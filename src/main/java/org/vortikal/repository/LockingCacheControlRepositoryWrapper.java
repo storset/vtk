@@ -48,32 +48,20 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.repository.store.CacheNoLockManager;
+import org.vortikal.repository.store.Cache;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 
 /**
- * Handles synchronization in URI namespace of repository write operations
+ * Handles synchronization in URI namespace of repository read/write operations
  * and does some extra cache flushing after transactions have completed.
  * 
- * A hack and necessary evil with our current repository implementation to fix:
- * - Inter-transactional locking problems on concurrent writes within the same URI namespace
- * - Cache coherence problems during heavy concurrency.
- * 
- * This is an ugly, but not so intrusive way (code-wise) of handling our
- * layering/model problems with the cache, since we here gain a back-door access
- * to the cache impl, while at the same time having control over namespace locking around
- * repository service transaction calls.
- * 
- * Since we are currently developing a new backend, this should be an acceptable
- * solution to keep the old one humping along a little longer.
- * 
- * NOTE: This class replaces {@link CachePurgeControlRepositoryWrapper}.
- * 
+ * Repository service calls which entail writing use exclusive locks on the involved
+ * <code>Path</code>s, while reading calls use shared locks.
  */
 public class LockingCacheControlRepositoryWrapper implements Repository {
 
-    private CacheNoLockManager cache;
+    private Cache cache;
     private Repository wrappedRepository;
     private final Log logger = LogFactory.getLog(LockingCacheControlRepositoryWrapper.class);
     private final PathLockManager lockManager = new PathLockManager();
@@ -147,7 +135,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
             lockUris.add(destUri);            
         }
         
-        List<Path> locked = this.lockManager.lock(lockUris, true);
+        final List<Path> locked = this.lockManager.lock(lockUris, true);
         
         try {
             this.wrappedRepository.move(token, srcUri, destUri, overwrite); // Tx
@@ -295,7 +283,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         lockUris.add(parentUri);
         lockUris.add(parentUri.extend(recoverableResource.getName()));
 
-        List<Path> locked = this.lockManager.lock(lockUris, true);
+        final List<Path> locked = this.lockManager.lock(lockUris, true);
         
         try {
             this.wrappedRepository.recover(token, parentUri, recoverableResource);
@@ -578,7 +566,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     }
     
     @Required
-    public void setCache(CacheNoLockManager cache) {
+    public void setCache(Cache cache) {
         this.cache = cache;
     }
 

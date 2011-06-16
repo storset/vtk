@@ -40,7 +40,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.repository.store.Cache;
+import org.vortikal.repository.store.OldCache;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 
@@ -77,7 +77,7 @@ import org.vortikal.security.Principal;
 @Deprecated
 public class CachePurgeControlRepositoryWrapper implements Repository {
 
-    private Cache cache;
+    private OldCache cache;
     private Repository wrappedRepository;
     private final Log logger = LogFactory.getLog(CachePurgeControlRepositoryWrapper.class);
 
@@ -361,7 +361,7 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
     }
 
     @Required
-    public void setCache(Cache cache) {
+    public void setCache(OldCache cache) {
         this.cache = cache;
     }
 

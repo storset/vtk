@@ -32,16 +32,19 @@ package org.vortikal.repository.store;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.PathLockManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.RecoverableResource;
@@ -49,6 +52,11 @@ import org.vortikal.repository.ResourceImpl;
 import org.vortikal.security.Principal;
 
 /**
+ * No synchronization on URI namespace is done by this Cache (it has no LockManager).
+ * It simply maintains the cache and flushes dirty entries on write operations.
+ * Synchronization of operations in URI namespace should be done outside of
+ * transaction context.
+ * 
  * Very simple resource cache, wrapping around a {@link DataAccessor}. Resources
  * are cached when loaded (and stored). Resources are evicted in the following
  * cases:
@@ -110,12 +118,10 @@ import org.vortikal.security.Principal;
  * percent or 0.05.
  * </ul>
  */
-@Deprecated
 public class Cache implements DataAccessor, InitializingBean {
 
     private Log logger = LogFactory.getLog(this.getClass());
     private DataAccessor wrappedAccessor;
-    private PathLockManager lockManager = new PathLockManager();
     private int maxItems = 1000;
     private double evictionRatio = 0.1;
     private int removeItems;
@@ -178,104 +184,6 @@ public class Cache implements DataAccessor, InitializingBean {
         }
     }
 
-    @Override
-    public ResourceImpl[] loadChildren(ResourceImpl parent) throws DataAccessException {
-
-        List<ResourceImpl> found = new ArrayList<ResourceImpl>();
-        List<Path> notFound = new ArrayList<Path>();
-
-        List<Path> childUris = parent.getChildURIs();
-
-        for (Path uri : childUris) {
-
-            ResourceImpl r = this.items.get(uri);
-            boolean lockTimedOut = (r != null && r.getLock() != null && r.getLock().getTimeout().getTime() < System
-                    .currentTimeMillis());
-
-            if (this.logger.isInfoEnabled() && lockTimedOut) {
-                this.logger.info("Dropping cached copy of " + r.getURI() + " (lock timed out)");
-            }
-
-            if (r == null || lockTimedOut) {
-                notFound.add(uri);
-            } else {
-                found.add(r);
-            }
-        }
-
-        if (this.gatherStatistics) {
-            updateStatistics(found.size(), notFound.size());
-        }
-
-        if (notFound.size() == 0) {
-            // Every child was found in cache, and none of them had expired
-            // locks.
-            return found.toArray(new ResourceImpl[found.size()]);
-        }
-
-        ResourceImpl[] resources = null;
-
-        List<Path> obtainedLocks = this.lockManager.lock(childUris, true);
-
-        float notFoundRatio = (float) notFound.size() / childUris.size();
-
-        if (notFoundRatio <= this.loadChildrenSelectivelyThreshold) {
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("loadChildren(): Less than " + (this.loadChildrenSelectivelyThreshold * 100)
-                        + " percent of children missing from cache for URI '" + parent.getURI() + "', " + "loading "
-                        + notFound.size() + " missing or expired children individually.");
-            }
-
-            try {
-                // Below threshold for number of missing children in cache, we
-                // load the missing ones selectively from database for better
-                // efficiency.
-                for (Path missingChild : notFound) {
-                    ResourceImpl resourceImpl = this.wrappedAccessor.load(missingChild);
-                    if (resourceImpl != null) {
-                        found.add(resourceImpl);
-                        enterResource(resourceImpl);
-                    }
-                }
-
-            } finally {
-                this.lockManager.unlock(obtainedLocks, true); // Release URI sync
-                // locks
-            }
-
-            return found.toArray(new ResourceImpl[found.size()]);
-
-        } else {
-            // Above threshold of children missing from cache or child too list
-            // too large
-            // for current cache size. Load everything in one go.
-            try {
-
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("loadChildren(): Loading all children of URI '" + parent.getURI()
-                            + "' from database, " + parent.getChildURIs().size() + " resources.");
-                }
-
-                resources = this.wrappedAccessor.loadChildren(parent);
-
-                for (ResourceImpl resourceImpl : resources) {
-                    enterResource(resourceImpl); // Put in cache, replace any
-                    // existing (full refresh).
-                }
-            } finally {
-                this.lockManager.unlock(obtainedLocks, true); // Release URI sync
-                // locks
-            }
-
-        }
-
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("cache size : " + this.items.size());
-        }
-
-        return resources;
-    }
-
     /**
      * Loads resource into cache (if it wasn't already there), returns resource.
      * 
@@ -309,100 +217,154 @@ public class Cache implements DataAccessor, InitializingBean {
             updateStatistics(0, 1);
         }
 
-        List<Path> lock = this.lockManager.lock(uri, true);
 
-        try {
-            r = this.items.get(uri);
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Load from wrappedAccessor: " + uri);
+        }
 
-            davLockTimedOut = (r != null && r.getLock() != null && r.getLock().getTimeout().getTime() < System
+        r = this.wrappedAccessor.load(uri);
+
+        if (r == null) {
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Not found in wrappedAccessor: " + uri);
+            }
+
+            return null;
+        }
+
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Miss: " + uri);
+        }
+
+        enterResource(r);
+
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Load took " + (System.currentTimeMillis() - start) + " ms");
+            this.logger.debug("Cache size: " + this.items.size());
+        }
+
+        return r;
+    }
+    
+    @Override
+    public ResourceImpl[] loadChildren(ResourceImpl parent) throws DataAccessException {
+
+        final List<Path> childUris = parent.getChildURIs();
+        final List<ResourceImpl> found = new ArrayList<ResourceImpl>();
+        final List<Path> notFound = new ArrayList<Path>();
+
+        for (Path uri : childUris) {
+
+            ResourceImpl r = this.items.get(uri);
+            boolean davlockTimedOut = (r != null && r.getLock() != null && r.getLock().getTimeout().getTime() < System
                     .currentTimeMillis());
 
-            if (r != null && !davLockTimedOut) {
-                return r;
+            if (this.logger.isInfoEnabled() && davlockTimedOut) {
+                this.logger.info("Dropping cached copy of " + r.getURI() + " (lock timed out)");
             }
 
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("load from wrappedAccessor: " + uri);
-            }
-
-            r = this.wrappedAccessor.load(uri);
-
-            if (r == null) {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("not found in wrappedAccessor: " + uri);
-                }
-
-                return null;
-            }
-
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("miss: " + uri);
-            }
-
-            enterResource(r);
-
-            return r;
-        } finally {
-            this.lockManager.unlock(lock, true); // Release URI sync lock
-
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("load: took " + (System.currentTimeMillis() - start) + " ms");
-            }
-
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("cache size : " + this.items.size());
+            if (r == null || davlockTimedOut) {
+                notFound.add(uri);
+            } else {
+                found.add(r);
             }
         }
+
+        if (this.gatherStatistics) {
+            updateStatistics(found.size(), notFound.size());
+        }
+
+        if (notFound.isEmpty()) {
+            // Every child was found in cache, and none of them had expired
+            // locks.
+            return found.toArray(new ResourceImpl[found.size()]);
+        }
+
+        ResourceImpl[] resources = null;
+
+        float notFoundRatio = (float) notFound.size() / childUris.size();
+
+        if (notFoundRatio <= this.loadChildrenSelectivelyThreshold) {
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("loadChildren(): Less than " + (this.loadChildrenSelectivelyThreshold * 100)
+                        + " percent of children missing from cache for URI '" + parent.getURI() + "', loading "
+                        + notFound.size() + " missing or expired children individually.");
+            }
+
+            // Below threshold for number of missing children in cache, we
+            // load the missing ones selectively from database for better
+            // efficiency.
+            List<ResourceImpl> loadedResources = new ArrayList<ResourceImpl>(notFound.size());
+            for (Path missingChild : notFound) {
+                ResourceImpl resourceImpl = this.wrappedAccessor.load(missingChild);
+                if (resourceImpl != null) {
+                    found.add(resourceImpl);
+                    loadedResources.add(resourceImpl);
+                }
+            }
+            
+            synchronized (this.items) {
+                for (ResourceImpl loaded: loadedResources) {
+                    enterResource(loaded);
+                }
+            }
+
+            return found.toArray(new ResourceImpl[found.size()]);
+
+        } else {
+            // Above threshold of children missing from cache or child list
+            // too large for current cache size. Load everything in one go.
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("loadChildren(): Loading all children of URI '" + parent.getURI()
+                        + "' from database, " + parent.getChildURIs().size() + " resources.");
+            }
+
+
+            // Treat entire child loading operation as atomic modification of cache,
+            // synchronize on items immediately.
+            resources = this.wrappedAccessor.loadChildren(parent);
+            synchronized (this.items) {
+                for (ResourceImpl resourceImpl : resources) {
+                    enterResource(resourceImpl); // Put in cache, replace any existing (full refresh).
+                }
+            }
+        }
+
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("Cache size : " + this.items.size());
+        }
+
+        return resources;
     }
+
 
     @Override
     public ResourceImpl storeACL(ResourceImpl r) throws DataAccessException {
-        List<Path> uris = new ArrayList<Path>();
-        uris.add(r.getURI());
-
+        ResourceImpl writtenResource = this.wrappedAccessor.storeACL(r); // Persist
         if (r.isCollection()) {
-            Path testURI = r.getURI();
-
-            for (Path uri : this.items.uriSet()) {
-                if (testURI.isAncestorOf(uri) && !uri.isRoot()) {
-                    uris.add(uri);
-                }
-            }
+            this.items.remove(r.getURI(), true); // Purge resource and all descendants from cache (due to ACL inheritance)
         }
 
-        List<Path> lockedUris = this.lockManager.lock(uris, true);
-
-        ResourceImpl writtenResource;
-        try {
-            writtenResource = this.wrappedAccessor.storeACL(r); // Persist
-            this.items.remove(uris); // Purge all affected items from cache
-        } finally {
-            this.lockManager.unlock(lockedUris, true); // Release URI sync lock
-
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("cache size : " + this.items.size());
-            }
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("cache size : " + this.items.size());
         }
+        
+        enterResource(writtenResource);
         
         return writtenResource;
     }
 
     @Override
     public ResourceImpl store(final ResourceImpl resource) throws DataAccessException {
-        List<Path> locked = this.lockManager.lock(resource.getURI(), true);
-        
-        ResourceImpl writtenResource;
-        try {
-            writtenResource = this.wrappedAccessor.store(resource); // Persist
-            this.items.remove(resource.getURI()); // Purge item from cache
-        } finally {
-            this.lockManager.unlock(locked, true); // Release URI sync lock
 
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("cache size : " + this.items.size());
-            }
-        }
+        ResourceImpl writtenResource = this.wrappedAccessor.store(resource); // Persist
         
+        enterResource(writtenResource);
+
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("cache size : " + this.items.size());
+        }
+
         return writtenResource;
     }
 
@@ -410,108 +372,74 @@ public class Cache implements DataAccessor, InitializingBean {
      * Explicity purge a resource from cache by URI. Used by external cache
      * control code.
      * 
+     * Optionally purges all descendants as well.
+     * 
      * @param uri
      */
-    public void purgeFromCache(Path uri) {
-        List<Path> locked = this.lockManager.lock(uri, true);
-        try {
-            this.items.remove(locked);
-        } finally {
-            this.lockManager.unlock(locked, true);
-        }
+    public void flushFromCache(Path uri, boolean flushDescendants) {
+        this.items.remove(uri, flushDescendants);
     }
 
     /**
-     * Eplicitly purge a list of resources from cache by URI. Used by external
-     * cache control code.
+     * Returns all currently cached descendant URIs.
      * 
-     * @param uris
+     * @param uri
+     * @return 
      */
-    public void purgeFromCache(List<Path> uris) {
-        List<Path> lockedUris = this.lockManager.lock(uris, true);
-        try {
-            this.items.remove(lockedUris);
-        } finally {
-            this.lockManager.unlock(lockedUris, true);
+    public List<Path> getCachedDescendantPaths(Path uri) {
+        List<Path> paths = new ArrayList<Path>();
+        
+        for (Path cachedUri: this.items.uriSet()) {
+            if (uri.isAncestorOf(cachedUri)) {
+                paths.add(cachedUri);
+            }
         }
+        
+        return paths;
     }
 
     @Override
     public ResourceImpl copy(ResourceImpl r, ResourceImpl destParent, PropertySet newResource, boolean copyACLs,
             PropertySet fixedProperties) throws DataAccessException {
 
-        Path destURI = newResource.getURI();
+        // Persist copy operation
+        ResourceImpl writtenDestResource = this.wrappedAccessor.copy(r, destParent, newResource, copyACLs, fixedProperties);
 
-        List<Path> uris = new ArrayList<Path>(4);
-        uris.add(r.getURI());
-        uris.add(destURI);
+        // Purge affected destination parent from cache
+        this.items.remove(destParent.getURI(), false);
+        this.items.remove(newResource.getURI(), true);
 
-        Path destParentURI = destParent.getURI();
-        if (this.items.containsURI(destParentURI)) {
-            uris.add(destParentURI);
-        }
-
-        Path srcParentURI = r.getURI().getParent();
-        if ((srcParentURI != null) && !uris.contains(srcParentURI) && this.items.containsURI(srcParentURI)) {
-            uris.add(srcParentURI);
-        }
-
-        List<Path> lockedUris = this.lockManager.lock(uris, true);
-        ResourceImpl writtenDestResource;
-        try {
-            // Persist copy operation
-            writtenDestResource = this.wrappedAccessor.copy(r, destParent, newResource, copyACLs, fixedProperties);
-            // Purge affected destination parent from cache
-            this.items.remove(destParentURI);
-        } finally {
-            this.lockManager.unlock(lockedUris, true); // Release URI sync locks
-
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("cache size : " + this.items.size());
-            }
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("cache size : " + this.items.size());
         }
         
+        enterResource(writtenDestResource);
+
         return writtenDestResource;
     }
 
     @Override
     public ResourceImpl move(ResourceImpl r, ResourceImpl newResource) throws DataAccessException {
-        Path destURI = newResource.getURI();
-        List<Path> uris = new ArrayList<Path>();
-        uris.add(r.getURI());
-        uris.add(destURI);
-        if (r.isCollection()) {
-            for (Path uri : this.items.uriSet()) {
-                if (r.getURI().isAncestorOf(uri) && !uri.equals(r.getURI())) {
-                    uris.add(uri);
-                }
-            }
+
+        ResourceImpl writtenDestResource = this.wrappedAccessor.move(r, newResource); // Persist move operation
+
+        // Purge all affected items from cache
+        if (newResource.getURI().getParent() != null) {
+            this.items.remove(newResource.getURI().getParent(), false);
+        }
+        if (r.getURI().getParent() != null) {
+            this.items.remove(r.getURI().getParent(), false);
+        }
+        // remove source+dest (all descendants, and we remove dest in case it was overwrite).
+        this.items.remove(r.getURI(), true);
+        this.items.remove(newResource.getURI(), true);
+
+
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("cache size : " + this.items.size());
         }
 
-        Path destParentURI = newResource.getURI().getParent();
-        if (this.items.containsURI(destParentURI)) {
-            uris.add(destParentURI);
-        }
-
-        Path srcParentURI = r.getURI().getParent();
-        if ((srcParentURI != null) && !uris.contains(srcParentURI) && this.items.containsURI(srcParentURI)) {
-            uris.add(srcParentURI);
-        }
-
-        List<Path> locks = this.lockManager.lock(uris, true);
-        ResourceImpl writtenDestResource;
-        try {
-            writtenDestResource = this.wrappedAccessor.move(r, newResource); // Persist move operation
-            this.items.remove(uris); // Purge all affected items from cache
-
-        } finally {
-
-            this.lockManager.unlock(locks, true); // Release URI sync locks
-
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("cache size : " + this.items.size());
-            }
-        }
+        enterResource(writtenDestResource);
         
         return writtenDestResource;
     }
@@ -529,42 +457,23 @@ public class Cache implements DataAccessor, InitializingBean {
 
     private void performDelete(boolean restorable, ResourceImpl resource, ResourceImpl parent, Principal principal,
             final String trashID) {
-        List<Path> uris = new ArrayList<Path>();
 
-        uris.add(resource.getURI());
-
-        if (resource.isCollection()) {
-            for (Path uri : this.items.uriSet()) {
-                if (resource.getURI().isAncestorOf(uri) && !uri.equals(resource.getURI())) {
-                    uris.add(uri);
-                }
-            }
+        // Dispatch to wrapped DAO for persistence
+        if (restorable) {
+            this.wrappedAccessor.markDeleted(resource, parent, principal, trashID);
+        } else {
+            this.wrappedAccessor.delete(resource);
         }
 
-        Path parentURI = resource.getURI().getParent();
-
-        if ((parentURI != null) && this.items.containsURI(parentURI)) {
-            uris.add(parentURI);
+        this.items.remove(resource.getURI(), resource.isCollection());
+        if (resource.getURI().getParent() != null) {
+            this.items.remove(resource.getURI().getParent(), false);
         }
 
-        List<Path> locks = this.lockManager.lock(uris, true);
-
-        try {
-            // Dispatch to wrapped DAO for persistence
-            if (restorable) {
-                this.wrappedAccessor.markDeleted(resource, parent, principal, trashID);
-            } else {
-                this.wrappedAccessor.delete(resource);
-            }
-
-            this.items.remove(uris); // Purge all affected items from cache
-        } finally {
-            this.lockManager.unlock(locks, true); // Release URI sync locks
-
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("cache size : " + this.items.size());
-            }
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("cache size : " + this.items.size());
         }
+
     }
 
     @Override
@@ -574,14 +483,11 @@ public class Cache implements DataAccessor, InitializingBean {
 
     @Override
     public ResourceImpl recover(Path parent, RecoverableResource recoverableResource) {
-        List<Path> locked = this.lockManager.lock(parent, true);
-        try {
-            ResourceImpl recoveredResource = this.wrappedAccessor.recover(parent, recoverableResource);
-            this.items.remove(parent);
-            return recoveredResource;
-        } finally {
-            this.lockManager.unlock(locked, true);
-        }
+        ResourceImpl writtenResource = this.wrappedAccessor.recover(parent, recoverableResource);
+        
+        enterResource(writtenResource);
+        
+        return writtenResource;
     }
 
     @Override
@@ -595,7 +501,7 @@ public class Cache implements DataAccessor, InitializingBean {
     }
 
     @Override
-    public java.util.List<RecoverableResource> getTrashCanOrphans() throws DataAccessException {
+    public List<RecoverableResource> getTrashCanOrphans() throws DataAccessException {
         return this.wrappedAccessor.getTrashCanOrphans();
     }
 
@@ -614,10 +520,7 @@ public class Cache implements DataAccessor, InitializingBean {
      * 
      */
     public void clear() {
-        synchronized (this.items) {
-            this.items.clear();
-            this.lockManager = new PathLockManager();
-        }
+        this.items.clear();
     }
 
     /**
@@ -632,24 +535,18 @@ public class Cache implements DataAccessor, InitializingBean {
     /**
      * Note: this method is not thread safe, lock uri first
      * 
-     * @param item
-     *            a <code>Resource</code> value
+     * @param item a <code>Resource</code> value
      * 
      */
     private void enterResource(ResourceImpl resource) {
         synchronized (this.items) {
             if (this.items.size() > (this.maxItems - 1)) {
-
                 long startTime = System.currentTimeMillis();
-
-                for (int i = 0; i < this.removeItems; i++) {
-                    this.items.removeOldest();
-                }
-
+                this.items.removeOldItems(this.removeItems);
                 long processingTime = System.currentTimeMillis() - startTime;
                 if (this.logger.isInfoEnabled()) {
-                    this.logger.info("Maximum cache size (" + this.maxItems + ") reached, removed " + this.removeItems
-                            + " oldest items in " + processingTime + " ms");
+                    this.logger.info("Maximum cache size (" + this.maxItems + ") reached, removed "
+                            + this.removeItems + " oldest items in " + processingTime + " ms");
                 }
             }
 
@@ -679,62 +576,114 @@ public class Cache implements DataAccessor, InitializingBean {
     private class Item {
         Item older = null;
         Item newer = null;
-        ResourceImpl resource;
+        final ResourceImpl resource;
 
         Item(ResourceImpl resource) {
             this.resource = resource;
         }
-
-        ResourceImpl getResource() {
-            return this.resource;
-        }
     }
 
+    /**
+     * Simple resource cache with non-blocking reads.
+     * - All read operations are concurrent/non-blocking
+     * - All write operations are completely synchronized/blocking.
+     */
     private class Items {
-        private Map<Path, Item> map;
+        private final Map<Path, Item> map;
+        private volatile int size = 0;
         private Item in = null; // Item eviction list head (newest item)
         private Item out = null;// Item eviction list tail (oldest item)
-
+        
         public Items(int initialCapacity) {
             this.map = new ConcurrentHashMap<Path, Item>(initialCapacity);
         }
 
-        public void clear() { // Synchronized externally
-            this.map.clear();
-            this.in = this.out = null;
-        }
-
         public ResourceImpl get(Path uri) {
-            Item i = this.map.get(uri);
+            final Item item = this.map.get(uri);
 
-            if (i != null) {
-                return i.getResource();
+            if (item != null) {
+                return item.resource;
             }
 
             return null;
         }
 
+        public int size() {
+            // The size() method of ConcurrentHashMap can be expensive. We can
+            // however easily avoid it and track it externally, since all
+            // modifying operations are synchronized.
+            return this.size;
+        }
+
+        public Set<Path> uriSet() {
+            return this.map.keySet();
+        }
+
         public synchronized void put(Path uri, ResourceImpl resource) {
-            Item item = new Item(resource);
+            final Item item = new Item(resource);
 
-            Item replaced = this.map.put(uri, item);
+            final Item replaced = this.map.put(uri, item);
             if (replaced != null) {
-                // Remove replaced item from eviction list
-                // This avoid growing the eviction list if the same set of URIs
-                // are frequently replaced in the cache (which can cause huge
-                // memory usage).
-                if (replaced.older != null)
-                    replaced.older.newer = replaced.newer;
-                else
-                    this.out = replaced.newer;
-
-                if (replaced.newer != null)
-                    replaced.newer.older = replaced.older;
-                else
-                    this.in = replaced.older;
+                // New Path item will be reinserted at front
+                removeFromEvictionQueue(replaced);
+            } else {
+                // Previously uncached URI, we grow.
+                ++this.size;
             }
 
-            // Put new item in eviction list head
+            addToEvictionQueue(item);
+        }
+
+        public synchronized void remove(final Path uri, boolean removeDescendants) {
+            Item item = this.map.remove(uri);
+            if (item != null) {
+                // Something was actually removed
+                --this.size;
+                removeFromEvictionQueue(item);
+            }
+            
+            if (removeDescendants) {
+                for (Iterator<Map.Entry<Path,Item>> iter = this.map.entrySet().iterator(); iter.hasNext();) {
+                    Map.Entry<Path,Item> entry = iter.next();
+                    
+                    if (uri.isAncestorOf(entry.getKey())) {
+                        removeFromEvictionQueue(entry.getValue());
+                        iter.remove();
+                        --this.size;
+                    }
+                }
+            }
+        }
+
+        public synchronized void removeOldItems(int n) {
+            for (int i = 0; i < n; i++) {
+                Item oldest = pollEvictionQueue();
+                if (oldest == null) {
+                    break;
+                }
+                if (Cache.this.logger.isDebugEnabled()) {
+                    Cache.this.logger.debug("Removing old item " + oldest.resource.getURI());
+                }
+                if (this.map.remove(oldest.resource.getURI()) != null) {
+                    --this.size;
+                }
+            }
+        }
+        
+        public synchronized void clear() {
+            this.map.clear();
+            this.size = 0;
+            this.in = this.out = null;
+        }
+
+        public void dump(java.io.PrintStream out) {
+            for (Path uri: this.map.keySet()) {
+                out.println(uri);
+            }
+        }
+
+        // Put new item in eviction list head
+        private void addToEvictionQueue(final Item item) {
             if (this.in != null) {
                 this.in.newer = item;
             }
@@ -747,91 +696,37 @@ public class Cache implements DataAccessor, InitializingBean {
             }
         }
 
-        public synchronized void remove(Path uri) {
-            Item i = this.map.get(uri);
-
-            if (i != null) {
-                if (i.older != null) {
-                    i.older.newer = i.newer;
-                } else {
-                    this.out = i.newer;
-                }
-
-                if (i.newer != null) {
-                    i.newer.older = i.older;
-                } else {
-                    this.in = i.older;
-                }
+        // Remove an item from eviction queue
+        private void removeFromEvictionQueue(final Item item) {
+            if (item.older != null) {
+                item.older.newer = item.newer;
+            } else {
+                this.out = item.newer;
             }
 
-            this.map.remove(uri);
-        }
-
-        public synchronized void remove(List<Path> uris) {
-            for (Path uri : uris) {
-                remove(uri);
+            if (item.newer != null) {
+                item.newer.older = item.older;
+            } else {
+                this.in = item.older;
             }
         }
 
-        public int size() {
-            return this.map.size();
-        }
-
-        public Set<Path> uriSet() {
-            return this.map.keySet();
-        }
-
-        public boolean containsURI(Path uri) {
-            return this.map.containsKey(uri);
-        }
-
-        // XXX: Not in use, for LRU-style eviction list shuffling ?
-        @SuppressWarnings("unused")
-        public synchronized void hit(Path uri) {
-            Item i = this.map.get(uri);
-
-            if ((i != null) && (i != this.in)) {
-                /* Remove i from list: */
-                if (i != this.out) {
-                    i.older.newer = i.newer;
-                } else {
-                    this.out = i.newer;
-                }
-
-                i.newer.older = i.older;
-
-                /* Insert i first in list: */
-                this.in.newer = i;
-                i.older = this.in;
-                i.newer = null;
-                this.in = i;
-            }
-        }
-
-        public synchronized void removeOldest() {
+        // Poll (return and remove) oldest item from eviction queue
+        private Item pollEvictionQueue() {
             if (this.out != null) {
-                if (Cache.this.logger.isDebugEnabled()) {
-                    Cache.this.logger.debug("Removing oldest item " + this.out.getResource().getURI());
-                }
-
-                this.map.remove(this.out.getResource().getURI());
-
-                if (this.in != this.out) {
+                Item polled = this.out;
+                
+                if (this.out != this.in) {
                     this.out.newer.older = null;
                     this.out = this.out.newer;
                 } else {
-                    this.in = this.out = null;
+                    this.out = this.in = null;
                 }
+                
+                return polled;
             }
-        }
-
-        public void dump(java.io.PrintStream out) {
-            Item i = this.in;
-
-            while (i != null) {
-                out.println(i.getResource().getURI());
-                i = i.older;
-            }
+            
+            return null;
         }
     }
 

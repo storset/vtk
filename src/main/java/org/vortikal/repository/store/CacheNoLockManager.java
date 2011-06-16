@@ -248,10 +248,10 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
     
     @Override
     public ResourceImpl[] loadChildren(ResourceImpl parent) throws DataAccessException {
-        List<Path> childUris = parent.getChildURIs();
 
-        List<ResourceImpl> found = new ArrayList<ResourceImpl>();
-        List<Path> notFound = new ArrayList<Path>();
+        final List<Path> childUris = parent.getChildURIs();
+        final List<ResourceImpl> found = new ArrayList<ResourceImpl>();
+        final List<Path> notFound = new ArrayList<Path>();
 
         for (Path uri : childUris) {
 
@@ -294,17 +294,18 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
             // Below threshold for number of missing children in cache, we
             // load the missing ones selectively from database for better
             // efficiency.
+            List<ResourceImpl> loadedResources = new ArrayList<ResourceImpl>(notFound.size());
             for (Path missingChild : notFound) {
                 ResourceImpl resourceImpl = this.wrappedAccessor.load(missingChild);
                 if (resourceImpl != null) {
                     found.add(resourceImpl);
-                    enterResource(resourceImpl);
+                    loadedResources.add(resourceImpl);
                 }
             }
             
             synchronized (this.items) {
-                for (ResourceImpl resourceImpl: found) {
-                    enterResource(resourceImpl);
+                for (ResourceImpl loaded: loadedResources) {
+                    enterResource(loaded);
                 }
             }
 

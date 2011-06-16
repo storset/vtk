@@ -56,7 +56,7 @@ import org.apache.commons.logging.LogFactory;
  *    managing the lock map (getLock(Path), returnLock(Lock) and unlockInternal(Path)).
  *
  */
-public class NewPathLockManager {
+public class PathLockManager {
 
     // How many seconds max to wait for each path lock requested if there is contention.
     private int lockTimeoutSeconds = 100;

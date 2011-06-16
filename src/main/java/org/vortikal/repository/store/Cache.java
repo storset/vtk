@@ -41,7 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.NewPathLockManager;
+import org.vortikal.repository.PathLockManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.RecoverableResource;
@@ -115,7 +115,7 @@ public class Cache implements DataAccessor, InitializingBean {
 
     private Log logger = LogFactory.getLog(this.getClass());
     private DataAccessor wrappedAccessor;
-    private NewPathLockManager lockManager = new NewPathLockManager();
+    private PathLockManager lockManager = new PathLockManager();
     private int maxItems = 1000;
     private double evictionRatio = 0.1;
     private int removeItems;
@@ -616,7 +616,7 @@ public class Cache implements DataAccessor, InitializingBean {
     public void clear() {
         synchronized (this.items) {
             this.items.clear();
-            this.lockManager = new NewPathLockManager();
+            this.lockManager = new PathLockManager();
         }
     }
 

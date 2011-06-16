@@ -238,7 +238,6 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
 
         enterResource(r);
 
-
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("Load took " + (System.currentTimeMillis() - start) + " ms");
             this.logger.debug("Cache size: " + this.items.size());
@@ -308,7 +307,6 @@ public class CacheNoLockManager implements DataAccessor, InitializingBean {
                     enterResource(resourceImpl);
                 }
             }
-
 
             return found.toArray(new ResourceImpl[found.size()]);
 

@@ -76,7 +76,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     private CacheNoLockManager cache;
     private Repository wrappedRepository;
     private final Log logger = LogFactory.getLog(LockingCacheControlRepositoryWrapper.class);
-    private final PathLockManager lockManager = new PathLockManager();
+    private final NewPathLockManager lockManager = new NewPathLockManager();
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
 
     @Override
@@ -105,7 +105,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         }
         lockUris.add(destUri);
                 
-        final List<Path> locked = this.lockManager.lock(lockUris);
+        final List<Path> locked = this.lockManager.lock(lockUris, true);
         
         try {
             this.wrappedRepository.copy(token, srcUri, destUri, depth, overwrite, preserveACL); // Tx
@@ -116,7 +116,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
                 flushFromCache(destUri.getParent(), false, "copy");
             }
         } finally {
-            this.lockManager.unlock(locked);
+            this.lockManager.unlock(locked, true);
         }
     }
 
@@ -147,7 +147,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
             lockUris.add(destUri);            
         }
         
-        List<Path> locked = this.lockManager.lock(lockUris);
+        List<Path> locked = this.lockManager.lock(lockUris, true);
         
         try {
             this.wrappedRepository.move(token, srcUri, destUri, overwrite); // Tx
@@ -164,7 +164,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
                 flushFromCache(destParent, false, "move");
             }
         } finally {
-            this.lockManager.unlock(locked);
+            this.lockManager.unlock(locked, true);
         }
     }
 
@@ -181,7 +181,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         }
         lockUris.add(uri);
         
-        final List<Path> locked = this.lockManager.lock(lockUris);
+        final List<Path> locked = this.lockManager.lock(lockUris, true);
         
         try {
             Resource resource = this.wrappedRepository.createCollection(token, uri); // Tx
@@ -194,7 +194,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
             
             return resource;
         } finally {
-            this.lockManager.unlock(locked);
+            this.lockManager.unlock(locked, true);
         }
     }
     
@@ -224,7 +224,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
             }
             lockUris.add(uri);
 
-            final List<Path> locked = this.lockManager.lock(lockUris);
+            final List<Path> locked = this.lockManager.lock(lockUris, true);
 
             try {
                 Resource resource = this.wrappedRepository.createDocument(token, uri, byteStream); // Tx
@@ -237,7 +237,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
 
                 return resource;
             } finally {
-                this.lockManager.unlock(locked);
+                this.lockManager.unlock(locked, true);
             }
             
         } finally {
@@ -263,7 +263,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         lockUris.add(uri);
         lockUris.addAll(getCachedDescendants(uri));
 
-        final List<Path> locked = this.lockManager.lock(lockUris);
+        final List<Path> locked = this.lockManager.lock(lockUris, true);
         
         try {
             this.wrappedRepository.delete(token, uri, restorable); // Tx
@@ -274,7 +274,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
                 flushFromCache(parent, false, "delete");
             }
         } finally {
-            this.lockManager.unlock(locked);
+            this.lockManager.unlock(locked, true);
         }
     }
 
@@ -295,13 +295,13 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         lockUris.add(parentUri);
         lockUris.add(parentUri.extend(recoverableResource.getName()));
 
-        List<Path> locked = this.lockManager.lock(lockUris);
+        List<Path> locked = this.lockManager.lock(lockUris, true);
         
         try {
             this.wrappedRepository.recover(token, parentUri, recoverableResource);
             flushFromCache(parentUri, false, "recover");
         } finally {
-            this.lockManager.unlock(locked);
+            this.lockManager.unlock(locked, true);
         }
     }
 
@@ -325,7 +325,13 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
 
     @Override
     public boolean exists(String token, Path uri) throws AuthorizationException, AuthenticationException, Exception {
-        return this.wrappedRepository.exists(token, uri);
+        // Acquired shared lock
+        final List<Path> locked = this.lockManager.lock(uri, false);
+        try {
+            return this.wrappedRepository.exists(token, uri); // Tx
+        } finally {
+            this.lockManager.unlock(locked, false);
+        }
     }
 
     @Override
@@ -348,7 +354,17 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     @Override
     public InputStream getInputStream(String token, Path uri, boolean forProcessing) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, Exception {
-        return this.wrappedRepository.getInputStream(token, uri, forProcessing); // Tx
+        
+        // XXX perhaps not lock at all for getInputStream ..
+        //     If a slow writer is uploading to the same resource, getting the input stream will block.
+        //     On the other hand, not locking can typically result in a bad half-written input stream.
+        
+        List<Path> locked = this.lockManager.lock(uri, false);
+        try {
+            return this.wrappedRepository.getInputStream(token, uri, forProcessing); // Tx
+        } finally {
+            this.lockManager.unlock(locked, false);
+        }
     }
 
     @Override
@@ -359,7 +375,14 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     @Override
     public Resource[] listChildren(String token, Path uri, boolean forProcessing) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, Exception {
-        return this.wrappedRepository.listChildren(token, uri, forProcessing); // Tx
+        
+        // Acquire a shared read-lock on parent path
+        final List<Path> locked = this.lockManager.lock(uri, false);
+        try {
+            return this.wrappedRepository.listChildren(token, uri, forProcessing); // Tx
+        } finally {
+            this.lockManager.unlock(locked, false);
+        }
     }
 
     @Override
@@ -369,11 +392,11 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         
         // Synchronize on:
         // - URI
-        final List<Path> locked = this.lockManager.lock(uri);
+        final List<Path> locked = this.lockManager.lock(uri, true);
         try {
             return this.wrappedRepository.lock(token, uri, ownerInfo, depth, requestedTimoutSeconds, lockToken); // Tx
         } finally {
-            this.lockManager.unlock(locked);
+            this.lockManager.unlock(locked, true);
         }
     }
 
@@ -383,18 +406,24 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         
         // Synchronize on:
         // - URI
-        final List<Path> locked = this.lockManager.lock(uri);
+        final List<Path> locked = this.lockManager.lock(uri, true);
         try {
             this.wrappedRepository.unlock(token, uri, lockToken); // Tx
         } finally {
-            this.lockManager.unlock(locked);
+            this.lockManager.unlock(locked, true);
         }
     }
 
     @Override
     public Resource retrieve(String token, Path uri, boolean forProcessing) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, Exception {
-        return this.wrappedRepository.retrieve(token, uri, forProcessing); // Tx
+        // Acquire a shared read-lock on path
+        final List<Path> locked = this.lockManager.lock(uri, false);
+        try {
+            return this.wrappedRepository.retrieve(token, uri, forProcessing); // Tx
+        } finally {
+            this.lockManager.unlock(locked, false);
+        }
     }
 
     @Override
@@ -409,12 +438,12 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         // Synchronize on:
         // - URI
         
-        final List<Path> locked = this.lockManager.lock(resource.getURI());
+        final List<Path> locked = this.lockManager.lock(resource.getURI(), true);
         
         try {
             return this.wrappedRepository.store(token, resource); // Tx
         } finally {
-            this.lockManager.unlock(locked);
+            this.lockManager.unlock(locked, true);
         }
     }
 
@@ -429,7 +458,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         lockUris.add(uri);
         lockUris.addAll(getCachedDescendants(uri));
         
-        final List<Path> locked = this.lockManager.lock(lockUris);
+        final List<Path> locked = this.lockManager.lock(lockUris, true);
         
         try {
             Resource resource = this.wrappedRepository.storeACL(token, uri, acl); // Tx
@@ -437,7 +466,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
 
             return resource;
         } finally {
-            this.lockManager.unlock(locked);
+            this.lockManager.unlock(locked, true);
         }
     }
 
@@ -452,7 +481,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         lockUris.add(uri);
         lockUris.addAll(getCachedDescendants(uri));
         
-        final List<Path> locked = this.lockManager.lock(lockUris);
+        final List<Path> locked = this.lockManager.lock(lockUris, true);
         
         try {
             Resource resource = this.wrappedRepository.storeACL(token, uri, acl, validateACL); // Tx
@@ -460,7 +489,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
             
             return resource;
         } finally {
-            this.lockManager.unlock(locked);
+            this.lockManager.unlock(locked, true);
         }
     }
     
@@ -477,7 +506,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         lockUris.add(uri);
         lockUris.addAll(getCachedDescendants(uri));
 
-        final List<Path> locked = this.lockManager.lock(lockUris);
+        final List<Path> locked = this.lockManager.lock(lockUris, true);
         
         try {
             Resource resource = this.wrappedRepository.deleteACL(token, uri); // Tx
@@ -486,7 +515,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
             
             return resource;
         } finally {
-            this.lockManager.unlock(locked);
+            this.lockManager.unlock(locked, true);
         }
     }
 
@@ -507,11 +536,11 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         
         // Synchronize on:
         // - URI
-        final List<Path> locked = this.lockManager.lock(uri);
+        final List<Path> locked = this.lockManager.lock(uri, true);
         try {
            return this.wrappedRepository.storeContent(token, uri, byteStream); // Tx
         } finally {
-            this.lockManager.unlock(locked);
+            this.lockManager.unlock(locked, true);
         }    
     }
 

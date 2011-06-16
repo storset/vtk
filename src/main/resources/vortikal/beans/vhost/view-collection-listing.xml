@@ -80,6 +80,8 @@
     </property>
     <property name="searchSorting" ref="collectionListing.searchSorting" />
     <property name="resourceTypeTree" ref="resourceTypeTree"/>
+    <!-- NB!!! REMOVE FROM HERE!!! only required when checkning for solr, set in solrComponents.xml -->
+    <property name="aggregationPropPointer" value="aggregation"/>
   </bean>
 
   <bean id="listingUriQueryBuilder" abstract="true" class="org.vortikal.web.search.ListingUriQueryBuilder">

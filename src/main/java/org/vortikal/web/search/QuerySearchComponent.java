@@ -46,6 +46,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
@@ -65,6 +66,7 @@ public abstract class QuerySearchComponent implements SearchComponent {
     private SearchSorting searchSorting;
     private List<String> configurablePropertySelectPointers;
     private ResourceTypeTree resourceTypeTree;
+    private String aggregationPropPointer;
 
     // Include other hosts in search, if multiHostSearchComponent is available
     // and component is configured to search other hosts
@@ -85,7 +87,7 @@ public abstract class QuerySearchComponent implements SearchComponent {
         search.setLimit(pageLimit + 1);
         search.setCursor(offset);
         ConfigurablePropertySelect propertySelect = new ConfigurablePropertySelect();
-        if (this.configurablePropertySelectPointers != null && this.resourceTypeTree != null) {
+        if (this.configurablePropertySelectPointers != null) {
             for (String propPointer : this.configurablePropertySelectPointers) {
                 PropertyTypeDefinition ptd = this.resourceTypeTree.getPropertyDefinitionByPointer(propPointer);
                 if (ptd != null) {
@@ -109,8 +111,13 @@ public abstract class QuerySearchComponent implements SearchComponent {
         }
 
         ResultSet result = null;
-        if (searchMultiHosts && this.multiHostSearchComponent != null) {
-            result = this.multiHostSearchComponent.search(token, search);
+        if (this.requiresMultiHostSearch(collection)) {
+            try {
+                result = this.multiHostSearchComponent.search(token, search);
+            } catch (Throwable t) {
+                // If something goes wrong with multi host search, run default instead
+                result = repository.search(token, search);
+            }
         } else {
             result = repository.search(token, search);
         }
@@ -160,6 +167,26 @@ public abstract class QuerySearchComponent implements SearchComponent {
         return listing;
     }
 
+    private boolean requiresMultiHostSearch(Resource collection) {
+        if (!this.searchMultiHosts || this.multiHostSearchComponent == null || this.aggregationPropPointer == null) {
+            return false;
+        }
+        PropertyTypeDefinition aggregationPropDef = this.resourceTypeTree
+                .getPropertyDefinitionByPointer(this.aggregationPropPointer);
+        Property aggregationProp = collection.getProperty(aggregationPropDef);
+        if (aggregationProp == null) {
+            return false;
+        }
+        for (Value val : aggregationProp.getValues()) {
+            String s = val.getStringValue();
+            // XXX better test, just do simple for now
+            if (s.startsWith("http") || s.startsWith("www")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Required
     public void setName(String name) {
         this.name = name;
@@ -197,10 +224,15 @@ public abstract class QuerySearchComponent implements SearchComponent {
         this.searchSorting = searchSorting;
     }
 
+    public void setAggregationPropPointer(String aggregationPropPointer) {
+        this.aggregationPropPointer = aggregationPropPointer;
+    }
+
     public void setConfigurablePropertySelectPointers(List<String> configurablePropertySelectPointers) {
         this.configurablePropertySelectPointers = configurablePropertySelectPointers;
     }
 
+    @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }

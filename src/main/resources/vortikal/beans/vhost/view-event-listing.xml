@@ -87,6 +87,7 @@
       </list>
     </property>
     <property name="searchSorting" ref="eventListing.upcoming.searchSorting" />
+    <property name="resourceTypeTree" ref="resourceTypeTree"/>
   </bean>
   
   <bean id="eventListing.processedQuerySearchComponent" parent="${override.listing.prefix}eventListing.upcomingEventsSearchComponent">

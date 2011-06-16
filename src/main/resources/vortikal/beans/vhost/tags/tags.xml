@@ -104,6 +104,7 @@
       </list>
     </property>
     <property name="searchSorting" ref="tags.searchSorting" />
+    <property name="resourceTypeTree" ref="resourceTypeTree"/>
   </bean>
 
   <bean id="tags.scopeQueryBuilder" class="org.vortikal.web.search.ScopeQueryBuilder">

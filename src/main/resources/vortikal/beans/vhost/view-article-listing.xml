@@ -85,6 +85,7 @@
       </list>
     </property>
     <property name="searchSorting" ref="articleListing.searchSorting" />
+    <property name="resourceTypeTree" ref="resourceTypeTree"/>
   </bean>
   
   <bean id="articleListing.listingUriQueryBuilder" parent="listingUriQueryBuilder">

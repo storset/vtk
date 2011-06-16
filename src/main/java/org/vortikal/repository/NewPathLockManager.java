@@ -129,7 +129,7 @@ public class NewPathLockManager {
         
         final List<Path> claimedLocks = new ArrayList<Path>(uris.length);
 
-        for (Path uri: uris) {
+        for (Path uri : uris) {
             final PathLock lock = getLock(uri);   // Request lock object for path
             if (lock.tryLock(this.lockTimeoutSeconds, TimeUnit.SECONDS, exclusive)) {
                 claimedLocks.add(uri);
@@ -137,20 +137,27 @@ public class NewPathLockManager {
                     this.logger.debug("suceeded: locking " + uri);
                 }
             } else {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("failed: locking " + uri
-                            + " after waiting " + this.lockTimeoutSeconds + " seconds");
-                }
-                
-                // Clean up, we failed.
-                // Return current lock, so it may be disposed of.
-                returnLock(lock);
+                try {
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.debug("failed: locking " + uri
+                                + " after waiting " + this.lockTimeoutSeconds + " seconds");
+                    }
 
-                // Release any locks we managed to claim as well.
-                unlock(claimedLocks, exclusive);
+                    throw new RuntimeException(
+                            "Thread " + Thread.currentThread().getName()
+                            + " giving up locking " + uri
+                            + " after " + this.lockTimeoutSeconds + " seconds");
+                } finally {
+                    // Clean up, we failed.
+                    // Return current lock, so it may be disposed of.
+                    returnLock(lock);
+
+                    // Release any locks we managed to claim as well.
+                    unlock(claimedLocks, exclusive);
+                }
             }
         }
-            
+
         return Collections.unmodifiableList(claimedLocks);
     }
     

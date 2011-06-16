@@ -55,6 +55,9 @@ import org.apache.commons.logging.LogFactory;
  *    of lock disposal. This synchronization is exclusively handled by the code
  *    managing the lock map (getLock(Path), returnLock(Lock) and unlockInternal(Path)).
  *
+ * TODO return list of lock objects or a lock token instead of list of paths (tighten up API).
+ *      Finally unlock(List<Path>) should only accept internal lock tokens/objects
+ *      that client code cannot create, as parameter.
  */
 public class PathLockManager {
 
@@ -138,13 +141,13 @@ public class PathLockManager {
             } else {
                 try {
                     if (this.logger.isDebugEnabled()) {
-                        this.logger.debug("failed: locking " + uri
+                        this.logger.debug("failed: locking " + uri + (exclusive ? " in exclusive mode" : " in shared mode")
                                 + " after waiting " + this.lockTimeoutSeconds + " seconds");
                     }
 
                     throw new RuntimeException(
                             "Thread " + Thread.currentThread().getName()
-                            + " giving up locking " + uri
+                            + " giving up locking " + uri + (exclusive ? " in exclusive mode " : " in shared mode")
                             + " after " + this.lockTimeoutSeconds + " seconds");
                 } finally {
                     // Clean up, we failed.

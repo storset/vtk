@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.security.Principal;
+import org.vortikal.security.Principal.Type;
 
 public class PrincipalAutoCompleteController extends AutoCompleteController {
 
@@ -42,16 +43,36 @@ public class PrincipalAutoCompleteController extends AutoCompleteController {
     private boolean invert;
 
     @Override
-    protected List<Suggestion> getAutoCompleteSuggestions(String input,
-                                                          CompletionContext context) {
+    protected List<Suggestion> getAutoCompleteSuggestions(String input, CompletionContext context) {
 
         List<Principal> completions = this.dataProvider.getCompletions(input, context);
 
         List<Suggestion> suggestions = new ArrayList<Suggestion>(completions.size());
-        for (Principal principal: completions) {
+        for (Principal principal : completions) {
             Suggestion suggestion = new Suggestion(2);
-            suggestion.setField(this.invert ? 0 : 1, principal.getUnqualifiedName());
-            suggestion.setField(this.invert ? 1 : 0, principal.getDescription());
+
+            // XXX: Only list uio.no and pseudo users
+            if (principal.isUser()) {
+                if (!(principal.getDomain().equals("uio.no") || principal.getDomain().equals(
+                        "pseudo:"))) {
+                    continue;
+                }
+            }
+            // XXX: Special treatment for webid-groups and users
+            if (principal.getQualifiedName().contains("webid.uio.no")) {
+                if (principal.getType() == Type.GROUP || principal.getType() == Type.PSEUDO) {
+                    suggestion.setField(this.invert ? 0 : 1, principal.getUnqualifiedName()
+                            + "@webid.uio.no");
+                    suggestion.setField(this.invert ? 1 : 0, principal.getDescription());
+
+                } else {
+                    continue;
+                }
+            } else {
+                suggestion.setField(this.invert ? 0 : 1, principal.getUnqualifiedName());
+                suggestion.setField(this.invert ? 1 : 0, principal.getDescription());
+            }
+
             suggestions.add(suggestion);
         }
 

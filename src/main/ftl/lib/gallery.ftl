@@ -80,13 +80,12 @@
     </#if>
     
     <#assign showTitle = false />
-    <#if (image.name != title && title != "") || photographer != "">
-      <#if photographer != "" && (image.name != title && title != "")>
-        <#local title = title + "<span class='vrtx-photographer'>${vrtx.getMsg('imageAsHtml.byline')}: " + photographer + "</span>" /> 
-      <#elseif photographer != "">  
-         <#local title = "<span class='vrtx-photographer'>${vrtx.getMsg('imageAsHtml.byline')}: " + photographer + "</span>" />        
-      </#if>
+    <#if (image.name != title && title != "")>
       <#assign showTitle = true />
+    </#if>
+    
+    <#if photographer != "">
+      <#local description = description + " <span class='vrtx-photographer'>${vrtx.getMsg('imageAsHtml.byline')}: " + photographer + ".</span>" />
     </#if>
     
     <#if activeImage != "" && imageListing != "">

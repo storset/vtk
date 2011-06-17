@@ -410,7 +410,7 @@ resourcetype person {
     rssFeeds : (en : "Show content from RSS-streams (from blog, Twitter or alike)", no : "Vis innhold fra RSS-strømmer (fra blogg, Twitter e.l.)", nn :"Vis innhald frå RSS-straumar (frå blogg, Twitter e.l.)"),
     rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
     rssUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
-    pressPhoto : (en : "Download press photo", no : "Last ned pressebilde", nn : "Last ned pressebilete"),
+    pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilete"),
     room : (en : "Room", no : "Rom", nn : "Rom"),
     images : (en : "Images", no : "Bilder", nn : "Bilete"),
     contactInformation : (en : "Primary contact information", no : "Primære kontaktopplysninger", nn : "Primære kontaktopplysingar"),

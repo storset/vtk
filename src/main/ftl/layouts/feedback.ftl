@@ -16,9 +16,11 @@
 <!-- end feedback js -->
 
 <div class="vrtx-feedback">
-  <span class="vrtx-feedback-title"><@vrtx.msg code="feedback.could-not-find" default="Did you find what you were looking for?" /></div>
-  <a class="feedback" href="${emailLink.url?html}" onClick="javascript:popup('${emailLink.url?html}'); return false">
-    <@vrtx.msg code="feedback.title" default="Give feedback" />
-  </a>
+  <span class="vrtx-feedback-title">
+    <@vrtx.msg code="feedback.could-not-find" default="Did you find what you were looking for?" />
+    <a class="feedback" href="${emailLink.url?html}" onClick="javascript:popup('${emailLink.url?html}'); return false">
+      <@vrtx.msg code="feedback.title" default="Give feedback" />
+    </a>
+  </span>
   <span class="vrtx-feedback-bottom"></span>
 </div>

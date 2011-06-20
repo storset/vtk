@@ -181,11 +181,3 @@
 .vrtx-image-listing-include .hiddenHeight {
   display: none;
 }
-
-.vrtx-image-listing-include .vrtx-photographer {
-  clear: left;
-  display: block;
-  font-style: normal;
-  font-size: 0.87em;
-  margin-top: 3px;
-}

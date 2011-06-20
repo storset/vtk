@@ -92,14 +92,14 @@ public class ListingUriQueryBuilder implements QueryBuilder {
         }
 
         // Any manually approved resources? Well then add those as well
-        Set<String> uriSet = this.manuallyApproveResourcesSearcher.getManuallyApprovedUris(collection);
-        if (uriSet != null && uriSet.size() > 0) {
-            UriSetQuery uriSetQuery = new UriSetQuery(uriSet);
-            OrQuery or = new OrQuery();
-            or.add(baseQuery);
-            or.add(uriSetQuery);
-            baseQuery = or;
-        }
+//        Set<String> uriSet = this.manuallyApproveResourcesSearcher.getManuallyApprovedUris(collection);
+//        if (uriSet != null && uriSet.size() > 0) {
+//            UriSetQuery uriSetQuery = new UriSetQuery(uriSet);
+//            OrQuery or = new OrQuery();
+//            or.add(baseQuery);
+//            or.add(uriSetQuery);
+//            baseQuery = or;
+//        }
 
         return baseQuery;
     }
@@ -114,7 +114,7 @@ public class ListingUriQueryBuilder implements QueryBuilder {
         this.aggregationResolver = aggregationResolver;
     }
 
-    @Required
+    //@Required
     public void setManuallyApproveResourcesSearcher(ManuallyApproveResourcesSearcher manuallyApproveResourcesSearcher) {
         this.manuallyApproveResourcesSearcher = manuallyApproveResourcesSearcher;
     }

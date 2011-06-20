@@ -28,8 +28,8 @@
         <ref bean="collection.typePropDef" />
         <ref bean="aggregationPropDef" />
         <ref bean="collection.recursiveListingPropDef" />
-        <ref bean="manuallyApproveFromPropDef" />
-        <ref bean="manuallyApprovedResourcesPropDef" />
+        <!--ref bean="manuallyApproveFromPropDef" />
+        <ref bean="manuallyApprovedResourcesPropDef" /-->
         <ref bean="pageLimitPropDef" />
         <ref bean="collection.sortingPropDef" />
         <ref bean="collection.hideLastModifiedPropDef" />
@@ -47,16 +47,16 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
 
-  <bean id="manuallyApproveFromPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+  <!--bean id="manuallyApproveFromPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="manually-approve-from" />
     <property name="type" value="STRING" />
     <property name="multiple" value="true" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-  </bean>
+  </bean-->
 
   <!-- ### See manually-approve.js ### -->
-  <bean id="manuallyApprovedResourcesPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+  <!--bean id="manuallyApprovedResourcesPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="manually-approved-resources" />
     <property name="type" value="STRING" />
@@ -72,7 +72,7 @@
         </entry>
       </map>
     </property>
-  </bean>
+  </bean-->
   
   <bean id="aggregationResolver" class="org.vortikal.web.display.collection.aggregation.CollectionListingAggregationResolver">
     <property name="aggregationPropDef" ref="aggregationPropDef" />

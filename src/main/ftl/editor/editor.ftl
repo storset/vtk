@@ -30,7 +30,8 @@
     <script type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
     
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
-    <#assign isCollection = resource.resourceType = 'collection' || resource.resourceType?contains("-listing")/>
+    <#assign isCollection = resource.resourceType = 'collection' || resource.resourceType?contains("-listing") />
+    <#assign simpleHTML = resource.resourceType = 'xhtml10trans' || resource.resourceType = 'html' />
 
     <script type="text/javascript">
     <!--
@@ -98,11 +99,11 @@
       </div>
 
       <#if (resource.content)?exists>
-      <div class="html-content">
-      <label class="resource.content" for="resource.content"><@vrtx.msg code="editor.content" /></label> 
-       <textarea name="resource.content" rows="8" cols="60" id="resource.content">${resource.bodyAsString?html}</textarea>
-       <@editor.createEditor  'resource.content' true false />
-      </div>
+        <div class="html-content">
+          <label class="resource.content" for="resource.content"><@vrtx.msg code="editor.content" /></label> 
+          <textarea name="resource.content" rows="8" cols="60" id="resource.content">${resource.bodyAsString?html}</textarea>
+          <@editor.createEditor  'resource.content' true false simpleHTML />
+        </div>
       </#if>
 
       <div class="properties">
@@ -258,7 +259,7 @@
       <#if type = 'HTML' && name != 'userTitle' && name != 'title' && name != 'caption'>
 
         <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
-        <@editor.createEditor  'resource.${name}' false false />
+        <@editor.createEditor  'resource.${name}' false false simpleHTML />
         
       <#elseif type = 'HTML' && name == 'caption'>
         <textarea id="resource.${name}" name="resource.${name}" rows="1" cols="60">${value?html}</textarea>

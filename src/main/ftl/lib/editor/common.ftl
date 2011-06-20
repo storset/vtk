@@ -26,7 +26,7 @@
   </#if>
 </#macro>
 
-<#macro createEditor content completeEditor=false withoutSubSuper=false>
+<#macro createEditor content completeEditor=false withoutSubSuper=false simpleHTML=false>
   <script type="text/javascript"><!--
     var cssFileList = new Array(
       <#if fckEditorAreaCSSURL?exists>
@@ -37,7 +37,7 @@
 
 	newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
 	  '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-	  '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList);
+	  '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
 
   //-->
   </script>

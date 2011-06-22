@@ -90,35 +90,35 @@
     
     <#if activeImage != "" && imageListing != "">
 	  <#if (activeImage == image.URI) >
-	     <a href="${imageListing.urls[image.URI]?html}" class="active">
+	     <a href="${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}" class="active">
 	       <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
 	   <#else>
-	     <a href="${imageListing.urls[image.URI]?html}">
+	     <a href="${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}">
 	       <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
 	   </#if>
 	 <#else>
 	   <#if imageListing != "">
 	     <#if (image_index == 0) >
-	       <a href="${imageListing.urls[image.URI]?html}" class="active">
+	       <a href="${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}" class="active">
 	         <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
 	     <#else>
-	       <a href="${imageListing.urls[image.URI]?html}">
+	       <a href="${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}">
 	         <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
 	     </#if>
 	   <#else>
 	     <#if (image_index == 0) >
-            <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery" class="active">
-              <img class="vrtx-thumbnail-image" src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" alt='${description}' <#if showTitle>title="${title}"</#if> />
+            <a href="${vrtx.relativeLinkConstructor(folderUrl, 'viewService')}?actimg=${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}&amp;display=gallery" class="active">
+              <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
          <#else>
-            <a href="${folderUrl}?actimg=${image.URI}&amp;display=gallery">
-              <img class="vrtx-thumbnail-image" src="${vrtx.linkConstructor(image.URI.toString(), 'displayThumbnailService').getPathRepresentation()}" alt='${description}' <#if showTitle>title="${title}"</#if> /> 
+            <a href="${vrtx.relativeLinkConstructor(folderUrl, 'viewService')}?actimg=${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}&amp;display=gallery">
+              <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> /> 
          </#if>
 	   </#if>
 	 </#if>
 	        <#if imageListing != "">
-	          <span><img class="vrtx-full-image" src="${vrtx.linkConstructor(image.URI.toString(), 'viewService').getPathRepresentation()?split("?")[0]}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span>
+	          <span><img class="vrtx-full-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')?split("?")[0]}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span>
 	        <#else>  
-	          <span><img class="vrtx-full-image" src="${vrtx.linkConstructor(image.URI.toString(), 'viewService').getPathRepresentation()}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span> 
+	          <span><img class="vrtx-full-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span> 
 	        </#if>
 	          <span class="hiddenWidth" style="display: none">${width}</span>
 	          <span class="hiddenHeight" style="display: none">${height}</span>

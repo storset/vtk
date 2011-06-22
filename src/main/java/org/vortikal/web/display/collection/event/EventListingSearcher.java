@@ -104,6 +104,9 @@ public class EventListingSearcher {
 
     private boolean isWithinDaysAhead(Date time, PropertySet ps) {
         Property sdProp = this.getProperty(ps, "start-date");
+        if (sdProp == null) {
+            sdProp = this.getProperty(ps, "publish-date");
+        }
         Date sd = sdProp.getDateValue();
         Calendar cal = Calendar.getInstance();
         cal.setTime(time);

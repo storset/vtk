@@ -116,9 +116,9 @@
 	   </#if>
 	 </#if>
 	        <#if imageListing != "">
-	          <span><img class="vrtx-full-image" src="${imageListing.urls[image.URI]?html?split("?")[0]}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span>
+	          <span><img class="vrtx-full-image" src="${vrtx.linkConstructor(image.URI.toString(), 'viewService').getPathRepresentation()?split("?")[0]}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span>
 	        <#else>  
-	          <span><img class="vrtx-full-image" src="${image.URI}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span> 
+	          <span><img class="vrtx-full-image" src="${vrtx.linkConstructor(image.URI.toString(), 'viewService').getPathRepresentation()}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span> 
 	        </#if>
 	          <span class="hiddenWidth" style="display: none">${width}</span>
 	          <span class="hiddenHeight" style="display: none">${height}</span>

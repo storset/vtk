@@ -322,6 +322,32 @@
   </#compress>   
 </#macro>
 
+<#--
+ * breakSpecificChar
+ * Breaks a string if longer than maximum characters on a char
+ * Example: <@vrtx.breakSpecificChar nchars=2 char='@'>root@localhost</@vrtx.breakSpecificChar>
+ *
+ * @param nchars the maximum number of characters before split
+ * @param char the char to split on
+ *
+-->
+<#macro breakSpecificChar nchars char>
+  <#compress>
+    <#local val><#nested /></#local>
+    <#if val?length &lt; nchars>
+      ${val}
+    <#else>
+      <#local cut_index = val?index_of(char) />
+      <#if (cut_index < 0)>
+        <#local cut_index = nchars />
+      </#if>
+      <#local val = "<span class='comment-author-part-one'>" + val?substring(0, cut_index) + "</span>" 
+                  + "<span class='comment-author-part-two'>" + val?substring(cut_index, val?length) + "</span>" />
+      ${val}
+    </#if>
+  </#compress>   
+</#macro>
+
 
 <#--
  * requestLanguage

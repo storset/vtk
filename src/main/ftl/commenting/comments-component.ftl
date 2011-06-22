@@ -96,7 +96,7 @@
         <#if comment.author.URL?exists>
          <span class="comment-author"><a href="${comment.author.URL?html}">${comment.author.description?html}</a><span class="comment-author-line"> -</span>
         <#else>
-         <span class="comment-author">${comment.author.description?html}</span><span class="comment-author-line"> -</span>
+         <span class="comment-author"><@vrtx.breakSpecificChar nchars=21 char='@'>${comment.author.description?html}</@vrtx.breakSpecificChar></span><span class="comment-author-line"> -</span>
         </#if>
          <span class="comment-date"><@vrtx.date value=comment.time format='long' /></span>
         <#if deleteCommentURLs[comment.ID?html]?exists>

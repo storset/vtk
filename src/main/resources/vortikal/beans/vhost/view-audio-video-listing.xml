@@ -37,6 +37,15 @@
       </list>
     </property>
     <property name="searchMultiHosts" value="false" />
+	<property name="configurablePropertySelectPointers">
+      <list>
+        <value>title</value>
+        <value>lastModified</value>
+        <value>content:description</value>
+        <value>contentType</value>
+        <value>poster-image</value>
+      </list>
+    </property>
   </bean>
 
   <bean id="audioVideoListing.viewResolver" parent="decoratorViewResolver">

@@ -1,19 +1,19 @@
 //
 // TODO: combine with other show-hide functionality and/or move into admin-enhancements.js
 //
-
 // Add toggle functionality to properties
+
 
 function setShowHide(name, parameters) {
   toggle(name, parameters);
   var objId = '[name=' + name + ']';
-  $(objId).click( function() {
+  $(objId).click(function () {
     toggle(name, parameters);
   });
 }
 
 function toggle(name, parameters) {
-  $('#' + name + '-true').each( function() {
+  $('#' + name + '-true').each(function () {
     if (this.checked) {
       var parametersLength = parameters.length;
       for (i = 0; i < parametersLength; i++) {
@@ -21,7 +21,7 @@ function toggle(name, parameters) {
       }
     }
   });
-  $('#' + name + '-false').each( function() {
+  $('#' + name + '-false').each(function () {
     if (this.checked) {
       var parametersLength = parameters.length;
       for (i = 0; i < parametersLength; i++) {

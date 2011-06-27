@@ -77,7 +77,7 @@ $(document).ready(function () {
   for (i = 0, len = tabMenuServices.length; i < len; i++) {
     getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], "vrtx-admin-form", ".activeTab ul.tabMenu2", false, "div", false);
     if(tabMenuServices[i] != "fileUploadService") { // Only half-async for file upload
-      postAjaxFormDelegator("form[name=" + tabMenuServices[i] + "] input[type=submit]", "#contents", "errorContainer", "> ul");
+      postAjaxForm("form[name=" + tabMenuServices[i] + "] input[type=submit]", "#contents", "errorContainer", "> ul");
     }
   }
 
@@ -124,11 +124,11 @@ $(document).ready(function () {
   }
 
   // Remove permission
-  ajaxRemoveDelegator("input.removePermission");
+  ajaxRemove("input.removePermission");
 
   // Add permission(s)
-  ajaxAddDelegator("span.addGroup", ".groups-wrapper", "errorContainer");
-  ajaxAddDelegator("span.addUser", ".users-wrapper", "errorContainer");
+  ajaxAdd("span.addGroup", ".groups-wrapper", "errorContainer");
+  ajaxAdd("span.addUser", ".users-wrapper", "errorContainer");
 
   /* ^ GET/POST forms with AJAX (initalization/config) */
 
@@ -443,7 +443,7 @@ function dropdownCollectionGlobalMenu() {
  */
 
 function getAjaxForm(link, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, permissions) {
-  $(link).click(function () {
+  $("#app-content").delegate(link, "click", function () {
     var serviceUrl = $(this).attr("href");
     $.ajax({
       type: "GET",
@@ -465,6 +465,8 @@ function getAjaxForm(link, selectorClass, insertAfterOrReplaceClass, isReplacing
           toggleConfigCustomPermissions(selectorClass);
           interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]",
                                       "." + selectorClass + " input.addUserButton");
+          interceptEnterKeyAndReroute("." + selectorClass + " .addGroup input[type=text]",
+                                      "." + selectorClass + " input.addGroupButton");
           permissionsAutocomplete('userNames', 
                                   'userNames', vrtxAdmin.permissionsAutocompleteParams);
           splitAutocompleteSuggestion('userNames');
@@ -495,7 +497,7 @@ function getAjaxForm(link, selectorClass, insertAfterOrReplaceClass, isReplacing
  * @params pending..
  */
 
-function postAjaxFormDelegator(selector, updateSelector, errorContainer, errorContainerInsertAfter) {
+function postAjaxForm(selector, updateSelector, errorContainer, errorContainerInsertAfter) {
   $("#app-content").delegate(selector, "click", function () {
     var link = $(this);
     var linkAction = link.attr("name");
@@ -569,12 +571,12 @@ function postAjaxFormDelegator(selector, updateSelector, errorContainer, errorCo
 }
 
 /**
- * Delegate AJAX (POST) remove-links (value is in the name)
+ * POST remove-links (value is in the name)
  * 
  * @param selector: selector for links that should post asynchronous
  */
 
-function ajaxRemoveDelegator(selector) {
+function ajaxRemove(selector) {
   $("#app-content").delegate(selector, "click", function () {
     var link = $(this);
     var name = link.attr("name");
@@ -609,14 +611,14 @@ function ajaxRemoveDelegator(selector) {
 }
 
 /**
- * Delegate AJAX (POST) add-links (values is in the textfield)
+ * POST add-links (values is in the textfield)
  * 
  * @param selector: selector for links that should post asynchronous
  * @param updateSelector: selector for markup to update
  * @param errorContainer: selector for error container
  */
 
-function ajaxAddDelegator(selector, updateSelector, errorContainer) {
+function ajaxAdd(selector, updateSelector, errorContainer) {
   $("#app-content").delegate(selector + " input[type=submit]", "click", function () {
     var link = $(this);
     var linkAction = link.attr("name");

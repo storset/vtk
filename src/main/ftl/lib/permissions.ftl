@@ -72,15 +72,15 @@
     <#assign count = 1 />
     <#list privilegeList as p>
       <#if count % 2 == 0>
-        <tr class="even">
+        <tr class="even ${p.name}">
       <#else>
-        <tr>
+        <tr class="${p.name}">
       </#if>
       <#assign formName = 'permissionsForm_' + p.name />
       <#assign privilegeName = p.name />
       <#assign privilegeHeading = p.heading />
       <#if .vars[formName]?exists>
-        <td colspan="2" class="expandedForm expandedForm-${p.name}">
+        <td colspan="2">
         <@editACLFormNew
            formName = formName
            privilegeName = privilegeName 

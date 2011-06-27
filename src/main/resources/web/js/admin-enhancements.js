@@ -81,6 +81,15 @@ $(document).ready(function () {
     getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", "expandedForm-"
                + privilegiesPermissions[i], "div.permissions-" + privilegiesPermissions[i] + "-wrapper", true, "div");
   }
+  
+  // More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
+  var privilegiesPermissionsInTable = ["add-comment",
+                                       "read-processed"];
+
+  for (i = 0, len = privilegiesPermissionsInTable.length; i < len; i++) {
+    getAjaxForm(".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax", 
+                privilegiesPermissionsInTable[i], "tr." + privilegiesPermissionsInTable[i], true, "tr");
+  }
 
   // About property forms
   var propsAbout = [

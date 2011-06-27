@@ -434,6 +434,7 @@ function getAjaxForm(link, selectorClass, insertAfterOrReplaceClass, isReplacing
             .insertAfter(insertAfterOrReplaceClass).hide();
         }
         $(nodeType + "." + selectorClass).slideDown(vrtxAdmin.transitionSpeed);
+        $(nodeType + "." + selectorClass).find("input[type=text]:first").focus();
       },
       error: function (xhr, textStatus) {
         if (xhr.readyState == 4 && xhr.status == 200) {

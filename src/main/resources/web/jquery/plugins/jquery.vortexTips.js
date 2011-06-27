@@ -39,11 +39,11 @@
 		    tipText = link.attr('title');
 		    link.attr('title', '');
 			var yOffset = tip.height() / 2;
-			var xOffset = link.width() + 20;
+			var xOffset = link.width();
 			var pos = link.offset();
 			var nPos = pos;
-			nPos.top = (pos.top - yOffset);
-			nPos.left = (pos.left + xOffset);
+			nPos.top = (pos.top - 230);
+			nPos.left = (pos.left + xOffset) - 230;
 			tip.css('position', 'absolute').css('z-index', '1000').css('width', '400px');
 			tip.css(nPos).fadeIn(animInSpeed);
 		  } else if (e.type == "mouseleave") {

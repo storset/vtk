@@ -30,7 +30,7 @@ var commentsToolbar = [ [ 'Source', 'PasteText', 'Bold',
                           'BulletedList', 'Link', 'Unlink' ] ];
 
 function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, baseDocumentUrl, browsePath,
-                   defaultLanguage, cssFileList) {
+                   defaultLanguage, cssFileList, simpleHTML) {
 
   // File browser
   
@@ -45,17 +45,18 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   
   var isCompleteEditor = completeEditor != null ? completeEditor : false;
   var isWithoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
+  var isSimpleHTML = simpleHTML != null ? simpleHTML : false;
 
   //CKEditor configurations
   if (name.indexOf("introduction") != -1 || name.indexOf("resource.description") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, 
-			          defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar, isCompleteEditor, false, baseDocumentUrl);
+			          defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar, isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (name.indexOf("caption") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, 
-			          defaultLanguage, cssFileList, 78, 400, 40, inlineToolbar, isCompleteEditor, false, baseDocumentUrl);
+			          defaultLanguage, cssFileList, 104, 400, 40, inlineToolbar, isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (name.indexOf("additional-content") != -1 || name.indexOf("additionalContents") != -1) {
 	setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
-		              defaultLanguage, cssFileList, 150, 400, 40, completeToolbar, true, false, baseDocumentUrl);
+		              defaultLanguage, cssFileList, 150, 400, 40, completeToolbar, true, false, baseDocumentUrl, isSimpleHTML);
   } else if (isCompleteEditor) {	  
 	var height = 220; var maxHeight = 400;
 	var completeTB = completeToolbar;
@@ -72,18 +73,20 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     }
 
 	setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
-			          defaultLanguage, cssFileList, height, maxHeight, 50, completeTB, isCompleteEditor, true,baseDocumentUrl);
+			          defaultLanguage, cssFileList, height, maxHeight, 50, completeTB, isCompleteEditor, true,baseDocumentUrl, isSimpleHTML);
   } else if (isWithoutSubSuper) {
 	setCKEditorConfig(name, linkBrowseUrl, null, null, 
-			          defaultLanguage, null, 40, 400, 40, inlineToolbar, isCompleteEditor, true, baseDocumentUrl);
+			          defaultLanguage, null, 40, 400, 40, inlineToolbar, isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
   } else {
 	setCKEditorConfig(name, linkBrowseUrl, null, null,
-			          defaultLanguage, null, 40, 400, 40, withoutSubSuperToolbar, isCompleteEditor, true, baseDocumentUrl);
+			          defaultLanguage, null, 40, 400, 40, withoutSubSuperToolbar, isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
   }
 
 }
 
-function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, minHeight, toolbar, complete, resizable,baseDocumentUrl) {
+function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, 
+                           maxHeight, minHeight, toolbar, complete, resizable, baseDocumentUrl, simple) {
+                           
   var config = [{}];
 
   config.baseHref = baseDocumentUrl;
@@ -114,8 +117,8 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 	
     config.stylesSet = divContainerStylesSet;
     
-    if(name == "resource.content") {
-      config.format_tags = 'p;h2;h3;h4;h5;h6;pre;div';
+    if(name == "resource.content" && simple) {
+      config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';
     } else {
       config.format_tags = 'p;h2;h3;h4;h5;h6;pre;div';
     }
@@ -139,7 +142,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
   config.autoGrow_minHeight = minHeight + 'px';
   
   config.forcePasteAsPlainText = false;
-
+  
   config.on = {
 	  instanceReady : function(ev) {
 	    var tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
@@ -167,7 +170,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 	    }
       }
 	}
-  
+
   CKEDITOR.replace(name, config);
 }
 

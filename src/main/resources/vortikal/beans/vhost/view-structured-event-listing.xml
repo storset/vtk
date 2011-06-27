@@ -24,6 +24,7 @@
         <value>resource:start-date</value>
         <value>resource:mapurl</value>
         <value>resource:hasBodyContent</value>
+        <!-- additionalContent -->
       </list>
     </property>
   </bean>

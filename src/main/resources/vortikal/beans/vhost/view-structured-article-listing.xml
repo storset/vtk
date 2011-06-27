@@ -13,6 +13,17 @@
       </list>
     </property>
     <property name="searchSorting" ref="structured.articleListing.searchSorting" />
+    <property name="configurablePropertySelectPointers">
+      <list>
+        <value>title</value>
+        <value>publish-date</value>
+        <value>resource:picture</value>
+        <value>resource:caption</value>
+        <value>resource:introduction</value>
+        <value>resource:hasBodyContent</value>
+        <value>resource:numberOfComments</value>
+      </list>
+    </property>
   </bean>
 
   <bean id="structured.articleListing.searchSorting" parent="articleListing.searchSorting">
@@ -34,6 +45,16 @@
       </list>
     </property>
     <property name="searchSorting" ref="structured.articleListing.searchSorting" />
+    <property name="configurablePropertySelectPointers">
+      <list>
+        <value>title</value>
+        <value>resource:published-date</value>
+        <value>resource:picture</value>
+        <value>resource:caption</value>
+        <value>resource:introduction</value>
+        <value>resource:hasBodyContent</value>
+      </list>
+    </property>
   </bean>
 
   <!-- Fetch articles from explicitly specified subfolders -->

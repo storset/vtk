@@ -1382,20 +1382,20 @@ form.vrtx-admin-form h3,
   margin-top: 0;
 }
 
-div.globalmenu {
-  margin: 0 0 20px 0;
-  padding: 13px 15px;
-  background-color: #e8e8e8;
-  border: 1px solid #d9d9d9;
-  clear: left;
-}
-
 div.expandedForm,
 tr.expandedForm td {
   margin: 10px -20px 4px -20px !important;
   padding: 14px 19px !important;
   background-color: #e8e8e8;
   border: 1px solid #d9d9d9;
+}
+
+div.globalmenu {
+  margin: 0 0 20px 0 !important;
+  padding: 13px 15px !important;
+  background-color: #e8e8e8;
+  border: 1px solid #d9d9d9;
+  clear: left;
 }
 
 div.vrtx-admin-form {

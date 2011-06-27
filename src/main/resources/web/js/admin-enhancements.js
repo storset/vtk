@@ -50,18 +50,25 @@ $(document).ready(function () {
 
   /* GET/POST forms with AJAX (initalization/config) */
 
-  // Rename
-  getAjaxForm("#titleContainer a#renameService", "globalmenu", "#titleContainer ul.globalMenu", false, "div");
+  // Global menu service forms
+  var globalMenuServices = ["renameService",
+                            "publish\\.globalUnpublishService",
+                            "publish\\.globalPublishService",
+                            "manage\\.createArchiveService"];
 
-  // Tabmenu service forms
-  var services = ["fileUploadService",
-                  "createDocumentService",
-                  "createCollectionService"];
+  for (var i = 0, len = globalMenuServices.length; i < len; i++) {
+    getAjaxForm("#titleContainer a#" + globalMenuServices[i], "globalmenu", "#titleContainer ul.globalMenu", false, "div");
+  }
 
-  for (var i = 0, len = services.length; i < len; i++) {
-    getAjaxForm("ul.tabMenu2 a#" + services[i], "vrtx-admin-form", ".activeTab ul.tabMenu2", false, "div");
-    if(services[i] != "fileUploadService") { // Only half-async for file upload
-      postAjaxFormDelegator("form[name=" + services[i] + "] input[type=submit]", "#contents", "errorContainer", "> ul");
+  // Tab menu service forms
+  var tabMenuServices = ["fileUploadService",
+                         "createDocumentService",
+                         "createCollectionService"];
+
+  for (var i = 0, len = tabMenuServices.length; i < len; i++) {
+    getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], "vrtx-admin-form", ".activeTab ul.tabMenu2", false, "div");
+    if(tabMenuServices[i] != "fileUploadService") { // Only half-async for file upload
+      postAjaxFormDelegator("form[name=" + tabMenuServices[i] + "] input[type=submit]", "#contents", "errorContainer", "> ul");
     }
   }
 

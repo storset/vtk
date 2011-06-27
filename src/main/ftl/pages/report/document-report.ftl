@@ -25,7 +25,7 @@
   <div class="vrtx-report">
   
   <#if report.result?exists && report.result?size &gt; 0 >
-    <table id="vrtx-report-document-table">
+    <table id="vrtx-report-document-table" class="directoryListing">
       <thead>
         <tr>
           <th id="vrtx-report-title"><@vrtx.msg code="report.title" default="Title" /></th>
@@ -38,6 +38,7 @@
       </thead>
       <tbody>
       <#assign count = 1 />
+      <#assign collectionSize = report.result?size />
       <#list report.result as res >
         <#assign title= vrtx.propValue(res, 'title') />
         <#assign lastModifiedTime = vrtx.propValue(res, 'lastModified') />

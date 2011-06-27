@@ -90,6 +90,7 @@ $(document).ready(function () {
   for (i = 0, len = privilegiesPermissionsInTable.length; i < len; i++) {
     getAjaxForm(".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax", 
                 privilegiesPermissionsInTable[i], "tr." + privilegiesPermissionsInTable[i], true, "tr");
+    toggleConfigCustomPermissions(privilegiesPermissionsInTable[i]);
   }
 
   // About property forms

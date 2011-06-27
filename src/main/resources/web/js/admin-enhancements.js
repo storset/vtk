@@ -56,17 +56,19 @@ $(document).ready(function () {
   // Tabmenu service forms
   var services = ["fileUploadService",
                   "createDocumentService",
-                   "createCollectionService"];
+                  "createCollectionService"];
 
   for (var i = 0, len = services.length; i < len; i++) {
     getAjaxForm("ul.tabMenu2 a#" + services[i], "vrtx-admin-form", ".activeTab ul.tabMenu2", false, "div");
-    postAjaxFormDelegator("form[name=" + services[i] + "] input[type=submit]", "#contents", "errorContainer", "> ul");
+    if(services[i] != "fileUploadService") { // Only half-async for file upload
+      postAjaxFormDelegator("form[name=" + services[i] + "] input[type=submit]", "#contents", "errorContainer", "> ul");
+    }
   }
 
   // Permission privilegie forms (READ, READ_WRITE, ALL)
   var privilegiesPermissions = ["read",
                                 "read-write",
-                                "createCollectionService"];
+                                "all"];
 
   for (i = 0, len = privilegiesPermissions.length; i < len; i++) {
     getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", "expandedForm-"
@@ -131,11 +133,10 @@ $(document).ready(function () {
 
 });
 
-// TODO: fix
-// Used by "createDocumentService" available from "manageCollectionListingService"
-//function changetemplatename(n) {
-  //document.createDocumentForm.name.value = n;
-//}
+/* Used by "createDocumentService" available from "manageCollectionListingService" */
+function changeTemplateName(n) {
+  $("form[name=createDocumentService] input[type=text]").val(n);
+}
 
 /* Keyboard interceptors/rerouters */
 

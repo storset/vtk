@@ -46,12 +46,7 @@
       <div>
     </div>
   </form>
-  
-  <script type="text/javascript">
-  <!--          
-  document.createcollection.name.focus();
-  // -->
-  </script>
+
   </div>
   </#if>
 

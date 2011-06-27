@@ -65,7 +65,7 @@ $(document).ready(function () {
                             "publish\\.globalPublishService",
                             "manage\\.createArchiveService"];
 
-  for (var i = 0, len = globalMenuServices.length; i < len; i++) {
+  for (var i = globalMenuServices.length; i--;) {
     getAjaxForm("#titleContainer a#" + globalMenuServices[i], "globalmenu", "#titleContainer ul.globalMenu", false, "div", false);
   }
 
@@ -74,7 +74,7 @@ $(document).ready(function () {
                          "createDocumentService",
                          "createCollectionService"];
 
-  for (i = 0, len = tabMenuServices.length; i < len; i++) {
+  for (i = tabMenuServices.length; i--;) {
     getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], "vrtx-admin-form", ".activeTab ul.tabMenu2", false, "div", false);
     if(tabMenuServices[i] != "fileUploadService") { // Only half-async for file upload
       postAjaxForm("form[name=" + tabMenuServices[i] + "] input[type=submit]", "#contents", "errorContainer", "> ul");
@@ -86,7 +86,7 @@ $(document).ready(function () {
                                 "read-write",
                                 "all"];
 
-  for (i = 0, len = privilegiesPermissions.length; i < len; i++) {
+  for (i = privilegiesPermissions.length; i--;) {
     getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", "expandedForm-"
                + privilegiesPermissions[i], "div.permissions-" + privilegiesPermissions[i] + "-wrapper", true, "div", true);
   }
@@ -95,7 +95,7 @@ $(document).ready(function () {
   var privilegiesPermissionsInTable = ["add-comment",
                                        "read-processed"];
 
-  for (i = 0, len = privilegiesPermissionsInTable.length; i < len; i++) {
+  for (i = privilegiesPermissionsInTable.length; i--;) {
     getAjaxForm(".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax", 
                 privilegiesPermissionsInTable[i], "tr." + privilegiesPermissionsInTable[i], true, "tr", true);
   }
@@ -118,7 +118,7 @@ $(document).ready(function () {
     "xhtml10-type"
     ];
 
-  for (i = 0, len = propsAbout.length; i < len; i++) {
+  for (i = propsAbout.length; i--) {
     getAjaxForm("body#vrtx-about .prop-" + propsAbout[i] + " a.vrtx-button-small", "expandedForm-prop-" 
                + propsAbout[i], "tr.prop-" + propsAbout[i], true, "tr", false);
   }
@@ -511,17 +511,17 @@ function postAjaxForm(selector, updateSelector, errorContainer, errorContainerIn
     var csrfPreventionToken = form.find("input[name='csrf-prevention-token']").val();
 
     var dataString = "";
-    for (var i = 0, len = textfields.length; i < len; i++) {
+    for (var i = textfields.length; i--;) {
       var name = $(textfields[i]).attr("name");
       var value = $(textfields[i]).val();
       dataString += '&' + name + '=' + value;
     }
-    for (i = 0, len = fileFields.length; i < len; i++) {
+    for (i = fileFields.length; i--;) {
       var name = $(fileFields[i]).attr("name");
       var value = $(fileFields[i]).val();
       dataString += '&' + name + '=' + value;
     }
-    for (i = 0, len = checkedRadioButtons.length; i < len; i++) {
+    for (i = checkedRadioButtons.length; i--;) {
       var name = $(checkedRadioButtons[i]).attr("name");
       var value = $(checkedRadioButtons[i]).val();
       dataString += '&' + name + '=' + value;

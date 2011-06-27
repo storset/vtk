@@ -1,6 +1,6 @@
 // Vortex Simple Gallery jQuery plugin v0.2
 // w/ paging, centered thumbnail navigation and fade effect
-// by Øyvind Hatland - UiO / USIT
+// by Ã˜yvind Hatland - UiO / USIT
 
 (function ($) {
   $.fn.vrtxSGallery = function (wrapper, container, maxWidth, options) {
@@ -181,11 +181,15 @@
        var minContainerHeight = 100;
        var minContainerWidth = 150;
        
-       if(parseInt(imgHeight) < minContainerHeight) {
+       if (parseInt(imgHeight) < minContainerHeight) {
     	  imgHeight = minContainerHeight + "px";
+       } else {
+    	  imgHeight = imgHeight + "px";   
        }
-       if(parseInt(imgWidth) < minContainerWidth) {
+       if (parseInt(imgWidth) < minContainerWidth) {
           imgWidth = minContainerWidth + "px";
+       } else {
+    	  imgWidth = imgWidth + "px";   
        }
        
        galleryLog(src + " [" + imgWidth + ", " + imgHeight + "]");
@@ -197,10 +201,15 @@
        
        $(wrapperContainer + "-description").remove();
        
-       $("<div class='" + container.substring(1) + "-description'>"
-       + "<p class='" + container.substring(1) + "-title'>" 
-       + $(image).attr("title") + "</p>" 
-       + $(image).attr("alt") + "</div>").insertAfter(wrapperContainer);
+       var html = "<div class='" + container.substring(1) + "-description'>";
+       if($(image).attr("title") && $(image).attr("title") != "") {
+         html += "<p class='" + container.substring(1) + "-title'>" + $(image).attr("title") + "</p>";
+       }
+       if($(image).attr("alt") && $(image).attr("alt") != "") {
+         html += $(image).attr("alt");
+       }
+       html += "</div>";
+       $(html).insertAfter(wrapperContainer);
 
        if(($(image).attr("alt") && $(image).attr("alt") != "")
           || ($(image).attr("title") && $(image).attr("title") != "")) {

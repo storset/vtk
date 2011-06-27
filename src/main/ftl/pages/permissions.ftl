@@ -24,16 +24,6 @@
     <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
     <script type='text/javascript' src='${webResources?html}/js/autocomplete/autocomplete-permissions.js'></script>
     
-    <script type="text/javascript">
-      $(document).ready(function() {
-        interceptEnterKeyAndReroute("input#userNames", "input.addUserButton");
-        var permissionsAutocompleteParams = {minChars:4, selectFirst:false, width:300, max:30, delay:800};
-        permissionsAutocomplete('userNames', 'userNames', permissionsAutocompleteParams);
-        splitAutocompleteSuggestion('userNames');
-        permissionsAutocomplete('groupNames', 'groupNames', permissionsAutocompleteParams);
-      });
-    </script>
-    
   </head>
   <body id="vrtx-permissions">
 

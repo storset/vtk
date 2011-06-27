@@ -81,6 +81,14 @@ $(document).ready(function () {
     getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", "expandedForm-"
                + privilegiesPermissions[i], "div.permissions-" + privilegiesPermissions[i] + "-wrapper", true, "div");
     toggleConfigCustomPermissions("expandedForm-" + privilegiesPermissions[i]);
+    interceptEnterKeyAndReroute(".expandedForm-" + privilegiesPermissions[i] + " .addUser input[type=text]",
+                                ".expandedForm-" + privilegiesPermissions[i] + " input.addUserButton");
+    
+    /* TODO: fix autocomplete (possible for multiple fields at once)
+    var permissionsAutocompleteParams = {minChars:4, selectFirst:false, width:300, max:30, delay:800};
+    permissionsAutocomplete('userNames', 'userNames', permissionsAutocompleteParams);
+    splitAutocompleteSuggestion('userNames');
+    permissionsAutocomplete('groupNames', 'groupNames', permissionsAutocompleteParams); */
   }
   
   // More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
@@ -90,7 +98,16 @@ $(document).ready(function () {
   for (i = 0, len = privilegiesPermissionsInTable.length; i < len; i++) {
     getAjaxForm(".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax", 
                 privilegiesPermissionsInTable[i], "tr." + privilegiesPermissionsInTable[i], true, "tr");
+                
     toggleConfigCustomPermissions(privilegiesPermissionsInTable[i]);
+    interceptEnterKeyAndReroute("." + privilegiesPermissionsInTable[i] + " .addUser input[type=text]",
+                                "." + privilegiesPermissionsInTable[i] + " input.addUserButton");
+    
+    /* TODO: fix autocomplete (possible for multiple fields at once)
+    var permissionsAutocompleteParams = {minChars:4, selectFirst:false, width:300, max:30, delay:800};
+    permissionsAutocomplete('userNames', 'userNames', permissionsAutocompleteParams);
+    splitAutocompleteSuggestion('userNames');
+    permissionsAutocomplete('groupNames', 'groupNames', permissionsAutocompleteParams); */
   }
 
   // About property forms
@@ -159,7 +176,7 @@ function changeTemplateName(n) {
 /* Keyboard interceptors/rerouters */
 
 function interceptEnterKey(idOrClass) {
-  $("form input" + idOrClass).bind("keypress", function (e) {
+  $("#app-content").delegate("form input" + idOrClass, "keypress", function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       return false; // cancel the default browser click
     }
@@ -167,7 +184,7 @@ function interceptEnterKey(idOrClass) {
 }
 
 function interceptEnterKeyAndReroute(txt, btn) {
-  $("form " + txt).bind("keypress", function (e) {
+  $("#app-content").delegate(txt, "keypress", function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       $(btn).click(); // click the associated button
       return false; // cancel the default browser click

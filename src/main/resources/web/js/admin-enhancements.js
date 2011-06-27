@@ -80,6 +80,7 @@ $(document).ready(function () {
   for (i = 0, len = privilegiesPermissions.length; i < len; i++) {
     getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", "expandedForm-"
                + privilegiesPermissions[i], "div.permissions-" + privilegiesPermissions[i] + "-wrapper", true, "div");
+    toggleConfigCustomPermissions("expandedForm-" + privilegiesPermissions[i]);
   }
   
   // More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
@@ -350,18 +351,20 @@ function switchCheckedRow(checkbox) {
 /* Permission shortcuts/custom toggling */
 
 function toggleConfigCustomPermissions(selectorClass) {
-  var shortcuts = $("div." + selectorClass + " ul.shortcuts");
-  if (shortcuts.length) {
-    if (!$(shortcuts.find("input:radio:last")).is(":checked")) {
-      shortcuts.parent().find(".principalList").hide(0);
+    if ($("div." + selectorClass).length) {
+      if (!$($("div." + selectorClass + " ul.shortcuts input:radio:last")).is(":checked")) {
+        $("div." + selectorClass).find(".principalList").hide(0);
+      }
     }
-    $(shortcuts.find("input:radio:last")).click(function () {
+    $("#app-content").delegate("div." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
       $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed);
+      e.stopPropagation();
     });
-    $(shortcuts.find("input:radio:not(:last)")).click(function () {
+    $("#app-content").delegate("div." + selectorClass + " ul.shortcuts label:not([for=custom])", "click", function (e) {
       $(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed);
+      e.stopPropagation();
     });
-  }
+  
 }
 
 /* ^ Permission shortcuts/custon toggling */

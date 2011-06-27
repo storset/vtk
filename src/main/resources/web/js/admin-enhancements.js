@@ -118,8 +118,8 @@ $(document).ready(function () {
     "xhtml10-type"
     ];
 
-  for (i = propsAbout.length; i--) {
-    getAjaxForm("body#vrtx-about .prop-" + propsAbout[i] + " a.vrtx-button-small", "expandedForm-prop-" 
+  for (i = propsAbout.length; i--;) {
+    getAjaxForm("body#vrtx-about .prop-" + propsAbout[i] + " a.vrtx-button-small", "expandedForm-prop-"
                + propsAbout[i], "tr.prop-" + propsAbout[i], true, "tr", false);
   }
 
@@ -247,7 +247,7 @@ function placeDeleteButtonInActiveTab() {
     } else {
       var list = new String("");
       var boxesSize = boxes.size();
-      for (i = 0; i < boxesSize && i < 10; i++) {
+      for (var i = 0; i < boxesSize && i < 10; i++) {
         list += boxes[i].name + '\n';
       }
       if (boxesSize > 10) {
@@ -309,7 +309,7 @@ function placeDeletePermanentButtonInActiveTab() {
 
       var list = new String("");
       var boxesSize = boxes.size();
-      for (i = 0; i < boxesSize && i < 10; i++) {
+      for (var i = 0; i < boxesSize && i < 10; i++) {
         list += boxes[i].title + '\n';
       }
       if (boxesSize > 10) {

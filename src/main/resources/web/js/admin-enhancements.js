@@ -2,6 +2,8 @@
  *  Vortex Admin enhancements
  *
  */
+ 
+var agent = navigator.userAgent.toLowerCase();
 
 var vrtxAdmin = {
   isIE: null,
@@ -9,19 +11,26 @@ var vrtxAdmin = {
   isIE6: null,
   isIE5OrHigher: null,
   isWin: null,
+  permissionsAutocompleteParams: null,
   transitionSpeed: 400, // same as 'default'
   transitionCustomPermissionSpeed: 200, // same as 'fast'
   transitionPropSpeed: 100,
   transitionDropdownSpeed: 100
 };
 
-// Using init-time branching
+// Browser info
 vrtxAdmin.isIE = $.browser.msie;
 vrtxAdmin.version = $.browser.version;
 vrtxAdmin.isIE6 = vrtxAdmin.isIE && vrtxAdmin.version <= 6;
 vrtxAdmin.isIE5OrHigher = vrtxAdmin.isIE && vrtxAdmin.version >= 5;
-var agt = navigator.userAgent.toLowerCase();
-vrtxAdmin.isWin = ((agt.indexOf("win") != -1) || (agt.indexOf("16bit") != -1));
+vrtxAdmin.isWin = ((agent.indexOf("win") != -1) || (agent.indexOf("16bit") != -1));
+
+// Permission Autocomplete parameters
+vrtxAdmin.permissionsAutocompleteParams = { minChars: 4, 
+                                            selectFirst: false, 
+                                            width: 300, 
+                                            max: 30,
+                                            delay: 800 };
 
 $(document).ready(function () {
 
@@ -57,7 +66,7 @@ $(document).ready(function () {
                             "manage\\.createArchiveService"];
 
   for (var i = 0, len = globalMenuServices.length; i < len; i++) {
-    getAjaxForm("#titleContainer a#" + globalMenuServices[i], "globalmenu", "#titleContainer ul.globalMenu", false, "div");
+    getAjaxForm("#titleContainer a#" + globalMenuServices[i], "globalmenu", "#titleContainer ul.globalMenu", false, "div", false);
   }
 
   // Tab menu service forms
@@ -65,8 +74,8 @@ $(document).ready(function () {
                          "createDocumentService",
                          "createCollectionService"];
 
-  for (var i = 0, len = tabMenuServices.length; i < len; i++) {
-    getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], "vrtx-admin-form", ".activeTab ul.tabMenu2", false, "div");
+  for (i = 0, len = tabMenuServices.length; i < len; i++) {
+    getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], "vrtx-admin-form", ".activeTab ul.tabMenu2", false, "div", false);
     if(tabMenuServices[i] != "fileUploadService") { // Only half-async for file upload
       postAjaxFormDelegator("form[name=" + tabMenuServices[i] + "] input[type=submit]", "#contents", "errorContainer", "> ul");
     }
@@ -79,16 +88,7 @@ $(document).ready(function () {
 
   for (i = 0, len = privilegiesPermissions.length; i < len; i++) {
     getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", "expandedForm-"
-               + privilegiesPermissions[i], "div.permissions-" + privilegiesPermissions[i] + "-wrapper", true, "div");
-    toggleConfigCustomPermissions("expandedForm-" + privilegiesPermissions[i]);
-    interceptEnterKeyAndReroute(".expandedForm-" + privilegiesPermissions[i] + " .addUser input[type=text]",
-                                ".expandedForm-" + privilegiesPermissions[i] + " input.addUserButton");
-    
-    /* TODO: fix autocomplete (possible for multiple fields at once)
-    var permissionsAutocompleteParams = {minChars:4, selectFirst:false, width:300, max:30, delay:800};
-    permissionsAutocomplete('userNames', 'userNames', permissionsAutocompleteParams);
-    splitAutocompleteSuggestion('userNames');
-    permissionsAutocomplete('groupNames', 'groupNames', permissionsAutocompleteParams); */
+               + privilegiesPermissions[i], "div.permissions-" + privilegiesPermissions[i] + "-wrapper", true, "div", true);
   }
   
   // More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
@@ -97,17 +97,7 @@ $(document).ready(function () {
 
   for (i = 0, len = privilegiesPermissionsInTable.length; i < len; i++) {
     getAjaxForm(".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax", 
-                privilegiesPermissionsInTable[i], "tr." + privilegiesPermissionsInTable[i], true, "tr");
-                
-    toggleConfigCustomPermissions(privilegiesPermissionsInTable[i]);
-    interceptEnterKeyAndReroute("." + privilegiesPermissionsInTable[i] + " .addUser input[type=text]",
-                                "." + privilegiesPermissionsInTable[i] + " input.addUserButton");
-    
-    /* TODO: fix autocomplete (possible for multiple fields at once)
-    var permissionsAutocompleteParams = {minChars:4, selectFirst:false, width:300, max:30, delay:800};
-    permissionsAutocomplete('userNames', 'userNames', permissionsAutocompleteParams);
-    splitAutocompleteSuggestion('userNames');
-    permissionsAutocomplete('groupNames', 'groupNames', permissionsAutocompleteParams); */
+                privilegiesPermissionsInTable[i], "tr." + privilegiesPermissionsInTable[i], true, "tr", true);
   }
 
   // About property forms
@@ -130,7 +120,7 @@ $(document).ready(function () {
 
   for (i = 0, len = propsAbout.length; i < len; i++) {
     getAjaxForm("body#vrtx-about .prop-" + propsAbout[i] + " a.vrtx-button-small", "expandedForm-prop-" 
-               + propsAbout[i], "tr.prop-" + propsAbout[i], true, "tr");
+               + propsAbout[i], "tr.prop-" + propsAbout[i], true, "tr", false);
   }
 
   // Remove permission
@@ -369,10 +359,9 @@ function switchCheckedRow(checkbox) {
 /* Permission shortcuts/custom toggling */
 
 function toggleConfigCustomPermissions(selectorClass) {
-    if ($("." + selectorClass).length) {
-      if (!$($("." + selectorClass + " ul.shortcuts input:radio:last")).is(":checked")) {
-        $("." + selectorClass).find(".principalList").hide(0);
-      }
+    if (!$("." + selectorClass + " ul.shortcuts label[for=custom] input").is(":checked")
+        && $("." + selectorClass + " ul.shortcuts label[for=custom] input").length) {
+      $("." + selectorClass).find(".principalList").hide(0);
     }
     $("#app-content").delegate("." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
       $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed);
@@ -385,7 +374,7 @@ function toggleConfigCustomPermissions(selectorClass) {
   
 }
 
-/* ^ Permission shortcuts/custon toggling */
+/* ^ Permission shortcuts/custom toggling */
 
 /* Dropdowns */
 
@@ -453,7 +442,7 @@ function dropdownCollectionGlobalMenu() {
  * @params pending..
  */
 
-function getAjaxForm(link, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType) {
+function getAjaxForm(link, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, permissions) {
   $(link).click(function () {
     var serviceUrl = $(this).attr("href");
     $.ajax({
@@ -472,6 +461,16 @@ function getAjaxForm(link, selectorClass, insertAfterOrReplaceClass, isReplacing
         }
         $(nodeType + "." + selectorClass).slideDown(vrtxAdmin.transitionSpeed);
         $(nodeType + "." + selectorClass).find("input[type=text]:first").focus();
+        if(permissions) { // Specific for permissions (TODO: how to do this best?)
+          toggleConfigCustomPermissions(selectorClass);
+          interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]",
+                                      "." + selectorClass + " input.addUserButton");
+          permissionsAutocomplete('userNames', 
+                                  'userNames', vrtxAdmin.permissionsAutocompleteParams);
+          splitAutocompleteSuggestion('userNames');
+          permissionsAutocomplete('groupNames', 
+                                  'groupNames', vrtxAdmin.permissionsAutocompleteParams);
+        }
       },
       error: function (xhr, textStatus) {
         if (xhr.readyState == 4 && xhr.status == 200) {
@@ -515,12 +514,12 @@ function postAjaxFormDelegator(selector, updateSelector, errorContainer, errorCo
       var value = $(textfields[i]).val();
       dataString += '&' + name + '=' + value;
     }
-    for (var i = 0, len = fileFields.length; i < len; i++) {
+    for (i = 0, len = fileFields.length; i < len; i++) {
       var name = $(fileFields[i]).attr("name");
       var value = $(fileFields[i]).val();
       dataString += '&' + name + '=' + value;
     }
-    for (var i = 0, len = checkedRadioButtons.length; i < len; i++) {
+    for (i = 0, len = checkedRadioButtons.length; i < len; i++) {
       var name = $(checkedRadioButtons[i]).attr("name");
       var value = $(checkedRadioButtons[i]).val();
       dataString += '&' + name + '=' + value;

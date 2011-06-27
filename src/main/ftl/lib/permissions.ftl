@@ -183,8 +183,8 @@
     <@spring.bind formName + ".shortcuts" />
     <@listShortcuts privilegeName privilegeHeading spring.status.value />
     <ul class="principalList" id="principalList">
-      <@editACLFormGroupsOrUsers "group" submitUrl />
-      <@editACLFormGroupsOrUsers "user" submitUrl />
+      <@editACLFormGroupsOrUsers "group" privilegeName submitUrl />
+      <@editACLFormGroupsOrUsers "user" privilegeName submitUrl />
     </ul>
     <div id="submitButtons" class="submitButtons">
       <div class="vrtx-button">
@@ -207,7 +207,7 @@
  *
 -->
 
-<#macro editACLFormGroupsOrUsers type submitUrl>
+<#macro editACLFormGroupsOrUsers type privilegeName submitUrl>
   <#assign capitalizedType = "${type?capitalize}" />
   
   <li class="${type}s">

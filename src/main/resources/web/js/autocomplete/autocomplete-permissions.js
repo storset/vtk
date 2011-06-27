@@ -22,7 +22,7 @@ function permissionsAutocomplete(id, service, params) {
           var regex = new RegExp("^(?![^&;]+;)(?!<[^<>]*)("
               + termArray[t].replace(/([\^\$\(\)\[\]\{\}\*\.\+\?\|\\])/gi, "\\$1") + ")(?![^<>]*>)(?![^&;]+;)", "gi");
           val = val.replace(regex, "<strong>$1</strong>");
-          if (id == "userNames") {
+          if (id.indexOf("userNames") != -1) {
             desc = desc.replace(regex, "<strong>$1</strong>");
           }
         }

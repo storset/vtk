@@ -1404,6 +1404,10 @@ div.vrtx-admin-form {
   width: 100%;
 }
 
+.ac_results ul {
+  text-align: left;
+}
+
 /* Buttons */
 
 .vrtx-button,

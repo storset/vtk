@@ -352,16 +352,16 @@ function switchCheckedRow(checkbox) {
 /* Permission shortcuts/custom toggling */
 
 function toggleConfigCustomPermissions(selectorClass) {
-    if ($("div." + selectorClass).length) {
-      if (!$($("div." + selectorClass + " ul.shortcuts input:radio:last")).is(":checked")) {
-        $("div." + selectorClass).find(".principalList").hide(0);
+    if ($("." + selectorClass).length) {
+      if (!$($("." + selectorClass + " ul.shortcuts input:radio:last")).is(":checked")) {
+        $("." + selectorClass).find(".principalList").hide(0);
       }
     }
-    $("#app-content").delegate("div." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
+    $("#app-content").delegate("." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
       $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed);
       e.stopPropagation();
     });
-    $("#app-content").delegate("div." + selectorClass + " ul.shortcuts label:not([for=custom])", "click", function (e) {
+    $("#app-content").delegate("." + selectorClass + " ul.shortcuts label:not([for=custom])", "click", function (e) {
       $(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed);
       e.stopPropagation();
     });

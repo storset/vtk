@@ -36,7 +36,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;
   var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
 
-  /* Fix for div container display in IE */
+  // Fix for div container display in IE
   if ($.browser.msie > -1 && $.browser.version <= 7) {
     cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
   }
@@ -45,7 +45,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var isWithoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
   var isSimpleHTML = simpleHTML != null ? simpleHTML : false;
 
-  //CKEditor configurations
+  // CKEditor configurations
   if (name.indexOf("introduction") != -1 || name.indexOf("resource.description") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar,
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
@@ -63,10 +63,9 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
       height = 130;
       maxHeight = 300;
     } else if (name == "content" || name == "resource.content") {
-
-      // TODO: Check if XHTML
       height = 400;
       maxHeight = 800;
+      // Old editor
       if (name == "resource.content") {
         completeTB = completeToolbarOld;
       }
@@ -107,6 +106,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
     config.filebrowserFlashBrowseUrl = flashBrowseUrl;
     config.extraPlugins = 'mediaembed';
     config.stylesSet = divContainerStylesSet;
+    // XHTML
     if (name == "resource.content" && simple) {
       config.format_tags = 'p;h1;h2;h3;h4;h5;h6;pre;div';
     } else {
@@ -135,6 +135,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 
   config.on = {
     instanceReady: function (ev) {
+
       var tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
       for (var key in tags) {
@@ -187,8 +188,7 @@ function commentsCkEditor() {
 var divContainerStylesSet = [{
   name: 'Facts left',
   element: 'div',
-  attributes: {
- 'class': 'vrtx-facts-container vrtx-container-left'
+  attributes: { 'class': 'vrtx-facts-container vrtx-container-left'
   }
 },
   {

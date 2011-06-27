@@ -40,12 +40,18 @@
 <#if action = "move-resources"><#assign formURL = move.url?html /><#else><#assign formURL = copy.url?html /></#if>
 
 <form name="vrtx-confirm-copy-move" id="vrtx-confirm-copy-move" action="${formURL}" method="post">
-  <button tabindex="1" type="submit" value="ok" id="confirmAction" name="confirm-action">
-    ${vrtx.getMsg("copyMove.discloseWarning.ok")}
-  </button>
-  <button tabindex="2" type="submit" value="cancel" id="cancelAction" name="cancel-action">
-    ${vrtx.getMsg("copyMove.discloseWarning.cancel")}
-  </button>
+  <div class="submitButtons">
+    <div class="vrtx-button">
+      <button tabindex="1" type="submit" value="ok" id="confirmAction" name="confirm-action">
+        ${vrtx.getMsg("copyMove.discloseWarning.ok")}
+      </button>
+    </div>
+    <div class="vrtx-button">
+      <button tabindex="2" type="submit" value="cancel" id="cancelAction" name="cancel-action">
+        ${vrtx.getMsg("copyMove.discloseWarning.cancel")}
+      </button>
+    </div>
+  </div>
 </form>
 
 <script type="text/javascript"><!--

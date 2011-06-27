@@ -19,7 +19,7 @@
 <#list requestContext.infoMessages as msg>
   <div class="infomessage ${msg.identifier?html}">
     ${msg.title?html}
-    <#if (msg.messages)?exists>
+    <#if ((msg.messages)?exists && msg.messages?size > 0)>
       <ul class="infoitems">
         <#list msg.messages as subMsg>
           <li>${subMsg?html}</li>

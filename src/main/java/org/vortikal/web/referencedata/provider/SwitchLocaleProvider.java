@@ -102,19 +102,26 @@ public class SwitchLocaleProvider implements ReferenceDataProvider {
         String currentLocale = springContext.getLocale().toString();
 
         Map<String, String> localeServiceURLs = new HashMap<String, String>();
+        Map<String, String> localeServiceActive = new HashMap<String, String>();
         List<String> localeServiceNames = new ArrayList<String>();
-        for (String key: this.locales.keySet()) {
+        
+        for (String key : this.locales.keySet()) {
             Service service = this.locales.get(key);
-            if (!currentLocale.equals(key)) {
-                try {
-                    localeServiceNames.add(key);
-                    String url = service.constructLink(resource, principal);
-                    localeServiceURLs.put(key, url);
-                } catch (ServiceUnlinkableException e) { }
+            try {
+                localeServiceNames.add(key);
+                String url = service.constructLink(resource, principal);
+                localeServiceURLs.put(key, url);
+                if (!currentLocale.equals(key)) {
+                    localeServiceActive.put(key, "not-active");
+                } else {
+                    localeServiceActive.put(key, "active");
+                }
+            } catch (ServiceUnlinkableException e) {
             }
         }
         
         localeMap.put("currentLocale", currentLocale);
+        localeMap.put("localeServiceActive", localeServiceActive);
         localeMap.put("localeServiceNames", localeServiceNames);
         localeMap.put("localeServiceURLs", localeServiceURLs);
         model.put(this.modelName, localeMap);

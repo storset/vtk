@@ -111,7 +111,7 @@
             </entry>
             <entry key="gallery">
               <list>
-                <value>${jsBaseURL}/image-listing-component.js</value>
+                <value>${jsBaseURL}/gallery.js</value>
               </list>
             </entry>
           </map>

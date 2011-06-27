@@ -23,11 +23,8 @@
     <@ping.ping url=pingURL['url'] interval=300 />    
     <@editor.addCkScripts />
 
-    <script type="text/javascript" src="${jsBaseURL?html}/tooltip.js"></script>
-    
   	<script type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>
-    <script type="text/javascript" src="${jsBaseURL?html}/admin-ck-helper.js"></script>
-    <script type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
+    <script type="text/javascript" src="${jsBaseURL?html}/editor-ck-helper.js"></script>
     
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
     <#assign isCollection = resource.resourceType = 'collection' || resource.resourceType?contains("-listing") />
@@ -54,17 +51,23 @@
       function performSave() {
         NEED_TO_CONFIRM = false;
       } 
+      
+      var cssFileList = new Array(
+      <#if fckEditorAreaCSSURL?exists>
+        <#list fckEditorAreaCSSURL as cssURL>
+          "${cssURL?html}" <#if cssURL_has_next>,</#if>
+        </#list>
+      </#if>);
      
     //-->
     </script>
-    <script type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
-    
-    <@editor.addDatePickerScripts true />
+
+    <@editor.addDatePickerScripts language true />
     
     <#if !isCollection>
-    <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
+      <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
     <#else>
-    <script type="text/javascript" src="${jsBaseURL?html}/collectionlisting/manually-approve.js"></script>
+      <script type="text/javascript" src="${jsBaseURL?html}/collectionlisting/manually-approve.js"></script>
     </#if>
     
    <#global baseFolder = "/" />
@@ -84,11 +87,17 @@
       <@vrtx.msg code="editor.edit" args=[vrtx.resourceTypeName(resource)?lower_case] />
     </#assign>
     <h2>${header}</h2>
-	  <div class="submit-extra-buttons">
+	  <div class="submitButtons submit-extra-buttons">
 	  	<#include "/system/help.ftl" />
-		<input type="button" onClick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
-		<input type="button" onClick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
-		<input type="button" onClick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
+	  	<div class="vrtx-button">
+		  <input type="button" onClick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
+		</div>
+		<div class="vrtx-button">
+		  <input type="button" onClick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
+		</div>
+		<div class="vrtx-button">
+		  <input type="button" onClick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
+		</div>
 	  </div>
     <form id="form" class="editor" action="" method="post">
 
@@ -116,10 +125,16 @@
       	<div id="allowedValues"></div>
       </#if>
 
-      <div id="submit" class="save-cancel">
+      <div id="submit" class="submitButtons save-cancel">
+        <div class="vrtx-button">
           <input type="submit" id="saveAndViewButton" onClick="formatFeaturedArticlesData();performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
+        </div>
+        <div class="vrtx-button">
           <input type="submit" id="saveButton" onClick="formatFeaturedArticlesData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
+        </div>
+        <div class="vrtx-button">
           <input type="submit" id="cancel" onClick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
+        </div>
       </div>
 
       <#--
@@ -271,32 +286,38 @@
         && (resource.resourceType = 'event-listing' || resource.resourceType = 'article-listing' || resource.resourceType = 'collection' ||
             resource.resourceType = 'person-listing' || resource.resourceType = 'project-listing' || resource.resourceType = 'research-group-listing' ||
             resource.resourceType = 'blog-listing' || resource.resourceType = 'image-listing' || resource.resourceType = 'master-listing')>
-  
-        <#if name == 'navigationTitle'>
-          <a class="show-tooltip" href="#" title="<@vrtx.msg code='editor.tooltip.navigation-title'/>">__</a>
-        </#if>
 
         <#if value = '' && name='userTitle'>
           <#local value = resource.title?html />
         </#if>
-        <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
+        <div class="vrtx-textfield">
+          <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
+        </div>
         <#if description != "">
           <span class="input-description">(${description})</span>
         </#if>
 
       <#elseif name = 'media'>
-        <input type="text" id="resource.${name}"  name="resource.${name}" value="${value?html}" />
-        <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
-              '${fckBrowse.url.pathRepresentation}', 'Media');"><@vrtx.msg code="editor.browseMediaFiles"/></button>
+        <div class="vrtx-textfield">
+          <input type="text" id="resource.${name}"  name="resource.${name}" value="${value?html}" />
+        </div>
+        <div class="vrtx-button">
+          <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
+                  '${fckBrowse.url.pathRepresentation}', 'Media');"><@vrtx.msg code="editor.browseMediaFiles"/></button>
+        </div>
         
       <#elseif type = 'IMAGE_REF'>
       
       	<#if name == "picture">
         <div class="picture-and-caption">
           <div class="input-and-button-container">
-            <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" />
-            <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
-              '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
+            <div class="vrtx-textfield">
+              <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" />
+            </div>
+            <div class="vrtx-button">
+              <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
+                      '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
+            </div>
           </div>
           <div id="resource.${name}.preview">
           
@@ -362,13 +383,15 @@
         </#if>
 
         <#local uniqueName = 'cal_' + propDef_index />
-        
-        <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date"
-            value="${dateVal}" />
-        
-        <input size="2" maxlength="2" type="text" class="hours" id="resource.${name}.hours" name="resource.${name}.hours"
-            value="${hours}"><span class="colon">:</span><input size="2" maxlength="2" type="text" class="minutes"
-            id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
+        <div class="vrtx-textfield">
+          <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date"
+                 value="${dateVal}" />
+        </div>
+        <div class="vrtx-textfield">
+          <input size="2" maxlength="2" type="text" class="hours" id="resource.${name}.hours" name="resource.${name}.hours"
+                 value="${hours}"><span class="colon">:</span><input size="2" maxlength="2" type="text" class="minutes"
+                 id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
+        </div>
 
       <#else>
       
@@ -430,8 +453,9 @@
           <#if name = 'recursive-listing-subfolders'>
             <label>${vrtx.getMsg("editor.recursive-listing.featured-articles")}</label>
           </#if>
-
-          <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" /> 
+          <div class="vrtx-textfield">
+            <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
+          </div>
 
           <#if name = 'recursive-listing-subfolders'>
             <label>${vrtx.getMsg("editor.recursive-listing.featured-articles.hint")}</label>
@@ -441,7 +465,9 @@
           </#if>
           
           <#if name = 'manually-approve-from'>
-            <div id="manually-approve-container-title"><button id="manually-approve-refresh" href=".">Oppdater liste</a></button></div>
+            <div id="manually-approve-container-title">
+              <a class="vrtx-button" id="manually-approve-refresh" href="."><span>Oppdater liste</span></a>
+            </div>
             <div id="manually-approve-container">
             </div>
           </#if>

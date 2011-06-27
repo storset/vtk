@@ -74,7 +74,8 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  *  the children and the parent collection
  *  <li><code>matchingResourceTypes</code> - set of resource types to filter with.
  *  <li><code>childInfoItems</code> - list of info items to be
- *      displayed for the children. Valid items are <code>name</code>,
+ *      displayed for the children. Valid items are
+ *      <code>title</code>, <code>name</code>,
  *      <code>size</code>, <code>locked</code>,
  *      <code>content-type</code>, <code>owner</code> and
  *      <code>last-modified</code>. Default is <code>name</code>,
@@ -116,16 +117,18 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  */
 public class CollectionListingProvider implements ReferenceDataProvider {
 
-    public static final String DEFAULT_SORT_BY_PARAMETER = "name";
+    public static final String DEFAULT_SORT_BY_PARAMETER = "title";
 
     
     private static final Set<String> supportedResourceColumns = 
         new HashSet<String>(Arrays.asList(new String[] {
-                                      DEFAULT_SORT_BY_PARAMETER, 
+                                      DEFAULT_SORT_BY_PARAMETER,
+                                      "name",
                                       "content-length", 
                                       "last-modified",
                                       "locked", 
-                                      "content-type", 
+                                      "content-type",
+                                      "resource-type", 
                                       "owner" }));
     
     private Map<String, Service> linkedServices = new HashMap<String, Service>();
@@ -290,9 +293,11 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     
 
     private void sortChildren(Resource[] children, String sortBy, boolean invert) {
-        Order order = ResourceSorter.Order.BY_NAME;
+        Order order = ResourceSorter.Order.BY_TITLE;
 
-        if ("content-length".equals(sortBy)) {
+        if ("name".equals(sortBy)) {
+            order = ResourceSorter.Order.BY_NAME;
+        } else if ("content-length".equals(sortBy)) {
             order = ResourceSorter.Order.BY_FILESIZE;
         } else if ("last-modified".equals(sortBy)) {
             order = ResourceSorter.Order.BY_DATE;
@@ -300,6 +305,8 @@ public class CollectionListingProvider implements ReferenceDataProvider {
             order = ResourceSorter.Order.BY_LOCKS;
         } else if ("content-type".equals(sortBy)) {
             order = ResourceSorter.Order.BY_CONTENT_TYPE;
+        } else if ("resource-type".equals(sortBy)) {
+            order = ResourceSorter.Order.BY_RESOURCE_TYPE;
         } else if ("owner".equals(sortBy)) {
             order = ResourceSorter.Order.BY_OWNER;
         } else if ("permissions".equals(sortBy)) {

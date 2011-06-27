@@ -33,9 +33,26 @@
 
 <#-- Output the menu links: -->
 <ul class="listMenu ${menu.label}">
+
+  <#assign size = 0 />
   <#list menu.items as item> 
     <#if item.url?exists>
-      <li class="${item.label}">
+      <#assign size = size+1 />
+    </#if>
+  </#list>
+
+  <#assign count = 1 />
+  <#list menu.items as item> 
+    <#if item.url?exists>
+      <#if count == 1 && count == size>
+        <li class="${item.label} first last">
+      <#elseif count == 1>
+        <li class="${item.label} first">     
+      <#elseif count == size>
+        <li class="${item.label} last">
+      <#else>
+        <li class="${item.label}">
+      </#if>
         <#if item_index != 0 && item_index != menu.items?size>${between}</#if>
         <#attempt>
           <#include "/actions/list-menu.${item.label}.ftl" />
@@ -43,6 +60,7 @@
           ${prepend}<a id="${item.label}" href="${item.url?html}">${item.title}</a>${append}
         </#recover>
       </li>
+      <#assign count = count+1 />
     </#if>
   </#list>
 </ul>

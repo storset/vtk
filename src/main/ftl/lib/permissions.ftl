@@ -37,7 +37,7 @@
 
   <#if .vars[formName]?exists>
     <div>
-      <div class="expandedForm">
+      <div class="expandedForm expandedForm-${privilegeName}">
         <@editACLFormNew
            formName = formName
            privilegeName = privilegeName
@@ -49,7 +49,7 @@
     <div class="${privilegeName}">
       <@listPrincipals privilegeName=privilegeName />
       <#if aclInfo.aclEditURLs[privilegeName]?exists>
-        (&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)
+        &nbsp;<a class="vrtx-button-small full-ajax" href="${aclInfo.aclEditURLs[privilegeName]?html}"><span><@vrtx.msg code="permissions.privilege.edit" default="edit" /></span></a>
       </#if>
     </div>
   </#if>
@@ -68,14 +68,19 @@
 
 <#macro editOrDisplayPrivileges privilegeList heading>
   <h3 class="privelegeList">${heading}</h3>
-  <table>
+  <table class="privilegeTable">
+    <#assign count = 1 />
     <#list privilegeList as p>
-      <tr>
+      <#if count % 2 == 0>
+        <tr class="even">
+      <#else>
+        <tr>
+      </#if>
       <#assign formName = 'permissionsForm_' + p.name />
       <#assign privilegeName = p.name />
       <#assign privilegeHeading = p.heading />
       <#if .vars[formName]?exists>
-        <td colspan="2" class="expandedForm">
+        <td colspan="2" class="expandedForm expandedForm-${p.name}">
         <@editACLFormNew
            formName = formName
            privilegeName = privilegeName 
@@ -86,11 +91,12 @@
         <td>
           <@listPrincipals privilegeName = privilegeName />
           <#if aclInfo.aclEditURLs[privilegeName]?exists>
-            (&nbsp;<a href="${aclInfo.aclEditURLs[privilegeName]?html}"><@vrtx.msg code="permissions.privilege.edit" default="edit" /></a>&nbsp;)
+            &nbsp;<a class="vrtx-button-small full-ajax" href="${aclInfo.aclEditURLs[privilegeName]?html}"><span><@vrtx.msg code="permissions.privilege.edit" default="edit" /></span></a>
           </#if>
         </td>
       </#if>
       </tr>
+      <#assign count = count+1 />
     </#list>
   </table>
 </#macro>
@@ -181,9 +187,13 @@
       <@editACLFormGroupsOrUsers "user" submitUrl />
     </ul>
     <div id="submitButtons" class="submitButtons">
-      <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>"
-       onclick="return checkStillAdmin()">
-      <input type="submit" name="cancelAction" value="<@vrtx.msg code="permissions.cancel" default="Cancel"/>">
+      <div class="vrtx-button">
+        <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>"
+         onclick="return checkStillAdmin()" />
+      </div>
+      <div class="vrtx-button">
+        <input type="submit" name="cancelAction" value="<@vrtx.msg code="permissions.cancel" default="Cancel"/>" />
+      </div>
     </div>
   </form>
 </#macro>
@@ -207,6 +217,7 @@
       <#-- Bind and list principals -->
       <@spring.bind formName + ".${type}s" />
       
+      <div class="${type}s-wrapper">
       <#if (spring.status.value?size > 0)>
         <ul class="${type}s">
           <#list spring.status.value as groupOrUser>
@@ -219,12 +230,13 @@
                 </#if>
               
                 <#-- Remove -->
-                &nbsp;(&nbsp;<input class="removePermission" name="remove${capitalizedType}.${groupOrUser.name?html}" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />"/>&nbsp;)  
+                &nbsp;<input class="removePermission" name="remove${capitalizedType}.${groupOrUser.name?html}" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />"/>  
               </#compress>
             </li>
           </#list>
-        </ul>
+        </ul>   
       </#if>
+      </div>
       
       <#-- Bind names -->
       <@spring.bind formName + ".${type}Names" /> 
@@ -260,8 +272,11 @@
       </#if>
       
       <#-- Add -->
-      <span class="add${capitalizedType}">      
-        <input type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${value?html}" />
+      <span class="add${capitalizedType}">
+        <div class="vrtx-textfield"> 
+          <input type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${value?html}" />
+        </div>
+        
         <#if type == "user">
           <@spring.bind formName + ".ac_userNames" />
           <#assign value=""/>
@@ -270,8 +285,11 @@
           </#if>        
           <input type="hidden" id="ac_userNames" name="ac_userNames" value="${value?html}" />
         </#if>
-        <input class="add${capitalizedType}Button" type="submit" name="add${capitalizedType}Action"
-               value="<@vrtx.msg code="permissions.add${capitalizedType}" default="Add ${capitalizedType}"/>"/>   
+        
+        <div class="vrtx-button">
+          <input class="add${capitalizedType}Button" type="submit" name="add${capitalizedType}Action"
+                       value="<@vrtx.msg code="permissions.add${capitalizedType}" default="Add ${capitalizedType}"/>"/>
+        </div>
       </span>
     </fieldset>
   </li>

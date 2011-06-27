@@ -1,0 +1,243 @@
+/*
+ *
+ *  Vortex - Editor - Common
+ *
+ */
+
+/* 
+ * ToC:
+ * 
+ * 1. General
+ * 2. Dimensions
+ * 3. CK
+ *
+ */
+
+/* 1. General */
+
+h2 {
+  background: url(images/line-dotted.gif) repeat-x bottom left;
+  padding-bottom: 15px;
+}
+
+.submit-extra-buttons {
+  clear: none;
+  float: right;
+  margin-top: -50px;
+  padding-top: 0px;
+}
+
+.help-link {
+  margin-right: 25px;
+}
+
+.property-item,
+.html-content,
+.vrtx-string,
+.vrtx-html,
+.vrtx-simple-html,
+.vrtx-radio,
+.vrtx-json,
+.vrtx-resource-ref,
+.vrtx-image-ref,
+.vrtx-media-ref,
+.vrtx-grouped-horizontal {
+  margin-top: 20px;
+}
+
+.property-item,
+.html-content,
+.vrtx-html.content {
+  clear: left;
+}
+
+.property-label,
+.html-content label,
+.vrtx-string label,
+.vrtx-html label,
+.vrtx-simple-html label,
+.vrtx-radio label,
+.vrtx-json label,
+.vrtx-resource-ref label,
+.vrtx-image-ref label,
+.vrtx-media-ref label,
+.vrtx-grouped-horizontal .header,
+.vrtx-grouped-vertical .header,
+.vrtx-json .header {
+  font-size: 1.15em;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.vrtx-grouped-vertical label,
+.vrtx-grouped-horizontal label,
+.vrtx-json label {
+  font-size: 1em;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.tooltip,
+.input-description {
+  display: inline;
+  padding-left: 15px;
+}
+
+.vrtx-image-ref-browse .vrtx-button,
+.vrtx-media-ref .vrtx-button {
+  margin-left: 20px;
+}
+
+.vrtx-featured-articles-row,
+.vrtx-multipleinputfield {
+  margin-bottom: 10px;
+}
+
+.vrtx-featured-articles-row .vrtx-textfield,
+.vrtx-featured-articles-row .vrtx-button,
+.vrtx-multipleinputfield .vrtx-textfield,
+.vrtx-multipleinputfield .vrtx-button {
+  margin-right: 20px;
+}
+
+/* ^ 1. General */
+
+
+
+/* 2. Dimensions and explicit settings */
+
+div.title input,
+div.name input,
+div.userTitle input,
+div.navigationTitle input,
+div.aggregation input {
+  width: 485px;
+}
+
+div.additionalContent,
+div.introduction,
+div.description {
+  width: 500px;
+}
+
+div.introduction,
+div.description {
+  clear: left;
+  float: left;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+
+div.additionalContent iframe,
+div.introduction iframe,
+div.description iframe {
+  width: 476px !important;
+}
+
+div.additionalContent iframe {
+  height: 150px !important;
+}
+
+/* Image and caption */
+
+.introImageAndCaption .header {
+  display: none;
+}
+
+.introImageAndCaption label {
+  font-size: 1.15em !important;
+  margin-bottom: 10px !important;
+  display: block !important;
+}
+
+div.introImageAndCaption,
+div#vrtx-resource\.picture {
+  float: left;
+  clear: none;
+  width: 500px;
+  position: relative;
+}
+
+div.introImageAndCaption .header {
+  display: none;
+}
+
+div.introImageAndCaption .caption,
+div#vrtx-resource\.picture .caption {
+  position: absolute;
+  top: 92px;
+  left: 0px;
+  width: 327px;
+}
+
+div#vrtx-resource\.picture .caption {
+  top: 52px;
+}
+
+div.introImageAndCaption .caption iframe,
+div#vrtx-resource\.picture .caption iframe {
+  width: 303px !important;
+}
+
+div.introImageAndCaption div.vrtx-image-ref-browse,
+div#vrtx-resource\.picture div#input-and-button-container {
+  float: left;
+}
+
+div.introImageAndCaption div.vrtx-image-ref-browse .vrtx-textfield input#picture,
+div#vrtx-resource\.picture div#input-and-button-container .vrtx-textfield input {
+  width: 200px;
+}
+
+div#vrtx-resource\.picture div#input-and-button-container .vrtx-textfield {
+  margin-right: 20px;
+}
+
+div.introImageAndCaption div#picture\.preview,
+div#vrtx-resource\.picture div#resource\.picture\.preview {
+  margin: 0 0 0 346px;
+  height: 231px;
+}
+
+/* ^ Image and caption */
+
+/* ^ 2. Dimensions and explicit settings */
+
+
+
+/* 3. CK */
+
+span.cke_skin_kama {
+  padding: 0px !important;
+  border-color: #d9d9d9 !important;
+
+  /* Remove rounded corners */
+  -moz-border-radius: 0px !important;
+  -webkit-border-radius: 0px !important;
+  border-radius: 0px !important;
+}
+
+span.cke_skin_kama .cke_wrapper {
+  background: #f6f6f6 !important;
+  padding: 10px !important;
+
+  /* Remove rounded corners */
+  -moz-border-radius: 0px !important;
+  -webkit-border-radius: 0px !important;
+  border-radius: 0px !important;
+}
+
+.cke_skin_kama .cke_toolgroup,
+.cke_skin_kama .cke_contents iframe {
+  border: 1px solid #d9d9d9 !important;
+}
+
+.cke_skin_kama .cke_toolgroup {
+  margin-bottom: 10px !important;
+}
+
+/* ^ 3. CK */
+
+
+
+/* ^ Vortex - Editor - Common */

@@ -11,9 +11,9 @@
 </#if>
 
 <form id="vrtx-move-to-selected-folder" action="${actionURL?html}" method="${method}" class="vrtx-admin-button">
-  <button title="${titleMsg}" type="submit"
-          id="vrtx-move-to-selected-folder.submit"
-          value="move-resources-to-this-folder" name="action">${item.title?html}</button>
+    <div class="vrtx-button"><button title="${titleMsg}" type="submit"
+            id="vrtx-move-to-selected-folder.submit"
+            value="move-resources-to-this-folder" name="action">${item.title?html}</button></div>
 </form>
 <#recover>
 ${.error}

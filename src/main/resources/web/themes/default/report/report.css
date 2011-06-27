@@ -1,10 +1,11 @@
+.vrtx-report-nav .back {
+  margin-bottom: 15px;
+}
+
 ul.vrtx-reporters {
   list-style-type: none;
   padding-left: 2px;
-}
-
-ul.vrtx-reporters li {
-  padding-bottom: 0.15em;	
+  margin-left: 0px;
 }
 
 div.vrtx-report {
@@ -14,43 +15,6 @@ div.vrtx-report {
 
 div.vrtx-report div.vrtx-subfolder-menu {
   border: none;
-}
-
-div.vrtx-report table#vrtx-report-document-table {
-  clear: both;
-  font-weight: normal;
-  font-size: 100%;
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid #b0e0e6;
-}
-
-div.vrtx-report table#vrtx-report-document-table th {
-  padding: 3px;
-  text-align: left;
-  font-weight: bold;
-  font-size: 80%;
-  background-color: #eeeeee;
-  border: none;
-}
-
-div.vrtx-report table#vrtx-report-document-table td {
-  background-color: #fff;
-  padding: 3px;
-  padding-right: 15px;
-  border: none;
-}
-
-div.vrtx-report table#vrtx-report-document-table tr {
-  border: none;
-}
-
-div.vrtx-report table#vrtx-report-document-table td.vrtx-report-last-modified {
-  white-space: nowrap;
-}
-
-div.vrtx-report table#vrtx-report-document-table tr.even td {
-  background-color: #eeeeee;
 }
 
 div.vrtx-report span.file a {

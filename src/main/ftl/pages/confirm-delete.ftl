@@ -22,12 +22,18 @@ ${vrtx.getMsg("collectionListing.confirmation.delete")} <span class="vrtx-confir
 </div>   
 
 <form name="vrtx-delete-resource" id="vrtx-delete-resource" action="${url}" method="post">
-  <button tabindex="1" type="submit" value="ok" id="deleteResourceAction" name="deleteResourceAction">
-    ${vrtx.getMsg("confirm-delete.ok")}
-  </button>
-  <button tabindex="2" type="submit" value="cancel" id="deleteResourceCancelAction" name="deleteResourceCancelAction">
-    ${vrtx.getMsg("confirm-delete.cancel")}
-  </button>
+  <div class="submitButtons">
+    <div class="vrtx-button">
+      <button tabindex="1" type="submit" value="ok" id="deleteResourceAction" name="deleteResourceAction">
+        ${vrtx.getMsg("confirm-delete.ok")}
+      </button>
+    </div>
+    <div class="vrtx-button">
+      <button tabindex="2" type="submit" value="cancel" id="deleteResourceCancelAction" name="deleteResourceCancelAction">
+        ${vrtx.getMsg("confirm-delete.cancel")}
+      </button>
+    </div>
+  </div>
 </form>
 
 <script type="text/javascript"><!--

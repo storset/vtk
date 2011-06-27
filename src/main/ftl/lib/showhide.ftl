@@ -1,7 +1,7 @@
 <#-- Adds the default required scripts necessary to use show and hide functionality -->
 
 <#macro addShowHideScripts srcBase>
-  <script type="text/javascript" src="${srcBase}/admin-showhide.js"></script>
+  <script type="text/javascript" src="${srcBase}/editor-showhide.js"></script>
 </#macro>
 
 <#macro addShowHide script>
@@ -15,5 +15,5 @@
    	  </#if>
    	</#list>
   </#list>
-      setShowHide('${script.name}', [${parameters}]);
+  setShowHide('${script.name}', [${parameters}]);
 </#macro>

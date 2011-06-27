@@ -1,526 +1,141 @@
-@charset "UTF-8";
+@import url(../editor-common.css);
 
-/* START contents, header, h2, help-links */
-
-#contents {
-  background-color: #efefef;
-  padding-left: 1.2em !important;
-  position: relative;
-}
-
-#contents h2 {
-  border-bottom: 1px solid #AAAAAA;
-  font-size: 1.1em;
-  margin-bottom: 20px;
-  margin-top: 0;
-  position: relative;
-}
-
-#contents h2 #help-link {
-  font-size:0.7em;
-  font-weight:100;
-  position:absolute;
-  right:0;
-  top:2.5em;
-}
-
-.header {
-  font-size: 1em;
-  width: 100%;
-  padding-right: 0 !important;
-}
-
-.vrtx-json .header {
-  margin-bottom: 0;
-  padding-bottom: 0 !important;
-  border: none;
-}
-
-.submit-extra-buttons a.help-link {
-  font-size: 0.8em;
-  margin-right: 1em;
-}
-
-/* STOP contents, header, h2, help-links */
-
-/* START forms */
-/* TODO: direct child does not work in IE 6. Try to avoid. */
-/* TODO: cleanup and refactor */
-/* TODO: Any special cases in own file pr. documenttype */
-
-form > div {
-  padding-bottom: 15px;
-  width: 100%;
-}
-
-.tooltip {
-  float: left;
-  font-size: 0.75em;
-  padding-left:0.35em;
-  line-height:1.85em;
-}
-
-.vrtx-string input {
-  float: left;	
-}
-
-.vrtx-grouped,
-.vrtx-grouped-vertical,
-.vrtx-grouped-horizontal,
-.vrtx-media-ref,
-.vrtx-simple-html,
-.vrtx-media-ref,
-.vrtx-simple-html-small,
-.vrtx-html,
-.vrtx-string,
-.vrtx-resource-ref,
-.vrtx-date,
-.vrtx-image-ref,
-.vrtx-checkbox,
-.vrtx-dropdownlist,
-.vrtx-radio,
-.vrtx-json,
-div.vrtx-json-element {
-  clear: left;
-  float: left;
-}
-
-.vrtx-grouped,
-.vrtx-grouped-horizontal {
-  width: 100%;
-}
-
-.vrtx-grouped > div,
-.vrtx-grouped-horizontal > div {
-  padding-bottom: 10px;
-}
-
-.vrtx-grouped-vertical {
-  clear: none;
-  position: relative;
-  width: auto;
-}
-
-.vrtx-html > div,
-.vrtx-simple-html >div,
-.vrtx-radio {
-  float: left;
-  width: 100%;
-}
-
-.vrtx-grouped .vrtx-string {
-  width: 100%;
-}
-
-.vrtx-grouped-horizontal > *  {
-  clear: none;
-  float: left;
-  padding-right: 15px;
-}
-
-.vrtx-grouped .vrtx-string input {
-  float: left;	
-}
-
-/* Not grouped becomes bigger */
-.vrtx-string > label,
-.vrtx-resource-ref * > label,
-.vrtx-html > label,
-.vrtx-simple-html > label,
-.vrtx-media-ref * > label,
-.vrtx-radio > label {
-  font-size: 1em;
-  display: block;
-  padding-bottom: 10px;
-}
-
-.vrtx-radio > label {
-  float: left;
-}
-
-.vrtx-radio > .vrtx-radio-buttons {
-  clear: left;
-}
-
-/* And override for grouped sub-properties */
-.vrtx-grouped-horizontal * > label,
-.vrtx-grouped-vertical * > label,
-.vrtx-grouped * > label,
-.vrtx-grouped-horizontal * .header,
-.vrtx-grouped-vertical * .header,
-.vrtx-grouped * .header,
-.vrtx-json-element * > label,
-.vrtx-radio * > label {
-  font-size: 0.9em;
-  padding: 0;
-}
-
-.vrtx-string .date {
-  margin-right: 1em;
-}
-.vrtx-string .hours {
-  margin-right: .2em;
-}
-.vrtx-string .minutes {
-  margin-left: .2em;
-}
-#ui-datepicker-div {
-  font-size: 10px;
-}
-
-input, iframe {
-  margin: 0;
-}
-iframe {
-  padding: 0;	
-}
-iframe, .fieldset {
-  float: left;
-  width: 100%;
-}
+/*
+ *
+ *  Vortex - Editor - New documenttypes
+ *
+ */
 
 .vrtx-json {
-  width: 100%;
-}
-.vrtx-json-element {
-  width: auto;
+  clear: both;
 }
 
-/* START JSON and multiple fields */
-
-.fieldset div.title {
-  padding: 0;
+.vrtx-json .vrtx-json-element {
+  margin-bottom: 20px;
+  position: relative;
+  clear: both;
 }
 
-.vrtx-grouped-horizontal .vrtx-json .header,
-.vrtx-grouped .vrtx-json .header {
-  padding-bottom: 5px;
+.vrtx-json .vrtx-json-element .vrtx-string,
+.vrtx-json .vrtx-json-element .vrtx-button {
+  margin: 0 20px 0 0;
+  clear: none;
+  float: left;
 }
 
-.vrtx-json-element, .vrtx-multipleinputfield {
-  padding-bottom: 15px;
+.vrtx-json .vrtx-json-element .vrtx-remove-button,
+.vrtx-json .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json .vrtx-json-element .vrtx-move-down-button {
+  margin-top: 26px;
 }
 
-#cssUrls .vrtx-json-element {
-  padding-bottom: 0;	
-}
-
-.vrtx-multipleinputfield input {
-  margin-right: 15px;
-}
-
-.vrtx-multipleinputfield button.movedown,
-.vrtx-multipleinputfield button.moveup,
-.vrtx-resource-ref .vrtx-multipleinputfield button.remove {
-  width: 70px;
-  margin-left: 15px;
-}
-
-.vrtx-json-element > div {
-  padding-right: 15px;
-  padding-bottom: 10px;
-}
-
-.vrtx-json-element > div > label {
-  width: 100%;
-}
-
-input.vrtx-add-button {
+.vrtx-json .vrtx-json-element .vrtx-image-ref {
   clear: left;
+  /* Fix a clearing problem */
+  margin-top: 0px;
+  padding-top: 20px;
+}
+
+.vrtx-json .vrtx-json-element .vrtx-image-ref img {
+  margin-top: 20px;
+}
+
+.vrtx-json .vrtx-json-element .vrtx-resource-ref-browse .vrtx-button,
+.vrtx-json .vrtx-json-element .vrtx-image-ref-browse .vrtx-button {
+  float: none;
+  margin: 0 0 0 20px;
+}
+
+.vrtx-json .vrtx-json-element .vrtx-html {
+  margin-bottom: 20px;
+}
+
+.vrtx-radio-buttons label {
+  margin-bottom: 0px;
+  display: inline;
+}
+
+.vrtx-grouped-horizontal .vrtx-string {
   float: left;
-  display: block;
+  margin-right: 20px;
+  margin-top: 0px;
 }
 
-input.vrtx-remove-button,
-input.vrtx-move-up-button,
-input.vrtx-move-down-button {
-  height: 20px;	
-}
-	
-input.vrtx-remove-button {
-  float: left;
-  margin-top:16px;
+.vrtx-add-button,
+.vrtx-grouped-horizontal,
+.vrtx-string.author {
+  clear: left;
 }
 
-input.vrtx-move-up-button,
-input.vrtx-move-down-button {
-  position: absolute;
-  right: 10px;
-  width:70px;
-}
-
-input.vrtx-move-up-button {
-  top: 10px;
-}
-	
-input.vrtx-move-down-button  {
-  bottom: 10px;
-}
-
-/* Special case for multiple JSON move-buttons when no box */
-/* TODO: should reverse so that frontpage boxes is the special case */
-
-#participants input.vrtx-move-up-button,
-#participants input.vrtx-move-down-button,
-#supervisors input.vrtx-move-up-button,
-#supervisors input.vrtx-move-down-button,
-#projects input.vrtx-move-up-button,
-#projects input.vrtx-move-down-button,
-#rssFeeds input.vrtx-move-up-button,
-#rssFeeds input.vrtx-move-down-button,
-#groups input.vrtx-move-up-button,
-#groups input.vrtx-move-down-button,
-#organizers input.vrtx-move-up-button,
-#organizers input.vrtx-move-down-button {
-  position: static;
-  margin-left: 15px;
-  float: left;
-  margin-top: 16px;
-}
+/* JSON-boxes - explicit settings */
 
 .vrtx-json #main-content .vrtx-json-element,
 .vrtx-json #contact-supervisor-box .vrtx-json-element,
 .vrtx-json #additional-content .vrtx-json-element,
 .vrtx-json #featured-items .vrtx-json-element {
-  width: 80%;
-  min-width: 500px;
-  padding: 10px 130px 10px 10px;
-  border: 1px solid #aaa;
-  position: relative;
-  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #D8D8D8;
+  background-color: #eee;
 }
 
-.vrtx-json #main-content .vrtx-json-element input.vrtx-remove-button,
-.vrtx-json #contact-supervisor-box .vrtx-json-element input.vrtx-remove-button,
-.vrtx-json #additional-content .vrtx-json-element input.vrtx-remove-button,
-.vrtx-json #featured-items .vrtx-json-element input.vrtx-remove-button {
+.vrtx-json #main-content .vrtx-json-element .vrtx-remove-button,
+.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-remove-button,
+.vrtx-json #additional-content .vrtx-json-element .vrtx-remove-button,
+.vrtx-json #featured-items .vrtx-json-element .vrtx-remove-button {
   position: absolute;
   margin-top: 0;
-  right: 10px;
-  top: 200px;
-  float: none;
-  width:70px;
-}
-
-.vrtx-json #main-content .header,
-.vrtx-json #contact-supervisor-box .header,
-.vrtx-json #additional-content .header,
-.vrtx-json #featured-items  .header {
-  padding-bottom:10px !important;
-}
-
-.vrtx-json .vrtx-json-element div.vrtx-string.featuredWebaddress {
-  clear: none;
-}
-
-/* STOP JSON and multiple fields */
-
-/* START Set explisit widths and heights */
-
-.vrtx-simple-html {
-  width: 500px;
-}
-
-.vrtx-simple-html textarea,
-.vrtx-simple-html .cke_contents {
-  height: 22.5ex !important;
-  width: 500px;
-}
-
-.vrtx-simple-html iframe {
-  height: 300px;
-}
-
-.vrtx-simple-html-small textarea,
-.vrtx-simple-html-small .cke_contents {
-  height: 12.5ex !important;
-  width: 350px;
-}
-
-.vrtx-simple-html-small {
-  width: 350px;
-}
-
-.vrtx-simple-html-small iframe {
-  height: 95px;
-}
-
-.vrtx-html {
-  width: 98% !important;
-}
-
-.vrtx-image-ref img {
-  max-height: 150px;
-}
-
-.vrtx-string.title,
-.vrtx-string.name,
-.vrtx-string.status-ongoing {
-  width: 98% !important; /* catch floating vertical box in IE7 */
-}
-
-.vrtx-string.title #title {
-  width: 496px;
-}
-
-#media-ref {
-  width: 370px;
-}
-
-.introduction {
-  padding-right: 15px;
-}
-
-.selectedPublications,
-.additional-content,
-.urlToEmployeesList,
-#participants .vrtx-json-element,
-#projects .vrtx-json-element,
-#rssFeeds .vrtx-json-element,
-#groups .vrtx-json-element,
-#organizers .vrtx-json-element,
-#supervisors .vrtx-json-element {
-  width: 98% !important;
-}
-
-.relatedContent .related-content label, /* article */
-.contactInformation .visitingAddress { /* person */
-  display: none !important;
-}
-
-#participants .vrtx-string,
-#projects .vrtx-string,
-#rssFeeds .vrtx-string,
-#groups .vrtx-string,
-#organizers .vrtx-string,
-#supervisors .vrtx-string {
-  clear: none;
-  padding-bottom: 0;
-  width:auto;
-}
-
-.fieldset#box-list-main,
-.fieldset#box-list-main div.vrtx-json-element,
-.fieldset#box-list-side,
-.fieldset#box-list-side div.vrtx-json-element {
-  width: 900px;
-}
-
-#contact-supervisor-box {
-  max-width: 750px;	
-}
-
-.vrtx-json #main-content .boxType input,
-.vrtx-json #addictional-content .boxType input {
-  width: 160px;	
-}
-
-/* STOP Set explisit widths and heights */
-
-.submit {
-  clear: left;
-  display: block;
-}
-
-h2.vrtx-title {
-  clear: left;
-  float: left;
-  overflow: hidden;
-}
-
-#projects .header {
-  font-size: 1em;	
-}
-
-.vrtx-json #additional-content .vrtx-string,
-.vrtx-json #main-content .vrtx-string,
-.vrtx-json #contact-supervisor-box .vrtx-string,
-.vrtx-json #additional-content .vrtx-resource-ref,
-.vrtx-json #main-content .vrtx-resource-ref,
-.vrtx-json #contact-supervisor-box .vrtx-resource-ref  {
-  clear: none;
-}
-
-/* IE7 fix */
-.vrtx-json #main-content .vrtx-json-element .vrtx-html,
-.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-html,
-.vrtx-json #additional-content .vrtx-json-element .vrtx-html,
-.vrtx-json #featured-items .vrtx-json-element .vrtx-html {
+  right: 0px;
+  top: 50%;
   float: none;
 }
 
-.vrtx-json #main-content .vrtx-json-element .vrtx-html > div,
-.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-html > div,
-.vrtx-json #additional-content .vrtx-json-element .vrtx-html > div,
-.vrtx-json #featured-items .vrtx-json-element .vrtx-html > div {
-  padding-bottom: 10px;	
-}
-
-.vrtx-grouped-horizontal .vrtx-string input,
-input.date, input.hours, input.minutes {	
-  float: none;	
-}
-
-/* START Introduction image edit (like the old one) */
-
-.introImageAndCaption {
-  margin-bottom: 20px;
-}
-
-.introImageAndCaption * > label {
-  font-size: 1em !important;
-}
-
-.introImageAndCaption .vrtx-image-ref-label label {
-  display: block;
-  padding-bottom: 10px;
-}
-
-.introImageAndCaption .header {
-  display: none;
-}
-
-.introImageAndCaption .caption {
+.vrtx-json #main-content .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json #additional-content .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json #featured-items .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json #main-content .vrtx-json-element .vrtx-move-down-button,
+.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-down-button,
+.vrtx-json #additional-content .vrtx-json-element .vrtx-move-down-button,
+.vrtx-json #featured-items .vrtx-json-element .vrtx-move-down-button {
   position: absolute;
-  top: 65px;
-  left: 0px;
+  right: 0px;
+  margin-top: 0;
 }
 
-.introImageAndCaption div.vrtx-image-ref-browse {
-  float: left;
+.vrtx-json #main-content .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json #additional-content .vrtx-json-element .vrtx-move-up-button,
+.vrtx-json #featured-items .vrtx-json-element .vrtx-move-up-button {
+  top: 10px;
 }
 
-.introImageAndCaption div.vrtx-image-ref-browse input#picture {
-  width: 200px;
+.vrtx-json #main-content .vrtx-json-element .vrtx-move-down-button,
+.vrtx-json #contact-supervisor-box .vrtx-json-element .vrtx-move-down-button,
+.vrtx-json #additional-content .vrtx-json-element .vrtx-move-down-button,
+.vrtx-json #featured-items .vrtx-json-element .vrtx-move-down-button {
+  bottom: 10px;
 }
 
-.introImageAndCaption div#picture\.preview {
-  margin: 0 0 0 370px;
-  height: 150px;
-  /* same height as (label, input + image-caption) to avoid 
-   * absolute positioned image-caption to overflow into below fields */
+.vrtx-json .vrtx-json-element .vrtx-html {
+  width: 600px;
 }
 
-.introImageAndCaption div#picture\.preview img {
-  padding: 0;
+.vrtx-json .vrtx-json-element .vrtx-html iframe {
+  width: 576px;
 }
 
-/* STOP Introduction image edit (like the old one) */
+/* ^ JSON-boxes - explicit settings */
 
-/* STOP forms */
-
-.submit-extra-buttons {
-    position:absolute;
-    top: 5px;
-    text-align:right;
-    height:0;
-    right: 12px;
+.vrtx-grouped-horizontal:after,
+.vrtx-grouped-vertical:after,
+.vrtx-json:after,
+.vrtx-json .fieldset:after,
+.vrtx-json .vrtx-json-element:after {
+  clear: both;
+  content: ".";
+  display: block;
+  height: 0;
+  visibility: hidden;
 }
 
-/* START CKEditor */
-
-span.cke_skin_kama {
-  padding: 0px !important;
-}
-
-/* STOP CKEditor */
+/* ^ Vortex - Editor - New documenttypes */

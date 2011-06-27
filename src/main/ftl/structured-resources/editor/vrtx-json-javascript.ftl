@@ -53,7 +53,7 @@
   </#list>
     var LIST_OF_JSON_ELEMENTS_LENGTH = LIST_OF_JSON_ELEMENTS.length;
     for (var i = 0; i < LIST_OF_JSON_ELEMENTS_LENGTH; i++) {
-        $("#" + LIST_OF_JSON_ELEMENTS[i].name).append("<input type=\"button\" class=\"vrtx-add-button\" onClick=\"addNewJsonElement(LIST_OF_JSON_ELEMENTS[" + i + "],this)\" value=\"${vrtx.getMsg("editor.add")}\" />");
+        $("#" + LIST_OF_JSON_ELEMENTS[i].name).append("<div class=\"vrtx-button vrtx-add-button\" onClick=\"addNewJsonElement(LIST_OF_JSON_ELEMENTS[" + i + "],this)\"><input type=\"button\" value=\"${vrtx.getMsg("editor.add")}\" /></div>");
       }
     });
     
@@ -100,9 +100,9 @@
          }
      }
 
-     var moveDownButton = "<input type=\"button\" class=\"vrtx-move-down-button\" value=\"&darr; ${vrtx.getMsg("editor.move-down")}\" />";    
-     var moveUpButton = "<input type=\"button\" class=\"vrtx-move-up-button\" value=\"&uarr; ${vrtx.getMsg("editor.move-up")}\" />";
-     var deleteButton = "<input type=\"button\" class=\"vrtx-remove-button\" value=\"${vrtx.getMsg("editor.remove")}\" \/>";
+     var moveDownButton = "<div class=\"vrtx-button vrtx-move-down-button\"><input type=\"button\" value=\"&darr; ${vrtx.getMsg("editor.move-down")}\" /><\/div>";    
+     var moveUpButton = "<div class=\"vrtx-button vrtx-move-up-button\"><input type=\"button\" value=\"&uarr; ${vrtx.getMsg("editor.move-up")}\" /><\/div>";
+     var deleteButton = "<div class=\"vrtx-button vrtx-remove-button\"><input type=\"button\" value=\"${vrtx.getMsg("editor.remove")}\" \/><\/div>";
    	 var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter +"\" />";
      
      var newElementId = "vrtx-json-element-" + j.name + "-" + counter; 
@@ -212,7 +212,6 @@
     }
     htmlTemplate += '<\/select>';
     htmlTemplate +=  '<\/div>';
-    htmlTemplate +=  '<div class=\"tooltip\"><\/div>';
     htmlTemplate +=  '<\/div>';
     
     return htmlTemplate;
@@ -223,10 +222,9 @@
     var classes = "vrtx-string" + " " + elem.name;
     htmlTemplate = '<div class=\"' + classes + '\">';
     htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
-    htmlTemplate += '<div class=\"inputfield\">';
+    htmlTemplate += '<div class=\"inputfield vrtx-textfield\">';
     htmlTemplate += '<input size=\"40\" type=\"text\" name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" />';
     htmlTemplate +=  '<\/div>';
-    htmlTemplate +=  '<div class=\"tooltip\"><\/div>';
     htmlTemplate +=  '<\/div>';
     
     return htmlTemplate;
@@ -269,8 +267,8 @@
     htmlTemplate += '<div>';
     htmlTemplate += '<label for=\"' + inputFieldName+ '\">' + elem.title + '<\/label>';
     htmlTemplate += '<\/div><div>';
-    htmlTemplate += '<input type=\"text\" id=\"' + inputFieldName+ '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage($(this).parent().find(\'input\').attr(\'id\'));\" size=\"30\" \/>';
-    htmlTemplate += '<button type=\"button\" onclick=\"browseServer($(this).parent().find(\'input\').attr(\'id\'), \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
+    htmlTemplate += '<div class=\"vrtx-textfield\"><input type=\"text\" id=\"' + inputFieldName+ '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage(' + inputFieldName + ');\" size=\"30\" \/><\/div>';
+    htmlTemplate += '<div class=\"vrtx-button\"><button type=\"button\" onclick=\"browseServer(' + inputFieldName + ', \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button><\/div>';
     htmlTemplate += '<\/div>';
     htmlTemplate += '<div id=\"' + inputFieldName + '.preview\">';
     htmlTemplate += '<\/div><\/div>';
@@ -285,8 +283,8 @@
     htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
 	htmlTemplate += '<\/div>';
 	htmlTemplate += '<div class=\"vrtx-url-browse\">';
-	htmlTemplate += '<input type=\"text\" name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" value=\"\" size=\"40\" \/>';
-    htmlTemplate += '<button type=\"button\" onclick=\"browseServer($(this).parent().find(\'input\').attr(\'id\'), \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\',\'File\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';	
+	htmlTemplate += '<div class=\"vrtx-textfield\"><input type=\"text\" name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" value=\"\" size=\"40\" \/><\/div>';
+    htmlTemplate += '<div class=\"vrtx-button\"><button type=\"button\" onclick=\"browseServer(' + inputFieldName + ', \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\',\'File\');\"><@vrtx.msg code="editor.browseImages" /><\/button><\/div>';	
     htmlTemplate += '<\/div>';
 	htmlTemplate += '<\/div>';
 	
@@ -297,10 +295,9 @@
     var htmlTemplate = new String();
     htmlTemplate = '<div class=\"vrtx-string date\">';
     htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
-    htmlTemplate += '<div class=\"inputfield\">';
+    htmlTemplate += '<div class=\"inputfield vrtx-textfield\">';
     htmlTemplate += '<input size=\"20\" type=\"text\" name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" value=\"\" class=\"date\" \/>';
     htmlTemplate += '<\/div>';
-    htmlTemplate += '<div class=\"tooltip\"><\/div>';
     htmlTemplate += '<\/div>';
     
     return htmlTemplate;
@@ -311,8 +308,8 @@
     htmlTemplate = '<div class=\"vrtx-media-ref\">';
     htmlTemplate += '<div><label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
     htmlTemplate += '<\/div><div>';
-    htmlTemplate += '<input type=\"text\" id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage($(this).parent().find(\'input\').attr(\'id\'));\" size=\"30\"\/>';
-    htmlTemplate += '<button type=\"button\" onclick=\"browseServer($(this).parent().find(\'input\').attr(\'id\'), \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\', \'Media\');\"><@vrtx.msg code="editor.browseImages" /><\/button>';
+    htmlTemplate += '<div class=\"vrtx-textfield\"><input type=\"text\" id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage(' + inputFieldName + ');\" size=\"30\"\/><\/div>';
+    htmlTemplate += '<div class=\"vrtx-button\"><button type=\"button\" onclick=\"browseServer(' + inputFieldName + ', \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\', \'Media\');\"><@vrtx.msg code="editor.browseImages" /><\/button><\/div>';
     htmlTemplate += '<\/div><\/div>'
     
     return htmlTemplate;

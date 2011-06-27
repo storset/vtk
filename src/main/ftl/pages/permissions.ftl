@@ -27,7 +27,6 @@
     <script type="text/javascript">
       $(document).ready(function() {
         interceptEnterKeyAndReroute("input#userNames", "input.addUserButton");
-        toggleConfigCustomPermissions();
         var permissionsAutocompleteParams = {minChars:4, selectFirst:false, width:300, max:30, delay:800};
         permissionsAutocomplete('userNames', 'userNames', permissionsAutocompleteParams);
         splitAutocompleteSuggestion('userNames');
@@ -36,7 +35,7 @@
     </script>
     
   </head>
-  <body>
+  <body id="vrtx-permissions">
 
     <#assign resource = resourceContext.currentResource />
     <#assign defaultHeader = vrtx.getMsg("permissions.header", "Permissions on this resource") />
@@ -54,48 +53,58 @@
       <form action="${aclInfo.aclEditURLs.inheritance?html}" method="post"
             id="permissions.toggleInheritance" class="vrtx-admin-button">
         <#if resourceContext.currentResource.inheritedAcl>
-          <p>
+          <div id="permissions-inheritance">
           <@vrtx.msg code="permissions.isInherited" default="Inherited permissions" />
           <#if aclInfo.aclEditURLs.inheritance?exists>
-            <input type="submit" id="permissions.toggleInheritance.submit"
-                   name="confirmation" value="<@vrtx.msg code="permissions.setCustom" default="edit" />" />
+            &nbsp;<div class="vrtx-button-small">
+              <input type="submit" id="permissions.toggleInheritance.submit"
+                     name="confirmation" value="<@vrtx.msg code="permissions.setCustom" default="edit" />" />
+            </div>
           </#if>
-          </p>
+          </div>
         <#else>
           <#assign warning =
                    vrtx.getMsg("permissions.removeAcl.warning", 
                    "Are you sure you want to set inherited permissions? This cannot be undone.",
                    [resource.name]) />
-          <p>         
+          <div id="permissions-inheritance">         
           <@vrtx.msg code="permissions.notInherited.${resource.resourceType}" default="${defaultNotInherited}" />
           <#if aclInfo.aclEditURLs.inheritance?exists>
-            <input type="submit"
-                   onclick="return confirm('${warning?html?js_string}');" 
-                   id="permissions.toggleInheritance.submit"
-                   name="confirmation" value="<@vrtx.msg code="permissions.setInherited" default="edit" />" />
-          </p>
+            &nbsp;<div class="vrtx-button-small">
+              <input type="submit"
+                     onclick="return confirm('${warning?html?js_string}');" 
+                     id="permissions.toggleInheritance.submit"
+                     name="confirmation" value="<@vrtx.msg code="permissions.setInherited" default="edit" />" />
+            </div>
+          </div>
           </#if>
         </#if>
       </form>
       <#elseif resourceContext.currentResource.inheritedAcl>
-      	<p>
+      	<div id="permissions-inheritance">
      		<@vrtx.msg code="permissions.isInherited" default="Inherited permissions" />
-     	</p>  
+     	</div>  
       <#elseif !resourceContext.currentResource.inheritedAcl>
-      	<p>
+      	<div id="permissions-inheritance">
       		<@vrtx.msg code="permissions.notInherited.${resource.resourceType}" default="${defaultNotInherited}" />  
-      	</p>
+      	</div>
       </#if>	
-	
-      <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.read" default="Read" /></#assign>
-      <@permissions.editOrDisplayPrivilege privilegeName="read" privilegeHeading=privilegeHeading />
-
-      <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.read-write" default="Read and Write" /></#assign>
-      <@permissions.editOrDisplayPrivilege privilegeName="read-write" privilegeHeading=privilegeHeading />
-
-      <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.all" default="Admin - all privileges" /></#assign>
-      <@permissions.editOrDisplayPrivilege privilegeName="all" privilegeHeading=privilegeHeading />
-     
+      
+      <div id="permissions-read-write-admin">
+        <div class="permissions-read-wrapper">
+          <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.read" default="Read" /></#assign>
+          <@permissions.editOrDisplayPrivilege privilegeName="read" privilegeHeading=privilegeHeading />
+        </div>
+        <div class="permissions-read-write-wrapper">
+          <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.read-write" default="Read and Write" /></#assign>
+          <@permissions.editOrDisplayPrivilege privilegeName="read-write" privilegeHeading=privilegeHeading />
+        </div>
+        <div class="permissions-all-wrapper">
+          <#assign privilegeHeading><@vrtx.msg code="permissions.privilege.all" default="Admin - all privileges" /></#assign>
+          <@permissions.editOrDisplayPrivilege privilegeName="all" privilegeHeading=privilegeHeading /> 
+        </div>
+      </div>
+      
       <#assign groupHeading><@vrtx.msg code="permissions.advanced" default="Advanced permissions" /></#assign>
 
       <#assign commentHeading><@vrtx.msg code="permissions.privilege.add-comment" default="Add comments" /></#assign>

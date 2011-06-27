@@ -3,19 +3,20 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
   <#if createDocumentForm?exists && !createDocumentForm.done>
-  <#-- Need this div coz of IEs sucky boxmodel implementation -->
-  <div style="clear:both;height:1px;visibility:hidden;"></div>
-  <form class="createDocumentService vrtx-admin-form"  name="createDocumentForm" action="${createDocumentForm.submitURL?html}"
+  <div class="expandedForm vrtx-admin-form">
+  <form name="createDocumentService" action="${createDocumentForm.submitURL?html}"
         method="post" accept-charset="utf-8">
     <h3><@vrtx.msg code="actions.createDocumentService" default="Create Document"/>:</h3>
     <#compress>
     <@spring.bind "createDocumentForm" + ".sourceURI" /> 
       <#if spring.status.errorMessages?size &gt; 0>
-        <ul class="errors">
-          <#list spring.status.errorMessages as error> 
-            <li>${error}</li> 
-          </#list>
-		</ul>
+        <div class="errorContainer">
+          <ul class="errors">
+            <#list spring.status.errorMessages as error> 
+              <li>${error}</li> 
+            </#list>
+		  </ul>
+		</div>
       </#if>
       <#assign newDocName = "">
       <#-- Set the name of the new file to whatever the user already has supplied-->
@@ -34,18 +35,27 @@
       </#compress>
       <@spring.bind "createDocumentForm" + ".name" /> 
       <#if spring.status.errorMessages?size &gt; 0>
-        <ul class="errors">
-          <#list spring.status.errorMessages as error> 
-            <li>${error}</li> 
-          </#list>
-        </ul>
+        <div class="errorContainer">
+          <ul class="errors">
+            <#list spring.status.errorMessages as error> 
+              <li>${error}</li> 
+            </#list>
+          </ul>
+        </div>
       </#if>
-    <input type="text" name="${spring.status.expression}" value="${newDocName}">
+    <div class="vrtx-textfield">
+      <input type="text" name="${spring.status.expression}" value="${newDocName}">
+    </div>
     <div id="submitButtons">
-      <input type="submit" name="save" value="<@vrtx.msg code="actions.createDocumentService.save" default="Create"/>">
-      <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createDocumentService.cancel" default="Cancel"/>"/>
+      <div class="vrtx-button">
+        <input type="submit" name="save" value="<@vrtx.msg code="actions.createDocumentService.save" default="Create"/>">
+      </div>
+      <div class="vrtx-button">
+        <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createDocumentService.cancel" default="Cancel"/>"/>
+      </div>
     </div>
   </form>
+  </div>
   </#if>
 <#recover>
 ${.error}

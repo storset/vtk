@@ -240,7 +240,6 @@
   </table>
 </#macro>
 
-
 <#--
  * defaultPropertyDisplay
  *
@@ -252,8 +251,8 @@
  * @editURL (optional) the edit (possibly toggle) URL of the property
  * 
 -->
-<#macro defaultPropertyDisplay name value prefix=false editURL="">
-  <tr>
+<#macro defaultPropertyDisplay propName name value prefix=false editURL="">
+  <tr class="prop-${propName}">
     <td class="key">
       ${name}:
     </td>
@@ -277,12 +276,12 @@
  * table row using <tr>, <td> and <#nested />.
  * 
 -->
-<#macro defaultEditWrapper>
-  <tr>
-    <td colspan="2" class="expandedForm">
+<#macro defaultEditWrapper item>
+  <tr class="expandedForm expandedForm-prop-${item.definition.name} ${item.definition.name}">
+    <td colspan="2">
       <#nested /> 
     </td>
-  </tr>
+  <tr>
 </#macro>
 
 
@@ -432,7 +431,7 @@
   </#local>
 
   <#local macroCall = resolveMacro(displayMacro) />
-  <@macroCall name=name prefix=prefix value=value editURL=editURL />
+  <@macroCall propName=item.definition.name name=name prefix=prefix value=value editURL=editURL />
 </#macro>
 
 
@@ -471,7 +470,7 @@
     <#local formErrorsWrapper = resolveMacro(formErrorsWrapperMacro) />
     <#local formErrorWrapper = resolveMacro(formErrorWrapperMacro) />
 
-    <@editWrapper>
+    <@editWrapper item>
     <form id="propertyForm" action="${form.submitURL?html}" method="POST">
       <@formWrapper item>
         <#-- Display radio buttons for a value set of 2: -->
@@ -545,7 +544,9 @@
             <#if inputSize &gt; 99>
               <textarea name="value" rows="5" cols="60">${value}</textarea>
             <#else>
-              <input type="text" id="value" name="value" value="${value}" size=${inputSize}>
+              <div class="vrtx-textfield">
+                <input type="text" id="value" name="value" value="${value}" size=${inputSize}>
+              </div>
               <#if item.format?exists>(${item.format})</#if>
             </#if>
             <#if form.hierarchicalHelpUrl?exists>
@@ -574,10 +575,14 @@
       </#if>
 
       <@formSubmitWrapper item>
-      <input type="submit" name="save"
-             value="<@vrtx.msg code="propertyEditor.save" default="Save"/>">
-      <input type="submit" name="cancelAction"
-             value="<@vrtx.msg code="propertyEditor.cancel" default="Cancel"/>">
+      <div class="vrtx-button">
+        <input type="submit" name="save"
+               value="<@vrtx.msg code="propertyEditor.save" default="Save"/>">
+      </div>
+      <div class="vrtx-button">
+        <input type="submit" name="cancelAction"
+               value="<@vrtx.msg code="propertyEditor.cancel" default="Cancel"/>">
+      </div>
       </@formSubmitWrapper>
       </@formWrapper>
     </form>
@@ -632,9 +637,9 @@
            code="${msgPrefix}.toggle.unset" default="${defaultToggle}" />
       </#if>
     </#local>
-     ( <a href="${item.toggleURL?html}">${label}</a> )
+     &nbsp;<a class="vrtx-button-small" href="${item.toggleURL?html}"><span>${label}</span></a>
   <#elseif item.editURL?exists>
-     ( <a href="${item.editURL?html}"><@vrtx.msg code="propertyEditor.edit" default="edit" /></a> )
+     &nbsp;<a class="vrtx-button-small" href="${item.editURL?html}"><span><@vrtx.msg code="propertyEditor.edit" default="edit" /></span></a>
   </#if>
 </#macro>
 

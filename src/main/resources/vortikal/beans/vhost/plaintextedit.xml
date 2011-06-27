@@ -132,8 +132,7 @@
   <bean id="plainEditCSSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-        <value>${themeBaseURL}/basic.css</value>
-        <value>${themeBaseURL}/tabs.css</value>
+        <value>${themeBaseURL}/default.css</value>
         <value>${themeBaseURL}/plain-edit.css</value>
         <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.css</value>
       </list>

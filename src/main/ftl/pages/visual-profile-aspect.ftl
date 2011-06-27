@@ -35,7 +35,9 @@
 
       <#elseif element.type == 'string'>
         ${element.label?html}:
-        <input type="text" name="${element.identifier?html}" value="${element.value?default('')?html}" />
+        <div class="vrtx-textfield">
+          <input type="text" name="${element.identifier?html}" value="${element.value?default('')?html}" />
+        </div>
 
       <#elseif element.type == 'enum'>
           ${element.label?html}: 
@@ -55,8 +57,15 @@
       </#if>
       </div>
     </#list>
-    <input type="submit" id="saveAction" name="saveAction" onclick="checkSubmit()" value="<@vrtx.msg code="editor.save" default="Save"/>" />
-    <input type="submit" id="cancelAction" name="cancelAction" value="<@vrtx.msg code="editor.cancel" default="Cancel"/>">
+    <div class="submitButtons">
+      <div class="vrtx-button">
+        <input type="submit" id="saveAction" name="saveAction" onclick="checkSubmit()" value="<@vrtx.msg code="editor.save" default="Save"/>" />
+      </div>
+      <div class="vrtx-button">
+        <input type="submit" id="cancelAction" name="cancelAction" value="<@vrtx.msg code="editor.cancel" default="Cancel"/>">
+      </div>
+    </div>
+    
   </form>
   </div>
   </#if>

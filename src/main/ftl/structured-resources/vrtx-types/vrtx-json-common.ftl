@@ -180,7 +180,9 @@
         </#list>
         <#assign arrayOfIds = arrayOfIds + ")" />
         	<input type="hidden" class="id" value="${counter}" />
-        <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" />
+        <div class="vrtx-button vrtx-remove-button">
+          <input type="button" value="${vrtx.getMsg("editor.remove")}" />
+        </div>
         <script type="text/javascript">
        	     $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-remove-button").click(
 			 	function(){
@@ -213,7 +215,9 @@
         </#list>
         <#assign arrayOfIds = arrayOfIds + ")" />
        	<input type="hidden" class="id" value="${counter}" />
-        <input type="button" class="vrtx-remove-button" value="${vrtx.getMsg("editor.remove")}" />
+       	<div class="vrtx-button vrtx-remove-button">
+          <input type="button" value="${vrtx.getMsg("editor.remove")}" />
+        </div>
        	<script type="text/javascript">
        	     $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-remove-button").click(
 			 	function(){
@@ -222,8 +226,9 @@
     		 );
        	</script>
         <#if (counter > 0) >
-       
-          <input type="button" class="vrtx-move-up-button" value="&uarr; ${vrtx.getMsg("editor.move-up")}"  /> 
+          <div class="vrtx-button vrtx-move-up-button">
+            <input type="button" value="&uarr; ${vrtx.getMsg("editor.move-up")}"  />
+          </div>
        	   <script type="text/javascript">
        	        $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-up-button").click(
     				function(){
@@ -233,8 +238,9 @@
        	   </script>
         </#if>
         <#if map_has_next >
-          
-          <input type="button"  class="vrtx-move-down-button" value="&darr; ${vrtx.getMsg("editor.move-down")}"  />
+          <div class="vrtx-button vrtx-move-down-button">
+            <input type="button" value="&darr; ${vrtx.getMsg("editor.move-down")}"  />
+          </div>
           <script type="text/javascript">       	
           	$("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-down-button").click(
 	     		function(){

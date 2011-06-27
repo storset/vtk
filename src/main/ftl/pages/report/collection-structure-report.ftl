@@ -48,7 +48,7 @@
      // -->
   </script>
   </head>
-  <body>
+  <body id="vrtx-report">
   <div class="resourceInfo">
     <div class="vrtx-report-nav">
   	  <div class="back">

@@ -1,4 +1,3 @@
-
 function visualizeBrokenLinks(options) {
     if (!options) throw "Missing argument";
     if (!options.validationURL) throw "Missing 'validationURL' field in argument";

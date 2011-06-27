@@ -12,10 +12,11 @@
 
     <p class="previewUnavailable">
       <@vrtx.msg code="preview.unavailable" default="The content cannot be previewed"/>
-    </p>
-    <p class="errorMessage">
-      <@vrtx.msg code="xslt.errorMessage" default="Error message" />: 
-      ${error.exception.cause.message}>
+    
+      <span class="errorMessage">
+        <@vrtx.msg code="xslt.errorMessage" default="Error message" />: 
+        ${error.exception.cause.message}>
+      </span>
     </p>
   </div>
   </body>

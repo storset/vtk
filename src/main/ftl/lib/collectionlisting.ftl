@@ -19,7 +19,6 @@
 
 <#import "vortikal.ftl" as vrtx />
 
-
 <#macro listCollection withForm=false action="" submitActions={}>
 
 <#if !resourceContext.currentResource.collection>
@@ -36,11 +35,12 @@
 </#if>
 
 <table id="vrtx-directoryListing" class="directoryListing">
-  <tr class="directoryListingHeader">
+  <thead>
+   <tr>
    <#list collectionListing.childInfoItems as item>
       <#if collectionListing.sortedBy = item>
         <#if collectionListing.invertedSort>
-          <th class="invertedSortColumn item">
+          <th class="invertedSortColumn ${item}">
         <#else>
           <th class="sortColumn ${item}">
         </#if>
@@ -62,6 +62,11 @@
             <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
               <@vrtx.msg code="collectionListing.contentType" default="Content Type"/></a>
             <#break>
+            
+          <#case "resource-type">
+            <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
+              <@vrtx.msg code="collectionListing.resourceType" default="Resource Type"/></a>
+            <#break>
 
           <#case "owner">
             <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
@@ -72,6 +77,12 @@
             <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
               <@vrtx.msg code="collectionListing.permissions" default="Permissions"/></a>
             <#break>
+            
+          <#-- TODO:
+          <#case "published-date">
+            <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
+              <@vrtx.msg code="publish.permission.state" default="Status"/></a>
+            <#break> -->
 
           <#case "content-length">
             <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
@@ -80,11 +91,14 @@
 
           <#case "name">
             <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
-              <@vrtx.msg code="collectionListing.${item}" default="${item?cap_first}"/></a>
-               <#if withForm>
+              <@vrtx.msg code="collectionListing.${item}" default="${item?cap_first}"/></a> 
+            <#break>
+            
+         <#case "title">
+            <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
+              <@vrtx.msg code="collectionListing.resourceTitle" default="Title"/></a>
+              <#if withForm>
                  </th><th class="checkbox">
-                 <a href="#" class="vrtx-check-all" > <@vrtx.msg code="collectionListing.all" default="All"/></a> | 
-                 <a href="#" class="vrtx-uncheck-all"> <@vrtx.msg code="collectionListing.none" default="None"/></a>
                </#if>
             <#break>
 
@@ -99,18 +113,34 @@
       <th>
       </th>
     </#list>
-  </tr>
-  <#if collectionListing.children?size < 1>
+   </tr>
+  </thead>
+  <tbody>
+  <#if (collectionListing.children?size < 1)>
     <tr>
-      <td style="height:35px;text-align:center;" class="emptycollection" colspan="7">
+      <td colspan="7">
         <@vrtx.msg code="collectionListing.empty" default="This collection is empty"/>.
       </td>
     </tr>
   </#if>
 
   <#assign rowType = "odd">
+  <#assign collectionSize = collectionListing.children?size />
+  
   <#list collectionListing.children as child>
-  <tr class="${rowType} ${child.resourceType}">
+  
+  <#assign firstOrLast = ""  />
+  <#if (child_index == 0)>
+    <#assign firstOrLast = " first" />
+  <#elseif (child_index == (collectionSize - 1))>    
+    <#assign firstOrLast = " last" />     
+  </#if>
+  
+  <#if child.collection>
+    <tr class="${rowType} <@vrtx.iconResolver child.resourceType child.contentType /> true${firstOrLast}">  
+  <#else>
+    <tr class="${rowType} <@vrtx.iconResolver child.resourceType child.contentType />${firstOrLast}">
+  </#if>
    <#list collectionListing.childInfoItems as item>
       <#assign class = item >
       <#if item = "locked" && child.lock?exists>
@@ -125,23 +155,27 @@
       </#if>
       <td class="${class}">
         <#switch item>
-
-          <#case "name">
+        
+           <#case "title">
             <#if collectionListing.browsingLinks[child_index]?exists>
               <#local resourceTypeName = vrtx.resourceTypeName(child) />
               <a href="${collectionListing.browsingLinks[child_index]?html}" title="${resourceTypeName}">
-                <span class="authorizedListedResource">${child.name}</span>
+                <span class="authorizedListedResource">${child.title}</span>
               </a>
               <#if withForm>
                </td><td class="checkbox" align="center"><input name="${child.URI?html}" type="checkbox"/>
               </#if>
             <#else>
-              <span class="unauthorizedListedResource">${child.name}</span>
+              <span class="unauthorizedListedResource">${child.title}</span>
               <#if withForm>
                 </td><td class="checkbox" align="center">&nbsp;
               </#if>
 
             </#if>
+            <#break>
+
+          <#case "name">
+            ${child.name}
             <#break>
 
           <#case "content-length">
@@ -159,6 +193,10 @@
               ${child.contentLength} B
             </#if>
             <#break>
+            
+          <#case "resource-type">
+            ${vrtx.getMsg("resourcetype.name.${child.resourceType}")}
+          <#break>
 
           <#case "last-modified">
             <#--${child.lastModified?string("yyyy-MM-dd HH:mm:ss")}-->
@@ -184,11 +222,21 @@
             
           <#case "permissions">
              <#if restricted != "restricted" >
-               ${vrtx.getMsg("collectionListing.permissions.readAll")}
+               <span class="allowed-for-all">${vrtx.getMsg("collectionListing.permissions.readAll")}</span>
              <#else>
-               ${vrtx.getMsg("collectionListing.permissions.restricted")}
+               <span class="restricted">${vrtx.getMsg("collectionListing.permissions.restricted")}</span>
              </#if>
             <#break>
+            
+         <#-- TODO:
+         <#case "published-date">
+             <#if published-date?has_content >
+               ${vrtx.getMsg("publish.permission.published")}
+             <#else>
+               ${vrtx.getMsg("publish.permission.unpublished")}
+             </#if>
+            <#break> -->
+            
         </#switch>
       </td>
     </#list>
@@ -218,7 +266,13 @@
     <#assign rowType = "even">
   </#if>
   </#list>
+ </tbody>
 </table>
+ <div id="collectionListing.checkUncheckAll">
+  Markér:&nbsp;
+  <a href="javascript:void(0);" class="vrtx-check-all" > <@vrtx.msg code="collectionListing.all" default="All"/></a>,&nbsp;
+  <a href="javascript:void(0);" class="vrtx-uncheck-all"> <@vrtx.msg code="collectionListing.none" default="none"/></a>
+ </div>
 
 <#if withForm>
   <div id="collectionListing.submit">

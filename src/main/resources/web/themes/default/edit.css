@@ -1,5 +1,6 @@
 /* Vortex overriding section */
 
+/*
 div.activeTab { 
 	background-color: #dddddd;
 	border-bottom: solid 2px; 
@@ -16,8 +17,9 @@ div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
 	height:expression(
 	    this.scrollHeight < 500? "500px" : "auto" ); 
 }
-
+*/
 div.footer {display: none;} /* Removing version & locale selection */
+
 
 /* Headings */
 

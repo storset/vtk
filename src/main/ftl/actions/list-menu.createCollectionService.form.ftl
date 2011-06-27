@@ -3,20 +3,20 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
   <#if createCollectionForm?exists && !createCollectionForm.done>
-  <#-- Need this div coz of IEs sucky boxmodel implementation -->
-  <div style="clear:both;height:1px;visibility:hidden;"></div>
-  
-  <form name="createcollection" class="vrtx-admin-form" action="${createCollectionForm.submitURL?html}" method="post">
+  <div class="expandedForm vrtx-admin-form">
+  <form name="createCollectionService" action="${createCollectionForm.submitURL?html}" method="post">
   <h3 class="nonul"><@vrtx.msg code="actions.createCollectionService" default="Create collection"/>:</h3>
   
     <@spring.bind "createCollectionForm.name" /> 
     <@spring.bind "createCollectionForm" + ".sourceURI" /> 
       <#if spring.status.errorMessages?size &gt; 0>
-        <ul class="errors">
-          <#list spring.status.errorMessages as error> 
-            <li>${error}</li> 
-          </#list>
-	    </ul>
+        <div class="errorContainer">
+          <ul class="errors">
+            <#list spring.status.errorMessages as error> 
+              <li>${error}</li> 
+            </#list>
+	      </ul>
+	    </div>
       </#if>
       
       <#if templates?exists && templates?size &gt; 0>
@@ -26,16 +26,24 @@
       </#if>
            <@spring.bind "createCollectionForm" + ".name" /> 
         <#if spring.status.errorMessages?size &gt; 0>
-        <ul class="errors">
-          <#list spring.status.errorMessages as error> 
-            <li>${error}</li> 
-          </#list>
-        </ul>
+        <div class="errorContainer">
+          <ul class="errors">
+            <#list spring.status.errorMessages as error> 
+              <li>${error}</li> 
+            </#list>
+          </ul>
+        </div>
       </#if>
-    <input type="text" name="name">
+    <div class="vrtx-textfield">
+      <input type="text" name="name">
+    </div>
     <div id="submitButtons">
-      <input type="submit" name="save" value="<@vrtx.msg code="actions.createCollectionService.save" default="Create"/>">
-      <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createCollectionService.cancel" default="Cancel"/>">
+      <div class="vrtx-button">
+        <input type="submit" name="save" value="<@vrtx.msg code="actions.createCollectionService.save" default="Create"/>">
+      </div>
+      <div class="vrtx-button">
+        <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createCollectionService.cancel" default="Cancel"/>">
+      <div>
     </div>
   </form>
   
@@ -44,6 +52,7 @@
   document.createcollection.name.focus();
   // -->
   </script>
+  </div>
   </#if>
 
 <#recover>

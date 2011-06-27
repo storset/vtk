@@ -17,7 +17,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <#-- Add table-tr hover support to IE6 browsers -->
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/ie6-table-tr-hover.js"></script>
   <title>Manage: collection listing</title>
 </head>
 <body id="vrtx-manage-collectionlisting">

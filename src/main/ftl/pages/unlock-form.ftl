@@ -15,15 +15,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <title>${vrtx.getMsg("unlockwarning.title")} '${resourceContext.currentResource.name}'</title>
-<style type="text/css">
-  #vrtx-unlock-buttons {
-    clear: left;
-    padding: 0.5em 0;
-    border-top: 1px solid #777;
-    border-bottom: 1px solid #777;
-    margin: 1em 0;
-  }
-</style>
 </head>
 
 
@@ -45,13 +36,17 @@
       <p>${vrtx.getMsg("unlockwarning.modified")}: <strong>${resourceContext.currentResource.lastModified?datetime?html}</strong>.</p>
       <p>${vrtx.getMsg("unlockwarning.explanation")}</p>
     </#if>
-    <div id="vrtx-unlock-buttons">
-      <button tabindex="1" type="submit" name="unlock" value="Unlock" >
-        ${vrtx.getMsg("unlockwarning.unlock")}
-      </button>
-      <button tabindex="2" type="submit" name="cancel" id="cancel" value="Cancel" >
-        ${vrtx.getMsg("unlockwarning.cancel")}
-      </button>
+    <div id="vrtx-unlock-buttons" class="submitButtons">
+      <div class="vrtx-button">
+        <button tabindex="1" type="submit" name="unlock" value="Unlock" >
+          ${vrtx.getMsg("unlockwarning.unlock")}
+        </button>
+      </div>
+      <div class="vrtx-button">
+        <button tabindex="2" type="submit" name="cancel" id="cancel" value="Cancel" >
+          ${vrtx.getMsg("unlockwarning.cancel")}
+        </button>
+      </div>
     </div>
   </form>
 </body>

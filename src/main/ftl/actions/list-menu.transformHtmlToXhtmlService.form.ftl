@@ -3,8 +3,8 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
   <#if command?exists && !command.done>
-
-  <form name="form" class="globalmenu" action="${command.submitURL?html}" method="POST">
+  <div class="globalmenu">
+  <form name="form" action="${command.submitURL?html}" method="POST">
     <h3 class="nonul"><@vrtx.msg code="actions.transformHtmlToXhtmlService"
     default="Make webeditable copy"/>:</h3>
     <@spring.bind "command.name" /> 
@@ -15,10 +15,16 @@
           </#list>
 	</ul>
       </#if>
-    <div><input type="text" size="30" name="${spring.status.expression}" value="${spring.status.value?if_exists}"></div>
+    <div class="vrtx-textfield">
+      <input type="text" size="30" name="${spring.status.expression}" value="${spring.status.value?if_exists}">
+    </div>
     <div id="submitButtons">
-      <input type="submit" name="save" value="<@vrtx.msg code="actions.transformHtmlToXhtmlService.save" default="Create"/>">
-      <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.transformHtmlToXhtmlService.cancel" default="Cancel"/>">
+      <div class="vrtx-button">
+        <input type="submit" name="save" value="<@vrtx.msg code="actions.transformHtmlToXhtmlService.save" default="Create"/>">
+      </div>
+      <div class="vrtx-button">
+        <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.transformHtmlToXhtmlService.cancel" default="Cancel"/>">
+      </div>
     </div>
   </form>
   <script type="text/javascript">
@@ -26,7 +32,7 @@
   document.form.name.focus();
   // -->
   </script>
-
+  </div>
   </#if>
 <#recover>
 ${.error}

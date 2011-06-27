@@ -4,11 +4,17 @@
 
 <script type="text/javascript">
 <!--          
- if (is_ie5up && is_win) 
- {
- document.write('(&nbsp;<a href="${item.url?html}" target="WindowsExplorer" folder="${item.url?html}" style="behavior:url(#default#AnchorClick)">${titleMsg}<\/a>&nbsp;)&nbsp;');
+
+ if (vrtxAdmin.isIE5OrHigher && vrtxAdmin.isWin) {
+   document.write('<a href="${item.url?html}" target="WindowsExplorer" folder="${item.url?html}" style="behavior:url(#default#AnchorClick)">${titleMsg}<\/a>');
+ } else {
+   var li = $("li.windowsWebdavExplorerService");
+   if(li.prev().is("li")) {
+     li.prev().not(".last").addClass("last");
+     li.remove();
+   } else {
+     li.parent().remove();
+   }
  }
  // -->
 </script>
-<!-- Need this next span to avoid a strange Firefox 1.5 CSS regression -->
-<span style="visibility:hidden">foo</span>

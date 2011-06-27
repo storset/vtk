@@ -249,16 +249,28 @@
     <property name="category" value="lockUnlockAction" />
   </bean>
   
-    <bean id="readPermissionsProvider" 
+  <bean id="readPermissionsProvider" 
     class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
     <constructor-arg ref="readPermissionFactory" />
     <constructor-arg value="readPermissions" />
   </bean>
   
-    <bean id="readPermissionFactory"
+  <bean id="readPermissionFactory"
     class="org.vortikal.context.CategoryResolvingFactoryBean">
     <property name="clazz" value="org.vortikal.web.service.Service" />
     <property name="category" value="readPermission" />
+  </bean>
+  
+  <bean id="publishProvider" 
+    class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg ref="publishFactory" />
+    <constructor-arg value="publish" />
+  </bean>
+  
+  <bean id="publishFactory"
+    class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.service.Service" />
+    <property name="category" value="publish" />
   </bean>
 
   <bean id="viewBreadCrumbProvider"

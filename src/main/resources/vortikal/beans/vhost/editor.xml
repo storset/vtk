@@ -300,8 +300,7 @@
   <bean id="editor.editCSSURLs" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-        <value>${themeBaseURL}/basic.css</value>
-        <value>${themeBaseURL}/tabs.css</value>
+        <value>${themeBaseURL}/default.css</value>
         <value>${themeBaseURL}/editor.css</value>
         <value>${webResources.baseURL}/thickbox-modified/thickbox.css</value>
       </list>

@@ -46,12 +46,14 @@ import org.vortikal.security.PrincipalFactory;
 public class ResourceSorter {
 
     public static enum Order {
+        BY_TITLE,
         BY_NAME,
         BY_DATE,
         BY_OWNER,
         BY_LOCKS,
         BY_FILESIZE,
         BY_CONTENT_TYPE,
+        BY_RESOURCE_TYPE,
         BY_PERMISSIONS
     }
 
@@ -59,6 +61,10 @@ public class ResourceSorter {
         Comparator<Resource> comparator = null;
 
         switch (order) {
+        case BY_TITLE:
+            comparator = new ResourceTitleComparator(inverted);
+            break;
+        
         case BY_NAME:
             comparator = new ResourceNameComparator(inverted);
             break;
@@ -82,19 +88,39 @@ public class ResourceSorter {
         case BY_CONTENT_TYPE:
             comparator = new ContentTypeComparator(inverted);
             break;
+            
+        case BY_RESOURCE_TYPE:
+            comparator = new ResourceTypeComparator(inverted);
+            break;
 
         case BY_PERMISSIONS:
             comparator = new PermissionsComparator(inverted);
             break;
 
         default:
-            comparator = new ResourceNameComparator(inverted);
+            comparator = new ResourceTitleComparator(inverted);
             break;
         }
 
         Arrays.sort(resources, comparator);
     }
 
+    private static class ResourceTitleComparator implements Comparator<Resource> {
+        private boolean invert = false;
+
+        public ResourceTitleComparator(boolean invert) {
+            this.invert = invert;
+        }
+
+        @Override
+        public int compare(Resource r1, Resource r2) {
+            if (!this.invert) {
+                return r1.getTitle().compareTo(r2.getTitle());
+            }
+            return r2.getTitle().compareTo(r1.getTitle());
+        }
+    }
+    
     private static class ResourceNameComparator implements Comparator<Resource> {
         private boolean invert = false;
 
@@ -202,8 +228,8 @@ public class ResourceSorter {
         @Override
         public int compare(Resource r1, Resource r2) {
             if (r1.isCollection() && r2.isCollection()) {
-                return this.invert ? r2.getName().compareTo(r1.getName()) : r1.getName()
-                        .compareTo(r2.getName());
+                return this.invert ? r2.getTitle().compareTo(r1.getTitle()) : r1.getTitle()
+                        .compareTo(r2.getTitle());
             }
 
             if (r1.isCollection()) {
@@ -216,6 +242,33 @@ public class ResourceSorter {
 
             return this.invert ? r2.getContentType().compareTo(r1.getContentType()) : r1
                     .getContentType().compareTo(r2.getContentType());
+        }
+    }
+    
+    private static class ResourceTypeComparator implements Comparator<Resource> {
+        private boolean invert = false;
+
+        public ResourceTypeComparator(boolean invert) {
+            this.invert = invert;
+        }
+
+        @Override
+        public int compare(Resource r1, Resource r2) {
+            if (r1.isCollection() && r2.isCollection()) {
+                return this.invert ? r2.getTitle().compareTo(r1.getTitle()) : r1.getTitle()
+                        .compareTo(r2.getTitle());
+            }
+
+            if (r1.isCollection()) {
+                return this.invert ? -1 : 1;
+            }
+
+            if (r2.isCollection()) {
+                return this.invert ? 1 : -1;
+            }
+
+            return this.invert ? r2.getResourceType().compareTo(r1.getResourceType()) : r1
+                    .getResourceType().compareTo(r2.getResourceType());
         }
     }
 

@@ -11,7 +11,7 @@
     </#list>
   </#if>
   </head>
-  <body>
+  <body id="vrtx-report-documents">
   <div class="resourceInfo">
     <div class="vrtx-report-nav">
       <div class="back">
@@ -60,23 +60,38 @@
           <#assign publishedStatus = vrtx.getMsg("report.no", "No")>
         </#if>
         
-        <#if (count % 2 == 0) >
-          <tr class="even">
-        <#else>
-          <tr class="odd">
-        </#if>
-          <td class="vrtx-report-title"><a href="${url?html}">${title?html}</a></td>
-          <td class="vrtx-report-last-modified">${lastModifiedTime?html}</td>
-          <td class="vrtx-report-last-modified-by">${modifiedBy}</td>
-          <td class="vrtx-report-permission-set">${aclIsInherited?html}</td>
-          <td class="vrtx-report-permissions">${isReadRestricted?html}</td>
-          <td class="vrtx-report-published">${publishedStatus?html}</td>
-        </tr>
-        <#assign count = count + 1 />
-      </#list>
-      </tbody>
-    </table>
+          <#assign contentType = vrtx.propValue(res, 'contentType') />
+        
+          <#assign rowType = "odd" />
+          <#if (res_index % 2 == 0) >
+            <#assign rowType = "even" />
+          </#if>
+          
+          <#assign firstOrLast = ""  />
+          <#if (res_index == 0)>
+            <#assign firstOrLast = " first" />
+          <#elseif (res_index == (collectionSize - 1))>    
+            <#assign firstOrLast = " last" />     
+          </#if>
+
+          <tr class="${rowType} <@vrtx.iconResolver res.resourceType contentType />${firstOrLast}">  
+            <td class="vrtx-report-title"><a href="${url?html}">${title?html}</a></td>
+            <td class="vrtx-report-last-modified">${lastModifiedTime?html}</td>
+            <td class="vrtx-report-last-modified-by">${modifiedBy}</td>
+            <td class="vrtx-report-permission-set">${aclIsInherited?html}</td>
+            <#if report.isReadRestricted[res_index] >
+              <td class="vrtx-report-permissions"><span class="restricted">${isReadRestricted?html}</span></td>
+            <#else>
+              <td class="vrtx-report-permissions"><span class="allowed-for-all">${isReadRestricted?html}</span></td>         
+            </#if>
+            <td class="vrtx-report-published">${publishedStatus?html}</td>
+          </tr>
+        </#list>
+        </tbody>
+      </table>
+    </div>
   </#if>
+
   </div>
   
   <@displayPaging />
@@ -84,7 +99,6 @@
   </div>
   
   
-
   </body>
 </html>
 

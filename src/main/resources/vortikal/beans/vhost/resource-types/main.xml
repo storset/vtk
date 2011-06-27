@@ -28,6 +28,7 @@
   <import resource="event.xml" />
   <import resource="xml.xml" />
   <import resource="managed-xml.xml" />
+  <import resource="msoffice.xml" />
   <import resource="odf.xml" />
   <import resource="json.xml" />
 

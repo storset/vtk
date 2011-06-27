@@ -34,7 +34,7 @@
 <head>
   <title>About</title>
 </head>
-<body>
+<body id="vrtx-about">
 <#assign resource = resourceContext.currentResource />
 <#assign defaultHeader = vrtx.getMsg("resource.metadata.about", "About this resource") />
 
@@ -62,6 +62,7 @@
       </#assign>
 
       <@propList.defaultPropertyDisplay
+             propName = "lastModified"
              name = vrtx.getMsg("property.lastModified", "Last modified")
              value = modifiedStr />
 
@@ -78,6 +79,7 @@
                    default = "${resource.creationTime?date} by ${createdByStr}" />
       </#assign>
       <@propList.defaultPropertyDisplay
+             propName = "creationTime"
              name = vrtx.getMsg("property.creationTime", "Created")
              value = createdByStr />
 
@@ -106,8 +108,10 @@
             </#assign>
             <form id="vrtx-admin-ownership-form" action="${ownerItem.toggleURL?html}"
                   method="post" onsubmit="return confirm('${warning}')">
-              <button id="vrtx-admin-ownership-button" type="submit" 
-                      name="confirmation">${editAction}</button>
+              <div class="vrtx-button-small">
+                <input id="vrtx-admin-ownership-button" type="submit" 
+                       name="confirmation" value="${editAction}" />
+              </div>
             </form>
           </#if>
         </td>
@@ -115,18 +119,21 @@
 
       <!-- ResourceType -->
       <@propList.defaultPropertyDisplay
+             propName = "resourceType"
              name = vrtx.getMsg("property.resourceType", "Resource type")
              value = vrtx.resourceTypeName(resource) />
 
       <!-- Web address -->
       <#assign url><a id="vrtx-aboutWebAddress" href="${resourceDetail.viewURL?html}">${resourceDetail.viewURL?html}</a></#assign>
       <@propList.defaultPropertyDisplay
+             propName = "viewURL"
              name = vrtx.getMsg("resource.viewURL", "Web address")
              value = url />
 
       <!-- WebDAV address -->      
       <#assign url>${resourceDetail.webdavURL?html}</#assign>
-      <@propList.defaultPropertyDisplay
+      <@propList.defaultPropertyDisplay 
+             propName = "webdavURL"
              name = vrtx.getMsg("resource.webdavURL", "WebDAV address")
              value = url />
       
@@ -134,6 +141,7 @@
       <#if resourceDetail.getSourceURL?exists>
         <#assign url><a id="vrtx-aboutSourceAddress" href="${resourceDetail.getSourceURL?html}">${resourceDetail.getSourceURL?html}</a></#assign>
         <@propList.defaultPropertyDisplay
+             propName = "sourceURL"
              name = vrtx.getMsg("resource.sourceURL")
              value = url />
       </#if>
@@ -142,6 +150,7 @@
       <#if resourceDetail.viewImageInfoService?exists>
         <#assign url><a href="${resourceDetail.viewImageInfoService?html}">${resourceDetail.viewImageInfoService?html}</a></#assign>
         <@propList.defaultPropertyDisplay
+             propName = "viewAsWebpage"
              name = vrtx.getMsg("resource.viewAsWebpage")
              value = url />
       </#if>
@@ -149,6 +158,7 @@
       <#if resourceDetail.mediaPlayerService?exists>
         <#assign url><a href="${resourceDetail.mediaPlayerService?html}">${resourceDetail.mediaPlayerService?html}</a></#assign>
         <@propList.defaultPropertyDisplay
+             propName = "viewAsWebpage"
              name = vrtx.getMsg("resource.viewAsWebpage")
              value = url />
       </#if>
@@ -170,6 +180,7 @@
          </#if>
         </#assign>
         <@propList.defaultPropertyDisplay
+               propName = "contentLength"
                name = vrtx.getMsg("property.contentLength", "Size")
                value = size />
     </#if>
@@ -258,8 +269,8 @@
 </body>
 </html>
 
-<#macro languagePropertyDisplay name value prefix=false editURL="">
-  <tr>
+<#macro languagePropertyDisplay propName name value prefix=false editURL="">
+  <tr class="prop-${propName}">
     <td class="key">
       ${name}:
     </td>
@@ -279,9 +290,9 @@
   </tr>
 </#macro>
 
-<#macro commentsEnabledPropertyDisplay name value prefix=false editURL="">
+<#macro commentsEnabledPropertyDisplay propName name value prefix=false editURL="">
   <#local result = vrtx.resolveInheritedProperty("commentsEnabled") />
-  <tr>
+  <tr class="prop-${propName}">
     <td class="key">
       ${name}:
     </td>

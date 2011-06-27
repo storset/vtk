@@ -21,8 +21,8 @@
     <title>${(title.title)?default(resourceContext.currentResource.name)}</title>
   </head>
   <body>
-    <p class="previewUnavailable">Preview not available.</p> 
-    <p>See the resource on: <a href="${resourceDetail.viewURL}">${resourceDetail.viewURL}</a></p>
+    <p class="previewUnavailable">Preview not available.<br /><br />
+    See the resource on: <a href="${resourceDetail.viewURL}">${resourceDetail.viewURL}</a></p>
   </body>
 </html>
 

@@ -10,7 +10,7 @@ $(window).ready( function() {
 
 $(document).ready( function() {
 
-  // Retrieve initial resources
+    // Retrieve initial resources
     var val = $("#resource\\.manually-approve-from").val();
     lastVal = val;
     var folders = val.split(",");

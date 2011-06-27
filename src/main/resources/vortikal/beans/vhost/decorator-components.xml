@@ -241,9 +241,8 @@
         <!-- <entry key="Nettby" value="http://www.nettby.no/user/edit_link.php?name=%{title}&amp;amp;url=%{url}&amp;amp;description=%{resource:introduction}" 
           />me -->
         <entry key="Delicious" value="http://del.icio.us/post?url=%{url}&amp;amp;title=%{title}" />
-        <!-- <entry key="Digg" value="http://digg.com/submit?url=%{url}&amp;amp;title=%{title}&amp;amp;bodytext=%{resource:introduction}" 
-          /> <entry key="LinkedIn" value="http://www.linkedin.com/shareArticle?mini=true&amp;amp;url=%{url}&amp;amp;title=%{title}" 
-          /> -->
+        <!-- <entry key="Digg" value="http://digg.com/submit?url=%{url}&amp;amp;title=%{title}&amp;amp;bodytext=%{resource:introduction}" /> 
+             <entry key="LinkedIn" value="http://www.linkedin.com/shareArticle?mini=true&amp;amp;url=%{url}&amp;amp;title=%{title}" /> -->
       </map>
     </property>
   </bean>
@@ -527,7 +526,7 @@
         <entry key="jsURLs">
           <list>
             <value>${webResources.baseURL}/jquery/include-jquery.js</value>
-            <value>${jsBaseURL}/image-listing-component.js</value>
+            <value>${jsBaseURL}/gallery.js</value>
           </list>
         </entry>
       </map>

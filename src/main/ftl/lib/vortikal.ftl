@@ -361,7 +361,6 @@
   </#compress>
 </#macro>
 
-
 <#function resourceTypeName resource>
     <#local locale = springMacroRequestContext.getLocale() />
     <#return getMsg("resourcetype.name." + resource.resourceType) />
@@ -533,6 +532,19 @@
   </#compress>
 </#macro>
 
+<#macro iconResolver resourceType="" contentType="">
+  <#compress>
+    <#if resourceType = "file">
+      <#if contentType = "application/octet-stream">
+        binary
+      <#else>
+        ${resourceType}
+      </#if>
+    <#else>
+      ${resourceType}
+    </#if>
+  </#compress>
+</#macro>
 
 <#function resolveInheritedProperty propertyName>
   <#assign resource = VRTX_INHERITED_PROPERTY_RESOLVER.resolve(propertyName)?default("undefined") />

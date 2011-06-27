@@ -511,7 +511,7 @@
       <map>
         <entry key="cssURLs">
           <list>
-            <value>${themeBaseURL}/basic.css</value>
+            <value>${themeBaseURL}/default.css</value>
             <value>http://www.uio.no/visuell-profil/css/uio.css</value>
           </list>
         </entry>

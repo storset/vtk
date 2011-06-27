@@ -13,12 +13,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Publishing status on document</title>
-    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.8.custom/js/jquery-ui-1.8.8.custom.min.js"></script>
-    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.8.custom/js/jquery.ui.datepicker-no.js"></script>
-    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.8.custom/js/jquery.ui.datepicker-nn.js"></script>
-    <script type="text/javascript" src="${jsBaseURL?html}/datepicker/datepicker-admin.js"></script>
-  
+    
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
+    
+    <#if language = "no">
+      <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.8.custom/js/jquery.ui.datepicker-no.js"></script>
+    </#if>
+    <#if language = "nn">
+      <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.8.custom/js/jquery.ui.datepicker-nn.js"></script>
+    </#if>
+    <script type="text/javascript" src="${jsBaseURL?html}/datepicker/datepicker-admin.js"></script>
 
     <script type="text/javascript">
     <!--
@@ -37,7 +41,7 @@
   </head>
   <#assign resource = resourceContext.currentResource />
   <#assign header = vrtx.getMsg("publishing.header", "Publishing status on document") />
-  <body>
+  <body id="vrtx-publishing">
     <div class="resourceInfo publishing">
       <h2>
         ${header}
@@ -49,10 +53,10 @@
         <@vrtx.msg code=publishedStatusMsgKey default="" />
         <#if isPublished>
           <#assign titleMsg = vrtx.getMsg("confirm-publish.title.unpublish") />
-        (&nbsp;<a href="${unPublishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" class="thickbox" title="${titleMsg}"><@vrtx.msg code="publish.action.unpublish" default="unpublish" /></a>&nbsp;)
+          &nbsp;<a class="vrtx-button-small" href="${unPublishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" class="thickbox" title="${titleMsg}"><span><@vrtx.msg code="publish.action.unpublish" default="unpublish" /></span></a>
         <#else>
           <#assign titleMsg = vrtx.getMsg("confirm-publish.title.publish") />
-        (&nbsp;<a href="${publishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" class="thickbox" title="${titleMsg}"><@vrtx.msg code="publish.action.publish" default="publish" /></a>&nbsp;)
+          &nbsp;<a class="vrtx-button-small" href="${publishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" class="thickbox" title="${titleMsg}"><span><@vrtx.msg code="publish.action.publish" default="publish" /></span></a>
         </#if>
         </div>
         <@displayOrEdit "publish-date" "publishDate" editPublishDateUrl />
@@ -80,12 +84,18 @@
           <@displayValidationErrors spring.status.errorMessages />
           <ul class="property">
           	<li>
-          	  <input class="date" type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${dateTimeValue?html}" />
+          	  <div class="vrtx-textfield">
+          	    <input class="date" type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${dateTimeValue?html}" />
+          	  </div>
 		  	</li>
 		  </ul>
         <div id="submitButtons" class="submitButtons">
-          <input type="submit" id="${bindName}UpdateAction" name="${bindName}UpdateAction" value="${vrtx.getMsg("editor.save")}" onclick="saveDateAndTimeFields();"/>
-          <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg("editor.cancel")}">
+          <div class="vrtx-button">
+            <input type="submit" id="${bindName}UpdateAction" name="${bindName}UpdateAction" value="${vrtx.getMsg("editor.save")}" onclick="saveDateAndTimeFields();"/>
+          </div>
+          <div class="vrtx-button">
+            <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg("editor.cancel")}">
+          </div>
         </div>
       </form>
     </div>
@@ -99,7 +109,7 @@
       <#else>
         <@vrtx.msg code="publishing.date.not-set" default="Not set" />
       </#if>
-      (&nbsp;<a href="${editUrl?html}"><@vrtx.msg code="publishing.edit" default="edit" /></a>&nbsp;)
+      &nbsp;<a class="vrtx-button-small" href="${editUrl?html}"><span><@vrtx.msg code="publishing.edit" default="edit" /></span></a>
 	  </div>
   </#if>
 </#macro>

@@ -1,0 +1,1576 @@
+/*
+ *
+ *  UiO design - Apps - Vortex
+ *
+ */
+
+/* 
+ * ToC:
+ *
+ * 1. General
+ * 2. Head and footer
+ *   2.1 Head and footer grid
+ *   2.2 Top (UiO-logo) and bottom line (breadcrumb)
+ *   2.3 Head menu
+ *   2.4 App name
+ *   2.5 Footer
+ * 3. App content
+ *   3.1 App content grid
+ *   3.2 Resource title
+ *   3.3 Tabs
+ *   3.4 Tab Menus
+ *   3.5 Directorylisting
+ *   3.6 Permissions / About / Publishing / View
+ *   3.7 Messages
+ * 4. Fluid design
+ * 5. Clearing
+ * 6. Forms
+ *
+ */
+
+/* 1. General */
+
+html {
+  background-color: #F8F8F8;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  background-color: #f8f8f8;
+  color: #363534;
+  font: normal 81.25%/1.3 Arial, sans-serif;
+  text-align: center;
+  min-width: 1000px;
+}
+ 
+h1 {
+  font-family: Arial, sans-serif;
+  font-size: 1.84em;
+  line-height: 1.2em;
+  margin: 0 0 15px 0;
+  font-weight: bold;
+}
+
+h2 {
+  font-family: Arial, sans-serif;
+  font-size: 1.76em;
+  font-weight: normal;
+  margin: 15px 0 8px 0;
+}
+
+h3 {
+  font-family: Arial, sans-serif;
+  font-size: 1.538em;
+  font-weight: normal;
+  margin: 10px 0 8px 0;
+}
+
+p {
+  margin: 3px 0 8px 0;
+}
+
+ul,
+ol {
+  margin: 8px 0 15px 10px;
+}
+
+img {
+  border: 0;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0 0;
+}
+
+a {
+  /* color: #0b5a9d; */
+  color: #005aab;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ^ 1. General */
+
+
+
+/* 2. Head and footer */
+
+/* 2.1 Head and footer grid */
+
+#app-head,
+#app-footer {
+  background-color: #fff;
+  clear: both;
+  position: relative;
+}
+
+#app-head-wrapper {
+  background: #fff;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #dad9d9;
+}
+
+#app-head {
+  margin: 0 auto;
+  height: 128px;
+  background-color: transparent;
+  width: 970px;
+  text-align: left;
+}
+
+#app-footer-wrapper {
+  text-align: center;
+  padding: 0;
+  position: relative;
+  background-color: #F8F8F8;
+}
+
+#app-footer {
+  margin-bottom: 0;
+  width: 940px;
+  margin: 0 auto;
+  text-align: left;
+  border: none;
+  font: normal 0.85em/1.25em Verdana, sans-serif;
+  padding: 0 15px 44px 15px;
+  background-color: #F8F8F8;
+}
+
+/* ^ 2.1 Head and footer grid */
+
+/* 2.2 Top (UiO-logo) and bottom line (breadcrumb) */
+
+#app-head-wrapper #line-top {
+  background-color: #000;
+  height: 34px;
+}
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper {
+  height: 32px;
+  background: url(images/app-head-breadcrumb-bg.png) repeat-x left bottom;
+  margin-bottom: -1px;
+}
+
+#app-head-wrapper #line-top #uiologo,
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb,
+#app-head-wrapper #system-message-wrapper .system-message {
+  width: 970px;
+  margin: 0 auto;
+  position: relative;
+  height: 34px;
+}
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb {
+  text-align: left;
+  height: 32px;
+}
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span {
+  display: block;
+  float: left;
+  height: 24px;
+  padding: 7px 0 0 0;
+  font-size: 1.15em;
+}
+
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span a {
+  color: #363534;
+  text-decoration: none;
+  display: block;
+  float: left;
+}
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span a:hover {
+  text-decoration: underline;
+}
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span {
+  
+}
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span span.vrtx-breadcrumb-delimiter {
+  background: url(images/app-head-breadcrumb-delimiter.png) no-repeat right bottom;
+  height: 30px;
+  display: block;
+  float: left;
+  width: 10px;
+  margin: -13px 11px 0 11px;
+  overflow: hidden;
+  text-indent: -9999px;
+}
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb .breadcrumb-prefix {
+  display: none;
+}
+
+/* "The Phark Method" - image replacement
+ * Don't want that extra empty span from Levin Alexander method
+ * (although it is used elsewhere in Ny UiO design and have an extra advantage).
+ */
+
+#app-head-wrapper #line-top #uiologo a {
+  background: url(images/uio-app-uio-small-black.png) no-repeat 0 0;
+  display: block;
+  overflow: hidden;
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  height: 15px;
+  width: 195px;
+  text-indent: -9999px;
+}
+
+#app-head-wrapper #line-top #uiologo.english-uiologo a {
+  background-image: url(images/uio-app-uio-small-black-eng.png);
+  height: 18px;
+}
+
+#app-head-wrapper #line-top #uiologo a:hover {
+  background: url(images/uio-app-uio-small-black.png) no-repeat 0 -17px;
+}
+
+#app-head-wrapper #line-top #uiologo.english-uiologo a:hover {
+  background-image: url(images/uio-app-uio-small-black-eng.png);
+}
+
+/* ^ 2.2 Top (UiO-logo) and bottom line (breadcrumb) */
+
+/* 2.3 Head menu */
+
+#app-head #global-menu-top,
+#app-head #global-menu-bottom {
+  top: 16px;
+  right: 15px;
+  position: absolute;
+}
+
+#app-head #global-menu-bottom {
+  top: 60px;
+}
+
+#app-head .global-menu {
+  background: url(images/seperator-grey-gradient.png) no-repeat top right;
+  padding: 13px 18px 0 0;
+  margin: 0 18px 0 0;
+  height: 30px;
+  float: left;
+}
+
+#app-head .global-menu-small {
+  background: url(images/seperator-grey-gradient-small.png) no-repeat top right;
+  padding: 4px 18px 0 0;
+  margin: 0 18px 0 0;
+  height: 21px;
+  float: left;
+}
+
+#app-head .global-menu.last,
+#app-head .global-menu-small.last {
+  background: none;
+  padding-right: 0;
+  margin-right: 0;
+}
+
+#app-head .principal #logoutForm {
+  display: inline;
+}
+
+#app-head .principal {
+  background: url(images/person.png) no-repeat 0 0;
+  padding-left: 28px; 
+  display: inline-block;
+}
+
+
+/* ^ 2.3 Head menu */
+
+/* 2.4 App name */
+
+#app-head #app-name {
+  position: absolute;
+  top: 38px;
+  left: 15px;
+  font-size: 2.77em;
+  font-weight: bold;
+  color: #96948e;
+  line-height: 1.05em;
+  white-space: nowrap;
+}
+
+#app-head #app-name a {
+  color: #96948e;
+}
+
+#app-head #app-name span#tagline {
+  color: #363534;
+  font-size: 0.47em;
+  margin-top: 10px;
+  line-height: 1em;
+  display: block;
+  font-weight: normal;
+}
+
+#app-head #app-name a:hover {
+  text-decoration: none;
+  color: #0b5a9d;
+}
+
+/* ^ 2.4 App name */
+
+/* 2.5 Footer */
+
+#app-footer {
+  color: #5e5e5e;
+  text-align: right;
+}
+
+/* ^ 2.5 Footer */
+
+/* ^ 2. Head and footer */
+
+
+
+/* 3. App content */
+
+/* 3.1 App content grid */
+
+#app-content {
+  width: 940px;
+  margin: 0 auto;
+  text-align: left;
+  padding: 15px 0 0 0;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+#app-content h2 {
+  margin-top: 0; /* implies that h2 is always at the top */
+}
+
+#app-content #main,
+#app-content #main #contents {
+  background-color: #fff;
+}
+
+#app-content #main {
+  padding: 19px;
+  border: 1px solid #d9d9d9;
+}
+
+/* ^ 3.1 App content grid */
+
+/* 3.2 Resource title */
+
+/* Icons */
+
+div.resource-title {
+  background: transparent url(images/file.gif) no-repeat 0px 3px;
+  padding-top: 8px;
+  position: relative;
+}
+div.resource-title h1 {
+  margin: 0 0 15px 36px;
+  float: left;
+}
+
+div.resource-title.true {
+  background: transparent url(images/folder.gif) no-repeat 0px 5px;
+}
+div.resource-title.true h1 {
+  margin-left: 42px;
+}
+
+div.resource-title.binary {
+  background: transparent url(images/file-binary.gif) no-repeat 0px 3px;
+}
+
+div.resource-title.doc {
+  background: transparent url(images/file-word.gif) no-repeat 0px 2px;
+}
+
+div.resource-title.pdf {
+  background: transparent url(images/file-pdf.gif) no-repeat 0px 2px;
+}
+
+div.resource-title.xls {
+  background: transparent url(images/file-xls.gif) no-repeat 0px 2px;
+}
+
+div.resource-title.text {
+  background: transparent url(images/file-txt.gif) no-repeat 0px 2px;
+}
+
+div.resource-title.ppt {
+  background: transparent url(images/file-ppt.gif) no-repeat 0px 2px;
+}
+
+div.resource-title.image {
+  background: transparent url(images/file-image.gif) no-repeat 0px 10px;
+}
+div.resource-title.image h1 {
+  margin-left: 39px;
+}
+
+div.resource-title.audio {
+  background: transparent url(images/file-audio.gif) no-repeat 0px 12px;
+}
+div.resource-title.audio h1 {
+  margin-left: 26px;
+}
+
+div.resource-title.video {
+  background: transparent url(images/file-video.gif) no-repeat 0px 5px;
+}
+div.resource-title.video h1 {
+  margin-left: 40px;
+}
+
+/* ^ Icons */
+
+ul.listMenu.globalMenu,
+ul.listMenu.globalMenu li,
+ul.listMenu.tabMenu1,
+ul.listMenu.tabMenu1 li,
+ul.listMenu.tabMenu2,
+ul.listMenu.tabMenu2 li,
+div.localeSelection ul,
+div.localeSelection ul li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Language menu */
+
+div.localeSelection {
+  background: url(images/globe.png) no-repeat 0px 1px;
+  padding: 0 0 1px 23px;
+}
+
+div.localeSelection ul,
+div.localeSelection ul li {
+  display: inline;
+}
+
+/* Dropdown */
+
+div.localeSelection.js-on {
+  position: relative;
+}
+
+div.localeSelection.js-on ul.dropdown-shortcut-menu-container {
+  display: none;
+  top: 24px;
+  left: auto;
+  right: 0;
+  /* right: -72px; */
+}
+
+div.localeSelection.js-on ul.dropdown-shortcut-menu-container li {
+  display: block;
+}
+
+div.localeSelection.js-on ul.dropdown-shortcut-menu-container li a,
+div.localeSelection.js-on ul.dropdown-shortcut-menu-container li span {
+  padding-left: 28px !important;
+}
+
+div.localeSelection.js-on ul.dropdown-shortcut-menu-container li.active span {
+  background: url(images/list-active.gif) no-repeat 10px 10px;
+}
+
+div.localeSelection.js-on .localeSelectionHeader {
+  background: url(images/arrow-down.png) no-repeat 100% 8px;
+  padding-right: 12px;
+  display: inline-block;
+}
+
+/* ^ Dropdown */
+
+/* ^ Language menu */
+
+/* Global menu */
+
+ul.listMenu.globalMenu {
+  margin: 0 0 20px 0;
+  clear: left;
+  float: left;
+}
+
+ul.listMenu.globalMenu li {
+  background: url(images/dropdown-left.gif) no-repeat -5px 0;
+  display: inline-block;
+  height: 27px;
+  white-space: nowrap;
+  overflow: visible;
+  margin: 0 0 0 1px;
+}
+
+ul.listMenu.globalMenu li.first {
+  background-position: 0 0;
+  margin: 0 0 0 0;
+}
+
+ul.listMenu.globalMenu li a {
+  color: #363534;
+  background: url(images/button-open-right.png) no-repeat top right;
+  display: inline-block;
+  height: 23px;
+  padding: 4px 15px 0 14px;
+  margin: 0 -5px 0 0;
+}
+
+ul.listMenu.globalMenu li.last a {
+  background: url(images/button-closed-right.gif) no-repeat top right;
+}
+
+ul.listMenu.globalMenu li:hover {
+  background-image: url(images/dropdown-left-rollover.gif);
+}
+
+ul.listMenu.globalMenu li:hover a {
+  background: none;
+  color: #fff;
+  text-decoration: none;
+}
+
+ul.listMenu.globalMenu li.last:hover a {
+  background: url(images/button-closed-right-rollover.gif) no-repeat top right;
+}
+
+/* Dropdown */
+
+ul.dropdown-shortcut-menu li a {
+  background: none !important;
+}
+
+ul.dropdown-shortcut-menu li.first {
+  display: inline-block !important;
+  border: none;
+  background: url(images/dropdown-left.gif) no-repeat top left !important;
+}
+
+ul.dropdown-shortcut-menu li.first a {
+  background: url(images/dropdown-right.gif) no-repeat top right !important;
+  padding-right: 44px !important;
+}
+
+ul.dropdown-shortcut-menu li.first:hover {
+  background-image: url(images/dropdown-left-rollover.gif) !important;
+}
+
+ul.dropdown-shortcut-menu li.first.unhover {
+  background: url(images/dropdown-left.gif) no-repeat top left !important;
+}
+
+ul.dropdown-shortcut-menu li.first a.hover {
+  background-image: url(images/dropdown-right-rollover.gif) !important;
+  color: #363534 !important;
+}
+
+div.dropdown-shortcut-menu-container,
+ul.dropdown-shortcut-menu-container {
+  display: none;
+  border: 1px solid #cbcbcb;
+  border-bottom: none;
+  position: absolute;
+  top: 80px;
+  left: 0;
+  z-index: 999999;
+  background-color: #fff;
+}
+
+ul.dropdown-shortcut-menu li.first {
+  position: relative;
+}
+
+ul.dropdown-shortcut-menu li.first #dropdown-shortcut-menu-click-area {
+  display: block;
+  width: 26px;
+  height: 22px;
+  position: absolute;
+  right: -4px;
+  top: 0;
+  cursor: pointer
+}
+
+div.dropdown-shortcut-menu-container ul,
+div.dropdown-shortcut-menu-container ul li,
+ul.dropdown-shortcut-menu-container,
+ul.dropdown-shortcut-menu-container li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+div.dropdown-shortcut-menu-container ul li a,
+ul.dropdown-shortcut-menu-container li a,
+div.dropdown-shortcut-menu-container ul li span,
+ul.dropdown-shortcut-menu-container li span,
+div.dropdown-shortcut-menu-container ul li form,
+ul.dropdown-shortcut-menu-container li form {
+  border-bottom: 1px solid #cbcbcb; 
+  padding: 8px 14px 7px 14px !important;
+  background-color: #fff;
+  display: block;
+  white-space: nowrap;
+}
+
+div.dropdown-shortcut-menu-container ul li a:hover,
+ul.dropdown-shortcut-menu-container li a:hover,
+div.dropdown-shortcut-menu-container ul li form:hover,
+ul.dropdown-shortcut-menu-container li form:hover {
+  background-color: #ecf3f9;
+  cursor: pointer;
+}
+
+div.dropdown-shortcut-menu-container ul li a:hover,
+ul.dropdown-shortcut-menu-container li a:hover {
+  text-decoration: none;
+}
+
+/* Button in dropdown menu  */
+
+div.dropdown-shortcut-menu-container form .vrtx-button {
+  height: auto;
+  background: none;
+}
+
+div.dropdown-shortcut-menu-container form .vrtx-button button {
+  color: #005aab;
+}
+
+div.dropdown-shortcut-menu-container form .vrtx-button:hover {
+  background: none;
+}
+
+div.dropdown-shortcut-menu-container form .vrtx-button button:hover {
+  background: none;
+  color: #005aab;
+}
+
+div.dropdown-shortcut-menu-container form .vrtx-button button {
+  background: none;
+  height: auto;
+  padding: 0;
+  margin: 0;
+}
+
+/* Button in dropdown menu */
+
+/* ^ Global menu */
+
+/* Resource menus */
+
+div#resource-menu {
+  float: right;
+  height: 86px;
+}
+
+div#resource-menu .resource-menu {
+  background: url(images/seperator-grey-gradient-big.png) no-repeat top left;
+  float: left;
+  margin: 0 0 0 25px;
+  padding: 0 0 0 25px;
+  height: 86px;
+}
+
+div#resource-menu h3 {
+  font-size: 1.15em;
+  font-weight: bold;
+  margin: 9px 0 0 0;
+}
+
+div#resource-menu .lock h3,
+div#resource-menu .publish span.published {
+  background: url(images/lock.png) no-repeat 100% 1px;
+  padding-right: 18px;
+  display: inline-block;
+}
+
+div#resource-menu .publish span.published {
+  background-image: url(images/menu-active-green.gif);
+}
+
+div#resource-menu .read-permissions p span,
+div#resource-menu .publish p span {
+  font-weight: bold;
+}
+
+/* ^ Resource menus */
+
+/* ^ 3.2 Resource title */
+
+/* 3.3 Tabs */
+
+div.tabs {
+  margin: 1px 0 0 0;
+  padding: 0;
+  position: relative;
+  top: 0px;
+  left: 0px;
+  width: 65em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
+  height: 34px;
+}
+
+div.tabs ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 65em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
+  /* Width is also required for IE 6.0. Can be reduced when we shorten some of the text on the tabs */
+  border-left: 1px solid #d8d8d8;
+}
+
+div.tabs ul li {
+  margin: 0;
+  padding: 0;
+  display: block;
+  list-style: none;
+  float: left;
+}
+
+div.tabs ul li a,
+div.tabs ul li.current a {
+  line-height: 1.25em;
+  display: block;
+  float: left;
+  padding: 8px 22px 7px 19px; 
+  margin: 0;
+  background: url(images/app-content-tabs-bg.png) repeat-x bottom left;
+  text-align: center;
+  font-size: 1.15em;
+  text-decoration: none;
+  color: #363534;    
+}
+
+div.tabs ul li a {
+  border: 1px solid #d8d8d8;
+  border-left: none;
+}
+
+/* Override this class to get different colors and size on a specific tab */
+
+div.tabs ul li a:hover {
+  background: #4a9ce2;
+  color: #fff;
+}
+
+div.tabs ul li.activeTab a,
+div.tabs ul li.activeTab a:hover {
+  background: #fff;
+  border-bottom: 1px solid #fff;
+  color: #363534;
+}
+
+.beta {
+  color:orange;
+}
+
+/* ^ 3.3 Tabs */
+
+
+/* 3.4 Tab Menus */
+
+.activeTab {
+  margin: 0 0 15px 0;
+}
+
+.activeTab ul.listMenu a {
+  font-weight: bold;
+}
+
+/* Tab Menu 1 (left) */
+
+ul.listMenu.tabMenu1,
+ul.listMenu.tabMenu1 li {
+  float: left;
+}
+
+ul.listMenu.tabMenu1 li.navigateToParentService a {
+  display: block;
+  background: url(images/tab-menu-navigate-up.png) no-repeat center left;
+  padding: 5px 0 5px 28px;
+}
+
+/* Tab Menu 2 (right) */
+
+ul.listMenu.tabMenu2 {
+  float: right;
+}
+
+ul.listMenu.tabMenu2 li {
+  float: left;
+}
+
+ul.listMenu.tabMenu2 li a {
+  display: block;
+  margin: 0 0 0 30px;
+  padding: 5px 0 5px 30px;
+}
+
+ul.listMenu.tabMenu2 li.deleteResourcesService a {
+  background: url(images/tab-menu-delete.png) no-repeat center left;
+  padding-left: 25px;
+}
+
+ul.listMenu.tabMenu2 li.moveResourcesService a {
+  background: url(images/tab-menu-move.png) no-repeat center left;
+  padding-left: 41px;
+}
+
+ul.listMenu.tabMenu2 li.copyResourcesService a {
+  background: url(images/tab-menu-copy.png) no-repeat center left;
+  padding-left: 38px;
+}
+
+ul.listMenu.tabMenu2 li.fileUploadService a {
+  background: url(images/tab-menu-upload.png) no-repeat center left; 
+}
+
+ul.listMenu.tabMenu2 li.createDocumentService a {
+  background: url(images/tab-menu-new-file.png) no-repeat center left; 
+}
+
+ul.listMenu.tabMenu2 li.createCollectionService a {
+  background: url(images/tab-menu-new-folder.png) no-repeat center left;
+}
+
+/* Trash can */
+
+ul.listMenu.tabMenu2 li.recoverResourceService a,
+ul.listMenu.tabMenu2 li.deleteResourcePermanentService a {
+  background: none; /* TODO: need to design icon */
+  padding-left: 0;
+}
+
+/* ^ Trash can */
+
+/* ^ 3.4 Tab Menus */
+
+/* 3.5 Directorylisting */
+
+#vrtx-manage-collectionlisting #app-content #main #contents,
+#vrtx-trash-can #app-content #main #contents,
+#vrtx-report-documents #app-content #main #contents .vrtx-report {
+  padding: 5px 0 0 0;
+  border: 1px solid #d9d9d9;
+}
+
+#vrtx-report-documents #app-content #main #contents .vrtx-report {
+  margin-top: 15px;
+}
+
+#vrtx-manage-collectionlisting #app-content #main,
+#vrtx-trash-can #app-content #main,
+#vrtx-report-documents #app-content #main {
+  padding-bottom: 34px;
+}
+
+#app-content #main #contents table.directoryListing {
+  width: 100%;
+}
+
+#app-content #main #contents table.directoryListing tr td {
+  font-size: 1.15em;
+  border-top: 1px solid #f0f0f0;
+  padding: 5px 15px 4px 0;
+}
+
+#app-content #main #contents table.directoryListing tr.first td {
+  border-top: none;
+  padding-top: 8px;
+}
+
+#app-content #main #contents table.directoryListing tr th {
+  background: url(images/line-dotted.gif) repeat-x bottom left;
+  padding: 0 15px 8px 0;
+  text-align: left;
+  white-space: nowrap;  
+}
+
+#app-content #main #contents table.directoryListing tr th.permissions,
+#app-content #main #contents table.directoryListing tr th.resource-type,
+#app-content #main #contents table.directoryListing tr th.last-modified,
+#app-content #main #contents table.directoryListing tr th#vrtx-trash-can\.deletedBy,
+#app-content #main #contents table.directoryListing tr th#vrtx-trash-can\.deletedTime,
+#app-content #main #contents table.directoryListing tr th#vrtx-report-last-modified,
+#app-content #main #contents table.directoryListing tr th#vrtx-report-modified-by,
+#app-content #main #contents table.directoryListing tr th#vrtx-report-permission-set,
+#app-content #main #contents table.directoryListing tr th#vrtx-report-permissions,
+#app-content #main #contents table.directoryListing tr th#vrtx-report-published {
+  width: 1%;
+}
+
+#app-content #main #contents table.directoryListing tr td.permissions,
+#app-content #main #contents table.directoryListing tr td.resource-type,
+#app-content #main #contents table.directoryListing tr td.last-modified,
+#app-content #main #contents table.directoryListing tr td.vrtx-trash-can-deleted-by,
+#app-content #main #contents table.directoryListing tr td.vrtx-trash-can-deleted-time,
+#app-content #main #contents table.directoryListing tr td.vrtx-report-last-modified,
+#app-content #main #contents table.directoryListing tr td.vrtx-report-last-modified-by,
+#app-content #main #contents table.directoryListing tr td.vrtx-report-permission-set,
+#app-content #main #contents table.directoryListing tr td.vrtx-report-permissions,
+#app-content #main #contents table.directoryListing tr td.vrtx-report-published {
+  white-space: nowrap;
+}
+
+#app-content #main #contents table.directoryListing tr td.checkbox {
+  padding-right: 30px;
+}
+
+#app-content #main #contents table.directoryListing tr th.title,
+#app-content #main #contents table.directoryListing tr td.title,
+#app-content #main #contents table.directoryListing tr th#vrtx-trash-can\.name,
+#app-content #main #contents table.directoryListing tr td.vrtx-trash-can-name,
+body#vrtx-report-documents #app-content #main #contents table.directoryListing tr th#vrtx-report-title,
+body#vrtx-report-documents #app-content #main #contents table.directoryListing tr td.vrtx-report-title {
+  padding-left: 15px;
+}
+
+#app-content #main #contents table.directoryListing tr th.last-modified,
+#app-content #main #contents table.directoryListing tr td.last-modified,
+#app-content #main #contents table.directoryListing tr th#vrtx-trash-can\.deletedTime,
+#app-content #main #contents table.directoryListing tr td.vrtx-trash-can\.deletedTime,
+#app-content #main #contents table.directoryListing tr th#vrtx-report-published,
+#app-content #main #contents table.directoryListing tr td.vrtx-report-published {
+  padding-right: 15px;
+}
+
+#app-content #main #contents table.directoryListing tr.even td {
+  background-color: #f9f9f9;
+}
+
+#app-content #main #contents table.directoryListing tr:hover td,
+#app-content #main #contents table.directoryListing tr.hover td {
+  background-color: #ecf3f9;
+  border-top: 1px solid #c7dadf;
+  border-bottom: 1px solid #c7dadf;
+}
+
+#app-content #main #contents table.directoryListing tr.first:hover td,
+#app-content #main #contents table.directoryListing tr.first.hover td {
+  border-top: none;
+}
+
+#app-content #main #contents table.directoryListing tr.last:hover td,
+#app-content #main #contents table.directoryListing tr.last.hover td {
+  border-bottom: none;
+}
+
+#app-content #main #contents table.directoryListing tr.checked {
+  background-color: #eaeaea;
+}
+
+#app-content #main #contents table.directoryListing tr.checked td {
+  background-color: #eaeaea;
+  border-top: 1px solid #d9d9d9;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+#app-content #main #contents table.directoryListing tr.checked.first td {
+  border-top: none;
+}
+
+#app-content #main #contents table.directoryListing tr.checked.last td {
+  border-bottom: none;
+}
+
+#app-content #main #contents table.directoryListing td span.allowed-for-all,
+#app-content #resource-menu .read-permissions span.allowed-for-all,
+#app-content #resource-menu .publish span.published {
+  color: #549401;
+}
+
+#app-content #main #contents table.directoryListing td span.restricted,
+#app-content #resource-menu .read-permissions span.restricted,
+#app-content #resource-menu .publish span.unpublished {
+  color: #ed1c24;
+}
+
+#collectionListing\.checkUncheckAll {
+  padding-top: 11px;
+  margin-bottom: -27px;
+  font-weight: bold;
+}
+
+/* Icons */
+
+#app-content #main #contents table.directoryListing tr td.title a,
+#app-content #main #contents table.directoryListing tr td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents table.directoryListing tr td.vrtx-report-title a {
+  padding: 2px 0 2px 31px;
+  display: block;
+  background: url(images/file-small.gif) no-repeat center left;
+}
+
+#app-content #main #contents table.directoryListing tr.true td.title a,
+#app-content #main #contents table.directoryListing tr.true td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents table.directoryListing tr.true td.vrtx-report-title a {
+  background: url(images/folder-small.gif) no-repeat center left;
+}
+
+#app-content #main #contents table.directoryListing tr.binary td.title a,
+#app-content #main #contents table.directoryListing tr.binary td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents table.directoryListing tr.binary td.vrtx-report-title a {
+  background: url(images/file-binary-small.gif) no-repeat center left;
+}
+
+#app-content #main #contents table.directoryListing tr.doc td.title a,
+#app-content #main #contents table.directoryListing tr.doc td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents table.directoryListing tr.doc td.vrtx-report-title a {
+  background: url(images/file-word-small.gif) no-repeat center left;
+}
+
+#app-content #main #contents table.directoryListing tr.pdf td.title a,
+#app-content #main #contents table.directoryListing tr.pdf td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents table.directoryListing tr.pdf td.vrtx-report-title a {
+  background: url(images/file-pdf-small.gif) no-repeat center left;
+}
+
+#app-content #main #contents table.directoryListing tr.xls td.title a,
+#app-content #main #contents table.directoryListing tr.xls td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents table.directoryListing tr.xls td.vrtx-report-title a {
+  background: url(images/file-xls-small.gif) no-repeat center left;
+}
+
+#app-content #main #contents table.directoryListing tr.text td.title a,
+#app-content #main #contents table.directoryListing tr.text td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents table.directoryListing tr.text td.vrtx-report-title a {
+  background: url(images/file-txt-small.gif) no-repeat center left;
+}
+
+#app-content #main #contents table.directoryListing tr.ppt td.title a,
+#app-content #main #contents table.directoryListing tr.ppt td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents table.directoryListing tr.ppt td.vrtx-report-title a {
+  background: url(images/file-ppt-small.gif) no-repeat center left;
+}
+
+#app-content #main #contents table.directoryListing tr.image td.title a,
+#app-content #main #contents table.directoryListing tr.image td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents table.directoryListing tr.image td.vrtx-report-title a {
+  background: url(images/file-image-small.gif) no-repeat center left;
+}
+
+#app-content #main #contents table.directoryListing tr.audio td.title a,
+#app-content #main #contents table.directoryListing tr.audio td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents table.directoryListing tr.audio td.vrtx-report-title a {
+  background: url(images/file-audio-small.gif) no-repeat center left;
+}
+
+#app-content #main #contents table.directoryListing tr.video td.title a,
+#app-content #main #contents table.directoryListing tr.video td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents table.directoryListing tr.video td.vrtx-report-title a {
+  background: url(images/file-video-small.gif) no-repeat center left;
+}
+
+/* ^ Icons */
+
+/* ^ 3.5 Directorylisting */
+
+/* 3.6 Permissions / About / Publishing / View / Plaintext-edit  */
+
+body#vrtx-preview #app-content #main #contents {
+  border: 1px solid #d9d9d9;
+}
+
+body#vrtx-preview #app-content #main #contents .previewUnavailable,
+body#vrtx-trash-can #app-content #main #contents .trash-can-empty {
+  margin: 10px 14px;
+}
+
+body#vrtx-trash-can #app-content #main #contents .trash-can-empty {
+  margin-top: 5px;
+}
+
+body#vrtx-permissions #permissions-read-write-admin {
+  padding-bottom: 15px;
+  padding-top: 5px;
+  margin: 15px 0;
+  border-top: 1px solid #d9d9d9;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+body#vrtx-permissions ul.shortcuts {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+body#vrtx-permissions #permissions-inheritance,
+body#vrtx-permissions #permissions-read-write-admin div.read,
+body#vrtx-permissions #permissions-read-write-admin div.read-write,
+body#vrtx-permissions #permissions-read-write-admin div.all,
+body#vrtx-permissions ul.shortcuts li {
+  font-size: 1.154em;
+}
+
+body#vrtx-permissions #permissions-inheritance .vrtx-button-small,
+body#vrtx-permissions #permissions-read-write-admin div.read a.vrtx-button-small,
+body#vrtx-permissions #permissions-read-write-admin div.read-write a.vrtx-button-small,
+body#vrtx-permissions #permissions-read-write-admin div.all a.vrtx-button-small {
+  font-size: 0.867em;
+}
+
+body#vrtx-permissions ul.shortcuts li {
+  margin: 0 0 5px 0;
+}
+
+body#vrtx-permissions li.groups,
+body#vrtx-permissions li.users {
+  float: left;
+  border: 1px solid #bebebe;
+  padding: 7px 19px 19px 19px;
+}
+
+body#vrtx-permissions li.groups {
+  margin-right: 20px;
+}
+
+body#vrtx-permissions li.groups .vrtx-button,
+body#vrtx-permissions li.users .vrtx-button {
+  margin-left: 15px;
+}
+
+body#vrtx-permissions li.groups legend,
+body#vrtx-permissions li.users legend {
+  font-size: 1.23em;
+  padding: 0 0 8px 0;
+}
+
+body#vrtx-permissions li.groups ul,
+body#vrtx-permissions li.users ul {
+  margin: 0;
+  padding: 0 0 10px 0;
+}
+
+ul.vrtx-reporters li,
+body#vrtx-permissions li.groups ul li,
+body#vrtx-permissions li.users ul li {
+  background: url(images/list-bullet-dark-grey.png) no-repeat center left;
+  margin: 0 0 5px 5px;
+  padding: 0 0 0 10px;
+}
+
+body#vrtx-permissions li.groups div.errorContainer ul li,
+body#vrtx-permissions li.users div.errorContainer ul li {
+  background: none;
+  margin: 0;
+  padding: 0;
+}
+
+body#vrtx-permissions .removePermission {
+  background: url(images/list-remove-red.png) no-repeat 0px 4px;
+  color: #e8e8e8;
+  width: 12px;
+  display: inline-block;
+  text-indent: -9999px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+body#vrtx-permissions .addGroup,
+body#vrtx-permissions .addUser {
+  display: block;
+}
+
+div.errorContainer ul.errors li {
+  color: #ed1c24;
+}
+
+table.resourceInfo,
+table.privilegeTable {
+  border: 1px solid #d9d9d9;
+  width: 100%;
+}
+
+table.resourceInfo td,
+table.privilegeTable td {
+  padding: 3px 5px;
+}
+
+table.resourceInfo .key,
+table.privilegeTable .key {
+  font-weight: bold;
+  width: 1%;
+  white-space: nowrap;
+}
+
+#vrtx-admin-ownership-form {
+  display: inline-block;
+}
+
+body#vrtx-edit-plaintext textarea {
+  width: 100%;
+  border: 1px solid #d9d9d9;
+}
+
+body#vrtx-edit-plaintext .contextual-help {
+  float: right;
+}
+
+/* ^ 3.6 Permissions / About / Publishing / View / Plaintext-edit  */
+
+/* 3.7 Messages */
+
+div.message,
+div.infomessage {
+  background-color: #fff;
+  border: 1px solid #d9d9d9;
+  padding: 12px 14px 11px 14px;
+  margin: 0 0 25px 0;
+}
+
+div.infomessage {
+  background: #fff url(images/info.png) no-repeat 14px 8px;
+  padding-left: 46px;
+}
+
+div#system-message-wrapper {
+  background-color: #4a9ce2;
+}
+
+div#system-message-wrapper div.system-message {
+  background: #4a9ce2 url(images/info-very-big.png) no-repeat 50px center;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  height: auto !important;
+}
+
+div#system-message-wrapper div.system-message div.system-message-text {
+  font-size: 1.231em;
+  color: #fff;
+  text-align: left;
+  margin: 0 0 0 45px;
+}
+
+div.tabMessage {
+  background: url(images/info-small.gif) no-repeat 0 0;
+  padding: 0 0 5px 25px;
+}
+
+/* ^ 3.7 Messages */
+
+/* ^ 3. App content */
+
+
+
+/* 4. Fluid design */
+
+.app-fluid {
+  min-width: 880px;
+}
+
+.app-fluid #app-head-wrapper,
+.app-fluid #app-footer-wrapper {
+  min-width: 880px;
+  width: 100%;
+}
+
+.app-fluid #app-head,
+.app-fluid #app-head-wrapper #line-top #uiologo,
+.app-fluid #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb,
+.app-fluid #app-head-wrapper #system-message-wrapper .system-message,
+.app-fluid #app-footer {
+  width: auto;
+  max-width: 1200px;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.app-fluid #app-content {
+  width: auto;
+  min-width: 780px;
+  max-width: 1200px;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.app-fluid #app-footer {
+  background-position: 50px 24px;
+}
+
+.app-fluid #app-head-wrapper #line-top #uiologo a,
+.app-fluid #app-head #app-name {
+  left: 50px;
+}
+
+.app-fluid #app-head #global-menu-top,
+.app-fluid #app-head #global-menu-bottom {
+  right: 50px;
+}
+
+* html .app-fluid #app-footer {
+  float: left;
+}
+
+/* ^ 4. Fluid design */
+
+
+
+/* 5. Clearing */
+
+#app-head:after,
+#app-footer:after,
+#app-content:after,
+#app-content #main:after,
+#app-content #titleContainer:after,
+#app-content .resource-title:after,
+#app-content form.globalMenu:after,
+#app-content #main .activeTab:after,
+#app-content #main #contents:after,
+#app-content .principalList:after {
+  clear: both;
+  content: ".";
+  display: block;
+  height: 0;
+  visibility: hidden;
+}
+
+/* ^ 5. Clearing */
+
+
+
+/* 6. Forms */
+
+form, fieldset, input, button{
+  margin: 0;
+  padding: 0;
+}
+
+fieldset {
+  background:transparent;
+  border:none;
+}
+
+input, button{
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: inherit;
+  font-size: 100%;
+  font-style: inherit;
+  font-weight: inherit;
+}
+
+form input:focus {
+  outline: 0;
+}
+
+div.globalmenu ul,
+div.globalmenu ul li,
+.expandedForm form ul,
+.expandedForm form ul li,
+form.vrtx-admin-form ul,
+form.vrtx-admin-form ul li {
+  margin-left: 0px;
+  padding-left: 0px;
+  list-style: none;
+}
+
+div.globalmenu h3,
+form.vrtx-admin-form h3,
+.expandedForm h3 {
+  margin-top: 0;
+}
+
+div.globalmenu {
+  margin: 0 0 20px 0;
+  padding: 13px 15px;
+  background-color: #e8e8e8;
+  border: 1px solid #d9d9d9;
+  clear: left;
+}
+
+div.expandedForm,
+tr.expandedForm td {
+  margin: 10px -20px 4px -20px !important;
+  padding: 14px 19px !important;
+  background-color: #e8e8e8;
+  border: 1px solid #d9d9d9;
+}
+
+div.vrtx-admin-form {
+  clear: left;
+  float: left;
+  width: 100%;
+}
+
+/* Buttons */
+
+.vrtx-button,
+.vrtx-button-small {
+  background: url(images/dropdown-left.gif) no-repeat 0 0;
+  display: inline-block;
+  height: 27px;
+  white-space: nowrap;
+  overflow: visible;
+  margin: 0;
+  cursor: pointer;
+}
+
+.vrtx-button-small {
+  height: 22px;
+  background: url(images/button-small-left.gif) no-repeat 0 0;
+}
+
+.vrtx-button span,
+.vrtx-button-small span,
+.vrtx-button input,
+.vrtx-button-small input,
+.vrtx-button button,
+.vrtx-button-small button {
+  color: #363534;
+  background: url(images/button-closed-right.gif) no-repeat top right;
+  display: inline-block;
+  height: 23px;
+  padding: 4px 15px 0 14px;
+  border: none;
+  cursor: pointer;
+  margin: 0 -5px 0 0;
+}
+
+.vrtx-button input,
+.vrtx-button button {
+  height: 27px;
+  padding: 0 15px 0 14px;
+}
+
+.vrtx-button-small span,
+.vrtx-button-small input,
+.vrtx-button-small button {
+  height: 20px;
+  padding: 2px 11px 0 10px;
+  background: url(images/button-small-right.gif) no-repeat top right;
+}
+
+.vrtx-button-small input,
+.vrtx-button-small button {
+  height: 22px;
+  padding: 0 11px 0 10px;
+}
+
+.vrtx-button:hover {
+  background-image: url(images/dropdown-left-rollover.gif);
+}
+
+.vrtx-button-small:hover {
+  background-image: url(images/button-small-left-rollover.gif);
+}
+
+.vrtx-button:hover span,
+.vrtx-button-small:hover span,
+.vrtx-button:hover input,
+.vrtx-button-small:hover input,
+.vrtx-button:hover button,
+.vrtx-button-small:hover button {
+  color: #fff;
+  text-decoration: none;
+  background: url(images/button-closed-right-rollover.gif) no-repeat top right;
+}
+
+.vrtx-button-small:hover span,
+.vrtx-button-small:hover input,
+.vrtx-button-small:hover button {
+  background: url(images/button-small-right-rollover.gif) no-repeat top right;
+}
+
+.submitButtons,
+#submitButtons {
+  margin: 15px 0 0 0;
+  clear: left;
+}
+
+.submitButtons .vrtx-button,
+#submitButtons .vrtx-button {
+  margin: 0 10px 0 0;
+}
+
+/* ^ Buttons */
+
+/* Textfields */
+
+.vrtx-textfield {
+  background: url(images/textfield-left.gif) no-repeat 0 0;
+  height: 23px;
+  padding: 4px 0 0 8px;
+  display: inline-block;
+}
+
+.vrtx-textfield input {
+  background: url(images/textfield-right.gif) no-repeat top right;
+  height: 27px;
+  margin: -5px -5px 0 0;
+  padding: 0 8px 0 0;
+  display: inline-block;
+}
+
+/* ^ Textfields */
+
+/* Mozilla hacks */
+
+form::-moz-focus-inner,
+form button::-moz-focus-inner {
+  border: none;
+  padding: 0;
+}
+
+/* ^ Mozilla hacks */
+
+/* IE 6 hacks */
+
+* html input {
+  border: none;
+}
+
+* html #app-head form {
+  background-image: url(images/uio-app-form-input.gif);
+}
+
+/* ^ IE 6 hacks */
+
+/* iPhone hacks */
+
+@media only screen and (max-device-width: 480px) {
+
+  #app-head form button span {
+    margin-right:-6px;
+  }
+
+  /* input reset */
+  input {
+    -webkit-appearance: none;
+    -webkit-border-radius: 0;
+  }
+
+}
+
+/* ^ iPhone hacks */
+
+/* iPhad hacks */
+
+@media only screen and (max-device-width: 1024px) {
+
+/* input reset */
+  input {
+    -webkit-appearance: none;
+    -webkit-border-radius: 0;
+  }
+
+}
+
+/* ^ iPad hacks */
+
+/* ^ 6. Forms */
+
+
+
+/* ^ UiO design - Apps - Vortex */

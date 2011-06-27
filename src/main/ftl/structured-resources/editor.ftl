@@ -14,8 +14,7 @@
   <@vrtxJSONJavascript.script />
   
   <script type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>
-  <script type="text/javascript" src="${jsBaseURL?html}/admin-ck-helper.js"></script>
-  <script type="text/javascript" src="${jsBaseURL?html}/admin-prop-change.js"></script>
+  <script type="text/javascript" src="${jsBaseURL?html}/editor-ck-helper.js"></script>
   
   <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
   
@@ -44,11 +43,18 @@
         document.getElementById("form").setAttribute("action", "#submit");
         performSave();
     }
+    
+    var cssFileList = new Array(
+      <#if fckEditorAreaCSSURL?exists>
+        <#list fckEditorAreaCSSURL as cssURL>
+          "${cssURL?html}" <#if cssURL_has_next>,</#if>
+        </#list>
+      </#if>);
+    
     //-->
   </script>
-  <script type="text/javascript" src="${jsBaseURL?html}/imageref.js"></script>
-  
-  <@editor.addDatePickerScripts />
+
+  <@editor.addDatePickerScripts language />
   
   <#global baseFolder = "/" />
   <#if resourceContext.parentURI?exists>
@@ -67,12 +73,18 @@
 <#assign header = form.resource.getLocalizedMsg("header", locale, null) />
 <h2>${header}</h2>
 
-<div class="submit-extra-buttons">
+<div class="submitButtons submit-extra-buttons">
     <#include "/system/help.ftl" />
     <a class="help-link" href="${form.listComponentServiceURL?html}" target="new_window"><@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" /></a>
-    <input type="button" onClick="$('#updateViewAction').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
-    <input type="button" onClick="$('#updateAction').click()"  value="${vrtx.getMsg("editor.save")}" />
-    <input type="button" onClick="$('#cancelAction').click()"  value="${vrtx.getMsg("editor.cancel")}" />
+    <div class="vrtx-button">
+      <input type="button" onClick="$('#updateViewAction').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
+    </div>
+    <div class="vrtx-button">
+      <input type="button" onClick="$('#updateAction').click()"  value="${vrtx.getMsg("editor.save")}" />
+    </div>
+    <div class="vrtx-button">
+      <input type="button" onClick="$('#cancelAction').click()"  value="${vrtx.getMsg("editor.cancel")}" />
+    </div>
 </div>  
 
 <form action="${form.submitURL?html}" method="post">
@@ -106,10 +118,16 @@
   </#if>
   
 </#list>
-<div class="submit">
-    <input type="submit" id="updateViewAction" onClick="performSave();" name="updateViewAction" value="${vrtx.getMsg("editor.saveAndView")}" />
-    <input type="submit" id="updateAction" onClick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
-    <input type="submit" onClick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
+<div class="submit submitButtons">
+    <div class="vrtx-button">
+      <input type="submit" id="updateViewAction" onClick="performSave();" name="updateViewAction" value="${vrtx.getMsg("editor.saveAndView")}" />
+    </div>
+    <div class="vrtx-button">
+      <input type="submit" id="updateAction" onClick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
+    </div>
+    <div class="vrtx-button">
+      <input type="submit" onClick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
+    </div>
 </div>
 </form>
 </body>

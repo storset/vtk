@@ -21,58 +21,68 @@
   </head>
 <body id="vrtx-trash-can">
 
-<#-- WTF???? Why the F*** does this work??? -->
-<#-- Without it, stupid freemarker puts spaces between digits in numbers -->
+<#-- Without this, freemarker puts spaces between digits in numbers -->
 <#setting number_format="0">
-<#-- END WTF -->
 
 <@spring.bind "trashcan.trashCanObjects" />
 <#if (spring.status.value?size > 0) >
-<@spring.bind "trashcan.submitURL" />
-<form class="trashcan" action="${spring.status.value?html}" method="post">
+  <@spring.bind "trashcan.submitURL" />
+  <form class="trashcan" action="${spring.status.value?html}" method="post">
 
   <table id="vrtx-trash-can-table" class="directoryListing">
     <@spring.bind "trashcan.sortLinks" />
     <tr id="vrtx-trash-can-header" class="directoryListingHeader">
       <@setHeader "name" "trash-can.name" />
-      <th class="checkbox">
-        <a href="#" class="vrtx-check-all" > <@vrtx.msg code="collectionListing.all" default="All"/></a> | 
-        <a href="#" class="vrtx-uncheck-all"> <@vrtx.msg code="collectionListing.none" default="None"/></a>
-      </th>
+      <th class="checkbox"></th>
       <@setHeader "deleted-by" "trash-can.deletedBy" />
       <@setHeader "deleted-time" "trash-can.deletedTime" />
     </tr>
 
     <@spring.bind "trashcan.trashCanObjects" />
+    <#assign collectionSize = spring.status.value?size />
     <#list spring.status.value as tco>
-    <#assign rr = tco.recoverableResource />
-    <#if (tco_index % 2 == 0)>
-      <tr class="odd ${rr.resourceType}">
-    <#else>
-      <tr class="even ${rr.resourceType}">
-    </#if>
-        <td class="vrtx-trash-can-name name trash">${rr.name?html}</td>
-        <td class="checkbox">
-        <@spring.bind "trashcan.trashCanObjects[${tco_index}].selectedForRecovery" />
-        <#assign checked = "" />
-        <#if spring.status.value?string = 'true' >
-          <#assign checked = "checked" />
-        </#if>
-        <input type="checkbox" name="${spring.status.expression}" title="${rr.name?html}" value="true" ${checked} />
-        </td>
-        <td class="vrtx-trash-can-deleted-by">${rr.deletedBy}</td>
-        <td class="vrtx-trash-can-deleted-time"><@printDeletedTime tco.recoverableResource.deletedTime /></td>
-      </tr>
+      <#assign rr = tco.recoverableResource />
+      
+      <#assign firstOrLast = ""  />
+      <#if (tco_index == 0)>
+        <#assign firstOrLast = " first" />
+      <#elseif (tco_index == (collectionSize - 1))>    
+        <#assign firstOrLast = " last" />     
+      </#if>
+      
+      <#if (tco_index % 2 == 0)>
+        <tr class="odd <@vrtx.iconResolver rr.resourceType rr.contentType />${firstOrLast}">
+      <#else>
+        <tr class="even <@vrtx.iconResolver rr.resourceType rr.contentType />${firstOrLast}">
+      </#if>
+          <td class="vrtx-trash-can-name name trash"><span class="vrtx-trash-can-name-text">${rr.name?html}</span></td>
+          <td class="checkbox">
+          <@spring.bind "trashcan.trashCanObjects[${tco_index}].selectedForRecovery" />
+          <#assign checked = "" />
+          <#if spring.status.value?string = 'true' >
+            <#assign checked = "checked" />
+          </#if>
+          <input type="checkbox" name="${spring.status.expression}" title="${rr.name?html}" value="true" ${checked} />
+          </td>
+          <td class="vrtx-trash-can-deleted-by">${rr.deletedBy}</td>
+          <td class="vrtx-trash-can-deleted-time"><@printDeletedTime tco.recoverableResource.deletedTime /></td>
+        </tr>
     </#list>
 
   </table>
+  <div id="collectionListing.checkUncheckAll">
+    Markér:&nbsp;
+    <a href="javascript:void(0);" class="vrtx-check-all" > <@vrtx.msg code="collectionListing.all" default="All"/></a>,&nbsp;
+    <a href="javascript:void(0);" class="vrtx-uncheck-all"> <@vrtx.msg code="collectionListing.none" default="none"/></a>
+  </div>
+
   <input class="recoverResource" type="submit" name="recoverAction"
                value="<@vrtx.msg code="trash-can.recover" default="Recover"/>"/>
   <input class="deleteResourcePermanent" type="submit" name="deletePermanentAction"
                value="<@vrtx.msg code="trash-can.delete-permanent" default="Delete permanently"/>"/>
 </form>
 <#else>
-  <@vrtx.msg code="trash-can.empty" default="The trash can contains no garbage." />
+  <p class="trash-can-empty"><@vrtx.msg code="trash-can.empty" default="The trash can contains no garbage." /></p>
 </#if>
 
 </body>

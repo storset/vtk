@@ -21,8 +21,8 @@
     <title>${(title.title)?default(resourceContext.currentResource.name)}</title>
   </head>
   <body>
-    <p class="previewUnavailable">Innholdet kan ikke forh&aring;ndsvises innenfor "Administrasjon av webdokumenter".</p> 
-    <p>Men du kan se p&aring; eller laste dokumentet p&aring; webadressen:<br><a href="${resourceDetail.viewURL}">${resourceDetail.viewURL}</a></p>
+    <p class="previewUnavailable">Innholdet kan ikke forh&aring;ndsvisast innenfor "Administrasjon av webdokumenter".<br /><br /> 
+    Men du kan sj&aring; p&aring; eller lasta dokumentet p&aring; webadressen:<br><a href="${resourceDetail.viewURL}">${resourceDetail.viewURL}</a></p>
   </body>
 </html>
 

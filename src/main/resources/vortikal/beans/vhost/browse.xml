@@ -114,8 +114,6 @@
     </property>
   </bean>
 
-
-
   <bean id="browse.globalMenuComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.browseNamespace" />
@@ -144,14 +142,13 @@
       <map>
         <entry key="cssURLs">
           <list>
-            <value>${themeBaseURL}/basic.css</value>
+            <value>${themeBaseURL}/default.css</value>
             <value>${themeBaseURL}/browse.css</value>
           </list>
         </entry>
       </map>
     </property>
   </bean>
-
 
   <bean id="browse.javascriptComponent" 
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
@@ -180,6 +177,7 @@
     <property name="browsingService" ref="browseService" />
     <property name="childInfoItems">
       <list>
+        <value>title</value>
         <value>name</value>
         <value>owner</value>
         <value>content-length</value>

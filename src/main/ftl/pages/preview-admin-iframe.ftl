@@ -46,7 +46,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head><title>${(title.title)?default(resourceContext.currentResource.name)}</title>
   </head>
-  <body>
+  <body id="vrtx-preview">
 
     <#assign previewRefreshParameter = 'outer-iframe-refresh' />
     <#assign constructor = "freemarker.template.utility.ObjectConstructor"?new() />

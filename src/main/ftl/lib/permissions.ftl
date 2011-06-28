@@ -37,7 +37,7 @@
 
   <#if .vars[formName]?exists>
     <div>
-      <div class="expandedForm expandedForm-${privilegeName}">
+      <div class="permissions-${privilegeName}-wrapper expandedForm-${privilegeName}">
         <@editACLFormNew
            formName = formName
            privilegeName = privilegeName
@@ -188,8 +188,7 @@
     </ul>
     <div id="submitButtons" class="submitButtons">
       <div class="vrtx-focus-button">
-        <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>"
-         onclick="return checkStillAdmin()" />
+        <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>" />
       </div>
       <div class="vrtx-button">
         <input type="submit" name="cancelAction" value="<@vrtx.msg code="permissions.cancel" default="Cancel"/>" />

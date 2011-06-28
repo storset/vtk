@@ -76,8 +76,10 @@ $(document).ready(function () {
 
   for (i = tabMenuServices.length; i--;) {
     getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], "vrtx-admin-form", ".activeTab ul.tabMenu2", false, "div", false);
+    
     if(tabMenuServices[i] != "fileUploadService") { // Only half-async for file upload
-      postAjaxForm("form[name=" + tabMenuServices[i] + "] input[type=submit]", "#contents", "errorContainer", "> ul");
+      postAjaxForm("form[name=" + tabMenuServices[i] + "] input[type=submit]", 
+                   ["#contents"], "errorContainer", "> ul");
     }
   }
 
@@ -89,6 +91,11 @@ $(document).ready(function () {
   for (i = privilegiesPermissions.length; i--;) {
     getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", "expandedForm-"
                + privilegiesPermissions[i], "div.permissions-" + privilegiesPermissions[i] + "-wrapper", true, "div", true);
+               
+    postAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
+                 [".permissions-" + privilegiesPermissions[i] + "-wrapper",
+                 ".resource-menu.read-permissions"], "errorContainer", 
+                 ".groups-wrapper");
   }
   
   // More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
@@ -98,6 +105,11 @@ $(document).ready(function () {
   for (i = privilegiesPermissionsInTable.length; i--;) {
     getAjaxForm(".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax", 
                 privilegiesPermissionsInTable[i], "tr." + privilegiesPermissionsInTable[i], true, "tr", true);
+                
+    postAjaxForm("tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
+                 ["tr." +  privilegiesPermissionsInTable[i],
+                 ".resource-menu.read-permissions"], "errorContainer", 
+                 ".groups-wrapper");
   }
 
   // About property forms
@@ -452,14 +464,15 @@ function getAjaxForm(link, selectorClass, insertAfterOrReplaceClass, isReplacing
       success: function (results, status, resp) {
         var form = $(results).find("." + selectorClass).html();
         if (isReplacing) {
-          $(insertAfterOrReplaceClass).replaceWith("<" + nodeType + " class='expandedForm " 
-                                                 + selectorClass + "'>" + form + "</" + nodeType + ">");
-          $(nodeType + "." + selectorClass).hide();
+          var classes = $(insertAfterOrReplaceClass).attr("class");
+          $(insertAfterOrReplaceClass)
+            .replaceWith("<" + nodeType + " class='expandedForm " 
+                       + selectorClass + " " + classes + "'>" + form + "</" + nodeType + ">");
         } else {
           $("<" + nodeType + " class='expandedForm " + selectorClass + "'>" + form + "</" + nodeType + ">")
-            .insertAfter(insertAfterOrReplaceClass).hide();
+            .insertAfter(insertAfterOrReplaceClass);
         }
-        $(nodeType + "." + selectorClass).slideDown(vrtxAdmin.transitionSpeed);
+        $(nodeType + "." + selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed);
         $(nodeType + "." + selectorClass).find("input[type=text]:first").focus();
         if(permissions) { // Specific for permissions (TODO: how to do this best?)
           toggleConfigCustomPermissions(selectorClass);
@@ -497,8 +510,8 @@ function getAjaxForm(link, selectorClass, insertAfterOrReplaceClass, isReplacing
  * @params pending..
  */
 
-function postAjaxForm(selector, updateSelector, errorContainer, errorContainerInsertAfter) {
-  $("#app-content").delegate(selector, "click", function () {
+function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerInsertAfter) {
+  $("#app-content").delegate(selector, "click", function (e) {
     var link = $(this);
     var linkAction = link.attr("name");
     var form = link.closest("form");
@@ -527,7 +540,7 @@ function postAjaxForm(selector, updateSelector, errorContainer, errorContainerIn
       dataString += '&' + name + '=' + value;
     }
     dataString += '&csrf-prevention-token=' + csrfPreventionToken + "&" + linkAction;
-
+    
     if (!encType.length) {
       encType = "application/x-www-form-urlencoded";
     }
@@ -547,7 +560,17 @@ function postAjaxForm(selector, updateSelector, errorContainer, errorContainerIn
               .insertAfter(form.find(errorContainerInsertAfter));
           }
         } else {
-          $("#app-content").find(updateSelector).html($(results).find(updateSelector).html());
+          for(i = updateSelectors.length; i--;) {
+            var classes = $(updateSelectors[i]).attr("class").split(" "),
+                j = classes.length, class = "";
+            while(j--) {
+              if(classes[j].indexOf("expandedForm") == -1) {
+                class += classes[j] + " ";
+              }
+            }
+            $(updateSelectors[i]).attr("class", class);
+            $("#app-content").find(updateSelectors[i]).html($(results).find(updateSelectors[i]).html());
+          }
           form.parent().slideUp(vrtxAdmin.transitionSpeed, function () {
             $(this).remove();
           });
@@ -566,6 +589,7 @@ function postAjaxForm(selector, updateSelector, errorContainer, errorContainerIn
         }
       }
     });
+    e.stopPropagation();
     return false;
   });
 }

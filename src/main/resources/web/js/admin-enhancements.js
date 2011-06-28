@@ -453,11 +453,16 @@ function dropdownCollectionGlobalMenu() {
 /**
  * GET form with AJAX
  *
- * @params pending..
+ * @param selector: selector for links that should get asynchronous form
+ * @param selectorClass: selector for form
+ * @param insertAfterOrReplaceClass: where to put the form
+ * @param isReplacing: replace instead of insert after
+ * @param nodeType: node type that should be replaced or inserted
+ * @param isPermissions: if it is a permission form post (TODO: referreds/callbacks instead)
  */
 
-function getAjaxForm(link, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, permissions) {
-  $("#app-content").delegate(link, "click", function (e) {
+function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, isPermissions) {
+  $("#app-content").delegate(selector, "click", function (e) {
     var serviceUrl = $(this).attr("href");
     $.ajax({
       type: "GET",
@@ -476,7 +481,7 @@ function getAjaxForm(link, selectorClass, insertAfterOrReplaceClass, isReplacing
         }
         $(nodeType + "." + selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed);
         $(nodeType + "." + selectorClass).find("input[type=text]:first").focus();
-        if(permissions) { // Specific for permissions (TODO: how to do this best?)
+        if(isPermissions) { // Specific for permissions (TODO: how to do this best?)
           toggleConfigCustomPermissions(selectorClass);
           interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]",
                                       "." + selectorClass + " input.addUserButton");
@@ -510,7 +515,10 @@ function getAjaxForm(link, selectorClass, insertAfterOrReplaceClass, isReplacing
 /**
  * POST form with AJAX
  *
- * @params pending..
+ * @param selector: selector for links that should post asynchronous form
+ * @param updateSelectors: one or more selectors for markup that should update after post (Array)
+ * @param errorContainer: selector for error container
+ * @param errorContainerInsertAfter: selector for where error container should be inserted after
  */
 
 function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerInsertAfter) {
@@ -564,6 +572,7 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
           }
         } else {
           for(i = updateSelectors.length; i--;) {
+            // Filter out 'expandedForm'-classes
             var classes = $(updateSelectors[i]).attr("class").split(" "),
                 j = classes.length, class = "";
             while(j--) {

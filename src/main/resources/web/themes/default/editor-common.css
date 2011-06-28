@@ -41,7 +41,8 @@ h2 {
 .vrtx-resource-ref,
 .vrtx-image-ref,
 .vrtx-media-ref,
-.vrtx-grouped-horizontal {
+.vrtx-grouped-horizontal,
+.vrtx-grouped {
   margin-top: 20px;
 }
 
@@ -63,18 +64,18 @@ h2 {
 .vrtx-media-ref label,
 .vrtx-grouped-horizontal .header,
 .vrtx-grouped-vertical .header,
+.vrtx-grouped .header,
 .vrtx-json .header {
   font-size: 1.15em;
   margin-bottom: 10px;
-  display: block;
+  display: inline-block;
 }
 
 .vrtx-grouped-vertical label,
 .vrtx-grouped-horizontal label,
+.vrtx-grouped label,
 .vrtx-json label {
   font-size: 1em;
-  margin-bottom: 10px;
-  display: block;
 }
 
 .tooltip,

@@ -817,7 +817,7 @@ function formatFeaturedArticlesData() {
   if ($("#resource\\.featured-articles").val() == null) {
     return;
   }
-  var data = $.find("input[id^='vrtx-featured-articles-']");
+  var data = $("input[id^='vrtx-featured-articles-']");
   var result = "";
   for (var i = 0, len = data.length; i < len; i++) {
     result += data[i].value;

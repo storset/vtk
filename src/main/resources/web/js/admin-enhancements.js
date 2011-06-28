@@ -532,15 +532,15 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
  * @param updateSelectors: one or more selectors for markup that should update after POST (Array)
  * @param errorContainer: selector for error container
  * @param errorContainerInsertAfter: selector for where error container should be inserted after
- * @param funcCondition: must return true to continue
+ * @param funcProceedCondition: must return true to continue
  */
 
-function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerInsertAfter, funcCondition) {
+function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerInsertAfter, funcProceedCondition) {
   $("#app-content").delegate(selector, "click", function (e) {
     var link = $(this);
     var linkAction = link.attr("name");
     var form = link.closest("form");
-    if(funcCondition(form)) {
+    if(funcProceedCondition(form)) {
       var url = form.attr("action");
       var encType = form.attr("enctype");
 

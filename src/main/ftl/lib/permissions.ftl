@@ -187,7 +187,7 @@
       <@editACLFormGroupsOrUsers "user" privilegeName submitUrl />
     </ul>
     <div id="submitButtons" class="submitButtons">
-      <div class="vrtx-button">
+      <div class="vrtx-focus-button">
         <input type="submit" name="saveAction" value="<@vrtx.msg code="permissions.save" default="Save"/>"
          onclick="return checkStillAdmin()" />
       </div>

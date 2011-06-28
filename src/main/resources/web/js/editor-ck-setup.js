@@ -54,7 +54,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (name.indexOf("additional-content") != -1 || name.indexOf("additionalContents") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 150, 400, 40, 
-                      isCompleteToolbar, true, false, baseDocumentUrl, isSimpleHTML);
+                      completeToolbar, true, false, baseDocumentUrl, isSimpleHTML);
   } else if (isCompleteEditor) {
     var height = 220;
     var maxHeight = 400;

@@ -1411,6 +1411,7 @@ div.vrtx-admin-form {
 /* Buttons */
 
 .vrtx-button,
+.vrtx-focus-button,
 .vrtx-button-small {
   background: url(images/dropdown-left.gif) no-repeat 0 0;
   display: inline-block;
@@ -1421,16 +1422,23 @@ div.vrtx-admin-form {
   cursor: pointer;
 }
 
+.vrtx-focus-button {
+  background: url(images/focus-button-left.gif) no-repeat 0 0;
+}
+
 .vrtx-button-small {
   height: 22px;
   background: url(images/button-small-left.gif) no-repeat 0 0;
 }
 
 .vrtx-button span,
-.vrtx-button-small span,
 .vrtx-button input,
-.vrtx-button-small input,
 .vrtx-button button,
+.vrtx-focus-button span,
+.vrtx-focus-button input,
+.vrtx-focus-button button,
+.vrtx-button-small span,
+.vrtx-button-small input,
 .vrtx-button-small button {
   color: #363534;
   background: url(images/button-closed-right.gif) no-repeat top right;
@@ -1443,9 +1451,18 @@ div.vrtx-admin-form {
 }
 
 .vrtx-button input,
-.vrtx-button button {
+.vrtx-button button,
+.vrtx-focus-button input,
+.vrtx-focus-button button {
   height: 27px;
   padding: 0 15px 0 14px;
+}
+
+.vrtx-focus-button span,
+.vrtx-focus-button input,
+.vrtx-focus-button button {
+  color: #fff;
+  background: url(images/focus-button-right.gif) no-repeat top right;
 }
 
 .vrtx-button-small span,
@@ -1466,19 +1483,32 @@ div.vrtx-admin-form {
   background-image: url(images/dropdown-left-rollover.gif);
 }
 
+.vrtx-focus-button:hover {
+  background-image: url(images/focus-button-left-rollover.gif);
+}
+
 .vrtx-button-small:hover {
   background-image: url(images/button-small-left-rollover.gif);
 }
 
 .vrtx-button:hover span,
-.vrtx-button-small:hover span,
 .vrtx-button:hover input,
-.vrtx-button-small:hover input,
 .vrtx-button:hover button,
+.vrtx-focus-button:hover span,
+.vrtx-focus-button:hover input,
+.vrtx-focus-button:hover button,
+.vrtx-button-small:hover span,
+.vrtx-button-small:hover input,
 .vrtx-button-small:hover button {
   color: #fff;
   text-decoration: none;
   background: url(images/button-closed-right-rollover.gif) no-repeat top right;
+}
+
+.vrtx-focus-button:hover span,
+.vrtx-focus-button:hover input,
+.vrtx-focus-button:hover button {
+  background: url(images/focus-button-right-rollover.gif) no-repeat top right;
 }
 
 .vrtx-button-small:hover span,
@@ -1494,7 +1524,9 @@ div.vrtx-admin-form {
 }
 
 .submitButtons .vrtx-button,
-#submitButtons .vrtx-button {
+#submitButtons .vrtx-button,
+.submitButtons .vrtx-focus-button,
+#submitButtons .vrtx-focus-button {
   margin: 0 10px 0 0;
 }
 

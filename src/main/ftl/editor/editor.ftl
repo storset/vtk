@@ -129,7 +129,7 @@
         <div class="vrtx-button">
           <input type="submit" id="saveAndViewButton" onClick="formatFeaturedArticlesData();performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
         </div>
-        <div class="vrtx-button">
+        <div class="vrtx-focus-button">
           <input type="submit" id="saveButton" onClick="formatFeaturedArticlesData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
         </div>
         <div class="vrtx-button">

@@ -106,12 +106,15 @@ h2 {
 
 /* 2. Dimensions and explicit settings */
 
-div.title input,
-div.name input,
-div.userTitle input,
 div.navigationTitle input,
 div.aggregation input {
   width: 485px;
+}
+
+div.title input,
+div.name input,
+div.userTitle input {
+  width: 473px;
 }
 
 div.additionalContent,

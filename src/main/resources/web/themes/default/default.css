@@ -1549,6 +1549,21 @@ div.vrtx-admin-form {
   display: inline-block;
 }
 
+.vrtx-textfield-big {
+  background: url(images/textfield-big-left.gif) no-repeat 0 0;
+  height: 23px;
+  padding: 10px 0 0 12px;
+  display: inline-block;
+}
+
+.vrtx-textfield-big input {
+  background: url(images/textfield-big-right.gif) no-repeat top right;
+  height: 33px;
+  margin: -11px -6px 0 0;
+  padding: 0 14px 0 0;
+  display: inline-block;
+}
+
 /* ^ Textfields */
 
 /* Mozilla hacks */

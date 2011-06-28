@@ -23,7 +23,11 @@
 	    </#list>
 	  </select>
     <#else>
-      <div class="vrtx-textfield">
+      <#if inputFieldName == "title">
+        <div class="vrtx-textfield-big">
+      <#else>
+        <div class="vrtx-textfield">
+      </#if>
 	    <input size="${inputFieldSize}" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}"/>
 	  </div>
     </#if>

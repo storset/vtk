@@ -289,10 +289,14 @@
 
         <#if value = '' && name='userTitle'>
           <#local value = resource.title?html />
+        </#if>  
+        <#if name='userTitle'>  
+          <div class="vrtx-textfield-big">
+        <#else>
+          <div class="vrtx-textfield">
         </#if>
-        <div class="vrtx-textfield">
-          <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
-        </div>
+            <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
+          </div>
         <#if description != "">
           <span class="input-description">(${description})</span>
         </#if>

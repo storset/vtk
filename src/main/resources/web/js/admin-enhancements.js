@@ -89,7 +89,6 @@ $(document).ready(function () {
     );
     
     if(tabMenuServices[i] != "fileUploadService") { // Only half-async for file upload
-    
       postAjaxForm("form[name=" + tabMenuServices[i] + "] input[type=submit]", 
                    ["#contents"],
                    "errorContainer",
@@ -132,7 +131,8 @@ $(document).ready(function () {
                 "tr." + privilegiesPermissionsInTable[i],
                 true,
                 "tr",
-                initPermissionForm);
+                initPermissionForm
+    );
                 
     postAjaxForm("tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
                  ["tr." +  privilegiesPermissionsInTable[i],

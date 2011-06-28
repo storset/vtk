@@ -147,14 +147,14 @@ $(document).ready(function () {
   /* ^ GET/POST forms with AJAX (initalization/config) */
 
   // Show/hide multiple properties (initalization/config)
-  showHide(new Array("#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"),
-                     "#resource\\.recursive-listing\\.false:checked", 'false', new Array("#vrtx-resource\\.recursive-listing-subfolders"));
+  showHide(["#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"],
+            "#resource\\.recursive-listing\\.false:checked", 'false', ["#vrtx-resource\\.recursive-listing-subfolders"]);
 
-  showHide(new Array("#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"),
-                     "#resource\\.display-type\\.calendar:checked", null, new Array("#vrtx-resource\\.event-type-title"));
+  showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
+            "#resource\\.display-type\\.calendar:checked", null, ["#vrtx-resource\\.event-type-title"]);
 
-  showHide(new Array("#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"),
-                     "#resource\\.display-type\\.calendar:checked", 'calendar', new Array("#vrtx-resource\\.hide-additional-content"));
+  showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
+            "#resource\\.display-type\\.calendar:checked", 'calendar', ["#vrtx-resource\\.hide-additional-content"]);
 
   // Remove active tab if it has no children
   if (!$("#main .activeTab > *").length) {
@@ -259,7 +259,7 @@ function placeDeleteButtonInActiveTab() {
     if (!boxes.length) {
       alert(deleteUncheckedMessage);
     } else {
-      var list = new String("");
+      var list = "";
       var boxesSize = boxes.size();
       for (var i = 0; i < boxesSize && i < 10; i++) {
         list += boxes[i].name + '\n';
@@ -321,7 +321,7 @@ function placeDeletePermanentButtonInActiveTab() {
       var confirmDeletePermanentlyAnd = 'and';
       var confirmDeletePermanentlyMore = 'more';
 
-      var list = new String("");
+      var list = "";
       var boxesSize = boxes.size();
       for (var i = 0; i < boxesSize && i < 10; i++) {
         list += boxes[i].title + '\n';

@@ -20,20 +20,21 @@ $(document).ready(function() {
     if(manuallyApproveFolders.length) {
       var val = manuallyApproveFolders.val();
       lastVal = val;
-      manuallyApproveFolders = val.split(",");
+      var folders = val.split(",");
       if(aggregatedFolders.length) {
         aggregatedFolders = aggregatedFolders.val().split(",");
       }
-      retrieveResources(".", manuallyApproveFolders, aggregatedFolders);
+      retrieveResources(".", folders, aggregatedFolders);
     }
 
     // Refresh when folders to approve from are changed
     $("#manually-approve-refresh").click( function(e) {
-      var val = $("#resource\\.manually-approve-from").val();
+      var val = manuallyApproveFolders.val();
       lastVal = val;
       var folders = val.split(",");
-      var val2 = $("#resource\\.aggregation").val();
-      var aggregatedFolders = val2.split(",");
+      if(aggregatedFolders.length) {
+        aggregatedFolders = aggregatedFolders.val().split(",");
+      }
       retrieveResources(".", folders, aggregatedFolders);
       $(this).hide();
       return false;

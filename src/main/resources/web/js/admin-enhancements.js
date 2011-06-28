@@ -89,9 +89,9 @@ $(document).ready(function () {
                                 "all"];
 
   for (i = privilegiesPermissions.length; i--;) {
-    $.when(getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", "expandedForm-"
-                     + privilegiesPermissions[i], "div.permissions-" + privilegiesPermissions[i] + "-wrapper", true, "div", 
-                       initPermissionForm)).then(function(resp) {});
+    getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", "expandedForm-"
+              + privilegiesPermissions[i], "div.permissions-" + privilegiesPermissions[i] + "-wrapper", true, "div", 
+                initPermissionForm);
 
     postAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
                  [".permissions-" + privilegiesPermissions[i] + "-wrapper",
@@ -104,9 +104,9 @@ $(document).ready(function () {
                                        "read-processed"];
 
   for (i = privilegiesPermissionsInTable.length; i--;) {
-    $.when(getAjaxForm(".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax", 
-                       privilegiesPermissionsInTable[i], "tr." + privilegiesPermissionsInTable[i], true, "tr",
-                       initPermissionForm)).then(function(resp) {});
+    getAjaxForm(".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax", 
+                privilegiesPermissionsInTable[i], "tr." + privilegiesPermissionsInTable[i], true, "tr",
+                initPermissionForm);
                 
     postAjaxForm("tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
                  ["tr." +  privilegiesPermissionsInTable[i],
@@ -473,12 +473,10 @@ function dropdownCollectionGlobalMenu() {
  * @param insertAfterOrReplaceClass: where to put the form
  * @param isReplacing: replace instead of insert after
  * @param nodeType: node type that should be replaced or inserted
- *
- * @return deferred obj. with status
+ * @param funcComlete: function to run when AJAX is completed and form is visible
  */
 
 function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, funcComplete) {
-  var ajaxComplete = $.Deferred();
   $("#app-content").delegate(selector, "click", function (e) {
     var serviceUrl = $(this).attr("href");
     $.ajax({
@@ -498,7 +496,7 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
         }
         $(nodeType + "." + selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
           $(this).find("input[type=text]:first").focus();
-          ajaxComplete.resolveWith(funcComplete(selectorClass));
+          funcComplete(selectorClass);
         });     
       },
       error: function (xhr, textStatus) {
@@ -517,7 +515,6 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
     e.stopPropagation();
     return false;
   });
-  return ajaxComplete.promise();
 }
 
 /**

@@ -43,7 +43,7 @@ function displayDateAsMultipleInputFields(name) {
   var date = new Array("");
   var fieldName = name.replace(/\./g, '\\.');
 
-  var a = $.find("#" + fieldName);
+  var a = $("#" + fieldName);
 
   if (a.length > 0) {
     hours = extractHoursFromDate(a[0].value);
@@ -57,8 +57,8 @@ function displayDateAsMultipleInputFields(name) {
              + "' class='hours' /></div>";
   minutesField = "<div class='vrtx-textfield vrtx-minutes'><input type='text' size='2' id='" + name + "-minutes' name='" + name + "-minutes' value='" + minutes
                + "' class='minutes' /></div>";
-  $("#" + fieldName).parent().hide();
-  $("#" + fieldName).parent().after(dateField + hoursField + ":" + minutesField);
+  a.parent().hide();
+  a.parent().after(dateField + hoursField + ":" + minutesField);
   $("#" + fieldName + "-date").datepicker({
     dateFormat :'yy-mm-dd'
   });

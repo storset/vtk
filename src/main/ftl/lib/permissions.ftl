@@ -164,19 +164,7 @@
   <#assign submitUrl = spring.status.value />
 
   <@spring.bind formName + ".yourselfStillAdmin" /> 
-  <script type="text/javascript"><!--
-    function checkStillAdmin() {
-      var stillAdmin = ${spring.status.value?string};
-      if(!stillAdmin) {
-        if(!confirm("<@vrtx.msg code='permissions.all.confirm.remove.yourself' 
-                      default='Are you sure you want to remove all admin permissions for yourself?' />")) {
-          return false;
-        }
-      }
-      return true; 
-    }
-  // -->
-  </script>
+  <#assign yourselfStillAdmin = spring.status.value?string />
   
   <form class="aclEdit" action="${submitUrl?html}" method="post">
     <h3>${privilegeHeading}</h3>
@@ -185,6 +173,7 @@
     <ul class="principalList" id="principalList">
       <@editACLFormGroupsOrUsers "group" privilegeName submitUrl />
       <@editACLFormGroupsOrUsers "user" privilegeName submitUrl />
+      <li class="still-admin" style="display:none;">${yourselfStillAdmin}</li>
     </ul>
     <div id="submitButtons" class="submitButtons">
       <div class="vrtx-focus-button">

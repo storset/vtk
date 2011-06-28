@@ -79,10 +79,10 @@ $(document).ready(function () {
     
     if(tabMenuServices[i] != "fileUploadService") { // Only half-async for file upload
       postAjaxForm("form[name=" + tabMenuServices[i] + "] input[type=submit]", 
-                   ["#contents"], "errorContainer", "> ul");
+                   ["#contents"], "errorContainer", "> ul", function(p) {return true;});
     }
   }
-
+  
   // Permission privilegie forms (READ, READ_WRITE, ALL)
   var privilegiesPermissions = ["read",
                                 "read-write",
@@ -92,11 +92,11 @@ $(document).ready(function () {
     getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", "expandedForm-"
               + privilegiesPermissions[i], "div.permissions-" + privilegiesPermissions[i] + "-wrapper", true, "div", 
                 initPermissionForm);
-
+                
     postAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
                  [".permissions-" + privilegiesPermissions[i] + "-wrapper",
                  ".resource-menu.read-permissions"], "errorContainer", 
-                 ".groups-wrapper");
+                 ".groups-wrapper", checkStillAdmin);
   }
   
   // More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
@@ -107,11 +107,10 @@ $(document).ready(function () {
     getAjaxForm(".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax", 
                 privilegiesPermissionsInTable[i], "tr." + privilegiesPermissionsInTable[i], true, "tr",
                 initPermissionForm);
-                
     postAjaxForm("tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
                  ["tr." +  privilegiesPermissionsInTable[i],
                  ".resource-menu.read-permissions"], "errorContainer", 
-                 ".groups-wrapper");      
+                 ".groups-wrapper", function(p) {return true;});      
   }
 
   // About property forms
@@ -138,11 +137,11 @@ $(document).ready(function () {
   }
 
   // Remove permission
-  ajaxRemove("input.removePermission");
+  ajaxRemove("input.removePermission", ".principalList");
 
   // Add permission(s)
-  ajaxAdd("span.addGroup", ".groups-wrapper", "errorContainer");
-  ajaxAdd("span.addUser", ".users-wrapper", "errorContainer");
+  ajaxAdd("span.addGroup", ".principalList", "errorContainer");
+  ajaxAdd("span.addUser", ".principalList", "errorContainer");
 
   /* ^ GET/POST forms with AJAX (initalization/config) */
 
@@ -398,7 +397,16 @@ function toggleConfigCustomPermissions(selectorClass) {
       $(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed);
       e.stopPropagation();
     });
-  
+}
+
+function checkStillAdmin(selector) {
+  var stillAdmin = selector.find(".still-admin").text();
+  if(stillAdmin == "false") {
+    if(!confirm("Are you sure you want to remove all admin permissions for yourself?'")) {
+      return false;
+    }
+  }
+  return true; 
 }
 
 /* ^ Permissions */
@@ -524,94 +532,97 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
  * @param updateSelectors: one or more selectors for markup that should update after POST (Array)
  * @param errorContainer: selector for error container
  * @param errorContainerInsertAfter: selector for where error container should be inserted after
+ * @param funcCondition: must return true to continue
  */
 
-function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerInsertAfter) {
+function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerInsertAfter, funcCondition) {
   $("#app-content").delegate(selector, "click", function (e) {
     var link = $(this);
     var linkAction = link.attr("name");
     var form = link.closest("form");
-    var url = form.attr("action");
-    var encType = form.attr("enctype");
+    if(funcCondition(form)) {
+      var url = form.attr("action");
+      var encType = form.attr("enctype");
 
-    var textfields = form.find("input[type=text]");
-    var fileFields = form.find("input[type=file]");
-    var checkedRadioButtons = form.find("input[type=radio]:checked");
-    var checkedCheckboxes = form.find("input[type=checkbox]:checked");
-    var csrfPreventionToken = form.find("input[name='csrf-prevention-token']").val();
+      var textfields = form.find("input[type=text]");
+      var fileFields = form.find("input[type=file]");
+      var checkedRadioButtons = form.find("input[type=radio]:checked");
+      var checkedCheckboxes = form.find("input[type=checkbox]:checked");
+      var csrfPreventionToken = form.find("input[name='csrf-prevention-token']").val();
 
-    var dataString = "";
-    for (var i = textfields.length; i--;) {
-      var name = $(textfields[i]).attr("name");
-      var value = $(textfields[i]).val();
-      dataString += '&' + name + '=' + value;
-    }
-    for (i = fileFields.length; i--;) {
-      var name = $(fileFields[i]).attr("name");
-      var value = $(fileFields[i]).val();
-      dataString += '&' + name + '=' + value;
-    }
-    for (i = checkedRadioButtons.length; i--;) {
-      var name = $(checkedRadioButtons[i]).attr("name");
-      var value = $(checkedRadioButtons[i]).val();
-      dataString += '&' + name + '=' + value;
-    }
-    for (i = checkedCheckboxes.length; i--;) {
-      var name = $(checkedCheckboxes[i]).attr("name");
-      var value = $(checkedCheckboxes[i]).val();
-      dataString += '&' + name + '=' + value;
-    }
-    dataString += '&csrf-prevention-token=' + csrfPreventionToken + "&" + linkAction;
-    
-    if (!encType.length) {
-      encType = "application/x-www-form-urlencoded";
-    }
-
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: dataString,
-      dataType: "html",
-      contentType: encType,
-      success: function (results, status, resp) {
-        if ($(results).find("div." + errorContainer).length) {
-          if (form.find("div." + errorContainer).length) {
-            form.find("div." + errorContainer).html($(results).find("div." + errorContainer).html());
-          } else {
-            $("<div class='" + errorContainer + "'>" + $(results).find("div." + errorContainer).html() + "</div>")
-              .insertAfter(form.find(errorContainerInsertAfter));
-          }
-        } else {
-          for(var i = updateSelectors.length; i--;) {
-            // Filter out 'expandedForm'-classes
-            var classes = $(updateSelectors[i]).attr("class").split(" "),
-                j = classes.length, class = "";
-            while(j--) {
-              if(classes[j].indexOf("expandedForm") == -1) {
-                class += classes[j] + " ";
-              }
-            }
-            $(updateSelectors[i]).attr("class", class);
-            $("#app-content").find(updateSelectors[i]).html($(results).find(updateSelectors[i]).html());
-          }
-          form.parent().slideUp(vrtxAdmin.transitionSpeed, function () {
-            $(this).remove();
-          });
-        }
-      },
-      error: function (xhr, textStatus) {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-          var msg = "The service is not active: " + textStatus;
-        } else {
-          var msg = "The service returned " + xhr.status + " and failed to retrieve form.";
-        }
-        if ($("#app-content > .errormessage").length) {
-          $("#app-content > .errormessage").html(msg);
-        } else {
-          $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
-        }
+      var dataString = "";
+      for (var i = textfields.length; i--;) {
+        var name = $(textfields[i]).attr("name");
+        var value = $(textfields[i]).val();
+        dataString += '&' + name + '=' + value;
       }
-    });
+      for (i = fileFields.length; i--;) {
+        var name = $(fileFields[i]).attr("name");
+        var value = $(fileFields[i]).val();
+        dataString += '&' + name + '=' + value;
+      }
+      for (i = checkedRadioButtons.length; i--;) {
+        var name = $(checkedRadioButtons[i]).attr("name");
+        var value = $(checkedRadioButtons[i]).val();
+        dataString += '&' + name + '=' + value;
+      }
+      for (i = checkedCheckboxes.length; i--;) {
+        var name = $(checkedCheckboxes[i]).attr("name");
+        var value = $(checkedCheckboxes[i]).val();
+        dataString += '&' + name + '=' + value;
+      }
+      dataString += '&csrf-prevention-token=' + csrfPreventionToken + "&" + linkAction;
+    
+      if (!encType.length) {
+        encType = "application/x-www-form-urlencoded";
+      }
+
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: dataString,
+        dataType: "html",
+        contentType: encType,
+        success: function (results, status, resp) {
+          if ($(results).find("div." + errorContainer).length) {
+            if (form.find("div." + errorContainer).length) {
+              form.find("div." + errorContainer).html($(results).find("div." + errorContainer).html());
+            } else {
+              $("<div class='" + errorContainer + "'>" + $(results).find("div." + errorContainer).html() + "</div>")
+                .insertAfter(form.find(errorContainerInsertAfter));
+            }
+          } else {
+            for(var i = updateSelectors.length; i--;) {
+              // Filter out 'expandedForm'-classes
+              var classes = $(updateSelectors[i]).attr("class").split(" "),
+                  j = classes.length, class = "";
+              while(j--) {
+                if(classes[j].indexOf("expandedForm") == -1) {
+                  class += classes[j] + " ";
+                }
+              }
+              $(updateSelectors[i]).attr("class", class);
+              $("#app-content").find(updateSelectors[i]).html($(results).find(updateSelectors[i]).html());
+            }
+            form.parent().slideUp(vrtxAdmin.transitionSpeed, function () {
+              $(this).remove();
+            });
+          }
+        },
+        error: function (xhr, textStatus) {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            var msg = "The service is not active: " + textStatus;
+          } else {
+            var msg = "The service returned " + xhr.status + " and failed to retrieve form.";
+          }
+          if ($("#app-content > .errormessage").length) {
+            $("#app-content > .errormessage").html(msg);
+          } else {
+            $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
+          }
+        }
+      });
+    }
     e.stopPropagation();
     return false;
   });
@@ -621,9 +632,10 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
  * POST remove-links (value is in the name)
  * 
  * @param selector: selector for links that should post asynchronous
+ * @param updateSelector: selector for markup to update
  */
 
-function ajaxRemove(selector) {
+function ajaxRemove(selector, updateSelector) {
   $("#app-content").delegate(selector, "click", function (e) {
     var link = $(this);
     var name = link.attr("name");
@@ -638,7 +650,7 @@ function ajaxRemove(selector) {
       data: dataString,
       dataType: "html",
       success: function (results, status, resp) {
-        listElement.remove();
+        form.find(updateSelector).html($(results).find(updateSelector).html());
       },
       error: function (xhr, textStatus) {
         if (xhr.readyState == 4 && xhr.status == 200) {

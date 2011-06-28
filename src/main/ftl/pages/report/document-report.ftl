@@ -26,7 +26,6 @@
   
   <#if report.result?exists && report.result?size &gt; 0 >
     <table id="vrtx-report-document-table" class="directoryListing">
-    <#assign collectionSize = report.result?size />
       <thead>
         <tr>
           <th id="vrtx-report-title"><@vrtx.msg code="report.title" default="Title" /></th>

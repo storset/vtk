@@ -107,7 +107,8 @@ h2 {
 /* 2. Dimensions and explicit settings */
 
 div.navigationTitle input,
-div.aggregation input {
+div.aggregation input,
+div.cssUrl input {
   width: 485px;
 }
 

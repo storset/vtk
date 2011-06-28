@@ -36,7 +36,7 @@
   padding-top: 20px;
 }
 
-.vrtx-json .vrtx-json-element .vrtx-image-ref img {
+.vrtx-image-ref img {
   margin-top: 20px;
 }
 
@@ -55,10 +55,22 @@
   display: inline;
 }
 
-.vrtx-grouped-horizontal .vrtx-string {
+.vrtx-grouped-horizontal .vrtx-string,
+.vrtx-grouped-horizontal .vrtx-radio,
+.vrtx-grouped-horizontal .vrtx-resource-ref,
+.vrtx-grouped-horizontal .vrtx-image-ref,
+.vrtx-grouped-horizontal .vrtx-media-ref {
   float: left;
   margin-right: 20px;
   margin-top: 0px;
+}
+
+.vrtx-grouped .vrtx-string,
+.vrtx-grouped .vrtx-radio,
+.vrtx-grouped .vrtx-resource-ref,
+.vrtx-grouped .vrtx-image-ref,
+.vrtx-grouped .vrtx-media-ref {
+  margin-top: 15px;
 }
 
 .vrtx-add-button,

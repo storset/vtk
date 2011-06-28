@@ -68,7 +68,7 @@ h2 {
 .vrtx-json .header {
   font-size: 1.15em;
   margin-bottom: 10px;
-  display: inline-block;
+  display: block;
 }
 
 .vrtx-grouped-vertical label,

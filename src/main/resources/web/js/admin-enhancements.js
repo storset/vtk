@@ -473,7 +473,7 @@ function dropdownCollectionGlobalMenu() {
  * @param insertAfterOrReplaceClass: where to put the form
  * @param isReplacing: replace instead of insert after
  * @param nodeType: node type that should be replaced or inserted
- * @param funcComlete: function to run when AJAX is completed and form is visible
+ * @param funcComplete: function(selectorClass) to run when AJAX is completed and form is visible
  */
 
 function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, funcComplete) {

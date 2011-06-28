@@ -1,6 +1,8 @@
 /*
  *  Vortex Admin enhancements
  *
+ *  TODO: i18n
+ *
  */
  
 var agent = navigator.userAgent.toLowerCase();
@@ -621,6 +623,7 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
         contentType: encType,
         success: function (results, status, resp) {
           if ($(results).find("div." + errorContainer).length) {
+            // TODO: support for multiple errorContainers (place the correct one in correct place (e.g. users and groups))
             if (form.find("div." + errorContainer).length) {
               form.find("div." + errorContainer).html($(results).find("div." + errorContainer).html());
             } else {

@@ -66,7 +66,7 @@ $(document).ready(function () {
                             "manage\\.createArchiveService"];
 
   for (var i = globalMenuServices.length; i--;) {
-    getAjaxForm("#titleContainer a#" + globalMenuServices[i], "globalmenu", "#titleContainer ul.globalMenu", false, "div");
+    getAjaxForm("#titleContainer a#" + globalMenuServices[i], "globalmenu", "#titleContainer ul.globalMenu", false, "div", function(p){});
   }
 
   // Tab menu service forms
@@ -75,7 +75,7 @@ $(document).ready(function () {
                          "createCollectionService"];
 
   for (i = tabMenuServices.length; i--;) {
-    getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], "vrtx-admin-form", ".activeTab ul.tabMenu2", false, "div");
+    getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], "vrtx-admin-form", ".activeTab ul.tabMenu2", false, "div", function(p){});
     
     if(tabMenuServices[i] != "fileUploadService") { // Only half-async for file upload
       postAjaxForm("form[name=" + tabMenuServices[i] + "] input[type=submit]", 
@@ -89,12 +89,9 @@ $(document).ready(function () {
                                 "all"];
 
   for (i = privilegiesPermissions.length; i--;) {
-    var ajaxComplete = getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", "expandedForm-"
-               + privilegiesPermissions[i], "div.permissions-" + privilegiesPermissions[i] + "-wrapper", true, "div");
-    $.when(ajaxComplete)
-      .then(function(resp) {
-        // want to init permission form here.. but selectorClass must somehow be returned when resolved() 
-    });
+    $.when(getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", "expandedForm-"
+                     + privilegiesPermissions[i], "div.permissions-" + privilegiesPermissions[i] + "-wrapper", true, "div", 
+                       initPermissionForm)).then(function(resp) {});
 
     postAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
                  [".permissions-" + privilegiesPermissions[i] + "-wrapper",
@@ -107,12 +104,9 @@ $(document).ready(function () {
                                        "read-processed"];
 
   for (i = privilegiesPermissionsInTable.length; i--;) {
-    var ajaxComplete = getAjaxForm(".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax", 
-                privilegiesPermissionsInTable[i], "tr." + privilegiesPermissionsInTable[i], true, "tr");
-    $.when(ajaxComplete)
-      .then(function(resp) {
-        // want to init permission form here.. but selectorClass must somehow be returned when resolved()         
-    });
+    $.when(getAjaxForm(".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax", 
+                       privilegiesPermissionsInTable[i], "tr." + privilegiesPermissionsInTable[i], true, "tr",
+                       initPermissionForm)).then(function(resp) {});
                 
     postAjaxForm("tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
                  ["tr." +  privilegiesPermissionsInTable[i],
@@ -140,7 +134,7 @@ $(document).ready(function () {
 
   for (i = propsAbout.length; i--;) {
     getAjaxForm("body#vrtx-about .prop-" + propsAbout[i] + " a.vrtx-button-small", "expandedForm-prop-"
-               + propsAbout[i], "tr.prop-" + propsAbout[i], true, "tr");
+               + propsAbout[i], "tr.prop-" + propsAbout[i], true, "tr", function(p){});
   }
 
   // Remove permission
@@ -483,7 +477,7 @@ function dropdownCollectionGlobalMenu() {
  * @return deferred obj. with status
  */
 
-function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType) {
+function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, funcComplete) {
   var ajaxComplete = $.Deferred();
   $("#app-content").delegate(selector, "click", function (e) {
     var serviceUrl = $(this).attr("href");
@@ -504,7 +498,7 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
         }
         $(nodeType + "." + selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
           $(this).find("input[type=text]:first").focus();
-          ajaxComplete.resolveWith(initPermissionForm(selectorClass));
+          ajaxComplete.resolveWith(funcComplete(selectorClass));
         });     
       },
       error: function (xhr, textStatus) {

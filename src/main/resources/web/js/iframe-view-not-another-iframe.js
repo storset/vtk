@@ -8,31 +8,26 @@
  *  TODO: refactor with iframe-view.js (much of same code used here without another iframe)
  *  
  */
-$(document).ready(function()
-	{		
-		var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65))
-	
-		var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of admin
-			
-		$(window).load(function()
-			{
-				// Set inline style to equal the body height of the iframed content,
-				// when body content is at least 350px height
-				var setHeight = 350;
-				var computedHeight = document.body.offsetHeight;
-				if (computedHeight > setHeight) { 
-					setHeight = computedHeight;
-				}
-				document.body.style.height = setHeight + "px";
-				if (hasPostMessage && parent) {
-					// Pass our height to parent since it is typically cross domain (and can't access it directly)
-					parent.postMessage(setHeight, vrtxAdminOrigin);	
-				}	
-				var links = $("a");
-			    for(var i = 0, len = links.length; i < len; i++) {
-		          $(links[i]).attr("target", "_top");
-	            }
-			}
-		);
-	}
-);
+$(document).ready(function () {
+  var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65))
+
+  var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of admin
+  $(window).load(function () {
+    // Set inline style to equal the body height of the iframed content,
+    // when body content is at least 350px height
+    var setHeight = 350;
+    var computedHeight = document.body.offsetHeight;
+    if (computedHeight > setHeight) {
+      setHeight = computedHeight;
+    }
+    document.body.style.height = setHeight + "px";
+    if (hasPostMessage && parent) {
+      // Pass our height to parent since it is typically cross domain (and can't access it directly)
+      parent.postMessage(setHeight, vrtxAdminOrigin);
+    }
+    var links = $("a");
+    for (var i = 0, len = links.length; i < len; i++) {
+      $(links[i]).attr("target", "_top");
+    }
+  });
+});

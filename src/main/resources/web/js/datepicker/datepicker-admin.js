@@ -1,4 +1,4 @@
-// JavaScript Document	
+// Initialize Datepicker for new documenttypes
 
 function initDatePicker(language) {
 
@@ -9,7 +9,7 @@ function initDatePicker(language) {
     $.datepicker.setDefaults($.datepicker.regional['nn']);
   }
 
-  $(".date").each( function() {
+  $(".date").each(function () {
     displayDateAsMultipleInputFields(this.name);
   });
 
@@ -26,13 +26,15 @@ function initDatePicker(language) {
   if (startDate != null) {
     setDefaultEndDate();
   }
-  $("#start-date-date").change( function() {
+  $("#start-date-date").change(function () {
     setDefaultEndDate();
   });
 }
 
 // Stupid test to check if script is loaded from editor
 // UNSAVED_CHANGES_CONFIRMATION is defined in "structured-resource/editor.ftl"
+
+
 function requestFromEditor() {
   return !(typeof (UNSAVED_CHANGES_CONFIRMATION) == "undefined");
 }
@@ -51,16 +53,13 @@ function displayDateAsMultipleInputFields(name) {
     date = new String(a[0].value).split(" ");
   }
 
-  dateField = "<div class='vrtx-textfield vrtx-date'><input type='text' size='12' id='" + name + "-date' name='" + name + "-date' value='" + date[0]
-            + "' class='date' /></div>";
-  hoursField = "<div class='vrtx-textfield vrtx-hours'><input type='text' size='2' id='" + name + "-hours' name='" + name + "-hours' value='" + hours
-             + "' class='hours' /></div>";
-  minutesField = "<div class='vrtx-textfield vrtx-minutes'><input type='text' size='2' id='" + name + "-minutes' name='" + name + "-minutes' value='" + minutes
-               + "' class='minutes' /></div>";
+  dateField = "<div class='vrtx-textfield vrtx-date'><input type='text' size='12' id='" + name + "-date' name='" + name + "-date' value='" + date[0] + "' class='date' /></div>";
+  hoursField = "<div class='vrtx-textfield vrtx-hours'><input type='text' size='2' id='" + name + "-hours' name='" + name + "-hours' value='" + hours + "' class='hours' /></div>";
+  minutesField = "<div class='vrtx-textfield vrtx-minutes'><input type='text' size='2' id='" + name + "-minutes' name='" + name + "-minutes' value='" + minutes + "' class='minutes' /></div>";
   a.parent().hide();
   a.parent().after(dateField + hoursField + ":" + minutesField);
   $("#" + fieldName + "-date").datepicker({
-    dateFormat :'yy-mm-dd'
+    dateFormat: 'yy-mm-dd'
   });
 }
 
@@ -103,9 +102,8 @@ function extractMinutesFromDate(datetime) {
 }
 
 function saveDateAndTimeFields() {
-  $(".date").each( function() {
-    if (!this.name)
-      return;
+  $(".date").each(function () {
+    if (!this.name) return;
     var fieldName = this.name.replace(/\./g, '\\.');
     var hours = $.find("#" + fieldName + "-hours");
     var minutes = $.find("#" + fieldName + "-minutes");
@@ -122,10 +120,10 @@ function saveDateAndTimeFields() {
     }
 
     // Hack fix for editor.. .must be removed!!!
-      if (requestFromEditor()) {
-        $("#" + fieldName + "-hours").remove();
-        $("#" + fieldName + "-minutes").remove();
-        $("#" + fieldName + "-date").remove();
-      }
-    });
+    if (requestFromEditor()) {
+      $("#" + fieldName + "-hours").remove();
+      $("#" + fieldName + "-minutes").remove();
+      $("#" + fieldName + "-date").remove();
+    }
+  });
 }

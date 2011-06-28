@@ -1,10 +1,9 @@
 // IE 6 max-height CSS substitute
-
-$(document).ready( function() {
+$(document).ready(function () {
   if (jQuery.browser.msie && jQuery.browser.version <= 6) {
     var maxSize = parseInt($(this).css('height'));
     var imageContainers = $(".vrtx-image-container");
-    for(var i = imageContainers.length; i--; ) { // performance: two fewer operations per iteration
+    for (var i = imageContainers.length; i--;) { // performance: two fewer operations per iteration
       var img = $(this).find("img"); // performance: cache object
       var height = img.height();
       if (height > maxSize) {

@@ -31,7 +31,7 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
                                             width: 300, 
                                             max: 30,
                                             delay: 800 };
-
+                                            
 $(document).ready(function () {
 
   // Buttons into links
@@ -66,7 +66,7 @@ $(document).ready(function () {
                             "manage\\.createArchiveService"];
 
   for (var i = globalMenuServices.length; i--;) {
-    getAjaxForm("#titleContainer a#" + globalMenuServices[i], "globalmenu", "#titleContainer ul.globalMenu", false, "div", false);
+    getAjaxForm("#titleContainer a#" + globalMenuServices[i], "globalmenu", "#titleContainer ul.globalMenu", false, "div");
   }
 
   // Tab menu service forms
@@ -75,7 +75,7 @@ $(document).ready(function () {
                          "createCollectionService"];
 
   for (i = tabMenuServices.length; i--;) {
-    getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], "vrtx-admin-form", ".activeTab ul.tabMenu2", false, "div", false);
+    getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], "vrtx-admin-form", ".activeTab ul.tabMenu2", false, "div");
     
     if(tabMenuServices[i] != "fileUploadService") { // Only half-async for file upload
       postAjaxForm("form[name=" + tabMenuServices[i] + "] input[type=submit]", 
@@ -89,9 +89,13 @@ $(document).ready(function () {
                                 "all"];
 
   for (i = privilegiesPermissions.length; i--;) {
-    getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", "expandedForm-"
-               + privilegiesPermissions[i], "div.permissions-" + privilegiesPermissions[i] + "-wrapper", true, "div", true);
-               
+    var ajaxComplete = getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", "expandedForm-"
+               + privilegiesPermissions[i], "div.permissions-" + privilegiesPermissions[i] + "-wrapper", true, "div");
+    $.when(ajaxComplete)
+      .then(function(resp) {
+        // want to init permission form here.. but selectorClass must somehow be returned when resolved() 
+    });
+
     postAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
                  [".permissions-" + privilegiesPermissions[i] + "-wrapper",
                  ".resource-menu.read-permissions"], "errorContainer", 
@@ -103,13 +107,17 @@ $(document).ready(function () {
                                        "read-processed"];
 
   for (i = privilegiesPermissionsInTable.length; i--;) {
-    getAjaxForm(".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax", 
-                privilegiesPermissionsInTable[i], "tr." + privilegiesPermissionsInTable[i], true, "tr", true);
+    var ajaxComplete = getAjaxForm(".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax", 
+                privilegiesPermissionsInTable[i], "tr." + privilegiesPermissionsInTable[i], true, "tr");
+    $.when(ajaxComplete)
+      .then(function(resp) {
+        // want to init permission form here.. but selectorClass must somehow be returned when resolved()         
+    });
                 
     postAjaxForm("tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
                  ["tr." +  privilegiesPermissionsInTable[i],
                  ".resource-menu.read-permissions"], "errorContainer", 
-                 ".groups-wrapper");
+                 ".groups-wrapper");      
   }
 
   // About property forms
@@ -132,7 +140,7 @@ $(document).ready(function () {
 
   for (i = propsAbout.length; i--;) {
     getAjaxForm("body#vrtx-about .prop-" + propsAbout[i] + " a.vrtx-button-small", "expandedForm-prop-"
-               + propsAbout[i], "tr.prop-" + propsAbout[i], true, "tr", false);
+               + propsAbout[i], "tr.prop-" + propsAbout[i], true, "tr");
   }
 
   // Remove permission
@@ -368,7 +376,20 @@ function switchCheckedRow(checkbox) {
 
 /* ^ Collectionlisting interaction */
 
-/* Permission shortcuts/custom toggling */
+/* Permissions */
+
+function initPermissionForm(selectorClass) {
+  toggleConfigCustomPermissions(selectorClass);
+  interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]",
+                              "." + selectorClass + " input.addUserButton");
+  interceptEnterKeyAndReroute("." + selectorClass + " .addGroup input[type=text]",
+                              "." + selectorClass + " input.addGroupButton");
+  permissionsAutocomplete('userNames', 
+                          'userNames', vrtxAdmin.permissionsAutocompleteParams);
+  splitAutocompleteSuggestion('userNames');
+  permissionsAutocomplete('groupNames', 
+                          'groupNames', vrtxAdmin.permissionsAutocompleteParams);
+}
 
 function toggleConfigCustomPermissions(selectorClass) {
     if (!$("." + selectorClass + " ul.shortcuts label[for=custom] input").is(":checked")
@@ -386,7 +407,7 @@ function toggleConfigCustomPermissions(selectorClass) {
   
 }
 
-/* ^ Permission shortcuts/custom toggling */
+/* ^ Permissions */
 
 /* Dropdowns */
 
@@ -458,10 +479,12 @@ function dropdownCollectionGlobalMenu() {
  * @param insertAfterOrReplaceClass: where to put the form
  * @param isReplacing: replace instead of insert after
  * @param nodeType: node type that should be replaced or inserted
- * @param isPermissions: if it is a permission form post (TODO: referreds/callbacks instead)
+ *
+ * @return deferred obj. with status
  */
 
-function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, isPermissions) {
+function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType) {
+  var ajaxComplete = $.Deferred();
   $("#app-content").delegate(selector, "click", function (e) {
     var serviceUrl = $(this).attr("href");
     $.ajax({
@@ -479,20 +502,10 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
           $("<" + nodeType + " class='expandedForm " + selectorClass + "'>" + form + "</" + nodeType + ">")
             .insertAfter(insertAfterOrReplaceClass);
         }
-        $(nodeType + "." + selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed);
-        $(nodeType + "." + selectorClass).find("input[type=text]:first").focus();
-        if(isPermissions) { // Specific for permissions (TODO: how to do this best?)
-          toggleConfigCustomPermissions(selectorClass);
-          interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]",
-                                      "." + selectorClass + " input.addUserButton");
-          interceptEnterKeyAndReroute("." + selectorClass + " .addGroup input[type=text]",
-                                      "." + selectorClass + " input.addGroupButton");
-          permissionsAutocomplete('userNames', 
-                                  'userNames', vrtxAdmin.permissionsAutocompleteParams);
-          splitAutocompleteSuggestion('userNames');
-          permissionsAutocomplete('groupNames', 
-                                  'groupNames', vrtxAdmin.permissionsAutocompleteParams);
-        }
+        $(nodeType + "." + selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
+          $(this).find("input[type=text]:first").focus();
+          ajaxComplete.resolveWith(initPermissionForm(selectorClass));
+        });     
       },
       error: function (xhr, textStatus) {
         if (xhr.readyState == 4 && xhr.status == 200) {
@@ -510,6 +523,7 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
     e.stopPropagation();
     return false;
   });
+  return ajaxComplete.promise();
 }
 
 /**

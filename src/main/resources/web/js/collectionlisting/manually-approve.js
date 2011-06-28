@@ -5,18 +5,27 @@
 var lastVal = "";
 
 $(window).ready( function() {
-  lastVal = $("#resource\\.manually-approve-from").val();
+  var manuallyApproveFolders = $("#resource\\.manually-approve-from");
+  if(manuallyApproveFolders.length) {
+    lastVal = manuallyApproveFolders.val()
+  }
 });
 
-$(document).ready( function() {
+$(document).ready(function() {
 
     // Retrieve initial resources
-    var val = $("#resource\\.manually-approve-from").val();
-    lastVal = val;
-    var folders = val.split(",");
-    var val2 = $("#resource\\.aggregation").val();
-    var aggregatedFolders = val2.split(",");
-    retrieveResources(".", folders, aggregatedFolders);
+    var manuallyApproveFolders = $("#resource\\.manually-approve-from");
+    var aggregatedFolders = $("#resource\\.aggregation");
+    
+    if(manuallyApproveFolders.length) {
+      var val = manuallyApproveFolders.val();
+      lastVal = val;
+      manuallyApproveFolders = val.split(",");
+      if(aggregatedFolders.length) {
+        aggregatedFolders = aggregatedFolders.val().split(",");
+      }
+      retrieveResources(".", manuallyApproveFolders, aggregatedFolders);
+    }
 
     // Refresh when folders to approve from are changed
     $("#manually-approve-refresh").click( function(e) {

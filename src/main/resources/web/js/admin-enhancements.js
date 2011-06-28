@@ -404,8 +404,9 @@ function dropdownLanguageMenu() {
 
     languageMenu.addClass("dropdown-shortcut-menu-container");
 
-    $(".localeSelection").delegate(".localeSelectionHeader", "click", function () {
+    $(".localeSelection").delegate(".localeSelectionHeader", "click", function (e) {
       $(this).next(".dropdown-shortcut-menu-container").slideToggle(vrtxAdmin.transitionDropdownSpeed);
+      e.stopPropagation();
       return false;
     });
   }
@@ -430,8 +431,9 @@ function dropdownCollectionGlobalMenu() {
     shortcutMenu.find("li.first").remove();
     shortcutMenu.css("left", (collectionGlobalMenu.width() - 24) + "px");
 
-    collectionGlobalMenu.find("li.first #dropdown-shortcut-menu-click-area").click(function () {
+    collectionGlobalMenu.find("li.first #dropdown-shortcut-menu-click-area").click(function (e) {
       shortcutMenu.slideToggle(vrtxAdmin.transitionDropdownSpeed);
+      e.stopPropagation();
       return false;
     });
 
@@ -455,7 +457,7 @@ function dropdownCollectionGlobalMenu() {
  */
 
 function getAjaxForm(link, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, permissions) {
-  $("#app-content").delegate(link, "click", function () {
+  $("#app-content").delegate(link, "click", function (e) {
     var serviceUrl = $(this).attr("href");
     $.ajax({
       type: "GET",
@@ -500,6 +502,7 @@ function getAjaxForm(link, selectorClass, insertAfterOrReplaceClass, isReplacing
         }
       }
     });
+    e.stopPropagation();
     return false;
   });
 }
@@ -601,7 +604,7 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
  */
 
 function ajaxRemove(selector) {
-  $("#app-content").delegate(selector, "click", function () {
+  $("#app-content").delegate(selector, "click", function (e) {
     var link = $(this);
     var name = link.attr("name");
     var listElement = link.parent();
@@ -630,6 +633,7 @@ function ajaxRemove(selector) {
         }
       }
     });
+    e.stopPropagation();
     return false;
   });
 }
@@ -643,7 +647,7 @@ function ajaxRemove(selector) {
  */
 
 function ajaxAdd(selector, updateSelector, errorContainer) {
-  $("#app-content").delegate(selector + " input[type=submit]", "click", function () {
+  $("#app-content").delegate(selector + " input[type=submit]", "click", function (e) {
     var link = $(this);
     var linkAction = link.attr("name");
     var textfield = link.parent().parent().find("input[type=text]");
@@ -685,6 +689,7 @@ function ajaxAdd(selector, updateSelector, errorContainer) {
         }
       }
     });
+    e.stopPropagation();
     return false;
   });
 }

@@ -388,13 +388,14 @@
 
         <#local uniqueName = 'cal_' + propDef_index />
         <div class="vrtx-textfield">
-          <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date"
-                 value="${dateVal}" />
+          <input size="10" maxlength="10" type="text" class="date" id="resource.${name}" name="resource.${name}.date" value="${dateVal}" />
         </div>
         <div class="vrtx-textfield">
-          <input size="2" maxlength="2" type="text" class="hours" id="resource.${name}.hours" name="resource.${name}.hours"
-                 value="${hours}"><span class="colon">:</span><input size="2" maxlength="2" type="text" class="minutes"
-                 id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
+          <input size="2" maxlength="2" type="text" class="hours" id="resource.${name}.hours" name="resource.${name}.hours" value="${hours}">
+        </div>
+          <span class="colon">:</span>
+        <div class="vrtx-textfield">
+          <input size="2" maxlength="2" type="text" class="minutes" id="resource.${name}.minutes" name="resource.${name}.minutes" value="${minutes}">
         </div>
 
       <#else>

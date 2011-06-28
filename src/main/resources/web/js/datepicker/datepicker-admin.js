@@ -51,15 +51,15 @@ function displayDateAsMultipleInputFields(name) {
     date = new String(a[0].value).split(" ");
   }
 
-  dateField = "<input type='text' size='12' id='" + name + "-date' name='" + name + "-date' value='" + date[0]
-      + "' class='date' />";
-  hoursField = "<input type='text' size='2' id='" + name + "-hours' name='" + name + "-hours' value='" + hours
-      + "' class='hours' />";
-  minutesField = "<input type='text' size='2' id='" + name + "-minutes' name='" + name + "-minutes' value='" + minutes
-      + "' class='minutes' />";
-  $("#" + fieldName).hide();
-  $("#" + fieldName).after(dateField + hoursField + ":" + minutesField);
-  $("#" + fieldName + "-date").datepicker( {
+  dateField = "<div class='vrtx-textfield vrtx-date'><input type='text' size='12' id='" + name + "-date' name='" + name + "-date' value='" + date[0]
+            + "' class='date' /></div>";
+  hoursField = "<div class='vrtx-textfield vrtx-hours'><input type='text' size='2' id='" + name + "-hours' name='" + name + "-hours' value='" + hours
+             + "' class='hours' /></div>";
+  minutesField = "<div class='vrtx-textfield vrtx-minutes'><input type='text' size='2' id='" + name + "-minutes' name='" + name + "-minutes' value='" + minutes
+               + "' class='minutes' /></div>";
+  $("#" + fieldName).parent().hide();
+  $("#" + fieldName).parent().after(dateField + hoursField + ":" + minutesField);
+  $("#" + fieldName + "-date").datepicker({
     dateFormat :'yy-mm-dd'
   });
 }

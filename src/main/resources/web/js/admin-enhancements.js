@@ -453,7 +453,7 @@ function dropdownCollectionGlobalMenu() {
 /**
  * GET form with AJAX
  *
- * @param selector: selector for links that should get asynchronous form
+ * @param selector: selector for links that should GET asynchronous form
  * @param selectorClass: selector for form
  * @param insertAfterOrReplaceClass: where to put the form
  * @param isReplacing: replace instead of insert after
@@ -515,8 +515,8 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
 /**
  * POST form with AJAX
  *
- * @param selector: selector for links that should post asynchronous form
- * @param updateSelectors: one or more selectors for markup that should update after post (Array)
+ * @param selector: selector for links that should POST asynchronous form
+ * @param updateSelectors: one or more selectors for markup that should update after POST (Array)
  * @param errorContainer: selector for error container
  * @param errorContainerInsertAfter: selector for where error container should be inserted after
  */

@@ -66,7 +66,13 @@ $(document).ready(function () {
                             "manage\\.createArchiveService"];
 
   for (var i = globalMenuServices.length; i--;) {
-    getAjaxForm("#titleContainer a#" + globalMenuServices[i], "globalmenu", "#titleContainer ul.globalMenu", false, "div", function(p){});
+    getAjaxForm("#titleContainer a#" + globalMenuServices[i], 
+                "globalmenu",
+                "#titleContainer ul.globalMenu",
+                false, 
+                "div", 
+                function(p){}
+    );
   }
 
   // Tab menu service forms
@@ -75,11 +81,21 @@ $(document).ready(function () {
                          "createCollectionService"];
 
   for (i = tabMenuServices.length; i--;) {
-    getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], "vrtx-admin-form", ".activeTab ul.tabMenu2", false, "div", function(p){});
+    getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], 
+                "vrtx-admin-form", ".activeTab ul.tabMenu2", 
+                false,
+                "div",
+                function(p){}
+    );
     
     if(tabMenuServices[i] != "fileUploadService") { // Only half-async for file upload
+    
       postAjaxForm("form[name=" + tabMenuServices[i] + "] input[type=submit]", 
-                   ["#contents"], "errorContainer", "> ul", function(p) {return true;});
+                   ["#contents"],
+                   "errorContainer",
+                   "> ul",
+                   function(p){return true;}
+      );
     }
   }
   
@@ -89,14 +105,21 @@ $(document).ready(function () {
                                 "all"];
 
   for (i = privilegiesPermissions.length; i--;) {
-    getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", "expandedForm-"
-              + privilegiesPermissions[i], "div.permissions-" + privilegiesPermissions[i] + "-wrapper", true, "div", 
-                initPermissionForm);
+    getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", 
+                "expandedForm-" + privilegiesPermissions[i],
+                "div.permissions-" + privilegiesPermissions[i] + "-wrapper",
+                true,
+                "div", 
+                initPermissionForm
+    );
                 
     postAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
                  [".permissions-" + privilegiesPermissions[i] + "-wrapper",
-                 ".resource-menu.read-permissions"], "errorContainer", 
-                 ".groups-wrapper", checkStillAdmin);
+                 ".resource-menu.read-permissions"],
+                 "errorContainer", 
+                 ".groups-wrapper",
+                 checkStillAdmin
+    );
   }
   
   // More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
@@ -105,12 +128,20 @@ $(document).ready(function () {
 
   for (i = privilegiesPermissionsInTable.length; i--;) {
     getAjaxForm(".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax", 
-                privilegiesPermissionsInTable[i], "tr." + privilegiesPermissionsInTable[i], true, "tr",
+                privilegiesPermissionsInTable[i],
+                "tr." + privilegiesPermissionsInTable[i],
+                true,
+                "tr",
                 initPermissionForm);
+                
     postAjaxForm("tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
                  ["tr." +  privilegiesPermissionsInTable[i],
-                 ".resource-menu.read-permissions"], "errorContainer", 
-                 ".groups-wrapper", function(p) {return true;});      
+                 ".resource-menu.read-permissions"],
+                 "errorContainer", 
+                 ".groups-wrapper",
+                 function(p) {return true;}
+                 
+    );      
   }
 
   // About property forms
@@ -132,8 +163,13 @@ $(document).ready(function () {
     ];
 
   for (i = propsAbout.length; i--;) {
-    getAjaxForm("body#vrtx-about .prop-" + propsAbout[i] + " a.vrtx-button-small", "expandedForm-prop-"
-               + propsAbout[i], "tr.prop-" + propsAbout[i], true, "tr", function(p){});
+    getAjaxForm("body#vrtx-about .prop-" + propsAbout[i] + " a.vrtx-button-small",
+                "expandedForm-prop-" + propsAbout[i],
+                "tr.prop-" + propsAbout[i],
+                true,
+                "tr",
+                function(p){}
+    );
   }
 
   // Remove permission

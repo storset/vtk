@@ -50,7 +50,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar,
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (name.indexOf("caption") != -1) {
-    setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 104, 400, 40, inlineToolbar, 
+    setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, inlineToolbar, 
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (name.indexOf("additional-content") != -1 || name.indexOf("additionalContents") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 150, 400, 40, 

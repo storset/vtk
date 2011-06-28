@@ -537,6 +537,7 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
     var textfields = form.find("input[type=text]");
     var fileFields = form.find("input[type=file]");
     var checkedRadioButtons = form.find("input[type=radio]:checked");
+    var checkedCheckboxes = form.find("input[type=checkbox]:checked");
     var csrfPreventionToken = form.find("input[name='csrf-prevention-token']").val();
 
     var dataString = "";
@@ -553,6 +554,11 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
     for (i = checkedRadioButtons.length; i--;) {
       var name = $(checkedRadioButtons[i]).attr("name");
       var value = $(checkedRadioButtons[i]).val();
+      dataString += '&' + name + '=' + value;
+    }
+    for (i = checkedCheckboxes.length; i--;) {
+      var name = $(checkedCheckboxes[i]).attr("name");
+      var value = $(checkedCheckboxes[i]).val();
       dataString += '&' + name + '=' + value;
     }
     dataString += '&csrf-prevention-token=' + csrfPreventionToken + "&" + linkAction;
@@ -576,7 +582,7 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
               .insertAfter(form.find(errorContainerInsertAfter));
           }
         } else {
-          for(i = updateSelectors.length; i--;) {
+          for(var i = updateSelectors.length; i--;) {
             // Filter out 'expandedForm'-classes
             var classes = $(updateSelectors[i]).attr("class").split(" "),
                 j = classes.length, class = "";

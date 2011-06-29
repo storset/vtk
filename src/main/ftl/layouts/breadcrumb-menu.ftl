@@ -26,16 +26,16 @@
 		<#else>
 			<#if (breadcrumb?size > elem_index + 1) > 
 				<#if elem.URL?exists>
-					<li  class="vrtx-parent" ><a href="${elem.URL}"><span>${elem.title?html}</span></a>
+					<li class="vrtx-parent" ><a href="${elem.URL}"><span>${elem.title?html}</span></a>
 				<#else>
-					<li  class="vrtx-parent" ><span>${elem.title?html}</span>
+					<li class="vrtx-parent" ><span>${elem.title?html}</span>
 				</#if>
 			<#else>
 				<ul>
 				<#if elem.URL?exists>
-					<li  class="vrtx-child" ><a class="vrtx-marked" href="${elem.URL}"><span>${elem.title?html}</span></li>
+					<li class="vrtx-child" ><a class="vrtx-marked" href="${elem.URL}"><span>${elem.title?html}</span></li>
 				<#else>
-					<li  class="vrtx-child" ><span class="vrtx-marked">${elem.title?html}</span></li>
+					<li class="vrtx-child" ><span class="vrtx-marked">${elem.title?html}</span></li>
 				</#if>
 				</ul>
 			</#if>

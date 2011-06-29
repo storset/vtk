@@ -174,8 +174,6 @@ a:hover {
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span {
   display: block;
   float: left;
-  height: 24px;
-  padding: 7px 0 0 0;
   font-size: 1.15em;
 }
 
@@ -185,14 +183,21 @@ a:hover {
   text-decoration: none;
   display: block;
   float: left;
+  height: 24px;
+  padding: 7px 11px 0 11px;
 }
-
+/*
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span a:hover {
   text-decoration: underline;
-}
+}*/
 
-#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span {
-  
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active {
+  background: #d9d9d9 url(images/app-head-breadcrumb-delimiter-active.png) no-repeat left bottom;
+  display: block;
+  float: left;
+  height: 25px;
+  padding: 6px 15px 0 21px;
+  margin: 1px 0 0 -10px;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span span.vrtx-breadcrumb-delimiter {
@@ -201,7 +206,7 @@ a:hover {
   display: block;
   float: left;
   width: 10px;
-  margin: -13px 11px 0 11px;
+  margin: 1px 0 0 0;
   overflow: hidden;
   text-indent: -9999px;
 }

@@ -37,7 +37,7 @@
         </#if>
         </span>
       <#else>
-        <span class="vrtx-breadcrumb-level-${counter?html}">${name?html}
+        <span class="vrtx-breadcrumb-level-${counter?html} vrtx-breadcrumb-active">${name?html}
         <#if elem.delimiter?exists>
       	  <span class="vrtx-breadcrumb-delimiter">${elem.delimiter?html}</span>
         </#if>

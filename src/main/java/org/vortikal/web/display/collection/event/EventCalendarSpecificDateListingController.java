@@ -40,6 +40,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 import org.vortikal.web.display.listing.ListingPager;
+import org.vortikal.web.display.listing.ListingPagingLink;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -74,8 +75,8 @@ public class EventCalendarSpecificDateListingController extends EventCalendarLis
                 baseURL.setParameter(EventListingHelper.REQUEST_PARAMETER_DATE, request
                         .getParameter(EventListingHelper.REQUEST_PARAMETER_DATE));
 
-                List<URL> urls = ListingPager.generatePageThroughUrls(specificDateEvents.getTotalHits(), pageLimit,
-                        baseURL);
+                List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(specificDateEvents.getTotalHits(), pageLimit,
+                        baseURL, page);
                 model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
             } else {
                 model.put("noPlannedEventsMsg", this.helper.getEventTypeTitle(request, collection,

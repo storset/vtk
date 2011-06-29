@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.listing.ListingPager;
+import org.vortikal.web.display.listing.ListingPagingLink;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -71,7 +72,7 @@ public abstract class EventCalendarAllListingController extends EventCalendarLis
             String noPlannedTitleKey = viewType + "NoPlannedTitle";
             model.put(noPlannedTitleKey, noPlannedTitle);
         } else {
-            List<URL> urls = ListingPager.generatePageThroughUrls(result.getTotalHits(), pageLimit, serviceURL);
+            List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(result.getTotalHits(), pageLimit, serviceURL, page);
             model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
         }
     }

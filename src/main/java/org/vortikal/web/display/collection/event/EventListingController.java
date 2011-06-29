@@ -42,6 +42,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.AbstractCollectionListingController;
 import org.vortikal.web.display.listing.ListingPager;
+import org.vortikal.web.display.listing.ListingPagingLink;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -120,8 +121,8 @@ public class EventListingController extends AbstractCollectionListingController 
         Service service = RequestContext.getRequestContext().getService();
         URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
 
-        List<URL> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, totalUpcomingHits, 
-                baseURL, true);
+        List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, totalUpcomingHits, 
+                baseURL, true, userDisplayPage);
         model.put(MODEL_KEY_SEARCH_COMPONENTS, results);
         model.put(MODEL_KEY_PAGE, userDisplayPage);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);

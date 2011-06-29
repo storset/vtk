@@ -19,11 +19,6 @@
     <div class="vrtx-textfield">
 	  <input id="file" type="file" name="file">
 	</div>
-    <script type="text/javascript">
-    <!--
-		$("#file").attr("multiple","multiple");
-	-->
-	</script>
     <div id="submitButtons">
       <div class="vrtx-focus-button">
         <input type="submit" name="save" value="<@vrtx.msg code="actions.fileUploadService.save" default="Save"/>">

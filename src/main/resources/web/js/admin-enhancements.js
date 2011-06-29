@@ -87,7 +87,9 @@ $(document).ready(function () {
                 "vrtx-admin-form", ".activeTab ul.tabMenu2", 
                 false,
                 "div",
-                function(p){}
+                function(p){
+                   $("#file").attr("multiple", "multiple");
+                }
     );
     
     if(tabMenuServices[i] != "fileUploadService") { // Only half-async for file upload
@@ -178,8 +180,8 @@ $(document).ready(function () {
   ajaxRemove("input.removePermission", ".principalList");
 
   // Add permission(s)
-  ajaxAdd("span.addGroup", ".principalList", "errorContainer");
-  ajaxAdd("span.addUser", ".principalList", "errorContainer");
+  ajaxAdd("span.addGroup", "ul.groups", "errorContainer");
+  ajaxAdd("span.addUser", "ul.users", "errorContainer");
 
   /* ^ GET/POST forms with AJAX (initalization/config) */
 

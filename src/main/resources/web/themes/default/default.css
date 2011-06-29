@@ -207,7 +207,7 @@ a:hover {
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level-1 {
-  margin-left: -15px;
+  margin-left: -11px;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-before-active span.vrtx-breadcrumb-delimiter {
@@ -246,7 +246,7 @@ a:hover {
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level-1:hover {
   background: #4a9ce2;
-  margin: 0 0 0 -15px;
+  margin: 0 0 0 -11px;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level-1:hover a {

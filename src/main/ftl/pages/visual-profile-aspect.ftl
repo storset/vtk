@@ -58,7 +58,7 @@
       </div>
     </#list>
     <div class="submitButtons">
-      <div class="vrtx-button">
+      <div class="vrtx-focus-button">
         <input type="submit" id="saveAction" name="saveAction" onclick="checkSubmit()" value="<@vrtx.msg code="editor.save" default="Save"/>" />
       </div>
       <div class="vrtx-button">

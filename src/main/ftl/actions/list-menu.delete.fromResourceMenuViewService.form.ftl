@@ -4,7 +4,7 @@
 ${vrtx.getMsg("collectionListing.confirmation.delete")} <span class="vrtx-confirm-delete-name"> ${name}</span>? 
 
   <div class="submitButtons">
-    <div class="vrtx-button">
+    <div class="vrtx-focus-button">
       <button tabindex="1" type="submit" value="ok" id="deleteResourceAction" name="deleteResourceAction">
         ${vrtx.getMsg("confirm-delete.ok")}
       </button>

@@ -47,7 +47,7 @@
       <input type="text" name="${spring.status.expression}" value="${newDocName}">
     </div>
     <div id="submitButtons">
-      <div class="vrtx-button">
+      <div class="vrtx-focus-button">
         <input type="submit" name="save" value="<@vrtx.msg code="actions.createDocumentService.save" default="Create"/>">
       </div>
       <div class="vrtx-button">

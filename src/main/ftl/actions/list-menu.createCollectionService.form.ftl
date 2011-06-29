@@ -38,7 +38,7 @@
       <input type="text" name="name">
     </div>
     <div id="submitButtons">
-      <div class="vrtx-button">
+      <div class="vrtx-focus-button">
         <input type="submit" name="save" value="<@vrtx.msg code="actions.createCollectionService.save" default="Create"/>">
       </div>
       <div class="vrtx-button">

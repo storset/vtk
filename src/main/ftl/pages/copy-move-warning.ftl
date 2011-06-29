@@ -41,7 +41,7 @@
 
 <form name="vrtx-confirm-copy-move" id="vrtx-confirm-copy-move" action="${formURL}" method="post">
   <div class="submitButtons">
-    <div class="vrtx-button">
+    <div class="vrtx-focus-button">
       <button tabindex="1" type="submit" value="ok" id="confirmAction" name="confirm-action">
         ${vrtx.getMsg("copyMove.discloseWarning.ok")}
       </button>

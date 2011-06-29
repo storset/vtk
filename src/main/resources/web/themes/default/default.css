@@ -175,6 +175,7 @@ a:hover {
   display: block;
   float: left;
   font-size: 1.15em;
+  margin: 1px 0 0 0;
 }
 
 
@@ -183,20 +184,16 @@ a:hover {
   text-decoration: none;
   display: block;
   float: left;
-  height: 24px;
+  height: 23px;
   padding: 7px 11px 0 11px;
 }
-/*
-#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span a:hover {
-  text-decoration: underline;
-}*/
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active {
   background: #d9d9d9 url(images/app-head-breadcrumb-delimiter-active.png) no-repeat left bottom;
   display: block;
   float: left;
-  height: 25px;
-  padding: 6px 15px 0 21px;
+  height: 24px;
+  padding: 7px 15px 0 21px;
   margin: 1px 0 0 -10px;
 }
 
@@ -206,13 +203,33 @@ a:hover {
   display: block;
   float: left;
   width: 10px;
-  margin: 1px 0 0 0;
+  margin: 0 0 0 0;
   overflow: hidden;
   text-indent: -9999px;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb .breadcrumb-prefix {
   display: none;
+}
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span:hover {
+  background: #4a9ce2;
+  margin: 0;
+}
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span:hover a {
+  color: #fff;
+  height: 25px;
+}
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span:hover span.vrtx-breadcrumb-delimiter {
+  background: url(images/app-head-breadcrumb-delimiter-rollover-right.png) no-repeat right bottom;
+  height: 32px;
+}
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active:hover {
+  background: #d9d9d9 url(images/app-head-breadcrumb-delimiter-active.png) no-repeat left bottom;
+  margin: 1px 0 0 -10px;
 }
 
 /* "The Phark Method" - image replacement
@@ -1290,6 +1307,10 @@ div.tabMessage {
   max-width: 1200px;
   padding-left: 50px;
   padding-right: 50px;
+}
+
+.app-fluid #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb {
+  padding-left: 30px;
 }
 
 .app-fluid #app-content {

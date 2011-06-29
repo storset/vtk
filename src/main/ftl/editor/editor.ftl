@@ -92,7 +92,7 @@
 	  	<div class="vrtx-button">
 		  <input type="button" onClick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
 		</div>
-		<div class="vrtx-button">
+		<div class="vrtx-focus-button">
 		  <input type="button" onClick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
 		</div>
 		<div class="vrtx-button">

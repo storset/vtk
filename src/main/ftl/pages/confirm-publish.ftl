@@ -28,7 +28,7 @@ ${vrtx.getMsg("confirm-publish.confirmation.publish")}
 
 <form name="vrtx-publish-resource" id="vrtx-publish-resource" action="${url}" method="post">
   <div class="submitButtons">
-    <div class="vrtx-button">
+    <div class="vrtx-focus-button">
       <button tabindex="1" type="submit" value="ok" id="publishResourceAction" name="publishResourceAction">
         ${vrtx.getMsg("confirm-delete.ok")}
       </button>

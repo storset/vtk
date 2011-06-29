@@ -37,7 +37,7 @@
       <p>${vrtx.getMsg("unlockwarning.explanation")}</p>
     </#if>
     <div id="vrtx-unlock-buttons" class="submitButtons">
-      <div class="vrtx-button">
+      <div class="vrtx-focus-button">
         <button tabindex="1" type="submit" name="unlock" value="Unlock" >
           ${vrtx.getMsg("unlockwarning.unlock")}
         </button>

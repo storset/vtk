@@ -90,7 +90,7 @@
 		  	</li>
 		  </ul>
         <div id="submitButtons" class="submitButtons">
-          <div class="vrtx-button">
+          <div class="vrtx-focus-button">
             <input type="submit" id="${bindName}UpdateAction" name="${bindName}UpdateAction" value="${vrtx.getMsg("editor.save")}" onclick="saveDateAndTimeFields();"/>
           </div>
           <div class="vrtx-button">

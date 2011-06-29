@@ -60,7 +60,7 @@
         <div class="vrtx-button">
           <input type="submit" id="saveViewAction" name="saveViewAction" onclick="checkSubmit()" value="<@vrtx.msg code="plaintextEditForm.saveAndView" default="Save and view"/>" />
         </div>
-        <div class="vrtx-button">
+        <div class="vrtx-focus-button">
           <input type="submit" id="saveAction" name="saveAction" onclick="checkSubmit()" value="<@vrtx.msg code="plaintextEditForm.save" default="Save"/>" />
         </div>
         <div class="vrtx-button">

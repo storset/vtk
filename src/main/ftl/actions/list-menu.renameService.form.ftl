@@ -20,7 +20,7 @@
         <input type="text" size="20" name="name" value="${spring.status.value}" <#if confirm> readonly="readonly" </#if> />
       </div>
       <div id="submitButtons">
-        <div class="vrtx-button">
+        <div class="vrtx-focus-button">
       	<#if confirm>
       		<input type="submit" name="overwrite" value="<@vrtx.msg code="actions.renameService.overwrite" default="Overwrite"/>">
       	<#else>

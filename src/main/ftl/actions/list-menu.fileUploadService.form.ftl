@@ -25,7 +25,7 @@
 	-->
 	</script>
     <div id="submitButtons">
-      <div class="vrtx-button">
+      <div class="vrtx-focus-button">
         <input type="submit" name="save" value="<@vrtx.msg code="actions.fileUploadService.save" default="Save"/>">
       </div>
       <div class="vrtx-button">

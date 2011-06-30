@@ -253,6 +253,7 @@ resourcetype organizational-unit {
               [call "comp:introduction"]
               [call "comp:responsibilities"]
             </div>
+            [call "comp:subunits"]
             [call "comp:employees"]
             [call "comp:content"]
           </div>

@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.vortikal.repository.Path;
 import org.vortikal.web.service.URL;
 
 public class HtmlUtil {
@@ -207,21 +208,31 @@ public class HtmlUtil {
                 return;
             }
             String val = attr.getValue();
-            try {
-                val = unescapeHtmlString(val);
-                if (!URL.isRelativeURL(val)) {
+
+            val = unescapeHtmlString(val);
+            if (URL.isRelativeURL(val)) {
+                if (base.getHost().equals(requestURL.getHost())) {
+                    URL url = this.base.relativeURL(val);
+                    attr.setValue(escapeHtmlString(url.getPathRepresentation()));
+                } else {
+                    try {
+                        Path path = Path.fromString(val);
+                        URL url = new URL(base.getProtocol(), base.getHost(), path);
+                        attr.setValue(escapeHtmlString(url.toString()));
+                    } catch (Throwable t) {
+                    }
+                }
+            } else {
+                if (base.getHost().equals(requestURL.getHost())) {
                     try {
                         URL url = URL.parse(val);
                         if (url.getHost().equals(this.requestURL.getHost())) {
                             attr.setValue(escapeHtmlString(url.getPathRepresentation()));
                         }
-                    } catch (Throwable t) { }
-                    return;
+                    } catch (Throwable t) {
+                    }
                 }
-                // URL is relative:
-                URL url = this.base.relativeURL(val);
-                attr.setValue(escapeHtmlString(url.getPathRepresentation()));
-            } catch (Throwable t) { }
+            }
         }
 
         @Override

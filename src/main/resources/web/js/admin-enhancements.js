@@ -233,8 +233,9 @@ function initFileUpload() {
     inputFile.change(function() {
       var txt = $(this).val();
       $(this).closest("form").find("#fake-file").val(txt);
+      fileInfo("file");
     }); 
-    
+
     var textfieldWrapper = form.find(".vrtx-textfield"); 
 	textfieldWrapper.addClass("vrtx-file-upload");
 	textfieldWrapper.append("<input id='fake-file' />");
@@ -244,6 +245,20 @@ function initFileUpload() {
 	    $(this).closest("form").find("#file").trigger("click");
 	    return false;
 	 });
+  }
+}
+
+// Credits: http://www.html5rocks.com/en/tutorials/file/dndfiles/
+function fileInfo(file) {  
+  var files = document.getElementById(file).files;
+  if(files) {
+    var output = [];
+    for (var i = 0, f; f = files[i]; i++) {
+      output.push('<li><strong>', f.name, '</strong> (', f.type || 'n/a', ') - ',
+                  f.size, ' bytes, last modified: ',
+                  f.lastModifiedDate.toLocaleDateString(), '</li>');
+    }
+    $("<ul>" + output.join("") + "</ul>").insertAfter("a.vrtx-button");
   }
 }
 

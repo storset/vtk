@@ -235,7 +235,7 @@ function initFileUpload() {
     inputFile.change(function() {
       var txt = $(this).val();
       $(this).closest("form").find("#fake-file").val(txt);
-      fileInfo("file");
+      // fileInfo("file");
     });
 
     var textfieldWrapper = form.find(".vrtx-textfield"); 
@@ -256,6 +256,8 @@ function initFileUpload() {
 }
 
 // Credits: http://www.html5rocks.com/en/tutorials/file/dndfiles/
+/* File API for v3.?
+
 function fileInfo(file) {  
   if (vrtxAdmin.supportsFileAPI) {
     var files = document.getElementById(file).files;
@@ -276,6 +278,7 @@ function fileInfo(file) {
     }
   }
 }
+*/
 
 /* Keyboard interceptors/rerouters */
 

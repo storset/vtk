@@ -85,16 +85,13 @@ $(document).ready(function () {
                          "createCollectionService"];
 
   for (i = tabMenuServices.length; i--;) {
-    getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], 
-                "vrtx-admin-form", ".activeTab ul.tabMenu2", 
-                false,
-                "div",
-                function(p){
-                   initFileUpload();
-                }
-    );
-    
-    if(tabMenuServices[i] != "fileUploadService") { // Only half-async for file upload
+    if(tabMenuServices[i] != "fileUploadService") { // half-async for file upload
+      getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], 
+                  "vrtx-admin-form", ".activeTab ul.tabMenu2", 
+                  false,
+                  "div",
+                  function(p){}
+      );
       postAjaxForm("form[name=" + tabMenuServices[i] + "] input[type=submit]", 
                    ["#contents"],
                    "errorContainer",
@@ -102,6 +99,14 @@ $(document).ready(function () {
                    function(p){return true;}
       );
     } else {
+      getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], 
+                  "vrtx-admin-form", ".activeTab ul.tabMenu2", 
+                  false,
+                  "div",
+                  function(p){
+                    initFileUpload()
+                  }
+      );
       initFileUpload(); // when error message
     }
   }
@@ -221,26 +226,25 @@ function changeTemplateName(n) {
 }
 
 function initFileUpload() {
-    var form = $("form[name=fileUploadService]");
-    if(form.length) {
-      var inputFile = form.find("#file");
-      inputFile.attr("multiple", "multiple");
-      inputFile.change(function() {
-        var txt = $(this).val();
-        $(this).closest("form").find("#fake-file").val(txt);
-      }); 
+  var form = $("form[name=fileUploadService]");
+  if(form.length) {
+    var inputFile = form.find("#file");
+    inputFile.attr("multiple", "multiple");
+    inputFile.change(function() {
+      var txt = $(this).val();
+      $(this).closest("form").find("#fake-file").val(txt);
+    }); 
     
-      var textfieldWrapper = form.find(".vrtx-textfield"); 
-	  textfieldWrapper.addClass("vrtx-file-upload");
-	  textfieldWrapper.append("<input id='fake-file' />");
+    var textfieldWrapper = form.find(".vrtx-textfield"); 
+	textfieldWrapper.addClass("vrtx-file-upload");
+	textfieldWrapper.append("<input id='fake-file' />");
 
-	  $("<a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a>")
-	    .insertBefore("#submitButtons").click(function() {
-	      $(this).closest("form").find("#file").trigger("click");
-	      return false;
-	   });
-	  
-	}
+	$("<a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a>")
+	  .insertBefore("form[name=fileUploadService] #submitButtons").click(function() {
+	    $(this).closest("form").find("#file").trigger("click");
+	    return false;
+	 });
+  }
 }
 
 /* Keyboard interceptors/rerouters */
@@ -569,9 +573,9 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
           $("<" + nodeType + " class='expandedForm " + selectorClass + "'>" + form + "</" + nodeType + ">")
             .insertAfter(insertAfterOrReplaceClass);
         }
+        funcComplete(selectorClass);
         $(nodeType + "." + selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
           $(this).find("input[type=text]:first").focus();
-          funcComplete(selectorClass);
         });     
       },
       error: function (xhr, textStatus) {

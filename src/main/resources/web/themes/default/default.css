@@ -766,7 +766,7 @@ div.tabs {
   position: relative;
   top: 0px;
   left: 0px;
-  width: 65em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
+  width: 73em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
   height: 34px;
 }
 
@@ -777,7 +777,7 @@ div.tabs ul {
   position: absolute;
   bottom: -1px;
   left: 0;
-  width: 65em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
+  width: 73em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
   /* Width is also required for IE 6.0. Can be reduced when we shorten some of the text on the tabs */
   border-left: 1px solid #d8d8d8;
 }
@@ -1128,7 +1128,7 @@ body#vrtx-report-documents #app-content #main #contents table.directoryListing t
 
 /* ^ 3.5 Directorylisting */
 
-/* 3.6 Permissions / About / Publishing / View / Plaintext-edit  */
+/* 3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile  */
 
 body#vrtx-preview #app-content #main #contents {
   border: 1px solid #d9d9d9;
@@ -1270,7 +1270,11 @@ body#vrtx-edit-plaintext .contextual-help {
   float: right;
 }
 
-/* ^ 3.6 Permissions / About / Publishing / View / Plaintext-edit  */
+.vrtx-visual-profile-rows {
+  margin: 0 0 10px 0;
+}
+
+/* ^ 3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile  */
 
 /* 3.7 Messages */
 

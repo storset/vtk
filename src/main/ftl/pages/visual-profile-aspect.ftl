@@ -19,7 +19,7 @@
 <head>
   <title><@vrtx.msg code="visualProfileAspect.edit" default="Edit visual profile"/></title>
 </head>
-<body>
+<body id="vrtx-visual-profile">
   <#if form.configError?exists>
     Error in configuration file: ${form.configError?html}
   <#else>
@@ -27,7 +27,7 @@
   <h2><@vrtx.msg code="visualProfileAspect.edit" default="Edit visual profile"/></h2>
   <form action="${form.submitURL}" method="post">
     <#list form.elements as element>
-      <div>
+      <div class="vrtx-visual-profile-rows">
       <#if element.type == 'flag'>
         <input type="checkbox" name="${element.identifier?html}"
                value="true" <#if element.value?exists>checked="checked"</#if>> 

@@ -7,18 +7,20 @@
  
 var agent = navigator.userAgent.toLowerCase();
 
-var vrtxAdmin = {
-  isIE: null,
-  version: null,
-  isIE6: null,
-  isIE5OrHigher: null,
-  isWin: null,
-  permissionsAutocompleteParams: null,
-  transitionSpeed: 400, // same as 'default'
-  transitionCustomPermissionSpeed: 200, // same as 'fast'
-  transitionPropSpeed: 100,
-  transitionDropdownSpeed: 100
+function vortexAdmin() {
+  this.isIE = null;
+  this.version = null;
+  this.isIE6 = null;
+  this.isIE5OrHigher = null;
+  this.isWin = null;
+  this.permissionsAutocompleteParams = null;
+  this.transitionSpeed = 400; // same as 'default'
+  this.transitionCustomPermissionSpeed = 200; // same as 'fast'
+  this.transitionPropSpeed = 100;
+  this.transitionDropdownSpeed = 100;
 };
+
+var vrtxAdmin = new vortexAdmin();
 
 // Browser info
 vrtxAdmin.isIE = $.browser.msie;
@@ -635,14 +637,15 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
           } else {
             for(var i = updateSelectors.length; i--;) {
               // Filter out 'expandedForm'-classes
-              var classes = $(updateSelectors[i]).attr("class").split(" "),
-                  j = classes.length, class = "";
+              var classes = $(updateSelectors[i]).attr("class");
+              var j = classes.split(" ").length;
+              var finalClass = "";
               while(j--) {
                 if(classes[j].indexOf("expandedForm") == -1) {
-                  class += classes[j] + " ";
+                  finalClass += classes[j] + " ";
                 }
               }
-              $(updateSelectors[i]).attr("class", class);
+              $(updateSelectors[i]).attr("class", finalClass);
               $("#app-content").find(updateSelectors[i]).html($(results).find(updateSelectors[i]).html());
             }
             form.parent().slideUp(vrtxAdmin.transitionSpeed, function () {

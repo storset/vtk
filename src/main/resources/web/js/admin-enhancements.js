@@ -266,7 +266,13 @@ function fileInfo(file) {
                     f.size, ' bytes, last modified: ',
                     f.lastModifiedDate.toLocaleDateString(), '</li>');
       }
-      $("<ul>" + output.join("") + "</ul>").insertAfter("a.vrtx-button");
+      var fileList = $("#vrtx-file-upload-file-list");
+      if(fileList.length) {
+        fileList.html(output.join(""));
+      } else {
+        $("<ul id='vrtx-file-upload-file-list'>" 
+          + output.join("") + "</ul>").insertAfter("a.vrtx-button");
+      }
     }
   }
 }

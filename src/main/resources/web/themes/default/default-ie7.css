@@ -8,6 +8,18 @@ div.tabs {
   clear: left;
 }
 
+#main,
+#global-menu-bottom,
+#system-message-wrapper,
+.system-message {
+  z-index: -2; /* Fix dropdowns */
+}
+
+ul.listMenu.globalMenu {
+  margin-bottom: 0px;
+  padding-bottom: 20px;
+}
+
 .resource-title,
 #main .activeTab,
 #main #contents,

@@ -43,17 +43,19 @@
     <#list spring.status.value as tco>
       <#assign rr = tco.recoverableResource />
       
-      <#assign firstOrLast = ""  />
-      <#if (tco_index == 0)>
-        <#assign firstOrLast = " first" />
+      <#assign firstLast = ""  />
+      <#if (tco_index == 0) && (tco_index == (collectionSize - 1))>
+        <#assign firstLast = " first last" />  
+      <#elseif (tco_index == 0)>
+        <#assign firstLast = " first" />
       <#elseif (tco_index == (collectionSize - 1))>    
-        <#assign firstOrLast = " last" />     
+        <#assign firstLast = " last" />     
       </#if>
       
       <#if (tco_index % 2 == 0)>
-        <tr class="odd <@vrtx.iconResolver rr.resourceType rr.contentType />${firstOrLast}">
+        <tr class="odd <@vrtx.iconResolver rr.resourceType rr.contentType />${firstLast}">
       <#else>
-        <tr class="even <@vrtx.iconResolver rr.resourceType rr.contentType />${firstOrLast}">
+        <tr class="even <@vrtx.iconResolver rr.resourceType rr.contentType />${firstLast}">
       </#if>
           <td class="vrtx-trash-can-name name trash"><span class="vrtx-trash-can-name-text">${rr.name?html}</span></td>
           <td class="checkbox">

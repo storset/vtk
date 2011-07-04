@@ -68,14 +68,16 @@
             <#assign rowType = "even" />
           </#if>
           
-          <#assign firstOrLast = ""  />
-          <#if (res_index == 0)>
-            <#assign firstOrLast = " first" />
+          <#assign firstLast = ""  />
+          <#if (res_index == 0) && (res_index == (collectionSize - 1))>
+            <#assign firstLast = " first last" />
+          <#elseif (res_index == 0)>
+            <#assign firstLast = " first" />
           <#elseif (res_index == (collectionSize - 1))>
-            <#assign firstOrLast = " last" />     
+            <#assign firstLast = " last" />     
           </#if>
 
-          <tr class="${rowType} <@vrtx.iconResolver res.resourceType contentType />${firstOrLast}">  
+          <tr class="${rowType} <@vrtx.iconResolver res.resourceType contentType />${firstLast}">  
             <td class="vrtx-report-title"><a href="${url?html}">${title?html}</a></td>
             <td class="vrtx-report-last-modified">${lastModifiedTime?html}</td>
             <td class="vrtx-report-last-modified-by">${modifiedBy}</td>

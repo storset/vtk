@@ -129,17 +129,19 @@
   
   <#list collectionListing.children as child>
   
-  <#assign firstOrLast = ""  />
-  <#if (child_index == 0)>
-    <#assign firstOrLast = " first" />
+  <#assign firstLast = ""  />
+  <#if (child_index == 0) && (child_index == (collectionSize - 1))>
+    <#assign firstLast = " first last" /> 
+  <#elseif (child_index == 0)>
+    <#assign firstLast = " first" />
   <#elseif (child_index == (collectionSize - 1))>    
-    <#assign firstOrLast = " last" />     
+    <#assign firstLast = " last" />     
   </#if>
   
   <#if child.collection>
-    <tr class="${rowType} <@vrtx.iconResolver child.resourceType child.contentType /> true${firstOrLast}">  
+    <tr class="${rowType} <@vrtx.iconResolver child.resourceType child.contentType /> true${firstLast}">  
   <#else>
-    <tr class="${rowType} <@vrtx.iconResolver child.resourceType child.contentType />${firstOrLast}">
+    <tr class="${rowType} <@vrtx.iconResolver child.resourceType child.contentType />${firstLast}">
   </#if>
    <#list collectionListing.childInfoItems as item>
       <#assign class = item >

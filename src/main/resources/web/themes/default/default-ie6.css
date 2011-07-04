@@ -4,5 +4,8 @@
  *
  */
 
+div.tabs {
+  clear: left;
+}
 
 /* ^ Vortex IE 6 */

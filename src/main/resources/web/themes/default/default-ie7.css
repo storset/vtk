@@ -4,5 +4,22 @@
  *
  */
 
+div.tabs {
+  clear: left;
+}
+
+.resource-title,
+#main .activeTab,
+#main #contents {
+  max-height: 9999px;
+}
+
+.vrtx-textfield,
+.vrtx-textfield-big,
+.vrtx-button,
+.vrtx-focus-button,
+.vrtx-button-small {
+  display: inline;
+}
 
 /* ^ Vortex IE 7 */

@@ -598,8 +598,14 @@ function dropdownCollectionGlobalMenu() {
 function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, funcComplete) {
   $("#app-content").delegate(selector, "click", function (e) {
     var serviceUrl = $(this).attr("href");
-    var formExists = $("#app-content").find(".expandedForm").length;
-    if(!formExists) {
+    var formExists = $("#app-content").find(".expandedForm");
+    if(formExists.length) {
+      if(!isReplacing) {
+        formExists.slideUp(vrtxAdmin.transitionSpeed, function() {
+          $(this).remove();
+        });
+      }
+    }
       $.ajax({
         type: "GET",
         url: serviceUrl,
@@ -633,7 +639,6 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
           }
         }
       });
-    }
     e.stopPropagation();
     return false;
   });

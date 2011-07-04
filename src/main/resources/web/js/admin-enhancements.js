@@ -47,7 +47,7 @@ $(document).ready(function () {
   placeDeleteButtonInActiveTab();
   placeRecoverButtonInActiveTab();
   placeDeletePermanentButtonInActiveTab();
-
+  
   // Checking rows in collectionlisting
   $(".vrtx-check-all").click(checkAll);
   $(".vrtx-uncheck-all").click(uncheckAll);
@@ -90,7 +90,7 @@ $(document).ready(function () {
                 false,
                 "div",
                 function(p){
-                   $("#file").attr("multiple", "multiple");
+                   initFileUpload();
                 }
     );
     
@@ -101,6 +101,8 @@ $(document).ready(function () {
                    "> ul",
                    function(p){return true;}
       );
+    } else {
+      initFileUpload(); // when error message
     }
   }
   
@@ -216,6 +218,29 @@ $(document).ready(function () {
 /* Used by "createDocumentService" available from "manageCollectionListingService" */
 function changeTemplateName(n) {
   $("form[name=createDocumentService] input[type=text]").val(n);
+}
+
+function initFileUpload() {
+    var form = $("form[name=fileUploadService]");
+    if(form.length) {
+      var inputFile = form.find("#file");
+      inputFile.attr("multiple", "multiple");
+      inputFile.change(function() {
+        var txt = $(this).val();
+        $(this).closest("form").find("#fake-file").val(txt);
+      }); 
+    
+      var textfieldWrapper = form.find(".vrtx-textfield"); 
+	  textfieldWrapper.addClass("vrtx-file-upload");
+	  textfieldWrapper.append("<input id='fake-file' />");
+
+	  $("<a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a>")
+	    .insertBefore("#submitButtons").click(function() {
+	      $(this).closest("form").find("#file").trigger("click");
+	      return false;
+	   });
+	  
+	}
 }
 
 /* Keyboard interceptors/rerouters */

@@ -17,7 +17,7 @@
 	    </div>
       </#if>
     <div class="vrtx-textfield">
-	  <input id="file" type="file" name="file">
+	  <input id="file" type="file" name="file" />
 	</div>
     <div id="submitButtons">
       <div class="vrtx-focus-button">

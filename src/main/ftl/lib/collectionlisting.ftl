@@ -95,15 +95,15 @@
 
           <#case "name">
             <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
-              <@vrtx.msg code="collectionListing.${item}" default="${item?cap_first}"/></a> 
+              <@vrtx.msg code="collectionListing.${item}" default="${item?cap_first}"/></a>
+            <#if withForm>
+                 </th><th class="checkbox">
+               </#if>
             <#break>
             
          <#case "title">
             <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
               <@vrtx.msg code="collectionListing.resourceTitle" default="Title"/></a>
-              <#if withForm>
-                 </th><th class="checkbox">
-               </#if>
             <#break>
 
           <#default>
@@ -156,25 +156,24 @@
         <#switch item>
         
            <#case "title">
+            ${child.title}
+            <#break>
+
+          <#case "name">
             <#if collectionListing.browsingLinks[child_index]?exists>
               <#local resourceTypeName = vrtx.resourceTypeName(child) />
               <a href="${collectionListing.browsingLinks[child_index]?html}" title="${resourceTypeName}">
-                <span class="authorizedListedResource">${child.title}</span>
+                <span class="authorizedListedResource">${child.name}</span>
               </a>
               <#if withForm>
                </td><td class="checkbox" align="center"><input name="${child.URI?html}" type="checkbox"/>
               </#if>
             <#else>
-              <span class="unauthorizedListedResource">${child.title}</span>
+              <span class="unauthorizedListedResource">${child.name}</span>
               <#if withForm>
                 </td><td class="checkbox" align="center">&nbsp;
-              </#if>
-
+              </#if> 
             </#if>
-            <#break>
-
-          <#case "name">
-            ${child.name}
             <#break>
 
           <#case "content-length">

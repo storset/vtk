@@ -299,8 +299,8 @@ function logoutButtonAsLink() {
     return;
   }
   btn.hide();
-  btn.after('&nbsp;(&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">'
-          + btn.attr('value') + '</a>&nbsp;)');
+  btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">'
+          + btn.attr('value') + '</a>');
   $('#logoutAction\\.link').click(function () {
     btn.click();
     return false;

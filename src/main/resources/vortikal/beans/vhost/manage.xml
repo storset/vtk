@@ -1802,7 +1802,6 @@
     <property name="browsingService" ref="manageService" />
     <property name="childInfoItems">
       <list>
-        <value>title</value>
         <value>name</value>
         <value>permissions</value>
         <value>resource-type</value>

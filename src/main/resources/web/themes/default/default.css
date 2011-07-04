@@ -979,12 +979,12 @@ ul.listMenu.tabMenu2 li.deleteResourcePermanentService a {
   padding-right: 30px;
 }
 
-#app-content #main #contents table.directoryListing tr th.title,
-#app-content #main #contents table.directoryListing tr td.title,
+#app-content #main #contents table.directoryListing tr th.name,
+#app-content #main #contents table.directoryListing tr td.name,
 #app-content #main #contents table.directoryListing tr th#vrtx-trash-can\.name,
 #app-content #main #contents table.directoryListing tr td.vrtx-trash-can-name,
-body#vrtx-report-documents #app-content #main #contents table.directoryListing tr th#vrtx-report-title,
-body#vrtx-report-documents #app-content #main #contents table.directoryListing tr td.vrtx-report-title {
+body#vrtx-report-documents #app-content #main #contents table.directoryListing tr th#vrtx-report-name,
+body#vrtx-report-documents #app-content #main #contents table.directoryListing tr td.vrtx-report-name {
   padding-left: 15px;
 }
 
@@ -1056,71 +1056,71 @@ body#vrtx-report-documents #app-content #main #contents table.directoryListing t
 
 /* Icons */
 
-#app-content #main #contents table.directoryListing tr td.title a,
+#app-content #main #contents table.directoryListing tr td.name a,
 #app-content #main #contents table.directoryListing tr td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr td.vrtx-report-title a {
+#app-content #main #contents table.directoryListing tr td.vrtx-report-name a {
   padding: 2px 0 2px 31px;
   display: block;
   background: url(images/file-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.true td.title a,
+#app-content #main #contents table.directoryListing tr.true td.name a,
 #app-content #main #contents table.directoryListing tr.true td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.true td.vrtx-report-title a {
+#app-content #main #contents table.directoryListing tr.true td.vrtx-report-name a {
   background: url(images/folder-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.binary td.title a,
+#app-content #main #contents table.directoryListing tr.binary td.name a,
 #app-content #main #contents table.directoryListing tr.binary td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.binary td.vrtx-report-title a {
+#app-content #main #contents table.directoryListing tr.binary td.vrtx-report-name a {
   background: url(images/file-binary-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.doc td.title a,
+#app-content #main #contents table.directoryListing tr.doc td.name a,
 #app-content #main #contents table.directoryListing tr.doc td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.doc td.vrtx-report-title a {
+#app-content #main #contents table.directoryListing tr.doc td.vrtx-report-name a {
   background: url(images/file-word-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.pdf td.title a,
+#app-content #main #contents table.directoryListing tr.pdf td.name a,
 #app-content #main #contents table.directoryListing tr.pdf td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.pdf td.vrtx-report-title a {
+#app-content #main #contents table.directoryListing tr.pdf td.vrtx-report-name a {
   background: url(images/file-pdf-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.xls td.title a,
+#app-content #main #contents table.directoryListing tr.xls td.name a,
 #app-content #main #contents table.directoryListing tr.xls td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.xls td.vrtx-report-title a {
+#app-content #main #contents table.directoryListing tr.xls td.vrtx-report-name a {
   background: url(images/file-xls-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.text td.title a,
+#app-content #main #contents table.directoryListing tr.text td.name a,
 #app-content #main #contents table.directoryListing tr.text td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.text td.vrtx-report-title a {
+#app-content #main #contents table.directoryListing tr.text td.vrtx-report-name a {
   background: url(images/file-txt-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.ppt td.title a,
+#app-content #main #contents table.directoryListing tr.ppt td.name a,
 #app-content #main #contents table.directoryListing tr.ppt td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.ppt td.vrtx-report-title a {
+#app-content #main #contents table.directoryListing tr.ppt td.vrtx-report-name a {
   background: url(images/file-ppt-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.image td.title a,
+#app-content #main #contents table.directoryListing tr.image td.name a,
 #app-content #main #contents table.directoryListing tr.image td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.image td.vrtx-report-title a {
+#app-content #main #contents table.directoryListing tr.image td.vrtx-report-name a {
   background: url(images/file-image-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.audio td.title a,
+#app-content #main #contents table.directoryListing tr.audio td.name a,
 #app-content #main #contents table.directoryListing tr.audio td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.audio td.vrtx-report-title a {
+#app-content #main #contents table.directoryListing tr.audio td.vrtx-report-name a {
   background: url(images/file-audio-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.video td.title a,
+#app-content #main #contents table.directoryListing tr.video td.name a,
 #app-content #main #contents table.directoryListing tr.video td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.video td.vrtx-report-title a {
+#app-content #main #contents table.directoryListing tr.video td.vrtx-report-name a {
   background: url(images/file-video-small.gif) no-repeat center left;
 }
 

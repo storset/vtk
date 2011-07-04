@@ -117,13 +117,13 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  */
 public class CollectionListingProvider implements ReferenceDataProvider {
 
-    public static final String DEFAULT_SORT_BY_PARAMETER = "title";
+    public static final String DEFAULT_SORT_BY_PARAMETER = "name";
 
     
     private static final Set<String> supportedResourceColumns = 
         new HashSet<String>(Arrays.asList(new String[] {
                                       DEFAULT_SORT_BY_PARAMETER,
-                                      "name",
+                                      "title",
                                       "content-length", 
                                       "last-modified",
                                       "locked", 

@@ -31,7 +31,7 @@
     <table id="vrtx-report-document-table" class="directoryListing">
       <thead>
         <tr>
-          <th id="vrtx-report-title"><@vrtx.msg code="report.title" default="Title" /></th>
+          <th id="vrtx-report-name"><@vrtx.msg code="report.name" default="Name" /></th>
           <th id="vrtx-report-last-modified"><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
           <th id="vrtx-report-modified-by"><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
           <th id="vrtx-report-permission-set"><@vrtx.msg code="report.permission-set" default="Permissions set" /></th>
@@ -43,7 +43,6 @@
       <#assign count = 1 />
       <#assign collectionSize = report.result?size />
       <#list report.result as res >
-        <#assign title= vrtx.propValue(res, 'title') />
         <#assign lastModifiedTime = vrtx.propValue(res, 'lastModified') />
         <#assign modifiedBy = vrtx.propValue(res, 'modifiedBy', 'name-link') />
         <#assign aclIsInherited = vrtx.getMsg("report.yes", "Yes")>
@@ -81,7 +80,7 @@
           </#if>
 
           <tr class="${rowType} <@vrtx.iconResolver res.resourceType contentType />${firstLast}">  
-            <td class="vrtx-report-title"><a href="${url?html}">${title?html}</a></td>
+            <td class="vrtx-report-name"><a href="${url?html}">${res.name?html}</a></td>
             <td class="vrtx-report-last-modified">${lastModifiedTime?html}</td>
             <td class="vrtx-report-last-modified-by">${modifiedBy}</td>
             <td class="vrtx-report-permission-set">${aclIsInherited?html}</td>
@@ -101,7 +100,7 @@
       <p><span id="vrtx-report-paging">
         <#if report.prev?exists>
           <a href="${report.prev?html}">
-          <@vrtx.msg code="report.prev-page" default="previous page" /></a><#if report.next?exists>&nbsp;|&nbsp;<a href="${report.next?html}"><@vrtx.msg code="report.next-page" default="next page" /></a></#if>
+          <@vrtx.msg code="report.prev-page" default="previous page" /></a><#if report.next?exists>&nbsp;&nbsp;&nbsp;<a href="${report.next?html}"><@vrtx.msg code="report.next-page" default="next page" /></a></#if>
         <#elseif report.next?exists>
           <a href="${report.next?html}"><@vrtx.msg code="report.next-page" default="next page" /></a>
         </#if>

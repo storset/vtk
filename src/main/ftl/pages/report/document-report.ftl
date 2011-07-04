@@ -20,11 +20,8 @@
     </div>
     <h2><@vrtx.msg code="report.${report.reportname}" /></h2>
     
-    <@displayPaging />
-
-  <div class="vrtx-report">
-  
-  <#if report.result?exists && report.result?size &gt; 0 >
+  <#if (report.result?exists && report.result?size > 0)>
+    <div class="vrtx-report">
     <table id="vrtx-report-document-table" class="directoryListing">
       <thead>
         <tr>
@@ -93,10 +90,9 @@
         </tbody>
       </table>
     </div>
-  </#if>
 
   </div>
-  
+  </#if>
   <@displayPaging />
   
   </div>

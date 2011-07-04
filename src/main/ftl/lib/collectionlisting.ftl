@@ -30,6 +30,10 @@
   'collectionListing' missing">
 </#if>
 
+<#if (collectionListing.children?size < 1)>
+  <p class="collectionlisting-empty"><@vrtx.msg code="collectionListing.empty" default="This collection is empty"/>.</p>
+<#else>
+
 <#if withForm>
   <form name="collectionListingForm" action="${action}" method="post" accept-charset="UTF-8">
 </#if>
@@ -116,13 +120,6 @@
    </tr>
   </thead>
   <tbody>
-  <#if (collectionListing.children?size < 1)>
-    <tr>
-      <td colspan="7">
-        <@vrtx.msg code="collectionListing.empty" default="This collection is empty"/>.
-      </td>
-    </tr>
-  </#if>
 
   <#assign rowType = "odd">
   <#assign collectionSize = collectionListing.children?size />
@@ -275,6 +272,7 @@
   <a href="javascript:void(0);" class="vrtx-check-all" > <@vrtx.msg code="collectionListing.all" default="All"/></a>,&nbsp;
   <a href="javascript:void(0);" class="vrtx-uncheck-all"> <@vrtx.msg code="collectionListing.none" default="none"/></a>
  </div>
+ </#if>
 
 <#if withForm>
   <div id="collectionListing.submit">

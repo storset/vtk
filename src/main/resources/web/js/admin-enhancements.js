@@ -637,8 +637,8 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
           } else {
             for(var i = updateSelectors.length; i--;) {
               // Filter out 'expandedForm'-classes
-              var classes = $(updateSelectors[i]).attr("class");
-              var j = classes.split(" ").length;
+              var classes = $(updateSelectors[i]).attr("class").split(" ");
+              var j = classes.length;
               var finalClass = "";
               while(j--) {
                 if(classes[j].indexOf("expandedForm") == -1) {

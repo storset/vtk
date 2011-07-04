@@ -13,6 +13,7 @@ function vortexAdmin() {
   this.isIE6 = null;
   this.isIE5OrHigher = null;
   this.isWin = null;
+  this.supportsFileAPI = null;
   this.permissionsAutocompleteParams = null;
   this.transitionSpeed = 400; // same as 'default'
   this.transitionCustomPermissionSpeed = 200; // same as 'fast'
@@ -28,6 +29,7 @@ vrtxAdmin.version = $.browser.version;
 vrtxAdmin.isIE6 = vrtxAdmin.isIE && vrtxAdmin.version <= 6;
 vrtxAdmin.isIE5OrHigher = vrtxAdmin.isIE && vrtxAdmin.version >= 5;
 vrtxAdmin.isWin = ((agent.indexOf("win") != -1) || (agent.indexOf("16bit") != -1));
+vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;
 
 // Permission Autocomplete parameters
 vrtxAdmin.permissionsAutocompleteParams = { minChars: 4, 
@@ -234,7 +236,7 @@ function initFileUpload() {
       var txt = $(this).val();
       $(this).closest("form").find("#fake-file").val(txt);
       fileInfo("file");
-    }); 
+    });
 
     var textfieldWrapper = form.find(".vrtx-textfield"); 
 	textfieldWrapper.addClass("vrtx-file-upload");
@@ -245,12 +247,17 @@ function initFileUpload() {
 	    $(this).closest("form").find("#file").trigger("click");
 	    return false;
 	 });
+	 if (vrtxAdmin.supportsFileAPI) {
+	   var multipleFilesInfoText = "<strong>Laste opp flere filer samtidig</strong>?<br />"
+	                             + "Hold nede CTRL eller CMD (på Mac) når du velger filer i filutforskeren.";
+	   $("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-button.vrtx-file-upload");
+	 }
   }
 }
 
 // Credits: http://www.html5rocks.com/en/tutorials/file/dndfiles/
 function fileInfo(file) {  
-  if (window.File && window.FileReader && window.FileList && window.Blob) {
+  if (vrtxAdmin.supportsFileAPI) {
     var files = document.getElementById(file).files;
     if(files) {
       var output = [];

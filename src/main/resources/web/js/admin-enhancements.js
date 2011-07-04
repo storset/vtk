@@ -591,39 +591,43 @@ function dropdownCollectionGlobalMenu() {
 function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, funcComplete) {
   $("#app-content").delegate(selector, "click", function (e) {
     var serviceUrl = $(this).attr("href");
-    $.ajax({
-      type: "GET",
-      url: serviceUrl,
-      dataType: "html",
-      success: function (results, status, resp) {
-        var form = $(results).find("." + selectorClass).html();
-        if (isReplacing) {
-          var classes = $(insertAfterOrReplaceClass).attr("class");
-          $(insertAfterOrReplaceClass)
-            .replaceWith("<" + nodeType + " class='expandedForm " 
-                       + selectorClass + " " + classes + "'>" + form + "</" + nodeType + ">");
-        } else {
-          $("<" + nodeType + " class='expandedForm " + selectorClass + "'>" + form + "</" + nodeType + ">")
-            .insertAfter(insertAfterOrReplaceClass);
+    var formExists = $("#app-content").find("." + selectorClass).length 
+                     + $("#app-content").find(".expandedForm").length;
+    if(!formExists) {
+      $.ajax({
+        type: "GET",
+        url: serviceUrl,
+        dataType: "html",
+        success: function (results, status, resp) {
+          var form = $(results).find("." + selectorClass).html();
+          if (isReplacing) {
+            var classes = $(insertAfterOrReplaceClass).attr("class");
+            $(insertAfterOrReplaceClass)
+              .replaceWith("<" + nodeType + " class='expandedForm " 
+                         + selectorClass + " " + classes + "'>" + form + "</" + nodeType + ">");
+          } else {
+            $("<" + nodeType + " class='expandedForm " + selectorClass + "'>" + form + "</" + nodeType + ">")
+              .insertAfter(insertAfterOrReplaceClass);
+          }
+          funcComplete(selectorClass);
+          $(nodeType + "." + selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
+            $(this).find("input[type=text]:first").focus();
+          });     
+        },
+        error: function (xhr, textStatus) {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            var msg = "The service is not active: " + textStatus;
+          } else {
+            var msg = "The service returned " + xhr.status + " and failed to retrieve form.";
+          }
+          if ($("#app-content > .errormessage").length) {
+            $("#app-content > .errormessage").html(msg);
+          } else {
+            $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
+          }
         }
-        funcComplete(selectorClass);
-        $(nodeType + "." + selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
-          $(this).find("input[type=text]:first").focus();
-        });     
-      },
-      error: function (xhr, textStatus) {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-          var msg = "The service is not active: " + textStatus;
-        } else {
-          var msg = "The service returned " + xhr.status + " and failed to retrieve form.";
-        }
-        if ($("#app-content > .errormessage").length) {
-          $("#app-content > .errormessage").html(msg);
-        } else {
-          $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
-        }
-      }
-    });
+      });
+    }
     e.stopPropagation();
     return false;
   });

@@ -61,12 +61,13 @@ public class ResourceSorter {
         Comparator<Resource> comparator = null;
 
         switch (order) {
-        case BY_TITLE:
-            comparator = new ResourceTitleComparator(inverted);
-            break;
-        
+
         case BY_NAME:
             comparator = new ResourceNameComparator(inverted);
+            break;
+            
+        case BY_TITLE:
+            comparator = new ResourceTitleComparator(inverted);
             break;
 
         case BY_DATE:
@@ -227,22 +228,12 @@ public class ResourceSorter {
 
         @Override
         public int compare(Resource r1, Resource r2) {
-            if (r1.isCollection() && r2.isCollection()) {
-                return this.invert ? r2.getTitle().compareTo(r1.getTitle()) : r1.getTitle()
-                        .compareTo(r2.getTitle());
+            if (!this.invert) {
+                return r1.getContentType().compareTo(r2.getContentType());
             }
-
-            if (r1.isCollection()) {
-                return this.invert ? -1 : 1;
-            }
-
-            if (r2.isCollection()) {
-                return this.invert ? 1 : -1;
-            }
-
-            return this.invert ? r2.getContentType().compareTo(r1.getContentType()) : r1
-                    .getContentType().compareTo(r2.getContentType());
+            return r2.getContentType().compareTo(r1.getContentType());
         }
+        
     }
     
     private static class ResourceTypeComparator implements Comparator<Resource> {
@@ -254,21 +245,10 @@ public class ResourceSorter {
 
         @Override
         public int compare(Resource r1, Resource r2) {
-            if (r1.isCollection() && r2.isCollection()) {
-                return this.invert ? r2.getTitle().compareTo(r1.getTitle()) : r1.getTitle()
-                        .compareTo(r2.getTitle());
+            if (!this.invert) {
+                return r1.getResourceType().compareTo(r2.getResourceType());
             }
-
-            if (r1.isCollection()) {
-                return this.invert ? -1 : 1;
-            }
-
-            if (r2.isCollection()) {
-                return this.invert ? 1 : -1;
-            }
-
-            return this.invert ? r2.getResourceType().compareTo(r1.getResourceType()) : r1
-                    .getResourceType().compareTo(r2.getResourceType());
+            return r2.getResourceType().compareTo(r1.getResourceType());
         }
     }
 

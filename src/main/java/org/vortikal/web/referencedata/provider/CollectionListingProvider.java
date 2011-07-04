@@ -293,10 +293,10 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     
 
     private void sortChildren(Resource[] children, String sortBy, boolean invert) {
-        Order order = ResourceSorter.Order.BY_TITLE;
+        Order order = ResourceSorter.Order.BY_NAME;
 
-        if ("name".equals(sortBy)) {
-            order = ResourceSorter.Order.BY_NAME;
+        if ("title".equals(sortBy)) {
+            order = ResourceSorter.Order.BY_TITLE;
         } else if ("content-length".equals(sortBy)) {
             order = ResourceSorter.Order.BY_FILESIZE;
         } else if ("last-modified".equals(sortBy)) {

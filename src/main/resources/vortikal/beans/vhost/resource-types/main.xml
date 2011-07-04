@@ -26,6 +26,7 @@
   <import resource="xhtml10.xml" />
   <import resource="article.xml" />
   <import resource="event.xml" />
+  <import resource="person.xml" />
   <import resource="xml.xml" />
   <import resource="managed-xml.xml" />
   <import resource="msoffice.xml" />

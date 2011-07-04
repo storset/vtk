@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+                       "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="vcfService" class="org.vortikal.web.service.ServiceImpl">
+  <property name="parent" ref="webService" />
+    <property name="order" value="-999" />
+    <property name="assertions">
+      <list>
+         <bean class="org.vortikal.web.service.OrAssertion">
+          <property name="assertions">
+            <list>
+              <ref bean="isPersonAssertion" />
+              <ref bean="resourceTypeIsPerson" />
+              <ref bean="resourceIsPersonListing" />
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="vcf" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="vcfHandler" />
+  </bean>
+  
+  <bean id="vcfHandler" class="org.vortikal.web.display.vcf.VcfController">
+    <property name="firstNamePropDef" ref="firstNamePropDef" />
+    <property name="surnamePropDef" ref="surnamePropDef" />
+    <property name="usernamePropDef" ref="usernamePropDef" />
+    <property name="positionPropDef" ref="positionPropDef" />
+    <property name="phonePropDef" ref="phonePropDef" />
+    <property name="mobilePropDef" ref="mobilePropDef" />
+    <property name="postalAddressPropDef" ref="postalAddressPropDef" />
+    <property name="visitingAddressPropDef" ref="visitingAddressPropDef" />
+    <property name="emailPropDef" ref="emailPropDef" />
+  </bean>
+ 
+  <bean id="resourceTypeIsPerson" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceType" value="person" />
+  </bean>
+
+</beans>

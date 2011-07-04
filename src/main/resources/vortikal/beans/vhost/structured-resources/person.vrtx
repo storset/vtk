@@ -299,11 +299,14 @@ resourcetype person {
     contact-extras{
         ##
         [resource-props "."]
-        [if pressPhoto != null]
         <div id="vrtx-person-contact-info-extras">
+        [if pressPhoto != null]
               <a id="vrtx-press-photo" href="[val pressPhoto]">[localized "pressPhoto"]</a>
-        </div>
         [endif]
+        [if surname != null || firstName != null]
+        	  <a id="vrtx-person-vcard" href="?vrtx=vcf">[localized "vCard"]</a>
+       	[endif]
+        </div>
         ##
     }
 
@@ -411,6 +414,7 @@ resourcetype person {
     rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
     rssUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilete"),
+    vCard : (en : "vCard", no : "vCard", nn : "vCard"),
     room : (en : "Room", no : "Rom", nn : "Rom"),
     images : (en : "Images", no : "Bilder", nn : "Bilete"),
     contactInformation : (en : "Primary contact information", no : "Primære kontaktopplysninger", nn : "Primære kontaktopplysingar"),

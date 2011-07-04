@@ -98,7 +98,12 @@ $(document).ready(function () {
                    ["#contents"],
                    "errorContainer",
                    "> ul",
-                   function(p){return true;}
+                   function(p){return true;},
+                   function(){
+                     placeMoveButtonInActiveTab();
+                     placeCopyButtonInActiveTab();
+                     placeDeleteButtonInActiveTab();
+                   }
       );
     } else {
       getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], 
@@ -132,7 +137,8 @@ $(document).ready(function () {
                  ".resource-menu.read-permissions"],
                  "errorContainer", 
                  ".groups-wrapper",
-                 checkStillAdmin
+                 checkStillAdmin,
+                 function() {}
     );
   }
   
@@ -154,7 +160,8 @@ $(document).ready(function () {
                  ".resource-menu.read-permissions"],
                  "errorContainer", 
                  ".groups-wrapper",
-                 function(p) {return true;}
+                 function(p) {return true;},
+                 function() {}
                  
     );      
   }
@@ -641,9 +648,10 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
  * @param errorContainer: selector for error container
  * @param errorContainerInsertAfter: selector for where error container should be inserted after
  * @param funcProceedCondition: must return true to continue
+ * @param funcComplete: function to run when AJAX is completed
  */
 
-function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerInsertAfter, funcProceedCondition) {
+function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerInsertAfter, funcProceedCondition, funcComplete) {
   $("#app-content").delegate(selector, "click", function (e) {
     var link = $(this);
     var linkAction = link.attr("name");
@@ -714,6 +722,7 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
               $(updateSelectors[i]).attr("class", finalClass);
               $("#app-content").find(updateSelectors[i]).html($(results).find(updateSelectors[i]).html());
             }
+            funcComplete();
             form.parent().slideUp(vrtxAdmin.transitionSpeed, function () {
               $(this).remove();
             });

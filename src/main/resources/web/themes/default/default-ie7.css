@@ -10,8 +10,9 @@ div.tabs {
 
 .resource-title,
 #main .activeTab,
-#main #contents {
-  max-height: 9999px;
+#main #contents,
+.expandedForm {
+  max-height: 9999px; /* instead of invalid zoom: 1 */
 }
 
 .vrtx-textfield,

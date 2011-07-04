@@ -44,20 +44,7 @@ $(document).ready(function () {
   logoutButtonAsLink();
 
   // Collectionlisting interaction
-  placeMoveButtonInActiveTab();
-  placeCopyButtonInActiveTab();
-  placeDeleteButtonInActiveTab();
-  placeRecoverButtonInActiveTab();
-  placeDeletePermanentButtonInActiveTab();
-  
-  // Checking rows in collectionlisting
-  $(".vrtx-check-all").click(checkAll);
-  $(".vrtx-uncheck-all").click(uncheckAll);
-
-  $(".checkbox input").click(toggleChecked);
-  $(".checkbox").click(function () {
-    $(this).find("input").each(toggleChecked);
-  });
+  collectionListingInteraction();
 
   // Dropdowns
   dropdownLanguageMenu();
@@ -99,11 +86,7 @@ $(document).ready(function () {
                    "errorContainer",
                    "> ul",
                    function(p){return true;},
-                   function(){
-                     placeMoveButtonInActiveTab();
-                     placeCopyButtonInActiveTab();
-                     placeDeleteButtonInActiveTab();
-                   }
+                   collectionListingInteraction
       );
     } else {
       getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], 
@@ -327,6 +310,23 @@ function logoutButtonAsLink() {
 /* ^ Buttons into links */
 
 /* Collectionlisting interaction */
+
+function collectionListingInteraction() {
+  placeMoveButtonInActiveTab();
+  placeCopyButtonInActiveTab();
+  placeDeleteButtonInActiveTab();
+  placeRecoverButtonInActiveTab();
+  placeDeletePermanentButtonInActiveTab();
+  
+  // Checking rows in collectionlisting
+  $(".vrtx-check-all").click(checkAll);
+  $(".vrtx-uncheck-all").click(uncheckAll);
+
+  $(".checkbox input").click(toggleChecked);
+  $(".checkbox").click(function () {
+    $(this).find("input").each(toggleChecked);
+  });
+}
 
 function placeMoveButtonInActiveTab() {
   var btn = $('#collectionListing\\.action\\.move-resources');

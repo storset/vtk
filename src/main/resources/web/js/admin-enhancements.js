@@ -221,7 +221,6 @@ function initFileUpload() {
   var form = $("form[name=fileUploadService]");
   if(form.length) {
     var inputFile = form.find("#file");
-    inputFile.attr("multiple", "multiple");
     inputFile.change(function() {
       var txt = $(this).val();
       $(this).closest("form").find("#fake-file").val(txt);
@@ -238,6 +237,7 @@ function initFileUpload() {
 	    return false;
 	 });
 	 if (vrtxAdmin.supportsFileAPI) {
+	   inputFile.attr("multiple", "multiple");
 	   var multipleFilesInfoText = "<strong>Laste opp flere filer samtidig</strong>?<br />"
 	                             + "Hold nede CTRL eller CMD (på Mac) når du velger filer i filutforskeren.";
 	   $("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-button.vrtx-file-upload");
@@ -598,8 +598,7 @@ function dropdownCollectionGlobalMenu() {
 function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, funcComplete) {
   $("#app-content").delegate(selector, "click", function (e) {
     var serviceUrl = $(this).attr("href");
-    var formExists = $("#app-content").find("." + selectorClass).length 
-                     + $("#app-content").find(".expandedForm").length;
+    var formExists = $("#app-content").find(".expandedForm").length;
     if(!formExists) {
       $.ajax({
         type: "GET",

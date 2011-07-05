@@ -48,14 +48,12 @@ public class Base64 {
     }
 
     public static String encode(InputStream in) throws Exception {
-        org.apache.commons.codec.binary.Base64 encoder = new org.apache.commons.codec.binary.Base64();
         String result = "";
-        byte buf[] = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            result += encoder.encode(buf);
+        byte[] buf = new byte[1024];
+        while (in.read(buf) > 0) {
+            result += new String(buf);
         }
-        return result;
+        return Base64.encode(result);
     }
 
 }

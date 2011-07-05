@@ -183,13 +183,11 @@ $(document).ready(function () {
                 function(p){}
     );
   }
-
-  // Remove permission
+  
+  // Remove/add permissions
   ajaxRemove("input.removePermission", ".principalList");
-
-  // Add permission(s)
-  ajaxAdd("span.addGroup", "ul.groups", "errorContainer");
-  ajaxAdd("span.addUser", "ul.users", "errorContainer");
+  ajaxAdd("span.addGroup", ".groups-wrapper", "errorContainer");
+  ajaxAdd("span.addUser", ".users-wrapper", "errorContainer");
 
   /* ^ GET/POST forms with AJAX (initalization/config) */
 

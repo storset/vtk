@@ -236,7 +236,7 @@ function initFileUpload() {
 	    $(this).closest("form").find("#file").trigger("click");
 	    return false;
 	 });
-	 if (supportsMultiple(document.getElementById("file"))) {
+	 if (supportsMultipleAttribute(document.getElementById("file"))) {
 	   inputFile.attr("multiple", "multiple");
 	   var multipleFilesInfoText = "<strong>Laste opp flere filer samtidig</strong>?<br />"
 	                             + "Hold nede CTRL eller CMD (på Mac) når du velger filer i filutforskeren.";
@@ -246,8 +246,8 @@ function initFileUpload() {
 }
 
 // Taken from: http://miketaylr.com/code/input-type-attr.html (MIT license)
-function supportsMultiple(y) {
-  return ( !! (y.multiple === false) && !! (y.multiple !== "undefined"))
+function supportsMultipleAttribute(inputfield) {
+  return ( !! (inputfield.multiple === false) && !! (inputfield.multiple !== "undefined"))
 }
 
 // Credits: http://www.html5rocks.com/en/tutorials/file/dndfiles/

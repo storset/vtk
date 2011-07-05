@@ -326,8 +326,11 @@ function logoutButtonAsLink() {
 /* Collectionlisting interaction */
 
 function collectionListingInteraction() {
-  placeMoveButtonInActiveTab();
-  placeCopyButtonInActiveTab();
+  placeCopyMoveButtonInActiveTab("collectionListingForm", "collectionListing\\.action\\.move-resources",
+                                 "moveResourcesService", moveUncheckedMessage) {
+  placeCopyMoveButtonInActiveTab("collectionListingForm", "collectionListing\\.action\\.copy-resources",
+                                 "copyResourcesService", copyUncheckedMessage) {
+
   placeDeleteButtonInActiveTab();
   placeRecoverButtonInActiveTab();
   placeDeletePermanentButtonInActiveTab();
@@ -339,37 +342,6 @@ function collectionListingInteraction() {
   $(".checkbox input").click(toggleChecked);
   $(".checkbox").click(function () {
     $(this).find("input").each(toggleChecked);
-  });
-}
-
-function placeMoveButtonInActiveTab() {
-  var btn = $('#collectionListing\\.action\\.move-resources');
-  btn.hide();
-  var li = $('li.moveResourcesService');
-  li.html('<a id="moveResourceService" href="javascript:void(0);">' + btn.attr('title') + '</a>');
-  $('#moveResourceService').click(function () {
-    if (!$('form[name=collectionListingForm] input[type=checkbox]:checked').length) {
-      alert(moveUncheckedMessage);
-    } else {
-      $('#collectionListing\\.action\\.move-resources').click();
-    }
-    return false;
-  });
-}
-
-
-function placeCopyButtonInActiveTab() {
-  var btn = $('#collectionListing\\.action\\.copy-resources');
-  btn.hide();
-  var li = $('li.copyResourcesService');
-  li.html('<a id="copyResourceService" href="javascript:void(0);">' + btn.attr('title') + '</a>');
-  $('#copyResourceService').click(function () {
-    if (!$('form[name=collectionListingForm] input[type=checkbox]:checked').length) {
-      alert(copyUncheckedMessage);
-    } else {
-      $('#collectionListing\\.action\\.copy-resources').click();
-    }
-    return false;
   });
 }
 
@@ -456,6 +428,21 @@ function placeDeletePermanentButtonInActiveTab() {
       if (confirm(confirmDeletePermanently.replace("(1)", boxesSize) + '\n\n' + list)) {
         $('.deleteResourcePermanent').click();
       }
+    }
+    return false;
+  });
+}
+
+function placeCopyMoveButtonInActiveTab(formName, btnId, service, msg) {
+  var btn = $("#" + btnId); 
+  btn.hide();
+  var li = $("li." + service);
+  li.html("<a id='" + service + "' href='javascript:void(0);'>" + btn.attr('title') + "</a>");
+  $("#" + service).click(function () {
+    if (!$("form[name=" + formName + "] input[type=checkbox]:checked").length) {
+      alert(msg);
+    } else {
+      $("#" + btnId).click();
     }
     return false;
   });
@@ -742,7 +729,7 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
         contentType: encType,
         success: function (results, status, resp) {
           if (hasErrorContainers(results, errorContainer)) {
-            displayErrorContainer(results, form, errorContainerInsertAfter, errorContainer);
+            displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
           } else {
             for(var i = updateSelectors.length; i--;) {
               // Filter out 'expandedForm'-classes
@@ -834,14 +821,14 @@ function ajaxAdd(selector, updateSelector, errorContainer) {
       dataType: "html",
       success: function (results, status, resp) {
         if (hasErrorContainers(results, errorContainer)) {
-          displayErrorContainer(results, form, updateSelector, errorContainer);
+          displayErrorContainers(results, form, updateSelector, errorContainer);
         } else {
           form.find(updateSelector).html($(results).find(updateSelector).html());
           textfield.val("");
         }
       },
       error: function (xhr, textStatus) {
-        displayAjaxErrorMessage(xhr, textStatus); 
+        displayAjaxErrorMessage(xhr, textStatus);
       }
     });
     e.stopPropagation();
@@ -873,7 +860,7 @@ function hasErrorContainers(results, errorContainer) {
 
 /* TODO: support for multiple errorContainers
   (place the correct one in correct place (e.g. users and groups)) */
-function displayErrorContainer(results, form, errorContainerInsertAfter, errorContainer) {
+function displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer) {
   var wrapper = form.find(errorContainerInsertAfter).parent();
   if (wrapper.find("div." + errorContainer).length) {
     wrapper.find("div." + errorContainer).html($(results).find("div." + errorContainer).html());

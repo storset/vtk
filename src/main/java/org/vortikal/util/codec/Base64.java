@@ -32,6 +32,8 @@ package org.vortikal.util.codec;
 
 import java.io.InputStream;
 
+import org.apache.commons.io.IOUtils;
+
 /**
  * A wrapper for commons codec's Base64 implementation.
  */
@@ -48,12 +50,9 @@ public class Base64 {
     }
 
     public static String encode(InputStream in) throws Exception {
-        String result = "";
-        byte[] buf = new byte[1024];
-        while (in.read(buf) > 0) {
-            result += new String(buf);
-        }
-        return Base64.encode(result);
+        byte[] bytes = IOUtils.toByteArray(in);
+        org.apache.commons.codec.binary.Base64 encoder = new org.apache.commons.codec.binary.Base64();
+        return new String(encoder.encode(bytes));
     }
 
 }

@@ -645,23 +645,23 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
           theNodeType = $.trim(theNodeType);
           finalClass = $.trim(finalClass.split(" ")[0]);
           if(theNodeType == "tr") {
-            jQuery.fn.slideUp = jQuery.fn.toggleSlideTable;
+            jQuery.fn.slideUp = jQuery.fn.toggleSlideTable; // Table slide
           }
           $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, function() {
-            jQuery.fn.slideUp = jQuery.fn.slideUp;
+            jQuery.fn.slideUp = jQuery.fn.slideUp;// Reset table slide
             if(isReplaced) {
               var normalElement = $(results).find("." + finalClass);
               var cls = normalElement.attr("class");
               var html = "<" + theNodeType + " class='" + cls + "'>" 
                        + normalElement.html() 
                        + "</" + theNodeType + ">"
-              if(theNodeType == "tr") {
+              if(theNodeType == "tr") {  // Because 'this' is tr > td > div
                 $(this).parent().parent().replaceWith(html).show(0);
               } else {
                 $(this).replaceWith(html).show(0);              
               }
             } else {
-              if(theNodeType == "tr") {
+              if(theNodeType == "tr") {  // Because 'this' is tr > td > div
                 $(this).parent().parent().remove();  
               } else {
                 $(this).remove();            
@@ -680,10 +680,10 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
             funcComplete(selectorClass);
             if(nodeType == "tr") {
               $(nodeType + "." + selectorClass).prepareTableRowForSliding();
-              jQuery.fn.slideDown = jQuery.fn.toggleSlideTable;
+              jQuery.fn.slideDown = jQuery.fn.toggleSlideTable; // Table slide
             }
             $(nodeType + "." + selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
-              jQuery.fn.slideDown = jQuery.fn.slideDown;
+              jQuery.fn.slideDown = jQuery.fn.slideDown; // Reset table slide
               $(this).find("input[type=text]:first").focus();
             });  
           });
@@ -701,10 +701,10 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
           funcComplete(selectorClass);
           if(nodeType == "tr") {
             $(nodeType + "." + selectorClass).prepareTableRowForSliding();
-            jQuery.fn.slideDown = jQuery.fn.toggleSlideTable;
+            jQuery.fn.slideDown = jQuery.fn.toggleSlideTable; // Table slide
           }
           $(nodeType + "." + selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
-            jQuery.fn.slideDown = jQuery.fn.slideDown;
+            jQuery.fn.slideDown = jQuery.fn.slideDown; // Reset table slide
             $(this).find("input[type=text]:first").focus();
           });
         }   

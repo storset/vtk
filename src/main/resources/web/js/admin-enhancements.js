@@ -549,6 +549,7 @@ function dropdownLanguageMenu() {
     // Remove ':' and replace <span> with <a>
     var header = parent.find(".localeSelectionHeader");
     var headerText = header.text();
+    // outerHtml
     header.replaceWith("<a href='javascript:void(0);' class='localeSelectionHeader'>"
                      + headerText.substring(0, headerText.length - 1) + "</a>");
 
@@ -588,11 +589,13 @@ function dropdownCollectionGlobalMenu() {
     });
 
     collectionGlobalMenu.find("li.first #dropdown-shortcut-menu-click-area").hover(function () {
-      $(this).parent().toggleClass('unhover');
-      $(this).prev().toggleClass('hover');
+      var elm = $(this);
+      elm.parent().toggleClass('unhover');
+      elm.prev().toggleClass('hover');
     }, function () {
-      $(this).parent().toggleClass('unhover');
-      $(this).prev().toggleClass('hover');
+      var elm = $(this);
+      elm.parent().toggleClass('unhover');
+      elm.prev().toggleClass('hover');
     });
 
   }
@@ -608,7 +611,7 @@ function dropdownCollectionGlobalMenu() {
  * @param insertAfterOrReplaceClass: where to put the form
  * @param isReplacing: replace instead of insert after
  * @param nodeType: node type that should be replaced or inserted
- * @param funcComplete: function(selectorClass) to run when AJAX is completed and form is visible
+ * @param funcComplete: callback function(selectorClass) to run when AJAX is completed and form is visible
  */
 
 function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, funcComplete) {
@@ -666,6 +669,7 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
             }
             if (isReplacing) {
               var classes = $(insertAfterOrReplaceClass).attr("class");
+              // outerHtml
               $(insertAfterOrReplaceClass)
                 .replaceWith("<" + nodeType + " class='expandedForm expandedFormIsReplaced nodeType" + nodeType + " " 
                            + selectorClass + " " + classes + "'>" + form + "</" + nodeType + ">");
@@ -686,6 +690,7 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
         } else {
           if (isReplacing) {
             var classes = $(insertAfterOrReplaceClass).attr("class");
+            // outerHtml
             $(insertAfterOrReplaceClass)
               .replaceWith("<" + nodeType + " class='expandedForm expandedFormIsReplaced  nodeType" + nodeType + " " 
                          + selectorClass + " " + classes + "'>" + form + "</" + nodeType + ">");
@@ -705,16 +710,7 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
         }   
       },
       error: function (xhr, textStatus) {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-          var msg = "The service is not active: " + textStatus;
-        } else {
-          var msg = "The service returned " + xhr.status + " and failed to retrieve form.";
-        }
-        if ($("#app-content > .errormessage").length) {
-          $("#app-content > .errormessage").html(msg);
-        } else {
-          $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
-        }
+        displayAjaxErrorMessage(xhr); 
       }
     });
     e.stopPropagation();
@@ -730,7 +726,7 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
  * @param errorContainer: selector for error container
  * @param errorContainerInsertAfter: selector for where error container should be inserted after
  * @param funcProceedCondition: must return true to continue
- * @param funcComplete: function to run when AJAX is completed
+ * @param funcComplete: callback function to run when AJAX is completed
  */
 
 function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerInsertAfter, funcProceedCondition, funcComplete) {
@@ -811,16 +807,7 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
           }
         },
         error: function (xhr, textStatus) {
-          if (xhr.readyState == 4 && xhr.status == 200) {
-            var msg = "The service is not active: " + textStatus;
-          } else {
-            var msg = "The service returned " + xhr.status + " and failed to retrieve form.";
-          }
-          if ($("#app-content > .errormessage").length) {
-            $("#app-content > .errormessage").html(msg);
-          } else {
-            $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
-          }
+          displayAjaxErrorMessage(xhr);
         }
       });
     }
@@ -854,16 +841,7 @@ function ajaxRemove(selector, updateSelector) {
         form.find(updateSelector).html($(results).find(updateSelector).html());
       },
       error: function (xhr, textStatus) {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-          var msg = "The service is not active: " + textStatus;
-        } else {
-          var msg = "The service returned " + xhr.status + " and failed to retrieve form.";
-        }
-        if ($("#app-content > .errormessage").length) {
-          $("#app-content > .errormessage").html(msg);
-        } else {
-          $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
-        }
+        displayAjaxErrorMessage(xhr); 
       }
     });
     e.stopPropagation();
@@ -910,21 +888,25 @@ function ajaxAdd(selector, updateSelector, errorContainer) {
         }
       },
       error: function (xhr, textStatus) {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-          var msg = "The service is not active: " + textStatus;
-        } else {
-          var msg = "The service returned " + xhr.status + " and failed to retrieve form.";
-        }
-        if ($("#app-content > .errormessage").length) {
-          $("#app-content > .errormessage").html(msg);
-        } else {
-          $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
-        }
+        displayAjaxErrorMessage(xhr); 
       }
     });
     e.stopPropagation();
     return false;
   });
+}
+
+function displayAjaxErrorMessage(xhr) {
+  if (xhr.readyState == 4 && xhr.status == 200) {
+    var msg = "The service is not active: " + textStatus;
+  } else {
+    var msg = "The service returned " + xhr.status + " and failed to retrieve/post form.";
+  }
+  if ($("#app-content > .errormessage").length) {
+    $("#app-content > .errormessage").html(msg);
+  } else {
+    $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
+  }
 }
 
 /**

@@ -247,7 +247,7 @@ function initFileUpload() {
 
 // Taken from: http://miketaylr.com/code/input-type-attr.html (MIT license)
 function supportsMultipleAttribute(inputfield) {
-  return ( !! (inputfield.multiple === false) && !! (inputfield.multiple !== "undefined"))
+  return ( !! (inputfield.multiple === false) && !! (inputfield.multiple !== "undefined"));
 }
 
 // Credits: http://www.html5rocks.com/en/tutorials/file/dndfiles/

@@ -741,14 +741,8 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
         dataType: "html",
         contentType: encType,
         success: function (results, status, resp) {
-          if ($(results).find("div." + errorContainer).length) {
-            // TODO: support for multiple errorContainers (place the correct one in correct place (e.g. users and groups))
-            if (form.find("div." + errorContainer).length) {
-              form.find("div." + errorContainer).html($(results).find("div." + errorContainer).html());
-            } else {
-              $(wrap("div", errorContainer, $(results).find("div." + errorContainer).html()))
-                .insertAfter(form.find(errorContainerInsertAfter));
-            }
+          if (hasErrorContainers(results, errorContainer)) {
+            displayErrorContainer(results, form, errorContainerInsertAfter, errorContainer);
           } else {
             for(var i = updateSelectors.length; i--;) {
               // Filter out 'expandedForm'-classes
@@ -839,14 +833,8 @@ function ajaxAdd(selector, updateSelector, errorContainer) {
       data: dataString,
       dataType: "html",
       success: function (results, status, resp) {
-        if ($(results).find("div." + errorContainer).length) {
-          var cont = form.find(updateSelector).parent();
-          if (cont.find(" div." + errorContainer).length) {
-            cont.find("div." + errorContainer).html($(results).find("div." + errorContainer).html());
-          } else {
-            $(wrap("div", errorContainer, $(results).find("div." + errorContainer).html())
-              .insertAfter(cont.find(updateSelector));
-          }
+        if (hasErrorContainers(results, errorContainer)) {
+          displayErrorContainer(results, form, updateSelector, errorContainer);
         } else {
           form.find(updateSelector).html($(results).find(updateSelector).html());
           textfield.val("");
@@ -861,6 +849,15 @@ function ajaxAdd(selector, updateSelector, errorContainer) {
   });
 }
 
+/* AJAX helper functions */
+
+// Use jQuery wrap function instead?
+function wrap(nodeType, class, html) {
+  return "<" + nodeType + " class='" + class + "'>"
+       + html +
+       + "</" + nodeType + ">";
+}
+
 function appendInputNameValuePairsToDataString(inputFields) {
   var dataStringChunk = "";
   for (i = inputFields.length; i--;) {
@@ -870,11 +867,20 @@ function appendInputNameValuePairsToDataString(inputFields) {
   return dataStringChunk;
 }
 
-// Use jQuery wrap function?
-function wrap(nodeType, class, html) {
-  return "<" + nodeType + " class='" + class + "'>"
-       + html +
-       + "</" + nodeType + ">";
+function hasErrorContainers(results, errorContainer) {
+  return $(results).find("div." + errorContainer).length > 0;
+}
+
+/* TODO: support for multiple errorContainers
+  (place the correct one in correct place (e.g. users and groups)) */
+function displayErrorContainer(results, form, errorContainerInsertAfter, errorContainer) {
+  var wrapper = form.find(errorContainerInsertAfter).parent();
+  if (wrapper.find("div." + errorContainer).length) {
+    wrapper.find("div." + errorContainer).html($(results).find("div." + errorContainer).html());
+  } else {
+    $(wrap("div", errorContainer, $(results).find("div." + errorContainer).html())
+      .insertAfter(wrapper.find(errorContainerInsertAfter));
+  }
 }
 
 function displayAjaxErrorMessage(xhr, textStatus) {
@@ -889,6 +895,8 @@ function displayAjaxErrorMessage(xhr, textStatus) {
     $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
   }
 }
+
+/* ^ AJAX helper functions */
 
 /**
  * Show and hide properties

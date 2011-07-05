@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.display.vcf;
 
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -46,6 +47,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.util.codec.Base64;
 import org.vortikal.web.RequestContext;
 
 public class VcfController implements Controller  {
@@ -56,9 +58,12 @@ public class VcfController implements Controller  {
     private PropertyTypeDefinition positionPropDef;
     private PropertyTypeDefinition phonePropDef;
     private PropertyTypeDefinition mobilePropDef;
+    private PropertyTypeDefinition faxPropDef;
     private PropertyTypeDefinition postalAddressPropDef;
     private PropertyTypeDefinition visitingAddressPropDef;
     private PropertyTypeDefinition emailPropDef;
+    private PropertyTypeDefinition picturePropDef;
+    private PropertyTypeDefinition thumbnailPropDef;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -69,7 +74,7 @@ public class VcfController implements Controller  {
 
         Resource person = repository.retrieve(token, uri, true);
         
-        String vcard = createVcard(person);
+        String vcard = createVcard(person, repository, token);
         if (vcard == null) {
             return null;
         }
@@ -92,7 +97,7 @@ public class VcfController implements Controller  {
         return name;
     }
 
-    private String createVcard(Resource person) {
+    private String createVcard(Resource person, Repository repository, String token) throws Exception {
 
         StringBuilder sb = new StringBuilder();
         sb.append("BEGIN:VCARD\n");
@@ -125,11 +130,14 @@ public class VcfController implements Controller  {
         
         if(getProperty(person, phonePropDef) != null)
         	sb.append("TEL;TYPE=WORK,VOICE:" + getProp(person, phonePropDef) + "\n");
-        	
+    	
         if(getProperty(person, mobilePropDef) != null)	
         	sb.append("TEL;TYPE=CELL:" + getProp(person, mobilePropDef) + "\n");
         
-        /* For data input reasons addresses has to be put in the street address field.
+        if(getProperty(person, faxPropDef) != null)	
+        	sb.append("TEL;TYPE=FAX:" + getProp(person, faxPropDef) + "\n");
+        
+        /* For data input reasons addresses has to be put in one (the street address) field.
          * ADR;TYPE=WORK:PO;Address Line 1;Address Line 2;City;Province;PostalCode;Country 
          * could however be used if this should change in the future. */
         if(getProperty(person, postalAddressPropDef) != null)
@@ -141,6 +149,11 @@ public class VcfController implements Controller  {
         if(getProperty(person, emailPropDef) != null)
         	sb.append("EMAIL;TYPE=INTERNET:" + getProp(person, emailPropDef) + "\n");
         
+        if(getProperty(person, picturePropDef) != null) {
+        	String pic = b64Thumbnail(person, repository, token);
+        	if(pic != null) sb.append(pic);
+        }
+                
         sb.append("REV:" + getDtstamp() + "\n");
         sb.append("END:VCARD");
         return sb.toString();
@@ -163,6 +176,36 @@ public class VcfController implements Controller  {
         String dateFormat = "yyyyMMdd'T'HHmmss'Z'";
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
         return sdf.format(Calendar.getInstance().getTime());
+    }
+    
+    private String b64Thumbnail(Resource person, Repository repository, String token) throws Exception {
+    	Path p = Path.fromString(getProp(person, picturePropDef));
+    	Resource r = repository.retrieve(token, p, true);
+    	Property thumbnail = r.getProperty(thumbnailPropDef);
+
+    	if(thumbnail == null) return null;
+    		
+    	/* Gets the TYPE=<type> from mimeType. */
+    	String mimeType = thumbnail.getBinaryMimeType();
+    	mimeType = mimeType.substring(mimeType.indexOf("/")+1, mimeType.length()).toUpperCase();
+        	
+    	/* Base64 encodes the thumbnail. */
+    	InputStream i = thumbnail.getBinaryStream().getStream();
+    	String encoded = Base64.encode(i);
+    	String output = "";
+    		
+    	/* Base64 encoding in vCards needs to be 75 characters on each line,
+    	 * starting with a white space.
+    	 */
+    	int j = 0, k = 74, len = encoded.length();
+    	while(k < len) {
+    		output += "\n "+encoded.substring(j,k);
+    		j = k;
+    		k += 74;
+    	}
+    	output += "\n "+encoded.substring(j,len);
+    		
+    	return "PHOTO;TYPE="+mimeType+";ENCODING=BASE64:"+output+"\n";
     }
 
     @Required
@@ -196,6 +239,11 @@ public class VcfController implements Controller  {
 	}
 
     @Required
+	public void setFaxPropDef(PropertyTypeDefinition faxPropDef) {
+		this.faxPropDef = faxPropDef;
+	}
+
+    @Required
 	public void setPostalAddressPropDef(PropertyTypeDefinition postalAddressPropDef) {
 		this.postalAddressPropDef = postalAddressPropDef;
 	}
@@ -208,5 +256,15 @@ public class VcfController implements Controller  {
     @Required
 	public void setEmailPropDef(PropertyTypeDefinition emailPropDef) {
 		this.emailPropDef = emailPropDef;
+	}
+
+    @Required
+	public void setPicturePropDef(PropertyTypeDefinition picturePropDef) {
+		this.picturePropDef = picturePropDef;
+	}
+
+    @Required
+	public void setThumbnailPropDef(PropertyTypeDefinition thumbnailPropDef) {
+		this.thumbnailPropDef = thumbnailPropDef;
 	}
 }

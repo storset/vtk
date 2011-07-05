@@ -21,9 +21,11 @@
         <ref bean="positionPropDef" />
         <ref bean="phonePropDef" />
         <ref bean="mobilePropDef" />
+        <ref bean="faxPropDef" />
         <ref bean="postalAddressPropDef" />
         <ref bean="visitingAddressPropDef" />
         <ref bean="emailPropDef" />
+        <ref bean="picturePropDef" />
       </list>
     </property>
   </bean>
@@ -83,6 +85,14 @@
     <property name="mandatory" value="false"/>
   </bean>
 
+   <bean id="faxPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="contentRelation" value="PRE_CONTENT" />
+    <property name="name" value="fax"/>
+    <property name="type" value="STRING"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+
    <bean id="postalAddressPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentRelation" value="PRE_CONTENT" />
     <property name="name" value="postalAddress"/>
@@ -102,6 +112,14 @@
    <bean id="emailPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentRelation" value="PRE_CONTENT" />
     <property name="name" value="email"/>
+    <property name="type" value="STRING"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+
+   <bean id="picturePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="contentRelation" value="PRE_CONTENT" />
+    <property name="name" value="picture"/>
     <property name="type" value="STRING"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
     <property name="mandatory" value="false"/>

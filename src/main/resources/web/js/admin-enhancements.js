@@ -217,6 +217,8 @@ function changeTemplateName(n) {
   $("form[name=createDocumentService] input[type=text]").val(n);
 }
 
+/* File upload */
+
 function initFileUpload() {
   var form = $("form[name=fileUploadService]");
   if(form.length) {
@@ -274,6 +276,8 @@ function fileInfo(file) {
   }
 }
 */
+
+/* ^ File upload */
 
 /* Keyboard interceptors/rerouters */
 

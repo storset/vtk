@@ -236,13 +236,18 @@ function initFileUpload() {
 	    $(this).closest("form").find("#file").trigger("click");
 	    return false;
 	 });
-	 if (vrtxAdmin.supportsFileAPI) {
+	 if (supportsMultiple(document.getElementById("file"))) {
 	   inputFile.attr("multiple", "multiple");
 	   var multipleFilesInfoText = "<strong>Laste opp flere filer samtidig</strong>?<br />"
 	                             + "Hold nede CTRL eller CMD (på Mac) når du velger filer i filutforskeren.";
 	   $("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-button.vrtx-file-upload");
 	 }
   }
+}
+
+// Taken from: http://miketaylr.com/code/input-type-attr.html (MIT license)
+function supportsMultiple(y) {
+  return ( !! (y.multiple === false) && !! (y.multiple !== "undefined"))
 }
 
 // Credits: http://www.html5rocks.com/en/tutorials/file/dndfiles/
@@ -604,6 +609,8 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
         formExists.slideUp(vrtxAdmin.transitionSpeed, function() {
           $(this).remove();
         });
+      } else {
+        
       }
     }
       $.ajax({

@@ -277,7 +277,7 @@
  * 
 -->
 <#macro defaultEditWrapper item>
-  <tr class="expandedForm expandedForm-prop-${item.definition.name} ${item.definition.name}">
+  <tr class="expandedForm-prop-${item.definition.name} ${item.definition.name}">
     <td colspan="2">
       <#nested /> 
     </td>

@@ -15,7 +15,7 @@ function vortexAdmin() {
   this.isWin = null;
   this.supportsFileAPI = null;
   this.permissionsAutocompleteParams = null;
-  this.transitionSpeed = 400; // same as 'default'
+  this.transitionSpeed = 200; // same as 'fast'
   this.transitionCustomPermissionSpeed = 200; // same as 'fast'
   this.transitionPropSpeed = 100;
   this.transitionDropdownSpeed = 100;
@@ -51,6 +51,13 @@ $(document).ready(function () {
   dropdownCollectionGlobalMenu();
 
   /* GET/POST forms with AJAX (initalization/config) */
+  
+  /* TODO: all cancel actions
+  $("#app-content").delegate("input[type=submit][name=cancelAction]", "click", function(e) {
+     .. 
+    e.stopPropagation();
+    return false;
+  }); */
 
   // Global menu service forms
   var globalMenuServices = ["renameService",
@@ -607,49 +614,109 @@ function dropdownCollectionGlobalMenu() {
 function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, funcComplete) {
   $("#app-content").delegate(selector, "click", function (e) {
     var serviceUrl = $(this).attr("href");
-    var formExists = $("#app-content").find(".expandedForm");
-    if(formExists.length) {
-      if(!isReplacing) {
-        formExists.slideUp(vrtxAdmin.transitionSpeed, function() {
-          $(this).remove();
-        });
-      } else {
-        
-      }
-    }
-      $.ajax({
-        type: "GET",
-        url: serviceUrl,
-        dataType: "html",
-        success: function (results, status, resp) {
-          var form = $(results).find("." + selectorClass).html();
+    $.ajax({
+      type: "GET",
+      url: serviceUrl,
+      dataType: "html",
+      success: function (results, status, resp) {
+        var form = $(results).find("." + selectorClass).html();
+          
+        // Another form is already open
+        if($(".expandedForm").length) {
+          var classes = $(".expandedForm").attr("class").split(" ");
+          var j = classes.length;
+          var finalClass = "";
+          var isReplaced = false;
+          var theNodeType = "div";
+          while(j--) {
+            if(classes[j].indexOf("expandedForm") == -1) {
+              if(classes[j].indexOf("nodeType") != -1) {
+                theNodeType = classes[j].split("nodeType")[1];
+              } else if(finalClass.indexOf(classes[j]) == -1) {
+                finalClass += classes[j] + " ";
+              }
+            } else if(classes[j] == "expandedFormIsReplaced") {
+              isReplaced = true;
+            }
+          }
+          theNodeType = $.trim(theNodeType);
+          finalClass = $.trim(finalClass.split(" ")[0]);
+          if(theNodeType == "tr") {
+            jQuery.fn.slideUp = jQuery.fn.toggleSlideTable;
+          }
+          $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, function() {
+            jQuery.fn.slideUp = jQuery.fn.slideUp;
+            if(isReplaced) {
+              var normalElement = $(results).find("." + finalClass);
+              var cls = normalElement.attr("class");
+              var html = "<" + theNodeType + " class='" + cls + "'>" 
+                       + normalElement.html() 
+                       + "</" + theNodeType + ">"
+              if(theNodeType == "tr") {
+                $(this).parent().parent().replaceWith(html).show(0);
+              } else {
+                $(this).replaceWith(html).show(0);              
+              }
+            } else {
+              if(theNodeType == "tr") {
+                $(this).parent().parent().remove();  
+              } else {
+                $(this).remove();            
+              }
+            }
+            if (isReplacing) {
+              var classes = $(insertAfterOrReplaceClass).attr("class");
+              $(insertAfterOrReplaceClass)
+                .replaceWith("<" + nodeType + " class='expandedForm expandedFormIsReplaced nodeType" + nodeType + " " 
+                           + selectorClass + " " + classes + "'>" + form + "</" + nodeType + ">");
+            } else {
+              $("<" + nodeType + " class='expandedForm nodeType" + nodeType + " " + selectorClass + "'>" + form + "</" + nodeType + ">")
+                .insertAfter(insertAfterOrReplaceClass);
+            }
+            funcComplete(selectorClass);
+            if(nodeType == "tr") {
+              $(nodeType + "." + selectorClass).prepareTableRowForSliding();
+              jQuery.fn.slideDown = jQuery.fn.toggleSlideTable;
+            }
+            $(nodeType + "." + selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
+              jQuery.fn.slideDown = jQuery.fn.slideDown;
+              $(this).find("input[type=text]:first").focus();
+            });  
+          });
+        } else {
           if (isReplacing) {
             var classes = $(insertAfterOrReplaceClass).attr("class");
             $(insertAfterOrReplaceClass)
-              .replaceWith("<" + nodeType + " class='expandedForm " 
+              .replaceWith("<" + nodeType + " class='expandedForm expandedFormIsReplaced  nodeType" + nodeType + " " 
                          + selectorClass + " " + classes + "'>" + form + "</" + nodeType + ">");
           } else {
-            $("<" + nodeType + " class='expandedForm " + selectorClass + "'>" + form + "</" + nodeType + ">")
+            $("<" + nodeType + " class='expandedForm nodeType" + nodeType + " " + selectorClass + "'>" + form + "</" + nodeType + ">")
               .insertAfter(insertAfterOrReplaceClass);
           }
           funcComplete(selectorClass);
+          if(nodeType == "tr") {
+            $(nodeType + "." + selectorClass).prepareTableRowForSliding();
+            jQuery.fn.slideDown = jQuery.fn.toggleSlideTable;
+          }
           $(nodeType + "." + selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
+            jQuery.fn.slideDown = jQuery.fn.slideDown;
             $(this).find("input[type=text]:first").focus();
-          });     
-        },
-        error: function (xhr, textStatus) {
-          if (xhr.readyState == 4 && xhr.status == 200) {
-            var msg = "The service is not active: " + textStatus;
-          } else {
-            var msg = "The service returned " + xhr.status + " and failed to retrieve form.";
-          }
-          if ($("#app-content > .errormessage").length) {
-            $("#app-content > .errormessage").html(msg);
-          } else {
-            $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
-          }
+          });
+        }   
+      },
+      error: function (xhr, textStatus) {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          var msg = "The service is not active: " + textStatus;
+        } else {
+          var msg = "The service returned " + xhr.status + " and failed to retrieve form.";
         }
-      });
+        if ($("#app-content > .errormessage").length) {
+          $("#app-content > .errormessage").html(msg);
+        } else {
+          $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
+        }
+      }
+    });
     e.stopPropagation();
     return false;
   });
@@ -1026,5 +1093,28 @@ function SetUrl(url, width, height, alt) {
 }
 
 /* ^ CK browse server integration */
+
+/* Slide row in table 
+ * Modified from: 
+ * http://stackoverflow.com/questions/467336/jquery-how-to-use-slidedown-or-show-function-on-a-table-row/920480#920480
+ */
+
+jQuery.fn.prepareTableRowForSliding = function() {
+  $tr = this;
+  $tr.children('td').wrapInner('<div style="display: none;" />');
+  return $tr;
+};
+
+jQuery.fn.toggleSlideTable = function(speed, callback) {
+  $tr = this;
+  if ($tr.is(':hidden')) {
+    $tr.show().find('td > div').animate({opacity: 'toggle', height: 'toggle'}, speed, callback);
+  } else {
+    $tr.find('td > div').animate({opacity: 'toggle', height: 'toggle'}, speed, callback);
+  }
+  return $tr;
+};
+
+/* ^ Slide row in table */
 
 /* ^ Vortex Admin enhancements */

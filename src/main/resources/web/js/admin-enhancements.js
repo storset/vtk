@@ -710,7 +710,7 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
         }   
       },
       error: function (xhr, textStatus) {
-        displayAjaxErrorMessage(xhr); 
+        displayAjaxErrorMessage(xhr, textStatus); 
       }
     });
     e.stopPropagation();
@@ -807,7 +807,7 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
           }
         },
         error: function (xhr, textStatus) {
-          displayAjaxErrorMessage(xhr);
+          displayAjaxErrorMessage(xhr, textStatus);
         }
       });
     }
@@ -841,7 +841,7 @@ function ajaxRemove(selector, updateSelector) {
         form.find(updateSelector).html($(results).find(updateSelector).html());
       },
       error: function (xhr, textStatus) {
-        displayAjaxErrorMessage(xhr); 
+        displayAjaxErrorMessage(xhr, textStatus); 
       }
     });
     e.stopPropagation();
@@ -888,7 +888,7 @@ function ajaxAdd(selector, updateSelector, errorContainer) {
         }
       },
       error: function (xhr, textStatus) {
-        displayAjaxErrorMessage(xhr); 
+        displayAjaxErrorMessage(xhr, textStatus); 
       }
     });
     e.stopPropagation();
@@ -896,7 +896,7 @@ function ajaxAdd(selector, updateSelector, errorContainer) {
   });
 }
 
-function displayAjaxErrorMessage(xhr) {
+function displayAjaxErrorMessage(xhr, textStatus) {
   if (xhr.readyState == 4 && xhr.status == 200) {
     var msg = "The service is not active: " + textStatus;
   } else {

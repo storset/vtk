@@ -54,7 +54,7 @@ $(document).ready(function () {
   
   /* TODO: all cancel actions
   $("#app-content").delegate("input[type=submit][name=cancelAction]", "click", function(e) {
-     .. 
+     ..
     e.stopPropagation();
     return false;
   }); */
@@ -235,20 +235,20 @@ function initFileUpload() {
     });
 
     var textfieldWrapper = form.find(".vrtx-textfield"); 
-	textfieldWrapper.addClass("vrtx-file-upload");
-	textfieldWrapper.append("<input id='fake-file' />");
+    textfieldWrapper.addClass("vrtx-file-upload");
+    textfieldWrapper.append("<input id='fake-file' />");
 
-	$("<a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a>")
-	  .insertBefore("form[name=fileUploadService] #submitButtons").click(function() {
-	    $(this).closest("form").find("#file").trigger("click");
-	    return false;
-	 });
-	 if (supportsMultipleAttribute(document.getElementById("file"))) {
-	   inputFile.attr("multiple", "multiple");
-	   var multipleFilesInfoText = "<strong>Laste opp flere filer samtidig</strong>?<br />"
-	                             + "Hold nede CTRL eller CMD (på Mac) når du velger filer i filutforskeren.";
-	   $("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-button.vrtx-file-upload");
-	 }
+    $("<a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a>")
+      .insertBefore("form[name=fileUploadService] #submitButtons").click(function() {
+        $(this).closest("form").find("#file").trigger("click");
+        return false;
+    });
+    if (supportsMultipleAttribute(document.getElementById("file"))) {
+      inputFile.attr("multiple", "multiple");
+      var multipleFilesInfoText = "<strong>Laste opp flere filer samtidig</strong>?<br />"
+                                + "Hold nede CTRL eller CMD (på Mac) når du velger filer i filutforskeren.";
+      $("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-button.vrtx-file-upload");
+    }
   }
 }
 
@@ -570,9 +570,7 @@ function dropdownCollectionGlobalMenu() {
     collectionGlobalMenu.addClass("dropdown-shortcut-menu");
 
     // Move listelements except .first into container
-    var coll = collectionGlobalMenu;
-    $("ul.dropdown-shortcut-menu").parent().append("<div class='dropdown-shortcut-menu-container'><ul>" + coll.html() + "</ul></div>");
-
+    $("ul.dropdown-shortcut-menu").parent().append("<div class='dropdown-shortcut-menu-container'><ul>" + collectionGlobalMenu.html() + "</ul></div>");
     collectionGlobalMenu.find("li").not(".first").remove();
     collectionGlobalMenu.find("li.first").append("<span id='dropdown-shortcut-menu-click-area'></span>");
 
@@ -595,7 +593,6 @@ function dropdownCollectionGlobalMenu() {
       elm.parent().toggleClass('unhover');
       elm.prev().toggleClass('hover');
     });
-
   }
 }
 
@@ -614,10 +611,10 @@ function dropdownCollectionGlobalMenu() {
 
 function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, funcComplete) {
   $("#app-content").delegate(selector, "click", function (e) {
-    var serviceUrl = $(this).attr("href");
+    var url = $(this).attr("href");
     $.ajax({
       type: "GET",
-      url: serviceUrl,
+      url: url,
       dataType: "html",
       success: function (results, status, resp) {
         var form = $(results).find("." + selectorClass).html();
@@ -625,18 +622,18 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
         // Another form is already open
         if($(".expandedForm").length) {
           var classes = $(".expandedForm").attr("class").split(" ");
-          var j = classes.length;
+          var i = classes.length;
           var finalClass = "";
           var isReplaced = false;
           var theNodeType = "div";
-          while(j--) {
-            if(classes[j].indexOf("expandedForm") == -1) {
-              if(classes[j].indexOf("nodeType") != -1) {
-                theNodeType = classes[j].split("nodeType")[1];
-              } else if(finalClass.indexOf(classes[j]) == -1) {
-                finalClass += classes[j] + " ";
+          while(i--) {
+            if(classes[i].indexOf("expandedForm") == -1) {
+              if(classes[i].indexOf("nodeType") != -1) {
+                theNodeType = classes[i].split("nodeType")[1];
+              } else if(finalClass.indexOf(classes[i]) == -1) {
+                finalClass += classes[i] + " ";
               }
-            } else if(classes[j] == "expandedFormIsReplaced") {
+            } else if(classes[i] == "expandedFormIsReplaced") {
               isReplaced = true;
             }
           }
@@ -648,11 +645,8 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
           $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, function() {
             jQuery.fn.slideUp = jQuery.fn.slideUp;// Reset table slide
             if(isReplaced) {
-              var normalElement = $(results).find("." + finalClass);
-              var cls = normalElement.attr("class");
-              var html = "<" + theNodeType + " class='" + cls + "'>" 
-                       + normalElement.html() 
-                       + "</" + theNodeType + ">"
+              var elm = $(results).find("." + finalClass);
+              var html = wrap(theNodeType, elm.attr("class"), elm.html());
               if(theNodeType == "tr") {  // Because 'this' is tr > td > div
                 $(this).parent().parent().replaceWith(html).show(0);
               } else {
@@ -667,13 +661,10 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
             }
             if (isReplacing) {
               var classes = $(insertAfterOrReplaceClass).attr("class");
-              // outerHtml
-              $(insertAfterOrReplaceClass)
-                .replaceWith("<" + nodeType + " class='expandedForm expandedFormIsReplaced nodeType" + nodeType + " " 
-                           + selectorClass + " " + classes + "'>" + form + "</" + nodeType + ">");
+              $(insertAfterOrReplaceClass).replaceWith(wrap(nodeType, "expandedForm expandedFormIsReplaced nodeType" + nodeType + " "
+                                                     + selectorClass + " " + classes, form));
             } else {
-              $("<" + nodeType + " class='expandedForm nodeType" + nodeType + " " + selectorClass + "'>" + form + "</" + nodeType + ">")
-                .insertAfter(insertAfterOrReplaceClass);
+              $(wrap(nodeType, "expandedForm nodeType" + nodeType + " " + selectorClass, form).insertAfter(insertAfterOrReplaceClass);
             }
             funcComplete(selectorClass);
             if(nodeType == "tr") {
@@ -688,13 +679,10 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
         } else {
           if (isReplacing) {
             var classes = $(insertAfterOrReplaceClass).attr("class");
-            // outerHtml
-            $(insertAfterOrReplaceClass)
-              .replaceWith("<" + nodeType + " class='expandedForm expandedFormIsReplaced  nodeType" + nodeType + " " 
-                         + selectorClass + " " + classes + "'>" + form + "</" + nodeType + ">");
+            $(insertAfterOrReplaceClass).replaceWith(wrap(nodeType, "expandedForm expandedFormIsReplaced nodeType"
+                                                        + nodeType + " " + selectorClass + " " + classes, form));
           } else {
-            $("<" + nodeType + " class='expandedForm nodeType" + nodeType + " " + selectorClass + "'>" + form + "</" + nodeType + ">")
-              .insertAfter(insertAfterOrReplaceClass);
+            $(wrap(nodeType, "expandedForm nodeType" + nodeType + " " + selectorClass, form)).insertAfter(insertAfterOrReplaceClass);
           }
           funcComplete(selectorClass);
           if(nodeType == "tr") {
@@ -730,41 +718,18 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
 function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerInsertAfter, funcProceedCondition, funcComplete) {
   $("#app-content").delegate(selector, "click", function (e) {
     var link = $(this);
-    var linkAction = link.attr("name");
     var form = link.closest("form");
     if(funcProceedCondition(form)) {
       var url = form.attr("action");
       var encType = form.attr("enctype");
 
-      var textfields = form.find("input[type=text]");
-      var fileFields = form.find("input[type=file]");
-      var checkedRadioButtons = form.find("input[type=radio]:checked");
-      var checkedCheckboxes = form.find("input[type=checkbox]:checked");
-      var csrfPreventionToken = form.find("input[name='csrf-prevention-token']").val();
+      var dataString = appendInputNameValuePairsToDataString(form.find("input[type=text]"));
+      dataString += appendInputNameValuePairsToDataString(form.find("input[type=file]"));
+      dataString += appendInputNameValuePairsToDataString(form.find("input[type=radio]:checked"));
+      dataString += appendInputNameValuePairsToDataString(form.find("input[type=checkbox]:checked"));
+      dataString += '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
+                  + "&" + link.attr("name");
 
-      var dataString = "";
-      for (var i = textfields.length; i--;) {
-        var name = $(textfields[i]).attr("name");
-        var value = $(textfields[i]).val();
-        dataString += '&' + name + '=' + value;
-      }
-      for (i = fileFields.length; i--;) {
-        var name = $(fileFields[i]).attr("name");
-        var value = $(fileFields[i]).val();
-        dataString += '&' + name + '=' + value;
-      }
-      for (i = checkedRadioButtons.length; i--;) {
-        var name = $(checkedRadioButtons[i]).attr("name");
-        var value = $(checkedRadioButtons[i]).val();
-        dataString += '&' + name + '=' + value;
-      }
-      for (i = checkedCheckboxes.length; i--;) {
-        var name = $(checkedCheckboxes[i]).attr("name");
-        var value = $(checkedCheckboxes[i]).val();
-        dataString += '&' + name + '=' + value;
-      }
-      dataString += '&csrf-prevention-token=' + csrfPreventionToken + "&" + linkAction;
-    
       if (!encType.length) {
         encType = "application/x-www-form-urlencoded";
       }
@@ -781,7 +746,7 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
             if (form.find("div." + errorContainer).length) {
               form.find("div." + errorContainer).html($(results).find("div." + errorContainer).html());
             } else {
-              $("<div class='" + errorContainer + "'>" + $(results).find("div." + errorContainer).html() + "</div>")
+              $(wrap("div", errorContainer, $(results).find("div." + errorContainer).html()))
                 .insertAfter(form.find(errorContainerInsertAfter));
             }
           } else {
@@ -824,12 +789,12 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
 function ajaxRemove(selector, updateSelector) {
   $("#app-content").delegate(selector, "click", function (e) {
     var link = $(this);
-    var name = link.attr("name");
-    var listElement = link.parent();
     var form = link.closest("form");
-    var csrfPreventionToken = form.find("input[name='csrf-prevention-token']").val();
     var url = form.attr("action");
-    var dataString = name + '&csrf-prevention-token=' + csrfPreventionToken;
+    var listElement = link.parent();
+
+    var dataString = '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
+                   + "&" + link.attr("name");
     $.ajax({
       type: "POST",
       url: url,
@@ -858,14 +823,16 @@ function ajaxRemove(selector, updateSelector) {
 function ajaxAdd(selector, updateSelector, errorContainer) {
   $("#app-content").delegate(selector + " input[type=submit]", "click", function (e) {
     var link = $(this);
-    var linkAction = link.attr("name");
+    var form = link.closest("form");
+    var url = form.attr("action");
     var textfield = link.parent().parent().find("input[type=text]");
     var textfieldName = textfield.attr("name");
     var textfieldVal = textfield.val();
-    var form = link.closest("form");
-    var csrfPreventionToken = form.find("input[name='csrf-prevention-token']").val();
-    var url = form.attr("action");
-    var dataString = textfieldName + '=' + textfieldVal + "&" + linkAction + '&csrf-prevention-token=' + csrfPreventionToken;
+
+    var dataString = textfieldName + '=' + textfieldVal
+                   + '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
+                   + "&" + link.attr("name");
+
     $.ajax({
       type: "POST",
       url: url,
@@ -877,7 +844,7 @@ function ajaxAdd(selector, updateSelector, errorContainer) {
           if (cont.find(" div." + errorContainer).length) {
             cont.find("div." + errorContainer).html($(results).find("div." + errorContainer).html());
           } else {
-            $("<div class='" + errorContainer + "'>" + $(results).find("div." + errorContainer).html() + "</div>")
+            $(wrap("div", errorContainer, $(results).find("div." + errorContainer).html())
               .insertAfter(cont.find(updateSelector));
           }
         } else {
@@ -892,6 +859,22 @@ function ajaxAdd(selector, updateSelector, errorContainer) {
     e.stopPropagation();
     return false;
   });
+}
+
+function appendInputNameValuePairsToDataString(inputFields) {
+  var dataStringChunk = "";
+  for (i = inputFields.length; i--;) {
+    dataStringChunk += '&' + $(inputFields[i]).attr("name")
+                     + '=' + $(inputFields[i]).val();
+  }
+  return dataStringChunk;
+}
+
+// Use jQuery wrap function?
+function wrap(nodeType, class, html) {
+  return "<" + nodeType + " class='" + class + "'>"
+       + html +
+       + "</" + nodeType + ">";
 }
 
 function displayAjaxErrorMessage(xhr, textStatus) {

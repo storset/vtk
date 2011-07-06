@@ -1,5 +1,6 @@
 <#ftl strip_whitespace=true>
 
+<#import "/lib/view-utils.ftl" as viewutils />
 <#import "/lib/collections/view-collection-listing.ftl" as coll />
 <#import "/lib/collections/view-project-listing.ftl" as projects />
 <#import "/lib/collections/view-person-listing.ftl" as persons />
@@ -38,19 +39,9 @@
   </div>
   
   <div class="vrtx-paging-feed-wrapper">
-    <#if pageThroughUrls?exists && (pageThroughUrls?size > 1) >
-      <span class="vrtx-paging-wrapper"> 
-      <#if (page-2 > -1) >
-        <a class="vrtx-previous" href="${pageThroughUrls[page-2]}"><@vrtx.msg code="viewCollectionListing.previous" /></a>
-      </#if>
-      <#list pageThroughUrls as url>
-        <a href="${url?html}" class="vrtx-page-number <#if (url_index+1) = page>vrtx-marked</#if>">${(url_index+1)}</a>
-      </#list>
-      <#if (pageThroughUrls?size > page) >
-        <a class="vrtx-next" href="${pageThroughUrls[page]}"><@vrtx.msg code="viewCollectionListing.next" /></a>
-      </#if>
-      </span>
-    </#if>
+  	<#if pageThroughUrls?exists >
+		<@viewutils.displayPageThroughUrls pageThroughUrls page />
+	</#if>
     
     <#if alternativeRepresentations?exists>
       <#list alternativeRepresentations as alt>

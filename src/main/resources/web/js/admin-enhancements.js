@@ -16,7 +16,7 @@ function VrtxAdmin() {
   }; 
   VrtxAdmin.prototype = this; // carry over properties
   instance = new VrtxAdmin(); // instance
-  instance.constructor = VrtxAdmin; // construction pointer
+  instance.constructor = VrtxAdmin; // reset construction pointer
   
   this.isIE = null;
   this.version = null;

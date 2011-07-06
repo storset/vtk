@@ -349,12 +349,22 @@ function collectionListingInteraction() {
   if(!$(".directoryListing").length) { return; }
   
   if(typeof moveUncheckedMessage != "undefined") { 
-    placeCopyMoveButtonInActiveTab("collectionListingForm", "collectionListing\\.action\\.move-resources",
-                                   "moveResourcesService", moveUncheckedMessage);
+    var options = {
+      formName: "collectionListingForm",
+      btnId: "collectionListing\\.action\\.move-resources",
+      service: "moveResourcesService",
+      msg: moveUncheckedMessage
+    };
+    placeCopyMoveButtonInActiveTab(options);
   }
-  if(typeof copyUncheckedMessage != "undefined") { 
-    placeCopyMoveButtonInActiveTab("collectionListingForm", "collectionListing\\.action\\.copy-resources",
-                                   "copyResourcesService", copyUncheckedMessage);
+  if(typeof copyUncheckedMessage != "undefined") {
+    options = {
+      formName: "collectionListingForm",
+      btnId: "collectionListing\\.action\\.copy-resources",
+      service: "copyResourcesService",
+      msg: copyUncheckedMessage
+    };
+    placeCopyMoveButtonInActiveTab(options);
   }
   
   placeDeleteButtonInActiveTab();
@@ -368,6 +378,22 @@ function collectionListingInteraction() {
   $(".checkbox input").click(toggleChecked);
   $(".checkbox").click(function () {
     $(this).find("input").each(toggleChecked);
+  });
+}
+
+// options: formName, btnId, service, msg
+function placeCopyMoveButtonInActiveTab(options) {
+  var btn = $("#" + options.btnId); 
+  btn.hide();
+  var li = $("li." + options.service);
+  li.html("<a id='" + options.service + "' href='javascript:void(0);'>" + btn.attr('title') + "</a>");
+  $("#" + options.service).click(function () {
+    if (!$("form[name=" + options.formName + "] input[type=checkbox]:checked").length) {
+      alert(options.msg);
+    } else {
+      $("#" + options.btnId).click();
+    }
+    return false;
   });
 }
 
@@ -454,21 +480,6 @@ function placeDeletePermanentButtonInActiveTab() {
       if (confirm(confirmDeletePermanently.replace("(1)", boxesSize) + '\n\n' + list)) {
         $('.deleteResourcePermanent').click();
       }
-    }
-    return false;
-  });
-}
-
-function placeCopyMoveButtonInActiveTab(formName, btnId, service, msg) {
-  var btn = $("#" + btnId); 
-  btn.hide();
-  var li = $("li." + service);
-  li.html("<a id='" + service + "' href='javascript:void(0);'>" + btn.attr('title') + "</a>");
-  $("#" + service).click(function () {
-    if (!$("form[name=" + formName + "] input[type=checkbox]:checked").length) {
-      alert(msg);
-    } else {
-      $("#" + btnId).click();
     }
     return false;
   });

@@ -51,6 +51,7 @@ $(document).ready(function () {
   /* GET/POST forms with AJAX (initalization/config) */
   
   var getAjaxOptions = {};
+  var postAjaxOptions = {};
 
   // Global menu service forms
   var globalMenuServices = ["renameService",
@@ -84,13 +85,16 @@ $(document).ready(function () {
         nodeType: "div"
       };
       getAjaxForm(getAjaxOptions);
-      postAjaxForm("form[name=" + tabMenuServices[i] + "] input[type=submit]", 
-                   ["#contents"],
-                   "errorContainer",
-                   "> ul",
-                   function(p){return true;},
-                   collectionListingInteraction
-      );
+      
+      postAjaxOptions = {
+        selector: "form[name=" + tabMenuServices[i] + "] input[type=submit]",
+        updateSelectors: ["#contents"],
+        errorContainer: "errorContainer",
+        errorContainerInsertAfter: "> ul",
+        funcComplete: collectionListingInteraction
+      };
+      postAjaxForm(postAjaxOptions);
+      
     } else {
       getAjaxOptions = {
         selector: "ul.tabMenu2 a#" + tabMenuServices[i],
@@ -120,15 +124,16 @@ $(document).ready(function () {
       funcComplete: initPermissionForm
     };
     getAjaxForm(getAjaxOptions);
-                
-    postAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
-                 [".permissions-" + privilegiesPermissions[i] + "-wrapper",
-                 ".resource-menu.read-permissions"],
-                 "errorContainer", 
-                 ".groups-wrapper",
-                 checkStillAdmin,
-                 function() {}
-    );
+    
+    postAjaxOptions = {
+      selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
+      updateSelectors: [".permissions-" + privilegiesPermissions[i] + "-wrapper",
+                        ".resource-menu.read-permissions"],
+      errorContainer: "errorContainer",
+      errorContainerInsertAfter: ".groups-wrapper",
+      funcProceedCondition: checkStillAdmin
+    };            
+    postAjaxForm(postAjaxOptions);
   }
   
   // More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
@@ -145,15 +150,15 @@ $(document).ready(function () {
       funcComplete: initPermissionForm
     };
     getAjaxForm(getAjaxOptions);
-    postAjaxForm("tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
-                 ["tr." +  privilegiesPermissionsInTable[i],
-                 ".resource-menu.read-permissions"],
-                 "errorContainer", 
-                 ".groups-wrapper",
-                 function(p) {return true;},
-                 function() {}
-                 
-    );      
+    
+    postAjaxOptions = {
+      selector: "tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
+      updateSelectors: ["tr." +  privilegiesPermissionsInTable[i],
+                        ".resource-menu.read-permissions"],
+      errorContainer: "errorContainer",
+      errorContainerInsertAfter: ".groups-wrapper"
+    };
+    postAjaxForm(postAjaxOptions);      
   }
 
   // About property forms
@@ -707,19 +712,19 @@ function getAjaxForm(options) {
 /**
  * POST form with AJAX
  *
- * @param selector: selector for links that should POST asynchronous form
- * @param updateSelectors: one or more selectors for markup that should update after POST (Array)
- * @param errorContainer: selector for error container
- * @param errorContainerInsertAfter: selector for where error container should be inserted after
- * @param funcProceedCondition: must return true to continue
- * @param funcComplete: callback function to run when AJAX is completed
+ * @param option: selector: selector for links that should POST asynchronous form
+ *                updateSelectors: one or more selectors for markup that should update after POST (Array)
+ *                errorContainer: selector for error container
+ *                errorContainerInsertAfter: selector for where error container should be inserted after
+ *                funcProceedCondition: must return true to continue
+ *                funcComplete: callback function to run when AJAX is completed
  */
 
-function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerInsertAfter, funcProceedCondition, funcComplete) {
-  $("#app-content").delegate(selector, "click", function (e) {
+function postAjaxForm(options) {
+  $("#app-content").delegate(options.selector, "click", function (e) {
     var link = $(this);
     var form = link.closest("form");
-    if(funcProceedCondition(form)) {
+    if(!options.funcProceedCondition || options.funcProceedCondition(form)) {
       var url = form.attr("action");
       var encType = form.attr("enctype");
 
@@ -741,12 +746,12 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
         dataType: "html",
         contentType: encType,
         success: function (results, status, resp) {
-          if (hasErrorContainers(results, errorContainer)) {
-            displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
+          if (hasErrorContainers(results, options.errorContainer)) {
+            displayErrorContainers(results, form, options.errorContainerInsertAfter, options.errorContainer);
           } else {
-            for(var i = updateSelectors.length; i--;) {
+            for(var i = options.updateSelectors.length; i--;) {
               // Filter out 'expandedForm'-classes
-              var classes = $(updateSelectors[i]).attr("class").split(" ");
+              var classes = $(options.updateSelectors[i]).attr("class").split(" ");
               var j = classes.length;
               var finalClass = "";
               while(j--) {
@@ -754,10 +759,13 @@ function postAjaxForm(selector, updateSelectors, errorContainer, errorContainerI
                   finalClass += classes[j] + " ";
                 }
               }
-              $(updateSelectors[i]).attr("class", finalClass);
-              $("#app-content").find(updateSelectors[i]).html($(results).find(updateSelectors[i]).html());
+              $(options.updateSelectors[i]).attr("class", finalClass);
+              $("#app-content").find(options.updateSelectors[i])
+                .html($(results).find(options.updateSelectors[i]).html());
             }
-            funcComplete();
+            if(options.funcComplete) {
+              options.funcComplete();
+            }
             form.parent().slideUp(vrtxAdmin.transitionSpeed, function () {
               $(this).remove();
             });

@@ -34,9 +34,6 @@ function VrtxAdmin() {
 };
 
 var vrtxAdmin = new VrtxAdmin();
-var vrtxAdmin2 = new VrtxAdmin();
-
-alert(vrtxAdmin === vrtxAdmin2);
 
 // Browser info
 vrtxAdmin.isIE = $.browser.msie;

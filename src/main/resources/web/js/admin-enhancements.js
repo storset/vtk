@@ -64,8 +64,7 @@ $(document).ready(function () {
         selectorClass: "globalmenu",
         insertAfterOrReplaceClass: "#titleContainer ul.globalMenu",
         isReplacing: false,
-        nodeType: "div",
-        funcComplete: function(p){}
+        nodeType: "div"
     };
     getAjaxForm(getAjaxOptions);
   }
@@ -82,8 +81,7 @@ $(document).ready(function () {
         selectorClass: "vrtx-admin-form",
         insertAfterOrReplaceClass: ".activeTab ul.tabMenu2",
         isReplacing: false,
-        nodeType: "div",
-        funcComplete: function(p){}
+        nodeType: "div"
       };
       getAjaxForm(getAjaxOptions);
       postAjaxForm("form[name=" + tabMenuServices[i] + "] input[type=submit]", 
@@ -100,7 +98,7 @@ $(document).ready(function () {
         insertAfterOrReplaceClass: ".activeTab ul.tabMenu2",
         isReplacing: false,
         nodeType: "div",
-        funcComplete: function(p){initFileUpload()}
+        funcComplete: function(p){ initFileUpload() }
       };
       getAjaxForm(getAjaxOptions);
       initFileUpload(); // when error message
@@ -182,8 +180,7 @@ $(document).ready(function () {
       selectorClass: "expandedForm-prop-" + propsAbout[i],
       insertAfterOrReplaceClass: "tr.prop-" + propsAbout[i],
       isReplacing: true,
-      nodeType: "tr",
-      funcComplete: function(p){}
+      nodeType: "tr"
     };
     getAjaxForm(getAjaxOptions);
   }
@@ -664,7 +661,9 @@ function getAjaxForm(options) {
               $(wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))
                 .insertAfter(options.insertAfterOrReplaceClass);
             }
-            options.funcComplete(options.selectorClass);
+            if(options.funcComplete) {
+              options.funcComplete(options.selectorClass);
+            }
             if(options.nodeType == "tr") {
               $(options.nodeType + "." + options.selectorClass).prepareTableRowForSliding();
               jQuery.fn.slideDown = jQuery.fn.toggleSlideTable; // Table slide
@@ -683,7 +682,9 @@ function getAjaxForm(options) {
             $(wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))
               .insertAfter(options.insertAfterOrReplaceClass);
           }
-          options.funcComplete(options.selectorClass);
+          if(options.funcComplete) {
+            options.funcComplete(options.selectorClass);
+          }
           if(options.nodeType == "tr") {
             $(options.nodeType + "." + options.selectorClass).prepareTableRowForSliding();
             jQuery.fn.slideDown = jQuery.fn.toggleSlideTable; // Table slide

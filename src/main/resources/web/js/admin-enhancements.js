@@ -327,9 +327,9 @@ function logoutButtonAsLink() {
 
 function collectionListingInteraction() {
   placeCopyMoveButtonInActiveTab("collectionListingForm", "collectionListing\\.action\\.move-resources",
-                                 "moveResourcesService", moveUncheckedMessage) {
+                                 "moveResourcesService", moveUncheckedMessage);
   placeCopyMoveButtonInActiveTab("collectionListingForm", "collectionListing\\.action\\.copy-resources",
-                                 "copyResourcesService", copyUncheckedMessage) {
+                                 "copyResourcesService", copyUncheckedMessage);
 
   placeDeleteButtonInActiveTab();
   placeRecoverButtonInActiveTab();

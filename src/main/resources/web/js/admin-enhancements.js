@@ -670,7 +670,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
             jQuery.fn.slideUp = jQuery.fn.slideUp;// Reset table slide
             if(isReplaced) {
               var elm = $(results).find("." + finalClass);
-              var html = wrap(theNodeType, elm.attr("class"), elm.html());
+              var html = vrtxAdmin.wrap(theNodeType, elm.attr("class"), elm.html());
               if(theNodeType == "tr") {  // Because 'this' is tr > td > div
                 $(this).parent().parent().replaceWith(html).show(0);
               } else {
@@ -685,11 +685,11 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
             }
             if (options.isReplacing) {
               var classes = $(options.insertAfterOrReplaceClass).attr("class");
-              $(options.insertAfterOrReplaceClass).replaceWith(wrap(options.nodeType, "expandedForm expandedFormIsReplaced nodeType" 
-                                                                  + options.nodeType + " " + options.selectorClass + " " + classes, form));
+              $(options.insertAfterOrReplaceClass).replaceWith(vrtxAdmin.wrap(options.nodeType, "expandedForm expandedFormIsReplaced nodeType" 
+                                                                            + options.nodeType + " " + options.selectorClass + " " + classes, form));
             } else {
-              $(wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))
-                .insertAfter(options.insertAfterOrReplaceClass);
+              $(vrtxAdmin.wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))
+                  .insertAfter(options.insertAfterOrReplaceClass);
             }
             if(options.funcComplete) {
               options.funcComplete(options.selectorClass);
@@ -706,11 +706,11 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
         } else {
           if (options.isReplacing) {
             var classes = $(options.insertAfterOrReplaceClass).attr("class");
-            $(options.insertAfterOrReplaceClass).replaceWith(wrap(options.nodeType, "expandedForm expandedFormIsReplaced nodeType"
-                                                                + options.nodeType + " " + options.selectorClass + " " + classes, form));
+            $(options.insertAfterOrReplaceClass).replaceWith(vrtxAdmin.wrap(options.nodeType, "expandedForm expandedFormIsReplaced nodeType"
+                                                                          + options.nodeType + " " + options.selectorClass + " " + classes, form));
           } else {
-            $(wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))
-              .insertAfter(options.insertAfterOrReplaceClass);
+            $(vrtxAdmin.wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))
+                .insertAfter(options.insertAfterOrReplaceClass);
           }
           if(options.funcComplete) {
             options.funcComplete(options.selectorClass);
@@ -726,7 +726,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
         }   
       },
       error: function (xhr, textStatus) {
-        displayAjaxErrorMessage(xhr, textStatus); 
+        vrtxAdmin.displayAjaxErrorMessage(xhr, textStatus); 
       }
     });
     e.stopPropagation();
@@ -771,8 +771,8 @@ VrtxAdmin.prototype.postAjaxForm = function(options) {
         dataType: "html",
         contentType: encType,
         success: function (results, status, resp) {
-          if (hasErrorContainers(results, options.errorContainer)) {
-            displayErrorContainers(results, form, options.errorContainerInsertAfter, options.errorContainer);
+          if (vrtxAdmin.hasErrorContainers(results, options.errorContainer)) {
+            vrtxAdmin.displayErrorContainers(results, form, options.errorContainerInsertAfter, options.errorContainer);
           } else {
             for(var i = options.updateSelectors.length; i--;) {
               // Filter out 'expandedForm'-classes
@@ -797,7 +797,7 @@ VrtxAdmin.prototype.postAjaxForm = function(options) {
           }
         },
         error: function (xhr, textStatus) {
-          displayAjaxErrorMessage(xhr, textStatus);
+          vrtxAdmin.displayAjaxErrorMessage(xhr, textStatus);
         }
       });
     }
@@ -831,7 +831,7 @@ VrtxAdmin.prototype.ajaxRemove = function(selector, updateSelector) {
         form.find(updateSelector).html($(results).find(updateSelector).html());
       },
       error: function (xhr, textStatus) {
-        displayAjaxErrorMessage(xhr, textStatus); 
+        vrtxAdmin.displayAjaxErrorMessage(xhr, textStatus); 
       }
     });
     e.stopPropagation();
@@ -866,15 +866,15 @@ VrtxAdmin.prototype.ajaxAdd = function(selector, updateSelector, errorContainer)
       data: dataString,
       dataType: "html",
       success: function (results, status, resp) {
-        if (hasErrorContainers(results, errorContainer)) {
-          displayErrorContainers(results, form, updateSelector, errorContainer);
+        if (vrtxAdmin.hasErrorContainers(results, errorContainer)) {
+          vrtxAdmin.displayErrorContainers(results, form, updateSelector, errorContainer);
         } else {
           form.find(updateSelector).html($(results).find(updateSelector).html());
           textfield.val("");
         }
       },
       error: function (xhr, textStatus) {
-        displayAjaxErrorMessage(xhr, textStatus);
+        vrtxAdmin.displayAjaxErrorMessage(xhr, textStatus);
       }
     });
     e.stopPropagation();
@@ -885,13 +885,13 @@ VrtxAdmin.prototype.ajaxAdd = function(selector, updateSelector, errorContainer)
 /* AJAX helper functions */
 
 // Use jQuery wrap function instead?
-function wrap(node, cls, html) {
+VrtxAdmin.prototype.wrap = function(node, cls, html) {
   return "<" + node + " class='" + cls + "'>" 
          + html 
          + "</" + node + ">";
 }
 
-function appendInputNameValuePairsToDataString(inputFields) {
+VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function(inputFields) {
   var dataStringChunk = "";
   for (i = inputFields.length; i--;) {
     dataStringChunk += '&' + $(inputFields[i]).attr("name")
@@ -900,23 +900,23 @@ function appendInputNameValuePairsToDataString(inputFields) {
   return dataStringChunk;
 }
 
-function hasErrorContainers(results, errorContainer) {
+VrtxAdmin.prototype.hasErrorContainers = function(results, errorContainer) {
   return $(results).find("div." + errorContainer).length > 0;
 }
 
 /* TODO: support for multiple errorContainers
   (place the correct one in correct place (e.g. users and groups)) */
-function displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer) {
+VrtxAdmin.prototype.displayErrorContainers = function(results, form, errorContainerInsertAfter, errorContainer) {
   var wrapper = form.find(errorContainerInsertAfter).parent();
   if (wrapper.find("div." + errorContainer).length) {
     wrapper.find("div." + errorContainer).html($(results).find("div." + errorContainer).html());
   } else {
-    $(wrap("div", errorContainer, $(results).find("div." + errorContainer).html()))
-      .insertAfter(wrapper.find(errorContainerInsertAfter));
+    $(vrtxAdmin.wrap("div", errorContainer, $(results).find("div." + errorContainer).html()))
+        .insertAfter(wrapper.find(errorContainerInsertAfter));
   }
 }
 
-function displayAjaxErrorMessage(xhr, textStatus) {
+VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
   if (xhr.readyState == 4 && xhr.status == 200) {
     var msg = "The service is not active: " + textStatus;
   } else {

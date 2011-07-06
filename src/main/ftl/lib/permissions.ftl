@@ -74,7 +74,11 @@
       <#if count % 2 == 0>
         <tr class="even ${p.name}">
       <#else>
-        <tr class="${p.name}">
+        <#if count == 1>
+          <tr class="odd first ${p.name}">
+        <#else>
+          <tr class="odd ${p.name}">
+        </#if>
       </#if>
       <#assign formName = 'permissionsForm_' + p.name />
       <#assign privilegeName = p.name />

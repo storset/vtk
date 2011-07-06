@@ -663,11 +663,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
           }
           theNodeType = $.trim(theNodeType);
           finalClass = $.trim(finalClass.split(" ")[0]);
-          if(theNodeType == "tr") {
-            jQuery.fn.slideUp = jQuery.fn.toggleSlideTable; // Table slide
-          }
           $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, function() {
-            jQuery.fn.slideUp = jQuery.fn.slideUp;// Reset table slide
             if(isReplaced) {
               var elm = $(results).find("." + finalClass);
               var html = vrtxAdmin.wrap(theNodeType, elm.attr("class"), elm.html());
@@ -696,10 +692,8 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
             }
             if(options.nodeType == "tr") {
               $(options.nodeType + "." + options.selectorClass).prepareTableRowForSliding();
-              jQuery.fn.slideDown = jQuery.fn.toggleSlideTable; // Table slide
             }
             $(options.nodeType + "." + options.selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
-              jQuery.fn.slideDown = jQuery.fn.slideDown; // Reset table slide
               $(this).find("input[type=text]:first").focus();
             });  
           });
@@ -717,10 +711,8 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
           }
           if(options.nodeType == "tr") {
             $(options.nodeType + "." + options.selectorClass).prepareTableRowForSliding();
-            jQuery.fn.slideDown = jQuery.fn.toggleSlideTable; // Table slide
           }
           $(options.nodeType + "." + options.selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
-            jQuery.fn.slideDown = jQuery.fn.slideDown; // Reset table slide
             $(this).find("input[type=text]:first").focus();
           });
         }   
@@ -1098,9 +1090,11 @@ function SetUrl(url, width, height, alt) {
 
 /* ^ CK browse server integration */
 
-/* Slide row in table 
- * Modified from: 
+/* Override slideUp() / slideDown() to handle rows in a table
+ *
+ * Credits: 
  * http://stackoverflow.com/questions/467336/jquery-how-to-use-slidedown-or-show-function-on-a-table-row/920480#920480
+ * http://www.bennadel.com/blog/1624-Ask-Ben-Overriding-Core-jQuery-Methods.htm
  */
 
 jQuery.fn.prepareTableRowForSliding = function() {
@@ -1109,16 +1103,28 @@ jQuery.fn.prepareTableRowForSliding = function() {
   return $tr;
 };
 
-jQuery.fn.toggleSlideTable = function(speed, callback) {
-  $tr = this;
-  if ($tr.is(':hidden')) {
-    $tr.show().find('td > div').animate({opacity: 'toggle', height: 'toggle'}, speed, callback);
+var originalSlideUp = jQuery.fn.slideUp;
+jQuery.fn.slideUp = function(speed, callback) {
+  $trOrOtherElm = this;
+  if($trOrOtherElm.is("tr")) {
+    $trOrOtherElm.find('td > div').animate({height: 'toggle'}, speed, callback);
   } else {
-    $tr.find('td > div').animate({opacity: 'toggle', height: 'toggle'}, speed, callback);
+    originalSlideUp.apply($trOrOtherElm, arguments);
   }
-  return $tr;
-};
+}
 
-/* ^ Slide row in table */
+var originalSlideDown = jQuery.fn.slideDown;
+jQuery.fn.slideDown = function(speed, callback) {
+  $trOrOtherElm = this;
+  if($trOrOtherElm.is("tr")) {
+    if ($trOrOtherElm.is(':hidden')) {
+      $trOrOtherElm.show().find('td > div').animate({height: 'toggle'}, speed, callback);
+    }
+  } else {
+    originalSlideDown.apply($trOrOtherElm, arguments);
+  }
+}
+
+/* ^ Override slideUp() / slideDown() to handle rows in a table */
 
 /* ^ Vortex Admin enhancements */

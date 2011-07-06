@@ -7,7 +7,10 @@
  
 var agent = navigator.userAgent.toLowerCase();
 
-var VrtxAdmin = function() {
+var VrtxAdmin = function VrtxAdmin() {
+
+  var instance = this; // class-like singleton
+
   this.isIE = null;
   this.version = null;
   this.isIE6 = null;
@@ -19,6 +22,10 @@ var VrtxAdmin = function() {
   this.transitionCustomPermissionSpeed = 200; // same as 'fast'
   this.transitionPropSpeed = 100;
   this.transitionDropdownSpeed = 100;
+  
+  VrtxAdmin = function() {
+    return instance;
+  }; 
 };
 
 var vrtxAdmin = new VrtxAdmin();

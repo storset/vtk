@@ -326,11 +326,17 @@ function logoutButtonAsLink() {
 /* Collectionlisting interaction */
 
 function collectionListingInteraction() {
-  placeCopyMoveButtonInActiveTab("collectionListingForm", "collectionListing\\.action\\.move-resources",
-                                 "moveResourcesService", moveUncheckedMessage);
-  placeCopyMoveButtonInActiveTab("collectionListingForm", "collectionListing\\.action\\.copy-resources",
-                                 "copyResourcesService", copyUncheckedMessage);
-
+  if(!$(".directoryListing").length) { return; }
+  
+  if(typeof moveUncheckedMessage != "undefined") { 
+    placeCopyMoveButtonInActiveTab("collectionListingForm", "collectionListing\\.action\\.move-resources",
+                                   "moveResourcesService", moveUncheckedMessage);
+  }
+  if(typeof copyUncheckedMessage != "undefined") { 
+    placeCopyMoveButtonInActiveTab("collectionListingForm", "collectionListing\\.action\\.copy-resources",
+                                   "copyResourcesService", copyUncheckedMessage);
+  }
+  
   placeDeleteButtonInActiveTab();
   placeRecoverButtonInActiveTab();
   placeDeletePermanentButtonInActiveTab();

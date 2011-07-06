@@ -7,7 +7,7 @@
  
 var agent = navigator.userAgent.toLowerCase();
 
-function vortexAdmin() {
+var vrtxAdmin = function() {
   this.isIE = null;
   this.version = null;
   this.isIE6 = null;
@@ -20,8 +20,6 @@ function vortexAdmin() {
   this.transitionPropSpeed = 100;
   this.transitionDropdownSpeed = 100;
 };
-
-var vrtxAdmin = new vortexAdmin();
 
 // Browser info
 vrtxAdmin.isIE = $.browser.msie;
@@ -52,12 +50,7 @@ $(document).ready(function () {
 
   /* GET/POST forms with AJAX (initalization/config) */
   
-  /* TODO: all cancel actions
-  $("#app-content").delegate("input[type=submit][name=cancelAction]", "click", function(e) {
-     ..
-    e.stopPropagation();
-    return false;
-  }); */
+  var getAjaxOptions = {};
 
   // Global menu service forms
   var globalMenuServices = ["renameService",
@@ -66,13 +59,15 @@ $(document).ready(function () {
                             "manage\\.createArchiveService"];
 
   for (var i = globalMenuServices.length; i--;) {
-    getAjaxForm("#titleContainer a#" + globalMenuServices[i], 
-                "globalmenu",
-                "#titleContainer ul.globalMenu",
-                false, 
-                "div", 
-                function(p){}
-    );
+    getAjaxOptions = {
+        selector: "#titleContainer a#" + globalMenuServices[i],
+        selectorClass: "globalmenu",
+        insertAfterOrReplaceClass: "#titleContainer ul.globalMenu",
+        isReplacing: false,
+        nodeType: "div",
+        funcComplete: function(p){}
+    };
+    getAjaxForm(getAjaxOptions);
   }
 
   // Tab menu service forms
@@ -82,12 +77,15 @@ $(document).ready(function () {
 
   for (i = tabMenuServices.length; i--;) {
     if(tabMenuServices[i] != "fileUploadService") { // half-async for file upload
-      getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], 
-                  "vrtx-admin-form", ".activeTab ul.tabMenu2", 
-                  false,
-                  "div",
-                  function(p){}
-      );
+      getAjaxOptions = {
+        selector: "ul.tabMenu2 a#" + tabMenuServices[i],
+        selectorClass: "vrtx-admin-form",
+        insertAfterOrReplaceClass: ".activeTab ul.tabMenu2",
+        isReplacing: false,
+        nodeType: "div",
+        funcComplete: function(p){}
+      };
+      getAjaxForm(getAjaxOptions);
       postAjaxForm("form[name=" + tabMenuServices[i] + "] input[type=submit]", 
                    ["#contents"],
                    "errorContainer",
@@ -96,14 +94,15 @@ $(document).ready(function () {
                    collectionListingInteraction
       );
     } else {
-      getAjaxForm("ul.tabMenu2 a#" + tabMenuServices[i], 
-                  "vrtx-admin-form", ".activeTab ul.tabMenu2", 
-                  false,
-                  "div",
-                  function(p){
-                    initFileUpload()
-                  }
-      );
+      getAjaxOptions = {
+        selector: "ul.tabMenu2 a#" + tabMenuServices[i],
+        selectorClass: "vrtx-admin-form",
+        insertAfterOrReplaceClass: ".activeTab ul.tabMenu2",
+        isReplacing: false,
+        nodeType: "div",
+        funcComplete: function(p){initFileUpload()}
+      };
+      getAjaxForm(getAjaxOptions);
       initFileUpload(); // when error message
     }
   }
@@ -114,13 +113,15 @@ $(document).ready(function () {
                                 "all"];
 
   for (i = privilegiesPermissions.length; i--;) {
-    getAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax", 
-                "expandedForm-" + privilegiesPermissions[i],
-                "div.permissions-" + privilegiesPermissions[i] + "-wrapper",
-                true,
-                "div", 
-                initPermissionForm
-    );
+    getAjaxOptions = {
+      selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax",
+      selectorClass: "expandedForm-" + privilegiesPermissions[i],
+      insertAfterOrReplaceClass: "div.permissions-" + privilegiesPermissions[i] + "-wrapper",
+      isReplacing: true,
+      nodeType: "div",
+      funcComplete: initPermissionForm
+    };
+    getAjaxForm(getAjaxOptions);
                 
     postAjaxForm("div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
                  [".permissions-" + privilegiesPermissions[i] + "-wrapper",
@@ -137,14 +138,15 @@ $(document).ready(function () {
                                        "read-processed"];
 
   for (i = privilegiesPermissionsInTable.length; i--;) {
-    getAjaxForm(".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax", 
-                privilegiesPermissionsInTable[i],
-                "tr." + privilegiesPermissionsInTable[i],
-                true,
-                "tr",
-                initPermissionForm
-    );
-                
+    getAjaxOptions = {
+      selector: ".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax",
+      selectorClass: privilegiesPermissionsInTable[i],
+      insertAfterOrReplaceClass: "tr." + privilegiesPermissionsInTable[i],
+      isReplacing: true,
+      nodeType: "tr",
+      funcComplete: initPermissionForm
+    };
+    getAjaxForm(getAjaxOptions);
     postAjaxForm("tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
                  ["tr." +  privilegiesPermissionsInTable[i],
                  ".resource-menu.read-permissions"],
@@ -175,13 +177,15 @@ $(document).ready(function () {
     ];
 
   for (i = propsAbout.length; i--;) {
-    getAjaxForm("body#vrtx-about .prop-" + propsAbout[i] + " a.vrtx-button-small",
-                "expandedForm-prop-" + propsAbout[i],
-                "tr.prop-" + propsAbout[i],
-                true,
-                "tr",
-                function(p){}
-    );
+    getAjaxOptions = {
+      selector: "body#vrtx-about .prop-" + propsAbout[i] + " a.vrtx-button-small",
+      selectorClass: "expandedForm-prop-" + propsAbout[i],
+      insertAfterOrReplaceClass: "tr.prop-" + propsAbout[i],
+      isReplacing: true,
+      nodeType: "tr",
+      funcComplete: function(p){}
+    };
+    getAjaxForm(getAjaxOptions);
   }
   
   // Remove/add permissions
@@ -594,23 +598,23 @@ function dropdownCollectionGlobalMenu() {
 /**
  * GET form with AJAX
  *
- * @param selector: selector for links that should GET asynchronous form
- * @param selectorClass: selector for form
- * @param insertAfterOrReplaceClass: where to put the form
- * @param isReplacing: replace instead of insert after
- * @param nodeType: node type that should be replaced or inserted
- * @param funcComplete: callback function(selectorClass) to run when AJAX is completed and form is visible
+ * @param options: selector: selector for links that should GET asynchronous form
+ *                 selectorClass: selector for form
+ *                 insertAfterOrReplaceClass: where to put the form
+ *                 isReplacing: replace instead of insert after
+ *                 nodeType: node type that should be replaced or inserted
+ *                 funcComplete: callback function(selectorClass) to run when AJAX is completed and form is visible
  */
 
-function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isReplacing, nodeType, funcComplete) {
-  $("#app-content").delegate(selector, "click", function (e) {
+function getAjaxForm(options) {
+  $("#app-content").delegate(options.selector, "click", function (e) {
     var url = $(this).attr("href");
     $.ajax({
       type: "GET",
       url: url,
       dataType: "html",
       success: function (results, status, resp) {
-        var form = $(results).find("." + selectorClass).html();
+        var form = $(results).find("." + options.selectorClass).html();
           
         // Another form is already open
         if($(".expandedForm").length) {
@@ -652,37 +656,39 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
                 $(this).remove();            
               }
             }
-            if (isReplacing) {
-              var classes = $(insertAfterOrReplaceClass).attr("class");
-              $(insertAfterOrReplaceClass).replaceWith(wrap(nodeType, "expandedForm expandedFormIsReplaced nodeType" + nodeType + " "
-                                                     + selectorClass + " " + classes, form));
+            if (options.isReplacing) {
+              var classes = $(options.insertAfterOrReplaceClass).attr("class");
+              $(options.insertAfterOrReplaceClass).replaceWith(wrap(options.nodeType, "expandedForm expandedFormIsReplaced nodeType" 
+                                                                  + options.nodeType + " " + options.selectorClass + " " + classes, form));
             } else {
-              $(wrap(nodeType, "expandedForm nodeType" + nodeType + " " + selectorClass, form)).insertAfter(insertAfterOrReplaceClass);
+              $(wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))
+                .insertAfter(options.insertAfterOrReplaceClass);
             }
-            funcComplete(selectorClass);
-            if(nodeType == "tr") {
-              $(nodeType + "." + selectorClass).prepareTableRowForSliding();
+            options.funcComplete(options.selectorClass);
+            if(options.nodeType == "tr") {
+              $(options.nodeType + "." + options.selectorClass).prepareTableRowForSliding();
               jQuery.fn.slideDown = jQuery.fn.toggleSlideTable; // Table slide
             }
-            $(nodeType + "." + selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
+            $(options.nodeType + "." + options.selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
               jQuery.fn.slideDown = jQuery.fn.slideDown; // Reset table slide
               $(this).find("input[type=text]:first").focus();
             });  
           });
         } else {
-          if (isReplacing) {
-            var classes = $(insertAfterOrReplaceClass).attr("class");
-            $(insertAfterOrReplaceClass).replaceWith(wrap(nodeType, "expandedForm expandedFormIsReplaced nodeType"
-                                                        + nodeType + " " + selectorClass + " " + classes, form));
+          if (options.isReplacing) {
+            var classes = $(options.insertAfterOrReplaceClass).attr("class");
+            $(options.insertAfterOrReplaceClass).replaceWith(wrap(options.nodeType, "expandedForm expandedFormIsReplaced nodeType"
+                                                                + options.nodeType + " " + options.selectorClass + " " + classes, form));
           } else {
-            $(wrap(nodeType, "expandedForm nodeType" + nodeType + " " + selectorClass, form)).insertAfter(insertAfterOrReplaceClass);
+            $(wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))
+              .insertAfter(options.insertAfterOrReplaceClass);
           }
-          funcComplete(selectorClass);
-          if(nodeType == "tr") {
-            $(nodeType + "." + selectorClass).prepareTableRowForSliding();
+          options.funcComplete(options.selectorClass);
+          if(options.nodeType == "tr") {
+            $(options.nodeType + "." + options.selectorClass).prepareTableRowForSliding();
             jQuery.fn.slideDown = jQuery.fn.toggleSlideTable; // Table slide
           }
-          $(nodeType + "." + selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
+          $(options.nodeType + "." + options.selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
             jQuery.fn.slideDown = jQuery.fn.slideDown; // Reset table slide
             $(this).find("input[type=text]:first").focus();
           });
@@ -845,10 +851,10 @@ function ajaxAdd(selector, updateSelector, errorContainer) {
 /* AJAX helper functions */
 
 // Use jQuery wrap function instead?
-function wrap(nodeType, class, html) {
-  return "<" + nodeType + " class='" + class + "'>"
-       + html +
-       + "</" + nodeType + ">";
+function wrap(node, cls, html) {
+  return "<" + node + " class='" + cls + "'>" 
+         + html 
+         + "</" + node + ">";
 }
 
 function appendInputNameValuePairsToDataString(inputFields) {

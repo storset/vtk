@@ -679,43 +679,26 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
                 $(this).remove();            
               }
             }
-            if (options.isReplacing) {
-              var classes = $(options.insertAfterOrReplaceClass).attr("class");
-              $(options.insertAfterOrReplaceClass).replaceWith(vrtxAdmin.wrap(options.nodeType, "expandedForm expandedFormIsReplaced nodeType" 
-                                                                            + options.nodeType + " " + options.selectorClass + " " + classes, form));
-            } else {
-              $(vrtxAdmin.wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))
-                  .insertAfter(options.insertAfterOrReplaceClass);
-            }
-            if(options.funcComplete) {
-              options.funcComplete(options.selectorClass);
-            }
-            if(options.nodeType == "tr") {
-              $(options.nodeType + "." + options.selectorClass).prepareTableRowForSliding();
-            }
-            $(options.nodeType + "." + options.selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
-              $(this).find("input[type=text]:first").focus();
-            });  
           });
+        }
+        
+        if (options.isReplacing) {
+          var classes = $(options.insertAfterOrReplaceClass).attr("class");
+          $(options.insertAfterOrReplaceClass).replaceWith(vrtxAdmin.wrap(options.nodeType, "expandedForm expandedFormIsReplaced nodeType"
+                                                                        + options.nodeType + " " + options.selectorClass + " " + classes, form));
         } else {
-          if (options.isReplacing) {
-            var classes = $(options.insertAfterOrReplaceClass).attr("class");
-            $(options.insertAfterOrReplaceClass).replaceWith(vrtxAdmin.wrap(options.nodeType, "expandedForm expandedFormIsReplaced nodeType"
-                                                                          + options.nodeType + " " + options.selectorClass + " " + classes, form));
-          } else {
-            $(vrtxAdmin.wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))
-                .insertAfter(options.insertAfterOrReplaceClass);
-          }
-          if(options.funcComplete) {
-            options.funcComplete(options.selectorClass);
-          }
-          if(options.nodeType == "tr") {
-            $(options.nodeType + "." + options.selectorClass).prepareTableRowForSliding();
-          }
-          $(options.nodeType + "." + options.selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
-            $(this).find("input[type=text]:first").focus();
-          });
-        }   
+          $(vrtxAdmin.wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))
+              .insertAfter(options.insertAfterOrReplaceClass);
+        }
+        if(options.funcComplete) {
+          options.funcComplete(options.selectorClass);
+        }
+        if(options.nodeType == "tr") {
+          $(options.nodeType + "." + options.selectorClass).prepareTableRowForSliding();
+        }
+        $(options.nodeType + "." + options.selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
+          $(this).find("input[type=text]:first").focus();
+        });
       },
       error: function (xhr, textStatus) {
         vrtxAdmin.displayAjaxErrorMessage(xhr, textStatus); 

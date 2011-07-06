@@ -7,10 +7,17 @@
  
 var agent = navigator.userAgent.toLowerCase();
 
-var VrtxAdmin = function VrtxAdmin() {
+function VrtxAdmin() {
 
-  var instance = this; // class-like singleton
-
+  // Class-like singleton pattern (p.145 JavaScript Patterns)
+  var instance; 
+  VrtxAdmin = function VrtxAdmin() {
+    return instance;
+  }; 
+  VrtxAdmin.prototype = this;
+  instance = new VrtxAdmin();
+  instance.constructor = VrtxAdmin;
+  
   this.isIE = null;
   this.version = null;
   this.isIE6 = null;
@@ -23,12 +30,13 @@ var VrtxAdmin = function VrtxAdmin() {
   this.transitionPropSpeed = 100;
   this.transitionDropdownSpeed = 100;
   
-  VrtxAdmin = function() {
-    return instance;
-  }; 
+  return instance;
 };
 
 var vrtxAdmin = new VrtxAdmin();
+var vrtxAdmin2 = new VrtxAdmin();
+
+alert(vrtxAdmin === vrtxAdmin2);
 
 // Browser info
 vrtxAdmin.isIE = $.browser.msie;

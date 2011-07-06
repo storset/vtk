@@ -10,13 +10,13 @@ var agent = navigator.userAgent.toLowerCase();
 function VrtxAdmin() {
 
   // Class-like singleton pattern (p.145 JavaScript Patterns)
-  var instance; 
-  VrtxAdmin = function VrtxAdmin() {
+  var instance; // cached instance
+  VrtxAdmin = function VrtxAdmin() { // rewrite constructor
     return instance;
   }; 
-  VrtxAdmin.prototype = this;
-  instance = new VrtxAdmin();
-  instance.constructor = VrtxAdmin;
+  VrtxAdmin.prototype = this; // carry over properties
+  instance = new VrtxAdmin(); // instance
+  instance.constructor = VrtxAdmin; // construction pointer
   
   this.isIE = null;
   this.version = null;

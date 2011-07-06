@@ -76,7 +76,7 @@ public class VcfController implements Controller  {
 
         Resource person = repository.retrieve(token, uri, true);
         
-        String vcard = createVcard(person, repository, token);
+        String vcard = createVcard(person, repository, token, uri.getParent());
         if (vcard == null) {
             return null;
         }
@@ -99,7 +99,7 @@ public class VcfController implements Controller  {
         return name;
     }
 
-    private String createVcard(Resource person, Repository repository, String token) throws Exception {
+    private String createVcard(Resource person, Repository repository, String token, Path currenturi) throws Exception {
 
         StringBuilder sb = new StringBuilder();
         sb.append("BEGIN:VCARD\n");
@@ -152,8 +152,8 @@ public class VcfController implements Controller  {
         	sb.append("EMAIL;TYPE=INTERNET:" + getProp(person, emailPropDef) + "\n");
         
         if(getProperty(person, picturePropDef) != null) {
-        	String pic = b64Thumbnail(person, repository, token);
-        	if(pic != null) sb.append(pic);
+        	String pic = b64Thumbnail(person, repository, token, currenturi);
+        	if(pic != null)	sb.append(pic);
         }
                 
         sb.append("REV:" + getDtstamp() + "\n");
@@ -180,12 +180,21 @@ public class VcfController implements Controller  {
         return sdf.format(Calendar.getInstance().getTime());
     }
     
-    private String b64Thumbnail(Resource person, Repository repository, String token) throws Exception {
-    	Path p = Path.fromString(getProp(person, picturePropDef));
+    private String b64Thumbnail(Resource person, Repository repository, String token, Path currenturi) throws Exception {
+    	String path = getProp(person, picturePropDef);
+    	
+    	Path p;
+    	try {
+    		if(!path.startsWith("/")) p = currenturi.extend(path);
+    		else p = Path.fromString(path);
+    	}
+    	catch (Exception e) {
+    		return null;
+    	}
+    	
     	Resource r = repository.retrieve(token, p, true);
     	Property thumbnail = r.getProperty(thumbnailPropDef);
     	InputStream i;
-    	String mimeType;
     	
     	if(thumbnail == null) {
     		int width = getProperty(r, imageWidthPropDef).getIntValue();
@@ -196,15 +205,9 @@ public class VcfController implements Controller  {
     		if(width > 300 || height > 300) return null;
     		
     		i = repository.getInputStream(token, p, true);
-    		mimeType = r.getContentType();
     	}
-    	else {
-    		i = thumbnail.getBinaryStream().getStream();
-    		mimeType = thumbnail.getBinaryMimeType();
-    	}
-    	
-    	/* Gets the TYPE=<type> from mimeType. */
-    	mimeType = mimeType.substring(mimeType.indexOf("/")+1, mimeType.length()).toUpperCase();
+    	else i = thumbnail.getBinaryStream().getStream();
+
         	
     	/* Base64 encodes the thumbnail. */
     	String encoded = Base64.encode(i);
@@ -213,15 +216,15 @@ public class VcfController implements Controller  {
     	/* Base64 encoding in vCards needs to be 75 characters on each line,
     	 * starting with a white space.
     	 */
-    	int j = 0, k = 74, len = encoded.length();
+    	int j = 0, k = 76, len = encoded.length();
     	while(k < len) {
-    		output += "\n "+encoded.substring(j,k);
+    		output += "\n  "+encoded.substring(j,k);
     		j = k;
-    		k += 74;
+    		k += 76;
     	}
-    	output += "\n "+encoded.substring(j,len);
+    	output += "\n  "+encoded.substring(j,len);
     		
-    	return "PHOTO;TYPE="+mimeType+";ENCODING=BASE64:"+output+"\n";
+    	return "PHOTO;BASE64:"+output+"\n";
     }
 
     @Required

@@ -49,6 +49,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.util.codec.Base64;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.URL;
 
 public class VcfController implements Controller  {
     
@@ -65,7 +66,7 @@ public class VcfController implements Controller  {
     private PropertyTypeDefinition picturePropDef;
     private PropertyTypeDefinition thumbnailPropDef;
     private PropertyTypeDefinition imageWidthPropDef;
-    private PropertyTypeDefinition imageHeightPropDef;
+    private String maxImageWidth;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -73,10 +74,11 @@ public class VcfController implements Controller  {
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
+        URL requestURL = URL.create(request);
 
         Resource person = repository.retrieve(token, uri, true);
         
-        String vcard = createVcard(person, repository, token, uri.getParent());
+        String vcard = createVcard(person, repository, token, uri.getParent(), requestURL);
         if (vcard == null) {
             return null;
         }
@@ -99,7 +101,7 @@ public class VcfController implements Controller  {
         return name;
     }
 
-    private String createVcard(Resource person, Repository repository, String token, Path currenturi) throws Exception {
+    private String createVcard(Resource person, Repository repository, String token, Path currenturi, URL requestURL) throws Exception {
 
         StringBuilder sb = new StringBuilder();
         sb.append("BEGIN:VCARD\n");
@@ -152,7 +154,7 @@ public class VcfController implements Controller  {
         	sb.append("EMAIL;TYPE=INTERNET:" + getProp(person, emailPropDef) + "\n");
         
         if(getProperty(person, picturePropDef) != null) {
-        	String pic = b64Thumbnail(person, repository, token, currenturi);
+        	String pic = b64Thumbnail(person, repository, token, currenturi, requestURL);
         	if(pic != null)	sb.append(pic);
         }
                 
@@ -180,17 +182,24 @@ public class VcfController implements Controller  {
         return sdf.format(Calendar.getInstance().getTime());
     }
     
-    private String b64Thumbnail(Resource person, Repository repository, String token, Path currenturi) throws Exception {
+    private String b64Thumbnail(Resource person, Repository repository, String token, Path currenturi, URL requestURL) throws Exception {
     	String path = getProp(person, picturePropDef);
     	
-    	Path p;
+    	Path p = null;
+    	
+    	try {
+        	URL pURL = URL.parse(path);
+        	if(requestURL.getHost().equals(pURL.getHost())) p = pURL.getPath();
+    	}
+    	catch (Exception e) {}
+    	
     	try {
     		if(!path.startsWith("/")) p = currenturi.extend(path);
     		else p = Path.fromString(path);
     	}
-    	catch (Exception e) {
-    		return null;
-    	}
+    	catch (Exception e) {}
+    	
+    	if(p == null) return null;
     	
     	Resource r = repository.retrieve(token, p, true);
     	Property thumbnail = r.getProperty(thumbnailPropDef);
@@ -198,11 +207,8 @@ public class VcfController implements Controller  {
     	
     	if(thumbnail == null) {
     		int width = getProperty(r, imageWidthPropDef).getIntValue();
-    		int height = getProperty(r, imageHeightPropDef).getIntValue();
     		
-    		/* If picture does not have a thumbnail and is larger then 300x300,
-    		 * it means that the picture is too large for a vCard. */
-    		if(width > 300 || height > 300) return null;
+    		if(width > Integer.parseInt(maxImageWidth)) return null;
     		
     		i = repository.getInputStream(token, p, true);
     	}
@@ -293,7 +299,7 @@ public class VcfController implements Controller  {
 	}
 
     @Required
-	public void setImageHeightPropDef(PropertyTypeDefinition imageHeightPropDef) {
-		this.imageHeightPropDef = imageHeightPropDef;
+	public void setMaxImageWidth(String maxImageWidth) {
+		this.maxImageWidth = maxImageWidth;
 	}
 }

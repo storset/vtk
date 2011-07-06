@@ -41,7 +41,7 @@
     <property name="picturePropDef" ref="picturePropDef" />
     <property name="thumbnailPropDef" ref="thumbnailPropDef" />
     <property name="imageWidthPropDef" ref="imageWidthPropDef" />
-    <property name="imageHeightPropDef" ref="imageHeightPropDef" />
+    <property name="maxImageWidth" value="${resourcetype.image.thumbnail.width}" />
   </bean>
  
   <bean id="resourceTypeIsPerson" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">

@@ -651,7 +651,7 @@ function getAjaxForm(selector, selectorClass, insertAfterOrReplaceClass, isRepla
               $(insertAfterOrReplaceClass).replaceWith(wrap(nodeType, "expandedForm expandedFormIsReplaced nodeType" + nodeType + " "
                                                      + selectorClass + " " + classes, form));
             } else {
-              $(wrap(nodeType, "expandedForm nodeType" + nodeType + " " + selectorClass, form).insertAfter(insertAfterOrReplaceClass);
+              $(wrap(nodeType, "expandedForm nodeType" + nodeType + " " + selectorClass, form)).insertAfter(insertAfterOrReplaceClass);
             }
             funcComplete(selectorClass);
             if(nodeType == "tr") {

@@ -64,6 +64,8 @@ public class VcfController implements Controller  {
     private PropertyTypeDefinition emailPropDef;
     private PropertyTypeDefinition picturePropDef;
     private PropertyTypeDefinition thumbnailPropDef;
+    private PropertyTypeDefinition imageWidthPropDef;
+    private PropertyTypeDefinition imageHeightPropDef;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -182,15 +184,29 @@ public class VcfController implements Controller  {
     	Path p = Path.fromString(getProp(person, picturePropDef));
     	Resource r = repository.retrieve(token, p, true);
     	Property thumbnail = r.getProperty(thumbnailPropDef);
-
-    	if(thumbnail == null) return null;
+    	InputStream i;
+    	String mimeType;
+    	
+    	if(thumbnail == null) {
+    		int width = getProperty(r, imageWidthPropDef).getIntValue();
+    		int height = getProperty(r, imageHeightPropDef).getIntValue();
     		
+    		/* If picture does not have a thumbnail and is larger then 300x300,
+    		 * it means that the picture is too large for a vCard. */
+    		if(width > 300 || height > 300) return null;
+    		
+    		i = repository.getInputStream(token, p, true);
+    		mimeType = r.getContentType();
+    	}
+    	else {
+    		i = thumbnail.getBinaryStream().getStream();
+    		mimeType = thumbnail.getBinaryMimeType();
+    	}
+    	
     	/* Gets the TYPE=<type> from mimeType. */
-    	String mimeType = thumbnail.getBinaryMimeType();
     	mimeType = mimeType.substring(mimeType.indexOf("/")+1, mimeType.length()).toUpperCase();
         	
     	/* Base64 encodes the thumbnail. */
-    	InputStream i = thumbnail.getBinaryStream().getStream();
     	String encoded = Base64.encode(i);
     	String output = "";
     		
@@ -266,5 +282,15 @@ public class VcfController implements Controller  {
     @Required
 	public void setThumbnailPropDef(PropertyTypeDefinition thumbnailPropDef) {
 		this.thumbnailPropDef = thumbnailPropDef;
+	}
+
+    @Required
+	public void setImageWidthPropDef(PropertyTypeDefinition imageWidthPropDef) {
+		this.imageWidthPropDef = imageWidthPropDef;
+	}
+
+    @Required
+	public void setImageHeightPropDef(PropertyTypeDefinition imageHeightPropDef) {
+		this.imageHeightPropDef = imageHeightPropDef;
 	}
 }

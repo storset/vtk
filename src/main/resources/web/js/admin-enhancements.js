@@ -7,7 +7,7 @@
  
 var agent = navigator.userAgent.toLowerCase();
 
-var vrtxAdmin = function() {
+var VrtxAdmin = function() {
   this.isIE = null;
   this.version = null;
   this.isIE6 = null;
@@ -20,6 +20,8 @@ var vrtxAdmin = function() {
   this.transitionPropSpeed = 100;
   this.transitionDropdownSpeed = 100;
 };
+
+var vrtxAdmin = new VrtxAdmin();
 
 // Browser info
 vrtxAdmin.isIE = $.browser.msie;
@@ -67,7 +69,7 @@ $(document).ready(function () {
         isReplacing: false,
         nodeType: "div"
     };
-    getAjaxForm(getAjaxOptions);
+    vrtxAdmin.getAjaxForm(getAjaxOptions);
   }
 
   // Tab menu service forms
@@ -84,7 +86,7 @@ $(document).ready(function () {
         isReplacing: false,
         nodeType: "div"
       };
-      getAjaxForm(getAjaxOptions);
+      vrtxAdmin.getAjaxForm(getAjaxOptions);
       
       postAjaxOptions = {
         selector: "form[name=" + tabMenuServices[i] + "] input[type=submit]",
@@ -93,7 +95,7 @@ $(document).ready(function () {
         errorContainerInsertAfter: "> ul",
         funcComplete: collectionListingInteraction
       };
-      postAjaxForm(postAjaxOptions);
+      vrtxAdmin.postAjaxForm(postAjaxOptions);
       
     } else {
       getAjaxOptions = {
@@ -104,7 +106,7 @@ $(document).ready(function () {
         nodeType: "div",
         funcComplete: function(p){ initFileUpload() }
       };
-      getAjaxForm(getAjaxOptions);
+      vrtxAdmin.getAjaxForm(getAjaxOptions);
       initFileUpload(); // when error message
     }
   }
@@ -123,7 +125,7 @@ $(document).ready(function () {
       nodeType: "div",
       funcComplete: initPermissionForm
     };
-    getAjaxForm(getAjaxOptions);
+    vrtxAdmin.getAjaxForm(getAjaxOptions);
     
     postAjaxOptions = {
       selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
@@ -133,7 +135,7 @@ $(document).ready(function () {
       errorContainerInsertAfter: ".groups-wrapper",
       funcProceedCondition: checkStillAdmin
     };            
-    postAjaxForm(postAjaxOptions);
+    vrtxAdmin.postAjaxForm(postAjaxOptions);
   }
   
   // More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
@@ -149,7 +151,7 @@ $(document).ready(function () {
       nodeType: "tr",
       funcComplete: initPermissionForm
     };
-    getAjaxForm(getAjaxOptions);
+    vrtxAdmin.getAjaxForm(getAjaxOptions);
     
     postAjaxOptions = {
       selector: "tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
@@ -158,7 +160,7 @@ $(document).ready(function () {
       errorContainer: "errorContainer",
       errorContainerInsertAfter: ".groups-wrapper"
     };
-    postAjaxForm(postAjaxOptions);      
+    vrtxAdmin.postAjaxForm(postAjaxOptions);      
   }
 
   // About property forms
@@ -187,13 +189,13 @@ $(document).ready(function () {
       isReplacing: true,
       nodeType: "tr"
     };
-    getAjaxForm(getAjaxOptions);
+    vrtxAdmin.getAjaxForm(getAjaxOptions);
   }
   
   // Remove/add permissions
-  ajaxRemove("input.removePermission", ".principalList");
-  ajaxAdd("span.addGroup", ".groups-wrapper", "errorContainer");
-  ajaxAdd("span.addUser", ".users-wrapper", "errorContainer");
+  vrtxAdmin.ajaxRemove("input.removePermission", ".principalList");
+  vrtxAdmin.ajaxAdd("span.addGroup", ".groups-wrapper", "errorContainer");
+  vrtxAdmin.ajaxAdd("span.addUser", ".users-wrapper", "errorContainer");
 
   /* ^ GET/POST forms with AJAX (initalization/config) */
 
@@ -608,7 +610,7 @@ function dropdownCollectionGlobalMenu() {
  *                 funcComplete: callback function(selectorClass) to run when AJAX is completed and form is visible
  */
 
-function getAjaxForm(options) {
+VrtxAdmin.prototype.getAjaxForm = function(options) {
   $("#app-content").delegate(options.selector, "click", function (e) {
     var url = $(this).attr("href");
     $.ajax({
@@ -720,7 +722,7 @@ function getAjaxForm(options) {
  *                funcComplete: callback function to run when AJAX is completed
  */
 
-function postAjaxForm(options) {
+VrtxAdmin.prototype.postAjaxForm = function(options) {
   $("#app-content").delegate(options.selector, "click", function (e) {
     var link = $(this);
     var form = link.closest("form");
@@ -788,7 +790,7 @@ function postAjaxForm(options) {
  * @param updateSelector: selector for markup to update
  */
 
-function ajaxRemove(selector, updateSelector) {
+VrtxAdmin.prototype.ajaxRemove = function(selector, updateSelector) {
   $("#app-content").delegate(selector, "click", function (e) {
     var link = $(this);
     var form = link.closest("form");
@@ -822,7 +824,7 @@ function ajaxRemove(selector, updateSelector) {
  * @param errorContainer: selector for error container
  */
 
-function ajaxAdd(selector, updateSelector, errorContainer) {
+VrtxAdmin.prototype.ajaxAdd = function(selector, updateSelector, errorContainer) {
   $("#app-content").delegate(selector + " input[type=submit]", "click", function (e) {
     var link = $(this);
     var form = link.closest("form");

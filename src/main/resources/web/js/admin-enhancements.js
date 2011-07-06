@@ -865,7 +865,7 @@ function displayErrorContainers(results, form, errorContainerInsertAfter, errorC
   if (wrapper.find("div." + errorContainer).length) {
     wrapper.find("div." + errorContainer).html($(results).find("div." + errorContainer).html());
   } else {
-    $(wrap("div", errorContainer, $(results).find("div." + errorContainer).html())
+    $(wrap("div", errorContainer, $(results).find("div." + errorContainer).html()))
       .insertAfter(wrapper.find(errorContainerInsertAfter));
   }
 }

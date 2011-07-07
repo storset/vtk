@@ -29,24 +29,11 @@ ${vrtx.getMsg("collectionListing.confirmation.delete")} <span class="vrtx-confir
       </button>
     </div>
     <div class="vrtx-button">
-      <button tabindex="2" type="submit" value="cancel" id="deleteResourceCancelAction" name="deleteResourceCancelAction">
+      <button tabindex="2" type="submit" value="cancel" onclick="tb_remove(); return false;" id="deleteResourceCancelAction" name="deleteResourceCancelAction">
         ${vrtx.getMsg("confirm-delete.cancel")}
       </button>
     </div>
   </div>
 </form>
-
-<script type="text/javascript"><!--
-   function focus(){
-      $("#deleteResourceAction").focus();
-   }
-	
-   $(document).ready(function(){
-      setTimeout("focus();",0);
-      $("#deleteResourceCancelAction").remove(); 
-      $("#vrtx-delete-resource").append('<button tabindex="2" type="button" onclick="tb_remove();" id="deleteResourceCancelAction" name="deleteResourceCancelAction">${vrtx.getMsg("confirm-delete.cancel")}</button>');
-   });
-// -->
-</script>
 </body>
 </html>

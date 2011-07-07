@@ -186,16 +186,16 @@ div#vrtx-resource\.picture .caption iframe {
 }
 
 div.introImageAndCaption div.vrtx-image-ref-browse,
-div#vrtx-resource\.picture div#input-and-button-container {
+div#vrtx-resource\.picture div.input-and-button-container {
   float: left;
 }
 
 div.introImageAndCaption div.vrtx-image-ref-browse .vrtx-textfield input#picture,
-div#vrtx-resource\.picture div#input-and-button-container .vrtx-textfield input {
+div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield input {
   width: 200px;
 }
 
-div#vrtx-resource\.picture div#input-and-button-container .vrtx-textfield {
+div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield {
   margin-right: 20px;
 }
 

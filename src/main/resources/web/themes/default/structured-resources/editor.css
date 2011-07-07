@@ -41,7 +41,8 @@
 }
 
 .vrtx-json .vrtx-json-element .vrtx-resource-ref-browse .vrtx-button,
-.vrtx-json .vrtx-json-element .vrtx-image-ref-browse .vrtx-button {
+.vrtx-json .vrtx-json-element .vrtx-image-ref-browse .vrtx-button,
+.vrtx-json .vrtx-json-element .vrtx-image-ref .vrtx-button {
   float: none;
   margin: 0 0 0 20px;
 }

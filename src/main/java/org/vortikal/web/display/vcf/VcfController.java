@@ -192,8 +192,7 @@ public class VcfController implements Controller {
         return sdf.format(Calendar.getInstance().getTime());
     }
 
-    private String b64Thumbnail(Resource person, Repository repository, String token, Path currenturi, URL requestURL)
-            throws Exception {
+    private String b64Thumbnail(Resource person, Repository repository, String token, Path currenturi, URL requestURL) {
         String path = getProp(person, picturePropDef);
 
         Path p = null;
@@ -216,31 +215,45 @@ public class VcfController implements Controller {
         if (p == null)
             return null;
 
-        Resource r = repository.retrieve(token, p, true);
+        Resource r;
+        try {
+            r = repository.retrieve(token, p, true);
+        } catch (Exception e) {
+            return null;
+        }
+
         Property thumbnail = r.getProperty(thumbnailPropDef);
         InputStream i;
 
         if (thumbnail == null) {
-            if(getProperty(r, imageWidthPropDef) == null)
+            if (getProperty(r, imageWidthPropDef) == null)
                 return null;
-            
+
             int width = getProperty(r, imageWidthPropDef).getIntValue();
 
             if (width > Integer.parseInt(maxImageWidth))
                 return null;
-
-            i = repository.getInputStream(token, p, true);
+            try {
+                i = repository.getInputStream(token, p, true);
+            } catch (Exception e) {
+                return null;
+            }
         } else
             i = thumbnail.getBinaryStream().getStream();
 
         /* Base64 encodes the thumbnail. */
-        String encoded = Base64.encode(i);
-        String output = "";
+        String encoded;
+        try {
+            encoded = Base64.encode(i);
+        } catch (Exception e) {
+            return null;
+        }
 
         /*
          * Base64 encoding in vCards needs to be 75 characters on each line,
          * starting with a white space.
          */
+        String output = "";
         int j = 0, k = 76, len = encoded.length();
         while (k < len) {
             output += "\n  " + encoded.substring(j, k);

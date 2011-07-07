@@ -221,6 +221,9 @@ public class VcfController implements Controller {
         InputStream i;
 
         if (thumbnail == null) {
+            if(getProperty(r, imageWidthPropDef) == null)
+                return null;
+            
             int width = getProperty(r, imageWidthPropDef).getIntValue();
 
             if (width > Integer.parseInt(maxImageWidth))

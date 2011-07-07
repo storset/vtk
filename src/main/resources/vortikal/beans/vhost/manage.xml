@@ -1169,7 +1169,7 @@
           <list>
             <value>${themeBaseURL}/default.css</value>
             <value>${themeBaseURL}/view-container.css</value>
-            <!-- <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.css</value> -->
+            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.css</value>
           </list>
         </entry>
       </map>
@@ -1193,8 +1193,8 @@
             <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
             <value>${jquery.baseURL}/plugins/ui/jquery-ui-1.8.8.custom/js/jquery-ui-1.8.8.custom.min.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
-            <!-- <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
-            <value>${jsBaseURL}/plugins/thickbox-modified/check-unsaved-changes.js</value> -->
+            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
+            <value>${jsBaseURL}/plugins/thickbox-modified/check-unsaved-changes.js</value>
           </list>
         </entry>
       </map>
@@ -1758,8 +1758,8 @@
             <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/iframe-admin.js</value>
-            <!-- <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
-            <value>${jsBaseURL}/plugins/thickbox-modified/check-unsaved-changes.js</value> -->
+            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
+            <value>${jsBaseURL}/plugins/thickbox-modified/check-unsaved-changes.js</value>
           </list>
         </entry>
       </map>
@@ -1774,8 +1774,8 @@
             <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/iframe-admin-alone.js</value>
-            <!-- <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
-            <value>${jsBaseURL}/plugins/thickbox-modified/check-unsaved-changes.js</value> -->
+            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
+            <value>${jsBaseURL}/plugins/thickbox-modified/check-unsaved-changes.js</value>
           </list>
         </entry>
       </map>

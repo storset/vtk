@@ -134,7 +134,6 @@
       <list>
         <value>${themeBaseURL}/default.css</value>
         <value>${themeBaseURL}/plain-edit.css</value>
-        <!-- <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.css</value> -->
       </list>
     </constructor-arg>
   </bean>

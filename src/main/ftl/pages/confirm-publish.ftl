@@ -29,29 +29,14 @@ ${vrtx.getMsg("confirm-publish.confirmation.publish")}
 <form name="vrtx-publish-resource" id="vrtx-publish-resource" action="${url}" method="post">
   <div class="submitButtons">
     <div class="vrtx-focus-button">
-      <button tabindex="1" type="submit" value="ok" id="publishResourceAction" name="publishResourceAction">
-        ${vrtx.getMsg("confirm-delete.ok")}
-      </button>
+      <input tabindex="1" type="submit" value="ok" id="publishResourceAction" 
+             name="publishResourceAction" value="${vrtx.getMsg("confirm-delete.ok")}" />
     </div>
     <div class="vrtx-button">
-      <button tabindex="2" type="submit" value="cancel" id="publishResourceCancelAction" name="publishResourceCancelAction">
-        ${vrtx.getMsg("confirm-delete.cancel")}
-      </button>
+      <input tabindex="2" type="submit" value="cancel" onclick="tb_remove(); return false;" id="publishResourceCancelAction"  
+             name="publishResourceCancelAction" value="${vrtx.getMsg("confirm-delete.cancel")}"  />
     </div>
   </div>
 </form>
-
-<script type="text/javascript"><!--
-   function focus(){
-      $("#publishResourceAction").focus();
-   }
-	
-   $(document).ready(function(){
-      setTimeout("focus();",0);
-      $("#publishResourceCancelAction").remove(); 
-      $("#vrtx-publish-resource").append('<button tabindex="2" type="button" onclick="tb_remove();" id="publishResourceCancelAction" name="publishResourceCancelAction">${vrtx.getMsg("confirm-delete.cancel")}</button>');
-   });
-// -->
-</script>
 </body>
 </html>

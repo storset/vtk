@@ -1395,7 +1395,8 @@ div.tabMessage {
 #app-content form.globalMenu:after,
 #app-content #main .activeTab:after,
 #app-content #main #contents:after,
-#app-content .principalList:after {
+#app-content .principalList:after,
+#app-content form:after {
   clear: both;
   content: ".";
   display: block;

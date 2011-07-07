@@ -94,10 +94,17 @@ public class VcfController implements Controller {
     }
 
     private String getVcardFileName(Resource person) {
-        String name = person.getName();
-        if (name.contains(".")) {
-            name = name.substring(0, name.indexOf("."));
+        String name;
+
+        if ((name = person.getTitle()) != null)
+            name = name.replace(' ', '_');
+        else {
+            name = person.getName();
+            if (name.contains(".")) {
+                name = name.substring(0, name.indexOf("."));
+            }
         }
+
         return name;
     }
 

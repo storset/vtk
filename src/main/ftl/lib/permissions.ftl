@@ -170,8 +170,9 @@
   <@spring.bind formName + ".yourselfStillAdmin" /> 
   <#assign yourselfStillAdmin = spring.status.value?string />
   
+  <h3>${privilegeHeading}</h3>
+  
   <form class="aclEdit" action="${submitUrl?html}" method="post">
-    <h3>${privilegeHeading}</h3>
     <@spring.bind formName + ".shortcuts" />
     <@listShortcuts privilegeName privilegeHeading spring.status.value />
     <ul class="principalList" id="principalList">

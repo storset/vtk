@@ -719,12 +719,12 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 /* Resource menus */
 
-div#resource-menu {
+div#resource-menu-right {
   float: right;
   height: 86px;
 }
 
-div#resource-menu .resource-menu {
+div#resource-menu-right .resource-menu {
   background: url(images/seperator-grey-gradient-big.png) no-repeat top left;
   float: left;
   margin: 0 0 0 25px;
@@ -732,25 +732,25 @@ div#resource-menu .resource-menu {
   height: 86px;
 }
 
-div#resource-menu h3 {
+div#resource-menu-right h3 {
   font-size: 1.15em;
   font-weight: bold;
   margin: 9px 0 0 0;
 }
 
-div#resource-menu .lock h3,
-div#resource-menu .publish span.published {
+div#resource-menu-right .lock h3,
+div#resource-menu-right .publish span.published {
   background: url(images/lock.png) no-repeat 100% 1px;
   padding-right: 18px;
   display: inline-block;
 }
 
-div#resource-menu .publish span.published {
+div#resource-menu-right .publish span.published {
   background-image: url(images/menu-active-green.gif);
 }
 
-div#resource-menu .read-permissions p span,
-div#resource-menu .publish p span {
+div#resource-menu-right .read-permissions p span,
+div#resource-menu-right .publish p span {
   font-weight: bold;
 }
 
@@ -1037,14 +1037,14 @@ body#vrtx-report-documents #app-content #main #contents table.directoryListing t
 }
 
 #app-content #main #contents table.directoryListing td span.allowed-for-all,
-#app-content #resource-menu .read-permissions span.allowed-for-all,
-#app-content #resource-menu .publish span.published {
+#app-content #resource-menu-right .read-permissions span.allowed-for-all,
+#app-content #resource-menu-right .publish span.published {
   color: #549401;
 }
 
 #app-content #main #contents table.directoryListing td span.restricted,
-#app-content #resource-menu .read-permissions span.restricted,
-#app-content #resource-menu .publish span.unpublished {
+#app-content #resource-menu-right .read-permissions span.restricted,
+#app-content #resource-menu-right .publish span.unpublished {
   color: #ed1c24;
 }
 
@@ -1376,6 +1376,9 @@ div.tabMessage {
   max-width: 1200px;
   padding-left: 50px;
   padding-right: 50px;
+
+  /* Remove scrollbars when not needed */
+  overflow: hidden;
 }
 
 .app-fluid #app-footer {

@@ -88,7 +88,12 @@ public class SearchSorting implements InitializingBean {
         } else {
             if (sortOrderPropDefs != null) {
                 for (PropertyTypeDefinition p : sortOrderPropDefs) {
-                    sortFields.add(new PropertySortField(p, sortFieldDirection));
+                    SortFieldDirection sortOrder = this.sortOrderMapping.get(p.getName());
+                    if (sortOrder != null) {
+                        sortFields.add(new PropertySortField(p, sortOrder));
+                    } else {
+                        sortFields.add(new PropertySortField(p, defaultSortOrder));
+                    }
                 }
             }
         }

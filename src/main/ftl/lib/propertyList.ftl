@@ -575,13 +575,13 @@
       </#if>
 
       <@formSubmitWrapper item>
-      <div class="vrtx-button">
-        <input type="submit" name="save"
-               value="<@vrtx.msg code="propertyEditor.save" default="Save"/>">
-      </div>
-      <div class="vrtx-button">
-        <input type="submit" name="cancelAction"
-               value="<@vrtx.msg code="propertyEditor.cancel" default="Cancel"/>">
+        <div class="vrtx-focus-button">
+          <input type="submit" name="save"
+                 value="<@vrtx.msg code="propertyEditor.save" default="Save"/>">
+        </div>
+        <div class="vrtx-button">
+          <input type="submit" name="cancelAction"
+                 value="<@vrtx.msg code="propertyEditor.cancel" default="Cancel"/>">
       </div>
       </@formSubmitWrapper>
       </@formWrapper>

@@ -1268,6 +1268,10 @@ table.privilegeTable .key {
   white-space: nowrap;
 }
 
+table.resourceInfo form#propertyForm ul.property .vrtx-textfield {
+  margin-right: 10px;
+}
+
 #vrtx-admin-ownership-form {
   display: inline-block;
 }

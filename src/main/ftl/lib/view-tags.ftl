@@ -81,10 +81,10 @@
           <#assign val = vrtx.getIntroduction(resource) />
         <#elseif displayPropDef.type = 'IMAGE_REF'>
           <#assign val><img src="${vrtx.propValue(resource, displayPropDef.name, "")}" /></#assign>
-        <#elseif displayPropDef.name = 'lastModified'>
+        <#elseif displayPropDef.name = 'publish-date'>
           <#assign val>
-            <@vrtx.msg code="viewCollectionListing.lastModified" args=[vrtx.propValue(resource, displayPropDef.name, "long")] />
-          </#assign>
+            <@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale />${vrtx.propValue(resource, displayPropDef.name)}
+          </#assign>  
         <#else>
           <#assign val = vrtx.propValue(resource, displayPropDef.name, "long") />
         </#if>

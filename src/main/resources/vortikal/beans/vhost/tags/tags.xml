@@ -2,7 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-  <import resource="person-tags.xml"/>
+  <import resource="person-tags.xml" />
 
   <bean id="tags.viewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
@@ -21,8 +21,7 @@
     <property name="serviceNameProvider" ref="tags.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="tags.viewService.serviceNameProvider"
-    class="org.vortikal.web.service.provider.TagsViewServiceNameProvider" >
+  <bean id="tags.viewService.serviceNameProvider" class="org.vortikal.web.service.provider.TagsViewServiceNameProvider">
     <property name="tagsHelper" ref="tagsHelper" />
   </bean>
 
@@ -58,15 +57,13 @@
     <property name="hostName" value="${repositoryID}" />
   </bean>
 
-  <bean id="tags.tagElementsProvider"
-    class="org.vortikal.web.tags.RepositoryTagElementsDataProvider">
+  <bean id="tags.tagElementsProvider" class="org.vortikal.web.tags.RepositoryTagElementsDataProvider">
     <property name="tagService" ref="tags.viewService" />
     <property name="tagsReporter" ref="tagsReporter" />
     <property name="servesRoot" value="${servesWebRoot}" />
   </bean>
 
-  <bean id="tags.atomHandler" class="org.vortikal.web.display.tags.TagsAsFeedController"
-    parent="viewAsFeedHandler">
+  <bean id="tags.atomHandler" class="org.vortikal.web.display.tags.TagsAsFeedController" parent="viewAsFeedHandler">
     <property name="overridePublishDatePropDef" ref="publishedDatePropDef" />
     <property name="searchComponent" ref="tags.searchComponent" />
     <property name="tagsHelper" ref="tagsHelper" />
@@ -79,8 +76,7 @@
     <property name="listableProperties">
       <list>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
-          <property name="displayProperty" ref="lastModifiedPropDef" />
-          <property name="preventDisplayProperty" ref="collection.hideLastModifiedPropDef" />
+          <property name="displayProperty" ref="publishDatePropDef" />
         </bean>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="introductionPropDef" />
@@ -104,7 +100,7 @@
       </list>
     </property>
     <property name="searchSorting" ref="tags.searchSorting" />
-    <property name="resourceTypeTree" ref="resourceTypeTree"/>
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <bean id="tags.scopeQueryBuilder" class="org.vortikal.web.search.ScopeQueryBuilder">
@@ -114,14 +110,14 @@
   <bean id="tags.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
     <property name="sortOrderPropDefPointers">
       <list>
-        <value>lastModified</value>
+        <value>publish-date</value>
       </list>
     </property>
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
     <property name="sortOrderMapping">
       <map>
-        <entry key="lastModified" value-ref="SORT_ORDER.DESC" />
+        <entry key="publish-date" value-ref="SORT_ORDER.DESC" />
         <entry key="title" value-ref="SORT_ORDER.ASC" />
       </map>
     </property>
@@ -168,8 +164,7 @@
     <property name="parameterValue" value="tags" />
   </bean>
 
-  <bean id="tags.messageSource"
-    class="org.springframework.context.support.ResourceBundleMessageSource">
+  <bean id="tags.messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
     <property name="basenames">
       <list>
         <value>vortikal.i18n.tags</value>

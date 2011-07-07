@@ -85,7 +85,8 @@ $(document).ready(function () {
         selectorClass: "globalmenu",
         insertAfterOrReplaceClass: "#titleContainer ul.globalMenu",
         isReplacing: false,
-        nodeType: "div"
+        nodeType: "div",
+        simultanSliding: true
     };
     vrtxAdmin.getAjaxForm(getAjaxOptions);
   }
@@ -102,7 +103,8 @@ $(document).ready(function () {
         selectorClass: "vrtx-admin-form",
         insertAfterOrReplaceClass: ".activeTab ul.tabMenu2",
         isReplacing: false,
-        nodeType: "div"
+        nodeType: "div",
+        simultanSliding: true
       };
       vrtxAdmin.getAjaxForm(getAjaxOptions);
       
@@ -122,7 +124,8 @@ $(document).ready(function () {
         insertAfterOrReplaceClass: ".activeTab ul.tabMenu2",
         isReplacing: false,
         nodeType: "div",
-        funcComplete: function(p){ initFileUpload() }
+        funcComplete: function(p){ initFileUpload() },
+        simultanSliding: true
       };
       vrtxAdmin.getAjaxForm(getAjaxOptions);
       initFileUpload(); // when error message
@@ -167,7 +170,8 @@ $(document).ready(function () {
       insertAfterOrReplaceClass: "tr." + privilegiesPermissionsInTable[i],
       isReplacing: true,
       nodeType: "tr",
-      funcComplete: initPermissionForm
+      funcComplete: initPermissionForm,
+      simultanSliding: true
     };
     vrtxAdmin.getAjaxForm(getAjaxOptions);
     
@@ -205,7 +209,8 @@ $(document).ready(function () {
       selectorClass: "expandedForm-prop-" + propsAbout[i],
       insertAfterOrReplaceClass: "tr.prop-" + propsAbout[i],
       isReplacing: true,
-      nodeType: "tr"
+      nodeType: "tr",
+      simultanSliding: true
     };
     vrtxAdmin.getAjaxForm(getAjaxOptions);
   }
@@ -637,6 +642,8 @@ function dropdownCollectionGlobalMenu() {
  *                 isReplacing: replace instead of insert after
  *                 nodeType: node type that should be replaced or inserted
  *                 funcComplete: callback function(selectorClass) to run when AJAX is completed and form is visible
+ *                 simultanSliding: whether to slideUp existing form at the same time slideDown new form 
+ *                                  (only when there is an existing form)
  */
 
 VrtxAdmin.prototype.getAjaxForm = function(options) {
@@ -685,26 +692,14 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
                 $(this).remove();            
               }
             }
+            if(!options.simultanSliding) {
+              vrtxAdmin.getAjaxFormShow(options, form);
+            }
           });
         }
-        
-        if (options.isReplacing) {
-          var classes = $(options.insertAfterOrReplaceClass).attr("class");
-          $(options.insertAfterOrReplaceClass).replaceWith(vrtxAdmin.wrap(options.nodeType, "expandedForm expandedFormIsReplaced nodeType"
-                                                                        + options.nodeType + " " + options.selectorClass + " " + classes, form));
-        } else {
-          $(vrtxAdmin.wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))
-              .insertAfter(options.insertAfterOrReplaceClass);
+        if (!$(".expandedForm").length || options.simultanSliding) {
+          vrtxAdmin.getAjaxFormShow(options, form);
         }
-        if(options.funcComplete) {
-          options.funcComplete(options.selectorClass);
-        }
-        if(options.nodeType == "tr") {
-          $(options.nodeType + "." + options.selectorClass).prepareTableRowForSliding();
-        }
-        $(options.nodeType + "." + options.selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
-          $(this).find("input[type=text]:first").focus();
-        });
       },
       error: function (xhr, textStatus) {
         vrtxAdmin.displayAjaxErrorMessage(xhr, textStatus); 
@@ -714,6 +709,26 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
     return false;
   });
 }
+
+VrtxAdmin.prototype.getAjaxFormShow = function(options, form) {
+  if (options.isReplacing) {
+    var classes = $(options.insertAfterOrReplaceClass).attr("class");
+    $(options.insertAfterOrReplaceClass).replaceWith(vrtxAdmin.wrap(options.nodeType, "expandedForm expandedFormIsReplaced nodeType"
+                                                                  + options.nodeType + " " + options.selectorClass + " " + classes, form));
+  } else {
+    $(vrtxAdmin.wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))
+        .insertAfter(options.insertAfterOrReplaceClass);
+  }
+  if(options.funcComplete) {
+    options.funcComplete(options.selectorClass);
+  }
+  if(options.nodeType == "tr") {
+    $(options.nodeType + "." + options.selectorClass).prepareTableRowForSliding();
+  }
+  $(options.nodeType + "." + options.selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
+    $(this).find("input[type=text]:first").focus();
+  });
+};
 
 /**
  * POST form with AJAX

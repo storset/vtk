@@ -161,6 +161,7 @@ div#vrtx-resource\.picture {
   clear: none;
   width: 500px;
   position: relative;
+  margin-bottom: 20px;
 }
 
 div.introImageAndCaption .header {

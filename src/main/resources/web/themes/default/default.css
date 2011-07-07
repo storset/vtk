@@ -1261,6 +1261,18 @@ table.privilegeTable tr.even td {
   background-color: #F9F9F9;
 }
 
+table.resourceInfo tr:nth-child(even) td {
+  background-color: #F9F9F9;
+}
+
+table.resourceInfo tr.first td {
+  border-top: none;
+}
+
+table.resourceInfo tr:first-child td {
+  border-top: none;
+}
+
 table.resourceInfo .key,
 table.privilegeTable .key {
   font-weight: bold;

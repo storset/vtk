@@ -53,7 +53,10 @@
   </bean>
   
   <bean id="contentTypeMatchesOoXml" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
-    <property name="pattern" value="application/(msword|vnd\.ms-word\.document|ms-excel|x-msexcel|ms-ppt|vnd\.ms-powerpoint|vnd\.openxmlformats-officedocument\.(wordprocessingml\.document|wordprocessingml\.template|spreadsheetml\.sheet|spreadsheetml\.template|presentationml\.presentation|presentationml\.template|presentationml\.slideshow))" />
+    <property name="pattern" value="application/(msword|vnd\.ms-word\.document|ms-excel|x-msexcel|ms-ppt|vnd\.ms-powerpoint
+                                                |vnd\.openxmlformats-officedocument\.(wordprocessingml\.document|wordprocessingml\.template
+                                                |spreadsheetml\.sheet|spreadsheetml\.template|presentationml\.presentation
+                                                |presentationml\.template|presentationml\.slideshow))" />
   </bean>
 
   <bean id="contentTypeMatchesDoc" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">

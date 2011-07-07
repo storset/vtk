@@ -19,9 +19,10 @@ function VrtxAdmin() {
   instance.constructor = VrtxAdmin; // reset construction pointer
   
   this.isIE = null;
-  this.version = null;
+  this.browserVersion = null;
   this.isIE6 = null;
   this.isIE5OrHigher = null;
+  this.isOpera = null;
   this.isWin = null;
   this.supportsFileAPI = null;
   this.permissionsAutocompleteParams = null;
@@ -37,9 +38,10 @@ var vrtxAdmin = new VrtxAdmin();
 
 // Browser info
 vrtxAdmin.isIE = $.browser.msie;
-vrtxAdmin.version = $.browser.version;
-vrtxAdmin.isIE6 = vrtxAdmin.isIE && vrtxAdmin.version <= 6;
-vrtxAdmin.isIE5OrHigher = vrtxAdmin.isIE && vrtxAdmin.version >= 5;
+vrtxAdmin.browserVersion = $.browser.version;
+vrtxAdmin.isIE6 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 6;
+vrtxAdmin.isIE5OrHigher = vrtxAdmin.isIE && vrtxAdmin.browserVersion >= 5;
+vrtxAdmin.isOpera = $.browser.opera;
 vrtxAdmin.isWin = ((agent.indexOf("win") != -1) || (agent.indexOf("16bit") != -1));
 vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;
 
@@ -61,6 +63,10 @@ $(document).ready(function () {
   // Dropdowns
   dropdownLanguageMenu();
   dropdownCollectionGlobalMenu();
+  
+  // Zebra-tables
+  vrtxAdmin.zebraTables(".resourceInfo");
+  
 
   /* GET/POST forms with AJAX (initalization/config) */
   
@@ -951,6 +957,14 @@ function showHideProperty(id, init, show) {
     }
   }
 }
+
+VrtxAdmin.prototype.zebraTables = function(selector) {
+  // http://www.quirksmode.org/css/contents.html
+  if((vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) || vrtxAdmin.isOpera) {
+    $("table" + selector + " tbody tr:odd").addClass("even"); // hmm.. somehow even is odd and odd is even
+    $("table" + selector + " tbody tr:first-child").addClass("first");
+  }
+};
 
 /* Featured articles */
 

@@ -2,23 +2,36 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     ${manage:css}
+    <!--[if IE 7]>
+      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css"/> 
+    <![endif]--> 
+    <!--[if lte IE 6]>
+      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css"/> 
+    <![endif]--> 
     ${manage:javascript}
     ${document:element select=[html.head] exclude=[title]}
+    
     <title>${manage:title}</title>
   </head>
-  <body${document:element-attributes select=[html.body]}>
-    <div class="banner">
-      <div class="text">
-        <span class="hostname">${manage:repository-id}</span>
-        <span>Root management</span>
+  <body${document:element-attributes select=[html.body]} class="app-fluid">
+    <div id="app-head-wrapper"> 
+      <div id="line-top">
+        <div id="uiologo">
+          <a href="http://www.uio.no/">Universitetet i Oslo</a>
+        </div> 
       </div>
-      <div class="menu">
-        ${manage:leave-admin} | ${manage:principal-info}
+      <div id="app-head">
+        <div id="app-name"> 
+          <a href='/?vrtx=admin'>${manage:repository-id}</a> 
+          <span id="tagline">Root management</span>
+        </div>
+        <div id="global-menu-top"><div class="global-menu-small">${manage:leave-admin}</div>
+                                  <div class="global-menu-small last">${manage:principal-info}</div>
+        </div>
       </div>
     </div>
 
-    <div class="body">
-      <br />
+    <div id="app-content">
       ${manage:root-tabs}
       <div id="main">
         <div id="contents">
@@ -26,7 +39,11 @@
         </div>
       </div>
     </div>
-    <div class="footer">
+    
+     <div id="app-footer-wrapper" class="footer">    
+      <div id="app-footer">
+        ${manage:version-info}
+      </div>
     </div>
   </body>
 </html>

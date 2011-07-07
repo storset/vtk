@@ -376,7 +376,7 @@
       <list>
         <value>${themeBaseURL}/default.css</value>
         <value>${themeBaseURL}/structured-resources/editor.css</value>
-        <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.css</value>
+        <!-- <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.css</value> -->
       </list>
     </constructor-arg>
   </bean>

@@ -252,8 +252,9 @@
         <#else>
           <#assign titleMsg = vrtx.getMsg("confirm-delete.title.file") />
         </#if>
+        <#-- class="thickbox" --> 
       	(&nbsp;<a href="${collectionListing.childLinks[child_index][item]?html}&amp;showAsHtml=true&amp;height=80&amp;width=230"
-      	   class="thickbox" title="${titleMsg}">${actionName}</a>&nbsp;)
+      	   title="${titleMsg}">${actionName}</a>&nbsp;)
 	</#if>
      </td>
     </#list>

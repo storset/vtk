@@ -302,7 +302,7 @@
       <list>
         <value>${themeBaseURL}/default.css</value>
         <value>${themeBaseURL}/editor.css</value>
-        <value>${webResources.baseURL}/thickbox-modified/thickbox.css</value>
+        <!-- <value>${webResources.baseURL}/thickbox-modified/thickbox.css</value> -->
       </list>
     </constructor-arg>
   </bean>

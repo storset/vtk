@@ -5,11 +5,11 @@
 <beans>
 
   <bean id="vcfService" class="org.vortikal.web.service.ServiceImpl">
-  <property name="parent" ref="webService" />
+    <property name="parent" ref="webService" />
     <property name="order" value="-999" />
     <property name="assertions">
       <list>
-         <bean class="org.vortikal.web.service.OrAssertion">
+        <bean class="org.vortikal.web.service.OrAssertion">
           <property name="assertions">
             <list>
               <ref bean="isPersonAssertion" />
@@ -26,7 +26,7 @@
     </property>
     <property name="handler" ref="vcfHandler" />
   </bean>
-  
+
   <bean id="vcfHandler" class="org.vortikal.web.display.vcf.VcfController">
     <property name="firstNamePropDef" ref="firstNamePropDef" />
     <property name="surnamePropDef" ref="surnamePropDef" />
@@ -43,7 +43,7 @@
     <property name="imageWidthPropDef" ref="imageWidthPropDef" />
     <property name="maxImageWidth" value="${resourcetype.image.thumbnail.width}" />
   </bean>
- 
+
   <bean id="resourceTypeIsPerson" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceType" value="person" />
   </bean>

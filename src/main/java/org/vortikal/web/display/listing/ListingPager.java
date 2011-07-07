@@ -41,8 +41,8 @@ import org.vortikal.web.service.URL;
 
 public class ListingPager {
 
-	private static final int PAGING_WINDOW = 10;
-	
+    private static final int PAGING_WINDOW = 10;
+
     public static final String UPCOMING_PAGE_PARAM = "page";
     public static final String PREVIOUS_PAGE_PARAM = "p-page";
     public static final String PREV_BASE_OFFSET_PARAM = "p-offset";
@@ -52,21 +52,17 @@ public class ListingPager {
         return generatePageThroughUrls(hits, pageLimit, 0, baseURL, false, currentPage);
     }
 
-    public static List<ListingPagingLink> generatePageThroughUrls(int hits, int pageLimit, int hitsInFirstSearch, URL baseURL,
-            boolean twoSearches, int currentPage) {
+    public static List<ListingPagingLink> generatePageThroughUrls(int hits, int pageLimit, int hitsInFirstSearch,
+            URL baseURL, boolean twoSearches, int currentPage) {
         if (pageLimit == 0) {
             return null;
         }
         List<ListingPagingLink> urls = new ArrayList<ListingPagingLink>();
-        baseURL = new URL(baseURL)
-            .removeParameter(PREVIOUS_PAGE_PARAM)
-            .removeParameter(PREV_BASE_OFFSET_PARAM)
-            .removeParameter(UPCOMING_PAGE_PARAM)
-            .removeParameter(USER_DISPLAY_PAGE)
-            .setCollection(true);
-        
+        baseURL = new URL(baseURL).removeParameter(PREVIOUS_PAGE_PARAM).removeParameter(PREV_BASE_OFFSET_PARAM)
+                .removeParameter(UPCOMING_PAGE_PARAM).removeParameter(USER_DISPLAY_PAGE).setCollection(true);
+
         int maxPages = Search.MAX_LIMIT / pageLimit;
-        
+
         int pages = hits / pageLimit;
         if ((hits % pageLimit) > 0) {
             pages += 1;
@@ -82,53 +78,55 @@ public class ListingPager {
         if (hitsInFirstSearch > 0 && (hitsInFirstSearch % pageLimit) > 0) {
             offset = pageLimit - (hitsInFirstSearch % pageLimit);
         }
-        
+
         int pageRange = PAGING_WINDOW;
         int range = pageRange / 2;
         int start = currentPage, stop = currentPage;
-        
+
         /* Special case for page number 1 */
-        if(pages <= pageRange || currentPage-range < 1) {
-        	
-        	/* If page one is current page then it needs to be marked. */
+        if (pages <= pageRange || currentPage - range < 1) {
+
+            /* If page one is current page then it needs to be marked. */
             urls.add(new ListingPagingLink("1", new URL(baseURL), currentPage == 1));
 
             /* Checks if page 1 is previous page for page 2. */
-            if(currentPage == 2) urls.add(0, new ListingPagingLink("prev", new URL(baseURL), false));
-            
+            if (currentPage == 2)
+                urls.add(0, new ListingPagingLink("prev", new URL(baseURL), false));
+
             /* If page 1 is used the for loop needs to stop 1 loop earlier. */
-        	stop--;
+            stop--;
         }
-        
-        /* Rules for how the range works.
-         * First rule is if we do not need to do anything.
-         * Second is for when we have enough room before current page.
-         * Third is for when we have enough room after current page. */
-        if(pages <= pageRange) {
-        	start = 1;
-        	stop = pages;
+
+        /*
+         * Rules for how the range works. First rule is if we do not need to do
+         * anything. Second is for when we have enough room before current page.
+         * Third is for when we have enough room after current page.
+         */
+        if (pages <= pageRange) {
+            start = 1;
+            stop = pages;
+        } else if (start - range >= 1) {
+            while (stop < pages && range != 0) {
+                stop++;
+                range--;
+                pageRange--;
+            }
+            start -= pageRange;
+        } else if (stop + range <= pages) {
+            while (start > 1 && range != 0) {
+                start--;
+                range--;
+                pageRange--;
+            }
+            stop += pageRange;
         }
-        else if(start-range >= 1) {
-        	while(stop < pages  && range != 0) {
-        		stop++;
-        		range--;
-        		pageRange--;
-        	}
-        	start -= pageRange;
-        }
-        else if(stop+range <= pages) {
-        	while(start > 1  && range != 0) {
-        		start--;
-        		range--;
-        		pageRange--;
-        	}
-        	stop += pageRange;
-        }
-        
-        /* ListingPagingLink next is set in the for-loop and then
-         * put at the end of the list after the loop. */
+
+        /*
+         * ListingPagingLink next is set in the for-loop and then put at the end
+         * of the list after the loop.
+         */
         ListingPagingLink next = null;
-        
+
         for (int i = start; i < stop; i++) {
             URL url = new URL(baseURL);
             if (hitsInFirstSearch == 0 && twoSearches) {
@@ -145,28 +143,28 @@ public class ListingPager {
                 url.setParameter(PREVIOUS_PAGE_PARAM, String.valueOf(start++));
             }
             url.setParameter(USER_DISPLAY_PAGE, String.valueOf(i + 1));
-            
+
             /* Puts ListingPagingLink in the list. */
-            urls.add(new ListingPagingLink((i+1)+"", url, currentPage == (i+1)));
-            
+            urls.add(new ListingPagingLink((i + 1) + "", url, currentPage == (i + 1)));
+
             /* Puts previous at start of the list */
-            if(currentPage != 1 && currentPage-2 == i) {
-            	urls.add(0, new ListingPagingLink("prev", url, false));
+            if (currentPage != 1 && currentPage - 2 == i) {
+                urls.add(0, new ListingPagingLink("prev", url, false));
             }
-            
+
             /* Stores next to put in list later. */
             if (currentPage != pages && currentPage == i) {
-            	next = new ListingPagingLink("next", url, false);
+                next = new ListingPagingLink("next", url, false);
             }
         }
-        
+
         /* Puts next at the end of the list. */
-        if(next != null) urls.add(next);
-        
+        if (next != null)
+            urls.add(next);
+
         return urls;
     }
-    
-    
+
     public static int getPage(HttpServletRequest request, String parameter) {
         int page = 1;
         String pageParam = request.getParameter(parameter);
@@ -181,5 +179,5 @@ public class ListingPager {
         }
         return page;
     }
-    
+
 }

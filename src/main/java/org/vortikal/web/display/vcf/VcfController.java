@@ -51,11 +51,11 @@ import org.vortikal.util.codec.Base64;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.URL;
 
-public class VcfController implements Controller  {
-    
+public class VcfController implements Controller {
+
     private PropertyTypeDefinition firstNamePropDef;
-	private PropertyTypeDefinition surnamePropDef;
-	private PropertyTypeDefinition usernamePropDef;
+    private PropertyTypeDefinition surnamePropDef;
+    private PropertyTypeDefinition usernamePropDef;
     private PropertyTypeDefinition positionPropDef;
     private PropertyTypeDefinition phonePropDef;
     private PropertyTypeDefinition mobilePropDef;
@@ -77,12 +77,12 @@ public class VcfController implements Controller  {
         URL requestURL = URL.create(request);
 
         Resource person = repository.retrieve(token, uri, true);
-        
+
         String vcard = createVcard(person, repository, token, uri.getParent(), requestURL);
         if (vcard == null) {
             return null;
         }
-        
+
         response.setContentType("text/x-vcard;charset=utf-8");
         String vcardFileName = getVcardFileName(person);
         response.setHeader("Content-Disposition", "filename=" + vcardFileName + ".vcf");
@@ -92,7 +92,7 @@ public class VcfController implements Controller  {
 
         return null;
     }
-    
+
     private String getVcardFileName(Resource person) {
         String name = person.getName();
         if (name.contains(".")) {
@@ -101,78 +101,81 @@ public class VcfController implements Controller  {
         return name;
     }
 
-    private String createVcard(Resource person, Repository repository, String token, Path currenturi, URL requestURL) throws Exception {
+    private String createVcard(Resource person, Repository repository, String token, Path currenturi, URL requestURL)
+            throws Exception {
 
         StringBuilder sb = new StringBuilder();
         sb.append("BEGIN:VCARD\n");
         sb.append("VERSION:3.0\n");
-        
-        if(getProperty(person, surnamePropDef) != null) {
-        	sb.append("N:" + getProp(person, surnamePropDef));
-        	if(getProperty(person, firstNamePropDef) != null)
-        		sb.append(";" + getProp(person, firstNamePropDef));
-        	sb.append("\n");
-        }
-        else if(getProperty(person, firstNamePropDef) != null)
-        		sb.append("N:" + getProp(person, firstNamePropDef) + "\n");
-        else if(getProperty(person, usernamePropDef) != null)
-        	sb.append("N:" + getProp(person, usernamePropDef) + "\n");
-        
-        if(getProperty(person, firstNamePropDef) != null) {
-        	sb.append("FN:" + getProp(person, firstNamePropDef));
-        	if(getProperty(person, surnamePropDef) != null)
-        		sb.append(" " + getProp(person, surnamePropDef));
-        	sb.append("\n");
-        }
-        else if(getProperty(person, surnamePropDef) != null)
-        		sb.append("FN:" + getProp(person, surnamePropDef) + "\n");
-        else if(getProperty(person, usernamePropDef) != null)
-        	sb.append("FN:" + getProp(person, usernamePropDef) + "\n");
-        
-        if(getProperty(person, positionPropDef) != null)
-        	sb.append("TITLE:" + getProp(person, positionPropDef) + "\n");
-        
-        if(getProperty(person, phonePropDef) != null)
-        	sb.append("TEL;TYPE=WORK,VOICE:" + getProp(person, phonePropDef) + "\n");
-    	
-        if(getProperty(person, mobilePropDef) != null)	
-        	sb.append("TEL;TYPE=CELL:" + getProp(person, mobilePropDef) + "\n");
-        
-        if(getProperty(person, faxPropDef) != null)	
-        	sb.append("TEL;TYPE=FAX:" + getProp(person, faxPropDef) + "\n");
-        
-        /* For data input reasons addresses has to be put in one (the street address) field.
-         * ADR;TYPE=WORK:PO;Address Line 1;Address Line 2;City;Province;PostalCode;Country 
-         * could however be used if this should change in the future. */
-        if(getProperty(person, postalAddressPropDef) != null)
+
+        if (getProperty(person, surnamePropDef) != null) {
+            sb.append("N:" + getProp(person, surnamePropDef));
+            if (getProperty(person, firstNamePropDef) != null)
+                sb.append(";" + getProp(person, firstNamePropDef));
+            sb.append("\n");
+        } else if (getProperty(person, firstNamePropDef) != null)
+            sb.append("N:" + getProp(person, firstNamePropDef) + "\n");
+        else if (getProperty(person, usernamePropDef) != null)
+            sb.append("N:" + getProp(person, usernamePropDef) + "\n");
+
+        if (getProperty(person, firstNamePropDef) != null) {
+            sb.append("FN:" + getProp(person, firstNamePropDef));
+            if (getProperty(person, surnamePropDef) != null)
+                sb.append(" " + getProp(person, surnamePropDef));
+            sb.append("\n");
+        } else if (getProperty(person, surnamePropDef) != null)
+            sb.append("FN:" + getProp(person, surnamePropDef) + "\n");
+        else if (getProperty(person, usernamePropDef) != null)
+            sb.append("FN:" + getProp(person, usernamePropDef) + "\n");
+
+        if (getProperty(person, positionPropDef) != null)
+            sb.append("TITLE:" + getProp(person, positionPropDef) + "\n");
+
+        if (getProperty(person, phonePropDef) != null)
+            sb.append("TEL;TYPE=WORK,VOICE:" + getProp(person, phonePropDef) + "\n");
+
+        if (getProperty(person, mobilePropDef) != null)
+            sb.append("TEL;TYPE=CELL:" + getProp(person, mobilePropDef) + "\n");
+
+        if (getProperty(person, faxPropDef) != null)
+            sb.append("TEL;TYPE=FAX:" + getProp(person, faxPropDef) + "\n");
+
+        /*
+         * For data input reasons addresses has to be put in one (the street
+         * address) field. ADR;TYPE=WORK:PO;Address Line 1;Address Line
+         * 2;City;Province;PostalCode;Country could however be used if this
+         * should change in the future.
+         */
+        if (getProperty(person, postalAddressPropDef) != null)
             sb.append("ADR;TYPE=WORK,POSTAL:;;" + getProp(person, postalAddressPropDef) + ";;;;\n");
-        
-        if(getProperty(person, visitingAddressPropDef) != null)
+
+        if (getProperty(person, visitingAddressPropDef) != null)
             sb.append("ADR;TYPE=WORK:;;" + getProp(person, visitingAddressPropDef) + ";;;;\n");
-        
-        if(getProperty(person, emailPropDef) != null)
-        	sb.append("EMAIL;TYPE=INTERNET:" + getProp(person, emailPropDef) + "\n");
-        
-        if(getProperty(person, picturePropDef) != null) {
-        	String pic = b64Thumbnail(person, repository, token, currenturi, requestURL);
-        	if(pic != null)	sb.append(pic);
+
+        if (getProperty(person, emailPropDef) != null)
+            sb.append("EMAIL;TYPE=INTERNET:" + getProp(person, emailPropDef) + "\n");
+
+        if (getProperty(person, picturePropDef) != null) {
+            String pic = b64Thumbnail(person, repository, token, currenturi, requestURL);
+            if (pic != null)
+                sb.append(pic);
         }
-                
+
         sb.append("REV:" + getDtstamp() + "\n");
         sb.append("END:VCARD");
         return sb.toString();
     }
 
     private String getProp(Resource person, PropertyTypeDefinition propDef) {
-    	return getProperty(person, propDef).getFormattedValue();
+        return getProperty(person, propDef).getFormattedValue();
     }
-    
+
     private Property getProperty(Resource person, PropertyTypeDefinition propDef) {
-    	Property prop = person.getProperty(propDef);
-    	if (prop == null) {
+        Property prop = person.getProperty(propDef);
+        if (prop == null) {
             prop = person.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propDef.getName());
         }
-    	
+
         return prop;
     }
 
@@ -181,56 +184,62 @@ public class VcfController implements Controller  {
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
         return sdf.format(Calendar.getInstance().getTime());
     }
-    
-    private String b64Thumbnail(Resource person, Repository repository, String token, Path currenturi, URL requestURL) throws Exception {
-    	String path = getProp(person, picturePropDef);
-    	
-    	Path p = null;
-    	
-    	try {
-        	URL pURL = URL.parse(path);
-        	if(requestURL.getHost().equals(pURL.getHost())) p = pURL.getPath();
-    	}
-    	catch (Exception e) {}
-    	
-    	try {
-    		if(!path.startsWith("/")) p = currenturi.extend(path);
-    		else p = Path.fromString(path);
-    	}
-    	catch (Exception e) {}
-    	
-    	if(p == null) return null;
-    	
-    	Resource r = repository.retrieve(token, p, true);
-    	Property thumbnail = r.getProperty(thumbnailPropDef);
-    	InputStream i;
-    	
-    	if(thumbnail == null) {
-    		int width = getProperty(r, imageWidthPropDef).getIntValue();
-    		
-    		if(width > Integer.parseInt(maxImageWidth)) return null;
-    		
-    		i = repository.getInputStream(token, p, true);
-    	}
-    	else i = thumbnail.getBinaryStream().getStream();
 
-        	
-    	/* Base64 encodes the thumbnail. */
-    	String encoded = Base64.encode(i);
-    	String output = "";
-    		
-    	/* Base64 encoding in vCards needs to be 75 characters on each line,
-    	 * starting with a white space.
-    	 */
-    	int j = 0, k = 76, len = encoded.length();
-    	while(k < len) {
-    		output += "\n  "+encoded.substring(j,k);
-    		j = k;
-    		k += 76;
-    	}
-    	output += "\n  "+encoded.substring(j,len);
-    		
-    	return "PHOTO;BASE64:"+output+"\n";
+    private String b64Thumbnail(Resource person, Repository repository, String token, Path currenturi, URL requestURL)
+            throws Exception {
+        String path = getProp(person, picturePropDef);
+
+        Path p = null;
+
+        try {
+            URL pURL = URL.parse(path);
+            if (requestURL.getHost().equals(pURL.getHost()))
+                p = pURL.getPath();
+        } catch (Exception e) {
+        }
+
+        try {
+            if (!path.startsWith("/"))
+                p = currenturi.extend(path);
+            else
+                p = Path.fromString(path);
+        } catch (Exception e) {
+        }
+
+        if (p == null)
+            return null;
+
+        Resource r = repository.retrieve(token, p, true);
+        Property thumbnail = r.getProperty(thumbnailPropDef);
+        InputStream i;
+
+        if (thumbnail == null) {
+            int width = getProperty(r, imageWidthPropDef).getIntValue();
+
+            if (width > Integer.parseInt(maxImageWidth))
+                return null;
+
+            i = repository.getInputStream(token, p, true);
+        } else
+            i = thumbnail.getBinaryStream().getStream();
+
+        /* Base64 encodes the thumbnail. */
+        String encoded = Base64.encode(i);
+        String output = "";
+
+        /*
+         * Base64 encoding in vCards needs to be 75 characters on each line,
+         * starting with a white space.
+         */
+        int j = 0, k = 76, len = encoded.length();
+        while (k < len) {
+            output += "\n  " + encoded.substring(j, k);
+            j = k;
+            k += 76;
+        }
+        output += "\n  " + encoded.substring(j, len);
+
+        return "PHOTO;BASE64:" + output + "\n";
     }
 
     @Required
@@ -240,66 +249,66 @@ public class VcfController implements Controller  {
 
     @Required
     public void setSurnamePropDef(PropertyTypeDefinition surnamePropDef) {
-		this.surnamePropDef = surnamePropDef;
-	}
+        this.surnamePropDef = surnamePropDef;
+    }
 
     @Required
-	public void setUsernamePropDef(PropertyTypeDefinition usernamePropDef) {
-		this.usernamePropDef = usernamePropDef;
-	}
+    public void setUsernamePropDef(PropertyTypeDefinition usernamePropDef) {
+        this.usernamePropDef = usernamePropDef;
+    }
 
     @Required
-	public void setPositionPropDef(PropertyTypeDefinition positionPropDef) {
-		this.positionPropDef = positionPropDef;
-	}
+    public void setPositionPropDef(PropertyTypeDefinition positionPropDef) {
+        this.positionPropDef = positionPropDef;
+    }
 
     @Required
-	public void setPhonePropDef(PropertyTypeDefinition phonePropDef) {
-		this.phonePropDef = phonePropDef;
-	}
+    public void setPhonePropDef(PropertyTypeDefinition phonePropDef) {
+        this.phonePropDef = phonePropDef;
+    }
 
     @Required
-	public void setMobilePropDef(PropertyTypeDefinition mobilePropDef) {
-		this.mobilePropDef = mobilePropDef;
-	}
+    public void setMobilePropDef(PropertyTypeDefinition mobilePropDef) {
+        this.mobilePropDef = mobilePropDef;
+    }
 
     @Required
-	public void setFaxPropDef(PropertyTypeDefinition faxPropDef) {
-		this.faxPropDef = faxPropDef;
-	}
+    public void setFaxPropDef(PropertyTypeDefinition faxPropDef) {
+        this.faxPropDef = faxPropDef;
+    }
 
     @Required
-	public void setPostalAddressPropDef(PropertyTypeDefinition postalAddressPropDef) {
-		this.postalAddressPropDef = postalAddressPropDef;
-	}
+    public void setPostalAddressPropDef(PropertyTypeDefinition postalAddressPropDef) {
+        this.postalAddressPropDef = postalAddressPropDef;
+    }
 
     @Required
-	public void setVisitingAddressPropDef(PropertyTypeDefinition visitingAddressPropDef) {
-		this.visitingAddressPropDef = visitingAddressPropDef;
-	}
+    public void setVisitingAddressPropDef(PropertyTypeDefinition visitingAddressPropDef) {
+        this.visitingAddressPropDef = visitingAddressPropDef;
+    }
 
     @Required
-	public void setEmailPropDef(PropertyTypeDefinition emailPropDef) {
-		this.emailPropDef = emailPropDef;
-	}
+    public void setEmailPropDef(PropertyTypeDefinition emailPropDef) {
+        this.emailPropDef = emailPropDef;
+    }
 
     @Required
-	public void setPicturePropDef(PropertyTypeDefinition picturePropDef) {
-		this.picturePropDef = picturePropDef;
-	}
+    public void setPicturePropDef(PropertyTypeDefinition picturePropDef) {
+        this.picturePropDef = picturePropDef;
+    }
 
     @Required
-	public void setThumbnailPropDef(PropertyTypeDefinition thumbnailPropDef) {
-		this.thumbnailPropDef = thumbnailPropDef;
-	}
+    public void setThumbnailPropDef(PropertyTypeDefinition thumbnailPropDef) {
+        this.thumbnailPropDef = thumbnailPropDef;
+    }
 
     @Required
-	public void setImageWidthPropDef(PropertyTypeDefinition imageWidthPropDef) {
-		this.imageWidthPropDef = imageWidthPropDef;
-	}
+    public void setImageWidthPropDef(PropertyTypeDefinition imageWidthPropDef) {
+        this.imageWidthPropDef = imageWidthPropDef;
+    }
 
     @Required
-	public void setMaxImageWidth(String maxImageWidth) {
-		this.maxImageWidth = maxImageWidth;
-	}
+    public void setMaxImageWidth(String maxImageWidth) {
+        this.maxImageWidth = maxImageWidth;
+    }
 }

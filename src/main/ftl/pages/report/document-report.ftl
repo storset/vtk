@@ -26,6 +26,9 @@
                  args=[report.from, report.to, report.total]
                  default="Listing results " + report.from + " - "
                  +  report.to + " of total " + report.total + " resources" />
+      <#if report.prev?exists || report.next?exists>
+        <@displayPaging />  
+      </#if>
     </p>
     <div class="vrtx-report">
     <table id="vrtx-report-document-table" class="directoryListing">
@@ -97,14 +100,9 @@
     </div>
 
     <#if report.prev?exists || report.next?exists>
-      <p><span id="vrtx-report-paging">
-        <#if report.prev?exists>
-          <a href="${report.prev?html}">
-          <@vrtx.msg code="report.prev-page" default="previous page" /></a><#if report.next?exists>&nbsp;&nbsp;&nbsp;<a href="${report.next?html}"><@vrtx.msg code="report.next-page" default="next page" /></a></#if>
-        <#elseif report.next?exists>
-          <a href="${report.next?html}"><@vrtx.msg code="report.next-page" default="next page" /></a>
-        </#if>
-      </span></p>
+      <p>
+        <@displayPaging />
+      </p>
     </#if>
   <#else>
     <p><@vrtx.msg code="report.document-reporter.no.documents.found" /></p>
@@ -112,6 +110,16 @@
   
   </div>
   
+  <#macro displayPaging>
+    <span id="vrtx-report-paging">
+      <#if report.prev?exists>
+        <a href="${report.prev?html}">
+        <@vrtx.msg code="report.prev-page" default="Previous page" /></a><#if report.next?exists>&nbsp;&nbsp;&nbsp;<a href="${report.next?html}"><@vrtx.msg code="report.next-page" default="Next page" /></a></#if>
+      <#elseif report.next?exists>
+        <a href="${report.next?html}"><@vrtx.msg code="report.next-page" default="Next page" /></a>
+      </#if>
+    </span>
+  </#macro>
   
   </body>
 </html>

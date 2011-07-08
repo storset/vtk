@@ -111,13 +111,13 @@
     <property name="sortOrderPropDefPointers">
       <list>
         <value>publish-date</value>
+        <value>title</value>
       </list>
     </property>
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
     <property name="sortOrderMapping">
       <map>
-        <entry key="publish-date" value-ref="SORT_ORDER.DESC" />
         <entry key="title" value-ref="SORT_ORDER.ASC" />
       </map>
     </property>

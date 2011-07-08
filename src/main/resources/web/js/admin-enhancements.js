@@ -656,11 +656,12 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
     var fromModeToNotMode = false;  
     var modeUrl = "";                         
     if(url.indexOf("&mode=") == -1) {
-      var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+      var whereAmI = window.location.href; 
+      var hashes = whereAmI.slice(whereAmI.indexOf('?') + 1).split('&');
       for(var i = hashes.length; i--;) {
         if(hashes[i].indexOf("mode=") != -1) {
           fromModeToNotMode = true; 
-          modeUrl = window.location.href;
+          modeUrl = whereAmI;
         }
       } 
     }

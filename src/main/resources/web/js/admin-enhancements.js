@@ -662,6 +662,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
           if($(".expandedForm").hasClass("expandedFormIsReplaced")) {
             var isReplaced = true;
           }
+          // Filter selector class to get original markup for the existing form
           var resultSelectorClasses = $(expandedHtml).attr("class").split(" ");
           var resultSelectorClass = "";
           for(var i = resultSelectorClasses.length; i--;) {
@@ -673,6 +674,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
               }  
             }  
           } 
+          // --
           $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, function() {
             if(isReplaced) {
               var resultHtml = vrtxAdmin.outerHTML(results, $.trim(resultSelectorClass));

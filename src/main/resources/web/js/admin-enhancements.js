@@ -4,8 +4,6 @@
  *  TODO: i18n
  *
  */
- 
-var agent = navigator.userAgent.toLowerCase();
 
 function VrtxAdmin() {
 
@@ -749,14 +747,14 @@ VrtxAdmin.prototype.postAjaxForm = function(options) {
       var url = form.attr("action");
       var encType = form.attr("enctype");
 
-      var dataString = appendInputNameValuePairsToDataString(form.find("input[type=text]"));
-      dataString += appendInputNameValuePairsToDataString(form.find("input[type=file]"));
-      dataString += appendInputNameValuePairsToDataString(form.find("input[type=radio]:checked"));
-      dataString += appendInputNameValuePairsToDataString(form.find("input[type=checkbox]:checked"));
+      var dataString = vrtxAdmin.appendInputNameValuePairsToDataString(form.find("input[type=text]"));
+      dataString += vrtxAdmin.appendInputNameValuePairsToDataString(form.find("input[type=file]"));
+      dataString += vrtxAdmin.appendInputNameValuePairsToDataString(form.find("input[type=radio]:checked"));
+      dataString += vrtxAdmin.appendInputNameValuePairsToDataString(form.find("input[type=checkbox]:checked"));
       dataString += '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
                   + "&" + link.attr("name");
-
-      if (!encType.length) {
+                  
+      if (typeof encType === "undefined" || !encType.length) {
         encType = "application/x-www-form-urlencoded";
       }
 
@@ -771,23 +769,15 @@ VrtxAdmin.prototype.postAjaxForm = function(options) {
             vrtxAdmin.displayErrorContainers(results, form, options.errorContainerInsertAfter, options.errorContainer);
           } else {
             for(var i = options.updateSelectors.length; i--;) {
-              // Filter out 'expandedForm'-classes
-              var classes = $(options.updateSelectors[i]).attr("class").split(" ");
-              var j = classes.length;
-              var finalClass = "";
-              while(j--) {
-                if(classes[j].indexOf("expandedForm") == -1) {
-                  finalClass += classes[j] + " ";
-                }
-              }
-              $(options.updateSelectors[i]).attr("class", finalClass);
-              $("#app-content").find(options.updateSelectors[i])
-                .html($(results).find(options.updateSelectors[i]).html());
+             var outer = vrtxAdmin.outerHTML($(results), options.updateSelectors[i]);
+             $("#app-content " + options.updateSelectors[i]).replaceWith(outer);
             }
             if(options.funcComplete) {
               options.funcComplete();
             }
+            alert(form.parent().attr("class"));
             form.parent().slideUp(vrtxAdmin.transitionSpeed, function () {
+              alert("hello verden");
               $(this).remove();
             });
           }
@@ -889,9 +879,11 @@ VrtxAdmin.prototype.wrap = function(node, cls, html) {
 
 VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function(inputFields) {
   var dataStringChunk = "";
-  for (i = inputFields.length; i--;) {
-    dataStringChunk += '&' + $(inputFields[i]).attr("name")
-                     + '=' + $(inputFields[i]).val();
+  if(typeof inputFields !== "undefined") {
+    for (i = inputFields.length; i--;) {
+      dataStringChunk += '&' + $(inputFields[i]).attr("name")
+                       + '=' + $(inputFields[i]).val();
+    }
   }
   return dataStringChunk;
 };
@@ -1103,8 +1095,8 @@ function SetUrl(url, width, height, alt) {
 /* ^ CK browse server integration */
 
 // jQuery outerHTML (because FF don't support regular outerHTML)
-vrtxAdmin.prototype.outerHTML = function(selector) {
-  return $('<div>').append($(selector).clone()).html();
+VrtxAdmin.prototype.outerHTML = function(selector, subselector) {
+  return $('<div>').append(selector.find(subselector).clone()).html();
 };
 
 /* Override slideUp() / slideDown() to handle rows in a table

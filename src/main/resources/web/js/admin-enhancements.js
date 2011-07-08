@@ -24,6 +24,7 @@ function VrtxAdmin() {
   this.isIE5OrHigher = null;
   this.isOpera = null;
   this.isWin = null;
+  this.isOnline = null;
   this.supportsFileAPI = null;
   this.permissionsAutocompleteParams = null;
   this.transitionSpeed = 200; // same as 'fast'
@@ -43,6 +44,7 @@ vrtxAdmin.isIE6 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 6;
 vrtxAdmin.isIE5OrHigher = vrtxAdmin.isIE && vrtxAdmin.browserVersion >= 5;
 vrtxAdmin.isOpera = $.browser.opera;
 vrtxAdmin.isWin = ((agent.indexOf("win") != -1) || (agent.indexOf("16bit") != -1));
+vrtxAdmin.isOnline = navigator.onLine;
 vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;
 
 // Permission Autocomplete parameters
@@ -959,11 +961,18 @@ VrtxAdmin.prototype.displayErrorContainers = function(results, form, errorContai
 };
 
 VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
-  if (xhr.readyState == 4 && xhr.status == 200) {
-    var msg = "The service is not active: " + textStatus;
+  if(!vrtxAdmin.isOnline) {
+    var msg = "You are offline. <br /><br />"
+            + "Reset your modem, connect to a wireless network,"
+            + "contact support or go home.";
   } else {
-    var msg = "The service returned " + xhr.status + " and failed to retrieve/post form.";
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      var msg = "The service is not active: " + textStatus;
+    } else {
+      var msg = "The service returned " + xhr.status + " and failed to retrieve/post form.";
+    }
   }
+  
   if ($("#app-content > .errormessage").length) {
     $("#app-content > .errormessage").html(msg);
   } else {

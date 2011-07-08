@@ -66,7 +66,7 @@ $(document).ready(function () {
   dropdownCollectionGlobalMenu();
   
   // Zebra-tables
-  vrtxAdmin.zebraTables(".resourceInfo");/
+  vrtxAdmin.zebraTables(".resourceInfo");
   
   var getAjaxOptions = {};
   var postAjaxOptions = {};
@@ -279,9 +279,9 @@ function initFileUpload() {
     });
     if (supportsMultipleAttribute(document.getElementById("file"))) {
       inputFile.attr("multiple", "multiple");
-      var multipleFilesInfoText = "<strong>Laste opp flere filer samtidig</strong>?<br />"
-                                + "Hold nede CTRL eller CMD (på Mac) når du velger filer i filutforskeren.";
-      $("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-button.vrtx-file-upload");
+      if(typeof multipleFilesInfoText !== "undefined") {
+        $("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-button.vrtx-file-upload");
+      }
     }
   }
 }
@@ -786,7 +786,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
 VrtxAdmin.prototype.getAjaxFormShow = function(options, form) {
   if (options.isReplacing) {
     var classes = $(options.insertAfterOrReplaceClass).attr("class");
-    $(options.insertAfterOrReplaceClass).replaceWith(vrtxAdmin.wrap(options.nodeType, "expandedForm expandedForm nodeType"
+    $(options.insertAfterOrReplaceClass).replaceWith(vrtxAdmin.wrap(options.nodeType, "expandedForm expandedFormIsReplaced nodeType"
                                                                   + options.nodeType + " " + options.selectorClass + " " + classes, form));
   } else {
     $(vrtxAdmin.wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))

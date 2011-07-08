@@ -37,7 +37,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
 
   // Fix for div container display in IE
-  if ($.browser.msie > -1 && $.browser.version <= 7) {
+  if ($.browser.msie && $.browser.version <= 7) {
     cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
   }
 
@@ -123,7 +123,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
   }
   config.toolbarCanCollapse = false;
   config.defaultLanguage = 'no';
-  if (defaultLanguage != null) {
+  if (defaultLanguage) {
     config.language = defaultLanguage;
   }
   config.toolbar = toolbar;
@@ -133,6 +133,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 
   config.forcePasteAsPlainText = false;
 
+  // Configure tag formatting in source
   config.on = {
     instanceReady: function (ev) {
 

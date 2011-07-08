@@ -1,4 +1,58 @@
-// Helper functions
+/*
+ * Check if inputfields or textareas (CK) have changes
+ *
+ */
+
+var INITIAL_INPUT_FIELDS = [];
+var NEED_TO_CONFIRM = true;
+var UNSAVED_CHANGES_CONFIRMATION;
+
+$(document).ready(function () {
+  initPropChange();
+});
+
+/* Store initial values in inputfields */
+function initPropChange() {
+  var inputFields = $("input");
+  for(var i = 0, len = inputFields.length; i < len; i++) {
+    INITIAL_INPUT_FIELDS[i++] = $(inputFields[i]).val();
+  }
+}
+
+/* If a textfield or textarea have unsaved changes: return true */
+function unsavedChangesInEditor() {
+  if (!NEED_TO_CONFIRM) return false;
+
+  // Textfields
+  var currentStateOfInputFields = $("input");
+  for (var i = 0, len = INITIAL_INPUT_FIELDS.length; i < len; i++) {
+    if (currentStateOfInputFields[i].value !== INITIAL_INPUT_FIELDS[i]) {
+      return true; // unsaved textfield
+    }
+  }
+
+  // Textareas
+  var currentStateOfTextFields = $("textarea");
+  for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
+    if (typeof (CKEDITOR) !== "undefined") {
+      if (getCkInstance(currentStateOfTextFields[i].name)) {
+        if (getCkInstance(currentStateOfTextFields[i].name).checkDirty()) {
+          return true  // unsaved textarea
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+function unsavedChangesInEditorMessage() {
+  if (unsavedChangesInEditor()) {
+    return UNSAVED_CHANGES_CONFIRMATION;
+  }
+}
+
+/* Helper functions */
 
 function getCkValue(instanceName) {
   var oEditor = getCkInstance(instanceName);
@@ -24,47 +78,4 @@ function isCkEditor(instanceName) {
   return oEditor != null;
 }
 
-// Prop change
-var INITIAL_INPUT_FIELDS = new Array();
-var NEED_TO_CONFIRM = true;
-var UNSAVED_CHANGES_CONFIRMATION;
-
-$(document).ready(function () {
-  initPropChange();
-});
-
-function initPropChange() {
-  var i = 0;
-  $("input").each(function () {
-    INITIAL_INPUT_FIELDS[i++] = this.value;
-  });
-}
-
-function unsavedChangesInEditor() {
-  if (!NEED_TO_CONFIRM) return false;
-  var dirtyState = false;
-  currentStateOfInputFields = $("input");
-  var INITIAL_INPUT_FIELDS_LENGTH = INITIAL_INPUT_FIELDS.length;
-  for (i = 0; i < INITIAL_INPUT_FIELDS_LENGTH; i++) {
-    if (currentStateOfInputFields[i].value != INITIAL_INPUT_FIELDS[i]) {
-      return true;
-    }
-  }
-  $("textarea").each(function () {
-    if (typeof (CKEDITOR) != "undefined") {
-      if (getCkInstance(this.name) != null) {
-        if (getCkInstance(this.name).checkDirty()) {
-          dirtyState = true;
-          return;
-        }
-      }
-    }
-  });
-  return dirtyState;
-}
-
-function unsavedChangesInEditorMessage() {
-  if (unsavedChangesInEditor()) {
-    return UNSAVED_CHANGES_CONFIRMATION;
-  }
-}
+/* ^ Helper functions */

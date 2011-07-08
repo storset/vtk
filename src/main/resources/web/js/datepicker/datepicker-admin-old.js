@@ -1,4 +1,7 @@
-// Initialize Datepicker for old documenttypes and folders
+/*
+ * Initialize Datepicker for old documenttypes and folders
+ *
+ */
 
 function initDatePicker(language) {
 
@@ -12,16 +15,17 @@ function initDatePicker(language) {
   $(".date").datepicker({
     dateFormat: 'yy-mm-dd'
   });
-  if ($("#resource\\.start-date").length == 0 || $("#resource\\.end-date").length == 0) {
+
+  if (!$("#resource\\.start-date").length || !$("#resource\\.end-date").length) {
     return;
   }
+
   var startDate = $("#resource\\.start-date").datepicker('getDate');
   if (startDate != null) {
     setDefaultEndDate();
   }
-  $("#resource\\.start-date").change(
 
-  function () {
+  $("#resource\\.start-date").change(function () {
     setDefaultEndDate();
   });
 }
@@ -33,3 +37,5 @@ function setDefaultEndDate() {
     $("#resource\\.end-date").datepicker('option', 'defaultDate', startDate);
   }
 }
+
+/* ^ Initialize Datepicker for old documenttypes and folders */

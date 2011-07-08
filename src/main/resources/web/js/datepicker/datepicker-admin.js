@@ -1,4 +1,7 @@
-// Initialize Datepicker for new documenttypes
+/*
+ * Datepicker for new documenttypes
+ *
+ */
 
 function initDatePicker(language) {
 
@@ -8,18 +11,19 @@ function initDatePicker(language) {
   } else if (language == 'nn') {
     $.datepicker.setDefaults($.datepicker.regional['nn']);
   }
-
-  $(".date").each(function () {
-    displayDateAsMultipleInputFields(this.name);
-  });
+  
+  var dateFields = $(".date");
+  for(var i = 0, len = dateFields.len; i < len; i++) {
+    displayDateAsMultipleInputFields(dateFields[i].name);
+  }
 
   // TODO !spageti
   if (requestFromEditor()) {
-    initPropChange();
+    storeInitPropValues();
   }
 
-  // specific for start and end date
-  if ($("#start-date-date").length == 0 || $("#end-date-date").length == 0) {
+  // Specific for start and end date
+  if (!$("#start-date-date").length || !$("#end-date-date").length) {
     return;
   }
   var startDate = $("#start-date-date").datepicker('getDate');
@@ -33,10 +37,8 @@ function initDatePicker(language) {
 
 // Stupid test to check if script is loaded from editor
 // UNSAVED_CHANGES_CONFIRMATION is defined in "structured-resource/editor.ftl"
-
-
 function requestFromEditor() {
-  return !(typeof (UNSAVED_CHANGES_CONFIRMATION) == "undefined");
+  return !(typeof(UNSAVED_CHANGES_CONFIRMATION) === "undefined");
 }
 
 function displayDateAsMultipleInputFields(name) {
@@ -47,7 +49,7 @@ function displayDateAsMultipleInputFields(name) {
 
   var a = $("#" + fieldName);
 
-  if (a.length > 0) {
+  if (a.length) {
     hours = extractHoursFromDate(a[0].value);
     minutes = extractMinutesFromDate(a[0].value)
     date = new String(a[0].value).split(" ");
@@ -102,19 +104,25 @@ function extractMinutesFromDate(datetime) {
 }
 
 function saveDateAndTimeFields() {
-  $(".date").each(function () {
-    if (!this.name) return;
-    var fieldName = this.name.replace(/\./g, '\\.');
-    var hours = $.find("#" + fieldName + "-hours");
-    var minutes = $.find("#" + fieldName + "-minutes");
-    var date = $.find("#" + fieldName + "-date");
-    this.value = "";
-    if (date[0] != null && date[0].value.toString().length > 0) {
-      this.value = date[0].value
-      if (hours[0] != null && hours[0].value.toString().length > 0) {
-        this.value += " " + hours[0].value
-        if (minutes[0].value != null && minutes[0].value.toString().length > 0) {
-          this.value += ":" + minutes[0].value;
+  var dateFields = $(".date");
+  for(var i = 0, len = dateFields.len; i < len; i++) {
+    var dateFieldName = dateFields[i].name;
+    if (!dateFieldName) return;
+
+    var fieldName = dateFieldName.replace(/\./g, '\\.');
+
+    var hours = $("#" + fieldName + "-hours");
+    var minutes = $("#" + fieldName + "-minutes");
+    var date = $("#" + fieldName + "-date");
+
+    dateFields[i].value = "";
+
+    if (date[0] && date[0].value.toString().length) {
+      dateFields[i].value = date[0].value
+      if (hours[0] && hours[0].value.toString().length) {
+        dateFields[i].value += " " + hours[0].value
+        if (minutes[0].value && minutes[0].value.toString().length) {
+         dateFields[i].value += ":" + minutes[0].value;
         }
       }
     }
@@ -125,5 +133,7 @@ function saveDateAndTimeFields() {
       $("#" + fieldName + "-minutes").remove();
       $("#" + fieldName + "-date").remove();
     }
-  });
+  }
 }
+
+/* ^ Datepicker for new documenttypes */

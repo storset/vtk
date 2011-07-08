@@ -107,4 +107,4 @@ tocGen.prototype.getId = function (ob) {
   return ob.id;
 }
 
-/* ^ Table of Content */
+/* ^ ToC (Table of Content) */

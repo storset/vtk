@@ -1,5 +1,5 @@
 /*
- * Specific behavior of datepicker for event-listing
+ * Datepicker for event-listing with calendar
  * 
  * TODO: Better interchange between format '2010-4-2' and '2010-04-02'
  * 
@@ -26,7 +26,6 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
     beforeShowDay: function (day) { // iterates days in month
       // Add classes and tooltip for dates with and without events
       var date_str = $.datepicker.formatDate("yy-m-d", new Date(day)).toString();
-
       if ($.inArray(date_str, allowedDates) != -1) { // If a day in month has event
         // Format correct
         if (activeDateForInit[1] == 3) {
@@ -36,7 +35,6 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
         } else if (activeDateForInit[1] == 1) {
           var choosen = $.datepicker.formatDate("yy", activeDateForInit[0]).toString();
         }
-
         if (choosen == date_str) {
           return [true, 'state-active', clickableDayTitle]; // If today has events
         } else {
@@ -62,12 +60,9 @@ function eventListingCalendar(allowedDates, activeDate, clickableDayTitle, notCl
       clearInterval(checkMonthYearHTMLLoaded);
     }
   }, interval);
-
 }
 
-// For init of calender / datepicker()
-
-
+// For init of datepicker()
 function makeActiveDateForInit(activeDate) {
   if (activeDate == "") {
     return [new Date(), 0];
@@ -82,3 +77,5 @@ function makeActiveDateForInit(activeDate) {
     return [new Date(dateArray[0]), len];
   }
 }
+
+/* ^ Datepicker for event-listing with calendar */

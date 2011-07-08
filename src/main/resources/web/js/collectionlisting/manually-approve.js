@@ -1,5 +1,6 @@
 /**
  * JS for handling manually approved resources
+ *
  */
 
 var lastVal = "";
@@ -97,22 +98,20 @@ $(document).ready(function() {
 /**
  * Retrieves resources as JSON array for folders to manually approve from
  * 
- * @param serviceUri
- *          as string
- * @param folders
- *          as array
- * 
+ * @param serviceUri as string
+ * @param folders as array
+ *
  */
 
 function retrieveResources(serviceUri, folders, aggregatedFolders) {
 
   var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources";
-  if (folders != null) {
-    for ( var i = 0, len = folders.length; i < len; i++) {
+  if (folders) {
+    for (var i = 0, len = folders.length; i < len; i++) {
       getUri += "&folders=" + $.trim(folders[i]);
     }
   }
-  if (aggregatedFolders != null) {
+  if (aggregatedFolders) {
     for (i = 0, len = aggregatedFolders.length; i < len; i++) {
       getUri += "&aggregate=" + $.trim(aggregatedFolders[i]);
     }
@@ -146,9 +145,8 @@ function retrieveResources(serviceUri, folders, aggregatedFolders) {
  * First page synchronous (if more than one page) Rest of pages asynchrounous
  * adding each to DOM when complete
  * 
- * @param resources
- *          as JSON array
- * 
+ * @param resources as JSON array
+ *
  * TODO: i18n
  * 
  */
@@ -231,7 +229,7 @@ function generateManuallyApprovedContainer(resources) {
 /* HTML generation functions */
 
 function generateTableRow(resource, i) {
-  if (i & 1) {
+  if (i & 1) { // faster than i % 2
     var html = "<tr class='even'>";
   } else {
     var html = "<tr>";
@@ -271,3 +269,5 @@ function generateStartPageAndTableHead(pages) {
 }
 
 /* ^ HTML generation functions */
+
+/* ^ JS for handling manually approved resources */

@@ -14,7 +14,7 @@ $(document).ready(function () {
 /* Store initial values in inputfields */
 function storeInitPropValues() {
   var inputFields = $("input");
-  for(var i = 0, len = inputFields.length; i < len; i++) {
+  for(var i = 0, len = inputFields.length; i < len;) {
     INITIAL_INPUT_FIELDS[i++] = $(inputFields[i]).val();
   }
 }

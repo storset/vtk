@@ -1,6 +1,11 @@
-// Vortex Simple Gallery jQuery plugin v0.2
-// w/ paging, centered thumbnail navigation and fade effect
-// by Øyvind Hatland - UiO / USIT
+/*
+ * Vortex Simple Gallery jQuery plugin v0.3
+ * w/ paging, centered thumbnail navigation and crossfade effect
+ *
+ * by Øyvind Hatland - UiO / USIT
+ *
+ */
+
 (function ($) {
   $.fn.vrtxSGallery = function (wrapper, container, maxWidth, options) {
 
@@ -273,3 +278,5 @@
     }
   };
 })(jQuery)
+
+/* ^ Vortex Simple Gallery jQuery plugin */

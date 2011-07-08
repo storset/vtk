@@ -1,8 +1,12 @@
+/*
+ * ToC (Table of Content)
+ *
+ */
+
 // Possible to override with a target for toc defined typical in document.ready() on a site / sites
 var tocTargetId = "";
-// This function is stolen (legally) from quirksmode.org
 
-
+// This function is stolen (legally) from quirksmode.org (and modified by USIT)
 function getElementsByTagNames(list, obj) {
   if (!obj) var obj = document;
   var tagNames = list.split(',');
@@ -39,8 +43,7 @@ window.onload = function () {
 };
 
 //This script was originally written By Brady Mulhollem - WebTech101.com
-//It was later modified by Tomm Eriksen and other humble USIT workers 
-
+//It was later modified by Tomm Eriksen and other humble USIT workers
 function tocGen(writeTo) {
   this.num = 1;
   this.opened = 0;
@@ -103,3 +106,5 @@ tocGen.prototype.getId = function (ob) {
   }
   return ob.id;
 }
+
+/* ^ Table of Content */

@@ -1,3 +1,8 @@
+/* 
+ * Visualize broken links
+ *
+ */
+
 function visualizeBrokenLinks(options) {
   if (!options) throw "Missing argument";
   if (!options.validationURL) throw "Missing 'validationURL' field in argument";
@@ -78,3 +83,5 @@ function linkCheckResponse(results, context, localizer, linkClass) {
   }
   return brokenLinks;
 }
+
+/* ^ Visualize broken links */

@@ -1,6 +1,8 @@
 <#ftl strip_whitespace=true>
 <#--
-  - File: editor.ftl
+  - File: common.ftl
+  -
+  - Add common JS old and new editor.ftl
   -
   -->
   
@@ -13,6 +15,7 @@
 </#macro>
 
 <#macro addDatePickerScripts language oldEditor=false>
+
   <!-- JQuery UI (used for datepicker) -->
   <link type="text/css" href="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.8.custom/css/smoothness/jquery-ui-1.8.8.custom.css" rel="stylesheet" />
   <#if language = "no">
@@ -21,6 +24,7 @@
   <#if language = "nn">
     <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.8.custom/js/jquery.ui.datepicker-nn.js"></script>
   </#if>
+
   <#if oldEditor>
     <script type="text/javascript" src="${jsBaseURL?html}/datepicker/datepicker-admin-old.js"></script>
   <#else>

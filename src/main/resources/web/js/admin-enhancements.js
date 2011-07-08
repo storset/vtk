@@ -30,7 +30,7 @@ function VrtxAdmin() {
   this.transitionSpeed = 200; // same as 'fast'
   this.transitionCustomPermissionSpeed = 200; // same as 'fast'
   this.transitionPropSpeed = 100;
-  this.transitionDropdownSpeed = 100;
+  this.transitionDropdownSpeed = 0;
   
   return instance;
 };

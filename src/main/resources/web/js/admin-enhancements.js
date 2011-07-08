@@ -17,6 +17,7 @@ function VrtxAdmin() {
   VrtxAdmin.prototype = this; // carry over properties
   instance = new VrtxAdmin(); // instance
   instance.constructor = VrtxAdmin; // reset construction pointer
+  //--
   
   this.isIE = null;
   this.browserVersion = null;
@@ -65,14 +66,13 @@ $(document).ready(function () {
   dropdownCollectionGlobalMenu();
   
   // Zebra-tables
-  vrtxAdmin.zebraTables(".resourceInfo");
-
-  /* GET/POST forms with AJAX (initalization/config) */
+  vrtxAdmin.zebraTables(".resourceInfo");/
   
   var getAjaxOptions = {};
   var postAjaxOptions = {};
 
-  // Global menu service forms
+  // AJAX INIT: Global menu service forms
+  
   var globalMenuServices = ["renameService",
                             "publish\\.globalUnpublishService",
                             "publish\\.globalPublishService",
@@ -90,7 +90,8 @@ $(document).ready(function () {
     vrtxAdmin.getAjaxForm(getAjaxOptions);
   }
 
-  // Tab menu service forms
+  // AJAX INIT: Tab menu service forms
+  
   var tabMenuServices = ["fileUploadService",
                          "createDocumentService",
                          "createCollectionService"];
@@ -131,7 +132,8 @@ $(document).ready(function () {
     }
   }
   
-  // Permission privilegie forms (READ, READ_WRITE, ALL)
+  // AJAX INIT: Permission privilegie forms (READ, READ_WRITE, ALL)
+  
   var privilegiesPermissions = ["read",
                                 "read-write",
                                 "all"];
@@ -158,7 +160,8 @@ $(document).ready(function () {
     vrtxAdmin.postAjaxForm(postAjaxOptions);
   }
   
-  // More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
+  // AJAX INIT: More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
+  
   var privilegiesPermissionsInTable = ["add-comment",
                                        "read-processed"];
 
@@ -183,8 +186,9 @@ $(document).ready(function () {
     };
     vrtxAdmin.postAjaxForm(postAjaxOptions);      
   }
-
-  // About property forms
+  
+  // AJAX INIT: About property forms
+  
   var propsAbout = [
     "contentLocale",
     "commentsEnabled",
@@ -213,15 +217,15 @@ $(document).ready(function () {
     };
     vrtxAdmin.getAjaxForm(getAjaxOptions);
   }
+
+  // AJAX INIT: Remove/add permissions
   
-  // Remove/add permissions
   vrtxAdmin.ajaxRemove("input.removePermission", ".principalList");
   vrtxAdmin.ajaxAdd("span.addGroup", ".groups-wrapper", "errorContainer");
   vrtxAdmin.ajaxAdd("span.addUser", ".users-wrapper", "errorContainer");
 
-  /* ^ GET/POST forms with AJAX (initalization/config) */
-
   // Show/hide multiple properties (initalization/config)
+  
   showHide(["#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"],
             "#resource\\.recursive-listing\\.false:checked", 'false', ["#vrtx-resource\\.recursive-listing-subfolders"]);
 

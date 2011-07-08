@@ -59,13 +59,17 @@
     });
 
     function addNewJsonElement(j, button) {
+    
       var counter = parseInt($(button).prev(".vrtx-json-element").find("input.id").val()) + 1;
       if (isNaN(counter)) {
         counter = 0;
       }
-      // Add opp og ned knapp...blah
+
       var htmlTemplate = "";
       var arrayOfIds = [];
+
+      // Add correct HTML for vrtx-type
+
       for (i in j.a) {
         var inputFieldName = j.name + "." + j.a[i].name + "." + counter;
         arrayOfIds[i] = new String(j.name + "." + j.a[i].name + ".").replace(/\./g, "\\.");
@@ -104,6 +108,9 @@
             break
         }
       }
+      
+      // Move up, move down, delete
+
       var moveDownButton = "<div class=\"vrtx-button vrtx-move-down-button\"><input type=\"button\" value=\"&darr; ${vrtx.getMsg("editor.move - down ")}\" /><\/div>";
       var moveUpButton = "<div class=\"vrtx-button vrtx-move-up-button\"><input type=\"button\" value=\"&uarr; ${vrtx.getMsg("editor.move - up ")}\" /><\/div>";
       var deleteButton = "<div class=\"vrtx-button vrtx-remove-button\"><input type=\"button\" value=\"${vrtx.getMsg("editor.remove ")}\" \/><\/div>";
@@ -113,9 +120,7 @@
       $("#" + j.name + " .vrtx-add-button").before("<div class=\"vrtx-json-element\" id=\"" + newElementId + "\"><\/div>");
     
       var newElement = $("#" + newElementId);
-    
       newElement.append(htmlTemplate);
-    
       newElement.append(id);
     
       if (counter > 0 && newElement.prev(".vrtx-json-element").length) {
@@ -136,7 +141,7 @@
       function () {
         swapContent(counter, arrayOfIds, -1, j.name);
       });
-    
+
       if (newElement.prev(".vrtx-json-element").length) {
         newElement.prev(".vrtx-json-element").find(".vrtx-move-down-button").click(
     
@@ -144,10 +149,11 @@
           swapContent(counter - 1, arrayOfIds, 1, j.name);
         });
       }
-    
+
+      // CK and date inputfields
+
       for (i in j.a) {
         var inputFieldName = j.name + "." + j.a[i].name + "." + counter;
-        // CK and date inputfields
         if (j.a[i].type == "simple_html") {
           newEditor(inputFieldName, false, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', 
                                                   '${fckeditorBase.documentURL?html}', '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', "");
@@ -191,6 +197,8 @@
         e.find(".vrtx-move-down-button").remove();
       }
     }
+    
+    // We need some way to add HTML from vrtx-types instead of building markup in JS
     
     function addDropdown(elem, inputFieldName) {
       var classes = "vrtx-string" + " " + elem.name;
@@ -293,6 +301,8 @@
       htmlTemplate += '<\/div><\/div>'
       return htmlTemplate;
     }
+    
+    // When move up or move down (+ scroll to)
     
     function swapContent(counter, arrayOfIds, move, name) {
       var thisId = "#vrtx-json-element-" + name + "-" + counter;

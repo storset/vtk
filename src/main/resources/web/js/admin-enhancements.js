@@ -777,9 +777,7 @@ VrtxAdmin.prototype.postAjaxForm = function(options) {
             if(options.funcComplete) {
               options.funcComplete();
             }
-            alert(form.parent().attr("class"));
             form.parent().slideUp(vrtxAdmin.transitionSpeed, function () {
-              alert("hello verden");
               $(this).remove();
             });
           }

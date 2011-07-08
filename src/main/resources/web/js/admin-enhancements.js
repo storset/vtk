@@ -673,13 +673,13 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
           $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, function() {
             if(isReplaced) {
               var resultHtml = vrtxAdmin.outerHTML(results, "." + resultSelectorClass);
-              if($(this).is("tr")) {  // Because 'this' is tr > td > div
+              if($(this).parent().parent().is("tr")) {  // Because 'this' is tr > td > div
                 $(this).parent().parent().replaceWith(resultHtml).show(0);
               } else {
                 $(this).replaceWith(resultHtml).show(0);              
               }
             } else {
-              if($(this).is("tr")) {  // Because 'this' is tr > td > div
+              if($(this).parent().parent().is("tr")) {  // Because 'this' is tr > td > div
                 $(this).parent().parent().remove();  
               } else {
                 $(this).remove();            

@@ -655,38 +655,31 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
       dataType: "html",
       success: function (results, status, resp) {
         var form = $(results).find("." + options.selectorClass).html();
-          
+
         // Another form is already open
         if($(".expandedForm").length) {
-          var classes = $(".expandedForm").attr("class").split(" ");
-          var i = classes.length;
-          var finalClass = "";
-          var isReplaced = false;
-          var theNodeType = "div";
-          while(i--) {
-            if(classes[i].indexOf("expandedForm") == -1) {
-              if(classes[i].indexOf("nodeType") != -1) {
-                theNodeType = classes[i].split("nodeType")[1];
-              } else if(finalClass.indexOf(classes[i]) == -1) {
-                finalClass += classes[i] + " ";
-              }
-            } else if(classes[i] == "expandedFormIsReplaced") {
-              isReplaced = true;
-            }
+          var expandedHtml = vrtxAdmin.outerHTML("#app-content", ".expandedForm");
+          if($(".expandedForm").hasClass("expandedFormIsReplaced")) {
+            var isReplaced = true;
           }
-          theNodeType = $.trim(theNodeType);
-          finalClass = $.trim(finalClass.split(" ")[0]);
+          var resultSelectorClasses = $(expandedHtml).attr("class").split(" ");
+          var resultSelectorClass = "";
+          for(var i = resultSelectorClasses.length; i--;) {
+            if(resultSelectorClasses[i].indexOf("expandedForm") == -1
+               && resultSelectorClasses[i].indexOf("nodeType") == -1) {
+              resultSelectorClass += resultSelectorClasses[i] + " ";  
+            }  
+          } 
           $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, function() {
             if(isReplaced) {
-              var elm = $(results).find("." + finalClass);
-              var html = vrtxAdmin.wrap(theNodeType, elm.attr("class"), elm.html());
-              if(theNodeType == "tr") {  // Because 'this' is tr > td > div
-                $(this).parent().parent().replaceWith(html).show(0);
+              var resultHtml = vrtxAdmin.outerHTML(results, "." + resultSelectorClass);
+              if($(this).is("tr")) {  // Because 'this' is tr > td > div
+                $(this).parent().parent().replaceWith(resultHtml).show(0);
               } else {
-                $(this).replaceWith(html).show(0);              
+                $(this).replaceWith(resultHtml).show(0);              
               }
             } else {
-              if(theNodeType == "tr") {  // Because 'this' is tr > td > div
+              if($(this).is("tr")) {  // Because 'this' is tr > td > div
                 $(this).parent().parent().remove();  
               } else {
                 $(this).remove();            
@@ -771,7 +764,7 @@ VrtxAdmin.prototype.postAjaxForm = function(options) {
             vrtxAdmin.displayErrorContainers(results, form, options.errorContainerInsertAfter, options.errorContainer);
           } else {
             for(var i = options.updateSelectors.length; i--;) {
-             var outer = vrtxAdmin.outerHTML($(results), options.updateSelectors[i]);
+             var outer = vrtxAdmin.outerHTML(results, options.updateSelectors[i]);
              $("#app-content " + options.updateSelectors[i]).replaceWith(outer);
             }
             if(options.funcComplete) {
@@ -899,8 +892,8 @@ VrtxAdmin.prototype.displayErrorContainers = function(results, form, errorContai
   if (wrapper.find("div." + errorContainer).length) {
     wrapper.find("div." + errorContainer).html($(results).find("div." + errorContainer).html());
   } else {
-    $(vrtxAdmin.wrap("div", errorContainer, $(results).find("div." + errorContainer).html()))
-        .insertAfter(wrapper.find(errorContainerInsertAfter));
+    var outer = vrtxAdmin.outerHTML(results, "div." + errorContainer); 
+    $(outer).insertAfter(wrapper.find(errorContainerInsertAfter));
   }
 };
 
@@ -1096,7 +1089,7 @@ function SetUrl(url, width, height, alt) {
 
 // jQuery outerHTML (because FF don't support regular outerHTML)
 VrtxAdmin.prototype.outerHTML = function(selector, subselector) {
-  return $('<div>').append(selector.find(subselector).clone()).html();
+  return $('<div>').append($(selector).find(subselector).clone()).html();
 };
 
 /* Override slideUp() / slideDown() to handle rows in a table

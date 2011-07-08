@@ -648,7 +648,8 @@ function dropdownCollectionGlobalMenu() {
 
 VrtxAdmin.prototype.getAjaxForm = function(options) {
   $("#app-content").delegate(options.selector, "click", function (e) {
-    var url = $(this).attr("href");
+    var url = $(this).attr("href"); // TODO: this can get corrupted if switchin between props edit and e.g. create archive..
+                                    //       (problem with delegate(?))
     $.ajax({
       type: "GET",
       url: url,
@@ -656,13 +657,18 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
       success: function (results, status, resp) {
         var form = $(results).find("." + options.selectorClass).html();
 
+        // If something went wrong - refresh page instead
+        if(!form) {
+          location.reload();
+        }
+
         // Another form is already open
         if($(".expandedForm").length) {
           var expandedHtml = vrtxAdmin.outerHTML("#app-content", ".expandedForm");
           if($(".expandedForm").hasClass("expandedFormIsReplaced")) {
             var isReplaced = true;
           }
-          // Filter selector class to get original markup for the existing form
+          // Filter out selector class to get original markup for the existing form
           var resultSelectorClasses = $(expandedHtml).attr("class").split(" ");
           var resultSelectorClass = "";
           for(var i = resultSelectorClasses.length; i--;) {
@@ -678,6 +684,10 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
           $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, function() {
             if(isReplaced) {
               var resultHtml = vrtxAdmin.outerHTML(results, $.trim(resultSelectorClass));
+              // If something went wrong - refresh page instead
+              if(!resultHtml) {
+                location.reload();
+              }
               if($(this).parent().parent().is("tr")) {  // Because 'this' is tr > td > div
                 $(this).parent().parent().replaceWith(resultHtml).show(0);
               } else {
@@ -715,7 +725,7 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, form) {
                                                                   + options.nodeType + " " + options.selectorClass + " " + classes, form));
   } else {
     $(vrtxAdmin.wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))
-        .insertAfter(options.insertAfterOrReplaceClass);
+      .insertAfter(options.insertAfterOrReplaceClass);
   }
   if(options.funcComplete) {
     options.funcComplete(options.selectorClass);

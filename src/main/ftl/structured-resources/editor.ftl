@@ -32,8 +32,12 @@
     UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
     COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
     window.onbeforeunload = unsavedChangesInEditorMessage;
-    
+
     function performSave() {
+      saveDateAndTimeFields(); // js/datepicker/datepicker-admin.js
+      if (typeof(MULTIPLE_INPUT_FIELD_NAMES) !== "undefined") {
+        saveMultipleInputFields();  // js/editor-multipleinputfields.js
+      }
       NEED_TO_CONFIRM = false;
     }
 

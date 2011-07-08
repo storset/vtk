@@ -66,7 +66,6 @@ $(document).ready(function () {
   
   // Zebra-tables
   vrtxAdmin.zebraTables(".resourceInfo");
-  
 
   /* GET/POST forms with AJAX (initalization/config) */
   
@@ -650,6 +649,10 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
   $("#app-content").delegate(options.selector, "click", function (e) {
     var url = $(this).attr("href"); // TODO: the URL sometimes get corrupted if switchin between props edit and e.g. create archive..
                                     //       (problem with delegate(?))
+                                    
+    if(url.indexOf("https://") != -1 && location.protocol == "http://") {
+      return; // no AJAX when http -> https (tmp. solution)
+    }
     
     // Make sure we get the mode markup (current page) if service is not mode
     // -- only if a expandedForm exists and is of the replaced kind..

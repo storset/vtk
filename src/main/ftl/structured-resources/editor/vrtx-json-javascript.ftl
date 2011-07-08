@@ -10,63 +10,64 @@
   LIST_OF_JSON_ELEMENTS = [];
 
   $(document).ready(function() {
-  
-  <#assign i = 0 />
-  <#list form.elements as elementBox>
-    <#assign j = 0 />
-    <#list elementBox.formElements as elem>
-      <#if elem.description.type == "json" && elem.description.isMultiple() >
-      LIST_OF_JSON_ELEMENTS[${i}] = {};
-      LIST_OF_JSON_ELEMENTS[${i}].name = "${elem.name}";
-      LIST_OF_JSON_ELEMENTS[${i}].type = "${elem.description.type}";
-      LIST_OF_JSON_ELEMENTS[${i}].a = [];
 
-    <#list elem.description.attributes as jsonAttr>
-      LIST_OF_JSON_ELEMENTS[${i}].a[${j}] = {};
-      LIST_OF_JSON_ELEMENTS[${i}].a[${j}].name = "${jsonAttr.name}";
-      LIST_OF_JSON_ELEMENTS[${i}].a[${j}].type = "${jsonAttr.type}";
-      <#if jsonAttr.edithints?exists>
-        <#if jsonAttr.edithints['dropdown']?exists>
-      LIST_OF_JSON_ELEMENTS[${i}].a[${j}].dropdown = true;
+    <#assign i = 0 />
+    <#list form.elements as elementBox>
+      <#assign j = 0 />
+      <#list elementBox.formElements as elem>
+        <#if elem.description.type == "json" && elem.description.isMultiple()>
+          LIST_OF_JSON_ELEMENTS[${i}] = {};
+          LIST_OF_JSON_ELEMENTS[${i}].name = "${elem.name}";
+          LIST_OF_JSON_ELEMENTS[${i}].type = "${elem.description.type}";
+
+          LIST_OF_JSON_ELEMENTS[${i}].a = [];
+          <#list elem.description.attributes as jsonAttr>
+            LIST_OF_JSON_ELEMENTS[${i}].a[${j}] = {};
+            LIST_OF_JSON_ELEMENTS[${i}].a[${j}].name = "${jsonAttr.name}";
+            LIST_OF_JSON_ELEMENTS[${i}].a[${j}].type = "${jsonAttr.type}";
+            <#if jsonAttr.edithints?exists>
+              <#if jsonAttr.edithints['dropdown']?exists>
+                LIST_OF_JSON_ELEMENTS[${i}].a[${j}].dropdown = true;
+              </#if>
+            </#if>
+            <#if jsonAttr.getValuemap(locale)?exists >
+              <#assign valuemap = jsonAttr.getValuemap(locale) />
+              <#assign k = 0 />
+              var valuemap = [];
+              <#list valuemap?keys as key>
+                <#assign optionKey = key />
+                <#if optionKey = '""' >
+                  <#assign optionKey = "''" />
+                </#if>
+                valuemap[${k}] = "${optionKey}$${valuemap[key]}";
+                <#assign k = k + 1 />
+              </#list>
+              LIST_OF_JSON_ELEMENTS[${i}].a[${j}].valuemap = valuemap;
+            </#if>
+            LIST_OF_JSON_ELEMENTS[${i}].a[${j}].title = "${form.resource.getLocalizedMsg(jsonAttr.name, locale, null)}";
+            <#assign j = j + 1 />
+          </#list>
+          <#assign i = i + 1 />
         </#if>
-      </#if>
-      <#if jsonAttr.getValuemap(locale)?exists >
-        <#assign valuemap = jsonAttr.getValuemap(locale) />
-        <#assign k = 0 />
-      var valuemap = [];
-        <#list valuemap?keys as key>
-          <#assign optionKey = key />
-          <#if optionKey = '""' >
-            <#assign optionKey = "''" />
-          </#if>
-      valuemap[${k}] = "${optionKey}$${valuemap[key]}";
-        <#assign k = k + 1 />
-        </#list>
-      LIST_OF_JSON_ELEMENTS[${i}].a[${j}].valuemap = valuemap;
-      </#if>
-      LIST_OF_JSON_ELEMENTS[${i}].a[${j}].title = "${form.resource.getLocalizedMsg(jsonAttr.name, locale, null)}";
-      <#assign j = j + 1 />
+      </#list>
     </#list>
-      <#assign i = i + 1 />
-       </#if>
-    </#list>
-  </#list>
-    var LIST_OF_JSON_ELEMENTS_LENGTH = LIST_OF_JSON_ELEMENTS.length;
-    for (var i = 0; i < LIST_OF_JSON_ELEMENTS_LENGTH; i++) {
-        $("#" + LIST_OF_JSON_ELEMENTS[i].name).append("<div class=\"vrtx-button vrtx-add-button\" onClick=\"addNewJsonElement(LIST_OF_JSON_ELEMENTS[" + i + "],this)\"><input type=\"button\" value=\"${vrtx.getMsg("editor.add")}\" /></div>");
-      }
-    });
-    
-    
+
+    for (var i = 0, len = LIST_OF_JSON_ELEMENTS.length; i < len; i++) {
+       $("#" + LIST_OF_JSON_ELEMENTS[i].name).append("<div class=\"vrtx-button vrtx-add-button\" onClick=\"addNewJsonElement(LIST_OF_JSON_ELEMENTS["
+                                                   + i + "],this)\"><input type=\"button\" value=\"${vrtx.getMsg("editor.add")}\" /></div>");
+    }
+
+  });
+
+
   function addNewJsonElement(j,button) {
-  
-     var counter = parseInt($(button).prev(".vrtx-json-element").find("input.id").val())+1;     
+     var counter = parseInt($(button).prev(".vrtx-json-element").find("input.id").val())+1;
      if(isNaN(counter)){
      	counter = 0;
      }
         
      // Add opp og ned knapp...blah
-     
+
      var htmlTemplate = "";
      var arrayOfIds = [];
    

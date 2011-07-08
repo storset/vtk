@@ -11,31 +11,36 @@ var debugMultipleInputFields = false;
 
 function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName) {
     var id = "#" + name;
-    if ($(id).val() == null) { return; }
-    var formFields = $(id).val().split(",");
+    var inputField = $(id); // cache
+
+    if (inputField.val() == null) { return; }
+
+    var formFields = inputField.val().split(",");
     
     COUNTER_FOR_MULTIPLE_INPUT_FIELD[name] = 1; // 1-index
     LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] = formFields.length;
     MULTIPLE_INPUT_FIELD_NAMES.push(name);
 
-    var size = $(id).attr("size");
+    var size = inputField.attr("size");
 
     registerClicks(name);
     
+    inputFieldParent = inputField.parent(); // another cache
+    
     var isResourceRef = false;
-    if($(id).parent().parent().attr("class").indexOf("vrtx-resource-ref-browse") != -1) {
+    if(inputFieldParent.parent().attr("class").indexOf("vrtx-resource-ref-browse") != -1) {
       isResourceRef = true;	
     }
     
-    if($(id).parent().next().hasClass("vrtx-button") && isResourceRef) {
-      $(id).parent().next().hide();
+    if(inputFieldParent.next().hasClass("vrtx-button") && isResourceRef) {
+      inputFieldParent.next().hide();
     }
-    $(id).parent().append("<div id='vrtx-" + name + "-add' class='vrtx-button'>"
+    inputFieldParent.append("<div id='vrtx-" + name + "-add' class='vrtx-button'>"
 		      + "<button onclick=\"addFormField('" + name + "',null, '"
 		      + removeName + "','" + moveUpName + "','" + moveDownName + "','" + browseName + "','" + size + "'," + isResourceRef + "," + false + "); return false;\">"
 		      + addName + "</button></div>").removeClass("vrtx-textfield");
 		 
-	$(id).hide();
+    inputField.hide();
     
     var addFormFieldFunc = addFormField;
     for (var i = 0; i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]; i++) {
@@ -44,22 +49,24 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
 }
 
 function registerClicks(name) {
-  $("." + name).delegate(".remove", "click", function(){
+  var wrapper = $("." + name);  // cache
+
+  wrapper.delegate(".remove", "click", function(){
 	removeFormField(name, $(this));
   });
-  $("." + name).delegate(".moveup", "click", function(){
+  wrapper.delegate(".moveup", "click", function(){
 	moveUpFormField($(this));
   });
-  $("." + name).delegate(".movedown", "click", function(){
+  wrapper.delegate(".movedown", "click", function(){
 	moveDownFormField($(this));
   });
-  $("." + name).delegate(".browse-resource-ref", "click", function(){
+  wrapper.delegate(".browse-resource-ref", "click", function(){
 	browseServer($(this).parent().parent().find('input').attr('id'), browseBase, browseBaseFolder, browseBasePath, 'File');
   });
 }
 
 function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isResourceRef, init) {
-	if (value == null) { value = ""; }
+    if (value == null) { value = ""; }
 
     var idstr = "vrtx-" + name + "-";
     var i = COUNTER_FOR_MULTIPLE_INPUT_FIELD[name];
@@ -68,18 +75,18 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
     var moveDownButton = "";
     var browseButton = "";
 
-    if (removeName != null) {
+    if (removeName) {
         removeButton = "<div class='vrtx-button'><button class='remove' type='button' " + "id='" + idstr + "remove' >" + removeName + "</button></div>";
     }
-    if (moveUpName != null && i > 1) {
+    if (moveUpName && i > 1) {
     	moveUpButton = "<div class='vrtx-button'><button class='moveup' type='button' " + "id='" + idstr + "moveup' >"
     	+ "&uarr; " + moveUpName + "</button></div>";
     }
-    if (moveDownName != null && i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]) {
+    if (moveDownName && i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]) {
     	moveDownButton = "<div class='vrtx-button'><button class='movedown' type='button' " + "id='" + idstr + "movedown' >"
     	+ "&darr; " + moveDownName + "</button></div>";
     }
-    if(browseButton != null) {
+    if(browseButton) {
         browseButton = "<div class='vrtx-button'><button type='button' class='browse-resource-ref'>" + browseName + "</button></div>";
     }
     
@@ -96,26 +103,26 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
     $("#vrtx-" + name + "-add").before(html);
     
     if(!init) {
-    	if(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] > 0) {
-    	  var fields = "." + name + " div.vrtx-multipleinputfield";
-          if($(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).not("has:button.movedown")) {
-            var theId = $(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).attr("id");
-          
-        	moveDownButton = "<div class='vrtx-button'><button class='movedown' type='button' " + "id='" + idstr + "movedown' >"
-        	+ "&darr; " + moveDownName + "</button></div>";
+      if(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] > 0) {
 
-        	$(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).append(moveDownButton);
-        	//logMultipleInputFields("Added before-last movedown");
-          }
-    	}
-        LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]++;
+        var fields = $("." + name + " div.vrtx-multipleinputfield"); // cache
+
+        if(fields.eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).not("has:button.movedown")) {
+          var theId = fields.eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).attr("id");
+          moveDownButton = "<div class='vrtx-button'><button class='movedown' type='button' " + "id='" + idstr + "movedown' >"
+                         + "&darr; " + moveDownName + "</button></div>";
+          fields.eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).append(moveDownButton);
+          //logMultipleInputFields("Added before-last movedown");
+        }
+
       }
+      LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]++;
+    }
 
     COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]++;
 }
 
 function removeFormField(name, that) {
-
     $(that).parent().parent().remove();
     //logMultipleInputFields("Fjerner felt");
 

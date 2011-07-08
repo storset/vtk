@@ -28,22 +28,15 @@
       initDatePicker("${language}");
     });
   
-    window.onbeforeunload = unsavedChangesInEditorMessage;
+
     UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
     COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
+    window.onbeforeunload = unsavedChangesInEditorMessage;
     
     function performSave() {
-        saveDateAndTimeFields();
-        if (typeof(MULTIPLE_INPUT_FIELD_NAMES) != "undefined") {
-            saveMultipleInputFields();
-        }
-        NEED_TO_CONFIRM = false;
+      NEED_TO_CONFIRM = false;
     }
-    function cSave() {
-        document.getElementById("form").setAttribute("action", "#submit");
-        performSave();
-    }
-    
+
     var cssFileList = new Array(
       <#if fckEditorAreaCSSURL?exists>
         <#list fckEditorAreaCSSURL as cssURL>
@@ -55,7 +48,7 @@
   </script>
 
   <@editor.addDatePickerScripts language />
-  
+
   <#global baseFolder = "/" />
   <#if resourceContext.parentURI?exists>
     <#global baseFolder = resourceContext.parentURI?html />

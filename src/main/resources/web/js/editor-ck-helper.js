@@ -72,7 +72,7 @@ function setCkValue(instanceName, data) {
   oEditor.setData(data);
 }
 
-// TODO: is this used anywhere
+// TODO: is this used anywhere(?)
 function isCkEditor(instanceName) {
   var oEditor = getCkInstance(instanceName);
   return oEditor != null;

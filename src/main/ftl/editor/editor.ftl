@@ -23,7 +23,7 @@
     <@ping.ping url=pingURL['url'] interval=300 />    
     <@editor.addCkScripts />
 
-  	<script type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>
+    <script type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>
     <script type="text/javascript" src="${jsBaseURL?html}/editor-ck-helper.js"></script>
     
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
@@ -101,8 +101,6 @@
 	  </div>
     <form id="form" class="editor" action="" method="post">
 
-      <@handleProps />
-
       <div class="properties">
         <@propsForm resource.preContentProperties />
       </div>
@@ -155,93 +153,6 @@
     </body>
 </html>
 
-<#macro propChangeTests propDefs>
-  <#list propDefs as propDef>
-    <#local name = propDef.name />
-    <#local value = resource.getValue(propDef) />
-
-    <#local type = propDef.type />
-
-    <#if type = 'HTML' && name='userTitle' && isCollection>
-      <#local value = resource.title />
-    </#if>
-		
-    <#if type = 'HTML'>
-      var fck_${name} = CKEDITOR.instances.resource.${name};
-	  	  
-      if (fck_${name} && fck_${name}.editor.checkDirty()) {
-        return true;
-      } else if (!fck_${name} && '${value?js_string}' != document.getElementById('resource.${name}').value) {
-        return true;
-      }
-    <#elseif type = 'DATE' || type = 'TIMESTAMP'>
-      <#local dateVal = value />
-      <#local hours = "" />
-      <#local minutes = "" />
-      <#if value != "">
-        <#local d = resource.getProperty(propDef) />
-        
-        <#local dateVal = d.getFormattedValue('yyyy-MM-dd', springMacroRequestContext.getLocale()) />
-        <#local hours = d.getFormattedValue('HH', springMacroRequestContext.getLocale()) />
-        <#local minutes = d.getFormattedValue('mm', springMacroRequestContext.getLocale()) />
-        <#if hours = "00" && minutes = "00">
-          <#local hours = "" />
-          <#local minutes = "" />
-        </#if>
-      </#if>
-
-      if (document.getElementById('resource.${name}').value != null  && '${dateVal}' != document.getElementById('resource.${name}').value) {
-        return true;
-      }
-      if (document.getElementById('resource.${name}.hours') != null  && '${hours}' != document.getElementById('resource.${name}.hours').value) {
-        return true;
-      }
-      if (document.getElementById('resource.${name}.minutes') != null && '${minutes}' != document.getElementById('resource.${name}.minutes').value) {
-        return true;
-      }            
-    <#else>
-      <#if !(propDef.vocabulary)?exists><#--XXX we don't handle changes to properties with vocabularies for now-->
-      if (document.getElementById('resource.${name}') != null && '${value?js_string}' != document.getElementById('resource.${name}').value) {
-        return true;
-      }
-      </#if>
-
-    </#if>
-  </#list>
-</#macro>
-
-<#macro handleProps>
-  <script type="text/javascript"><!--
-    function propChange() {
-      <@propChangeTests resource.preContentProperties />
-      <@propChangeTests resource.postContentProperties />
-      return false;
-    }
-
-  <#--assign url = unlockURL['url']?default("") />
-  <#if url != "">
-    function doUnlock(event) {
-      if (needToConfirm) {
-        var req;
-        if (window.XMLHttpRequest) {
-          req = new XMLHttpRequest();
-        } else if (window.ActiveXObject) {
-          req = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        var url = '${url}';
-        if (req != null) {
-          req.open('GET', url, false);
-          req.send(null);
-        }
-      }
-    }
-	
-    window.onunload = doUnlock;
-   </#if-->
-    // -->
-  </script>
-</#macro>
-
 <#macro propsForm propDefs>
     <#local locale = springMacroRequestContext.getLocale() />
 
@@ -259,7 +170,7 @@
       <#local useRadioButtons = false />
       <#if ((propDef.metadata.editingHints.radio)?exists)>
         <#local useRadioButtons = true />
-      </#if>          
+      </#if>
 
       <#local displayLabel = true />
       <#if ((propDef.metadata.editingHints.hideLabel)?exists)>

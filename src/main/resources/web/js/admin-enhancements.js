@@ -656,7 +656,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
     //
     var fromModeToNotMode = false;
     var modeUrl = "";
-    var isReplaced = false;
+    var existExpandedFormIsReplacing = false;
     var existExpandedForm = false;
     
     if($(".expandedForm").length) {
@@ -672,7 +672,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
             }
           } 
         }
-        isReplaced = true;
+        existExpandedFormIsReplacing = true;
       }
       existExpandedForm = true;
     }
@@ -708,7 +708,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
           } 
           // --
           $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, function() {
-            if(isReplaced) {
+            if(existExpandedFormIsReplacing) {
               var expanded = $(this);
               
               // When we need the 'mode=' HTML when requesting a 'not mode=' service
@@ -779,7 +779,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
 VrtxAdmin.prototype.getAjaxFormShow = function(options, form) {
   if (options.isReplacing) {
     var classes = $(options.insertAfterOrReplaceClass).attr("class");
-    $(options.insertAfterOrReplaceClass).replaceWith(vrtxAdmin.wrap(options.nodeType, "expandedForm expandedFormIsReplaced nodeType"
+    $(options.insertAfterOrReplaceClass).replaceWith(vrtxAdmin.wrap(options.nodeType, "expandedForm expandedForm nodeType"
                                                                   + options.nodeType + " " + options.selectorClass + " " + classes, form));
   } else {
     $(vrtxAdmin.wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))

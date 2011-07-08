@@ -649,7 +649,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
   $("#app-content").delegate(options.selector, "click", function (e) {
     var url = $(this).attr("href"); // TODO: the URL sometimes get corrupted if switchin between props edit and e.g. create archive..
                                     //       (problem with delegate(?))
-                           
+                                                               
     if(location.protocol == "http:" && url.indexOf("https://") != -1) {
       return; // no AJAX when http -> https (tmp. solution)
     }
@@ -665,13 +665,13 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
     if($(".expandedForm").length) {
       if($(".expandedForm").hasClass("expandedFormIsReplaced")) {                      
         if(url.indexOf("&mode=") == -1) {
-          var whereAmI = window.location.href; 
+          var currentHref = location.href; 
           // Partly based on: http://snipplr.com/view/799/get-url-variables/ 
-          var hashes = whereAmI.slice(whereAmI.indexOf('?') + 1).split('&');
+          var hashes = currentHref.slice(currentHref.indexOf('?') + 1).split('&');
           for(var i = hashes.length; i--;) {
             if(hashes[i].indexOf("mode=") != -1) {
               fromModeToNotMode = true; 
-              modeUrl = whereAmI;
+              modeUrl = currentHref;
             }
           } 
         }

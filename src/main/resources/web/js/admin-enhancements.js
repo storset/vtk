@@ -651,8 +651,8 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
     var url = $(this).attr("href"); // TODO: the URL sometimes get corrupted if switchin between props edit and e.g. create archive..
                                     //       (problem with delegate(?))
     
-    // Make sure we get mode markup if service is not mode
-    // and expandedForm and isReplaced type.
+    // Make sure we get the mode markup (current page) if service is not mode
+    // -- only if a expandedForm exists and is of the replaced kind..
     //
     var fromModeToNotMode = false;
     var modeUrl = "";

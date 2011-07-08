@@ -8,18 +8,17 @@ var NEED_TO_CONFIRM = true;
 var UNSAVED_CHANGES_CONFIRMATION;
 
 $(document).ready(function () {
-  initPropChange();
+  storeInitPropValues();
 });
 
 /* Store initial values in inputfields */
-function initPropChange() {
+function storeInitPropValues() {
   var inputFields = $("input");
   for(var i = 0, len = inputFields.length; i < len; i++) {
     INITIAL_INPUT_FIELDS[i++] = $(inputFields[i]).val();
   }
 }
 
-/* If a textfield or textarea have unsaved changes: return true */
 function unsavedChangesInEditor() {
   if (!NEED_TO_CONFIRM) return false;
 
@@ -31,7 +30,7 @@ function unsavedChangesInEditor() {
     }
   }
 
-  // Textareas
+  // Textareas (CK->checkDirty())
   var currentStateOfTextFields = $("textarea");
   for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
     if (typeof (CKEDITOR) !== "undefined") {
@@ -73,6 +72,7 @@ function setCkValue(instanceName, data) {
   oEditor.setData(data);
 }
 
+// TODO: is this used anywhere
 function isCkEditor(instanceName) {
   var oEditor = getCkInstance(instanceName);
   return oEditor != null;

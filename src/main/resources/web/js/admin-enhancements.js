@@ -650,6 +650,21 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
   $("#app-content").delegate(options.selector, "click", function (e) {
     var url = $(this).attr("href"); // TODO: this can get corrupted if switchin between props edit and e.g. create archive..
                                     //       (problem with delegate(?))
+    
+    // Make sure we keep the mode     
+    var fromModeToNotMode = false;  
+    var modeUrl = "";                         
+    if(url.indexOf("&mode=") == -1) {
+      var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+      for(var i = hashes.length; i--;) {
+        if(hashes[i].indexOf("mode=") != -1) {
+          fromModeToNotMode = true; 
+          modeUrl = window.location.href;
+        }
+      } 
+    }
+    //---
+    
     $.ajax({
       type: "GET",
       url: url,
@@ -683,15 +698,44 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
           // --
           $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, function() {
             if(isReplaced) {
-              var resultHtml = vrtxAdmin.outerHTML(results, $.trim(resultSelectorClass));
-              // If something went wrong - refresh page instead
-              if(!resultHtml) {
-                location.reload();
-              }
-              if($(this).parent().parent().is("tr")) {  // Because 'this' is tr > td > div
-                $(this).parent().parent().replaceWith(resultHtml).show(0);
+              var expanded = $(this);
+              
+              // When we need the 'mode=' HTML when requesting a 'not mode=' service
+              if(fromModeToNotMode) {
+                $.ajax({
+                  type: "GET",
+                  url: modeUrl,
+                  dataType: "html",
+                  success: function (results, status, resp) {
+                    var resultHtml = vrtxAdmin.outerHTML(results, $.trim(resultSelectorClass));
+                    
+                    // If all went wrong - refresh page instead
+                    if(!resultHtml) {
+                      location.reload();
+                    }
+                    
+                    if(expanded.parent().parent().is("tr")) {  // Because 'this' is tr > td > div
+                      expanded.parent().parent().replaceWith(resultHtml).show(0);
+                    } else {
+                      expanded.replaceWith(resultHtml).show(0);              
+                    }
+                    
+                     vrtxAdmin.getAjaxFormShow(options, form);
+                  }
+               });
               } else {
-                $(this).replaceWith(resultHtml).show(0);              
+                var resultHtml = vrtxAdmin.outerHTML(results, $.trim(resultSelectorClass));
+                
+                // If all went wrong - refresh page instead
+                if(!resultHtml) {
+                  location.reload();
+                }
+              
+                if(expanded.parent().parent().is("tr")) {  // Because 'this' is tr > td > div
+                  expanded.parent().parent().replaceWith(resultHtml).show(0);
+                } else {
+                  expanded.replaceWith(resultHtml).show(0);              
+                }
               }
             } else {
               if($(this).parent().parent().is("tr")) {  // Because 'this' is tr > td > div
@@ -700,12 +744,12 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
                 $(this).remove();            
               }
             }
-            if(!options.simultanSliding) {
+            if(!options.simultanSliding && !fromModeToNotMode) {
               vrtxAdmin.getAjaxFormShow(options, form);
             }
           });
         }
-        if (!$(".expandedForm").length || options.simultanSliding) {
+        if ((!$(".expandedForm").length || options.simultanSliding) && !fromModeToNotMode) {
           vrtxAdmin.getAjaxFormShow(options, form);
         }
       },

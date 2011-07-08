@@ -1,3 +1,8 @@
+/*
+ * Editor CK setup
+ *
+ */
+
 var inlineToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                       'Italic', 'Strike', 'Subscript', 'Superscript',
                       'SpecialChar']];
@@ -336,3 +341,5 @@ var divContainerStylesSet = [{
   attributes: { 'class': 'vrtx-container vrtx-container-size-xxs vrtx-container-right'
   }
 }];
+
+/* ^ Editor CK setup */

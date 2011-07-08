@@ -1,10 +1,11 @@
-//
-// TODO: move into admin-enhancements.js? / combine with move-up-down functionality for JSON-type
-//
+/*
+ * Multiple inputfields (new documenttypes)
+ *
+ */
 
-var MULTIPLE_INPUT_FIELD_NAMES = new Array();
-var COUNTER_FOR_MULTIPLE_INPUT_FIELD = new Array();
-var LENGTH_FOR_MULTIPLE_INPUT_FIELD = new Array();
+var MULTIPLE_INPUT_FIELD_NAMES = [];
+var COUNTER_FOR_MULTIPLE_INPUT_FIELD = [];
+var LENGTH_FOR_MULTIPLE_INPUT_FIELD = [];
 
 var debugMultipleInputFields = false;
 
@@ -157,8 +158,7 @@ function moveDownFormField(that) {
 }
 
 function formatMultipleInputFields(name) {
-    if ($( "#" + name ).val() == null)
-        return;
+    if ($( "#" + name ).val() == null) return;
 
     var allFields = $.find("input[id^='vrtx-" + name + "']");
     var result = "";
@@ -181,7 +181,9 @@ function saveMultipleInputFields(){
 }
 
 function logMultipleInputFields(str) {
-  if (typeof console != "undefined" && debugMultipleInputFields) {
+  if (typeof console !== "undefined" && console.log && debugMultipleInputFields) {
     console.log(str);
   }
 }
+
+/* ^ Multiple inputfields (new documenttypes) */

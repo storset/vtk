@@ -79,3 +79,5 @@ function isCkEditor(instanceName) {
 }
 
 /* ^ Helper functions */
+
+/* ^ Check if inputfields or textareas (CK) have changes */

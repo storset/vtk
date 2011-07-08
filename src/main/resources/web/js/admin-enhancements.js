@@ -667,12 +667,15 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
           for(var i = resultSelectorClasses.length; i--;) {
             if(resultSelectorClasses[i].indexOf("expandedForm") == -1
                && resultSelectorClasses[i].indexOf("nodeType") == -1) {
-              resultSelectorClass += resultSelectorClasses[i] + " ";  
+              if(resultSelectorClasses[i] 
+                 && resultSelectorClass.indexOf(resultSelectorClasses[i]) == -1) {
+                resultSelectorClass += "." + resultSelectorClasses[i];
+              }  
             }  
           } 
           $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, function() {
             if(isReplaced) {
-              var resultHtml = vrtxAdmin.outerHTML(results, "." + resultSelectorClass);
+              var resultHtml = vrtxAdmin.outerHTML(results, $.trim(resultSelectorClass));
               if($(this).parent().parent().is("tr")) {  // Because 'this' is tr > td > div
                 $(this).parent().parent().replaceWith(resultHtml).show(0);
               } else {

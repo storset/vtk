@@ -708,7 +708,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
     e.stopPropagation();
     return false;
   });
-}
+};
 
 VrtxAdmin.prototype.getAjaxFormShow = function(options, form) {
   if (options.isReplacing) {
@@ -800,7 +800,7 @@ VrtxAdmin.prototype.postAjaxForm = function(options) {
     e.stopPropagation();
     return false;
   });
-}
+};
 
 /**
  * POST remove-links (value is in the name)
@@ -833,7 +833,7 @@ VrtxAdmin.prototype.ajaxRemove = function(selector, updateSelector) {
     e.stopPropagation();
     return false;
   });
-}
+};
 
 /**
  * POST add-links (values is in the textfield)
@@ -876,7 +876,7 @@ VrtxAdmin.prototype.ajaxAdd = function(selector, updateSelector, errorContainer)
     e.stopPropagation();
     return false;
   });
-}
+};
 
 /* AJAX helper functions */
 
@@ -885,7 +885,7 @@ VrtxAdmin.prototype.wrap = function(node, cls, html) {
   return "<" + node + " class='" + cls + "'>" 
          + html 
          + "</" + node + ">";
-}
+};
 
 VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function(inputFields) {
   var dataStringChunk = "";
@@ -894,11 +894,11 @@ VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function(inputFields
                      + '=' + $(inputFields[i]).val();
   }
   return dataStringChunk;
-}
+};
 
 VrtxAdmin.prototype.hasErrorContainers = function(results, errorContainer) {
   return $(results).find("div." + errorContainer).length > 0;
-}
+};
 
 /* TODO: support for multiple errorContainers
   (place the correct one in correct place (e.g. users and groups)) */
@@ -910,7 +910,7 @@ VrtxAdmin.prototype.displayErrorContainers = function(results, form, errorContai
     $(vrtxAdmin.wrap("div", errorContainer, $(results).find("div." + errorContainer).html()))
         .insertAfter(wrapper.find(errorContainerInsertAfter));
   }
-}
+};
 
 VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
   if (xhr.readyState == 4 && xhr.status == 200) {
@@ -923,7 +923,7 @@ VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
   } else {
     $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
   }
-}
+};
 
 /* ^ AJAX helper functions */
 
@@ -1102,6 +1102,11 @@ function SetUrl(url, width, height, alt) {
 
 /* ^ CK browse server integration */
 
+// jQuery outerHTML (because FF don't support regular outerHTML)
+vrtxAdmin.prototype.outerHTML = function(selector) {
+  return $('<div>').append($(selector).clone()).html();
+};
+
 /* Override slideUp() / slideDown() to handle rows in a table
  *
  * Credits: 
@@ -1123,7 +1128,7 @@ jQuery.fn.slideUp = function(speed, callback) {
   } else {
     originalSlideUp.apply($trOrOtherElm, arguments);
   }
-}
+};
 
 var originalSlideDown = jQuery.fn.slideDown;
 jQuery.fn.slideDown = function(speed, callback) {
@@ -1135,7 +1140,7 @@ jQuery.fn.slideDown = function(speed, callback) {
   } else {
     originalSlideDown.apply($trOrOtherElm, arguments);
   }
-}
+};
 
 /* ^ Override slideUp() / slideDown() to handle rows in a table */
 

@@ -24,7 +24,7 @@ function VrtxAdmin() {
   this.isIE5OrHigher = null;
   this.isOpera = null;
   this.isWin = null;
-  this.supportsFileAPI = null;
+  // v3.?: this.supportsFileAPI = null;
   this.permissionsAutocompleteParams = null;
   this.transitionSpeed = 200; // same as 'fast'
   this.transitionCustomPermissionSpeed = 200; // same as 'fast'
@@ -43,7 +43,7 @@ vrtxAdmin.isIE6 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 6;
 vrtxAdmin.isIE5OrHigher = vrtxAdmin.isIE && vrtxAdmin.browserVersion >= 5;
 vrtxAdmin.isOpera = $.browser.opera;
 vrtxAdmin.isWin = ((agent.indexOf("win") != -1) || (agent.indexOf("16bit") != -1));
-vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;
+// v3.?: vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;
 
 // Permission Autocomplete parameters
 vrtxAdmin.permissionsAutocompleteParams = { minChars: 4, 

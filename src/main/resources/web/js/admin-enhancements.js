@@ -24,7 +24,6 @@ function VrtxAdmin() {
   this.isIE5OrHigher = null;
   this.isOpera = null;
   this.isWin = null;
-  this.isOnline = null;
   this.supportsFileAPI = null;
   this.permissionsAutocompleteParams = null;
   this.transitionSpeed = 200; // same as 'fast'
@@ -44,7 +43,6 @@ vrtxAdmin.isIE6 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 6;
 vrtxAdmin.isIE5OrHigher = vrtxAdmin.isIE && vrtxAdmin.browserVersion >= 5;
 vrtxAdmin.isOpera = $.browser.opera;
 vrtxAdmin.isWin = ((agent.indexOf("win") != -1) || (agent.indexOf("16bit") != -1));
-vrtxAdmin.isOnline = navigator.onLine;
 vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;
 
 // Permission Autocomplete parameters
@@ -654,20 +652,29 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
                                     //       (problem with delegate(?))
     
     // Make sure we get mode markup if service is not mode
-    // and expandedForm is mode and isReplaced type.
+    // and expandedForm and isReplaced type.
     //
     // Partly based on: http://snipplr.com/view/799/get-url-variables/ 
-    var fromModeToNotMode = false;  
-    var modeUrl = "";                         
-    if(url.indexOf("&mode=") == -1) {
-      var whereAmI = window.location.href; 
-      var hashes = whereAmI.slice(whereAmI.indexOf('?') + 1).split('&');
-      for(var i = hashes.length; i--;) {
-        if(hashes[i].indexOf("mode=") != -1) {
-          fromModeToNotMode = true; 
-          modeUrl = whereAmI;
+    var fromModeToNotMode = false;
+    var modeUrl = "";
+    var isReplaced = false;
+    var existExpandedForm = false;
+    
+    if($(".expandedForm").length) {
+      if($(".expandedForm").hasClass("expandedFormIsReplaced")) {                      
+        if(url.indexOf("&mode=") == -1) {
+          var whereAmI = window.location.href; 
+          var hashes = whereAmI.slice(whereAmI.indexOf('?') + 1).split('&');
+          for(var i = hashes.length; i--;) {
+            if(hashes[i].indexOf("mode=") != -1) {
+              fromModeToNotMode = true; 
+              modeUrl = whereAmI;
+            }
+          } 
         }
-      } 
+        isReplaced = true;
+      }
+      existExpandedForm = true;
     }
     //---
     
@@ -684,11 +691,9 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
         }
 
         // Another form is already open
-        if($(".expandedForm").length) {
+        if(existExpandedForm) {
           var expandedHtml = vrtxAdmin.outerHTML("#app-content", ".expandedForm");
-          if($(".expandedForm").hasClass("expandedFormIsReplaced")) {
-            var isReplaced = true;
-          }
+
           // Filter out selector class to get original markup for the existing form
           var resultSelectorClasses = $(expandedHtml).attr("class").split(" ");
           var resultSelectorClass = "";
@@ -727,8 +732,11 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
                     }
                     
                      vrtxAdmin.getAjaxFormShow(options, form);
+                  },
+                  error: function (xhr, textStatus) {
+                    displayAjaxErrorMessage(xhr, textStatus);
                   }
-               });
+                });
               } else {
                 var resultHtml = vrtxAdmin.outerHTML(results, $.trim(resultSelectorClass));
                 
@@ -755,7 +763,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
             }
           });
         }
-        if ((!$(".expandedForm").length || options.simultanSliding) && !fromModeToNotMode) {
+        if ((!existExpandedForm || options.simultanSliding) && !fromModeToNotMode) {
           vrtxAdmin.getAjaxFormShow(options, form);
         }
       },
@@ -963,16 +971,10 @@ VrtxAdmin.prototype.displayErrorContainers = function(results, form, errorContai
 };
 
 VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
-  if(!vrtxAdmin.isOnline) {
-    var msg = "You are offline. <br /><br />"
-            + "Reset your modem, connect to a wireless network,"
-            + "contact support or go home.";
+  if (xhr.readyState == 4 && xhr.status == 200) {
+    var msg = "The service is not active: " + textStatus;
   } else {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      var msg = "The service is not active: " + textStatus;
-    } else {
-      var msg = "The service returned " + xhr.status + " and failed to retrieve/post form.";
-    }
+    var msg = "The service returned " + xhr.status + " and failed to retrieve/post form.";
   }
   
   if ($("#app-content > .errormessage").length) {

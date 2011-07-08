@@ -288,7 +288,7 @@ function initFileUpload() {
 
 // Taken from: http://miketaylr.com/code/input-type-attr.html (MIT license)
 function supportsMultipleAttribute(inputfield) {
-  return (!! (inputfield.multiple === false) && !! (inputfield.multiple !== "undefined"));
+  return (!!(inputfield.multiple === false) && !!(inputfield.multiple !== "undefined"));
 }
 
 // Credits: http://www.html5rocks.com/en/tutorials/file/dndfiles/
@@ -983,7 +983,6 @@ VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
   } else {
     var msg = "The service returned " + xhr.status + " and failed to retrieve/post form.";
   }
-  
   if ($("#app-content > .errormessage").length) {
     $("#app-content > .errormessage").html(msg);
   } else {

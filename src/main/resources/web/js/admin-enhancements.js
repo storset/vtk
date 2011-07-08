@@ -650,11 +650,13 @@ function dropdownCollectionGlobalMenu() {
 
 VrtxAdmin.prototype.getAjaxForm = function(options) {
   $("#app-content").delegate(options.selector, "click", function (e) {
-    var url = $(this).attr("href"); // TODO: this can get corrupted if switchin between props edit and e.g. create archive..
+    var url = $(this).attr("href"); // TODO: the URL sometimes get corrupted if switchin between props edit and e.g. create archive..
                                     //       (problem with delegate(?))
     
     // Make sure we get mode markup if service is not mode
-    // and expandedForm is mode and isReplaced type  
+    // and expandedForm is mode and isReplaced type.
+    //
+    // Partly based on: http://snipplr.com/view/799/get-url-variables/ 
     var fromModeToNotMode = false;  
     var modeUrl = "";                         
     if(url.indexOf("&mode=") == -1) {

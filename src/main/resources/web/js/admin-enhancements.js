@@ -4,6 +4,8 @@
  *  TODO: i18n
  *
  */
+ 
+var agent = navigator.userAgent.toLowerCase();
 
 function VrtxAdmin() {
 

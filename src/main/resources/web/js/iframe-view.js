@@ -1,4 +1,4 @@
-/*  Based on code found on the web page "http://sonspring.com/journal/jquery-iframe-sizing" which 
+/*  Based on code found on the web page "http://sonspring.com/journal/jquery-iframe-sizing" which
  *  was written by Nathan Smith (http://technorati.com/people/technorati/nathansmith/)
  *
  *  Changed to only process specific frame and pass height to parent with postMessage.
@@ -20,17 +20,23 @@ $(document).ready(function () {
     }
   }
   $('iframe#previewViewIframe').load(function () {
-    // Set inline style to equal the body height of the iframed content,
-    // when body content is at least 350px height
-    var setHeight = 350;
-    var computedHeight = this.contentWindow.document.body.offsetHeight + 45
-    if (computedHeight > setHeight) {
-      setHeight = computedHeight;
-    }
-    this.style.height = setHeight + "px";
-    if (hasPostMessage && parent) {
-      // Pass our height to parent since it is typically cross domain (and can't access it directly)
-      parent.postMessage(setHeight, vrtxAdminOrigin);
+    try {
+      // Set inline style to equal the body height of the iframed content,
+      // when body content is at least 350px height
+      var setHeight = 350;
+      var computedHeight = this.contentWindow.document.body.offsetHeight + 45
+      if (computedHeight > setHeight) {
+        setHeight = computedHeight;
+      }
+      this.style.height = setHeight + "px";
+      if (hasPostMessage && parent) {
+        // Pass our height to parent since it is typically cross domain (and can't access it directly)
+        parent.postMessage(setHeight, vrtxAdminOrigin);
+      }
+    } catch(e){
+      if(typeof console !== "undefined" && console.log) {
+        console.log("Error in getting iframe height or trying to post it to parent: " + e.message);
+      }
     }
   });
 });

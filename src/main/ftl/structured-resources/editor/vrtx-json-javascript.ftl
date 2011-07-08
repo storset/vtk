@@ -1,14 +1,14 @@
-<#-- 
+<#--
   Evil hack(s) alert! 
 -->
 <#macro script >
   <#assign locale = springMacroRequestContext.getLocale() />
-  
   <script type="text/javascript" src="${webResources?html}/jquery/plugins/jquery.scrollTo-1.4.2-min.js"></script>
 
   <script type="text/javascript"> <!-- 
    
-  LIST_OF_JSON_ELEMENTS = new Array();
+  LIST_OF_JSON_ELEMENTS = [];
+
   $(document).ready(function() {
   
   <#assign i = 0 />
@@ -16,13 +16,13 @@
     <#assign j = 0 />
     <#list elementBox.formElements as elem>
       <#if elem.description.type == "json" && elem.description.isMultiple() >
-      LIST_OF_JSON_ELEMENTS[${i}] = new Object();
+      LIST_OF_JSON_ELEMENTS[${i}] = {};
       LIST_OF_JSON_ELEMENTS[${i}].name = "${elem.name}";
       LIST_OF_JSON_ELEMENTS[${i}].type = "${elem.description.type}";
-      LIST_OF_JSON_ELEMENTS[${i}].a = new Array();
+      LIST_OF_JSON_ELEMENTS[${i}].a = [];
 
     <#list elem.description.attributes as jsonAttr>
-      LIST_OF_JSON_ELEMENTS[${i}].a[${j}] = new Object();
+      LIST_OF_JSON_ELEMENTS[${i}].a[${j}] = {};
       LIST_OF_JSON_ELEMENTS[${i}].a[${j}].name = "${jsonAttr.name}";
       LIST_OF_JSON_ELEMENTS[${i}].a[${j}].type = "${jsonAttr.type}";
       <#if jsonAttr.edithints?exists>
@@ -33,7 +33,7 @@
       <#if jsonAttr.getValuemap(locale)?exists >
         <#assign valuemap = jsonAttr.getValuemap(locale) />
         <#assign k = 0 />
-      var valuemap = new Array();
+      var valuemap = [];
         <#list valuemap?keys as key>
           <#assign optionKey = key />
           <#if optionKey = '""' >
@@ -68,12 +68,12 @@
      // Add opp og ned knapp...blah
      
      var htmlTemplate = "";
-     var arrayOfIds = new Array();
+     var arrayOfIds = [];
    
      for (i in j.a) {
          var inputFieldName = j.name + "." + j.a[i].name + "." + counter;         
          arrayOfIds[i] = new String(j.name + "." + j.a[i].name + ".").replace(/\./g, "\\.");
-         
+
          switch(j.a[i].type) {
            case "string":
              if (j.a[i].dropdown && j.a[i].valuemap) {
@@ -147,7 +147,7 @@
      for (i in j.a) {
        var inputFieldName = j.name + "." + j.a[i].name + "." + counter;
        if (j.a[i].type == "simple_html") {
-         newEditor(inputFieldName, false, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+         newEditor(inputFieldName, false, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}',
           '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', "");
        } else if (j.a[i].type == "html") {
          newEditor(inputFieldName, true, false, '${resourceContext.parentURI?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
@@ -198,7 +198,6 @@
   }
   
   function addDropdown(elem, inputFieldName) {
-    var htmlTemplate = new String();
     var classes = "vrtx-string" + " " + elem.name;
     htmlTemplate = '<div class=\"' + classes + '\">';
     htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
@@ -218,7 +217,6 @@
   }
 
   function addStringField(elem, inputFieldName) {
-    var htmlTemplate = new String();
     var classes = "vrtx-string" + " " + elem.name;
     htmlTemplate = '<div class=\"' + classes + '\">';
     htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
@@ -231,7 +229,6 @@
   }
   
   function addHtmlField(elem, inputFieldName) {
-    var htmlTemplate = new String();
     var baseclass = "vrtx-html";
     if (elem.type == "simple_html") {
       baseclass = "vrtx-simple-html";
@@ -248,7 +245,6 @@
   }
   
   function addBooleanField(elem, inputFieldName) {
-    var htmlTemplate = new String();
     htmlTemplate = '<div class=\"vrtx-radio\">';
     htmlTemplate += '<div><label>elem.title<\/label><\/div>';
     htmlTemplate += '<div>';
@@ -262,7 +258,6 @@
   }
   
   function addImageRef(elem, inputFieldName) {
-    var htmlTemplate = new String();
     htmlTemplate = '<div class=\"vrtx-image-ref\">';
     htmlTemplate += '<div>';
     htmlTemplate += '<label for=\"' + inputFieldName+ '\">' + elem.title + '<\/label>';
@@ -277,7 +272,6 @@
   }
   
   function addResourceRef(elem, inputFieldName){
-  	var htmlTemplate = new String();
   	htmlTemplate = '<div class=\"vrtx-url\">';
   	htmlTemplate += '<div class=\"vrtx-url-label\">';
     htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
@@ -292,7 +286,6 @@
   }
   
   function addDateField(elem, inputFieldName) {
-    var htmlTemplate = new String();
     htmlTemplate = '<div class=\"vrtx-string date\">';
     htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
     htmlTemplate += '<div class=\"inputfield vrtx-textfield\">';
@@ -304,7 +297,6 @@
   }
 
   function addMediaRef(elem, inputFieldName) {
-    var htmlTemplate = new String();
     htmlTemplate = '<div class=\"vrtx-media-ref\">';
     htmlTemplate += '<div><label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
     htmlTemplate += '<\/div><div>';
@@ -317,7 +309,6 @@
   
   
   function swapContent(counter, arrayOfIds, move, name) {
-  
     var thisId = "#vrtx-json-element-" + name + "-" + counter;
     var movedId = "#";
     if(move > 0){

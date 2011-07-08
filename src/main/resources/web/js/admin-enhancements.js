@@ -654,7 +654,6 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
     // Make sure we get mode markup if service is not mode
     // and expandedForm and isReplaced type.
     //
-    // Partly based on: http://snipplr.com/view/799/get-url-variables/ 
     var fromModeToNotMode = false;
     var modeUrl = "";
     var isReplaced = false;
@@ -664,6 +663,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
       if($(".expandedForm").hasClass("expandedFormIsReplaced")) {                      
         if(url.indexOf("&mode=") == -1) {
           var whereAmI = window.location.href; 
+          // Partly based on: http://snipplr.com/view/799/get-url-variables/ 
           var hashes = whereAmI.slice(whereAmI.indexOf('?') + 1).split('&');
           for(var i = hashes.length; i--;) {
             if(hashes[i].indexOf("mode=") != -1) {

@@ -650,7 +650,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
     var url = $(this).attr("href"); // TODO: the URL sometimes get corrupted if switchin between props edit and e.g. create archive..
                                     //       (problem with delegate(?))
                                     
-    if(url.indexOf("https://") != -1 && location.protocol == "http://") {
+    if(location.protocol == "http://" && url.indexOf("https://") != -1) {
       return; // no AJAX when http -> https (tmp. solution)
     }
     

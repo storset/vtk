@@ -1,12 +1,13 @@
 /*
  * Check if inputfields or textareas (CK) have changes
  *
- * TODO: Radiobutton / checkboxes is ignored (need a eventhandler for updating arrays)
- *
  */
 
 var INITIAL_INPUT_FIELDS = [];
 var INITIAL_SELECTS = [];
+var INITIAL_CHECKBOXES = [];
+var INITIAL_RADIO_BUTTONS = [];
+
 var NEED_TO_CONFIRM = true;
 var UNSAVED_CHANGES_CONFIRMATION;
 
@@ -16,7 +17,8 @@ $(document).ready(function () {
 
 /* Store initial values of inputfields */
 function storeInitPropValues() {
-  var inputFields = $("input").not("[type=submit]").not("[type=button]");
+  var inputFields = $("input").not("[type=submit]").not("[type=button]")
+                              .not("[type=checkbox]").not("[type=radio]");
   for(var i = 0, len = inputFields.length; i < len; i++) {
     INITIAL_INPUT_FIELDS[i] = inputFields[i].value;
   }
@@ -26,34 +28,77 @@ function storeInitPropValues() {
     INITIAL_SELECTS[i] = selects[i].value;
   }
   
+  var checkboxes = $("input[type=checkbox]:checked");
+  for(var i = 0, len = checkboxes.length; i < len; i++) {
+    INITIAL_CHECKBOXES[i] = checkboxes[i].name;
+  }
+  
+  var radioButtons = $("input[type=radio]:checked");
+  for(var i = 0, len = radioButtons.length; i < len; i++) {
+    INITIAL_RADIO_BUTTONS[i] = radioButtons[i].name;
+  }
+   
 }
 
 function unsavedChangesInEditor() {
   if (!NEED_TO_CONFIRM) return false;
 
   // Inputfields (not submit and button)
-  var currentStateOfInputFields = $("input").not("[type=submit]").not("[type=button]");
-  var len = INITIAL_INPUT_FIELDS.length;
-  if(len != currentStateOfInputFields.length) { // if something is removed or added
+  var currentStateOfInputFields = $("input").not("[type=submit]").not("[type=button]")
+                                            .not("[type=checkbox]").not("[type=radio]");
+  var textLen = currentStateOfInputFields.length;
+  if(textLen != INITIAL_INPUT_FIELDS.length) { // if something is removed or added
     return true;
   }
-  for (var i = 0; i < len; i++) {
+
+  // Selects
+  var currentStateOfSelects = $("select");
+  var selectsLen = currentStateOfSelects.length;
+  if( selectsLen != INITIAL_SELECTS.length) { // if something is removed or added
+    return true;
+  }
+  
+  // Checkboxes
+  var currentStateOfCheckboxes = $("input[type=checkbox]:checked");
+  var checkboxLen = currentStateOfCheckboxes.length;
+  if(checkboxLen != INITIAL_CHECKBOXES.length) { // if something is removed or added
+    return true;
+  }
+  
+  // Radio buttons
+  var currentStateOfRadioButtons = $("input[type=radio]:checked");
+  var radioLen = currentStateOfRadioButtons.length;
+  if(radioLen != INITIAL_RADIO_BUTTONS.length) { // if something is removed or added
+    return true;
+  }
+  
+  // Check if values have changed
+  
+  for (var i = 0; i < textLen; i++) {
     if (currentStateOfInputFields[i].value !== INITIAL_INPUT_FIELDS[i]) {
       return true; // unsaved textfield
     }
   }
   
-  // Selects
-  var currentStateOfSelects = $("select");
-  len = INITIAL_SELECTS.length;
-  if(len != currentStateOfSelects.length) { // if something is removed or added
-    return true;
-  }
-  for (var i = 0; i < len; i++) {
+  for (var i = 0; i < selectsLen; i++) {
     if (currentStateOfSelects[i].value !== INITIAL_SELECTS[i]) {
-      return true; // unsaved textfield
+      return true; // unsaved select value
     }
   }
+  
+  for (var i = 0; i < checkboxLen; i++) {
+    if (currentStateOfCheckboxes[i].name !== INITIAL_CHECKBOXES[i]) {
+      return true; // unsaved checked checkbox
+    }
+  }
+
+  for (var i = 0; i < radioLen; i++) {
+    if (currentStateOfRadioButtons[i].name !== INITIAL_RADIO_BUTTONS[i]) {
+      return true; // unsaved checked radio button
+    }
+  }
+  
+  //---
 
   // Textareas (CK->checkDirty())
   var currentStateOfTextFields = $("textarea");

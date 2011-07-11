@@ -18,7 +18,7 @@ function initDatePicker(language) {
   }
 
   // TODO !spageti
-  if (requestFromEditor()) {
+  if (requestFromEditor() && typeof storeInitPropValues !== "undefined") {
     storeInitPropValues();
   }
 
@@ -38,7 +38,7 @@ function initDatePicker(language) {
 // Stupid test to check if script is loaded from editor
 // UNSAVED_CHANGES_CONFIRMATION is defined in "structured-resource/editor.ftl"
 function requestFromEditor() {
-  return !(typeof(UNSAVED_CHANGES_CONFIRMATION) === "undefined");
+  return (typeof(UNSAVED_CHANGES_CONFIRMATION) === "undefined");
 }
 
 function displayDateAsMultipleInputFields(name) {

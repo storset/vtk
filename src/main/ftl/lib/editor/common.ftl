@@ -10,7 +10,7 @@
 
 <#macro addCkScripts>
   <script type="text/javascript" src="${fckeditorBase.url?html}/ckeditor.js"></script>
-  <script type="text/javascript" src="${jsBaseURL?html}/editor-ck-setup.js"></script>
+  <script type="text/javascript" src="${jsBaseURL?html}/editor-ck-setup-helper.js"></script>
   <script type="text/javascript" src="${fckeditorBase.url?html}/adapters/jquery.js"></script>
 </#macro>
 

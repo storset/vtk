@@ -14,7 +14,6 @@
   <@vrtxJSONJavascript.script />
   
   <script type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>
-  <script type="text/javascript" src="${jsBaseURL?html}/editor-ck-helper.js"></script>
   
   <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
   

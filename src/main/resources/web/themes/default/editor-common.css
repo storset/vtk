@@ -13,7 +13,9 @@
  *
  */
 
-/* 1. General */
+/*-----------------------------------------*\
+	1. General
+\*-----------------------------------------*/
 
 h2 {
   background: url(images/line-dotted.gif) repeat-x bottom left;
@@ -101,11 +103,11 @@ h2 {
   margin-right: 20px;
 }
 
-/* ^ 1. General */
 
 
-
-/* 2. Dimensions and explicit settings */
+/*-----------------------------------------*\
+	2. Dimensions and explicit settings
+\*-----------------------------------------*/
 
 div.navigationTitle input,
 div.aggregation input,
@@ -207,11 +209,11 @@ div#vrtx-resource\.picture div#resource\.picture\.preview {
 
 /* ^ Image and caption */
 
-/* ^ 2. Dimensions and explicit settings */
 
 
-
-/* 3. CK */
+/*------------------------------------*\
+	3. CK
+\*------------------------------------*/
 
 span.cke_skin_kama {
   padding: 0px !important;
@@ -241,8 +243,6 @@ span.cke_skin_kama .cke_wrapper {
 .cke_skin_kama .cke_toolgroup {
   margin-bottom: 10px !important;
 }
-
-/* ^ 3. CK */
 
 
 

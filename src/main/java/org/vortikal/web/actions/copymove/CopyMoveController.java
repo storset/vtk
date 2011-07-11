@@ -113,10 +113,7 @@ public class CopyMoveController implements Controller {
             sessionBean.setFilesToBeCopied(filesToBeCopied);
             request.getSession(true).setAttribute(COPYMOVE_SESSION_ATTRIBUTE, sessionBean);
         }
-
-        RequestContext requestContext = RequestContext.getRequestContext();
-        String msgCode = "copyMove." + sessionBean.getAction() + ".header";
-        requestContext.addInfoMessage(new Message(msgCode));
+        
         return new ModelAndView(this.viewName);
     }
 

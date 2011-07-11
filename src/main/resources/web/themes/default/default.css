@@ -490,6 +490,8 @@ div.resource-title.video h1 {
 
 ul.list-menu.resourceMenuLeft,
 ul.list-menu.resourceMenuLeft li,
+ul.list-menu.resourceMenuRight,
+ul.list-menu.resourceMenuRight li,
 ul.list-menu.tabMenu1,
 ul.list-menu.tabMenu1 li,
 ul.list-menu.tabMenu2,
@@ -723,12 +725,12 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 /* Resource menus */
 
-div#resource-menu-right {
+ul.list-menu.resourceMenuRight {
   float: right;
   height: 86px;
 }
 
-div#resource-menu-right .resource-menu {
+ul.list-menu.resourceMenuRight li {
   background: url(images/seperator-grey-gradient-big.png) no-repeat top left;
   float: left;
   margin: 0 0 0 25px;
@@ -736,12 +738,13 @@ div#resource-menu-right .resource-menu {
   height: 86px;
 }
 
-div#resource-menu-right h3 {
+ul.list-menu.resourceMenuRight li h3 {
   font-size: 1.15em;
   font-weight: bold;
-  margin: 9px 0 0 0;
+  margin: 9px 0 10px 0;
 }
 
+/*
 div#resource-menu-right .lock h3,
 div#resource-menu-right .publish span.published {
   background: url(images/lock.png) no-repeat 100% 1px;
@@ -757,6 +760,7 @@ div#resource-menu-right .read-permissions p span,
 div#resource-menu-right .publish p span {
   font-weight: bold;
 }
+*/
 
 /* ^ Resource menus */
 
@@ -1415,7 +1419,7 @@ div.tabMessage {
 #app-content #main:after,
 #app-content #titleContainer:after,
 #app-content .resource-title:after,
-#app-content form.resourceMenuLeft:after,
+#app-content div.globalMenu:after,
 #app-content #main .activeTab:after,
 #app-content #main #contents:after,
 #app-content .principalList:after,
@@ -1456,8 +1460,8 @@ form input:focus {
   outline: 0;
 }
 
-div.resourceMenuLeft ul,
-div.resourceMenuLeft ul li,
+div.globalmenu ul,
+div.globalmenu ul li,
 .expandedForm form ul,
 .expandedForm form ul li,
 form.vrtx-admin-form ul,
@@ -1467,7 +1471,7 @@ form.vrtx-admin-form ul li {
   list-style: none;
 }
 
-div.resourceMenuLeft h3,
+div.globalmenu h3,
 form.vrtx-admin-form h3,
 .expandedForm h3 {
   margin-top: 0;
@@ -1481,7 +1485,7 @@ tr.expandedForm td {
   border: 1px solid #d9d9d9 !important;
 }
 
-div.resourceMenuLeft {
+div.globalmenu {
   margin: 0 0 20px 0 !important;
   padding: 13px 15px !important;
   background-color: #e8e8e8;

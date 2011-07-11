@@ -1416,6 +1416,24 @@
       </list>
     </property>
   </bean>
+  
+  <bean id="manage.resourceMenuRightComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="resource-menu-right" />
+    <property name="description" value="Displays the admin global menu" />
+    <property name="view" ref="manage.resourceMenuRightView" />
+    <property name="exposeMvcModel" value="true" />
+  </bean>
+
+  <bean id="manage.resourceMenuRightView" parent="freemarkerView">
+    <property name="url" value="system/resource-menu-right.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="resourceMenuRightProvider" />
+      </list>
+    </property>
+  </bean>
 
   <bean id="manage.tabsComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
@@ -1850,6 +1868,29 @@
   <bean id="resourceMenuLeft.referenceDataProviders" class="org.vortikal.context.CategoryResolvingFactoryBean">
     <property name="clazz" value="org.vortikal.web.referencedata.CategorizableReferenceDataProvider" />
     <property name="category" value="resourceMenuLeft.referenceDataProvider" />
+  </bean>
+  
+  <bean id="resourceMenuRightProvider" class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg value="resourceMenuRight" />
+    <constructor-arg value="resourceMenuRight" />
+    <constructor-arg value="true" />
+    <constructor-arg ref="resourceMenuRightActionServicesFactory" />
+    <constructor-arg ref="resourceMenuRight.referenceDataProviders" />
+  </bean>
+
+  <bean id="resourceMenuRightActionServicesFactory" class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.service.Service" />
+    <property name="category" value="resourceMenuRight" />
+    <property name="comparator">
+      <bean class="org.vortikal.web.service.ServiceAttributeComparator">
+        <property name="attributeName" value="resourceMenuRightOrder" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="resourceMenuRight.referenceDataProviders" class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.referencedata.CategorizableReferenceDataProvider" />
+    <property name="category" value="resourceMenuRight.referenceDataProvider" />
   </bean>
 
   <bean id="manageBreadCrumbProvider" class="org.vortikal.web.referencedata.provider.BreadCrumbProvider">

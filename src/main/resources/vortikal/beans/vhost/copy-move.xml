@@ -53,12 +53,12 @@
     <property name="order" value="-996" />
     <property name="categories">
       <set>
-        <value>resourceMenuLeft</value>
+        <value>resourceMenuRight</value>
       </set>
     </property>
     <property name="attributes">
       <map>
-        <entry key="resourceMenuLeftOrder"><value type="java.lang.Integer">200</value></entry>
+        <entry key="resourceMenuRightOrder"><value type="java.lang.Integer">200</value></entry>
       </map>
     </property>
     <property name="assertions">
@@ -84,12 +84,12 @@
     <property name="order" value="-996" />
     <property name="categories">
       <set>
-        <value>resourceMenuLeft</value>
+        <value>resourceMenuRight</value>
       </set>
     </property>
     <property name="attributes">
       <map>
-        <entry key="resourceMenuLeftOrder"><value type="java.lang.Integer">200</value></entry>
+        <entry key="resourceMenuRightOrder"><value type="java.lang.Integer">200</value></entry>
       </map>
     </property>
 

@@ -2,6 +2,7 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
+<#assign headerMsg = vrtx.getMsg("copyMove.copy-resources.header") />
 <#assign titleMsg = vrtx.getMsg("copyMove.copy.title") />
 <#assign actionURL = item.url />
 <#assign method = "post" />
@@ -9,6 +10,8 @@
   <#assign actionURL =  warningDialogURL + '&showAsHtml=true&height=110&width=250' />
   <#assign method = "get" />
 </#if>
+
+<h3>${headerMsg}</h3>
 <form id="vrtx-copy-to-selected-folder" action="${actionURL?html}" method="${method}" class="vrtx-admin-button">
    <div class="vrtx-button"><button title="${titleMsg}" type="submit"
             id="vrtx-copy-to-selected-folder.submit"

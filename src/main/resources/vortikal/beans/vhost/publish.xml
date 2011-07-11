@@ -19,12 +19,12 @@
     <property name="handler" ref="publish.globalConfirmPublishHandler" />
     <property name="categories">
       <set>
-        <value>resourceMenuLeft</value>
+        <value>resourceMenuRight</value>
       </set>
     </property>
     <property name="attributes">
       <map>
-        <entry key="resourceMenuLeftOrder">
+        <entry key="resourceMenuRightOrder">
           <value type="java.lang.Integer">300</value>
         </entry>
       </map>
@@ -47,12 +47,12 @@
     <property name="handler" ref="publish.globalConfirmUnpublishHandler" />
     <property name="categories">
       <set>
-        <value>resourceMenuLeft</value>
+        <value>resourceMenuRight</value>
       </set>
     </property>
     <property name="attributes">
       <map>
-        <entry key="resourceMenuLeftOrder">
+        <entry key="resourceMenuRightOrder">
           <value type="java.lang.Integer">300</value>
         </entry>
       </map>

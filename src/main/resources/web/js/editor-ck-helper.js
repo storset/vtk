@@ -11,10 +11,9 @@ $(document).ready(function () {
   storeInitPropValues();
 });
 
-/* Store initial values in inputfields */
+/* Store initial values of inputfields */
 function storeInitPropValues() {
   var inputFields = $("input").not("[type=submit]").not("[type=button]");
-  
   for(var i = 0, len = inputFields.length; i < len; i++) {
     INITIAL_INPUT_FIELDS[i] = inputFields[i].value;
   }
@@ -23,7 +22,7 @@ function storeInitPropValues() {
 function unsavedChangesInEditor() {
   if (!NEED_TO_CONFIRM) return false;
 
-  // Textfields
+  // Inputfields (not submit and button)
   var currentStateOfInputFields = $("input").not("[type=submit]").not("[type=button]");
   var len = INITIAL_INPUT_FIELDS.length;
   if(len != currentStateOfInputFields.length) { // if something is removed or added

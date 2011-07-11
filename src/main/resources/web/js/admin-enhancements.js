@@ -73,7 +73,7 @@ $(document).ready(function () {
 
   // AJAX INIT: Global menu service forms
   
-  var globalMenuServices = ["renameService",
+  var resourceMenuLeftServices = ["renameService",
                             "publish\\.globalUnpublishService",
                             "publish\\.globalPublishService",
                             "manage\\.createArchiveService"];

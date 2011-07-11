@@ -71,12 +71,10 @@ $(document).ready(function () {
   var getAjaxOptions = {};
   var postAjaxOptions = {};
 
-  // AJAX INIT: Global menu service forms
+  // AJAX INIT: Resource menu service forms
   
   var resourceMenuLeftServices = ["renameService",
-                            "publish\\.globalUnpublishService",
-                            "publish\\.globalPublishService",
-                            "manage\\.createArchiveService"];
+                                  "manage\\.createArchiveService"];
 
   for (var i = resourceMenuLeftServices.length; i--;) {
     getAjaxOptions = {
@@ -89,6 +87,22 @@ $(document).ready(function () {
     };
     vrtxAdmin.getAjaxForm(getAjaxOptions);
   }
+  
+  var resourceMenuRightServices = ["vrtx-unpublish-document\\.submit",
+                                   "vrtx-publish-document\\.submit"];
+
+  for (var i = resourceMenuRightServices.length; i--;) {
+    getAjaxOptions = {
+        selector: "#titleContainer #" + resourceMenuRightServices[i],
+        selectorClass: "globalmenu",
+        insertAfterOrReplaceClass: "#titleContainer ul.resourceMenuLeft",
+        isReplacing: false,
+        nodeType: "div",
+        simultanSliding: true
+    };
+    vrtxAdmin.getAjaxForm(getAjaxOptions);
+  }
+  
 
   // AJAX INIT: Tab menu service forms
   
@@ -651,9 +665,12 @@ function dropdownCollectionGlobalMenu() {
 
 VrtxAdmin.prototype.getAjaxForm = function(options) {
   $("#app-content").delegate(options.selector, "click", function (e) {
-    var url = $(this).attr("href"); // TODO: the URL sometimes get corrupted if switchin between props edit and e.g. create archive..
-                                    //       (problem with delegate(?))
-                                                               
+  
+    // TODO: the URL sometimes get corrupted if switchin between props edit and e.g. create archive..
+    //       (problem with delegate(?))      
+                          
+    var url = $(this).attr("href") || $(this).closest("form").attr("action"); 
+                       
     if(location.protocol == "http:" && url.indexOf("https://") != -1) {
       return; // no AJAX when http -> https (tmp. solution)
     }

@@ -35,7 +35,7 @@ function storeInitPropValues() {
   
   var radioButtons = $("input[type=radio]:checked");
   for(var i = 0, len = radioButtons.length; i < len; i++) {
-    INITIAL_RADIO_BUTTONS[i] = radioButtons[i].name;
+    INITIAL_RADIO_BUTTONS[i] = radioButtons[i].name + " " + radioButtons[i].value;
   }
    
 }
@@ -93,7 +93,7 @@ function unsavedChangesInEditor() {
   }
 
   for (var i = 0; i < radioLen; i++) {
-    if (currentStateOfRadioButtons[i].name !== INITIAL_RADIO_BUTTONS[i]) {
+    if (currentStateOfRadioButtons[i].name + " " + currentStateOfRadioButtons[i].value !== INITIAL_RADIO_BUTTONS[i]) {
       return true; // unsaved checked radio button
     }
   }

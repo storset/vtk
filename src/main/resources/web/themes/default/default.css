@@ -28,7 +28,9 @@
  *
  */
 
-/* 1. General */
+/*-----------------------------------------*\
+	1. General
+\*-----------------------------------------*/
 
 html {
   background-color: #F8F8F8;
@@ -95,11 +97,11 @@ a:hover {
   text-decoration: underline;
 }
 
-/* ^ 1. General */
 
 
-
-/* 2. Head and footer */
+/*-----------------------------------------*\
+	2. Head and footer
+\*-----------------------------------------*/
 
 /* 2.1 Head and footer grid */
 
@@ -387,7 +389,9 @@ a:hover {
 
 
 
-/* 3. App content */
+/*-----------------------------------------*\
+	3. App content
+\*-----------------------------------------*/
 
 /* 3.1 App content grid */
 
@@ -1343,11 +1347,11 @@ div.tabMessage {
 
 /* ^ 3.7 Messages */
 
-/* ^ 3. App content */
 
 
-
-/* 4. Fluid design */
+/*-----------------------------------------*\
+	4. Fluid design
+\*-----------------------------------------*/
 
 .app-fluid {
   min-width: 880px;
@@ -1399,11 +1403,11 @@ div.tabMessage {
   float: left;
 }
 
-/* ^ 4. Fluid design */
 
 
-
-/* 5. Clearing */
+/*-----------------------------------------*\
+	5. Clearing
+\*-----------------------------------------*/
 
 #app-head:after,
 #app-footer:after,
@@ -1423,11 +1427,11 @@ div.tabMessage {
   visibility: hidden;
 }
 
-/* ^ 5. Clearing */
 
 
-
-/* 6. Forms */
+/*-----------------------------------------*\
+	6. Forms
+\*-----------------------------------------*/
 
 form, fieldset, input, button{
   margin: 0;
@@ -1755,8 +1759,6 @@ form button::-moz-focus-inner {
 }
 
 /* ^ iPad hacks */
-
-/* ^ 6. Forms */
 
 
 

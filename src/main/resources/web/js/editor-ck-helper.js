@@ -93,7 +93,8 @@ function unsavedChangesInEditor() {
   }
 
   for (var i = 0; i < radioLen; i++) {
-    if (currentStateOfRadioButtons[i].name + " " + currentStateOfRadioButtons[i].value !== INITIAL_RADIO_BUTTONS[i]) {
+    var currentStateOfRadioButton = currentStateOfRadioButtons[i].name + " " + currentStateOfRadioButtons[i].value;
+    if (currentStateOfRadioButton !== INITIAL_RADIO_BUTTONS[i]) {
       return true; // unsaved checked radio button
     }
   }

@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import org.codehaus.jackson.JsonParser.Feature;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
@@ -83,6 +84,7 @@ public class JSONBackedMapResource implements Map<Object, Object>, InitializingB
         Map<Object, Object> m = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(Feature.ALLOW_COMMENTS, true);
             InputStream inputStream = this.repository.getInputStream(this.token, this.uri, false);
             m = mapper.readValue(inputStream, Map.class);
         } finally {

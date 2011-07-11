@@ -1,6 +1,8 @@
 /*
  * Check if inputfields or textareas (CK) have changes
  *
+ * TODO: Radiobutton / checkboxes is ignored (need a eventhandler for updating arrays)
+ *
  */
 
 var INITIAL_INPUT_FIELDS = [];

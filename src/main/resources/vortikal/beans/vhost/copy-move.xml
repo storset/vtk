@@ -53,12 +53,12 @@
     <property name="order" value="-996" />
     <property name="categories">
       <set>
-        <value>globalMenu</value>
+        <value>resourceMenuLeft</value>
       </set>
     </property>
     <property name="attributes">
       <map>
-        <entry key="globalMenuOrder"><value type="java.lang.Integer">200</value></entry>
+        <entry key="resourceMenuLeftOrder"><value type="java.lang.Integer">200</value></entry>
       </map>
     </property>
     <property name="assertions">
@@ -84,12 +84,12 @@
     <property name="order" value="-996" />
     <property name="categories">
       <set>
-        <value>globalMenu</value>
+        <value>resourceMenuLeft</value>
       </set>
     </property>
     <property name="attributes">
       <map>
-        <entry key="globalMenuOrder"><value type="java.lang.Integer">200</value></entry>
+        <entry key="resourceMenuLeftOrder"><value type="java.lang.Integer">200</value></entry>
       </map>
     </property>
 
@@ -116,7 +116,7 @@
     <property name="confirmationService" ref="copyMove.confirmationService" />
     <property name="categories">
       <set>
-        <value>globalMenu.referenceDataProvider</value>
+        <value>resourceMenuLeft.referenceDataProvider</value>
       </set>
     </property>
   </bean>

@@ -78,11 +78,11 @@ $(document).ready(function () {
                             "publish\\.globalPublishService",
                             "manage\\.createArchiveService"];
 
-  for (var i = globalMenuServices.length; i--;) {
+  for (var i = resourceMenuLeftServices.length; i--;) {
     getAjaxOptions = {
-        selector: "#titleContainer a#" + globalMenuServices[i],
+        selector: "#titleContainer a#" + resourceMenuLeftServices[i],
         selectorClass: "globalmenu",
-        insertAfterOrReplaceClass: "#titleContainer ul.globalMenu",
+        insertAfterOrReplaceClass: "#titleContainer ul.resourceMenuLeft",
         isReplacing: false,
         nodeType: "div",
         simultanSliding: true
@@ -443,7 +443,7 @@ function placeRecoverButtonInActiveTab() {
     return;
   }
   btn.hide();
-  $("#main .activeTab").prepend('<ul class="listMenu tabMenu2"><li class="recoverResourceService">'
+  $("#main .activeTab").prepend('<ul class="list-menu tabMenu2"><li class="recoverResourceService">'
                               + '<a id="recoverResourceService" href="javascript:void(0);">' 
                               + btn.attr('value') + '</a></li></ul>');
   $('#recoverResourceService').click(function () {
@@ -600,7 +600,7 @@ function dropdownLanguageMenu() {
 }
 
 function dropdownCollectionGlobalMenu() {
-  var collectionGlobalMenu = $("#titleContainer .resource-title.true ul.globalMenu");
+  var collectionGlobalMenu = $("#titleContainer .resource-title.true ul.resourceMenuLeft");
   var numberOfShortcuts = collectionGlobalMenu.find("li").size();
 
   // Make sure it is a folder with more than one choice

@@ -114,17 +114,17 @@
     </property>
   </bean>
 
-  <bean id="browse.globalMenuComponent"
+  <bean id="browse.resourceMenuLeftComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.browseNamespace" />
     <property name="name" value="global-menu" />
     <property name="description" value="Displays the browse global menu" />
-    <property name="view" ref="browse.globalMenuView" />
+    <property name="view" ref="browse.resourceMenuLeftView" />
     <property name="exposeMvcModel" value="true" />
   </bean>
 
-  <bean id="browse.globalMenuView" parent="freemarkerView">
-    <property name="url" value="system/global-menu.ftl" />
+  <bean id="browse.resourceMenuLeftView" parent="freemarkerView">
+    <property name="url" value="system/resource-menu-left.ftl" />
   </bean>
 
   <bean id="browse.cssComponent"
@@ -210,7 +210,7 @@
   <bean id="browseMenuProvider" 
     class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
     <constructor-arg ref="browseActionServicesFactory" />
-    <constructor-arg value="globalMenu" />
+    <constructor-arg value="resourceMenuLeft" />
   </bean>
 
 

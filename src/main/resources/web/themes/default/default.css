@@ -488,12 +488,12 @@ div.resource-title.video h1 {
 
 /* ^ Icons */
 
-ul.listMenu.globalMenu,
-ul.listMenu.globalMenu li,
-ul.listMenu.tabMenu1,
-ul.listMenu.tabMenu1 li,
-ul.listMenu.tabMenu2,
-ul.listMenu.tabMenu2 li,
+ul.list-menu.resourceMenuLeft,
+ul.list-menu.resourceMenuLeft li,
+ul.list-menu.tabMenu1,
+ul.list-menu.tabMenu1 li,
+ul.list-menu.tabMenu2,
+ul.list-menu.tabMenu2 li,
 div.localeSelection ul,
 div.localeSelection ul li {
   list-style: none;
@@ -552,13 +552,13 @@ div.localeSelection.js-on .localeSelectionHeader {
 
 /* Global menu */
 
-ul.listMenu.globalMenu {
+ul.list-menu.resourceMenuLeft {
   margin: 0 0 20px 0;
   clear: left;
   float: left;
 }
 
-ul.listMenu.globalMenu li {
+ul.list-menu.resourceMenuLeft li {
   background: url(images/dropdown-left.gif) no-repeat -5px 0;
   display: inline-block;
   height: 27px;
@@ -567,12 +567,12 @@ ul.listMenu.globalMenu li {
   margin: 0 0 0 1px;
 }
 
-ul.listMenu.globalMenu li.first {
+ul.list-menu.resourceMenuLeft li.first {
   background-position: 0 0;
   margin: 0 0 0 0;
 }
 
-ul.listMenu.globalMenu li a {
+ul.list-menu.resourceMenuLeft li a {
   color: #363534;
   background: url(images/button-open-right.png) no-repeat top right;
   display: inline-block;
@@ -581,21 +581,21 @@ ul.listMenu.globalMenu li a {
   margin: 0 -5px 0 0;
 }
 
-ul.listMenu.globalMenu li.last a {
+ul.list-menu.resourceMenuLeft li.last a {
   background: url(images/button-closed-right.gif) no-repeat top right;
 }
 
-ul.listMenu.globalMenu li:hover {
+ul.list-menu.resourceMenuLeft li:hover {
   background-image: url(images/dropdown-left-rollover.gif);
 }
 
-ul.listMenu.globalMenu li:hover a {
+ul.list-menu.resourceMenuLeft li:hover a {
   background: none;
   color: #fff;
   text-decoration: none;
 }
 
-ul.listMenu.globalMenu li.last:hover a {
+ul.list-menu.resourceMenuLeft li.last:hover a {
   background: url(images/button-closed-right-rollover.gif) no-repeat top right;
 }
 
@@ -840,18 +840,18 @@ div.tabs ul li.activeTab a:hover {
   margin: 0 0 15px 0;
 }
 
-.activeTab ul.listMenu a {
+.activeTab ul.list-menu a {
   font-weight: bold;
 }
 
 /* Tab Menu 1 (left) */
 
-ul.listMenu.tabMenu1,
-ul.listMenu.tabMenu1 li {
+ul.list-menu.tabMenu1,
+ul.list-menu.tabMenu1 li {
   float: left;
 }
 
-ul.listMenu.tabMenu1 li.navigateToParentService a {
+ul.list-menu.tabMenu1 li.navigateToParentService a {
   display: block;
   background: url(images/tab-menu-navigate-up.png) no-repeat center left;
   padding: 5px 0 5px 28px;
@@ -859,51 +859,51 @@ ul.listMenu.tabMenu1 li.navigateToParentService a {
 
 /* Tab Menu 2 (right) */
 
-ul.listMenu.tabMenu2 {
+ul.list-menu.tabMenu2 {
   float: right;
 }
 
-ul.listMenu.tabMenu2 li {
+ul.list-menu.tabMenu2 li {
   float: left;
 }
 
-ul.listMenu.tabMenu2 li a {
+ul.list-menu.tabMenu2 li a {
   display: block;
   margin: 0 0 0 30px;
   padding: 5px 0 5px 30px;
 }
 
-ul.listMenu.tabMenu2 li.deleteResourcesService a {
+ul.list-menu.tabMenu2 li.deleteResourcesService a {
   background: url(images/tab-menu-delete.png) no-repeat center left;
   padding-left: 25px;
 }
 
-ul.listMenu.tabMenu2 li.moveResourcesService a {
+ul.list-menu.tabMenu2 li.moveResourcesService a {
   background: url(images/tab-menu-move.png) no-repeat center left;
   padding-left: 41px;
 }
 
-ul.listMenu.tabMenu2 li.copyResourcesService a {
+ul.list-menu.tabMenu2 li.copyResourcesService a {
   background: url(images/tab-menu-copy.png) no-repeat center left;
   padding-left: 38px;
 }
 
-ul.listMenu.tabMenu2 li.fileUploadService a {
+ul.list-menu.tabMenu2 li.fileUploadService a {
   background: url(images/tab-menu-upload.png) no-repeat center left; 
 }
 
-ul.listMenu.tabMenu2 li.createDocumentService a {
+ul.list-menu.tabMenu2 li.createDocumentService a {
   background: url(images/tab-menu-new-file.png) no-repeat center left; 
 }
 
-ul.listMenu.tabMenu2 li.createCollectionService a {
+ul.list-menu.tabMenu2 li.createCollectionService a {
   background: url(images/tab-menu-new-folder.png) no-repeat center left;
 }
 
 /* Trash can */
 
-ul.listMenu.tabMenu2 li.recoverResourceService a,
-ul.listMenu.tabMenu2 li.deleteResourcePermanentService a {
+ul.list-menu.tabMenu2 li.recoverResourceService a,
+ul.list-menu.tabMenu2 li.deleteResourcePermanentService a {
   background: none; /* TODO: need to design icon */
   padding-left: 0;
 }
@@ -1415,7 +1415,7 @@ div.tabMessage {
 #app-content #main:after,
 #app-content #titleContainer:after,
 #app-content .resource-title:after,
-#app-content form.globalMenu:after,
+#app-content form.resourceMenuLeft:after,
 #app-content #main .activeTab:after,
 #app-content #main #contents:after,
 #app-content .principalList:after,
@@ -1456,8 +1456,8 @@ form input:focus {
   outline: 0;
 }
 
-div.globalmenu ul,
-div.globalmenu ul li,
+div.resourceMenuLeft ul,
+div.resourceMenuLeft ul li,
 .expandedForm form ul,
 .expandedForm form ul li,
 form.vrtx-admin-form ul,
@@ -1467,7 +1467,7 @@ form.vrtx-admin-form ul li {
   list-style: none;
 }
 
-div.globalmenu h3,
+div.resourceMenuLeft h3,
 form.vrtx-admin-form h3,
 .expandedForm h3 {
   margin-top: 0;
@@ -1481,7 +1481,7 @@ tr.expandedForm td {
   border: 1px solid #d9d9d9 !important;
 }
 
-div.globalmenu {
+div.resourceMenuLeft {
   margin: 0 0 20px 0 !important;
   padding: 13px 15px !important;
   background-color: #e8e8e8;

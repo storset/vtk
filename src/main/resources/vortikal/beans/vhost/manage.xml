@@ -392,12 +392,12 @@
     <property name="order" value="-1000" />
     <property name="categories">
       <set>
-        <value>globalMenu</value>
+        <value>resourceMenuLeft</value>
       </set>
     </property>
     <property name="attributes">
       <map>
-        <entry key="globalMenuOrder">
+        <entry key="resourceMenuLeftOrder">
           <value type="java.lang.Integer">0</value>
         </entry>
       </map>
@@ -1399,20 +1399,20 @@
     </property>
   </bean>
 
-  <bean id="manage.globalMenuComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+  <bean id="manage.resourceMenuLeftComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
-    <property name="name" value="global-menu" />
+    <property name="name" value="resource-menu-left" />
     <property name="description" value="Displays the admin global menu" />
-    <property name="view" ref="manage.globalMenuView" />
+    <property name="view" ref="manage.resourceMenuLeftView" />
     <property name="exposeMvcModel" value="true" />
   </bean>
 
-  <bean id="manage.globalMenuView" parent="freemarkerView">
-    <property name="url" value="system/global-menu.ftl" />
+  <bean id="manage.resourceMenuLeftView" parent="freemarkerView">
+    <property name="url" value="system/resource-menu-left.ftl" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <ref bean="globalMenuProvider" />
+        <ref bean="resourceMenuLeftProvider" />
       </list>
     </property>
   </bean>
@@ -1829,27 +1829,27 @@
     <property name="category" value="collectionMenu" />
   </bean>
 
-  <bean id="globalMenuProvider" class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
-    <constructor-arg value="globalMenu" />
-    <constructor-arg value="globalMenu" />
+  <bean id="resourceMenuLeftProvider" class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
+    <constructor-arg value="resourceMenuLeft" />
+    <constructor-arg value="resourceMenuLeft" />
     <constructor-arg value="true" />
-    <constructor-arg ref="globalMenuActionServicesFactory" />
-    <constructor-arg ref="globalMenu.referenceDataProviders" />
+    <constructor-arg ref="resourceMenuLeftActionServicesFactory" />
+    <constructor-arg ref="resourceMenuLeft.referenceDataProviders" />
   </bean>
 
-  <bean id="globalMenuActionServicesFactory" class="org.vortikal.context.CategoryResolvingFactoryBean">
+  <bean id="resourceMenuLeftActionServicesFactory" class="org.vortikal.context.CategoryResolvingFactoryBean">
     <property name="clazz" value="org.vortikal.web.service.Service" />
-    <property name="category" value="globalMenu" />
+    <property name="category" value="resourceMenuLeft" />
     <property name="comparator">
       <bean class="org.vortikal.web.service.ServiceAttributeComparator">
-        <property name="attributeName" value="globalMenuOrder" />
+        <property name="attributeName" value="resourceMenuLeftOrder" />
       </bean>
     </property>
   </bean>
 
-  <bean id="globalMenu.referenceDataProviders" class="org.vortikal.context.CategoryResolvingFactoryBean">
+  <bean id="resourceMenuLeft.referenceDataProviders" class="org.vortikal.context.CategoryResolvingFactoryBean">
     <property name="clazz" value="org.vortikal.web.referencedata.CategorizableReferenceDataProvider" />
-    <property name="category" value="globalMenu.referenceDataProvider" />
+    <property name="category" value="resourceMenuLeft.referenceDataProvider" />
   </bean>
 
   <bean id="manageBreadCrumbProvider" class="org.vortikal.web.referencedata.provider.BreadCrumbProvider">
@@ -2011,7 +2011,7 @@
         <ref bean="manageBreadCrumbProvider" />
         <ref bean="lockUnlockActionsProvider" />
         <ref bean="switchLocaleActionsProvider" />
-        <ref bean="globalMenuProvider" />
+        <ref bean="resourceMenuLeftProvider" />
         <ref bean="resourceDetailProvider" />
         <ref bean="readPermissionsProvider" />
         <ref bean="publishProvider" />

@@ -32,7 +32,7 @@
 <#if menu.items?size &gt; 0>
 
 <#-- Output the menu links: -->
-<ul class="listMenu ${menu.label}">
+<ul class="list-menu ${menu.label}">
 
   <#assign size = 0 />
   <#list menu.items as item> 

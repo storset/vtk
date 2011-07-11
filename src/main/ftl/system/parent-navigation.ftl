@@ -2,7 +2,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#if tabMenu1?exists>
   <#if (tabMenu1.url)?exists>
-    <ul class="listMenu tabMenu1">
+    <ul class="list-menu tabMenu1">
       <li class="navigateToParentService">
         <a id="navigateToParent" href="${tabMenu1.url?html}">
           <@vrtx.msg code="collectionListing.navigateToParent" default="Up"/>

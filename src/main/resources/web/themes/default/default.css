@@ -20,7 +20,7 @@
  *   3.3 Tabs
  *   3.4 Tab Menus
  *   3.5 Directorylisting
- *   3.6 Permissions / About / Publishing / View
+ *   3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile
  *   3.7 Messages
  * 4. Fluid design
  * 5. Clearing
@@ -1722,19 +1722,11 @@ form button::-moz-focus-inner {
   border: none;
 }
 
-* html #app-head form {
-  background-image: url(images/uio-app-form-input.gif);
-}
-
 /* ^ IE 6 hacks */
 
 /* iPhone hacks */
 
 @media only screen and (max-device-width: 480px) {
-
-  #app-head form button span {
-    margin-right:-6px;
-  }
 
   /* input reset */
   input {

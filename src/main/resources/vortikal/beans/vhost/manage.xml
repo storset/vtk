@@ -414,7 +414,7 @@
     </property>
     <property name="handler" ref="renameHandler" />
   </bean>
-
+  
   <bean id="ownershipService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="aboutResourceService" />
     <property name="assertions">
@@ -1289,40 +1289,6 @@
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="localized-text" />
   </bean>
-
-  <bean id="manage.lockInfoComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="decorating.manageNamespace" />
-    <property name="name" value="lock-info" />
-    <property name="description" value="Displays lock information" />
-    <property name="view" ref="manageLockInfoView" />
-  </bean>
-
-  <bean id="manageLockInfoView" parent="freemarkerView">
-    <property name="url" value="layouts/resourcemenus/lock.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <ref bean="lockUnlockActionsProvider" />
-      </list>
-    </property>
-  </bean>
-  
-  <bean id="manage.readPermissionsInfoComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="decorating.manageNamespace" />
-    <property name="name" value="read-permissions" />
-    <property name="description" value="Displays read permissions information" />
-    <property name="view" ref="manageReadPermissionsInfoView" />
-  </bean>
-
-  <bean id="manageReadPermissionsInfoView" parent="freemarkerView">
-    <property name="url" value="layouts/resourcemenus/read-permissions.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <ref bean="readPermissionsProvider" />
-      </list>
-    </property>
-  </bean>
   
   <bean id="manage.messagesComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
@@ -2036,6 +2002,7 @@
         <ref bean="lockUnlockActionsProvider" />
         <ref bean="switchLocaleActionsProvider" />
         <ref bean="resourceMenuLeftProvider" />
+        <ref bean="resourceMenuRightProvider" />
         <ref bean="resourceDetailProvider" />
         <ref bean="readPermissionsProvider" />
         <ref bean="publishProvider" />

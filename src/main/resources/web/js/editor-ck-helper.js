@@ -4,6 +4,7 @@
  */
 
 var INITIAL_INPUT_FIELDS = [];
+var INITIAL_SELECTS = [];
 var NEED_TO_CONFIRM = true;
 var UNSAVED_CHANGES_CONFIRMATION;
 
@@ -17,6 +18,12 @@ function storeInitPropValues() {
   for(var i = 0, len = inputFields.length; i < len; i++) {
     INITIAL_INPUT_FIELDS[i] = inputFields[i].value;
   }
+  
+  var selects = $("select");
+  for(var i = 0, len = selects.length; i < len; i++) {
+    INITIAL_SELECTS[i] = selects[i].value;
+  }
+  
 }
 
 function unsavedChangesInEditor() {
@@ -30,6 +37,18 @@ function unsavedChangesInEditor() {
   }
   for (var i = 0; i < len; i++) {
     if (currentStateOfInputFields[i].value !== INITIAL_INPUT_FIELDS[i]) {
+      return true; // unsaved textfield
+    }
+  }
+  
+  // Selects
+  var currentStateOfSelects = $("select");
+  len = INITIAL_SELECTS.length;
+  if(len != currentStateOfSelects.length) { // if something is removed or added
+    return true;
+  }
+  for (var i = 0; i < len; i++) {
+    if (currentStateOfSelects[i].value !== INITIAL_SELECTS[i]) {
       return true; // unsaved textfield
     }
   }

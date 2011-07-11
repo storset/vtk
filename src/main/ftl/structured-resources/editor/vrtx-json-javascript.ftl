@@ -111,9 +111,9 @@
       
       // Move up, move down, delete
 
-      var moveDownButton = "<div class=\"vrtx-button vrtx-move-down-button\"><input type=\"button\" value=\"&darr; ${vrtx.getMsg("editor.move - down ")}\" /><\/div>";
-      var moveUpButton = "<div class=\"vrtx-button vrtx-move-up-button\"><input type=\"button\" value=\"&uarr; ${vrtx.getMsg("editor.move - up ")}\" /><\/div>";
-      var deleteButton = "<div class=\"vrtx-button vrtx-remove-button\"><input type=\"button\" value=\"${vrtx.getMsg("editor.remove ")}\" \/><\/div>";
+      var moveDownButton = "<div class=\"vrtx-button vrtx-move-down-button\"><input type=\"button\" value=\"&darr; ${vrtx.getMsg("editor.move-down")}\" /><\/div>";
+      var moveUpButton = "<div class=\"vrtx-button vrtx-move-up-button\"><input type=\"button\" value=\"&uarr; ${vrtx.getMsg("editor.move-up")}\" /><\/div>";
+      var deleteButton = "<div class=\"vrtx-button vrtx-remove-button\"><input type=\"button\" value=\"${vrtx.getMsg("editor.remove")}\" \/><\/div>";
       var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" />";
       var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
     

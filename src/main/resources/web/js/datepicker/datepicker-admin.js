@@ -13,7 +13,7 @@ function initDatePicker(language) {
   }
   
   var dateFields = $(".date");
-  for(var i = 0, len = dateFields.len; i < len; i++) {
+  for(var i = 0, len = dateFields.length; i < len; i++) {
     displayDateAsMultipleInputFields(dateFields[i].name);
   }
 

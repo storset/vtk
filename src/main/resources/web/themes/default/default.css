@@ -745,22 +745,21 @@ ul.list-menu.resourceMenuRight li h3 {
 }
 
 /*
-div#resource-menu-right .lock h3,
-div#resource-menu-right .publish span.published {
+div#resource-menu-right .lock h3, */
+ul.list-menu.resourceMenuRight span.published {
   background: url(images/lock.png) no-repeat 100% 1px;
   padding-right: 18px;
   display: inline-block;
 }
 
-div#resource-menu-right .publish span.published {
+
+ul.list-menu.resourceMenuRight span.published {
   background-image: url(images/menu-active-green.gif);
 }
 
-div#resource-menu-right .read-permissions p span,
-div#resource-menu-right .publish p span {
+ul.list-menu.resourceMenuRight p span {
   font-weight: bold;
 }
-*/
 
 /* ^ Resource menus */
 
@@ -1045,14 +1044,14 @@ body#vrtx-report-documents #app-content #main #contents table.directoryListing t
 }
 
 #app-content #main #contents table.directoryListing td span.allowed-for-all,
-#app-content #resource-menu-right .read-permissions span.allowed-for-all,
-#app-content #resource-menu-right .publish span.published {
+#app-content .resourceMenuRight  span.allowed-for-all,
+#app-content .resourceMenuRight  span.published {
   color: #549401;
 }
 
 #app-content #main #contents table.directoryListing td span.restricted,
-#app-content #resource-menu-right .read-permissions span.restricted,
-#app-content #resource-menu-right .publish span.unpublished {
+#app-content .resourceMenuRight span.restricted,
+#app-content .resourceMenuRight  span.unpublished {
   color: #ed1c24;
 }
 

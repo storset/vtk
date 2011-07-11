@@ -414,7 +414,25 @@
     </property>
     <property name="handler" ref="renameHandler" />
   </bean>
-  
+ <!-- 
+  <bean id="readPermissionService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-1000" />
+    <property name="categories">
+      <set>
+        <value>resourceMenuRight</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="resourceMenuRightOrder">
+          <value type="java.lang.Integer">0</value>
+        </entry>
+      </map>
+    </property>
+    <property name="handler" ref="?" />
+  </bean> -->
+
   <bean id="ownershipService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="aboutResourceService" />
     <property name="assertions">

@@ -19,6 +19,7 @@
             id="vrtx-unpublish-document.submit"
             value="upublish-document" name="action">${item.title?html}</button></div>
 </form>
+
 <#recover>
 ${.error}
 </#recover>

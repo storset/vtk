@@ -17,6 +17,7 @@ ${vrtx.getMsg("collectionListing.confirmation.delete")} <span class="vrtx-confir
   </div>
 </form>
 </div>
+
 <#recover>
 ${.error}
 </#recover>

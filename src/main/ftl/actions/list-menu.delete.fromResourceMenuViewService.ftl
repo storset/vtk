@@ -8,6 +8,7 @@
   <#assign titleMsg = vrtx.getMsg("confirm-delete.title.file") />
 </#if>
 (&nbsp;<a href="${item.url?html}" title="${titleMsg}">${item.title}</a>&nbsp;)
+
 <#recover>
 ${.error}
 </#recover>

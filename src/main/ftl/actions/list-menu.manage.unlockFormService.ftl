@@ -26,7 +26,6 @@
             value="unlock-resource" name="action">${item.title?html}</button></div>
 </form>
 
-
 <#recover>
 ${.error}
 </#recover>

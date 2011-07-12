@@ -17,6 +17,7 @@
             id="vrtx-copy-to-selected-folder.submit"
             value="copy-resources-to-this-folder" name="action">${item.title?html}</button></div>
 </form>
+
 <#recover>
 ${.error}
 </#recover>

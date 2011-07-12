@@ -38,13 +38,9 @@
       </div>
     </div>
   </form>
-  <script type="text/javascript">
-  <!--          
-  document.form.name.focus();
-  // -->
-  </script>
   </div>
   </#if>
+  
 <#recover>
 ${.error}
 </#recover>

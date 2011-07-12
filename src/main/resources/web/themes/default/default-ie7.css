@@ -8,11 +8,15 @@ div.tabs {
   clear: left;
 }
 
-#main,
-#global-menu-bottom,
-#system-message-wrapper,
-.system-message {
-  z-index: -2; /* Fix dropdowns */
+/* Fix dropdown */
+#app-head-wrapper,
+#app-head,
+#global-menu-top,
+.localeSelection,
+#titleContainer,
+.resource-title,
+.dropdown-shortcut-menu-container {
+  z-index: 1;
 }
 
 ul.list-menu.resourceMenuLeft {

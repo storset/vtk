@@ -32,7 +32,7 @@
 
 <#macro listMenu menu displayForms=false prepend="" between="" append="">
 
-<#if menu.items?size &gt; 0 || menu.label == "resourceMenuRight">
+<#if (menu.items?size > 0 || menu.label == "resourceMenuRight")>
 
 <#-- Output the menu links: -->
 <ul class="list-menu ${menu.label}">
@@ -43,32 +43,15 @@
       <#assign size = size+1 />
     </#if>
   </#list>
+  
   <#assign count = 1 />
-  
-  <#if menu.label == "resourceMenuRight">
-    <#assign size = size+1 />
-    <#if count == 1 && count == size>
-      <li class="readPermission first last">
-    <#elseif count == 1>
-      <li class="readPermission first">
-    </#if>
-      <h3>${vrtx.getMsg("collectionListing.permissions")}</h3>
-      <#if !resourceContext.currentResource.readRestricted >
-        <p><span class="allowed-for-all">${vrtx.getMsg("collectionListing.permissions.readAll")}</span></p>
-      <#else>
-        <p><span class="restricted">${vrtx.getMsg("collectionListing.permissions.restricted")}</span></p>
-      </#if>
-    </li>
-    <#assign count = count+1 />
-  </#if>
-  
   <#list menu.items as item> 
     <#if item.url?exists>
-      <#if count == 1 && count == size>
+      <#if count == 1 && count == size && menu.label != "resourceMenuRight">
         <li class="${item.label} first last">
       <#elseif count == 1>
         <li class="${item.label} first">     
-      <#elseif count == size>
+      <#elseif count == size && menu.label != "resourceMenuRight">
         <li class="${item.label} last">
       <#else>
         <li class="${item.label}">
@@ -83,6 +66,22 @@
       <#assign count = count+1 />
     </#if>
   </#list>
+  
+  <#if menu.label == "resourceMenuRight">
+    <#assign size = size+1 />
+    <#if (menu.items?size == 0)>
+      <li class="readPermission first last">
+    <#else>
+      <li class="readPermission last">
+    </#if>
+      <h3>${vrtx.getMsg("collectionListing.permissions")}</h3>
+      <#if !resourceContext.currentResource.readRestricted >
+        <p><span class="allowed-for-all">${vrtx.getMsg("collectionListing.permissions.readAll")}</span></p>
+      <#else>
+        <p><span class="restricted">${vrtx.getMsg("collectionListing.permissions.restricted")}</span></p>
+      </#if>
+    </li>
+  </#if>
 </ul>
 
 <#-- Output the form if it exists: -->

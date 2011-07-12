@@ -727,7 +727,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 ul.list-menu.resourceMenuRight {
   float: right;
-  height: 105px;
+  height: 86px;
 }
 
 ul.list-menu.resourceMenuRight li {
@@ -1418,7 +1418,9 @@ div.tabMessage {
 #app-content #main:after,
 #app-content #titleContainer:after,
 #app-content .resource-title:after,
-#app-content div.globalMenu:after,
+#app-content ul.resourceMenuLeft:after,
+#app-content ul.resourceMenuRight:after,
+#app-content div.globalmenu:after,
 #app-content #main .activeTab:after,
 #app-content #main #contents:after,
 #app-content .principalList:after,

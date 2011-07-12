@@ -27,9 +27,12 @@
  * @param append - an optional string which is appended to each link
  *
 -->
+
+<#import "/lib/vortikal.ftl" as vrtx/>
+
 <#macro listMenu menu displayForms=false prepend="" between="" append="">
 
-<#if menu.items?size &gt; 0>
+<#if menu.items?size &gt; 0 || menu.label == "resourceMenuRight">
 
 <#-- Output the menu links: -->
 <ul class="list-menu ${menu.label}">
@@ -40,8 +43,25 @@
       <#assign size = size+1 />
     </#if>
   </#list>
-
   <#assign count = 1 />
+  
+  <#if menu.label == "resourceMenuRight">
+    <#assign size = size+1 />
+    <#if count == 1 && count == size>
+      <li class="readPermission first last">
+    <#elseif count == 1>
+      <li class="readPermission first">
+    </#if>
+      <h3>${vrtx.getMsg("collectionListing.permissions")}</h3>
+      <#if !resourceContext.currentResource.readRestricted >
+        <p><span class="allowed-for-all">${vrtx.getMsg("collectionListing.permissions.readAll")}</span></p>
+      <#else>
+        <p><span class="restricted">${vrtx.getMsg("collectionListing.permissions.restricted")}</span></p>
+      </#if>
+    </li>
+    <#assign count = count+1 />
+  </#if>
+  
   <#list menu.items as item> 
     <#if item.url?exists>
       <#if count == 1 && count == size>

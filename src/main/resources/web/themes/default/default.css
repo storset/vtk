@@ -1700,7 +1700,7 @@ div.vrtx-admin-form {
 
 .vrtx-file-upload.vrtx-textfield input#fake-file {
   position: absolute;
-  top: 4px;
+  top: 0px;
   right: 0px;
   z-index: 1;
   width: 239px;

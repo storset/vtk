@@ -272,9 +272,8 @@
   <a href="javascript:void(0);" class="vrtx-check-all" > <@vrtx.msg code="collectionListing.all" default="All"/></a>,&nbsp;
   <a href="javascript:void(0);" class="vrtx-uncheck-all"> <@vrtx.msg code="collectionListing.none" default="none"/></a>
  </div>
- </#if>
-
-<#if withForm>
+ 
+ <#if withForm>
   <div id="collectionListing.submit">
     <#list submitActions?keys as actionName>
       <input type="submit"
@@ -291,6 +290,8 @@
     </#list>
   </div>
   </form>
+</#if>
+ 
 </#if>
 
 </#macro>

@@ -13,7 +13,7 @@
 </#if>
 
 <h3>${headerMsg}</h3>
-<p><span class="published"><@vrtx.msg code="publishing.publish-date" /></span></p>
+<p><span class="unpublished"><@vrtx.msg code="publishing.unpublish-date" /></span></p>
 <form id="vrtx-publish-document" action="${actionURL?html}" method="${method}" class="vrtx-admin-button">
    <div class="vrtx-button"><button title="${titleMsg}" type="submit"
             id="vrtx-publish-document.submit"

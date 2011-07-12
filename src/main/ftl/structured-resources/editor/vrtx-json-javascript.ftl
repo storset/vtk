@@ -131,22 +131,16 @@
       if (counter > 0) {
         newElement.append(moveUpButton);
       }
-      newElement.find(".vrtx-remove-button").click(
-    
-      function () {
+      newElement.find(".vrtx-remove-button").click(function () {
         removeNode(j.name, counter, arrayOfIds);
       });
-      newElement.find(".vrtx-move-up-button").click(
-    
-      function () {
+      newElement.find(".vrtx-move-up-button").click(function () {
         swapContent(counter, arrayOfIds, -1, j.name);
       });
 
       if (newElement.prev(".vrtx-json-element").length) {
-        newElement.prev(".vrtx-json-element").find(".vrtx-move-down-button").click(
-    
-        function () {
-          swapContent(counter - 1, arrayOfIds, 1, j.name);
+        newElement.prev(".vrtx-json-element").find(".vrtx-move-down-button").click(function () {
+          swapContent(counter-1, arrayOfIds, 1, j.name);
         });
       }
 
@@ -321,7 +315,9 @@
         } else {
           moveToId = parseInt($(elementId1).parents(".vrtx-json-element").prev(".vrtx-json-element").find("input.id").val());
         }
-        var elementId2 = '#' + arrayOfIds[x] + moveToId; /* We need to handle special cases like date and CK fields  */
+        var elementId2 = '#' + arrayOfIds[x] + moveToId;
+        
+        /* We need to handle special cases like date and CK fields  */
         var ckInstanceName1 = arrayOfIds[x].replace(/\\/g, '') + counter;
         var ckInstanceName2 = arrayOfIds[x].replace(/\\/g, '') + moveToId;
         if (isCkEditor(ckInstanceName1) && isCkEditor(ckInstanceName2)) {
@@ -355,11 +351,12 @@
         var val2 = element2.val();
         element1.val(val2);
         element2.val(val1);
-        element1.blur();
-        element2.blur();
         element1.change();
         element2.change();
       }
+      element1.closest(".vrtx-json-element").focusout();
+      element2.closest(".vrtx-json-element").focusout();
+      
       $('body').scrollTo(movedId, 250, {
         easing: 'swing',
         queue: true,

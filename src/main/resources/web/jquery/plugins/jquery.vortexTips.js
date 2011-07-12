@@ -2,7 +2,7 @@
  *  vortexTips plugin
  *  
  *  Based loosely on tinyTips v1.1 by Mike Merritt (se license.txt)
- *  Modified by Øyvind Hatland (USIT)
+ *  Modified by ï¿½yvind Hatland (USIT)
  *  
  *  Changes
  *  -------
@@ -40,10 +40,10 @@
         link.attr('title', '');
         var yOffset = tip.height() / 2;
         var xOffset = link.width();
-        var pos = link.offset();
+        var pos = link.position();
         var nPos = pos;
-        nPos.top = (pos.top - 230);
-        nPos.left = (pos.left + xOffset) - 230;
+        nPos.top = (pos.top) + yOffset;
+        nPos.left = (pos.left + xOffset + 30);
         tip.css('position', 'absolute').css('z-index', '1000').css('width', '400px');
         tip.css(nPos).fadeIn(animInSpeed);
       } else if (e.type == "mouseleave") {

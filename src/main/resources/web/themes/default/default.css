@@ -928,6 +928,10 @@ ul.list-menu.tabMenu2 li.deleteResourcePermanentService a {
   margin-top: 15px;
 }
 
+#vrtx-report #app-content #main #contents {
+  position: relative;
+}
+
 #vrtx-manage-collectionlisting #app-content #main,
 #vrtx-trash-can #app-content #main,
 #vrtx-report-documents #app-content #main {

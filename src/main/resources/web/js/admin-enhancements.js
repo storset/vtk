@@ -462,15 +462,11 @@ function placeRecoverButtonInActiveTab() {
                               + btn.attr('value') + '</a></li></ul>');
   $('#recoverResourceService').click(function () {
     var boxes = $('form.trashcan input[type=checkbox]:checked');
-    //TODO i18n from somewhere
-    var recoverUncheckedMessage = 'You must check at least one element to recover';
-
     if (!boxes.length) {
       alert(recoverUncheckedMessage); //TODO i18n from somewhere
     } else {
       $('.recoverResource').click();
     }
-
     return false;
   });
 }
@@ -486,17 +482,10 @@ function placeDeletePermanentButtonInActiveTab() {
           + btn.attr('value') + '</a></li>');
   $('#deleteResourcePermanentService').click(function () {
     var boxes = $('form.trashcan input[type=checkbox]:checked');
-    //TODO i18n from somewhere
-    var deletePermanentlyUncheckedMessage = 'You must check at least one element to delete permanently';
-
+    
     if (!boxes.length) {
       alert(deletePermanentlyUncheckedMessage);
     } else {
-      //TODO i18n from somewhere
-      var confirmDeletePermanently = 'Are you sure you want to delete:';
-      var confirmDeletePermanentlyAnd = 'and';
-      var confirmDeletePermanentlyMore = 'more';
-
       var list = "";
       var boxesSize = boxes.size();
       for (var i = 0; i < boxesSize && i < 10; i++) {

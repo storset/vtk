@@ -1632,32 +1632,34 @@ div.vrtx-admin-form {
 
 .vrtx-textfield {
   background: url(images/textfield-left.gif) no-repeat 0 0;
-  height: 23px;
-  padding: 4px 0 0 8px;
+  height: 27px;
+  padding: 0 0 0 8px;
   display: inline-block;
 }
 
 .vrtx-textfield input {
   background: url(images/textfield-right.gif) no-repeat top right;
-  height: 27px;
-  margin: -5px -5px 0 0;
-  padding: 0 8px 0 0;
-  display: inline-block;
+  height: 23px;
+  margin: -1px -5px 0 0;
+  padding: 4px 8px 0 0;
+  display: block;
+  width: 5px;
 }
 
 .vrtx-textfield-big {
   background: url(images/textfield-big-left.gif) no-repeat 0 0;
-  height: 23px;
-  padding: 10px 0 0 12px;
+  height: 33px;
+  padding: 0 0 0 12px;
   display: inline-block;
 }
 
 .vrtx-textfield-big input {
   background: url(images/textfield-big-right.gif) no-repeat top right;
-  height: 33px;
-  margin: -11px -6px 0 0;
-  padding: 0 14px 0 0;
-  display: inline-block;
+  height: 23px;
+  margin: -1px -6px 0 0;
+  padding: 10px 14px 0 0;
+  display: block;
+  width: 5px;
 }
 
 /* Date */

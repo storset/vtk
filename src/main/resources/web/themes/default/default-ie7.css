@@ -15,7 +15,7 @@ div.tabs {
   z-index: -2; /* Fix dropdowns */
 }
 
-ul.listMenu.globalMenu {
+ul.list-menu.resourceMenuLeft {
   margin-bottom: 0px;
   padding-bottom: 20px;
 }
@@ -33,6 +33,11 @@ ul.listMenu.globalMenu {
 .vrtx-focus-button,
 .vrtx-button-small {
   display: inline;
+}
+
+.vrtx-textfield input,
+.vrtx-textfield-big input {
+  margin-top: -2px;
 }
 
 /* ^ Vortex IE 7 */

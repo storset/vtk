@@ -1075,9 +1075,10 @@ function loadFeaturedArticles(addName, removeName, browseName, editorBase, baseF
   }
 }
 
+var countId = 1;
+
 function addFormField(value, removeName, browsName, editorBase, baseFolder, editorBrowseUrl) {
   var idstr = "vrtx-featured-articles-";
-  var id = document.getElementById("id").value;
   if (value == null) {
     value = "";
   }
@@ -1085,20 +1086,21 @@ function addFormField(value, removeName, browsName, editorBase, baseFolder, edit
     var deleteRow = "";
   } else {
     var deleteRow = "<div class=\"vrtx-button\"><button type='button' id='" + idstr
-                  + "remove' onClick='removeFormField(\"#" + idstr + "row-" + id + "\"); return false;'>" 
+                  + "remove' onClick='removeFormField(\"#" + idstr + "row-" + countId + "\"); return false;'>" 
                   + removeName + "</button></div>";
   }
 
   var browseServer = "<div class=\"vrtx-button\"><button type=\"button\" id=\"" + idstr 
-                   + "browse\" onclick=\"browseServer('" + idstr + id + "', '" + editorBase 
+                   + "browse\" onclick=\"browseServer('" + idstr + countId + "', '" + editorBase 
                    + "', '" + baseFolder + "', '" + editorBrowseUrl + "', 'File');\">" + browsName + "</button></div>";
 
-  $("<div class='" + idstr + "row' id='" + idstr + "row-" + id + "'><div class=\"vrtx-textfield\"><input value='" 
-    + value + "'type='text' size='20′ name='txt[]' id='" + idstr + id + "' /></div>" 
-    + browseServer + deleteRow + "</div></div>").insertBefore("#vrtx-featured-article-add");
+  var html = "<div class='" + idstr + "row' id='" + idstr + "row-" + countId + "'><div class=\"vrtx-textfield\"><input value='" 
+    + value + "' type='text' size='20′ name='txt[]' id='" + idstr + countId + "' /></div>" 
+    + browseServer + deleteRow + "</div>";
 
-  id++;
-  document.getElementById("id").value = id;
+  $(html).insertBefore("#vrtx-featured-article-add");
+
+  countId++;
 }
 
 function removeFormField(id) {

@@ -13,7 +13,7 @@ function VrtxAdmin() {
   var instance; // cached instance
   VrtxAdmin = function VrtxAdmin() { // rewrite constructor
     return instance;
-  }; 
+  };
   VrtxAdmin.prototype = this; // carry over properties
   instance = new VrtxAdmin(); // instance
   instance.constructor = VrtxAdmin; // reset construction pointer
@@ -161,14 +161,16 @@ $(document).ready(function () {
       initFileUpload(); // when error message
     }
   }
-  
+
   // AJAX INIT: Permission privilegie forms (READ, READ_WRITE, ALL)
-  var privilegiesPermissions = ["read",
-                                "read-write",
-                                "all"];
-                                
-  for (i = privilegiesPermissions.length; i--;) {                              
-    initPermissionForm("expandedForm-" + privilegiesPermissions[i]);
+  if($("body#vrtx-permissions").length) {
+    var privilegiesPermissions = ["read",
+                                  "read-write",
+                                  "all"];
+
+    for (i = privilegiesPermissions.length; i--;) {
+      initPermissionForm("expandedForm-" + privilegiesPermissions[i]);
+    }
   }
 
   /*
@@ -557,6 +559,8 @@ function switchCheckedRow(checkbox) {
 /* Permissions */
 
 function initPermissionForm(selectorClass) {
+  if(!$("." + selectorClass + " .aclEdit").length) return;
+
   toggleConfigCustomPermissions(selectorClass);
   interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]",
                               "." + selectorClass + " input.addUserButton");
@@ -694,7 +698,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
       if($(".expandedForm").hasClass("expandedFormIsReplaced")) {                      
         if(url.indexOf("&mode=") == -1) {
           var currentHref = location.href; 
-          // Partly based on: http://snipplr.com/view/799/get-url-variables/ 
+          // Partly based on: http://snipplr.com/view/799/get-url-variables/
           var hashes = currentHref.slice(currentHref.indexOf('?') + 1).split('&');
           for(var i = hashes.length; i--;) {
             if(hashes[i].indexOf("mode=") != -1) {
@@ -750,7 +754,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
           $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasing, function() {
             if(existExpandedFormIsReplacing) {
               var expanded = $(this);
-              
+
               // When we need the 'mode=' HTML when requesting a 'not mode=' service
               if(fromModeToNotMode) {
                 $.ajax({
@@ -811,6 +815,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
         vrtxAdmin.displayAjaxErrorMessage(xhr, textStatus); 
       }
     });
+
     e.stopPropagation();
     return false;
   });
@@ -894,7 +899,9 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
           vrtxAdmin.displayAjaxErrorMessage(xhr, textStatus);
         }
       });
+
     }
+
     e.stopPropagation();
     return false;
   });
@@ -930,6 +937,7 @@ VrtxAdmin.prototype.ajaxRemove = function ajaxRemove(selector, updateSelector) {
         vrtxAdmin.displayAjaxErrorMessage(xhr, textStatus); 
       }
     });
+
     e.stopPropagation();
     return false;
   });
@@ -975,6 +983,7 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
         vrtxAdmin.displayAjaxErrorMessage(xhr, textStatus);
       }
     });
+
     e.stopPropagation();
     return false;
   });

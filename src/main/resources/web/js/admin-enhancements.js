@@ -970,13 +970,6 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
 
 /* AJAX helper functions */
 
-// Use jQuery wrap function instead?
-VrtxAdmin.prototype.wrap = function(node, cls, html) {
-  return "<" + node + " class='" + cls + "'>" 
-         + html 
-         + "</" + node + ">";
-};
-
 VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function(inputFields) {
   var dataStringChunk = "";
   if(typeof inputFields !== "undefined") {
@@ -1207,6 +1200,15 @@ function SetUrl(url, width, height, alt) {
 
 /* ^ CK browse server integration */
 
+/* Utils */
+
+// Use jQuery wrap function instead?
+VrtxAdmin.prototype.wrap = function(node, cls, html) {
+  return "<" + node + " class='" + cls + "'>" 
+         + html 
+         + "</" + node + ">";
+};
+
 // jQuery outerHTML (because FF don't support regular outerHTML)
 VrtxAdmin.prototype.outerHTML = function(selector, subselector) {
   return $('<div>').append($(selector).find(subselector).clone()).html();
@@ -1239,6 +1241,8 @@ VrtxAdmin.prototype.error = function(options) {
     }
   }
 };
+
+/* ^ Utils */
 
 /* Override slideUp() / slideDown() to handle rows in a table
  *

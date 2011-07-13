@@ -51,12 +51,17 @@
         NEED_TO_CONFIRM = false;
       } 
       
-      var cssFileList = new Array(
+      var cssFileList = [
       <#if fckEditorAreaCSSURL?exists>
         <#list fckEditorAreaCSSURL as cssURL>
           "${cssURL?html}" <#if cssURL_has_next>,</#if>
         </#list>
-      </#if>);
+      </#if>];
+      
+      // Fix for div container display in IE
+      if ($.browser.msie && $.browser.version <= 7) {
+       cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
+      }
      
     //-->
     </script>

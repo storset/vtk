@@ -41,11 +41,6 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var imageBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Image&Connector=' + browsePath;
   var flashBrowseUrl = baseUrl + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' + baseFolder + '&Type=Flash&Connector=' + browsePath;
 
-  // Fix for div container display in IE
-  if ($.browser.msie && $.browser.version <= 7) {
-    cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
-  }
-
   var isCompleteEditor = completeEditor != null ? completeEditor : false;
   var isWithoutSubSuper = withoutSubSuper != null ? withoutSubSuper : false;
   var isSimpleHTML = simpleHTML != null ? simpleHTML : false;

@@ -122,43 +122,45 @@ $(document).ready(function () {
 
   // AJAX INIT: Tab menu service forms
   
-  var tabMenuServices = ["fileUploadService",
-                         "createDocumentService",
-                         "createCollectionService"];
+  if($("body#vrtx-manage-collectionlisting").length) {
+    var tabMenuServices = ["fileUploadService",
+                           "createDocumentService",
+                           "createCollectionService"];
 
-  for (i = tabMenuServices.length; i--;) {
-    if(tabMenuServices[i] != "fileUploadService") { // half-async for file upload
-      getAjaxOptions = {
-        selector: "ul.tabMenu2 a#" + tabMenuServices[i],
-        selectorClass: "vrtx-admin-form",
-        insertAfterOrReplaceClass: ".activeTab ul.tabMenu2",
-        isReplacing: false,
-        nodeType: "div",
-        simultanSliding: true
-      };
-      vrtxAdmin.getAjaxForm(getAjaxOptions);
+    for (i = tabMenuServices.length; i--;) {
+      if(tabMenuServices[i] != "fileUploadService") { // half-async for file upload
+        getAjaxOptions = {
+          selector: "ul.tabMenu2 a#" + tabMenuServices[i],
+          selectorClass: "vrtx-admin-form",
+          insertAfterOrReplaceClass: ".activeTab ul.tabMenu2",
+          isReplacing: false,
+          nodeType: "div",
+          simultanSliding: true
+        };
+        vrtxAdmin.getAjaxForm(getAjaxOptions);
       
-      postAjaxOptions = {
-        selector: "form[name=" + tabMenuServices[i] + "] input[type=submit]",
-        updateSelectors: ["#contents"],
-        errorContainer: "errorContainer",
-        errorContainerInsertAfter: "> ul",
-        funcComplete: collectionListingInteraction
-      };
-      vrtxAdmin.postAjaxForm(postAjaxOptions);
+        postAjaxOptions = {
+          selector: "form[name=" + tabMenuServices[i] + "] input[type=submit]",
+          updateSelectors: ["#contents"],
+          errorContainer: "errorContainer",
+          errorContainerInsertAfter: "> ul",
+          funcComplete: collectionListingInteraction
+        };
+        vrtxAdmin.postAjaxForm(postAjaxOptions);
       
-    } else {
-      getAjaxOptions = {
-        selector: "ul.tabMenu2 a#" + tabMenuServices[i],
-        selectorClass: "vrtx-admin-form",
-        insertAfterOrReplaceClass: ".activeTab ul.tabMenu2",
-        isReplacing: false,
-        nodeType: "div",
-        funcComplete: function(p){ initFileUpload() },
-        simultanSliding: true
-      };
-      vrtxAdmin.getAjaxForm(getAjaxOptions);
-      initFileUpload(); // when error message
+      } else {
+        getAjaxOptions = {
+          selector: "ul.tabMenu2 a#" + tabMenuServices[i],
+          selectorClass: "vrtx-admin-form",
+          insertAfterOrReplaceClass: ".activeTab ul.tabMenu2",
+          isReplacing: false,
+          nodeType: "div",
+          funcComplete: function(p){ initFileUpload() },
+          simultanSliding: true
+        };
+        vrtxAdmin.getAjaxForm(getAjaxOptions);
+        initFileUpload(); // when error message
+      }
     }
   }
 
@@ -171,96 +173,98 @@ $(document).ready(function () {
     for (i = privilegiesPermissions.length; i--;) {
       initPermissionForm("expandedForm-" + privilegiesPermissions[i]);
     }
-  }
 
-  /*
-  for (i = privilegiesPermissions.length; i--;) {
-    getAjaxOptions = {
-      selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax",
-      selectorClass: "expandedForm-" + privilegiesPermissions[i],
-      insertAfterOrReplaceClass: "div.permissions-" + privilegiesPermissions[i] + "-wrapper",
-      isReplacing: true,
-      nodeType: "div",
-      funcComplete: initPermissionForm,
-      simultanSliding: true
-    };
-    vrtxAdmin.getAjaxForm(getAjaxOptions);
+    /* TODO: trekkspilleffekt
+    for (i = privilegiesPermissions.length; i--;) {
+      getAjaxOptions = {
+        selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax",
+        selectorClass: "expandedForm-" + privilegiesPermissions[i],
+        insertAfterOrReplaceClass: "div.permissions-" + privilegiesPermissions[i] + "-wrapper",
+        isReplacing: true,
+        nodeType: "div",
+        funcComplete: initPermissionForm,
+        simultanSliding: true
+      };
+      vrtxAdmin.getAjaxForm(getAjaxOptions);
     
-    postAjaxOptions = {
-      selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
-      updateSelectors: [".permissions-" + privilegiesPermissions[i] + "-wrapper",
-                        ".resource-menu.read-permissions"],
-      errorContainer: "errorContainer",
-      errorContainerInsertAfter: ".groups-wrapper",
-      funcProceedCondition: checkStillAdmin
-    };            
-    vrtxAdmin.postAjaxForm(postAjaxOptions);
-  }
-  */
+      postAjaxOptions = {
+        selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
+        updateSelectors: [".permissions-" + privilegiesPermissions[i] + "-wrapper",
+                          ".resource-menu.read-permissions"],
+        errorContainer: "errorContainer",
+        errorContainerInsertAfter: ".groups-wrapper",
+        funcProceedCondition: checkStillAdmin
+      };
+      vrtxAdmin.postAjaxForm(postAjaxOptions);
+    }
+    */
   
-  // AJAX INIT: More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
+    // AJAX INIT: More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
   
-  var privilegiesPermissionsInTable = ["add-comment",
-                                       "read-processed"];
+    var privilegiesPermissionsInTable = ["add-comment",
+                                         "read-processed"];
 
-  for (i = privilegiesPermissionsInTable.length; i--;) {
-    getAjaxOptions = {
-      selector: ".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax",
-      selectorClass: privilegiesPermissionsInTable[i],
-      insertAfterOrReplaceClass: "tr." + privilegiesPermissionsInTable[i],
-      isReplacing: true,
-      nodeType: "tr",
-      funcComplete: initPermissionForm,
-      simultanSliding: true
-    };
-    vrtxAdmin.getAjaxForm(getAjaxOptions);
+    for (i = privilegiesPermissionsInTable.length; i--;) {
+      getAjaxOptions = {
+        selector: ".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax",
+        selectorClass: privilegiesPermissionsInTable[i],
+        insertAfterOrReplaceClass: "tr." + privilegiesPermissionsInTable[i],
+        isReplacing: true,
+        nodeType: "tr",
+        funcComplete: initPermissionForm,
+        simultanSliding: true
+      };
+      vrtxAdmin.getAjaxForm(getAjaxOptions);
     
-    postAjaxOptions = {
-      selector: "tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
-      updateSelectors: ["tr." +  privilegiesPermissionsInTable[i],
-                        ".resource-menu.read-permissions"],
-      errorContainer: "errorContainer",
-      errorContainerInsertAfter: ".groups-wrapper"
-    };
-    vrtxAdmin.postAjaxForm(postAjaxOptions);      
+      postAjaxOptions = {
+        selector: "tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
+        updateSelectors: ["tr." +  privilegiesPermissionsInTable[i],
+                          ".resource-menu.read-permissions"],
+        errorContainer: "errorContainer",
+        errorContainerInsertAfter: ".groups-wrapper"
+      };
+      vrtxAdmin.postAjaxForm(postAjaxOptions);
+    }
+    
+    vrtxAdmin.ajaxRemove("input.removePermission", ".principalList");
+    vrtxAdmin.ajaxAdd("span.addGroup", ".groups-wrapper", "errorContainer");
+    vrtxAdmin.ajaxAdd("span.addUser", ".users-wrapper", "errorContainer");
   }
   
   // AJAX INIT: About property forms
   
-  var propsAbout = [
-    "contentLocale",
-    "commentsEnabled",
-    "userTitle",
-    "keywords",
-    "description",
-    "verifiedDate",
-    "authorName",
-    "authorEmail",
-    "authorURL",
-    "collection-type",
-    "contentType",
-    "userSpecifiedCharacterEncoding",
-    "plaintext-edit",
-    "xhtml10-type"
-    ];
+  if($("body#vrtx-about").length) {
+    var propsAbout = [
+      "contentLocale",
+      "commentsEnabled",
+      "userTitle",
+      "keywords",
+      "description",
+      "verifiedDate",
+      "authorName",
+      "authorEmail",
+      "authorURL",
+      "collection-type",
+      "contentType",
+      "userSpecifiedCharacterEncoding",
+      "plaintext-edit",
+      "xhtml10-type"
+      ];
 
-  for (i = propsAbout.length; i--;) {
-    getAjaxOptions = {
-      selector: "body#vrtx-about .prop-" + propsAbout[i] + " a.vrtx-button-small",
-      selectorClass: "expandedForm-prop-" + propsAbout[i],
-      insertAfterOrReplaceClass: "tr.prop-" + propsAbout[i],
-      isReplacing: true,
-      nodeType: "tr",
-      simultanSliding: true
-    };
-    vrtxAdmin.getAjaxForm(getAjaxOptions);
+    for (i = propsAbout.length; i--;) {
+      getAjaxOptions = {
+        selector: "body#vrtx-about .prop-" + propsAbout[i] + " a.vrtx-button-small",
+        selectorClass: "expandedForm-prop-" + propsAbout[i],
+        insertAfterOrReplaceClass: "tr.prop-" + propsAbout[i],
+        isReplacing: true,
+        nodeType: "tr",
+        simultanSliding: true
+      };
+      vrtxAdmin.getAjaxForm(getAjaxOptions);
+    }
   }
 
   // AJAX INIT: Remove/add permissions
-  
-  vrtxAdmin.ajaxRemove("input.removePermission", ".principalList");
-  vrtxAdmin.ajaxAdd("span.addGroup", ".groups-wrapper", "errorContainer");
-  vrtxAdmin.ajaxAdd("span.addUser", ".users-wrapper", "errorContainer");
 
   // Show/hide multiple properties (initalization/config)
   

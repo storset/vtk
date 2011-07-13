@@ -666,9 +666,6 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
   var args = arguments; // this function
   
   $("#app-content").delegate(options.selector, "click", function (e) {
-  
-    // TODO: the URL sometimes get corrupted if switchin between props edit and e.g. create archive..
-    //       (problem with delegate(?))      
                           
     var url = $(this).attr("href") || $(this).closest("form").attr("action");
                        

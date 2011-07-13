@@ -49,7 +49,7 @@ vrtxAdmin.isWin = ((agent.indexOf("win") != -1) || (agent.indexOf("16bit") != -1
 
 // Upgrade easing if not < IE 9
 if(!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9)) {
-  this.transitionEasing = "easeOutCubic";
+  this.transitionEasing = "easeInQuad"; // ..wondering if we can just use "swing" everywhere because of fast transitions
 }
 
 // Permission Autocomplete parameters

@@ -58,12 +58,17 @@ $(document).ready(function () {
   // Buttons into links
   logoutButtonAsLink();
 
-  // Collectionlisting interaction
-  collectionListingInteraction();
-
   // Dropdowns
   dropdownLanguageMenu();
   dropdownCollectionGlobalMenu();
+  
+  // Remove active tab if it has no children
+  if (!$("#main .activeTab > *").length) {
+    $("#main .activeTab").remove();
+  }
+  
+  // Collectionlisting interaction
+  collectionListingInteraction();
   
   // Zebra-tables
   vrtxAdmin.zebraTables(".resourceInfo");
@@ -248,11 +253,6 @@ $(document).ready(function () {
 
   showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
             "#resource\\.display-type\\.calendar:checked", 'calendar', ["#vrtx-resource\\.hide-additional-content"]);
-
-  // Remove active tab if it has no children
-  if (!$("#main .activeTab > *").length) {
-    $("#main .activeTab").remove();
-  }
 
   // Fix IE 6 collectionlisting hover
   if (vrtxAdmin.isIE6) {

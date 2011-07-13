@@ -2,7 +2,7 @@
 <#--
   - File: upload-status.ftl
   -  
-  - Description: served to FCKeditor as a response to a file upload
+  - Description: served to CKeditor as a response to a file upload
   - request. Invokes a Javascript function to let FCK know the status
   - of the completed operation.
   -  

@@ -8,7 +8,7 @@
 <#--
  * editorInTextArea
  * 
- * Writes a <script> reference to the main fckeditor.js file
+ * Writes <script> references to CKEditor JS
  *
  -->
 <#macro declareEditor>
@@ -25,10 +25,10 @@
 <#--
  * editorInTextArea
  *
- * Display a minimal FCKeditor in a div.
+ * Display a minimal CKeditor in a div.
  *
- * @param textarea - the id of the textarea to replace with FCKeditor
- * @param fckeditorBase - the FCKeditor config (required to contain a 'url' entry)
+ * @param textarea - the id of the textarea to replace with CKeditor
+ * @param fckeditorBase - the CKeditor config (required to contain a 'url' entry)
  * @param runOnLoad - whether to run the editor immediately or wait
  *        until the JavaScript function loadEditor() is
  *        invoked. Defaults to 'false'.

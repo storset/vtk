@@ -265,7 +265,7 @@ $(document).ready(function () {
     });
   }
   
-  vrtxAdmin.log({msg: "document.ready() " + (+new Date - startTime) + "ms"});
+  vrtxAdmin.log({msg: "document.ready() in " + (+new Date - startTime) + "ms"});
 
 });
 

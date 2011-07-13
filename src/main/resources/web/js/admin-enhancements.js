@@ -75,6 +75,9 @@ $(document).ready(function () {
     $("#main .activeTab").remove();
   }
   
+  adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
+  adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");
+  
   // Collectionlisting interaction
   collectionListingInteraction();
   
@@ -1156,6 +1159,8 @@ function formatFeaturedArticlesData() {
 
 /* CK browse server integration */
 
+var urlobj;
+
 function previewImage(urlobj) {
   var previewNode = document.getElementById(urlobj + '.preview');
   if (previewNode) {
@@ -1166,30 +1171,32 @@ function previewImage(urlobj) {
       previewNode.innerHTML = '';
     }
   }
+  adjustImageAndCaptionContainer(previewNode);
+}
+
+function adjustImageAndCaptionContainer(previewNode) {
   $(previewNode).find("img").load(function() {
     var previewNodeImg = $(this);
     var container = $(previewNode).parent().parent();
     
     if(container.attr("id") == "vrtx-resource.picture") { // old
       var origHeight = 241;
-      var d = 29;
+      var extraMarginHeight = 29;
     } else if(container.attr("class").indexOf("introImageAndCaption") != -1) { // new
       var origHeight = 260;
-      var d = 20;
+      var extraMarginHeight = 49;
     } else {
       return;
     }
  
-    if((previewNodeImg.height() + d) > origHeight) {
-      container.css("height", (previewNodeImg.height() + d) + "px");
+    if((previewNodeImg.height() + extraMarginHeight) > origHeight) {
+      container.css("height", (previewNodeImg.height() + extraMarginHeight) + "px");
     } else {
       container.css("height", origHeight + "px");
     }
   });
-  //previewNode.closest(".vrtx-grouped-vertical").height();
 }
 
-var urlobj;
 function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
   urlobj = obj;
   if (type) {

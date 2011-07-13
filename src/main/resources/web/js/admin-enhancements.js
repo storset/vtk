@@ -714,8 +714,8 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
           var resultSelectorClass = "";
           // Must have full control over additional classes in FTL we need to remove
           // (meaning which is the unique selector class)
-          // TODO: add a postfix to original markup, e.g. 'ajax-' to unique classes
-          //       where we use AJAX to avoid filtering out others
+          // TODO: add a postfix to original markup, e.g. 'ajax-' to unique class where we use AJAX
+          //       -- to avoid filtering out others
           for(var i = resultSelectorClasses.length; i--;) {
             if(resultSelectorClasses[i].indexOf("expandedForm") == -1
                && resultSelectorClasses[i].indexOf("nodeType") == -1

@@ -17,7 +17,7 @@ function initDatePicker(language) {
     displayDateAsMultipleInputFields(dateFields[i].name);
   }
 
-  // TODO !spageti
+  // TODO !spageti && !run twice
   if (requestFromEditor()) {
     storeInitPropValues();
   }

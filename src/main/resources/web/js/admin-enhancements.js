@@ -1074,7 +1074,7 @@ function loadFeaturedArticles(addName, removeName, browseName, editorBase, baseF
     addFormFieldFunc(jQuery.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
   }
   
-  // TODO !spageti
+  // TODO !spageti && !run twice
   if (requestFromEditor()) {
     storeInitPropValues();
   }

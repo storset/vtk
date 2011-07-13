@@ -55,6 +55,8 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
                                             
 $(document).ready(function () {
 
+  var startTime = +new Date();
+
   // Buttons into links
   logoutButtonAsLink();
 
@@ -262,6 +264,8 @@ $(document).ready(function () {
       $(this).toggleClass('hover');
     });
   }
+  
+  vrtxAdmin.log({msg: "document.ready() " + (+new Date - startTime) + "ms"});
 
 });
 
@@ -702,7 +706,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
 
         // If something went wrong
         if(!form) {
-          vrtxAdmin.error(args, "retrieved form from " + url + " is null");
+          vrtxAdmin.error({args: args, msg: "retrieved form from " + url + " is null"});
         }
 
         // Another form is already open
@@ -746,7 +750,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
                     
                     // If all went wrong
                     if(!resultHtml) {
-                      vrtxAdmin.error(args, "retrieved existing expandedForm from " + modeUrl + " is null");
+                      vrtxAdmin.error({args: args, msg: "retrieved existing expandedForm from " + modeUrl + " is null"});
                     }
                     
                     if(expanded.parent().parent().is("tr")) {  // Because 'this' is tr > td > div
@@ -766,7 +770,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
                 
                 // If all went wrong
                 if(!resultHtml) {
-                  vrtxAdmin.error(args, "retrieved existing expandedForm from " + url + " is null");
+                  vrtxAdmin.error({args: args, msg: "retrieved existing expandedForm from " + url + " is null"});
                 }
               
                 if(expanded.parent().parent().is("tr")) {  // Because 'this' is tr > td > div
@@ -1208,18 +1212,30 @@ VrtxAdmin.prototype.outerHTML = function(selector, subselector) {
   return $('<div>').append($(selector).find(subselector).clone()).html();
 };
 
-VrtxAdmin.prototype.log = function(args, msg) {
+VrtxAdmin.prototype.log = function(options) {
   if(typeof console !== "undefined" && console.log) {
-    console.log("Vortex admin log -> " + args.callee.name + ": " + msg);
+    if(options.args) {
+      console.log("Vortex admin log -> " + options.args.callee.name + ": " + options.msg);
+    } else {
+      console.log("Vortex admin: " + options.msg);    
+    }
   }
 };
 
-VrtxAdmin.prototype.error = function(args, msg) {
+VrtxAdmin.prototype.error = function(options) {
   if(typeof console !== "undefined") {
     if(console.error) {
-      console.error("Vortex admin error -> " + args.callee.name + ": " + msg);
+      if(options.args) {
+        console.error("Vortex admin error -> " + options.args.callee.name + ": " + options.msg);
+      } else {
+        console.error("Vortex admin error: " + options.msg);     
+      }
     } else if(console.log) {
-      console.log("Vortex admin error -> " + args.callee.name + ": " + msg);    
+      if(options.args) {
+        console.log("Vortex admin error -> " + options.args.callee.name + ": " + options.msg);   
+      } else {
+        console.log("Vortex admin error: " + options.msg);        
+      } 
     }
   }
 };

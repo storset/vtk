@@ -652,7 +652,9 @@ function dropdownCollectionGlobalMenu() {
  *                                  (only when there is an existing form)
  */
 
-VrtxAdmin.prototype.getAjaxForm = function(options) {
+VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
+  var args = arguments; // this function
+  
   $("#app-content").delegate(options.selector, "click", function (e) {
   
     // TODO: the URL sometimes get corrupted if switchin between props edit and e.g. create archive..
@@ -700,6 +702,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
 
         // If something went wrong
         if(!form) {
+          vrtxAdmin.error(args, "retrieved form from " + url + " is null");
         }
 
         // Another form is already open
@@ -734,6 +737,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
                     
                     // If all went wrong
                     if(!resultHtml) {
+                      vrtxAdmin.error(args, "retrieved existing expandedForm from " + modeUrl + " is null");
                     }
                     
                     if(expanded.parent().parent().is("tr")) {  // Because 'this' is tr > td > div
@@ -753,7 +757,7 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
                 
                 // If all went wrong - refresh page instead
                 if(!resultHtml) {
-                  location.reload();
+                  vrtxAdmin.error(args, "retrieved existing expandedForm from " + url + " is null");
                 }
               
                 if(expanded.parent().parent().is("tr")) {  // Because 'this' is tr > td > div
@@ -818,7 +822,9 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, form) {
  *                funcComplete: callback function to run when AJAX is completed
  */
 
-VrtxAdmin.prototype.postAjaxForm = function(options) {
+VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
+  var args = arguments; // this function
+
   $("#app-content").delegate(options.selector, "click", function (e) {
     var link = $(this);
     var form = link.closest("form");
@@ -876,7 +882,9 @@ VrtxAdmin.prototype.postAjaxForm = function(options) {
  * @param updateSelector: selector for markup to update
  */
 
-VrtxAdmin.prototype.ajaxRemove = function(selector, updateSelector) {
+VrtxAdmin.prototype.ajaxRemove = function ajaxRemove(selector, updateSelector) {
+  var args = arguments; // this function
+
   $("#app-content").delegate(selector, "click", function (e) {
     var link = $(this);
     var form = link.closest("form");
@@ -910,7 +918,9 @@ VrtxAdmin.prototype.ajaxRemove = function(selector, updateSelector) {
  * @param errorContainer: selector for error container
  */
 
-VrtxAdmin.prototype.ajaxAdd = function(selector, updateSelector, errorContainer) {
+VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorContainer) {
+  var args = arguments; // this function
+
   $("#app-content").delegate(selector + " input[type=submit]", "click", function (e) {
     var link = $(this);
     var form = link.closest("form");
@@ -1187,6 +1197,22 @@ function SetUrl(url, width, height, alt) {
 // jQuery outerHTML (because FF don't support regular outerHTML)
 VrtxAdmin.prototype.outerHTML = function(selector, subselector) {
   return $('<div>').append($(selector).find(subselector).clone()).html();
+};
+
+VrtxAdmin.prototype.log = function(args, msg) {
+  if(typeof console !== "undefined" && console.log) {
+    console.log("Vortex admin log -> " + args.callee.name + ": " + msg);
+  }
+};
+
+VrtxAdmin.prototype.error = function(args, msg) {
+  if(typeof console !== "undefined") {
+    if(console.error) {
+      console.error("Vortex admin error -> " + args.callee.name + ": " + msg);
+    } else if(console.log) {
+      console.log("Vortex admin error -> " + args.callee.name + ": " + msg);    
+    }
+  }
 };
 
 /* Override slideUp() / slideDown() to handle rows in a table

@@ -37,7 +37,7 @@
 
   <#if .vars[formName]?exists>
     <div>
-      <div class="permissions-${privilegeName}-wrapper expandedForm-${privilegeName}">
+      <div class="permissions-${privilegeName}-wrapper expandedForm expandedForm-${privilegeName}">
         <@editACLFormNew
            formName = formName
            privilegeName = privilegeName

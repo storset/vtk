@@ -1,5 +1,5 @@
 <#attempt>
-<div class="globalmenu">
+<div class="globalmenu expandedForm">
 <form name="vrtx-delete-resource" id="vrtx-delete-resource" action="${url}" method="post">
 ${vrtx.getMsg("collectionListing.confirmation.delete")} <span class="vrtx-confirm-delete-name"> ${name}</span>? 
 

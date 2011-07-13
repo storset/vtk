@@ -4,7 +4,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
   <#if renameCommand?exists>
-    <div class="globalmenu">
+    <div class="globalmenu expandedForm">
     <form name="rename" action="${renameCommand.submitURL?html}" method="post">
       <h3><@vrtx.msg code="actions.renameService" default="Change name"/>:</h3>
       <@spring.bind "renameCommand" + ".name" /> 

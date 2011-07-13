@@ -2,7 +2,7 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#if type = "publish.unpublishResourceConfirmedService">
-<div class="globalmenu">
+<div class="globalmenu expandedForm">
 <form name="vrtx-publish-resource" id="vrtx-publish-resource" action="${url}" method="post">
   <h3>${vrtx.getMsg("confirm-publish.confirmation.unpublish")}?</h3>
   <div class="submitButtons">

@@ -3,7 +3,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
   <#if command?exists && !command.done>
-  <div class="globalmenu">
+  <div class="globalmenu expandedForm">
   <form name="form" action="${command.submitURL?html}" method="POST">
     <h3 class="nonul"><@vrtx.msg code="actions.expandArchive"
     default="Expand archive"/>:</h3>

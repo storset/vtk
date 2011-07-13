@@ -698,9 +698,8 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
       success: function (results, status, resp) {
         var form = $(results).find("." + options.selectorClass).html();
 
-        // If something went wrong - refresh page instead
+        // If something went wrong
         if(!form) {
-          location.reload();
         }
 
         // Another form is already open
@@ -733,9 +732,8 @@ VrtxAdmin.prototype.getAjaxForm = function(options) {
                   success: function (results, status, resp) {
                     var resultHtml = vrtxAdmin.outerHTML(results, $.trim(resultSelectorClass));
                     
-                    // If all went wrong - refresh page instead
+                    // If all went wrong
                     if(!resultHtml) {
-                      location.reload();
                     }
                     
                     if(expanded.parent().parent().is("tr")) {  // Because 'this' is tr > td > div

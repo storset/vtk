@@ -199,7 +199,7 @@ var INITIAL_RADIO_BUTTONS = [];
 var NEED_TO_CONFIRM = true;
 var UNSAVED_CHANGES_CONFIRMATION;
 
-$(document).ready(function () {
+$(window).load(function () {
   storeInitPropValues();
 });
 

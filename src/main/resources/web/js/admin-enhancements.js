@@ -30,7 +30,7 @@ function VrtxAdmin() {
   this.transitionSpeed = 200; // same as 'fast'
   this.transitionCustomPermissionSpeed = 200; // same as 'fast'
   this.transitionPropSpeed = 100;
-  this.transitionDropdownSpeed = 0;
+  this.transitionDropdownSpeed = 100;
   this.transitionEasing = "swing";
   
   return instance;
@@ -46,6 +46,11 @@ vrtxAdmin.isIE5OrHigher = vrtxAdmin.isIE && vrtxAdmin.browserVersion >= 5;
 vrtxAdmin.isOpera = $.browser.opera;
 vrtxAdmin.isWin = ((agent.indexOf("win") != -1) || (agent.indexOf("16bit") != -1));
 // v3.?: vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;
+
+// Upgrade easing if not < IE 9
+if(!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9)) {
+  this.transitionEasing = "easeOutCubic";
+}
 
 // Permission Autocomplete parameters
 vrtxAdmin.permissionsAutocompleteParams = { minChars: 4, 

@@ -31,6 +31,7 @@ function VrtxAdmin() {
   this.transitionCustomPermissionSpeed = 200; // same as 'fast'
   this.transitionPropSpeed = 100;
   this.transitionDropdownSpeed = 0;
+  this.transitionEasing = "swing";
   
   return instance;
 };
@@ -560,11 +561,11 @@ function toggleConfigCustomPermissions(selectorClass) {
       $("." + selectorClass).find(".principalList").hide(0);
     }
     $("#app-content").delegate("." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
-      $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed);
+      $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasing);
       e.stopPropagation();
     });
     $("#app-content").delegate("." + selectorClass + " ul.shortcuts label:not([for=custom])", "click", function (e) {
-      $(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed);
+      $(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasing);
       e.stopPropagation();
     });
 }
@@ -599,7 +600,7 @@ function dropdownLanguageMenu() {
     languageMenu.addClass("dropdown-shortcut-menu-container");
 
     $(".localeSelection").delegate(".localeSelectionHeader", "click", function (e) {
-      $(this).next(".dropdown-shortcut-menu-container").slideToggle(vrtxAdmin.transitionDropdownSpeed);
+      $(this).next(".dropdown-shortcut-menu-container").slideToggle(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasing);
       e.stopPropagation();
       return false;
     });
@@ -624,7 +625,7 @@ function dropdownCollectionGlobalMenu() {
     shortcutMenu.css("left", (collectionGlobalMenu.width() - 24) + "px");
 
     collectionGlobalMenu.find("li.first #dropdown-shortcut-menu-click-area").click(function (e) {
-      shortcutMenu.slideToggle(vrtxAdmin.transitionDropdownSpeed);
+      shortcutMenu.slideToggle(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasing);
       e.stopPropagation();
       return false;
     });
@@ -735,7 +736,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
           } 
           // --
           
-          $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, function() {
+          $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasing, function() {
             if(existExpandedFormIsReplacing) {
               var expanded = $(this);
               
@@ -819,7 +820,7 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, form) {
   if(options.nodeType == "tr") {
     $(options.nodeType + "." + options.selectorClass).prepareTableRowForSliding();
   }
-  $(options.nodeType + "." + options.selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, function() {
+  $(options.nodeType + "." + options.selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasing, function() {
     $(this).find("input[type=text]:first").focus();
   });
 };
@@ -873,7 +874,7 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
             if(options.funcComplete) {
               options.funcComplete();
             }
-            form.parent().slideUp(vrtxAdmin.transitionSpeed, function () {
+            form.parent().slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasing, function () {
               $(this).remove();
             });
           }
@@ -1051,9 +1052,9 @@ function showHideProperty(id, init, show) {
     }
   } else {
     if (show) {
-      $(id).slideDown(vrtxAdmin.transitionPropSpeed);
+      $(id).slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasing);
     } else {
-      $(id).slideUp(vrtxAdmin.transitionPropSpeed);
+      $(id).slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasing);
     }
   }
 }
@@ -1262,21 +1263,21 @@ jQuery.fn.prepareTableRowForSliding = function() {
 };
 
 var originalSlideUp = jQuery.fn.slideUp;
-jQuery.fn.slideUp = function(speed, callback) {
+jQuery.fn.slideUp = function(speed, easing, callback) {
   $trOrOtherElm = this;
   if($trOrOtherElm.is("tr")) {
-    $trOrOtherElm.find('td > div').animate({height: 'toggle'}, speed, callback);
+    $trOrOtherElm.find('td > div').animate({height: 'toggle'}, speed, easing, callback);
   } else {
     originalSlideUp.apply($trOrOtherElm, arguments);
   }
 };
 
 var originalSlideDown = jQuery.fn.slideDown;
-jQuery.fn.slideDown = function(speed, callback) {
+jQuery.fn.slideDown = function(speed, easing, callback) {
   $trOrOtherElm = this;
   if($trOrOtherElm.is("tr")) {
     if ($trOrOtherElm.is(':hidden')) {
-      $trOrOtherElm.show().find('td > div').animate({height: 'toggle'}, speed, callback);
+      $trOrOtherElm.show().find('td > div').animate({height: 'toggle'}, speed, easing, callback);
     }
   } else {
     originalSlideDown.apply($trOrOtherElm, arguments);

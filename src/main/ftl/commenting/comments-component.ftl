@@ -15,7 +15,7 @@
   - 
   -->
 <#import "/lib/vortikal.ftl" as vrtx />
-<#import "/fckeditor/fckeditor-textarea.ftl" as fck />
+<#import "/ckeditor/ckeditor-textarea.ftl" as ck />
 
 <#if !comments?exists || !config?exists>
   <#stop "Unable to render model: model data missing: required entries
@@ -25,7 +25,7 @@
 <#if !commentsEnabled>
   <#-- display nothing -->
 <#else>
-<@fck.declareEditor />
+<@ck.declareEditor />
 <div class="vrtx-comments" id="comments">
   <#if comments?exists>
     <div class="comments-header">
@@ -191,7 +191,7 @@
           (<@vrtx.rawMsg code="commenting.post.comment-as" default="as ${principal.description}" args=[principalStr] />)
         </div> 
       </form>
-      <@fck.editorInTextarea textarea="comments-text" toolbar="AddComment" runOnLoad=false  />
+      <@ck.editorInTextarea textarea="comments-text" toolbar="AddComment" runOnLoad=false  />
     </#if>
   </div>
 </div>

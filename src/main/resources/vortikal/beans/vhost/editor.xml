@@ -280,7 +280,7 @@
   <bean id="editor.collectionEditView" parent="editor.editView" />
 
   <bean id="editor.browseView" parent="freemarkerView">
-    <property name="url" value="fckeditor/browse.ftl" />
+    <property name="url" value="ckeditor/browse.ftl" />
     <property name="contentType" value="text/xml;charset=utf-8" />
     <property name="referenceDataProviders">
       <list>
@@ -289,7 +289,7 @@
   </bean>
 
   <bean id="editor.uploadStatusView" parent="freemarkerView">
-    <property name="url" value="fckeditor/upload-status.ftl" />
+    <property name="url" value="ckeditor/upload-status.ftl" />
     <property name="contentType" value="text/html;charset=utf-8" />
     <property name="referenceDataProviders">
       <list>

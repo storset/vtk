@@ -1,4 +1,4 @@
-
+<#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <?xml version="1.0" encoding="utf-8"?>

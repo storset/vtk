@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#if cssURLs?exists>
   <#list cssURLs as cssURL>
     <link rel="stylesheet" href="${cssURL?html}" type="text/css" />

@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#--
   - File: select-language.ftl
   - 

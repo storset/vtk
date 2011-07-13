@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#import "/spring.ftl" as spring />
 
 <#--

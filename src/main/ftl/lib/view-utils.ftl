@@ -1,4 +1,4 @@
-
+<#ftl strip_whitespace=true>
 <#--
   - File: view-utils.ftl
   - 

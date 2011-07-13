@@ -712,6 +712,8 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
           // Filter out selector class to get original markup for the existing form
           var resultSelectorClasses = $(expandedHtml).attr("class").split(" ");
           var resultSelectorClass = "";
+          // Must have full control over additional classes in FTL we need to remove
+          // (meaning which is the unique selector class)
           for(var i = resultSelectorClasses.length; i--;) {
             if(resultSelectorClasses[i].indexOf("expandedForm") == -1
                && resultSelectorClasses[i].indexOf("nodeType") == -1

@@ -256,7 +256,7 @@
       htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
       htmlTemplate += '<\/div><div>';
       htmlTemplate += '<div class=\"vrtx-textfield\"><input type=\"text\" id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage(' + inputFieldName + ');\" size=\"30\" \/><\/div>';
-      htmlTemplate += '<div class=\"vrtx-button\"><button type=\"button\" onclick=\"browseServer(' + inputFieldName + ', \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button><\/div>';
+      htmlTemplate += '<div class=\"vrtx-button\"><button type=\"button\" onclick=\"browseServer(\'' + inputFieldName + '\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button><\/div>';
       htmlTemplate += '<\/div>';
       htmlTemplate += '<div id=\"' + inputFieldName + '.preview\">';
       htmlTemplate += '<\/div><\/div>';
@@ -264,13 +264,13 @@
     }
     
     function addResourceRef(elem, inputFieldName) {
-      htmlTemplate = '<div class=\"vrtx-url\">';
-      htmlTemplate += '<div class=\"vrtx-url-label\">';
+      htmlTemplate = '<div class=\"vrtx-resource-ref-browse\">';
+      htmlTemplate += '<div class=\"vrtx-resource-ref-browse-label\">';
       htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
       htmlTemplate += '<\/div>';
-      htmlTemplate += '<div class=\"vrtx-url-browse\">';
+      htmlTemplate += '<div class=\"vrtx-resource-ref-browse-browse\">';
       htmlTemplate += '<div class=\"vrtx-textfield\"><input type=\"text\" name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" value=\"\" size=\"40\" \/><\/div>';
-      htmlTemplate += '<div class=\"vrtx-button\"><button type=\"button\" onclick=\"browseServer(' + inputFieldName + ', \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\',\'File\');\"><@vrtx.msg code="editor.browseImages" /><\/button><\/div>';
+      htmlTemplate += '<div class=\"vrtx-button\"><button type=\"button\" onclick=\"browseServer(\'' + inputFieldName + '\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\',\'File\');\"><@vrtx.msg code="editor.browseImages" /><\/button><\/div>';
       htmlTemplate += '<\/div>';
       htmlTemplate += '<\/div>';
       return htmlTemplate;
@@ -291,7 +291,7 @@
       htmlTemplate += '<div><label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
       htmlTemplate += '<\/div><div>';
       htmlTemplate += '<div class=\"vrtx-textfield\"><input type=\"text\" id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage(' + inputFieldName + ');\" size=\"30\"\/><\/div>';
-      htmlTemplate += '<div class=\"vrtx-button\"><button type=\"button\" onclick=\"browseServer(' + inputFieldName + ', \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\', \'Media\');\"><@vrtx.msg code="editor.browseImages" /><\/button><\/div>';
+      htmlTemplate += '<div class=\"vrtx-button\"><button type=\"button\" onclick=\"browseServer(\'' + inputFieldName + '\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\', \'Media\');\"><@vrtx.msg code="editor.browseImages" /><\/button><\/div>';
       htmlTemplate += '<\/div><\/div>'
       return htmlTemplate;
     }

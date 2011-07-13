@@ -1178,7 +1178,7 @@ function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
                     + baseFolder + '&Type=Image&Connector=' + editorBrowseUrl, screen.width * 0.7, screen.height * 0.7);
   }
 }
-
+ 
 function openServerBrowser(url, width, height) {
   var iLeft = (screen.width - width) / 2;
   var iTop = (screen.height - height) / 2;

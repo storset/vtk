@@ -160,7 +160,7 @@ $(document).ready(function () {
   }
   
   // AJAX INIT: Permission privilegie forms (READ, READ_WRITE, ALL)
-  
+  /*
   var privilegiesPermissions = ["read",
                                 "read-write",
                                 "all"];
@@ -172,7 +172,8 @@ $(document).ready(function () {
       insertAfterOrReplaceClass: "div.permissions-" + privilegiesPermissions[i] + "-wrapper",
       isReplacing: true,
       nodeType: "div",
-      funcComplete: initPermissionForm
+      funcComplete: initPermissionForm,
+      simultanSliding: true
     };
     vrtxAdmin.getAjaxForm(getAjaxOptions);
     
@@ -186,6 +187,7 @@ $(document).ready(function () {
     };            
     vrtxAdmin.postAjaxForm(postAjaxOptions);
   }
+  */
   
   // AJAX INIT: More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
   
@@ -1164,6 +1166,27 @@ function previewImage(urlobj) {
       previewNode.innerHTML = '';
     }
   }
+  $(previewNode).find("img").load(function() {
+    var previewNodeImg = $(this);
+    var container = $(previewNode).parent().parent();
+    
+    if(container.attr("id") == "vrtx-resource.picture") { // old
+      var origHeight = 241;
+      var d = 29;
+    } else if(container.attr("class").indexOf("introImageAndCaption") != -1) { // new
+      var origHeight = 260;
+      var d = 20;
+    } else {
+      return;
+    }
+ 
+    if((previewNodeImg.height() + d) > origHeight) {
+      container.css("height", (previewNodeImg.height() + d) + "px");
+    } else {
+      container.css("height", origHeight + "px");
+    }
+  });
+  //previewNode.closest(".vrtx-grouped-vertical").height();
 }
 
 var urlobj;

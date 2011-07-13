@@ -167,6 +167,10 @@ div#vrtx-resource\.picture {
   height: 260px;
 }
 
+div#vrtx-resource\.picture {
+  height: 241px;
+}
+
 div.introImageAndCaption .header {
   display: none;
 }
@@ -205,7 +209,11 @@ div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield {
 div.introImageAndCaption div#picture\.preview,
 div#vrtx-resource\.picture div#resource\.picture\.preview {
   margin: 0 0 0 346px;
-  height: 184px;
+}
+
+div.introImageAndCaption img,
+div#vrtx-resource\.picture img {
+  margin-top: 0px;
 }
 
 /* ^ Image and caption */

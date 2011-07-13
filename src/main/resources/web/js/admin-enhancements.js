@@ -1073,6 +1073,17 @@ function loadFeaturedArticles(addName, removeName, browseName, editorBase, baseF
   for (var i = 0, len = listOfFiles.length; i < len; i++) {
     addFormFieldFunc(jQuery.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
   }
+  
+  // TODO !spageti
+  if (requestFromEditor()) {
+    storeInitPropValues();
+  }
+}
+
+// Stupid test to check if script is loaded from editor
+// UNSAVED_CHANGES_CONFIRMATION is defined in "structured-resource/editor.ftl"
+function requestFromEditor() {
+  return !(typeof(UNSAVED_CHANGES_CONFIRMATION) === "undefined");
 }
 
 var countId = 1;

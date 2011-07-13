@@ -745,8 +745,7 @@ ul.list-menu.resourceMenuRight li h3 {
   margin: 9px 0 5px 0;
 }
 
-/*
-div#resource-menu-right .lock h3, */
+ul.list-menu.resourceMenuRight .manage\.unlockFormService h3,
 ul.list-menu.resourceMenuRight span.published {
   background: url(images/lock.png) no-repeat 100% 1px;
   padding-right: 18px;

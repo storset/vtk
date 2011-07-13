@@ -660,7 +660,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
     // TODO: the URL sometimes get corrupted if switchin between props edit and e.g. create archive..
     //       (problem with delegate(?))      
                           
-    var url = $(this).attr("href") || $(this).closest("form").attr("action"); 
+    var url = $(this).attr("href") || $(this).closest("form").attr("action");
                        
     if(location.protocol == "http:" && url.indexOf("https://") != -1) {
       return; // no AJAX when http -> https (tmp. solution)
@@ -714,14 +714,18 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
           var resultSelectorClass = "";
           for(var i = resultSelectorClasses.length; i--;) {
             if(resultSelectorClasses[i].indexOf("expandedForm") == -1
-               && resultSelectorClasses[i].indexOf("nodeType") == -1) {
-              if(resultSelectorClasses[i] 
-                 && resultSelectorClass.indexOf(resultSelectorClasses[i]) == -1) {
-                resultSelectorClass += "." + resultSelectorClasses[i];
-              }  
+               && resultSelectorClasses[i].indexOf("nodeType") == -1
+               && resultSelectorClasses[i] 
+               && resultSelectorClass.indexOf(resultSelectorClasses[i]) == -1
+               && resultSelectorClasses[i].indexOf("even") == -1
+               && resultSelectorClasses[i].indexOf("odd") == -1
+               && resultSelectorClasses[i].indexOf("first") == -1
+               && resultSelectorClasses[i].indexOf("last") == -1) {
+                 resultSelectorClass += "." + resultSelectorClasses[i]; 
             }  
           } 
           // --
+          
           $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, function() {
             if(existExpandedFormIsReplacing) {
               var expanded = $(this);
@@ -755,7 +759,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
               } else {
                 var resultHtml = vrtxAdmin.outerHTML(results, $.trim(resultSelectorClass));
                 
-                // If all went wrong - refresh page instead
+                // If all went wrong
                 if(!resultHtml) {
                   vrtxAdmin.error(args, "retrieved existing expandedForm from " + url + " is null");
                 }

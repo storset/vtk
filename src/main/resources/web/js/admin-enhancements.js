@@ -721,7 +721,8 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
                && resultSelectorClasses[i].indexOf("odd") == -1
                && resultSelectorClasses[i].indexOf("first") == -1
                && resultSelectorClasses[i].indexOf("last") == -1) {
-                 resultSelectorClass += "." + resultSelectorClasses[i]; 
+                 resultSelectorClass = "." + resultSelectorClasses[i];
+                 break;
             }  
           } 
           // --

@@ -53,10 +53,10 @@
         <@vrtx.msg code=publishedStatusMsgKey default="" />
         <#if isPublished>
           <#assign titleMsg = vrtx.getMsg("confirm-publish.title.unpublish") />
-          &nbsp;<a class="vrtx-button-small thickbox" href="${unPublishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" title="${titleMsg}"><span><@vrtx.msg code="publish.action.unpublish" default="unpublish" /></span></a>
+          &nbsp;<a class="vrtx-button-small thickbox" href="${unPublishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" title="${titleMsg}"><span><@vrtx.msg code="publish.action.unpublish" default="Unpublish" /></span></a>
         <#else>
           <#assign titleMsg = vrtx.getMsg("confirm-publish.title.publish") />
-          &nbsp;<a class="vrtx-button-small thickbox" href="${publishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" title="${titleMsg}"><span><@vrtx.msg code="publish.action.publish" default="publish" /></span></a>
+          &nbsp;<a class="vrtx-button-small thickbox" href="${publishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" title="${titleMsg}"><span><@vrtx.msg code="publish.action.publish" default="Publish" /></span></a>
         </#if>
         </div>
         <@displayOrEdit "publish-date" "publishDate" editPublishDateUrl />

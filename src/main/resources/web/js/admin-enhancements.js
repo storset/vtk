@@ -76,7 +76,6 @@ $(document).ready(function () {
   var resourceMenuLeftServices = ["renameService",
                                   "manage\\.createArchiveService"];
 
-  // Performance: reversed for-loop is reported faster than reversed while-loop when few iterations (source)
   for (var i = resourceMenuLeftServices.length; i--;) {
     getAjaxOptions = {
         selector: "#titleContainer a#" + resourceMenuLeftServices[i],

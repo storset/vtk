@@ -15,7 +15,7 @@
 <h3>${headerMsg}</h3>
 <p><span class="published"><@vrtx.msg code="publishing.publish-date" /></span></p>
 <form id="vrtx-unpublish-document" action="${actionURL?html}" method="${method}" class="vrtx-admin-button">
-   <div class="vrtx-button"><button title="${titleMsg}" type="submit"
+   <div class="vrtx-button-small"><button title="${titleMsg}" type="submit"
             id="vrtx-unpublish-document.submit"
             value="upublish-document" name="action">${item.title?html}</button></div>
 </form>

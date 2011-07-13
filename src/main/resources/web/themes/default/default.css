@@ -399,7 +399,7 @@ a:hover {
   width: 940px;
   margin: 0 auto;
   text-align: left;
-  padding: 15px 0 0 0;
+  padding: 10px 0 0 0;
   margin-bottom: 30px;
   position: relative;
 }
@@ -430,7 +430,7 @@ div.resource-title {
   position: relative;
 }
 div.resource-title h1 {
-  margin: 0 0 15px 36px;
+  margin:  0 0 15px 36px;
   float: left;
 }
 
@@ -727,7 +727,8 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 ul.list-menu.resourceMenuRight {
   float: right;
-  height: 86px;
+  min-height: 86px;
+  margin-top: -8px;
 }
 
 ul.list-menu.resourceMenuRight li {
@@ -735,13 +736,13 @@ ul.list-menu.resourceMenuRight li {
   float: left;
   margin: 0 0 0 25px;
   padding: 0 0 0 25px;
-  height: 86px;
+  min-height: 86px;
 }
 
 ul.list-menu.resourceMenuRight li h3 {
   font-size: 1.15em;
   font-weight: bold;
-  margin: 9px 0 10px 0;
+  margin: 9px 0 5px 0;
 }
 
 /*

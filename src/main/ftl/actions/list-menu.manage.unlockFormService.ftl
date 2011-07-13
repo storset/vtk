@@ -21,7 +21,7 @@
 <h3>${headerMsg}</h3>
 <p>${lockedBy}</p>
 <form id="vrtx-unlock" action="${actionURL?html}" method="${method}" class="vrtx-admin-button">
-   <div class="vrtx-button"><button title="${titleMsg}" type="submit"
+   <div class="vrtx-button-small"><button title="${titleMsg}" type="submit"
             id="vrtx-unlock.submit"
             value="unlock-resource" name="action">${item.title?html}</button></div>
 </form>

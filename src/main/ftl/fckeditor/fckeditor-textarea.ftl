@@ -13,8 +13,8 @@
  -->
 <#macro declareEditor>
   <#if !__editorDeclared?exists>
-   	<script type="text/javascript" src="${jquery}"></script>
-  	<script type="text/javascript" src="${jsBaseURL?html}/editor-ck-setup.js"></script>
+   	<script type="text/javascript" src="${jsBaseURL?html}/../jquery/include-jquery.js"></script>
+  	<script type="text/javascript" src="${jsBaseURL?html}/editor-ck-setup-helper.js"></script>
   	<script type="text/javascript" src="${fckeditorBase.url?html}/ckeditor.js"></script>
  	 <script type="text/javascript" src="${fckeditorBase.url?html}/adapters/jquery.js"></script>
     <#assign __editorDeclared = true />

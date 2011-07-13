@@ -48,7 +48,7 @@
       </#if>];
       
     // Fix for div container display in IE
-    if ($.browser.msie && $.browser.version <= 7) {
+    if (vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7) {
      cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
     }
     

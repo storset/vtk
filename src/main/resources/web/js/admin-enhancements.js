@@ -1217,7 +1217,7 @@ VrtxAdmin.prototype.log = function(options) {
     if(options.args) {
       console.log("Vortex admin log -> " + options.args.callee.name + ": " + options.msg);
     } else {
-      console.log("Vortex admin: " + options.msg);    
+      console.log("Vortex admin log: " + options.msg);    
     }
   }
 };

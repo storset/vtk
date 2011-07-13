@@ -163,11 +163,15 @@ $(document).ready(function () {
   }
   
   // AJAX INIT: Permission privilegie forms (READ, READ_WRITE, ALL)
-  /*
   var privilegiesPermissions = ["read",
                                 "read-write",
                                 "all"];
+                                
+  for (i = privilegiesPermissions.length; i--;) {                              
+    initPermissionForm("expandedForm-" + privilegiesPermissions[i]);
+  }
 
+  /*
   for (i = privilegiesPermissions.length; i--;) {
     getAjaxOptions = {
       selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax",

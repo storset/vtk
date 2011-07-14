@@ -113,7 +113,7 @@
       </list>
     </property>
   </bean>
-
+ <!--
   <bean id="browse.resourceMenuLeftComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.browseNamespace" />
@@ -126,6 +126,7 @@
   <bean id="browse.resourceMenuLeftView" parent="freemarkerView">
     <property name="url" value="system/resource-menu-left.ftl" />
   </bean>
+  -->
 
   <bean id="browse.cssComponent"
         class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">

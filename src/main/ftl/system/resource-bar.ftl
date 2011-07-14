@@ -3,9 +3,13 @@
 
 <#assign resource = resourceContext.currentResource />
 
-<@gen resource resourceMenuLeft resourceMenuRight />
+<#if resource?exists && resourceMenuLeft?exists && resourceMenuRight?exists>
+  <@gen resource resourceMenuLeft resourceMenuRight />
+<#elseif resource?exists && resourceMenuLeft?exists>
+  <@gen resource resourceMenuLeft />
+</#if>
 
-<#macro gen resource resourceMenuLeft resourceMenuRight>
+<#macro gen resource resourceMenuLeft resourceMenuRight="">
   <div id="titleContainer">
     <div class="resource-title ${resource.resourceType?html} ${resource.collection?string}">
       <h1>
@@ -16,7 +20,9 @@
         </#if>
       </h1>
       <@listMenu.listMenu menu=resourceMenuLeft displayForms=true prepend="" append=""/>
-      <@listMenu.listMenu menu=resourceMenuRight displayForms=true prepend="" append=""/>
+      <#if resourceMenuRight != "">
+        <@listMenu.listMenu menu=resourceMenuRight displayForms=true prepend="" append=""/>
+      </#if>
     </div>
   </div>
 </#macro>

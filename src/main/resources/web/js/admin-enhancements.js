@@ -425,11 +425,18 @@ function collectionListingInteraction() {
   placeDeletePermanentButtonInActiveTab();
   
   // Checking rows in collectionlisting
-  $(".vrtx-check-all").click(checkAll);
-  $(".vrtx-uncheck-all").click(uncheckAll);
+    
+  $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />")
+  $("th.checkbox input").click(function() {
+    if(this.checked) {
+      checkAll();
+    } else {
+      uncheckAll();
+    }
+  });
 
-  $(".checkbox input").click(toggleChecked);
-  $(".checkbox").click(function () {
+  $("td.checkbox input").click(toggleChecked);
+  $("td.checkbox").click(function () {
     $(this).find("input").each(toggleChecked);
   });
 }
@@ -528,14 +535,14 @@ function placeDeletePermanentButtonInActiveTab() {
 }
 
 function checkAll() {
-  $(".checkbox input").each(function () {
+  $("td.checkbox input").each(function () {
     this.checked = true;
     switchCheckedRow(this);
   });
 }
 
 function uncheckAll() {
-  $(".checkbox input").each(function () {
+  $("td.checkbox input").each(function () {
     this.checked = false;
     switchCheckedRow(this);
   });

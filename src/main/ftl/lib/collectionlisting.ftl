@@ -166,12 +166,12 @@
                 <span class="authorizedListedResource">${child.name}</span>
               </a>
               <#if withForm>
-               </td><td class="checkbox" align="center"><input name="${child.URI?html}" type="checkbox"/>
+               </td><td class="checkbox"><input name="${child.URI?html}" type="checkbox"/>
               </#if>
             <#else>
               <span class="unauthorizedListedResource">${child.name}</span>
               <#if withForm>
-                </td><td class="checkbox" align="center">&nbsp;
+                </td><td class="checkbox">&nbsp;
               </#if> 
             </#if>
             <#break>
@@ -267,11 +267,6 @@
   </#list>
  </tbody>
 </table>
- <div id="collectionListing.checkUncheckAll">
-  Markér:&nbsp;
-  <a href="javascript:void(0);" class="vrtx-check-all" > <@vrtx.msg code="collectionListing.all" default="All"/></a>,&nbsp;
-  <a href="javascript:void(0);" class="vrtx-uncheck-all"> <@vrtx.msg code="collectionListing.none" default="none"/></a>
- </div>
  
  <#if withForm>
   <div id="collectionListing.submit">

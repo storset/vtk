@@ -933,11 +933,12 @@ ul.list-menu.tabMenu2 li.deleteResourcePermanentService a {
   position: relative;
 }
 
+/*
 #vrtx-manage-collectionlisting #app-content #main,
 #vrtx-trash-can #app-content #main,
 #vrtx-report-documents #app-content #main {
   padding-bottom: 34px;
-}
+} */
 
 #app-content #main #contents table.directoryListing {
   width: 100%;
@@ -987,7 +988,7 @@ ul.list-menu.tabMenu2 li.deleteResourcePermanentService a {
   white-space: nowrap;
 }
 
-#app-content #main #contents table.directoryListing tr td.checkbox {
+#app-content #main #contents table.directoryListing tr .checkbox {
   padding-right: 30px;
 }
 

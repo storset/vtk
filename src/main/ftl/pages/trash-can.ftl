@@ -81,11 +81,6 @@
     </#list>
 
   </table>
-  <div id="collectionListing.checkUncheckAll">
-    Markér:&nbsp;
-    <a href="javascript:void(0);" class="vrtx-check-all" > <@vrtx.msg code="collectionListing.all" default="All"/></a>,&nbsp;
-    <a href="javascript:void(0);" class="vrtx-uncheck-all"> <@vrtx.msg code="collectionListing.none" default="none"/></a>
-  </div>
 
   <input class="recoverResource" type="submit" name="recoverAction"
                value="<@vrtx.msg code="trash-can.recover" default="Recover"/>"/>

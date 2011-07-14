@@ -1317,6 +1317,64 @@
       </list>
     </property>
   </bean>
+  
+  <bean id="resourceBarService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-200" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="mode" />
+          <property name="parameterValue" value="show-resource-bar" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="resourceBarHandler" />
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
+  </bean>
+  
+  <bean name="resourceBarHandler" class="org.vortikal.web.display.AController">
+    <property name="viewName" value="resourceBarIframeView" />
+  </bean>
+  
+  <bean id="manage.resourceBarComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="resource-bar" />
+    <property name="description" value="Displays resource bar" />
+    <property name="view" ref="resourceBarView" />
+  </bean>
+ 
+  <bean id="resourceBarView" parent="freemarkerView">
+    <property name="url" value="system/resource-bar.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="resourceMenuLeftProvider" />
+        <ref bean="resourceMenuRightProvider" />
+      </list>
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="repositoryID" value="${repositoryID}" />
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="resourceBarIframeView" parent="freemarkerView">
+    <property name="url" value="system/resource-bar-iframe.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="resourceMenuLeftProvider" />
+        <ref bean="resourceMenuRightProvider" />
+      </list>
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="repositoryID" value="${repositoryID}" />
+      </map>
+    </property>
+  </bean>
 
   <bean id="manage.infoMessageComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
@@ -1335,62 +1393,6 @@
           <property name="repositoryId" value="${repositoryID}" />
           <property name="defaultFile" value="${manage.infoMessageDefaultFile}" />
         </bean>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="manage.resourceHeaderComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="decorating.manageNamespace" />
-    <property name="name" value="resource-header" />
-    <property name="description" value="Displays the resource name or repository ID for root" />
-    <property name="view" ref="manage.resourceHeaderView" />
-    <property name="exposeMvcModel" value="true" />
-  </bean>
-
-  <bean id="manage.resourceHeaderView" parent="freemarkerView">
-    <property name="url" value="system/resource-header.ftl" />
-    <property name="referenceDataProviders">
-      <ref bean="resourceContextProvider" />
-    </property>
-    <property name="attributesMap">
-      <map>
-        <entry key="repositoryID" value="${repositoryID}" />
-      </map>
-    </property>
-  </bean>
-
-  <bean id="manage.resourceMenuLeftComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="decorating.manageNamespace" />
-    <property name="name" value="resource-menu-left" />
-    <property name="description" value="Displays the admin global menu" />
-    <property name="view" ref="manage.resourceMenuLeftView" />
-    <property name="exposeMvcModel" value="true" />
-  </bean>
-
-  <bean id="manage.resourceMenuLeftView" parent="freemarkerView">
-    <property name="url" value="system/resource-menu-left.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <ref bean="resourceMenuLeftProvider" />
-      </list>
-    </property>
-  </bean>
-  
-  <bean id="manage.resourceMenuRightComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="decorating.manageNamespace" />
-    <property name="name" value="resource-menu-right" />
-    <property name="description" value="Displays the admin global menu" />
-    <property name="view" ref="manage.resourceMenuRightView" />
-    <property name="exposeMvcModel" value="true" />
-  </bean>
-
-  <bean id="manage.resourceMenuRightView" parent="freemarkerView">
-    <property name="url" value="system/resource-menu-right.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <ref bean="resourceMenuRightProvider" />
       </list>
     </property>
   </bean>

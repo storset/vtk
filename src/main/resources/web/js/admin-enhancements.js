@@ -1269,10 +1269,12 @@ VrtxAdmin.prototype.wrap = function(node, cls, html) {
 
 // jQuery outerHTML (because FF don't support regular outerHTML)
 VrtxAdmin.prototype.outerHTML = function(selector, subselector) {
-  if(typeof $(selector).find(subselector)[0].outerHTML !== "undefined") {
-    return $(selector).find(subselector)[0].outerHTML;
-  } else {
-    return $('<div>').append($(selector).find(subselector).clone()).html();
+  if($(selector).find(subselector).length) { 
+    if(typeof $(selector).find(subselector)[0].outerHTML !== "undefined") {
+      return $(selector).find(subselector)[0].outerHTML;
+    } else {
+      return $('<div>').append($(selector).find(subselector).clone()).html();
+    }
   }
 };
 

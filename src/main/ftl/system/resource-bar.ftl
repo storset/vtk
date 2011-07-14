@@ -19,10 +19,10 @@
           ${resource.name?html}
         </#if>
       </h1>
-      <@listMenu.listMenu menu=resourceMenuLeft displayForms=true prepend="" append=""/>
       <#if resourceMenuRight != "">
         <@listMenu.listMenu menu=resourceMenuRight displayForms=true prepend="" append=""/>
       </#if>
+      <@listMenu.listMenu menu=resourceMenuLeft displayForms=true prepend="" append=""/>
     </div>
   </div>
 </#macro>

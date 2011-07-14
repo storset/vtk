@@ -425,15 +425,16 @@ function collectionListingInteraction() {
   placeDeletePermanentButtonInActiveTab();
   
   // Checking rows in collectionlisting
-    
-  $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />")
-  $("th.checkbox input").click(function() {
-    if(this.checked) {
-      checkAll();
-    } else {
-      uncheckAll();
-    }
-  });
+  if($("td.checkbox").length) {
+    $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />")
+    $("th.checkbox input").click(function() {
+      if(this.checked) {
+        checkAll();
+      } else {
+        uncheckAll();
+      }
+    });
+  }
 
   $("td.checkbox input").click(toggleChecked);
   $("td.checkbox").click(function () {

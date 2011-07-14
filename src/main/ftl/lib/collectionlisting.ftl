@@ -30,10 +30,6 @@
   'collectionListing' missing">
 </#if>
 
-<#if (collectionListing.children?size < 1)>
-  <p class="collectionlisting-empty"><@vrtx.msg code="collectionListing.empty" default="This collection is empty"/>.</p>
-<#else>
-
 <#if withForm>
   <form name="collectionListingForm" action="${action}" method="post" accept-charset="UTF-8">
 </#if>
@@ -124,23 +120,26 @@
   <#assign rowType = "odd">
   <#assign collectionSize = collectionListing.children?size />
   
-  <#list collectionListing.children as child>
+  <#if (collectionSize > 0)>
   
-  <#assign firstLast = ""  />
-  <#if (child_index == 0) && (child_index == (collectionSize - 1))>
-    <#assign firstLast = " first last" /> 
-  <#elseif (child_index == 0)>
-    <#assign firstLast = " first" />
-  <#elseif (child_index == (collectionSize - 1))>    
-    <#assign firstLast = " last" />     
-  </#if>
+    <#list collectionListing.children as child>
   
-  <#if child.collection>
-    <tr class="${rowType} <@vrtx.iconResolver child.resourceType child.contentType /> true${firstLast}">  
-  <#else>
-    <tr class="${rowType} <@vrtx.iconResolver child.resourceType child.contentType />${firstLast}">
-  </#if>
-   <#list collectionListing.childInfoItems as item>
+    <#assign firstLast = ""  />
+    <#if (child_index == 0) && (child_index == (collectionSize - 1))>
+      <#assign firstLast = " first last" /> 
+    <#elseif (child_index == 0)>
+      <#assign firstLast = " first" />
+    <#elseif (child_index == (collectionSize - 1))>    
+      <#assign firstLast = " last" />     
+    </#if>
+  
+    <#if child.collection>
+      <tr class="${rowType} <@vrtx.iconResolver child.resourceType child.contentType /> true${firstLast}">  
+    <#else>
+      <tr class="${rowType} <@vrtx.iconResolver child.resourceType child.contentType />${firstLast}">
+    </#if>
+    
+    <#list collectionListing.childInfoItems as item>
       <#assign class = item >
       <#if item = "locked" && child.lock?exists>
         <#assign class = class + " activeLock">
@@ -238,6 +237,7 @@
         </#switch>
       </td>
     </#list>
+    
     <#list collectionListing.linkedServiceNames as item>
       <td class="${item}">
         <#if collectionListing.childLinks[child_index][item]?has_content>
@@ -265,6 +265,12 @@
     <#assign rowType = "even">
   </#if>
   </#list>
+  <#else>  
+    <tr id="collectionlisting-empty" class="first last">
+      <td colspan="5"><@vrtx.msg code="collectionListing.empty" default="This collection is empty"/></td>
+    </tr>
+  </#if> 
+  
  </tbody>
 </table>
  
@@ -285,8 +291,6 @@
     </#list>
   </div>
   </form>
-</#if>
- 
 </#if>
 
 </#macro>

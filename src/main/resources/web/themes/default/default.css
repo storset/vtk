@@ -1147,15 +1147,18 @@ body#vrtx-preview #app-content #main #contents {
   border: 1px solid #d9d9d9;
 }
 
-body#vrtx-preview #app-content #main #contents .previewUnavailable,
-body#vrtx-trash-can #app-content #main #contents .trash-can-empty,
-body#vrtx-manage-collectionlisting #app-content #main #contents .collectionlisting-empty {
+body#vrtx-preview #app-content #main #contents .previewUnavailable {
   margin: 10px 14px;
 }
 
-body#vrtx-trash-can #app-content #main #contents .trash-can-empty,
-body#vrtx-manage-collectionlisting #app-content #main #contents .collectionlisting-empty {
-  margin-top: 5px;
+body#vrtx-trash-can #app-content #main #contents #trash-can-empty,
+body#vrtx-manage-collectionlisting #app-content #main #contents #collectionlisting-empty {
+  text-align: center;
+}
+
+body#vrtx-trash-can #app-content #main #contents #trash-can-empty td,
+body#vrtx-manage-collectionlisting #app-content #main #contents #collectionlisting-empty td {
+  padding: 25px 0 30px 0;
 }
 
 body#vrtx-permissions #permissions-read-write-admin {

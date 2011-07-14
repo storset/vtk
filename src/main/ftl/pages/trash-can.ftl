@@ -34,7 +34,6 @@
 <#setting number_format="0">
 
 <@spring.bind "trashcan.trashCanObjects" />
-<#if (spring.status.value?size > 0) >
   <@spring.bind "trashcan.submitURL" />
   <form class="trashcan" action="${spring.status.value?html}" method="post">
 
@@ -49,6 +48,9 @@
 
     <@spring.bind "trashcan.trashCanObjects" />
     <#assign collectionSize = spring.status.value?size />
+    
+    <#if (collectionSize > 0) >
+    
     <#list spring.status.value as tco>
       <#assign rr = tco.recoverableResource />
       
@@ -79,6 +81,11 @@
           <td class="vrtx-trash-can-deleted-time"><@printDeletedTime tco.recoverableResource.deletedTime /></td>
         </tr>
     </#list>
+    <#else>
+      <tr id="trash-can-empty" class="first last">
+        <td colspan="4"><@vrtx.msg code="trash-can.empty" default="The trash can contains no garbage" /></td>
+      </tr>
+    </#if>
 
   </table>
 
@@ -87,9 +94,6 @@
   <input class="deleteResourcePermanent" type="submit" name="deletePermanentAction"
                value="<@vrtx.msg code="trash-can.delete-permanent" default="Delete permanently"/>"/>
 </form>
-<#else>
-  <p class="trash-can-empty"><@vrtx.msg code="trash-can.empty" default="The trash can contains no garbage." /></p>
-</#if>
 
 </body>
 </html>

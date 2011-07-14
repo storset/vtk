@@ -533,8 +533,6 @@
 </#macro>
 
 <#macro iconResolver resourceType="" contentType="">
-  ${resourceType}
-  <#-- Wait until 3.x
   <#compress>
     <#if resourceType = "file">
       <#if contentType = "application/octet-stream">
@@ -545,7 +543,7 @@
     <#else>
       ${resourceType}
     </#if>
-  </#compress> -->
+  </#compress>
 </#macro>
 
 <#function resolveInheritedProperty propertyName>

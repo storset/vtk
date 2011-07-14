@@ -1,5 +1,6 @@
 <#ftl strip_whitespace=true />
 <#import "/lib/menu/list-menu.ftl" as listMenu />
+<#import "/lib/vortikal.ftl" as vrtx />
 
 <#assign resource = resourceContext.currentResource />
 
@@ -11,7 +12,7 @@
 
 <#macro gen resource resourceMenuLeft resourceMenuRight="">
   <div id="titleContainer">
-    <div class="resource-title ${resource.resourceType?html} ${resource.collection?string}">
+    <div class="resource-title <@vrtx.iconResolver resource.resourceType resource.contentType /> ${resource.collection?string}">
       <h1>
         <#if resource.URI == '/'>
           ${repositoryID?html}

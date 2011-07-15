@@ -1021,6 +1021,13 @@ body#vrtx-report-documents #app-content #main #contents table.directoryListing t
   border-bottom: 1px solid #c7dadf;
 }
 
+#app-content #main #contents table.directoryListing tr#trash-can-empty:hover td,
+#app-content #main #contents table.directoryListing tr#trash-can-empty.hover td,
+#app-content #main #contents table.directoryListing tr#collectionlisting-empty:hover td,
+#app-content #main #contents table.directoryListing tr#collectionlisting-empty.hover td {
+  background: none;
+}
+
 #app-content #main #contents table.directoryListing tr.first:hover td,
 #app-content #main #contents table.directoryListing tr.first.hover td {
   border-top: none;

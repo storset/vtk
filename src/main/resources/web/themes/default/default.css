@@ -729,7 +729,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 ul.list-menu.resourceMenuRight {
   float: right;
   min-height: 86px;
-  margin-top: -8px;
+  margin-top: -12px;
 }
 
 ul.list-menu.resourceMenuRight li {

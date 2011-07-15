@@ -30,11 +30,12 @@
  */
 package org.vortikal.resourcemanagement.service;
 
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.resourcemanagement.ServiceDefinition;
 
 public interface ExternalService {
 
-    public void invoke(PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition);
+    public void invoke(Property property, PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition);
 
 }

@@ -39,6 +39,7 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.resourcemanagement.ServiceDefinition;
 
 public class ExternalServiceInvoker implements ApplicationContextAware {
@@ -58,7 +59,7 @@ public class ExternalServiceInvoker implements ApplicationContextAware {
         String serviceName = serviceDefinition.getServiceName();
         if (this.applicationContext != null && this.applicationContext.containsBean(serviceName)) {
             ExternalService externalService = (ExternalService) this.applicationContext.getBean(serviceName);
-            externalService.invoke(ctx, serviceDefinition);
+            externalService.invoke(property, ctx, serviceDefinition);
         }
     }
 
@@ -79,6 +80,13 @@ public class ExternalServiceInvoker implements ApplicationContextAware {
     }
 
     private boolean invalidProperty(Property property) {
+        if (property == null) {
+            return true;
+        }
+        if (property.getDefinition().isMultiple()) {
+            Value[] values = property.getValues();
+            return values == null || values.length == 0;
+        }
         return property == null || property.getValue() == null
                 || (Type.BOOLEAN.equals(property.getDefinition().getType()) && property.getBooleanValue() == false);
     }

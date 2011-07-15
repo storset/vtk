@@ -1393,8 +1393,8 @@ div.tabMessage {
   padding-left: 50px;
   padding-right: 50px;
 
-  /* Remove scrollbars when not needed */
-  overflow: hidden;
+  /* TODO: remove scrollbars when not needed */
+  /* overflow: hidden; */
 }
 
 .app-fluid #app-footer {

@@ -1373,12 +1373,12 @@ div.tabMessage {
 \*-----------------------------------------*/
 
 .app-fluid {
-  min-width: 949px;
+  min-width: 994px;
 }
 
 .app-fluid #app-head-wrapper,
 .app-fluid #app-footer-wrapper {
-  min-width: 949px;
+  min-width: 994px;
   width: 100%;
 }
 
@@ -1395,7 +1395,7 @@ div.tabMessage {
 
 .app-fluid #app-content {
   width: auto;
-  min-width: 849px;
+  min-width: 894px;
   max-width: 1200px;
   padding-left: 50px;
   padding-right: 50px;

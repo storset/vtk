@@ -8,16 +8,16 @@ ul.vrtx-reporters {
   margin-left: 0px;
 }
 
-div.vrtx-report {
+body.vrtx-permission-tree div.vrtx-report {
   position: relative;
-  min-height: 150px;
+  min-height: 219px;
 }
 
-div.vrtx-report div.vrtx-subfolder-menu {
+body.vrtx-permission-tree div.vrtx-report div.vrtx-subfolder-menu {
   border: none;
 }
 
-div.vrtx-report span.file a {
+body.vrtx-permission-tree div.vrtx-report span.file a {
   text-decoration: none !important;
   color: black !important;
 }

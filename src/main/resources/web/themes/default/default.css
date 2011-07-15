@@ -1301,7 +1301,7 @@ table.resourceInfo form#propertyForm ul.property .vrtx-textfield {
 }
 
 #vrtx-admin-ownership-form {
-  display: inline-block;
+  display: inline;
 }
 
 body#vrtx-edit-plaintext textarea {

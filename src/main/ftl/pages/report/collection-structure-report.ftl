@@ -49,7 +49,7 @@
      // -->
   </script>
   </head>
-  <body id="vrtx-report">
+  <body id="vrtx-report" class="vrtx-permission-tree">
   <div class="resourceInfo">
     <div class="vrtx-report-nav">
   	  <div class="back">

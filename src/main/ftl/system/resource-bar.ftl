@@ -11,13 +11,13 @@
 </#if>
 
 <#macro gen resource resourceMenuLeft resourceMenuRight="">
-  <div id="titleContainer">
+  <#if (resourceMenuLeft.items?size > 1)>
+    <div id="titleContainer">
+  <#else>
+    <div id="titleContainer" class="vrtx-compact-header">  
+  </#if>
     <div class="resource-title <@vrtx.iconResolver resource.resourceType resource.contentType /> ${resource.collection?string}">
-      <#if (resourceMenuLeft.items?size > 0)>
-        <h1>
-      <#else>
-        <h1 class="vrtx-compact-header">
-      </#if>
+      <h1>
         <#if resource.URI == '/'>
           ${repositoryID?html}
         <#else>

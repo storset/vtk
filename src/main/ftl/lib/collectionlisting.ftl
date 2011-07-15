@@ -231,10 +231,12 @@
             <#break>
             
          <#case "published">
-            <#if published?exists && child.collection?string == "false" && child.contentType == "application/json">
+            <#if published?exists 
+                 && child.collection?string == "false"
+                 && child.contentType == "application/json">
               <#if published == "true">
                 ${vrtx.getMsg("publish.permission.published")}
-              <#elseif published == "false">
+              <#else>
                 ${vrtx.getMsg("publish.permission.unpublished")}
               </#if>
             <#else>

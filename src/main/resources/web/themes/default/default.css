@@ -1373,12 +1373,12 @@ div.tabMessage {
 \*-----------------------------------------*/
 
 .app-fluid {
-  min-width: 880px;
+  min-width: 949px;
 }
 
 .app-fluid #app-head-wrapper,
 .app-fluid #app-footer-wrapper {
-  min-width: 880px;
+  min-width: 949px;
   width: 100%;
 }
 
@@ -1395,13 +1395,13 @@ div.tabMessage {
 
 .app-fluid #app-content {
   width: auto;
-  min-width: 780px;
+  min-width: 849px;
   max-width: 1200px;
   padding-left: 50px;
   padding-right: 50px;
 
   /* TODO: remove scrollbars when not needed */
-  /* overflow: hidden; */
+  overflow: hidden;
 }
 
 .app-fluid #app-footer {

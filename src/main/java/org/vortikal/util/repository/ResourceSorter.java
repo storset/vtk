@@ -301,14 +301,46 @@ public class ResourceSorter {
         }
 
         @Override
-        public int compare(Resource r1, Resource r2) {
-            Property rr1 = r1.getProperty(Namespace.DEFAULT_NAMESPACE, "published");
-            Property rr2 = r2.getProperty(Namespace.DEFAULT_NAMESPACE, "published");
+        public int compare(Resource r1, Resource r2) { 
+            String rr1 = r1.isPublished() ? "true" : "false";
+            String rr2 = r2.isPublished() ? "true" : "false";
+            
+            // TODO: less hacky solution for checking if it is JSON and !collection
+            //       now other files with 'application/json' is also considered published/unpublished..
+            if(r1.getContentType() == null || !r1.getContentType().equals("application/json")) {
+              rr1 = null;
+            }
+            if(r2.getContentType() == null || !r2.getContentType().equals("application/json")) {
+              rr2 = null;
+            }
+            if(r1.isCollection()) {
+              rr1 = null;
+            }
+            if(r2.isCollection()) {
+              rr2 = null;
+            }
+            
+            if (rr1 != null && rr2 == null) {
+              if(!this.invert) {
+                return 1;
+              } else { 
+                return -1;
+              }
+            } else if (rr1 == null && rr2 != null) {
+             if(!this.invert) {
+               return -1;
+             } else {
+               return 1;
+             }
+            } else if(rr1 == null && rr2 == null) {
+              return 0;
+            }
+            // .......
             
             if (!this.invert) {
-                return rr1.toString().compareTo(rr2.toString());
+                return rr1.compareTo(rr2);
             }
-            return rr2.toString().compareTo(rr1.toString());
+            return rr2.compareTo(rr1);
         }
     }
 }

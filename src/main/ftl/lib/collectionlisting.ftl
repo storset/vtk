@@ -240,6 +240,11 @@
                 ${vrtx.getMsg("publish.permission.unpublished")}
               </#if>
             <#else>
+              <#if published == "true">
+                <span style="color: #bbb">${vrtx.getMsg("publish.permission.published")}</span>
+              <#else>
+                <span style="color: #bbb">${vrtx.getMsg("publish.permission.unpublished")}</span>
+              </#if>
             </#if>
             <#break>
             

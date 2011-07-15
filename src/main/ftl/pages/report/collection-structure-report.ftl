@@ -29,7 +29,7 @@
     </#list>
   </#if>
   <script type="text/javascript">
-     <!--
+  <!--
      $(document).ready(function(){
        var timestamp = 1 - new Date();
        $("#tree").treeview({
@@ -46,10 +46,10 @@
        
      });
 
-     // -->
+  // -->
   </script>
   </head>
-  <body id="vrtx-report" class="vrtx-permission-tree">
+  <body id="vrtx-report">
   <div class="resourceInfo">
     <div class="vrtx-report-nav">
   	  <div class="back">
@@ -60,7 +60,7 @@
 	<p>
 	  <@vrtx.msg code="report.collection-structure.about" />
 	</p>
-	<div class="vrtx-report">
+	<div class="vrtx-report vrtx-permission-tree">
 	
 	  <ul id="tree" class="filetree treeview-gray"></ul>
 	  
@@ -89,48 +89,3 @@
   </div>
   </body>
 </html>
-
-<#-- SUBRESOURCES TRUCTURE BUILD (keep) -->
-
-<#macro displaySubResourceStructure subResourceStructure>
-      <div class="vrtx-subfolder-menu">
-        <ul id="tree" class="filetree treeview-gray">
-          <#assign i = 0 />
-          <#assign size = subResourceStructure?size />
-          <#list subResourceStructure as item>
-          
-            <#assign listClasses = "" />
-            <#if (i == (size-1))>
-              <#assign listClasses = listClasses + "last" />
-            </#if>
-            <#if !item.inheritedAcl>
-              <#assign listClasses = listClasses +  " not-inherited" />
-            </#if>
-            <#if item.collection>
-              <#assign listClasses = listClasses +  " closed hasChildren" />
-            </#if>
-            <li class="${listClasses}">
-             -->
-              <#assign spanClasses = "" />
-              <#if item.collection>
-                <#assign spanClasses = spanClasses +  "folder" />
-              <#else>
-                <#assign spanClasses = spanClasses +  "file" />
-              </#if>
-              <#if item.readRestricted>
-                <#assign spanClasses = spanClasses + " restricted">
-              <#else>
-                <#assign spanClasses = spanClasses + " allowed-for-all">
-              </#if>
-              <span class="${spanClasses}">
-                <a href="${item.uri?html}" title="${item.title?html}">${item.name?html}</a>
-              </span>
-              <#if item.collection>
-                <ul><li></li></ul>
-              </#if>
-            </li>
-            <#assign i = i + 1 />
-          </#list>
-        </ul>
-      </div>
-</#macro>

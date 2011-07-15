@@ -126,7 +126,9 @@ public class CollectionListingProvider implements ReferenceDataProvider {
                                       "title",
                                       "content-length", 
                                       "last-modified",
-                                      "locked", 
+                                      "locked",
+                                      "published",
+                                      "permissions",
                                       "content-type",
                                       "resource-type", 
                                       "owner" }));
@@ -311,6 +313,8 @@ public class CollectionListingProvider implements ReferenceDataProvider {
             order = ResourceSorter.Order.BY_OWNER;
         } else if ("permissions".equals(sortBy)) {
             order = ResourceSorter.Order.BY_PERMISSIONS;
+        } else if ("published".equals(sortBy)) {
+            order = ResourceSorter.Order.BY_PUBLISHED;
         }
         
         ResourceSorter.sort(children, order, invert);

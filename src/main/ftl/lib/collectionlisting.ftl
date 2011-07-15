@@ -78,11 +78,10 @@
               <@vrtx.msg code="collectionListing.permissions" default="Permissions"/></a>
             <#break>
             
-          <#-- TODO:
-          <#case "published-date">
+          <#case "published">
             <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
               <@vrtx.msg code="publish.permission.state" default="Status"/></a>
-            <#break> -->
+            <#break>
 
           <#case "content-length">
             <a href="${collectionListing.sortByLinks[item]?html}" id="${item}">
@@ -144,6 +143,7 @@
       <#if item = "locked" && child.lock?exists>
         <#assign class = class + " activeLock">
       </#if>
+      
       <#local restricted = "" />
       <#if item = "permissions">
         <#if child.isReadRestricted() >
@@ -151,6 +151,11 @@
           <#local restricted = "restricted">
         </#if>
       </#if>
+      
+      <#if item = "published">
+        <#assign published = vrtx.propValue(child, "published") />
+      </#if>
+      
       <td class="${class}">
         <#switch item>
         
@@ -225,14 +230,13 @@
              </#if>
             <#break>
             
-         <#-- TODO:
-         <#case "published-date">
-             <#if published-date?has_content >
-               ${vrtx.getMsg("publish.permission.published")}
-             <#else>
-               ${vrtx.getMsg("publish.permission.unpublished")}
-             </#if>
-            <#break> -->
+         <#case "published">
+            <#if published == "true" >
+              ${vrtx.getMsg("publish.permission.published")}
+            <#else>
+              ${vrtx.getMsg("publish.permission.unpublished")}
+            </#if>
+            <#break>
             
         </#switch>
       </td>

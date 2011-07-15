@@ -1784,6 +1784,7 @@
     <property name="childInfoItems">
       <list>
         <value>name</value>
+        <value>published</value>
         <value>permissions</value>
         <value>resource-type</value>
         <value>last-modified</value>

@@ -34,7 +34,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Privilege;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.PrincipalFactory;
 
@@ -54,7 +56,8 @@ public class ResourceSorter {
         BY_FILESIZE,
         BY_CONTENT_TYPE,
         BY_RESOURCE_TYPE,
-        BY_PERMISSIONS
+        BY_PERMISSIONS,
+        BY_PUBLISHED
     }
 
     public static void sort(Resource[] resources, Order order, boolean inverted) {
@@ -97,9 +100,13 @@ public class ResourceSorter {
         case BY_PERMISSIONS:
             comparator = new PermissionsComparator(inverted);
             break;
+        
+        case BY_PUBLISHED:
+            comparator = new PublishedComparator(inverted);
+            break;
 
         default:
-            comparator = new ResourceTitleComparator(inverted);
+            comparator = new ResourceNameComparator(inverted);
             break;
         }
 
@@ -284,5 +291,24 @@ public class ResourceSorter {
             return 0;
         }
         
+    }
+    
+    private static class PublishedComparator implements Comparator<Resource> {
+        private boolean invert = false;
+
+        public PublishedComparator(boolean invert) {
+            this.invert = invert;
+        }
+
+        @Override
+        public int compare(Resource r1, Resource r2) {
+            Property rr1 = r1.getProperty(Namespace.DEFAULT_NAMESPACE, "published");
+            Property rr2 = r2.getProperty(Namespace.DEFAULT_NAMESPACE, "published");
+            
+            if (!this.invert) {
+                return rr1.toString().compareTo(rr2.toString());
+            }
+            return rr2.toString().compareTo(rr1.toString());
+        }
     }
 }

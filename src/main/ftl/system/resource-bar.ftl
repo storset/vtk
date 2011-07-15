@@ -16,7 +16,7 @@
       <#if (resourceMenuLeft.items?size > 0)>
         <h1>
       <#else>
-        <h1 class="vrtx-comptact-header">
+        <h1 class="vrtx-compact-header">
       </#if>
         <#if resource.URI == '/'>
           ${repositoryID?html}

@@ -325,6 +325,28 @@ public final class Path implements Comparable<Path> {
         }
         return cur;
     }
+    
+    /**
+     * Returns longest common path between this path and another.
+     * @param otherPath the other
+     * @return the longest common path
+     */
+    public Path common(Path otherPath) {
+        if (otherPath == null || otherPath.isRoot() || this.isRoot()) {
+            return Path.ROOT;
+        }
+        if (this.isAncestorOf(otherPath) || this.equals(otherPath)) {
+            return this;
+        }
+        Path common = Path.ROOT;
+        for (int i = 1; i <= otherPath.getAncestors().size(); i++) {
+            if (!otherPath.getAncestor(i).equals(this.getAncestor(i))) {
+                break;
+            }
+            common = this.getAncestor(i);
+        }
+        return common;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -375,23 +397,4 @@ public final class Path implements Comparable<Path> {
         
         return paths;
     }
-    
-    public Path getNearestCommonAncestor(Path otherPath) {
-        if (otherPath == null || otherPath.isRoot() || this.isRoot()) {
-            return Path.ROOT;
-        }
-        if (this.isAncestorOf(otherPath) || this.equals(otherPath)) {
-            return this;
-        }
-        Path mostCommonPath = Path.ROOT;
-        for (int i = 1; i <= otherPath.getAncestors().size(); i++) {
-            if (!otherPath.getAncestor(i).equals(this.getAncestor(i))) {
-                break; // dance
-            }
-            mostCommonPath = this.getAncestor(i);
-        }
-        return mostCommonPath;
-
-    }
-
 }

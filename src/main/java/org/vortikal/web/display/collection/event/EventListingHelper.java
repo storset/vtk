@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.display.collection.event;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -43,6 +41,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.support.RequestContext;
@@ -59,7 +59,7 @@ public final class EventListingHelper implements InitializingBean {
     private static final Pattern DATE_PATTERN = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
     private static final Pattern MONTH_PATTERN = Pattern.compile("\\d{4}-\\d{2}");
     private static final Pattern YEAR_PATTERN = Pattern.compile("\\d{4}");
-    private Map<Pattern, SimpleDateFormat> dateformats;
+    private Map<Pattern, DateTimeFormatter> dateformats;
     private Map<Pattern, SpecificDateSearchType> searchTypes;
 
     private DateValueFormatter dateValueFormatter;
@@ -77,10 +77,11 @@ public final class EventListingHelper implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.dateformats = new HashMap<Pattern, SimpleDateFormat>();
-        this.dateformats.put(DATE_PATTERN, new SimpleDateFormat("yyyy-MM-dd"));
-        this.dateformats.put(MONTH_PATTERN, new SimpleDateFormat("yyyy-MM"));
-        this.dateformats.put(YEAR_PATTERN, new SimpleDateFormat("yyyy"));
+        this.dateformats = new HashMap<Pattern, DateTimeFormatter>();
+        
+        this.dateformats.put(DATE_PATTERN, DateTimeFormat.forPattern("yyyy-MM-dd"));
+        this.dateformats.put(MONTH_PATTERN, DateTimeFormat.forPattern("yyyy-MM"));
+        this.dateformats.put(YEAR_PATTERN, DateTimeFormat.forPattern("yyyy"));
         this.searchTypes = new HashMap<Pattern, SpecificDateSearchType>();
         this.searchTypes.put(DATE_PATTERN, SpecificDateSearchType.Day);
         this.searchTypes.put(MONTH_PATTERN, SpecificDateSearchType.Month);
@@ -102,7 +103,7 @@ public final class EventListingHelper implements InitializingBean {
     public Date getSpecificSearchDate(HttpServletRequest request) {
         String specificDate = request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE);
         if (specificDate != null && !"".equals(specificDate.trim())) {
-            SimpleDateFormat sdf = null;
+            DateTimeFormatter sdf = null;
             for (Pattern regex : this.searchTypes.keySet()) {
                 if (regex.matcher(specificDate).matches()) {
                     sdf = this.dateformats.get(regex);
@@ -110,9 +111,10 @@ public final class EventListingHelper implements InitializingBean {
             }
             if (sdf != null) {
                 try {
-                    Date date = sdf.parse(specificDate);
+                    long millis = sdf.parseMillis(specificDate);
+                    Date date = new Date(millis);
                     return date;
-                } catch (ParseException pee) { // Hehe.. pee..
+                } catch (IllegalArgumentException e) {
                     // Ignore, return null
                 }
             }

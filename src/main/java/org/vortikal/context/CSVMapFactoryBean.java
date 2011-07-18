@@ -56,7 +56,7 @@ public class CSVMapFactoryBean extends AbstractCSVFactoryBean {
         return map;
     }
 
-    @SuppressWarnings({"rawtypes" })
+    @SuppressWarnings("rawtypes")
     public Class getObjectType() {
         return Map.class;
     }

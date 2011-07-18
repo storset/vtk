@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -51,9 +50,6 @@ import freemarker.template.TemplateException;
 
 /**
  * An extension of the FreeMarkerView provided in the Spring Framework.
- * <p>
- * When the request method is <code>HEAD</code>, only headers is written to the
- * response.
  * 
  * <p>
  * Configurable JavaBean properties:
@@ -75,34 +71,21 @@ public class FreeMarkerViewRenderer extends FreeMarkerView implements ReferenceD
         this.resourceLocaleResolver = resourceLocaleResolver;
     }
 
-
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
-
 
     @SuppressWarnings("rawtypes")
     protected void doRender(Map model, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         BufferedResponse wrapper = new BufferedResponse();
         super.doRender(model, request, wrapper);
-
-        ServletOutputStream outStream = response.getOutputStream();
-        byte[] content = wrapper.getContentBuffer();
-        response.setContentType(getContentType());
-        response.setContentLength(content.length);
-
-        outStream.write(content);
-        outStream.flush();
-        outStream.close();
-
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Wrote " + content.length + " bytes to response");
-        }
+        wrapper.setContentType(getContentType());
+        wrapper.writeTo(response, true);
     }
 
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void processTemplate(Template template, Map model, HttpServletResponse response)
             throws IOException, TemplateException {
 
@@ -122,16 +105,13 @@ public class FreeMarkerViewRenderer extends FreeMarkerView implements ReferenceD
         super.processTemplate(template, model, response);
     }
 
-
     public ReferenceDataProvider[] getReferenceDataProviders() {
         return this.referenceDataProviders;
     }
 
-
     public void setReferenceDataProviders(ReferenceDataProvider[] referenceDataProviders) {
         this.referenceDataProviders = referenceDataProviders;
     }
-
 
     /**
      * Allows to set a list whose elements are either reference data providers
@@ -145,7 +125,6 @@ public class FreeMarkerViewRenderer extends FreeMarkerView implements ReferenceD
         }
     }
 
-
     private void addReferenceDataProviders(List<?> source, List<ReferenceDataProvider> result) {
 
         for (Object object : source) {
@@ -158,14 +137,11 @@ public class FreeMarkerViewRenderer extends FreeMarkerView implements ReferenceD
         }
     }
 
-
     public String toString() {
         return this.getClass().getName() + ":" + this.getUrl();
     }
 
-
     public void setRepositoryID(String repositoryID) {
         this.repositoryID = repositoryID;
     }
-
 }

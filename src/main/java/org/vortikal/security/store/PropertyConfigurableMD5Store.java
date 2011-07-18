@@ -129,11 +129,11 @@ public class PropertyConfigurableMD5Store implements MD5PasswordStore, Ordered {
             return false;
         }
         
-        boolean hit = this.principals.getProperty(principal.getQualifiedName()) != null;
+        boolean found = this.principals.getProperty(principal.getQualifiedName()) != null;
         if (logger.isDebugEnabled()) {
-            logger.debug("Validate principal: " + principal + ": " + hit);
+            logger.debug("Validate principal: " + principal + ": " + found);
         }
-        return hit;
+        return found;
     }
 
     public String getMD5HashString(Principal principal) {

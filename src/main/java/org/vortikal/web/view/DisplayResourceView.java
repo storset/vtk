@@ -115,7 +115,6 @@ public class DisplayResourceView extends AbstractView
         Range range = this.supportRangeRequests ? 
                 getRangeHeader(request, resource) : null;
         request.setAttribute(Range.class.getName(), range);
-        
         setHeaders(resource, model, request, response);
 
         if ("HEAD".equals(request.getMethod())) {
@@ -227,6 +226,7 @@ public class DisplayResourceView extends AbstractView
                     this.streamBufferSize, true);
         }
         response.flushBuffer();
+        
         if (logger.isDebugEnabled()) {
             logger.debug("Wrote a total of " + bytesWritten + " bytes to response");
         }
@@ -294,12 +294,16 @@ public class DisplayResourceView extends AbstractView
                                           HttpServletRequest request,
                                           HttpServletResponse response) throws Exception {
         setHeader(response, "Content-Length", String.valueOf(resource.getContentLength()));
+        
     }
     
     private static class Range {
         long from; long to;
         public Range(long from, long to) {
             this.from = from; this.to = to;
+        }
+        public String toString() {
+            return "Range: " + from + ":" + to;
         }
     }
     

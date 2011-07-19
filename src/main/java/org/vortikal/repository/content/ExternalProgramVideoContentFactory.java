@@ -37,14 +37,19 @@ import java.util.Iterator;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.store.MetadataImpl;
 import org.vortikal.repository.store.VideoMetadata;
 
+
 public class ExternalProgramVideoContentFactory implements ContentFactory {
     // TODO: cache on fail?
-    private String programLocation = null;
+    private String programLocation;
     private String repositoryDataDirectory;
 
+    private static Log logger = LogFactory.getLog(ExternalProgramVideoContentFactory.class.getName());
+    
     @Override
     public Class<?>[] getRepresentationClasses() {
         return new Class<?>[] { VideoMetadata.class };
@@ -69,13 +74,18 @@ public class ExternalProgramVideoContentFactory implements ContentFactory {
         if (t.isAlive()) { // we have waited long enough - time to kill
             t.destroyProc();
             t.interrupt();
+            logger.error("Aborted extraction of video metadata on resource path: " + content.getPath());
         } else {
             jsonResult = t.getResult();
         }
         t = null;
 
         if (jsonResult != null) {
+            
             JSONObject obj = JSONObject.fromObject(jsonResult);
+            if(obj.isEmpty()){
+                logger.debug("JSON object is empthy. Problems with pharsing: " + jsonResult);
+            }
             Iterator<String> i = obj.keys();
             MetadataImpl metdata = new MetadataImpl();
             while (i.hasNext()) {
@@ -83,6 +93,8 @@ public class ExternalProgramVideoContentFactory implements ContentFactory {
                 metdata.addAttributeValue(key, obj.getString(key));
             }
             return metdata;
+        }else{
+            logger.debug("No metadata extracted from: " + content.getPath() );
         }
         return null;
     }

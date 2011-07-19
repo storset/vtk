@@ -122,7 +122,6 @@ resourcetype structured-article : structured-document {
     download-media-file : (en : "Download media file", no : "Last ned mediefil", nn : "Last ned mediefil"),
     media: (en : "Mediafile (audio or video)", no : "Mediefil (lyd eller video)", nn : "Mediefil (lyd eller video)"),
     author: (en : "Author", no : "Forfatter", nn : "Forfattar"),
-    published-date: (en : "Publishing time", no : "Publiseringstidspunkt", nn : "Publiseringstidspunkt"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     hideAdditionalContent : (en : "Hide right-column", no : "Skjul høyrekolonne", nn : "Skjul høyrekolonne"),
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),

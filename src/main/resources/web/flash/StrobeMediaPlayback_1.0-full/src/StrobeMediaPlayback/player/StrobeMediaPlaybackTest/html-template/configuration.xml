@@ -1,9 +1,0 @@
-<config>
-	<src>http://mysite.com/my.flv</src>
-	<plugin src="http://mysite.com/myplugin.swf">
-		<metadata id="NAMESPACE_D"> 
-			<param name="account" value="gfgdfg" />
-			<param name="trackingServer" value="corp1.d1.sc.omtrdc.net"/>                        
-		</metadata>
-	</plugin>
-</config>

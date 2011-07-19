@@ -34,6 +34,7 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.Iterator;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.FileCacheImageInputStream;
@@ -58,21 +59,21 @@ public class ImageContentFactory implements ContentFactory {
     }
 
     @Override
-    public Object getContentRepresentation(Class<?> clazz,  InputStream content)
+    public Object getContentRepresentation(Class<?> clazz,  InputStreamWrapper content)
         throws Exception {
         
         try {
             if (clazz == Dimension.class) {
-                return getImageDimension(content);
+                return getImageDimension(content.getInputStream());
             } else if (clazz == BufferedImage.class) {
-                return ImageIO.read(content);                
+                return ImageIO.read(content.getInputStream());                
             } else {
                 throw new IllegalArgumentException("Unsupported content representation class: " + clazz.getName());
             }
 
         } finally {
             // ImageIO.read documentation states that it does not close the input stream.
-            content.close();
+            content.getInputStream().close();
         }
     }
     
@@ -95,4 +96,5 @@ public class ImageContentFactory implements ContentFactory {
 
         return null;
     }
+
 }

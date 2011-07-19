@@ -5,7 +5,7 @@ Flash
 -----
 
 |-- flash
-|   |-- StrobeMediaPlayback_1.0-full (http://www.osmf.org/strobe_mediaplayback.html)
+|   |-- StrobeMediaPlayback_1.5.1-full (http://www.osmf.org/strobe_mediaplayback.html)
 |   |   |-- 10.0
 |   |   |-- 10.1
 |   |   `-- src

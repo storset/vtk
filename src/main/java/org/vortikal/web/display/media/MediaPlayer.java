@@ -48,6 +48,7 @@ public class MediaPlayer {
     protected Map<String, String> extentionToMimetype;
     protected Service viewService;
     private PropertyTypeDefinition posterImagePropDef;
+    private PropertyTypeDefinition generatedPosterImagePropDef;
 
     public void addMediaPlayer(Map<Object, Object> model, String resourceReferance, String height, String width,
             String autoplay, String contentType, String streamType, String poster) throws AuthorizationException {
@@ -156,10 +157,16 @@ public class MediaPlayer {
     public void addPoster(Resource mediaFile, Map<Object, Object> model) {
         if (mediaFile == null)
             return;
-
+        URL poster = null;
         Property posterImageProp = mediaFile.getProperty(posterImagePropDef);
+        Property thumbnail = mediaFile.getProperty(generatedPosterImagePropDef);
         if (posterImageProp != null) {
-            URL poster = createUrl(posterImageProp.getStringValue());
+            poster = createUrl(posterImageProp.getStringValue());
+        } else if (thumbnail != null) {
+            poster = createUrl(mediaFile.getURI().toString() + "?vrtx=thumbnail");
+        }
+
+        if (poster != null) {
             model.put("poster", poster);
         }
     }
@@ -219,6 +226,14 @@ public class MediaPlayer {
 
     public PropertyTypeDefinition getPosterImagePropDef() {
         return posterImagePropDef;
+    }
+
+    public void setGeneratedPosterImagePropDef(PropertyTypeDefinition generatedPosterImagePropDef) {
+        this.generatedPosterImagePropDef = generatedPosterImagePropDef;
+    }
+
+    public PropertyTypeDefinition getGeneratedPosterImagePropDef() {
+        return generatedPosterImagePropDef;
     }
 
 }

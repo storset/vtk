@@ -197,7 +197,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.authorizationManager.authorizeRead(uri, principal);
         }
         
-        return this.contentStore.getInputStream(uri);
+        return this.contentStore.getInputStream(uri).getInputStream();
     }
 
     @Override

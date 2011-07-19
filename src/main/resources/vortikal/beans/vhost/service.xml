@@ -198,7 +198,6 @@
     <property name="parent" ref="displayResourceService" />
     <property name="assertions">
       <list>
-        <ref bean="contentTypeMatchesImage" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="vrtx" />
           <property name="parameterValue" value="thumbnail" />

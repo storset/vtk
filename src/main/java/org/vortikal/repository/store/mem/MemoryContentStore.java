@@ -41,6 +41,7 @@ import java.util.Map;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.RecoverableResource;
+import org.vortikal.repository.content.InputStreamWrapper;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessException;
 
@@ -110,7 +111,7 @@ public class MemoryContentStore implements ContentStore {
         }
     }
 
-    public InputStream getInputStream(Path uri) throws DataAccessException {
+    public InputStreamWrapper getInputStream(Path uri) throws DataAccessException {
         Node node = getNode(uri);
 
         if (node == null) {
@@ -121,7 +122,9 @@ public class MemoryContentStore implements ContentStore {
             throw new DataAccessException("Node is a directory.");
         }
 
-        return new ByteArrayInputStream(((ContentNode) node).content);
+        InputStream in = new ByteArrayInputStream(((ContentNode) node).content);
+        InputStreamWrapper pw = new InputStreamWrapper(in);
+        return pw;
     }
 
     public void storeContent(Path uri, InputStream inputStream) throws DataAccessException {

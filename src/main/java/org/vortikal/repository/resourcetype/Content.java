@@ -71,5 +71,5 @@ public interface Content {
      * @exception IOException if an error occurs
      */
     public long getContentLength() throws IOException;
-    
+
 }

@@ -30,8 +30,6 @@
  */
 package org.vortikal.repository.content;
 
-import java.io.InputStream;
-
 import org.pdfbox.pdmodel.PDDocument;
 
 public class PDFContentFactory implements ContentFactory {
@@ -42,9 +40,9 @@ public class PDFContentFactory implements ContentFactory {
     }
 
     @Override
-    public Object getContentRepresentation(Class<?> clazz, InputStream content)
+    public Object getContentRepresentation(Class<?> clazz, InputStreamWrapper content)
             throws Exception {
-        PDDocument document = PDDocument.load(content);
+        PDDocument document = PDDocument.load(content.getInputStream());
         return document;
     }
 

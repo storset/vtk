@@ -35,6 +35,7 @@ import java.io.InputStream;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.RecoverableResource;
+import org.vortikal.repository.content.InputStreamWrapper;
 
 
 /**
@@ -55,7 +56,7 @@ public interface ContentStore {
 
     public void deleteResource(Path uri) throws DataAccessException;
 
-    public InputStream getInputStream(Path uri) throws DataAccessException;
+    public InputStreamWrapper getInputStream(Path uri) throws DataAccessException;
 
     /**
      * Store content in the resource given by the URI.

@@ -15,7 +15,7 @@
 <#assign dateStr = nanoTime?c />
 <script type="text/javascript"><!--
       if (typeof swfobject == 'undefined') {
-        document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.0-full/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
+        document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.5.1-full/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
       }
     // -->
     </script> 
@@ -46,7 +46,7 @@
   
     <script type="text/javascript"><!--
       if (typeof swfobject == 'undefined') {
-        document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.0-full/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
+        document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.5.1-full/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
       }
     // -->
     </script> 
@@ -117,7 +117,6 @@
 	  <script type="text/javascript"><!--
 	    var flashvars = {
   		  src: "${media?url("UTF-8")}"
-  		  	  <#if poster?exists>,poster: "${poster?html}" </#if>
   		  <#if autoplay?exists>,autoPlay: "${autoplay}"</#if>
 	    };
 	    var params = {

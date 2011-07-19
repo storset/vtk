@@ -76,17 +76,20 @@ public class ContentImpl implements Content {
         
         // We don't cache InputStream representations
         if (clazz == java.io.InputStream.class) {
-            return this.contentStore.getInputStream(this.uri); 
+            return this.contentStore.getInputStream(uri); 
         }
         
         Object representation = this.cachedRepresentations.get(clazz);
         if (representation == null) {
             // Lazy load representation
             
-            InputStream inputStream = null;
+
             try {
-                inputStream = this.contentStore.getInputStream(this.uri);
-                representation = this.contentRegistry.createRepresentation(clazz, inputStream);
+                InputStreamWrapper pw  = this.contentStore.getInputStream(uri);
+                
+                //TODO: write temp file if we must ?? 
+                
+                representation = this.contentRegistry.createRepresentation(clazz, pw);
                 
             } finally {
                 // XXX hmm, might leak if a ContentFactory doesn't close it...
@@ -119,7 +122,9 @@ public class ContentImpl implements Content {
     
     @Override
     public long getContentLength() throws IOException {
-        return this.contentStore.getContentLength(this.uri);
+        return this.contentStore.getContentLength(uri);
     }
-    
+
+
+ 
 }

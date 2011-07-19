@@ -14,11 +14,15 @@
         <ref bean="contentTypeMatchesVideo" />
       </list>
     </property>
-      <property name="propertyTypeDefinitions">
+    <property name="propertyTypeDefinitions">
       <list>
         <ref bean="posterImagePropDef" />
+        <ref bean="durationPropDef" />
+        <ref bean="generatedPosterImagePropDef" />
+        <ref bean="videoWidthPropDef" />
+        <ref bean="videoHeightPropDef" />
       </list>
-      </property>
+    </property>
   </bean>
 
   <bean id="contentTypeMatchesVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
@@ -47,8 +51,9 @@
         <entry key="flv" value="video/x-flv" />
       </map>
     </property>
-    <property name="viewService" ref="viewService" />
     <property name="posterImagePropDef" ref="posterImagePropDef" />
+    <property name="generatedPosterImagePropDef" ref="generatedPosterImagePropDef" />
+    <property name="viewService" ref="viewService" />
   </bean>
 
   <bean id="displayMediaResource" class="org.vortikal.web.display.media.DisplayMediaController">
@@ -74,7 +79,7 @@
         <entry key="autoplay" value="false" />
         <entry key="audioFlashPlayerJsURL" value="${jsBaseURL}/audio-player.js" />
         <entry key="audioFlashPlayerFlashURL" value="${flash.baseURL}/audioplayer.swf" />
-        <entry key="strobe" value="${flash.baseURL}/StrobeMediaPlayback_1.0-full/10.1/StrobeMediaPlayback.swf" />
+        <entry key="strobe" value="${flash.baseURL}/StrobeMediaPlayback_1.5.1-full/10.1/StrobeMediaPlayback.swf" />
       </map>
     </property>
     <property name="referenceDataProviders">
@@ -99,13 +104,66 @@
     <property name="urlName" value="URL" />
     <property name="service" ref="mediaPlayerService" />
   </bean>
-  
+
   <bean id="posterImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentRelation" value="PRE_CONTENT" />
-    <property name="name" value="poster-image"/>
-    <property name="type" value="IMAGE_REF"/>
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
-    <property name="mandatory" value="false"/>
+    <property name="name" value="poster-image" />
+    <property name="type" value="IMAGE_REF" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
   </bean>
 
+  <bean id="durationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="contentRelation" value="PRE_CONTENT" />
+    <property name="name" value="duration" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="propertyEvaluator" ref="videoDurationEvaluator" />
+  </bean>
+
+  <bean id="videoDurationEvaluator" class="org.vortikal.repository.resourcetype.property.JSONPropertyFieldEvaluratorImpl">
+    <property name="clazz" value="org.vortikal.repository.store.VideoMetadata" />
+    <property name="key" value="duration" />
+  </bean>
+
+  <bean id="generatedPosterImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="thumbnail" />
+    <property name="type" value="BINARY" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="videoPosterImageEvaluator" />
+  </bean>
+
+  <bean id="videoPosterImageEvaluator" class="org.vortikal.repository.resourcetype.property.JSONPropertyFieldEvaluratorImpl">
+    <property name="clazz" value="org.vortikal.repository.store.VideoMetadata" />
+    <property name="key" value="poster-image" />
+    <property name="binaryMimeType" value="image/jpeg" />
+  </bean>
+
+  <bean id="videoHeightPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="pixelHeight" />
+    <property name="type" value="INT" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="videoHeightEvaluator" />
+  </bean>
+
+  <bean id="videoWidthPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="pixelWidth" />
+    <property name="type" value="INT" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="videoWidthEvaluator" />
+  </bean>
+
+  <bean id="videoHeightEvaluator" class="org.vortikal.repository.resourcetype.property.JSONPropertyFieldEvaluratorImpl">
+    <property name="clazz" value="org.vortikal.repository.store.VideoMetadata" />
+    <property name="key" value="height" />
+  </bean>
+
+  <bean id="videoWidthEvaluator" class="org.vortikal.repository.resourcetype.property.JSONPropertyFieldEvaluratorImpl">
+    <property name="clazz" value="org.vortikal.repository.store.VideoMetadata" />
+    <property name="key" value="width" />
+  </bean>
 </beans>

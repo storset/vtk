@@ -71,11 +71,15 @@
                <img src="/vrtx/__vrtx/static-resources/themes/default/icons/audio-icon.png" alt="audio icon" />
              </a>
            <#elseif contentType == "video/x-flv"  || contentType == "video/mp4" || contentType == "video/quicktime">
-               <#local introImgURI = vrtx.propValue(r, 'poster-image') />       	 
+               <#local introImgURI = vrtx.propValue(r, 'poster-image') />     	 
 	           <#if introImgURI?exists && introImgURI != "">
 	    			<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
 	    	  	<#else>
-	    			<#local thumbnail = "/vrtx/__vrtx/static-resources/themes/default/icons/video-icon.png" />
+	    	  	    <#if vrtx.getProp(r,"thumbnail")?exists >
+	    			    <#local thumbnail =  vrtx.relativeLinkConstructor(r.URI, 'displayThumbnailService') />
+	    			<#else>
+	    			    <#local thumbnail = "/vrtx/__vrtx/static-resources/themes/default/icons/video-icon.png" />
+	    			</#if>
 	   		   	</#if>
 	           	 
             	<a href="${collectionListing.urls[r.URI]?html}">

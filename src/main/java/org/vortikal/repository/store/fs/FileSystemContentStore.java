@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.RecoverableResource;
+import org.vortikal.repository.content.InputStreamWrapper;
 import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.util.io.StreamUtil;
@@ -113,7 +114,7 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
     @Override
     public void deleteResource(Path uri) {
         // Don't delete root
-        if (! uri.isRoot()) {
+        if (!uri.isRoot()) {
             String fileName = getLocalFilename(uri);
             deleteFiles(new File(fileName));
         }
@@ -124,8 +125,8 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
             f.delete();
             return;
         }
-        
-        for (File child: f.listFiles()) {
+
+        for (File child : f.listFiles()) {
             deleteFiles(child);
         }
 
@@ -133,10 +134,12 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
     }
 
     @Override
-    public InputStream getInputStream(Path uri) throws DataAccessException {
+    public InputStreamWrapper getInputStream(Path uri) throws DataAccessException {
         String fileName = getLocalFilename(uri);
+
         try {
-            return new java.io.FileInputStream(new File(fileName));
+            InputStream in = new FileInputStream(new File(fileName));
+            return new InputStreamWrapper(in, Path.fromString(fileName));
         } catch (IOException e) {
             throw new DataAccessException("Get input stream [" + uri + "] failed", e);
         }
@@ -157,15 +160,15 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
                 dstChannel.close();
                 return;
             }
-            
+
             FileOutputStream outputStream = new FileOutputStream(dest);
             StreamUtil.pipe(inputStream, outputStream, 16384, true);
-            
+
         } catch (IOException e) {
             throw new DataAccessException("Store content [" + uri + "] failed", e);
         }
     }
-    
+
     @Override
     public void copy(Path srcURI, Path destURI) throws DataAccessException {
         String fileNameFrom = getLocalFilename(srcURI);
@@ -187,7 +190,7 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
         toDir.mkdir();
 
         File[] children = fromDir.listFiles();
-        for (File child: children) {
+        for (File child : children) {
             File newFile = new File(toDir.getCanonicalPath() + File.separator + child.getName());
             if (child.isFile()) {
                 copyFile(child, newFile);

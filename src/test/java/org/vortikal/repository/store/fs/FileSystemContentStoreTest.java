@@ -87,7 +87,7 @@ public class FileSystemContentStoreTest extends AbstractContentStoreTest {
     public void testCreateResource() throws IOException {
         Path uri = Path.fromString("/test.html");
         getStore().createResource(uri, false);
-        InputStream is = getStore().getInputStream(uri);
+        InputStream is = getStore().getInputStream(uri).getInputStream();
         assertNotNull(is);
         is.close();
         assertEquals(0, getStore().getContentLength(uri));
@@ -98,7 +98,7 @@ public class FileSystemContentStoreTest extends AbstractContentStoreTest {
         getStore().createResource(uri, false);
         String testString = "This is a test æøå ÆØÅ";
 
-        InputStream inputStreamBeforeStoringContent = getStore().getInputStream(uri);
+        InputStream inputStreamBeforeStoringContent = getStore().getInputStream(uri).getInputStream();
         assertNotNull(inputStreamBeforeStoringContent);
         inputStreamBeforeStoringContent.close();
         assertEquals(0, getStore().getContentLength(uri));
@@ -112,7 +112,7 @@ public class FileSystemContentStoreTest extends AbstractContentStoreTest {
         inputStreamForStoringContent.close();
 
         assertEquals(testString.getBytes().length, getStore().getContentLength(uri));
-        InputStream inputStreamAfterStoringContent = getStore().getInputStream(uri);
+        InputStream inputStreamAfterStoringContent = getStore().getInputStream(uri).getInputStream();
         assertNotNull(inputStreamAfterStoringContent);
         // Write some assertions to make sure the content of the file is ok
         inputStreamAfterStoringContent.close();

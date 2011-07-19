@@ -32,6 +32,7 @@ package org.vortikal.repository.content;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
+
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
 
@@ -41,10 +42,11 @@ public class AudioFileContentFactory implements ContentFactory {
         return new Class<?>[] {AudioFileFormat.class};
     }
     
-    public Object getContentRepresentation(Class<?> clazz,  InputStream content)
+    public Object getContentRepresentation(Class<?> clazz,  InputStreamWrapper content)
         throws Exception {
-        InputStream is = new BufferedInputStream(content);
+        InputStream is = new BufferedInputStream(content.getInputStream());
         AudioFileFormat audioFileFormat = AudioSystem.getAudioFileFormat(is);
         return audioFileFormat;
     }
+
 }

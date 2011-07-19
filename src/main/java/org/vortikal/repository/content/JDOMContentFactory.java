@@ -30,8 +30,6 @@
  */
 package org.vortikal.repository.content;
 
-import java.io.InputStream;
-
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 
@@ -46,12 +44,15 @@ public class JDOMContentFactory implements ContentFactory {
     }
     
 
-    public Object getContentRepresentation(Class<?> clazz,  InputStream content) throws Exception {
+    public Object getContentRepresentation(Class<?> clazz,  InputStreamWrapper content) throws Exception {
         SAXBuilder saxBuilder = new SAXBuilder();
         saxBuilder.setValidation(false);
         saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
-        return saxBuilder.build(content);
+        return saxBuilder.build(content.getInputStream());
     }
+
+
+   
     
 }

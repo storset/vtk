@@ -44,17 +44,18 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
+import org.vortikal.repository.store.VideoMetadata;
 
 /**
  * A resource content representation registry.
- *
- * <p>Looks up registered {@link ContentFactory} beans in the
- * application context upon initialization, recording their registered
- * content representations.
- *
- * <p>Also contains default representations for the classes
- * <code>byte[]</code> and <code>java.nio.ByteBuffer</code>.
+ * 
+ * <p>
+ * Looks up registered {@link ContentFactory} beans in the application context
+ * upon initialization, recording their registered content representations.
+ * 
+ * <p>
+ * Also contains default representations for the classes <code>byte[]</code> and
+ * <code>java.nio.ByteBuffer</code>.
  */
 public class ContentRepresentationRegistry implements ApplicationContextAware, InitializingBean {
 
@@ -66,64 +67,59 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
-    
 
     @SuppressWarnings("unchecked")
     public void afterPropertiesSet() {
-        
-        this.contentFactories = new HashMap<Class<?>, ContentFactory>();
-        
-        Collection<ContentFactory> contentFactoryBeans = 
-            BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 
-                    ContentFactory.class, false, false).values();
 
-        for (ContentFactory factory: contentFactoryBeans) {
+        this.contentFactories = new HashMap<Class<?>, ContentFactory>();
+
+        Collection<ContentFactory> contentFactoryBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+                this.applicationContext, ContentFactory.class, false, false).values();
+
+        for (ContentFactory factory : contentFactoryBeans) {
             Class<?>[] supportedClasses = factory.getRepresentationClasses();
-            for (Class<?> supportedClass: supportedClasses) {
-                this.logger.info("Registering content factory for class '"
-                            + supportedClass + "': " + factory);
+            for (Class<?> supportedClass : supportedClasses) {
+                this.logger.info("Registering content factory for class '" + supportedClass + "': " + factory);
 
                 this.contentFactories.put(supportedClass, factory);
             }
         }
     }
-    
-    
-    public Object createRepresentation(Class<?> clazz, InputStream content) 
-        throws Exception {
+
+    public Object createRepresentation(Class<?> clazz, InputStreamWrapper content) throws Exception {
 
         ContentFactory factory = this.contentFactories.get(clazz);
 
         if (factory != null) {
-            return factory.getContentRepresentation(clazz, content);
+            if (clazz.equals(VideoMetadata.class)) {
+                return factory.getContentRepresentation(clazz, content);
+            } else {
+                return factory.getContentRepresentation(clazz, content);
+
+            }
         }
 
         // The default representations:
         if (clazz == byte[].class) {
-            return getContentAsByteArray(content);
+            return getContentAsByteArray(content.getInputStream());
         } else if (clazz == java.nio.ByteBuffer.class) {
-            return ByteBuffer.wrap(getContentAsByteArray(content));
+            return ByteBuffer.wrap(getContentAsByteArray(content.getInputStream()));
         }
 
-        throw new UnsupportedContentRepresentationException(
-                "Content type '" + clazz.getName() + "' not supported.");
-            
-    }
-    
+        throw new UnsupportedContentRepresentationException("Content type '" + clazz.getName() + "' not supported.");
 
+    }
 
     private static byte[] getContentAsByteArray(InputStream content) throws IOException {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        
+
         int n;
         byte[] buffer = new byte[5000];
         while ((n = content.read(buffer, 0, buffer.length)) != -1) {
             bout.write(buffer, 0, n);
         }
-        
+
         return bout.toByteArray();
     }
 
 }
-
-  

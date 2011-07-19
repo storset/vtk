@@ -123,7 +123,6 @@
         <directory>src/main/resources</directory>
         <excludes>
           <exclude>war/</exclude>
-          <exclude>web/fckeditor**</exclude>
         </excludes>
       </resource>
       <resource>
@@ -139,10 +138,6 @@
         <includes>
           <include>*-schema.sql</include>
         </includes>
-      </resource>
-      <resource>
-        <directory>src/main/ext/FCKeditor/fckeditor-build-2.6.5</directory>
-        <targetPath>web/fckeditor-build-2.6.5</targetPath>
       </resource>
        <resource>
         <directory>src/main/ext/CKEditor/ckeditor-build</directory>

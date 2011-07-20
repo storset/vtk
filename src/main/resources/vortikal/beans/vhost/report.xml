@@ -69,12 +69,28 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
+  <bean id="diagramReport" class="org.vortikal.web.actions.report.DiagramReport">
+    <property name="name" value="diagram" />
+    <property name="viewName" value="diagramReport" />
+    <property name="filesSearch" ref="diagramFilesReporter.searchComponent" />
+    <property name="folderSearch" ref="diagramFolderReporter.searchComponent" />
+    <property name="webpageSearch" ref="diagramWebpageReporter.searchComponent" />
+    <property name="imageSearch" ref="diagramImageReporter.searchComponent" />
+    <property name="audioSearch" ref="diagramAudioReporter.searchComponent" />
+    <property name="videoSearch" ref="diagramVideoReporter.searchComponent" />
+    <property name="pdfSearch" ref="diagramPdfReporter.searchComponent" />
+    <property name="wordSearch" ref="diagramWordReporter.searchComponent" />
+    <property name="pptSearch" ref="diagramPptReporter.searchComponent" />
+    <property name="excelSearch" ref="diagramExcelReporter.searchComponent" />
+  </bean>
+
   <bean id="report.viewResolver" parent="system.decoratingViewResolver">
     <property name="views">
       <map>
         <entry key="report" value-ref="reportView" />
         <entry key="collectionStructure" value-ref="collectionStructureView" />
         <entry key="documentReport" value-ref="documentReportView" />
+        <entry key="diagramReport" value-ref="diagramReportView" />
       </map>
     </property>
     <property name="referenceDataProviders">
@@ -120,6 +136,19 @@
 
   <bean id="documentReportView" parent="freemarkerView">
     <property name="url" value="pages/report/document-report.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/report/report.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="diagramReportView" parent="freemarkerView">
+    <property name="url" value="pages/report/diagram-report.ftl" />
     <property name="attributesMap">
       <map>
         <entry key="cssURLs">

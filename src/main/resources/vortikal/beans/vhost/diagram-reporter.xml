@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="diagramReporter.searchComponent" abstract="true" class="org.vortikal.web.search.QueryPartsSearchComponent">
+    <property name="viewService" ref="webService" />
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="listableProperties">
+      <list>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="titlePropDef" />
+        </bean>
+      </list>
+    </property>
+    <property name="configurablePropertySelectPointers">
+      <list>
+      </list>
+    </property>
+    <property name="searchSorting" ref="diagramReporter.searchSorting" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+  </bean>
+
+  <bean id="diagramFilesReporter.searchComponent" parent="diagramReporter.searchComponent">
+    <property name="name" value="diagramFilesReporter.searcher" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="diagram.UriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="(uri != /vrtx/*) AND (type IN file)" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="diagramFolderReporter.searchComponent" parent="diagramReporter.searchComponent">
+    <property name="name" value="diagramFolderReporter.searcher" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="diagram.UriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="(uri = {$currentFolder}/* AND uri != /vrtx/* AND uri != /vrtx) AND (type IN collection)" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="diagramWebpageReporter.searchComponent" parent="diagramReporter.searchComponent">
+    <property name="name" value="diagramWebpageReporter.searcher" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="diagram.UriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString"
+            value="(uri != /vrtx/*) AND (type IN apt-resource OR type IN php OR type IN html OR type IN managed-xml OR type IN json-resource)" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="diagramImageReporter.searchComponent" parent="diagramReporter.searchComponent">
+    <property name="name" value="diagramImageReporter.searcher" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="diagram.UriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="(uri != /vrtx/*) AND (type IN image)" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="diagramAudioReporter.searchComponent" parent="diagramReporter.searchComponent">
+    <property name="name" value="diagramAudioReporter.searcher" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="diagram.UriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="(uri != /vrtx/*) AND (type IN audio)" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="diagramVideoReporter.searchComponent" parent="diagramReporter.searchComponent">
+    <property name="name" value="diagramVideoReporter.searcher" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="diagram.UriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="(uri != /vrtx/*) AND (type IN video)" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="diagramPdfReporter.searchComponent" parent="diagramReporter.searchComponent">
+    <property name="name" value="diagramPdfReporter.searcher" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="diagram.UriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="(uri != /vrtx/*) AND (type IN pdf)" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="diagramWordReporter.searchComponent" parent="diagramReporter.searchComponent">
+    <property name="name" value="diagramWordReporter.searcher" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="diagram.UriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="(uri != /vrtx/*) AND (type IN doc)" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="diagramPptReporter.searchComponent" parent="diagramReporter.searchComponent">
+    <property name="name" value="diagramPptReporter.searcher" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="diagram.UriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="(uri != /vrtx/*) AND (type IN ppt)" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="diagramExcelReporter.searchComponent" parent="diagramReporter.searchComponent">
+    <property name="name" value="diagramExcelReporter.searcher" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="diagram.UriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="(uri != /vrtx/*) AND (type IN xls)" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="diagram.UriQueryBuilder" parent="collection.listingUriQueryBuilder">
+    <property name="defaultRecursive" value="true" />
+  </bean>
+
+  <bean id="diagramReporter.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>title</value>
+      </list>
+    </property>
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
+    <property name="sortOrderMapping">
+      <map>
+        <entry key="title" value-ref="SORT_ORDER.DESC" />
+      </map>
+    </property>
+  </bean>
+
+</beans>

@@ -18,6 +18,7 @@
         <entry key="Expires" value="0" />
       </map>
     </property>
+    <property name="preventDecoratingParameter" value="x-prevent-decorating" />
     <property name="decorators">
       <list>
         <ref bean="system.templateDecorator" />

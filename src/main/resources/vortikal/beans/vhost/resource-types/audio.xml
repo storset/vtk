@@ -8,7 +8,7 @@
   <bean id="audioResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
     <property name="name" value="audio"/>
-    <property name="namespace" ref="AUDIO_NAMESPACE" />
+        <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
     <property name="assertions" ref="contentTypeMatchesAudio" />
     <property name="propertyTypeDefinitions">
@@ -19,8 +19,21 @@
         <ref bean="audioTrackPropDef" />
         <ref bean="audioGenrePropDef" />
         <ref bean="audioOverriddenTitlePropDef" />
+        <ref bean="audioDurationPropDef" />
       </list>
     </property>
+  </bean>
+
+  <bean id="audioDurationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="duration" />
+    <property name="type" value="INT" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="propertyEvaluator" ref="audioDurationEvaluator" />
+  </bean>
+
+  <bean id="audioDurationEvaluator" class="org.vortikal.repository.resourcetype.property.JSONPropertyFieldEvaluratorImpl">
+    <property name="clazz" value="org.vortikal.repository.store.AudioMetadata" />
+    <property name="key" value="duration" />
   </bean>
 
 

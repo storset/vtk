@@ -48,9 +48,10 @@
     </property>
     <property name="listableProperties">
       <list>
-        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
-          <property name="displayProperty" ref="durationPropDef" />
+         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="audioDurationPropDef" />
         </bean>
+        
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="lastModifiedPropDef" />
         </bean>

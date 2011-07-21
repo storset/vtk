@@ -188,8 +188,12 @@
 
   <bean id="pdfContentFactory" class="org.vortikal.repository.content.PDFContentFactory" />
 
-  <bean id="externalContentFactory" class="org.vortikal.repository.content.ExternalProgramVideoContentFactory">
+  <bean id="externalVideoContentFactory" class="org.vortikal.repository.content.ExternalProgramVideoContentFactory">
     <property name="programLocation" value="${externalProgramVideoContentLocation}" />
+  </bean>
+  
+  <bean id="externalAudioContentFactory" class="org.vortikal.repository.content.ExternalProgramAudioContentFactory">
+    <property name="programLocation" value="${externalProgramAudioContentLocation}" />
   </bean>
 
   <bean id="authorizationManager" class="org.vortikal.repository.AuthorizationManager">

@@ -46,7 +46,7 @@ import org.vortikal.repository.store.VideoMetadata;
 public class ExternalProgramVideoContentFactory implements ContentFactory {
     // TODO: cache on fail?
     private String programLocation;
-    private String repositoryDataDirectory;
+
 
     private static Log logger = LogFactory.getLog(ExternalProgramVideoContentFactory.class.getName());
     
@@ -95,7 +95,7 @@ public class ExternalProgramVideoContentFactory implements ContentFactory {
             }
             return metdata;
         }else{
-            logger.debug("No metadata extracted. Debug cmd: " + t.getCmd());
+            logger.debug("No metadata extracted. Debug Cmd: " + t.getCmd());
         }
         return null;
     }
@@ -106,14 +106,6 @@ public class ExternalProgramVideoContentFactory implements ContentFactory {
 
     public void setProgramLocation(String programLocation) {
         this.programLocation = programLocation;
-    }
-
-    public void setRepositoryDataDirectory(String repositoryDataDirectory) {
-        this.repositoryDataDirectory = repositoryDataDirectory;
-    }
-
-    public String getRepositoryDataDirectory() {
-        return repositoryDataDirectory;
     }
 
     /*

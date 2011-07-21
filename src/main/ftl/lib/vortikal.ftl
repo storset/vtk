@@ -474,6 +474,13 @@
          value="${VRTX_CSRF_PREVENTION_HANDLER.newToken(url)}" />
 </#macro>
 
+<#macro displayTime timeSec >
+    <#local sec = (timeSec % 60) />
+    <#local min = ((timeSec-sec) % 3600) / 60 />
+    <#local hours = ((timeSec-(sec+(min*60))) / 3600 ) />
+    <#if (hours > 0)>${hours?string("00")}:</#if><#if (min > 0)>${min?string("00")}:</#if><#if (sec > 0)>${sec?string("00")}</#if>
+</#macro>
+
 <#macro calculateResourceSize contentLength>
   <#if contentLength <= 1000>
     ${contentLength} B

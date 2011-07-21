@@ -68,10 +68,11 @@ public class MediaPlayer {
             // ignore
         }
 
-        if (height != null && !"".equals(height))
+        if ((height != null && !"".equals(height)) && (width != null && !"".equals(width))) {
             model.put("height", height);
-        if (width != null && !"".equals(width))
             model.put("width", width);
+        }
+        
         if (autoplay != null && !"".equals(autoplay))
             model.put("autoplay", autoplay);
         if (streamType != null && !"".equals(streamType))
@@ -81,6 +82,7 @@ public class MediaPlayer {
         } else {
             addPoster(mediaResource, model);
         }
+
         String extension = getExtension(resourceReferance);
         if (contentType != null && !"".equals(contentType)) {
             model.put("contentType", contentType);
@@ -120,6 +122,7 @@ public class MediaPlayer {
         } else {
             model.put("contentType", extentionToMimetype.get(getExtension(resourceReferance)));
         }
+
         model.put("nanoTime", System.nanoTime());
         createLocalUrlToMediaFile(resourceReferance, model);
     }
@@ -163,7 +166,7 @@ public class MediaPlayer {
         if (posterImageProp != null) {
             poster = createUrl(posterImageProp.getStringValue());
         } else if (thumbnail != null) {
-            poster = createUrl(mediaFile.getURI().toString() + "?vrtx=thumbnail");
+            // add poster image from thumbnail when player supports it
         }
 
         if (poster != null) {

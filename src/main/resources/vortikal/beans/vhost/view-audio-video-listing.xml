@@ -22,11 +22,11 @@
       </list>
     </property>
     <property name="viewName" value="audioVideoListing.view" />
-   
+
   </bean>
 
   <bean id="audioVideoListing.searchComponent" parent="collectionListing.searchComponent">
-    <property name="viewService"  ref="mediaPlayerService" />
+    <property name="viewService" ref="mediaPlayerService" />
     <property name="name" value="audioVideoListing.defaultListing" />
     <property name="queryBuilders">
       <list>
@@ -37,13 +37,27 @@
       </list>
     </property>
     <property name="searchMultiHosts" value="false" />
-	<property name="configurablePropertySelectPointers">
+    <property name="configurablePropertySelectPointers">
       <list>
         <value>title</value>
         <value>lastModified</value>
         <value>content:description</value>
         <value>contentType</value>
-        <value>poster-image</value>
+        <value>duration</value>
+      </list>
+    </property>
+    <property name="listableProperties">
+      <list>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="durationPropDef" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="lastModifiedPropDef" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionPropDef" />
+          <property name="preventDisplayProperty" ref="collection.hideIntroductionPropDef" />
+        </bean>
       </list>
     </property>
   </bean>
@@ -57,7 +71,7 @@
   </bean>
 
   <bean id="audioVideoListing.view" parent="collectionListing.view">
-  <property name="attributesMap">
+    <property name="attributesMap">
       <map>
         <!-- CSS's -->
         <entry key="cssURLs">
@@ -66,7 +80,7 @@
             <value>${themeBaseURL}/view-image-listing.css</value>
           </list>
         </entry>
-        
+
         <!-- JS's -->
         <entry key="jsURLs">
           <list>
@@ -94,5 +108,5 @@
     parent="viewAsFeedHandler">
     <property name="searchComponent" ref="audioVideoListing.searchComponent" />
   </bean>
-  
+
 </beans>

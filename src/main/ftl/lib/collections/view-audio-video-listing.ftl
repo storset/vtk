@@ -75,11 +75,7 @@
 	           <#if introImgURI?exists && introImgURI != "">
 	    			<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
 	    	  	<#else>
-	    	  	    <#if vrtx.getProp(r,"thumbnail")?exists >
-	    			    <#local thumbnail =  vrtx.relativeLinkConstructor(r.URI, 'displayThumbnailService') />
-	    			<#else>
-	    			    <#local thumbnail = "/vrtx/__vrtx/static-resources/themes/default/icons/video-icon.png" />
-	    			</#if>
+	    			<#local thumbnail =  vrtx.relativeLinkConstructor(r.URI, 'displayThumbnailService') />
 	   		   	</#if>
 	           	 
             	<a href="${collectionListing.urls[r.URI]?html}">
@@ -92,7 +88,9 @@
            <div class="vrtx-image-title">
              <a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "", "")?html}</a>
 		   </div>
+		   
            <#list collectionListing.displayPropDefs as displayPropDef>
+             <#assign val = "" />
              <#if displayPropDef.name = 'introduction'>
                <#assign val = vrtx.getIntroduction(r) />
              <#elseif displayPropDef.type = 'IMAGE_REF'>
@@ -101,10 +99,18 @@
                <div class="vrtx-image-creation-time">
                  ${creationTime}
                </div>
+             <#elseif displayPropDef.name = 'lastModified'>
+               <#assign val = vrtx.propValue(r, displayPropDef.name, 'short') />
+             <#elseif displayPropDef.name = 'duration'  >                 
+                <#local property = r.getProperty(displayPropDef) />
+                <#if property?exists>
+                    <div class="${displayPropDef.name}">                
+                        <@vrtx.displayTime property.intValue />
+                    </div>
+                </#if>
              <#else>
-               <#assign val = vrtx.propValue(r, displayPropDef.name, "short") />
-             </#if>
-
+                <#assign val = vrtx.propValue(r, displayPropDef.name) />
+             </#if> 
              <#if val?has_content>
                <div class="${displayPropDef.name}">
                  ${val}

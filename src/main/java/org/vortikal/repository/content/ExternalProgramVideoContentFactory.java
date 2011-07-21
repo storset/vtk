@@ -74,16 +74,17 @@ public class ExternalProgramVideoContentFactory implements ContentFactory {
         if (t.isAlive()) { // we have waited long enough - time to kill
             t.destroyProc();
             t.interrupt();
-            logger.error("Aborted extraction of video metadata on resource path: " + content.getPath());
+            logger.error("Killed thread. Error Cmd: " + t.getCmd());
+            logger.error("Result befor kill:" + t.getResult());
         } else {
             jsonResult = t.getResult();
         }
-        t = null;
 
         if (jsonResult != null) {
             
             JSONObject obj = JSONObject.fromObject(jsonResult);
             if(obj.isEmpty()){
+                logger.debug("Debug Cmd: " + t.getCmd());
                 logger.debug("JSON object is empthy. Problems with pharsing: " + jsonResult);
             }
             Iterator<String> i = obj.keys();
@@ -94,7 +95,7 @@ public class ExternalProgramVideoContentFactory implements ContentFactory {
             }
             return metdata;
         }else{
-            logger.debug("No metadata extracted from: " + content.getPath() );
+            logger.debug("No metadata extracted. Debug cmd: " + t.getCmd());
         }
         return null;
     }
@@ -125,6 +126,7 @@ public class ExternalProgramVideoContentFactory implements ContentFactory {
         String result = null;
         Process process = null;
         String localPath = null;
+        private String cmd[] = null;
 
         ExternalProgramThread(String localPath) {
             this.localPath = localPath;
@@ -133,7 +135,7 @@ public class ExternalProgramVideoContentFactory implements ContentFactory {
         public void run() {
             try {
                 Runtime runtime = Runtime.getRuntime();
-                String cmd[] = new String[] { getProgramLocation(), localPath };
+                cmd = new String[] { getProgramLocation(), localPath };
 
                 process = runtime.exec(cmd);
                 InputStream is = process.getInputStream();
@@ -165,6 +167,10 @@ public class ExternalProgramVideoContentFactory implements ContentFactory {
             if (process != null) {
                 process.destroy();
             }
+        }
+
+        public String[] getCmd() {
+            return cmd;
         }
 
     }

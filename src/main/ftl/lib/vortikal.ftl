@@ -478,7 +478,7 @@
     <#local sec = (timeSec % 60) />
     <#local min = ((timeSec-sec) % 3600) / 60 />
     <#local hours = ((timeSec-(sec+(min*60))) / 3600 ) />
-    <#if (hours > 0)>${hours?string("00")}:</#if><#if (min > 0)>${min?string("00")}:</#if><#if (sec > 0)>${sec?string("00")}</#if>
+    <#if (hours > 0)>${hours}:</#if><#if (sec > 0 || hours > 0)>${min}:</#if><#if (sec > 0 || (hours > 0 || min > 0) )>${sec?string("00")}</#if>
 </#macro>
 
 <#macro calculateResourceSize contentLength>

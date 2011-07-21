@@ -101,12 +101,14 @@
                </div>
              <#elseif displayPropDef.name = 'lastModified'>
                <#assign val = vrtx.propValue(r, displayPropDef.name, 'short') />
-             <#elseif displayPropDef.name = 'duration'  >                 
-                <#local property = r.getProperty(displayPropDef) />
-                <#if property?exists>
-                    <div class="${displayPropDef.name}">                
-                        <@vrtx.displayTime property.intValue />
-                    </div>
+             <#elseif displayPropDef.name = 'duration'  >
+                <#if r.getProperty(displayPropDef)?exists >                 
+                    <#local property = r.getProperty(displayPropDef) />
+                    <#if property?exists>
+                        <div class="${displayPropDef.name}">                
+                            <@vrtx.displayTime property.intValue />
+                        </div>
+                    </#if>
                 </#if>
              <#else>
                 <#assign val = vrtx.propValue(r, displayPropDef.name) />

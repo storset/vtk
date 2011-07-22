@@ -31,7 +31,6 @@
 package org.vortikal.web.actions.report;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,12 +38,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
@@ -55,22 +49,23 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public class ReportHandler implements Controller, InitializingBean, ApplicationContextAware {
+public class ReportHandler implements Controller {
 
     private Repository repository;
     private String viewName;
-    private Collection<Reporter> reporters;
-    private ApplicationContext applicationContext;
+    private List<Reporter> reporters, hiddenReporters;
 
     private static final String REPORT_TYPE_PARAM = "report-type";
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void afterPropertiesSet() throws Exception {
-        this.reporters = BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, Reporter.class, false,
-                false).values();
+    @Required
+    public void setReporters(List<Reporter> reporters) {
+        this.reporters = reporters;
     }
 
+    public void setHiddenReporters(List<Reporter> hiddenReporters) {
+        this.hiddenReporters = hiddenReporters;
+    }
+    
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -113,6 +108,11 @@ public class ReportHandler implements Controller, InitializingBean, ApplicationC
                 return reporter;
             }
         }
+        for (Reporter reporter : this.hiddenReporters) {
+            if (reporter.getName().equals(reportType)) {
+                return reporter;
+            }
+        }
         return null;
     }
 
@@ -144,11 +144,6 @@ public class ReportHandler implements Controller, InitializingBean, ApplicationC
             return url;
         }
 
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
     }
 
 }

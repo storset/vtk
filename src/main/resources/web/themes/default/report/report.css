@@ -26,6 +26,20 @@ div.vrtx-permission-tree span.file a {
   float: right;
 }
 
+div.vrtx-report-diagram {
+  height: 210px;
+}
+
+div.vrtx-report-diagram-table {
+  clear: left;
+  float: left;
+  width: 200px;
+}
+
+div.vrtx-report-diagram-img {
+  float: left;
+}
+
 /* Tooltip */
 
 .tip {

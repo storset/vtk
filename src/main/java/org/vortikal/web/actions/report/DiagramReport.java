@@ -32,13 +32,15 @@ package org.vortikal.web.actions.report;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 public class DiagramReport implements Reporter {
 
@@ -51,14 +53,22 @@ public class DiagramReport implements Reporter {
     private SearchComponent audioSearch;
     private SearchComponent videoSearch;
     private SearchComponent pdfSearch;
-    private SearchComponent wordSearch;
+    private SearchComponent docSearch;
     private SearchComponent pptSearch;
-    private SearchComponent excelSearch;
+    private SearchComponent xlsSearch;
+    
+    private static final String REPORT_TYPE_PARAM = "report-type";
 
     @Override
     public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("reportname", this.getName());
+
+        RequestContext requestContext = RequestContext.getRequestContext();
+        SecurityContext securityContext = SecurityContext.getSecurityContext();
+        Service service = requestContext.getService();
+
+        URL backURL = new URL(service.constructURL(resource, securityContext.getPrincipal()));
 
         Listing l;
         try {
@@ -78,36 +88,60 @@ public class DiagramReport implements Reporter {
             l = this.webpageSearch.execute(request, resource, 1, 1, 0);
             int webpage = l.getTotalHits();
             result.put("webpage", webpage);
+            URL webpageURL = new URL(backURL);
+            webpageURL.addParameter(REPORT_TYPE_PARAM, "webpageReporter");
+            result.put("webpageURL", webpageURL);
 
             l = this.imageSearch.execute(request, resource, 1, 1, 0);
             int image = l.getTotalHits();
             result.put("image", image);
+            URL imageURL = new URL(backURL);
+            imageURL.addParameter(REPORT_TYPE_PARAM, "imageReporter");
+            result.put("imageURL", imageURL);
 
             l = this.audioSearch.execute(request, resource, 1, 1, 0);
             int audio = l.getTotalHits();
             result.put("audio", audio);
+            URL audioURL = new URL(backURL);
+            audioURL.addParameter(REPORT_TYPE_PARAM, "audioReporter");
+            result.put("audioURL", audioURL);
 
             l = this.videoSearch.execute(request, resource, 1, 1, 0);
             int video = l.getTotalHits();
             result.put("video", video);
+            URL videoURL = new URL(backURL);
+            videoURL.addParameter(REPORT_TYPE_PARAM, "videoReporter");
+            result.put("videoURL", videoURL);
 
             l = this.pdfSearch.execute(request, resource, 1, 1, 0);
             int pdf = l.getTotalHits();
             result.put("pdf", pdf);
+            URL pdfURL = new URL(backURL);
+            pdfURL.addParameter(REPORT_TYPE_PARAM, "pdfReporter");
+            result.put("pdfURL", pdfURL);
 
-            l = this.wordSearch.execute(request, resource, 1, 1, 0);
-            int word = l.getTotalHits();
-            result.put("word", word);
+            l = this.docSearch.execute(request, resource, 1, 1, 0);
+            int doc = l.getTotalHits();
+            result.put("doc", doc);
+            URL docURL = new URL(backURL);
+            docURL.addParameter(REPORT_TYPE_PARAM, "docReporter");
+            result.put("docURL", docURL);
 
             l = this.pptSearch.execute(request, resource, 1, 1, 0);
             int ppt = l.getTotalHits();
             result.put("ppt", ppt);
+            URL pptURL = new URL(backURL);
+            pptURL.addParameter(REPORT_TYPE_PARAM, "pptReporter");
+            result.put("pptURL", pptURL);
 
-            l = this.excelSearch.execute(request, resource, 1, 1, 0);
-            int excel = l.getTotalHits();
-            result.put("excel", excel);
+            l = this.xlsSearch.execute(request, resource, 1, 1, 0);
+            int xls = l.getTotalHits();
+            result.put("xls", xls);
+            URL xlsURL = new URL(backURL);
+            xlsURL.addParameter(REPORT_TYPE_PARAM, "xlsReporter");
+            result.put("xlsURL", xlsURL);
 
-            result.put("secondtotal", webpage + image + audio + video + pdf + word + ppt + excel);
+            result.put("secondtotal", webpage + image + audio + video + pdf + doc + ppt + xls);
         } catch (Exception e) {
         }
 
@@ -150,8 +184,8 @@ public class DiagramReport implements Reporter {
     }
 
     @Required
-    public void setWordSearch(SearchComponent wordSearch) {
-        this.wordSearch = wordSearch;
+    public void setDocSearch(SearchComponent docSearch) {
+        this.docSearch = docSearch;
     }
 
     @Required
@@ -160,8 +194,8 @@ public class DiagramReport implements Reporter {
     }
 
     @Required
-    public void setExcelSearch(SearchComponent excelSearch) {
-        this.excelSearch = excelSearch;
+    public void setXlsSearch(SearchComponent xlsSearch) {
+        this.xlsSearch = xlsSearch;
     }
 
     @Override

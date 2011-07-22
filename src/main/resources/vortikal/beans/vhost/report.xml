@@ -38,6 +38,26 @@
 
   <bean id="reportHandler" class="org.vortikal.web.actions.report.ReportHandler" parent="repositoryAware">
     <property name="viewName" value="report" />
+    <property name="reporters">
+      <list>
+        <ref bean="collectionStructureReporter" />
+        <ref bean="lastModifiedReporter" />
+        <ref bean="myDocumentsReporter" />
+        <ref bean="diagramReport" />
+      </list>
+    </property>
+    <property name="hiddenReporters">
+      <list>
+        <ref bean="webpageReporter" />
+        <ref bean="imageReporter" />
+        <ref bean="audioReporter" />
+        <ref bean="videoReporter" />
+        <ref bean="pdfReporter" />
+        <ref bean="docReporter" />
+        <ref bean="pptReporter" />
+        <ref bean="xlsReporter" />
+      </list>
+    </property>
   </bean>
 
   <bean id="reporter" abstract="true" class="org.vortikal.web.actions.report.AbstractReporter" parent="repositoryAware">
@@ -52,6 +72,7 @@
 
   <bean id="documentReporter" abstract="true" class="org.vortikal.web.actions.report.DocumentReporter" parent="reporter">
     <property name="viewService" ref="viewService" />
+    <property name="backURL" value="false" />
     <property name="viewName" value="documentReport" />
   </bean>
 
@@ -59,6 +80,7 @@
     <property name="name" value="last-modified" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
+    <property name="file" value="file" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
@@ -79,9 +101,80 @@
     <property name="audioSearch" ref="diagramAudioReporter.searchComponent" />
     <property name="videoSearch" ref="diagramVideoReporter.searchComponent" />
     <property name="pdfSearch" ref="diagramPdfReporter.searchComponent" />
-    <property name="wordSearch" ref="diagramWordReporter.searchComponent" />
+    <property name="docSearch" ref="diagramDocReporter.searchComponent" />
     <property name="pptSearch" ref="diagramPptReporter.searchComponent" />
-    <property name="excelSearch" ref="diagramExcelReporter.searchComponent" />
+    <property name="xlsSearch" ref="diagramXlsReporter.searchComponent" />
+  </bean>
+
+  <bean id="webpageReporter" class="org.vortikal.web.actions.report.WebpageReporter" parent="documentReporter">
+    <property name="name" value="webpageReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="imageReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="imageReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="file" value="image" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="audioReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="audioReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="file" value="audio" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="videoReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="videoReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="file" value="video" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="pdfReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="pdfReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="file" value="pdf" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="docReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="docReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="file" value="doc" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="pptReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="pptReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="file" value="ppt" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="xlsReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="xlsReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="file" value="xls" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
   <bean id="report.viewResolver" parent="system.decoratingViewResolver">

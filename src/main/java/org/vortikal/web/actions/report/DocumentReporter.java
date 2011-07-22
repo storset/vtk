@@ -39,6 +39,8 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -46,26 +48,40 @@ public abstract class DocumentReporter extends AbstractReporter {
 
     private int pageSize = DEFAULT_SEARCH_LIMIT;
     private Service viewService;
+    private boolean backURL;
 
-    protected abstract Search getSearch(String token, Resource currentResource);
+    private static final String REPORT_TYPE_PARAM = "report-type";
     
+    protected abstract Search getSearch(String token, Resource currentResource);
+
     @Override
     public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("reportname", this.getName());
 
+        if (backURL) {
+            RequestContext requestContext = RequestContext.getRequestContext();
+            SecurityContext securityContext = SecurityContext.getSecurityContext();
+            Service service = requestContext.getService();
+
+            URL backURL = new URL(service.constructURL(currentResource, securityContext.getPrincipal()));
+            backURL.addParameter(REPORT_TYPE_PARAM, "diagram");
+
+            result.put("backURL", backURL);
+        }
+
         Search search = this.getSearch(token, currentResource);
         if (search == null) {
             return result;
         }
-        
+
         Position pos = Position.create(request, this.pageSize);
         if (pos.cursor >= Search.MAX_LIMIT) {
             return result;
         }
         search.setCursor(pos.cursor);
         search.setLimit(pageSize);
-        
+
         ResultSet rs = this.searcher.execute(token, search);
         if (pos.cursor + Math.min(pageSize, rs.getAllResults().size()) >= rs.getTotalHits()) {
             pos.next = null;
@@ -73,10 +89,10 @@ public abstract class DocumentReporter extends AbstractReporter {
         if (pos.cursor + Math.min(pageSize, rs.getAllResults().size()) >= Search.MAX_LIMIT) {
             pos.next = null;
         }
-        
+
         result.put("result", rs.getAllResults());
         result.put("from", pos.cursor + 1);
-        result.put("to", pos.cursor  + Math.min(pageSize, rs.getAllResults().size()));
+        result.put("to", pos.cursor + Math.min(pageSize, rs.getAllResults().size()));
         result.put("total", rs.getTotalHits());
         result.put("next", pos.next);
         result.put("prev", pos.prev);
@@ -102,14 +118,19 @@ public abstract class DocumentReporter extends AbstractReporter {
         this.viewService = viewService;
     }
 
+    public void setBackURL(boolean backURL) {
+        this.backURL = backURL;
+    }
+
     private static class Position {
         int cursor = 0;
         int limit = 0;
         URL next = null;
         URL prev = null;
-        
-        private Position() {}
-        
+
+        private Position() {
+        }
+
         static Position create(HttpServletRequest req, int limit) {
             Position position = new Position();
             position.limit = limit;
@@ -119,7 +140,8 @@ public abstract class DocumentReporter extends AbstractReporter {
             if (pageParam != null) {
                 try {
                     page = Integer.parseInt(pageParam.trim());
-                } catch (Throwable t) { }
+                } catch (Throwable t) {
+                }
             }
             if (page <= 0) {
                 page = 1;

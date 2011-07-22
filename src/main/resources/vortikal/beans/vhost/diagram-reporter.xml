@@ -38,7 +38,8 @@
       <list>
         <ref bean="diagram.UriQueryBuilder" />
         <bean parent="queryStringParser">
-          <property name="queryString" value="(uri = {$currentFolder}/* AND uri != /vrtx/* AND uri != /vrtx) AND (type IN collection)" />
+          <property name="queryString"
+            value="(uri = {$currentFolder}/* AND uri != /vrtx/* AND uri != /vrtx) AND (type IN collection)" />
         </bean>
       </list>
     </property>
@@ -105,8 +106,8 @@
     </property>
   </bean>
 
-  <bean id="diagramWordReporter.searchComponent" parent="diagramReporter.searchComponent">
-    <property name="name" value="diagramWordReporter.searcher" />
+  <bean id="diagramDocReporter.searchComponent" parent="diagramReporter.searchComponent">
+    <property name="name" value="diagramDocReporter.searcher" />
     <property name="queryBuilders">
       <list>
         <ref bean="diagram.UriQueryBuilder" />
@@ -129,8 +130,8 @@
     </property>
   </bean>
 
-  <bean id="diagramExcelReporter.searchComponent" parent="diagramReporter.searchComponent">
-    <property name="name" value="diagramExcelReporter.searcher" />
+  <bean id="diagramXlsReporter.searchComponent" parent="diagramReporter.searchComponent">
+    <property name="name" value="diagramXlsReporter.searcher" />
     <property name="queryBuilders">
       <list>
         <ref bean="diagram.UriQueryBuilder" />

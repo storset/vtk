@@ -38,29 +38,41 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 
-public class LastModifiedReporter extends DocumentReporter {
+public class WebpageReporter extends DocumentReporter {
 
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition sortPropDef;
     private SortFieldDirection sortOrder;
-    private String type;
-    
+
     @Override
     protected Search getSearch(String token, Resource currentResource) {
-        AndQuery query = new AndQuery();
-        query.add(new TypeTermQuery(type, TermOperator.IN));
-        query.add(new UriPrefixQuery(currentResource.getURI().toString()));
-        query.add(new UriPrefixQuery("/vrtx", true));
+        AndQuery q = new AndQuery();
+
+        OrQuery query = new OrQuery();
+        query.add(new TypeTermQuery("apt-resource", TermOperator.IN));
+
+        query.add(new TypeTermQuery("php", TermOperator.IN));
+
+        query.add(new TypeTermQuery("html", TermOperator.IN));
+
+        query.add(new TypeTermQuery("managed-xml", TermOperator.IN));
+
+        query.add(new TypeTermQuery("json-resource", TermOperator.IN));
+        q.add(query);
+
+        q.add(new UriPrefixQuery(currentResource.getURI().toString()));
+        q.add(new UriPrefixQuery("/vrtx", true));
         
         Search search = new Search();
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
         search.setSorting(sorting);
-        search.setQuery(query);
+        search.setQuery(q);
         return search;
     }
 
@@ -74,11 +86,6 @@ public class LastModifiedReporter extends DocumentReporter {
         this.sortOrder = sortOrder;
     }
 
-    @Required
-    public void setFile(String type) {
-        this.type = type;
-    }
-
     public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
         this.titlePropDef = titlePropDef;
     }
@@ -86,5 +93,4 @@ public class LastModifiedReporter extends DocumentReporter {
     public PropertyTypeDefinition getTitlePropDef() {
         return titlePropDef;
     }
-
 }

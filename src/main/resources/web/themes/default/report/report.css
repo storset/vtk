@@ -33,11 +33,20 @@ div.vrtx-report-diagram {
 div.vrtx-report-diagram-table {
   clear: left;
   float: left;
-  width: 200px;
+  width: 180px;
 }
 
 div.vrtx-report-diagram-img {
   float: left;
+}
+
+tr.vrtx-report-diagram-total {
+  border-top: dotted;
+  border-width: 1px;
+}
+
+td.vrtx-report-diagram-count {
+  text-align: right;
 }
 
 /* Tooltip */

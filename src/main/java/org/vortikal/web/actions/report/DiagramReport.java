@@ -64,12 +64,13 @@ public class DiagramReport implements Reporter {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("reportname", this.getName());
 
+        /* Create base URL */
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
+        URL baseURL = new URL(service.constructURL(resource, securityContext.getPrincipal()));
 
-        URL backURL = new URL(service.constructURL(resource, securityContext.getPrincipal()));
-
+        /* Get files and folders count */
         Listing l;
         try {
             l = this.filesSearch.execute(request, resource, 1, 1, 0);
@@ -84,60 +85,61 @@ public class DiagramReport implements Reporter {
         } catch (Exception e) {
         }
 
+        /* Get filetypes count and add URL to new search listing up the filetype */
         try {
             l = this.webpageSearch.execute(request, resource, 1, 1, 0);
             int webpage = l.getTotalHits();
             result.put("webpage", webpage);
-            URL webpageURL = new URL(backURL);
+            URL webpageURL = new URL(baseURL);
             webpageURL.addParameter(REPORT_TYPE_PARAM, "webpageReporter");
             result.put("webpageURL", webpageURL);
 
             l = this.imageSearch.execute(request, resource, 1, 1, 0);
             int image = l.getTotalHits();
             result.put("image", image);
-            URL imageURL = new URL(backURL);
+            URL imageURL = new URL(baseURL);
             imageURL.addParameter(REPORT_TYPE_PARAM, "imageReporter");
             result.put("imageURL", imageURL);
 
             l = this.audioSearch.execute(request, resource, 1, 1, 0);
             int audio = l.getTotalHits();
             result.put("audio", audio);
-            URL audioURL = new URL(backURL);
+            URL audioURL = new URL(baseURL);
             audioURL.addParameter(REPORT_TYPE_PARAM, "audioReporter");
             result.put("audioURL", audioURL);
 
             l = this.videoSearch.execute(request, resource, 1, 1, 0);
             int video = l.getTotalHits();
             result.put("video", video);
-            URL videoURL = new URL(backURL);
+            URL videoURL = new URL(baseURL);
             videoURL.addParameter(REPORT_TYPE_PARAM, "videoReporter");
             result.put("videoURL", videoURL);
 
             l = this.pdfSearch.execute(request, resource, 1, 1, 0);
             int pdf = l.getTotalHits();
             result.put("pdf", pdf);
-            URL pdfURL = new URL(backURL);
+            URL pdfURL = new URL(baseURL);
             pdfURL.addParameter(REPORT_TYPE_PARAM, "pdfReporter");
             result.put("pdfURL", pdfURL);
 
             l = this.docSearch.execute(request, resource, 1, 1, 0);
             int doc = l.getTotalHits();
             result.put("doc", doc);
-            URL docURL = new URL(backURL);
+            URL docURL = new URL(baseURL);
             docURL.addParameter(REPORT_TYPE_PARAM, "docReporter");
             result.put("docURL", docURL);
 
             l = this.pptSearch.execute(request, resource, 1, 1, 0);
             int ppt = l.getTotalHits();
             result.put("ppt", ppt);
-            URL pptURL = new URL(backURL);
+            URL pptURL = new URL(baseURL);
             pptURL.addParameter(REPORT_TYPE_PARAM, "pptReporter");
             result.put("pptURL", pptURL);
 
             l = this.xlsSearch.execute(request, resource, 1, 1, 0);
             int xls = l.getTotalHits();
             result.put("xls", xls);
-            URL xlsURL = new URL(backURL);
+            URL xlsURL = new URL(baseURL);
             xlsURL.addParameter(REPORT_TYPE_PARAM, "xlsReporter");
             result.put("xlsURL", xlsURL);
 

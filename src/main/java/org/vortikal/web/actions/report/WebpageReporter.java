@@ -55,16 +55,13 @@ public class WebpageReporter extends DocumentReporter {
 
         OrQuery query = new OrQuery();
         query.add(new TypeTermQuery("apt-resource", TermOperator.IN));
-
         query.add(new TypeTermQuery("php", TermOperator.IN));
-
         query.add(new TypeTermQuery("html", TermOperator.IN));
-
         query.add(new TypeTermQuery("managed-xml", TermOperator.IN));
-
         query.add(new TypeTermQuery("json-resource", TermOperator.IN));
         q.add(query);
 
+        /* In current resource but not in /vrtx */
         q.add(new UriPrefixQuery(currentResource.getURI().toString()));
         q.add(new UriPrefixQuery("/vrtx", true));
         

@@ -59,6 +59,7 @@ public abstract class DocumentReporter extends AbstractReporter {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("reportname", this.getName());
 
+        /* Create back to diagram URL */
         if (backURL) {
             RequestContext requestContext = RequestContext.getRequestContext();
             SecurityContext securityContext = SecurityContext.getSecurityContext();

@@ -25,19 +25,15 @@
       <div class="vrtx-report-diagram-table">
         <table id="vrtx-report-diagram-filesandfolders">
           <tr>
-            <th>Type</th>
-            <th><@vrtx.msg code="report.count" /></th>
-          </tr>
-          <tr>
-            <td>File</td>
+            <td class="vrtx-report-diagram-text">File</td>
             <td class="vrtx-report-diagram-count">${report.files}</td>
           </tr>
           <tr>
-            <td>Folder</td>
+            <td class="vrtx-report-diagram-text">Folder</td>
             <td class="vrtx-report-diagram-count">${report.folders}</td>
           </tr>
           <tr class="vrtx-report-diagram-total">
-            <td>Total</td>
+            <td class="vrtx-report-diagram-text">Total</td>
             <td class="vrtx-report-diagram-count">${report.firsttotal}</td>
           </tr>
         </table>
@@ -54,43 +50,39 @@
       <div class="vrtx-report-diagram-table">
         <table id="vrtx-report-diagram-filetypes">
           <tr>
-            <th><@vrtx.msg code="report.${report.reportname}.filetype" /></th>
-            <th><@vrtx.msg code="report.count" /></th>
-          </tr>
-          <tr>
-            <td><#if (report.webpage > 0)><a href="${report.webpageURL?html}">Web page</a><#else>Web page</#if></td>
+            <td class="vrtx-report-diagram-text"><#if (report.webpage > 0)><a href="${report.webpageURL?html}">Web page</a><#else>Web page</#if></td>
             <td class="vrtx-report-diagram-count">${report.webpage}</td>
           </tr>
           <tr>
-            <td><#if (report.image > 0)><a href="${report.imageURL?html}">Image</a><#else>Image</#if></td>
+            <td class="vrtx-report-diagram-text"><#if (report.image > 0)><a href="${report.imageURL?html}">Image</a><#else>Image</#if></td>
             <td class="vrtx-report-diagram-count">${report.image}</td>
           </tr>
           <tr>
-            <td><#if (report.audio > 0)><a href="${report.audioURL?html}">Audio</a><#else>Audio</#if></td>
+            <td class="vrtx-report-diagram-text"><#if (report.audio > 0)><a href="${report.audioURL?html}">Audio</a><#else>Audio</#if></td>
             <td class="vrtx-report-diagram-count">${report.audio}</td>
           </tr>
           <tr>
-            <td><#if (report.video > 0)><a href="${report.videoURL?html}">Video</a><#else>Video</#if></td>
+            <td class="vrtx-report-diagram-text"><#if (report.video > 0)><a href="${report.videoURL?html}">Video</a><#else>Video</#if></td>
             <td class="vrtx-report-diagram-count">${report.video}</td>
           </tr>
           <tr>
-            <td><#if (report.pdf > 0)><a href="${report.pdfURL?html}">PDF</a><#else>PDF</#if></td>
+            <td class="vrtx-report-diagram-text"><#if (report.pdf > 0)><a href="${report.pdfURL?html}">PDF</a><#else>PDF</#if></td>
             <td class="vrtx-report-diagram-count">${report.pdf}</td>
           </tr>
           <tr>
-            <td><#if (report.doc > 0)><a href="${report.docURL?html}">Word</a><#else>Word</#if></td>
+            <td class="vrtx-report-diagram-text"><#if (report.doc > 0)><a href="${report.docURL?html}">Word</a><#else>Word</#if></td>
             <td class="vrtx-report-diagram-count">${report.doc}</td>
           </tr>
           <tr>
-            <td><#if (report.ppt > 0)><a href="${report.pptURL?html}">Power Point</a><#else>Power Point</#if></td>
+            <td class="vrtx-report-diagram-text"><#if (report.ppt > 0)><a href="${report.pptURL?html}">Power Point</a><#else>Power Point</#if></td>
             <td class="vrtx-report-diagram-count">${report.ppt}</td>
           </tr>
           <tr>
-            <td><#if (report.xls > 0)><a href="${report.xlsURL?html}">Excel</a><#else>Excel</#if></td>
+            <td class="vrtx-report-diagram-text"><#if (report.xls > 0)><a href="${report.xlsURL?html}">Excel</a><#else>Excel</#if></td>
             <td class="vrtx-report-diagram-count">${report.xls}</td>
           </tr>
           <tr class="vrtx-report-diagram-total">
-            <td>Total</td>
+            <td class="vrtx-report-diagram-text">Total</td>
             <td class="vrtx-report-diagram-count">${report.secondtotal}</td>
           </tr>
         </table>

@@ -46,7 +46,13 @@ tr.vrtx-report-diagram-total {
 }
 
 td.vrtx-report-diagram-count {
+  font-size: 1.154em;
   text-align: right;
+}
+
+td.vrtx-report-diagram-text {
+  font-size: 1.154em;
+  width: 100px;
 }
 
 /* Tooltip */

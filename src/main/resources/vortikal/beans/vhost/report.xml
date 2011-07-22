@@ -91,19 +91,9 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="diagramReport" class="org.vortikal.web.actions.report.DiagramReport">
+  <bean id="diagramReport" class="org.vortikal.web.actions.report.DiagramReport" parent="reporter">
     <property name="name" value="diagram" />
     <property name="viewName" value="diagramReport" />
-    <property name="filesSearch" ref="diagramFilesReporter.searchComponent" />
-    <property name="folderSearch" ref="diagramFolderReporter.searchComponent" />
-    <property name="webpageSearch" ref="diagramWebpageReporter.searchComponent" />
-    <property name="imageSearch" ref="diagramImageReporter.searchComponent" />
-    <property name="audioSearch" ref="diagramAudioReporter.searchComponent" />
-    <property name="videoSearch" ref="diagramVideoReporter.searchComponent" />
-    <property name="pdfSearch" ref="diagramPdfReporter.searchComponent" />
-    <property name="docSearch" ref="diagramDocReporter.searchComponent" />
-    <property name="pptSearch" ref="diagramPptReporter.searchComponent" />
-    <property name="xlsSearch" ref="diagramXlsReporter.searchComponent" />
   </bean>
 
   <bean id="webpageReporter" class="org.vortikal.web.actions.report.WebpageReporter" parent="documentReporter">

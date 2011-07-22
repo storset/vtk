@@ -61,10 +61,10 @@ public class WebpageReporter extends DocumentReporter {
         query.add(new TypeTermQuery("json-resource", TermOperator.IN));
         q.add(query);
 
-        /* In current resource but not in /vrtx */
+        /* In current resource but not in /vrtx. */
         q.add(new UriPrefixQuery(currentResource.getURI().toString()));
         q.add(new UriPrefixQuery("/vrtx", true));
-        
+
         Search search = new Search();
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));

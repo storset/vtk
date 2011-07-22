@@ -38,8 +38,10 @@ import org.vortikal.repository.Resource;
 
 public interface Reporter {
 
+    public static final String REPORT_TYPE_PARAM = "report-type";
+
     public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request);
-    
+
     public String getName();
 
     public String getViewName();

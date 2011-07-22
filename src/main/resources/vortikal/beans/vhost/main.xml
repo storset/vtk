@@ -75,7 +75,6 @@
   <import resource="delete.xml" />
   <import resource="publish.xml" />
   <import resource="trash-can.xml" />
-  <import resource="diagram-reporter.xml" />
   <!--import resource="manually-approve-resources.xml" /-->
   
   <import resource="link-check.xml" />

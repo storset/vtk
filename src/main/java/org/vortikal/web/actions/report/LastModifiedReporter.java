@@ -50,10 +50,10 @@ public class LastModifiedReporter extends DocumentReporter {
     private String type;
     
     @Override
-    protected Search getSearch(String token, Resource currentResource) {
+    protected Search getSearch(String token, Resource resource) {
         AndQuery query = new AndQuery();
         query.add(new TypeTermQuery(type, TermOperator.IN));
-        query.add(new UriPrefixQuery(currentResource.getURI().toString()));
+        query.add(new UriPrefixQuery(resource.getURI().toString()));
         query.add(new UriPrefixQuery("/vrtx", true));
         
         Search search = new Search();

@@ -35,169 +35,117 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.OrQuery;
+import org.vortikal.repository.search.query.TermOperator;
+import org.vortikal.repository.search.query.TypeTermQuery;
+import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.search.Listing;
-import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public class DiagramReport implements Reporter {
+public class DiagramReport extends AbstractReporter {
 
     private String name;
     private String viewName;
-    private SearchComponent filesSearch;
-    private SearchComponent folderSearch;
-    private SearchComponent webpageSearch;
-    private SearchComponent imageSearch;
-    private SearchComponent audioSearch;
-    private SearchComponent videoSearch;
-    private SearchComponent pdfSearch;
-    private SearchComponent docSearch;
-    private SearchComponent pptSearch;
-    private SearchComponent xlsSearch;
-    
-    private static final String REPORT_TYPE_PARAM = "report-type";
 
     @Override
     public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("reportname", this.getName());
 
-        /* Create base URL */
+        /* Create base URL. */
         RequestContext requestContext = RequestContext.getRequestContext();
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         URL baseURL = new URL(service.constructURL(resource, securityContext.getPrincipal()));
 
-        /* Get files and folders count */
-        Listing l;
+        /* Get files and folders count. */
         try {
-            l = this.filesSearch.execute(request, resource, 1, 1, 0);
-            int files = l.getTotalHits();
+            int files = fileSearch("file", token, resource);
             result.put("files", files);
 
-            l = this.folderSearch.execute(request, resource, 1, 1, 0);
-            int folders = l.getTotalHits();
+            int folders = fileSearch("collection", token, resource);
             result.put("folders", folders);
 
             result.put("firsttotal", files + folders);
         } catch (Exception e) {
         }
 
-        /* Get filetypes count and add URL to new search listing up the filetype */
+        /*
+         * Get filetypes count and add URL to new search listing up the
+         * filetype.
+         */
         try {
-            l = this.webpageSearch.execute(request, resource, 1, 1, 0);
-            int webpage = l.getTotalHits();
+            int total = 0;
+
+            /*
+             * Web pages needs to be handled alone since the search is
+             * different.
+             */
+            int webpage = webSearch(token, resource);
             result.put("webpage", webpage);
             URL webpageURL = new URL(baseURL);
             webpageURL.addParameter(REPORT_TYPE_PARAM, "webpageReporter");
             result.put("webpageURL", webpageURL);
+            total += webpage;
 
-            l = this.imageSearch.execute(request, resource, 1, 1, 0);
-            int image = l.getTotalHits();
-            result.put("image", image);
-            URL imageURL = new URL(baseURL);
-            imageURL.addParameter(REPORT_TYPE_PARAM, "imageReporter");
-            result.put("imageURL", imageURL);
+            /* All types except web pages. */
+            String[] types = { "image", "audio", "video", "pdf", "doc", "ppt", "xls" };
+            for (String type : types) {
+                int count = fileSearch(type, token, resource);
+                result.put(type, count);
+                URL imageURL = new URL(baseURL);
+                imageURL.addParameter(REPORT_TYPE_PARAM, type + "Reporter");
+                result.put(type + "URL", imageURL);
+                total += count;
+            }
 
-            l = this.audioSearch.execute(request, resource, 1, 1, 0);
-            int audio = l.getTotalHits();
-            result.put("audio", audio);
-            URL audioURL = new URL(baseURL);
-            audioURL.addParameter(REPORT_TYPE_PARAM, "audioReporter");
-            result.put("audioURL", audioURL);
-
-            l = this.videoSearch.execute(request, resource, 1, 1, 0);
-            int video = l.getTotalHits();
-            result.put("video", video);
-            URL videoURL = new URL(baseURL);
-            videoURL.addParameter(REPORT_TYPE_PARAM, "videoReporter");
-            result.put("videoURL", videoURL);
-
-            l = this.pdfSearch.execute(request, resource, 1, 1, 0);
-            int pdf = l.getTotalHits();
-            result.put("pdf", pdf);
-            URL pdfURL = new URL(baseURL);
-            pdfURL.addParameter(REPORT_TYPE_PARAM, "pdfReporter");
-            result.put("pdfURL", pdfURL);
-
-            l = this.docSearch.execute(request, resource, 1, 1, 0);
-            int doc = l.getTotalHits();
-            result.put("doc", doc);
-            URL docURL = new URL(baseURL);
-            docURL.addParameter(REPORT_TYPE_PARAM, "docReporter");
-            result.put("docURL", docURL);
-
-            l = this.pptSearch.execute(request, resource, 1, 1, 0);
-            int ppt = l.getTotalHits();
-            result.put("ppt", ppt);
-            URL pptURL = new URL(baseURL);
-            pptURL.addParameter(REPORT_TYPE_PARAM, "pptReporter");
-            result.put("pptURL", pptURL);
-
-            l = this.xlsSearch.execute(request, resource, 1, 1, 0);
-            int xls = l.getTotalHits();
-            result.put("xls", xls);
-            URL xlsURL = new URL(baseURL);
-            xlsURL.addParameter(REPORT_TYPE_PARAM, "xlsReporter");
-            result.put("xlsURL", xlsURL);
-
-            result.put("secondtotal", webpage + image + audio + video + pdf + doc + ppt + xls);
+            result.put("secondtotal", total);
         } catch (Exception e) {
         }
 
         return result;
     }
 
-    @Required
-    public void setFilesSearch(SearchComponent filesSearch) {
-        this.filesSearch = filesSearch;
+    private int webSearch(String token, Resource resource) {
+        Search search = new Search();
+        AndQuery q = new AndQuery();
+        OrQuery query = new OrQuery();
+
+        query.add(new TypeTermQuery("apt-resource", TermOperator.IN));
+        query.add(new TypeTermQuery("php", TermOperator.IN));
+        query.add(new TypeTermQuery("html", TermOperator.IN));
+        query.add(new TypeTermQuery("managed-xml", TermOperator.IN));
+        query.add(new TypeTermQuery("json-resource", TermOperator.IN));
+        q.add(query);
+
+        /* In current resource but not in /vrtx. */
+        q.add(new UriPrefixQuery(resource.getURI().toString()));
+        q.add(new UriPrefixQuery("/vrtx", true));
+
+        search.setQuery(q);
+        search.setPropertySelect(null);
+        
+        return this.searcher.execute(token, search).getTotalHits();
     }
 
-    @Required
-    public void setFolderSearch(SearchComponent folderSearch) {
-        this.folderSearch = folderSearch;
-    }
+    private int fileSearch(String type, String token, Resource resource) {
+        Search search = new Search();
+        AndQuery query = new AndQuery();
 
-    @Required
-    public void setWebpageSearch(SearchComponent webpageSearch) {
-        this.webpageSearch = webpageSearch;
-    }
+        query.add(new TypeTermQuery(type, TermOperator.IN));
 
-    @Required
-    public void setImageSearch(SearchComponent imageSearch) {
-        this.imageSearch = imageSearch;
-    }
+        /* In current resource but not in /vrtx. */
+        query.add(new UriPrefixQuery(resource.getURI().toString()));
+        query.add(new UriPrefixQuery("/vrtx", true));
 
-    @Required
-    public void setAudioSearch(SearchComponent audioSearch) {
-        this.audioSearch = audioSearch;
-    }
+        search.setQuery(query);
+        search.setPropertySelect(null);
 
-    @Required
-    public void setVideoSearch(SearchComponent videoSearch) {
-        this.videoSearch = videoSearch;
-    }
-
-    @Required
-    public void setPdfSearch(SearchComponent pdfSearch) {
-        this.pdfSearch = pdfSearch;
-    }
-
-    @Required
-    public void setDocSearch(SearchComponent docSearch) {
-        this.docSearch = docSearch;
-    }
-
-    @Required
-    public void setPptSearch(SearchComponent pptSearch) {
-        this.pptSearch = pptSearch;
-    }
-
-    @Required
-    public void setXlsSearch(SearchComponent xlsSearch) {
-        this.xlsSearch = xlsSearch;
+        return this.searcher.execute(token, search).getTotalHits();
     }
 
     @Override

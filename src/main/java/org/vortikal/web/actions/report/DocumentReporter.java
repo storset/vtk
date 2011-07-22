@@ -50,8 +50,6 @@ public abstract class DocumentReporter extends AbstractReporter {
     private Service viewService;
     private boolean backURL;
 
-    private static final String REPORT_TYPE_PARAM = "report-type";
-    
     protected abstract Search getSearch(String token, Resource currentResource);
 
     @Override
@@ -59,7 +57,7 @@ public abstract class DocumentReporter extends AbstractReporter {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("reportname", this.getName());
 
-        /* Create back to diagram URL */
+        /* Create back to diagram URL. */
         if (backURL) {
             RequestContext requestContext = RequestContext.getRequestContext();
             SecurityContext securityContext = SecurityContext.getSecurityContext();

@@ -65,7 +65,7 @@ public class ReportHandler implements Controller {
     public void setHiddenReporters(List<Reporter> hiddenReporters) {
         this.hiddenReporters = hiddenReporters;
     }
-    
+
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 

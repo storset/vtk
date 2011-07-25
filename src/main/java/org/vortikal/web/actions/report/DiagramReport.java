@@ -130,7 +130,7 @@ public class DiagramReport extends AbstractReporter {
         q.add(query);
 
         /* In current resource but not in /vrtx. */
-        q.add(new UriPrefixQuery(resource.getURI().toString()));
+        q.add(new UriPrefixQuery(resource.getURI().toString(), TermOperator.IN, false));
         q.add(new UriPrefixQuery("/vrtx", true));
 
         search.setQuery(q);
@@ -146,7 +146,7 @@ public class DiagramReport extends AbstractReporter {
         query.add(new TypeTermQuery(type, TermOperator.IN));
 
         /* In current resource but not in /vrtx. */
-        query.add(new UriPrefixQuery(resource.getURI().toString()));
+        query.add(new UriPrefixQuery(resource.getURI().toString(), TermOperator.IN, false));
         query.add(new UriPrefixQuery("/vrtx", true));
 
         search.setQuery(query);

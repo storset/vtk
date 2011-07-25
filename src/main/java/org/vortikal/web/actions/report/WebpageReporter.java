@@ -62,7 +62,7 @@ public class WebpageReporter extends DocumentReporter {
         q.add(query);
 
         /* In current resource but not in /vrtx. */
-        q.add(new UriPrefixQuery(currentResource.getURI().toString()));
+        q.add(new UriPrefixQuery(currentResource.getURI().toString(), TermOperator.IN, false));
         q.add(new UriPrefixQuery("/vrtx", true));
 
         Search search = new Search();

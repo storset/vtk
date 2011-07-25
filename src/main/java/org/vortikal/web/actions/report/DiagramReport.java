@@ -62,13 +62,15 @@ public class DiagramReport extends AbstractReporter {
         Service service = requestContext.getService();
         URL baseURL = new URL(service.constructURL(resource, securityContext.getPrincipal()));
 
-        /* Get files and folders count. */
+        /* Get count and URL for file and folder. */
         try {
             int files = fileSearch("file", token, resource);
             result.put("files", files);
+            result.put("filesURL", new URL(baseURL).addParameter(REPORT_TYPE_PARAM, "fileReporter"));
 
             int folders = fileSearch("collection", token, resource);
             result.put("folders", folders);
+            result.put("foldersURL", new URL(baseURL).addParameter(REPORT_TYPE_PARAM, "folderReporter"));
 
             result.put("firsttotal", files + folders);
         } catch (Exception e) {
@@ -81,10 +83,14 @@ public class DiagramReport extends AbstractReporter {
         try {
             int total = 0;
 
+            /*
+             * This list can be appended to add file types. Do it after webpage
+             * unless it will be handled uniquely.
+             */
             String[] types = { "webpage", "image", "audio", "video", "pdf", "doc", "ppt", "xls" };
             int typeCount[] = new int[types.length];
             URL typeURL[] = new URL[types.length];
-            
+
             /*
              * Web pages needs to be handled alone since the search is
              * different.
@@ -94,16 +100,16 @@ public class DiagramReport extends AbstractReporter {
             total += typeCount[0];
 
             /* Starting on i = 1 since we have already done webpage. */
-            for (int i = 1; i < types.length; i++ ) {
+            for (int i = 1; i < types.length; i++) {
                 typeCount[i] = fileSearch(types[i], token, resource);
                 typeURL[i] = new URL(baseURL).addParameter(REPORT_TYPE_PARAM, types[i] + "Reporter");
                 total += typeCount[i];
             }
-            
+
             result.put("types", types);
             result.put("typeCount", typeCount);
             result.put("typeURL", typeURL);
-            
+
             result.put("secondtotal", total);
         } catch (Exception e) {
         }
@@ -128,8 +134,8 @@ public class DiagramReport extends AbstractReporter {
         q.add(new UriPrefixQuery("/vrtx", true));
 
         search.setQuery(q);
-        search.setPropertySelect(null);
-        
+        search.setLimit(1);
+
         return this.searcher.execute(token, search).getTotalHits();
     }
 
@@ -144,7 +150,7 @@ public class DiagramReport extends AbstractReporter {
         query.add(new UriPrefixQuery("/vrtx", true));
 
         search.setQuery(query);
-        search.setPropertySelect(null);
+        search.setLimit(1);
 
         return this.searcher.execute(token, search).getTotalHits();
     }

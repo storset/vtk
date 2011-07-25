@@ -25,12 +25,12 @@
       <div class="vrtx-report-diagram-table">
         <table id="vrtx-report-diagram-filesandfolders">
           <tr>
-            <td class="vrtx-report-diagram-text">File</td>
-            <td class="vrtx-report-diagram-count">${report.files}</td>
+            <td class="vrtx-report-diagram-text"><a href="${report.foldersURL?html}"><@vrtx.msg code="report.diagram.folder" /></a></td>
+            <td class="vrtx-report-diagram-count">${report.folders}</td>
           </tr>
           <tr>
-            <td class="vrtx-report-diagram-text">Folder</td>
-            <td class="vrtx-report-diagram-count">${report.folders}</td>
+            <td class="vrtx-report-diagram-text"><a href="${report.filesURL?html}"><@vrtx.msg code="report.diagram.file" /></a></td>
+            <td class="vrtx-report-diagram-count">${report.files}</td>
           </tr>
           <tr class="vrtx-report-diagram-total">
             <td class="vrtx-report-diagram-text"><@vrtx.msg code="report.diagram.total" /></td>
@@ -40,9 +40,7 @@
       </div>
       <div class="vrtx-report-diagram-img">
         <img id="filesandfoldersimg" width="480" height="180" alt="<@vrtx.msg code="report.${report.reportname}.filesandfolderspiechart" />" 
-             src="https://chart.googleapis.com/chart?chs=480x180&cht=p3&chd=s:Sm&chdl=Mapper|Filer
-             &chl=<#if (report.folders > 0)>Mapper</#if>|<#if (report.files > 0)>Filer</#if>
-             &chd=t:${((report.folders/report.firsttotal)*100)?string("0.#")},${((report.files/report.firsttotal)*100)?string("0.#")}" />
+             src="https://chart.googleapis.com/chart?chs=480x180&cht=p3&chd=s:Sm&chdl=<@vrtx.msg code="report.diagram.folder" />|<@vrtx.msg code="report.diagram.file" />&chl=<#if (report.folders > 0)><@vrtx.msg code="report.diagram.folder" /></#if>|<#if (report.files > 0)><@vrtx.msg code="report.diagram.file" /></#if>&chd=t:${((report.folders/report.firsttotal)*100)?string("0")},${((report.files/report.firsttotal)*100)?string("0")}" />
       </div>
     </div>
   </#if>
@@ -66,7 +64,7 @@
       </div>
       <div class="vrtx-report-diagram-img">
         <img id="filetypesimg" width="480" height="180" alt="<@vrtx.msg code="report.${report.reportname}.filetypepiechart" />" 
-             src="https://chart.googleapis.com/chart?chs=480x180&cht=p3&chd=s:Sm&chdl=<#list report.types as type><@vrtx.msg code="report.diagram.+${type}" /><#if report.types[type_index+1]?exists>|</#if></#list>&chl=<#list report.types as type><#if (report.typeCount[type_index] > 0)><@vrtx.msg code="report.diagram.+${type}" /></#if><#if report.types[type_index+1]?exists>|</#if></#list>&chd=t:<#list report.types as type>${((report.typeCount[type_index]/report.secondtotal)*100)?string("0.#")}<#if report.types[type_index+1]?exists>,</#if></#list>" />
+             src="https://chart.googleapis.com/chart?chs=480x180&cht=p3&chd=s:Sm&chdl=<#list report.types as type><#if ((report.typeCount[type_index] > 0) && (type_index != 0))>|</#if><#if (report.typeCount[type_index] > 0)><@vrtx.msg code="report.diagram.+${type}" /></#if></#list>&chl=<#list report.types as type><#if ((report.typeCount[type_index] > 0) && (type_index != 0))>|</#if><#if (report.typeCount[type_index] > 0)><@vrtx.msg code="report.diagram.+${type}" /></#if></#list>&chd=t:<#list report.types as type><#if ((report.typeCount[type_index] > 0) && (type_index != 0))>,</#if><#if (report.typeCount[type_index] > 0)>${((report.typeCount[type_index]/report.secondtotal)*100)?string("0")}</#if></#list>" />
       </div>
     </div>
   </#if>

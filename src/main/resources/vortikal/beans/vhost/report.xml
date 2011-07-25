@@ -40,10 +40,10 @@
     <property name="viewName" value="report" />
     <property name="reporters">
       <list>
+        <ref bean="diagramReport" />
         <ref bean="collectionStructureReporter" />
         <ref bean="lastModifiedReporter" />
         <ref bean="myDocumentsReporter" />
-        <ref bean="diagramReport" />
       </list>
     </property>
     <property name="hiddenReporters">
@@ -56,6 +56,8 @@
         <ref bean="docReporter" />
         <ref bean="pptReporter" />
         <ref bean="xlsReporter" />
+        <ref bean="folderReporter" />
+        <ref bean="fileReporter" />
       </list>
     </property>
   </bean>
@@ -80,7 +82,7 @@
     <property name="name" value="last-modified" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
-    <property name="file" value="file" />
+    <property name="type" value="file" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
@@ -108,7 +110,7 @@
     <property name="name" value="imageReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
-    <property name="file" value="image" />
+    <property name="type" value="image" />
     <property name="backURL" value="true" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
@@ -117,7 +119,7 @@
     <property name="name" value="audioReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
-    <property name="file" value="audio" />
+    <property name="type" value="audio" />
     <property name="backURL" value="true" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
@@ -126,7 +128,7 @@
     <property name="name" value="videoReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
-    <property name="file" value="video" />
+    <property name="type" value="video" />
     <property name="backURL" value="true" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
@@ -135,7 +137,7 @@
     <property name="name" value="pdfReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
-    <property name="file" value="pdf" />
+    <property name="type" value="pdf" />
     <property name="backURL" value="true" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
@@ -144,7 +146,7 @@
     <property name="name" value="docReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
-    <property name="file" value="doc" />
+    <property name="type" value="doc" />
     <property name="backURL" value="true" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
@@ -153,7 +155,7 @@
     <property name="name" value="pptReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
-    <property name="file" value="ppt" />
+    <property name="type" value="ppt" />
     <property name="backURL" value="true" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
@@ -162,7 +164,25 @@
     <property name="name" value="xlsReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
-    <property name="file" value="xls" />
+    <property name="type" value="xls" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="folderReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="folderReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="collection" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="fileReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="fileReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="file" />
     <property name="backURL" value="true" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>

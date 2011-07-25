@@ -59,8 +59,11 @@ public class LastModifiedReporter extends DocumentReporter {
         Search search = new Search();
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
+        
         search.setSorting(sorting);
         search.setQuery(query);
+        search.setLimit(DEFAULT_SEARCH_LIMIT);
+        
         return search;
     }
 
@@ -75,7 +78,7 @@ public class LastModifiedReporter extends DocumentReporter {
     }
 
     @Required
-    public void setFile(String type) {
+    public void setType(String type) {
         this.type = type;
     }
 

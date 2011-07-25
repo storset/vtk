@@ -16,7 +16,7 @@
     <div class="vrtx-report-nav">
       <div class="back">
         <#if report.backURL?exists>
-        <a href="${report.backURL?html}" ><@vrtx.msg code="report.back.to.diagram" default="Back" /></a>
+        <a href="${report.backURL?html}" ><@vrtx.msg code="report.diagram" default="Back" /></a>
         <#else>
         <a href="${serviceURL}" ><@vrtx.msg code="report.back" default="Back" /></a>
         </#if>

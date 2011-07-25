@@ -81,28 +81,29 @@ public class DiagramReport extends AbstractReporter {
         try {
             int total = 0;
 
+            String[] types = { "webpage", "image", "audio", "video", "pdf", "doc", "ppt", "xls" };
+            int typeCount[] = new int[types.length];
+            URL typeURL[] = new URL[types.length];
+            
             /*
              * Web pages needs to be handled alone since the search is
              * different.
              */
-            int webpage = webSearch(token, resource);
-            result.put("webpage", webpage);
-            URL webpageURL = new URL(baseURL);
-            webpageURL.addParameter(REPORT_TYPE_PARAM, "webpageReporter");
-            result.put("webpageURL", webpageURL);
-            total += webpage;
+            typeCount[0] = webSearch(token, resource);
+            typeURL[0] = new URL(baseURL).addParameter(REPORT_TYPE_PARAM, "webpageReporter");
+            total += typeCount[0];
 
-            /* All types except web pages. */
-            String[] types = { "image", "audio", "video", "pdf", "doc", "ppt", "xls" };
-            for (String type : types) {
-                int count = fileSearch(type, token, resource);
-                result.put(type, count);
-                URL imageURL = new URL(baseURL);
-                imageURL.addParameter(REPORT_TYPE_PARAM, type + "Reporter");
-                result.put(type + "URL", imageURL);
-                total += count;
+            /* Starting on i = 1 since we have already done webpage. */
+            for (int i = 1; i < types.length; i++ ) {
+                typeCount[i] = fileSearch(types[i], token, resource);
+                typeURL[i] = new URL(baseURL).addParameter(REPORT_TYPE_PARAM, types[i] + "Reporter");
+                total += typeCount[i];
             }
-
+            
+            result.put("types", types);
+            result.put("typeCount", typeCount);
+            result.put("typeURL", typeURL);
+            
             result.put("secondtotal", total);
         } catch (Exception e) {
         }

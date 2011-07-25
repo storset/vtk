@@ -33,14 +33,16 @@
             <td class="vrtx-report-diagram-count">${report.folders}</td>
           </tr>
           <tr class="vrtx-report-diagram-total">
-            <td class="vrtx-report-diagram-text">Total</td>
+            <td class="vrtx-report-diagram-text"><@vrtx.msg code="report.diagram.total" /></td>
             <td class="vrtx-report-diagram-count">${report.firsttotal}</td>
           </tr>
         </table>
       </div>
       <div class="vrtx-report-diagram-img">
         <img id="filesandfoldersimg" width="480" height="180" alt="<@vrtx.msg code="report.${report.reportname}.filesandfolderspiechart" />" 
-             src="https://chart.googleapis.com/chart?chs=480x180&cht=p3&chd=s:Sm&chdl=Mapper|Filer&chl=<#if (report.folders > 0)>Mapper</#if>|<#if (report.files > 0)>Filer</#if>&chd=t:${((report.folders/report.firsttotal)*100)?string("0.#")},${((report.files/report.firsttotal)*100)?string("0.#")}" />
+             src="https://chart.googleapis.com/chart?chs=480x180&cht=p3&chd=s:Sm&chdl=Mapper|Filer
+             &chl=<#if (report.folders > 0)>Mapper</#if>|<#if (report.files > 0)>Filer</#if>
+             &chd=t:${((report.folders/report.firsttotal)*100)?string("0.#")},${((report.files/report.firsttotal)*100)?string("0.#")}" />
       </div>
     </div>
   </#if>
@@ -49,47 +51,22 @@
       <h3><@vrtx.msg code="report.diagram.filetypetitle" /></h3>
       <div class="vrtx-report-diagram-table">
         <table id="vrtx-report-diagram-filetypes">
+          <#list report.types as type>
           <tr>
-            <td class="vrtx-report-diagram-text"><#if (report.webpage > 0)><a href="${report.webpageURL?html}">Web page</a><#else>Web page</#if></td>
-            <td class="vrtx-report-diagram-count">${report.webpage}</td>
+            <td class="vrtx-report-diagram-text"><#if report.typeURL[type_index]?exists><a href="${report.typeURL[type_index]?html}"><@vrtx.msg code="report.diagram.${type}" /></a>
+              <#else><@vrtx.msg code="report.diagram.${type}" /></#if></td>
+            <td class="vrtx-report-diagram-count"><#if report.typeCount[type_index]?exists>${report.typeCount[type_index]}<#else>0</#if></td>
           </tr>
-          <tr>
-            <td class="vrtx-report-diagram-text"><#if (report.image > 0)><a href="${report.imageURL?html}">Image</a><#else>Image</#if></td>
-            <td class="vrtx-report-diagram-count">${report.image}</td>
-          </tr>
-          <tr>
-            <td class="vrtx-report-diagram-text"><#if (report.audio > 0)><a href="${report.audioURL?html}">Audio</a><#else>Audio</#if></td>
-            <td class="vrtx-report-diagram-count">${report.audio}</td>
-          </tr>
-          <tr>
-            <td class="vrtx-report-diagram-text"><#if (report.video > 0)><a href="${report.videoURL?html}">Video</a><#else>Video</#if></td>
-            <td class="vrtx-report-diagram-count">${report.video}</td>
-          </tr>
-          <tr>
-            <td class="vrtx-report-diagram-text"><#if (report.pdf > 0)><a href="${report.pdfURL?html}">PDF</a><#else>PDF</#if></td>
-            <td class="vrtx-report-diagram-count">${report.pdf}</td>
-          </tr>
-          <tr>
-            <td class="vrtx-report-diagram-text"><#if (report.doc > 0)><a href="${report.docURL?html}">Word</a><#else>Word</#if></td>
-            <td class="vrtx-report-diagram-count">${report.doc}</td>
-          </tr>
-          <tr>
-            <td class="vrtx-report-diagram-text"><#if (report.ppt > 0)><a href="${report.pptURL?html}">Power Point</a><#else>Power Point</#if></td>
-            <td class="vrtx-report-diagram-count">${report.ppt}</td>
-          </tr>
-          <tr>
-            <td class="vrtx-report-diagram-text"><#if (report.xls > 0)><a href="${report.xlsURL?html}">Excel</a><#else>Excel</#if></td>
-            <td class="vrtx-report-diagram-count">${report.xls}</td>
-          </tr>
+          </#list>
           <tr class="vrtx-report-diagram-total">
-            <td class="vrtx-report-diagram-text">Total</td>
+            <td class="vrtx-report-diagram-text"><@vrtx.msg code="report.diagram.total" /></td>
             <td class="vrtx-report-diagram-count">${report.secondtotal}</td>
           </tr>
         </table>
       </div>
       <div class="vrtx-report-diagram-img">
         <img id="filetypesimg" width="480" height="180" alt="<@vrtx.msg code="report.${report.reportname}.filetypepiechart" />" 
-             src="https://chart.googleapis.com/chart?chs=480x180&cht=p3&chd=s:Sm&chdl=Webpage|Image|Audio|Video|Pdf|Word|Power+Point|Excel&chl=<#if (report.webpage > 0)>Webpage</#if>|<#if (report.image > 0)>Image</#if>|<#if (report.audio > 0)>Audio</#if>|<#if (report.video > 0)>Video</#if>|<#if (report.pdf > 0)>Pdf</#if>|<#if (report.doc > 0)>Word</#if>|<#if (report.ppt > 0)>Power+Point</#if>|<#if (report.xls > 0)>Excel</#if>&chd=t:${((report.webpage/report.secondtotal)*100)?string("0.#")},${((report.image/report.secondtotal)*100)?string("0.#")},${((report.audio/report.secondtotal)*100)?string("0.#")},${((report.video/report.secondtotal)*100)?string("0.#")},${((report.pdf/report.secondtotal)*100)?string("0.#")},${((report.doc/report.secondtotal)*100)?string("0.#")},${((report.ppt/report.secondtotal)*100)?string("0.#")},${((report.xls/report.secondtotal)*100)?string("0.#")}" />
+             src="https://chart.googleapis.com/chart?chs=480x180&cht=p3&chd=s:Sm&chdl=<#list report.types as type><@vrtx.msg code="report.diagram.+${type}" /><#if report.types[type_index+1]?exists>|</#if></#list>&chl=<#list report.types as type><#if (report.typeCount[type_index] > 0)><@vrtx.msg code="report.diagram.+${type}" /></#if><#if report.types[type_index+1]?exists>|</#if></#list>&chd=t:<#list report.types as type>${((report.typeCount[type_index]/report.secondtotal)*100)?string("0.#")}<#if report.types[type_index+1]?exists>,</#if></#list>" />
       </div>
     </div>
   </#if>

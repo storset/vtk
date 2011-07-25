@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.display.thumbnail;
 
+import java.io.InputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,17 +51,21 @@ import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 
 public class DisplayThumbnailController implements Controller, LastModified {
-	
+
     private static final Logger log = Logger.getLogger(DisplayThumbnailController.class);
-	
+
+    private static final String VIDEO_LOGO = "/web/themes/default/icons/audio-icon.png";
+    private static final String VIDEO_LOGO_CONTENT_TYPE = "image/jpg";
+    private static final String ADUIO_LOGO = "/web/themes/default/icons/audio-icon.png";
+    private static final String AUDIO_LOGO_CONTENT_TYPE = "image/jpg";
+
     @Override
     public long getLastModified(HttpServletRequest request) {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
         try {
-            Resource resource = repository.retrieve(
-                token, requestContext.getResourceURI(), true);
+            Resource resource = repository.retrieve(token, requestContext.getResourceURI(), true);
             return resource.getLastModified().getTime();
         } catch (Throwable t) {
             return -1;
@@ -78,22 +83,31 @@ public class DisplayThumbnailController implements Controller, LastModified {
         Property thumbnail = image.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.THUMBNAIL_PROP_NAME);
 
         if (thumbnail == null || StringUtils.isBlank(thumbnail.getBinaryMimeType())) {
-            if (log.isDebugEnabled()) {
-                String detailedMessage = thumbnail == null ? "no thumbnail found (null)" : "no mimetype set";
-                log.debug("Cannot display thumbnail for image: " + uri + ", " + detailedMessage);
+            String resourceType = image.getResourceType().trim();
+            if ("image".equals(resourceType)) {
+                if (log.isDebugEnabled()) {
+                    String detailedMessage = thumbnail == null ? "no thumbnail found (null)" : "no mimetype set";
+                    log.debug("Cannot display thumbnail for image: " + uri + ", " + detailedMessage);
+                }
+                response.sendRedirect(uri.toString());
+            } else if ("audio".equals(resourceType)) {
+                InputStream in = this.getClass().getResourceAsStream(ADUIO_LOGO);
+                response.setContentType(AUDIO_LOGO_CONTENT_TYPE);
+                StreamUtil.pipe(in, response.getOutputStream());
+            } else if ("video".equals(resourceType)) {
+                InputStream in = this.getClass().getResourceAsStream(VIDEO_LOGO);
+                response.setContentType(VIDEO_LOGO_CONTENT_TYPE);
+                StreamUtil.pipe(in, response.getOutputStream());
             }
-            response.sendRedirect(uri.toString());
+            return null;
+        } else {
+            ContentStream binaryStream = thumbnail.getBinaryStream();
+            String mimetype = thumbnail.getBinaryMimeType();
+            response.setContentType(mimetype);
+            int length = (int) binaryStream.getLength();
+            response.setContentLength(length);
+            StreamUtil.pipe(binaryStream.getStream(), response.getOutputStream(), length, true);
             return null;
         }
-
-        ContentStream binaryStream = thumbnail.getBinaryStream();
-        String mimetype = thumbnail.getBinaryMimeType();
-        response.setContentType(mimetype);
-        int length = (int) binaryStream.getLength();
-        response.setContentLength(length);
-
-        StreamUtil.pipe(binaryStream.getStream(), response.getOutputStream(), length, true);
-
-        return null;
     }
 }

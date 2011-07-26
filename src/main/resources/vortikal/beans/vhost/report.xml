@@ -58,6 +58,17 @@
         <ref bean="xlsReporter" />
         <ref bean="folderReporter" />
         <ref bean="fileReporter" />
+        <ref bean="webDiagramReport" />
+        <ref bean="structured-articleReporter" />
+        <ref bean="structured-eventReporter" />
+        <ref bean="personReporter" />
+        <ref bean="structured-projectReporter" />
+        <ref bean="research-groupReporter" />
+        <ref bean="organizational-unitReporter" />
+        <ref bean="contact-supervisorReporter" />
+        <ref bean="managed-xmlReporter" />
+        <ref bean="htmlReporter" />
+        <ref bean="phpReporter" />
       </list>
     </property>
   </bean>
@@ -96,6 +107,11 @@
   <bean id="diagramReport" class="org.vortikal.web.actions.report.DiagramReport" parent="reporter">
     <property name="name" value="diagram" />
     <property name="viewName" value="diagramReport" />
+  </bean>
+
+  <bean id="webDiagramReport" class="org.vortikal.web.actions.report.WebDiagramReport" parent="reporter">
+    <property name="name" value="webDiagram" />
+    <property name="viewName" value="webDiagramReport" />
   </bean>
 
   <bean id="webpageReporter" class="org.vortikal.web.actions.report.WebpageReporter" parent="documentReporter">
@@ -186,6 +202,96 @@
     <property name="backURL" value="true" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
+  
+  <bean id="structured-articleReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="structured-articleReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="structured-article" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+  
+  <bean id="structured-eventReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="structured-eventReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="structured-event" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+  
+  <bean id="personReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="personReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="person" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+  
+  <bean id="structured-projectReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="structured-projectReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="structured-project" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+  
+  <bean id="research-groupReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="research-groupReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="research-group" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+  
+  <bean id="organizational-unitReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="organizational-unitReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="organizational-unit" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+  
+  <bean id="contact-supervisorReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="contact-supervisorReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="contact-supervisor" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="managed-xmlReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="managed-xmlReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="managed-xml" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="htmlReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="htmlReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="html" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="phpReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="phpReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="php" />
+    <property name="backURL" value="true" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
 
   <bean id="report.viewResolver" parent="system.decoratingViewResolver">
     <property name="views">
@@ -194,6 +300,7 @@
         <entry key="collectionStructure" value-ref="collectionStructureView" />
         <entry key="documentReport" value-ref="documentReportView" />
         <entry key="diagramReport" value-ref="diagramReportView" />
+        <entry key="webDiagramReport" value-ref="webDiagramReportView" />
       </map>
     </property>
     <property name="referenceDataProviders">
@@ -252,6 +359,19 @@
 
   <bean id="diagramReportView" parent="freemarkerView">
     <property name="url" value="pages/report/diagram-report.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/report/report.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="webDiagramReportView" parent="freemarkerView">
+    <property name="url" value="pages/report/web-diagram-report.ftl" />
     <property name="attributesMap">
       <map>
         <entry key="cssURLs">

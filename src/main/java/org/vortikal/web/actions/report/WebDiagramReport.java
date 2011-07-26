@@ -37,7 +37,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
@@ -46,7 +45,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public class DiagramReport extends AbstractReporter {
+public class WebDiagramReport extends AbstractReporter {
 
     private String name;
     private String viewName;
@@ -61,24 +60,11 @@ public class DiagramReport extends AbstractReporter {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         URL baseURL = new URL(service.constructURL(resource, securityContext.getPrincipal()));
-
-        /* Get count and URL for file and folder. */
-        try {
-            int files = doSearch("file", TermOperator.IN, token, resource);
-            result.put("files", files);
-            result.put("filesURL", new URL(baseURL).addParameter(REPORT_TYPE_PARAM, "fileReporter"));
-
-            int folders = doSearch("collection", TermOperator.IN, token, resource);
-            result.put("folders", folders);
-            result.put("foldersURL", new URL(baseURL).addParameter(REPORT_TYPE_PARAM, "folderReporter"));
-
-            result.put("firsttotal", files + folders);
-        } catch (Exception e) {
-        }
+        result.put("backURL", new URL(baseURL).addParameter(REPORT_TYPE_PARAM, "diagram"));
 
         /*
-         * Get filetypes count and add URL to new search listing up the
-         * filetype.
+         * Get web page types count and add URL to new search listing up the
+         * specific type.
          */
         try {
             int total = 0;
@@ -87,25 +73,13 @@ public class DiagramReport extends AbstractReporter {
              * This list can be appended to add file types. Do it after webpage
              * unless it will be handled uniquely.
              */
-            String[] types = { "webpage", "image", "audio", "video", "pdf", "doc", "ppt", "xls", "text" };
-            TermOperator[] t = { null, TermOperator.IN, TermOperator.IN, TermOperator.IN, TermOperator.IN,
-                    TermOperator.IN, TermOperator.IN, TermOperator.IN, TermOperator.EQ };
+            String[] types = { "structured-article", "structured-event", "person", "structured-project",
+                    "research-group", "organizational-unit", "contact-supervisor", "managed-xml", "html", "php" };
             int typeCount[] = new int[types.length];
             URL typeURL[] = new URL[types.length];
 
-            /*
-             * Web pages needs to be handled alone since the search is
-             * different.
-             */
-            typeCount[0] = webSearch(token, resource);
-            typeURL[0] = new URL(baseURL).addParameter(REPORT_TYPE_PARAM, "webDiagram");
-            total += typeCount[0];
-
-            /*
-             * Starting on i = 1 since we have already done webpage.
-             */
-            for (int i = 1; i < types.length; i++) {
-                typeCount[i] = doSearch(types[i], t[i], token, resource);
+            for (int i = 0; i < types.length; i++) {
+                typeCount[i] = fileSearch(types[i], token, resource);
                 typeURL[i] = new URL(baseURL).addParameter(REPORT_TYPE_PARAM, types[i] + "Reporter");
                 total += typeCount[i];
             }
@@ -114,40 +88,18 @@ public class DiagramReport extends AbstractReporter {
             result.put("typeCount", typeCount);
             result.put("typeURL", typeURL);
 
-            result.put("secondtotal", total);
+            result.put("total", total);
         } catch (Exception e) {
         }
 
         return result;
     }
 
-    private int webSearch(String token, Resource resource) {
-        Search search = new Search();
-        AndQuery q = new AndQuery();
-        OrQuery query = new OrQuery();
-
-        query.add(new TypeTermQuery("apt-resource", TermOperator.IN));
-        query.add(new TypeTermQuery("php", TermOperator.IN));
-        query.add(new TypeTermQuery("html", TermOperator.IN));
-        query.add(new TypeTermQuery("managed-xml", TermOperator.IN));
-        query.add(new TypeTermQuery("json-resource", TermOperator.IN));
-        q.add(query);
-
-        /* In current resource but not in /vrtx. */
-        q.add(new UriPrefixQuery(resource.getURI().toString(), TermOperator.IN, false));
-        q.add(new UriPrefixQuery("/vrtx", true));
-
-        search.setQuery(q);
-        search.setLimit(1);
-
-        return this.searcher.execute(token, search).getTotalHits();
-    }
-
-    private int doSearch(String type, TermOperator t, String token, Resource resource) {
+    private int fileSearch(String type, String token, Resource resource) {
         Search search = new Search();
         AndQuery query = new AndQuery();
 
-        query.add(new TypeTermQuery(type, t));
+        query.add(new TypeTermQuery(type, TermOperator.IN));
 
         /* In current resource but not in /vrtx. */
         query.add(new UriPrefixQuery(resource.getURI().toString(), TermOperator.IN, false));

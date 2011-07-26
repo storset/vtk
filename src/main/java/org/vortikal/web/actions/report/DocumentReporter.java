@@ -48,7 +48,7 @@ public abstract class DocumentReporter extends AbstractReporter {
 
     private int pageSize = DEFAULT_SEARCH_LIMIT;
     private Service viewService;
-    private boolean backURL;
+    private int backURL;
 
     protected abstract Search getSearch(String token, Resource currentResource);
 
@@ -58,15 +58,23 @@ public abstract class DocumentReporter extends AbstractReporter {
         result.put("reportname", this.getName());
 
         /* Create back to diagram URL. */
-        if (backURL) {
+        if (backURL > 0) {
+            String backURLname;
+            if (backURL == 1)
+                backURLname = "diagram";
+            else if (backURL == 2)
+                backURLname = "webDiagram";
+            else
+                backURLname = "unknown";
+
             RequestContext requestContext = RequestContext.getRequestContext();
             SecurityContext securityContext = SecurityContext.getSecurityContext();
             Service service = requestContext.getService();
 
             URL backURL = new URL(service.constructURL(currentResource, securityContext.getPrincipal()));
-            backURL.addParameter(REPORT_TYPE_PARAM, "diagram");
+            backURL.addParameter(REPORT_TYPE_PARAM, backURLname);
 
-            result.put("backURLname", "diagram");
+            result.put("backURLname", backURLname);
             result.put("backURL", backURL);
         }
 
@@ -118,7 +126,7 @@ public abstract class DocumentReporter extends AbstractReporter {
         this.viewService = viewService;
     }
 
-    public void setBackURL(boolean backURL) {
+    public void setBackURL(int backURL) {
         this.backURL = backURL;
     }
 

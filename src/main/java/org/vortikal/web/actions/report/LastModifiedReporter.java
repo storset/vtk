@@ -48,22 +48,28 @@ public class LastModifiedReporter extends DocumentReporter {
     private PropertyTypeDefinition sortPropDef;
     private SortFieldDirection sortOrder;
     private String type;
-    
+    private boolean termIN = true;
+
     @Override
     protected Search getSearch(String token, Resource resource) {
         AndQuery query = new AndQuery();
-        query.add(new TypeTermQuery(type, TermOperator.IN));
+
+        if (termIN)
+            query.add(new TypeTermQuery(type, TermOperator.IN));
+        else
+            query.add(new TypeTermQuery(type, TermOperator.EQ));
+
         query.add(new UriPrefixQuery(resource.getURI().toString(), TermOperator.IN, false));
         query.add(new UriPrefixQuery("/vrtx", true));
-        
+
         Search search = new Search();
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
-        
+
         search.setSorting(sorting);
         search.setQuery(query);
         search.setLimit(DEFAULT_SEARCH_LIMIT);
-        
+
         return search;
     }
 
@@ -80,6 +86,10 @@ public class LastModifiedReporter extends DocumentReporter {
     @Required
     public void setType(String type) {
         this.type = type;
+    }
+
+    public void setTermIN(boolean termIN) {
+        this.termIN = termIN;
     }
 
     public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {

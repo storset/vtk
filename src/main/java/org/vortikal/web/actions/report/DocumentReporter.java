@@ -66,6 +66,7 @@ public abstract class DocumentReporter extends AbstractReporter {
             URL backURL = new URL(service.constructURL(currentResource, securityContext.getPrincipal()));
             backURL.addParameter(REPORT_TYPE_PARAM, "diagram");
 
+            result.put("backURLname", "diagram");
             result.put("backURL", backURL);
         }
 

@@ -35,7 +35,7 @@
     <property name="considerLocks" value="false" />
   </bean>
 
-
+  <!-- structuredResourceReporters.xml in vortex overrides this bean so make sure to add refs there also -->
   <bean id="reportHandler" class="org.vortikal.web.actions.report.ReportHandler" parent="repositoryAware">
     <property name="viewName" value="report" />
     <property name="reporters">
@@ -56,6 +56,7 @@
         <ref bean="docReporter" />
         <ref bean="pptReporter" />
         <ref bean="xlsReporter" />
+        <ref bean="textReporter" />
         <ref bean="folderReporter" />
         <ref bean="fileReporter" />
         <ref bean="webDiagramReport" />
@@ -185,6 +186,16 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
+  <bean id="textReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="textReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="text" />
+    <property name="backURL" value="true" />
+    <property name="termIN" value="false" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
   <bean id="folderReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="folderReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
@@ -202,7 +213,7 @@
     <property name="backURL" value="true" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
-  
+
   <bean id="structured-articleReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="structured-articleReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
@@ -211,7 +222,7 @@
     <property name="backURL" value="true" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
-  
+
   <bean id="structured-eventReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="structured-eventReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
@@ -220,7 +231,7 @@
     <property name="backURL" value="true" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
-  
+
   <bean id="personReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="personReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
@@ -229,7 +240,7 @@
     <property name="backURL" value="true" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
-  
+
   <bean id="structured-projectReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="structured-projectReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
@@ -238,7 +249,7 @@
     <property name="backURL" value="true" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
-  
+
   <bean id="research-groupReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="research-groupReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
@@ -247,7 +258,7 @@
     <property name="backURL" value="true" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
-  
+
   <bean id="organizational-unitReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="organizational-unitReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
@@ -256,7 +267,7 @@
     <property name="backURL" value="true" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
-  
+
   <bean id="contact-supervisorReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="contact-supervisorReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />

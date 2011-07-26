@@ -60,6 +60,7 @@ public class WebDiagramReport extends AbstractReporter {
         SecurityContext securityContext = SecurityContext.getSecurityContext();
         Service service = requestContext.getService();
         URL baseURL = new URL(service.constructURL(resource, securityContext.getPrincipal()));
+
         result.put("backURL", new URL(baseURL).addParameter(REPORT_TYPE_PARAM, "diagram"));
 
         /*

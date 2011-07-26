@@ -161,6 +161,12 @@ resourcetype person {
           [endif]
           
         [endif]
+        
+        <div class="vrtx-person-other-units">
+        [def username resource-prop-obj-val(".", "username")]
+        [call "resource:affiliated-units" {"username":username, "primaryunit":false}]
+        </div>
+        
       </div>
       ##
     }
@@ -311,14 +317,6 @@ resourcetype person {
         </div>
         ##
     }
-    
-    subunits {
-      ##
-      [resource-props "."]
-      [def username resource-prop-obj-val(".", "username")]
-      [call "resource:affiliated-units" {"username":username, "primaryunit":false}]
-      ##
-    }
 
   }
 
@@ -338,7 +336,6 @@ resourcetype person {
               [call "comp:person-image"]
               [call "comp:contact-information"]
               [call "comp:contact-extras"]
-              [call "comp:subunits"]
               <div class="vrtx-person-contact-info-wrapper-end"></div>
           </div>
           <div id="vrtx-person-main-content-wrapper">

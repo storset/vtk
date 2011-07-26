@@ -54,7 +54,7 @@ public class DisplayThumbnailController implements Controller, LastModified {
 
     private static final Logger log = Logger.getLogger(DisplayThumbnailController.class);
 
-    private static final String VIDEO_LOGO = "/web/themes/default/icons/audio-icon.png";
+    private static final String VIDEO_LOGO = "/web/themes/default/icons/video-icon.png";
     private static final String VIDEO_LOGO_CONTENT_TYPE = "image/jpg";
     private static final String ADUIO_LOGO = "/web/themes/default/icons/audio-icon.png";
     private static final String AUDIO_LOGO_CONTENT_TYPE = "image/jpg";

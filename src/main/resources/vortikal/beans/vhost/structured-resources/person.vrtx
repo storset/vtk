@@ -249,6 +249,8 @@ resourcetype person {
           [if position != null]
             <div id="vrtx-person-position">
               [val position]
+              [def username resource-prop-obj-val(".", "username")]
+              [call "resource:affiliated-units" {"username":username, "subunits":false}]
             </div>
           [endif]
         [endif]
@@ -296,7 +298,7 @@ resourcetype person {
         ##
     }
     
-    contact-extras{
+    contact-extras {
         ##
         [resource-props "."]
         [if pressPhoto != null]
@@ -305,6 +307,14 @@ resourcetype person {
         </div>
         [endif]
         ##
+    }
+    
+    subunits {
+      ##
+      [resource-props "."]
+      [def username resource-prop-obj-val(".", "username")]
+      [call "resource:affiliated-units" {"username":username, "primaryunit":false}]
+      ##
     }
 
   }
@@ -325,6 +335,7 @@ resourcetype person {
               [call "comp:person-image"]
               [call "comp:contact-information"]
               [call "comp:contact-extras"]
+              [call "comp:subunits"]
               <div class="vrtx-person-contact-info-wrapper-end"></div>
           </div>
           <div id="vrtx-person-main-content-wrapper">

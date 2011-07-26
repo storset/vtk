@@ -161,6 +161,12 @@ resourcetype person {
           [endif]
           
         [endif]
+        
+        <div class="vrtx-person-other-units">
+        [def username resource-prop-obj-val(".", "username")]
+        [call "resource:affiliated-units" {"username":username, "primaryunit":false}]
+        </div>
+        
       </div>
       ##
     }
@@ -301,20 +307,15 @@ resourcetype person {
     contact-extras {
         ##
         [resource-props "."]
-        [if pressPhoto != null]
         <div id="vrtx-person-contact-info-extras">
+        [if pressPhoto != null]
               <a id="vrtx-press-photo" href="[val pressPhoto]">[localized "pressPhoto"]</a>
-        </div>
         [endif]
+        [if surname != null || firstName != null]
+        	  <a id="vrtx-person-vcard" href="?vrtx=vcf">[localized "vCard"]</a>
+       	[endif]
+        </div>
         ##
-    }
-    
-    subunits {
-      ##
-      [resource-props "."]
-      [def username resource-prop-obj-val(".", "username")]
-      [call "resource:affiliated-units" {"username":username, "primaryunit":false}]
-      ##
     }
 
   }
@@ -335,7 +336,6 @@ resourcetype person {
               [call "comp:person-image"]
               [call "comp:contact-information"]
               [call "comp:contact-extras"]
-              [call "comp:subunits"]
               <div class="vrtx-person-contact-info-wrapper-end"></div>
           </div>
           <div id="vrtx-person-main-content-wrapper">
@@ -422,6 +422,7 @@ resourcetype person {
     rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
     rssUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilete"),
+    vCard : (en : "Add to address book", no : "Legg til i adressebok", nn : "Legg til i adressebok"),
     room : (en : "Room", no : "Rom", nn : "Rom"),
     images : (en : "Images", no : "Bilder", nn : "Bilete"),
     contactInformation : (en : "Primary contact information", no : "Primære kontaktopplysninger", nn : "Primære kontaktopplysingar"),

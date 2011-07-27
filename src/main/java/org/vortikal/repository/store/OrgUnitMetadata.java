@@ -32,6 +32,8 @@ package org.vortikal.repository.store;
 
 public interface OrgUnitMetadata extends Metadata {
     
+    // Mother of all area codes -> UiO
+    public static final String ROOT_AREACODE = "900000";
     public static final String AREACODE_ATTRIBUTE = "areacode";
     
     /** 

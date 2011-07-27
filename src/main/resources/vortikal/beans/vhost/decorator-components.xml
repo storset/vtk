@@ -142,6 +142,17 @@
     </property>
   </bean>
 
+  <bean id="decorating.facebookCommentsComponent" class="org.vortikal.web.decorating.components.FacebookCommentsComponent">
+    <property name="namespace" value="resource" />
+    <property name="name" value="comments-facebook" />
+    <property name="description" value="Inserts a iframe with comments from facebook." />
+    <property name="view" ref="decorating.facebookCommentsComponent.view" />
+  </bean>
+
+  <bean id="decorating.facebookCommentsComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/facebook-comments.ftl" />
+  </bean>
+
   <bean id="decorating.timeAndPlaceComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="time-and-place" />

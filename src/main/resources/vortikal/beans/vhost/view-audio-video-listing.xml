@@ -45,6 +45,7 @@
         <value>contentType</value>
         <value>duration</value>
         <value>publish-date</value>
+        <value>poster-image</value>
       </list>
     </property>
     <property name="listableProperties">

@@ -161,12 +161,6 @@ resourcetype person {
           [endif]
           
         [endif]
-        
-        <div class="vrtx-person-other-units">
-        [def username resource-prop-obj-val(".", "username")]
-        [call "resource:affiliated-units" {"username":username, "primaryunit":false}]
-        </div>
-        
       </div>
       ##
     }

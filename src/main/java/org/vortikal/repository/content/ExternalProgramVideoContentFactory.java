@@ -34,9 +34,7 @@ import org.vortikal.repository.store.VideoMetadata;
 
 
 public class ExternalProgramVideoContentFactory extends AbstractExternalProgramContentFactory implements ContentFactory {
-    @Override
     public Class<?>[] getRepresentationClasses() {
         return new Class<?>[] { VideoMetadata.class };
     }
-
 }

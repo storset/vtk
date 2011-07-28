@@ -15,7 +15,7 @@ public abstract class AbstractExternalProgramContentFactory {
     
     // TODO: cache on fail?
     private String programLocation;
-    private static Log logger = LogFactory.getLog(ExternalProgramVideoContentFactory.class.getName());
+    private static Log logger = LogFactory.getLog(AbstractExternalProgramContentFactory.class.getName());
     
     @SuppressWarnings("unchecked")
     public Object getContentRepresentation(Class<?> clazz, InputStreamWrapper content) throws Exception {

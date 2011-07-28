@@ -1,0 +1,13 @@
+--- framework/OSMF/org/osmf/elements/ImageLoader.as	2011-07-27 13:17:06.000000000 +0200
++++ framework/OSMF/org/osmf/elements/ImageLoader.as	2010-09-08 12:12:14.000000000 +0200
+@@ -88,10 +88,6 @@
+ 			if (urlResource != null &&
+ 				urlResource.url != null)
+ 			{
+-				// Vortex hack for supporting thumbnails 
+-				if(urlResource.url.indexOf("?vrtx=thumbnail") != -1){
+-					return true;
+-				}
+ 				var url:URL = new URL(urlResource.url);
+ 				return (url.path.search(/\.gif$|\.jpg$|\.png$/i) != -1);
+ 			}	

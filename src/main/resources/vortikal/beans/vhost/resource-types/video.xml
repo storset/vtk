@@ -54,6 +54,7 @@
     <property name="posterImagePropDef" ref="posterImagePropDef" />
     <property name="generatedPosterImagePropDef" ref="generatedPosterImagePropDef" />
     <property name="viewService" ref="viewService" />
+    <property name="thumbnailService" ref="displayThumbnailService" />
   </bean>
 
   <bean id="displayMediaResource" class="org.vortikal.web.display.media.DisplayMediaController">
@@ -79,7 +80,7 @@
         <entry key="autoplay" value="false" />
         <entry key="audioFlashPlayerJsURL" value="${jsBaseURL}/audio-player.js" />
         <entry key="audioFlashPlayerFlashURL" value="${flash.baseURL}/audioplayer.swf" />
-        <entry key="strobe" value="${flash.baseURL}/StrobeMediaPlayback_1.5.1-full/10.1/StrobeMediaPlayback.swf" />
+        <entry key="strobe" value="${flash.baseURL}/StrobeMediaPlayback_1.5.1-patched/10.1/StrobeMediaPlayback.swf" />
       </map>
     </property>
     <property name="referenceDataProviders">

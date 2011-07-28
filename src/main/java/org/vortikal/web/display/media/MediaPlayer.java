@@ -47,6 +47,7 @@ public class MediaPlayer {
 
     protected Map<String, String> extentionToMimetype;
     protected Service viewService;
+    private Service thumbnailService;
     private PropertyTypeDefinition posterImagePropDef;
     private PropertyTypeDefinition generatedPosterImagePropDef;
 
@@ -72,7 +73,7 @@ public class MediaPlayer {
             model.put("height", height);
             model.put("width", width);
         }
-        
+
         if (autoplay != null && !"".equals(autoplay))
             model.put("autoplay", autoplay);
         if (streamType != null && !"".equals(streamType))
@@ -166,7 +167,7 @@ public class MediaPlayer {
         if (posterImageProp != null) {
             poster = createUrl(posterImageProp.getStringValue());
         } else if (thumbnail != null) {
-            // add poster image from thumbnail when player supports it
+          poster = thumbnailService.constructURL(mediaFile.getURI());
         }
 
         if (poster != null) {
@@ -237,6 +238,14 @@ public class MediaPlayer {
 
     public PropertyTypeDefinition getGeneratedPosterImagePropDef() {
         return generatedPosterImagePropDef;
+    }
+
+    public void setThumbnailService(Service thumbnailService) {
+        this.thumbnailService = thumbnailService;
+    }
+
+    public Service getThumbnailService() {
+        return thumbnailService;
     }
 
 }

@@ -5,10 +5,10 @@ Flash
 -----
 
 |-- flash
-|   |-- StrobeMediaPlayback_1.5.1-full (http://www.osmf.org/strobe_mediaplayback.html)
-|   |   |-- 10.0
-|   |   |-- 10.1
-|   |   `-- src
+|   |-- StrobeMediaPlayback_1.5.1-patched (http://www.osmf.org/strobe_mediaplayback.html)
+|   |   `-- 10.1
+|   |-- StrobeMediaPlayback_vortikal_patch
+|   |-- STROBE-UPDATE-HOWTO
 |   `-- audioplayer.swf (http://wpaudioplayer.com/)
 
 

@@ -104,36 +104,31 @@ function extractMinutesFromDate(datetime) {
 }
 
 function saveDateAndTimeFields() {
-  var dateFields = $(".date");
-  for(var i = 0, len = dateFields.len; i < len; i++) {
-    var dateFieldName = dateFields[i].name;
-    if (!dateFieldName) return;
-
-    var fieldName = dateFieldName.replace(/\./g, '\\.');
-
-    var hours = $("#" + fieldName + "-hours");
-    var minutes = $("#" + fieldName + "-minutes");
-    var date = $("#" + fieldName + "-date");
-
-    dateFields[i].value = "";
-
-    if (date[0] && date[0].value.toString().length) {
-      dateFields[i].value = date[0].value
-      if (hours[0] && hours[0].value.toString().length) {
-        dateFields[i].value += " " + hours[0].value
-        if (minutes[0].value && minutes[0].value.toString().length) {
-         dateFields[i].value += ":" + minutes[0].value;
+  $(".date").each( function() {
+    if (!this.name)
+      return;
+    var fieldName = this.name.replace(/\./g, '\\.');
+    var hours = $.find("#" + fieldName + "-hours");
+    var minutes = $.find("#" + fieldName + "-minutes");
+    var date = $.find("#" + fieldName + "-date");
+    this.value = "";
+    if (date[0] != null && date[0].value.toString().length > 0) {
+      this.value = date[0].value
+      if (hours[0] != null && hours[0].value.toString().length > 0) {
+        this.value += " " + hours[0].value
+        if (minutes[0].value != null && minutes[0].value.toString().length > 0) {
+          this.value += ":" + minutes[0].value;
         }
       }
     }
 
     // Hack fix for editor.. .must be removed!!!
-    if (requestFromEditor()) {
-      $("#" + fieldName + "-hours").remove();
-      $("#" + fieldName + "-minutes").remove();
-      $("#" + fieldName + "-date").remove();
-    }
-  }
+      if (requestFromEditor()) {
+        $("#" + fieldName + "-hours").remove();
+        $("#" + fieldName + "-minutes").remove();
+        $("#" + fieldName + "-date").remove();
+      }
+    });
 }
 
 /* ^ Datepicker for new documenttypes */

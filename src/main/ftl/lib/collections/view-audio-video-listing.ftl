@@ -99,11 +99,6 @@
              <#if displayPropDef.name = 'introduction'>
                <#assign val = vrtx.getIntroduction(r) />
              <#elseif displayPropDef.type = 'IMAGE_REF'>
-               <#assign val><img src="${vrtx.propValue(r, displayPropDef.name, "")}" /></#assign>
-               <#local creationTime = vrtx.propValue(r, 'creationTime', 'short', '') />
-               <div class="vrtx-image-creation-time">
-                 ${creationTime}
-               </div>
              <#elseif displayPropDef.name = 'lastModified'>
                <#assign val = vrtx.propValue(r, displayPropDef.name, 'short') />
              <#elseif displayPropDef.name = 'duration'  >

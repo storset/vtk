@@ -249,8 +249,6 @@ resourcetype person {
           [if position != null]
             <div id="vrtx-person-position">
               [val position]
-              [def username resource-prop-obj-val(".", "username")]
-              [call "resource:affiliated-units" {"username":username, "subunits":false}]
             </div>
           [endif]
         [endif]

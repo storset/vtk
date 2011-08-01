@@ -13,6 +13,8 @@ resourcetype person {
     postalAddress : string multiple external:userMetadataLdapService,
     visitingAddress : string multiple external:userMetadataLdapService,
     externalUserMetaData : derived external:userMetadataLdapService,
+    primaryUnitName : derived external:userMetadataLdapService,
+    primaryUnitUrl : derived external:userMetadataLdapService,
     alternativeVisitingAddress : string multiple,
     title : derived (firstName, surname) eval (firstName + " " + surname)
       overrides title default username,
@@ -249,6 +251,13 @@ resourcetype person {
           [if position != null]
             <div id="vrtx-person-position">
               [val position]
+              [if primaryUnitName != null]
+                [if primaryUnitUrl != null]
+                  - <a href="[val primaryUnitUrl]">[val primaryUnitName]</a>
+                [else]
+                  [val primaryUnitName]
+                [endif]
+              [endif]
             </div>
           [endif]
         [endif]

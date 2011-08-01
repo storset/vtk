@@ -303,9 +303,6 @@ resourcetype person {
         [if pressPhoto != null]
               <a id="vrtx-press-photo" href="[val pressPhoto]">[localized "pressPhoto"]</a>
         [endif]
-        [if surname != null || firstName != null]
-        	  <a id="vrtx-person-vcard" href="?vrtx=vcf">[localized "vCard"]</a>
-       	[endif]
         </div>
         ##
     }

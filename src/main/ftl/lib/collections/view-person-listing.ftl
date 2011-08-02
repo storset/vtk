@@ -26,6 +26,7 @@
       <#local title = vrtx.propValue(person, 'title') />
       <#local picture = vrtx.propValue(person, 'picture')  />
       <#local position = vrtx.propValue(person, 'position')  />
+      <#local primaryUnitName = vrtx.propValue(person, 'primaryUnitName')  />
       <#local phonenumbers = vrtx.propValue(person, 'phone')  />
       <#local mobilenumbers = vrtx.propValue(person, 'mobile')  />
       <#local emails = vrtx.propValue(person, 'email')  />
@@ -52,7 +53,20 @@
           <#else>
             <a href="${person.URI?html}">${title?html}</a>
           </#if>
-          <span>${position?html}</span>
+          <span>
+            ${position?html}
+            <#--
+            <#if primaryUnitName?exists && primaryUnitName != "">
+              <#local primaryUnitUrl = vrtx.propValue(person, 'primaryUnitUrl')  />
+               -
+              <#if primaryUnitUrl?exists && primaryUnitUrl != "">
+                <a href="${primaryUnitUrl}">${primaryUnitName?html}</a>
+              <#else>
+                ${primaryUnitName?html}
+              </#if>
+            </#if>
+            -->
+          </span>
         </td>
         <td class="vrtx-person-listing-phone">
           <#if phonenumbers != "" >

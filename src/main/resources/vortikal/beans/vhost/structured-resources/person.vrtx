@@ -252,8 +252,9 @@ resourcetype person {
             <div id="vrtx-person-position">
               [val position]
               [if primaryUnitName != null]
+                 -
                 [if primaryUnitUrl != null]
-                  - <a href="[val primaryUnitUrl]">[val primaryUnitName]</a>
+                  <a href="[val primaryUnitUrl]">[val primaryUnitName]</a>
                 [else]
                   [val primaryUnitName]
                 [endif]

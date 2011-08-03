@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.decorating;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -80,14 +79,7 @@ public class ContextualTitleResolver {
 
     @Required
     public void setConfig(Map<String, ?> config) {
-        Map<String, Object> m = new HashMap<String, Object>();
-        if (config == null) {
-            return;
-        }
-        for (String key: config.keySet()) {
-            m.put(key, config.get(key));
-        }
-        this.config = m;
+        this.config = config;
     }
     
     @Required

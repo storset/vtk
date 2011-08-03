@@ -314,7 +314,7 @@ resourcetype organizational-unit {
     picture : (en: "Picture of unit", no: "Bilde av enheten", nn : "Bilde av enheten"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
     introduction : (en: "Introduction", no: "Innledning", nn : "Innleiing"),
-    responsibilities : (en : "Responsibilities or sub-units", no : "Ansvarsområder eller underenheter", nn : "Ansvarsområder eller underenheter"),
+    responsibilities : (en : "Responsibilities", no : "Ansvarsområder", nn : "Ansvarsområder"),
     employees : (en : "Employees", no : "Ansatte", nn : "Ansatte"),
     employeesLink : (en : "All employees in", no : "Alle ansatte i", nn : "Alle ansatte i"),
     displayEmployees : (

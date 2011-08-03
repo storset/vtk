@@ -350,4 +350,23 @@
       </map>
     </property>
   </bean>
+  
+
+  <bean id="decorating.contextualTitleResolver" class="org.vortikal.web.decorating.ContextualTitleResolver">
+    <property name="config" ref="decorating.contextualTitleResolver.config" />
+    <property name="token" ref="trustedToken" />
+    <property name="repository" ref="repository" />
+  </bean>
+
+  <bean id="decorating.contextualTitleResolver.config" class="org.vortikal.util.repository.JSONBackedMapResource"  parent="repositoryAware">
+    <property name="uri" value="${decorating.contextualTitleResolver.configFile}" />
+  </bean>
+  <bean id="decorating.titleMapper.config.refreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${decorating.contextualTitleResolver.configFile}" />
+    <property name="targetObject" ref="decorating.contextualTitleResolver.config" />
+    <property name="method" value="load" />
+  </bean>
+
 </beans>

@@ -252,11 +252,18 @@ public class RequestContext {
         return new RepositoryTraversal(this.repository, token, uri);
     }
     
+    public static RepositoryTraversal rootTraversal(Repository repository, String token, Path uri) {
+        return new RepositoryTraversal(repository, token, uri);
+    }
+    
     public static final class RepositoryTraversal {
         private Repository repository;
         private String token;
         private Path uri;
         private RepositoryTraversal(Repository repository, String token, Path uri) {
+            if (repository == null) {
+                throw new IllegalArgumentException("Repository is NULL");
+            }
             this.repository = repository;
             this.token = token;
             this.uri = uri;

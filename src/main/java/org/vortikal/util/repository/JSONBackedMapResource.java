@@ -36,18 +36,21 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import net.sf.json.JSONObject;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
+import org.vortikal.util.io.StreamUtil;
 
 public class JSONBackedMapResource implements Map<Object, Object>, InitializingBean {
 
     private Repository repository;
     private Path uri;
     private String token;
-    private Map<Object, Object> map;
+    //private Map<Object, Object> map;
+    private JSONObject map;
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -78,18 +81,17 @@ public class JSONBackedMapResource implements Map<Object, Object>, InitializingB
         this.token = token;
     }
     
-    @SuppressWarnings("unchecked")
     public void load() throws Exception {
-        Map<Object, Object> m = null;
+        JSONObject obj = null;
         try {
-            ObjectMapper mapper = new ObjectMapper();
             InputStream inputStream = this.repository.getInputStream(this.token, this.uri, false);
-            m = mapper.readValue(inputStream, Map.class);
+            String content = new String(StreamUtil.readInputStream(inputStream), "utf-8");
+            obj = JSONObject.fromObject(content);
         } finally {
-            this.map = m;
+            this.map = obj;
         }
     }
-
+    
     @Override
     public void clear() {
         throw new RuntimeException("Illegal operation");
@@ -112,6 +114,7 @@ public class JSONBackedMapResource implements Map<Object, Object>, InitializingB
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Set<Map.Entry<Object, Object>> entrySet() {
         if (this.map == null) {
             return Collections.emptySet();
@@ -136,6 +139,7 @@ public class JSONBackedMapResource implements Map<Object, Object>, InitializingB
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Set<Object> keySet() {
         if (this.map == null) {
             return Collections.emptySet();
@@ -167,6 +171,7 @@ public class JSONBackedMapResource implements Map<Object, Object>, InitializingB
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<Object> values() {
         if (this.map == null) {
             return Collections.emptySet();

@@ -309,11 +309,11 @@ resourcetype person {
     contact-extras {
         ##
         [resource-props "."]
-        <div id="vrtx-person-contact-info-extras">
         [if pressPhoto != null]
-              <a id="vrtx-press-photo" href="[val pressPhoto]">[localized "pressPhoto"]</a>
-        [endif]
+        <div id="vrtx-person-contact-info-extras">
+          <a id="vrtx-press-photo" href="[val pressPhoto]">[localized "pressPhoto"]</a>
         </div>
+        [endif]
         ##
     }
 

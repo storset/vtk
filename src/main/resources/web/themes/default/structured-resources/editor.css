@@ -80,6 +80,18 @@
   clear: left;
 }
 
+.getExternalPersonInfo label {
+  display: inline;
+}
+
+.getExternalPersonInfo .vrtx-radio-buttons {
+  margin-top: 10px;
+}
+
+.getExternalPersonInfo .tooltip {
+  padding-left: 5px;
+}
+
 /* JSON-boxes - explicit settings */
 
 .vrtx-json #main-content .vrtx-json-element,

@@ -104,7 +104,7 @@
     </div>
 
     <#if report.prev?exists || report.next?exists>
-      <p>
+      <p id="vrtx-report-paging-bottom">
         <@displayPaging />
       </p>
     </#if>
@@ -115,7 +115,7 @@
   </div>
   
   <#macro displayPaging>
-    <span id="vrtx-report-paging">
+    <span class="vrtx-report-paging">
       <#if report.prev?exists>
         <a href="${report.prev?html}">
         <@vrtx.msg code="report.prev-page" default="Previous page" /></a><#if report.next?exists>&nbsp;&nbsp;&nbsp;<a href="${report.next?html}"><@vrtx.msg code="report.next-page" default="Next page" /></a></#if>

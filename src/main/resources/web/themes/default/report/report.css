@@ -22,8 +22,12 @@ div.vrtx-permission-tree span.file a {
   color: black !important;
 }
 
-#vrtx-report-paging {
+.vrtx-report-paging {
   float: right;
+}
+
+#vrtx-report-paging-bottom {
+  margin-top: 10px;
 }
 
 div.vrtx-report-diagram {

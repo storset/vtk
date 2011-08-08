@@ -8,15 +8,15 @@ resourcetype structured-project {
     picture : image_ref,
     caption : simple_html,
     content : html noextract,
-    related-content : html noextract,
+    tags : string multiple overrides tags,
+    contactInfo : html noextract,
     participantsUsernames : string multiple,
     participantsCachedFullNames : binary external:projectParticipantsFullNameService,
     participants : json (participantName:string, participantUrl:string) multiple,
     numberOfParticipantsToDisplay : string defaultvalue("50"),
-    contactInfo : html noextract,
-    tags : string multiple overrides tags,
+    relatedGroups : resource_ref multiple,
     rssFeeds : json (rssTitle:string, rssUrl:string) multiple,
-    relatedGroups : resource_ref multiple
+    related-content : html noextract
   }
   
   edit-rules {

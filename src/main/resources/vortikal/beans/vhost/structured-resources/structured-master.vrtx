@@ -7,11 +7,11 @@ resourcetype structured-master{
     picture : image_ref,
     caption : simple_html,
     content : html noextract,
-    related-content : html noextract,
+    tags : string multiple overrides tags,
     supervisorsUsernames : string multiple,
     supervisors : json (supervisorName:string, supervisorUrl:string) multiple,
     credits : string,
-    tags : string multiple overrides tags
+    related-content : html noextract
   }
   
   edit-rules {
@@ -193,7 +193,7 @@ resourcetype structured-master{
     introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
-    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
+    related-content : (en : "Related content (right column)", no : "Relatert innhold (vises i høyre kolonne)", nn : "Relatert innhald (visast i høgre kolonne)"),
     supervisorsHeader : (en : "Supervisors", no : "Veiledere", nn : "Rettleiarar"),
     supervisorsUsernames : (en : "Supervisors from UiO (enter the supervisor username)",no : "Veiledere fra UiO (fyll inn veilederens brukernavn)", nn :"Rettleiarar fra UiO (fyll inn rettleiarens brukernavn)"),
     supervisors : (en : "Other supervisors", no : "Andre veiledere", nn : "Andre rettleiarar"),

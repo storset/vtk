@@ -20,7 +20,7 @@
       </#if>
       
       <#if templates?exists && templates?size &gt; 0>
-        <ul>
+        <ul class="radio-buttons">
           <@vrtx.formRadioButtons "createCollectionForm.sourceURI", templates, "<li>", "</li>" />
         </ul>
       </#if>

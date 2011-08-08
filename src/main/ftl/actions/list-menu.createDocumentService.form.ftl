@@ -24,7 +24,7 @@
         <#assign newDocName = createDocumentForm.name>
       </#if>
       <#if templates?exists && templates?size &gt; 0>
-        <ul>
+        <ul class="radio-buttons">
           <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", true />
         </ul>
         <#-- Assign a default filename if user has not yet entered anything -->

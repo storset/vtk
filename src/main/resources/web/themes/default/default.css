@@ -914,9 +914,17 @@ ul.list-menu.tabMenu2 li.createCollectionService a {
   background: url(images/tab-menu-new-folder.png) no-repeat center left;
 }
 
+/* Tab forms */
+
 ul.radio-buttons label {
  font-size: 1.154em;
 }
+
+p#vrtx-file-upload-info-text {
+  margin-top: 10px;
+}
+
+/* ^ Tab forms */
 
 /* Trash can */
 

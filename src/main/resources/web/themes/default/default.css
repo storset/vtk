@@ -1826,8 +1826,8 @@ form button::-moz-focus-inner {
 }
 
 .vrtx-textfield-big input, x:-moz-any-link, x:only-child {
-  padding-top: 6px;
-  height: 27px;
+  padding-top: 2px;
+  height: 31px;
 }
 
 /* ^ Vertical aligning text in textfields: targets Firefox 1.5 and newer */

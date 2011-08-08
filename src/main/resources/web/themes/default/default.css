@@ -1500,14 +1500,14 @@ div.resource-title:after,
 	6. Forms
 \*-----------------------------------------*/
 
-form, fieldset, input, button{
+form, fieldset, input, button {
   margin: 0;
   padding: 0;
 }
 
 fieldset {
-  background:transparent;
-  border:none;
+  background: transparent;
+  border: none;
 }
 
 input, button {
@@ -1791,6 +1791,19 @@ form button::-moz-focus-inner {
   border: none;
   padding: 0;
 }
+
+/* Vertical aligning text in textfields: targets Firefox 1.5 and newer */
+/* Credits: http://perishablepress.com/press/2009/06/28/css-hacks-for-different-versions-of-firefox/ */
+
+.vrtx-textfield input, x:-moz-any-link, x:only-child {
+  padding-top: 2px;
+}
+
+.vrtx-textfield-big input, x:-moz-any-link, x:only-child {
+  padding-top: 6px;
+}
+
+/* ^ Vertical aligning text in textfields: targets Firefox 1.5 and newer */
 
 /* ^ Mozilla hacks */
 

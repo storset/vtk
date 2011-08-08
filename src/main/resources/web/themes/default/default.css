@@ -803,7 +803,7 @@ div.tabs ul li.current a {
   line-height: 1.25em;
   display: block;
   float: left;
-  padding: 8px 22px 7px 19px; 
+  padding: 6px 22px 5px 19px; 
   margin: 0;
   background: url(images/app-content-tabs-bg.png) repeat-x bottom left;
   text-align: center;

@@ -47,6 +47,8 @@
     </tr>
 
     <@spring.bind "trashcan.trashCanObjects" />
+    
+    <#assign rowType = "odd">
     <#assign collectionSize = spring.status.value?size />
     
     <#if (collectionSize > 0) >
@@ -63,10 +65,19 @@
         <#assign firstLast = " last" />     
       </#if>
       
-      <#if (tco_index % 2 == 0)>
-        <tr class="odd <@vrtx.iconResolver rr.resourceType rr.contentType />${firstLast}">
+      <#if rr.resourceType = "collection"
+        || rr.resourceType = "article-listing"
+        || rr.resourceType = "event-listing"
+        || rr.resourceType = "project-listing"
+        || rr.resourceType = "research-group-listing"
+        || rr.resourceType = "person-listing"
+        || rr.resourceType = "image-listing"
+        || rr.resourceType = "blog-listing"
+        || rr.resourceType = "master-listing"
+        || rr.resourceType = "audio-video-listing"> <#-- tmp fix - need isCollection() in RecoverableResource -->
+        <tr class="${rowType} <@vrtx.iconResolver rr.resourceType rr.contentType /> true${firstLast}">  
       <#else>
-        <tr class="even <@vrtx.iconResolver rr.resourceType rr.contentType />${firstLast}">
+        <tr class="${rowType} <@vrtx.iconResolver rr.resourceType rr.contentType />${firstLast}">
       </#if>
           <td class="vrtx-trash-can-name name trash"><span class="vrtx-trash-can-name-text">${rr.name?html}</span></td>
           <td class="checkbox">
@@ -80,6 +91,11 @@
           <td class="vrtx-trash-can-deleted-by">${rr.deletedBy}</td>
           <td class="vrtx-trash-can-deleted-time"><@printDeletedTime tco.recoverableResource.deletedTime /></td>
         </tr>
+      <#if rowType = "even">
+        <#assign rowType = "odd">
+      <#else>
+        <#assign rowType = "even">
+      </#if>
     </#list>
     <#else>
       <tr id="trash-can-empty" class="first last">

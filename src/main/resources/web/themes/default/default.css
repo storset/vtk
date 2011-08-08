@@ -1510,7 +1510,7 @@ fieldset {
   border:none;
 }
 
-input, button{
+input, button {
   border: 1px solid transparent;
   background: transparent;
   font-family: inherit;
@@ -1578,6 +1578,15 @@ div.vrtx-admin-form {
   overflow: visible;
   margin: 0;
   cursor: pointer;
+}
+
+a.vrtx-button:hover,
+a.vrtx-focus-button:hover,
+a.vrtx-button-small:hover,
+a.vrtx-button.hover,
+a.vrtx-focus-button.hover,
+a.vrtx-button-small.hover {
+  text-decoration: none;
 }
 
 .vrtx-focus-button {

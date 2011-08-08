@@ -1,7 +1,7 @@
 resourcetype organizational-unit {
 
   properties {
-    areacode : string,
+    areacode : string trim,
     getExternalUnitInfo : boolean,
     displayAcronym : boolean,
     name : string external:organizationMetadataLdapService,

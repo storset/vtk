@@ -1770,7 +1770,7 @@ div.vrtx-admin-form {
   z-index: 999;
 }
 
-input#file {
+#file-upload-container input.js-on {
   z-index: 999;
   position: relative;
   left: 328px;

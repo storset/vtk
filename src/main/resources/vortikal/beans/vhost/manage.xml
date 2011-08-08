@@ -1334,7 +1334,15 @@
   </bean>
   
   <bean name="manage.resourceBarHandler" class="org.vortikal.web.display.AController">
-    <property name="viewName" value="anage.resourceBarIframeView" />
+    <property name="viewName" value="manage.resourceBarIframeView" />
+  </bean>
+  
+  <bean id="manage.resourceBar.viewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="manage.resourceBarIframeView" value-ref="manage.resourceBarIframeView" />
+      </map>
+    </property>
   </bean>
   
   <bean id="manage.resourceBarComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">

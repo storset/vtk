@@ -309,25 +309,26 @@ function initFileUpload() {
   var form = $("form[name=fileUploadService]");
   if(form.length) {
     var inputFile = form.find("#file");
-    inputFile.change(function() {
-      var txt = $(this).val();
-      $(this).closest("form").find("#fake-file").val(txt);
-      // fileInfo("file");
-    });
 
-    var textfieldWrapper = form.find(".vrtx-textfield"); 
-    textfieldWrapper.addClass("vrtx-file-upload");
-    textfieldWrapper.append("<input id='fake-file' />");
-
-    $("<a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a>")
-      .insertBefore("form[name=fileUploadService] #submitButtons").click(function() {
-        $(this).closest("form").find("#file").trigger("click");
-        return false;
+    $("<div class='vrtx-textfield vrtx-file-upload'><input id='fake-file' /><a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a></div>'")
+      .insertAfter(inputFile);  
+      
+    inputFile.change(function(e) {
+      form.find("#fake-file").val($(this).val());
     });
+    
+    inputFile.hover(function () {
+      $("a.vrtx-file-upload").addClass("hover");
+      $(this).css("cursor", "pointer");
+    }, function () {
+      $("a.vrtx-file-upload").removeClass("hover");
+      $(this).css("cursor", "auto");
+    });
+      
     if (supportsMultipleAttribute(document.getElementById("file"))) {
       inputFile.attr("multiple", "multiple");
       if(typeof multipleFilesInfoText !== "undefined") {
-        $("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-button.vrtx-file-upload");
+        $("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-textfield");
       }
     }
   }

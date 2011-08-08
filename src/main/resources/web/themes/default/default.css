@@ -1578,15 +1578,7 @@ div.vrtx-admin-form {
   overflow: visible;
   margin: 0;
   cursor: pointer;
-}
-
-a.vrtx-button:hover,
-a.vrtx-focus-button:hover,
-a.vrtx-button-small:hover,
-a.vrtx-button.hover,
-a.vrtx-focus-button.hover,
-a.vrtx-button-small.hover {
-  text-decoration: none;
+  text-decoration: none !important;
 }
 
 .vrtx-focus-button {
@@ -1646,15 +1638,18 @@ a.vrtx-button-small.hover {
   padding: 0 11px 0 10px;
 }
 
-.vrtx-button:hover {
+.vrtx-button:hover,
+.vrtx-button.hover {
   background-image: url(images/dropdown-left-rollover.gif);
 }
 
-.vrtx-focus-button:hover {
+.vrtx-focus-button:hover,
+.vrtx-focus-button.hover {
   background-image: url(images/focus-button-left-rollover.gif);
 }
 
-.vrtx-button-small:hover {
+.vrtx-button-small:hover,
+.vrtx-button-small.hover {
   background-image: url(images/button-small-left-rollover.gif);
 }
 
@@ -1666,21 +1661,35 @@ a.vrtx-button-small.hover {
 .vrtx-focus-button:hover button,
 .vrtx-button-small:hover span,
 .vrtx-button-small:hover input,
-.vrtx-button-small:hover button {
+.vrtx-button-small:hover button,
+.vrtx-button.hover span,
+.vrtx-button.hover input,
+.vrtx-button.hover button,
+.vrtx-focus-button.hover span,
+.vrtx-focus-button.hover input,
+.vrtx-focus-button.hover button,
+.vrtx-button-small.hover span,
+.vrtx-button-small.hover input,
+.vrtx-button-small.hover button {
   color: #fff;
-  text-decoration: none;
   background: url(images/button-closed-right-rollover.gif) no-repeat top right;
 }
 
 .vrtx-focus-button:hover span,
 .vrtx-focus-button:hover input,
-.vrtx-focus-button:hover button {
+.vrtx-focus-button:hover button,
+.vrtx-focus-button.hover span,
+.vrtx-focus-button.hover input,
+.vrtx-focus-button.hover button {
   background: url(images/focus-button-right-rollover.gif) no-repeat top right;
 }
 
 .vrtx-button-small:hover span,
 .vrtx-button-small:hover input,
-.vrtx-button-small:hover button {
+.vrtx-button-small:hover button,
+.vrtx-button-small.hover span,
+.vrtx-button-small.hover input,
+.vrtx-button-small.hover button {
   background: url(images/button-small-right-rollover.gif) no-repeat top right;
 }
 
@@ -1756,30 +1765,46 @@ a.vrtx-button-small.hover {
  * Credits technique: http://www.quirksmode.org/dom/inputfile.html
  */
 
-.vrtx-file-upload.vrtx-textfield {
+#file-upload-container {
   position: relative;
+  z-index: 999;
 }
 
-.vrtx-file-upload.vrtx-textfield input#file {
+input#file {
+  z-index: 999;
+  position: relative;
+  left: 328px;
+  background: none;
+  width: 83px;
+  height: 25px;
   opacity: 0;
-  z-index: 2;
   -moz-opacity: 0;
   filter:alpha(opacity: 0);
-  opacity: 0;
-  position: relative;
 }
 
-.vrtx-file-upload.vrtx-textfield input#fake-file {
+#file-upload-container .vrtx-textfield {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 300px;
+  z-index: 1;
+}
+
+#file-upload-container .vrtx-textfield input#fake-file {
   position: absolute;
   top: 0px;
   right: 0px;
+  width: 295px;
   z-index: 1;
-  width: 239px;
 }
 
-a.vrtx-file-upload {
+#file-upload-container a.vrtx-file-upload {
   margin-left: 10px;
   margin-bottom: -2px;
+  position: absolute;
+  top: 0px;
+  right: -100px;
+  z-index: 1;
 }
 
 /* ^ Textfields */
@@ -1797,10 +1822,12 @@ form button::-moz-focus-inner {
 
 .vrtx-textfield input, x:-moz-any-link, x:only-child {
   padding-top: 2px;
+  height: 25px;
 }
 
 .vrtx-textfield-big input, x:-moz-any-link, x:only-child {
   padding-top: 6px;
+  height: 27px;
 }
 
 /* ^ Vertical aligning text in textfields: targets Firefox 1.5 and newer */

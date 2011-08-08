@@ -16,9 +16,9 @@
 	      </ul>
 	    </div>
       </#if>
-    <div class="vrtx-textfield">
-	  <input id="file" type="file" name="file" />
-	</div>
+    <div id="file-upload-container">   
+      <input id="file" type="file" name="file" />
+    </div>
     <div id="submitButtons">
       <div class="vrtx-focus-button">
         <input type="submit" name="save" value="<@vrtx.msg code="actions.fileUploadService.save" default="Save"/>">

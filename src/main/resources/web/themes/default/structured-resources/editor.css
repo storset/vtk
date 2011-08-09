@@ -80,15 +80,18 @@
   clear: left;
 }
 
-.getExternalPersonInfo label {
+.getExternalPersonInfo label,
+.getExternalUnitInfo label {
   display: inline;
 }
 
-.getExternalPersonInfo .vrtx-radio-buttons {
+.getExternalPersonInfo .vrtx-radio-buttons,
+.getExternalUnitInfo .vrtx-radio-buttons {
   margin-top: 10px;
 }
 
-.getExternalPersonInfo .tooltip {
+.getExternalPersonInfo .tooltip,
+.getExternalUnitInfo .tooltip {
   padding-left: 5px;
 }
 

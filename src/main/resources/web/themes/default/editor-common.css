@@ -50,7 +50,8 @@ h2 {
 
 .property-item,
 .html-content,
-.vrtx-html.content {
+.vrtx-html.content,
+.vrtx-html.responsibilities {
   clear: left;
 }
 
@@ -87,7 +88,8 @@ h2 {
 }
 
 .vrtx-image-ref-browse .vrtx-button,
-.vrtx-media-ref .vrtx-button {
+.vrtx-media-ref .vrtx-button,
+.vrtx-resource-ref .vrtx-button {
   margin-left: 20px;
 }
 

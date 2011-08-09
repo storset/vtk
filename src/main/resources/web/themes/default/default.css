@@ -74,13 +74,13 @@ p {
 }
 
 pre {
-  font-size: 0.85em;
   font-family: courier;
   line-height: 1.9;
 }
 
 #contents pre {
   color: #2b2b2b;
+  margin: 0;
 }
 
 ul,

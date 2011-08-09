@@ -760,14 +760,15 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
           // TODO: add a postfix to original markup, e.g. 'ajax-' to unique class where we use AJAX
           //       -- to avoid filtering out others
           for(var i = resultSelectorClasses.length; i--;) {
-            if(resultSelectorClasses[i].indexOf("expandedForm") == -1
-               && resultSelectorClasses[i].indexOf("nodeType") == -1
-               && resultSelectorClasses[i] 
+            var resultSelectorClassCache = resultSelectorClasses[i];
+            if(resultSelectorClassCache.indexOf("expandedForm") == -1
+               && resultSelectorClassCache.indexOf("nodeType") == -1
+               && resultSelectorClassCache 
                && resultSelectorClass.indexOf(resultSelectorClasses[i]) == -1
-               && resultSelectorClasses[i].indexOf("even") == -1
-               && resultSelectorClasses[i].indexOf("odd") == -1
-               && resultSelectorClasses[i].indexOf("first") == -1
-               && resultSelectorClasses[i].indexOf("last") == -1) {
+               && resultSelectorClassCache.indexOf("even") == -1
+               && resultSelectorClassCache.indexOf("odd") == -1
+               && resultSelectorClassCache.indexOf("first") == -1
+               && resultSelectorClassCache.indexOf("last") == -1) {
                  resultSelectorClass = "." + resultSelectorClasses[i];
                  break;
             }  

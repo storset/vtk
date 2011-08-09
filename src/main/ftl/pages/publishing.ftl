@@ -33,11 +33,6 @@
     </script>
     
     <link type="text/css" href="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.8.custom/css/smoothness/jquery-ui-1.8.8.custom.css" rel="stylesheet" />
-    <#if cssURLs?exists>
-      <#list cssURLs as cssURL>
-        <link rel="stylesheet" href="${cssURL}" />
-      </#list>
-    </#if>
   </head>
   <#assign resource = resourceContext.currentResource />
   <#assign header = vrtx.getMsg("publishing.header", "Publishing status on document") />

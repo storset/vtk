@@ -339,11 +339,6 @@
       <map>
         <entry key="jsBaseURL" value="${jsBaseURL}" />
         <entry key="webResources" value="${webResources.baseURL}" />
-        <entry key="cssURLs">
-          <list>
-            <value>${themeBaseURL}/publishing.css</value>
-          </list>
-        </entry>
       </map>
     </property>
   </bean>

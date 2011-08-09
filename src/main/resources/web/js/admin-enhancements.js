@@ -59,6 +59,13 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
                                             max: 30,
                                             delay: 800 };
                                             
+$(window).load(function() {
+  if(!$("ul.resourceMenuLeft").length) {
+    var resourceMenuRight = $("ul.list-menu.resourceMenuRight");
+    resourceMenuRight.css("margin", "-12px 0 20px 0");  
+  }
+});
+                                            
 $(document).ready(function () {
 
   var startTime = +new Date();

@@ -1,3 +1,5 @@
+/* TODO: what is this? it seem to be commented out in portal.xml */
+
 body, div, td, th, h1, h2, h3, h4 { /* redundant rules for bad browsers  */  
         font-family: Arial, Helvetica, sans-serif;
         voice-family: "\"}\"";

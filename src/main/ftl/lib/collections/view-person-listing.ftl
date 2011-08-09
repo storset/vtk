@@ -53,18 +53,7 @@
           <#else>
             <a href="${person.URI?html}">${title?html}</a>
           </#if>
-          <span>
-            ${position?html}
-            <#if primaryUnitName?exists && primaryUnitName != "">
-              <#local primaryUnitUrl = vrtx.propValue(person, 'primaryUnitUrl')  />
-               -
-              <#if primaryUnitUrl?exists && primaryUnitUrl != "">
-                <a class="vrtx-primary-affiliation" href="${primaryUnitUrl}">${primaryUnitName?html}</a>
-              <#else>
-                ${primaryUnitName?html}
-              </#if>
-            </#if>
-          </span>
+          <span>${position?html}</span>
         </td>
         <td class="vrtx-person-listing-phone">
           <#if phonenumbers != "" >

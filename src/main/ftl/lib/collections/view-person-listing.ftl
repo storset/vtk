@@ -55,7 +55,6 @@
           </#if>
           <span>
             ${position?html}
-            <#--
             <#if primaryUnitName?exists && primaryUnitName != "">
               <#local primaryUnitUrl = vrtx.propValue(person, 'primaryUnitUrl')  />
                -
@@ -65,7 +64,6 @@
                 ${primaryUnitName?html}
               </#if>
             </#if>
-            -->
           </span>
         </td>
         <td class="vrtx-person-listing-phone">

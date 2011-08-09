@@ -59,7 +59,7 @@
               <#local primaryUnitUrl = vrtx.propValue(person, 'primaryUnitUrl')  />
                -
               <#if primaryUnitUrl?exists && primaryUnitUrl != "">
-                <a href="${primaryUnitUrl}">${primaryUnitName?html}</a>
+                <a class="vrtx-primary-affiliation" href="${primaryUnitUrl}">${primaryUnitName?html}</a>
               <#else>
                 ${primaryUnitName?html}
               </#if>

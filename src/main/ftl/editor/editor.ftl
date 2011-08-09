@@ -256,11 +256,15 @@
           </div>
           <#else>
         
-	        <div class="vrtx-image-ref.${name}">
+	        <div class="image-ref vrtx-image-ref.${name}">
 	          <div class="input-and-button-container.${name}">
-	            <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" />
-	            <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
-	              '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
+	            <div class="vrtx-textfield">
+	              <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" />
+	            </div>
+                <div class="vrtx-button">
+	              <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
+	                '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
+	            </div>
 	          </div>
 	          <div id="resource.${name}.preview">
 	          

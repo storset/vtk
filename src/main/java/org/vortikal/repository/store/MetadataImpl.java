@@ -52,7 +52,12 @@ public class MetadataImpl implements Metadata {
         }
         values.add(value);
     }
-    
+
+    public void replaceAttributeValue(String attribute, Object value) {
+        this.attributes.remove(attribute);
+        this.addAttributeValue(attribute, value);
+    }
+
     public void setAttributeValues(String name, List<Object> values) {
         if (values == null) {
             this.attributes.remove(name);
@@ -60,7 +65,7 @@ public class MetadataImpl implements Metadata {
             this.attributes.put(name, values);
         }
     }
-    
+
     @Override
     public Object getValue(String attributeName) {
         List<Object> values = this.attributes.get(attributeName);
@@ -69,17 +74,17 @@ public class MetadataImpl implements Metadata {
         }
         return values.get(0);
     }
-    
+
     @Override
     public List<Object> getValues(String attributeName) {
         List<Object> values = this.attributes.get(attributeName);
         if (values != null) {
             return Collections.unmodifiableList(values);
         }
-        
+
         return null;
     }
-    
+
     @Override
     public Set<String> getAttributeNames() {
         return Collections.unmodifiableSet(this.attributes.keySet());

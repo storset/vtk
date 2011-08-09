@@ -26,7 +26,6 @@
       <#local title = vrtx.propValue(person, 'title') />
       <#local picture = vrtx.propValue(person, 'picture')  />
       <#local position = vrtx.propValue(person, 'position')  />
-      <#local primaryUnitName = vrtx.propValue(person, 'primaryUnitName')  />
       <#local phonenumbers = vrtx.propValue(person, 'phone')  />
       <#local mobilenumbers = vrtx.propValue(person, 'mobile')  />
       <#local emails = vrtx.propValue(person, 'email')  />

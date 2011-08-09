@@ -179,6 +179,7 @@ public class JSONBackedMapResource implements Map<Object, Object>, InitializingB
         return this.map.values();
     }
     
+    @Override
     public String toString() {
         if (this.map != null) {
             return this.map.toString();

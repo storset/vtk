@@ -133,7 +133,6 @@
     <constructor-arg>
       <list>
         <value>${themeBaseURL}/default.css</value>
-        <value>${themeBaseURL}/plain-edit.css</value>
       </list>
     </constructor-arg>
   </bean>

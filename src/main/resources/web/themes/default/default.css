@@ -48,7 +48,6 @@ body {
 }
  
 h1 {
-  font-family: Arial, sans-serif;
   font-size: 1.84em;
   line-height: 1.2em;
   margin: 0 0 15px 0;
@@ -56,14 +55,12 @@ h1 {
 }
 
 h2 {
-  font-family: Arial, sans-serif;
   font-size: 1.76em;
   font-weight: normal;
   margin: 15px 0 8px 0;
 }
 
 h3 {
-  font-family: Arial, sans-serif;
   font-size: 1.538em;
   font-weight: normal;
   margin: 10px 0 8px 0;

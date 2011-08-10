@@ -20,19 +20,32 @@
     <div class="resourceInfo">
       <h2><@vrtx.msg code="report.heading" default="Reports" /></h2>
       <div class="vrtx-report">
-   	    <@makeReporterList primaryReporters "vrtx-primary-reporters" /> 	    
-  	    <@makeReporterList reporters "vrtx-reporters" />
+      
+        <#if primaryReporters?has_content>
+          <ul class="vrtx-primary-reporters">
+          <#list primaryReporters as reporter>
+            <li class="${reporter.name}">
+              <a href="${reporter.url}">
+                <span class="vrtx-primary-reporters-title"><@vrtx.msg code="report.${reporter.name}" default="${reporter.name}" /></span>
+              </a>
+            </li>
+          </#list>
+  	      </ul>
+  	    </#if>
+  	    
+  	    <#if reporters?has_content>
+          <ul class="vrtx-reporters">
+          <#list reporters as reporter>
+            <li class="${reporter.name}"><a href="${reporter.url}"><@vrtx.msg code="report.${reporter.name}" default="${reporter.name}" /></a></li>
+          </#list>
+  	      </ul>
+  	    </#if>
+  	    
       </div>
     </div>
   </body>
 </html>
 
-<#macro makeReporterList reporters className>
-  <#if reporters?has_content>
-    <ul class="${className}">
-    <#list reporters as reporter>
-      <li class="${reporter.name}"><a href="${reporter.url}"><@vrtx.msg code="report.${reporter.name}" default="${reporter.name}" /></a></li>
-    </#list>
-  	</ul>
-  </#if>
+<#macro makeList reporters>
+
 </#macro>

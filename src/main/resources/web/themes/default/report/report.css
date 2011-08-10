@@ -6,6 +6,34 @@ ul.vrtx-reporters {
   list-style-type: none;
   padding-left: 2px;
   margin-left: 0px;
+  margin-top: 20px;
+  clear: both;
+  float: left;
+}
+
+ul.vrtx-primary-reporters,
+ul.vrtx-primary-reporters li {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.vrtx-primary-reporters li a {
+  width: 200px;
+  padding: 15px;
+  margin: 0 30px 0 0;
+  border: 1px solid #d9d9d9;
+  background: #f9f9f9;
+  float: left;
+}
+
+ul.vrtx-primary-reporters li a:hover {
+  background-color: #ecf3f9; 
+  text-decoration: none;
+}
+
+ul.vrtx-primary-reporters li span.vrtx-primary-reporters-title {
+  font-size: 1.077em;
 }
 
 div.vrtx-report div.vrtx-subfolder-menu {

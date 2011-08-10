@@ -6,8 +6,16 @@ ul.vrtx-reporters {
   list-style-type: none;
   padding-left: 2px;
   margin-left: 0px;
-  margin-top: 20px;
+}
+
+h4.vrtx-reporters-title {
+  margin: 25px 0 0 0;
+}
+
+h4.vrtx-reporters-title,
+ul.vrtx-reporters {
   clear: both;
+  width: 100%;
   float: left;
 }
 

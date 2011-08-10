@@ -35,6 +35,7 @@
   	    </#if>
   	    
   	    <#if reporters?has_content>
+  	      <h4 class="vrtx-reporters-title"><@vrtx.msg code="report.heading.others" default="Other reports" /></h4>
           <ul class="vrtx-reporters">
           <#list reporters as reporter>
             <li class="${reporter.name}"><a href="${reporter.url}"><@vrtx.msg code="report.${reporter.name}" default="${reporter.name}" /></a></li>

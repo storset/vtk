@@ -22,7 +22,7 @@
       <div class="vrtx-report">
         <ul class="vrtx-reporters">
          <#list reporters as reporter>
-           <li><a href="${reporter.url}"><@vrtx.msg code="report.${reporter.name}" default="${reporter.name}" /></a></li>
+           <li class="${reporter.name}"><a href="${reporter.url}"><@vrtx.msg code="report.${reporter.name}" default="${reporter.name}" /></a></li>
          </#list>
   	    </ul>
       </div>

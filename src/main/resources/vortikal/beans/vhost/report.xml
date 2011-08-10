@@ -40,10 +40,10 @@
     <property name="viewName" value="report" />
     <property name="reporters">
       <list>
-        <ref bean="diagramReport" />
         <ref bean="collectionStructureReporter" />
-        <ref bean="lastModifiedReporter" />
+        <ref bean="diagramReport" />
         <ref bean="myDocumentsReporter" />
+        <ref bean="lastModifiedReporter" />
       </list>
     </property>
     <property name="hiddenReporters">
@@ -83,6 +83,18 @@
     <property name="name" value="collection-structure" />
     <property name="viewName" value="collectionStructure" />
   </bean>
+  
+  <bean id="diagramReport" class="org.vortikal.web.actions.report.DiagramReport" parent="reporter">
+    <property name="name" value="diagram" />
+    <property name="viewName" value="diagramReport" />
+  </bean>
+  
+  <bean id="myDocumentsReporter" class="org.vortikal.web.actions.report.MyDocumentsReporter" parent="documentReporter">
+    <property name="name" value="my-documents" />
+    <property name="createdByPropDef" ref="createdByPropDef" />
+    <property name="sortPropDef" ref="creationTimePropDef" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
 
   <bean id="documentReporter" abstract="true" class="org.vortikal.web.actions.report.DocumentReporter" parent="reporter">
     <property name="viewService" ref="viewService" />
@@ -96,18 +108,6 @@
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="type" value="file" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
-  </bean>
-
-  <bean id="myDocumentsReporter" class="org.vortikal.web.actions.report.MyDocumentsReporter" parent="documentReporter">
-    <property name="name" value="my-documents" />
-    <property name="createdByPropDef" ref="createdByPropDef" />
-    <property name="sortPropDef" ref="creationTimePropDef" />
-    <property name="sortOrder" ref="SORT_ORDER.DESC" />
-  </bean>
-
-  <bean id="diagramReport" class="org.vortikal.web.actions.report.DiagramReport" parent="reporter">
-    <property name="name" value="diagram" />
-    <property name="viewName" value="diagramReport" />
   </bean>
 
   <bean id="webDiagramReport" class="org.vortikal.web.actions.report.WebDiagramReport" parent="reporter">

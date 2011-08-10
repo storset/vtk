@@ -201,7 +201,15 @@ public class PropertyDescriptionParser {
     }
 
     private void handleDerivedProperty(DerivedPropertyDescription p, CommonTree descEntry) {
-        Tree fields = descEntry.getChild(0);
+
+        int index = 0;
+        Tree fields = descEntry.getChild(index);
+
+        if (fields.getType() == ResourcetreeLexer.MULTIPLE) {
+            p.setMultiple(true);
+            index++;
+            fields = descEntry.getChild(index);
+        }
 
         if (fields.getType() == ResourcetreeLexer.EXTERNAL) {
             p.setExternalService(fields.getChild(0).getText());
@@ -209,11 +217,11 @@ public class PropertyDescriptionParser {
         }
 
         List<String> dependentFields = new ArrayList<String>();
-        for (int i = 0; i < fields.getChildCount(); i++) {
+        for (int i = index; i < fields.getChildCount(); i++) {
             dependentFields.add(fields.getChild(i).getText());
         }
 
-        Tree eval = descEntry.getChild(1);
+        Tree eval = descEntry.getChild(index + 1);
 
         DerivedPropertyEvaluationDescription evaluationDescription = new DerivedPropertyEvaluationDescription();
         boolean quote = false;

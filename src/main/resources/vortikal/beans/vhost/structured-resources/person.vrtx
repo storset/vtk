@@ -168,8 +168,8 @@ resourcetype person {
               <span class="vrtx-label">[localized 'otherUnits']:</span>
               <ul class="vrtx-values">
               [list otherUnits otherUnit]
-                [def otherUnitSplit otherUnit.split("$")]
-                <li><a href="[val otherUnitSplit.0]">[val otherUnitSplit.0]</a></li>
+                [def otherUnitSplit otherUnit.split("\\\\$")]
+                <li><a href="[val otherUnitSplit.1]">[val otherUnitSplit.0]</a></li>
               [endlist]
               </ul>
             </div>
@@ -453,6 +453,6 @@ resourcetype person {
     no-external-user-metadata : (en : "Could not get user data from external service",
                                  no : "Kan ikke hente personopplysninger fra ekstern kilde",
                                  nn : "Kan ikkje hente personopplysningar frå ekstern kilde"),
-    otherUnits : (en : "Other units", no : "Andre tilknytninger", nn : "Andre tilknytningar")
+    otherUnits : (en : "Other affiliations", no : "Andre tilknytninger", nn : "Andre tilknytningar")
   }
 }

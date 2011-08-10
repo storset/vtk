@@ -165,7 +165,7 @@ resourcetype person {
           
           [if otherUnits != null]
             <div class="vrtx-person-other-units">
-              <span class="vrtx-label">[localized 'otherUnits']:</span>
+              <span class="vrtx-label">[localized 'otherUnits']</span>
               [list otherUnits otherUnit]
                 [def otherUnitSplit otherUnit.split("\\\\$")]
                 <a class="vrtx-value" href="[val otherUnitSplit.1]">[val otherUnitSplit.0]</a>

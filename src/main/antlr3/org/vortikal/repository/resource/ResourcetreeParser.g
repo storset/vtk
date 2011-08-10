@@ -100,8 +100,8 @@ propertytypedef
 derivedpropertytypedef
 	:	NAME COLON derived (overrides)? (MULTIPLE)? (defaultprop)? 
 		-> ^(NAME derived (overrides)? (MULTIPLE)? (defaultprop)?)
-	|	NAME COLON DERIVED external
-		-> ^(NAME ^(DERIVED external))
+	|	NAME COLON DERIVED (MULTIPLE)? external
+		-> ^(NAME ^(DERIVED (MULTIPLE)? external))
 	;
 
 derived	:	DERIVED LP fieldlist RP EVAL LP evallist RP

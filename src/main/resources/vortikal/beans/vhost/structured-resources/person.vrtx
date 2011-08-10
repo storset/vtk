@@ -15,6 +15,7 @@ resourcetype person {
     externalUserMetaData : derived external:userMetadataLdapService,
     primaryUnitName : derived external:userMetadataLdapService,
     primaryUnitUrl : derived external:userMetadataLdapService,
+    otherUnits : derived multiple external:userMetadataLdapService,
     alternativeVisitingAddress : string multiple,
     title : derived (firstName, surname) eval (firstName + " " + surname)
       overrides title default username,
@@ -160,6 +161,14 @@ resourcetype person {
                 <span class="vrtx-address-line">[if postalAddressLine != null][val postalAddressLine][endif]</span>
               [endlist]
             </div>
+          [endif]
+          
+          [if otherUnits != null]
+            [localized 'otherUnits']: 
+            [list otherUnits otherUnit]
+              [def otherUnitSplit otherUnit.split("$")]
+              <a href="[val otherUnitSplit.0]">[val otherUnitSplit.1]</a>
+            [endlist]
           [endif]
           
         [endif]
@@ -436,6 +445,7 @@ resourcetype person {
     contentLastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra"),
     no-external-user-metadata : (en : "Could not get user data from external service",
                                  no : "Kan ikke hente personopplysninger fra ekstern kilde",
-                                 nn : "Kan ikkje hente personopplysningar frå ekstern kilde")
+                                 nn : "Kan ikkje hente personopplysningar frå ekstern kilde"),
+    otherUnits : (en : "Other units", no : "Andre tilknytninger", nn : "Andre tilknytningar")
   }
 }

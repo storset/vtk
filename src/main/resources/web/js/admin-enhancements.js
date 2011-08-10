@@ -60,9 +60,9 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
                                             delay: 800 };
                                             
 $(window).load(function() {
-  if(!$("ul.resourceMenuLeft").length) {
-    var resourceMenuRight = $("ul.list-menu.resourceMenuRight");
-    resourceMenuRight.css("marginBottom", "20px");  
+  var resourceMenuRight = $("ul.list-menu.resourceMenuRight"); 
+  if(resourceMenuRight.length == 1) {
+    $("ul.list-menu.resourceMenuRight").addClass("smaller-seperator");
   }
 });
                                             

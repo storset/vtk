@@ -20,11 +20,23 @@
     <div class="resourceInfo">
       <h2><@vrtx.msg code="report.heading" default="Reports" /></h2>
       <div class="vrtx-report">
-        <ul class="vrtx-reporters">
-         <#list reporters as reporter>
-           <li class="${reporter.name}"><a href="${reporter.url}"><@vrtx.msg code="report.${reporter.name}" default="${reporter.name}" /></a></li>
-         </#list>
-  	    </ul>
+      
+        <#if primaryReporters?has_content>
+          <ul class="vrtx-primary-reporters">
+          <#list primaryReporters as reporter>
+            <li class="${reporter.name}"><a href="${reporter.url}"><@vrtx.msg code="report.${reporter.name}" default="${reporter.name}" /></a></li>
+          </#list>
+  	      </ul>
+  	    </#if>
+  	    
+  	    <#if reporters?has_content>
+          <ul class="vrtx-reporters">
+          <#list reporters as reporter>
+            <li class="${reporter.name}"><a href="${reporter.url}"><@vrtx.msg code="report.${reporter.name}" default="${reporter.name}" /></a></li>
+          </#list>
+  	      </ul>
+  	    </#if>
+  	    
       </div>
     </div>
   </body>

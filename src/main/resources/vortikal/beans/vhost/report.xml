@@ -38,11 +38,15 @@
   <!-- structuredResourceReporters.xml in vortex overrides this bean so make sure to add refs there also -->
   <bean id="reportHandler" class="org.vortikal.web.actions.report.ReportHandler" parent="repositoryAware">
     <property name="viewName" value="report" />
-    <property name="reporters">
+    <property name="primaryReporters">
       <list>
         <ref bean="collectionStructureReporter" />
         <ref bean="diagramReport" />
         <ref bean="myDocumentsReporter" />
+      </list>
+    </property>
+    <property name="reporters">
+      <list>
         <ref bean="lastModifiedReporter" />
       </list>
     </property>

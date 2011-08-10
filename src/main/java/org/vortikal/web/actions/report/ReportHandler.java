@@ -53,10 +53,15 @@ public class ReportHandler implements Controller {
 
     private Repository repository;
     private String viewName;
-    private List<Reporter> reporters, hiddenReporters;
+    private List<Reporter> primaryReporters, reporters, hiddenReporters;
 
     private static final String REPORT_TYPE_PARAM = "report-type";
 
+    @Required
+    public void setPrimaryReporters(List<Reporter> primaryReporters) {
+        this.primaryReporters = primaryReporters;
+    }
+    
     @Required
     public void setReporters(List<Reporter> reporters) {
         this.reporters = reporters;
@@ -90,8 +95,16 @@ public class ReportHandler implements Controller {
                 return new ModelAndView(reporter.getViewName(), model);
             }
         }
-
+        
         List<ReporterObject> reporterObjects = new ArrayList<ReporterObject>();
+        for (Reporter reporter : this.primaryReporters) {
+            URL reporterURL = new URL(serviceURL);
+            reporterURL.addParameter(REPORT_TYPE_PARAM, reporter.getName());
+            reporterObjects.add(new ReporterObject(reporter.getName(), reporterURL));
+        }
+        model.put("primaryReporters", reporterObjects);
+
+        reporterObjects = new ArrayList<ReporterObject>();
         for (Reporter reporter : this.reporters) {
             URL reporterURL = new URL(serviceURL);
             reporterURL.addParameter(REPORT_TYPE_PARAM, reporter.getName());
@@ -103,6 +116,11 @@ public class ReportHandler implements Controller {
     }
 
     private Reporter getReporter(String reportType) {
+        for (Reporter reporter : this.primaryReporters) {
+            if (reporter.getName().equals(reportType)) {
+                return reporter;
+            }
+        }
         for (Reporter reporter : this.reporters) {
             if (reporter.getName().equals(reportType)) {
                 return reporter;

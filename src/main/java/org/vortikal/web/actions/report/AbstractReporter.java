@@ -70,5 +70,4 @@ public abstract class AbstractReporter implements Reporter {
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-
 }

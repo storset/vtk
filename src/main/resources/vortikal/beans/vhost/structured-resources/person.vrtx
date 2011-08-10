@@ -451,6 +451,6 @@ resourcetype person {
     no-external-user-metadata : (en : "Could not get user data from external service",
                                  no : "Kan ikke hente personopplysninger fra ekstern kilde",
                                  nn : "Kan ikkje hente personopplysningar frå ekstern kilde"),
-    otherUnits : (en : "Other affiliations", no : "Andre tilknytninger", nn : "Andre tilknyttingar")
+    otherUnits : (en : "Other affiliations", no : "Andre tilknytninger", nn : "Andre tilknytingar")
   }
 }

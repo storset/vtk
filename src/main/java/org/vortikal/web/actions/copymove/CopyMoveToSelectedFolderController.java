@@ -198,9 +198,8 @@ public class CopyMoveToSelectedFolderController implements Controller {
         // Removing session variable
         request.getSession(true).removeAttribute(COPYMOVE_SESSION_ATTRIBUTE);
 
-        long total = System.currentTimeMillis() - before;
-
         if (logger.isDebugEnabled()) {
+            long total = System.currentTimeMillis() - before;
             logger.debug("Milliseconds spent on this copy/move operation: " + total);
         }
 

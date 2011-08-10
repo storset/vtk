@@ -755,13 +755,15 @@ ul.list-menu.resourceMenuRight li {
 }
 
 ul.list-menu.resourceMenuRight.smaller-seperator {
-  min-height: 55px;
+  min-height: 65px;
   margin-bottom: 0px;
 }
 
 ul.list-menu.resourceMenuRight.smaller-seperator li {
-  background: url(images/seperator-grey-gradient.png) no-repeat 5px left;
-  min-height: 55px;
+  background-image: url(images/seperator-grey-gradient.png);
+  background-repeat: no-repeat;
+  background-position: 0 5px;
+  min-height: 65px;
 }
 
 ul.list-menu.resourceMenuRight li h3 {

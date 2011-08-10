@@ -51,6 +51,7 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.servlet.ConfigurableRequestWrapper;
+import org.vortikal.web.servlet.StatusAwareResponseWrapper;
 
 /**
  * This view wrapper takes a view and decorates the output from that
@@ -158,13 +159,10 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         this.preventDecoratingParameter = preventDecoratingParameter;
     }
 
-
     @SuppressWarnings("rawtypes")
     public void renderView(View view, Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        
         List<Decorator> decoratorList = new ArrayList<Decorator>();
-        
         if (this.decorators != null) {
             for (int i = 0; i < this.decorators.length; i++) {
                 if (this.decorators[i].match(request, response)) {
@@ -176,12 +174,18 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         if (decoratorList.size() == 0) {
             view.render(model, request, response);
             return;
-        } 
+        }
 
         ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request);
         requestWrapper.setMethod("GET");
+        
         BufferedResponse bufferedResponse = new BufferedResponse(this.maxDocumentSize);
- 
+
+        if (response instanceof StatusAwareResponseWrapper) {
+            int status = ((StatusAwareResponseWrapper) response).getStatus();
+            bufferedResponse.setStatus(status);
+        }
+
         if (view instanceof HtmlRenderer) {
             HtmlPageContent page = ((HtmlRenderer) view).render(model, requestWrapper);
             decorate(model, request, decoratorList, page, response);
@@ -246,7 +250,6 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
                         + "' is not supported on this system");
             }
             bufferedResponse.writeTo(response, true);
-            //writeResponse(bufferedResponse);
             return;
         }
 
@@ -298,7 +301,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
                 }
             }
         }
-
+        
         if (this.forcedOutputEncoding != null) {
             characterEncoding = this.forcedOutputEncoding;
         }
@@ -309,7 +312,6 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
             contentType = contentType + ";charset=" + characterEncoding;
         }
         writeResponse(content.getContent().getBytes(characterEncoding), contentType, response);
-
     }
 
 
@@ -317,7 +319,6 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
             String contentType, HttpServletResponse response)
             throws Exception {
         writeStaticHeaders(response);
-        ServletOutputStream outStream = response.getOutputStream();
 
         if (logger.isDebugEnabled()) {
             logger.debug("Write response: Content-Length: " + content.length
@@ -325,6 +326,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         }
         response.setContentType(contentType);
         response.setContentLength(content.length);
+        ServletOutputStream outStream = response.getOutputStream();
         outStream.write(content);
         outStream.flush();
         outStream.close();

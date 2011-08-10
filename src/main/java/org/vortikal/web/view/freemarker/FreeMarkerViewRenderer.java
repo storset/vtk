@@ -35,14 +35,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerView;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
-import org.vortikal.web.servlet.BufferedResponse;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Template;
@@ -73,15 +71,6 @@ public class FreeMarkerViewRenderer extends FreeMarkerView implements ReferenceD
 
     public void setDebug(boolean debug) {
         this.debug = debug;
-    }
-
-    @SuppressWarnings("rawtypes")
-    protected void doRender(Map model, HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
-        BufferedResponse wrapper = new BufferedResponse();
-        super.doRender(model, request, wrapper);
-        wrapper.setContentType(getContentType());
-        wrapper.writeTo(response, true);
     }
 
     @Override

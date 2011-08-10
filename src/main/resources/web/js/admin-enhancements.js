@@ -58,11 +58,13 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
                                             width: 300, 
                                             max: 30,
                                             delay: 800 };
-                                            
+       
+// More compact when no left resource menu and only 'Read permission' in right resource menu                                     
 $(window).load(function() {
   var resourceMenuRight = $("ul.list-menu.resourceMenuRight"); 
-  if(!$("ul.resourceMenuLeft").length && resourceMenuRight.length == 1) {
-    $("ul.list-menu.resourceMenuRight").addClass("smaller-seperator");
+  var resourceMenuRightListElements = resourceMenuRight.find("li");
+  if(!$("ul.resourceMenuLeft").length && resourceMenuRightListElements.length == 1) {
+    resourceMenuRight.addClass("smaller-seperator");
   }
 });
                                             

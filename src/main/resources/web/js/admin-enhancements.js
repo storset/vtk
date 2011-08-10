@@ -62,7 +62,7 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
 $(window).load(function() {
   if(!$("ul.resourceMenuLeft").length) {
     var resourceMenuRight = $("ul.list-menu.resourceMenuRight");
-    resourceMenuRight.css("margin", "-12px 0 20px 0");  
+    resourceMenuRight.css("marginBottom", "20px");  
   }
 });
                                             

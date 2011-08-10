@@ -34,6 +34,12 @@ ul.vrtx-primary-reporters li a:hover {
 
 ul.vrtx-primary-reporters li span.vrtx-primary-reporters-title {
   font-size: 1.077em;
+  display: block;
+  margin: 0 0 20px 0;
+}
+
+ul.vrtx-primary-reporters img.vrtx-primary-reporters-image {
+  clear: left;
 }
 
 div.vrtx-report div.vrtx-subfolder-menu {

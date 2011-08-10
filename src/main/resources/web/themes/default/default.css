@@ -446,6 +446,7 @@ div.resource-title {
 div.resource-title h1 {
   margin:  0 0 15px 36px;
   float: left;
+  min-width: 85px; /* at least as wide as 'Endre navn' in dropdown + 15px */
 }
 
 div.resource-title.true {

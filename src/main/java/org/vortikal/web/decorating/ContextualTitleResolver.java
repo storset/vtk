@@ -32,6 +32,7 @@ package org.vortikal.web.decorating;
 
 import java.util.Map;
 
+import java.util.regex.Matcher;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -73,7 +74,8 @@ public class ContextualTitleResolver {
         if (mapping.length() == 0) {
             return resource.getTitle();
         }
-        String result = mapping.toString().replaceAll("\\$\\{title\\}", resource.getTitle());
+        String replacement = Matcher.quoteReplacement(resource.getTitle());
+        String result = mapping.toString().replaceAll("\\$\\{title\\}", replacement);
         return result;
     }
 

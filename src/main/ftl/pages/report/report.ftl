@@ -47,7 +47,3 @@
     </div>
   </body>
 </html>
-
-<#macro makeList reporters>
-
-</#macro>

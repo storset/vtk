@@ -48,6 +48,12 @@ ul.vrtx-primary-reporters li span.vrtx-primary-reporters-title {
 
 ul.vrtx-primary-reporters img.vrtx-primary-reporters-image {
   clear: left;
+  float: left;
+  margin: 0 15px 0 0;
+}
+
+ul.vrtx-primary-reporters li span.vrtx-primary-reporters-info {
+  color: #363534;
 }
 
 div.vrtx-report div.vrtx-subfolder-menu {

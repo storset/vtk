@@ -92,7 +92,6 @@
         <entry key="resourceMenuRightOrder"><value type="java.lang.Integer">200</value></entry>
       </map>
     </property>
-
     <property name="assertions">
       <list>
         <ref bean="manage.postRequestAssertion" />
@@ -169,8 +168,7 @@
   <bean id="copyMove.viewResolver" parent="system.decoratingViewResolver">
     <property name="views">
       <map>
-        <entry key="copyMove.warningView"
-               value-ref="copyMove.warningView" />
+        <entry key="copyMove.warningView" value-ref="copyMove.warningView" />
      </map>
     </property>
   </bean> 

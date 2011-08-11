@@ -299,13 +299,14 @@ public final class Path implements Comparable<Path> {
         }
         Path cur = this;
         StringBuilder segment = new StringBuilder();
-        int i = 0;
-        while (i < expansion.length()) {
+        int length = expansion.length();
+        
+        for (int i = 0; i < length; i++) {
             if (cur == null) {
                 return null;
             }
             char c = expansion.charAt(i);
-            if (c == '/' || i == expansion.length() - 1) {
+            if (c == '/' || i == length - 1) {
                 if (c != '/') {
                     segment.append(c);
                 }
@@ -321,7 +322,6 @@ public final class Path implements Comparable<Path> {
             } else {
                 segment.append(c);
             }
-            i++;
         }
         return cur;
     }

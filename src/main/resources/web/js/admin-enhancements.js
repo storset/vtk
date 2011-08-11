@@ -58,13 +58,19 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
                                             width: 300, 
                                             max: 30,
                                             delay: 800 };
-       
-// More compact when no left resource menu and only 'Read permission' in right resource menu                                     
+                
 $(window).load(function() {
+  // More compact when no left resource menu and only 'Read permission' in right resource menu     
   var resourceMenuRight = $("ul.list-menu.resourceMenuRight"); 
   var resourceMenuRightListElements = resourceMenuRight.find("li");
   if(!$("ul.resourceMenuLeft").length && resourceMenuRightListElements.length == 1) {
     resourceMenuRight.addClass("smaller-seperator");
+  }
+  // When AJAX is turned of because of http->https we need to ensure form is in the right place
+  var formResourceMenu = $("#titleContainer:last-child").hasClass("expandedForm");
+  if(!formResourceMenu) {
+    var ff = $("#titleContainer .expandedForm").remove();
+    $("#titleContainer").append(ff);
   }
 });
                                             
@@ -705,7 +711,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
   $("#app-content").delegate(options.selector, "click", function (e) {
                           
     var url = $(this).attr("href") || $(this).closest("form").attr("action");
-                       
+            
     if(location.protocol == "http:" && url.indexOf("https://") != -1) {
       return; // no AJAX when http -> https (tmp. solution)
     }

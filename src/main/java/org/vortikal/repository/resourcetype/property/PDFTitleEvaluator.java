@@ -58,7 +58,7 @@ public class PDFTitleEvaluator implements PropertyEvaluator {
             doc = PDDocument.load(stream);
             PDDocumentInformation info = doc.getDocumentInformation();
             String title = info.getTitle();
-            if (title != null) {
+            if (title != null && !"".equals(title.trim())) {
                 property.setStringValue(title);
                 return true;
             }

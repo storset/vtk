@@ -1655,9 +1655,10 @@ div.vrtx-admin-form {
 .vrtx-button-small input,
 .vrtx-button-small button {
   height: 20px;
-  padding: 2px 11px 0 10px;
+  padding: 4px 11px 0 10px;
   background: url(images/button-small-right.gif) no-repeat top right;
-}
+  font-size: 0.846em;
+} 
 
 .vrtx-button-small input,
 .vrtx-button-small button {

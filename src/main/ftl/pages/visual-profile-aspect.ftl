@@ -26,8 +26,13 @@
   <div class="resourceInfo visualProfile">
   <h2><@vrtx.msg code="visualProfileAspect.edit" default="Edit visual profile"/></h2>
   <form action="${form.submitURL}" method="post">
+    <#assign formElementsSize = form.elements?size />
     <#list form.elements as element>
-      <div class="vrtx-visual-profile-rows">
+      <#if (element_index == (formElementsSize-1))>
+        <div class="vrtx-visual-profile-rows last">      
+      <#else>
+        <div class="vrtx-visual-profile-rows">
+      </#if>
       <#if element.type == 'flag'>
         <input type="checkbox" name="${element.identifier?html}"
                value="true" <#if element.value?exists>checked="checked"</#if>> 

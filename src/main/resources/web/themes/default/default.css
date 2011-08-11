@@ -1390,9 +1390,19 @@ body#vrtx-edit-plaintext .contextual-help {
 }
 
 #publishing-status,
-#publishing-publish-date {
+#publishing-publish-date,
+.vrtx-visual-profile-rows {
   padding-bottom: 15px;
   border-bottom: 1px solid #d9d9d9;
+}
+
+.vrtx-visual-profile-rows.last {
+  padding-bottom: 0px;
+  border-bottom: none;
+}
+
+.vrtx-visual-profile-rows .radio-buttons {
+  margin-bottom: 0px;
 }
 
 #publishing-publish-date.expandedForm,

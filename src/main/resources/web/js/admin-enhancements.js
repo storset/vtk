@@ -113,8 +113,8 @@ $(document).ready(function () {
     vrtxAdmin.getAjaxForm(getAjaxOptions);
   }
   
-  var resourceMenuRightServices = ["vrtx-unpublish-document\\.submit",
-                                   "vrtx-publish-document\\.submit"];
+  var resourceMenuRightServices = ["vrtx-unpublish-document",
+                                   "vrtx-publish-document"];
 
   for (var i = resourceMenuRightServices.length; i--;) {
     getAjaxOptions = {

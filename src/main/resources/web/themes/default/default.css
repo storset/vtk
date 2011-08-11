@@ -1368,6 +1368,10 @@ table.resourceInfo form#propertyForm ul.property .vrtx-textfield {
   margin-right: 10px;
 }
 
+table.resourceInfo .vrtx-button-small {
+  margin-left: 3px;
+}
+
 #vrtx-admin-ownership-form {
   display: inline;
 }

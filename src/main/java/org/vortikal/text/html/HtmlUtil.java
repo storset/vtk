@@ -210,6 +210,9 @@ public class HtmlUtil {
             String val = attr.getValue();
 
             val = unescapeHtmlString(val);
+            if (val.trim().equals("")) {
+                return;
+            }
             if (URL.isRelativeURL(val)) {
                 if (base.getHost().equals(requestURL.getHost())) {
                     URL url = this.base.relativeURL(val);

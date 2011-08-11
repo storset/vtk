@@ -13,9 +13,6 @@ resourcetype person {
     postalAddress : string multiple external:userMetadataLdapService,
     visitingAddress : string multiple external:userMetadataLdapService,
     externalUserMetaData : derived external:userMetadataLdapService,
-    primaryUnitName : derived external:userMetadataLdapService,
-    primaryUnitUrl : derived external:userMetadataLdapService,
-    otherUnits : derived multiple external:userMetadataLdapService,
     alternativeVisitingAddress : string multiple,
     title : derived (firstName, surname) eval (firstName + " " + surname)
       overrides title default username,
@@ -162,17 +159,8 @@ resourcetype person {
               [endlist]
             </div>
           [endif]
-          
-          [if otherUnits != null]
-            <div class="vrtx-person-other-units">
-              <span class="vrtx-label">[localized 'otherUnits']</span>
-              [list otherUnits otherUnit]
-                [def otherUnitSplit otherUnit.split("\\\\$")]
-                <a class="vrtx-value" href="[val otherUnitSplit.1]">[val otherUnitSplit.0]</a>
-              [endlist]
-            </div>
-          [endif]
-          
+          [def username resource-prop-obj-val(".", "username")]
+          [call "resource:affiliated-units" {"username":username, "primaryunit":false}]
         [endif]
       </div>
       ##
@@ -262,14 +250,8 @@ resourcetype person {
           [if position != null]
             <div id="vrtx-person-position">
               [val position]
-              [if primaryUnitName != null]
-                 -
-                [if primaryUnitUrl != null]
-                  <a href="[val primaryUnitUrl]">[val primaryUnitName]</a>
-                [else]
-                  [val primaryUnitName]
-                [endif]
-              [endif]
+              [def username resource-prop-obj-val(".", "username")]
+              [call "resource:affiliated-units" {"username":username, "subunits":false}]
             </div>
           [endif]
         [endif]

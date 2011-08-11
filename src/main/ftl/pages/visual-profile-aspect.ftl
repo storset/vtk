@@ -34,20 +34,22 @@
           ${element.label?html}
 
       <#elseif element.type == 'string'>
-        ${element.label?html}:
+        <h3>${element.label?html}</h3>
         <div class="vrtx-textfield">
           <input type="text" name="${element.identifier?html}" value="${element.value?default('')?html}" />
         </div>
 
       <#elseif element.type == 'enum'>
-          ${element.label?html}: 
+        <h3>${element.label?html}</h3> 
         <#if element.possibleValues?exists>
+        <ul class="radio-buttons">
         <#list element.possibleValues as value>
           <#assign id = element.identifier + '.' + value.value?default('null') />
-          <input type="radio" id="${id?html}"  name="${element.identifier?html}" 
+          <li><input type="radio" id="${id?html}"  name="${element.identifier?html}" 
                  value="${value.value?default('')?html}"<#if value.selected>checked="checked"</#if> />
-          <label for="${id?html}">${value.label?html}</label>
+          <label for="${id?html}">${value.label?html}</label></li>
         </#list>
+        </ul>
         </#if>
       <#else>
         unknown type: ${element.type?html}

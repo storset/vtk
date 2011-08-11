@@ -1550,8 +1550,8 @@ form input:focus {
   outline: 0;
 }
 
-div.globalmenu ul,
-div.globalmenu ul li,
+ul.radio-buttons,
+ul.radio-buttons li,
 .expandedForm form ul,
 .expandedForm form ul li,
 form.vrtx-admin-form ul,

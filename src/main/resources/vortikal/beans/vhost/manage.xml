@@ -2012,10 +2012,10 @@
   <!-- MANAGE error handlers -->
   <bean id="abstractReferencedataProvidingErrorHandler" class="org.vortikal.web.DefaultErrorHandler"
     abstract="true">
-    <property name="referenceDataProviders" ref="standardManageReferenceDataProviders" />
+    <property name="referenceDataProviders" ref="manageErrorHandler.referenceDataProviders" />
   </bean>
 
-  <bean id="standardManageReferenceDataProviders" class="java.util.ArrayList">
+  <bean id="manageErrorHandler.referenceDataProviders" class="java.util.ArrayList">
     <constructor-arg>
       <list>
         <ref bean="leaveAdminLinkProvider" />
@@ -2043,7 +2043,7 @@
   <bean id="defaultManageErrorHandler" class="org.vortikal.web.DefaultErrorHandler">
     <property name="service" ref="manageService" />
     <property name="errorViewName" value="defaultManageError" />
-    <property name="referenceDataProviders" ref="standardManageReferenceDataProviders" />
+    <property name="referenceDataProviders" ref="manageErrorHandler.referenceDataProviders" />
     <property name="statusCodeMappings">
       <map>
         <entry key="org.vortikal.repository.ResourceNotFoundException" value="404" />

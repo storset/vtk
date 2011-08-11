@@ -93,8 +93,12 @@ div.vrtx-report-diagram-img {
 }
 
 tr.vrtx-report-diagram-total {
-  border-top: dotted;
-  border-width: 1px;
+  border-top: 5px solid #fff;
+}
+
+tr.vrtx-report-diagram-total td {
+  background: url(../images/line-dotted.gif) repeat-x top left;
+  padding-top: 5px;
 }
 
 td.vrtx-report-diagram-count {

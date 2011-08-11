@@ -78,7 +78,6 @@
     <property name="handler" ref="copyToSelectedFolderHandler" />
   </bean>
 
-
   <bean id="moveToSelectedFolderService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageCollectionListingService" />
     <property name="order" value="-996" />

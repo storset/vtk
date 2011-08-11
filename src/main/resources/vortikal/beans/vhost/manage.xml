@@ -1848,6 +1848,7 @@
     <constructor-arg value="true" />
     <constructor-arg ref="resourceMenuRightActionServicesFactory" />
     <constructor-arg ref="resourceMenuRight.referenceDataProviders" />
+    <constructor-arg ref="sessionBeanProvider" />
   </bean>
 
   <bean id="resourceMenuRightActionServicesFactory" class="org.vortikal.context.CategoryResolvingFactoryBean">
@@ -2029,8 +2030,14 @@
         <ref bean="resourceDetailProvider" />
         <ref bean="readPermissionsProvider" />
         <ref bean="publishProvider" />
+        <ref bean="sessionBeanProvider" />
       </list>
     </constructor-arg>
+  </bean>
+  
+  <bean id="sessionBeanProvider" class="org.vortikal.web.referencedata.provider.SessionBeanProvider">
+    <property name="attributeName" value="copymovesession" />
+    <property name="modelName" value="session" />
   </bean>
 
   <bean id="defaultManageErrorHandler" class="org.vortikal.web.DefaultErrorHandler">

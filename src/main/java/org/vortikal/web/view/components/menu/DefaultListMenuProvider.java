@@ -30,6 +30,9 @@
  */
 package org.vortikal.web.view.components.menu;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -89,6 +92,7 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
     private String label;
     private Service[] services;
     private ReferenceDataProvider[] referenceDataProviders;
+    private ReferenceDataProvider referenceDataProvider;
     private boolean matchAncestorServices = false;
     private boolean matchAssertions;
     private boolean retrieveForProcessing = false;
@@ -118,6 +122,20 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         this.services = services;
         this.matchAssertions = matchAssertions;
         this.referenceDataProviders = referenceDataProviders;
+    }
+    
+    public DefaultListMenuProvider(String label, String modelName, boolean matchAssertions, Service[] services,
+            ReferenceDataProvider[] referenceDataProviders, ReferenceDataProvider referenceDataProvider) {
+        if (label == null) throw new IllegalArgumentException("Argument 'label' cannot be null");
+        if (modelName == null) throw new IllegalArgumentException("Argument 'modelName' cannot be null");
+        if (services == null) throw new IllegalArgumentException("Argument 'services' cannot be null");
+
+        this.label = label;
+        this.modelName = modelName;
+        this.services = services;
+        this.matchAssertions = matchAssertions;
+        this.referenceDataProviders = referenceDataProviders;
+        this.referenceDataProvider = referenceDataProvider;
     }
     
     public void setMatchAncestorServices(boolean matchAncestorServices) {
@@ -176,6 +194,10 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
             for (ReferenceDataProvider provider : this.referenceDataProviders) {
                 provider.referenceData(model, request);
             }
+        }
+        
+        if (this.referenceDataProvider != null) {
+            this.referenceDataProvider.referenceData(model, request);
         }
     }
 

@@ -12,7 +12,9 @@
 </#if>
 
 <h3>${headerMsg}</h3>
-<p>${session.filesToBeCopied?size} filer</p>
+<#if session?exists && session.filesToBeCopied?exists>
+  <p>${session.filesToBeCopied?size} filer</p>
+</#if>
 <form id="vrtx-copy-to-selected-folder" action="${actionURL?html}" method="${method}" class="vrtx-admin-button">
    <div class="vrtx-button-small"><button title="${titleMsg}" type="submit"
             id="vrtx-copy-to-selected-folder.submit"

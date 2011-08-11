@@ -16,7 +16,6 @@ public class SessionBeanProvider implements ReferenceDataProvider {
     
     @Override
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
-        System.out.println("*************************************** HELLOOOOOO");
         HttpSession session = request.getSession(true);
         if (session == null) return;
         Object o = session.getAttribute(this.attributeName);

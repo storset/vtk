@@ -41,6 +41,7 @@
       <h2>
         ${header}
       </h2>
+      <div id="publishing-status">
         <#assign isPublished = resource.isPublished() />
         <#assign publishedStatusMsgKey = "publishing.status." + isPublished?string />
         <h3><@vrtx.msg code="publishing.status" default="Status" /></h3>
@@ -54,15 +55,17 @@
           &nbsp;<a class="vrtx-button-small thickbox" href="${publishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" title="${titleMsg}"><span><@vrtx.msg code="publish.action.publish" default="Publish" /></span></a>
         </#if>
         </div>
-        <@displayOrEdit "publish-date" "publishDate" editPublishDateUrl />
-        <@displayOrEdit "unpublish-date" "unpublishDate" editUnpublishDateUrl />
+      </div>
+        
+      <@displayOrEdit "publish-date" "publishDate" editPublishDateUrl />
+      <@displayOrEdit "unpublish-date" "unpublishDate" editUnpublishDateUrl />
     </div>
   </body>
 </html>
 
 <#macro displayOrEdit propName bindName editUrl >
   <#if formName?exists && formName == propName >
-    <div class="expandedForm">
+    <div id="publishing-${propName}" class="expandedForm">
       <@spring.bind formName + ".submitURL" />
       <form class="schedule-publishing" action="${spring.status.value?html}" method="post">
         <#assign dateValue = vrtx.propValue(resource, propName, "iso-8601-short") />
@@ -95,7 +98,7 @@
       </form>
     </div>
   <#else>
-
+    <div id="publishing-${propName}">
       <h3><@vrtx.msg code="publishing." + propName default="Published date" /></h3>
       <div>
       <#assign editableDate = vrtx.propValue(resource, propName) />
@@ -106,6 +109,7 @@
       </#if>
       &nbsp;<a class="vrtx-button-small" href="${editUrl?html}"><span><@vrtx.msg code="publishing.edit" default="edit" /></span></a>
 	  </div>
+	</div>
   </#if>
 </#macro>
 

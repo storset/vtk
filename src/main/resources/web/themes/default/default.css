@@ -1886,6 +1886,12 @@ form button::-moz-focus-inner {
 
 /* ^ iPad hacks */
 
+/* Thickbox */
 
+#TB_closeAjaxWindow {
+  display: none !important;
+}
+
+/* ^ Thickbox */
 
 /* ^ UiO design - Apps - Vortex */

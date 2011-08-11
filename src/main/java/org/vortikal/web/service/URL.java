@@ -916,7 +916,7 @@ public class URL {
             if (!this.collection) {
                 path = path.getParent();
             }
-            path = path.expand(rel);
+            path = expandPath(path, rel);
             if (path == null) {
                 throw new IllegalArgumentException("Error expanding relative URL: " + rel);
             }
@@ -945,6 +945,7 @@ public class URL {
         }
         return url;
     }
+
 
     /**
      * Splits a query string into a map of (String, String[]). Note: the values
@@ -1141,5 +1142,44 @@ public class URL {
             }
         }
         return true;
+    }
+    
+    /**
+     * Does the same as {@link Path#expand(String)}, except that too 
+     * many {@literal ../} segments resolve to the root path 
+     * ({@link Path#expand(String)} returns {@literal null} in such cases).
+     * 
+     * @param the path to expand from 
+     * @param the expansion string
+     * @return the expanded path
+     */
+    private static Path expandPath(Path base, String expansion) {
+        Path cur = base;
+        StringBuilder segment = new StringBuilder();
+        int length = expansion.length();
+
+        for (int i = 0; i < length; i++) {
+            if (cur == null) {
+                return Path.ROOT;
+            }
+            char c = expansion.charAt(i);
+            if (c == '/' || i == length - 1) {
+                if (c != '/') {
+                    segment.append(c);
+                }
+                if ("..".equals(segment.toString())) {
+                    cur = cur.getParent();
+                    segment.delete(0, segment.length());
+                } else if (".".equals(segment.toString())) {
+                    segment.delete(0, segment.length());
+                } else {
+                    cur = cur.extend(segment.toString());
+                    segment.delete(0, segment.length());
+                }
+            } else {
+                segment.append(c);
+            }
+        }
+        return cur;
     }
 }

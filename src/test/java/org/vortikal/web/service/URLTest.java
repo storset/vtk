@@ -218,6 +218,14 @@ public class URLTest extends TestCase {
         url = URL.parse("http://a/b/");
         assertEquals("http://a/c/", url.relativeURL("        ../c/     ").toString());
         assertEquals("http://a/b/%c3%a6", url.relativeURL("%c3%a6").toString().toLowerCase());
+        
+        url = URL.parse("http://a/b/");
+        assertEquals("http://a/", url.relativeURL("../../../../../").toString());
+ 
+        url = URL.parse("http://a/b/c/d");
+        assertEquals("http://a/", url.relativeURL("../../../../../").toString());
+        assertEquals("http://a/b/", url.relativeURL("../../../../../b/").toString());
+        assertEquals("http://a/", url.relativeURL("../../../../../b/../../../../../").toString());
     }
     
     public void testIsRelative() {

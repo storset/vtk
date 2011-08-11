@@ -8,7 +8,7 @@
 
 <h3>${headerMsg}</h3>
 <p><span class="published"><@vrtx.msg code="publishing.publish-date" /></span></p>
-<a id="vrtx-publish-document" class="vrtx-button-small vrtx-admin-button" title="${titleMsg}" href="${actionURL?html}"><span>${item.title?html}</span></a>
+<a id="vrtx-unpublish-document" class="vrtx-button-small vrtx-admin-button" title="${titleMsg}" href="${actionURL?html}"><span>${item.title?html}</span></a>
 
 <#recover>
 ${.error}

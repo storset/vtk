@@ -19,7 +19,57 @@
       </div>
     </div>
     <h2><@vrtx.msg code="report.${report.reportname}" /></h2>
+  <#if (report.thirdtotal?exists && report.thirdtotal > 0)>
+    <div class="vrtx-report-diagram">
+      <h3><@vrtx.msg code="report.diagram.webtypetitle" /></h3>
+      <div class="vrtx-report-diagram-table">
+        <table id="vrtx-report-diagram-webtypes">
+          <#list report.webTypes as type>
+          <tr>
+            <td class="vrtx-report-diagram-text"><#if report.webTypeURL[type_index]?exists><a href="${report.webTypeURL[type_index]?html}"><@vrtx.msg code="report.webDiagram.${type}" /></a>
+              <#else><@vrtx.msg code="report.webDiagram.${type}" /></#if></td>
+            <td class="vrtx-report-diagram-count"><#if report.webTypeCount[type_index]?exists>${report.webTypeCount[type_index]}<#else>0</#if></td>
+          </tr>
+          </#list>
+          <tr class="vrtx-report-diagram-total">
+            <td class="vrtx-report-diagram-text"><@vrtx.msg code="report.diagram.total" /></td>
+            <td class="vrtx-report-diagram-count">${report.thirdtotal}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="vrtx-report-diagram-img">
+        <img id="webtypesimg" width="550" height="180" alt="<@vrtx.msg code="report.${report.reportname}.webpagepiechart" />" 
+             src="https://chart.googleapis.com/chart?chs=550x180&cht=p3&chd=s:Sm&chdl=<#list report.webTypes as type><#if ((report.webTypeCount[type_index] > 0) && (type_index != 0))>|</#if><#if (report.webTypeCount[type_index] > 0)><@vrtx.msg code="report.webDiagram.+${type}" /></#if></#list>&chl=<#list report.webTypes as type><#if ((report.webTypeCount[type_index] > 0) && (type_index != 0))>|</#if><#if (report.webTypeCount[type_index] > 0)><@vrtx.msg code="report.webDiagram.+${type}" /></#if></#list>&chd=t:<#list report.webTypes as type><#if ((report.webTypeCount[type_index] > 0) && (type_index != 0))>,</#if><#if (report.webTypeCount[type_index] > 0)>${((report.webTypeCount[type_index]/report.thirdtotal)*100)?string("0")}</#if></#list>" />
+      </div>
+    </div>
+  </#if>
+  <#if (report.secondtotal?exists && report.secondtotal > 0)>
+    <div class="vrtx-report-break"></div>
+    <div class="vrtx-report-diagram">
+      <h3><@vrtx.msg code="report.diagram.filetypetitle" /></h3>
+      <div class="vrtx-report-diagram-table">
+        <table id="vrtx-report-diagram-filetypes">
+          <#list report.types as type>
+          <tr>
+            <td class="vrtx-report-diagram-text"><#if report.typeURL[type_index]?exists><a href="${report.typeURL[type_index]?html}"><@vrtx.msg code="report.diagram.${type}" /></a>
+              <#else><@vrtx.msg code="report.diagram.${type}" /></#if></td>
+            <td class="vrtx-report-diagram-count"><#if report.typeCount[type_index]?exists>${report.typeCount[type_index]}<#else>0</#if></td>
+          </tr>
+          </#list>
+          <tr class="vrtx-report-diagram-total">
+            <td class="vrtx-report-diagram-text"><@vrtx.msg code="report.diagram.total" /></td>
+            <td class="vrtx-report-diagram-count">${report.secondtotal}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="vrtx-report-diagram-img">
+        <img id="filetypesimg" width="480" height="180" alt="<@vrtx.msg code="report.${report.reportname}.filetypepiechart" />" 
+             src="https://chart.googleapis.com/chart?chs=480x180&cht=p3&chd=s:Sm&chdl=<#list report.types as type><#if ((report.typeCount[type_index] > 0) && (type_index != 0))>|</#if><#if (report.typeCount[type_index] > 0)><@vrtx.msg code="report.diagram.+${type}" /></#if></#list>&chl=<#list report.types as type><#if ((report.typeCount[type_index] > 0) && (type_index != 0))>|</#if><#if (report.typeCount[type_index] > 0)><@vrtx.msg code="report.diagram.+${type}" /></#if></#list>&chd=t:<#list report.types as type><#if ((report.typeCount[type_index] > 0) && (type_index != 0))>,</#if><#if (report.typeCount[type_index] > 0)>${((report.typeCount[type_index]/report.secondtotal)*100)?string("0")}</#if></#list>" />
+      </div>
+    </div>
+  </#if>
   <#if (report.firsttotal?exists && report.firsttotal > 0)>
+    <div class="vrtx-report-break"></div>
     <div class="vrtx-report-diagram">
       <h3><@vrtx.msg code="report.diagram.folderandfiletitle" /></h3>
       <div class="vrtx-report-diagram-table">
@@ -44,31 +94,7 @@
       </div>
     </div>
   </#if>
-  <#if (report.secondtotal?exists && report.secondtotal > 0)>
-    <div class="vrtx-report-diagram">
-      <h3><@vrtx.msg code="report.diagram.filetypetitle" /></h3>
-      <div class="vrtx-report-diagram-table">
-        <table id="vrtx-report-diagram-filetypes">
-          <#list report.types as type>
-          <tr>
-            <td class="vrtx-report-diagram-text"><#if report.typeURL[type_index]?exists><a href="${report.typeURL[type_index]?html}"><@vrtx.msg code="report.diagram.${type}" /></a>
-              <#else><@vrtx.msg code="report.diagram.${type}" /></#if></td>
-            <td class="vrtx-report-diagram-count"><#if report.typeCount[type_index]?exists>${report.typeCount[type_index]}<#else>0</#if></td>
-          </tr>
-          </#list>
-          <tr class="vrtx-report-diagram-total">
-            <td class="vrtx-report-diagram-text"><@vrtx.msg code="report.diagram.total" /></td>
-            <td class="vrtx-report-diagram-count">${report.secondtotal}</td>
-          </tr>
-        </table>
-      </div>
-      <div class="vrtx-report-diagram-img">
-        <img id="filetypesimg" width="480" height="180" alt="<@vrtx.msg code="report.${report.reportname}.filetypepiechart" />" 
-             src="https://chart.googleapis.com/chart?chs=480x180&cht=p3&chd=s:Sm&chdl=<#list report.types as type><#if ((report.typeCount[type_index] > 0) && (type_index != 0))>|</#if><#if (report.typeCount[type_index] > 0)><@vrtx.msg code="report.diagram.+${type}" /></#if></#list>&chl=<#list report.types as type><#if ((report.typeCount[type_index] > 0) && (type_index != 0))>|</#if><#if (report.typeCount[type_index] > 0)><@vrtx.msg code="report.diagram.+${type}" /></#if></#list>&chd=t:<#list report.types as type><#if ((report.typeCount[type_index] > 0) && (type_index != 0))>,</#if><#if (report.typeCount[type_index] > 0)>${((report.typeCount[type_index]/report.secondtotal)*100)?string("0")}</#if></#list>" />
-      </div>
-    </div>
-  </#if>
-  <#if !((report.firsttotal?exists && report.firsttotal > 0) || (report.secondtotal?exists && report.secondtotal > 0))>
+  <#if !((report.firsttotal?exists && report.firsttotal > 0) || (report.secondtotal?exists && report.secondtotal > 0) || (report.thirdtotal?exists && report.thirdtotal > 0))>
         <p><@vrtx.msg code="report.diagram.error" /></p>
   </#if>
   </div>

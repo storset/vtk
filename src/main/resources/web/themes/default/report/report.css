@@ -78,8 +78,13 @@ div.vrtx-permission-tree span.file a {
   margin-top: 10px;
 }
 
+div.vrtx-report-break {
+  clear: left;
+  height: 10px;
+}
+
 div.vrtx-report-diagram {
-  height: 210px;
+  clear: left;
 }
 
 div.vrtx-report-diagram-table {

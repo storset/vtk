@@ -50,6 +50,7 @@ public class DiagramReport extends AbstractReporter {
 
     private String name;
     private String viewName;
+    private int total, totalWebpages, files;
 
     @Override
     public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
@@ -64,7 +65,7 @@ public class DiagramReport extends AbstractReporter {
 
         /* Get count and URL for file and folder. */
         try {
-            int files = doSearch("file", TermOperator.IN, token, resource);
+            files = doSearch("file", TermOperator.IN, token, resource);
             result.put("files", files);
             result.put("filesURL", new URL(baseURL).addParameter(REPORT_TYPE_PARAM, "fileReporter"));
 
@@ -74,6 +75,7 @@ public class DiagramReport extends AbstractReporter {
 
             result.put("firsttotal", files + folders);
         } catch (Exception e) {
+            return result;
         }
 
         /*
@@ -81,13 +83,13 @@ public class DiagramReport extends AbstractReporter {
          * filetype.
          */
         try {
-            int total = 0;
+            total = 0;
 
             /*
              * This list can be appended to add file types. Do it after webpage
-             * unless it will be handled uniquely.
+             * and before other unless it will be handled uniquely.
              */
-            String[] types = { "webpage", "image", "audio", "video", "pdf", "doc", "ppt", "xls", "text" };
+            String[] types = { "webpage", "image", "audio", "video", "pdf", "doc", "ppt", "xls", "text", "other" };
             TermOperator[] t = { null, TermOperator.IN, TermOperator.IN, TermOperator.IN, TermOperator.IN,
                     TermOperator.IN, TermOperator.IN, TermOperator.IN, TermOperator.EQ };
             int typeCount[] = new int[types.length];
@@ -97,24 +99,67 @@ public class DiagramReport extends AbstractReporter {
              * Web pages needs to be handled alone since the search is
              * different.
              */
-            typeCount[0] = webSearch(token, resource);
-            typeURL[0] = new URL(baseURL).addParameter(REPORT_TYPE_PARAM, "webDiagram");
+            typeCount[0] = totalWebpages = webSearch(token, resource);
+            typeURL[0] = new URL(baseURL).addParameter(REPORT_TYPE_PARAM, types[0] + "Reporter");
             total += typeCount[0];
 
             /*
-             * Starting on i = 1 since we have already done webpage.
+             * Starting on i = 1 since we have already done webpage and ending
+             * on types.length - 1 since we will handle other unique.
              */
-            for (int i = 1; i < types.length; i++) {
+            for (int i = 1; i < types.length - 1; i++) {
                 typeCount[i] = doSearch(types[i], t[i], token, resource);
                 typeURL[i] = new URL(baseURL).addParameter(REPORT_TYPE_PARAM, types[i] + "Reporter");
                 total += typeCount[i];
             }
+
+            /* Other is handled unique as we do not need to search for it. */
+            typeCount[types.length - 1] = files - total;
+            typeURL[types.length - 1] = new URL(baseURL).addParameter(REPORT_TYPE_PARAM, types[types.length - 1]
+                    + "Reporter");
+            total += typeCount[types.length - 1];
 
             result.put("types", types);
             result.put("typeCount", typeCount);
             result.put("typeURL", typeURL);
 
             result.put("secondtotal", total);
+        } catch (Exception e) {
+        }
+
+        /*
+         * Get web page types count and add URL to new search listing up the
+         * specific type.
+         */
+        try {
+            total = 0;
+
+            /*
+             * This list can be appended to add file types. Do it before other.
+             */
+            String[] types = { "structured-article", "structured-event", "person", "structured-project",
+                    "research-group", "organizational-unit", "contact-supervisor", "frontpage", "managed-xml", "html",
+                    "php", "webOther" };
+            int typeCount[] = new int[types.length];
+            URL typeURL[] = new URL[types.length];
+
+            for (int i = 0; i < types.length - 1; i++) {
+                typeCount[i] = doSearch(types[i], TermOperator.IN, token, resource);
+                typeURL[i] = new URL(baseURL).addParameter(REPORT_TYPE_PARAM, types[i] + "Reporter");
+                total += typeCount[i];
+            }
+
+            /* webOther is handled unique as we do not need to search for it. */
+            typeCount[types.length - 1] = totalWebpages - total;
+            typeURL[types.length - 1] = new URL(baseURL).addParameter(REPORT_TYPE_PARAM, types[types.length - 1]
+                    + "Reporter");
+            total += typeCount[types.length - 1];
+
+            result.put("webTypes", types);
+            result.put("webTypeCount", typeCount);
+            result.put("webTypeURL", typeURL);
+
+            result.put("thirdtotal", total);
         } catch (Exception e) {
         }
 

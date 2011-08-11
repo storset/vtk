@@ -62,10 +62,8 @@ public abstract class DocumentReporter extends AbstractReporter {
             String backURLname;
             if (backURL == 1)
                 backURLname = "diagram";
-            else if (backURL == 2)
-                backURLname = "webDiagram";
             else
-                backURLname = "unknown";
+                backURLname = "BACKURL_SET-BUT_UNKNOWN";
 
             RequestContext requestContext = RequestContext.getRequestContext();
             SecurityContext securityContext = SecurityContext.getSecurityContext();

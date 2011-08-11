@@ -53,6 +53,8 @@
     <property name="hiddenReporters">
       <list>
         <ref bean="webpageReporter" />
+        <ref bean="otherReporter" />
+        <ref bean="webOtherReporter" />
         <ref bean="imageReporter" />
         <ref bean="audioReporter" />
         <ref bean="videoReporter" />
@@ -61,9 +63,9 @@
         <ref bean="pptReporter" />
         <ref bean="xlsReporter" />
         <ref bean="textReporter" />
+        <ref bean="frontpageReporter" />
         <ref bean="folderReporter" />
         <ref bean="fileReporter" />
-        <ref bean="webDiagramReport" />
         <ref bean="structured-articleReporter" />
         <ref bean="structured-eventReporter" />
         <ref bean="personReporter" />
@@ -87,12 +89,12 @@
     <property name="name" value="collection-structure" />
     <property name="viewName" value="collectionStructure" />
   </bean>
-  
+
   <bean id="diagramReport" class="org.vortikal.web.actions.report.DiagramReport" parent="reporter">
     <property name="name" value="diagram" />
     <property name="viewName" value="diagramReport" />
   </bean>
-  
+
   <bean id="myDocumentsReporter" class="org.vortikal.web.actions.report.MyDocumentsReporter" parent="documentReporter">
     <property name="name" value="my-documents" />
     <property name="createdByPropDef" ref="createdByPropDef" />
@@ -114,13 +116,24 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="webDiagramReport" class="org.vortikal.web.actions.report.WebDiagramReport" parent="reporter">
-    <property name="name" value="webDiagram" />
-    <property name="viewName" value="webDiagramReport" />
-  </bean>
-
   <bean id="webpageReporter" class="org.vortikal.web.actions.report.WebpageReporter" parent="documentReporter">
     <property name="name" value="webpageReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="backURL" value="1" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="otherReporter" class="org.vortikal.web.actions.report.OtherReporter" parent="documentReporter">
+    <property name="name" value="otherReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="backURL" value="1" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="webOtherReporter" class="org.vortikal.web.actions.report.WebOtherReporter" parent="documentReporter">
+    <property name="name" value="webOtherReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="backURL" value="1" />
@@ -200,6 +213,16 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
+  <bean id="frontpageReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="frontpageReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="frontpage" />
+    <property name="backURL" value="1" />
+    <property name="termIN" value="false" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
   <bean id="folderReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="folderReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
@@ -223,7 +246,7 @@
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="type" value="structured-article" />
-    <property name="backURL" value="2" />
+    <property name="backURL" value="1" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
@@ -232,7 +255,7 @@
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="type" value="structured-event" />
-    <property name="backURL" value="2" />
+    <property name="backURL" value="1" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
@@ -241,7 +264,7 @@
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="type" value="person" />
-    <property name="backURL" value="2" />
+    <property name="backURL" value="1" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
@@ -250,7 +273,7 @@
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="type" value="structured-project" />
-    <property name="backURL" value="2" />
+    <property name="backURL" value="1" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
@@ -259,7 +282,7 @@
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="type" value="research-group" />
-    <property name="backURL" value="2" />
+    <property name="backURL" value="1" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
@@ -268,7 +291,7 @@
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="type" value="organizational-unit" />
-    <property name="backURL" value="2" />
+    <property name="backURL" value="1" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
@@ -277,7 +300,7 @@
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="type" value="contact-supervisor" />
-    <property name="backURL" value="2" />
+    <property name="backURL" value="1" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
@@ -286,7 +309,7 @@
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="type" value="managed-xml" />
-    <property name="backURL" value="2" />
+    <property name="backURL" value="1" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
@@ -295,7 +318,7 @@
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="type" value="html" />
-    <property name="backURL" value="2" />
+    <property name="backURL" value="1" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
@@ -304,7 +327,7 @@
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="type" value="php" />
-    <property name="backURL" value="2" />
+    <property name="backURL" value="1" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
@@ -315,7 +338,6 @@
         <entry key="collectionStructure" value-ref="collectionStructureView" />
         <entry key="documentReport" value-ref="documentReportView" />
         <entry key="diagramReport" value-ref="diagramReportView" />
-        <entry key="webDiagramReport" value-ref="webDiagramReportView" />
       </map>
     </property>
     <property name="referenceDataProviders">
@@ -374,19 +396,6 @@
 
   <bean id="diagramReportView" parent="freemarkerView">
     <property name="url" value="pages/report/diagram-report.ftl" />
-    <property name="attributesMap">
-      <map>
-        <entry key="cssURLs">
-          <list>
-            <value>${themeBaseURL}/report/report.css</value>
-          </list>
-        </entry>
-      </map>
-    </property>
-  </bean>
-
-  <bean id="webDiagramReportView" parent="freemarkerView">
-    <property name="url" value="pages/report/web-diagram-report.ftl" />
     <property name="attributesMap">
       <map>
         <entry key="cssURLs">

@@ -4,6 +4,7 @@
 
 <#assign headerMsg = vrtx.getMsg("copyMove.move-resources.header") />
 <#assign titleMsg = vrtx.getMsg("copyMove.move.title") />
+<#assign filesI18n = vrtx.getMsg("copyMove.files") /> 
 <#assign actionURL = item.url />
 <#assign method = "post" />
 <#if resourcesDisclosed?exists>
@@ -12,8 +13,8 @@
 </#if>
 
 <h3>${headerMsg}</h3>
-<#if session?exists && session.filesToBeCopied?exists>
-  <p>${session.filesToBeCopied?size} filer</p>
+<#if session.filesToBeCopied?exists>
+  <p>${session.filesToBeCopied?size} ${filesI18n}</p>
 </#if>
 <form id="vrtx-move-to-selected-folder" action="${actionURL?html}" method="${method}" class="vrtx-admin-button">
     <div class="vrtx-button-small"><button title="${titleMsg}" type="submit"

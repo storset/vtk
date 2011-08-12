@@ -14,7 +14,11 @@
 
 <h3>${headerMsg}</h3>
 <#if session.filesToBeCopied?exists>
-  <p>${session.filesToBeCopied?size} ${filesI18n}</p>
+  <p>
+    <abbr title="<#list session.filesToBeCopied as fileName>$${fileName?split("/")?last}</#list>">
+      ${session.filesToBeCopied?size} ${filesI18n}
+    </abbr>
+  </p>
 </#if>
 <form id="vrtx-move-to-selected-folder" action="${actionURL?html}" method="${method}" class="vrtx-admin-button">
     <div class="vrtx-button-small"><button title="${titleMsg}" type="submit"

@@ -348,6 +348,33 @@
   </#compress>   
 </#macro>
 
+<#--
+ * fileNamesAsLimitedList
+ * Make filenames with full path into a list with only filename limited by 10
+ *
+ * @param files the files
+ *
+-->
+<#macro fileNamesAsLimitedList files>
+  <#compress>
+    <#local maxNumberOfFiles = 10 />
+    <#local numberOfRemainingFiles = (files?size - maxNumberOfFiles)  />
+    <ul>
+    <#local more = false />
+    <#list files as file>
+      <li>${file?split("/")?last}</li>
+      <#if file_index == (maxNumberOfFiles-1)>
+        <#local more = true />
+        <#break />
+      </#if>
+    </#list>
+    </ul>
+    <#if more>
+      <p>... <@msg code="trash-can.permanent.delete.confirm.and" default="and"/> ${numberOfRemainingFiles} <@msg code="trash-can.permanent.delete.confirm.more" default="mode"/></p>
+    </#if>
+  </#compress>
+</#macro>
+
 
 <#--
  * requestLanguage

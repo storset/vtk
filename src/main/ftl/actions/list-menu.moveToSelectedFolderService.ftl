@@ -21,7 +21,7 @@
   // -->
   </script>
   <p>
-    <abbr title="<@fileNamesAsLimitedString session.filesToBeCopied />">
+    <abbr title="<@vrtx.fileNamesAsLimitedList session.filesToBeCopied />">
       ${session.filesToBeCopied?size} ${filesI18n}
     </abbr>
   </p>
@@ -35,21 +35,3 @@
 <#recover>
 ${.error}
 </#recover>
-
-<#macro fileNamesAsLimitedString files>
-   <#local maxNumberOfFiles = 10 />
-   <#local numberOfRemainingFiles = (files?size - maxNumberOfFiles)  />
-   <ul>
-   <#local more = false />
-   <#list files as file>
-     <li>${file?split("/")?last}</li>
-     <#if file_index == (maxNumberOfFiles-1)>
-       <#local more = true />
-       <#break />
-     </#if>
-   </#list>
-   </ul>
-   <#if more>
-     <p>... <@vrtx.msg code="trash-can.permanent.delete.confirm.and" default="and"/> ${numberOfRemainingFiles} <@vrtx.msg code="trash-can.permanent.delete.confirm.more" default="mode"/></p>
-   </#if>
-</#macro>

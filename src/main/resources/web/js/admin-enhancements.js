@@ -489,7 +489,8 @@ function placeDeleteButtonInActiveTab() {
       var list = "";
       var boxesSize = boxes.size();
       for (var i = 0; i < boxesSize && i < 10; i++) {
-        list += boxes[i].name + '\n';
+        var name = boxes[i].name.split("/");
+        list += name[name.length-1] + '\n';
       }
       if (boxesSize > 10) {
         list += "... " + confirmDeleteAnd + " " + (boxesSize - 10) + " " + confirmDeleteMore;
@@ -540,7 +541,8 @@ function placeDeletePermanentButtonInActiveTab() {
       var list = "";
       var boxesSize = boxes.size();
       for (var i = 0; i < boxesSize && i < 10; i++) {
-        list += boxes[i].title + '\n';
+        var name = boxes[i].title.split("/");
+        list += name[name.length-1] + '\n';
       }
       if (boxesSize > 10) {
         list += "... " + confirmDeletePermanentlyAnd + " " + (boxesSize - 10) + " " + confirmDeletePermanentlyMore;

@@ -436,6 +436,10 @@ a:hover {
 
 /* 3.2 Resource title */
 
+#titleContainer {
+  position: relative;
+}
+
 /* Icons */
 
 div.resource-title {
@@ -789,6 +793,23 @@ ul.list-menu.resourceMenuRight p span {
 }
 
 /* ^ Resource menus */
+
+/* Tooltip */
+
+.tip.moveToSelectedFolderService,
+.tip.copyToSelectedFolderService {
+  border: 1px solid #CBCBCB;
+  padding: 14px;
+  background-color: #fff;
+}
+
+.moveToSelectedFolderService abbr,
+.copyToSelectedFolderService abbr {
+  color: #a9a9a9;
+  cursor: pointer; 
+}
+
+/* ^ Tooltip */
 
 /* ^ 3.2 Resource title */
 

@@ -15,25 +15,24 @@
  *  
  */
 (function ($) {
-  $.fn.vortexTips = function (subSelector) {
+  $.fn.vortexTips = function (subSelector, appendTo, containerWidth, animInSpeed, animOutPreDelay, animOutSpeed) {
 
     var html = "<span class='tip'>&nbsp;</span>";
-    var animInSpeed = 300;
-    var animOutPreDelay = 4000;
-    var animOutSpeed = 3000;
     var tip;
     var tipText;
     var fadeOutTimer;
 
-    $(this).delegate(subSelector + " a", "mouseover mouseleave", function (e) {
+    $(this).delegate(subSelector, "mouseover mouseleave", function (e) {
       if (e.type == "mouseover") {
         clearTimeout(fadeOutTimer); // remove fadeOutTimer
-        $("#contents").append(html);
+        $(appendTo).append(html);
         tip = $(".tip");
         tip.hide();
         var link = $(this);
         var classes = link.parent().attr("class") + " " + link.parent().parent().attr("class");
-        tip.addClass(classes);
+        if(typeof classes !== "undefined") {
+          tip.addClass(classes);
+        }
         var title = link.attr('title');
         tip.html(title);
         tipText = link.attr('title');
@@ -44,7 +43,7 @@
         var nPos = pos;
         nPos.top = (pos.top) + yOffset;
         nPos.left = (pos.left + xOffset + 30);
-        tip.css('position', 'absolute').css('z-index', '1000').css('width', '400px');
+        tip.css('position', 'absolute').css('z-index', '1000').css('width', containerWidth + 'px');
         tip.css(nPos).fadeIn(animInSpeed);
       } else if (e.type == "mouseleave") {
         $(this).attr('title', tipText);

@@ -18,7 +18,7 @@
 <#macro projectListingViewServiceURL >
   <#if viewAllProjectsLink?exists || viewOngoingProjectsLink?exists>
 	<div id="vrtx-listing-completed-ongoing">
-	  <#if viewAllProjectsLink?exists>
+	  <#if viewAllProjectsLink?exists && displayAlternateLink?exists>
 	  	<a href="${viewAllProjectsLink}">${vrtx.getMsg("projects.viewCompletedProjects")}</a>
 	  </#if>
 	  <#if viewOngoingProjectsLink?exists>

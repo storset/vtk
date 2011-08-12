@@ -51,6 +51,7 @@
     <property name="viewName" value="projectListing.view" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="displayTypePropDef" ref="projectListing.displayTypePropDef" />
+    <property name="alternateSearchComponent" ref="projectListing.viewCompletedProjectsSearchComponent" />
   </bean>
 
   <bean id="projectListing.searchComponent" parent="collectionListing.searchComponent">

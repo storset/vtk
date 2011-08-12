@@ -22,13 +22,21 @@ import org.vortikal.web.service.URL;
 public class AlphabeticalCollectionListingController extends CollectionListingController {
 
     private PropertyTypeDefinition titlePropDef;
-    protected PropertyTypeDefinition displayTypePropDef;
+    private PropertyTypeDefinition displayTypePropDef;
+    private SearchComponent alternateSearchComponent;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
             throws Exception {
-        Property type = collection.getProperty(displayTypePropDef);
 
+        if (this.alternateSearchComponent != null) {
+            Listing listing = this.alternateSearchComponent.execute(request, collection, 1, pageLimit, 0);
+            if (listing != null && listing.size() > 0) {
+                model.put("displayAlternateLink", "true");
+            }
+        }
+
+        Property type = collection.getProperty(displayTypePropDef);
         if (type != null && "alphabetical".equals(type.getStringValue())) {
             getAlphabeticalOrdredProjects(request, collection, model, pageLimit);
         } else {
@@ -58,7 +66,7 @@ public class AlphabeticalCollectionListingController extends CollectionListingCo
             List<PropertySet> files = listing.getFiles();
             List<PropertySet> tmpFiles = new ArrayList<PropertySet>();
 
-            // array is convenient for string constructors 
+            // array is convenient for string constructors
             char currentIndexChar[] = new char[1];
             for (int i = 0; i < files.size(); i++) {
                 PropertySet file = files.get(i);
@@ -91,7 +99,7 @@ public class AlphabeticalCollectionListingController extends CollectionListingCo
 
         Service service = RequestContext.getRequestContext().getService();
         URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
-       
+
         model.put("alpthabeticalOrdredResult", alpthabeticalOrdredResult);
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL, page);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
@@ -113,6 +121,10 @@ public class AlphabeticalCollectionListingController extends CollectionListingCo
 
     public PropertyTypeDefinition getDisplayTypePropDef() {
         return displayTypePropDef;
+    }
+
+    public void setAlternateSearchComponent(SearchComponent alternateSearchComponent) {
+        this.alternateSearchComponent = alternateSearchComponent;
     }
 
 }

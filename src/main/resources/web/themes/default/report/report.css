@@ -192,6 +192,7 @@ td.vrtx-report-diagram-text {
 /* Help */
 
 div.vrtx-report #vrtx-report-help {
+  background: #fff;
   position: absolute;
   top: 20px;
   left: 400px;

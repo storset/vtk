@@ -1820,6 +1820,8 @@ div.vrtx-admin-form {
   width: 83px;
   height: 25px;
   cursor: pointer;
+
+  /* Transparent */
   opacity: 0;
   -moz-opacity: 0;
   filter:alpha(opacity: 0);

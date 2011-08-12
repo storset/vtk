@@ -39,12 +39,17 @@ ${.error}
 <#macro fileNamesAsLimitedString files>
    <#local maxNumberOfFiles = 10 />
    <#local numberOfRemainingFiles = (files?size - maxNumberOfFiles)  />
-   
+   <ul>
+   <#local more = false />
    <#list files as file>
-     ${file?split("/")?last}<br />
+     <li>${file?split("/")?last}</li>
      <#if file_index == (maxNumberOfFiles-1)>
-       ... <@vrtx.msg code="trash-can.permanent.delete.confirm.and" default="and"/> ${numberOfRemainingFiles} <@vrtx.msg code="trash-can.permanent.delete.confirm.more" default="mode"/>
+       <#local more = true />
        <#break />
      </#if>
    </#list>
+   </ul>
+   <#if more>
+     <p>... <@vrtx.msg code="trash-can.permanent.delete.confirm.and" default="and"/> ${numberOfRemainingFiles} <@vrtx.msg code="trash-can.permanent.delete.confirm.more" default="mode"/></p>
+   </#if>
 </#macro>

@@ -41,7 +41,7 @@
 	       // don't want click on links
 	       return false;
        });
-       $("#tree").vortexTips("li a", "#contents", 400, 300, 4000, 3000); // class, appendTo, containerWidth, in-, pre-, outdelay
+       $("#tree").vortexTips("li a", "#contents", 400, 300, 4000, 3000, 30, 100); // class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset
        
      });
 

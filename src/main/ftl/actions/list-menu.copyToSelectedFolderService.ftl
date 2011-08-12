@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#attempt>
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
@@ -16,7 +17,7 @@
 <#if session.filesToBeCopied?exists>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js"></script>
   <script type="text/javascript"><!--
-    $("#titleContainer").vortexTips("abbr", "#titleContainer", 200, 300, 250, 300);
+    $("#titleContainer").vortexTips("abbr", "#titleContainer", 200, 300, 250, 300, 20, 0);
   // -->
   </script>
   <p>
@@ -37,16 +38,14 @@ ${.error}
 </#recover>
 
 <#macro fileNamesAsLimitedString files>
- <#compress>
    <#local maxNumberOfFiles = 10 />
    <#local numberOfRemainingFiles = (files?size - maxNumberOfFiles)  />
    
    <#list files as file>
-     ${file?split("/")?last}
+     ${file?split("/")?last}<br />
      <#if file_index == (maxNumberOfFiles-1)>
        ... <@vrtx.msg code="trash-can.permanent.delete.confirm.and" default="and"/> ${numberOfRemainingFiles} <@vrtx.msg code="trash-can.permanent.delete.confirm.more" default="mode"/>
        <#break />
      </#if>
    </#list>
- </#compress>
 </#macro>

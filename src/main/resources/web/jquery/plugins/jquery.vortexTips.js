@@ -15,7 +15,7 @@
  *  
  */
 (function ($) {
-  $.fn.vortexTips = function (subSelector, appendTo, containerWidth, animInSpeed, animOutPreDelay, animOutSpeed) {
+  $.fn.vortexTips = function (subSelector, appendTo, containerWidth, animInSpeed, animOutPreDelay, animOutSpeed, xOffset, yOffset) {
 
     var html = "<span class='tip'>&nbsp;</span>";
     var tip;
@@ -37,12 +37,10 @@
         tip.html(title);
         tipText = link.attr('title');
         link.attr('title', '');
-        var yOffset = tip.height() / 2;
-        var xOffset = link.width();
         var pos = link.position();
         var nPos = pos;
-        nPos.top = (pos.top) + yOffset;
-        nPos.left = (pos.left + xOffset + 30);
+        nPos.top = pos.top + yOffset;
+        nPos.left = pos.left + link.width() + xOffset;
         tip.css('position', 'absolute').css('z-index', '1000').css('width', containerWidth + 'px');
         tip.css(nPos).fadeIn(animInSpeed);
       } else if (e.type == "mouseleave") {

@@ -776,7 +776,7 @@ ul.list-menu.resourceMenuRight .manage\.unlockFormService h3,
 ul.list-menu.resourceMenuRight span.published {
   background: url(images/lock.png) no-repeat 100% 1px;
   padding-right: 18px;
-  display: inline-block;
+  /* display: inline-block; */
 }
 
 

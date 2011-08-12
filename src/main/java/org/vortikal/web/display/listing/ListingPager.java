@@ -180,4 +180,12 @@ public class ListingPager {
         return page;
     }
 
+    public static URL removePagerParms(URL url){
+        url.removeParameter(PREVIOUS_PAGE_PARAM);
+        url.removeParameter(PREV_BASE_OFFSET_PARAM);
+        url.removeParameter(UPCOMING_PAGE_PARAM);
+        url.removeParameter(USER_DISPLAY_PAGE);
+        return url;
+    }
+    
 }

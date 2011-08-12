@@ -15,7 +15,7 @@
 <h3>${headerMsg}</h3>
 <#if session.filesToBeCopied?exists>
   <p>
-    <abbr title="<#list session.filesToBeCopied as fileName>$${fileName?split("/")?last}</#list>">
+    <abbr title="<@fileNamesAsDollarSeperatedString session.filesToBeCopied />">
       ${session.filesToBeCopied?size} ${filesI18n}
     </abbr>
   </p>
@@ -29,3 +29,11 @@
 <#recover>
 ${.error}
 </#recover>
+
+<#macro fileNamesAsDollarSeperatedString files>
+ <#compress>
+  <#list files as fileName>
+    $${fileName?split("/")?last}
+  </#list>
+ </#compress>
+</#macro>

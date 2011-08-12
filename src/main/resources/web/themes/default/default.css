@@ -1679,10 +1679,15 @@ div.vrtx-admin-form {
   padding: 0 11px 0 10px;
 }
 
+.resourceInfo table .vrtx-button-small input,
+.resourceInfo table .vrtx-button-small button,
+.resourceInfo table .vrtx-button-small span {
+  font-size: 0.846em;
+}
+
 .resourceInfo table .vrtx-button-small span {
   height: 20px;
   padding: 4px 11px 0 10px;
-  font-size: 0.846em;
 }
 
 .vrtx-button:hover,

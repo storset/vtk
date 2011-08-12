@@ -1425,13 +1425,12 @@ div.infomessage {
 div.infomessage,
 div.errormessage {
   padding-left: 46px;
-  padding-left: 46px;
 }
 
 div.infomessage {
   background: #fff url(images/info.png) no-repeat 14px 8px;
 }
-
+ 
 div.errormessage {
   background: #fff url(images/error.gif) no-repeat 14px 8px;
 }

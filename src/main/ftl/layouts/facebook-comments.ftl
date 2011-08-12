@@ -8,6 +8,8 @@
 <#import "/lib/vortikal.ftl" as vrtx/>
 
 <script type="text/javascript"><!--    
+    // Try to set height of iframe to inner Facebook iframe height
+
     var tries = 0;
     var giveUpAfterTries = 1000; // ~1000*10ms = 10s
     

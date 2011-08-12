@@ -309,7 +309,8 @@
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback" />
     <result property="resourceType" column="resource_type" />
     <result property="contentType" column="content_type" />
-    <result property="isCollection" column="is_collection" />
+    <result property="isCollection" column="is_collection"
+            typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback" />
   </resultMap>
 
   <select id="getRecoverableResources" parameterClass="int" resultMap="recoverableResource">
@@ -319,7 +320,7 @@
   </select>
 
   <select id="getRecoverableResourceById" parameterClass="int" resultMap="recoverableResource">
-    select d.*, r.resource_type as resource_type, r.content_type as content_type
+    select d.*, r.resource_type, r.content_type
       from deleted_resource d, vortex_resource r
       where d.id = #value# and d.resource_trash_uri = r.uri
   </select>

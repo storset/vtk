@@ -65,16 +65,7 @@
         <#assign firstLast = " last" />     
       </#if>
       
-      <#if rr.resourceType = "collection"
-        || rr.resourceType = "article-listing"
-        || rr.resourceType = "event-listing"
-        || rr.resourceType = "project-listing"
-        || rr.resourceType = "research-group-listing"
-        || rr.resourceType = "person-listing"
-        || rr.resourceType = "image-listing"
-        || rr.resourceType = "blog-listing"
-        || rr.resourceType = "master-listing"
-        || rr.resourceType = "audio-video-listing"> <#-- tmp fix - need isCollection() in RecoverableResource -->
+      <#if rr.isCollection()>
         <tr class="${rowType} <@vrtx.iconResolver rr.resourceType rr.contentType /> true${firstLast}">  
       <#else>
         <tr class="${rowType} <@vrtx.iconResolver rr.resourceType rr.contentType />${firstLast}">

@@ -67,6 +67,12 @@
   </bean>
 
 
+  <bean id="decorating.contextualTitleComponent" class="org.vortikal.web.decorating.components.ContextualTitleComponent">
+    <property name="titleResolver" ref="decorating.contextualTitleResolver" />
+    <property name="namespace" ref="decorating.resourceNamespace" />
+    <property name="name" value="contextual-title" />
+  </bean>
+
   <bean id="decorating.manageURLComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="manage-url" />

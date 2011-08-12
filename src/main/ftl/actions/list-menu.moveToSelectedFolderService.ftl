@@ -32,8 +32,15 @@ ${.error}
 
 <#macro fileNamesAsDollarSeperatedString files>
  <#compress>
-  <#list files as fileName>
-    $${fileName?split("/")?last}
-  </#list>
+   <#local maxNumberOfFiles = 10 />
+   <#local numberOfRemainingFiles = (files?size - maxNumberOfFiles)  />
+   
+   <#list files as file>
+     $${file?split("/")?last}
+     <#if file_index == (maxNumberOfFiles-1)>
+       ... <@vrtx.msg code="trash-can.permanent.delete.confirm.and" default="and"/> ${numberOfRemainingFiles} <@vrtx.msg code="trash-can.permanent.delete.confirm.more" default="mode"/>
+       <#break />
+     </#if>
+   </#list>
  </#compress>
 </#macro>

@@ -60,7 +60,7 @@
         unknown type: ${element.type?html}
       </#if>
       <#if element.inheritable && element.inheritedValue?exists>
-        (<@vrtx.msg code="default.inheritsValue" args=[element.inheritedValue?html] default="inherits" + element.inheritedValue?html />)
+        <div class="tooltip">(<@vrtx.msg code="default.inheritsValue" args=[element.inheritedValue?html] default="inherits" + element.inheritedValue?html />)</div>
       </#if>
       </div>
     </#list>

@@ -81,12 +81,6 @@ h2 {
   font-size: 1em;
 }
 
-.tooltip,
-.input-description {
-  display: inline;
-  padding-left: 15px;
-}
-
 .vrtx-image-ref-browse .vrtx-button,
 .vrtx-media-ref .vrtx-button,
 .vrtx-resource-ref .vrtx-button {

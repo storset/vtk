@@ -1859,6 +1859,16 @@ div.vrtx-admin-form {
 
 /* ^ Textfields */
 
+/* Tooltips */
+
+.tooltip,
+.input-description {
+  display: inline;
+  padding-left: 8px;
+}
+
+/* ^ Tooltips */
+
 /* Mozilla hacks */
 
 form::-moz-focus-inner,

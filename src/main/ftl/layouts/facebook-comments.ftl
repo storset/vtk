@@ -9,7 +9,7 @@
 
 <script type="text/javascript"><!--    
     var tries = 0;
-    var giveUpAfterTries = 1000; // 1000*10ms = 10s
+    var giveUpAfterTries = 1000; // ~1000*10ms = 10s
     
     var facebookIframeReadyTimer = setInterval(function() {
       if($("iframe#fbc").length) {

@@ -320,7 +320,7 @@
   </select>
 
   <select id="getRecoverableResourceById" parameterClass="int" resultMap="recoverableResource">
-    select d.*, r.resource_type, r.content_type
+    select d.*, r.resource_type, r.content_type, r.is_collection
       from deleted_resource d, vortex_resource r
       where d.id = #value# and d.resource_trash_uri = r.uri
   </select>

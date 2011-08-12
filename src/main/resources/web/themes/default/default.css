@@ -1679,6 +1679,8 @@ div.vrtx-admin-form {
   padding: 0 11px 0 10px;
 }
 
+/* Smaller font-size in resource-info tables */
+
 .resourceInfo table .vrtx-button-small input,
 .resourceInfo table .vrtx-button-small button,
 .resourceInfo table .vrtx-button-small span {
@@ -1689,6 +1691,8 @@ div.vrtx-admin-form {
   height: 20px;
   padding: 4px 11px 0 10px;
 }
+
+/* ^ Smaller font-size in resource-info tables */
 
 .vrtx-button:hover,
 .vrtx-button.hover {

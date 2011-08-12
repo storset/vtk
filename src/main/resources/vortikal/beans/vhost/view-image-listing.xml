@@ -54,7 +54,6 @@
         <value>photographer</value>
       </list>
     </property>
-    <property name="searchMultiHosts" value="false" />
   </bean>
 
   <bean id="imageListing.listingUriQueryBuilder" parent="collection.listingUriQueryBuilder">

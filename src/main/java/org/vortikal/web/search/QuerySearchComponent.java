@@ -37,8 +37,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Property;
@@ -48,7 +46,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
@@ -60,8 +57,6 @@ import org.vortikal.web.service.URL;
 
 public abstract class QuerySearchComponent implements SearchComponent {
 
-    private static Log logger = LogFactory.getLog(QuerySearchComponent.class.getName());
-
     private String name;
     private String titleLocalizationKey;
     private ResourceWrapperManager resourceManager;
@@ -70,12 +65,6 @@ public abstract class QuerySearchComponent implements SearchComponent {
     private SearchSorting searchSorting;
     private List<String> configurablePropertySelectPointers;
     private ResourceTypeTree resourceTypeTree;
-    private String aggregationPropPointer;
-
-    // Include other hosts in search, if multiHostSearchComponent is available
-    // and component is configured to search other hosts
-    private MultiHostSearchComponent multiHostSearchComponent;
-    private boolean searchMultiHosts;
 
     protected abstract Query getQuery(Resource collection, HttpServletRequest request);
 
@@ -114,20 +103,7 @@ public abstract class QuerySearchComponent implements SearchComponent {
             search.setSorting(new SortingImpl(this.searchSorting.getSortFields(collection)));
         }
 
-        ResultSet result = null;
-        if (this.requiresMultiHostSearch(collection)) {
-            try {
-                result = this.multiHostSearchComponent.search(token, search);
-            } catch (Throwable t) {
-                // If something goes wrong with multi host search, run default
-                // instead
-                logger.warn("Could not perfom multi host search, falling back to default local repo search: "
-                        + t.getMessage());
-                result = repository.search(token, search);
-            }
-        } else {
-            result = repository.search(token, search);
-        }
+        ResultSet result = repository.search(token, search);
 
         boolean more = result.getSize() == pageLimit + 1;
         int num = result.getSize();
@@ -174,26 +150,6 @@ public abstract class QuerySearchComponent implements SearchComponent {
         return listing;
     }
 
-    private boolean requiresMultiHostSearch(Resource collection) {
-        if (!this.searchMultiHosts || this.multiHostSearchComponent == null || this.aggregationPropPointer == null) {
-            return false;
-        }
-        PropertyTypeDefinition aggregationPropDef = this.resourceTypeTree
-                .getPropertyDefinitionByPointer(this.aggregationPropPointer);
-        Property aggregationProp = collection.getProperty(aggregationPropDef);
-        if (aggregationProp == null) {
-            return false;
-        }
-        for (Value val : aggregationProp.getValues()) {
-            String s = val.getStringValue();
-            // XXX better test, just do simple for now
-            if (s.startsWith("http") || s.startsWith("www")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Required
     public void setName(String name) {
         this.name = name;
@@ -231,10 +187,6 @@ public abstract class QuerySearchComponent implements SearchComponent {
         this.searchSorting = searchSorting;
     }
 
-    public void setAggregationPropPointer(String aggregationPropPointer) {
-        this.aggregationPropPointer = aggregationPropPointer;
-    }
-
     public void setConfigurablePropertySelectPointers(List<String> configurablePropertySelectPointers) {
         this.configurablePropertySelectPointers = configurablePropertySelectPointers;
     }
@@ -242,14 +194,6 @@ public abstract class QuerySearchComponent implements SearchComponent {
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
-    }
-
-    public void setMultiHostSearchComponent(MultiHostSearchComponent multiHostSearchComponent) {
-        this.multiHostSearchComponent = multiHostSearchComponent;
-    }
-
-    public void setSearchMultiHosts(boolean searchMultiHosts) {
-        this.searchMultiHosts = searchMultiHosts;
     }
 
 }

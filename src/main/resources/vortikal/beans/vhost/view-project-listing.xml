@@ -41,7 +41,8 @@
     </property>
   </bean>
 
-  <bean id="projectListing.handler" class="org.vortikal.web.display.collection.AlphabeticalCollectionListingController" parent="collectionListing.handler">
+  <bean id="projectListing.handler" class="org.vortikal.web.display.collection.AlphabeticalCollectionListingController"
+    parent="collectionListing.handler">
     <property name="searchComponents">
       <list>
         <ref bean="projectListing.searchComponent" />
@@ -62,7 +63,6 @@
         </bean>
       </list>
     </property>
-    <property name="searchMultiHosts" value="false" />
     <property name="configurablePropertySelectPointers">
       <list>
         <value>title</value>
@@ -83,7 +83,6 @@
         </bean>
       </list>
     </property>
-    <property name="searchMultiHosts" value="false" />
   </bean>
 
   <bean id="projectListing.listingUriQueryBuilder" parent="collection.listingUriQueryBuilder">

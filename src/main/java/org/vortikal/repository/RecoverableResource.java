@@ -43,6 +43,7 @@ public class RecoverableResource {
     private boolean wasInheritedAcl;
     private String resourceType;
     private String contentType;
+    private boolean isCollection;
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
@@ -120,6 +121,14 @@ public class RecoverableResource {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    public boolean isCollection() {
+        return isCollection;
+    }
+
+    public void setCollection(boolean isCollection) {
+        this.isCollection = isCollection;
     }
 
     @Override

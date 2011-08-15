@@ -39,8 +39,13 @@ ul.list-menu.resourceMenuLeft {
   display: inline;
 }
 
-.vrtx-textfield input,
+.vrtx-textfield input {
+  padding-top: 4px;
+  margin-top: -2px;
+}
+
 .vrtx-textfield-big input {
+  padding-top: 8px;
   margin-top: -2px;
 }
 

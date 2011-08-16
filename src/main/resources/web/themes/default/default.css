@@ -648,9 +648,14 @@ ul.dropdown-shortcut-menu li.first.unhover {
   background: url(images/dropdown-left.gif) no-repeat top left !important;
 }
 
+ul.dropdown-shortcut-menu li.first:hover a {
+  margin: 0 -5px 0 0 !important;
+}
+
 ul.dropdown-shortcut-menu li.first a.hover {
   background-image: url(images/dropdown-right-rollover.gif) !important;
   color: #363534 !important;
+  margin: 0 -5px 0 0 !important;
 }
 
 div.dropdown-shortcut-menu-container,

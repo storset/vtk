@@ -7,7 +7,7 @@
 <#else>
   <#assign titleMsg = vrtx.getMsg("confirm-delete.title.file") />
 </#if>
-(&nbsp;<a href="${item.url?html}" title="${titleMsg}">${item.title}</a>&nbsp;)
+<a class="vrtx-button" href="${item.url?html}" title="${titleMsg}"><span>${item.title}</span></a>
 
 <#recover>
 ${.error}

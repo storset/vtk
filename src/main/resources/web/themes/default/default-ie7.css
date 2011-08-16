@@ -24,6 +24,13 @@ ul.list-menu.resourceMenuRight {
   padding-bottom: 20px;
 }
 
+body#vrtx-permissions .removePermission {
+  width: 14px;
+  height: 19px;
+  line-height: 0;
+  font-size: 0;
+}
+
 .resource-title,
 #main .activeTab,
 #main #contents,

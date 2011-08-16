@@ -105,7 +105,8 @@ $(document).ready(function () {
   // AJAX INIT: Resource menu service forms
   
   var resourceMenuLeftServices = ["renameService",
-                                  "manage\\.createArchiveService"];
+                                  "manage\\.createArchiveService",
+                                  "manage\\.expandArchiveService"];
 
   for (var i = resourceMenuLeftServices.length; i--;) {
     getAjaxOptions = {

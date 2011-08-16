@@ -608,16 +608,19 @@ ul.list-menu.resourceMenuLeft li.last a {
 
 ul.list-menu.resourceMenuLeft li:hover {
   background-image: url(images/dropdown-left-rollover.gif);
+  margin-right: -5px;
 }
 
 ul.list-menu.resourceMenuLeft li:hover a {
   background: none;
   color: #fff;
   text-decoration: none;
+  margin: 0px;
 }
 
 ul.list-menu.resourceMenuLeft li.last:hover a {
   background: url(images/button-closed-right-rollover.gif) no-repeat top right;
+  margin: 0 -5px 0 0;
 }
 
 /* Dropdown */

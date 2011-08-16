@@ -60,7 +60,8 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
                                             delay: 800 };
                 
 $(window).load(function() {
-  // More compact when no left resource menu and only 'Read permission' in right resource menu     
+  // More compact when no left resource menu and only 'Read permission' in right resource menu
+  // Should never occur in IE because of "Show in file explorer" in root-folder 
   var resourceMenuRight = $("ul.list-menu.resourceMenuRight"); 
   var resourceMenuRightListElements = resourceMenuRight.find("li");
   if(!$("ul.resourceMenuLeft").length && resourceMenuRightListElements.length == 1) {

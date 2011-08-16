@@ -21,9 +21,13 @@ ul.vrtx-reporters {
 
 ul.vrtx-primary-reporters,
 ul.vrtx-primary-reporters li {
-  list-style-type: none;
+  list-style: none;
   margin: 0;
   padding: 0;
+}
+
+ul.vrtx-primary-reporters li {
+  float: left;
 }
 
 ul.vrtx-primary-reporters li a {
@@ -33,6 +37,7 @@ ul.vrtx-primary-reporters li a {
   border: 1px solid #d9d9d9;
   background: #f9f9f9;
   float: left;
+  display: block;
 }
 
 ul.vrtx-primary-reporters li a:hover {

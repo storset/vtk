@@ -217,23 +217,18 @@ public final class Path implements Comparable<Path> {
         }
     }
 
-    /* XXX Trying to get "self" as an ancestor of itself should throw index out of bounds
-     *     to be consistent with methods getAncestors and isAncestorOf,
-     *     which always exclude the path itself.
-     *     Self is not an ancestor of self.
-     */
     /**
-     * Gets an ancestor path of this path on a given level. If the supplied
-     * level is 0, the root path is returned. If the supplied level is equal to
-     * the number of elements in this path minus 1, this path itself is
-     * returned.
+     * Gets one of the paths that comprise this path on a given level. 
+     * If the supplied level is 0, the root path is returned. If the 
+     * supplied level is equal to the number of elements in this path 
+     * minus 1, this path itself is returned.
      * 
-     * @return the ancestor path
+     * @return the path on the given level
      * @throws IllegalArgumentException
      *             if the supplied level is outside the bounds of the element
      *             list of this path
      */
-    public Path getAncestor(int level) {
+    public Path getPath(int level) {
         List<Path> paths = this.paths();
         if (level < 0 || level >= paths.size()) {
             throw new IllegalArgumentException("Index out of bounds: " + level);
@@ -340,10 +335,10 @@ public final class Path implements Comparable<Path> {
         }
         Path common = Path.ROOT;
         for (int i = 1; i <= otherPath.getAncestors().size(); i++) {
-            if (!otherPath.getAncestor(i).equals(this.getAncestor(i))) {
+            if (!otherPath.getPath(i).equals(this.getPath(i))) {
                 break;
             }
-            common = this.getAncestor(i);
+            common = this.getPath(i);
         }
         return common;
     }

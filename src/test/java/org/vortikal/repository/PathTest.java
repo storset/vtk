@@ -163,7 +163,7 @@ public class PathTest extends TestCase {
 
         assertEquals(0, Path.fromString("/").getAncestors().size());
 
-        assertEquals(Path.fromString("/a/b/c"), Path.fromString("/a/b/c/d").getAncestor(3));
+        assertEquals(Path.fromString("/a/b/c"), Path.fromString("/a/b/c/d").getPath(3));
 
         p = Path.fromString("/a/b/c");
         assertEquals(p, p.expand("."));

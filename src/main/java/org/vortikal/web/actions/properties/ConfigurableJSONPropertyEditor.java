@@ -216,6 +216,14 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         public String getConfigError() {
             return this.configError;
         }
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder("{");
+            sb.append("configError : ").append(this.configError);
+            sb.append(", elements : ").append(this.elements);
+            sb.append("}");
+            return sb.toString();
+        }
     }
     
     public class FormElement {
@@ -259,11 +267,12 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
             }
             List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
             List<?> values = this.desc.getValues();
-            for (Object object : values) {
+            for (Object v : values) {
                 Map<String, Object> map = new HashMap<String, Object>();
-                map.put("label", this.desc.getLocalizedValue(object, this.locale));
-                map.put("value", object);
-                boolean selected = this.value == null ? object == null : this.value.equals(object);
+                map.put("label", this.desc.getLocalizedValue(v, this.locale));
+                map.put("value", v);
+                boolean selected = this.value == null ? (v == null | v instanceof JSONNull) 
+                        : this.value.equals(v);
                 map.put("selected", selected);
                 result.add(map);
             }
@@ -276,6 +285,17 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
 
         public Object getInheritedValue() {
             return this.inheritedValue;
+        }
+        
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder("{");
+            sb.append("desc : ").append(this.desc);
+            sb.append(", locale : ").append(this.locale);
+            sb.append(", value : ").append(this.value);
+            sb.append(", inheritedValue : ").append(this.inheritedValue);
+            sb.append("}");
+            return sb.toString();
         }
     }
     

@@ -103,4 +103,16 @@ public class PropertyAspectField {
         }
         return str;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("{");
+        sb.append("identifier : ").append(this.identifier);
+        sb.append(", type : ").append(this.type);
+        sb.append(", inherited: ").append(this.inherited);
+        sb.append(", values : ").append(this.values);
+        sb.append(", i18n : ").append(this.i18n);
+        sb.append("}");
+        return sb.toString();
+    }
 }

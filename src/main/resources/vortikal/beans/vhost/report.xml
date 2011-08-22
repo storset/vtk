@@ -48,6 +48,7 @@
     <property name="reporters">
       <list>
         <ref bean="lastModifiedReporter" />
+        <ref bean="falseGetExternalPersonInfoReporter" />
       </list>
     </property>
     <property name="hiddenReporters">
@@ -329,6 +330,12 @@
     <property name="type" value="php" />
     <property name="backURL" value="1" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="falseGetExternalPersonInfoReporter" class="org.vortikal.web.actions.report.FalseGetExternalPersonInfoReporter"
+    parent="documentReporter">
+    <property name="name" value="false-get-external-person-info" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <bean id="report.viewResolver" parent="system.decoratingViewResolver">

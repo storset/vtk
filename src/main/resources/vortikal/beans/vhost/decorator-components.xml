@@ -330,6 +330,28 @@
     <property name="url" value="layouts/tags.ftl" />
   </bean>
 
+  <bean id="decorating.eventComponent" class="org.vortikal.web.decorating.components.EventComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="events" />
+    <property name="view" ref="decorating.eventComponent.view" />
+    <property name="description" value="Inserts a event list component on the page" />
+    <property name="search" ref="${override.listing.prefix}eventListing.upcomingEventsSearchComponent" />
+    <property name="htmlUtil" ref="htmlUtil" />
+    <property name="defaultElementOrder">
+      <list>
+        <value>title</value>
+        <value>description</value>
+        <value>start-date</value>
+        <value>end-date</value>
+        <value>location</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="decorating.eventComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/event-listing.ftl" />
+  </bean>
+
   <bean id="decorating.feedComponent" class="org.vortikal.web.decorating.components.FeedComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="feed" />

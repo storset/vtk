@@ -21,6 +21,7 @@ function VrtxAdmin() {
   
   this.isIE = null;
   this.browserVersion = null;
+  this.isIE7 = null;
   this.isIE6 = null;
   this.isIE5OrHigher = null;
   this.isOpera = null;
@@ -41,6 +42,7 @@ var vrtxAdmin = new VrtxAdmin();
 // Browser info
 vrtxAdmin.isIE = $.browser.msie;
 vrtxAdmin.browserVersion = $.browser.version;
+vrtxAdmin.isIE7 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7;
 vrtxAdmin.isIE6 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 6;
 vrtxAdmin.isIE5OrHigher = vrtxAdmin.isIE && vrtxAdmin.browserVersion >= 5;
 vrtxAdmin.isOpera = $.browser.opera;
@@ -250,7 +252,9 @@ $(document).ready(function () {
   
   // AJAX INIT: About property forms
   
-  if($("body#vrtx-about").length) {
+  
+  
+  if($("body#vrtx-about").length && !vrtxAdmin.isIE7) { // turn of tmp. in IE7
     var propsAbout = [
       "contentLocale",
       "commentsEnabled",

@@ -48,36 +48,36 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.actions.convert.CopyAction;
 
 /**
  * A controller that copies (or moves) resources from one folder to another
  * based on a set of resources stored in a session variable
- * 
- * <p>
- * Description:
- * 
  * <p>
  * Configurable properties:
  * <ul>
- * <li><code>repository</code> - the content repository
- * <li><code>viewName</code> - the view to which to return to
+ * <li>{@link String viewName} - the view to which to return to
+ * <li>{@link CopyAction copyAction} - if specified, invoke this 
+ *     {@link CopyAction} instead of {@link Repository#copy} to 
+ *     copy resources
  * </ul>
- * 
+ * </p>
  * <p>
  * Model data published:
  * <ul>
- * <li><code>createErrorMessage</code>: errormessage
- * <li><code>errorItems</code>: an array of repository items which the
- * errormessage relates to
+ * <li>{@code createErrorMessage}: error message
+ * <li>{@code errorItems}: an array of repository items which the
+ *      error message relates to
  * </ul>
+ * </p>
  */
-
 public class CopyMoveToSelectedFolderController implements Controller {
 
     private static Log logger = LogFactory.getLog(CopyMoveToSelectedFolderController.class);
     static final String COPYMOVE_SESSION_ATTRIBUTE = "copymovesession";
     private String viewName = "DEFAULT_VIEW_NAME";
-    private static final Pattern COPY_POSTFIX_PATTERN = Pattern.compile("\\(\\d+\\)$");
+    private static final Pattern COPY_SUFFIX_PATTERN = Pattern.compile("\\(\\d+\\)$");
+    private CopyAction copyAction;
 
     public void setViewName(String viewName) {
         this.viewName = viewName;
@@ -93,85 +93,59 @@ public class CopyMoveToSelectedFolderController implements Controller {
         
         CopyMoveSessionBean sessionBean = (CopyMoveSessionBean) request.getSession(true).getAttribute(
                 COPYMOVE_SESSION_ATTRIBUTE);
-
         if (sessionBean == null) {
             return new ModelAndView(this.viewName);
         }
-
         if (request.getParameter("cancel-action") != null) {
             return new ModelAndView(this.viewName);
         }
-
         long before = System.currentTimeMillis();
 
         List<Path> filesFailed = new ArrayList<Path>();
         String action = sessionBean.getAction();
 
-        // Getting the selected files from Session
-        List<String> filesToBeCopied = sessionBean.getFilesToBeCopied();
+        List<String> items = sessionBean.getFilesToBeCopied();
 
         boolean authorizationFailed = false;
         boolean moveAction = "move-resources".equals(action);
 
-        for (String uri : filesToBeCopied) {
-            Path resourceUri = Path.fromString(uri);
-            String resourceFilename = resourceUri.getName();
+        for (String s : items) {
+            Path uri = Path.fromString(s);
+            String name = uri.getName();
 
-            Path newResourceUri = destinationUri.extend(resourceFilename);
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Trying to copy(or move) resource from: " + resourceUri + " to: " + newResourceUri);
-            }
+            Path newResourceUri = destinationUri.extend(name);
 
             try {
                 if (moveAction) {
-
-                    if (!repository.exists(token, newResourceUri)) {
-                        repository.move(token, resourceUri, newResourceUri, false);
-                    } else {
+                    if (repository.exists(token, newResourceUri)) {
                         throw new RuntimeException("Trying to move to resource with same filename: " + newResourceUri);
                     }
+                    repository.move(token, uri, newResourceUri, false);
 
                 } else {
-                    if (!repository.exists(token, newResourceUri)) {
-                        repository.copy(token, resourceUri, newResourceUri, Depth.INF, false, false);
+                    Path destUri = newResourceUri;
+                    int number = 1;
+                    while (repository.exists(token, destUri)) {
+                        destUri = appendCopySuffix(destUri, number);
+                        number++;
+                    }
+                    if (this.copyAction != null) {
+                        this.copyAction.process(uri, destUri, null);
                     } else {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Trying to duplicate resource: " + newResourceUri);
-                        }
-
-                        Path newUri = newResourceUri;
-
-                        int number = 1;
-                        while (repository.exists(token, newUri)) {
-                            newUri = appendCopySuffix(newUri, number);
-                            number++;
-                        }
-                        repository.copy(token, resourceUri, newUri, Depth.INF, false, false);
+                        repository.copy(token, uri, destUri, Depth.INF, false, false);
                     }
                 }
             } catch (AuthorizationException e) {
-                filesFailed.add(resourceUri);
+                filesFailed.add(uri);
                 authorizationFailed = true;
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Copy/Move action failed because of restricted files", e);
-                }
-
             } catch (Exception e) {
-                filesFailed.add(resourceUri);
-
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Copy/Move action failed", e);
-                }
-
+                filesFailed.add(uri);
             }
         }
 
         if (filesFailed.size() > 0) {
-
             String msgCode = "";
-
             if (authorizationFailed) {
                 if (moveAction) {
                     msgCode = "manage.create.copyMove.error.authorization.moveFailed";
@@ -187,12 +161,10 @@ public class CopyMoveToSelectedFolderController implements Controller {
             }
 
             Message msg = new Message(msgCode);
-
             for (Path p : filesFailed) {
                 msg.addMessage(p.getName());
             }
             requestContext.addErrorMessage(msg);
-
         }
 
         // Removing session variable
@@ -220,19 +192,23 @@ public class CopyMoveToSelectedFolderController implements Controller {
             name = name.substring(0, name.lastIndexOf("."));
         }
 
-        Matcher matcher = COPY_POSTFIX_PATTERN.matcher(name);
+        Matcher matcher = COPY_SUFFIX_PATTERN.matcher(name);
         if (matcher.find()) {
             String count = matcher.group();
             count = count.substring(1, count.length() - 1);
             try {
                 number = Integer.parseInt(count) + 1;
-                name = COPY_POSTFIX_PATTERN.split(name)[0];
+                name = COPY_SUFFIX_PATTERN.split(name)[0];
             } catch (Exception e) {
             }
         }
 
         name = name + "(" + number + ")" + dot + extension;
         return newUri.getParent().extend(name);
+    }
+    
+    public void setCopyAction(CopyAction copyAction) {
+        this.copyAction = copyAction;
     }
 
 }

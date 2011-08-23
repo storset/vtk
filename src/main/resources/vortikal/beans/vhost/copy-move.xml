@@ -157,7 +157,12 @@
   <bean id="copyToSelectedFolderHandler" 
     class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController">
     <property name="viewName" value="manageCollectionListing" />
+    <property name="copyAction" ref="copy.unpublishAfterCopyAction" />
   </bean>
+
+
+  <bean id="copy.unpublishAfterCopyAction" class="org.vortikal.web.actions.copymove.UnpublishAfterCopyAction" />
+
 
   <bean id="moveToSelectedFolderHandler" 
     class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController">

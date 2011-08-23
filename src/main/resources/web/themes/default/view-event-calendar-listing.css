@@ -1,3 +1,20 @@
+div.vrtx-event-component-occurence {
+  clear: left;
+  background: url("images/line-dotted.gif") repeat-x scroll left bottom transparent;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+div.vrtx-event-component-picture {
+  float: left;
+  padding-right: 15px;
+}
+
+div.vrtx-event-component-main {
+  padding-left: 58px;
+  text-align: left;
+}
+
 #vrtx-additional-content {
   float: left;
   margin-left: 20px;

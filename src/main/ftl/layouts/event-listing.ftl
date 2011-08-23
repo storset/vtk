@@ -1,11 +1,6 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
 
-<link rel="stylesheet" href="http://www.uio.no/vrtx/decorating/resources/dist/style/style.css" />
-<link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/view-event-calendar-listing.css" />
-<link rel="stylesheet" href="http://www.uio.no/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-tabs-customized/css/ui-lightness/jquery-ui-1.7.2.custom.css"/>
-<link rel="stylesheet" href="http://www.uio.no/vrtx/__vrtx/static-resources/themes/default/view-collectionlisting.css"/>
-
 <#if conf.includeIfEmpty>
   <h2><a href="${conf.uri?html}"><@vrtx.msg code="event.events" default="Events" /></a></h2>
   <#if (psd?exists && (psd?size > 0))>

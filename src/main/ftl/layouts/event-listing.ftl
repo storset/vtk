@@ -38,7 +38,11 @@
 
 
 <#macro displayPsd event startdate showTime nr last>
-  <div class="vrtx-event-component-occurence">
+  <#if nr == last>
+    <div class="vrtx-event-component-occurence last">
+  <#else>
+    <div class="vrtx-event-component-occurence">
+  </#if>
     <#local title = vrtx.propValue(event, 'title') />
     <#local location  = vrtx.propValue(event, 'location')  />
     <#local intro = vrtx.propValue(event, 'introduction')  />

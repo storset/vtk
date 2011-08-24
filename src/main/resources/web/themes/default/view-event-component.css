@@ -5,9 +5,13 @@
 div.vrtx-event-component-occurence {
   clear: left;
   background: url("images/line-dotted.gif") repeat-x scroll left bottom transparent;
-  margin-top: 15px;
+  margin-bottom: 15px;
   padding-bottom: 15px;
   overflow: auto;
+}
+
+div.vrtx-event-component-occurence.last {
+  margin-bottom: 5px;
 }
 
 div.vrtx-event-component-picture {

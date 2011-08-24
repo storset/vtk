@@ -3,13 +3,13 @@
 
 <#if conf.includeIfEmpty>
   <h2><a href="${conf.uri?html}"><@vrtx.msg code="event.events" default="Events" /></a></h2>
-  <#if (psd?exists && (psd?size > 0))>
+  <#if psd?has_content>
     <div class="vrtx-event-component">
       <#list psd as event>
         <@displayPsd event.ps event.date event.showTime event_index+1 psd?size />
       </#list>
     </div>
-  <#elseif (res?exists && (res?size > 0))>
+  <#elseif res?has_content>
     <div class="vrtx-event-component">
       <ul class="items">
         <#list res.files as event>

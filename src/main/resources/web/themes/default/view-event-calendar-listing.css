@@ -10,6 +10,15 @@ div.vrtx-event-component-occurence {
 div.vrtx-event-component-picture {
   float: left;
   padding-right: 15px;
+  width: 100%;
+}
+
+div.vrtx-event-component-picture img {
+  max-width: 100%;
+}
+
+div.vrtx-event-component-title {
+  clear: left;
 }
 
 div.vrtx-event-component-main {

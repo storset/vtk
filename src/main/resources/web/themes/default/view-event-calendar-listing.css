@@ -1,3 +1,5 @@
+/* Event component */
+
 div.vrtx-event-component-occurence {
   clear: left;
   background: url("images/line-dotted.gif") repeat-x scroll left bottom transparent;
@@ -15,15 +17,21 @@ div.vrtx-event-component-main {
   text-align: left;
 }
 
-#vrtx-additional-content {
+/* ^ Event component */
+
+/* Event listing grid w/ design */
+
+body#vrtx-event-listing #vrtx-main-content {
+  width: 70%;
+  float: left;
+}
+
+body#vrtx-event-listing #vrtx-additional-content {
   float: left;
   margin-left: 20px;
 }
 
-#vrtx-main-content {
-  width: 70%;
-  float: left;
-}
+/* ^ Event listing grid w/ design */
 
 .vrtx-calendar-listing .eventListing\.upcomingEventsSearchComponent, 
 .vrtx-calendar-listing .eventListing\.previousEventsSearchComponent, 
@@ -181,6 +189,8 @@ div.vrtx-event-component-main {
   padding-left: 58px;
 }
 
+/* Date icon */
+
 .vrtx-daily-events-date {
   float: left;
   width: 40px;
@@ -213,6 +223,8 @@ div.vrtx-event-component-main {
   background-color: #444;
   color: #fff;
 }
+
+/* ^ Date icon */
 
 .vrtx-events-further-upcoming .description,
 .vrtx-events-further-upcoming a.vrtx-image {

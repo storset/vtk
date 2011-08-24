@@ -14,11 +14,6 @@ div.vrtx-event-component-occurence.last {
   margin-bottom: 5px;
 }
 
-div.vrtx-event-component-picture {
-  float: left;
-  width: 100%;
-}
-
 div.vrtx-event-component-picture img {
   max-width: 100%;
 }

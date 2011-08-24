@@ -20,7 +20,7 @@
     <div class="vrtx-event-component">
       <ul class="items">
         <#list res.files as event>
-          <@displayRes event event_index />
+          <@displayRes event event_index+1 />
         </#list>
       </ul>
     </div>

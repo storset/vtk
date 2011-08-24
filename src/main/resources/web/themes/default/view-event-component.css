@@ -24,8 +24,11 @@ div.vrtx-event-component-picture img {
 }
 
 div.vrtx-event-component-main {
-  padding-left: 58px;
   text-align: left;
+}
+
+div.vrtx-event-component-main.date-icon {
+  padding-left: 58px;
 }
 
 /* ^ Event component */

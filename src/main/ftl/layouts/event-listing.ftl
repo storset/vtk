@@ -69,9 +69,10 @@
         </#if>
         <span class="vrtx-daily-events-date-month"><@vrtx.date value=startdate format='MMM' /></span>
       </div>
+      <div class="vrtx-event-component-main date-icon">
+    <#else>
+      <div class="vrtx-event-component-main">
     </#if>
-
-    <div class="vrtx-event-component-main">
       <#if conf.showPicture>
         <#local captionFlattened>
           <@vrtx.flattenHtml value=caption escape=true />

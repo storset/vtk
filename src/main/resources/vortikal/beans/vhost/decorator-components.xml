@@ -354,7 +354,7 @@
       <map>
         <entry key="cssURLs">
           <list>
-            <value>${webResources.baseURL}/themes/default/view-event-calendar-listing.css</value>
+            <value>${webResources.baseURL}/themes/default/view-event-component.css</value>
           </list>
         </entry>
       </map>

@@ -1,0 +1,29 @@
+@import url('view-event-date-icon.css');
+
+/* Event component */
+
+div.vrtx-event-component-occurence {
+  clear: left;
+  background: url("images/line-dotted.gif") repeat-x scroll left bottom transparent;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  float: left;
+  width: 100%;
+}
+
+div.vrtx-event-component-picture {
+  float: left;
+  padding-right: 15px;
+  width: 100%;
+}
+
+div.vrtx-event-component-picture img {
+  max-width: 100%;
+}
+
+div.vrtx-event-component-main {
+  padding-left: 58px;
+  text-align: left;
+}
+
+/* ^ Event component */

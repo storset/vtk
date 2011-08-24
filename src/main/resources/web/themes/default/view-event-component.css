@@ -27,8 +27,8 @@ div.vrtx-event-component-main {
   text-align: left;
 }
 
-div.vrtx-event-component-main.date-icon {
-  padding-left: 58px;
+ .vrtx-daily-events-date {
+  margin-right: 13px;
 }
 
 /* ^ Event component */

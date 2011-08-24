@@ -71,69 +71,68 @@
           </#if>
           <span class="vrtx-daily-events-date-month"><@vrtx.date value=startdate format='MMM' /></span>
         </div>
-        <div class="vrtx-event-component-main date-icon">
-      <#else>
-        <div class="vrtx-event-component-main">
       </#if>
-      <#if conf.showPicture>
-        <#local captionFlattened>
-          <@vrtx.flattenHtml value=caption escape=true />
-        </#local>
-        <div class="vrtx-event-component-picture">
-          <#if introImg?has_content>
-            <#local introImgURI = vrtx.propValue(event, 'picture') />
-            <#if introImgURI?exists>
-              <#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
-            <#else>
-              <#local thumbnail = "" />
+      
+      <div class="vrtx-event-component-main">
+        <#if conf.showPicture>
+          <#local captionFlattened>
+            <@vrtx.flattenHtml value=caption escape=true />
+          </#local>
+          <div class="vrtx-event-component-picture">
+            <#if introImg?has_content>
+              <#local introImgURI = vrtx.propValue(event, 'picture') />
+              <#if introImgURI?exists>
+                <#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
+              <#else>
+                <#local thumbnail = "" />
+              </#if>
+              <a class="vrtx-image" href="${event.URI?html}">
+              <#if caption != ''>
+                <img src="${thumbnail?html}" alt="${captionFlattened}" />
+              <#else>
+                <img src="${thumbnail?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+              </#if>
+              </a>
             </#if>
-            <a class="vrtx-image" href="${event.URI?html}">
-            <#if caption != ''>
-              <img src="${thumbnail?html}" alt="${captionFlattened}" />
-            <#else>
-              <img src="${thumbnail?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-            </#if>
-            </a>
+          </div>
+        </#if>
+
+        <div class="vrtx-event-component-title">
+          <a class="vrtx-event-component-title summary vrtx-link-check" href="${event.URI?html}">${title?html}</a>
+        </div>
+
+        <#if conf.eventDescription>
+          <div class="vrtx-event-component-introduction">
+            <p>${intro}</p>
+          </div>
+        </#if>
+
+        <div class="vrtx-event-component-misc">
+          <#if conf.dateIcon && showTime>
+            <span class="vrtx-event-component-start-time">
+              <@vrtx.date value=startdate format='HH:mm' /><#if conf.showLocation && (location != "")>,</#if>
+            </span>
+          <#elseif showTime>
+            <span class="vrtx-event-component-start-time">
+              <@vrtx.date value=startdate format='dd' />. 
+              <@vrtx.date value=startdate format='MMM' />. 
+              <@vrtx.date value=startdate format='yyyy' /> 
+              <@vrtx.date value=startdate format='HH:mm' /><#if conf.showLocation && (location != "")>,</#if>
+            </span>
+          </#if>
+
+          <#if conf.showLocation && (location != "")>
+            <span class="vrtx-event-component-location">${location}</span>
+          </#if>
+
+          <#if conf.addToCalendar>
+            <span class="vrtx-add-event">
+              <a class="vrtx-ical vrtx-link-check" href="${event.URI?html}?vrtx=ical"><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")?html}" title="${vrtx.getMsg("event.add-to-calendar.help")?html}"></a>
+            </span>
           </#if>
         </div>
-      </#if>
-
-      <div class="vrtx-event-component-title">
-        <a class="vrtx-event-component-title summary vrtx-link-check" href="${event.URI?html}">${title?html}</a>
-      </div>
-
-      <#if conf.eventDescription>
-        <div class="vrtx-event-component-introduction">
-          <p>${intro}</p>
-        </div>
-      </#if>
-
-      <div class="vrtx-event-component-misc">
-        <#if conf.dateIcon && showTime>
-          <span class="vrtx-event-component-start-time">
-            <@vrtx.date value=startdate format='HH:mm' /><#if conf.showLocation && (location != "")>,</#if>
-          </span>
-        <#elseif showTime>
-          <span class="vrtx-event-component-start-time">
-            <@vrtx.date value=startdate format='dd' />. 
-            <@vrtx.date value=startdate format='MMM' />. 
-            <@vrtx.date value=startdate format='yyyy' /> 
-            <@vrtx.date value=startdate format='HH:mm' /><#if conf.showLocation && (location != "")>,</#if>
-          </span>
-        </#if>
-
-        <#if conf.showLocation && (location != "")>
-          <span class="vrtx-event-component-location">${location}</span>
-        </#if>
-
-        <#if conf.addToCalendar>
-          <span class="vrtx-add-event">
-            <a class="vrtx-ical vrtx-link-check" href="${event.URI?html}?vrtx=ical"><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")?html}" title="${vrtx.getMsg("event.add-to-calendar.help")?html}"></a>
-          </span>
-        </#if>
       </div>
     </div>
-  </div>
 </#macro>
 
 <#macro displayRes event nr last>

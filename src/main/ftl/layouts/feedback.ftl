@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#--
   - File: email-a-friend.ftl
   - 

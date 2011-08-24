@@ -9,9 +9,9 @@
 </#if>
 
 <#if conf.includeIfEmpty>
-  <h2><a href="${conf.uri?html}"><@vrtx.msg code="event.events" default="Events" /></a></h2>
   <#if psd?has_content>
     <div class="vrtx-event-component">
+      <h2><a href="${conf.uri?html}"><@vrtx.msg code="event.events" default="Events" /></a></h2>
       <#assign psdSize = psd?size />
       <#list psd as event>
         <@displayPsd event.ps event.date event.showTime event_index+1 psdSize />
@@ -19,6 +19,7 @@
     </div>
   <#elseif res?has_content>
     <div class="vrtx-event-component">
+      <h2><a href="${conf.uri?html}"><@vrtx.msg code="event.events" default="Events" /></a></h2>
       <ul class="items">
         <#assign resSize = res.files?size />
         <#list res.files as event>

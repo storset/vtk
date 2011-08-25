@@ -1605,6 +1605,8 @@ fieldset {
 }
 
 input[type=text],
+input[type=submit],
+input[type=button],
 button {
   border: 1px solid transparent;
 }

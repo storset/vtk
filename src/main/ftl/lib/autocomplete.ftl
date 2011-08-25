@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#-- Adds the default required scripts necessary to use autocomplete functionality -->
 
 <#macro addAutoCompleteScripts srcBase>
@@ -21,5 +22,5 @@
       </#if>
     </#if>
   </#list>
-      setAutoComplete('${script.name}', '${serviceId}', {${parameters}});
+  setAutoComplete('${script.name}', '${serviceId}', {${parameters}});
 </#macro>

@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#-- Adds the default required scripts necessary to use show and hide functionality -->
 <#import "/lib/vortikal.ftl" as vrtx />
 

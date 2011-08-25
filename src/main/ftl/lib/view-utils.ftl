@@ -215,8 +215,6 @@
   </#if>
 </#macro>
 
-
-
 <#macro displayPageThroughUrls pageThroughUrls page >
   <#if pageThroughUrls?exists && (pageThroughUrls?size > 1) >
     <span class="vrtx-paging-wrapper">

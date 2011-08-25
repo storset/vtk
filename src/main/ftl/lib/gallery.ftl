@@ -15,7 +15,6 @@
 	  var options = {
 	    fadeInOutTime : ${fadeEffect}
 	  }
-  
 	  $(wrapper + " ul li a").vrtxSGallery(wrapper, container, ${maxWidth}, options);			  
     });
   // -->

@@ -3,7 +3,6 @@
 <#import "/lib/gallery.ftl" as gallery />
 
 <#macro addScripts collection>
-
   <#local listingType = vrtx.propValue(collection, 'display-type', '', 'imgl') />
   <#if displayTypeParam?exists>
     <#local listingType = displayTypeParam />
@@ -25,11 +24,9 @@
     <@addScriptURLs "js" "common" jsURLs />
     <@addScriptURLs "js" listingType jsURLs />
   </#if>
-  
 </#macro>
 
 <#macro addScriptURLs scriptType listingType urls>
-  
   <#if urls[listingType]?exists>
     <#list urls[listingType] as commonUrl>
       <#if scriptType == "css">
@@ -39,11 +36,9 @@
       </#if>
     </#list>
   </#if>
-
 </#macro>
 
 <#macro displayImages imageListing collection>
-
   <#local listingType = vrtx.propValue(collection, 'display-type', '', 'imgl') />
   <#if displayTypeParam?exists>
     <#local listingType = displayTypeParam />
@@ -56,11 +51,9 @@
   <#else>
     <@displayDefault imageListing collection />
   </#if>
-
 </#macro>
 
 <#macro displayDefault imageListing collection>
-
   <#local images=imageListing.files />
   <#if (images?size > 0)>
     <div class="vrtx-image-listing-container">
@@ -78,7 +71,9 @@
           <li class="vrtx-image-entry">
         </#if>
             <div class="vrtx-image-container">
-                <a href="${imageListing.urls[image.URI]?html}"><img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" title="${title}" alt="${title}" /></a>
+              <a href="${imageListing.urls[image.URI]?html}">
+                <img src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" title="${title}" alt="${title}" />
+              </a>
             </div>
 
             <div class="vrtx-image-info">
@@ -102,7 +97,6 @@
       </ul>
     </div>
   </#if>
-
 </#macro>
 
 <#macro displayGallery imageListing collection>
@@ -124,11 +118,9 @@
       </ul>
    </div>
  </#if>
-
 </#macro>
 
 <#macro displayTable imageListing collection>
-
   <#local images=imageListing.files />
   <#if (images?size > 0)>
     <div class="vrtx-image-table">
@@ -173,5 +165,4 @@
       </table>
     </div>
   </#if>
-
 </#macro>

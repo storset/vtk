@@ -114,7 +114,7 @@
 </#macro>
 
 <#macro displayValidationErrors errorMessages >
-  <#if errorMessages?size &gt; 0>
+  <#if errorMessages?has_content>
     <div class="errorContainer">
       <ul class="errors">
         <#list spring.status.errorMessages as error>

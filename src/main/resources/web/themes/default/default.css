@@ -1604,8 +1604,11 @@ fieldset {
   border: none;
 }
 
-input, button {
+input[type=text] {
   border: 1px solid transparent;
+}
+
+input, button {
   background: transparent;
   font-family: inherit;
   font-size: 100%;

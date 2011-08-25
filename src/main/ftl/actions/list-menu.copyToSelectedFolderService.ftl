@@ -6,6 +6,7 @@
 <#assign headerMsg = vrtx.getMsg("copyMove.copy-resources.header") />
 <#assign titleMsg = vrtx.getMsg("copyMove.copy.title") />
 <#assign filesI18n = vrtx.getMsg("copyMove.files") /> 
+<#assign filesTipI18n = vrtx.getMsg("copyMove.files.copy.tip.title") /> 
 <#assign actionURL = item.url />
 <#assign method = "post" />
 <#if resourcesDisclosed?exists>
@@ -21,7 +22,7 @@
   // -->
   </script>
   <p>
-    <abbr title="<h3>${filesI18n?capitalize}</h3><@vrtx.fileNamesAsLimitedList session.filesToBeCopied />">
+    <abbr title="<h4>${filesTipI18n}</h4><@vrtx.fileNamesAsLimitedList session.filesToBeCopied />">
       ${session.filesToBeCopied?size} ${filesI18n}
     </abbr>
   </p>

@@ -423,7 +423,7 @@ function logoutButtonAsLink() {
 function collectionListingInteraction() {
   if(!$(".directoryListing").length) { return; }
   
-  if(typeof moveUncheckedMessage != "undefined") { 
+  if(typeof moveUncheckedMessage !== "undefined") { 
     var options = {
       formName: "collectionListingForm",
       btnId: "collectionListing\\.action\\.move-resources",
@@ -432,7 +432,7 @@ function collectionListingInteraction() {
     };
     placeCopyMoveButtonInActiveTab(options);
   }
-  if(typeof copyUncheckedMessage != "undefined") {
+  if(typeof copyUncheckedMessage !== "undefined") {
     options = {
       formName: "collectionListingForm",
       btnId: "collectionListing\\.action\\.copy-resources",

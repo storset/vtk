@@ -810,6 +810,10 @@ ul.list-menu.resourceMenuRight p span {
   background-color: #fff;
 }
 
+#titleContainer .tip h3 {
+  margin-top: 0px;
+}
+
 #titleContainer abbr {
   color: #797979;
   cursor: pointer;

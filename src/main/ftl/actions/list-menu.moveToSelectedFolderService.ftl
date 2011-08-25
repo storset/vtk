@@ -21,7 +21,7 @@
   // -->
   </script>
   <p>
-    <abbr title="<@vrtx.fileNamesAsLimitedList session.filesToBeCopied />">
+    <abbr title="<h3>${filesI18n?capitalize}</h3><@vrtx.fileNamesAsLimitedList session.filesToBeCopied />">
       ${session.filesToBeCopied?size} ${filesI18n}
     </abbr>
   </p>

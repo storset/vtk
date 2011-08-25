@@ -27,23 +27,22 @@
     <script type="text/javascript" src="${jsURL}"></script>
     </#list>
   </#if>
-  <script type="text/javascript">
-  <!--
+  <script type="text/javascript"><!--
      $(document).ready(function(){
        var timestamp = 1 - new Date();
+       
        $("#tree").treeview({
          animated: "fast",
-         url: "?vrtx=admin&service=subresource-retrieve&uri=${report.uri}&ts=" + timestamp
+         url: "?vrtx=admin&service=subresource-retrieve&uri=${report.uri}&ts=" + timestamp // don't cache results
        })
        
        $("#tree").delegate("a", "click", function(e){
-	       // don't want click on links
+	       // Don't want click on links
 	       return false;
        });
-       $("#tree").vortexTips("li a", "#contents", 400, 300, 4000, 3000, 30, 100); // class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset
        
+       $("#tree").vortexTips("li a", "#contents", 400, 300, 4000, 3000, 30, 100); // class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset
      });
-
   // -->
   </script>
   </head>

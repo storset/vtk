@@ -1,7 +1,7 @@
 /*
  *  Vortex Admin enhancements
  *
- *  TODO: i18n
+ *  TODO: i18n AJAX error messages
  *
  */
  

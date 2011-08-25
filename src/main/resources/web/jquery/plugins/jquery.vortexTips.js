@@ -7,12 +7,12 @@
  *  Changes
  *  -------
  *  
- *  * Delegate mouseover/mouseleave to affect added nodes
- *  * Simpler parameters
+ *  * Delegate mouseover/mouseleave to affect added nodes dynamically
+ *  * Independent/multiple tips in different contexts (by appendTo)
+ *  * Configure different speeds for fadeIn, fadeOutPreDelay and fadeOut
  *  * Changed positioning 'algorithm'
- *  * Different animationspeeds for fadeIn / fadeOut
- *  * Caching of link-element
- *  
+ *  * Caching
+ *
  */
 (function ($) {
   $.fn.vortexTips = function (subSelector, appendTo, containerWidth, animInSpeed, animOutPreDelay, animOutSpeed, xOffset, yOffset) {

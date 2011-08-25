@@ -1604,9 +1604,13 @@ fieldset {
   border: none;
 }
 
-input[type=text],
-input[type=submit],
 input[type=button],
+input[type=file],
+input[type=image],
+input[type=password],
+input[type=reset],
+input[type=submit],
+input[type=text],
 button {
   border: 1px solid transparent;
 }

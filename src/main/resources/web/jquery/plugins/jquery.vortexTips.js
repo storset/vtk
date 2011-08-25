@@ -17,7 +17,7 @@
 (function ($) {
   $.fn.vortexTips = function (subSelector, appendTo, containerWidth, animInSpeed, animOutPreDelay, animOutSpeed, xOffset, yOffset) {
 
-    var html = "<span class='tip'>&nbsp;</span>";
+    var html = "<span class='tip " + appendTo.substring(1) + "'>&nbsp;</span>";
     var tip;
     var tipText;
     var fadeOutTimer;
@@ -26,7 +26,7 @@
       if (e.type == "mouseover") {
         clearTimeout(fadeOutTimer); // remove fadeOutTimer
         $(appendTo).append(html);
-        tip = $(".tip");
+        tip = $(".tip." + appendTo.substring(1));
         tip.hide();
         var link = $(this);
         var classes = link.parent().attr("class") + " " + link.parent().parent().attr("class");

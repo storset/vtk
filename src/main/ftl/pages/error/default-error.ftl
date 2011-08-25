@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+<#ftl strip_whitespace=true>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
- <title>500 - Internal Server Error</title>
+  <title>500 - Internal Server Error</title>
 </head>
 <body>
 
@@ -19,11 +20,9 @@ cannot be displayed due to an error.</p>
 
 <p>Server-administrator: <a href="mailto:${webmaster}">${webmaster}</a></p>
 
-</div>
-
 <#if debugErrors?exists && debugErrors>
-<hr style="width: 98%;">
-<#include "/lib/error-detail.ftl" />
+  <hr />
+  <#include "/lib/error-detail.ftl" />
 </#if>
 
 </body>

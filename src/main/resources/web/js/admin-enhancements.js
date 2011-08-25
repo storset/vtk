@@ -339,7 +339,7 @@ function initFileUpload() {
   if(form.length) {
     var inputFile = form.find("#file");
 
-    $("<div class='vrtx-textfield vrtx-file-upload'><input id='fake-file' /><a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a></div>'")
+    $("<div class='vrtx-textfield vrtx-file-upload'><input id='fake-file' type='text' /><a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a></div>'")
       .insertAfter(inputFile);
       
     inputFile.addClass("js-on");

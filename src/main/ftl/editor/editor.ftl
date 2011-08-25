@@ -123,7 +123,7 @@
       
       <#-- Margin-bottom before save- cancel button for collection, event- or articlelisting -->
       <#if (resource.resourceType = 'event-listing' ||
-               resource.resourceType = 'article-listing' || resource.resourceType = 'collection')>
+            resource.resourceType = 'article-listing' || resource.resourceType = 'collection')>
       	<div id="allowedValues"></div>
       </#if>
 

@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#import "/lib/ping.ftl" as ping />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "include/scripts.ftl" as scripts />
@@ -8,7 +9,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-
   <title>Edit structured resource</title>
   <@ping.ping url=pingURL['url'] interval=300 />
   <@editor.addCkScripts />
@@ -28,7 +28,6 @@
       initDatePicker("${language}");
     });
   
-
     UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
     COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
     window.onbeforeunload = unsavedChangesInEditorMessage;
@@ -53,7 +52,7 @@
      cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
     }
     
-    //-->
+  //-->
   </script>
 
   <@editor.addDatePickerScripts language />
@@ -70,15 +69,14 @@
 </head>
 <body>
 
-<#assign locale = springMacroRequestContext.getLocale() />
+  <#assign locale = springMacroRequestContext.getLocale() />
+  <#assign header = form.resource.getLocalizedMsg("header", locale, null) />
+  <h2>${header}</h2>
 
-<#assign header = form.resource.getLocalizedMsg("header", locale, null) />
-<h2>${header}</h2>
-
-<div class="submitButtons submit-extra-buttons">
+  <div class="submitButtons submit-extra-buttons">
     <#include "/system/help.ftl" />
-    <a class="help-link" href="${form.listComponentServiceURL?html}" target="new_window"><@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" /></a>
-    <div class="vrtx-button">
+      <a class="help-link" href="${form.listComponentServiceURL?html}" target="new_window"><@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" /></a>
+      <div class="vrtx-button">
       <input type="button" onClick="$('#updateViewAction').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
     </div>
     <div class="vrtx-focus-button">
@@ -87,50 +85,48 @@
     <div class="vrtx-button">
       <input type="button" onClick="$('#cancelAction').click()"  value="${vrtx.getMsg("editor.cancel")}" />
     </div>
-</div>  
+  </div>  
 
-<form action="${form.submitURL?html}" method="post">
+  <form action="${form.submitURL?html}" method="post">
+    <#list form.elements as elementBox>
+      <#if elementBox.formElements?size &gt; 1>
+        <#assign groupClass = "vrtx-grouped" />
+        <#if elementBox.metaData['horizontal']?exists>
+          <#assign groupClass = groupClass + "-horizontal" />
+        <#elseif elementBox.metaData['vertical']?exists>
+          <#assign groupClass = groupClass + "-vertical" />
+        </#if>
+        <#if elementBox.name?exists>
+          <#assign groupName = elementBox["name"] />
+          <#assign groupClass = groupClass + " ${groupName?string}" />
+          <div class="${groupClass}">
+            <#assign localizedHeader = form.resource.getLocalizedMsg(elementBox.name, locale, null) />
+            <div class="header">${localizedHeader}</div>
+        <#else>
+          <div class="${groupClass}">
+        </#if>
+      </#if>
 
-<#list form.elements as elementBox>
-
-  <#if elementBox.formElements?size &gt; 1>
-    <#assign groupClass = "vrtx-grouped" />
-    <#if elementBox.metaData['horizontal']?exists>
-      <#assign groupClass = groupClass + "-horizontal" />
-    <#elseif elementBox.metaData['vertical']?exists>
-      <#assign groupClass = groupClass + "-vertical" />
-    </#if>
-    <#if elementBox.name?exists>
-      <#assign groupName = elementBox["name"] />
-      <#assign groupClass = groupClass + " ${groupName?string}" />
-       <div class="${groupClass}">
-       <#assign localizedHeader = form.resource.getLocalizedMsg(elementBox.name, locale, null) />
-       <div class="header">${localizedHeader}</div>
-    <#else>
-       <div class="${groupClass}">
-    </#if>
-  </#if>
-
-  <#list elementBox.formElements as elem>
-    <@vrtxJSONCommon.printPropertyEditView form elem locale />
-  </#list>
+      <#list elementBox.formElements as elem>
+        <@vrtxJSONCommon.printPropertyEditView form elem locale />
+      </#list>
   
-  <#if elementBox.formElements?size &gt; 1>
+      <#if elementBox.formElements?size &gt; 1>
+        </div>
+      </#if>
+    </#list>
+    
+    <div class="submit submitButtons">
+      <div class="vrtx-button">
+        <input type="submit" id="updateViewAction" onClick="performSave();" name="updateViewAction" value="${vrtx.getMsg("editor.saveAndView")}" />
+      </div>
+      <div class="vrtx-focus-button">
+        <input type="submit" id="updateAction" onClick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
+      </div>
+      <div class="vrtx-button">
+        <input type="submit" onClick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
+      </div>
     </div>
-  </#if>
-  
-</#list>
-<div class="submit submitButtons">
-    <div class="vrtx-button">
-      <input type="submit" id="updateViewAction" onClick="performSave();" name="updateViewAction" value="${vrtx.getMsg("editor.saveAndView")}" />
-    </div>
-    <div class="vrtx-focus-button">
-      <input type="submit" id="updateAction" onClick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
-    </div>
-    <div class="vrtx-button">
-      <input type="submit" onClick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
-    </div>
-</div>
-</form>
+  </form>
 </body>
 </html>

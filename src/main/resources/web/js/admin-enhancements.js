@@ -49,7 +49,7 @@ vrtxAdmin.isOpera = $.browser.opera;
 vrtxAdmin.isWin = ((agent.indexOf("win") != -1) || (agent.indexOf("16bit") != -1));
 // v3.?: vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;
 
-// Upgrade easing if not < IE 9
+// Upgrade easing algorithm from 'swing' to 'easeInQuad' if not < IE 9
 if(!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9)) {
   this.transitionEasing = "easeInQuad"; // ..wondering if we can just use "swing" everywhere because of fast transitions
 }

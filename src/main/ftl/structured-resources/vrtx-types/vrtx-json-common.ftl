@@ -213,7 +213,7 @@
 
             <script type="text/javascript"><!--
        	      $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-remove-button").click(function(){
-	        removeNode("${inputFieldName}", ${counter} ,  ${arrayOfIds} );
+	            removeNode("${inputFieldName}", ${counter} ,  ${arrayOfIds} );
               });
             // -->
        	    </script>

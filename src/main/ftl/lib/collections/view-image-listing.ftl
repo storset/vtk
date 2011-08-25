@@ -89,7 +89,6 @@
               <div class="vrtx-image-creation-time">
                 ${creationTime}
               </div>
-
             </div>
         </li>
         <#assign count = count +1 />

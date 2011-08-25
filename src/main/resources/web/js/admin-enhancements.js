@@ -440,7 +440,7 @@ function collectionListingInteraction() {
       btnId: "collectionListing\\.action\\.copy-resources",
       service: "copyResourcesService",
       msg: copyUncheckedMessage
-    };
+    }; 
     placeCopyMoveButtonInActiveTab(options);
   }
   
@@ -473,7 +473,7 @@ function placeCopyMoveButtonInActiveTab(options) {
   var li = $("li." + options.service);
   li.html("<a id='" + options.service + "' href='javascript:void(0);'>" + btn.attr('title') + "</a>");
   $("#" + options.service).click(function () {
-    if (!$("form[name=" + options.formName + "] input[type=checkbox]:checked").length) {
+    if (!$("form[name=" + options.formName + "] td input[type=checkbox]:checked").length) {
       alert(options.msg);
     } else {
       $("#" + options.btnId).click();
@@ -488,7 +488,7 @@ function placeDeleteButtonInActiveTab() {
   var li = $('li.deleteResourcesService');
   li.html('<a id="deleteResourceService" href="javascript:void(0);">' + btn.attr('title') + '</a>');
   $('#deleteResourceService').click(function () {
-    var boxes = $('form[name=collectionListingForm] input[type=checkbox]:checked');
+    var boxes = $('form[name=collectionListingForm] td input[type=checkbox]:checked');
     if (!boxes.length) {
       alert(deleteUncheckedMessage);
     } else {
@@ -519,7 +519,7 @@ function placeRecoverButtonInActiveTab() {
                               + '<a id="recoverResourceService" href="javascript:void(0);">' 
                               + btn.attr('value') + '</a></li></ul>');
   $('#recoverResourceService').click(function () {
-    var boxes = $('form.trashcan input[type=checkbox]:checked');
+    var boxes = $('form.trashcan td input[type=checkbox]:checked');
     if (!boxes.length) {
       alert(recoverUncheckedMessage); //TODO i18n from somewhere
     } else {
@@ -539,7 +539,7 @@ function placeDeletePermanentButtonInActiveTab() {
     .append('<li class="deleteResourcePermanentService"><a id="deleteResourcePermanentService" href="javascript:void(0);">' 
           + btn.attr('value') + '</a></li>');
   $('#deleteResourcePermanentService').click(function () {
-    var boxes = $('form.trashcan input[type=checkbox]:checked');
+    var boxes = $('form.trashcan td input[type=checkbox]:checked');
     
     if (!boxes.length) {
       alert(deletePermanentlyUncheckedMessage);

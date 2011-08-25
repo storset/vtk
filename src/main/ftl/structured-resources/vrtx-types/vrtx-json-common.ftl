@@ -266,7 +266,7 @@
 
                <script type="text/javascript"><!--
                  $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-up-button").click(function(){
-     		   swapContent(${counter}, ${arrayOfIds}, -1, "${inputFieldName}");
+     		       swapContent(${counter}, ${arrayOfIds}, -1, "${inputFieldName}");
                  });
                // -->
                </script>

@@ -118,7 +118,9 @@ $(document).ready(function () {
         insertAfterOrReplaceClass: "#titleContainer ul.resourceMenuLeft",
         isReplacing: false,
         nodeType: "div",
-        simultanSliding: true
+        simultanSliding: true,
+        transitionSpeed: vrtxAdmin.transitionSpeed,
+        transitionEasing: vrtxAdmin.transitionEasing
     };
     vrtxAdmin.getAjaxForm(getAjaxOptions);
   }
@@ -133,7 +135,9 @@ $(document).ready(function () {
         insertAfterOrReplaceClass: "#titleContainer ul.resourceMenuLeft",
         isReplacing: false,
         nodeType: "div",
-        simultanSliding: true
+        simultanSliding: true,
+        transitionSpeed: vrtxAdmin.transitionSpeed,
+        transitionEasing: vrtxAdmin.transitionEasing
     };
     vrtxAdmin.getAjaxForm(getAjaxOptions);
   }
@@ -154,7 +158,9 @@ $(document).ready(function () {
           insertAfterOrReplaceClass: ".activeTab ul.tabMenu2",
           isReplacing: false,
           nodeType: "div",
-          simultanSliding: true
+          simultanSliding: true,
+          transitionSpeed: vrtxAdmin.transitionSpeed,
+          transitionEasing: vrtxAdmin.transitionEasing
         };
         vrtxAdmin.getAjaxForm(getAjaxOptions);
       
@@ -163,7 +169,9 @@ $(document).ready(function () {
           updateSelectors: ["#contents"],
           errorContainer: "errorContainer",
           errorContainerInsertAfter: "> ul",
-          funcComplete: collectionListingInteraction
+          funcComplete: collectionListingInteraction,
+          transitionSpeed: vrtxAdmin.transitionSpeed,
+          transitionEasing: vrtxAdmin.transitionEasing
         };
         vrtxAdmin.postAjaxForm(postAjaxOptions);
       
@@ -175,7 +183,9 @@ $(document).ready(function () {
           isReplacing: false,
           nodeType: "div",
           funcComplete: function(p){ initFileUpload() },
-          simultanSliding: true
+          simultanSliding: true,
+          transitionSpeed: vrtxAdmin.transitionSpeed,
+          transitionEasing: vrtxAdmin.transitionEasing
         };
         vrtxAdmin.getAjaxForm(getAjaxOptions);
         initFileUpload(); // when error message
@@ -193,7 +203,6 @@ $(document).ready(function () {
       initPermissionForm("expandedForm-" + privilegiesPermissions[i]);
     }
 
-    /* TODO: trekkspilleffekt
     for (i = privilegiesPermissions.length; i--;) {
       getAjaxOptions = {
         selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax",
@@ -202,7 +211,9 @@ $(document).ready(function () {
         isReplacing: true,
         nodeType: "div",
         funcComplete: initPermissionForm,
-        simultanSliding: true
+        simultanSliding: false,
+        transitionSpeed: 0,
+        transitionEasing: "linear"
       };
       vrtxAdmin.getAjaxForm(getAjaxOptions);
     
@@ -212,11 +223,12 @@ $(document).ready(function () {
                           ".resource-menu.read-permissions"],
         errorContainer: "errorContainer",
         errorContainerInsertAfter: ".groups-wrapper",
-        funcProceedCondition: checkStillAdmin
+        funcProceedCondition: checkStillAdmin,
+        transitionSpeed: 0,
+        transitionEasing: "linear"
       };
       vrtxAdmin.postAjaxForm(postAjaxOptions);
     }
-    */
   
     // AJAX INIT: More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
   
@@ -231,7 +243,9 @@ $(document).ready(function () {
         isReplacing: true,
         nodeType: "tr",
         funcComplete: initPermissionForm,
-        simultanSliding: true
+        simultanSliding: true,
+        transitionSpeed: vrtxAdmin.transitionSpeed,
+        transitionEasing: vrtxAdmin.transitionEasing
       };
       vrtxAdmin.getAjaxForm(getAjaxOptions);
     
@@ -240,7 +254,9 @@ $(document).ready(function () {
         updateSelectors: ["tr." +  privilegiesPermissionsInTable[i],
                           ".resource-menu.read-permissions"],
         errorContainer: "errorContainer",
-        errorContainerInsertAfter: ".groups-wrapper"
+        errorContainerInsertAfter: ".groups-wrapper",
+        transitionSpeed: vrtxAdmin.transitionSpeed,
+        transitionEasing: vrtxAdmin.transitionEasing
       };
       vrtxAdmin.postAjaxForm(postAjaxOptions);
     }
@@ -277,7 +293,9 @@ $(document).ready(function () {
         insertAfterOrReplaceClass: "tr.prop-" + propsAbout[i],
         isReplacing: true,
         nodeType: "tr",
-        simultanSliding: true
+        simultanSliding: true,
+        transitionSpeed: vrtxAdmin.transitionSpeed,
+        transitionEasing: vrtxAdmin.transitionEasing
       };
       vrtxAdmin.getAjaxForm(getAjaxOptions);
     }
@@ -709,6 +727,8 @@ function dropdownCollectionGlobalMenu() {
  *                 funcComplete: callback function(selectorClass) to run when AJAX is completed and form is visible
  *                 simultanSliding: whether to slideUp existing form at the same time slideDown new form 
  *                                  (only when there is an existing form)
+ *                 transitionSpeed: transition speed in ms
+ *                 transitionEasing: transition easing algorithm
  */
 
 VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
@@ -788,7 +808,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
           } 
           // --
           
-          $("#app-content .expandedForm").slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasing, function() {
+          $("#app-content .expandedForm").slideUp(options.transitionSpeed, options.transitionEasing, function() {
             if(existExpandedFormIsReplacing) {
               var expanded = $(this);
 
@@ -873,7 +893,7 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, form) {
   if(options.nodeType == "tr") {
     $(options.nodeType + "." + options.selectorClass).prepareTableRowForSliding();
   }
-  $(options.nodeType + "." + options.selectorClass).hide().slideDown(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasing, function() {
+  $(options.nodeType + "." + options.selectorClass).hide().slideDown(options.transitionSpeed, options.transitionEasing, function() {
     $(this).find("input[type=text]:first").focus();
   });
 };
@@ -887,6 +907,8 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, form) {
  *                errorContainerInsertAfter: selector for where error container should be inserted after
  *                funcProceedCondition: must return true to continue
  *                funcComplete: callback function to run when AJAX is completed
+ *                transitionSpeed: transition speed in ms
+ *                transitionEasing: transition easing algorithm
  */
 
 VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
@@ -927,7 +949,7 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
             if(options.funcComplete) {
               options.funcComplete();
             }
-            form.parent().slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasing, function () {
+            form.parent().slideUp(options.transitionSpeed, options.transitionEasing, function () {
               $(this).remove();
             });
           }

@@ -804,14 +804,21 @@ ul.list-menu.resourceMenuRight p span {
 
 /* Tooltip */
 
-#titleContainer .tip {
-  border: 1px solid #CBCBCB;
+.tip {
+  border: 1px solid #cbcbcb;
   padding: 14px;
   background-color: #fff;
 }
 
-#titleContainer .tip h4 {
+.tip h4 {
   margin-top: 0px;
+}
+
+.tip #title-wrapper {
+  display: block;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #cbcbcb;
 }
 
 #titleContainer abbr {

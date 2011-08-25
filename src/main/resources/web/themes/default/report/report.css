@@ -125,11 +125,6 @@ td.vrtx-report-diagram-text {
 
 .tip {
   display: none;
-  background-color: #fff;
-  border: 1px solid #666;
-  padding: 7px 10px;
-  font-size: 90%;
-  color: black;
   /* Progressive enhancements */
   /*-webkit-border-radius: 10px;
   -moz-border-radius: 10px;
@@ -146,20 +141,12 @@ td.vrtx-report-diagram-text {
 .tip.file,
 .tip.folder {
   background-repeat: no-repeat;
-  background-position: 10px 8px;
+  background-position: 12px 14px;
 }
 
 .tip.file #title,
 .tip.folder #title {
   padding-left: 18px;
-}
-
-.tip.file #title-wrapper,
-.tip.folder #title-wrapper {
-  display: block;
-  padding-bottom: 5px;
-  margin-bottom: 5px;
-  border-bottom: 1px solid #aaa;
 }
 
 .tip.allowed-for-all.folder {

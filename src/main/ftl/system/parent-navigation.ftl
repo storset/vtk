@@ -8,6 +8,6 @@
           <@vrtx.msg code="collectionListing.navigateToParent" default="Up"/>
         </a>
       </li>
-   </ul>
- </#if>
+    </ul>
+  </#if>
 </#if>

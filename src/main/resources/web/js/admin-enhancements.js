@@ -251,9 +251,7 @@ $(document).ready(function () {
   }
   
   // AJAX INIT: About property forms
-  
-  
-  
+
   if($("body#vrtx-about").length && !vrtxAdmin.isIE7) { // turn of tmp. in IE7
     var propsAbout = [
       "contentLocale",

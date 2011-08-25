@@ -278,9 +278,10 @@
                </div>
 
                <script type="text/javascript"><!--
-          	 $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-down-button").click(function(){
-	     	   swapContent(${counter}, ${arrayOfIds}, 1, "${inputFieldName}");
-	     	 });
+          	     $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-down-button").click(function(){
+	     	       swapContent(${counter}, ${arrayOfIds}, 1, "${inputFieldName}");
+	     	     });
+	     	   // -->
                </script>
              </#if>
 

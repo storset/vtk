@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#macro vrtxRadio title tooltip classes options>
   <div class="vrtx-radio ${classes}">
     <div>${title}</div>

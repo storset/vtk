@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#-- JSON elements interaction in new documenttypes (add, remove and move) -->
 
 <#macro script>

@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#macro vrtxFileRef title tooltip classes>
   <div class="vrtx-file-ref ${classes}">
 	<div>

@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#import "vrtx-boolean.ftl" as vrtxBoolean />
 <#import "vrtx-datetime.ftl" as vrtxDateTime />
 <#import "vrtx-file-ref.ftl" as vrtxFileRef />

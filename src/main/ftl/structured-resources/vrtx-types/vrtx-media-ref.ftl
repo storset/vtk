@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#macro printPropertyEditView title inputFieldName tooltip="" classes="" value="" baseFolder="/">
   <div class="vrtx-media-ref ${classes}">
     <div>

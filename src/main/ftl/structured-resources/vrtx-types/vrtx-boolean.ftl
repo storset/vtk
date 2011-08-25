@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#macro printPropertyEditView title inputFieldName description value="" tooltip="" classes="" defaultValue="true">
   <#assign locale = springMacroRequestContext.getLocale() />
   <#if value=="" >

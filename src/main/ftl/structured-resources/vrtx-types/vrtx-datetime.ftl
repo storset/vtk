@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#macro printPropertyEditView title inputFieldName value="" tooltip="" classes="">
   <div class="vrtx-string ${classes}">
     <label for="${inputFieldName}">${title}</label>

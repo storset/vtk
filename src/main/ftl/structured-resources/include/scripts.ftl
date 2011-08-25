@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#import "/lib/autocomplete.ftl" as autocomplete />
 <#import "/lib/showhide.ftl" as showhide />
 <#import "/lib/multipleinputfields.ftl" as multipleinputfields />

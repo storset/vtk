@@ -1116,7 +1116,7 @@ function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
 
 function showHideProperties(init, conditionHide, conditionHideEqual, showHideProps) {
   var conditionHideVal = $(conditionHide).val(),
-      showHidePropertyFunc = showHideProperty,
+      showHidePropertyFunc = showHideProperty,  // cache to function scope
       i = 0,
       len = showHideProps.length;
       

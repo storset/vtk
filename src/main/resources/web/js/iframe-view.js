@@ -6,6 +6,7 @@
  *  Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage.
  *
  *  Updated with cross-browser postMessage: http://benalman.com/code/projects/jquery-postmessage/examples/iframe/
+ *    -- which means using hash if not supported
  */
 $(document).ready(function () {
 

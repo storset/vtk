@@ -8,6 +8,7 @@
  *  TODO: refactor with iframe-view.js (much of same code used here without another iframe)
  *
  *  Updated with cross-browser postMessage: http://benalman.com/code/projects/jquery-postmessage/examples/iframe/
+ *    -- which means using hash if not supported
  *  
  */
 $(document).ready(function () {

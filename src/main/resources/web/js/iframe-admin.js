@@ -2,6 +2,7 @@
  *  Not essential functionality. Only works in browsers which support postMessage
  *
  *  Updated with cross-browser postMessage: http://benalman.com/code/projects/jquery-postmessage/examples/iframe/
+ *    -- which means using hash if not supported
  */
 $(document).ready(function () {
   $.receiveMessage(function(e) {

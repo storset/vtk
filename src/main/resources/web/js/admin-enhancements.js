@@ -1270,15 +1270,12 @@ function adjustImageAndCaptionContainer(previewNode) {
 }
 
 function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
-  urlobj = obj;
-  if (type) {
-    openServerBrowser(editorBase + '/plugins/filemanager/browser/default/browser.html?BaseFolder='
-                    + baseFolder + '&Type=' + type + '&Connector=' + editorBrowseUrl, screen.width * 0.7, screen.height * 0.7);
-
-  } else {
-    openServerBrowser(editorBase + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' 
-                    + baseFolder + '&Type=Image&Connector=' + editorBrowseUrl, screen.width * 0.7, screen.height * 0.7);
+  urlobj = obj; // NB: store to global var
+  if (!type) {
+    type = 'Image';
   }
+  openServerBrowser(editorBase + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' 
+                  + baseFolder + '&Type=' + type + '&Connector=' + editorBrowseUrl, screen.width * 0.7, screen.height * 0.7);
 }
  
 function openServerBrowser(url, width, height) {

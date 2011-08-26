@@ -20,8 +20,7 @@ $(document).ready(function () {
     if (computedHeight > setHeight) {
       setHeight = computedHeight;
     }
-    document.body.style.height = setHeight + "px";
-    
+    document.body.style.height = setHeight + "px"; 
     if(parent) {
       // Pass our height to parent since it is typically cross domain (and can't access it directly)
       var parent_url = decodeURIComponent(document.location.hash.replace(/^#/,''));

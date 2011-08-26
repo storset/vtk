@@ -61,7 +61,7 @@
     	<#assign url = resourceReference />	  
     </#if>
     
-    <#assign origUrl = url />
+    <#assign origUrl = url?replace("?vrtx=view-as-webpage", "") + "?vrtx=admin&action=preview" />
     
     <#if url?contains("?")>
       <#assign url = url + "&amp;" + previewViewParameter />
@@ -78,7 +78,7 @@
       <p class="previewUnavailable">${vrtx.getMsg("preview.httpOnly")}</p>
     
     <#else>
-      <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}#${origUrl}?vrtx=admin&action=preview" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" vspace="0" hspace="0" style="overflow:visible; width:100%; ">
+      <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}#${origUrl}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" vspace="0" hspace="0" style="overflow:visible; width:100%; ">
         [Your user agent does not support frames or is currently configured
         not to display frames. However, you may visit
         <a href="${resourceReference}">the related document.</a>]

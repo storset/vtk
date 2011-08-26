@@ -1274,7 +1274,7 @@ function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
   if (!type) {
     type = 'Image';
   }
-  // Use 70% of screen
+  // Use 70% of screen dimension
   openServerBrowser(editorBase + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' 
                   + baseFolder + '&Type=' + type + '&Connector=' + editorBrowseUrl, screen.width * 0.7, screen.height * 0.7);
 }

@@ -15,7 +15,7 @@ $(document).ready(function () {
         if (previewIframe) {
           var newHeight = previewIframeMinHeight;
           var dataHeight = parseInt(event.data, 10);
-          if (!isNaN(dataHeight) && (dataHeight > previewIframeMinHeight) && (dataHeight <= previewIframeMaxHeight)) {
+          if (!$.isNaN(dataHeight) && (dataHeight > previewIframeMinHeight) && (dataHeight <= previewIframeMaxHeight)) {
             newHeight = dataHeight
           }
           previewIframe.style.height = newHeight + "px";

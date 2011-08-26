@@ -22,7 +22,7 @@ $(document).ready(function () {
     if (previewViewIframe) {
       var iSource = previewViewIframe.src;
       previewViewIframe.src = '';
-      previewViewIframe.src = iSource;
+      previewViewIframe.src = iSource; 
     }
   }
   $('iframe#previewViewIframe').load(function (e) {

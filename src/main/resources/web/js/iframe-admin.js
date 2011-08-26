@@ -14,7 +14,7 @@ $(document).ready(function () {
       if (previewIframe) {
         var newHeight = previewIframeMinHeight;
         var recievedData = e.data;
-        if(recievedData.indexOf("height") == -1) {
+        if(!(recievedData.indexOf) || (recievedData.indexOf("height") == -1)) {
           var dataHeight = parseInt(recievedData, 10); // recieved with postMessage
         } else {
           var dataHeight = Number(recievedData.replace( /.*height=(\d+)(?:&|$)/, '$1' ) );  // recieved via hash

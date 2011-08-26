@@ -1275,7 +1275,8 @@ function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
   var serverBrowserWindow = openServerBrowser(editorBase + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' 
                                             + baseFolder + '&Type=' + type + '&Connector=' + editorBrowseUrl,
                                               screen.width * 0.7, screen.height * 0.7);
-  serverBrowserWindow.focus();
+                                              
+  serverBrowserWindow.focus(); // TODO: refocus when user closes window with [x] and tries to open it again via browse..
 }
  
 function openServerBrowser(url, width, height) {

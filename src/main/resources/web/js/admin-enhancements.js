@@ -1307,7 +1307,7 @@ function SetUrl(url, width, height, alt) {
 
 /* Utils */
 
-// Use jQuery wrap function instead?
+// Use our own wrap function
 VrtxAdmin.prototype.wrap = function(node, cls, html) {
   return "<" + node + " class='" + cls + "'>" 
          + html 

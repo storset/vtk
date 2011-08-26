@@ -11,7 +11,10 @@
  *    -- which means using hash if not supported
  */
 $(document).ready(function () {
+  var hasPostMessage = window['postMessage'] && (!$.browser.opera && $.browser.version < 9.65));
 
+  var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
+  
   if ($.browser.msie) {
     // iframe load event not firing in IE8 when page w. iframe is inside another iframe
     // Setting the iframe src seems to fix the problem
@@ -34,8 +37,12 @@ $(document).ready(function () {
       this.style.height = setHeight + "px";
       if (parent) {
         // Pass our height to parent since it is typically cross domain (and can't access it directly)
-        var parent_url = decodeURIComponent(document.location.hash.replace(/^#/,''));
-        $.postMessage({height: setHeight}, parent_url, parent);
+        if(hasPostMessage) {
+          parent.postMessage(setHeight, vrtxAdminOrigin);
+        } else { // use the hash stuff in plugin from jQuery "Cowboy"
+          var parent_url = decodeURIComponent(document.location.hash.replace(/^#/,''));
+          $.postMessage({height: setHeight}, parent_url, parent);        
+        }
       }
     } catch(e){
       if(typeof console !== "undefined" && console.log) {

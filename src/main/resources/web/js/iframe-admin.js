@@ -13,7 +13,12 @@ $(document).ready(function () {
       var previewIframe = $("iframe#previewIframe")[0]
       if (previewIframe) {
         var newHeight = previewIframeMinHeight;
-        var dataHeight = Number(e.data.replace( /.*height=(\d+)(?:&|$)/, '$1' ) );
+        var recievedData = e.data;
+        if(recievedData.indexOf("height") == -1) {
+          var dataHeight = parseInt(recievedData, 10); // recieved with postMessage
+        } else {
+          var dataHeight = Number(recievedData.replace( /.*height=(\d+)(?:&|$)/, '$1' ) );  // recieved via hash
+        }
         if (!$.isNaN(dataHeight) && (dataHeight > previewIframeMinHeight) && (dataHeight <= previewIframeMaxHeight)) {
           newHeight = dataHeight
         }

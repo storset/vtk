@@ -1123,19 +1123,11 @@ function showHideProperties(init, conditionHide, conditionHideEqual, showHidePro
 }
 
 function showHideProperty(id, init, show) {
-  if (init) {
-    if (show) {
-      $(id).show();
-    } else {
-      $(id).hide();
-    }
-  } else {
-    if (show) {
-      $(id).slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasing);
-    } else {
-      $(id).slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasing);
-    }
-  }
+  init ? 
+         show ? $(id).show() : $(id).hide()
+       : 
+         show ? $(id).slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasing)
+              : $(id).slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasing);
 }
 
 VrtxAdmin.prototype.zebraTables = function(selector) {
@@ -1149,20 +1141,21 @@ VrtxAdmin.prototype.zebraTables = function(selector) {
 /* Featured articles */
 
 function loadFeaturedArticles(addName, removeName, browseName, editorBase, baseFolder, editorBrowseUrl) {
-  if ($("#resource\\.featured-articles").val() == null) {
+  var featuredArticles = $("#resource\\.featured-articles");
+  if (featuredArticles.val() == null) {
     return;
   }
 
-  $("#resource\\.featured-articles").hide();
-  $("#resource\\.featured-articles").parent().hide();
+  featuredArticles.hide();
+  featuredArticles.parent().hide();
 
-  $("#vrtx-resource\\.featured-articles").append("<div id='vrtx-featured-article-add'>"
-                                               + "<div class=\"vrtx-button\"><button onclick=\"addFormField(null, '" 
-                                               + removeName + "', '" + browseName + "', '" + editorBase + "', '" + baseFolder 
-                                               + "', '" + editorBrowseUrl + "'); return false;\">" + addName + "</button></div>"
-                                               + "<input type='hidden' id='id' name='id' value='1' />");
+  featuredArticles.append("<div id='vrtx-featured-article-add'>"
+                        + "<div class=\"vrtx-button\"><button onclick=\"addFormField(null, '" 
+                        + removeName + "', '" + browseName + "', '" + editorBase + "', '" + baseFolder 
+                        + "', '" + editorBrowseUrl + "'); return false;\">" + addName + "</button></div>"
+                        + "<input type='hidden' id='id' name='id' value='1' />");
 
-  var listOfFiles = document.getElementById("resource\.featured-articles").value.split(",");
+  var listOfFiles = featuredArticles.val().split(",");
   var addFormFieldFunc = addFormField;
   for (var i = 0, len = listOfFiles.length; i < len; i++) {
     addFormFieldFunc(jQuery.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);

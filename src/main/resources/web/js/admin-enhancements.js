@@ -72,8 +72,8 @@ $(window).load(function() {
   // When AJAX is turned of because of http->https we need to ensure form is in the right place
   var formResourceMenu = $("#titleContainer:last-child").hasClass("expandedForm");
   if(!formResourceMenu) {
-    var ff = $("#titleContainer .expandedForm").remove();
-    $("#titleContainer").append(ff);
+    var expandedForm = $("#titleContainer .expandedForm").remove();
+    $("#titleContainer").append(expandedForm);
   }
 });
                                             
@@ -402,7 +402,7 @@ function fileInfo(file) {
 function interceptEnterKey(idOrClass) {
   $("#app-content").delegate("form input" + idOrClass, "keypress", function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-      return false; // cancel the default browser click
+      e.preventDefault(); // cancel the default browser click
     }
   });
 }
@@ -411,7 +411,7 @@ function interceptEnterKeyAndReroute(txt, btn) {
   $("#app-content").delegate(txt, "keypress", function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       $(btn).click(); // click the associated button
-      return false; // cancel the default browser click
+       e.preventDefault();
     }
   });
 }
@@ -428,9 +428,10 @@ function logoutButtonAsLink() {
   btn.hide();
   btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">'
           + btn.attr('value') + '</a>');
-  $('#logoutAction\\.link').click(function () {
+  $('#logoutAction\\.link').click(function (e) {
     btn.click();
-    return false;
+    e.stopPropagation();
+    e.preventDefault();
   });
 }
 
@@ -488,13 +489,14 @@ function placeCopyMoveButtonInActiveTab(options) {
   btn.hide();
   var li = $("li." + options.service);
   li.html("<a id='" + options.service + "' href='javascript:void(0);'>" + btn.attr('title') + "</a>");
-  $("#" + options.service).click(function () {
+  $("#" + options.service).click(function (e) {
     if (!$("form[name=" + options.formName + "] td input[type=checkbox]:checked").length) {
       alert(options.msg);
     } else {
       $("#" + options.btnId).click();
     }
-    return false;
+    e.stopPropagation();
+    e.preventDefault();
   });
 }
 
@@ -503,7 +505,7 @@ function placeDeleteButtonInActiveTab() {
   btn.hide();
   var li = $('li.deleteResourcesService');
   li.html('<a id="deleteResourceService" href="javascript:void(0);">' + btn.attr('title') + '</a>');
-  $('#deleteResourceService').click(function () {
+  $('#deleteResourceService').click(function (e) {
     var boxes = $('form[name=collectionListingForm] td input[type=checkbox]:checked');
     if (!boxes.length) {
       alert(deleteUncheckedMessage);
@@ -521,7 +523,8 @@ function placeDeleteButtonInActiveTab() {
         $('#collectionListing\\.action\\.delete-resources').click();
       }
     }
-    return false;
+    e.stopPropagation();
+    e.preventDefault();
   });
 }
 
@@ -534,14 +537,15 @@ function placeRecoverButtonInActiveTab() {
   $("#main .activeTab").prepend('<ul class="list-menu tabMenu2"><li class="recoverResourceService">'
                               + '<a id="recoverResourceService" href="javascript:void(0);">' 
                               + btn.attr('value') + '</a></li></ul>');
-  $('#recoverResourceService').click(function () {
+  $('#recoverResourceService').click(function (e) {
     var boxes = $('form.trashcan td input[type=checkbox]:checked');
     if (!boxes.length) {
       alert(recoverUncheckedMessage); //TODO i18n from somewhere
     } else {
       $('.recoverResource').click();
     }
-    return false;
+    e.stopPropagation();
+    e.preventDefault();
   });
 }
 
@@ -554,7 +558,7 @@ function placeDeletePermanentButtonInActiveTab() {
   $("#main .activeTab .tabMenu2")
     .append('<li class="deleteResourcePermanentService"><a id="deleteResourcePermanentService" href="javascript:void(0);">' 
           + btn.attr('value') + '</a></li>');
-  $('#deleteResourcePermanentService').click(function () {
+  $('#deleteResourcePermanentService').click(function (e) {
     var boxes = $('form.trashcan td input[type=checkbox]:checked');
     
     if (!boxes.length) {
@@ -573,7 +577,8 @@ function placeDeletePermanentButtonInActiveTab() {
         $('.deleteResourcePermanent').click();
       }
     }
-    return false;
+    e.stopPropagation();
+    e.preventDefault();
   });
 }
 
@@ -674,7 +679,7 @@ function dropdownLanguageMenu() {
     $(".localeSelection").delegate(".localeSelectionHeader", "click", function (e) {
       $(this).next(".dropdown-shortcut-menu-container").slideToggle(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasing);
       e.stopPropagation();
-      return false;
+      e.preventDefault();
     });
   }
 }
@@ -699,7 +704,7 @@ function dropdownCollectionGlobalMenu() {
     collectionGlobalMenu.find("li.first #dropdown-shortcut-menu-click-area").click(function (e) {
       shortcutMenu.slideToggle(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasing);
       e.stopPropagation();
-      return false;
+      e.preventDefault();
     });
 
     collectionGlobalMenu.find("li.first #dropdown-shortcut-menu-click-area").hover(function () {
@@ -874,7 +879,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
     });
 
     e.stopPropagation();
-    return false;
+    e.preventDefault();
   });
 };
 
@@ -962,7 +967,7 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
     }
 
     e.stopPropagation();
-    return false;
+    e.preventDefault();
   });
 };
 
@@ -998,7 +1003,7 @@ VrtxAdmin.prototype.ajaxRemove = function ajaxRemove(selector, updateSelector) {
     });
 
     e.stopPropagation();
-    return false;
+    e.preventDefault();
   });
 };
 
@@ -1044,7 +1049,7 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
     });
 
     e.stopPropagation();
-    return false;
+    e.preventDefault();
   });
 };
 

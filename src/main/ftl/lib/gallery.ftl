@@ -105,11 +105,15 @@
 	         <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
 	     </#if>
 	   <#else>
+	     <#assign finalFolderUrl = vrtx.relativeLinkConstructor(folderUrl, 'viewService') />
+	     <#if !finalFolderUrl?ends_with("/")>
+	       <#assign finalFolderUrl = finalFolderUrl + "/" /> 
+	     </#if>
 	     <#if (image_index == 0) >
-            <a href="${vrtx.relativeLinkConstructor(folderUrl, 'viewService')}?actimg=${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}&amp;display=gallery" class="active">
+            <a href="${finalFolderUrl}?actimg=${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}&amp;display=gallery" class="active">
               <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
          <#else>
-            <a href="${vrtx.relativeLinkConstructor(folderUrl, 'viewService')}?actimg=${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}&amp;display=gallery">
+            <a href="${finalFolderUrl}?actimg=${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}&amp;display=gallery">
               <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> /> 
          </#if>
 	   </#if>

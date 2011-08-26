@@ -1276,7 +1276,9 @@ function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
                                             + baseFolder + '&Type=' + type + '&Connector=' + editorBrowseUrl,
                                               screen.width * 0.7, screen.height * 0.7);
                                               
-  serverBrowserWindow.focus(); // TODO: refocus when user closes window with [x] and tries to open it again via browse..
+  serverBrowserWindow.focus(); 
+  // TODO: Refocus when user closes window with [x] and tries to open it again via browse..
+  //       Maybe with a timer: http://en.allexperts.com/q/Javascript-1520/set-window-top-working.htm
 }
  
 function openServerBrowser(url, width, height) {

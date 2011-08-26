@@ -11,7 +11,7 @@
  *    -- which means using hash if not supported
  */
 $(document).ready(function () {
-  var hasPostMessage = window['postMessage'] && (!$.browser.opera && $.browser.version < 9.65));
+  var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
 
   var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
   

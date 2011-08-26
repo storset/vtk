@@ -7,21 +7,21 @@
  */
 $(document).ready(function () {
   $.receiveMessage(function(e) {
-      var previewIframeMinHeight = 350;
-      var previewIframeMaxHeight = 20000;
-      var previewIframe = $("iframe#previewIframe")[0]
-      if (previewIframe) {
-        var newHeight = previewIframeMinHeight;
-        var recievedData = e.data;
-        if(!(recievedData.indexOf) || (recievedData.indexOf("height") == -1)) {
-          var dataHeight = parseInt(recievedData, 10); // recieved with postMessage
-        } else {
-          var dataHeight = Number(recievedData.replace( /.*height=(\d+)(?:&|$)/, '$1' ) );  // recieved via hash
-        }
-        if (!$.isNaN(dataHeight) && (dataHeight > previewIframeMinHeight) && (dataHeight <= previewIframeMaxHeight)) {
-          newHeight = dataHeight
-        }
-        previewIframe.style.height = newHeight + "px";
+    var previewIframeMinHeight = 350;
+    var previewIframeMaxHeight = 20000;
+    var previewIframe = $("iframe#previewIframe")[0]
+    if (previewIframe) {
+      var newHeight = previewIframeMinHeight;
+      var recievedData = e.data;
+      if(!(recievedData.indexOf) || (recievedData.indexOf("height") == -1)) {
+        var dataHeight = parseInt(recievedData, 10); // recieved with postMessage
+      } else {
+        var dataHeight = Number(recievedData.replace( /.*height=(\d+)(?:&|$)/, '$1' ) );  // recieved via hash
       }
+      if (!$.isNaN(dataHeight) && (dataHeight > previewIframeMinHeight) && (dataHeight <= previewIframeMaxHeight)) {
+        newHeight = dataHeight
+      }
+      previewIframe.style.height = newHeight + "px";
+    }
   }); // TODO: here we can add where we only want to receive from, e.g. }, "<domain>");
 });

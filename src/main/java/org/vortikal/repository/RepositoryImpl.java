@@ -329,6 +329,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             destParent = this.resourceHelper.contentModification(destParent, principal);
 
             // Both new resource and destParent are stored in DAO copy call
+            // Probably better to not touch destparent in DAO copy code and explicitly
+            // store it here instead (for better clarity).
             newResource = this.dao.copy(src, destParent, newResource, preserveACL, fixedProps);
             this.contentStore.copy(src.getURI(), newResource.getURI());
 

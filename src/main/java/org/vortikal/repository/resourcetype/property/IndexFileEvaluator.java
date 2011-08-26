@@ -46,20 +46,26 @@ public class IndexFileEvaluator implements PropertyEvaluator {
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
             throws PropertyEvaluationException {
-        if (ctx.getEvaluationType() == Type.ContentChange) {
-            for (Path p: ctx.getNewResource().getChildURIs()) {
-                String name = p.getName();
-                for (String indexFile: this.indexFiles) {
-                    if (indexFile.equals(name)) {
-                        property.setStringValue(name);
-                        return true;
+        
+        if (ctx.getEvaluationType() == Type.ContentChange
+                && ctx.getNewResource().isCollection()) {
+            List<Path> childUris = ctx.getNewResource().getChildURIs();
+            if (childUris != null) {
+                for (Path p : ctx.getNewResource().getChildURIs()) {
+                    String name = p.getName();
+                    for (String indexFile : this.indexFiles) {
+                        if (indexFile.equals(name)) {
+                            property.setStringValue(name);
+                            return true;
+                        }
                     }
                 }
             }
         }
+        
         return false;
     }
-    
+
     public void setIndexFiles(List<String> indexFiles) {
         if (indexFiles == null)
             return;

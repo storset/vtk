@@ -1126,11 +1126,9 @@ function showHideProperties(init, conditionHide, conditionHideEqual, showHidePro
 }
 
 function showHideProperty(id, init, show) {
-  init ? 
-         show ? $(id).show() 
+  init ? show ? $(id).show() 
               : $(id).hide()
-       : 
-         show ? $(id).slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasing)
+       : show ? $(id).slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasing)
               : $(id).slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasing);
 }
 

@@ -7,11 +7,9 @@
  *  
  *  TODO: refactor with iframe-view.js (much of same code used here without another iframe)
  *
- *  Updated with cross-browser postMessage: 
+ *  Updated with cross-browser postMessage -- which means using hash communication from:
  *    http://benalman.com/code/projects/jquery-postmessage/examples/iframe/
  *    see src: https://raw.github.com/cowboy/jquery-postmessage/master/jquery.ba-postmessage.js
- *    -- which means using hash if not supported
- *  
  */
 $(document).ready(function () {
   var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));

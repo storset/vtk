@@ -1272,8 +1272,15 @@ function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
     type = 'Image';
   }
   // Use 70% of screen dimension
-  openServerBrowser(editorBase + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' 
-                  + baseFolder + '&Type=' + type + '&Connector=' + editorBrowseUrl, screen.width * 0.7, screen.height * 0.7);
+  serverBrowserWindow = openServerBrowser(editorBase + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' 
+                                         + baseFolder + '&Type=' + type + '&Connector=' + editorBrowseUrl,
+                                           screen.width * 0.7, screen.height * 0.7);
+                                           
+  // Focus server browser window
+  $(serverBrowserWindow).ready(function() { // .load() / .onload dont work
+    window.blur();                                      
+    serverBrowserWindow.focus();
+  });
 }
  
 function openServerBrowser(url, width, height) {

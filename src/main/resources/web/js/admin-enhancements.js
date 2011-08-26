@@ -1115,9 +1115,12 @@ function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
 }
 
 function showHideProperties(init, conditionHide, conditionHideEqual, showHideProps) {
-  var conditionHideVal = $(conditionHide).val();
-  var showHidePropertyFunc = showHideProperty;
-  for (var i = 0, len = showHideProps.length; i < len; i++) {
+  var conditionHideVal = $(conditionHide).val(),
+      showHidePropertyFunc = showHideProperty,
+      i = 0,
+      len = showHideProps.length;
+      
+  for (; i < len; i++) {
     showHidePropertyFunc(showHideProps[i], init, conditionHideVal == conditionHideEqual ? false : true);
   }
 }

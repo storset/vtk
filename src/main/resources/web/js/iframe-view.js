@@ -31,7 +31,8 @@ $(document).ready(function () {
       this.style.height = setHeight + "px";
       if (parent) {
         // Pass our height to parent since it is typically cross domain (and can't access it directly)
-        $.postMessage({height: setHeight}, location.href, parent);
+        var parent_url = decodeURIComponent(document.location.hash.replace(/^#/,''));
+        $.postMessage({height: setHeight}, parent_url, parent);
       }
     } catch(e){
       if(typeof console !== "undefined" && console.log) {

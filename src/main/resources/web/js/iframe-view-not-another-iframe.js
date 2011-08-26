@@ -24,7 +24,8 @@ $(document).ready(function () {
     
     if (parent) {
       // Pass our height to parent since it is typically cross domain (and can't access it directly)
-      $.postMessage({height: setHeight}, location.href, parent);
+      var parent_url = decodeURIComponent(document.location.hash.replace(/^#/,''));
+      $.postMessage({height: setHeight}, parent_url, parent);
     }
     var links = $("a");
     for (var i = 0, len = links.length; i < len; i++) {

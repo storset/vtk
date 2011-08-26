@@ -60,6 +60,8 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
                                             width: 300, 
                                             max: 30,
                                             delay: 800 };
+                                            
+// When DOM is fully loaded ("load"-event)
                 
 $(window).load(function() {
   // More compact when no left resource menu and only 'Read permission' in right resource menu
@@ -76,6 +78,8 @@ $(window).load(function() {
     $("#titleContainer").append(expandedForm);
   }
 });
+
+// When DOM is ready (readyState === "complete" || "DOMContentLoaded"-event (++))
                                             
 $(document).ready(function () {
 

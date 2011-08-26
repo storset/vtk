@@ -17,5 +17,5 @@ $(document).ready(function () {
         }
         previewIframe.style.height = newHeight + "px";
       }
-  });
+  }); // TODO: here we can add where we only want to receive from, e.g. }, "<domain>");
 });

@@ -12,7 +12,6 @@
  *  
  */
 $(document).ready(function () {
-
   $(window).load(function (e) {
     // Set inline style to equal the body height of the iframed content,
     // when body content is at least 350px height

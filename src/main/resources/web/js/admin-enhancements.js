@@ -1153,16 +1153,17 @@ function loadFeaturedArticles(addName, removeName, browseName, editorBase, baseF
   featuredArticles.hide();
   featuredArticles.parent().hide();
 
-  featuredArticles.append("<div id='vrtx-featured-article-add'>"
+  featuredArticles.parent().parent()
+                  .append("<div id='vrtx-featured-article-add'>"
                         + "<div class=\"vrtx-button\"><button onclick=\"addFormField(null, '" 
                         + removeName + "', '" + browseName + "', '" + editorBase + "', '" + baseFolder 
                         + "', '" + editorBrowseUrl + "'); return false;\">" + addName + "</button></div>"
-                        + "<input type='hidden' id='id' name='id' value='1' />");
+                        + "<input type='hidden' id='id' name='id' value='1' /></div>");
 
   var listOfFiles = featuredArticles.val().split(",");
   var addFormFieldFunc = addFormField;
   for (var i = 0, len = listOfFiles.length; i < len; i++) {
-    addFormFieldFunc(jQuery.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
+    addFormFieldFunc($.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
   }
   
   // TODO !spageti && !run twice
@@ -1184,6 +1185,7 @@ function addFormField(value, removeName, browsName, editorBase, baseFolder, edit
   if (value == null) {
     value = "";
   }
+
   if (removeName == null) {
     var deleteRow = "";
   } else {
@@ -1210,7 +1212,8 @@ function removeFormField(id) {
 }
 
 function formatFeaturedArticlesData() {
-  if ($("#resource\\.featured-articles").val() == null) {
+  var featuredArticles = $("#resource\\.featured-articles");
+  if (featuredArticles.val() == null) {
     return;
   }
   var data = $("input[id^='vrtx-featured-articles-']");
@@ -1221,7 +1224,7 @@ function formatFeaturedArticlesData() {
       result += ",";
     }
   }
-  document.getElementById("resource\.featured-articles").value = result;
+  featuredArticles.val(result);
 }
 
 /* ^ Featured articles */

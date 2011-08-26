@@ -47,23 +47,33 @@ public class IndexFileEvaluator implements PropertyEvaluator {
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
             throws PropertyEvaluationException {
         
-        if (ctx.getEvaluationType() == Type.ContentChange
-                && ctx.getNewResource().isCollection()) {
+        if (! ctx.getNewResource().isCollection()) {
+            return false;
+        }
+
+        // Property can only ever be created or removed when content of collection is changed.
+        if (ctx.getEvaluationType() == Type.ContentChange) {
             List<Path> childUris = ctx.getNewResource().getChildURIs();
-            if (childUris != null) {
-                for (Path p : ctx.getNewResource().getChildURIs()) {
-                    String name = p.getName();
-                    for (String indexFile : this.indexFiles) {
-                        if (indexFile.equals(name)) {
-                            property.setStringValue(name);
-                            return true;
-                        }
+            if (childUris == null) {
+                return false;
+            }
+
+            for (Path p : childUris) {
+                String name = p.getName();
+                for (String indexFile : this.indexFiles) {
+                    if (indexFile.equals(name)) {
+                        property.setStringValue(name);
+                        return true;
                     }
                 }
             }
+            
+            // No index file match
+            return false;
         }
-        
-        return false;
+
+        // Keep any existing value for other eval types than content change
+        return property.isValueInitialized();
     }
 
     public void setIndexFiles(List<String> indexFiles) {

@@ -16,7 +16,7 @@
  * 6.  Collectionlisting interaction
  * 7.  Permissions
  * 8.  Dropdowns
- * 9.  AJAX
+ * 9.  AJAX functions
  * 10. AJAX helper functions
  * 11. Show and hide properties
  * 12. Featured articles
@@ -786,7 +786,7 @@ function dropdownCollectionGlobalMenu() {
 
 
 /*-------------------------------------------------------------------*\
-    9. AJAX	
+    9. AJAX functions	
 \*-------------------------------------------------------------------*/
 
 /**

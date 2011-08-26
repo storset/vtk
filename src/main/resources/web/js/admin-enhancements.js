@@ -5,6 +5,18 @@
  *
  */
  
+/* 
+ * ToC:
+ *
+ * 1. Config / initial code
+ * ..
+ *
+ */
+ 
+/*-------------------------------------------------------------------*\
+    1. Config / initial code
+\*-------------------------------------------------------------------*/
+ 
 var ua = navigator.userAgent.toLowerCase();
 
 function VrtxAdmin() {
@@ -69,8 +81,14 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
                                             width: 300, 
                                             max: 30,
                                             delay: 800 };
+
+
+
+/*-------------------------------------------------------------------*\
+    DOM is fully loaded ("load"-event) 
+\*-------------------------------------------------------------------*/
                                             
-$(window).load(function() { // DOM is fully loaded ("load"-event) 
+$(window).load(function() {
 
   // More compact when no left resource menu and only 'Read permission' in right resource menu
   // Should never occur in IE because of "Show in file explorer" in root-folder 
@@ -79,15 +97,24 @@ $(window).load(function() { // DOM is fully loaded ("load"-event)
   if(!$("ul.resourceMenuLeft").length && resourceMenuRightListElements.length == 1) {
     resourceMenuRight.addClass("smaller-seperator");
   }
+  
   // When AJAX is turned of because of http->https we need to ensure form is in the right place
   var formResourceMenu = $("#titleContainer:last-child").hasClass("expandedForm");
   if(!formResourceMenu) {
     var expandedForm = $("#titleContainer .expandedForm").remove();
     $("#titleContainer").append(expandedForm);
   }
+  
 });
 
-$(document).ready(function () { // DOM is ready (readyState === "complete" || "DOMContentLoaded"-event (++))    
+
+
+/*-------------------------------------------------------------------*\
+    DOM is ready
+    (readyState === "complete" || "DOMContentLoaded"-event (++))
+\*-------------------------------------------------------------------*/
+
+$(document).ready(function () {   
 
   var startTime = +new Date();
 
@@ -342,7 +369,11 @@ function changeTemplateName(n) {
   $("form[name=createDocumentService] input[type=text]").val(n);
 }
 
-/* File upload */
+
+
+/*-------------------------------------------------------------------*\
+    File upload
+\*-------------------------------------------------------------------*/
 
 function initFileUpload() {
   var form = $("form[name=fileUploadService]");
@@ -405,9 +436,11 @@ function fileInfo(file) {
 }
 */
 
-/* ^ File upload */
 
-/* Keyboard interceptors/rerouters */
+
+/*-------------------------------------------------------------------*\
+    Keyboard interceptors/rerouters
+\*-------------------------------------------------------------------*/
 
 function interceptEnterKey(idOrClass) {
   $("#app-content").delegate("form input" + idOrClass, "keypress", function (e) {
@@ -426,9 +459,11 @@ function interceptEnterKeyAndReroute(txt, btn) {
   });
 }
 
-/* ^ Keyboard interceptors/rerouters */
 
-/* Buttons into links */
+
+/*-------------------------------------------------------------------*\
+    Buttons into links
+\*-------------------------------------------------------------------*/
 
 function logoutButtonAsLink() {
   var btn = $('input#logoutAction');
@@ -445,9 +480,11 @@ function logoutButtonAsLink() {
   });
 }
 
-/* ^ Buttons into links */
 
-/* Collectionlisting interaction */
+
+/*-------------------------------------------------------------------*\
+    Collectionlisting interaction
+\*-------------------------------------------------------------------*/
 
 function collectionListingInteraction() {
   if(!$(".directoryListing").length) { return; }
@@ -623,9 +660,11 @@ function switchCheckedRow(checkbox) {
   }
 }
 
-/* ^ Collectionlisting interaction */
 
-/* Permissions */
+
+/*-------------------------------------------------------------------*\
+    Permissions	
+\*-------------------------------------------------------------------*/
 
 function initPermissionForm(selectorClass) {
   if(!$("." + selectorClass + " .aclEdit").length) return;
@@ -667,9 +706,11 @@ function checkStillAdmin(selector) {
   return true; 
 }
 
-/* ^ Permissions */
 
-/* Dropdowns */
+
+/*-------------------------------------------------------------------*\
+    Dropdowns	
+\*-------------------------------------------------------------------*/
 
 function dropdownLanguageMenu() {
   var languageMenu = $(".localeSelection ul");
@@ -729,7 +770,11 @@ function dropdownCollectionGlobalMenu() {
   }
 }
 
-/* ^ Dropdowns */
+
+
+/*-------------------------------------------------------------------*\
+    AJAX	
+\*-------------------------------------------------------------------*/
 
 /**
  * GET form with AJAX
@@ -1063,7 +1108,11 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
   });
 };
 
-/* AJAX helper functions */
+
+
+/*-------------------------------------------------------------------*\
+    AJAX helper functions	
+\*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function(inputFields) {
   var dataStringChunk = "";
@@ -1105,16 +1154,16 @@ VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
   }
 };
 
-/* ^ AJAX helper functions */
 
-/**
- * Show and hide properties
- * 
- * @param radioIds: Multiple id's for radiobuttons binding click events (Array)
- * @param conditionHide: Condition to be checked for hiding
- * @param conditionHideEqual: What it should equal
- * @param showHideProps: Multiple props / id's / classnames to show / hide (Array)
- */
+
+/*-------------------------------------------------------------------*\
+	Show and hide properties
+
+    @param radioIds: Multiple id's for radiobuttons binding click events (Array)
+    @param conditionHide: Condition to be checked for hiding
+    @param conditionHideEqual: What it should equal
+    @param showHideProps: Multiple props / id's / classnames to show / hide (Array)
+\*-------------------------------------------------------------------*/
 
 function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
   var showHidePropertiesFunc = showHideProperties;
@@ -1153,7 +1202,11 @@ VrtxAdmin.prototype.zebraTables = function(selector) {
   }
 };
 
-/* Featured articles */
+
+
+/*-------------------------------------------------------------------*\
+	Featured articles
+\*-------------------------------------------------------------------*/
 
 function loadFeaturedArticles(addName, removeName, browseName, editorBase, baseFolder, editorBrowseUrl) {
   var featuredArticles = $("#resource\\.featured-articles");
@@ -1238,9 +1291,11 @@ function formatFeaturedArticlesData() {
   featuredArticles.val(result);
 }
 
-/* ^ Featured articles */
 
-/* CK browse server integration */
+
+/*-------------------------------------------------------------------*\
+	CK browse server integration
+\*-------------------------------------------------------------------*/
 
 var urlobj;
 
@@ -1319,9 +1374,11 @@ function SetUrl(url, width, height, alt) {
   urlobj = ""; // NB: reset global var
 }
 
-/* ^ CK browse server integration */
 
-/* Utils */
+
+/*-------------------------------------------------------------------*\
+	Utils
+\*-------------------------------------------------------------------*/
 
 // Use our own wrap function
 VrtxAdmin.prototype.wrap = function(node, cls, html) {
@@ -1369,14 +1426,18 @@ VrtxAdmin.prototype.error = function(options) {
   }
 };
 
-/* ^ Utils */
 
-/* Override slideUp() / slideDown() to handle rows in a table
- *
- * Credits: 
- * http://stackoverflow.com/questions/467336/jquery-how-to-use-slidedown-or-show-function-on-a-table-row/920480#920480
- * http://www.bennadel.com/blog/1624-Ask-Ben-Overriding-Core-jQuery-Methods.htm
- */
+
+/*-------------------------------------------------------------------*\
+	Override slideUp() / slideDown() to handle rows in a table
+	
+	Credits: 
+    o http://stackoverflow.com/questions/467336/
+      jquery-how-to-use-slidedown-or-show-function-on-a-table-row/920480#920480
+    o http://www.bennadel.com/blog/
+      1624-Ask-Ben-Overriding-Core-jQuery-Methods.htm
+	
+\*-------------------------------------------------------------------*/
 
 jQuery.fn.prepareTableRowForSliding = function() {
   $tr = this;
@@ -1405,7 +1466,5 @@ jQuery.fn.slideDown = function(speed, easing, callback) {
     originalSlideDown.apply($trOrOtherElm, arguments);
   }
 };
-
-/* ^ Override slideUp() / slideDown() to handle rows in a table */
 
 /* ^ Vortex Admin enhancements */

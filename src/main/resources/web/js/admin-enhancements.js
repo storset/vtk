@@ -1243,6 +1243,7 @@ function previewImage(urlobj) {
   adjustImageAndCaptionContainer(previewNode);
 }
 
+// Make sure these is space below previewed image
 function adjustImageAndCaptionContainer(previewNode) {
   $(previewNode).find("img").load(function() {
     var previewNodeImg = $(this);

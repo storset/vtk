@@ -5,7 +5,7 @@
  *
  */
  
-var agent = navigator.userAgent.toLowerCase();
+var ua = navigator.userAgent.toLowerCase();
 
 function VrtxAdmin() {
 
@@ -25,9 +25,14 @@ function VrtxAdmin() {
   this.isIE6 = null;
   this.isIE5OrHigher = null;
   this.isOpera = null;
+  this.isMozilla = null;
+  this.isChrome = null;
+  this.isSafari = null;
   this.isWin = null;
   // v3.?: this.supportsFileAPI = null;
+  
   this.permissionsAutocompleteParams = null;
+  
   this.transitionSpeed = 200; // same as 'fast'
   this.transitionCustomPermissionSpeed = 200; // same as 'fast'
   this.transitionPropSpeed = 100;
@@ -46,7 +51,11 @@ vrtxAdmin.isIE7 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7;
 vrtxAdmin.isIE6 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 6;
 vrtxAdmin.isIE5OrHigher = vrtxAdmin.isIE && vrtxAdmin.browserVersion >= 5;
 vrtxAdmin.isOpera = $.browser.opera;
-vrtxAdmin.isWin = ((agent.indexOf("win") != -1) || (agent.indexOf("16bit") != -1));
+vrtxAdmin.isMozilla = $.browser.mozilla;
+vrtxAdmin.isChrome = /chrome/.test(ua);
+vrtxAdmin.isSafari = /safari/.test(ua) && !/chrome/.test(ua);
+vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
+
 // v3.?: vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;
 
 // Upgrade easing algorithm from 'swing' to 'easeInQuad' if not < IE 9
@@ -61,9 +70,8 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
                                             max: 30,
                                             delay: 800 };
                                             
-// When DOM is fully loaded ("load"-event)
-                
-$(window).load(function() {
+$(window).load(function() { // DOM is fully loaded ("load"-event) 
+
   // More compact when no left resource menu and only 'Read permission' in right resource menu
   // Should never occur in IE because of "Show in file explorer" in root-folder 
   var resourceMenuRight = $("ul.list-menu.resourceMenuRight"); 
@@ -79,9 +87,7 @@ $(window).load(function() {
   }
 });
 
-// When DOM is ready (readyState === "complete" || "DOMContentLoaded"-event (++))
-                                            
-$(document).ready(function () {
+$(document).ready(function () { // DOM is ready (readyState === "complete" || "DOMContentLoaded"-event (++))    
 
   var startTime = +new Date();
 

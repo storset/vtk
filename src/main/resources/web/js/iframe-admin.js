@@ -1,7 +1,9 @@
 /*  Need to use postMessage for iframe resizing since cross domain is typical case now.
  *  Not essential functionality. Only works in browsers which support postMessage
  *
- *  Updated with cross-browser postMessage: http://benalman.com/code/projects/jquery-postmessage/examples/iframe/
+ *  Updated with cross-browser postMessage: 
+ *    http://benalman.com/code/projects/jquery-postmessage/examples/iframe/
+ *    see src: https://raw.github.com/cowboy/jquery-postmessage/master/jquery.ba-postmessage.js
  *    -- which means using hash if not supported
  */
 $(document).ready(function () {

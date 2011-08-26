@@ -7,7 +7,9 @@
  *  
  *  TODO: refactor with iframe-view.js (much of same code used here without another iframe)
  *
- *  Updated with cross-browser postMessage: http://benalman.com/code/projects/jquery-postmessage/examples/iframe/
+ *  Updated with cross-browser postMessage: 
+ *    http://benalman.com/code/projects/jquery-postmessage/examples/iframe/
+ *    see src: https://raw.github.com/cowboy/jquery-postmessage/master/jquery.ba-postmessage.js
  *    -- which means using hash if not supported
  *  
  */

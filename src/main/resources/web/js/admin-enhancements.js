@@ -8,8 +8,21 @@
 /* 
  * ToC:
  *
- * 1. Config / initial code
- * ..
+ * 1.  Config / initial code
+ * 2.  DOM is fully loaded ("load"-event) 
+ * 3.  DOM is ready
+ * 4.  File upload
+ * 5.  Keyboard interceptors / rerouters
+ * 6.  Collectionlisting interaction
+ * 7.  Permissions
+ * 8.  Dropdowns
+ * 9.  AJAX
+ * 10. AJAX helper functions
+ * 11. Show and hide properties
+ * 12. Featured articles
+ * 13. CK browse server integration
+ * 14. Utils
+ * 15. Override slideUp() / slideDown() to animate rows in a table
  *
  */
  
@@ -85,7 +98,7 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
 
 
 /*-------------------------------------------------------------------*\
-    DOM is fully loaded ("load"-event) 
+    2. DOM is fully loaded ("load"-event) 
 \*-------------------------------------------------------------------*/
                                             
 $(window).load(function() {
@@ -110,8 +123,8 @@ $(window).load(function() {
 
 
 /*-------------------------------------------------------------------*\
-    DOM is ready
-    (readyState === "complete" || "DOMContentLoaded"-event (++))
+    3. DOM is ready
+       readyState === "complete" || "DOMContentLoaded"-event (++)
 \*-------------------------------------------------------------------*/
 
 $(document).ready(function () {   
@@ -372,7 +385,7 @@ function changeTemplateName(n) {
 
 
 /*-------------------------------------------------------------------*\
-    File upload
+    4. File upload
 \*-------------------------------------------------------------------*/
 
 function initFileUpload() {
@@ -439,7 +452,7 @@ function fileInfo(file) {
 
 
 /*-------------------------------------------------------------------*\
-    Keyboard interceptors/rerouters
+    5. Keyboard interceptors / rerouters
 \*-------------------------------------------------------------------*/
 
 function interceptEnterKey(idOrClass) {
@@ -663,7 +676,7 @@ function switchCheckedRow(checkbox) {
 
 
 /*-------------------------------------------------------------------*\
-    Permissions	
+    7. Permissions	
 \*-------------------------------------------------------------------*/
 
 function initPermissionForm(selectorClass) {
@@ -709,7 +722,7 @@ function checkStillAdmin(selector) {
 
 
 /*-------------------------------------------------------------------*\
-    Dropdowns	
+    8. Dropdowns	
 \*-------------------------------------------------------------------*/
 
 function dropdownLanguageMenu() {
@@ -773,7 +786,7 @@ function dropdownCollectionGlobalMenu() {
 
 
 /*-------------------------------------------------------------------*\
-    AJAX	
+    9. AJAX	
 \*-------------------------------------------------------------------*/
 
 /**
@@ -1111,7 +1124,7 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
 
 
 /*-------------------------------------------------------------------*\
-    AJAX helper functions	
+    10. AJAX helper functions	
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function(inputFields) {
@@ -1157,7 +1170,7 @@ VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
 
 
 /*-------------------------------------------------------------------*\
-	Show and hide properties
+	11. Show and hide properties
 
     @param radioIds: Multiple id's for radiobuttons binding click events (Array)
     @param conditionHide: Condition to be checked for hiding
@@ -1192,20 +1205,10 @@ function showHideProperty(id, init, show) {
               : $(id).slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasing);
 }
 
-/* ^ Show and hide properties */
-
-VrtxAdmin.prototype.zebraTables = function(selector) {
-  // http://www.quirksmode.org/css/contents.html
-  if((vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) || vrtxAdmin.isOpera) {
-    $("table" + selector + " tbody tr:odd").addClass("even"); // hmm.. somehow even is odd and odd is even
-    $("table" + selector + " tbody tr:first-child").addClass("first");
-  }
-};
-
 
 
 /*-------------------------------------------------------------------*\
-	Featured articles
+	12. Featured articles
 \*-------------------------------------------------------------------*/
 
 function loadFeaturedArticles(addName, removeName, browseName, editorBase, baseFolder, editorBrowseUrl) {
@@ -1294,7 +1297,7 @@ function formatFeaturedArticlesData() {
 
 
 /*-------------------------------------------------------------------*\
-	CK browse server integration
+	13. CK browse server integration
 \*-------------------------------------------------------------------*/
 
 var urlobj;
@@ -1377,7 +1380,7 @@ function SetUrl(url, width, height, alt) {
 
 
 /*-------------------------------------------------------------------*\
-	Utils
+	14. Utils
 \*-------------------------------------------------------------------*/
 
 // Use our own wrap function
@@ -1426,10 +1429,17 @@ VrtxAdmin.prototype.error = function(options) {
   }
 };
 
+VrtxAdmin.prototype.zebraTables = function(selector) {
+  // http://www.quirksmode.org/css/contents.html
+  if((vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) || vrtxAdmin.isOpera) {
+    $("table" + selector + " tbody tr:odd").addClass("even"); // hmm.. somehow even is odd and odd is even
+    $("table" + selector + " tbody tr:first-child").addClass("first");
+  }
+};
 
 
 /*-------------------------------------------------------------------*\
-	Override slideUp() / slideDown() to handle rows in a table
+	15. Override slideUp() / slideDown() to animate rows in a table
 	
 	Credits: 
     o http://stackoverflow.com/questions/467336/

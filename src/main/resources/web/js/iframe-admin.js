@@ -4,23 +4,17 @@
  *  Updated with cross-browser postMessage: http://benalman.com/code/projects/jquery-postmessage/examples/iframe/
  */
 $(document).ready(function () {
-
   $.receiveMessage(function(e) {
-      var vrtxViewOrigin = e.origin; // TODO: TEMP
       var previewIframeMinHeight = 350;
       var previewIframeMaxHeight = 20000;
-
-      if (vrtxViewOrigin && (e.origin == vrtxViewOrigin)) {
-        var previewIframe = $("iframe#previewIframe")[0]
-        if (previewIframe) {
-          var newHeight = previewIframeMinHeight;
-          var dataHeight = Number( e.data.replace( /.*height=(\d+)(?:&|$)/, '$1' ) );
-          if (!$.isNaN(dataHeight) && (dataHeight > previewIframeMinHeight) && (dataHeight <= previewIframeMaxHeight)) {
-            newHeight = dataHeight
-          }
-          previewIframe.style.height = newHeight + "px";
+      var previewIframe = $("iframe#previewIframe")[0]
+      if (previewIframe) {
+        var newHeight = previewIframeMinHeight;
+        var dataHeight = Number(e.data.replace( /.*height=(\d+)(?:&|$)/, '$1' ) );
+        if (!$.isNaN(dataHeight) && (dataHeight > previewIframeMinHeight) && (dataHeight <= previewIframeMaxHeight)) {
+          newHeight = dataHeight
         }
+        previewIframe.style.height = newHeight + "px";
       }
   });
-  
 });

@@ -308,6 +308,7 @@
         <entry key="jsURLs">
           <list>
             <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
+            <value>${jquery.baseURL}/plugins/jquery.ba-postmessage.min.js</value>
             <value>${jsBaseURL}/iframe-view.js</value>
             <value>${jsBaseURL}/visualize-broken-links.js</value>
           </list>

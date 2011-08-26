@@ -6,13 +6,13 @@
  *  Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage.
  *  
  *  TODO: refactor with iframe-view.js (much of same code used here without another iframe)
+ *
+ *  Updated with cross-browser postMessage: http://benalman.com/code/projects/jquery-postmessage/examples/iframe/
  *  
  */
 $(document).ready(function () {
-  var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65))
 
-  var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of admin
-  $(window).load(function () {
+  $(window).load(function (e) {
     // Set inline style to equal the body height of the iframed content,
     // when body content is at least 350px height
     var setHeight = 350;
@@ -21,9 +21,10 @@ $(document).ready(function () {
       setHeight = computedHeight;
     }
     document.body.style.height = setHeight + "px";
-    if (hasPostMessage && parent) {
+    
+    if (parent) {
       // Pass our height to parent since it is typically cross domain (and can't access it directly)
-      parent.postMessage(setHeight, vrtxAdminOrigin);
+      $.postMessage({height: setHeight}, location.href, parent);
     }
     var links = $("a");
     for (var i = 0, len = links.length; i < len; i++) {

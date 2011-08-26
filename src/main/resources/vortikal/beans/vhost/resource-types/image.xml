@@ -72,6 +72,7 @@
         <entry key="jsURLs">
           <list>
             <value>${jquery.baseURL}/include-jquery.js</value>
+            <value>${jquery.baseURL}/plugins/jquery.ba-postmessage.min.js</value>
             <value>${webResources.baseURL}/js/iframe-view-not-another-iframe.js</value>
           </list>
         </entry>

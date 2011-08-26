@@ -8,8 +8,8 @@
 /* 
  * ToC:
  *
- * 1.  Config / initial code
- * 2.  DOM is fully loaded ("load"-event) 
+ * 1.  Config
+ * 2.  DOM is fully loaded
  * 3.  DOM is ready
  * 4.  File upload
  * 5.  Keyboard interceptors / rerouters
@@ -22,12 +22,12 @@
  * 12. Featured articles
  * 13. CK browse server integration
  * 14. Utils
- * 15. Override slideUp() / slideDown() to animate rows in a table
+ * 15. Override JavaScript / jQuery
  *
  */
  
 /*-------------------------------------------------------------------*\
-    1. Config / initial code
+    1. Config
 \*-------------------------------------------------------------------*/
  
 var ua = navigator.userAgent.toLowerCase();
@@ -1438,16 +1438,20 @@ VrtxAdmin.prototype.zebraTables = function(selector) {
 };
 
 
+
 /*-------------------------------------------------------------------*\
-	15. Override slideUp() / slideDown() to animate rows in a table
+	15. Override JavaScript / jQuery
+\*-------------------------------------------------------------------*/	
+	
+/* 
+	Override slideUp() / slideDown() to animate rows in a table
 	
 	Credits: 
     o http://stackoverflow.com/questions/467336/
       jquery-how-to-use-slidedown-or-show-function-on-a-table-row/920480#920480
     o http://www.bennadel.com/blog/
       1624-Ask-Ben-Overriding-Core-jQuery-Methods.htm
-	
-\*-------------------------------------------------------------------*/
+*/	
 
 jQuery.fn.prepareTableRowForSliding = function() {
   $tr = this;

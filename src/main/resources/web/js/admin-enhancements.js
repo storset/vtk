@@ -1103,10 +1103,7 @@ VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
 
 function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
   var showHidePropertiesFunc = showHideProperties;
-
-  // Init
-  showHidePropertiesFunc(true, conditionHide, conditionHideEqual, showHideProps);
-
+  showHidePropertiesFunc(true, conditionHide, conditionHideEqual, showHideProps); // Init
   for (var j = 0, len = radioIds.length; j < len; j++) {
     $(radioIds[j]).click(function () {
       showHidePropertiesFunc(false, conditionHide, conditionHideEqual, showHideProps);
@@ -1119,7 +1116,6 @@ function showHideProperties(init, conditionHide, conditionHideEqual, showHidePro
       showHidePropertyFunc = showHideProperty,  // cache to function scope
       i = 0,
       len = showHideProps.length;
-      
   for (; i < len; i++) {
     showHidePropertyFunc(showHideProps[i], init, conditionHideVal == conditionHideEqual ? false : true);
   }
@@ -1131,6 +1127,8 @@ function showHideProperty(id, init, show) {
        : show ? $(id).slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasing)
               : $(id).slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasing);
 }
+
+/* ^ Show and hide properties */
 
 VrtxAdmin.prototype.zebraTables = function(selector) {
   // http://www.quirksmode.org/css/contents.html

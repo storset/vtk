@@ -61,6 +61,7 @@
     	<#assign url = resourceReference />	  
     </#if>
     
+    <#-- current URL to use in hash communication with iframe (Opera and IE 7) -->
     <#assign origUrl = url?replace("?vrtx=view-as-webpage", "") + "?vrtx=admin&action=preview" />
     
     <#if url?contains("?")>

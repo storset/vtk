@@ -250,7 +250,7 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
                 if (m == null) {
                     m = e.getClass().getName();
                 }
-                throw new RuntimeException("Could not read feed url " + url + " (" + m + ")");
+                throw new RuntimeException("Could not read feed url " + url + ": " + m);
             }
             if (tmpFeed == null) {
                 throw new RuntimeException("Unable to load feed: " + url);

@@ -1272,26 +1272,22 @@ function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
     type = 'Image';
   }
   // Use 70% of screen dimension
-  serverBrowserWindow = openServerBrowser(editorBase + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' 
-                                         + baseFolder + '&Type=' + type + '&Connector=' + editorBrowseUrl,
-                                           screen.width * 0.7, screen.height * 0.7);
-                                           
-  // Focus server browser window
-  $(serverBrowserWindow).ready(function() { // .load() / .onload dont work
-    window.blur();                                      
-    serverBrowserWindow.focus();
-  });
+  var serverBrowserWindow = openServerBrowser(editorBase + '/plugins/filemanager/browser/default/browser.html?BaseFolder=' 
+                                            + baseFolder + '&Type=' + type + '&Connector=' + editorBrowseUrl,
+                                              screen.width * 0.7, screen.height * 0.7);
+  serverBrowserWindow.focus();
 }
  
 function openServerBrowser(url, width, height) {
   var iLeft = (screen.width - width) / 2;
   var iTop = (screen.height - height) / 2;
-  var sOptions = "toolbar=no,status=no,resizable=yes,dependent=yes";
+  var sOptions = "toolbar=no,status=no,resizable=yes"; // http://www.quirksmode.org/js/popup.html
   sOptions += ",width=" + width;
   sOptions += ",height=" + height;
   sOptions += ",left=" + iLeft;
   sOptions += ",top=" + iTop;
   var oWindow = window.open(url, "BrowseWindow", sOptions);
+  return oWindow;
 }
 
 // Callback from the CKEditor image browser:

@@ -344,14 +344,14 @@
 
   <!-- ## Get resources that have been deleted longer than a given limit ## -->
   <select id="getOverdue" parameterClass="java.util.Date" resultMap="recoverableResource">
-    select d.*, r.resource_type as resource_type, r.content_type as content_type
+    select d.*, r.resource_type, r.content_type, r.is_collection
       from deleted_resource d, vortex_resource r
       where d.deleted_time &lt; #value# and d.resource_trash_uri = r.uri
   </select>
 
   <!-- ## Get resources that have been deleted and are orphans (parent has been permanently deleted) ## -->
   <select id="getOrphans" resultMap="recoverableResource">
-    select d.*, r.resource_type as resource_type, r.content_type as content_type
+    select d.*, r.resource_type, r.content_type, r.is_collection
       from deleted_resource d, vortex_resource r
       where d.resource_trash_uri = r.uri
         and d.parent_id not in (select resource_id from vortex_resource)

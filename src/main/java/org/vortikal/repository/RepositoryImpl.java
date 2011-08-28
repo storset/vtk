@@ -1227,7 +1227,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     @Override
-    public void purgeTrash() {
+    public synchronized void purgeTrash() {
         List<RecoverableResource> overdue = this.dao.getTrashCanOverdue(this.permanentDeleteOverdueLimitInDays);
         if (overdue != null && overdue.size() > 0) {
             trashLogger.info("Found " + overdue.size()

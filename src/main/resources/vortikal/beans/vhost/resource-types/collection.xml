@@ -26,6 +26,7 @@
         <ref bean="collectionOverriddenTitlePropDef" />
         <ref bean="navigationTitlePropDef" />
         <ref bean="collection.typePropDef" />
+        <ref bean="collection.indexFilePropDef" />
         <ref bean="aggregationPropDef" />
         <ref bean="collection.recursiveListingPropDef" />
         <!--ref bean="manuallyApproveFromPropDef" />
@@ -164,6 +165,16 @@
     </property>
   </bean>
   
+
+  <bean id="collection.indexFilePropDef"
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="indexFile" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="collection.indexFilePropertyEvaluator" />
+  </bean>
+  
   <bean id="collectionTitlePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="collectionTitle" />
@@ -172,6 +183,15 @@
     <property name="propertyEvaluator" ref="collectionTitlePropertyEvaluator" />
   </bean>
   
+  <bean id="collection.indexFilePropertyEvaluator" class="org.vortikal.repository.resourcetype.property.IndexFileEvaluator">
+    <property name="indexFiles" ref="collection.indexFiles" />
+  </bean>
+
+  <bean id="collection.indexFiles" class="org.vortikal.context.CSVListFactoryBean">
+    <property name="csvList" value="${indexFiles}" />
+    <property name="trim" value="true" />
+  </bean>
+
   <bean id="collectionTitlePropertyEvaluator" parent="titleEvaluator">
     <property name="capitalizeResourceNames" value="true" />
   </bean>

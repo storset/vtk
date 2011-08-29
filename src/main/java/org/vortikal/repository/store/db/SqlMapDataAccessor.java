@@ -540,6 +540,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         parameters = getResourceAsMap(destParent);
         sqlMap = getSqlMap("updateResource");
         getSqlMapClientTemplate().update(sqlMap, parameters);
+        storeProperties(destParent);
 
         ResourceImpl created = loadResourceInternal(newResource.getURI());
         for (Property prop : newResource.getProperties()) {

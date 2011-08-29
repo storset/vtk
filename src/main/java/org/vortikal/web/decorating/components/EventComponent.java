@@ -65,7 +65,7 @@ public class EventComponent extends AbstractEventComponent {
     private static final String PARAMETER_EVENT_DESCRIPTION_DESC = "Must be set to 'true' to show event description";
 
     private static final String PARAMETER_ALL_EVENTS_LINK = "all-events-link";
-    private static final String PARAMETER_ALL_EVENTS_LINK_DESC = "Defaults to 'true' displaying 'All events' link at the bottom. Set to 'false' to remove this link.";
+    private static final String PARAMETER_ALL_EVENTS_LINK_DESC = "Set to 'true' to display 'All events' link at the bottom of the list. Default is 'false'.";
 
     private static final String PARAMETER_MAX_EVENTS = "max-events";
     private static final String PARAMETER_MAX_EVENTS_DESC = "The max number of events to display, defaults to 5";
@@ -88,6 +88,9 @@ public class EventComponent extends AbstractEventComponent {
     private static final String PARAMETER_ADD_TO_CALENDAR = "add-to-calendar";
     private static final String PARAMETER_ADD_TO_CALENDAR_DESC = "Set to 'true' if you want add to calendar function. Default is 'false'.";
 
+    private static final String PARAMETER_EVENTS_TITLE = "events-title";
+    private static final String PARAMETER_EVENTS_TITLE_DESC = "Set to true if you want to display title of the vents folder. Default is 'false'";
+
     private SearchComponent search;
 
     @Override
@@ -105,7 +108,7 @@ public class EventComponent extends AbstractEventComponent {
 
         conf.put("eventDescription", parameterHasValue(PARAMETER_EVENT_DESCRIPTION, "true", request));
 
-        conf.put("allEventsLink", !parameterHasValue(PARAMETER_ALL_EVENTS_LINK, "false", request));
+        conf.put("allEventsLink", parameterHasValue(PARAMETER_ALL_EVENTS_LINK, "true", request));
 
         int maxEvents = 5;
         try {
@@ -134,6 +137,9 @@ public class EventComponent extends AbstractEventComponent {
 
         conf.put("addToCalendar", parameterHasValue(PARAMETER_ADD_TO_CALENDAR, "true", request));
 
+        boolean eventsTitle = parameterHasValue(PARAMETER_EVENTS_TITLE, "true", request);
+        conf.put("eventsTitle", eventsTitle);
+
         model.put("elementOrder", getElementOrder(PARAMETER_EVENT_ELEMENT_ORDER, request));
 
         /* Remove / at the end of a URI if it is present */
@@ -150,6 +156,9 @@ public class EventComponent extends AbstractEventComponent {
         } catch (Exception e) {
             resource = repository.retrieve(token, URL.parse(uri).getPath(), false);
         }
+        
+        if (eventsTitle)
+            model.put("eventsTitle", resource.getTitle());
 
         Listing res = search.execute(RequestContext.getRequestContext().getServletRequest(), resource, 1, maxEvents, 0);
 
@@ -287,6 +296,7 @@ public class EventComponent extends AbstractEventComponent {
         map.put(PARAMETER_SHOW_PICTURE, PARAMETER_SHOW_PICTURE_DESC);
         map.put(PARAMETER_SHOW_END_TIME, PARAMETER_SHOW_END_TIME_DESC);
         map.put(PARAMETER_ADD_TO_CALENDAR, PARAMETER_ADD_TO_CALENDAR_DESC);
+        map.put(PARAMETER_EVENTS_TITLE, PARAMETER_EVENTS_TITLE_DESC);
         return map;
     }
 

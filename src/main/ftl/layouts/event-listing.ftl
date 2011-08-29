@@ -11,7 +11,7 @@
 <#if conf.includeIfEmpty>
   <#if psd?has_content>
     <div class="vrtx-event-component">
-      <h2><a href="${conf.uri?html}"><@vrtx.msg code="event.events" default="Events" /></a></h2>
+      <#if conf.eventsTitle><h2><a href="${conf.uri?html}">${eventsTitle?html}</a></h2></#if>
       <#assign psdSize = psd?size />
       <#list psd as event>
         <@displayPsd event.ps event.date event.showTime event_index+1 psdSize />
@@ -19,7 +19,7 @@
     </div>
   <#elseif res?has_content>
     <div class="vrtx-event-component">
-      <h2><a href="${conf.uri?html}"><@vrtx.msg code="event.events" default="Events" /></a></h2>
+      <#if conf.eventsTitle><h2><a href="${conf.uri?html}">${eventsTitle?html}</a></h2></#if>
       <ul class="items">
         <#assign resSize = res.files?size />
         <#list res.files as event>
@@ -102,12 +102,6 @@
           <a class="vrtx-event-component-title summary vrtx-link-check" href="${event.URI?html}">${title?html}</a>
         </div>
 
-        <#if conf.eventDescription>
-          <div class="vrtx-event-component-introduction">
-            <p>${intro}</p>
-          </div>
-        </#if>
-
         <div class="vrtx-event-component-misc">
           <#if conf.dateIcon && showTime>
             <span class="vrtx-event-component-start-time">
@@ -132,6 +126,12 @@
             </span>
           </#if>
         </div>
+
+        <#if conf.eventDescription>
+          <div class="vrtx-event-component-introduction">
+            <p>${intro}</p>
+          </div>
+        </#if>
       </div>
     </div>
 </#macro>
@@ -152,12 +152,6 @@
       <a class="vrtx-event-component-title summary vrtx-link-check" href="${event.URI?html}">${title?html}</a>
     </div>
 
-    <#if conf.eventDescription>
-      <div class="vrtx-event-component-introduction">
-        <p>${intro}</p>
-      </div>
-    </#if>
-
     <div class="vrtx-event-component-misc">
       <span class="vrtx-event-component-start<#if conf.showEndTime>-and-end</#if>-time">
         ${startDate}<#if conf.showEndTime> - ${endDate}</#if><#if conf.showLocation && (location != "")>,</#if>
@@ -173,5 +167,11 @@
         </span>
       </#if>
     </div>
+
+    <#if conf.eventDescription>
+      <div class="vrtx-event-component-introduction">
+        <p>${intro}</p>
+      </div>
+    </#if>
   </li>
 </#macro>

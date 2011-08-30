@@ -1259,6 +1259,7 @@
     <property name="url" value="system/create-drop-down.ftl" />
     <property name="referenceDataProviders">
       <list>
+        <ref bean="resourceContextProvider" />
         <ref bean="createDropDownLinkProvider" />
       </list>
     </property>

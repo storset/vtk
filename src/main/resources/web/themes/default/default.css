@@ -683,6 +683,8 @@ ul.dropdown-shortcut-menu-container {
 
 .global-menu div.dropdown-shortcut-menu-container {
   top: 37px;
+  left: auto !important;
+  right: -5px;
 }
 
 ul.dropdown-shortcut-menu li.first {

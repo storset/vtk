@@ -42,7 +42,7 @@
        // Cache create tree ref.
        var windowTree = $("#TB_ajaxContent .tree-create");
        
-       vrtxAdmin.log({msg: "Number of traversable paths: " treeTrav.length});
+       vrtxAdmin.log({msg: "Number of traversable paths: " + treeTrav.length});
        
        if(treeTrav.length > 1) { // Ignore if only root
          var i = 1; // Skip root

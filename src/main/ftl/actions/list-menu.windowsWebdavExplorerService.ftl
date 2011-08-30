@@ -1,6 +1,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#assign titleMsg = vrtx.getMsg("actions.showInWindowsExplorer") />
+<#assign tooltipMsg = vrtx.getMsg("actions.showInWindowsExplorer.tooltip") />
 
 <script type="text/javascript"><!-- 
  var agent = navigator.userAgent.toLowerCase();         
@@ -9,7 +10,7 @@
  var li = $("li.windowsWebdavExplorerService");
  
  if ($.browser.msie && $.browser.version >= 5 && isWin) {
-   li.html('<a href="${item.url?html}" target="WindowsExplorer" folder="${item.url?html}" style="behavior:url(#default#AnchorClick)">${titleMsg}<\/a>');
+   li.html('<a href="${item.url?html}" title="${tooltipMsg}" target="WindowsExplorer" folder="${item.url?html}" style="behavior:url(#default#AnchorClick)">${titleMsg}<\/a>');
  } else {
    if(li.prev().is("li")) {
      li.prev().not(".last").addClass("last");

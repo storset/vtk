@@ -142,8 +142,7 @@ $(document).ready(function () {
   });
   dropdown("ul.manage-create", function(a, b) { return true; });
   
-  
-  
+ 
   // Remove active tab if it has no children
   if (!$("#main .activeTab > *").length) {
     $("#main .activeTab").remove();

@@ -73,7 +73,15 @@ function load(settings, root, child, container) {
 			child.empty();
 			$.each(response, createNode, [child]);
 	        $(container).treeview({add: child});
-	    }
+	    },
+	    error: function(jqXHR, textStatus, errorThrown) {
+	      if(typeof console !== "undefined" && console.log) {
+            console.log(textStatus);
+            if(console.dir) {
+              console.dir(jqXHR);
+            }
+          }
+        }
 	}, settings.ajax));
 	/*
 	$.getJSON(settings.url, {root: root}, function(response) {

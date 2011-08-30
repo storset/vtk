@@ -36,13 +36,13 @@
        // Traverse tree
        var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];
        
-       // Cache Greybox window
-       var window = $("#TB_ajaxContent");
+       // Cache Greybox window create tree
+       var windowTree = $("#TB_ajaxContent .tree-create");
        
        if(treeTrav.length > 1) { // Ignore if only root
          var i = 1; // Skip root
          var checkLinkAvailable = setInterval(function() {
-           var link = window.find(".tree-create a[href='" + treeTrav[i] + "']");
+           var link = windowTree.find("a[href='" + treeTrav[i] + "']");
            if(link.length) {
              var hit = link.parent().parent().find("> .hitarea");
              hit.click();

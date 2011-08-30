@@ -28,29 +28,20 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.context;
+package org.vortikal.util;
 
-import org.springframework.beans.factory.config.AbstractFactoryBean;
+import java.util.Map;
+import java.util.Set;
 
-public class JSONFactoryBean extends AbstractFactoryBean {
+public interface ReverseMap<K, V> extends Map<K, V> {
 
-    private Object object;
-
-    public JSONFactoryBean(String input) {
-        this.object = org.vortikal.util.text.JSON.parse(input);
-    }
-    
-    @Override
-    @SuppressWarnings("rawtypes")
-    public Class getObjectType() {
-        if (this.object == null) {
-            return Object.class;
-        }
-        return this.object.getClass();
-    }
-
-    @Override
-    protected Object createInstance() throws Exception {
-        return this.object;
-    }
+    /**
+     * Gets the reverse mapping from a value to a set of keys.
+     * 
+     * @param value a map value
+     * @return the set of corresponding keys of the supplied value, 
+     * or {@code null} if the supplied value has no corresponding key(s) 
+     * in the map
+     */
+    public Set<K> keysOf(V value);
 }

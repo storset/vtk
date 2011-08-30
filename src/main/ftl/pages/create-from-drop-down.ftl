@@ -42,15 +42,16 @@
        // Cache create tree ref.
        var windowTree = $("#TB_ajaxContent .tree-create");
        
+       vrtxAdmin.log({msg: "Number of traversable paths: " treeTrav.length});
+       
        if(treeTrav.length > 1) { // Ignore if only root
-         vrtxAdmin.log({msg: treeTrav.length});
          var i = 1; // Skip root
          var checkLinkAvailable = setInterval(function() {
            var link = windowTree.find("a[href='" + treeTrav[i] + "']");
-           vrtxAdmin.log({msg: link});
+           vrtxAdmin.log({msg: "Traverse path " + treeTrav[i] + " (#" + i + ") : " + link});
            if(link.length) {
              var hit = link.closest("li").find("> .hitarea");
-             vrtxAdmin.log({msg: hit});
+             vrtxAdmin.log({msg: "Hit area found: " + hit});
              hit.click();
              if(i == (treeTrav.length-1)) {
                clearInterval(checkLinkAvailable);

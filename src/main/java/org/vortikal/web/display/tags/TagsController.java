@@ -50,6 +50,7 @@ import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.listing.ListingPager;
+import org.vortikal.web.display.listing.ListingPagingLink;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
@@ -139,7 +140,7 @@ public class TagsController implements Controller {
         List<String> sortFieldParams = listing.getSortFieldParams();
         this.processUrl(baseURL, tag, resourceTypes, sortFieldParams);
 
-        List<URL> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL);
+        List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL, page);
 
         model.put("listing", listing);
         model.put("page", page);

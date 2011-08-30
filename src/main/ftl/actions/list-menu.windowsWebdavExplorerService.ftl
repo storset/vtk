@@ -1,7 +1,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#assign titleMsg = vrtx.getMsg("actions.showInWindowsExplorer") />
-<#assign tooltipMsg = vrtx.getMsg("actions.showInWindowsExplorer.tooltip") />
+<#assign tooltipMsg = vrtx.getMsg("actions.showInWindowsExplorer.title") />
 
 <script type="text/javascript"><!-- 
  var agent = navigator.userAgent.toLowerCase();         

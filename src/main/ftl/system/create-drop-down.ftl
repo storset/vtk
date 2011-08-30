@@ -21,12 +21,12 @@
 <ul class="manage-create">
   <li class="manage-create-drop first">
     <a class="thickbox" title="<@vrtx.msg code="manage.choose-location" default="Choose location" />" href="${docUrl?html}">
-      <@vrtx.msg code="manage.document" default="Create Document" />
+      <@vrtx.msg code="manage.document" default="Create document" />
     </a>
   </li>
   <li class="manage-create-drop">
     <a class="thickbox" title="<@vrtx.msg code="manage.choose-location" default="Choose location" />" href="${colUrl?html}">
-      <@vrtx.msg code="manage.collection" default="Create Folder" />
+      <@vrtx.msg code="manage.collection" default="Create folder" />
     </a>
   </li>
   <li class="manage-create-drop">

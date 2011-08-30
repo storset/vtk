@@ -20,7 +20,7 @@
   </#if>
   <script type="text/javascript">
   <!--
-     $(document).ready(function(){
+     $(document).ready(function() {
        var timestamp = 1 - new Date();
        $(".tree-create").treeview({
          animated: "fast",

@@ -400,8 +400,9 @@ public class URL {
         return this.ref;
     }
 
-    public void setRef(String ref) {
+    public URL setRef(String ref) {
         this.ref = ref;
+        return this;
     }
 
     /**

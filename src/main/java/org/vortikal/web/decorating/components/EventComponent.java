@@ -156,7 +156,7 @@ public class EventComponent extends AbstractEventComponent {
         } catch (Exception e) {
             resource = repository.retrieve(token, URL.parse(uri).getPath(), false);
         }
-        
+
         if (eventsTitle)
             model.put("eventsTitle", resource.getTitle());
 

@@ -41,15 +41,15 @@
        
        if(treeTrav.length > 1) { // Ignore if only root
          var i = 1; // Skip root
-         var timer = setInterval(function() {
+         var checkLinkAvailable = setInterval(function() {
            var link = window.find(".tree-create a[href='" + treeTrav[i] + "']");
            if(link.length) {
              var hit = link.parent().parent().find("> .hitarea");
              hit.click();
              if(i == (treeTrav.length-1)) {
-               clearInterval(timer);
+               clearInterval(checkLinkAvailable);
              } else {
-               i++;
+               i++; // next URI
              }
            }
          }, 15);

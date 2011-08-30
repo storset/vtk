@@ -41,6 +41,25 @@
     <property name="createService" ref="createCollectionService" />
   </bean>
 
+  <bean id="uploadFileDropDown.retrieveService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="upload-file-from-drop-down" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="uploadFileDropDown.handler" />
+  </bean>
+
+  <bean id="uploadFileDropDown.handler" class="org.vortikal.web.actions.create.CreateDropDownJSON">
+    <property name="provider" ref="createDropDown.provider" />
+    <property name="createService" ref="fileUploadService" />
+  </bean>
+
   <bean id="createDropDown.provider" class="org.vortikal.web.actions.create.CreateDropDownProvider">
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="repository" ref="repository" />
@@ -59,7 +78,23 @@
 
   <bean id="createCollectionFromDropDownHandler" class="org.vortikal.web.actions.create.CreateFromDropDownController">
     <property name="viewName" value="createFromDropDown.view" />
-    <property name="type" value="collection" />
+    <property name="type" value="create-collection" />
+  </bean>
+
+  <bean id="uploadFileFromDropDownService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="handler" ref="uploadFileFromDropDownHandler" />
+    <property name="assertions">
+      <bean class="org.vortikal.web.service.RequestParameterAssertion">
+        <property name="parameterName" value="display" />
+        <property name="parameterValue" value="upload-file-from-drop-down" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="uploadFileFromDropDownHandler" class="org.vortikal.web.actions.create.CreateFromDropDownController">
+    <property name="viewName" value="createFromDropDown.view" />
+    <property name="type" value="upload-file" />
   </bean>
 
   <bean id="createDocFromDropDownService" class="org.vortikal.web.service.ServiceImpl">
@@ -75,7 +110,7 @@
 
   <bean id="createDocFromDropDownHandler" class="org.vortikal.web.actions.create.CreateFromDropDownController">
     <property name="viewName" value="createFromDropDown.view" />
-    <property name="type" value="document" />
+    <property name="type" value="create-document" />
   </bean>
 
   <bean id="createFromDropDown.viewResolver" parent="viewResolver">
@@ -100,6 +135,7 @@
         </entry>
         <entry key="jsURLs">
           <list>
+            <value>${webResources.baseURL}/jquery/plugins/jquery.vortexTips.js</value>
             <value>${webResources.baseURL}/jquery/plugins/jquery.treeview.js</value>
             <value>${webResources.baseURL}/jquery/plugins/jquery.treeview.async.js</value>
           </list>

@@ -24,14 +24,17 @@
        var timestamp = 1 - new Date();
        $(".tree-create").treeview({
          animated: "fast",
-         url: "?vrtx=admin&service=create-${type}-from-drop-down&uri=/&ts=" + timestamp,
-         service: "create-${type}-from-drop-down"
+         url: "?vrtx=admin&service=${type}-from-drop-down&uri=/&ts=" + timestamp,
+         service: "${type}-from-drop-down"
        })
 
        $(".tree-create").delegate("a", "click", function(e){
            // don't want click on links
            return false;
        });
+              
+       // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset
+       $(".tree-create").vortexTips("li a", "#contents", 400, 300, 1000, 1000, 200, 0);
        
        // Traverse tree
        var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];

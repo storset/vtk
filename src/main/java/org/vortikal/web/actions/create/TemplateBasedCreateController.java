@@ -49,15 +49,13 @@ import org.vortikal.web.service.Service;
 import org.vortikal.web.templates.ResourceTemplate;
 import org.vortikal.web.templates.ResourceTemplateManager;
 
-
 public class TemplateBasedCreateController extends SimpleFormController {
 
     private ResourceTemplateManager templateManager;
     private boolean downcaseNames = false;
-    private Map<String, String> replaceNameChars; 
+    private Map<String, String> replaceNameChars;
 
-    protected Object formBackingObject(HttpServletRequest request)
-    throws Exception {
+    protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Service service = requestContext.getService();
         Path uri = requestContext.getResourceURI();
@@ -68,47 +66,42 @@ public class TemplateBasedCreateController extends SimpleFormController {
         String url = service.constructLink(resource, requestContext.getPrincipal());
         CreateDocumentCommand command = new CreateDocumentCommand(url);
 
-        List <ResourceTemplate> l = this.templateManager.getDocumentTemplates(token, uri);        
-        // Set first available template as the selected 
+        List<ResourceTemplate> l = this.templateManager.getDocumentTemplates(token, uri);
+        // Set first available template as the selected
         if (!l.isEmpty()) {
             command.setSourceURI(l.get(0).getUri().toString());
         }
         return command;
     }
 
-
-    @SuppressWarnings("rawtypes")
-    protected Map referenceData(HttpServletRequest request) throws Exception {       
-        RequestContext requestContext = RequestContext.getRequestContext();        
+    protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
 
         Map<String, Object> model = new HashMap<String, Object>();
         Path uri = requestContext.getResourceURI();
-        List <ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
+        List<ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
 
-        Map <String, String> templates = new LinkedHashMap <String, String>();
-        for (ResourceTemplate t: l) {
-            templates.put(t.getUri().toString(),t.getName());
+        Map<String, String> templates = new LinkedHashMap<String, String>();
+        for (ResourceTemplate t : l) {
+            templates.put(t.getUri().toString(), t.getName());
         }
-        model.put("templates", templates);		    	
+        model.put("templates", templates);
         return model;
     }
 
     @Override
-    protected void onBindAndValidate(HttpServletRequest request,
-            Object command, BindException errors) throws Exception {
+    protected void onBindAndValidate(HttpServletRequest request, Object command, BindException errors) throws Exception {
         super.onBindAndValidate(request, command, errors);
 
-        CreateDocumentCommand createDocumentCommand =
-            (CreateDocumentCommand) command;
+        CreateDocumentCommand createDocumentCommand = (CreateDocumentCommand) command;
 
-        if (createDocumentCommand.getCancelAction() != null) return;
+        if (createDocumentCommand.getCancelAction() != null)
+            return;
 
-        if (createDocumentCommand.getSourceURI() == null
-                || createDocumentCommand.getSourceURI().trim().equals("")) {
-            errors.rejectValue("sourceURI",
-                    "manage.create.document.missing.template",
-            "You must choose a document type");
+        if (createDocumentCommand.getSourceURI() == null || createDocumentCommand.getSourceURI().trim().equals("")) {
+            errors.rejectValue("sourceURI", "manage.create.document.missing.template",
+                    "You must choose a document type");
         }
 
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -119,38 +112,30 @@ public class TemplateBasedCreateController extends SimpleFormController {
 
         String name = createDocumentCommand.getName();
         if (null == name || "".equals(name.trim())) {
-            errors.rejectValue("name",
-                    "manage.create.document.missing.name",
-            "A name must be provided for the document");
+            errors.rejectValue("name", "manage.create.document.missing.name",
+                    "A name must be provided for the document");
             return;
         }
 
         if (name.indexOf("/") >= 0) {
-            errors.rejectValue("name",
-                    "manage.create.document.invalid.name",
-            "This is an invalid document name");
+            errors.rejectValue("name", "manage.create.document.invalid.name", "This is an invalid document name");
         }
         name = fixDocumentName(name);
 
         if (name.isEmpty()) {
-            errors.rejectValue("name",
-                    "manage.create.document.invalid.name",
-            "This is an invalid document name");
+            errors.rejectValue("name", "manage.create.document.invalid.name", "This is an invalid document name");
             return;
         }
 
         Path destinationURI = uri.extend(name);
 
         if (repository.exists(token, destinationURI)) {
-            errors.rejectValue("name", "manage.create.document.exists",
-            "A resource of this name already exists");
+            errors.rejectValue("name", "manage.create.document.exists", "A resource of this name already exists");
         }
     }
 
-    
-    protected void doSubmitAction(Object command) throws Exception {        
-        CreateDocumentCommand createDocumentCommand =
-            (CreateDocumentCommand) command;
+    protected void doSubmitAction(Object command) throws Exception {
+        CreateDocumentCommand createDocumentCommand = (CreateDocumentCommand) command;
         if (createDocumentCommand.getCancelAction() != null) {
             createDocumentCommand.setDone(true);
             return;
@@ -176,11 +161,11 @@ public class TemplateBasedCreateController extends SimpleFormController {
     public void setTemplateManager(ResourceTemplateManager templateManager) {
         this.templateManager = templateManager;
     }
-    
+
     public void setReplaceNameChars(Map<String, String> replaceNameChars) {
         this.replaceNameChars = replaceNameChars;
     }
-    
+
     public void setDowncaseNames(boolean downcaseNames) {
         this.downcaseNames = downcaseNames;
     }
@@ -191,7 +176,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
         }
 
         if (this.replaceNameChars != null) {
-            for (String regex: this.replaceNameChars.keySet()) {
+            for (String regex : this.replaceNameChars.keySet()) {
                 String replacement = this.replaceNameChars.get(regex);
                 name = name.replaceAll(regex, replacement);
             }
@@ -199,4 +184,3 @@ public class TemplateBasedCreateController extends SimpleFormController {
         return name;
     }
 }
-

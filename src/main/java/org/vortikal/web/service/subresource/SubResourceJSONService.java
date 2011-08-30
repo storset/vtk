@@ -95,7 +95,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             // Add classes
             if (sr.isCollection()) {
               spanClasses = "folder";
-              o.put("hasChildren", true);
+              o.put("hasChildren", sr.hasChildren());
             } else {
               spanClasses = "file";
             }

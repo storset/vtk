@@ -33,7 +33,8 @@
        
        $("#tree").treeview({
          animated: "fast",
-         url: "?vrtx=admin&service=subresource-retrieve&uri=${report.uri}&ts=" + timestamp // don't cache results
+         url: "?vrtx=admin&service=subresource-retrieve&uri=${report.uri}&ts=" + timestamp,
+         service: "subresource-retrieve"
        })
        
        $("#tree").delegate("a", "click", function(e){

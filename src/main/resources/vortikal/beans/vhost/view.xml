@@ -188,6 +188,12 @@
     <property name="modelName" value="leaveAdmin" />
   </bean>
 
+  <bean id="createDropDownLinkProvider"
+        class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="service" ref="viewService" />
+    <property name="modelName" value="createDropDown" />
+  </bean>
+
   <bean id="parentLinkProvider"
         class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="service" ref="manageService" />

@@ -63,8 +63,9 @@ public class SubResourcePermissionsProvider {
     private Repository repository;
 
     private static Log logger = LogFactory.getLog(SubResourcePermissionsProvider.class);
-    
-    public List<SubResourcePermissions> buildSearchAndPopulateSubresources(String uri, String token, HttpServletRequest request) {
+
+    public List<SubResourcePermissions> buildSearchAndPopulateSubresources(String uri, String token,
+            HttpServletRequest request) {
 
         // MainQuery (depth + 1 from uri and all resources)
         Path url = Path.fromString(uri);
@@ -77,110 +78,106 @@ public class SubResourcePermissionsProvider {
         search.setLimit(500);
         search.setPropertySelect(new WildcardPropertySelect());
         ResultSet rs = searcher.execute(token, search);
-        
+
         List<SubResourcePermissions> subresources = populateSubResources(token, rs, request);
         return subresources;
     }
-    
-    @SuppressWarnings("unchecked")
+
     private List<SubResourcePermissions> populateSubResources(String token, ResultSet rs, HttpServletRequest request) {
         List<PropertySet> results = rs.getAllResults();
-        List<SubResourcePermissions> subresources = new ArrayList();
-        
-        Resource r = null;
-        
-        for(PropertySet result : results) {
-          String rURI = result.getURI().toString();
-          String rName = result.getName();
-          String rTitle = "";
-          boolean rIsCollection = false;
-          boolean rIsReadRestricted = false;
-          boolean rIsInheritedAcl = false;
-          String rRead = "";
-          String rReadWrite = "";
-          String rAdmin = "";
-          
-          try {
-            r = this.repository.retrieve(token, result.getURI(), true);
-            if (r != null) {
-              rTitle = r.getTitle();
-              rIsCollection = r.isCollection();
-              if(r.isReadRestricted()) {
-                rIsReadRestricted = true;
-              }
-              if(r.isInheritedAcl()) {
-                rIsInheritedAcl = true;
-              }
-              
-              Acl acl = r.getAcl();
-              for (Privilege action: Privilege.values()) {
-                  String actionName = action.getName();
-                  Principal[] privilegedUsers = acl.listPrivilegedUsers(action);
-                  Principal[] privilegedGroups = acl.listPrivilegedGroups(action);
-                  Principal[] privilegedPseudoPrincipals = acl.listPrivilegedPseudoPrincipals(action);
-                  StringBuilder combined = new StringBuilder();
-                  int i = 0; 
-                  int len = privilegedPseudoPrincipals.length + privilegedUsers.length + privilegedGroups.length;
-                  boolean all = false;
-                  
-                  for(Principal p : privilegedPseudoPrincipals) {
-                    String pseudo = this.getLocalizedTitle(request, "pseudoPrincipal." + p.getName(), null);
-                    if(p.getName() == PrincipalFactory.NAME_ALL) {
-                      all = true;
-                      combined.append(pseudo);
+        List<SubResourcePermissions> subresources = new ArrayList<SubResourcePermissions>();
+
+        for (PropertySet result : results) {
+            String rURI = result.getURI().toString();
+            String rName = result.getName();
+            String rTitle = "";
+            boolean rIsCollection = false;
+            boolean rIsReadRestricted = false;
+            boolean rIsInheritedAcl = false;
+            boolean rHasChildren = false;
+            String rRead = "";
+            String rReadWrite = "";
+            String rAdmin = "";
+
+            try {
+                Resource r = this.repository.retrieve(token, result.getURI(), true);
+                if (r != null) {
+                    rTitle = r.getTitle();
+                    rIsCollection = r.isCollection();
+                    rIsReadRestricted = r.isReadRestricted();
+                    rIsInheritedAcl = r.isInheritedAcl();
+                    rHasChildren = !r.getChildURIs().isEmpty();
+
+                    Acl acl = r.getAcl();
+                    for (Privilege action : Privilege.values()) {
+                        String actionName = action.getName();
+                        Principal[] privilegedUsers = acl.listPrivilegedUsers(action);
+                        Principal[] privilegedGroups = acl.listPrivilegedGroups(action);
+                        Principal[] privilegedPseudoPrincipals = acl.listPrivilegedPseudoPrincipals(action);
+                        StringBuilder combined = new StringBuilder();
+                        int i = 0;
+                        int len = privilegedPseudoPrincipals.length + privilegedUsers.length + privilegedGroups.length;
+                        boolean all = false;
+
+                        for (Principal p : privilegedPseudoPrincipals) {
+                            String pseudo = this.getLocalizedTitle(request, "pseudoPrincipal." + p.getName(), null);
+                            if (p.getName() == PrincipalFactory.NAME_ALL) {
+                                all = true;
+                                combined.append(pseudo);
+                            }
+                            if ((len == 1 || i == len - 1) && !all) {
+                                combined.append(pseudo);
+                            } else if (!all) {
+                                combined.append(pseudo + ", ");
+                            }
+                            i++;
+                        }
+                        if (!all) {
+                            for (Principal p : privilegedUsers) {
+                                if (len == 1 || i == len - 1) {
+                                    combined.append(p.getDescription());
+                                } else {
+                                    combined.append(p.getDescription() + ", ");
+                                }
+                                i++;
+                            }
+                            for (Principal p : privilegedGroups) {
+                                if (len == 1 || i == len - 1) {
+                                    combined.append(p.getDescription());
+                                } else {
+                                    combined.append(p.getDescription() + ", ");
+                                }
+                                i++;
+                            }
+                        }
+                        if (actionName == "read") {
+                            rRead = combined.toString();
+                        } else if (actionName == "read-write") {
+                            rReadWrite = combined.toString();
+                        } else if (actionName == "all") {
+                            rAdmin = combined.toString();
+                        }
                     }
-                    if((len == 1 || i == len - 1) && !all) {
-                      combined.append(pseudo);
-                    } else if(!all) {
-                      combined.append(pseudo + ", ");
-                    }
-                    i++;
-                  }
-                  if(!all) {
-                    for(Principal p : privilegedUsers) {
-                      if(len == 1 || i == len - 1) {
-                        combined.append(p.getDescription());  
-                      } else {
-                        combined.append(p.getDescription() + ", ");
-                      }
-                      i++;
-                    }
-                    for(Principal p : privilegedGroups) {
-                      if(len == 1 || i == len - 1) {
-                        combined.append(p.getDescription());  
-                      } else {
-                        combined.append(p.getDescription() + ", ");
-                      }
-                      i++;
-                    }
-                  }
-                  if(actionName == "read") {
-                    rRead = combined.toString();
-                  } else if(actionName == "read-write") {
-                    rReadWrite = combined.toString();
-                  } else if(actionName == "all") {
-                    rAdmin = combined.toString();
-                  }
-              }
-              
+
+                }
+            } catch (ResourceNotFoundException e) {
+                logger.error("ResourceNotFoundException " + e.getMessage());
+            } catch (AuthorizationException e) {
+                logger.error("AuthorizationException " + e.getMessage());
+            } catch (AuthenticationException e) {
+                logger.error("AuthenticationException " + e.getMessage());
+            } catch (Exception e) {
+                logger.error("Exception " + e.getMessage());
             }
-          } catch (ResourceNotFoundException e) {
-            logger.error("ResourceNotFoundException " + e.getMessage());
-          } catch (AuthorizationException e) {
-            logger.error("AuthorizationException " + e.getMessage());
-          } catch (AuthenticationException e) {
-            logger.error("AuthenticationException " + e.getMessage());
-          } catch (Exception e) {
-            logger.error("Exception " + e.getMessage());
-          }
-          subresources.add(new SubResourcePermissions(rURI, rName, rTitle, rIsCollection, rIsReadRestricted, 
-                                                      rIsInheritedAcl, rRead, rReadWrite, rAdmin));
+            subresources.add(new SubResourcePermissions(rURI, rName, rTitle, rIsCollection, rHasChildren,
+                    rIsReadRestricted, rIsInheritedAcl, rRead, rReadWrite, rAdmin));
         }
         return subresources;
     }
-    
+
     public String getLocalizedTitle(HttpServletRequest request, String key, Object[] params) {
-        org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(request);
+        org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
+                request);
         if (params != null) {
             return springRequestContext.getMessage(key, params);
         }
@@ -191,7 +188,7 @@ public class SubResourcePermissionsProvider {
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }
-    
+
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;

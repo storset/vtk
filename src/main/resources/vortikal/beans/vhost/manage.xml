@@ -1248,6 +1248,22 @@
     </property>
   </bean>
 
+  <bean id="manage.createDropDownComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="create-drop-down" />
+    <property name="description" value="Displays a drop down menu to create new document or collection" />
+    <property name="view" ref="manage.createDropDownView" />
+  </bean>
+
+  <bean id="manage.createDropDownView" parent="freemarkerView">
+    <property name="url" value="system/create-drop-down.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="createDropDownLinkProvider" />
+      </list>
+    </property>
+  </bean>
+
   <bean id="manage.principalInfoComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="principal-info" />
@@ -2020,6 +2036,7 @@
     <constructor-arg>
       <list>
         <ref bean="leaveAdminLinkProvider" />
+        <ref bean="createDropDownLinkProvider" />
         <ref bean="tabsProvider" />
         <ref bean="resourceContextProvider" />
         <ref bean="versionProvider" />

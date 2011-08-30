@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, University of Oslo, Norway
+/* Copyright (c) 2008 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,43 +28,55 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.report.subresource;
 
-public class SubResourcePermissions extends SubResource {
-    private boolean readRestricted = false;
-    private boolean inheritedAcl = true;
-    private String read;
-    private String write;
-    private String admin;
+package org.vortikal.web.actions.create;
 
-    public SubResourcePermissions(String uri, String name, String title, boolean collection, boolean hasChildren,
-            boolean readRestricted, boolean inheritedAcl, String read, String write, String admin) {
-        super(uri, name, title, collection, hasChildren);
-        this.readRestricted = readRestricted;
-        this.inheritedAcl = inheritedAcl;
-        this.read = read;
-        this.write = write;
-        this.admin = admin;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Path;
+import org.vortikal.web.RequestContext;
+
+public class CreateFromDropDownController implements Controller {
+
+    private String viewName;
+    private String type;
+
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, Object> model = new HashMap<String, Object>();
+
+        Path uri = RequestContext.getRequestContext().getCurrentCollection();
+
+        model.put("uri", uri);
+
+        ArrayList<Path> uris = new ArrayList<Path>();
+
+        while (uri != null) {
+            uris.add(0, uri);
+            uri = uri.getParent();
+        }
+
+        model.put("uris", uris);
+        model.put("type", type);
+
+        return new ModelAndView(this.viewName, model);
     }
 
-    public boolean isReadRestricted() {
-        return this.readRestricted;
+    @Required
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
     }
 
-    public boolean isInheritedAcl() {
-        return this.inheritedAcl;
-    }
-
-    public String getRead() {
-        return this.read;
-    }
-
-    public String getWrite() {
-        return this.write;
-    }
-
-    public String getAdmin() {
-        return this.admin;
+    @Required
+    public void setType(String type) {
+        this.type = type;
     }
 
 }

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+                       "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="createDocumentDropDown.retrieveService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="create-document-from-drop-down" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="createDocumentDropDown.handler" />
+  </bean>
+
+  <bean id="createDocumentDropDown.handler" class="org.vortikal.web.actions.create.CreateDropDownJSON">
+    <property name="provider" ref="createDropDown.provider" />
+    <property name="createService" ref="createDocumentService" />
+  </bean>
+
+  <bean id="createCollectionDropDown.retrieveService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="service" />
+          <property name="parameterValue" value="create-collection-from-drop-down" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="createCollectionDropDown.handler" />
+  </bean>
+
+  <bean id="createCollectionDropDown.handler" class="org.vortikal.web.actions.create.CreateDropDownJSON">
+    <property name="provider" ref="createDropDown.provider" />
+    <property name="createService" ref="createCollectionService" />
+  </bean>
+
+  <bean id="createDropDown.provider" class="org.vortikal.web.actions.create.CreateDropDownProvider">
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="repository" ref="repository" />
+  </bean>
+
+  <bean id="createCollectionFromDropDownService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="handler" ref="createCollectionFromDropDownHandler" />
+    <property name="assertions">
+      <bean class="org.vortikal.web.service.RequestParameterAssertion">
+        <property name="parameterName" value="display" />
+        <property name="parameterValue" value="create-collection-from-drop-down" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="createCollectionFromDropDownHandler" class="org.vortikal.web.actions.create.CreateFromDropDownController">
+    <property name="viewName" value="createFromDropDown.view" />
+    <property name="type" value="collection" />
+  </bean>
+
+  <bean id="createDocFromDropDownService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="handler" ref="createDocFromDropDownHandler" />
+    <property name="assertions">
+      <bean class="org.vortikal.web.service.RequestParameterAssertion">
+        <property name="parameterName" value="display" />
+        <property name="parameterValue" value="create-document-from-drop-down" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="createDocFromDropDownHandler" class="org.vortikal.web.actions.create.CreateFromDropDownController">
+    <property name="viewName" value="createFromDropDown.view" />
+    <property name="type" value="document" />
+  </bean>
+
+  <bean id="createFromDropDown.viewResolver" parent="viewResolver">
+    <property name="views">
+      <map>
+        <entry key="createFromDropDown.view" value-ref="createFromDropDown.view" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="createFromDropDown.view" parent="freemarkerView">
+    <property name="url" value="pages/create-from-drop-down.ftl" />
+    <property name="referenceDataProviders">
+      <ref bean="resourceContextProvider" />
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/report/jquery.treeview.css</value>
+          </list>
+        </entry>
+        <entry key="jsURLs">
+          <list>
+            <value>${webResources.baseURL}/jquery/plugins/jquery.treeview2.js</value>
+            <value>${webResources.baseURL}/jquery/plugins/jquery.treeview.async2.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+</beans>

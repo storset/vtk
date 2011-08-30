@@ -35,23 +35,33 @@ public class SubResource {
     private String name;
     private String title;
     private boolean collection;
+    private boolean hasChildren;
 
-    public SubResource(String uri, String name, String title, boolean collection) {
+    public SubResource(String uri, String name, String title, boolean collection, boolean hasChildren) {
         this.uri = uri;
         this.name = name;
         this.title = title;
         this.collection = collection;
+        this.hasChildren = hasChildren;
     }
+
     public String getUri() {
         return this.uri;
     }
+
     public String getName() {
         return this.name;
     }
+
     public String getTitle() {
         return this.title;
     }
+
     public boolean isCollection() {
         return this.collection;
+    }
+
+    public boolean hasChildren() {
+        return this.hasChildren;
     }
 }

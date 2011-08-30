@@ -41,11 +41,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.util.codec.Base64;
 import org.vortikal.web.RequestContext;
@@ -53,19 +53,20 @@ import org.vortikal.web.service.URL;
 
 public class VcfController implements Controller {
 
-    private PropertyTypeDefinition firstNamePropDef;
-    private PropertyTypeDefinition surnamePropDef;
-    private PropertyTypeDefinition usernamePropDef;
-    private PropertyTypeDefinition positionPropDef;
-    private PropertyTypeDefinition phonePropDef;
-    private PropertyTypeDefinition mobilePropDef;
-    private PropertyTypeDefinition faxPropDef;
-    private PropertyTypeDefinition postalAddressPropDef;
-    private PropertyTypeDefinition visitingAddressPropDef;
-    private PropertyTypeDefinition emailPropDef;
-    private PropertyTypeDefinition picturePropDef;
-    private PropertyTypeDefinition thumbnailPropDef;
-    private PropertyTypeDefinition imageWidthPropDef;
+    private ResourceTypeTree resourceTypeTree;
+    private String firstNamePropDefPointer;
+    private String surnamePropDefPointer;
+    private String usernamePropDefPointer;
+    private String positionPropDefPointer;
+    private String phonePropDefPointer;
+    private String mobilePropDefPointer;
+    private String faxPropDefPointer;
+    private String postalAddressPropDefPointer;
+    private String visitingAddressPropDefPointer;
+    private String emailPropDefPointer;
+    private String picturePropDefPointer;
+    private String thumbnailPropDefPointer;
+    private String imageWidthPropDefPointer;
     private String maxImageWidth;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -115,37 +116,52 @@ public class VcfController implements Controller {
         sb.append("BEGIN:VCARD\n");
         sb.append("VERSION:3.0\n");
 
-        if (getProperty(person, surnamePropDef) != null) {
-            sb.append("N:" + getProp(person, surnamePropDef));
-            if (getProperty(person, firstNamePropDef) != null)
-                sb.append(";" + getProp(person, firstNamePropDef));
+        Property surnameProp = getProperty(person, surnamePropDefPointer);
+        Property firstNameProp = getProperty(person, firstNamePropDefPointer);
+        Property usernameProp = getProperty(person, usernamePropDefPointer);
+        if (surnameProp != null) {
+            sb.append("N:" + surnameProp.getFormattedValue());
+            if (firstNameProp != null) {
+                sb.append(";" + firstNameProp.getFormattedValue());
+            }
             sb.append("\n");
-        } else if (getProperty(person, firstNamePropDef) != null)
-            sb.append("N:" + getProp(person, firstNamePropDef) + "\n");
-        else if (getProperty(person, usernamePropDef) != null)
-            sb.append("N:" + getProp(person, usernamePropDef) + "\n");
+        } else if (firstNameProp != null) {
+            sb.append("N:" + firstNameProp.getFormattedValue() + "\n");
+        } else if (usernameProp != null) {
+            sb.append("N:" + usernameProp.getFormattedValue() + "\n");
+        }
 
-        if (getProperty(person, firstNamePropDef) != null) {
-            sb.append("FN:" + getProp(person, firstNamePropDef));
-            if (getProperty(person, surnamePropDef) != null)
-                sb.append(" " + getProp(person, surnamePropDef));
+        if (firstNameProp != null) {
+            sb.append("FN:" + firstNameProp.getFormattedValue());
+            if (surnameProp != null) {
+                sb.append(" " + surnameProp.getFormattedValue());
+            }
             sb.append("\n");
-        } else if (getProperty(person, surnamePropDef) != null)
-            sb.append("FN:" + getProp(person, surnamePropDef) + "\n");
-        else if (getProperty(person, usernamePropDef) != null)
-            sb.append("FN:" + getProp(person, usernamePropDef) + "\n");
+        } else if (surnameProp != null) {
+            sb.append("FN:" + surnameProp.getFormattedValue() + "\n");
+        } else if (usernameProp != null) {
+            sb.append("FN:" + usernameProp.getFormattedValue() + "\n");
+        }
 
-        if (getProperty(person, positionPropDef) != null)
-            sb.append("TITLE:" + getProp(person, positionPropDef) + "\n");
+        Property positionProp = getProperty(person, positionPropDefPointer);
+        if (positionProp != null) {
+            sb.append("TITLE:" + positionProp.getFormattedValue() + "\n");
+        }
 
-        if (getProperty(person, phonePropDef) != null)
-            sb.append("TEL;TYPE=WORK,VOICE:" + getProp(person, phonePropDef) + "\n");
+        Property phoneProp = getProperty(person, phonePropDefPointer);
+        if (phoneProp != null) {
+            sb.append("TEL;TYPE=WORK,VOICE:" + phoneProp.getFormattedValue() + "\n");
+        }
 
-        if (getProperty(person, mobilePropDef) != null)
-            sb.append("TEL;TYPE=CELL:" + getProp(person, mobilePropDef) + "\n");
+        Property mobileProp = getProperty(person, mobilePropDefPointer);
+        if (mobileProp != null) {
+            sb.append("TEL;TYPE=CELL:" + mobileProp.getFormattedValue() + "\n");
+        }
 
-        if (getProperty(person, faxPropDef) != null)
-            sb.append("TEL;TYPE=FAX:" + getProp(person, faxPropDef) + "\n");
+        Property faxProp = getProperty(person, faxPropDefPointer);
+        if (faxProp != null) {
+            sb.append("TEL;TYPE=FAX:" + faxProp.getFormattedValue() + "\n");
+        }
 
         /*
          * For data input reasons addresses has to be put in one (the street
@@ -153,19 +169,26 @@ public class VcfController implements Controller {
          * 2;City;Province;PostalCode;Country could however be used if this
          * should change in the future.
          */
-        if (getProperty(person, postalAddressPropDef) != null)
-            sb.append("ADR;TYPE=WORK,POSTAL:;;" + getProp(person, postalAddressPropDef) + ";;;;\n");
+        Property postalAddressProp = getProperty(person, postalAddressPropDefPointer);
+        if (postalAddressProp != null)
+            sb.append("ADR;TYPE=WORK,POSTAL:;;" + postalAddressProp.getFormattedValue() + ";;;;\n");
 
-        if (getProperty(person, visitingAddressPropDef) != null)
-            sb.append("ADR;TYPE=WORK:;;" + getProp(person, visitingAddressPropDef) + ";;;;\n");
+        Property visitingAddressProp = getProperty(person, visitingAddressPropDefPointer);
+        if (visitingAddressProp != null) {
+            sb.append("ADR;TYPE=WORK:;;" + visitingAddressProp.getFormattedValue() + ";;;;\n");
+        }
 
-        if (getProperty(person, emailPropDef) != null)
-            sb.append("EMAIL;TYPE=INTERNET:" + getProp(person, emailPropDef) + "\n");
+        Property emailProp = getProperty(person, emailPropDefPointer);
+        if (emailProp != null) {
+            sb.append("EMAIL;TYPE=INTERNET:" + emailProp.getFormattedValue() + "\n");
+        }
 
-        if (getProperty(person, picturePropDef) != null) {
-            String pic = b64Thumbnail(person, repository, token, currenturi, requestURL);
-            if (pic != null)
+        Property pictureProp = getProperty(person, picturePropDefPointer);
+        if (pictureProp != null) {
+            String pic = b64Thumbnail(person, repository, token, currenturi, requestURL, pictureProp);
+            if (pic != null) {
                 sb.append(pic);
+            }
         }
 
         sb.append("REV:" + getDtstamp() + "\n");
@@ -173,17 +196,12 @@ public class VcfController implements Controller {
         return sb.toString();
     }
 
-    private String getProp(Resource person, PropertyTypeDefinition propDef) {
-        return getProperty(person, propDef).getFormattedValue();
-    }
-
-    private Property getProperty(Resource person, PropertyTypeDefinition propDef) {
-        Property prop = person.getProperty(propDef);
-        if (prop == null) {
-            prop = person.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propDef.getName());
+    private Property getProperty(Resource person, String propDefPointer) {
+        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyDefinitionByPointer(propDefPointer);
+        if (propDef != null) {
+            return person.getProperty(propDef);
         }
-
-        return prop;
+        return null;
     }
 
     private String getDtstamp() {
@@ -192,28 +210,31 @@ public class VcfController implements Controller {
         return sdf.format(Calendar.getInstance().getTime());
     }
 
-    private String b64Thumbnail(Resource person, Repository repository, String token, Path currenturi, URL requestURL) {
-        String path = getProp(person, picturePropDef);
+    private String b64Thumbnail(Resource person, Repository repository, String token, Path currenturi, URL requestURL,
+            Property pictureProp) {
 
+        String picturePath = pictureProp.getFormattedValue();
         Path p = null;
-
         try {
-            URL pURL = URL.parse(path);
-            if (requestURL.getHost().equals(pURL.getHost()))
+            URL pURL = URL.parse(picturePath);
+            if (requestURL.getHost().equals(pURL.getHost())) {
                 p = pURL.getPath();
+            }
         } catch (Exception e) {
         }
 
         try {
-            if (!path.startsWith("/"))
-                p = currenturi.extend(path);
-            else
-                p = Path.fromString(path);
+            if (!picturePath.startsWith("/")) {
+                p = currenturi.extend(picturePath);
+            } else {
+                p = Path.fromString(picturePath);
+            }
         } catch (Exception e) {
         }
 
-        if (p == null)
+        if (p == null) {
             return null;
+        }
 
         Resource r;
         try {
@@ -222,24 +243,27 @@ public class VcfController implements Controller {
             return null;
         }
 
-        Property thumbnail = r.getProperty(thumbnailPropDef);
+        Property thumbnail = this.getProperty(r, thumbnailPropDefPointer);
         InputStream i;
 
         if (thumbnail == null) {
-            if (getProperty(r, imageWidthPropDef) == null)
+            if (getProperty(r, imageWidthPropDefPointer) == null) {
                 return null;
+            }
 
-            int width = getProperty(r, imageWidthPropDef).getIntValue();
+            int width = getProperty(r, imageWidthPropDefPointer).getIntValue();
 
-            if (width > Integer.parseInt(maxImageWidth))
+            if (width > Integer.parseInt(maxImageWidth)) {
                 return null;
+            }
             try {
                 i = repository.getInputStream(token, p, true);
             } catch (Exception e) {
                 return null;
             }
-        } else
+        } else {
             i = thumbnail.getBinaryStream().getStream();
+        }
 
         /* Base64 encodes the thumbnail. */
         String encoded;
@@ -266,68 +290,73 @@ public class VcfController implements Controller {
     }
 
     @Required
-    public void setFirstNamePropDef(PropertyTypeDefinition firstNamePropDef) {
-        this.firstNamePropDef = firstNamePropDef;
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
     }
 
     @Required
-    public void setSurnamePropDef(PropertyTypeDefinition surnamePropDef) {
-        this.surnamePropDef = surnamePropDef;
+    public void setFirstNamePropDefPointer(String firstNamePropDefPointer) {
+        this.firstNamePropDefPointer = firstNamePropDefPointer;
     }
 
     @Required
-    public void setUsernamePropDef(PropertyTypeDefinition usernamePropDef) {
-        this.usernamePropDef = usernamePropDef;
+    public void setSurnamePropDefPointer(String surnamePropDefPointer) {
+        this.surnamePropDefPointer = surnamePropDefPointer;
     }
 
     @Required
-    public void setPositionPropDef(PropertyTypeDefinition positionPropDef) {
-        this.positionPropDef = positionPropDef;
+    public void setUsernamePropDefPointer(String usernamePropDefPointer) {
+        this.usernamePropDefPointer = usernamePropDefPointer;
     }
 
     @Required
-    public void setPhonePropDef(PropertyTypeDefinition phonePropDef) {
-        this.phonePropDef = phonePropDef;
+    public void setPositionPropDefPointer(String positionPropDefPointer) {
+        this.positionPropDefPointer = positionPropDefPointer;
     }
 
     @Required
-    public void setMobilePropDef(PropertyTypeDefinition mobilePropDef) {
-        this.mobilePropDef = mobilePropDef;
+    public void setPhonePropDefPointer(String phonePropDefPointer) {
+        this.phonePropDefPointer = phonePropDefPointer;
     }
 
     @Required
-    public void setFaxPropDef(PropertyTypeDefinition faxPropDef) {
-        this.faxPropDef = faxPropDef;
+    public void setMobilePropDefPointer(String mobilePropDefPointer) {
+        this.mobilePropDefPointer = mobilePropDefPointer;
     }
 
     @Required
-    public void setPostalAddressPropDef(PropertyTypeDefinition postalAddressPropDef) {
-        this.postalAddressPropDef = postalAddressPropDef;
+    public void setFaxPropDefPointer(String faxPropDefPointer) {
+        this.faxPropDefPointer = faxPropDefPointer;
     }
 
     @Required
-    public void setVisitingAddressPropDef(PropertyTypeDefinition visitingAddressPropDef) {
-        this.visitingAddressPropDef = visitingAddressPropDef;
+    public void setPostalAddressPropDefPointer(String postalAddressPropDefPointer) {
+        this.postalAddressPropDefPointer = postalAddressPropDefPointer;
     }
 
     @Required
-    public void setEmailPropDef(PropertyTypeDefinition emailPropDef) {
-        this.emailPropDef = emailPropDef;
+    public void setVisitingAddressPropDefPointer(String visitingAddressPropDefPointer) {
+        this.visitingAddressPropDefPointer = visitingAddressPropDefPointer;
     }
 
     @Required
-    public void setPicturePropDef(PropertyTypeDefinition picturePropDef) {
-        this.picturePropDef = picturePropDef;
+    public void setEmailPropDefPointer(String emailPropDefPointer) {
+        this.emailPropDefPointer = emailPropDefPointer;
     }
 
     @Required
-    public void setThumbnailPropDef(PropertyTypeDefinition thumbnailPropDef) {
-        this.thumbnailPropDef = thumbnailPropDef;
+    public void setPicturePropDefPointer(String picturePropDefPointer) {
+        this.picturePropDefPointer = picturePropDefPointer;
     }
 
     @Required
-    public void setImageWidthPropDef(PropertyTypeDefinition imageWidthPropDef) {
-        this.imageWidthPropDef = imageWidthPropDef;
+    public void setThumbnailPropDefPointer(String thumbnailPropDefPointer) {
+        this.thumbnailPropDefPointer = thumbnailPropDefPointer;
+    }
+
+    @Required
+    public void setImageWidthPropDefPointer(String imageWidthPropDefPointer) {
+        this.imageWidthPropDefPointer = imageWidthPropDefPointer;
     }
 
     @Required

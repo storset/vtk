@@ -12,7 +12,6 @@
         <bean class="org.vortikal.web.service.OrAssertion">
           <property name="assertions">
             <list>
-              <ref bean="isPersonAssertion" />
               <ref bean="resourceTypeIsPerson" />
               <ref bean="resourceIsPersonListing" />
             </list>
@@ -28,19 +27,20 @@
   </bean>
 
   <bean id="vcfHandler" class="org.vortikal.web.display.vcf.VcfController">
-    <property name="firstNamePropDef" ref="firstNamePropDef" />
-    <property name="surnamePropDef" ref="surnamePropDef" />
-    <property name="usernamePropDef" ref="usernamePropDef" />
-    <property name="positionPropDef" ref="positionPropDef" />
-    <property name="phonePropDef" ref="phonePropDef" />
-    <property name="mobilePropDef" ref="mobilePropDef" />
-    <property name="faxPropDef" ref="faxPropDef" />
-    <property name="postalAddressPropDef" ref="postalAddressPropDef" />
-    <property name="visitingAddressPropDef" ref="visitingAddressPropDef" />
-    <property name="emailPropDef" ref="emailPropDef" />
-    <property name="picturePropDef" ref="picturePropDef" />
-    <property name="thumbnailPropDef" ref="thumbnailPropDef" />
-    <property name="imageWidthPropDef" ref="imageWidthPropDef" />
+    <property name="resourceTypeTree" ref="resourceTypeTree"/>
+    <property name="firstNamePropDefPointer" value="resource:firstName" />
+    <property name="surnamePropDefPointer" value="resource:surname" />
+    <property name="usernamePropDefPointer" value="resource:username" />
+    <property name="positionPropDefPointer" value="resource:position" />
+    <property name="phonePropDefPointer" value="resource:phone" />
+    <property name="mobilePropDefPointer" value="resource:mobile" />
+    <property name="faxPropDefPointer" value="resource:fax" />
+    <property name="postalAddressPropDefPointer" value="resource:postalAddress" />
+    <property name="visitingAddressPropDefPointer" value="resource:visitingAddress" />
+    <property name="emailPropDefPointer" value="resource:email" />
+    <property name="picturePropDefPointer" value="resource:picture" />
+    <property name="thumbnailPropDefPointer" value="thumbnail" />
+    <property name="imageWidthPropDefPointer" value="imageWidth" />
     <property name="maxImageWidth" value="${resourcetype.image.thumbnail.width}" />
   </bean>
 

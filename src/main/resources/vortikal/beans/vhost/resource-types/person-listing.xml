@@ -19,6 +19,7 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="personListing.additionalContentPropDef" />
+        <ref bean="personListing.unitAreaCodePropDef" />
       </list>
     </property>
   </bean>
@@ -27,12 +28,19 @@
     <property name="resourceTypeDefinition" ref="personListingResourceTypeDefinition" />
     <property name="exactMatch" value="true" />
   </bean>
-  
 
   <bean id="personListing.additionalContentPropDef" 
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="additionalContent"/>
     <property name="type" value="HTML"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
+    <property name="mandatory" value="false"/>
+  </bean>
+
+  <bean id="personListing.unitAreaCodePropDef" 
+        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="unit-areacode"/>
+    <property name="type" value="STRING"/>
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/>
     <property name="mandatory" value="false"/>
   </bean>

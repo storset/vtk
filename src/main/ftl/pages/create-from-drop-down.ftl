@@ -22,13 +22,13 @@
   <!--
      $(document).ready(function(){
        var timestamp = 1 - new Date();
-       $("#tree").treeview({
+       $(".tree-create").treeview({
          animated: "fast",
          url: "?vrtx=admin&service=create-${type}-from-drop-down&uri=/&ts=" + timestamp,
          service: "create-${type}-from-drop-down"
        })
 
-       $("#tree").delegate("a", "click", function(e){
+       $(".tree-create").delegate("a", "click", function(e){
            // don't want click on links
            return false;
        });
@@ -47,7 +47,7 @@
 </head>
 <body>
   <div class="vrtx-report vrtx-permission-tree">
-    <ul id="tree" class="filetree treeview-gray"></ul>
+    <ul id="tree" class="filetree treeview-gray tree-create"></ul>
   </div>
 </body>
 </html>

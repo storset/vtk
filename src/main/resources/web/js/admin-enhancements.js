@@ -136,7 +136,13 @@ $(document).ready(function () {
 
   // Dropdowns
   dropdownLanguageMenu();
-  dropdownCollectionGlobalMenu();
+  
+  dropdown("#titleContainer .resource-title.true ul.resourceMenuLeft", function(a,b) {
+    return a && (b > 1);
+  });
+  dropdown("ul.manage-create", function(a, b) { return true; });
+  
+  
   
   // Remove active tab if it has no children
   if (!$("#main .activeTab > *").length) {
@@ -748,23 +754,23 @@ function dropdownLanguageMenu() {
   }
 }
 
-function dropdownCollectionGlobalMenu() {
-  var collectionGlobalMenu = $("#titleContainer .resource-title.true ul.resourceMenuLeft");
+function dropdown(selection, cond, removeFirst) {
+  var collectionGlobalMenu = $(selection);
   var numberOfShortcuts = collectionGlobalMenu.find("li").size();
-
+  
   // Make sure it is a folder with more than one choice
-  if (collectionGlobalMenu.length && numberOfShortcuts > 1) {
+  if (cond(collectionGlobalMenu.length, numberOfShortcuts)) {
     collectionGlobalMenu.addClass("dropdown-shortcut-menu");
 
     // Move listelements except .first into container
-    $("ul.dropdown-shortcut-menu").parent().append("<div class='dropdown-shortcut-menu-container'><ul>" + collectionGlobalMenu.html() + "</ul></div>");
+    collectionGlobalMenu.parent().append("<div class='dropdown-shortcut-menu-container'><ul>" + collectionGlobalMenu.html() + "</ul></div>");
     collectionGlobalMenu.find("li").not(".first").remove();
     collectionGlobalMenu.find("li.first").append("<span id='dropdown-shortcut-menu-click-area'></span>");
 
-    var shortcutMenu = $(".resource-title .dropdown-shortcut-menu-container");
+    var shortcutMenu = collectionGlobalMenu.siblings(".dropdown-shortcut-menu-container");
     shortcutMenu.find("li.first").remove();
     shortcutMenu.css("left", (collectionGlobalMenu.width() - 24) + "px");
-
+    
     collectionGlobalMenu.find("li.first #dropdown-shortcut-menu-click-area").click(function (e) {
       shortcutMenu.slideToggle(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasing);
       e.stopPropagation();

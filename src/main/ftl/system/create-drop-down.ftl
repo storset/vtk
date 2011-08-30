@@ -13,7 +13,7 @@
   <#assign colUrl = colUrl + "?vrtx=admin&display=create-collection-from-drop-down" />
 </#if>
 <ul class="manage-create">
-  <li class="manage-create-top">
+  <li class="manage-create-top first">
     <@vrtx.msg code="manage.create-new" default="Create new" />
   </li>
   <li class="manage-create-drop">

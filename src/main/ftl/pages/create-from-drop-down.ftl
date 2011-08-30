@@ -46,9 +46,10 @@
        
        if(treeTrav.length > 1) { // Ignore if only root
          var i = 1; // Skip root
+         var j = 1;
          var checkLinkAvailable = setInterval(function() {
            var link = windowTree.find("a[href='" + treeTrav[i] + "']");
-           vrtxAdmin.log({msg: "Traverse path " + treeTrav[i] + " (#" + i + ") : " + link});
+           vrtxAdmin.log({msg: "Checking for path #" + i + ": " + treeTrav[i] + link + "..."});
            if(link.length) {
              var hit = link.closest("li").find("> .hitarea");
              vrtxAdmin.log({msg: "Hit area found: " + hit});
@@ -59,6 +60,10 @@
                i++; // next URI
              }
            }
+           if(j >= 200) {  // only check for 3s
+             clearInterval(checkLinkAvailable);
+           } 
+           j++;
          }, 15);
        }
      });

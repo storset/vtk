@@ -36,7 +36,7 @@
        // Traverse tree
        var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];
        
-       // Cache Greybox window create tree
+       // Cache create tree ref.
        var windowTree = $("#TB_ajaxContent .tree-create");
        
        if(treeTrav.length > 1) { // Ignore if only root

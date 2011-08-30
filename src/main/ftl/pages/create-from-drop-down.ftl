@@ -44,7 +44,7 @@
          var checkLinkAvailable = setInterval(function() {
            var link = windowTree.find("a[href='" + treeTrav[i] + "']");
            if(link.length) {
-             var hit = link.parent().parent().find("> .hitarea");
+             var hit = link.closest("li").find("> .hitarea");
              hit.click();
              if(i == (treeTrav.length-1)) {
                clearInterval(checkLinkAvailable);

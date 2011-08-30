@@ -898,8 +898,9 @@ div.tabs ul li a:hover {
 div.tabs ul li.activeTab a,
 div.tabs ul li.activeTab a:hover {
   background: #fff;
-  border-bottom: 1px solid #fff;
   color: #363534;
+  border-bottom: 3px solid #fff;
+  margin-bottom: -2px;
 }
 
 .beta {

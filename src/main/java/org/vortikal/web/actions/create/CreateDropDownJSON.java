@@ -92,14 +92,12 @@ public class CreateDropDownJSON implements Controller {
             String uriService = createService.constructURL(Path.fromString(sr.getUri())).getPathRepresentation();
 
             StringBuilder title = new StringBuilder();
-            title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + sr.getName()
-                    + "</strong>");
 
-            title.append(" (<a href=&quot;" + uriService + "&quot;>Create here</a>)</span>");
+            title.append("<a href=&quot;" + uriService + "&quot;>"
+                    + provider.getLocalizedTitle(request, "manage.place-here", null) + "</a></span>");
 
             o.put("hasChildren", sr.hasChildren());
-            o.put("text", sr.getName() + " "
-                    + createService.constructURL(Path.fromString(sr.getUri())).getPathRepresentation());
+            o.put("text", sr.getName());
             o.put("uri", sr.getUri());
             o.put("uriService", uriService);
             o.put("spanClasses", "folder");

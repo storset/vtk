@@ -33,13 +33,27 @@
            return false;
        });
        
-       // Bruke denne:
-       // var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];
+       // Traverse tree
+       var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];
        
-       // Evt noe slikt:
-       // <#list uris as link>
-       //   Funksjon som bruker ${link?html}
-       //  </#list>
+       // Cache Greybox window
+       var window = $("#TB_ajaxContent");
+       
+       if(treeTrav.length > 1) { // Ignore if only root
+         var i = 1; // Skip root
+         var timer = setInterval(function() {
+           var link = window.find(".tree-create a[href='" + treeTrav[i] + "']");
+           if(link.length) {
+             var hit = link.parent().parent().find("> .hitarea");
+             hit.click();
+             if(i == (treeTrav.length-1)) {
+               clearInterval(timer);
+             } else {
+               i++;
+             }
+           }
+         }, 15);
+       }
        
      });
   // -->

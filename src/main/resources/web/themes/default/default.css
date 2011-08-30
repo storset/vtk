@@ -327,6 +327,7 @@ a:hover {
   margin: 0 18px 0 0;
   height: 30px;
   float: left;
+  position: relative;
 }
 
 #app-head .global-menu-small {
@@ -342,6 +343,10 @@ a:hover {
   background: none;
   padding-right: 0;
   margin-right: 0;
+}
+
+#app-head .global-menu#global-menu-create {
+  padding-top: 9px;
 }
 
 #app-head .principal #logoutForm {
@@ -515,6 +520,8 @@ ul.list-menu.tabMenu1,
 ul.list-menu.tabMenu1 li,
 ul.list-menu.tabMenu2,
 ul.list-menu.tabMenu2 li,
+.global-menu ul,
+.global-menu ul li,
 div.localeSelection ul,
 div.localeSelection ul li {
   list-style: none;
@@ -588,11 +595,13 @@ ul.list-menu.resourceMenuLeft li {
   margin: 0 0 0 1px;
 }
 
+ul.dropdown-shortcut-menu li.first,
 ul.list-menu.resourceMenuLeft li.first {
   background-position: 0 0;
   margin: 0 0 0 0;
 }
 
+ul.dropdown-shortcut-menu li a,
 ul.list-menu.resourceMenuLeft li a {
   color: #363534;
   background: url(images/button-open-right.png) no-repeat top right;
@@ -668,6 +677,10 @@ ul.dropdown-shortcut-menu-container {
   left: 0;
   z-index: 999999;
   background-color: #fff;
+}
+
+.global-menu div.dropdown-shortcut-menu-container {
+  top: 37px;
 }
 
 ul.dropdown-shortcut-menu li.first {

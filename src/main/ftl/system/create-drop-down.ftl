@@ -20,6 +20,9 @@
 </#if>
 <ul class="manage-create">
   <li class="manage-create-top first">
+    <a href="javascript:void(0);"><@vrtx.msg code="manage.create-new" default="Create new" /></a>
+  </li>
+  <li class="manage-create-drop">
     <a class="thickbox" title="<@vrtx.msg code="manage.choose-location" default="Choose location" />" href="${docUrl?html}">
       <@vrtx.msg code="manage.document" default="Create Document" />
     </a>

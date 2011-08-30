@@ -117,13 +117,16 @@
           </#if>
 
           <#if conf.showLocation && (location != "")>
-            <span class="vrtx-event-component-location">${location}</span>
+            <span class="vrtx-event-component-location location">${location}</span>
           </#if>
 
           <#if conf.addToCalendar>
-            <span class="vrtx-add-event">
-              <a class="vrtx-ical vrtx-link-check" href="${event.URI?html}?vrtx=ical"><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")?html}" title="${vrtx.getMsg("event.add-to-calendar.help")?html}"></a>
-            </span>
+            <div class="vrtx-number-of-comments-add-event-container">
+              <span class="vrtx-add-event">
+                <a class="vrtx-ical vrtx-link-check" href="${event.URI?html}?vrtx=ical"><@vrtx.msg code="event.add-to-calendar" /></a>
+                <a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")?html}" title="${vrtx.getMsg("event.add-to-calendar.help")?html}"></a>
+              </span>
+            </div> 
           </#if>
         </div>
 

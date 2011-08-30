@@ -33,24 +33,26 @@ package org.vortikal.util.repository;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.util.io.StreamUtil;
+import org.vortikal.util.ReverseMap;
+import org.vortikal.util.text.JSON;
 
-public class JSONBackedMapResource implements Map<Object, Object>, InitializingBean {
+public class JSONBackedMapResource implements Map<Object, Object>, 
+    ReverseMap<Object, Object>, InitializingBean {
 
     private Repository repository;
     private Path uri;
     private String token;
-    //private Map<Object, Object> map;
-    private JSONObject map;
+    private Map<Object, Object> map;
+    private Map<Object, Set<Object>> reverseMap;
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -70,25 +72,42 @@ public class JSONBackedMapResource implements Map<Object, Object>, InitializingB
         this.repository = repository;
     }
 
-
     @Required
     public void setUri(String uri) {
         this.uri = Path.fromString(uri);
     }
-
 
     public void setToken(String token) {
         this.token = token;
     }
     
     public void load() throws Exception {
-        JSONObject obj = null;
+        
+        Map<Object, Object> map = null;
+        Map<Object, Set<Object>>reverseMap = null;
         try {
             InputStream inputStream = this.repository.getInputStream(this.token, this.uri, false);
-            String content = new String(StreamUtil.readInputStream(inputStream), "utf-8");
-            obj = JSONObject.fromObject(content);
+            Object parsed = JSON.parse(inputStream);
+            if (!(parsed instanceof Map<?, ?>)) {
+                return;
+            }
+            Map<?, ?> m = (Map<?, ?>) parsed;
+            
+            map = new HashMap<Object, Object>();
+            reverseMap = new HashMap<Object, Set<Object>>();
+
+            for (Object k: m.keySet()) {
+                Object v = m.get(k);
+                map.put(k, v);
+                if (!reverseMap.containsKey(v)) {
+                    reverseMap.put(v, new HashSet<Object>());
+                }
+                Set<Object> keys = reverseMap.get(v);
+                keys.add(k);
+            }
         } finally {
-            this.map = obj;
+            this.map = map;
+            this.reverseMap = reverseMap;
         }
     }
     
@@ -114,7 +133,6 @@ public class JSONBackedMapResource implements Map<Object, Object>, InitializingB
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Set<Map.Entry<Object, Object>> entrySet() {
         if (this.map == null) {
             return Collections.emptySet();
@@ -139,7 +157,6 @@ public class JSONBackedMapResource implements Map<Object, Object>, InitializingB
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Set<Object> keySet() {
         if (this.map == null) {
             return Collections.emptySet();
@@ -171,7 +188,6 @@ public class JSONBackedMapResource implements Map<Object, Object>, InitializingB
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Collection<Object> values() {
         if (this.map == null) {
             return Collections.emptySet();
@@ -179,11 +195,23 @@ public class JSONBackedMapResource implements Map<Object, Object>, InitializingB
         return this.map.values();
     }
     
+    @Override
     public String toString() {
         if (this.map != null) {
             return this.map.toString();
         }
         return "{}";
     }
-    
+
+    @Override
+    public Set<Object> keysOf(Object value) {
+        if (this.reverseMap == null) {
+            return null;
+        }
+        Set<Object> result = this.reverseMap.get(value);
+        if (result == null) {
+            return null;
+        }
+        return Collections.unmodifiableSet(result);
+    }
 }

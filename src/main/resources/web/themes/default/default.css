@@ -659,6 +659,8 @@ ul.dropdown-shortcut-menu li.first.unhover {
 
 ul.dropdown-shortcut-menu li.first:hover a {
   margin: 0 -5px 0 0 !important;
+  color: #fff;
+  text-decoration: none;
 }
 
 ul.dropdown-shortcut-menu li.first a.hover {

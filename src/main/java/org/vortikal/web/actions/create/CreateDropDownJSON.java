@@ -90,7 +90,8 @@ public class CreateDropDownJSON implements Controller {
             JSONObject o = new JSONObject();
             o.put("hasChildren", sr.hasChildren());
             o.put("text", sr.getName());
-            o.put("uri", sr.getUri());
+            o.put("uri", sr.getUri() + " "
+                    + createService.constructURL(Path.fromString(sr.getUri())).getPathRepresentation());
             o.put("uriService", createService.constructURL(Path.fromString(sr.getUri())).getPathRepresentation());
             o.put("spanClasses", "folder");
             list.add(o);

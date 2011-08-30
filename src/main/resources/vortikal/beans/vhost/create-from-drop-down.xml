@@ -100,8 +100,8 @@
         </entry>
         <entry key="jsURLs">
           <list>
-            <value>${webResources.baseURL}/jquery/plugins/jquery.treeview2.js</value>
-            <value>${webResources.baseURL}/jquery/plugins/jquery.treeview.async2.js</value>
+            <value>${webResources.baseURL}/jquery/plugins/jquery.treeview.js</value>
+            <value>${webResources.baseURL}/jquery/plugins/jquery.treeview.async.js</value>
           </list>
         </entry>
       </map>

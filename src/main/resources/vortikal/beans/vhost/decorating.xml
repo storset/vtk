@@ -229,6 +229,11 @@
         </property>
       </bean>
     </property>
+    <property name="attributes">
+      <map>
+        <entry key="remove-caching" value="true" />
+      </map>
+    </property>
   </bean>
 
   <bean id="listDecoratorComponentsService" class="org.vortikal.web.service.ServiceImpl">

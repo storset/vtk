@@ -1249,6 +1249,12 @@ function loadFeaturedArticles(addName, removeName, browseName, editorBase, baseF
                         + "', '" + editorBrowseUrl + "'); return false;\">" + addName + "</button></div>"
                         + "<input type='hidden' id='id' name='id' value='1' /></div>");
 
+   var listOfFiles = featuredArticlesVal.split(",");
+   var addFormFieldFunc = addFormField;
+   for (var i = 0, len = listOfFiles.length; i < len; i++) {
+     addFormFieldFunc($.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
+   }
+
   // TODO !spageti && !run twice
   if (requestFromEditor()) {
     storeInitPropValues();

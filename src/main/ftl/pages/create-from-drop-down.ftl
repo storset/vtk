@@ -61,7 +61,11 @@
                  queue: true,
                  axis: 'y'
                });
+               var title = link.attr("title");
                link.trigger('mouseover');
+               $('#TB_ajaxContent a').bind('mouseout', 'mouseover', function() {
+                 link.attr("title", title);
+               });
                clearInterval(checkLinkAvailable);
              } else {
                i++; // next URI

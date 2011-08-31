@@ -50,6 +50,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.report.subresource.SubResource;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.ServiceUnlinkableException;
 
 public class CreateDropDownJSON implements Controller {
 
@@ -99,20 +100,31 @@ public class CreateDropDownJSON implements Controller {
             Resource resource = repository.retrieve(token, Path.fromString(sr.getUri()), true);
 
             String uriService;
-            try {
-                uriService = createService.constructURL(resource, principal).getPathRepresentation();
-            } catch (Exception e) {
-                uriService = "";
-            }
             StringBuilder title = new StringBuilder();
+            boolean useButton;
+            try {
+                String service = createService.constructURL(resource, principal).getPathRepresentation();
+                uriService = "<a href=&quot;" + service + "&quot;>"
+                        + provider.getLocalizedTitle(request, "manage.place-here", null) + "</a></span>";
+                useButton = true;
 
-            title.append("<a href=&quot;" + uriService + "&quot;>"
-                    + provider.getLocalizedTitle(request, "manage.place-here", null) + "</a></span>");
+                title.append("<a href=&quot;" + service + "&quot;>"
+                        + provider.getLocalizedTitle(request, "manage.place-here", null) + "</a></span>");
+            } catch (ServiceUnlinkableException e) {
+                uriService = provider.getLocalizedTitle(request, "manage.no-permission", null);
+                useButton = false;
+                
+                title.append(provider.getLocalizedTitle(request, "manage.no-permission", null));
+            } catch (Exception e) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return;
+            }
 
             o.put("hasChildren", sr.hasChildren());
             o.put("text", sr.getName());
             o.put("uri", sr.getUri());
             o.put("uriService", uriService);
+            o.put("useButton", useButton);
             o.put("spanClasses", "folder");
             o.put("title", title.toString());
 

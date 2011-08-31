@@ -854,14 +854,23 @@ ul.list-menu.resourceMenuRight p span {
   position: relative;
 }
 
+.vrtx-create-tree a.tree-link {
+  padding: 7px 10px !important;
+  color: #2b2b2b !important;
+  font-size: 1.231em;
+  max-width: 200px;
+  display: block;
+}
+
+.vrtx-create-tree a.tree-link:hover {
+  padding: 6px 9px !important;
+  background-color: #ecf3f9;
+  border: 1px solid #c7dadf; 
+}
+
 .tip.vrtx-create-tree {
   border: none;
   background: transparent;
-  /*
-  padding: 5px 10px;
-  background-color: #ecf3f9;
-  border-color: #c7dadf;
-  */
 }
 
 .tip.vrtx-create-tree .vrtx-button-small {

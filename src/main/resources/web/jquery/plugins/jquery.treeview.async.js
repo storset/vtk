@@ -26,7 +26,7 @@ function load(settings, root, child, container) {
         if(this.uri) {
           if(this.title) {
             var theuri = this.uri;
-            linkOrPlainText = "<a href='" + theuri
+            linkOrPlainText = "<a class='tree-link' href='" + theuri
                             + "' title='" + this.title + "'>" 
                             + this.text + "</a>"
           } else {

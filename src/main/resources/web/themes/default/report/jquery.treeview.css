@@ -1,3 +1,5 @@
+/* USIT heavily modified */
+
 .treeview, .treeview ul { 
 	padding: 0 !important;
 	margin: 0 !important;
@@ -5,7 +7,6 @@
 }
 
 .treeview ul {
-	background-color: white;
 	margin-top: 4px;
 }
 
@@ -14,7 +15,7 @@
 	height: 16px;
 	width: 20px;
 	margin-left: -20px;
-        float: left;
+    float: left;
 	cursor: pointer;
 }
 
@@ -31,6 +32,7 @@
 
 .treeview a {
   text-decoration: none;
+  z-index: 9999999;
 }
 
 .treeview .hover { text-decoration: underline; cursor: pointer; }
@@ -61,10 +63,10 @@
 
 
 .filetree li { padding: 3px 0 2px 20px; }
-.filetree span.folder, .filetree span.file { padding: 1px 0 1px 20px; display: block; }
-.filetree span.folder { background: url(images/folder.gif) 0 0 no-repeat; }
-.filetree li.expandable span.folder, .filetree li.closed span.folder { background: url(images/folder-closed.gif) 0 0 no-repeat; }
-.filetree span.file { background: url(images/file.gif) 0 0 no-repeat; }
+.filetree span.folder, .filetree span.file { padding: 1px 0 1px 20px; display: block; z-index: 9999999; }
+.filetree span.folder { background: transparent url(images/folder.gif) 0 0 no-repeat; }
+.filetree li.expandable span.folder, .filetree li.closed span.folder { background: transparent url(images/folder-closed.gif) 0 0 no-repeat; }
+.filetree span.file { background: transparent url(images/file.gif) 0 0 no-repeat; }
 
 /* Folder / file icons for permission visualization */
 .filetree span.folder.restricted  { background: url(images/folder-restricted.gif) 0 0 no-repeat; }

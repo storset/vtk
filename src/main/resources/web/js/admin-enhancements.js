@@ -136,13 +136,9 @@ $(document).ready(function () {
 
   // Dropdowns
   dropdownLanguageMenu();
-  
-  dropdown("#titleContainer .resource-title.true ul.resourceMenuLeft", function(a,b) {
-    return a && (b > 1);
-  });
+  dropdown("#titleContainer .resource-title.true ul.resourceMenuLeft", function(a, b) { return a && (b > 1); });
   dropdown("ul.manage-create", function(a, b) { return true; });
-  
- 
+
   // Remove active tab if it has no children
   if (!$("#main .activeTab > *").length) {
     $("#main .activeTab").remove();
@@ -358,7 +354,7 @@ $(document).ready(function () {
 
   // AJAX INIT: Remove/add permissions
 
-  // Show/hide multiple properties (initalization/config)
+  // Show/hide multiple properties (initalization / config)
   
   showHide(["#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"],
             "#resource\\.recursive-listing\\.false:checked", 'false', ["#vrtx-resource\\.recursive-listing-subfolders"]);
@@ -753,12 +749,12 @@ function dropdownLanguageMenu() {
   }
 }
 
-function dropdown(selection, cond, removeFirst) {
+function dropdown(selection, continueCondition) {
   var collectionGlobalMenu = $(selection);
   var numberOfShortcuts = collectionGlobalMenu.find("li").size();
   
   // Make sure it is a folder with more than one choice
-  if (cond(collectionGlobalMenu.length, numberOfShortcuts)) {
+  if (continueCondition(collectionGlobalMenu.length, numberOfShortcuts)) {
     collectionGlobalMenu.addClass("dropdown-shortcut-menu");
 
     // Move listelements except .first into container
@@ -777,13 +773,13 @@ function dropdown(selection, cond, removeFirst) {
     });
 
     collectionGlobalMenu.find("li.first #dropdown-shortcut-menu-click-area").hover(function () {
-      var elm = $(this);
-      elm.parent().toggleClass('unhover');
-      elm.prev().toggleClass('hover');
+      var $this = $(this);
+      $this.parent().toggleClass('unhover');
+      $this.prev().toggleClass('hover');
     }, function () {
-      var elm = $(this);
-      elm.parent().toggleClass('unhover');
-      elm.prev().toggleClass('hover');
+      var $this = $(this);
+      $this.parent().toggleClass('unhover');
+      $this.prev().toggleClass('hover');
     });
   }
 }
@@ -811,7 +807,7 @@ function dropdown(selection, cond, removeFirst) {
 
 VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
   var args = arguments; // this function
-  
+
   $("#app-content").delegate(options.selector, "click", function (e) {
                           
     var url = $(this).attr("href") || $(this).closest("form").attr("action");
@@ -1018,17 +1014,17 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
     if(!options.funcProceedCondition || options.funcProceedCondition(form)) {
       var url = form.attr("action");
       var encType = form.attr("enctype");
+       if (typeof encType === "undefined" || !encType.length) {
+        encType = "application/x-www-form-urlencoded";
+      }
 
+      // TODO: test with form.serialize()
       var dataString = vrtxAdmin.appendInputNameValuePairsToDataString(form.find("input[type=text]"));
       dataString += vrtxAdmin.appendInputNameValuePairsToDataString(form.find("input[type=file]"));
       dataString += vrtxAdmin.appendInputNameValuePairsToDataString(form.find("input[type=radio]:checked"));
       dataString += vrtxAdmin.appendInputNameValuePairsToDataString(form.find("input[type=checkbox]:checked"));
       dataString += '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
                   + "&" + link.attr("name");
-                  
-      if (typeof encType === "undefined" || !encType.length) {
-        encType = "application/x-www-form-urlencoded";
-      }
 
       $.ajax({
         type: "POST",
@@ -1238,26 +1234,21 @@ function showHideProperty(id, init, show) {
 
 function loadFeaturedArticles(addName, removeName, browseName, editorBase, baseFolder, editorBrowseUrl) {
   var featuredArticles = $("#resource\\.featured-articles");
-  if (featuredArticles.val() == null) {
+  var featuredArticlesVal = featuredArticles.val();
+  if (featuredArticlesVal == null) {
     return;
   }
 
   featuredArticles.hide();
-  featuredArticles.parent().hide();
-
-  featuredArticles.parent().parent()
+  var featuredArticlesParent = featuredArticles.parent();
+  featuredArticlesParent.hide();
+  featuredArticlesParent.parent()
                   .append("<div id='vrtx-featured-article-add'>"
                         + "<div class=\"vrtx-button\"><button onclick=\"addFormField(null, '" 
                         + removeName + "', '" + browseName + "', '" + editorBase + "', '" + baseFolder 
                         + "', '" + editorBrowseUrl + "'); return false;\">" + addName + "</button></div>"
                         + "<input type='hidden' id='id' name='id' value='1' /></div>");
 
-  var listOfFiles = featuredArticles.val().split(",");
-  var addFormFieldFunc = addFormField;
-  for (var i = 0, len = listOfFiles.length; i < len; i++) {
-    addFormFieldFunc($.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
-  }
-  
   // TODO !spageti && !run twice
   if (requestFromEditor()) {
     storeInitPropValues();
@@ -1310,9 +1301,9 @@ function formatFeaturedArticlesData() {
   }
   var data = $("input[id^='vrtx-featured-articles-']");
   var result = "";
-  for (var i = 0, len = data.length; i < len; i++) {
+  for (var i = 0, len = (data.length - 1); i <= len; i++) {
     result += data[i].value;
-    if (i < (len - 1)) {
+    if (i < len) {
       result += ",";
     }
   }

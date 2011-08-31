@@ -136,16 +136,18 @@ $(document).ready(function () {
 
   // Dropdowns
   dropdownLanguageMenu();
-  dropdown("#titleContainer .resource-title.true ul.resourceMenuLeft",
-    function(isExisting, numOfListElements) { 
+  dropdown({
+    selector: "#titleContainer .resource-title.true ul.resourceMenuLeft",
+    proceedCondition: function(isExisting, numOfListElements) { 
       return isExisting && (numOfListElements > 1);
     }
-  );
-  dropdown("ul.manage-create",
-    function(isExisting, numOfListElements) {
+  });
+  dropdown({
+    selector: "ul.manage-create",
+    proceedCondition: function(isExisting, numOfListElements) {
       return isExisting;
     }
-  );
+  });
 
   // Remove active tab if it has no children
   if (!$("#main .activeTab > *").length) {
@@ -760,30 +762,29 @@ function dropdownLanguageMenu() {
   }
 }
 
-function dropdown(selection, continueCondition) {
-  var collectionGlobalMenu = $(selection);
-  var numberOfShortcuts = collectionGlobalMenu.find("li").size();
-  
-  // Make sure it is a folder with more than one choice
-  if (continueCondition(collectionGlobalMenu.length, numberOfShortcuts)) {
-    collectionGlobalMenu.addClass("dropdown-shortcut-menu");
+function dropdown(options) {
+  var list = $(options.selector);
+  var numOfListElements = list.find("li").size();
 
+  // Proceed condition
+  if (options.proceedCondition(list.length, numOfListElements)) {
+    list.addClass("dropdown-shortcut-menu");
     // Move listelements except .first into container
-    collectionGlobalMenu.parent().append("<div class='dropdown-shortcut-menu-container'><ul>" + collectionGlobalMenu.html() + "</ul></div>");
-    collectionGlobalMenu.find("li").not(".first").remove();
-    collectionGlobalMenu.find("li.first").append("<span id='dropdown-shortcut-menu-click-area'></span>");
+    list.parent().append("<div class='dropdown-shortcut-menu-container'><ul>" + collectionGlobalMenu.html() + "</ul></div>");
+    list.find("li").not(".first").remove();
+    list.find("li.first").append("<span id='dropdown-shortcut-menu-click-area'></span>");
 
-    var shortcutMenu = collectionGlobalMenu.siblings(".dropdown-shortcut-menu-container");
+    var shortcutMenu = list.siblings(".dropdown-shortcut-menu-container");
     shortcutMenu.find("li.first").remove();
     shortcutMenu.css("left", (collectionGlobalMenu.width() - 24) + "px");
-    
-    collectionGlobalMenu.find("li.first #dropdown-shortcut-menu-click-area").click(function (e) {
+
+    list.find("li.first #dropdown-shortcut-menu-click-area").click(function (e) {
       shortcutMenu.slideToggle(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasing);
       e.stopPropagation();
       e.preventDefault();
     });
 
-    collectionGlobalMenu.find("li.first #dropdown-shortcut-menu-click-area").hover(function () {
+    list.find("li.first #dropdown-shortcut-menu-click-area").hover(function () {
       var $this = $(this);
       $this.parent().toggleClass('unhover');
       $this.prev().toggleClass('hover');

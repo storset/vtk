@@ -71,7 +71,7 @@
   </script>
 </head>
 <body>
-  <div class="vrtx-report vrtx-create-tree">
+  <div class="vrtx-create-tree">
     <ul id="tree" class="filetree treeview-gray tree-create"></ul>
   </div>
 </body>

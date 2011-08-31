@@ -907,11 +907,11 @@ ul.list-menu.resourceMenuRight p span {
 }
 
 .vrtx-create-tree .filetree .expandable-hitarea {
-  background: url(images/tree-expand.gif) no-repeat 0 0;
+  background: url(images/tree-expand.gif) no-repeat 0 0 !important;
 }
 
 .vrtx-create-tree .filetree .collapsable-hitarea {
-  background: url(images/tree-collapse.gif) no-repeat 0 0;
+  background: url(images/tree-collapse.gif) no-repeat 0 0 !important;
 }
 
 /*

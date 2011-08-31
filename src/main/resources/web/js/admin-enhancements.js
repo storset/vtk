@@ -138,16 +138,11 @@ $(document).ready(function () {
   dropdownLanguageMenu();
   dropdown({
     selector: "#titleContainer .resource-title.true ul.resourceMenuLeft",
-    proceedCondition: function(isExisting, numOfListElements) { 
-      return isExisting && (numOfListElements > 1);
+    proceedCondition: function(numOfListElements) {
+      return numOfListElements > 1;
     }
   });
-  dropdown({
-    selector: "ul.manage-create",
-    proceedCondition: function(isExisting, numOfListElements) {
-      return isExisting;
-    }
-  });
+  dropdown({selector: "ul.manage-create"});
 
   // Remove active tab if it has no children
   if (!$("#main .activeTab > *").length) {
@@ -764,19 +759,20 @@ function dropdownLanguageMenu() {
 
 function dropdown(options) {
   var list = $(options.selector);
+  if (!list.length) return;
+
   var numOfListElements = list.find("li").size();
 
-  // Proceed condition
-  if (options.proceedCondition(list.length, numOfListElements)) {
+  if(options.proceedCondition && options.proceedCondition(numOfListElements) {
     list.addClass("dropdown-shortcut-menu");
     // Move listelements except .first into container
-    list.parent().append("<div class='dropdown-shortcut-menu-container'><ul>" + collectionGlobalMenu.html() + "</ul></div>");
+    list.parent().append("<div class='dropdown-shortcut-menu-container'><ul>" + list.html() + "</ul></div>");
     list.find("li").not(".first").remove();
     list.find("li.first").append("<span id='dropdown-shortcut-menu-click-area'></span>");
 
     var shortcutMenu = list.siblings(".dropdown-shortcut-menu-container");
     shortcutMenu.find("li.first").remove();
-    shortcutMenu.css("left", (collectionGlobalMenu.width() - 24) + "px");
+    shortcutMenu.css("left", (list.width() - 24) + "px");
 
     list.find("li.first #dropdown-shortcut-menu-click-area").click(function (e) {
       shortcutMenu.slideToggle(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasing);

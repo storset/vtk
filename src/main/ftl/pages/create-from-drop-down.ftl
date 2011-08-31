@@ -34,7 +34,7 @@
        });
               
                           // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset
-       $(".tree-create").vortexTips("li a", ".vrtx-create-tree", 100, 300, 4000, 300, 20, 0);
+       $(".tree-create").vortexTips("li a", ".vrtx-create-tree", 100, 300, 4000, 300, 20, -3);
        
        // Traverse tree
        var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];

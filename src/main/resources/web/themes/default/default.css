@@ -887,10 +887,8 @@ ul.list-menu.resourceMenuRight p span {
 }
 
 .vrtx-create-tree a.tree-link {
-  padding: 4px 10px !important;
   color: #2b2b2b !important;
   font-size: 1.231em;
-  display: block;
 }
 
 .vrtx-create-tree .treeview li {
@@ -899,7 +897,9 @@ ul.list-menu.resourceMenuRight p span {
 
 .vrtx-create-tree .filetree span.folder {
   background: url(images/folder-small.gif) no-repeat left center !important;
-  padding-left: 20px;
+  padding-left: 30px;
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
 }
 
 .vrtx-create-tree .treeview .hitarea {
@@ -924,8 +924,6 @@ ul.list-menu.resourceMenuRight p span {
 .tip.vrtx-create-tree {
   background-color: #ecf3f9;
   border: 1px solid #c7dadf;
-  left: 0px !important;
-  width: 400px !important;
   padding: 4px 9px !important;
 }
 

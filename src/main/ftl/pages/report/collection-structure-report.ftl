@@ -42,8 +42,8 @@
 	       return false;
        });
        
-       // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset
-       $("#tree").vortexTips("li a", "#contents", 400, 300, 4000, 3000, 30, 100);
+       // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset, autoWidth
+       $("#tree").vortexTips("li a", "#contents", 400, 300, 4000, 3000, 30, 100, false);
      });
   // -->
   </script>

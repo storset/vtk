@@ -34,8 +34,8 @@
          return false;
        });
               
-                          // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset
-       $(".tree-create").vortexTips("li a", ".vrtx-create-tree", 100, 300, 4000, 300, 20, -3);
+                          // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset, autoWidth
+       $(".tree-create").vortexTips("li a", ".vrtx-create-tree", 80, 300, 4000, 300, 80, -8, true);
        
        // Traverse tree
        var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];
@@ -53,7 +53,7 @@
              hit.click();
              if(i == (treeTrav.length-1)) { // Last uri
                // Scroll to
-               $('#TB_ajaxContent').scrollTo(".collapsable-hitarea:first", 250, {
+               $('#TB_ajaxContent').scrollTo(".collapsable-hitarea:last", 250, {
                  easing: 'swing',
                  queue: true,
                  axis: 'y'
@@ -61,8 +61,12 @@
                // Trigger mouseover (and make sure title is kept)
                var title = link.attr("title");
                link.trigger('mouseover');
-               $('#TB_ajaxContent a').bind('mouseout', 'mouseover', function() {
-                 link.attr("title", title);
+               $(".tree-create").delegate("li a", "mouseover mouseleave", function (e) {
+                if (e.type == "mouseover") {
+                  link.attr("title", title);
+                } else if (e.type == "mouseleave") {
+                  link.attr("title", title);
+                }
                });
                clearInterval(checkLinkAvailable);
              } else {

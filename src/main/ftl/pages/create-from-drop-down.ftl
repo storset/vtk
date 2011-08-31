@@ -48,7 +48,7 @@
          var i = 1; // Skip root
          var tries = 200; // Only check for 200 * 15ms = 3s
          var checkLinkAvailable = setInterval(function() {
-           var link = windowTree.find("a[href='" + treeTrav[i] + "']");
+           var link = windowTree.find("a[href$='" + treeTrav[i] + "']"); 
            vrtxAdmin.log({msg: "Checking for path #" + i + ": " + treeTrav[i] + link + "..."});
            if(link.length) {
              var hit = link.closest("li").find("> .hitarea");

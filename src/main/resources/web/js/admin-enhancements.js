@@ -573,7 +573,9 @@ function placeDeleteButtonInActiveTab() {
     } else {
       var list = "";
       var boxesSize = boxes.size();
-      for (var i = 0; i < boxesSize && i < 10; i++) {
+      var boxesSize = boxesSizeTmp = boxes.size();
+      boxesSizeTmp = boxesSizeTmp > 10 ? 10 : boxesSizeTmp;
+      for (var i = 0; i < boxesSizeTmp; i++) {
         var name = boxes[i].name.split("/");
         list += name[name.length-1] + '\n';
       }
@@ -626,12 +628,13 @@ function placeDeletePermanentButtonInActiveTab() {
       alert(deletePermanentlyUncheckedMessage);
     } else {
       var list = "";
-      var boxesSize = boxes.size();
-      for (var i = 0; i < boxesSize && i < 10; i++) {
+      var boxesSize = boxesSizeTmp = boxes.size();
+      boxesSizeTmp = boxesSizeTmp > 10 ? 10 : boxesSizeTmp;
+      for (var i = 0; i < boxesSizeTmp; i++) {
         var name = boxes[i].title.split("/");
         list += name[name.length-1] + '\n';
       }
-      if (boxesSize > 10) {
+      if (isOverTen) {
         list += "... " + confirmDeletePermanentlyAnd + " " + (boxesSize - 10) + " " + confirmDeletePermanentlyMore;
       }
       if (confirm(confirmDeletePermanently.replace("(1)", boxesSize) + '\n\n' + list)) {

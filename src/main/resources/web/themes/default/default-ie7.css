@@ -35,7 +35,7 @@ body#vrtx-permissions .removePermission {
 #main .activeTab,
 #main #contents,
 .expandedForm {
-  max-height: 9999px; /* instead of invalid zoom: 1 */
+  max-height: 99999px; /* instead of invalid zoom: 1 */
 }
 
 .vrtx-textfield,

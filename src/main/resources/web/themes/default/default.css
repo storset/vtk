@@ -920,7 +920,8 @@ ul.list-menu.resourceMenuRight p span {
   padding: 4px 9px !important;
 }
 
-.tip.vrtx-create-tree .vrtx-button-small {
+.tip.vrtx-create-tree .vrtx-button-small,
+.tip.vrtx-create-tree .no-create-permission {
   float: right;
 }
 

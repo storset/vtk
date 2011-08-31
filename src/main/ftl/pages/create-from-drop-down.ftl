@@ -18,6 +18,7 @@
     <script type="text/javascript" src="${jsURL}"></script>
     </#list>
   </#if>
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo-1.4.2-min.js"></script>
   <script type="text/javascript">
   <!--
      $(document).ready(function() {
@@ -55,6 +56,11 @@
              vrtxAdmin.log({msg: "Hit area found: " + hit});
              hit.click();
              if(i == (treeTrav.length-1)) {
+               $('#TB_ajaxContent').scrollTo(".collapsable-hitarea:first", 250, {
+                 easing: 'swing',
+                 queue: true,
+                 axis: 'y'
+               });
                clearInterval(checkLinkAvailable);
              } else {
                i++; // next URI

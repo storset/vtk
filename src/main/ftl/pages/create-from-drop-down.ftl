@@ -46,7 +46,7 @@
        
        if(treeTrav.length > 1) { // Ignore if only root
          var i = 1; // Skip root
-         var j = 1;
+         var j = 200;
          var checkLinkAvailable = setInterval(function() {
            var link = windowTree.find("a[href='" + treeTrav[i] + "']");
            vrtxAdmin.log({msg: "Checking for path #" + i + ": " + treeTrav[i] + link + "..."});
@@ -60,10 +60,10 @@
                i++; // next URI
              }
            }
-           if(j >= 200) {  // only check for 3s
+           if(!j) {  // only check for 3s
              clearInterval(checkLinkAvailable);
            } 
-           j++;
+           j--;
          }, 15);
        }
      });

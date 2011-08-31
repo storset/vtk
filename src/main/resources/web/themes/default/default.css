@@ -893,6 +893,10 @@ ul.list-menu.resourceMenuRight p span {
   display: block;
 }
 
+.vrtx-create-tree .treeview li {
+  background: none !important;
+}
+
 .vrtx-create-tree .filetree span.folder {
   background: url(images/folder-small.gif) no-repeat left center !important;
   padding-left: 20px;

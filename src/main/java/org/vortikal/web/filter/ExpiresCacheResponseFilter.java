@@ -97,9 +97,15 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
                 }
             }
         }
-
         Service service = requestContext.getService();
+
         while (service != null) {
+            if ("true".equals(service.getAttribute("remove-caching"))) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(uri + ": remove: service-attr remove-caching=true");
+                }
+                return new CacheControlResponseWrapper(response, 0);
+            }
             if ("true".equals(service.getAttribute("inhibit-caching"))) {
                 if (logger.isDebugEnabled()) {
                     logger.debug(uri + ": ignore: service-attr inhibit-caching=true");

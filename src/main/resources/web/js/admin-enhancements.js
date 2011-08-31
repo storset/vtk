@@ -634,7 +634,7 @@ function placeDeletePermanentButtonInActiveTab() {
         var name = boxes[i].title.split("/");
         list += name[name.length-1] + '\n';
       }
-      if (isOverTen) {
+      if (boxesSize > 10) {
         list += "... " + confirmDeletePermanentlyAnd + " " + (boxesSize - 10) + " " + confirmDeletePermanentlyMore;
       }
       if (confirm(confirmDeletePermanently.replace("(1)", boxesSize) + '\n\n' + list)) {

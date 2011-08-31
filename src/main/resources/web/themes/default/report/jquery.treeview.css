@@ -32,7 +32,6 @@
 
 .treeview a {
   text-decoration: none;
-  z-index: 9999999;
 }
 
 .treeview .hover { text-decoration: underline; cursor: pointer; }
@@ -63,7 +62,7 @@
 
 
 .filetree li { padding: 3px 0 2px 20px; }
-.filetree span.folder, .filetree span.file { padding: 1px 0 1px 20px; display: block; z-index: 9999999; }
+.filetree span.folder, .filetree span.file { padding: 1px 0 1px 20px; display: block; }
 .filetree span.folder { background: transparent url(images/folder.gif) 0 0 no-repeat; }
 .filetree li.expandable span.folder, .filetree li.closed span.folder { background: transparent url(images/folder-closed.gif) 0 0 no-repeat; }
 .filetree span.file { background: transparent url(images/file.gif) 0 0 no-repeat; }

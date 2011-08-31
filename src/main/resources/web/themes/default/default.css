@@ -850,6 +850,8 @@ ul.list-menu.resourceMenuRight p span {
   padding-left: 10px;
 }
 
+/* Create dialog */
+
 .vrtx-create-tree {
   position: relative;
 }
@@ -860,6 +862,14 @@ ul.list-menu.resourceMenuRight p span {
   font-size: 1.231em;
   display: block;
 }
+
+/*
+.vrtx-create-tree a.tree-link,
+.filetree span.folder,
+.filetree span.file { 
+  z-index: 9999999; 
+}
+*/
 
 .vrtx-create-tree .tree-create {
   z-index: 9999999;
@@ -879,6 +889,8 @@ ul.list-menu.resourceMenuRight p span {
 .tip.vrtx-create-tree .vrtx-button-small {
   float: right;
 }
+
+/* ^ Create dialog */
 
 /* ^ Tooltip */
 

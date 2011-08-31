@@ -136,8 +136,16 @@ $(document).ready(function () {
 
   // Dropdowns
   dropdownLanguageMenu();
-  dropdown("#titleContainer .resource-title.true ul.resourceMenuLeft", function(a, b) { return a && (b > 1); });
-  dropdown("ul.manage-create", function(a, b) { return true; });
+  dropdown("#titleContainer .resource-title.true ul.resourceMenuLeft",
+    function(isExisting, numOfListElements) { 
+      return isExisting && (numOfListElements > 1);
+    }
+  );
+  dropdown("ul.manage-create",
+    function(isExisting, numOfListElements) {
+      return isExisting;
+    }
+  );
 
   // Remove active tab if it has no children
   if (!$("#main .activeTab > *").length) {

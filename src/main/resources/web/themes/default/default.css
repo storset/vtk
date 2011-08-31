@@ -852,11 +852,26 @@ ul.list-menu.resourceMenuRight p span {
 
 /* Create dialog */
 
+/* Thickbox mod */
+
 #TB_ajaxContent,
 .vrtx-create-tree {
   position: relative;
   max-height: 99999px;
 }
+
+#TB_title {
+  height: auto !important;
+  background-color: transparent !important;
+  margin: 10px 0 0 5px;
+  font-size: 1.667em; /* 20px <- 12px <- 13px */
+}
+
+#TB_ajaxWindowTitle {
+  float: none !important;
+}
+
+/* ^ Thickbox mod */
 
 .vrtx-create-tree .tree-create {
   z-index: 9999999; /* stack over tip */

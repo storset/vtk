@@ -33,8 +33,8 @@
            return false;
        });
               
-       // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset
-       $(".tree-create").vortexTips("li a", "#contents", 100, 300, 4000, 3000, 350, -35);
+                          // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset
+       $(".tree-create").vortexTips("li a", ".vrtx-create-tree", 100, 300, 4000, 300, 100, -20);
        
        // Traverse tree
        var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];
@@ -71,7 +71,7 @@
   </script>
 </head>
 <body>
-  <div class="vrtx-report vrtx-permission-tree">
+  <div class="vrtx-report vrtx-create-tree">
     <ul id="tree" class="filetree treeview-gray tree-create"></ul>
   </div>
 </body>

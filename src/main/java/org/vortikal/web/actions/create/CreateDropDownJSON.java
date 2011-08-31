@@ -104,17 +104,12 @@ public class CreateDropDownJSON implements Controller {
             boolean useButton;
             try {
                 String service = createService.constructURL(resource, principal).getPathRepresentation();
-                uriService = "<a href=&quot;" + service + "&quot;>"
-                        + provider.getLocalizedTitle(request, "manage.place-here", null) + "</a></span>";
-                useButton = true;
-
-                title.append("<a href=&quot;" + service + "&quot;>"
-                        + provider.getLocalizedTitle(request, "manage.place-here", null) + "</a></span>");
+                uriService = "<a class=&quot;vrtx-button-small&quot; href=&quot;" + service + "&quot;><span>"
+                           + provider.getLocalizedTitle(request, "manage.place-here", null) + "</span></a>";
+                title.append(uriService); 
             } catch (ServiceUnlinkableException e) {
                 uriService = provider.getLocalizedTitle(request, "manage.no-permission", null);
-                useButton = false;
-                
-                title.append(provider.getLocalizedTitle(request, "manage.no-permission", null));
+                title.append(uriService);
             } catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 return;
@@ -124,7 +119,6 @@ public class CreateDropDownJSON implements Controller {
             o.put("text", sr.getName());
             o.put("uri", sr.getUri());
             o.put("uriService", uriService);
-            o.put("useButton", useButton);
             o.put("spanClasses", "folder");
             o.put("title", title.toString());
 

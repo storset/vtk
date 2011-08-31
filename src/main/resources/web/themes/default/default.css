@@ -850,6 +850,24 @@ ul.list-menu.resourceMenuRight p span {
   padding-left: 10px;
 }
 
+.vrtx-create-tree {
+  position: relative;
+}
+
+.tip.vrtx-create-tree {
+  border: none;
+  background: transparent;
+  /*
+  padding: 5px 10px;
+  background-color: #ecf3f9;
+  border-color: #c7dadf;
+  */
+}
+
+.tip.vrtx-create-tree .vrtx-button-small {
+  float: right;
+}
+
 /* ^ Tooltip */
 
 /* ^ 3.2 Resource title */

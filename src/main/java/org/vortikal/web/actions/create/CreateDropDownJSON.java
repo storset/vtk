@@ -44,6 +44,9 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.report.subresource.SubResource;
 import org.vortikal.web.service.Service;
@@ -89,8 +92,18 @@ public class CreateDropDownJSON implements Controller {
         for (SubResource sr : subresources) {
             JSONObject o = new JSONObject();
 
-            String uriService = createService.constructURL(Path.fromString(sr.getUri())).getPathRepresentation();
+            RequestContext requestContext = RequestContext.getRequestContext();
+            Repository repository = requestContext.getRepository();
+            String token = requestContext.getSecurityToken();
+            Principal principal = requestContext.getPrincipal();
+            Resource resource = repository.retrieve(token, Path.fromString(sr.getUri()), true);
 
+            String uriService;
+            try {
+                uriService = createService.constructURL(resource, principal).getPathRepresentation();
+            } catch (Exception e) {
+                uriService = "";
+            }
             StringBuilder title = new StringBuilder();
 
             title.append("<a href=&quot;" + uriService + "&quot;>"

@@ -157,10 +157,10 @@ $(document).ready(function () {
   // Zebra-tables
   vrtxAdmin.zebraTables(".resourceInfo");
   
+  // AJAX INIT: Resource menu service forms
+
   var getAjaxOptions = {};
   var postAjaxOptions = {};
-
-  // AJAX INIT: Resource menu service forms
   
   var resourceMenuLeftServices = ["renameService",
                                   "manage\\.createArchiveService",
@@ -972,7 +972,19 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, form) {
     $(options.nodeType + "." + options.selectorClass).prepareTableRowForSliding();
   }
   $(options.nodeType + "." + options.selectorClass).hide().slideDown(options.transitionSpeed, options.transitionEasing, function() {
-    $(this).find("input[type=text]:first").focus();
+    var $this = $(this);
+    $this.find("input[type=text]:first").focus();
+    // TODO: same for replaced html
+    if(!options.isReplacing) {
+      $this.find("input[type=submit][name=cancelAction]").click(function(e) {
+        if (options.nodeType == "tr") {
+          $this.prepareTableRowForSliding();
+        }
+        $this.slideUp(options.transitionSpeed, options.transitionEasing);
+        e.stopPropagation();
+        e.preventDefault();
+      });
+    }
   });
 };
 

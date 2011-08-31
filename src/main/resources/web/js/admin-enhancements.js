@@ -763,7 +763,7 @@ function dropdown(options) {
 
   var numOfListElements = list.find("li").size();
 
-  if(options.proceedCondition && options.proceedCondition(numOfListElements) {
+  if (!options.proceedCondition || (options.proceedCondition && options.proceedCondition(numOfListElements)) {
     list.addClass("dropdown-shortcut-menu");
     // Move listelements except .first into container
     list.parent().append("<div class='dropdown-shortcut-menu-container'><ul>" + list.html() + "</ul></div>");

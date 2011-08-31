@@ -852,8 +852,10 @@ ul.list-menu.resourceMenuRight p span {
 
 /* Create dialog */
 
+#TB_ajaxContent,
 .vrtx-create-tree {
   position: relative;
+  max-height: 99999px;
 }
 
 .vrtx-create-tree .tree-create {
@@ -881,8 +883,7 @@ ul.list-menu.resourceMenuRight p span {
 .filetree span.folder,
 .filetree span.file { 
   z-index: 9999999; 
-}
-*/
+}*/
 
 .tip.vrtx-create-tree {
   background-color: #ecf3f9;

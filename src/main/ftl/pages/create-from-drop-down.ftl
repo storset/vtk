@@ -61,6 +61,7 @@
                  queue: true,
                  axis: 'y'
                });
+               link.trigger('mouseover');
                clearInterval(checkLinkAvailable);
              } else {
                i++; // next URI

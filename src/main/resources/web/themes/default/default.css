@@ -854,6 +854,11 @@ ul.list-menu.resourceMenuRight p span {
 
 /* Thickbox mod */
 
+#TB_overlay,
+#TB_window {
+  z-index: 999 !important;
+}
+
 #TB_ajaxContent,
 .vrtx-create-tree {
   position: relative;

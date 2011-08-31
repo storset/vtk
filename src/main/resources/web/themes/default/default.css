@@ -856,7 +856,7 @@ ul.list-menu.resourceMenuRight p span {
 
 #TB_overlay,
 #TB_window {
-  z-index: 999 !important;
+  z-index: 9999 !important;
 }
 
 #TB_ajaxContent,

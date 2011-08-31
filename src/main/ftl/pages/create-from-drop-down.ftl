@@ -29,8 +29,8 @@
        })
 
        $(".tree-create").delegate("a", "click", function(e){
-           // don't want click on links
-           return false;
+         // don't want click on links
+         return false;
        });
               
                           // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset

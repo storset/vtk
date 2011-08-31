@@ -863,19 +863,31 @@ ul.list-menu.resourceMenuRight p span {
   position: absolute;
   top: 0px;
   left: 0px;
-  padding: 10px 0 !important;
+  padding: 10px !important;
 }
 
 .vrtx-create-tree a.tree-link {
-  padding: 7px 10px !important;
+  padding: 4px 10px !important;
   color: #2b2b2b !important;
   font-size: 1.231em;
   display: block;
 }
 
 .vrtx-create-tree .filetree span.folder {
-  background: url(images/folder.gif) no-repeat left center !important;
-  padding-left: 30px;
+  background: url(images/folder-small.gif) no-repeat left center !important;
+  padding-left: 20px;
+}
+
+.vrtx-create-tree .treeview .hitarea {
+  margin-top: 11px;
+}
+
+.vrtx-create-tree .filetree .expandable-hitarea {
+  background: url(images/tree-expand.gif) no-repeat 0 0;
+}
+
+.vrtx-create-tree .filetree .collapsable-hitarea {
+  background: url(images/tree-collapse.gif) no-repeat 0 0;
 }
 
 /*
@@ -890,7 +902,7 @@ ul.list-menu.resourceMenuRight p span {
   border: 1px solid #c7dadf;
   left: 0px !important;
   width: 400px !important;
-  padding: 6px 9px !important;
+  padding: 4px 9px !important;
 }
 
 .tip.vrtx-create-tree .vrtx-button-small {

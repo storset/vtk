@@ -4,6 +4,7 @@
  *  TODO: i18n AJAX error messages
  *  TODO: prototypes vs. static (memory vs. speed?) -- it seem to be boiling down to using at the right time and test alot:
  *        http://stackoverflow.com/questions/3493252/javascript-prototype-operator-performance-saves-memory-but-is-it-faster
+ *  TODO: CPU usage in ready() vs. wait for it in load()
  *
  */
  

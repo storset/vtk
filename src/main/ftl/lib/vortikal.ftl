@@ -369,7 +369,7 @@
       </#if>
     </#list>
     </ul>
-    <#if more>
+    <#if (more && numberOfRemainingFiles > 0)>
       <p>... <@msg code="trash-can.permanent.delete.confirm.and" default="and"/> ${numberOfRemainingFiles} <@msg code="trash-can.permanent.delete.confirm.more" default="mode"/></p>
     </#if>
   </#compress>

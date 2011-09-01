@@ -168,15 +168,12 @@ $(document).ready(function () {
   
   // AJAX INIT: Resource menu service forms
 
-  var getAjaxOptions = {};
-  var postAjaxOptions = {};
-  
   var resourceMenuLeftServices = ["renameService",
                                   "manage\\.createArchiveService",
                                   "manage\\.expandArchiveService"];
 
   for (var i = resourceMenuLeftServices.length; i--;) {
-    getAjaxOptions = {
+    vrtxAdmin.getAjaxForm({
         selector: "#titleContainer a#" + resourceMenuLeftServices[i],
         selectorClass: "globalmenu",
         insertAfterOrReplaceClass: "#titleContainer ul.resourceMenuLeft",
@@ -185,15 +182,14 @@ $(document).ready(function () {
         simultanSliding: true,
         transitionSpeed: vrtxAdmin.transitionSpeed,
         transitionEasing: vrtxAdmin.transitionEasing
-    };
-    vrtxAdmin.getAjaxForm(getAjaxOptions);
+    });
   }
   
   var resourceMenuRightServices = ["vrtx-unpublish-document",
                                    "vrtx-publish-document"];
 
   for (var i = resourceMenuRightServices.length; i--;) {
-    getAjaxOptions = {
+    vrtxAdmin.getAjaxForm({
         selector: "#titleContainer #" + resourceMenuRightServices[i],
         selectorClass: "globalmenu",
         insertAfterOrReplaceClass: "#titleContainer ul.resourceMenuLeft",
@@ -202,8 +198,7 @@ $(document).ready(function () {
         simultanSliding: true,
         transitionSpeed: vrtxAdmin.transitionSpeed,
         transitionEasing: vrtxAdmin.transitionEasing
-    };
-    vrtxAdmin.getAjaxForm(getAjaxOptions);
+    });
   }
   
 
@@ -216,7 +211,7 @@ $(document).ready(function () {
 
     for (i = tabMenuServices.length; i--;) {
       if(tabMenuServices[i] != "fileUploadService") { // half-async for file upload
-        getAjaxOptions = {
+        vrtxAdmin.getAjaxForm({
           selector: "ul.tabMenu2 a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",
           insertAfterOrReplaceClass: ".activeTab ul.tabMenu2",
@@ -225,10 +220,8 @@ $(document).ready(function () {
           simultanSliding: true,
           transitionSpeed: vrtxAdmin.transitionSpeed,
           transitionEasing: vrtxAdmin.transitionEasing
-        };
-        vrtxAdmin.getAjaxForm(getAjaxOptions);
-      
-        postAjaxOptions = {
+        });
+        vrtxAdmin.postAjaxForm({
           selector: "form[name=" + tabMenuServices[i] + "] input[type=submit]",
           updateSelectors: ["#contents"],
           errorContainer: "errorContainer",
@@ -236,11 +229,10 @@ $(document).ready(function () {
           funcComplete: collectionListingInteraction,
           transitionSpeed: vrtxAdmin.transitionSpeed,
           transitionEasing: vrtxAdmin.transitionEasing
-        };
-        vrtxAdmin.postAjaxForm(postAjaxOptions);
+        });
       
       } else {
-        getAjaxOptions = {
+        vrtxAdmin.getAjaxForm({
           selector: "ul.tabMenu2 a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",
           insertAfterOrReplaceClass: ".activeTab ul.tabMenu2",
@@ -250,8 +242,7 @@ $(document).ready(function () {
           simultanSliding: true,
           transitionSpeed: vrtxAdmin.transitionSpeed,
           transitionEasing: vrtxAdmin.transitionEasing
-        };
-        vrtxAdmin.getAjaxForm(getAjaxOptions);
+        });
         initFileUpload(); // when error message
       }
     }
@@ -268,7 +259,7 @@ $(document).ready(function () {
     }
 
     for (i = privilegiesPermissions.length; i--;) {
-      getAjaxOptions = {
+      vrtxAdmin.getAjaxForm({
         selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax",
         selectorClass: "expandedForm-" + privilegiesPermissions[i],
         insertAfterOrReplaceClass: "div.permissions-" + privilegiesPermissions[i] + "-wrapper",
@@ -278,10 +269,8 @@ $(document).ready(function () {
         simultanSliding: false,
         transitionSpeed: 0,
         transitionEasing: "linear"
-      };
-      vrtxAdmin.getAjaxForm(getAjaxOptions);
-    
-      postAjaxOptions = {
+      });
+      vrtxAdmin.postAjaxForm({
         selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
         updateSelectors: [".permissions-" + privilegiesPermissions[i] + "-wrapper",
                           ".resource-menu.read-permissions"],
@@ -290,8 +279,7 @@ $(document).ready(function () {
         funcProceedCondition: checkStillAdmin,
         transitionSpeed: 0,
         transitionEasing: "linear"
-      };
-      vrtxAdmin.postAjaxForm(postAjaxOptions);
+      });
     }
   
     // AJAX INIT: More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
@@ -300,7 +288,7 @@ $(document).ready(function () {
                                          "read-processed"];
 
     for (i = privilegiesPermissionsInTable.length; i--;) {
-      getAjaxOptions = {
+      vrtxAdmin.getAjaxForm({
         selector: ".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax",
         selectorClass: privilegiesPermissionsInTable[i],
         insertAfterOrReplaceClass: "tr." + privilegiesPermissionsInTable[i],
@@ -310,10 +298,8 @@ $(document).ready(function () {
         simultanSliding: true,
         transitionSpeed: vrtxAdmin.transitionSpeed,
         transitionEasing: vrtxAdmin.transitionEasing
-      };
-      vrtxAdmin.getAjaxForm(getAjaxOptions);
-    
-      postAjaxOptions = {
+      });
+      vrtxAdmin.postAjaxForm({
         selector: "tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
         updateSelectors: ["tr." +  privilegiesPermissionsInTable[i],
                           ".resource-menu.read-permissions"],
@@ -321,8 +307,7 @@ $(document).ready(function () {
         errorContainerInsertAfter: ".groups-wrapper",
         transitionSpeed: vrtxAdmin.transitionSpeed,
         transitionEasing: vrtxAdmin.transitionEasing
-      };
-      vrtxAdmin.postAjaxForm(postAjaxOptions);
+      });
     }
     
     vrtxAdmin.ajaxRemove("input.removePermission", ".principalList");
@@ -351,7 +336,7 @@ $(document).ready(function () {
       ];
 
     for (i = propsAbout.length; i--;) {
-      getAjaxOptions = {
+      vrtxAdmin.getAjaxForm({
         selector: "body#vrtx-about .prop-" + propsAbout[i] + " a.vrtx-button-small",
         selectorClass: "expandedForm-prop-" + propsAbout[i],
         insertAfterOrReplaceClass: "tr.prop-" + propsAbout[i],
@@ -360,8 +345,7 @@ $(document).ready(function () {
         simultanSliding: true,
         transitionSpeed: vrtxAdmin.transitionSpeed,
         transitionEasing: vrtxAdmin.transitionEasing
-      };
-      vrtxAdmin.getAjaxForm(getAjaxOptions);
+      });
     }
   }
 

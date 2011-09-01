@@ -350,19 +350,19 @@
 
 <#--
  * fileNamesAsLimitedList
- * Make filenames with full path into a list with only filename limited by 10
+ * Make filenames with full path into a list with only filename limited by a number
  *
  * @param files the files
+ * @param limit number of filenames to list
  *
 -->
-<#macro fileNamesAsLimitedList files>
+<#macro fileNamesAsLimitedList files limit=10>
   <#compress>
-    <#local maxNumberOfFiles = 10 />
-    <#local numberOfRemainingFiles = (files?size - maxNumberOfFiles)  />
+    <#local numberOfRemainingFiles = (files?size - limit)  />
     <ul>
     <#local more = false />
     <#list files as file>
-      <#if file_index == maxNumberOfFiles>
+      <#if file_index == limit>
         <#local more = true />
         <#break />
       </#if>

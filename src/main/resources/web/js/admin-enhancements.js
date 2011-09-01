@@ -396,31 +396,30 @@ function changeTemplateName(n) {
 
 function initFileUpload() {
   var form = $("form[name=fileUploadService]");
-  if(form.length) {
-    var inputFile = form.find("#file");
+  if(!form.length) return;
+  var inputFile = form.find("#file");
 
-    $("<div class='vrtx-textfield vrtx-file-upload'><input id='fake-file' type='text' /><a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a></div>'")
-      .insertAfter(inputFile);
+  $("<div class='vrtx-textfield vrtx-file-upload'><input id='fake-file' type='text' /><a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a></div>'")
+    .insertAfter(inputFile);
       
-    inputFile.addClass("js-on");
+  inputFile.addClass("js-on");
       
-    inputFile.change(function(e) {
-      form.find("#fake-file").val($(this).val());
-    });
+  inputFile.change(function(e) {
+    form.find("#fake-file").val($(this).val());
+  });
     
-    inputFile.hover(function () {
-      $("a.vrtx-file-upload").addClass("hover");
-      $(this).css("cursor", "pointer");
-    }, function () {
-      $("a.vrtx-file-upload").removeClass("hover");
-      $(this).css("cursor", "auto");
-    });
+  inputFile.hover(function () {
+    $("a.vrtx-file-upload").addClass("hover");
+    $(this).css("cursor", "pointer");
+  }, function () {
+    $("a.vrtx-file-upload").removeClass("hover");
+    $(this).css("cursor", "auto");
+  });
       
-    if (supportsMultipleAttribute(document.getElementById("file"))) {
-      inputFile.attr("multiple", "multiple");
-      if(typeof multipleFilesInfoText !== "undefined") {
-        $("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-textfield");
-      }
+  if (supportsMultipleAttribute(document.getElementById("file"))) {
+    inputFile.attr("multiple", "multiple");
+    if(typeof multipleFilesInfoText !== "undefined") {
+      $("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-textfield");
     }
   }
 }
@@ -486,9 +485,7 @@ function interceptEnterKeyAndReroute(txt, btn) {
 
 function logoutButtonAsLink() {
   var btn = $('input#logoutAction');
-  if (!btn.length) {
-    return;
-  }
+  if (!btn.length) return;
   btn.hide();
   btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">'
           + btn.attr('value') + '</a>');
@@ -506,7 +503,7 @@ function logoutButtonAsLink() {
 \*-------------------------------------------------------------------*/
 
 function collectionListingInteraction() {
-  if(!$(".directoryListing").length) { return; }
+  if(!$(".directoryListing").length) return;
   
   if(typeof moveUncheckedMessage !== "undefined") { 
     var options = {
@@ -551,7 +548,8 @@ function collectionListingInteraction() {
 
 // options: formName, btnId, service, msg
 function placeCopyMoveButtonInActiveTab(options) {
-  var btn = $("#" + options.btnId); 
+  var btn = $("#" + options.btnId);
+  if (!btn.length) return;
   btn.hide();
   var li = $("li." + options.service);
   li.html("<a id='" + options.service + "' href='javascript:void(0);'>" + btn.attr('title') + "</a>");
@@ -568,6 +566,7 @@ function placeCopyMoveButtonInActiveTab(options) {
 
 function placeDeleteButtonInActiveTab() {
   var btn = $('#collectionListing\\.action\\.delete-resources');
+  if (!btn.length) return;
   btn.hide();
   var li = $('li.deleteResourcesService');
   li.html('<a id="deleteResourceService" href="javascript:void(0);">' + btn.attr('title') + '</a>');
@@ -598,9 +597,7 @@ function placeDeleteButtonInActiveTab() {
 
 function placeRecoverButtonInActiveTab() {
   var btn = $('.recoverResource');
-  if (!btn.length) {
-    return;
-  }
+  if (!btn.length) return;
   btn.hide();
   $("#main .activeTab").prepend('<ul class="list-menu tabMenu2"><li class="recoverResourceService">'
                               + '<a id="recoverResourceService" href="javascript:void(0);">' 
@@ -619,9 +616,7 @@ function placeRecoverButtonInActiveTab() {
 
 function placeDeletePermanentButtonInActiveTab() {
   var btn = $('.deleteResourcePermanent');
-  if (!btn.length) {
-    return;
-  }
+  if (!btn.length) return;
   btn.hide();
   $("#main .activeTab .tabMenu2")
     .append('<li class="deleteResourcePermanentService"><a id="deleteResourcePermanentService" href="javascript:void(0);">' 
@@ -689,7 +684,7 @@ function switchCheckedRow(checkbox) {
 \*-------------------------------------------------------------------*/
 
 function initPermissionForm(selectorClass) {
-  if(!$("." + selectorClass + " .aclEdit").length) return;
+  if (!$("." + selectorClass + " .aclEdit").length) return;
 
   toggleConfigCustomPermissions(selectorClass);
   interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]",
@@ -704,18 +699,18 @@ function initPermissionForm(selectorClass) {
 }
 
 function toggleConfigCustomPermissions(selectorClass) {
-    if (!$("." + selectorClass + " ul.shortcuts label[for=custom] input").is(":checked")
-        && $("." + selectorClass + " ul.shortcuts label[for=custom] input").length) {
+  if (!$("." + selectorClass + " ul.shortcuts label[for=custom] input").is(":checked")
+    && $("." + selectorClass + " ul.shortcuts label[for=custom] input").length) {
       $("." + selectorClass).find(".principalList").hide(0);
-    }
-    $("#app-content").delegate("." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
-      $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasing);
-      e.stopPropagation();
-    });
-    $("#app-content").delegate("." + selectorClass + " ul.shortcuts label:not([for=custom])", "click", function (e) {
-      $(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasing);
-      e.stopPropagation();
-    });
+  }
+  $("#app-content").delegate("." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
+    $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasing);
+    e.stopPropagation();
+  });
+  $("#app-content").delegate("." + selectorClass + " ul.shortcuts label:not([for=custom])", "click", function (e) {
+    $(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasing);
+    e.stopPropagation();
+  });
 }
 
 function checkStillAdmin(selector) {
@@ -736,25 +731,25 @@ function checkStillAdmin(selector) {
 
 function dropdownLanguageMenu() {
   var languageMenu = $(".localeSelection ul");
-  if (languageMenu.length) {
-    var parent = languageMenu.parent();
-    parent.addClass("js-on");
+  if (!languageMenu.length) return;
+  
+  var parent = languageMenu.parent();
+  parent.addClass("js-on");
 
-    // Remove ':' and replace <span> with <a>
-    var header = parent.find(".localeSelectionHeader");
-    var headerText = header.text();
-    // outerHtml
-    header.replaceWith("<a href='javascript:void(0);' class='localeSelectionHeader'>"
-                     + headerText.substring(0, headerText.length - 1) + "</a>");
+  // Remove ':' and replace <span> with <a>
+  var header = parent.find(".localeSelectionHeader");
+  var headerText = header.text();
+  // outerHtml
+  header.replaceWith("<a href='javascript:void(0);' class='localeSelectionHeader'>"
+                   + headerText.substring(0, headerText.length - 1) + "</a>");
 
-    languageMenu.addClass("dropdown-shortcut-menu-container");
+  languageMenu.addClass("dropdown-shortcut-menu-container");
 
-    $(".localeSelection").delegate(".localeSelectionHeader", "click", function (e) {
-      $(this).next(".dropdown-shortcut-menu-container").slideToggle(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasing);
-      e.stopPropagation();
-      e.preventDefault();
-    });
-  }
+  $(".localeSelection").delegate(".localeSelectionHeader", "click", function (e) {
+    $(this).next(".dropdown-shortcut-menu-container").slideToggle(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasing);
+    e.stopPropagation();
+    e.preventDefault();
+  });
 }
 
 function dropdown(options) {
@@ -1243,10 +1238,8 @@ function showHideProperty(id, init, show) {
 function loadFeaturedArticles(addName, removeName, browseName, editorBase, baseFolder, editorBrowseUrl) {
   var featuredArticles = $("#resource\\.featured-articles");
   var featuredArticlesVal = featuredArticles.val();
-  if (featuredArticlesVal == null) {
-    return;
-  }
-
+  if (featuredArticlesVal == null) return;
+  
   featuredArticles.hide();
   var featuredArticlesParent = featuredArticles.parent();
   featuredArticlesParent.hide();

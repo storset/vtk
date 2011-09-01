@@ -219,12 +219,12 @@
   <#if pageThroughUrls?exists && (pageThroughUrls?size > 1) >
     <span class="vrtx-paging-wrapper">
     	<#list pageThroughUrls as url>
-          <a href="${url.url?html}" class="vrtx-page-number<#if (url.marked) > vrtx-marked</#if>">
+          <a href="${url.url?html}" class="<#if url.title == "prev">vrtx-previous<#elseif url.title="next">vrtx-next<#else>vrtx-page-number</#if><#if (url.marked) > vrtx-marked</#if>"><#compress>
           <#if (url.title) = "prev" ><@vrtx.msg code="viewCollectionListing.previous" />
           <#elseif (url.title) = "next" ><@vrtx.msg code="viewCollectionListing.next" />
           <#else >${(url.title?html)}
           </#if>       
-          </a>
+          </#compress></a>
         </#list>
     </span>
   </#if>

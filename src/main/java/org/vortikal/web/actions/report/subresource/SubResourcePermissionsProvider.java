@@ -31,6 +31,7 @@
 package org.vortikal.web.actions.report.subresource;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,8 +62,10 @@ public class SubResourcePermissionsProvider {
 
     private Searcher searcher;
     private Repository repository;
+    private final int maxLimit = 500;
 
     private static Log logger = LogFactory.getLog(SubResourcePermissionsProvider.class);
+
 
     public List<SubResourcePermissions> buildSearchAndPopulateSubresources(String uri, String token,
             HttpServletRequest request) {
@@ -70,18 +73,22 @@ public class SubResourcePermissionsProvider {
         // MainQuery (depth + 1 from uri and all resources)
         Path url = Path.fromString(uri);
         int depth = url.getDepth() + 1;
+        
         AndQuery mainQuery = new AndQuery();
         mainQuery.add(new UriPrefixQuery(url.toString()));
         mainQuery.add(new UriDepthQuery(depth));
+        
         Search search = new Search();
         search.setQuery(mainQuery);
-        search.setLimit(500);
+        search.setLimit(maxLimit);
         search.setPropertySelect(new WildcardPropertySelect());
+        
         ResultSet rs = searcher.execute(token, search);
 
         List<SubResourcePermissions> subresources = populateSubResources(token, rs, request);
         return subresources;
     }
+
 
     private List<SubResourcePermissions> populateSubResources(String token, ResultSet rs, HttpServletRequest request) {
         List<PropertySet> results = rs.getAllResults();
@@ -106,8 +113,9 @@ public class SubResourcePermissionsProvider {
                     rIsCollection = r.isCollection();
                     rIsReadRestricted = r.isReadRestricted();
                     rIsInheritedAcl = r.isInheritedAcl();
-                    rHasChildren = !r.getChildURIs().isEmpty();
-
+                    if(r.getChildURIs() != null) {
+                      rHasChildren = !r.getChildURIs().isEmpty();
+                    }
                     Acl acl = r.getAcl();
                     for (Privilege action : Privilege.values()) {
                         String actionName = action.getName();
@@ -175,6 +183,7 @@ public class SubResourcePermissionsProvider {
         return subresources;
     }
 
+
     public String getLocalizedTitle(HttpServletRequest request, String key, Object[] params) {
         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
                 request);
@@ -184,10 +193,12 @@ public class SubResourcePermissionsProvider {
         return springRequestContext.getMessage(key);
     }
 
+
     @Required
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }
+
 
     @Required
     public void setRepository(Repository repository) {

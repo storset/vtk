@@ -87,16 +87,18 @@ public class CreateDropDownProvider {
                 if (r != null) {
                     rTitle = r.getTitle();
                     rIsCollection = r.isCollection();
-                    if (!r.getChildURIs().isEmpty()) {
-                        AndQuery mainQuery = new AndQuery();
-                        mainQuery.add(new UriPrefixQuery(rURI));
-                        mainQuery.add(new UriDepthQuery(result.getURI().getDepth() + 1));
-                        mainQuery.add(new TypeTermQuery("collection", TermOperator.IN));
-                        Search search = new Search();
-                        search.setQuery(mainQuery);
-                        search.setLimit(1);
-                        if (searcher.execute(token, search).getTotalHits() > 0)
-                            rHasChildren = true;
+                    if (r.getChildURIs() != null) {
+                        if (!r.getChildURIs().isEmpty()) {
+                            AndQuery mainQuery = new AndQuery();
+                            mainQuery.add(new UriPrefixQuery(rURI));
+                            mainQuery.add(new UriDepthQuery(result.getURI().getDepth() + 1));
+                            mainQuery.add(new TypeTermQuery("collection", TermOperator.IN));
+                            Search search = new Search();
+                            search.setQuery(mainQuery);
+                            search.setLimit(1);
+                            if (searcher.execute(token, search).getTotalHits() > 0)
+                                rHasChildren = true;
+                        }
                     }
                 }
             } catch (Exception e) {

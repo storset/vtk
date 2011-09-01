@@ -33,6 +33,8 @@
     1. Config
 \*-------------------------------------------------------------------*/
  
+var startLoadTime = +new Date(); 
+ 
 var ua = navigator.userAgent.toLowerCase();
 
 function VrtxAdmin() {
@@ -57,6 +59,7 @@ function VrtxAdmin() {
   this.isChrome = null;
   this.isSafari = null;
   this.isWin = null;
+  
   // v3.?: this.supportsFileAPI = null;
   
   this.permissionsAutocompleteParams = null;
@@ -121,6 +124,8 @@ $(window).load(function() {
     $("#titleContainer").append(expandedForm);
   }
   
+  vrtxAdmin.log({msg: "window.load() in " + (+new Date - startLoadTime) + "ms"});
+  
 });
 
 
@@ -132,7 +137,7 @@ $(window).load(function() {
 
 $(document).ready(function () {   
 
-  var startTime = +new Date();
+  var startReadyTime = +new Date();
 
   // Buttons into links
   logoutButtonAsLink();
@@ -382,7 +387,7 @@ $(document).ready(function () {
     });
   }
   
-  vrtxAdmin.log({msg: "document.ready() in " + (+new Date - startTime) + "ms"});
+  vrtxAdmin.log({msg: "document.ready() in " + (+new Date - startReadyTime) + "ms"});
 
 });
 

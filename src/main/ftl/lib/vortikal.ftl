@@ -362,14 +362,14 @@
     <ul>
     <#local more = false />
     <#list files as file>
-      <li>${file?split("/")?last}</li>
-      <#if file_index == (maxNumberOfFiles-1)>
+      <#if file_index == maxNumberOfFiles>
         <#local more = true />
         <#break />
       </#if>
+      <li>${file?split("/")?last}</li>
     </#list>
     </ul>
-    <#if (more && numberOfRemainingFiles > 0)>
+    <#if more>
       <p>... <@msg code="trash-can.permanent.delete.confirm.and" default="and"/> ${numberOfRemainingFiles} <@msg code="trash-can.permanent.delete.confirm.more" default="mode"/></p>
     </#if>
   </#compress>

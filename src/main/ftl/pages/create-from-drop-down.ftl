@@ -50,7 +50,7 @@
              hit.click();
              if(i == (treeTrav.length-1)) { // Last uri
                // Scroll to
-               $('#TB_ajaxContent').scrollTo(".collapsable-hitarea:last", 250, {
+               $('#TB_ajaxContent').scrollTo(link, 250, {
                  easing: 'swing',
                  queue: true,
                  axis: 'y'

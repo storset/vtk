@@ -353,14 +353,16 @@ $(document).ready(function () {
 
   // Show/hide multiple properties (initalization / config)
   
-  showHide(["#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"],
-            "#resource\\.recursive-listing\\.false:checked", 'false', ["#vrtx-resource\\.recursive-listing-subfolders"]);
+  if ($("form.editor").length) {
+    showHide(["#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"],
+              "#resource\\.recursive-listing\\.false:checked", 'false', ["#vrtx-resource\\.recursive-listing-subfolders"]);
 
-  showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
-            "#resource\\.display-type\\.calendar:checked", null, ["#vrtx-resource\\.event-type-title"]);
+    showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
+              "#resource\\.display-type\\.calendar:checked", null, ["#vrtx-resource\\.event-type-title"]);
 
-  showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
-            "#resource\\.display-type\\.calendar:checked", 'calendar', ["#vrtx-resource\\.hide-additional-content"]);
+    showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
+              "#resource\\.display-type\\.calendar:checked", 'calendar', ["#vrtx-resource\\.hide-additional-content"]);
+  }
 
   // Fix IE 6 collectionlisting hover
   if (vrtxAdmin.isIE6) {
@@ -1445,6 +1447,7 @@ VrtxAdmin.prototype.error = function(options) {
 };
 
 VrtxAdmin.prototype.zebraTables = function(selector) {
+  if(!$("table" + selector).length) return;
   // http://www.quirksmode.org/css/contents.html
   if((vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) || vrtxAdmin.isOpera) {
     $("table" + selector + " tbody tr:odd").addClass("even"); // hmm.. somehow even is odd and odd is even

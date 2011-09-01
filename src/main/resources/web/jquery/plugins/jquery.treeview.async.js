@@ -19,6 +19,8 @@
  *
  * USIT * removed commented out method and set indent to 2 spaces
  *      * added error debug to AJAX function
+ *      * callback on data load:
+ *        http://stackoverflow.com/questions/4905101/how-to-add-jquery-treeview-callback-on-data-load
  *
  */
 
@@ -66,6 +68,9 @@
         root: root
       },
       success: function (response) {
+        if (settings.dataLoaded) {
+          settings.dataLoaded();
+        }
         child.empty();
         $.each(response, createNode, [child]);
         $(container).treeview({

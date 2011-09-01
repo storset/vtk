@@ -23,10 +23,24 @@
   <!--
      $(document).ready(function() {
        var timestamp = 1 - new Date();
+       
+       var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];
+       var paths = 0;
+       
        $(".tree-create").treeview({
          animated: "fast",
          url: "?vrtx=admin&service=${type}-from-drop-down&uri=/&ts=" + timestamp,
-         service: "${type}-from-drop-down"
+         service: "${type}-from-drop-down",
+         dataLoaded: function() {
+           paths++;
+           if(paths < treeTrav.length) {
+             var last = false;
+             if (paths == (treeTrav.length-1)) {
+               last = true;
+             }
+             traverseNode(treeTrav[paths], last);
+           }
+         }
        })
 
        $(".tree-create").delegate("a", "click", function(e){
@@ -36,48 +50,27 @@
               
                           // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset, autoWidth
        $(".tree-create").vortexTips("li a", ".vrtx-create-tree", 80, 300, 4000, 300, 80, -8, true);
-       
-       // Traverse tree (TODO: recursively expand nodes from this array in jquery.treeview.async.js instead)
-       var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];
-       var windowTree = $("#TB_ajaxContent .tree-create");
-       if(treeTrav.length > 1) { // Ignore if only root
-         var i = 1; // Skip root
-         var tries = 200; // Only check for 200 * 15ms = 3s
-         var checkLinkAvailable = setInterval(function() {
-           var link = windowTree.find("a[href$='" + treeTrav[i] + "']");  
-           if(link.length) {
-             var hit = link.closest("li").find("> .hitarea");
-             hit.click();
-             if(i == (treeTrav.length-1)) { // Last uri
-               // Scroll to
-               $('#TB_ajaxContent').scrollTo(link, 250, {
-                 easing: 'swing',
-                 queue: true,
-                 axis: 'y'
-               });
-               /* Trigger mouseover (and make sure title is kept)
-               var title = link.attr("title");
-               link.trigger('mouseover');
-               $(".tree-create").delegate("li a", "mouseover mouseleave", function (e) {
-                if (e.type == "mouseover") {
-                  link.attr("title", title);
-                } else if (e.type == "mouseleave") {
-                  link.attr("title", title);
-                }
-               });
-               */
-               clearInterval(checkLinkAvailable);
-             } else {
-               i++; // next URI
-             }
-           }
-           if(!tries) {  
-             clearInterval(checkLinkAvailable);
-           }
-           tries--;
-         }, 15);
-       }
+
      });
+     
+     function traverseNode(treeTravNode, lastNode) {
+       var windowTree = $("#TB_ajaxContent .tree-create");
+       var timer = setInterval(function() {
+         var link = windowTree.find("a[href$='" + treeTravNode + "']");  
+         if(link.length) {
+           clearInterval(timer);
+           var hit = link.closest("li").find("> .hitarea");
+           hit.click();
+           if(lastNode) { // If last scroll to node
+             $('#TB_ajaxContent').scrollTo(link, 250, {
+               easing: 'swing',
+               queue: true,
+               axis: 'y'
+             });
+           }
+         }
+       }, 15);
+     }
   // -->
   </script>
 </head>

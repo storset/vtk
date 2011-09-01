@@ -25,20 +25,20 @@
        var timestamp = 1 - new Date();
        
        var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];
-       var paths = 0;
+       var pathNum = 0;
        
        $(".tree-create").treeview({
          animated: "fast",
          url: "?vrtx=admin&service=${type}-from-drop-down&uri=/&ts=" + timestamp,
          service: "${type}-from-drop-down",
          dataLoaded: function() {
-           paths++;
-           if(paths < treeTrav.length) {
+           pathNum++;
+           if(pathNum < treeTrav.length) {
              var last = false;
-             if (paths == (treeTrav.length-1)) {
+             if (pathNum == (treeTrav.length-1)) {
                last = true;
              }
-             traverseNode(treeTrav[paths], last);
+             traverseNode(treeTrav[pathNum], last);
            }
          }
        })
@@ -55,13 +55,13 @@
      
      function traverseNode(treeTravNode, lastNode) {
        var windowTree = $("#TB_ajaxContent .tree-create");
-       var timer = setInterval(function() {
+       var nodeAvailable = setInterval(function() {
          var link = windowTree.find("a[href$='" + treeTravNode + "']");  
          if(link.length) {
-           clearInterval(timer);
+           clearInterval(nodeAvailable);
            var hit = link.closest("li").find("> .hitarea");
            hit.click();
-           if(lastNode) { // If last scroll to node
+           if(lastNode) { // If last: scroll to node
              $('#TB_ajaxContent').scrollTo(link, 250, {
                easing: 'swing',
                queue: true,

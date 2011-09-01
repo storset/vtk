@@ -56,6 +56,7 @@
                  axis: 'y'
                });
                // Trigger mouseover (and make sure title is kept)
+               /*
                var title = link.attr("title");
                link.trigger('mouseover');
                $(".tree-create").delegate("li a", "mouseover mouseleave", function (e) {
@@ -65,6 +66,7 @@
                   link.attr("title", title);
                 }
                });
+               */
                clearInterval(checkLinkAvailable);
              } else {
                i++; // next URI

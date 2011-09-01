@@ -19,8 +19,7 @@
     </#list>
   </#if>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo-1.4.2-min.js"></script>
-  <script type="text/javascript">
-  <!--
+  <script type="text/javascript"><!--
      $(document).ready(function() {
        var timestamp = 1 - new Date();
        
@@ -31,7 +30,7 @@
          animated: "fast",
          url: "?vrtx=admin&service=${type}-from-drop-down&uri=/&ts=" + timestamp,
          service: "${type}-from-drop-down",
-         dataLoaded: function() {
+         dataLoaded: function() { // AJAX success
            pathNum++;
            if(pathNum < treeTrav.length) {
              var last = false;
@@ -43,22 +42,21 @@
          }
        })
 
-       $(".tree-create").delegate("a", "click", function(e){
-         // don't want click on links
+       $(".tree-create").delegate("a", "click", function(e) { // Don't want click on links
          e.preventDefault();
        });
               
-                          // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset, autoWidth
+       // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset, autoWidth
        $(".tree-create").vortexTips("li a", ".vrtx-create-tree", 80, 300, 4000, 300, 80, -8, true);
 
      });
      
      function traverseNode(treeTravNode, lastNode) {
        var windowTree = $("#TB_ajaxContent .tree-create");
-       var nodeAvailable = setInterval(function() {
+       var checkNodeAvailable = setInterval(function() {
          var link = windowTree.find("a[href$='" + treeTravNode + "']");  
          if(link.length) {
-           clearInterval(nodeAvailable);
+           clearInterval(checkNodeAvailable );
            var hit = link.closest("li").find("> .hitarea");
            hit.click();
            if(lastNode) { // If last: scroll to node

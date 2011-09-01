@@ -61,7 +61,7 @@
            hit.click();
            if(lastNode) { // If last: scroll to node
              $('#TB_ajaxContent').scrollTo(link, 250, {
-               easing: 'swing',
+               easing: vrtxAdmin.transitionEasing,
                queue: true,
                axis: 'y'
              });

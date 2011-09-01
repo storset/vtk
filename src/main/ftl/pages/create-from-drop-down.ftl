@@ -55,8 +55,7 @@
                  queue: true,
                  axis: 'y'
                });
-               // Trigger mouseover (and make sure title is kept)
-               /*
+               /* Trigger mouseover (and make sure title is kept)
                var title = link.attr("title");
                link.trigger('mouseover');
                $(".tree-create").delegate("li a", "mouseover mouseleave", function (e) {

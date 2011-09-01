@@ -906,16 +906,14 @@ ul.list-menu.resourceMenuRight p span {
   padding-bottom: 5px !important;
 }
 
-.vrtx-create-tree .treeview .hitarea {
-  margin-top: 8px;
-}
-
 .vrtx-create-tree .filetree .expandable-hitarea {
   background: url(images/tree-expand.gif) no-repeat 0 0 !important;
+  margin-top: 8px;
 }
 
 .vrtx-create-tree .filetree .collapsable-hitarea {
   background: url(images/tree-collapse.gif) no-repeat 0 0 !important;
+  margin-top: 9px;
 }
 
 /*

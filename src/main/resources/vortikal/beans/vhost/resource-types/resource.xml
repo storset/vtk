@@ -91,7 +91,7 @@
   <bean id="titlePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="title" />
-    <property name="type" value="HTML" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="true" />
     <property name="propertyEvaluator" ref="titleEvaluator" />
@@ -105,7 +105,7 @@
     parent="abstractPropDef">
     <property name="contentRelation" value="PRE_CONTENT" />
     <property name="name" value="userTitle" />
-    <property name="type" value="HTML" />
+    <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <property name="valueFormatter" ref="htmlFormatter" />

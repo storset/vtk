@@ -37,12 +37,9 @@
                           // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset, autoWidth
        $(".tree-create").vortexTips("li a", ".vrtx-create-tree", 80, 300, 4000, 300, 80, -8, true);
        
-       // Traverse tree
+       // Traverse tree (TODO: recursively expand nodes from this array in jquery.treeview.async.js instead)
        var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];
-       
-       // Cache create tree ref.
        var windowTree = $("#TB_ajaxContent .tree-create");
-
        if(treeTrav.length > 1) { // Ignore if only root
          var i = 1; // Skip root
          var tries = 200; // Only check for 200 * 15ms = 3s

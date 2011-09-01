@@ -873,21 +873,11 @@ ul.list-menu.resourceMenuRight p span {
 }
 
 #TB_ajaxWindowTitle {
-  
+  float: none !important;
 }
 
 #TB_closeAjaxWindow {
-  color: #fff !important;
-  position: relative;
-  right: 15px;
-  top: 0px;
-}
-
-#TB_closeAjaxWindow a {
-  color: #2b2b2b !important;
-  position: absolute;
-  right: 0px;
-  top: 0px;
+  display: none !important;
 }
 
 /* ^ Thickbox mod */

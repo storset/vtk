@@ -2,6 +2,8 @@
  *  Vortex Admin enhancements
  *
  *  TODO: i18n AJAX error messages
+ *  TODO: prototypes vs. static (memory vs. speed)
+ *  http://stackoverflow.com/questions/3493252/javascript-prototype-operator-performance-saves-memory-but-is-it-faster
  *
  */
  

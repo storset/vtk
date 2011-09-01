@@ -12,9 +12,12 @@
  * Revision: $Id$
  *
  * USIT added JSON: 1. possible to set classes also on <li> (in addition to <span>)
- *                  2. uri -> <a>
- *                  3. title -> <a>
+ *                  2. uri in <a>
+ *                  3. title in <a>
  *                  4. update settings.url on toggle()
+ *                  5. service
+ *
+ * USIT removed commented out method
  *
  */
 
@@ -39,15 +42,10 @@ function load(settings, root, child, container) {
 		var current = $("<li/>").attr("id", this.id || "")
                       .html("<span>" + linkOrPlainText + "</span>").appendTo(parent);
 
-        if (this.listClasses) {
-			current.addClass(this.listClasses);
-		}
-		if (this.spanClasses) {
-			current.children("span").addClass(this.spanClasses);
-		}
-		if (this.expanded) {
-			current.addClass("open");
-		}
+        if (this.listClasses) current.addClass(this.listClasses);
+		if (this.spanClasses) current.children("span").addClass(this.spanClasses);
+		if (this.expanded) current.addClass("open");
+		
 		if (this.hasChildren || this.children && this.children.length) {
 			var branch = $("<ul/>").appendTo(current);
 			if (this.hasChildren) {
@@ -59,16 +57,14 @@ function load(settings, root, child, container) {
 				}, branch);
 			}
 			if (this.children && this.children.length) {
-				$.each(this.children, createNode, [branch])
+			  $.each(this.children, createNode, [branch])
 			}
 		}
 	}
 	$.ajax($.extend(true, {
 		url: settings.url,
 		dataType: "json",
-		data: {
-			root: root
-		},
+		data: { root: root },
 		success: function(response) {
 			child.empty();
 			$.each(response, createNode, [child]);
@@ -83,36 +79,6 @@ function load(settings, root, child, container) {
           }
         }
 	}, settings.ajax));
-	/*
-	$.getJSON(settings.url, {root: root}, function(response) {
-		function createNode(parent) {
-			var current = $("<li/>").attr("id", this.id || "").html("<span>" + this.text + "</span>").appendTo(parent);
-			if (this.classes) {
-				current.children("span").addClass(this.classes);
-			}
-			if (this.expanded) {
-				current.addClass("open");
-			}
-			if (this.hasChildren || this.children && this.children.length) {
-				var branch = $("<ul/>").appendTo(current);
-				if (this.hasChildren) {
-					current.addClass("hasChildren");
-					createNode.call({
-						classes: "placeholder",
-						text: "&nbsp;",
-						children:[]
-					}, branch);
-				}
-				if (this.children && this.children.length) {
-					$.each(this.children, createNode, [branch])
-				}
-			}
-		}
-		child.empty();
-		$.each(response, createNode, [child]);
-        $(container).treeview({add: child});
-    });
-    */
 }
 
 var proxied = $.fn.treeview;

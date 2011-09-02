@@ -103,8 +103,13 @@ public class CreateDropDownJSON implements Controller {
             StringBuilder title = new StringBuilder();
             try {
                 String service = createService.constructURL(resource, principal).getPathRepresentation();
+                
+                String buttonText = "manage.place-here";
+                if(service.contains("upload-file")) {
+                    buttonText = "manage.upload-here";   
+                }
                 uriService = "<a class=&quot;vrtx-button-small&quot; href=&quot;" + service + "&quot;>"
-                           +   "<span>" + provider.getLocalizedTitle(request, "manage.place-here", null) + "</span>"
+                           +   "<span>" + provider.getLocalizedTitle(request, buttonText, null) + "</span>"
                            + "</a>";
                 title.append(uriService); 
             } catch (ServiceUnlinkableException e) {

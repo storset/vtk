@@ -26,6 +26,8 @@
  * 5. Clearing
  * 6. Forms
  *
+ * TODO: less expensive selectors (speed vs. readability in this file)
+ *
  */
 
 /*-----------------------------------------*\
@@ -39,7 +41,6 @@ html {
 body {
   margin: 0;
   padding: 0;
-  background-color: transparent;
   background-color: #f8f8f8;
   color: #363534;
   font: normal 81.25%/1.3 Arial, sans-serif;
@@ -2088,7 +2089,7 @@ form button::-moz-focus-inner {
 
 /* ^ iPhone hacks */
 
-/* iPhad hacks */
+/* iPad hacks */
 
 @media only screen and (max-device-width: 1024px) {
 

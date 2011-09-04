@@ -6,7 +6,7 @@
  *  
  *  Changes
  *  -------
- *  
+ *
  *  * Delegate mouseover/mouseleave to affect added nodes dynamically
  *  * Independent/multiple tips in different contexts (by appendTo)
  *  * Configure different speeds for fadeIn, fadeOutPreDelay and fadeOut
@@ -29,13 +29,13 @@
         tip = $(".tip." + appendTo.substring(1));
         tip.hide();
         var link = $(this);
-        var classes = link.parent().attr("class") + " " + link.parent().parent().attr("class");
+        var linkParent = link.parent();
+        var classes = linkParent.attr("class") + " " + linkParent.parent().attr("class");
         if(typeof classes !== "undefined") {
           tip.addClass(classes);
         }
-        var title = link.attr('title');
+        var title = tipText = link.attr('title');
         tip.html(title);
-        tipText = link.attr('title');
         link.attr('title', '');
         var pos = link.position();
         var nPos = pos;

@@ -266,9 +266,7 @@ $(document).ready(function () {
         isReplacing: true,
         nodeType: "div",
         funcComplete: initPermissionForm,
-        simultanSliding: false,
-        transitionSpeed: 0,
-        transitionEasing: "linear"
+        simultanSliding: false
       });
       vrtxAdmin.postAjaxForm({
         selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
@@ -276,9 +274,7 @@ $(document).ready(function () {
                           ".resource-menu.read-permissions"],
         errorContainer: "errorContainer",
         errorContainerInsertAfter: ".groups-wrapper",
-        funcProceedCondition: checkStillAdmin,
-        transitionSpeed: 0,
-        transitionEasing: "linear"
+        funcProceedCondition: checkStillAdmin
       });
     }
   
@@ -679,22 +675,17 @@ function switchCheckedRow(checkbox) {
 
 function initPermissionForm(selectorClass) {
   if (!$("." + selectorClass + " .aclEdit").length) return;
-
   toggleConfigCustomPermissions(selectorClass);
-  interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]",
-                              "." + selectorClass + " input.addUserButton");
-  interceptEnterKeyAndReroute("." + selectorClass + " .addGroup input[type=text]",
-                              "." + selectorClass + " input.addGroupButton");
-  permissionsAutocomplete('userNames', 
-                          'userNames', vrtxAdmin.permissionsAutocompleteParams);
+  interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]", "." + selectorClass + " input.addUserButton");
+  interceptEnterKeyAndReroute("." + selectorClass + " .addGroup input[type=text]", "." + selectorClass + " input.addGroupButton");
+  permissionsAutocomplete('userNames', 'userNames', vrtxAdmin.permissionsAutocompleteParams);
   splitAutocompleteSuggestion('userNames');
-  permissionsAutocomplete('groupNames', 
-                          'groupNames', vrtxAdmin.permissionsAutocompleteParams);
+  permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams);
 }
 
 function toggleConfigCustomPermissions(selectorClass) {
-  if (!$("." + selectorClass + " ul.shortcuts label[for=custom] input").is(":checked")
-    && $("." + selectorClass + " ul.shortcuts label[for=custom] input").length) {
+  var customInput = $("." + selectorClass + " ul.shortcuts label[for=custom] input");
+  if (!customInput.is(":checked") && customInput.length) {
       $("." + selectorClass).find(".principalList").hide(0);
   }
   $("#app-content").delegate("." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
@@ -803,7 +794,13 @@ function dropdown(options) {
  */
 
 VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
-  var args = arguments; // this function
+  var args = arguments, // this function
+      vrtxAdm = this; // use prototypal hierarchy
+      selector = options.selector,
+      selectorClass = options.selectorClass,
+      simultanSliding = options.simultanSliding,
+      transitionSpeed = options.transitionSpeed || 0,
+      transitionEasing = options.transitionEasing || "linear";
 
   $("#app-content").delegate(options.selector, "click", function (e) {
                           
@@ -820,11 +817,11 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
     var modeUrl = "";
     var existExpandedFormIsReplacing = false;
     var existExpandedForm = false;
-    
+
     if($(".expandedForm").length) {
       if($(".expandedForm").hasClass("expandedFormIsReplaced")) {                      
         if(url.indexOf("&mode=") == -1) {
-          var currentHref = location.href; 
+          var currentHref = location.href;
           // Partly based on: http://snipplr.com/view/799/get-url-variables/
           var hashes = currentHref.slice(currentHref.indexOf('?') + 1).split('&');
           for(var i = hashes.length; i--;) {
@@ -845,16 +842,16 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
       url: url,
       dataType: "html",
       success: function (results, status, resp) {
-        var form = $(results).find("." + options.selectorClass).html();
+        var form = $(results).find("." + selectorClass).html();
 
         // If something went wrong
         if(!form) {
-          vrtxAdmin.error({args: args, msg: "retrieved form from " + url + " is null"});
+          vrtxAdm.error({args: args, msg: "retrieved form from " + url + " is null"});
         }
 
         // Another form is already open
         if(existExpandedForm) {
-          var expandedHtml = vrtxAdmin.outerHTML("#app-content", ".expandedForm");
+          var expandedHtml = vrtxAdm.outerHTML("#app-content", ".expandedForm");
 
           // Filter out selector class to get original markup for the existing form
           var resultSelectorClasses = $(expandedHtml).attr("class").split(" ");
@@ -879,7 +876,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
           } 
           // --
           
-          $("#app-content .expandedForm").slideUp(options.transitionSpeed, options.transitionEasing, function() {
+          $("#app-content .expandedForm").slideUp(transitionSpeed, transitionEasing, function() {
             if(existExpandedFormIsReplacing) {
               var expanded = $(this);
 
@@ -890,57 +887,58 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
                   url: modeUrl,
                   dataType: "html",
                   success: function (results, status, resp) {
-                    var resultHtml = vrtxAdmin.outerHTML(results, $.trim(resultSelectorClass));
+                    var resultHtml = vrtxAdm.outerHTML(results, $.trim(resultSelectorClass));
                     
                     // If all went wrong
                     if(!resultHtml) {
-                      vrtxAdmin.error({args: args, msg: "retrieved existing expandedForm from " + modeUrl + " is null"});
+                      vrtxAdm.error({args: args, msg: "retrieved existing expandedForm from " + modeUrl + " is null"});
                     }
-                    
-                    if(expanded.parent().parent().is("tr")) {  // Because 'this' is tr > td > div
-                      expanded.parent().parent().replaceWith(resultHtml).show(0);
+                    var node = expanded.parent().parent();
+                    if(node.is("tr")) {  // Because 'this' is tr > td > div
+                      node.replaceWith(resultHtml).show(0);
                     } else {
                       expanded.replaceWith(resultHtml).show(0);              
                     }
-                    
-                     vrtxAdmin.getAjaxFormShow(options, form);
+
+                    vrtxAdm.getAjaxFormShow(options, selectorClass, transitionSpeed, transitionEasing, form);
                   },
                   error: function (xhr, textStatus) {
-                    displayAjaxErrorMessage(xhr, textStatus);
+                    vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
                   }
                 });
               } else {
-                var resultHtml = vrtxAdmin.outerHTML(results, $.trim(resultSelectorClass));
+                var resultHtml = vrtxAdm.outerHTML(results, $.trim(resultSelectorClass));
                 
                 // If all went wrong
                 if(!resultHtml) {
-                  vrtxAdmin.error({args: args, msg: "retrieved existing expandedForm from " + url + " is null"});
+                  vrtxAdm.error({args: args, msg: "retrieved existing expandedForm from " + url + " is null"});
                 }
-              
-                if(expanded.parent().parent().is("tr")) {  // Because 'this' is tr > td > div
-                  expanded.parent().parent().replaceWith(resultHtml).show(0);
+                var node = expanded.parent().parent();
+                if(node.is("tr")) {  // Because 'this' is tr > td > div
+                  node.replaceWith(resultHtml).show(0);
                 } else {
                   expanded.replaceWith(resultHtml).show(0);              
                 }
               }
             } else {
-              if($(this).parent().parent().is("tr")) {  // Because 'this' is tr > td > div
-                $(this).parent().parent().remove();  
+              var node = $(this).parent().parent();
+              if(node.is("tr")) {  // Because 'this' is tr > td > div
+                node.remove();
               } else {
                 $(this).remove();            
               }
             }
-            if(!options.simultanSliding && !fromModeToNotMode) {
-              vrtxAdmin.getAjaxFormShow(options, form);
+            if(!simultanSliding && !fromModeToNotMode) {
+              vrtxAdm.getAjaxFormShow(options, selectorClass, transitionSpeed, transitionEasing, form);
             }
           });
         }
-        if ((!existExpandedForm || options.simultanSliding) && !fromModeToNotMode) {
-          vrtxAdmin.getAjaxFormShow(options, form);
+        if ((!existExpandedForm || simultanSliding) && !fromModeToNotMode) {
+          vrtxAdm.getAjaxFormShow(options, selectorClass, transitionSpeed, transitionEasing, form);
         }
       },
       error: function (xhr, textStatus) {
-        vrtxAdmin.displayAjaxErrorMessage(xhr, textStatus); 
+        vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
       }
     });
 
@@ -949,41 +947,39 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
   });
 };
 
-VrtxAdmin.prototype.getAjaxFormShow = function(options, form) {
-  if (options.isReplacing) {
-    var classes = $(options.insertAfterOrReplaceClass).attr("class");
-    $(options.insertAfterOrReplaceClass).replaceWith(vrtxAdmin.wrap(options.nodeType, "expandedForm expandedFormIsReplaced nodeType"
-                                                                  + options.nodeType + " " + options.selectorClass + " " + classes, form));
+VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitionSpeed, transitionEasing, form) {
+  var vrtxAdm = this,
+      insertAfterOrReplaceClass = options.insertAfterOrReplaceClass,
+      isReplacing = options.isReplacing,
+      nodeType = options.nodeType,
+      funcComplete = options.funcComplete;
+
+  if (isReplacing) {
+    var classes = $(insertAfterOrReplaceClass).attr("class");
+    $(insertAfterOrReplaceClass).replaceWith(vrtxAdm.wrap(nodeType, "expandedForm expandedFormIsReplaced nodeType"
+                                                        + nodeType + " " + selectorClass + " " + classes, form));
   } else {
-    $(vrtxAdmin.wrap(options.nodeType, "expandedForm nodeType" + options.nodeType + " " + options.selectorClass, form))
-      .insertAfter(options.insertAfterOrReplaceClass);
+    $(vrtxAdm.wrap(nodeType, "expandedForm nodeType" + nodeType + " " + selectorClass, form))
+      .insertAfter(insertAfterOrReplaceClass);
   }
-  if(options.funcComplete) {
-    options.funcComplete(options.selectorClass);
+  if(funcComplete) {
+    funcComplete(selectorClass);
   }
-  if(options.nodeType == "tr") {
-    $(options.nodeType + "." + options.selectorClass).prepareTableRowForSliding();
+  if(nodeType == "tr") {
+    $(nodeType + "." + selectorClass).prepareTableRowForSliding();
   }
-  $(options.nodeType + "." + options.selectorClass).hide().slideDown(options.transitionSpeed, options.transitionEasing, function() {
+  $(nodeType + "." + selectorClass).hide().slideDown(transitionSpeed, transitionEasing, function() {
     var $this = $(this);
     $this.find("input[type=text]:first").focus();
     // TODO: same for replaced html
-    if(!options.isReplacing) {
-      $this.find("button[type=submit][name*=Cancel]").click(function(e) {
-        if (options.nodeType == "tr") {
+    if(!isReplacing) {
+      $this.find("button[type=submit][name*=Cancel]", "input[type=submit][name*=cancel]").click(function(e) {
+        if (nodeType == "tr") {
           $this.prepareTableRowForSliding();
         }
-        $this.slideUp(options.transitionSpeed, options.transitionEasing);
+        $this.slideUp(transitionSpeed, transitionEasing);
         e.stopPropagation();
         e.preventDefault();     
-      });
-      $this.find("input[type=submit][name*=cancel]").click(function(e) {
-        if (options.nodeType == "tr") {
-          $this.prepareTableRowForSliding();
-        }
-        $this.slideUp(options.transitionSpeed, options.transitionEasing);
-        e.stopPropagation();
-        e.preventDefault();
       });
     }
   });
@@ -1003,12 +999,21 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, form) {
  */
 
 VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
-  var args = arguments; // this function
+  var args = arguments,
+      vrtxAdm = this,
+      selector = options.selector,
+      updateSelectors = options.updateSelectors,
+      errorContainer = options.errorContainer,
+      errorContainerInsertAfter = options.errorContainerInsertAfter,
+      funcProceedCondition = options.funcProceedCondition,
+      funcComplete = options.funcComplete,
+      transitionSpeed = options.transitionSpeed || 0,
+      transitionEasing = options.transitionEasing || "linear";
 
-  $("#app-content").delegate(options.selector, "click", function (e) {
+  $("#app-content").delegate(selector, "click", function (e) {
     var link = $(this);
     var form = link.closest("form");
-    if(!options.funcProceedCondition || options.funcProceedCondition(form)) {
+    if(!funcProceedCondition || funcProceedCondition(form)) {
       var url = form.attr("action");
       var encType = form.attr("enctype");
        if (typeof encType === "undefined" || !encType.length) {
@@ -1016,10 +1021,11 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
       }
 
       // TODO: test with form.serialize()
-      var dataString = vrtxAdmin.appendInputNameValuePairsToDataString(form.find("input[type=text]"));
-      dataString += vrtxAdmin.appendInputNameValuePairsToDataString(form.find("input[type=file]"));
-      dataString += vrtxAdmin.appendInputNameValuePairsToDataString(form.find("input[type=radio]:checked"));
-      dataString += vrtxAdmin.appendInputNameValuePairsToDataString(form.find("input[type=checkbox]:checked"));
+      var vrtxAdmAppendInputNameValuePairsToDataString = vrtxAdm.appendInputNameValuePairsToDataString; // cache to function scope
+      var dataString = vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=text]"));
+      dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=file]"));
+      dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=radio]:checked"));
+      dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=checkbox]:checked"));
       dataString += '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
                   + "&" + link.attr("name");
 
@@ -1030,23 +1036,23 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
         dataType: "html",
         contentType: encType,
         success: function (results, status, resp) {
-          if (vrtxAdmin.hasErrorContainers(results, options.errorContainer)) {
-            vrtxAdmin.displayErrorContainers(results, form, options.errorContainerInsertAfter, options.errorContainer);
+          if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
+            vrtxAdm.displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
           } else {
-            for(var i = options.updateSelectors.length; i--;) {
-             var outer = vrtxAdmin.outerHTML(results, options.updateSelectors[i]);
-             $("#app-content " + options.updateSelectors[i]).replaceWith(outer);
+            for(var i = updateSelectors.length; i--;) {
+             var outer = vrtxAdmin.outerHTML(results, updateSelectors[i]);
+             $("#app-content " + updateSelectors[i]).replaceWith(outer);
             }
-            if(options.funcComplete) {
-              options.funcComplete();
+            if(funcComplete) {
+              funcComplete();
             }
-            form.parent().slideUp(options.transitionSpeed, options.transitionEasing, function () {
+            form.parent().slideUp(transitionSpeed, transitionEasing, function () {
               $(this).remove();
             });
           }
         },
         error: function (xhr, textStatus) {
-          vrtxAdmin.displayAjaxErrorMessage(xhr, textStatus);
+          vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
         }
       });
 
@@ -1065,7 +1071,8 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
  */
 
 VrtxAdmin.prototype.ajaxRemove = function ajaxRemove(selector, updateSelector) {
-  var args = arguments; // this function
+  var args = arguments;
+  var vrtxAdm = this;
 
   $("#app-content").delegate(selector, "click", function (e) {
     var link = $(this);
@@ -1084,7 +1091,7 @@ VrtxAdmin.prototype.ajaxRemove = function ajaxRemove(selector, updateSelector) {
         form.find(updateSelector).html($(results).find(updateSelector).html());
       },
       error: function (xhr, textStatus) {
-        vrtxAdmin.displayAjaxErrorMessage(xhr, textStatus); 
+        vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
       }
     });
 
@@ -1102,7 +1109,8 @@ VrtxAdmin.prototype.ajaxRemove = function ajaxRemove(selector, updateSelector) {
  */
 
 VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorContainer) {
-  var args = arguments; // this function
+  var args = arguments;
+  var vrtxAdm = this;
 
   $("#app-content").delegate(selector + " input[type=submit]", "click", function (e) {
     var link = $(this);
@@ -1122,15 +1130,15 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
       data: dataString,
       dataType: "html",
       success: function (results, status, resp) {
-        if (vrtxAdmin.hasErrorContainers(results, errorContainer)) {
-          vrtxAdmin.displayErrorContainers(results, form, updateSelector, errorContainer);
+        if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
+          vrtxAdm.displayErrorContainers(results, form, updateSelector, errorContainer);
         } else {
           form.find(updateSelector).html($(results).find(updateSelector).html());
           textfield.val("");
         }
       },
       error: function (xhr, textStatus) {
-        vrtxAdmin.displayAjaxErrorMessage(xhr, textStatus);
+        vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
       }
     });
 
@@ -1188,7 +1196,7 @@ VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
 
 
 /*-------------------------------------------------------------------*\
-	11. Show and hide properties
+    11. Show and hide properties
 
     @param radioIds: Multiple id's for radiobuttons binding click events (Array)
     @param conditionHide: Condition to be checked for hiding

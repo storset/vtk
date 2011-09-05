@@ -1,0 +1,22 @@
+/* Not supported by flash */
+
+.vrtx-media-player-no-flash {
+  /* background image is in layouts/media-player.ftl */
+  width: 507px;
+  height: 282px;
+  background-color: #000000;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.vrtx-media-player-no-flash .playbutton,
+.vrtx-media-player-no-flash .playbutton:visited,
+.vrtx-media-player-no-flash .playbutton:active {
+  background: url('icons/video-playbutton.png') no-repeat center center;
+}
+
+.vrtx-media-player-no-flash .playbutton:hover {
+  background-image: url('icons/video-playbutton-hover.png');
+}
+
+/* ^ Not supported by flash */

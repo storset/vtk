@@ -182,7 +182,8 @@ div.caption textarea {
   width: 352px !important;
 }
 
-.introImageAndCaption .header {
+.introImageAndCaption .header,
+#additional-content .header {
   display: none;
 }
 

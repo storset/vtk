@@ -41,7 +41,7 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 
-public class FalseGetExternalPersonInfoReporter extends DocumentReporter {
+public class OverriddenLDAPPersonReporter extends DocumentReporter {
 
     private ResourceTypeTree resourceTypeTree;
 

@@ -234,7 +234,7 @@
       htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
       htmlTemplate += '<div>';
       htmlTemplate += '<textarea name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" ';
-      htmlTemplate += ' rows=\"4\" cols=\"20\" ><\/textarea>';
+      htmlTemplate += ' rows=\"7\" cols=\"60\" ><\/textarea>';
       htmlTemplate += '<\/div><\/div>';
       return htmlTemplate;
     }

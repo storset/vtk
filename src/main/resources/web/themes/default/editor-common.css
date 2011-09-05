@@ -123,6 +123,10 @@ div.description {
   width: 500px;
 }
 
+div.additionalContent iframe {
+  height: 150px !important;
+}
+
 div.introduction,
 div.description {
   clear: left;
@@ -131,17 +135,37 @@ div.description {
   margin-bottom: 20px;
 }
 
-div.additionalContent iframe,
+div.introduction textarea,
+div.description textarea {
+  height: 200px;
+}
+
+div.content textarea {
+  width: 100%;
+  height: 300px;
+}
+
+div.additionalContents textarea,
+div.relatedContent textarea {
+  height: 127px;
+}
+
 div.introduction iframe,
 div.description iframe {
   width: 476px !important;
 }
 
-div.additionalContent iframe {
-  height: 150px !important;
+div.introduction textarea,
+div.description textarea {
+  width: 497px !important;
 }
 
 /* Image and caption */
+
+div.caption textarea {
+  height: 127px;
+  width: 352px !important;
+}
 
 .introImageAndCaption .header {
   display: none;
@@ -176,16 +200,16 @@ div#vrtx-resource\.picture .caption {
   position: absolute;
   top: 92px;
   left: 0px;
-  width: 327px;
+  width: 355px;
 }
 
 div#vrtx-resource\.picture .caption {
   top: 52px;
 }
 
-div.introImageAndCaption .caption iframe,
-div#vrtx-resource\.picture .caption iframe {
-  width: 303px !important;
+div.introImageAndCaption iframe,
+div#vrtx-resource\.picture iframe {
+  width: 331px !important;
 }
 
 div.introImageAndCaption div.vrtx-image-ref-browse,
@@ -204,12 +228,16 @@ div#vrtx-resource\.picture div.input-and-button-container .vrtx-textfield {
 
 div.introImageAndCaption div#picture\.preview,
 div#vrtx-resource\.picture div#resource\.picture\.preview {
-  margin: 0 0 0 346px;
+  margin: 0 0 0 375px;
 }
 
 div.introImageAndCaption img,
 div#vrtx-resource\.picture img {
   margin-top: 0px;
+}
+
+.vrtx-grouped .related-content label {
+  display: none;
 }
 
 /* ^ Image and caption */

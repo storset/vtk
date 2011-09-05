@@ -116,7 +116,7 @@
       <#if (resource.content)?exists>
         <div class="html-content">
           <label class="resource.content" for="resource.content"><@vrtx.msg code="editor.content" /></label> 
-          <textarea name="resource.content" rows="8" cols="60" id="resource.content">${resource.bodyAsString?html}</textarea>
+          <textarea name="resource.content" rows="7" cols="60" id="resource.content">${resource.bodyAsString?html}</textarea>
           <@editor.createEditor  'resource.content' true false simpleHTML />
         </div>
       </#if>
@@ -178,11 +178,11 @@
       
       <#if type = 'HTML' && name != 'userTitle' && name != 'title' && name != 'caption'>
 
-        <textarea id="resource.${name}" name="resource.${name}" rows="4" cols="60">${value?html}</textarea>
+        <textarea id="resource.${name}" name="resource.${name}" rows="7" cols="60">${value?html}</textarea>
         <@editor.createEditor  'resource.${name}' false false simpleHTML />
         
       <#elseif type = 'HTML' && name == 'caption'>
-        <textarea id="resource.${name}" name="resource.${name}" rows="1" cols="60">${value?html}</textarea>
+        <textarea id="resource.${name}" name="resource.${name}" rows="7" cols="60">${value?html}</textarea>
         <@editor.createEditor 'resource.${name}' false true />
         </div><#-- On the fly div STOP caption -->
 

@@ -29,10 +29,24 @@
     <#assign isCollection = resource.resourceType = 'collection' || resource.resourceType?contains("-listing") />
     <#assign simpleHTML = resource.resourceType = 'xhtml10trans' || resource.resourceType = 'html' />
 
+    <#global baseFolder = "/" />
+    <#if resourceContext.parentURI?exists>
+      <#if isCollection>
+        <#global baseFolder = resourceContext.currentURI?html />
+      <#else>
+        <#global baseFolder = resourceContext.parentURI?html />
+      </#if>
+     </#if>
+
     <script type="text/javascript">
     <!--
    	  shortcut.add("Ctrl+S",function() {
  		$("#saveButton").click();
+ 	  });
+ 	  
+ 	  $(window).load(function() {
+ 	    loadFeaturedArticles('${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
+                             '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
  	  });
     
       $(document).ready(function() {
@@ -73,19 +87,9 @@
     <#else>
       <script type="text/javascript" src="${jsBaseURL?html}/collectionlisting/manually-approve.js"></script>
     </#if>
-    
-   <#global baseFolder = "/" />
-   <#if resourceContext.parentURI?exists>
-    <#if isCollection>
-      <#global baseFolder = resourceContext.currentURI?html />
-    <#else>
-      <#global baseFolder = resourceContext.parentURI?html />
-    </#if>
-   </#if>
 
   </head>
-  <body onLoad="loadFeaturedArticles('${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
-                  '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');">
+  <body>
 
     <#assign header>
       <@vrtx.msg code="editor.edit" args=[vrtx.resourceTypeName(resource)?lower_case] />

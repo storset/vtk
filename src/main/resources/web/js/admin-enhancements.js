@@ -60,6 +60,7 @@ function VrtxAdmin() {
   this.isSafari = null;
   this.isIPhone = null;
   this.isIPad = null;
+  this.isAndroid = null;
   this.isWin = null;
   
   // v3.?: this.supportsFileAPI = null;
@@ -89,6 +90,7 @@ vrtxAdmin.isChrome = /chrome/.test(ua);
 vrtxAdmin.isSafari = /safari/.test(ua) && !/chrome/.test(ua);
 vrtxAdmin.isIPhone = /iphone/.test(ua);
 vrtxAdmin.isIPad= /ipad/.test(ua);
+vrtxAdmin.isAndroid = /android/.test(ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
 vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
 
 // v3.?: vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;

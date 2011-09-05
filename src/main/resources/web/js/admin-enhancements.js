@@ -57,10 +57,11 @@ function VrtxAdmin() {
   this.isOpera = null;
   this.isMozilla = null;
   this.isChrome = null;
-  this.isSafari = null;
   this.isIPhone = null;
   this.isIPad = null;
   this.isAndroid = null;
+  this.isMobileDevice = null;
+  this.isSafari = null;
   this.isWin = null;
   
   // v3.?: this.supportsFileAPI = null;
@@ -90,7 +91,8 @@ vrtxAdmin.isChrome = /chrome/.test(ua);
 vrtxAdmin.isIPhone = /iphone/.test(ua);
 vrtxAdmin.isIPad= /ipad/.test(ua);
 vrtxAdmin.isAndroid = /android/.test(ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
-vrtxAdmin.isSafari = /safari/.test(ua) && !(vrtxAdmin.isChrome || vrtxAdmin.isIPhone || vrtxAdmin.isIPad || vrtxAdmin.isAndroid);
+vrtxAdmin.isMobileDevice = (vrtxAdmin.isIPhone || vrtxAdmin.isIPad || vrtxAdmin.isAndroid); 
+vrtxAdmin.isSafari = /safari/.test(ua) && !vrtxAdmin.isChrome && !vrtxAdmin.isMobileDevice;
 vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
 
 // v3.?: vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;

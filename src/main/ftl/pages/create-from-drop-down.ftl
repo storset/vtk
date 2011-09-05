@@ -26,9 +26,21 @@
        var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];
        var pathNum = 0;
        
+       var thisUrl = location.href;
+       if(thisUrl.indexOf("http:") != -1 && thisUrl.indexOf("localhost:9322") != -1) {
+         thisUrl = thisUrl.substring(0, thisUrl.indexOf("?"));
+         thisUrl = thisUrl.replace("http:", "https:");
+       } else {
+         thisUrl = "";
+       }
+       
+       console.log(thisUrl);
+       
+       vrtxAdmin.log({msg: "create tree AJAX url " + thisUrl});
+       
        $(".tree-create").treeview({
          animated: "fast",
-         url: "?vrtx=admin&service=${type}-from-drop-down&uri=&ts=" + timestamp,
+         url: thisUrl + "?vrtx=admin&service=${type}-from-drop-down&uri=&ts=" + timestamp,
          service: "${type}-from-drop-down",
          dataLoaded: function() { // AJAX success
            var last = false;

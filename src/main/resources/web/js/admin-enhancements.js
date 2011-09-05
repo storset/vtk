@@ -72,7 +72,7 @@ function VrtxAdmin() {
   this.transitionCustomPermissionSpeed = 200; // same as 'fast'
   this.transitionPropSpeed = 100;
   this.transitionDropdownSpeed = 100;
-  this.transitionEasing = "swing";
+  this.transitionEasing = "linear";
   
   return instance;
 };
@@ -97,10 +97,10 @@ vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
 
 // v3.?: vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;
 
-// Upgrade easing algorithm from 'swing' to 'easeInQuad' 
+// Upgrade easing algorithm from 'linear' to 'swing' / 'easeOutQuad'
 // -- if not < IE 9 and not iPhone, iPad and Android devices
 if(!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) && !vrtxAdmin.isMobileWebkitDevice) {
-  vrtxAdmin.transitionEasing = "easeInQuad"; // ..wondering if we can just use "swing" everywhere because of fast transitions
+  vrtxAdmin.transitionEasing = "easeOutQuad";
 }
 
 // Permission Autocomplete parameters

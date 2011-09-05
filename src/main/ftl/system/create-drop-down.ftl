@@ -23,19 +23,17 @@
 </#if>
 
 <#-- Tmp. fix for getting 'https' page -->
-
 <#if resourceContext.repositoryId != "localhost">
   <#if docUrl?contains("http:")>
-    <#assign docUrl = docUrl?replace("http", "https:") />
+    <#assign docUrl = docUrl?replace("http:", "https:") />
   </#if>
   <#if colUrl?contains("http:")>
-    <#assign colUrl = colUrl?replace("http", "https:") />
+    <#assign colUrl = colUrl?replace("http:", "https:") />
   </#if>
   <#if upUrl?contains("http:")>
-    <#assign upUrl = upUrl?replace("http", "https:") />  
+    <#assign upUrl = upUrl?replace("http:", "https:") />  
   </#if>
 </#if>
-
 <#-- ---------- -->
 
 <ul class="manage-create"> 

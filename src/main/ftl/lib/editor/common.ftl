@@ -34,7 +34,7 @@
 
 <#macro createEditor content completeEditor=false withoutSubSuper=false simpleHTML=false>
   <script type="text/javascript"><!--
-    if(!vrtxAdmin.isMobileDevice) {
+    if(!vrtxAdmin.isMobileWebkitDevice) {
       newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
 	    '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
 	    '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});

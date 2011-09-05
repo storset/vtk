@@ -117,17 +117,6 @@ div.userTitle input {
   width: 473px;
 }
 
-/* Fix for additional content */
-#additional-content .header {
-    display: none;
-}
-
-#additional-content .vrtx-html, .relatedContent .vrtx-html{
-display:block;clear:left;padding-top:20px;
-}
-
-/* ^ Fix for additional content */
-
 div.additionalContent,
 div.introduction,
 div.description {

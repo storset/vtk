@@ -72,7 +72,8 @@ function VrtxAdmin() {
   this.transitionCustomPermissionSpeed = 200; // same as 'fast'
   this.transitionPropSpeed = 100;
   this.transitionDropdownSpeed = 100;
-  this.transitionEasing = "linear";
+  this.transitionEasingSlideDown = "linear";
+  this.transitionEasingSlideUp = "linear";
   
   return instance;
 };
@@ -100,7 +101,8 @@ vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
 // Upgrade easing algorithm from 'linear' to 'easeOutQuad'
 // -- if not < IE 9 and not iPhone, iPad and Android devices
 if(!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) && !vrtxAdmin.isMobileWebkitDevice) {
-  vrtxAdmin.transitionEasing = "easeOutQuad";
+  vrtxAdmin.transitionEasingSlideDown = "easeOutQuad";
+  vrtxAdmin.transitionEasingSlideUp = "easeInQuad";
 }
 
 // Permission Autocomplete parameters
@@ -190,7 +192,8 @@ $(document).ready(function () {
         nodeType: "div",
         simultanSliding: true,
         transitionSpeed: vrtxAdmin.transitionSpeed,
-        transitionEasing: vrtxAdmin.transitionEasing
+        transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
+        transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
     });
   }
   
@@ -206,7 +209,8 @@ $(document).ready(function () {
         nodeType: "div",
         simultanSliding: true,
         transitionSpeed: vrtxAdmin.transitionSpeed,
-        transitionEasing: vrtxAdmin.transitionEasing
+        transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
+        transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
     });
   }
   
@@ -228,7 +232,8 @@ $(document).ready(function () {
           nodeType: "div",
           simultanSliding: true,
           transitionSpeed: vrtxAdmin.transitionSpeed,
-          transitionEasing: vrtxAdmin.transitionEasing
+          transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
+          transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
         });
         vrtxAdmin.postAjaxForm({
           selector: "form[name=" + tabMenuServices[i] + "] input[type=submit]",
@@ -237,7 +242,8 @@ $(document).ready(function () {
           errorContainerInsertAfter: "> ul",
           funcComplete: collectionListingInteraction,
           transitionSpeed: vrtxAdmin.transitionSpeed,
-          transitionEasing: vrtxAdmin.transitionEasing
+          transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
+          transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
         });
       
       } else {
@@ -250,7 +256,8 @@ $(document).ready(function () {
           funcComplete: function(p){ initFileUpload() },
           simultanSliding: true,
           transitionSpeed: vrtxAdmin.transitionSpeed,
-          transitionEasing: vrtxAdmin.transitionEasing
+          transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
+          transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
         });
         initFileUpload(); // when error message
       }
@@ -302,7 +309,8 @@ $(document).ready(function () {
         funcComplete: initPermissionForm,
         simultanSliding: true,
         transitionSpeed: vrtxAdmin.transitionSpeed,
-        transitionEasing: vrtxAdmin.transitionEasing
+        transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
+        transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
       });
       vrtxAdmin.postAjaxForm({
         selector: "tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
@@ -311,7 +319,8 @@ $(document).ready(function () {
         errorContainer: "errorContainer",
         errorContainerInsertAfter: ".groups-wrapper",
         transitionSpeed: vrtxAdmin.transitionSpeed,
-        transitionEasing: vrtxAdmin.transitionEasing
+        transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
+        transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
       });
     }
     
@@ -349,7 +358,8 @@ $(document).ready(function () {
         nodeType: "tr",
         simultanSliding: true,
         transitionSpeed: vrtxAdmin.transitionSpeed,
-        transitionEasing: vrtxAdmin.transitionEasing
+        transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
+        transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
       });
     }
   }
@@ -698,11 +708,11 @@ function toggleConfigCustomPermissions(selectorClass) {
       $("." + selectorClass).find(".principalList").hide(0);
   }
   $("#app-content").delegate("." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
-    $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasing);
+    $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideDown);
     e.stopPropagation();
   });
   $("#app-content").delegate("." + selectorClass + " ul.shortcuts label:not([for=custom])", "click", function (e) {
-    $(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasing);
+    $(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideUp);
     e.stopPropagation();
   });
 }
@@ -740,7 +750,7 @@ function dropdownLanguageMenu() {
   languageMenu.addClass("dropdown-shortcut-menu-container");
 
   $(".localeSelection").delegate(".localeSelectionHeader", "click", function (e) {
-    $(this).next(".dropdown-shortcut-menu-container").slideToggle(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasing);
+    $(this).next(".dropdown-shortcut-menu-container").slideToggle(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideDown);
     e.stopPropagation();
     e.preventDefault();
   });
@@ -764,7 +774,7 @@ function dropdown(options) {
     shortcutMenu.css("left", (list.width() - 24) + "px");
 
     list.find("li.first #dropdown-shortcut-menu-click-area").click(function (e) {
-      shortcutMenu.slideToggle(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasing);
+      shortcutMenu.slideToggle(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideDown);
       e.stopPropagation();
       e.preventDefault();
     });
@@ -799,7 +809,8 @@ function dropdown(options) {
  *                 simultanSliding: whether to slideUp existing form at the same time slideDown new form 
  *                                  (only when there is an existing form)
  *                 transitionSpeed: transition speed in ms
- *                 transitionEasing: transition easing algorithm
+ *                 transitionEasingSlideDown: transition easing algorithm for slideDown()
+ *                 transitionEasingSlideUp: transition easing algorithm for slideUp()
  */
 
 VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
@@ -812,8 +823,9 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
         selectorClass = options.selectorClass,
         simultanSliding = options.simultanSliding,
         transitionSpeed = options.transitionSpeed || 0,
-        transitionEasing = options.transitionEasing || "linear";
-                          
+        transitionEasingSlideDown = options.transitionEasingSlideDown || "linear";
+        transitionEasingSlideUp = options.transitionEasingSlideUp || "linear";
+
     var url = $(this).attr("href") || $(this).closest("form").attr("action");
             
     if(location.protocol == "http:" && url.indexOf("https://") != -1) {
@@ -886,7 +898,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
           } 
           // --
           
-          $("#app-content .expandedForm").slideUp(transitionSpeed, transitionEasing, function() {
+          $("#app-content .expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
             if(existExpandedFormIsReplacing) {
               var expanded = $(this);
 
@@ -910,7 +922,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
                       expanded.replaceWith(resultHtml).show(0);              
                     }
 
-                    vrtxAdm.getAjaxFormShow(options, selectorClass, transitionSpeed, transitionEasing, form);
+                    vrtxAdm.getAjaxFormShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
                   },
                   error: function (xhr, textStatus) {
                     vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
@@ -939,12 +951,12 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
               }
             }
             if(!simultanSliding && !fromModeToNotMode) {
-              vrtxAdm.getAjaxFormShow(options, selectorClass, transitionSpeed, transitionEasing, form);
+              vrtxAdm.getAjaxFormShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
             }
           });
         }
         if ((!existExpandedForm || simultanSliding) && !fromModeToNotMode) {
-          vrtxAdm.getAjaxFormShow(options, selectorClass, transitionSpeed, transitionEasing, form);
+          vrtxAdm.getAjaxFormShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
         }
       },
       error: function (xhr, textStatus) {
@@ -957,7 +969,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
   });
 };
 
-VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitionSpeed, transitionEasing, form) {
+VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form) {
   var vrtxAdm = this,
       insertAfterOrReplaceClass = options.insertAfterOrReplaceClass,
       isReplacing = options.isReplacing,
@@ -978,7 +990,7 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitio
   if(nodeType == "tr") {
     $(nodeType + "." + selectorClass).prepareTableRowForSliding();
   }
-  $(nodeType + "." + selectorClass).hide().slideDown(transitionSpeed, transitionEasing, function() {
+  $(nodeType + "." + selectorClass).hide().slideDown(transitionSpeed, transitionEasingSlideDown, function() {
     var $this = $(this);
     $this.find("input[type=text]:first").focus();
     // TODO: same for replaced html
@@ -987,7 +999,7 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitio
         if (nodeType == "tr") {
           $this.prepareTableRowForSliding();
         }
-        $this.slideUp(transitionSpeed, transitionEasing);
+        $this.slideUp(transitionSpeed, transitionEasingSlideUp);
         e.stopPropagation();
         e.preventDefault();     
       });
@@ -1006,6 +1018,8 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitio
  *                funcComplete: callback function to run when AJAX is completed
  *                transitionSpeed: transition speed in ms
  *                transitionEasing: transition easing algorithm
+ *                transitionEasingSlideDown: transition easing algorithm for slideDown()
+ *                transitionEasingSlideUp: transition easing algorithm for slideUp()
  */
 
 VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
@@ -1021,7 +1035,8 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
         funcProceedCondition = options.funcProceedCondition,
         funcComplete = options.funcComplete,
         transitionSpeed = options.transitionSpeed || 0,
-        transitionEasing = options.transitionEasing || "linear";
+        transitionEasingSlideDown = options.transitionEasingSlideDown || "linear";
+        transitionEasingSlideUp = options.transitionEasingSlideUp || "linear";
   
     var link = $(this);
     var form = link.closest("form");
@@ -1058,7 +1073,7 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
             if(funcComplete) {
               funcComplete();
             }
-            form.parent().slideUp(transitionSpeed, transitionEasing, function () {
+            form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
               $(this).remove();
             });
           }
@@ -1239,8 +1254,8 @@ function showHideProperties(init, conditionHide, conditionHideEqual, showHidePro
 function showHideProperty(id, init, show) {
   init ? show ? $(id).show() 
               : $(id).hide()
-       : show ? $(id).slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasing)
-              : $(id).slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasing);
+       : show ? $(id).slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideDown)
+              : $(id).slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideUp);
 }
 
 

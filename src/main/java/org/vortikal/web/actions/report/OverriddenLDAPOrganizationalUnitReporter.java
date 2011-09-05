@@ -54,7 +54,7 @@ public class OverriddenLDAPOrganizationalUnitReporter extends DocumentReporter {
         if (getExternalUnitInfoPropDef == null) {
             return null;
         }
-        
+
         PropertyTypeDefinition areacodePropDef = this.resourceTypeTree
                 .getPropertyDefinitionByPointer("resource:areacode");
 

@@ -55,7 +55,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
 public class CreateDropDownJSON implements Controller {
 
     private CreateDropDownProvider provider;
-    private Service createService;
+    private Service service;
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -99,24 +99,21 @@ public class CreateDropDownJSON implements Controller {
             Principal principal = requestContext.getPrincipal();
             Resource resource = repository.retrieve(token, Path.fromString(sr.getUri()), true);
 
-            String uriService;
-            StringBuilder title = new StringBuilder();
+            String title;
             try {
-                String service = createService.constructURL(resource, principal).getPathRepresentation();
-                
-                String buttonText = "manage.place-here";
-                if(service.contains("upload-file")) {
-                    buttonText = "manage.upload-here";   
-                }
-                uriService = "<a class=&quot;vrtx-button-small&quot; href=&quot;" + service + "&quot;>"
-                           +   "<span>" + provider.getLocalizedTitle(request, buttonText, null) + "</span>"
-                           + "</a>";
-                title.append(uriService); 
+                String uri = service.constructURL(resource, principal).getPathRepresentation();
+
+                String buttonText;
+                if (uri.contains("upload-file"))
+                    buttonText = "manage.upload-here";
+                else
+                    buttonText = "manage.place-here";
+
+                title = "<a class=&quot;vrtx-button-small&quot; href=&quot;" + uri + "&quot;>" + "<span>"
+                        + provider.getLocalizedTitle(request, buttonText, null) + "</span>" + "</a>";
             } catch (ServiceUnlinkableException e) {
-                uriService = "<span class=&quot;no-create-permission&quot;>" 
-                              + provider.getLocalizedTitle(request, "manage.no-permission", null) 
-                           + "</span>";
-                title.append(uriService);
+                title = "<span class=&quot;no-create-permission&quot;>"
+                        + provider.getLocalizedTitle(request, "manage.no-permission", null) + "</span>";
             } catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 return;
@@ -125,9 +122,8 @@ public class CreateDropDownJSON implements Controller {
             o.put("hasChildren", sr.hasChildren());
             o.put("text", sr.getName());
             o.put("uri", sr.getUri());
-            o.put("uriService", uriService);
             o.put("spanClasses", "folder");
-            o.put("title", title.toString());
+            o.put("title", title);
 
             list.add(o);
         }
@@ -148,8 +144,8 @@ public class CreateDropDownJSON implements Controller {
     }
 
     @Required
-    public void setCreateService(Service createService) {
-        this.createService = createService;
+    public void setService(Service service) {
+        this.service = service;
     }
 
 }

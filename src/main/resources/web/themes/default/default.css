@@ -856,9 +856,9 @@ ul.list-menu.resourceMenuRight p span {
 /* Thickbox mod */
 
 #TB_window {
-  -moz-border-radius: 10px !important;
-  -webkit-border-radius: 10px !important;
-  border-radius: 10px !important;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
 }
 
 #TB_overlay,

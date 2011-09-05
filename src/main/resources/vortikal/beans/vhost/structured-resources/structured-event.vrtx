@@ -8,7 +8,7 @@ resourcetype structured-event : structured-document {
     organizers : json (organizer:string, organizer-url:string) multiple,
     tags : string multiple overrides tags,
     related-content : html noextract,
-    hideAdditionalContentEvent : boolean defaultvalue("false")
+    showAdditionalContent : boolean defaultvalue("true")
   }
 
   edit-rules {
@@ -18,7 +18,8 @@ resourcetype structured-event : structured-document {
     group timeAndPlace (start-date, end-date, location, mapurl) (after introImageAndCaption) horizontal,
     location (size[small]),
     mapurl (size[small]),
-    tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)")
+    tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
+    group relatedContent (showAdditionalContent, related-content) (after tags) horizontal
   }
 
   scripts {
@@ -61,10 +62,10 @@ resourcetype structured-event : structured-document {
       ##
       [resource-props "."]
       [def document structured-document()]
-      [def thehideAdditionalContent document.properties.hideAdditionalContentEvent]
+      [def theshowAdditionalContent document.properties.showAdditionalContent]
       [def theRelated-content document.properties.related-content]
 
-      [if (thehideAdditionalContent = "false")]
+      [if (theshowAdditionalContent = "true")]
         [if theRelated-content != null]
           <div id="vrtx-additional-content">
             <div id="vrtx-related-content">
@@ -80,10 +81,10 @@ resourcetype structured-event : structured-document {
       ##
       [resource-props "."]
       [def document structured-document()]
-      [def thehideAdditionalContent document.properties.hideAdditionalContentEvent]
+      [def theshowAdditionalContent document.properties.showAdditionalContent]
       [def theRelated-content document.properties.related-content]
       
-      [if (thehideAdditionalContent = "true")]
+      [if (theshowAdditionalContent = "false")]
           [if theRelated-content != null]
             <div id="vrtx-related-content">
               [val theRelated-content # unescaped]
@@ -104,7 +105,14 @@ resourcetype structured-event : structured-document {
       </head>
       <body id="vrtx-structured-event">
        <div id="vrtx-content">
-         <div id="vrtx-main-content" class="vrtx-hide-additional-content-[call "resource:property" {"id":"resource:hideAdditionalContentEvent"}]">
+       [resources-props "."]
+        [def document structured-document()]
+        [def theShowAdditionalContent document.properties.showAdditionalContent]
+        [if theShowAdditionalContent = "true" || theShowAdditionalContent = null]
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
+        [else]
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
+        [endif]
             <h1>[call "comp:title"]</h1>
             [call "comp:introduction"]
             <div class="vrtx-byline">
@@ -130,7 +138,7 @@ resourcetype structured-event : structured-document {
   }
   
   vocabulary {
-    hideAdditionalContentEvent {
+    showAdditionalContent {
       en : ("true" = "Yes", "false" = "No"),
       no : ("true" = "Ja", "false" = "Nei"),
       nn : ("true" = "Ja", "false" = "Nei")
@@ -148,9 +156,9 @@ resourcetype structured-event : structured-document {
     organizer-and : (en: "and", no : "og", nn : "og"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     timeAndPlace : (en : "Time and place", no : "Tid og sted", nn : "Tid og stad"),
-    hideAdditionalContentEvent : (en : "Hide right-column", no : "Skjul høyrekolonne", nn : "Skjul høyrekolonne"),
-    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
-    relatedContent : (en : "Related content (default as right-column)", no : "Relatert innhold (default som høyrekolonne)", nn : "Relatert innhold (default som høyrekolonne)"),
+    showAdditionalContent : (en : "Show in right-column", no : "Vis i høyrekolonne", nn : "Vis i høgrekolonne"),
+    related-content : (en : "Content", no : "Innhold", nn : "Innhold"),
+    relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
     header : (en : "Edit event", no : "Rediger arrangement", nn : "Rediger arrangement")
   }
 }

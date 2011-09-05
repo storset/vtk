@@ -19,4 +19,11 @@
   background-image: url('icons/video-playbutton-hover.png');
 }
 
+.vrtx-media-player-no-flash .playbutton {
+  float: left;
+  margin: 90px 0 0 195px;
+  width: 115px;
+  height: 106px;
+}
+
 /* ^ Not supported by flash */

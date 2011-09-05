@@ -107,7 +107,7 @@
 		  <input type="button" onClick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
 		</div>
 	  </div>
-    <form id="form" class="editor" action="" method="post">
+    <form action="" method="post" id="editor">
 
       <div class="properties">
         <@propsForm resource.preContentProperties />

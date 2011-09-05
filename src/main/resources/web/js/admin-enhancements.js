@@ -355,7 +355,7 @@ $(document).ready(function () {
 
   // Show/hide multiple properties (initalization / config)
   
-  if ($("form.editor").length) {
+  if ($("form#editor").length) {
     showHide(["#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"],
               "#resource\\.recursive-listing\\.false:checked", 'false', ["#vrtx-resource\\.recursive-listing-subfolders"]);
 

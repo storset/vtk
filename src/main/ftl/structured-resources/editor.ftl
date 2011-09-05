@@ -87,7 +87,7 @@
     </div>
   </div>  
 
-  <form action="${form.submitURL?html}" method="post">
+  <form action="${form.submitURL?html}" method="post" id="editor">
     <#list form.elements as elementBox>
       <#if elementBox.formElements?size &gt; 1>
         <#assign groupClass = "vrtx-grouped" />

@@ -28,7 +28,7 @@
 
        $(".tree-create").treeview({
          animated: "fast",
-         url: "/?vrtx=admin&service=${type}-from-drop-down&uri=&ts=" + timestamp,
+         url: "?vrtx=admin&service=${type}-from-drop-down&uri=&ts=" + timestamp,
          service: "${type}-from-drop-down",
          dataLoaded: function() { // AJAX success
            var last = false;

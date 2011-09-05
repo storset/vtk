@@ -55,6 +55,10 @@
           setAutoComplete('resource\\.tags', 'tags', {minChars:1});
           </#if>
           initDatePicker("${language}");
+          
+          if(isChrome) {
+            
+          }
        });
 
       UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
@@ -143,20 +147,6 @@
         </div>
       </div>
 
-      <#--
-      <#if (resource.content)?exists>
-      <script type="text/javascript">
-        <!--
-          disableSubmit();
-        // -->
-      </script>
-      <#-- <#else> -->
-      <script type="text/javascript">
-        <!--
-          enableSubmit();
-        // -->
-      </script>
-      <#-- </#if> -->
      </form>
     </body>
 </html>

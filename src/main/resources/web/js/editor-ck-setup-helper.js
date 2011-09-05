@@ -166,18 +166,6 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
   CKEDITOR.replace(name, config);
 }
 
-function disableSubmit() {
-  document.getElementById("saveButton").disabled = true;
-  document.getElementById("saveAndViewButton").disabled = true;
-  return true;
-}
-
-function enableSubmit() {
-  document.getElementById("saveButton").disabled = false;
-  document.getElementById("saveAndViewButton").disabled = false;
-  return true;
-}
-
 function commentsCkEditor() {
   document.getElementById("comment-syntax-desc").style.display = "none";
   document.getElementById("comments-text-div").style.margin = "0";

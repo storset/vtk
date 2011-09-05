@@ -44,7 +44,7 @@ function visualizeBrokenLinks(options) {
       type: 'POST',
       url: validationURL,
       data: data,
-      contentType: 'text/plain',
+      contentType: 'text/plain;charset=utf-8',
       dataType: 'json',
       context: context,
       success: function (results, status, resp) {

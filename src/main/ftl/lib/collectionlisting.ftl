@@ -35,7 +35,7 @@
   <form name="collectionListingForm" action="${action}" method="post" accept-charset="UTF-8">
 </#if>
 
-<table id="vrtx-directoryListing" class="directoryListing">
+<table id="directory-listing" class="collection-listing">
   <thead>
    <tr>
    <#list collectionListing.childInfoItems as item>

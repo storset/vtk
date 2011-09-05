@@ -35,7 +35,7 @@
   <@spring.bind "trashcan.submitURL" />
   <form class="trashcan" action="${spring.status.value?html}" method="post">
 
-  <table id="vrtx-trash-can-table" class="directoryListing">
+  <table  id="directory-listing" class="trash-can-listing">
     <@spring.bind "trashcan.sortLinks" />
     <tr id="vrtx-trash-can-header" class="directoryListingHeader">
       <@setHeader "name" "trash-can.name" />

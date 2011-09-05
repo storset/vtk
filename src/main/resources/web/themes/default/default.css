@@ -1124,129 +1124,129 @@ ul.list-menu.tabMenu2 li.deleteResourcePermanentService a {
   padding-bottom: 34px;
 } */
 
-#app-content #main #contents table.directoryListing {
+#app-content #main #contents #directory-listing {
   width: 100%;
 }
 
-#app-content #main #contents table.directoryListing tr td {
+#app-content #main #contents #directory-listing tr td {
   font-size: 1.15em;
   border-top: 1px solid #f0f0f0;
   padding: 5px 15px 4px 0;
 }
 
-#app-content #main #contents table.directoryListing tr.first td {
+#app-content #main #contents #directory-listing tr.first td {
   border-top: none;
   padding-top: 8px;
 }
 
-#app-content #main #contents table.directoryListing tr th {
+#app-content #main #contents #directory-listing tr th {
   background: url(images/line-dotted.gif) repeat-x bottom left;
   padding: 0 15px 8px 0;
   text-align: left;
   white-space: nowrap;  
 }
 
-#app-content #main #contents table.directoryListing tr th.permissions,
-#app-content #main #contents table.directoryListing tr th.resource-type,
-#app-content #main #contents table.directoryListing tr th.last-modified,
-#app-content #main #contents table.directoryListing tr th#vrtx-trash-can\.deletedBy,
-#app-content #main #contents table.directoryListing tr th#vrtx-trash-can\.deletedTime,
-#app-content #main #contents table.directoryListing tr th#vrtx-report-last-modified,
-#app-content #main #contents table.directoryListing tr th#vrtx-report-modified-by,
-#app-content #main #contents table.directoryListing tr th#vrtx-report-permission-set,
-#app-content #main #contents table.directoryListing tr th#vrtx-report-permissions,
-#app-content #main #contents table.directoryListing tr th#vrtx-report-published {
+#app-content #main #contents #directory-listing th.permissions,
+#app-content #main #contents #directory-listing th.resource-type,
+#app-content #main #contents #directory-listing th.last-modified,
+#app-content #main #contents #directory-listing th#vrtx-trash-can\.deletedBy,
+#app-content #main #contents #directory-listing th#vrtx-trash-can\.deletedTime,
+#app-content #main #contents #directory-listing th#vrtx-report-last-modified,
+#app-content #main #contents #directory-listing th#vrtx-report-modified-by,
+#app-content #main #contents #directory-listing th#vrtx-report-permission-set,
+#app-content #main #contents #directory-listing th#vrtx-report-permissions,
+#app-content #main #contents #directory-listing th#vrtx-report-published {
   width: 1%;
 }
 
-#app-content #main #contents table.directoryListing tr td.permissions,
-#app-content #main #contents table.directoryListing tr td.resource-type,
-#app-content #main #contents table.directoryListing tr td.last-modified,
-#app-content #main #contents table.directoryListing tr td.vrtx-trash-can-deleted-by,
-#app-content #main #contents table.directoryListing tr td.vrtx-trash-can-deleted-time,
-#app-content #main #contents table.directoryListing tr td.vrtx-report-last-modified,
-#app-content #main #contents table.directoryListing tr td.vrtx-report-last-modified-by,
-#app-content #main #contents table.directoryListing tr td.vrtx-report-permission-set,
-#app-content #main #contents table.directoryListing tr td.vrtx-report-permissions,
-#app-content #main #contents table.directoryListing tr td.vrtx-report-published {
+#app-content #main #contents #directory-listing td.permissions,
+#app-content #main #contents #directory-listing td.resource-type,
+#app-content #main #contents #directory-listing td.last-modified,
+#app-content #main #contents #directory-listing td.vrtx-trash-can-deleted-by,
+#app-content #main #contents #directory-listing td.vrtx-trash-can-deleted-time,
+#app-content #main #contents #directory-listing td.vrtx-report-last-modified,
+#app-content #main #contents #directory-listing td.vrtx-report-last-modified-by,
+#app-content #main #contents #directory-listing td.vrtx-report-permission-set,
+#app-content #main #contents #directory-listing td.vrtx-report-permissions,
+#app-content #main #contents #directory-listing td.vrtx-report-published {
   white-space: nowrap;
 }
 
-#app-content #main #contents table.directoryListing tr .checkbox {
+#app-content #main #contents #directory-listing .checkbox {
   padding-right: 30px;
 }
 
-#app-content #main #contents table.directoryListing tr th.name,
-#app-content #main #contents table.directoryListing tr td.name,
-#app-content #main #contents table.directoryListing tr th#vrtx-trash-can\.name,
-#app-content #main #contents table.directoryListing tr td.vrtx-trash-can-name,
-body#vrtx-report-documents #app-content #main #contents table.directoryListing tr th#vrtx-report-name,
-body#vrtx-report-documents #app-content #main #contents table.directoryListing tr td.vrtx-report-name {
+#app-content #main #contents #directory-listingtr th.name,
+#app-content #main #contents #directory-listing td.name,
+#app-content #main #contents #directory-listing th#vrtx-trash-can\.name,
+#app-content #main #contents #directory-listing td.vrtx-trash-can-name,
+body#vrtx-report-documents #app-content #main #contents #directory-listing th#vrtx-report-name,
+body#vrtx-report-documents #app-content #main #contents #directory-listing td.vrtx-report-name {
   padding-left: 15px;
 }
 
-#app-content #main #contents table.directoryListing tr th.last-modified,
-#app-content #main #contents table.directoryListing tr td.last-modified,
-#app-content #main #contents table.directoryListing tr th#vrtx-trash-can\.deletedTime,
-#app-content #main #contents table.directoryListing tr td.vrtx-trash-can\.deletedTime,
-#app-content #main #contents table.directoryListing tr th#vrtx-report-published,
-#app-content #main #contents table.directoryListing tr td.vrtx-report-published {
+#app-content #main #contents #directory-listing th.last-modified,
+#app-content #main #contents #directory-listing td.last-modified,
+#app-content #main #contents #directory-listing th#vrtx-trash-can\.deletedTime,
+#app-content #main #contents #directory-listing td.vrtx-trash-can\.deletedTime,
+#app-content #main #contents #directory-listing th#vrtx-report-published,
+#app-content #main #contents #directory-listing td.vrtx-report-published {
   padding-right: 15px;
 }
 
-#app-content #main #contents table.directoryListing tr.even td {
+#app-content #main #contents #directory-listing tr.even td {
   background-color: #f9f9f9;
 }
 
-#app-content #main #contents table.directoryListing tr:hover td,
-#app-content #main #contents table.directoryListing tr.hover td {
+#app-content #main #contents #directory-listing tr:hover td,
+#app-content #main #contents #directory-listing tr.hover td {
   background-color: #ecf3f9;
   border-top: 1px solid #c7dadf;
   border-bottom: 1px solid #c7dadf;
 }
 
-#app-content #main #contents table.directoryListing tr#trash-can-empty:hover td,
-#app-content #main #contents table.directoryListing tr#trash-can-empty.hover td,
-#app-content #main #contents table.directoryListing tr#collectionlisting-empty:hover td,
-#app-content #main #contents table.directoryListing tr#collectionlisting-empty.hover td {
+#app-content #main #contents #directory-listing tr#trash-can-empty:hover td,
+#app-content #main #contents #directory-listing tr#trash-can-empty.hover td,
+#app-content #main #contents #directory-listing tr#collectionlisting-empty:hover td,
+#app-content #main #contents #directory-listing tr#collectionlisting-empty.hover td {
   background: none;
 }
 
-#app-content #main #contents table.directoryListing tr.first:hover td,
-#app-content #main #contents table.directoryListing tr.first.hover td {
+#app-content #main #contents #directory-listing tr.first:hover td,
+#app-content #main #contents #directory-listing tr.first.hover td {
   border-top: none;
 }
 
-#app-content #main #contents table.directoryListing tr.last:hover td,
-#app-content #main #contents table.directoryListing tr.last.hover td {
+#app-content #main #contents #directory-listing tr.last:hover td,
+#app-content #main #contents #directory-listing tr.last.hover td {
   border-bottom: none;
 }
 
-#app-content #main #contents table.directoryListing tr.checked {
+#app-content #main #contents #directory-listing tr.checked {
   background-color: #eaeaea;
 }
 
-#app-content #main #contents table.directoryListing tr.checked td {
+#app-content #main #contents #directory-listing tr.checked td {
   background-color: #eaeaea;
   border-top: 1px solid #d9d9d9;
   border-bottom: 1px solid #d9d9d9;
 }
 
-#app-content #main #contents table.directoryListing tr.checked.first td {
+#app-content #main #contents #directory-listing tr.checked.first td {
   border-top: none;
 }
 
-#app-content #main #contents table.directoryListing tr.checked.last td {
+#app-content #main #contents #directory-listing tr.checked.last td {
   border-bottom: none;
 }
 
-#app-content #main #contents table.directoryListing td span.allowed-for-all,
+#app-content #main #contents #directory-listing td span.allowed-for-all,
 .resourceMenuRight  span.allowed-for-all,
 .resourceMenuRight  span.published {
   color: #549401;
 }
 
-#app-content #main #contents table.directoryListing td span.restricted,
+#app-content #main #contents #directory-listing td span.restricted,
 .resourceMenuRight span.restricted,
 .resourceMenuRight  span.unpublished {
   color: #ed1c24;
@@ -1260,71 +1260,71 @@ body#vrtx-report-documents #app-content #main #contents table.directoryListing t
 
 /* Icons */
 
-#app-content #main #contents table.directoryListing tr td.name a,
-#app-content #main #contents table.directoryListing tr td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr td.vrtx-report-name a {
+#app-content #main #contents #directory-listing tr td.name a,
+#app-content #main #contents #directory-listing tr td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents #directory-listing tr td.vrtx-report-name a {
   padding: 2px 0 2px 31px;
   display: block;
   background: url(images/file-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.true td.name a,
-#app-content #main #contents table.directoryListing tr.true td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.true td.vrtx-report-name a {
+#app-content #main #contents #directory-listing tr.true td.name a,
+#app-content #main #contents #directory-listing tr.true td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents #directory-listing tr.true td.vrtx-report-name a {
   background: url(images/folder-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.binary td.name a,
-#app-content #main #contents table.directoryListing tr.binary td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.binary td.vrtx-report-name a {
+#app-content #main #contents #directory-listing tr.binary td.name a,
+#app-content #main #contents #directory-listing tr.binary td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents #directory-listing tr.binary td.vrtx-report-name a {
   background: url(images/file-binary-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.doc td.name a,
-#app-content #main #contents table.directoryListing tr.doc td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.doc td.vrtx-report-name a {
+#app-content #main #contents #directory-listing tr.doc td.name a,
+#app-content #main #contents #directory-listing tr.doc td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents #directory-listing tr.doc td.vrtx-report-name a {
   background: url(images/file-word-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.pdf td.name a,
-#app-content #main #contents table.directoryListing tr.pdf td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.pdf td.vrtx-report-name a {
+#app-content #main #contents #directory-listing tr.pdf td.name a,
+#app-content #main #contents #directory-listing tr.pdf td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents #directory-listing tr.pdf td.vrtx-report-name a {
   background: url(images/file-pdf-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.xls td.name a,
-#app-content #main #contents table.directoryListing tr.xls td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.xls td.vrtx-report-name a {
+#app-content #main #contents #directory-listing tr.xls td.name a,
+#app-content #main #contents #directory-listing tr.xls td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents #directory-listing tr.xls td.vrtx-report-name a {
   background: url(images/file-xls-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.text td.name a,
-#app-content #main #contents table.directoryListing tr.text td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.text td.vrtx-report-name a {
+#app-content #main #contents #directory-listing tr.text td.name a,
+#app-content #main #contents #directory-listing tr.text td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents #directory-listing tr.text td.vrtx-report-name a {
   background: url(images/file-txt-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.ppt td.name a,
-#app-content #main #contents table.directoryListing tr.ppt td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.ppt td.vrtx-report-name a {
+#app-content #main #contents #directory-listing tr.ppt td.name a,
+#app-content #main #contents #directory-listing tr.ppt td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents #directory-listing tr.ppt td.vrtx-report-name a {
   background: url(images/file-ppt-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.image td.name a,
-#app-content #main #contents table.directoryListing tr.image td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.image td.vrtx-report-name a {
+#app-content #main #contents #directory-listing tr.image td.name a,
+#app-content #main #contents #directory-listing tr.image td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents #directory-listing tr.image td.vrtx-report-name a {
   background: url(images/file-image-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.audio td.name a,
-#app-content #main #contents table.directoryListing tr.audio td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.audio td.vrtx-report-name a {
+#app-content #main #contents #directory-listing tr.audio td.name a,
+#app-content #main #contents #directory-listing tr.audio td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents #directory-listing tr.audio td.vrtx-report-name a {
   background: url(images/file-audio-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents table.directoryListing tr.video td.name a,
-#app-content #main #contents table.directoryListing tr.video td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents table.directoryListing tr.video td.vrtx-report-name a {
+#app-content #main #contents #directory-listing tr.video td.name a,
+#app-content #main #contents #directory-listing tr.video td.name span.vrtx-trash-can-name-text,
+#app-content #main #contents #directory-listing tr.video td.vrtx-report-name a {
   background: url(images/file-video-small.gif) no-repeat center left;
 }
 

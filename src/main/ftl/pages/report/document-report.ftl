@@ -34,7 +34,7 @@
       </#if>
     </p>
     <div class="vrtx-report">
-    <table id="vrtx-report-document-table" class="directoryListing">
+    <table id="directory-listing" class="report-document-listing">
       <thead>
         <tr>
           <th id="vrtx-report-name"><@vrtx.msg code="report.name" default="Name" /></th>

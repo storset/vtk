@@ -368,7 +368,7 @@ $(document).ready(function () {
 
   // Fix IE 6 collectionlisting hover
   if (vrtxAdmin.isIE6) {
-    $("table.directoryListing tr").hover(function () {
+    $("#directory-listing tr").hover(function () {
       $(this).toggleClass('hover');
     }, function () {
       $(this).toggleClass('hover');
@@ -499,7 +499,7 @@ function logoutButtonAsLink() {
 \*-------------------------------------------------------------------*/
 
 function collectionListingInteraction() {
-  if(!$(".directoryListing").length) return;
+  if(!$("#directory-listing").length) return;
   
   if(typeof moveUncheckedMessage !== "undefined") { 
     var options = {

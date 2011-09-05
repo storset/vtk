@@ -84,6 +84,7 @@ public class VcfController implements Controller {
             return null;
         }
 
+        response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("text/x-vcard;charset=utf-8");
         String vcardFileName = getVcardFileName(person);
         response.setHeader("Content-Disposition", "filename=" + vcardFileName + ".vcf");

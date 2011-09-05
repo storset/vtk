@@ -219,7 +219,7 @@ public class EventComponent extends AbstractEventComponent {
                      * If it does not last longer than this day, remove it and
                      * decrement i. Else set the start-date value to next day.
                      */
-                    if (smidnight.getTimeInMillis() > eprop.getDateValue().getTime())
+                    if (eprop == null || smidnight.getTimeInMillis() > eprop.getDateValue().getTime())
                         res.getFiles().remove(i--);
                     else
                         sprop.setDateValue(new Date(smidnight.getTimeInMillis()));

@@ -32,7 +32,9 @@ package org.vortikal.web.actions.report;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.Search;
@@ -41,6 +43,7 @@ import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -58,10 +61,9 @@ public class DiagramReport extends AbstractReporter {
         result.put("reportname", this.getName());
 
         /* Create base URL. */
-        RequestContext requestContext = RequestContext.getRequestContext();
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        Service service = requestContext.getService();
-        URL baseURL = new URL(service.constructURL(resource, securityContext.getPrincipal()));
+        Principal p = SecurityContext.getSecurityContext().getPrincipal();
+        Service service = RequestContext.getRequestContext().getService();
+        URL baseURL = new URL(service.constructURL(resource, p));
 
         /* Get count and URL for file and folder. */
         try {

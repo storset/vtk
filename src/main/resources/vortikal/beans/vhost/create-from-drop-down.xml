@@ -143,5 +143,21 @@
       </map>
     </property>
   </bean>
+  
+  <bean id="createFromDropDown.docService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="service" ref="createDocFromDropDownService" />
+    <property name="modelName" value="docUrl" />
+    <property name="urlName" value="url" />
+  </bean>
+  <bean id="createFromDropDown.collService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="service" ref="createCollectionFromDropDownService" />
+    <property name="modelName" value="collUrl" />
+    <property name="urlName" value="url" />
+  </bean>
+  <bean id="createFromDropDown.upService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="service" ref="uploadFileFromDropDownService" />
+    <property name="modelName" value="upUrl" />
+    <property name="urlName" value="url" />
+  </bean>
 
 </beans>

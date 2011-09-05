@@ -1260,7 +1260,9 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <ref bean="createDropDownLinkProvider" />
+        <ref bean="createFromDropDown.docService.urlProvider" /> 
+        <ref bean="createFromDropDown.collService.urlProvider" /> 
+        <ref bean="createFromDropDown.upService.urlProvider" /> 
       </list>
     </property>
   </bean>
@@ -2037,7 +2039,9 @@
     <constructor-arg>
       <list>
         <ref bean="leaveAdminLinkProvider" />
-        <ref bean="createDropDownLinkProvider" />
+        <ref bean="createFromDropDown.docService.urlProvider" /> 
+        <ref bean="createFromDropDown.collService.urlProvider" /> 
+        <ref bean="createFromDropDown.upService.urlProvider" /> 
         <ref bean="tabsProvider" />
         <ref bean="resourceContextProvider" />
         <ref bean="versionProvider" />

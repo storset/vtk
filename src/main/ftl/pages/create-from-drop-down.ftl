@@ -27,16 +27,12 @@
        var pathNum = 0;
        
        var thisUrl = location.href;
-       if(thisUrl.indexOf("http:") != -1 && thisUrl.indexOf("localhost:9322") != -1) {
+       if(thisUrl.indexOf("http:") != -1 && thisUrl.indexOf("localhost:9322") == -1) {
          thisUrl = thisUrl.substring(0, thisUrl.indexOf("?"));
          thisUrl = thisUrl.replace("http:", "https:");
        } else {
          thisUrl = "";
        }
-       
-       console.log(thisUrl);
-       
-       vrtxAdmin.log({msg: "create tree AJAX url " + thisUrl});
        
        $(".tree-create").treeview({
          animated: "fast",

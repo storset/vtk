@@ -109,15 +109,31 @@
 	  </script>
 	  
     <#elseif (!streamType?exists) && contentType == "video/x-flv" || contentType == "video/mp4">
-	  <div id="mediaspiller-${dateStr}">
-	    <a class="vrtx-media" href="${media?html}">
-	      <img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png" width="500" height="279" alt="<@vrtx.msg code="article.media-file" />"/>
-	    </a>
+	  <div id="mediaspiller-${dateStr}" style="width:507px;height:282px;background-color:#000000;background-image:url('<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png</#if>');background-repeat:no-repeat;background-position:center center;">
+	  <style>
+	  .playbutton, .playbutton:visited, .playbutton:active{
+	  	background-image: url('/vrtx/__vrtx/static-resources/themes/default/icons/video-playbutton.png');
+	  	background-repeat: no-repeat;
+	  	background-position: center center;
+	  }
+	  .playbutton:hover{
+	  	background-image: url('/vrtx/__vrtx/static-resources/themes/default/icons/video-playbutton-hover.png');
+	  }
+	  </style>
+	  <a class="vrtx-media" href="${media?html}">
+	  <div class="playbutton" style="float:left;margin-top:90px;width:115px;height:106px;margin-left:195px;">
+	  
+	  <!-- img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-playbutton.png" border="0" / -->
+	  
+	  </div>
+	  </a>
 	  </div>
 	  <script type="text/javascript"><!--
 	    var flashvars = {
   		  src: "${media?url("UTF-8")}"
-  		  <#if poster?exists>,poster: "${poster?url("UTF-8")}" </#if>
+  		  <#if poster?exists>,poster: "${poster?url("UTF-8")}" 
+  		  <#else>,poster: "/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png"
+  		  </#if>
   		  <#if autoplay?exists>,autoPlay: "${autoplay}"</#if>
 	    };
 	    var params = {

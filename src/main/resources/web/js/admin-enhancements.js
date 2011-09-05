@@ -97,7 +97,7 @@ vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
 
 // v3.?: vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;
 
-// Upgrade easing algorithm from 'linear' to 'swing' / 'easeOutQuad'
+// Upgrade easing algorithm from 'linear' to 'easeOutQuad'
 // -- if not < IE 9 and not iPhone, iPad and Android devices
 if(!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) && !vrtxAdmin.isMobileWebkitDevice) {
   vrtxAdmin.transitionEasing = "easeOutQuad";

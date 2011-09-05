@@ -7,7 +7,7 @@ resourcetype frontpage {
     caption : simple_html,
     main-content : json (boxTitle : string, boxCssSizeAndPlacement : string, boxCssColor : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract,
     additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract,
-    showAdditionalContent : boolean,
+    showAdditionalContent : boolean defaultvalue("true"),
     cssUrl : string
   }
 
@@ -15,7 +15,8 @@ resourcetype frontpage {
     caption (size[small]),
     main-content:boxCssSizeAndPlacement (dropdown),
     main-content:boxCssColor (dropdown),
-    group introImageAndCaption (picture, caption) (after introduction) vertical
+    group introImageAndCaption (picture, caption) (after introduction) vertical,
+    group relatedContent (showAdditionalContent, additional-content) (after main-content) horizontal
   }
 
   view-components {
@@ -373,7 +374,7 @@ resourcetype frontpage {
      photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
      caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
      main-content : (en : "Main content", no : "Hovedinnhold", nn : "Hovedinnhold"),
-     additional-content : (en : "Additional content (default as right-column)", no : "Relatert innhold (default som høyrekolonne)", nn : "Relatert innhald (default som høyrekolonne)"),
+     relatedContent : (en : "Additional content", no : "Relatert innhold", nn : "Relatert innhald"),
      boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
      boxType : (en : "Special settings", no : "Spesielle innstillinger", nn : "Spesielle innstillinger"),
      boxCssSizeAndPlacement : (en : "Size and placement", no : "Størrelse og plassering", nn : "Størrelse og plassering"),
@@ -383,7 +384,7 @@ resourcetype frontpage {
      boxUrlText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
      boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
      header : (en : "Edit frontpage", no : "Rediger forside", nn : "Rediger forside"),
-     showAdditionalContent : (en : "Show right-column", no : "Vis høyrekolonne", nn : "Vis høyrekolonne"),
+     showAdditionalContent : (en : "Show in right-column", no : "Vis i høyrekolonne", nn : "Vis i høyrekolonne"),
      cssUrl : (en : "Include CSS", no : "Inkluder CSS", nn : "Inkluder CSS")
   }
 }

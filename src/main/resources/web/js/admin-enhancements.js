@@ -58,6 +58,8 @@ function VrtxAdmin() {
   this.isMozilla = null;
   this.isChrome = null;
   this.isSafari = null;
+  this.isIPhone = null;
+  this.isIPad = null;
   this.isWin = null;
   
   // v3.?: this.supportsFileAPI = null;
@@ -85,6 +87,8 @@ vrtxAdmin.isOpera = $.browser.opera;
 vrtxAdmin.isMozilla = $.browser.mozilla;
 vrtxAdmin.isChrome = /chrome/.test(ua);
 vrtxAdmin.isSafari = /safari/.test(ua) && !/chrome/.test(ua);
+vrtxAdmin.isIPhone = /iphone/.test(ua);
+vrtxAdmin.isIPad= /ipad/.test(ua);
 vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
 
 // v3.?: vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;
@@ -795,14 +799,15 @@ function dropdown(options) {
 
 VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
   var args = arguments, // this function
-      vrtxAdm = this; // use prototypal hierarchy
-      selector = options.selector,
-      selectorClass = options.selectorClass,
-      simultanSliding = options.simultanSliding,
-      transitionSpeed = options.transitionSpeed || 0,
-      transitionEasing = options.transitionEasing || "linear";
+      vrtxAdm = this; // use prototypal hierarchy 
 
   $("#app-content").delegate(options.selector, "click", function (e) {
+
+    var selector = options.selector,
+        selectorClass = options.selectorClass,
+        simultanSliding = options.simultanSliding,
+        transitionSpeed = options.transitionSpeed || 0,
+        transitionEasing = options.transitionEasing || "linear";
                           
     var url = $(this).attr("href") || $(this).closest("form").attr("action");
             
@@ -846,7 +851,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
 
         // If something went wrong
         if(!form) {
-          vrtxAdm.error({args: args, msg: "retrieved form from " + url + " is null"});
+          this.error({args: args, msg: "retrieved form from " + url + " is null"});
         }
 
         // Another form is already open
@@ -1000,17 +1005,19 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitio
 
 VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
   var args = arguments,
-      vrtxAdm = this,
-      selector = options.selector,
-      updateSelectors = options.updateSelectors,
-      errorContainer = options.errorContainer,
-      errorContainerInsertAfter = options.errorContainerInsertAfter,
-      funcProceedCondition = options.funcProceedCondition,
-      funcComplete = options.funcComplete,
-      transitionSpeed = options.transitionSpeed || 0,
-      transitionEasing = options.transitionEasing || "linear";
+      vrtxAdm = this;   
 
-  $("#app-content").delegate(selector, "click", function (e) {
+  $("#app-content").delegate(options.selector, "click", function (e) {
+  
+    var selector = options.selector,
+        updateSelectors = options.updateSelectors,
+        errorContainer = options.errorContainer,
+        errorContainerInsertAfter = options.errorContainerInsertAfter,
+        funcProceedCondition = options.funcProceedCondition,
+        funcComplete = options.funcComplete,
+        transitionSpeed = options.transitionSpeed || 0,
+        transitionEasing = options.transitionEasing || "linear";
+  
     var link = $(this);
     var form = link.closest("form");
     if(!funcProceedCondition || funcProceedCondition(form)) {

@@ -55,11 +55,7 @@
           setAutoComplete('resource\\.tags', 'tags', {minChars:1});
           </#if>
           initDatePicker("${language}");
-          
-          if(isChrome) {
-            
-          }
-       });
+       }); 
 
       UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
       COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";

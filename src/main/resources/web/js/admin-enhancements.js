@@ -87,7 +87,7 @@ vrtxAdmin.isIE5OrHigher = vrtxAdmin.isIE && vrtxAdmin.browserVersion >= 5;
 vrtxAdmin.isOpera = $.browser.opera;
 vrtxAdmin.isMozilla = $.browser.mozilla;
 vrtxAdmin.isChrome = /chrome/.test(ua);
-vrtxAdmin.isSafari = /safari/.test(ua) && !/chrome/.test(ua);
+vrtxAdmin.isSafari = /safari/.test(ua) && !vrtxAdmin.isChrome;
 vrtxAdmin.isIPhone = /iphone/.test(ua);
 vrtxAdmin.isIPad= /ipad/.test(ua);
 vrtxAdmin.isAndroid = /android/.test(ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/

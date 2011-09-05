@@ -27,16 +27,17 @@
        var pathNum = 0;
        
        var thisUrl = location.href;
-       if(thisUrl.indexOf("http:") != -1 && thisUrl.indexOf("localhost:9322") == -1) {
-         thisUrl = thisUrl.substring(0, thisUrl.indexOf("?"));
+       if(thisUrl.indexOf("http:") != -1 && thisUrl.indexOf(":9322") == -1) {
+         thisUrl = thisUrl.substring(0, thisUrl.indexOf("/", 8));
          thisUrl = thisUrl.replace("http:", "https:");
        } else {
          thisUrl = "";
        }
+       thisUrl = thisUrl + "/?vrtx=admin&service=${type}-from-drop-down&uri=&ts=" + timestamp;
        
        $(".tree-create").treeview({
          animated: "fast",
-         url: thisUrl + "?vrtx=admin&service=${type}-from-drop-down&uri=&ts=" + timestamp,
+         url: thisUrl,
          service: "${type}-from-drop-down",
          dataLoaded: function() { // AJAX success
            var last = false;

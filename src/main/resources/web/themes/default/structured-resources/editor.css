@@ -23,6 +23,10 @@
   float: left;
 }
 
+.vrtx-json .vrtx-json-element .vrtx-string.id {
+  float: none;
+}
+
 .vrtx-json .vrtx-json-element .vrtx-remove-button,
 .vrtx-json .vrtx-json-element .vrtx-move-up-button,
 .vrtx-json .vrtx-json-element .vrtx-move-down-button {

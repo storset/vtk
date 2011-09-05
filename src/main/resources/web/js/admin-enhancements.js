@@ -851,7 +851,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
 
         // If something went wrong
         if(!form) {
-          this.error({args: args, msg: "retrieved form from " + url + " is null"});
+          vrtxAdm.error({args: args, msg: "retrieved form from " + url + " is null"});
         }
 
         // Another form is already open

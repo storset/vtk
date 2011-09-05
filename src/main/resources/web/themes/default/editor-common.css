@@ -207,10 +207,6 @@ div#vrtx-resource\.picture {
   height: 241px;
 }
 
-div.introImageAndCaption .header {
-  display: none;
-}
-
 div.introImageAndCaption .caption,
 div#vrtx-resource\.picture .caption {
   position: absolute;

@@ -140,14 +140,29 @@ div.description textarea {
   height: 200px;
 }
 
-div.content textarea {
+div.content textarea,
+div.additionalContents textarea,
+div.additionalContent textarea,
+div.relatedContent textarea,
+div.selectedPublications textarea,
+div.related-content textarea,
+div.contactInfo textarea,
+div.responsibilities textarea {
   width: 100%;
+}
+
+div.content textarea {
   height: 300px;
 }
 
 div.additionalContents textarea,
-div.relatedContent textarea {
-  height: 127px;
+div.additionalContent textarea,
+div.relatedContent textarea,
+div.selectedPublications textarea,
+div.related-content textarea,
+div.contactInfo textarea,
+div.responsibilities textarea {
+  height: 160px;
 }
 
 div.introduction iframe,

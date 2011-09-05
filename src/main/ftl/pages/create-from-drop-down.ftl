@@ -28,16 +28,15 @@
        
        $(".tree-create").treeview({
          animated: "fast",
-         url: "?vrtx=admin&service=${type}-from-drop-down&uri=/&ts=" + timestamp,
+         url: "?vrtx=admin&service=${type}-from-drop-down&uri=&ts=" + timestamp,
          service: "${type}-from-drop-down",
          dataLoaded: function() { // AJAX success
-           pathNum++;
            if(pathNum < treeTrav.length) {
              var last = false;
              if (pathNum == (treeTrav.length-1)) {
                last = true;
              }
-             traverseNode(treeTrav[pathNum], last);
+             traverseNode(treeTrav[pathNum++], last);
            }
          }
        })

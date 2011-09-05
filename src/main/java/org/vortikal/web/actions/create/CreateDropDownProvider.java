@@ -57,10 +57,13 @@ public class CreateDropDownProvider {
     private final int maxLimit = 500;
 
     public List<SubResource> buildSearchAndPopulateSubresources(String uri, String token, HttpServletRequest request) {
-
         AndQuery mainQuery = new AndQuery();
-        mainQuery.add(new UriPrefixQuery(uri));
-        mainQuery.add(new UriDepthQuery(Path.fromString(uri).getDepth() + 1));
+        if (uri.equals("")) {
+            mainQuery.add(new UriDepthQuery(0));
+        } else {
+            mainQuery.add(new UriPrefixQuery(uri));
+            mainQuery.add(new UriDepthQuery(Path.fromString(uri).getDepth() + 1));
+        }
         mainQuery.add(new TypeTermQuery("collection", TermOperator.IN));
         Search search = new Search();
         search.setQuery(mainQuery);

@@ -118,13 +118,7 @@
 	  
 	  <link type="text/css" rel="stylesheet" media="all" href="/vrtx/__vrtx/static-resources/themes/default/view-mediaplayer.css" />
 
-	  <a class="vrtx-media" href="${media?html}">
-	  <div class="playbutton">
-	  
-	  <!-- img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-playbutton.png" border="0" / -->
-	  
-	  </div>
-	  </a>
+	  <a class="playbutton" href="${media?html}"></a>
 	  </div>
 	  <script type="text/javascript"><!--
 	    var flashvars = {

@@ -9,29 +9,24 @@
 </#if>
 
 <#if conf.includeIfEmpty>
-  <#if psd?has_content>
-    <div class="vrtx-event-component">
-      <#if conf.eventsTitle><h2><a href="${conf.uri?html}">${eventsTitle?html}</a></h2></#if>
+  <div class="vrtx-event-component">
+    <#if conf.eventsTitle><h2><a href="${conf.uri?html}">${eventsTitle?html}</a></h2></#if>
+    <#if psd?has_content>
       <#assign psdSize = psd?size />
       <#list psd as event>
         <@displayPsd event.ps event.date event.showTime event_index+1 psdSize />
       </#list>
-    </div>
-  <#elseif res?has_content>
-    <div class="vrtx-event-component">
-      <#if conf.eventsTitle><h2><a href="${conf.uri?html}">${eventsTitle?html}</a></h2></#if>
+    <#elseif res?has_content>
       <ul class="items">
         <#assign resSize = res.files?size />
         <#list res.files as event>
           <@displayRes event event_index+1 resSize />
         </#list>
       </ul>
-    </div>
-  <#else>
-    <div>
+    <#else>
       <@vrtx.msg code="eventListing.noPlanned.allupcoming" />
-    </div>
-  </#if>
+    </#if>
+  </div>
   <#if conf.allEventsLink>
     <div class="vrtx-more">
       <span><a href="${conf.uri?html}"><@vrtx.msg code="event.go-to-events" default="Go to events" /></a></span>
@@ -151,7 +146,7 @@
     <#local startDateShort = vrtx.propValue(event, 'start-date', 'short') />
     <#local endDate = vrtx.propValue(event, 'end-date', 'long') />
     <#local endDateShort = vrtx.propValue(event, 'end-date', 'short') />
-    <#local endDateTime = vrtx.propValue(event, 'end-date', 'HH:mm a') />
+    <#local endDateTime = vrtx.propValue(event, 'end-date', 'hours-minutes') />
     <#local intro = vrtx.propValue(event, 'introduction')  />
 
     <div class="vrtx-event-component-title">

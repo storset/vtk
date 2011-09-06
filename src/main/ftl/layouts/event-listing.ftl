@@ -169,7 +169,7 @@
     </#if>
     <div class="vrtx-event-component-misc">
       <span class="vrtx-event-component-start<#if conf.showEndTime>-and-end</#if>-time">
-            <#if isostarthour != "00:00">${startDate}<#else>${startDateShort}</#if><#if conf.showEndTime> - <#if isoendhour != "00:00">${endDate}<#else>${endDateShort}</#if></#if><#if conf.showLocation && (location != "")>,</#if>
+            <#if isostarthour != "00:00">${startDate}<#else>${startDateShort}</#if><#if conf.showEndTime && endiso8601 != ""> - <#if isoendhour != "00:00">${endDate}<#else>${endDateShort}</#if></#if><#if conf.showLocation && (location != "")>,</#if>
       </span>
 
       <#if conf.showLocation && (location != "")>

@@ -1764,6 +1764,7 @@
         <entry key="jsURLs">
           <list>
             <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
+            <value>${jquery.baseURL}/plugins/ui/jquery-ui-1.8.8.custom/js/jquery-ui-1.8.8.custom.min.js</value>
             <value>${jquery.baseURL}/plugins/jquery.ba-postmessage.min.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/iframe-admin.js</value>

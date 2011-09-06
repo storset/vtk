@@ -34,7 +34,6 @@
   </#if>
 </#if>
 
-
 <#macro displayPsd event startdate showTime nr last>
   <#if nr == last>
     <div class="vrtx-event-component-occurence vrtx-event-component-occurence-${nr} last">

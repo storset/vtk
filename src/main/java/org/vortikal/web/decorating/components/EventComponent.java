@@ -40,17 +40,15 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class EventComponent extends AbstractEventComponent {
@@ -92,6 +90,7 @@ public class EventComponent extends AbstractEventComponent {
     private static final String PARAMETER_EVENTS_TITLE_DESC = "Set to true if you want to display title of the vents folder. Default is 'false'";
 
     private SearchComponent search;
+    private Service viewService;
 
     @Override
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
@@ -142,19 +141,13 @@ public class EventComponent extends AbstractEventComponent {
 
         model.put("elementOrder", getElementOrder(PARAMETER_EVENT_ELEMENT_ORDER, request));
 
-        /* Remove / at the end of a URI if it is present */
-        if (uri.charAt(uri.length() - 1) == '/')
-            uri = uri.substring(0, uri.length() - 1);
-
-        conf.put("uri", uri);
-
-        Repository repository = RequestContext.getRequestContext().getRepository();
-        String token = SecurityContext.getSecurityContext().getToken();
         Resource resource;
         try {
-            resource = repository.retrieve(token, Path.fromString(uri), false);
+            URL eventURL = RequestContext.getRequestContext().getRequestURL().relativeURL(uri);
+            conf.put("uri", viewService.constructURL(eventURL.getPath()));
+            resource = retrieveLocalResource(eventURL);
         } catch (Exception e) {
-            resource = repository.retrieve(token, URL.parse(uri).getPath(), false);
+            throw new RuntimeException("Could not read uri " + uri + ": " + e.getMessage(), e);
         }
 
         if (eventsTitle)
@@ -277,6 +270,11 @@ public class EventComponent extends AbstractEventComponent {
     @Required
     public void setSearch(SearchComponent search) {
         this.search = search;
+    }
+
+    @Required
+    public void setViewService(Service viewService) {
+        this.viewService = viewService;
     }
 
     protected String getDescriptionInternal() {

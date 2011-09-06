@@ -333,6 +333,7 @@
   <bean id="decorating.eventComponent" class="org.vortikal.web.decorating.components.EventComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="events" />
+    <property name="viewService" ref="viewService" />
     <property name="view" ref="decorating.eventComponent.view" />
     <property name="description" value="Inserts a event list component on the page" />
     <property name="search" ref="${override.listing.prefix}eventListing.upcomingEventsSearchComponent" />

@@ -887,6 +887,7 @@ ul.list-menu.resourceMenuRight p span {
 }
 
 #TB_closeAjaxWindow {
+  display: none;
   overflow: hidden;
   text-indent: -9999px;
   width: 31px;
@@ -895,6 +896,11 @@ ul.list-menu.resourceMenuRight p span {
   margin: -32px 30px 0 0 !important;
   text-align: left !important;
 }
+
+#TB_closeAjaxWindow.create-tree-close-window {
+  display: block;
+}
+
 #TB_closeAjaxWindow a {
   background: url(images/thickbox-close.png) no-repeat center center;
   overflow: hidden;

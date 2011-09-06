@@ -34,6 +34,7 @@ public class CommentsFeedUrlProvider extends ViewRenderingDecoratorComponent {
         model.put("commentsEnabled", false);
         RepositoryTraversal traversal = requestContext.rootTraversal(token, uri);
         traversal.traverse(new TraversalCallback() {
+            @Override
             public boolean callback(Resource resource) {
                 for (Property p: resource.getProperties()) {
                     if (p.getDefinition().getName().equals("commentsEnabled")) {
@@ -42,6 +43,10 @@ public class CommentsFeedUrlProvider extends ViewRenderingDecoratorComponent {
                     }
                 }
                 return true;
+            }
+            @Override
+            public boolean error(Path uri, Throwable error) {
+                return false;
             }
         });
     }

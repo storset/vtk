@@ -59,6 +59,7 @@ public class PropertyAspectResolver {
         RepositoryTraversal traversal = requestContext.rootTraversal(token, uri);
 
         traversal.traverse(new TraversalCallback() {
+            @Override
             public boolean callback(Resource resource) {
                 Property property = resource.getProperty(aspectsPropdef);
                 if (property != null) {
@@ -81,6 +82,11 @@ public class PropertyAspectResolver {
                     }
                 }
                 return true;
+            }
+
+            @Override
+            public boolean error(Path uri, Throwable error) {
+                return false;
             }});
         return result;
     }

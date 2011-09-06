@@ -89,6 +89,11 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
                     }
                     lang.insert(0, s);
                     return false;
+                }
+
+                @Override
+                public boolean error(Path uri, Throwable error) {
+                    return false;
                 }});
             if (lang.length() == 0) {
                 return this.defaultLocale;

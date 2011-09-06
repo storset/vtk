@@ -164,6 +164,7 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
         model.put("commentsEnabled", false);
         RepositoryTraversal traversal = requestContext.rootTraversal(token, uri);
         traversal.traverse(new TraversalCallback() {
+            @Override
             public boolean callback(Resource resource) {
                 for (Property p: resource.getProperties()) {
                     if (p.getDefinition().getName().equals("commentsEnabled")) {
@@ -172,6 +173,10 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
                     }
                 }
                 return true;
+            }
+            @Override
+            public boolean error(Path uri, Throwable error) {
+                return false;
             }
         });
         model.put("resource", resource);

@@ -62,6 +62,10 @@ public final class InheritedPropertyResolver {
                     }
                 }
                 return true;
+            }
+            @Override
+            public boolean error(Path uri, Throwable error) {
+                return false;
             }});
         return result[0];
     }

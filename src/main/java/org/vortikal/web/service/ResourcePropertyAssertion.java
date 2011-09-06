@@ -31,6 +31,7 @@
 package org.vortikal.web.service;
 
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
@@ -195,6 +196,10 @@ public class ResourcePropertyAssertion
                 }
             }
             return true;
+        }
+        @Override
+        public boolean error(Path uri, Throwable error) {
+            return false;
         }
     }
 

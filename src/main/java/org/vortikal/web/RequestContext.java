@@ -268,12 +268,18 @@ public class RequestContext {
             this.token = token;
             this.uri = uri;
         }
-        public void traverse(TraversalCallback callback) throws Exception {
+        public void traverse(TraversalCallback callback) {
             Path uri = this.uri;
             while (uri != null) {
-                Resource resource = this.repository.retrieve(this.token, uri, true);
-                if (!callback.callback(resource)) {
-                    return;
+                try {
+                    Resource resource = this.repository.retrieve(this.token, uri, true);
+                    if (!callback.callback(resource)) {
+                        return;
+                    }
+                } catch (Throwable t) {
+                    if (!callback.error(uri, t)) {
+                        return;
+                    }
                 }
                 uri = uri.getParent();
             }
@@ -282,5 +288,6 @@ public class RequestContext {
     
     public static interface TraversalCallback {
         public boolean callback(Resource resource);
+        public boolean error(Path uri, Throwable error);
     }
 }

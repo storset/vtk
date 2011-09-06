@@ -31,9 +31,10 @@
 package org.vortikal.web.decorating;
 
 import java.util.Map;
-
 import java.util.regex.Matcher;
+
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
@@ -53,24 +54,24 @@ public class ContextualTitleResolver {
             return resource.getTitle();
         }
         final StringBuilder mapping = new StringBuilder();
-        try {
-            traversal.traverse(new TraversalCallback() {
-                @Override
-                public boolean callback(Resource resource) {
-                    Object o = config.get(repoID);
-                    if (o instanceof Map) {
-                        Map<?, ?> m = (Map<?, ?>) o;
-                        Object val = m.get(resource.getURI().toString());
-                        if (val != null) {
-                            mapping.append(val.toString());
-                            return false;
-                        }
+        traversal.traverse(new TraversalCallback() {
+            @Override
+            public boolean callback(Resource resource) {
+                Object o = config.get(repoID);
+                if (o instanceof Map) {
+                    Map<?, ?> m = (Map<?, ?>) o;
+                    Object val = m.get(resource.getURI().toString());
+                    if (val != null) {
+                        mapping.append(val.toString());
+                        return false;
                     }
-                    return true;
-                }});
-        } catch (Exception e) {
-            return resource.getTitle();
-        }
+                }
+                return true;
+            }
+            @Override
+            public boolean error(Path uri, Throwable error) {
+                return false;
+            }});
         if (mapping.length() == 0) {
             return resource.getTitle();
         }

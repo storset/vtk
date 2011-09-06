@@ -124,6 +124,7 @@ public class CommentsProvider implements ReferenceDataProvider {
         model.put("commentsEnabled", false);
         RepositoryTraversal traversal = requestContext.rootTraversal(token, uri);
         traversal.traverse(new TraversalCallback() {
+            @Override
             public boolean callback(Resource resource) {
                 for (Property p: resource.getProperties()) {
                     if (p.getDefinition().getName().equals("commentsEnabled")) {
@@ -132,8 +133,12 @@ public class CommentsProvider implements ReferenceDataProvider {
                     }
                 }
                 return true;
+            }
+            @Override
+            public boolean error(Path uri, Throwable error) {
+                return false;
             }});
-        
+
         model.put("repositoryReadOnly", repository.isReadOnly());
 
         Map<String, URL> deleteCommentURLs = new HashMap<String, URL>();

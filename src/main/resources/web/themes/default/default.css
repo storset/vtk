@@ -856,9 +856,10 @@ ul.list-menu.resourceMenuRight p span {
 /* Thickbox mod */
 
 #TB_window {
-  border-radius: 10px;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
+  border-radius: 8px;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border: 2px solid #646464 !important;
 }
 
 #TB_overlay,
@@ -930,9 +931,13 @@ ul.list-menu.resourceMenuRight p span {
 }*/
 
 .tip.vrtx-create-tree {
+  /*
   background-color: #ecf3f9;
   border: 1px solid #c7dadf;
   padding: 4px 9px !important;
+  */
+  padding: 4px 0px !important;
+  border: none !important;
 }
 
 /* ^ Create dialog */

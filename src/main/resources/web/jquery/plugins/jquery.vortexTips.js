@@ -22,8 +22,8 @@
     var tipText;
     var fadeOutTimer;
 
-    $(this).delegate(subSelector, "mouseover mouseleave", function (e) {
-      if (e.type == "mouseover") {
+    $(this).delegate(subSelector, "mouseenter mouseleave", function (e) {
+      if (e.type == "mouseenter") {
         clearTimeout(fadeOutTimer); // remove fadeOutTimer
         $(appendTo).append(html);
         tip = $(".tip." + appendTo.substring(1));

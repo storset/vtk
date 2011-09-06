@@ -1075,7 +1075,7 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
             vrtxAdm.displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
           } else {
             for(var i = updateSelectors.length; i--;) {
-             var outer = vrtxAdmin.outerHTML(results, updateSelectors[i]);
+             var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
              $("#app-content " + updateSelectors[i]).replaceWith(outer);
             }
             if(funcComplete) {

@@ -890,7 +890,6 @@ ul.list-menu.resourceMenuRight p span {
 /* ^ Thickbox mod */
 
 .vrtx-create-tree .tree-create {
-  z-index: 9999999; /* stack over tip */
   position: absolute;
   top: 0px;
   left: 0px;
@@ -934,11 +933,6 @@ ul.list-menu.resourceMenuRight p span {
   background-color: #ecf3f9;
   border: 1px solid #c7dadf;
   padding: 4px 9px !important;
-}
-
-.tip.vrtx-create-tree .vrtx-button-small,
-.tip.vrtx-create-tree .no-create-permission {
-  float: right;
 }
 
 /* ^ Create dialog */

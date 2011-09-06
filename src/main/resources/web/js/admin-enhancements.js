@@ -995,7 +995,15 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitio
     $this.find("input[type=text]:first").focus();
     // TODO: same for replaced html
     if(!isReplacing) {
-      $this.find("button[type=submit][name*=Cancel]", "input[type=submit][name*=cancel]").click(function(e) {
+      $this.find("input[type=submit][name*=cancel]").click(function(e) {
+        if (nodeType == "tr") {
+          $this.prepareTableRowForSliding();
+        }
+        $this.slideUp(transitionSpeed, transitionEasingSlideUp);
+        e.stopPropagation();
+        e.preventDefault();     
+      });
+      $this.find("button[type=submit][name*=Cancel]").click(function(e) {
         if (nodeType == "tr") {
           $this.prepareTableRowForSliding();
         }

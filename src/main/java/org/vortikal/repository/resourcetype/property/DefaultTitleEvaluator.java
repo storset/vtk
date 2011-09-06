@@ -53,9 +53,9 @@ public class DefaultTitleEvaluator implements PropertyEvaluator {
 
         Property prop = ctx.getNewResource().getProperty(this.propertyDefinition);
         if (prop != null) {
-            property.setValue(new Value(prop.getStringValue(), PropertyType.Type.HTML));
+            property.setValue(new Value(prop.getStringValue(), PropertyType.Type.STRING));
         } else {
-            property.setValue(new Value(getFallback(ctx.getNewResource()), PropertyType.Type.HTML));
+            property.setValue(new Value(getFallback(ctx.getNewResource()), PropertyType.Type.STRING));
         }
         return true;
     }

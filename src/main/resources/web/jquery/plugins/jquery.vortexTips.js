@@ -7,7 +7,7 @@
  *  Changes
  *  -------
  *
- *  * Delegate mouseover/mouseleave to affect added nodes dynamically
+ *  * Delegate mouseover/mouseleave to affect added nodes dynamically (http://stackoverflow.com/questions/3367769/using-delegate-with-hover)
  *  * Independent/multiple tips in different contexts (by appendTo)
  *  * Configure different speeds for fadeIn, fadeOutPreDelay and fadeOut
  *  * Changed positioning 'algorithm'

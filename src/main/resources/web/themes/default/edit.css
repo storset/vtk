@@ -42,16 +42,16 @@ h3 {font-size: 115%;}
   background-color: #e8e8e8;
 }
 
-.bgcolorExpanded.firstbgcolorExpanded {
+.bgcolorExpanded.bgcolorExpandedFirst {
   border-top: 1px solid #C8C8C8;
 }
 
-.bgcolorExpanded.lastbgcolorExpanded {
+.bgcolorExpanded.bgcolorExpandedLast {
   border-bottom: 1px solid #C8C8C8;
 }
 
-.bgcolorExpanded.firstbgcolorExpanded td,
-.bgcolorExpanded.lastbgcolorExpanded td {
+.bgcolorExpanded.bgcolorExpandedFirst td,
+.bgcolorExpanded.bgcolorExpandedLast td {
   padding: 0px;
 }
 

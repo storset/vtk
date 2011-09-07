@@ -155,7 +155,8 @@ ul.finishButton {
  
 .buttons .vrtx-button,
 .buttons .vrtx-focus-button,
-.bgcolorExpanded .vrtx-focus-button {
+.bgcolorExpanded .vrtx-focus-button,
+.elementvaluecell .vrtx-textfield {
   margin-right: 15px;
 }
 

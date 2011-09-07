@@ -21,24 +21,32 @@ h3 {font-size: 115%;}
 
 /* Form section */
 
-form {margin:0;padding:0;}
+#contents form {
+  padding-top: 15px;
+}
+
+#contents form > table {
+  border: 1px solid #d9d9d9;
+}
+
 .ekspandert {padding: 15px 0px 15px 15px;}
 .light {font-size: 80%;} 
 
 /* Document structure / grid */
 
-.bgcolorDocument {background-color: white;} 
+.bgcolorDocument {background-color: #fff;} 
 .bgcolorOne {background-color: #f9f9f9;} 
 .bgcolorTwo {background-color: #fff;} 
-.bgcolorThree{background-color: whitesmoke;}
+.bgcolorThree {background-color: whitesmoke;}
 .bgcolorExpanded {background-color: #e8e8e8;}
-.margincell {width: 18px; padding-left: 5px; padding-right: 5px;}
-.documentMargin{padding-top: 5px;}
-.bottomborder {border-width: 1px; border-bottom-style: solid; border-color: white;}
-
-.tabHelpURL {
-  float: right;
+.margincell {
+  width: 18px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
+.documentMargin {padding-top: 5px;}
+.bottomborder {border: 1px solid #fff;}
+.tabHelpURL {float: right;}
 
 .xml-error {
   margin-left: -81px;
@@ -47,9 +55,18 @@ form {margin:0;padding:0;}
 
 /* Move / Delete section */
 
-.instructiontext {font-size: 150%; font-weight: bold;}
-.markedElementFaint {background-color: #F2F0E6; color: #AAAAAA;}
-.markedElement {background-color: #EFEFEF; color: black;}
+.instructiontext {
+  font-size: 150%;
+  font-weight: bold;
+}
+.markedElementFaint {
+  background-color: #f2f0e6;
+  color: #aaa;
+}
+.markedElement {
+  background-color: #efefef;
+  color: black;
+}
 
  /* Specific classes for generic editing used in form-elements.xsl 
     (choice-, sequence og attribute-edit) */

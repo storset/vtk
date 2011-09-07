@@ -1736,6 +1736,11 @@ fieldset {
   border: none;
 }
 
+textarea {
+  border: 1px solid #ddd;
+  outline: none;
+}
+
 input[type=button],
 input[type=file],
 input[type=image],

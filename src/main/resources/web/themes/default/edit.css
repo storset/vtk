@@ -65,8 +65,16 @@ h3 {font-size: 115%;}
 .tabHelpURL {float: right;}
 
 .xml-error {
-  margin-left: -81px;
-  margin-top: -51px; 
+  margin-left: -12px;
+  margin-top: -52px; 
+  background: url(images/error.gif) no-repeat 0 0;
+  padding-left: 33px;
+  display: block;
+  height: 26px;
+}
+
+.xml-error td {
+  padding: 0px;
 }
 
 /* Move / Delete section */

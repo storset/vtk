@@ -90,7 +90,6 @@
 
   </head>
   <body>
-
     <#assign header>
       <@vrtx.msg code="editor.edit" args=[vrtx.resourceTypeName(resource)?lower_case] />
     </#assign>

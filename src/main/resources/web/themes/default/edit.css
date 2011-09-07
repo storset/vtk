@@ -149,8 +149,8 @@ div.buttons {
   height: 27px;
   position: fixed;
   bottom: 0px;
-  left: 21px;
-  right: 21px;
+  left: 13%;
+  right: 13%;
   z-index: 1;
 }
 

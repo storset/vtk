@@ -180,9 +180,9 @@ $(document).ready(function () {
   $("#contents").find(".errormessage").closest("table").addClass("xml-error");
   
   // Top and bottom border for expanded table row in XML-edit (TODO: add these in XSLT)
-  $("tr.bgcolorExpanded:first").css("borderTop", "1px solid #C8C8C8");
-  $("tr.bgcolorExpanded:last").css("borderBottom", "1px solid #C8C8C8");
-  
+  $("tr.bgcolorExpanded:first").addClass("firstbgcolorExpanded");
+  $("tr.bgcolorExpanded:last").addClass("lastbgcolorExpanded");
+
   adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
   adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");
   

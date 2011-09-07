@@ -58,7 +58,7 @@
      });
      
      function traverseNode(treeTravNode, lastNode) {
-       var windowTree = $("#TB_ajaxContent .tree-create");
+       var windowTree = $(".tree-create");
        var checkNodeAvailable = setInterval(function() {
          var link = windowTree.find("a[href$='" + treeTravNode + "']");  
          if(link.length) {
@@ -66,7 +66,7 @@
            var hit = link.closest("li").find("> .hitarea");
            hit.click();
            if(lastNode) { // If last: scroll to node
-             $('#TB_ajaxContent').scrollTo(link, 250, {
+             $(window).scrollTo(link, 250, {
                easing: "swing",
                queue: true,
                axis: 'y'

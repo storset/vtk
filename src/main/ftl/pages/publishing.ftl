@@ -44,16 +44,20 @@
         <#assign isPublished = resource.isPublished() />
         <#assign publishedStatusMsgKey = "publishing.status." + isPublished?string />
         <h3><@vrtx.msg code="publishing.status" default="Status" /></h3>
-        <div>
-        <@vrtx.msg code=publishedStatusMsgKey default="" />
         <#if isPublished>
-          <#assign titleMsg = vrtx.getMsg("confirm-publish.title.unpublish") />
+          <span class="published">
+            <@vrtx.msg code=publishedStatusMsgKey default="" />
+            <#assign titleMsg = vrtx.getMsg("confirm-publish.title.unpublish") />
+          </span>
           &nbsp;<a class="vrtx-button-small thickbox" href="${unPublishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" title="${titleMsg}"><span><@vrtx.msg code="publish.action.unpublish" default="Unpublish" /></span></a>
         <#else>
-          <#assign titleMsg = vrtx.getMsg("confirm-publish.title.publish") />
+          <span class="unpublished">
+            <@vrtx.msg code=publishedStatusMsgKey default="" />
+            <#assign titleMsg = vrtx.getMsg("confirm-publish.title.publish") />      
+          </span>
           &nbsp;<a class="vrtx-button-small thickbox" href="${publishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" title="${titleMsg}"><span><@vrtx.msg code="publish.action.publish" default="Publish" /></span></a>
         </#if>
-        </div>
+        
       </div>
         
       <@displayOrEdit "publish-date" "publishDate" editPublishDateUrl />

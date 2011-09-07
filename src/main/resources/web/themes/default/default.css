@@ -802,19 +802,22 @@ ul.list-menu.resourceMenuRight li h3 {
   margin: 9px 0 5px 0;
 }
 
-ul.list-menu.resourceMenuRight .manage\.unlockFormService h3,
-ul.list-menu.resourceMenuRight span.published {
+ul.list-menu.resourceMenuRight .manage\.unlockFormService h3 {
   background: url(images/lock.png) no-repeat 100% 1px;
   padding-right: 18px;
   /* display: inline-block; */
 }
 
 
-ul.list-menu.resourceMenuRight span.published {
-  background-image: url(images/menu-active-green.gif);
+ul.list-menu.resourceMenuRight span.published,
+#publishing-status span.published {
+  background: url(images/menu-active-green.gif) no-repeat 100% 1px;
+  padding-right: 18px;
 }
 
-ul.list-menu.resourceMenuRight p span {
+ul.list-menu.resourceMenuRight p span,
+#publishing-status span.published,
+#publishing-status span.unpublished {
   font-weight: bold;
 }
 
@@ -1271,14 +1274,16 @@ body#vrtx-report-documents #app-content #main #contents #directory-listing td.vr
 }
 
 #app-content #main #contents #directory-listing td span.allowed-for-all,
-.resourceMenuRight  span.allowed-for-all,
-.resourceMenuRight  span.published {
+.resourceMenuRight span.allowed-for-all,
+.resourceMenuRight span.published,
+#publishing-status span.published {
   color: #549401;
 }
 
 #app-content #main #contents #directory-listing td span.restricted,
 .resourceMenuRight span.restricted,
-.resourceMenuRight  span.unpublished {
+.resourceMenuRight span.unpublished,
+#publishing-status span.unpublished {
   color: #ed1c24;
 }
 

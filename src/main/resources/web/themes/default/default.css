@@ -1749,17 +1749,20 @@ input[type=submit],
 input[type=text],
 button {
   border: 1px solid transparent;
-}
-
-input, button {
   background: transparent;
   font-family: inherit;
   font-size: 100%;
-  font-style: inherit;
+  font-style: inherit; 
   font-weight: inherit;
 }
 
-form input:focus {
+form input[type=button]:focus,
+form input[type=file]:focus ,
+form input[type=image]:focus ,
+form input[type=password]:focus ,
+form input[type=reset]:focus ,
+form input[type=submit]:focus ,
+form input[type=text]:focus {
   outline: 0;
 }
 

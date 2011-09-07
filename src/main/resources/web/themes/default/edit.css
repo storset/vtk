@@ -127,6 +127,7 @@ div.buttons {
   bottom: 0px;
   left: 21px;
   right: 21px;
+  z-index: 1;
 }
 
 div.buttons ul {

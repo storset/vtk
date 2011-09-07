@@ -1179,10 +1179,17 @@ ul.list-menu.tabMenu2 li.deleteResourcePermanentService a {
   white-space: nowrap;  
 }
 
+#app-content #main #contents #directory-listing .checkbox {
+  padding-right: 30px;
+}
+
 #app-content #main #contents #directory-listing th.permissions,
 #app-content #main #contents #directory-listing th.resource-type,
+#app-content #main #contents #directory-listing th#vrtx-trash-can\.deletedBy {
+  width: 10%;
+}
+
 #app-content #main #contents #directory-listing th.last-modified,
-#app-content #main #contents #directory-listing th#vrtx-trash-can\.deletedBy,
 #app-content #main #contents #directory-listing th#vrtx-trash-can\.deletedTime,
 #app-content #main #contents #directory-listing th#vrtx-report-last-modified,
 #app-content #main #contents #directory-listing th#vrtx-report-modified-by,
@@ -1205,10 +1212,6 @@ ul.list-menu.tabMenu2 li.deleteResourcePermanentService a {
   white-space: nowrap;
 }
 
-#app-content #main #contents #directory-listing .checkbox {
-  padding-right: 30px;
-}
-
 #app-content #main #contents #directory-listing th.name,
 #app-content #main #contents #directory-listing td.name,
 #app-content #main #contents #directory-listing th#vrtx-trash-can\.name,
@@ -1216,6 +1219,7 @@ ul.list-menu.tabMenu2 li.deleteResourcePermanentService a {
 body#vrtx-report-documents #app-content #main #contents #directory-listing th#vrtx-report-name,
 body#vrtx-report-documents #app-content #main #contents #directory-listing td.vrtx-report-name {
   padding-left: 15px;
+  width: 40%;
 }
 
 #app-content #main #contents #directory-listing th.last-modified,

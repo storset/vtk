@@ -8,7 +8,7 @@
 <#assign actionURL = item.url />
 
 <h3>${headerMsg}</h3>
-<p><span class="unpublished"><@vrtx.msg code="publishing.unpublish-date" /></span></p>
+<p><span class="unpublished"><@vrtx.msg code="publish.permission.unpublished" /></span></p>
 <a id="vrtx-publish-document" class="vrtx-button-small" title="${titleMsg}" href="${actionURL?html}"><span>${item.title?html}</span></a>
 
 <#recover>

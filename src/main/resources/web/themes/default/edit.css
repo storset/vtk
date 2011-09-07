@@ -116,6 +116,10 @@ div.subbuttons {
    margin: 0.5em 0 0; 
 } 
 
+.bgcolorExpanded input[type=radio] {
+  margin-bottom: 10px;
+}
+
 /* Buttons in bottom row */
 
 div.buttons {

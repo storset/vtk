@@ -978,7 +978,7 @@ div.tabs {
   margin: 1px 0 0 0;
   padding: 0;
   position: relative;
-  top: 0px;
+  top: 1px;
   left: 0px;
   width: 73em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
   height: 34px;
@@ -989,7 +989,7 @@ div.tabs ul {
   padding: 0;
   list-style: none;
   position: absolute;
-  bottom: -1px;
+  bottom: 0;
   left: 0;
   width: 73em; /* a width is required for Opera, older Mozilla browsers, and Konqueror browsers */
   /* Width is also required for IE 6.0. Can be reduced when we shorten some of the text on the tabs */
@@ -1034,8 +1034,7 @@ div.tabs ul li.activeTab a,
 div.tabs ul li.activeTab a:hover {
   background: #fff;
   color: #363534;
-  border-bottom: 3px solid #fff;
-  margin-bottom: -2px;
+  border-bottom: 1px solid #fff;
 }
 
 /* ^ 3.3 Tabs */

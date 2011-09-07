@@ -1555,7 +1555,6 @@ table.resourceInfo form#propertyForm ul.property .vrtx-textfield {
 
 body#vrtx-edit-plaintext textarea {
   width: 100%;
-  border: 1px solid #d9d9d9;
 }
 
 body#vrtx-edit-plaintext .contextual-help {
@@ -1737,7 +1736,7 @@ fieldset {
 }
 
 textarea {
-  border: 1px solid #ddd;
+  border: 1px solid #919191;
   outline: none;
 }
 

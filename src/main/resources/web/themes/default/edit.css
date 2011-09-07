@@ -101,9 +101,9 @@ table.nothing {
 
 td fieldset {
   display: block;
-  padding: 5px;
+  padding: 0 10px 10px 10px;
   margin: 0;
-  border: 1px solid #AAA; 
+  border: 1px solid #ccc; 
 }
 
 td legend {

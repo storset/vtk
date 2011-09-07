@@ -50,7 +50,7 @@ h3 {font-size: 115%;}
 
 .xml-error {
   margin-left: -81px;
-  margin-top: -33px; 
+  margin-top: -51px; 
 }
 
 /* Move / Delete section */
@@ -119,11 +119,14 @@ div.subbuttons {
 /* Buttons in bottom row */
 
 div.buttons {
-  background-color: #000;
+  background-color: #e8e8e8;
   padding: 7px 15px;
   text-align: center;
   height: 27px;
-  margin: -20px;
+  position: fixed;
+  bottom: 0px;
+  left: 21px;
+  right: 21px;
 }
 
 div.buttons ul {

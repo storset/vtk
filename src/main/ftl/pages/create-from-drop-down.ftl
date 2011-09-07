@@ -20,6 +20,7 @@
      body {
        min-width: 0;
        text-align: left;
+       font: 12px Arial, Helvetica, sans-serif; // TB font-size
      }
   </style>
   <#if jsURLs?exists>
@@ -33,9 +34,6 @@
        
        var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];
        var pathNum = 0;
-       
-       // Show close link
-       $("#TB_closeAjaxWindow").addClass("create-tree-close-window");
 
        $(".tree-create").treeview({
          animated: "fast",

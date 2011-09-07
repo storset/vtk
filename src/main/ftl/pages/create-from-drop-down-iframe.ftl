@@ -25,6 +25,11 @@
     <script type="text/javascript" src="${jsURL}"></script>
     </#list>
   </#if>
+  <script type="text/javascript"><!--
+    // Show close link
+    $("#TB_closeAjaxWindow").addClass("create-tree-close-window");
+  // -->
+  </script>
 </head>
 <body>
    <#if serviceUri == "create-document">

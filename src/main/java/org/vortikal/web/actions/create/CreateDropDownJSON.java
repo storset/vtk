@@ -109,7 +109,7 @@ public class CreateDropDownJSON implements Controller {
                 else
                     buttonText = "manage.place-here";
 
-                title = "<a class=&quot;vrtx-button-small&quot; href=&quot;" + uri + "&quot;>" + "<span>"
+                title = "<a target=&quot;_top&quot; class=&quot;vrtx-button-small&quot; href=&quot;" + uri + "&quot;>" + "<span>"
                         + provider.getLocalizedTitle(request, buttonText, null) + "</span>" + "</a>";
             } catch (ServiceUnlinkableException e) {
                 title = "<span class=&quot;no-create-permission&quot;>"

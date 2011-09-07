@@ -27,17 +27,4 @@
       </ul>
     </#if>
   </div>
-
 </#list>
-
-<#-- XXX: remove -->
-<#if expiresSec?exists && expiresSec["expires-sec"]?exists>
-  <#assign delay = expiresSec["expires-sec"]?number / 60>
-  <#if delay &gt;= 5>
-  <div class="infomessage">
-    <#assign delay = delay?string("0.###")>
-    <@vrtx.msg "headerControl.expiresSec",
-    "This resource uses the expires property", [delay] />
-  </div>
-  </#if>
-</#if>

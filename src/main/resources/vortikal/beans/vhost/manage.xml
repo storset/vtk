@@ -1332,7 +1332,6 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <ref bean="expiresSecProvider" />
       </list>
     </property>
   </bean>
@@ -1463,6 +1462,11 @@
 
   <bean id="manage.tabMessageView" parent="freemarkerView">
     <property name="url" value="system/tab-message.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="expiresSecProvider" />
+      </list>
+    </property>
   </bean>
 
   <bean id="manage.parentNavigationComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">

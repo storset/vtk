@@ -2102,7 +2102,7 @@ form button::-moz-focus-inner {
 .vrtx-button button,
 .vrtx-focus-button input,
 .vrtx-focus-button button, x:-moz-any-link, x:only-child {
-  height: 26px;
+  padding-bottom: 1px;
 }
 
 .vrtx-textfield input, x:-moz-any-link, x:only-child {

@@ -143,7 +143,6 @@ div.buttons li {
 
 ul.moveDelete {
   float: left;
-
 }
 
 ul.newButtons {
@@ -153,9 +152,10 @@ ul.newButtons {
 ul.finishButton {
   float: right;
 }
-
+ 
 .buttons .vrtx-button,
-.buttons .vrtx-focus-button {
+.buttons .vrtx-focus-button,
+.bgcolorExpanded .vrtx-focus-button {
   margin-right: 15px;
 }
 

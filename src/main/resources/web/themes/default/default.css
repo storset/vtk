@@ -1399,16 +1399,19 @@ body#vrtx-permissions #permissions-read-write-admin .permissions-read-write-wrap
 
 /* Remove borders around expanded forms */
 
-.permissions-read-wrapper .permissions-read-wrapper {
+.permissions-read-wrapper .permissions-read-wrapper,
+.permissions-read-wrapper .expandedForm {
   margin-bottom: -16px !important;
 }
 
-.permissions-read-write-wrapper .permissions-read-write-wrapper {
+.permissions-read-write-wrapper .permissions-read-write-wrapper,
+.permissions-read-write-wrapper .expandedForm {
   margin-top: -1px !important;
   margin-bottom: -16px !important;
 }
 
-.permissions-all-wrapper .permissions-all-wrapper {
+.permissions-all-wrapper .permissions-all-wrapper,
+.permissions-all-wrapper .expandedForm {
   margin-top: -1px !important; 
 }
 

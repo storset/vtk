@@ -39,6 +39,9 @@
    <#elseif serviceUri == "upload-file">
      <#assign url = upUrl.url />  
    </#if>
+   <#if !url?contains(":9322") && url?contains("http:")>
+      <#assign url = url?replace("http:", "https:") />
+   </#if>
    <iframe name="createTreeIframe" id="createTreeIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" vspace="0" hspace="0">
       [Your browser does not support frames or is currently configured
       not to display frames.]

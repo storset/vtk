@@ -2098,6 +2098,13 @@ form button::-moz-focus-inner {
 /* Vertical aligning text in textfields: targets Firefox 1.5 and newer */
 /* Credits: http://perishablepress.com/press/2009/06/28/css-hacks-for-different-versions-of-firefox/ */
 
+.vrtx-button input,
+.vrtx-button button,
+.vrtx-focus-button input,
+.vrtx-focus-button button, x:-moz-any-link, x:only-child {
+  height: 26px;
+}
+
 .vrtx-textfield input, x:-moz-any-link, x:only-child {
   padding-top: 2px;
   height: 25px;

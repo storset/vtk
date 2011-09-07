@@ -176,8 +176,12 @@ $(document).ready(function () {
   if (!activeTabMsg.text().length) {
    activeTabMsg.remove();
   }
-  // Hack for fixing XML error message
+  // Hack for fixing XML-edit error message
   $("#contents").find(".errormessage").closest("table").addClass("xml-error");
+  
+  // Top and bottom border for expanded table row in XML-edit (TODO: add these in XSLT)
+  $("tr.bgcolorExpanded:first").css("borderTop", "1px solid #C8C8C8");
+  $("tr.bgcolorExpanded:last").css("borderBottom", "1px solid #C8C8C8");
   
   adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
   adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");

@@ -38,7 +38,10 @@ h3 {font-size: 115%;}
 .bgcolorOne {background-color: #f9f9f9;} 
 .bgcolorTwo {background-color: #fff;} 
 .bgcolorThree {background-color: whitesmoke;}
-.bgcolorExpanded {background-color: #e8e8e8;}
+.bgcolorExpanded {
+  background-color: #e8e8e8;
+}
+
 .margincell {
   width: 18px;
   padding-left: 5px;

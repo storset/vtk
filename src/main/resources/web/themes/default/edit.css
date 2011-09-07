@@ -111,6 +111,10 @@ td legend {
   text-align: right;
 }
 
+td {
+  padding: 10px;
+}
+
 div.subbuttons {
   padding: 0.5em 0;
    margin: 0.5em 0 0; 

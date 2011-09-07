@@ -166,9 +166,18 @@ $(document).ready(function () {
   dropdown({selector: "ul.manage-create"});
 
   // Remove active tab if it has no children
-  if (!$("#main .activeTab > *").length) {
-    $("#main .activeTab").remove();
+  var activeTab = $("#main .activeTab");
+  if (!activeTab.find(" > *").length) {
+    activeTab.remove();
   }
+  
+  // Remove active tab-message if it is empty
+  var activeTabMsg = activeTab.find(" > .tabMessage");
+  if (!activeTabMsg.text().length) {
+   activeTabMsg.remove();
+  }
+  // Hack for fixing XML error message
+  $("#contents").find(".errormessage").closest("table").addClass("xml-error");
   
   adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
   adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");

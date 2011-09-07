@@ -1,28 +1,11 @@
-/* Vortex overriding section */
-
 /*
-div.activeTab { 
-	background-color: #dddddd;
-	border-bottom: solid 2px; 
-        border-color: white;
-}
-
-div.tabs ul li.activeTab a, div.tabs ul li.activeTab a:hover {
-	background-color: #dddddd;
-}
-
-#contents {
-	padding: 0;
-	min-height: 500px; 
-	height:expression(
-	    this.scrollHeight < 500? "500px" : "auto" ); 
-}
-*/
-div.footer {display: none;} /* Removing version & locale selection */
-
+ *
+ *  Vortex - Editor - XML
+ *
+ */
 
 /* Headings */
-
+/*
 h1,h2,h3,h4 {font-weight: bold; display:inline;}
 
 h1 {font-size: 150%;}
@@ -30,10 +13,10 @@ h2 {font-size: 130%;}
 h3 {font-size: 115%;}
 
 .documentTitle {font-size: 150%; font-weight: bold;} 
-
+*/
 /* List */
 
-ul {margin: 1em 1em 1em 2.5em;}
+/* ul {margin: 1em 1em 1em 2.5em;} */
 
 
 /* Form section */
@@ -45,15 +28,22 @@ form {margin:0;padding:0;}
 /* Document structure / grid */
 
 .bgcolorDocument {background-color: white;} 
-.bgcolorOne {background-color: #EFEFEF;} 
-.bgcolorTwo {background-color: white;} 
+.bgcolorOne {background-color: #f9f9f9;} 
+.bgcolorTwo {background-color: #fff;} 
 .bgcolorThree{background-color: whitesmoke;}
-.bgcolorExpanded {background-color: #DDDDDD;}
+.bgcolorExpanded {background-color: #e8e8e8;}
 .margincell {width: 18px; padding-left: 5px; padding-right: 5px;}
 .documentMargin{padding-top: 5px;}
 .bottomborder {border-width: 1px; border-bottom-style: solid; border-color: white;}
 
-.errormessage {font-size: 125%; font-weight: bold; color: red;}
+.tabHelpURL {
+  float: right;
+}
+
+.xml-error {
+  margin-left: -81px;
+  margin-top: -33px; 
+}
 
 /* Move / Delete section */
 
@@ -65,98 +55,89 @@ form {margin:0;padding:0;}
     (choice-, sequence og attribute-edit) */
  
 td.elementvaluecell {
-        padding:0; 
-        margin: 0;
+  padding:0; 
+  margin: 0;
 }
 
 td.deletebuttoncell {
-	padding: 0px 0px 0px 0.5em;
-	margin: 0;
-	text-align:right;
-	vertical-align:top;
+  padding: 0px 0px 0px 0.5em;
+  margin: 0;
+  text-align:right;
+  vertical-align:top;
 }
 
 td.attributelabelcell {
-	margin-left: 0;
-	padding-left: 0;
+  margin-left: 0;
+  padding-left: 0;
 }
 
 td.attributevaluecell {
-	width:99%
+  width:99%
 }
 
 table.nothing {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        border: none; 
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  border: none; 
 }
 
 td fieldset {
-        display: block;             
-        padding: 0 0.5em 0.5em 0.5em;
-        margin: 0;
-        border: 1px solid gray; 
+  display: block;
+  padding: 5px;
+  margin: 0;
+  border: 1px solid #AAA; 
 }
 
 td legend {
-        padding: 0 0.5em;
-        text-align: right;
-        color: black; 
+  padding: 0 10px;
+  text-align: right;
 }
 
 div.subbuttons {
-        padding: 0.5em 0;
-        margin: 0.5em 0 0; 
+  padding: 0.5em 0;
+   margin: 0.5em 0 0; 
 } 
-
 
 /* Buttons in bottom row */
 
 div.buttons {
-    position: fixed;
-    bottom: 0px;
-    left: 21px;
-    right: 21px;
-    background-color: #dddddd;
-    padding: 5px;
-    text-align: center;
+  background-color: #000;
+  padding: 7px 15px;
+  text-align: center;
+  height: 27px;
+  margin: -20px;
 }
 
 div.buttons ul {
-    list-style-type: none;
-    display: inline;
+  list-style-type: none;
+  display: inline;
+  margin: 0;
+  padding: 0;
 }
 
 div.buttons li {
-    display: inline;
+  display: inline;
 }
 
 ul.moveDelete {
-    float: left;
-    margin: 0;
-    padding: 0px;
-}
+  float: left;
 
-ul.moveButtons {
-    margin: 0;
-    padding: 0px;
-}
-
-ul.insertButtons {
-    margin: 0;
-    padding: 0px;
 }
 
 ul.newButtons {
-    margin: 0 10em auto 0 1em auto;
-    padding: 0px;
+  margin: 0 10em auto 0 1em auto;
 }
 
 ul.finishButton {
-    padding: 0; margin: 0;
-    float: right;
+  float: right;
 }
 
+.buttons .vrtx-button,
+.buttons .vrtx-focus-button {
+  margin-right: 15px;
+}
 
+/* ^ Buttons in bottom row */
 
+/* ^ Vortex - Editor - XML */

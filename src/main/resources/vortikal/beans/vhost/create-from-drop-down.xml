@@ -68,7 +68,7 @@
   </bean>
   
   <bean id="createCollectionFromDropDownIframeService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="viewService" />
+    <property name="parent" ref="manageService" />
     <property name="handler" ref="createCollectionFromDropDownIframeHandler" />
     <property name="assertions">
       <bean class="org.vortikal.web.service.RequestParameterAssertion">
@@ -100,7 +100,7 @@
   </bean>
   
   <bean id="createDocFromDropDownIframeService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="viewService" />
+    <property name="parent" ref="manageService" />
     <property name="handler" ref="createDocFromDropDownIframeHandler" />
     <property name="assertions">
       <bean class="org.vortikal.web.service.RequestParameterAssertion">
@@ -132,7 +132,7 @@
   </bean>
   
   <bean id="uploadFileFromDropDownIframeService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="viewService" />
+    <property name="parent" ref="manageService" />
     <property name="handler" ref="uploadFileFromDropDownIframeHandler" />
     <property name="assertions">
       <bean class="org.vortikal.web.service.RequestParameterAssertion">

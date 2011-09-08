@@ -3,3 +3,13 @@
 .browse-actions {
 	display: inline;
 }
+
+body,
+#app-content,
+#app-head {
+  width: 914px;
+  max-width: none !important;
+  min-width: 0 !important;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+}

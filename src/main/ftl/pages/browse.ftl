@@ -27,7 +27,7 @@
 <head>
   <title>Browse</title>
 </head>
-<body class="app-fluid">
+<body>
   <#if resourceContext.currentResource.collection>
     <@col.listCollection />
   </#if>

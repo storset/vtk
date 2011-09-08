@@ -13,16 +13,6 @@
   <!--[if lte IE 8]>
     <link rel="stylesheet" type="text/css" href="/vrtx/__vrtx/static-resources/themes/default/report/jquery.treeview.ie.css" />
   <![endif]-->
-  <style type="text/css">
-     html, body {
-       background-color: #fff;     
-     }
-     body {
-       min-width: 0;
-       text-align: left;
-       font: 12px Arial, Helvetica, sans-serif; // TB font-size
-     }
-  </style>
   <#if jsURLs?exists>
     <#list jsURLs as jsURL>
     <script type="text/javascript" src="${jsURL}"></script>
@@ -31,6 +21,8 @@
   <script type="text/javascript"><!--
      $(document).ready(function() {
        var timestamp = 1 - new Date();
+       
+       $("#TB_closeAjaxWindow").addClass("create-tree-close-window");
        
        var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];
        var pathNum = 0;

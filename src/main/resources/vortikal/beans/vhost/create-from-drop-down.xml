@@ -66,22 +66,6 @@
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="repository" ref="repository" />
   </bean>
-  
-  <bean id="createCollectionFromDropDownIframeService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="manageService" />
-    <property name="handler" ref="createCollectionFromDropDownIframeHandler" />
-    <property name="assertions">
-      <bean class="org.vortikal.web.service.RequestParameterAssertion">
-        <property name="parameterName" value="display" />
-        <property name="parameterValue" value="create-collection-from-drop-down-iframe" />
-      </bean>
-    </property>
-  </bean>
-
-  <bean id="createCollectionFromDropDownIframeHandler" class="org.vortikal.web.actions.create.CreateFromDropDownIframeController">
-    <property name="viewName" value="createFromDropDownIframe.view" />
-    <property name="serviceUri" value="create-collection" />
-  </bean>
 
   <bean id="createCollectionFromDropDownService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
@@ -98,22 +82,6 @@
     <property name="viewName" value="createFromDropDown.view" />
     <property name="type" value="create-collection" />
   </bean>
-  
-  <bean id="createDocFromDropDownIframeService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="manageService" />
-    <property name="handler" ref="createDocFromDropDownIframeHandler" />
-    <property name="assertions">
-      <bean class="org.vortikal.web.service.RequestParameterAssertion">
-        <property name="parameterName" value="display" />
-        <property name="parameterValue" value="create-document-from-drop-down-iframe" />
-      </bean>
-    </property>
-  </bean>
-
-  <bean id="createDocFromDropDownIframeHandler" class="org.vortikal.web.actions.create.CreateFromDropDownIframeController">
-    <property name="viewName" value="createFromDropDownIframe.view" />
-    <property name="serviceUri" value="create-document" />
-  </bean>
 
   <bean id="createDocFromDropDownService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
@@ -129,22 +97,6 @@
   <bean id="createDocFromDropDownHandler" class="org.vortikal.web.actions.create.CreateFromDropDownController">
     <property name="viewName" value="createFromDropDown.view" />
     <property name="type" value="create-document" />
-  </bean>
-  
-  <bean id="uploadFileFromDropDownIframeService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="manageService" />
-    <property name="handler" ref="uploadFileFromDropDownIframeHandler" />
-    <property name="assertions">
-      <bean class="org.vortikal.web.service.RequestParameterAssertion">
-        <property name="parameterName" value="display" />
-        <property name="parameterValue" value="upload-file-from-drop-down-iframe" />
-      </bean>
-    </property>
-  </bean>
-
-  <bean id="uploadFileFromDropDownIframeHandler" class="org.vortikal.web.actions.create.CreateFromDropDownIframeController">
-    <property name="viewName" value="createFromDropDownIframe.view" />
-    <property name="serviceUri" value="upload-file" />
   </bean>
   
   <bean id="uploadFileFromDropDownService" class="org.vortikal.web.service.ServiceImpl">
@@ -172,18 +124,6 @@
     </property>
   </bean>
   
-  <bean id="createFromDropDownIframe.view" parent="freemarkerView">
-    <property name="url" value="pages/create-from-drop-down-iframe.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <ref bean="createFromDropDown.docService.urlProvider" />
-        <ref bean="createFromDropDown.collService.urlProvider" />
-        <ref bean="createFromDropDown.upService.urlProvider" />
-      </list>
-    </property>
-  </bean>
-
   <bean id="createFromDropDown.view" parent="freemarkerView">
     <property name="url" value="pages/create-from-drop-down.ftl" />
     <property name="referenceDataProviders">
@@ -222,22 +162,6 @@
   </bean>
   <bean id="createFromDropDown.upService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="service" ref="uploadFileFromDropDownService" />
-    <property name="modelName" value="upUrl" />
-    <property name="urlName" value="url" />
-  </bean>
-  
-  <bean id="createFromDropDownIframe.docService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
-    <property name="service" ref="createDocFromDropDownIframeService" />
-    <property name="modelName" value="docUrl" />
-    <property name="urlName" value="url" />
-  </bean>
-  <bean id="createFromDropDownIframe.collService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
-    <property name="service" ref="createCollectionFromDropDownIframeService" />
-    <property name="modelName" value="collUrl" />
-    <property name="urlName" value="url" />
-  </bean>
-  <bean id="createFromDropDownIframe.upService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
-    <property name="service" ref="uploadFileFromDropDownIframeService" />
     <property name="modelName" value="upUrl" />
     <property name="urlName" value="url" />
   </bean>

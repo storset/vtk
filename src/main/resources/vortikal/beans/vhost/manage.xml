@@ -1260,9 +1260,9 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <ref bean="createFromDropDownIframe.docService.urlProvider" /> 
-        <ref bean="createFromDropDownIframe.collService.urlProvider" /> 
-        <ref bean="createFromDropDownIframe.upService.urlProvider" /> 
+        <ref bean="createFromDropDown.docService.urlProvider" />
+        <ref bean="createFromDropDown.collService.urlProvider" />
+        <ref bean="createFromDropDown.upService.urlProvider" />
       </list>
     </property>
   </bean>

@@ -13,7 +13,7 @@ if(typeof hasReceiveMessageHandler === "undefined") {
 $(document).ready(function () {
   if (typeof hasReceiveMessageHandler === "undefined" || !hasReceiveMessageHandler) { // not handler in iframe-view.js available
     $.receiveMessage(function(e) {
-
+    
       hasReceiveMessageHandler = true;
      
       var recievedData = e.data;

@@ -52,13 +52,12 @@
 
   <bean id="browseView" parent="freemarkerView">
     <property name="url" value="pages/browse.ftl" />
-
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
         <ref bean="browseBreadCrumbProvider" />
         <ref bean="browseUrlProvider" />
-        <ref bean="browseMenuProvider" /> 
+        <!-- <ref bean="browseMenuProvider" /> -->
         <ref bean="browseCollectionListingProvider" />
       </list>
     </property>
@@ -127,7 +126,7 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <ref bean="browseMenuProvider" />
+        <!-- <ref bean="browseMenuProvider" /> -->
         <ref bean="browseUrlProvider" />
       </list>
     </property>
@@ -223,8 +222,7 @@
   </bean>
 
 
-  <bean id="browseUrlProvider" 
-        class="org.vortikal.web.referencedata.provider.BrowseUrlProvider">
+  <bean id="browseUrlProvider" class="org.vortikal.web.referencedata.provider.BrowseUrlProvider">
     <description>
       Generates a link to a document in the repository (for
       xml-edit in elements like "webadresse")

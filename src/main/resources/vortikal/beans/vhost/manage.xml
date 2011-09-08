@@ -2059,6 +2059,7 @@
         <ref bean="readPermissionsProvider" />
         <ref bean="publishProvider" />
         <ref bean="sessionBeanProvider" />
+        <ref bean="browseUrlProvider" />
       </list>
     </constructor-arg>
   </bean>

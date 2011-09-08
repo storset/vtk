@@ -47,6 +47,8 @@ import org.vortikal.web.service.Service;
 /**
  * Creates model data for the browse application. 
  *
+ * TODO: make it similar to SessionBeanProvider so that we can insert into DefaultMenuProvider instead of hack in resource-bar.ftl
+ *
  * <p>Description:
  *  
  * <p>Configurable properties:

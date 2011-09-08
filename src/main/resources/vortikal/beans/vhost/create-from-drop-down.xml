@@ -118,7 +118,6 @@
   <bean id="createFromDropDown.viewResolver" parent="viewResolver">
     <property name="views">
       <map>
-        <entry key="createFromDropDownIframe.view" value-ref="createFromDropDownIframe.view" />
         <entry key="createFromDropDown.view" value-ref="createFromDropDown.view" />
       </map>
     </property>

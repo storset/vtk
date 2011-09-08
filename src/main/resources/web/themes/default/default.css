@@ -351,7 +351,7 @@ a:hover {
 }
 
 #global-menu-create {
-  z-index: 9999999;
+  z-index: 99;
 }
 
 #app-head .principal #logoutForm {
@@ -541,6 +541,7 @@ div.localeSelection ul li {
 div.localeSelection {
   background: url(images/globe.png) no-repeat 0px 1px;
   padding: 0 0 1px 23px;
+  z-index: 100;
 }
 
 div.localeSelection ul,

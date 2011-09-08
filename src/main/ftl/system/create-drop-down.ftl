@@ -22,7 +22,7 @@
     }
     div.dropdown-shortcut-menu-container {
       left: auto !important;
-      right: 16px !important;
+      right: 0px !important;
       top: 28px !important;
     }
   </style>

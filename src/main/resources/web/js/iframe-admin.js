@@ -43,6 +43,7 @@ $(document).ready(function () {
           previewCreateIframe.css({"height": $(window).height() + "px", 
                                     "width": $(window).width()  + "px"});
           previewCreateIframe.addClass("iframe-fullscreen");
+          $("#global-menu-create").css("zIndex", "999999");
           previewCreateIframe.contents().find("ul.manage-create").hide(0);
           previewCreateIframe.contents().find(".dropdown-shortcut-menu-container").hide(0);
         }
@@ -51,6 +52,7 @@ $(document).ready(function () {
           previewCreateIframe.css({"height": 100 + "px", 
                                    "width": 150 + "px"});
           previewCreateIframe.removeClass("iframe-fullscreen");
+          $("#global-menu-create").css("zIndex", "99");
           previewCreateIframe.contents().find("ul.manage-create").show(0);
         } 
       }

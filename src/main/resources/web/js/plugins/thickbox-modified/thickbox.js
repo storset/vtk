@@ -8,7 +8,7 @@
 // Modified path for use in Vortex
 var tb_pathToImage = "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif";
 
-// USIT added: tb_postMessageClose() for notify if in iframe
+// USIT added: tb_postMessageClose() for notifying parent if thickbox closes in iframe
 
 /*!!!!!!!!!!!!!!!!! edit below this line at your own risk !!!!!!!!!!!!!!!!!!!!!!!*/
 
@@ -34,6 +34,7 @@ function tb_init(domChunk){
 function tb_show(caption, url, imageGroup) {//function called when the user clicks on a thickbox link
 
 	try {
+
 		if (typeof document.body.style.maxHeight === "undefined") {//if IE 6
 			$("body","html").css({height: "100%", width: "100%"});
 			$("html").css("overflow","hidden");

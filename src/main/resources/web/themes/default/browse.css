@@ -13,3 +13,19 @@ body,
   padding-left: 0px !important;
   padding-right: 0px !important;
 }
+
+#vrtx-breadcrumb-wrapper {
+  padding-left: 20px !important;
+}
+
+#app-head #app-name {
+  top: 10px !important;
+}
+
+#app-head {
+  height: 55px !important;
+}
+
+div.resource-title {
+  margin: -8px 20px 0 20px !important;
+}

@@ -40,8 +40,8 @@ $(document).ready(function () {
       if (previewCreateIframe) {
         // Fullsize
         if(recievedData.indexOf && recievedData.indexOf("fullsize") != -1) {
-          previewCreateIframe.css({"height": document.body.clientHeight + "px", 
-                                    "width": document.body.clientWidth + "px"});
+          previewCreateIframe.css({"height": $(window).height() + "px", 
+                                    "width": $(window).width()  + "px"});
           previewCreateIframe.addClass("iframe-fullscreen");
         }
         // Back to normal again

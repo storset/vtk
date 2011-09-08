@@ -8,10 +8,12 @@
         var previewIframe = $("#create-iframe")[0];
         if (previewIframe) {
           var recievedData = e.data;
+          // Fullsize
           if(recievedData.indexOf && recievedData.indexOf("fullsize") != -1) {
             previewIframe.style.height = document.body.clientHeight + "px";
             previewIframe.style.width = document.body.clientWidth + "px";
           }
+          // Back to normal again
           if(recievedData.indexOf && recievedData.indexOf("originalsize") != -1) {
             previewIframe.style.height = 50 + "px";
             previewIframe.style.width = 200 + "px";

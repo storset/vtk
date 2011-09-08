@@ -49,7 +49,7 @@ $(document).ready(function () {
         // Back to normal again
         if(recievedData.indexOf && recievedData.indexOf("originalsize") != -1) {
           previewCreateIframe.css({"height": 100 + "px", 
-                                   "width": 180 + "px"});
+                                   "width": 150 + "px"});
           previewCreateIframe.removeClass("iframe-fullscreen");
           previewCreateIframe.contents().find("ul.manage-create").show(0);
         } 

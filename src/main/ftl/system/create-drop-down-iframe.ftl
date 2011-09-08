@@ -4,8 +4,8 @@
 <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/iframe-admin.js"></script>
 <style type="text/css">
   #create-iframe {
-    height: 30px;
-    width: 180px;
+    height: 40px;
+    width: 150px;
     overflow: visible;
     margin: 0;
     padding: 0;
@@ -25,5 +25,5 @@
    // avoid flickering by set real height after 250ms
    setTimeout(function() {
      $(iframe).css("height", "100px");
-   }, 250);
+   }, 500);
 </script>

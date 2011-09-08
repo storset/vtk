@@ -3,7 +3,7 @@
 
 <script type="text/javascript"><!--
   $(document).ready(function () {
-    if (typeof $.receiveMessage !== "function") { // not handler in iframe-view.js available
+    if (typeof hasReceiveMessageHandler === "undefined" || !hasReceiveMessageHandler) { // not handler in iframe-view.js available
       $.receiveMessage(function(e) {
         var previewIframe = $("#create-iframe")[0];
         if (previewIframe) {

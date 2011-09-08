@@ -5,8 +5,13 @@
  *    http://benalman.com/code/projects/jquery-postmessage/examples/iframe/
  *    see src: https://raw.github.com/cowboy/jquery-postmessage/master/jquery.ba-postmessage.js
  */
+ 
+var hasReceiveMessageHandler = false; 
+ 
 $(document).ready(function () {
   $.receiveMessage(function(e) {
+     hasReceiveMessageHandler = true;
+  
     var previewIframeMinHeight = 350;
     var previewIframeMaxHeight = 20000;
     var previewIframe = $("iframe#previewIframe")[0]

@@ -43,12 +43,15 @@ $(document).ready(function () {
           previewCreateIframe.css({"height": $(window).height() + "px", 
                                     "width": $(window).width()  + "px"});
           previewCreateIframe.addClass("iframe-fullscreen");
+          previewCreateIframe.contents().find("ul.manage-create").hide(0);
+          previewCreateIframe.contents().find(".dropdown-shortcut-menu-container").hide(0);
         }
         // Back to normal again
         if(recievedData.indexOf && recievedData.indexOf("originalsize") != -1) {
           previewCreateIframe.css({"height": 100 + "px", 
                                    "width": 180 + "px"});
           previewCreateIframe.removeClass("iframe-fullscreen");
+          previewCreateIframe.contents().find("ul.manage-create").show(0);
         } 
       }
     

@@ -14,7 +14,7 @@
   
   <style type="text/css">
     html, body {
-      background-color: #fff;    
+      background-color: transparent;    
     }
     body {
       min-width: 0;
@@ -27,7 +27,6 @@
     <script type="text/javascript" src="${jsURL}"></script>
     </#list>
   </#if>
-
 </head>
 <body>
 

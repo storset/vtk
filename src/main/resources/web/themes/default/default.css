@@ -350,6 +350,10 @@ a:hover {
   padding-top: 9px;
 }
 
+#global-menu-create {
+  z-index: 9999999;
+}
+
 #app-head .principal #logoutForm {
   display: inline;
 }

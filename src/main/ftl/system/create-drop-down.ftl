@@ -27,6 +27,31 @@
     <script type="text/javascript" src="${jsURL}"></script>
     </#list>
   </#if>
+  
+ <script type="text/javascript"><!--
+ 
+ // Notice parent about user actions
+  
+ $(document).ready(function () {
+  $(".thickbox").click(function() {
+  
+    var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
+
+    var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
+    if (parent) {
+      // Pass our height to parent since it is typically cross domain (and can't access it directly)
+        if(hasPostMessage) {
+          parent.postMessage("fullsize", vrtxAdminOrigin);
+        } else { // use the hash stuff in plugin from jQuery "Cowboy"
+          var parent_url = decodeURIComponent(document.location.hash.replace(/^#/,''));
+          $.postMessage({fullsize: true}, parent_url, parent);        
+        }
+     }
+     
+  });
+});
+
+</script>
 </head>
 <body>
 

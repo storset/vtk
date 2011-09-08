@@ -8,7 +8,7 @@
     var previewIframe = $("#create-iframe")[0];
     if (previewIframe) {
       var recievedData = e.data;
-      if(recievedData.indexOf("fullsize") != -1) {
+      if(recievedData.indexOf && recievedData.indexOf("fullsize") != -1) {
         previewIframe.style.height = document.body.clientHeight + "px";
         previewIframe.style.width = document.body.clientWidth + "px";
       }

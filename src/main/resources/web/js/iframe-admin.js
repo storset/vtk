@@ -49,7 +49,7 @@ $(document).ready(function () {
         }
         // Back to normal again
         if(recievedData.indexOf && recievedData.indexOf("originalsize") != -1) {
-          previewCreateIframe.css({"height": 100 + "px", 
+          previewCreateIframe.css({"height": 100 + "px", // TODO: generalize
                                    "width": 150 + "px"});
           previewCreateIframe.removeClass("iframe-fullscreen");
           $("#global-menu-create").css("zIndex", "99");

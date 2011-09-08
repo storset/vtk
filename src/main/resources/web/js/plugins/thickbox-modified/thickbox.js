@@ -337,8 +337,7 @@ function tb_postMessageClose() {
       parent.postMessage("originalsize", vrtxAdminOrigin);
     } else { // use the hash stuff in plugin from jQuery "Cowboy"
       var parent_url = decodeURIComponent(document.location.hash.replace(/^#/,''));
-      alert(parent_url);
-      $.postMessage({fullsize: false}, parent_url, parent);        
+      $.postMessage({originalsize: true}, parent_url, parent);        
     }
   }
 }

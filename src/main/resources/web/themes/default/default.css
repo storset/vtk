@@ -527,6 +527,8 @@ ul.list-menu.tabMenu2,
 ul.list-menu.tabMenu2 li,
 .global-menu ul,
 .global-menu ul li,
+ul.manage-create,
+ul.manage-create li,
 div.localeSelection ul,
 div.localeSelection ul li {
   list-style: none;

@@ -14,11 +14,16 @@
   
   <style type="text/css">
     html, body {
-      background-color: transparent;    
+      background-color: transparent !important;
     }
     body {
       min-width: 0;
       position: relative;
+    }
+    div.dropdown-shortcut-menu-container {
+      left: auto !important;
+      right: 16px !important;
+      top: 28px !important;
     }
   </style>
   

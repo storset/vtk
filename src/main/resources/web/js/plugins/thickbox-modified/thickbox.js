@@ -279,7 +279,10 @@ function tb_showIframe(){
 function tb_remove() {
  	$("#TB_imageOff").unbind("click");
 	$("#TB_closeWindowButton").unbind("click");
-	$("#TB_window").fadeOut("fast",function(){$('#TB_window,#TB_overlay,#TB_HideSelect').trigger("unload").unbind().remove();});
+	$("#TB_window").fadeOut("fast",function(){
+           $('#TB_window,#TB_overlay,#TB_HideSelect').trigger("unload").unbind().remove();
+           tb_postMessageClose();
+        });
 	$("#TB_load").remove();
 	if (typeof document.body.style.maxHeight == "undefined") {//if IE 6
 		$("body","html").css({height: "auto", width: "auto"});
@@ -287,7 +290,6 @@ function tb_remove() {
 	}
 	document.onkeydown = "";
 	document.onkeyup = "";
-        tb_postMessageClose();
 	return false;
 }
 

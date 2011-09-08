@@ -51,7 +51,7 @@ public abstract class AutoCompleteController implements Controller {
     protected static final char FIELD_SEPARATOR = ';';
     protected static final char FIELD_SEPARATOR_ESCAPE = '\\';
     protected static final String PARAM_QUERY = "q";
-    protected static final String PARAM_CONTEXT_URI_OVERRIDE = "context";
+    protected static final String PARAM_SCOPE_URI_OVERRIDE = "scope";
     protected static final String PARAM_PREFERRED_LANG = "lang";
     protected static final String RESPONSE_CONTENT_TYPE = "text/plain;charset=utf-8";
 
@@ -102,7 +102,7 @@ public abstract class AutoCompleteController implements Controller {
             return Path.ROOT;
         }
 
-        String contextParam = request.getParameter(PARAM_CONTEXT_URI_OVERRIDE);
+        String contextParam = request.getParameter(PARAM_SCOPE_URI_OVERRIDE);
 
         // Check if it's a complete url
         try {

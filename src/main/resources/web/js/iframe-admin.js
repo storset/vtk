@@ -23,5 +23,13 @@ $(document).ready(function () {
       }
       previewIframe.style.height = newHeight + "px";
     }
+    var previewIframe = $("#create-iframe")[0];
+    if (previewIframe) {
+      var recievedData = e.data;
+      if(recievedData.indexOf && recievedData.indexOf("fullsize") != -1) {
+        previewIframe.style.height = document.body.clientHeight + "px";
+        previewIframe.style.width = document.body.clientWidth + "px";
+      }
+    }
   }); // TODO: here we can add where we only want to receive from, e.g. }, "<domain>");
 });

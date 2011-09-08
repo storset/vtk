@@ -1,31 +1,5 @@
 /* Need to override classes from default.css */
 
-
 .browse-actions {
 	display: inline;
-}
-
-table.directoryListing {
-	margin: 0;
-	padding: 0;
-        clear: left;
-	margin-bottom: 1em;
-        font-weight: normal;
-        width: 100%;
-        border-collapse: collapse;
-        border: 1px solid #b0e0e6;
-        //white-space: nowrap;
-}
-
-/* Banner section: */
-
-div.banner {
-  background-color: #fff;
-  border-color: #807743;
-}
-
-.close {
-  padding-right: 15px;
-  padding-left: 20px;
-  background: transparent url(icons/close.gif) no-repeat 1px 0px;
 }

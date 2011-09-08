@@ -12,6 +12,7 @@ $(document).ready(function () {
   $.receiveMessage(function(e) {
      hasReceiveMessageHandler = true;
   
+    // Preview iframe
     var previewIframeMinHeight = 350;
     var previewIframeMaxHeight = 20000;
     var previewIframe = $("iframe#previewIframe")[0]
@@ -28,6 +29,8 @@ $(document).ready(function () {
       }
       previewIframe.style.height = newHeight + "px";
     }
+    
+    // Create tree iframe
     var previewIframe = $("#create-iframe")[0];
     if (previewIframe) {
       var recievedData = e.data;
@@ -36,5 +39,6 @@ $(document).ready(function () {
         previewIframe.style.width = document.body.clientWidth + "px";
       }
     }
+    
   }); // TODO: here we can add where we only want to receive from, e.g. }, "<domain>");
 });

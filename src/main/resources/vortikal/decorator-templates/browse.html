@@ -18,12 +18,7 @@
       ${browse:breadcrumb}
     </div> 
     <div id="app-content">	
-      <div id="titleContainer">
-        <div class="resource-title ${resource:property id=[type]} ${resource:property id=[isCollection]}">  
-          <h1>${resource:property id=[title]}</h1>
-          ${browse:global-menu}
-        </div>
-      </div>
+      ${browse:resource-bar}
       <div id="main">
         <div id="contents">
           ${document:body}

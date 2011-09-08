@@ -14,43 +14,42 @@ $(document).ready(function () {
   if (typeof hasReceiveMessageHandler === "undefined" || !hasReceiveMessageHandler) { // not handler in iframe-view.js available
     $.receiveMessage(function(e) {
 
-    hasReceiveMessageHandler = true;
+      hasReceiveMessageHandler = true;
      
-    var recievedData = e.data;
+      var recievedData = e.data;
   
-    // Preview iframe
-    var previewIframeMinHeight = 350;
-    var previewIframeMaxHeight = 20000;
-    var previewIframe = $("iframe#previewIframe")[0]
-    if (previewIframe) {
-      
-      var newHeight = previewIframeMinHeight;
-      if(!(recievedData.indexOf) || (recievedData.indexOf("height") == -1)) {
-        var dataHeight = parseInt(recievedData, 10); // recieved with postMessage
-      } else {
-        var dataHeight = Number(recievedData.replace( /.*height=(\d+)(?:&|$)/, '$1' ) );  // recieved via hash
+      // Preview iframe
+      var previewIframeMinHeight = 350;
+      var previewIframeMaxHeight = 20000;
+      var previewIframe = $("iframe#previewIframe")[0]
+      if (previewIframe) {
+        var newHeight = previewIframeMinHeight;
+        if(!(recievedData.indexOf) || (recievedData.indexOf("height") == -1)) {
+          var dataHeight = parseInt(recievedData, 10); // recieved with postMessage
+        } else {
+          var dataHeight = Number(recievedData.replace( /.*height=(\d+)(?:&|$)/, '$1' ) );  // recieved via hash
+        }
+        if (!$.isNaN(dataHeight) && (dataHeight > previewIframeMinHeight) && (dataHeight <= previewIframeMaxHeight)) {
+          newHeight = dataHeight
+        }
+        previewIframe.style.height = newHeight + "px";
       }
-      if (!$.isNaN(dataHeight) && (dataHeight > previewIframeMinHeight) && (dataHeight <= previewIframeMaxHeight)) {
-        newHeight = dataHeight
-      }
-      previewIframe.style.height = newHeight + "px";
-    }
     
-    // Create tree iframe
-    var previewCreateIframe = $("#create-iframe")[0];
-    if (previewCreateIframe) {
-      // Fullsize
-      if(recievedData.indexOf && recievedData.indexOf("fullsize") != -1) {
-        previewCreateIframe.style.height = document.body.clientHeight + "px";
-        previewCreateIframe.style.width = document.body.clientWidth + "px";
+      // Create tree iframe
+      var previewCreateIframe = $("#create-iframe")[0];
+      if (previewCreateIframe) {
+        // Fullsize
+        if(recievedData.indexOf && recievedData.indexOf("fullsize") != -1) {
+          previewCreateIframe.style.height = document.body.clientHeight + "px";
+          previewCreateIframe.style.width = document.body.clientWidth + "px";
+        }
+        // Back to normal again
+        if(recievedData.indexOf && recievedData.indexOf("originalsize") != -1) {
+          previewCreateIframe.style.height = 50 + "px";
+          previewCreateIframe.style.width = 200 + "px";
+        } 
       }
-      // Back to normal again
-      if(recievedData.indexOf && recievedData.indexOf("originalsize") != -1) {
-        previewCreateIframe.style.height = 50 + "px";
-        previewCreateIframe.style.width = 200 + "px";
-      } 
-    }
     
-  }); // TODO: here we can add where we only want to receive from, e.g. }, "<domain>");
+    }); // TODO: here we can add where we only want to receive from, e.g. }, "<domain>");
   }
 });

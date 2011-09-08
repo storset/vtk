@@ -136,7 +136,7 @@
             <value>${themeBaseURL}/report/jquery.treeview.css</value>
           </list>
         </entry>
-        <entry key="jsURLs">
+       <entry key="jsURLs">
           <list>
             <value>${webResources.baseURL}/jquery/jquery-${jquery.version}.min.js"></value>
             <value>${webResources.baseURL}/jquery/plugins/jquery.vortexTips.js</value>
@@ -162,6 +162,63 @@
   <bean id="createFromDropDown.upService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="service" ref="uploadFileFromDropDownService" />
     <property name="modelName" value="upUrl" />
+    <property name="urlName" value="url" />
+  </bean>
+
+  <bean id="createDropDownService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="handler" ref="createDropDownHandler" />
+    <property name="assertions">
+      <bean class="org.vortikal.web.service.RequestParameterAssertion">
+        <property name="parameterName" value="display" />
+        <property name="parameterValue" value="create-drop-down" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="createDropDownHandler" class="org.vortikal.web.actions.create.CreateDropDownController">
+    <property name="viewName" value="createDropDown.view" />
+  </bean>
+  
+ <bean id="createDropDown.viewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
+    <property name="views">
+      <map>
+        <entry key="createDropDown.view" value-ref="createDropDown.view" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="createDropDown.view" parent="freemarkerView">
+    <property name="url" value="system/create-drop-down.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="createFromDropDown.docService.urlProvider" />
+        <ref bean="createFromDropDown.collService.urlProvider" />
+        <ref bean="createFromDropDown.upService.urlProvider" />
+      </list>
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/default.css</value>
+          </list>
+        </entry>
+        <entry key="jsURLs">
+          <list>
+           <value>${webResources.baseURL}/jquery/jquery-${jquery.version}.min.js"></value>
+           <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-1.8.8.custom/js/jquery-ui-1.8.8.custom.min.js"></value>
+           <value>${webResources.baseURL}/js/admin-enhancements.js"></value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="createDropDown.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="service" ref="createDropDownService" />
+    <property name="modelName" value="create" />
     <property name="urlName" value="url" />
   </bean>
 

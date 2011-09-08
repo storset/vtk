@@ -1,6 +1,36 @@
 <#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
 
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+  <#if cssURLs?exists>
+    <#list cssURLs as cssURL>
+    <link rel="stylesheet" href="${cssURL}" />
+    </#list>
+  </#if>
+  
+  <style type="text/css">
+    html, body {
+      background-color: #fff;    
+    }
+    body {
+      min-width: 0;
+      position: relative;
+    }
+  </style>
+  
+  <#if jsURLs?exists>
+    <#list jsURLs as jsURL>
+    <script type="text/javascript" src="${jsURL}"></script>
+    </#list>
+  </#if>
+
+</head>
+<body>
+
 <#assign docUrl = docUrl.url />
 <#assign collUrl = collUrl.url />
 <#assign upUrl = upUrl.url />
@@ -22,3 +52,6 @@
     </a>
   </li>
 </ul>
+
+</body>
+</html>

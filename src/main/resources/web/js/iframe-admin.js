@@ -45,8 +45,8 @@ $(document).ready(function () {
         }
         // Back to normal again
         if(recievedData.indexOf && recievedData.indexOf("originalsize") != -1) {
-          previewCreateIframe.style.height = 50 + "px";
-          previewCreateIframe.style.width = 200 + "px";
+          previewCreateIframe.style.height = 180 + "px";
+          previewCreateIframe.style.width = 100 + "px";
         } 
       }
     

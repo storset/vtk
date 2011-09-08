@@ -6,19 +6,24 @@
  *    see src: https://raw.github.com/cowboy/jquery-postmessage/master/jquery.ba-postmessage.js
  */
  
-var hasReceiveMessageHandler = false; 
+if(typeof hasReceiveMessageHandler === "undefined") {
+  var hasReceiveMessageHandler = false; 
+}
  
 $(document).ready(function () {
-  $.receiveMessage(function(e) {
-     hasReceiveMessageHandler = true;
+  if (typeof hasReceiveMessageHandler === "undefined" || !hasReceiveMessageHandler) { // not handler in iframe-view.js available
+    $.receiveMessage(function(e) {
+
+    hasReceiveMessageHandler = true;
      
-     var recievedData = e.data;
+    var recievedData = e.data;
   
     // Preview iframe
     var previewIframeMinHeight = 350;
     var previewIframeMaxHeight = 20000;
     var previewIframe = $("iframe#previewIframe")[0]
     if (previewIframe) {
+      
       var newHeight = previewIframeMinHeight;
       if(!(recievedData.indexOf) || (recievedData.indexOf("height") == -1)) {
         var dataHeight = parseInt(recievedData, 10); // recieved with postMessage
@@ -47,4 +52,5 @@ $(document).ready(function () {
     }
     
   }); // TODO: here we can add where we only want to receive from, e.g. }, "<domain>");
+  }
 });

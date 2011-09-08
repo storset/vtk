@@ -12,7 +12,10 @@
             previewIframe.style.height = document.body.clientHeight + "px";
             previewIframe.style.width = document.body.clientWidth + "px";
           }
-      
+          if(recievedData.indexOf && recievedData.indexOf("originalsize") != -1) {
+            previewIframe.style.height = 50 + "px";
+            previewIframe.style.width = 200 + "px";
+          }      
         }
       }); // TODO: here we can add where we only want to receive from, e.g. }, "<domain>");
     }

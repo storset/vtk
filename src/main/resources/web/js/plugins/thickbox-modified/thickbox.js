@@ -8,6 +8,8 @@
 // Modified path for use in Vortex
 var tb_pathToImage = "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif";
 
+// USIT added: tb_postMessageClose() for notify if in iframe
+
 /*!!!!!!!!!!!!!!!!! edit below this line at your own risk !!!!!!!!!!!!!!!!!!!!!!!*/
 
 //on page load call tb_init
@@ -237,6 +239,7 @@ function tb_show(caption, url, imageGroup) {//function called when the user clic
 						$("#TB_load").remove();
 						$("#TB_window").css({display:"block"});
 					}
+
 				}else{
 					$("#TB_ajaxContent").load(url += "&random=" + (new Date().getTime()),function(){//to do a post change this load method
 						tb_position();
@@ -245,6 +248,7 @@ function tb_show(caption, url, imageGroup) {//function called when the user clic
 						$("#TB_window").css({display:"block"});
 					});
 				}
+                                
 			
 		}
 
@@ -283,6 +287,7 @@ function tb_remove() {
 	}
 	document.onkeydown = "";
 	document.onkeyup = "";
+        tb_postMessageClose();
 	return false;
 }
 
@@ -320,6 +325,20 @@ function tb_detectMacXFF() {
   var userAgent = navigator.userAgent.toLowerCase();
   if (userAgent.indexOf('mac') != -1 && userAgent.indexOf('firefox')!=-1) {
     return true;
+  }
+}
+
+function tb_postMessageClose() {
+  var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
+  var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
+  if (parent) {
+    // Pass our height to parent since it is typically cross domain (and can't access it directly)
+    if(hasPostMessage) {
+      parent.postMessage("originalsize", vrtxAdminOrigin);
+    } else { // use the hash stuff in plugin from jQuery "Cowboy"
+      var parent_url = decodeURIComponent(document.location.hash.replace(/^#/,''));
+      $.postMessage({originalsize: true}, parent_url, parent);        
+    }
   }
 }
 

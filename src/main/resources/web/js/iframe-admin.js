@@ -36,17 +36,19 @@ $(document).ready(function () {
       }
     
       // Create tree iframe
-      var previewCreateIframe = $("#create-iframe")[0];
+      var previewCreateIframe = $("#create-iframe");
       if (previewCreateIframe) {
         // Fullsize
         if(recievedData.indexOf && recievedData.indexOf("fullsize") != -1) {
-          previewCreateIframe.style.height = document.body.clientHeight + "px";
-          previewCreateIframe.style.width = document.body.clientWidth + "px";
+          previewCreateIframe.css({"height": document.body.clientHeight + "px", 
+                                    "width": document.body.clientWidth + "px"});
+          previewCreateIframe.addClass("iframe-fullscreen");
         }
         // Back to normal again
         if(recievedData.indexOf && recievedData.indexOf("originalsize") != -1) {
-          previewCreateIframe.style.height = 100 + "px";
-          previewCreateIframe.style.width = 180 + "px";
+          previewCreateIframe.css({"height": 100 + "px", 
+                                   "width": 180 + "px"});
+          previewCreateIframe.removeClass("iframe-fullscreen");
         } 
       }
     

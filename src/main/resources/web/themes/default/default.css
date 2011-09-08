@@ -587,6 +587,12 @@ div.localeSelection.js-on .localeSelectionHeader {
 
 /* Global menu */
 
+.iframe-fullscreen {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+}
+
 ul.list-menu.resourceMenuLeft {
   margin: -50px 0 20px 0;
   clear: left;

@@ -42,20 +42,24 @@ $(document).ready(function () {
         if(recievedData.indexOf && recievedData.indexOf("fullsize") != -1) {
           var winHeight = $(window).height();
           var winWidth = $(window).width();
-          var winHeightDelta = winHeight - previewCreateIframe.contents().height(); 
-          var winWidthDelta = winWidth - previewCreateIframe.contents().width();
+          var createDropdownOrigPos = previewCreateIframe.offset();
+          var createDropdownOrigPosTop = createDropdownOrigPos.top;
+          var createDropdownOrigPosLeft = createDropdownOrigPos.left;
+          vrtxAdmin.log({msg: " dropdown orig pos: x=" + createDropdownOrigPosLeft + " y=" + createDropdownOrigPosTop});
           
-          var createDropdownPosA = previewCreateIframe.offset();
-          var createDropdownPosAtop = createDropdownPosA.top;
-          var createDropdownPosAleft = createDropdownPosA.left;
-
-          previewCreateIframe.css({"height": winHeight + "px", 
-                                    "width": winWidth  + "px"});
+          previewCreateIframe.css({
+              "height": winHeight + "px", 
+              "width": winWidth  + "px"
+            });
           previewCreateIframe.addClass("iframe-fullscreen");
           $("#global-menu-create").css("zIndex", "999999");
           
           previewCreateIframe.contents().find(".dropdown-shortcut-menu-container").hide(0);
-          previewCreateIframe.contents().find("ul.manage-create").css({"position": "absolute", "top": createDropdownPosAtop + "px", "left": createDropdownPosAleft + "px"});
+          previewCreateIframe.contents().find("ul.manage-create").css({
+              "position": "absolute",
+              "top": createDropdownOrigPosTop + "px",
+              "left": createDropdownOrigPosLeft + "px"
+            });
           
         }
         // Back to normal again
@@ -64,8 +68,10 @@ $(document).ready(function () {
           if ($(".localeSelection li.active").hasClass("en")) {
             originalWidth = 162;
           }
-          previewCreateIframe.css({"height": 100 + "px", // TODO: generalize
-                                   "width": originalWidth + "px"});
+          previewCreateIframe.css({
+              "height": 100 + "px", // TODO: generalize
+              "width": originalWidth + "px"
+            });
           previewCreateIframe.removeClass("iframe-fullscreen");
           $("#global-menu-create").css("zIndex", "99");
           

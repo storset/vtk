@@ -64,7 +64,7 @@
            var hit = link.closest("li").find("> .hitarea");
            hit.click();
            if(lastNode) { // If last: scroll to node
-             $(window).scrollTo(link, 250, {
+             $("#TB_ajaxContent").scrollTo(link, 250, {
                easing: "swing",
                queue: true,
                axis: 'y'

@@ -40,12 +40,23 @@ $(document).ready(function () {
       if (previewCreateIframe) {
         // Fullsize
         if(recievedData.indexOf && recievedData.indexOf("fullsize") != -1) {
-          previewCreateIframe.css({"height": $(window).height() + "px", 
-                                    "width": $(window).width()  + "px"});
+          var winHeight = $(window).height();
+          var winWidth = $(window).width();
+          var winHeightDelta = winHeight - previewCreateIframe.contents().height(); 
+          var winWidthDelta = winWidth - previewCreateIframe.contents().width();
+          
+          var createDropdownPosA = previewCreateIframe.offset();
+          var createDropdownPosAtop = createDropdownPosA.top;
+          var createDropdownPosAleft = createDropdownPosA.left;
+
+          previewCreateIframe.css({"height": winHeight + "px", 
+                                    "width": winWidth  + "px"});
           previewCreateIframe.addClass("iframe-fullscreen");
           $("#global-menu-create").css("zIndex", "999999");
-          previewCreateIframe.contents().find("ul.manage-create").hide(0);
+          
           previewCreateIframe.contents().find(".dropdown-shortcut-menu-container").hide(0);
+          previewCreateIframe.contents().find("ul.manage-create").css({"position": "absolute", "top": createDropdownPosAtop + "px", "left": createDropdownPosAleft + "px"});
+          
         }
         // Back to normal again
         if(recievedData.indexOf && recievedData.indexOf("originalsize") != -1) {
@@ -57,7 +68,9 @@ $(document).ready(function () {
                                    "width": originalWidth + "px"});
           previewCreateIframe.removeClass("iframe-fullscreen");
           $("#global-menu-create").css("zIndex", "99");
-          previewCreateIframe.contents().find("ul.manage-create").show(0);
+          
+          previewCreateIframe.contents().find("ul.manage-create").css("position", "static");
+          
         } 
       }
     

@@ -1569,6 +1569,10 @@ table.resourceInfo form#propertyForm ul.property .vrtx-textfield {
   margin-right: 10px;
 }
 
+ul.property {
+  margin: 0px;
+}
+
 .resourceInfo .vrtx-button-small {
   margin-left: 2px;
 }
@@ -1977,7 +1981,7 @@ div.vrtx-admin-form {
 
 .submitButtons,
 #submitButtons {
-  margin: 15px 0 0 0;
+  padding: 15px 0 0 0;
   clear: left;
 }
 

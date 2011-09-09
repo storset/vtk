@@ -70,6 +70,15 @@
   margin-top: 0px;
 }
 
+.vrtx-grouped-horizontal .vrtx-string label,
+.vrtx-grouped-horizontal .vrtx-radio label,
+.vrtx-grouped-horizontal .vrtx-resource-ref label,
+.vrtx-grouped-horizontal .vrtx-image-ref label,
+.vrtx-grouped-horizontal .vrtx-media-ref label {
+  margin-bottom: 0px;
+  padding-bottom: 10px;
+}
+
 .vrtx-grouped .vrtx-string,
 .vrtx-grouped .vrtx-radio,
 .vrtx-grouped .vrtx-resource-ref,

@@ -1044,6 +1044,16 @@ div.tabs ul li a {
 div.tabs ul li a:hover {
   background: #4a9ce2;
   color: #fff;
+  border-color: #4a9ce2; 
+  border-bottom: 1px solid #4a9ce2;
+  margin-left: -1px;
+  padding-left: 20px;
+}
+
+div.tabs ul li.activeTab a:hover {
+  border-color: #d8d8d8;
+  margin-left: 0px;
+  padding-left: 19px;
 }
 
 div.tabs ul li.activeTab a,

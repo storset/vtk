@@ -30,6 +30,11 @@ $(document).ready(function () {
       // Create tree iframe
       var previewCreateIframe = $("#create-iframe");
       if (previewCreateIframe) {
+        var originalWidth = 150;
+        if ($(".localeSelection li.active").hasClass("en")) {
+          originalWidth = 162;
+        }
+      
         // Fullsize
         if(recievedData.indexOf && recievedData.indexOf("fullsize") != -1) {
           var winHeight = $(window).height();
@@ -46,7 +51,7 @@ $(document).ready(function () {
             });
           previewCreateIframe.addClass("iframe-fullscreen");
           $(".dropdown-shortcut-menu-container").css("display", "none");
-          $("#global-menu-create").css("zIndex", "999999");
+          $("#global-menu-create").css({"zIndex": "999999", "width": originalWidth + "px"});
           
           // Post back to iframe original iframe position
           var hasPostMessage = previewCreateIframe[0].contentWindow['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
@@ -58,10 +63,6 @@ $(document).ready(function () {
         }
         // Back to normal again
         if(recievedData.indexOf && recievedData.indexOf("originalsize") != -1) {
-          var originalWidth = 150;
-          if ($(".localeSelection li.active").hasClass("en")) {
-            originalWidth = 162;
-          }
           previewCreateIframe.css({
               "height": 135 + "px", // TODO: generalize
               "width": originalWidth + "px"

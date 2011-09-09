@@ -176,10 +176,10 @@
     </property>
   </bean>
 
-  <bean id="createDropDownHandler" class="org.vortikal.web.actions.create.CreateDropDownController">
+  <bean id="createDropDownHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName" value="createDropDown.view" />
   </bean>
-  
+
  <bean id="createDropDown.viewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
     <property name="views">
       <map>

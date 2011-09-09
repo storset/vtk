@@ -179,10 +179,12 @@ $(document).ready(function () {
   // Hack for fixing XML-edit error message
   $("#contents").find(".errormessage").closest("table").addClass("xml-error");
   
+  // Hack for setting iframe width if english i18n
   if ($(".localeSelection li.active").hasClass("en")) {
     $("#create-iframe").css("width", "162px");
   }
 
+  // Preview image
   adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
   adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");
   
@@ -382,16 +384,23 @@ $(document).ready(function () {
   // AJAX INIT: Remove/add permissions
 
   // Show/hide multiple properties (initalization / config)
+  // TODO: better / easier to understand interface (and remove old "." in CSS-ids / classes)
   
   if ($("form#editor").length) {
-    showHide(["#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"],
-              "#resource\\.recursive-listing\\.false:checked", 'false', ["#vrtx-resource\\.recursive-listing-subfolders"]);
+    showHide(["#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"], //radioIds
+              "#resource\\.recursive-listing\\.false:checked",                                         //conditionHide
+              'false',                                                                                 //conditionHideEqual
+              ["#vrtx-resource\\.recursive-listing-subfolders"]);                                      //showHideProps
 
     showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
-              "#resource\\.display-type\\.calendar:checked", null, ["#vrtx-resource\\.event-type-title"]);
+              "#resource\\.display-type\\.calendar:checked",
+              null,
+              ["#vrtx-resource\\.event-type-title"]);
 
     showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
-              "#resource\\.display-type\\.calendar:checked", 'calendar', ["#vrtx-resource\\.hide-additional-content"]);
+              "#resource\\.display-type\\.calendar:checked",
+              'calendar',
+              ["#vrtx-resource\\.hide-additional-content"]);
   }
 
   // Fix IE 6 collectionlisting hover

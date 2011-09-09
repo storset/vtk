@@ -14,7 +14,7 @@ $(document).ready(function () {
 
 
 /*-------------------------------------------------------------------*\
-    Dropdown (TODO: not dupe the one from admin-enhancements.js
+    Dropdown (TODO: not dupe the one from admin-enhancements.js)
 \*-------------------------------------------------------------------*/
 
 function dropdown(options) {

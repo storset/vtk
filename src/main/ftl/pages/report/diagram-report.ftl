@@ -38,7 +38,7 @@
       </div>
       <div class="vrtx-report-diagram-img">
         <img id="webtypesimg" width="550" height="180" alt="<@vrtx.msg code="report.${report.reportname}.webpagepiechart" />" 
-             src="https://chart.googleapis.com/chart?chs=600x180&cht=p3&chd=s:Sm&chdl=<#list report.webTypes as type><#if ((report.webTypeCount[type_index] > 0) && (type_index != 0))>|</#if><#if (report.webTypeCount[type_index] > 0)><@vrtx.msg code="report.webDiagram.+${type}" /></#if></#list>&chl=<#list report.webTypes as type><#if ((report.webTypeCount[type_index] > 0) && (type_index != 0))>|</#if><#if (report.webTypeCount[type_index] > 0)><@vrtx.msg code="report.webDiagram.+${type}" /></#if></#list>&chd=t:<#list report.webTypes as type><#if ((report.webTypeCount[type_index] > 0) && (type_index != 0))>,</#if><#if (report.webTypeCount[type_index] > 0)>${((report.webTypeCount[type_index]/report.thirdtotal)*100)?string("0")}</#if></#list>" />
+             src="https://chart.googleapis.com/chart?chs=600x180&cht=p3&chd=s:Sm&chdl=<#assign first = 0><#list report.webTypes as type><#if (report.webTypeCount[type_index] > 0)><#if (first != 0)>|</#if><@vrtx.msg code="report.webDiagram.+${type}" /><#assign first = 1></#if></#list>&chl=<#assign first = 0><#list report.webTypes as type><#if (report.webTypeCount[type_index] > 0)><#if (first != 0)>|</#if><@vrtx.msg code="report.webDiagram.+${type}" /><#assign first = 1></#if></#list>&chd=t:<#assign first = 0><#list report.webTypes as type><#if (report.webTypeCount[type_index] > 0)><#if (first != 0)>,</#if>${((report.webTypeCount[type_index]/report.thirdtotal)*100)?string("0")}<#assign first = 1></#if></#list>" />
       </div>
     </div>
   </#if>
@@ -63,7 +63,7 @@
       </div>
       <div class="vrtx-report-diagram-img">
         <img id="filetypesimg" width="480" height="180" alt="<@vrtx.msg code="report.${report.reportname}.filetypepiechart" />" 
-             src="https://chart.googleapis.com/chart?chs=520x180&cht=p3&chd=s:Sm&chdl=<#list report.types as type><#if ((report.typeCount[type_index] > 0) && (type_index != 0))>|</#if><#if (report.typeCount[type_index] > 0)><@vrtx.msg code="report.diagram.+${type}" /></#if></#list>&chl=<#list report.types as type><#if ((report.typeCount[type_index] > 0) && (type_index != 0))>|</#if><#if (report.typeCount[type_index] > 0)><@vrtx.msg code="report.diagram.+${type}" /></#if></#list>&chd=t:<#list report.types as type><#if ((report.typeCount[type_index] > 0) && (type_index != 0))>,</#if><#if (report.typeCount[type_index] > 0)>${((report.typeCount[type_index]/report.secondtotal)*100)?string("0")}</#if></#list>" />
+             src="https://chart.googleapis.com/chart?chs=520x180&cht=p3&chd=s:Sm&chdl=<#assign first = 0><#list report.types as type><#if (report.typeCount[type_index] > 0)><#if (first != 0)>|</#if><@vrtx.msg code="report.diagram.+${type}" /><#assign first = 1></#if></#list>&chl=<#assign first = 0><#list report.types as type><#if (report.typeCount[type_index] > 0)><#if (first != 0)>|</#if><@vrtx.msg code="report.diagram.+${type}" /><#assign first = 1></#if></#list>&chd=t:<#assign first = 0><#list report.types as type><#if (report.typeCount[type_index] > 0)><#if (first != 0)>,</#if>${((report.typeCount[type_index]/report.secondtotal)*100)?string("0")}<#assign first = 1></#if></#list>" />
       </div>
     </div>
   </#if>

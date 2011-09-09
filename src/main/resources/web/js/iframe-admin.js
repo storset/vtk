@@ -42,11 +42,12 @@ $(document).ready(function () {
         if(recievedData.indexOf && recievedData.indexOf("fullsize") != -1) {
           var winHeight = $(window).height();
           var winWidth = $(window).width();
-          var createDropdownOrigPos = previewCreateIframe.offset();
-          var createDropdownOrigPosTop = createDropdownOrigPos.top;
-          var createDropdownOrigPosLeft = createDropdownOrigPos.left;
-          vrtxAdmin.log({msg: " dropdown orig pos: x=" + createDropdownOrigPosLeft + " y=" + createDropdownOrigPosTop});
           
+          // Get original iframe position
+          previewCreateIframePos = previewCreateIframe.offset();
+          previewCreateIframePosTop = previewCreateIframePos.top;
+          previewCreateIframePosLeft = previewCreateIframePos.left;
+
           previewCreateIframe.css({
               "height": winHeight + "px", 
               "width": winWidth  + "px"
@@ -54,13 +55,13 @@ $(document).ready(function () {
           previewCreateIframe.addClass("iframe-fullscreen");
           $("#global-menu-create").css("zIndex", "999999");
           
-          previewCreateIframe.contents().find(".dropdown-shortcut-menu-container").hide(0);
-          previewCreateIframe.contents().find("ul.manage-create").css({
-              "position": "absolute",
-              "top": createDropdownOrigPosTop + "px",
-              "left": createDropdownOrigPosLeft + "px"
-            });
-          
+          // Post back to iframe original iframe position
+          var hasPostMessage = previewCreateIframe[0].contentWindow['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
+          var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
+          if(hasPostMessage) {
+            previewCreateIframe[0].contentWindow.postMessage("top=" + previewCreateIframePosTop 
+                                                           + "left=" + previewCreateIframePosLeft, vrtxAdminOrigin);
+          }
         }
         // Back to normal again
         if(recievedData.indexOf && recievedData.indexOf("originalsize") != -1) {
@@ -73,10 +74,7 @@ $(document).ready(function () {
               "width": originalWidth + "px"
             });
           previewCreateIframe.removeClass("iframe-fullscreen");
-          $("#global-menu-create").css("zIndex", "99");
-          
-          previewCreateIframe.contents().find("ul.manage-create").css("position", "static");
-          
+          $("#global-menu-create").css("zIndex", "99");    
         } 
       }
     

@@ -363,8 +363,10 @@ function tb_postMessageClose() {
   if (parent) {
     // Pass our height to parent since it is typically cross domain (and can't access it directly)
     if (hasPostMessage) {
+      $("ul.manage-create").css("position", "static"); // reset position
       parent.postMessage("originalsize", vrtxAdminOrigin);
     } else { // use the hash stuff in plugin from jQuery "Cowboy"
+      $("ul.manage-create").css("position", "static"); // reset position
       var parent_url = decodeURIComponent(document.location.hash.replace(/^#/, ''));
       $.postMessage({
         originalsize: true

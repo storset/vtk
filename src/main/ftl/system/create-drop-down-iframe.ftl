@@ -20,6 +20,6 @@
 <script type="text/javascript">
    // avoid flickering by set real height after 500ms
    setTimeout(function() {
-     $(iframe).css("height", "100px");
+     $("#create-iframe").css("height", "100px");
    }, 500);
 </script>

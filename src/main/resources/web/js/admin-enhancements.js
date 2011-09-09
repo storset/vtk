@@ -765,7 +765,7 @@ function dropdownLanguageMenu() {
   languageMenu.addClass("dropdown-shortcut-menu-container");
 
   $(".localeSelection").delegate(".localeSelectionHeader", "click", function (e) {
-    $(this).next(".dropdown-shortcut-menu-container").slideToggle(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideDown);
+    $(this).next(".dropdown-shortcut-menu-container").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
     e.stopPropagation();
     e.preventDefault();
   });
@@ -789,7 +789,7 @@ function dropdown(options) {
     shortcutMenu.css("left", (list.width() - 24) + "px");
 
     list.find("li.first #dropdown-shortcut-menu-click-area").click(function (e) {
-      shortcutMenu.slideToggle(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideDown);
+      shortcutMenu.slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
       e.stopPropagation();
       e.preventDefault();
     });

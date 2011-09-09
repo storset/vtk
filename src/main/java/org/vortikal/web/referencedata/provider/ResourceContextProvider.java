@@ -47,6 +47,7 @@ import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.ServiceUnlinkableException;
 
 /**
  * Standard resource context model builder. Creates a model map with "standard" model data for the current resource.
@@ -157,7 +158,9 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         resourceContextModel.put("currentURI", requestContext.getResourceURI());
         resourceContextModel.put("parentURI", parent);
         resourceContextModel.put("currentServiceName", currentService.getName());
-        resourceContextModel.put("currentServiceURL", currentService.constructURL(resource, principal));
+        try {
+          resourceContextModel.put("currentServiceURL", currentService.constructURL(resource, principal));
+        } catch(ServiceUnlinkableException sue) {}
         resourceContextModel.put("repositoryId", repository.getId());
         resourceContextModel.put("requestContext", requestContext);
         resourceContextModel.put("repositoryReadOnly", repository.isReadOnly());

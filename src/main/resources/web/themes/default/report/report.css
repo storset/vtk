@@ -102,10 +102,6 @@ div.vrtx-report-diagram-img {
   float: left;
 }
 
-td.vrtx-report-diagram-count {
-  width: 70px;
-}
-
 tr.vrtx-report-diagram-total {
   border-top: 5px solid #fff;
 }
@@ -118,6 +114,7 @@ tr.vrtx-report-diagram-total td {
 td.vrtx-report-diagram-count {
   font-size: 1.154em;
   text-align: right;
+  padding-left: 30px;
 }
 
 td.vrtx-report-diagram-text {

@@ -5,7 +5,7 @@
  *    http://benalman.com/code/projects/jquery-postmessage/examples/iframe/
  *    see src: https://raw.github.com/cowboy/jquery-postmessage/master/jquery.ba-postmessage.js
  */
- 
+
 $(document).ready(function () {
     $.receiveMessage(function(e) {
       var recievedData = e.data;
@@ -13,7 +13,7 @@ $(document).ready(function () {
       // What is the recieved message..
       var isMsgCreateIframeFullSize = recievedData.indexOf && (recievedData.indexOf("fullsize") != -1);
       var isMsgCreateIframeOriginalSize = recievedData.indexOf && (recievedData.indexOf("originalsize") != -1);
-      var isMsgPreviewIframeInnerHeight = !(isMsgCreateIframeFullSize || isMsgCreateIframeOriginalSize);
+      var isMsgPreviewIframeInnerHeight = !isMsgCreateIframeFullSize && !isMsgCreateIframeOriginalSize;
 
       if(isMsgPreviewIframeInnerHeight) {
         var previewIframe = $("iframe#previewIframe")[0]
@@ -58,7 +58,8 @@ $(document).ready(function () {
             $("#global-menu-create").css({"zIndex": "999999", "width": originalWidth + "px"});
           
             // Post back to iframe the original iframe offset position
-            if(!$.isNaN(previewCreateIframePosTop) && !$.isNaN(previewCreateIframePosLeft)) {
+            var isPreviewCreateIframePosValid = !$.isNaN(previewCreateIframePosTop) && !$.isNaN(previewCreateIframePosLeft);
+            if(isPreviewCreateIframePosValid) {
               var hasPostMessage = previewCreateIframe[0].contentWindow['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
               var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
               if(hasPostMessage) {

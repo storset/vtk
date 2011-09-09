@@ -1,6 +1,8 @@
 /**
  * JS for handling manually approved resources
  *
+ * TODO: cleaner interfaces and easier to understand code (probably refactor more human-readable methods)
+ *
  */
 
 var lastVal = "";

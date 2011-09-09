@@ -19,6 +19,7 @@
     body {
       min-width: 0;
       position: relative;
+      text-align: left;
     }
     div.dropdown-shortcut-menu-container {
       left: auto !important;

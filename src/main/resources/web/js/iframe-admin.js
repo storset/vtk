@@ -11,20 +11,20 @@ $(document).ready(function () {
       var recievedData = e.data;
 
       // What is the recieved message..
-      var isMsgCreateIframeFullsize = recievedData.indexOf && (recievedData.indexOf("fullsize") != -1);
-      var isMsgCreateIframeOriginalsize = recievedData.indexOf && (recievedData.indexOf("originalsize") != -1);
-      var isMsgPreviewIframeInnerHeight = !(isMsgCreateIframeFullsize || isMsgCreateIframeOriginalsize);
+      var isMsgCreateIframeFullSize = recievedData.indexOf && (recievedData.indexOf("fullsize") != -1);
+      var isMsgCreateIframeOriginalSize = recievedData.indexOf && (recievedData.indexOf("originalsize") != -1);
+      var isMsgPreviewIframeInnerHeight = !(isMsgCreateIframeFullSize || isMsgCreateIframeOriginalSize);
 
-     if(isMsgPreviewIframeInnerHeight) {
-        var previewIframeMinHeight = 350;
-        var previewIframeMaxHeight = 20000;
+      if(isMsgPreviewIframeInnerHeight) {
         var previewIframe = $("iframe#previewIframe")[0]
         if (previewIframe) {
+          var previewIframeMinHeight = 350;
+          var previewIframeMaxHeight = 20000;
           var newHeight = previewIframeMinHeight;
-          if(recievedData.indexOf("height=") == -1)) {
-            var dataHeight = Number(recievedData.replace( /.*height=(\d+)(?:&|$)/, '$1' ) );  // recieved via hash
-          } else {
-            var dataHeight = parseInt(recievedData, 10); // recieved with postMessage
+          if(recievedData.indexOf("height=") != -1) { // recieved via hash
+            var dataHeight = Number(recievedData.replace(/.*height=(\d+)(?:&|$)/, '$1' ));
+          } else { // recieved with postMessage
+            var dataHeight = parseInt(recievedData, 10);
           }
           if (!$.isNaN(dataHeight) && (dataHeight > previewIframeMinHeight) && (dataHeight <= previewIframeMaxHeight)) {
             newHeight = dataHeight
@@ -39,7 +39,7 @@ $(document).ready(function () {
           if ($(".localeSelection li.active").hasClass("en")) {
             originalWidth = 162;
           }
-          if(isMsgCreateIframeFullsize) {
+          if(isMsgCreateIframeFullSize) {
             var winHeight = $(window).height();
             var winWidth = $(window).width();
           
@@ -66,7 +66,7 @@ $(document).ready(function () {
                                                                + "left=" + previewCreateIframePosLeft, vrtxAdminOrigin);
               }
             }
-          } else if(isMsgCreateIframeOriginalsize) {
+          } else if(isMsgCreateIframeOriginalSize) {
             previewCreateIframe.css({
               "height": 135 + "px",
               "width": originalWidth + "px"

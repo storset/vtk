@@ -178,6 +178,10 @@ $(document).ready(function () {
   }
   // Hack for fixing XML-edit error message
   $("#contents").find(".errormessage").closest("table").addClass("xml-error");
+  
+  if ($(".localeSelection li.active").hasClass("en")) {
+    $("#create-iframe").css("width", "162px");
+  }
 
   adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
   adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");

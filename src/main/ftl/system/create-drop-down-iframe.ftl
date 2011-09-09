@@ -13,16 +13,12 @@
   }
 </style>
 
-<iframe id="create-iframe" src="" allowTransparency="true" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" vspace="0" hspace="0">
+<iframe id="create-iframe" src="${create.url}#${resourceContext.currentServiceURL}" allowTransparency="true" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" vspace="0" hspace="0">
   [Du har ikke iframe]
 </iframe>
 
 <script type="text/javascript">
-   var href = location.href;
-   var iframe = document.getElementById("create-iframe");
-   iframe.src = "${create.url}" + "#" + href;
-   
-   // avoid flickering by set real height after 250ms
+   // avoid flickering by set real height after 500ms
    setTimeout(function() {
      $(iframe).css("height", "100px");
    }, 500);

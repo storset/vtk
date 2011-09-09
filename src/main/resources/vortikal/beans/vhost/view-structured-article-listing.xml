@@ -21,7 +21,7 @@
         <value>resource:caption</value>
         <value>resource:introduction</value>
         <value>resource:hasBodyContent</value>
-        <value>resource:numberOfComments</value>
+        <value>numberOfComments</value>
       </list>
     </property>
   </bean>

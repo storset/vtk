@@ -24,6 +24,7 @@
         <value>resource:start-date</value>
         <value>resource:mapurl</value>
         <value>resource:hasBodyContent</value>
+        <value>numberOfComments</value>
         <!-- additionalContent -->
       </list>
     </property>
@@ -59,6 +60,7 @@
         <value>resource:start-date</value>
         <value>resource:mapurl</value>
         <value>resource:hasBodyContent</value>
+        <value>numberOfComments</value>
       </list>
     </property>
   </bean>

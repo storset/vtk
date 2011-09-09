@@ -26,7 +26,5 @@
      }, 500);
   </script>
 <#else>
-
   <@dropdownUtils.genDropdown />
-
 </#if>

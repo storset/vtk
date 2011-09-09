@@ -1,6 +1,12 @@
 <#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
 
+<@genDropdown true />
+
+<#macro genDropdown preview=false>
+
+<#if preview>
+
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -11,28 +17,29 @@
     <link rel="stylesheet" href="${cssURL}" />
     </#list>
   </#if>
-  <!--[if IE 7]>
-    <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css"/> 
-  <![endif]--> 
-  <!--[if lte IE 6]>
-    <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css"/> 
-  <![endif]--> 
   
-  <style type="text/css">
-    html, body {
-      background-color: transparent !important;
-    }
-    body {
-      min-width: 0;
-      position: relative;
-      text-align: left;
-    }
-    div.dropdown-shortcut-menu-container {
-      left: auto !important;
-      right: 0px !important;
-      top: 28px !important;
-    }
-  </style>
+    <!--[if IE 7]>
+      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css"/> 
+    <![endif]--> 
+    <!--[if lte IE 6]>
+      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css"/> 
+    <![endif]--> 
+  
+    <style type="text/css">
+      html, body {
+        background-color: transparent !important;
+      }
+      body {
+        min-width: 0;
+        position: relative;
+        text-align: left;
+      }
+      div.dropdown-shortcut-menu-container {
+        left: auto !important;
+        right: 0px !important;
+        top: 28px !important;
+      }
+    </style>
   
   <#if jsURLs?exists>
     <#list jsURLs as jsURL>
@@ -62,27 +69,35 @@
 </head>
 <body>
 
-<#assign docUrl = docUrl.url />
-<#assign collUrl = collUrl.url />
-<#assign upUrl = upUrl.url />
+</#if>
+
+<#if docUrl?exists && collUrl?exists && upUrl?exists>
 
 <ul class="manage-create"> 
   <li class="manage-create-drop first">
-    <a class="thickbox" title="<@vrtx.msg code="manage.choose-location.document" default="Choose where you would like to create document" />" href="${docUrl?html}">
+    <a class="thickbox" title="<@vrtx.msg code="manage.choose-location.document" default="Choose where you would like to create document" />" href="${docUrl.url?html}">
       <@vrtx.msg code="manage.document" default="Create document" />
     </a>
   </li>
   <li class="manage-create-drop">
-    <a class="thickbox" title="<@vrtx.msg code="manage.choose-location.collection" default="Choose where you would like to create folder" />" href="${collUrl?html}">
+    <a class="thickbox" title="<@vrtx.msg code="manage.choose-location.collection" default="Choose where you would like to create folder" />" href="${collUrl.url?html}">
       <@vrtx.msg code="manage.collection" default="Create folder" />
     </a>
   </li>
   <li class="manage-create-drop">
-    <a class="thickbox" title="<@vrtx.msg code="manage.choose-location.upload-file" default="Choose where you would like to upload file" />" href="${upUrl?html}">
+    <a class="thickbox" title="<@vrtx.msg code="manage.choose-location.upload-file" default="Choose where you would like to upload file" />" href="${upUrl.url?html}">
       <@vrtx.msg code="manage.upload-file" default="Upload file" />
     </a>
   </li>
 </ul>
 
+</#if>
+
+<#if preview>
+
 </body>
 </html>
+
+</#if>
+
+</#macro>

@@ -1262,6 +1262,9 @@
       <list>
         <ref bean="resourceContextProvider" />
         <ref bean="createDropDown.urlProvider" />
+        <ref bean="createFromDropDown.docService.urlProvider" />
+        <ref bean="createFromDropDown.collService.urlProvider" />
+        <ref bean="createFromDropDown.upService.urlProvider" />
       </list>
     </property>
   </bean>

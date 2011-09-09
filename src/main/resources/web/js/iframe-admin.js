@@ -6,16 +6,8 @@
  *    see src: https://raw.github.com/cowboy/jquery-postmessage/master/jquery.ba-postmessage.js
  */
  
-if(typeof hasReceiveMessageHandler === "undefined") {
-  var hasReceiveMessageHandler = false; 
-}
- 
 $(document).ready(function () {
-  if (typeof hasReceiveMessageHandler === "undefined" || !hasReceiveMessageHandler) { // not handler in iframe-view.js available
     $.receiveMessage(function(e) {
-    
-      hasReceiveMessageHandler = true;
-     
       var recievedData = e.data;
   
       // Preview iframe
@@ -53,6 +45,7 @@ $(document).ready(function () {
               "width": winWidth  + "px"
             });
           previewCreateIframe.addClass("iframe-fullscreen");
+          $(".dropdown-shortcut-menu-container").css("display", "none");
           $("#global-menu-create").css("zIndex", "999999");
           
           // Post back to iframe original iframe position
@@ -70,7 +63,7 @@ $(document).ready(function () {
             originalWidth = 162;
           }
           previewCreateIframe.css({
-              "height": 100 + "px", // TODO: generalize
+              "height": 135 + "px", // TODO: generalize
               "width": originalWidth + "px"
             });
           previewCreateIframe.removeClass("iframe-fullscreen");
@@ -79,5 +72,4 @@ $(document).ready(function () {
       }
     
     }); // TODO: here we can add where we only want to receive from, e.g. }, "<domain>");
-  }
 });

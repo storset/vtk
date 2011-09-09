@@ -22,9 +22,10 @@
   <script type="text/javascript">
      // avoid flickering by set real height after 500ms
      setTimeout(function() {
-       $("#create-iframe").css("height", "100px");
+       $("#create-iframe").css("height", "135px");
      }, 500);
   </script>
+
 <#else>
   <@dropdownUtils.genDropdown />
 </#if>

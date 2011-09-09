@@ -429,7 +429,9 @@ function initFileUpload() {
   inputFile.addClass("js-on");
       
   inputFile.change(function(e) {
-    form.find("#fake-file").val($(this).val());
+    var filePath = $(this).val();
+    filePath = filePath.substring(filePath.lastIndexOf("\\")+1);
+    form.find("#fake-file").val(filePath);
   });
     
   inputFile.hover(function () {

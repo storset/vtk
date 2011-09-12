@@ -41,6 +41,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.View;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -113,12 +115,20 @@ public class CreateFromDropDownDecoratorComponent extends AbstractDecoratorCompo
             }
         }
 
-        RequestContext req = RequestContext.getRequestContext();
-        String action = req.getServletRequest().getParameter("action");
-        if (action == null)
-            model.put("preview", false);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Resource resource = repository.retrieve(token, requestContext.getResourceURI(), true);
+        HttpServletRequest sr = requestContext.getServletRequest();
+
+        String parameter;
+        if (resource.isCollection() && ((parameter = sr.getParameter("action")) != null))
+            model.put("preview", parameter.equals("preview"));
+        else if (!resource.isCollection() && ((parameter = sr.getParameter("vrtx")) != null)
+                && (sr.getParameterMap().size() == 1))
+            model.put("preview", parameter.equals("admin"));
         else
-            model.put("preview", action.equals("preview"));
+            model.put("preview", false);
 
         if (this.view instanceof ReferenceDataProviding) {
             ReferenceDataProvider[] providers = ((ReferenceDataProviding) this.view).getReferenceDataProviders();

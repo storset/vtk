@@ -62,7 +62,12 @@
     </#if>
     
     <#-- current URL to use in hash communication with iframe (Opera and IE 7) -->
-    <#assign origUrl = url?replace("?vrtx=view-as-webpage", "") + "?vrtx=admin&action=preview" />
+    <#assign origUrl = url?replace("?vrtx=view-as-webpage", "") + "?vrtx=admin" />
+    <#if resourceContext.currentResource.collection>
+      <#assign origUrl = origUrl + "&action=preview" />
+    </#if>
+    
+    
     
     <#if url?contains("?")>
       <#assign url = url + "&amp;" + previewViewParameter />

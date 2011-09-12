@@ -94,8 +94,8 @@
 
   <#assign resourceType = resourceContext.currentResource.resourceType />
 
-  <#-- TMP fix for video and image -- get service from folder instead of resource (you cant create on resource anyway) -->
-  <#if resourceType == "image" || resourceType == "video">
+  <#-- TMP fix for image -- get service from folder instead of resource (you cant create on resource anyway) -->
+  <#if resourceType == "image">
     <#assign docFinalUrl = docFinalUrl?substring(0, docFinalUrl?last_index_of("/"))
                          + "/" + docFinalUrl?substring(docFinalUrl?index_of("?"), docFinalUrl?length) />
     <#assign collFinalUrl = collFinalUrl?substring(0, collFinalUrl?last_index_of("/"))

@@ -542,7 +542,7 @@
     <property name="parameterDescriptions">
       <map>
         <entry key="uri" value="URI of the imagefolder to include pictures from." />
-        <entry key="limit" value="Maximum number of images to show in list. Default and minimum is 5." />
+        <entry key="limit" value="Maximum number of images to show in list. Default is 5." />
         <entry key="type"
           value="How to the display the component. Default is 'list'. 'gallery' will display an embedded gallery." />
         <entry key="fade-effect"

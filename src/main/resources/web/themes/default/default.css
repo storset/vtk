@@ -1530,7 +1530,7 @@ body#vrtx-permissions .addUser {
   display: block;
 }
 
-div.errorContainer ul.errors li {
+ul.errors li {
   color: #ed1c24;
 }
 

@@ -1245,6 +1245,12 @@ body#vrtx-report-documents #app-content #main #contents #directory-listing td.vr
   width: 40%;
 }
 
+#app-content #main #contents #directory-listing td.name span.name-split,
+#app-content #main #contents #directory-listing td.vrtx-trash-can-name span.name-split,
+body#vrtx-report-documents #app-content #main #contents #directory-listing td.vrtx-report-name span.name-split {
+  display: block;
+}
+
 #app-content #main #contents #directory-listing th.last-modified,
 #app-content #main #contents #directory-listing td.last-modified,
 #app-content #main #contents #directory-listing th#vrtx-trash-can\.deletedTime,

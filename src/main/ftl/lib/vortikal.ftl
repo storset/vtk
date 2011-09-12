@@ -324,28 +324,41 @@
 
 <#--
  * breakSpecificChar
- * Breaks a string if longer than maximum characters on a char
+ * Breaks a string if longer than maximum characters on a char or recursive on nchars
  * Example: <@vrtx.breakSpecificChar nchars=2 char='@'>root@localhost</@vrtx.breakSpecificChar>
  *
  * @param nchars the maximum number of characters before split
  * @param char the char to split on
  *
 -->
-<#macro breakSpecificChar nchars char>
+<#macro breakSpecificChar nchars splitClass="comment-author-part" char="">
   <#compress>
     <#local val><#nested /></#local>
     <#if val?length &lt; nchars>
       ${val}
     <#else>
-      <#local cut_index = val?index_of(char) />
-      <#if (cut_index < 0)>
-        <#local cut_index = nchars />
-      </#if>
-      <#local val = "<span class='comment-author-part-one'>" + val?substring(0, cut_index) + "</span>" 
-                  + "<span class='comment-author-part-two'>" + val?substring(cut_index, val?length) + "</span>" />
-      ${val}
+      <#local cut_index = nchars />
+      <#if (char != "" && val?index_of(char) >= 0)>
+        <#local cut_index = val?index_of(char) />
+        <#local newVal = newVal + "<span class='${splitClass}-one'>" + val?substring(0, cut_index) + "</span>" />
+        <#local newVal = newVal + "<span class='${splitClass}-two'>" + val?substring(cut_index, val?length) + "</span>" /> 
+      <#else>
+        <@splitParts val "" splitClass cut_index 0 />   
+      </#if>        
     </#if>
   </#compress>   
+</#macro>
+
+<#macro splitParts val newVal splitClass cut_index nr>
+   <#local start = cut_index * nr />
+   <#if ((cut_index + start) < val?length)>
+     <#local end = cut_index + start />
+     <#local newVal = newVal + "<span class='${splitClass}-split'>" + val?substring(start, end) + "</span>" />
+     <@splitParts val newVal splitClass cut_index nr+1 />
+   <#else>
+     <#local newVal = newVal + "<span class='${splitClass}-split'>" + val?substring(start, val?length) + "</span>" />
+     ${newVal}   
+   </#if>
 </#macro>
 
 <#--

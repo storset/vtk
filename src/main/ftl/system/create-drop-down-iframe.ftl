@@ -25,7 +25,6 @@
        $("#create-iframe").css("height", "135px");
      }, 500);
   </script>
-
 <#else>
   <@dropdownUtils.genDropdown />
 </#if>

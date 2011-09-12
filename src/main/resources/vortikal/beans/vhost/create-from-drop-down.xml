@@ -138,7 +138,6 @@
         </entry>
        <entry key="jsURLs">
           <list>
-            <value>${webResources.baseURL}/jquery/jquery-${jquery.version}.min.js"></value>
             <value>${webResources.baseURL}/jquery/plugins/jquery.vortexTips.js</value>
             <value>${webResources.baseURL}/jquery/plugins/jquery.treeview.js</value>
             <value>${webResources.baseURL}/jquery/plugins/jquery.treeview.async.js</value>

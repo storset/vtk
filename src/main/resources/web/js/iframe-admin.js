@@ -21,7 +21,7 @@ $(document).ready(function () {
           var previewIframeMinHeight = 350;
           var previewIframeMaxHeight = 20000;
           var newHeight = previewIframeMinHeight;
-          if(recievedData.indexOf("height=") != -1) { // recieved via hash
+          if(recievedData.indexOf) { // recieved via hash
             var dataHeight = Number(recievedData.replace(/.*height=(\d+)(?:&|$)/, '$1' ));
           } else { // recieved with postMessage
             var dataHeight = parseInt(recievedData, 10);

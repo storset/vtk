@@ -50,7 +50,6 @@
               
        // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset, autoWidth
        $(".tree-create").vortexTips("li a", ".vrtx-create-tree", 80, 300, 4000, 300, 10, -8, false);
-
      });
      
      function traverseNode(treeTravNode, lastNode) {

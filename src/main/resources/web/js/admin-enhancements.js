@@ -183,6 +183,14 @@ $(document).ready(function () {
   if ($(".localeSelection li.active").hasClass("en")) {
     $("#create-iframe").css("width", "162px");
   }
+  
+  // Open Webdav collectionlisting in window
+  if (vrtxAdmin.isIE5OrHigher && vrtxAdmin.isWin) {
+    $(".windowsWebdavExplorerService a").click(function(e) {
+      openServerBrowser($(this).attr("href"), 914, 450);   
+      e.preventDefault();
+    });
+  }
 
   // Preview image
   adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");

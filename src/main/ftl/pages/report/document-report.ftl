@@ -86,7 +86,7 @@
           </#if>
 
           <tr class="${rowType} <@vrtx.iconResolver res.resourceType contentType />${firstLast}">  
-            <td class="vrtx-report-name"><a href="${url?html}">${res.name?html}</a></td>
+            <td class="vrtx-report-name"><a href="${url?html}"><@vrtx.breakSpecificChar nchars=48 splitClass="name">${res.name?html}</@vrtx.breakSpecificChar></a></td>
             <td class="vrtx-report-last-modified">${lastModifiedTime?html}</td>
             <td class="vrtx-report-last-modified-by">${modifiedBy}</td>
             <td class="vrtx-report-permission-set">${aclIsInherited?html}</td>

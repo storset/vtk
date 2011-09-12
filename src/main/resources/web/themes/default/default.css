@@ -463,6 +463,10 @@ div.resource-title h1 {
   min-width: 85px; /* at least as wide as 'Endre navn' in dropdown + 15px */
 }
 
+div.resource-title h1 .title-split {
+  display: block;
+} 
+
 div.resource-title.true {
   background: transparent url(images/folder.gif) no-repeat 0px 5px;
 }

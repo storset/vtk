@@ -394,6 +394,20 @@
           </bean>
         </entry>
 
+        <entry key="http://www.uio.no/xsd/studier/studieprogram-samlet/v00./studieprogram-samlet.xsd">
+          <bean parent="abstractXPathEvaluator">
+            <property name="expression"
+              value="vrtx:localize('studier.studieprogram-samlet')" />
+          </bean>
+        </entry>
+
+        <entry key="http://www.uio.no/xsd/studier/studieretning-samlet/v00./studieretning-samlet.xsd">
+          <bean parent="abstractXPathEvaluator">
+            <property name="expression"
+              value="vrtx:localize('studier.studieretning-samlet')" />
+          </bean>
+        </entry>
+
         <entry key="http://www.uio.no/xsd/studier/studieretning-hjemmeside/v00./studieretning-hjemmeside.xsd">
           <bean parent="abstractXPathEvaluator">
             <property name="expression"
@@ -411,6 +425,18 @@
           <bean parent="abstractXPathEvaluator">
             <property name="expression"
               value="concat(vrtx:localize('studier.undervisning-tid-og-sted'), ' (', /tid-og-sted/emnekode, ' - ',vrtx:localize(/tid-og-sted/semester),' ',/tid-og-sted/aar,')')" />
+          </bean>
+        </entry>
+
+        <entry key="http://www.uio.no/xsd/studier/undervisning-eksamen/v00./undervisning-eksamen.xsd">
+          <bean parent="abstractXPathEvaluator">
+            <property name="expression" value="vrtx:localize('studier.undervisning-eksamen')" />
+          </bean>
+        </entry>
+
+        <entry key="http://www.uio.no/xsd/studier/studiekvalitet/v00./studiekvalitet.xsd">
+          <bean parent="abstractXPathEvaluator">
+            <property name="expression" value="vrtx:localize('studier.studiekvalitet')" />
           </bean>
         </entry>
 

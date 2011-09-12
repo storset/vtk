@@ -541,7 +541,7 @@
     <property name="description" value="Inserts a simple image list." />
     <property name="parameterDescriptions">
       <map>
-        <entry key="uri" value="URI of the imagefolder to include pictures from." />
+        <entry key="uri" value="URI of the image folder to include pictures from. Must not end with '/' unless it is the root-folder." />
         <entry key="limit" value="Maximum number of images to show in list. Default is 5." />
         <entry key="type"
           value="How to the display the component. Default is 'list'. 'gallery' will display an embedded gallery." />

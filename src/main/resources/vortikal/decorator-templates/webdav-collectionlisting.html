@@ -6,17 +6,26 @@
     <title>${document:title}</title>
   </head>
   <body${document:element-attributes select=[html.body]}>
-    <div class="body">
-      ${webdav:breadcrumb}
-      ${webdav:info-message}
-      <div id="titleContainer" class="clear">
-        <div class="resource-title ${resource:property id=[type]}">
-          <h1>${manage:resource-header}</h1>
+    <div id="app-head-wrapper"> 
+      <div id="app-head">
+        <div id="global-menu-top">
+          <div class="global-menu-small">
+            ${resource:manage-url}
+          </div>
+          <div class="global-menu-small last">
+            <a href="" onclick="window.close()">${manage:localized-text code=[default.window.close]default=[close window]}
+          </div>
         </div>
       </div>
-      ${document:body}
+      ${webdav:breadcrumb}
+    </div> 
+    <div id="app-content">	
+      ${webdav:info-message}
+      <div id="main">
+        <div id="contents">
+          ${document:body}
+        </div>
+      </div>
     </div>
-    ${resource:manage-url}
   </body>
 </html>
-

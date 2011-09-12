@@ -9,15 +9,15 @@
  
  var li = $("li.windowsWebdavExplorerService");
  
- if ($.browser.msie && $.browser.version >= 5 && isWin) {
+ //if ($.browser.msie && $.browser.version >= 5 && isWin) {
    li.html('<a href="${item.url?html}" title="${tooltipMsg}" target="WindowsExplorer" folder="${item.url?html}" style="behavior:url(#default#AnchorClick)">${titleMsg}<\/a>');
- } else {
+ /*} else {
    if(li.prev().is("li")) {
      li.prev().not(".last").addClass("last");
      li.remove();
    } else {
      li.parent().remove();
    }
- }
+ }*/
 // -->
 </script>

@@ -512,7 +512,8 @@
         <entry key="cssURLs">
           <list>
             <value>${themeBaseURL}/default.css</value>
-            <value>http://www.uio.no/visuell-profil/css/uio.css</value>
+            <value>${themeBaseURL}/webdav-collectionlisting.css</value>
+            <!-- <value>http://www.uio.no/visuell-profil/css/uio.css</value> -->
           </list>
         </entry>
       </map>

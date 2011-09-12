@@ -45,10 +45,7 @@
           <div id="permissions-inheritance">
           <@vrtx.msg code="permissions.isInherited" default="Inherited permissions" />
           <#if aclInfo.aclEditURLs.inheritance?exists>
-            &nbsp;<div class="vrtx-button-small">
-              <input type="submit" id="permissions.toggleInheritance.submit"
-                     name="confirmation" value="<@vrtx.msg code="permissions.setCustom" default="edit" />" />
-            </div>
+            &nbsp;<div class="vrtx-button-small"><input type="submit" id="permissions.toggleInheritance.submit" name="confirmation" value="<@vrtx.msg code="permissions.setCustom" default="edit" />" /></div>
           </#if>
           </div>
         <#else>
@@ -59,12 +56,7 @@
           <div id="permissions-inheritance">         
           <@vrtx.msg code="permissions.notInherited.${resource.resourceType}" default="${defaultNotInherited}" />
           <#if aclInfo.aclEditURLs.inheritance?exists>
-            &nbsp;<div class="vrtx-button-small">
-              <input type="submit"
-                     onclick="return confirm('${warning?html?js_string}');" 
-                     id="permissions.toggleInheritance.submit"
-                     name="confirmation" value="<@vrtx.msg code="permissions.setInherited" default="edit" />" />
-            </div>
+            &nbsp;<div class="vrtx-button-small"><input type="submit" onclick="return confirm('${warning?html?js_string}');" id="permissions.toggleInheritance.submit" name="confirmation" value="<@vrtx.msg code="permissions.setInherited" default="edit" />" /></div>
           </div>
           </#if>
         </#if>

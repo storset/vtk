@@ -76,10 +76,6 @@
             });
         });    
         
-        if(!hasPostMessage) {
-          $("ul.manage-create").hide(0);
-        }
-        
       });
     // -->
     </script>

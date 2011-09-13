@@ -40,7 +40,7 @@
     <property name="emailPropDefPointer" value="resource:email" />
     <property name="picturePropDefPointer" value="resource:picture" />
     <property name="thumbnailPropDefPointer" value="thumbnail" />
-    <property name="imageWidthPropDefPointer" value="imageWidth" />
+    <property name="imageWidthPropDefPointer" value="pixelWidth" />
     <property name="maxImageWidth" value="${resourcetype.image.thumbnail.width}" />
   </bean>
 

@@ -218,24 +218,21 @@ public class VcfController implements Controller {
         Path p = null;
         try {
             URL pURL = URL.parse(picturePath);
-            if (requestURL.getHost().equals(pURL.getHost())) {
+            if (requestURL.getHost().equals(pURL.getHost()))
                 p = pURL.getPath();
-            }
         } catch (Exception e) {
         }
 
         try {
-            if (!picturePath.startsWith("/")) {
+            if (p == null && !picturePath.startsWith("/"))
                 p = currenturi.extend(picturePath);
-            } else {
+            else if (p == null)
                 p = Path.fromString(picturePath);
-            }
         } catch (Exception e) {
         }
 
-        if (p == null) {
+        if (p == null)
             return null;
-        }
 
         Resource r;
         try {
@@ -248,15 +245,15 @@ public class VcfController implements Controller {
         InputStream i;
 
         if (thumbnail == null) {
-            if (getProperty(r, imageWidthPropDefPointer) == null) {
+            Property prop;
+            if ((prop = getProperty(r, imageWidthPropDefPointer)) == null)
                 return null;
-            }
 
-            int width = getProperty(r, imageWidthPropDefPointer).getIntValue();
+            int width = prop.getIntValue();
 
-            if (width > Integer.parseInt(maxImageWidth)) {
+            if (width > Integer.parseInt(maxImageWidth))
                 return null;
-            }
+
             try {
                 i = repository.getInputStream(token, p, true);
             } catch (Exception e) {

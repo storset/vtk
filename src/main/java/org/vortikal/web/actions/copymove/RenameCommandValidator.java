@@ -64,7 +64,7 @@ public class RenameCommandValidator implements Validator {
 
         }
         name = name.trim();
-        if (name.contains("/") || name.equals(".") || name.equals("..")) {
+        if (name.contains("/") || name.contains("?") || name.equals(".") || name.equals("..")) {
             errors.rejectValue("name", "manage.create.document.invalid.name", "This is an invalid name");
             return;
         }

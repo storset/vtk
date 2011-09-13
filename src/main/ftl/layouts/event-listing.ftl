@@ -134,14 +134,15 @@
         </#if>
       </div>
     </div>
+  </div>
 </#macro>
 
 <#macro displayRes event nr last>
-  <#if nr == last>
-    <div class="vrtx-event-component-item vrtx-event-component-item-${nr} last">
-  <#else>
-    <div class="vrtx-event-component-item vrtx-event-component-item-${nr}">
-  </#if>
+<#if nr == last>
+  <div class="vrtx-event-component-item vrtx-event-component-item-${nr} last">
+<#else>
+  <div class="vrtx-event-component-item vrtx-event-component-item-${nr}">
+</#if>
     <#local title = vrtx.propValue(event, 'title') />
     <#local location  = vrtx.propValue(event, 'location')  />
     <#local startDate = vrtx.propValue(event, 'start-date', 'long') />

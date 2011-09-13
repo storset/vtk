@@ -14,6 +14,8 @@
   <div class="vrtx-event-component vrtx-event-component-psd">
 <#elseif res?has_content>
   <div class="vrtx-event-component vrtx-event-component-res">
+<#else>  
+  <div>
 </#if>
     <#if conf.eventsTitle><h2><a href="${conf.uri?html}">${eventsTitle?html}</a></h2></#if>
     <#if psd?has_content>
@@ -72,28 +74,26 @@
       </#if>
       
       <div class="vrtx-event-component-main">
-        <#if conf.showPicture>
+        <#if conf.showPicture && introImg?has_content>
           <#local captionFlattened>
             <@vrtx.flattenHtml value=caption escape=true />
           </#local>
           <div class="vrtx-event-component-picture">
-            <#if introImg?has_content>
-              <#local introImgURI = vrtx.propValue(event, 'picture') />
-              <#if introImgURI?exists>
-                <#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
-              <#else>
-                <#local thumbnail = "" />
-              </#if>
-              <a class="vrtx-image" href="${event.URI?html}">
+            <#local introImgURI = vrtx.propValue(event, 'picture') />
+            <#if introImgURI?exists>
+              <#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
+            <#else>
+              <#local thumbnail = "" />
+            </#if>
+            <a class="vrtx-image" href="${event.URI?html}">
               <#if caption != ''>
                 <img src="${thumbnail?html}" alt="${captionFlattened}" />
               <#else>
                 <img src="${thumbnail?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
               </#if>
-              </a>
-            </#if>
+            </a>
           </div>
-        </#if>
+       </#if>
 
         <div class="vrtx-event-component-title">
           <a class="vrtx-event-component-title summary vrtx-link-check" href="${event.URI?html}">${title?html}</a>
@@ -134,7 +134,6 @@
         </#if>
       </div>
     </div>
-  </div>
 </#macro>
 
 <#macro displayRes event nr last>

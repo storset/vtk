@@ -513,7 +513,7 @@
       <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
         <property name="preContentProperties">
           <list>
-            <ref bean="personListing.unitAreaCodePropDef" />
+            <!-- ref bean="personListing.unitAreaCodePropDef" / -->
             <ref bean="userTitlePropDef" />
             <ref bean="introductionPropDef" />
             <ref bean="introductionImagePropDef" />

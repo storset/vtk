@@ -756,8 +756,11 @@ function toggleConfigCustomPermissions(selectorClass) {
 function checkStillAdmin(selector) {
   var stillAdmin = selector.find(".still-admin").text();
   if(stillAdmin == "false") {
-    if(!confirm("Are you sure you want to remove all admin permissions for yourself?'")) {
+    var confirmRemoveAllAdmin = confirm("Are you sure you want to remove all admin permissions for yourself?");
+    if(!confirmRemoveAllAdmin) {
       return false;
+    } else {
+      location.reload(true); // reload from server
     }
   }
   return true; 
@@ -1255,6 +1258,9 @@ VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
   if (xhr.readyState == 4 && xhr.status == 200) {
     var msg = "The service is not active: " + textStatus;
   } else {
+    if (xhr.status == 403) { // if you have no access anymore -- reload from server
+      location.reload(true);
+    } 
     var msg = "The service returned " + xhr.status + " and failed to retrieve/post form.";
   }
   if ($("#app-content > .errormessage").length) {

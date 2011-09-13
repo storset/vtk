@@ -1207,7 +1207,9 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
         if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
           vrtxAdm.displayErrorContainers(results, form, updateSelector, errorContainer);
         } else {
-          form.find(updateSelector).html($(results).find(updateSelector).html());
+          var upSelector = form.find(updateSelector);
+          upSelector.parent().find("div." + errorContainer).remove();
+          upSelector.html($(results).find(updateSelector).html());
           textfield.val("");
         }
       },

@@ -1,4 +1,5 @@
 <#ftl strip_whitespace=true>
+<#import "/lib/vortikal.ftl" as vrtx />
 
 <#assign locale = springMacroRequestContext.getLocale() />
 

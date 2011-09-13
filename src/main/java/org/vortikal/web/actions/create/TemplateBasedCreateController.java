@@ -119,6 +119,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
 
         if (name.indexOf("/") >= 0) {
             errors.rejectValue("name", "manage.create.document.invalid.name", "This is an invalid document name");
+            return;
         }
         name = fixDocumentName(name);
 

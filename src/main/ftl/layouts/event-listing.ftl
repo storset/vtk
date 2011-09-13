@@ -9,7 +9,12 @@
 </#if>
 
 <#if conf.includeIfEmpty>
-  <div class="vrtx-event-component">
+
+<#if psd?has_content>
+  <div class="vrtx-event-component vrtx-event-component-psd">
+<#elseif res?has_content>
+  <div class="vrtx-event-component vrtx-event-component-res">
+</#if>
     <#if conf.eventsTitle><h2><a href="${conf.uri?html}">${eventsTitle?html}</a></h2></#if>
     <#if psd?has_content>
       <#assign psdSize = psd?size />
@@ -17,28 +22,26 @@
         <@displayPsd event.ps event.date event.showTime event_index+1 psdSize />
       </#list>
     <#elseif res?has_content>
-      <ul class="items">
-        <#assign resSize = res.files?size />
-        <#list res.files as event>
-          <@displayRes event event_index+1 resSize />
-        </#list>
-      </ul>
+      <#assign resSize = res.files?size />
+      <#list res.files as event>
+        <@displayRes event event_index+1 resSize />
+      </#list>
     <#else>
       <@vrtx.msg code="eventListing.noPlanned.allupcoming" />
     </#if>
+    <#if conf.allEventsLink>
+      <div class="vrtx-more">
+        <span><a href="${conf.uri?html}"><@vrtx.msg code="event.go-to-events" default="Go to events" /></a></span>
+      </div>
+    </#if>
   </div>
-  <#if conf.allEventsLink>
-    <div class="vrtx-more">
-      <span><a href="${conf.uri?html}"><@vrtx.msg code="event.go-to-events" default="Go to events" /></a></span>
-    </div>
-  </#if>
 </#if>
 
 <#macro displayPsd event startdate showTime nr last>
   <#if nr == last>
-    <div class="vrtx-event-component-occurence vrtx-event-component-occurence-${nr} last">
+    <div class="vrtx-event-component-item vrtx-event-component-item-${nr} last">
   <#else>
-    <div class="vrtx-event-component-occurence vrtx-event-component-occurence-${nr}">
+    <div class="vrtx-event-component-item vrtx-event-component-item-${nr}">
   </#if>
       <#local title = vrtx.propValue(event, 'title') />
       <#local location  = vrtx.propValue(event, 'location')  />
@@ -135,9 +138,9 @@
 
 <#macro displayRes event nr last>
   <#if nr == last>
-    <li class="item-${nr} item-last">
+    <div class="vrtx-event-component-item vrtx-event-component-item-${nr} last">
   <#else>
-    <li class="item-${nr}">  
+    <div class="vrtx-event-component-item vrtx-event-component-item-${nr}">
   </#if>
     <#local title = vrtx.propValue(event, 'title') />
     <#local location  = vrtx.propValue(event, 'location')  />
@@ -191,5 +194,5 @@
         <p>${intro}</p>
       </div>
     </#if>
-  </li>
+  </div>
 </#macro>

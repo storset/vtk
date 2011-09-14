@@ -426,6 +426,7 @@ a:hover {
   padding: 10px 0 0 0;
   margin-bottom: 12px;
   position: relative;
+  clear: left;
 }
 
 #app-content h2 {

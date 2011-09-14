@@ -156,18 +156,26 @@ div.subbuttons {
   padding-left: 10px;
 }
 
+#app-footer-wrapper {
+  display: none;
+}
+
+#app-content {
+  margin-bottom: 0px;
+}
+
 /* Buttons in bottom row */
 
 div.buttons {
-  background-color: #e8e8e8;
-  padding: 7px 15px;
+  background-color: #d8d8d8;
+  padding: 7px 13%;
   text-align: center;
   height: 27px;
   position: fixed;
-  position: fixed;
-  bottom: 69px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
   z-index: 1;
-  width: 844px;
 }
 
 div.buttons ul {

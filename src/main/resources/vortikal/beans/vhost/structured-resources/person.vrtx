@@ -29,7 +29,8 @@ resourcetype person {
     getRelatedGroups : boolean,
     groups : json (groupName:string, groupUrl:string) multiple,
     rssFeeds : json (rssTitle:string, rssUrl:string) multiple,
-    tags : string multiple overrides tags
+    tags : string multiple overrides tags,
+    related-content : html noextract
   }
 
   edit-rules {
@@ -163,6 +164,19 @@ resourcetype person {
           [call "resource:affiliated-units" {"username":username, "primaryunit":false}]
         [endif]
       </div>
+      ##
+    }
+
+    related-content-in-additional-column {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def theRelated-content document.properties.related-content]
+      [if theRelated-content != null]
+        <div id="vrtx-related-content">
+          [val theRelated-content # unescaped]
+        </div>
+      [endif]
       ##
     }
     
@@ -344,6 +358,7 @@ resourcetype person {
           [call "comp:feeds"]
           [call "resource:project-list"]
           [call "resource:resarch-group-list"]
+          [call "comp:related-content-in-additional-column"]
         </div>
       </body>
     </html>
@@ -413,11 +428,12 @@ resourcetype person {
     groupName : (en : "Group name", no : "Gruppenavn", nn :"Gruppenamn"),
     projectUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     groupUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
+    related-content : (en : "Related content (right column)", no : "Relatert innhold (vises i høyre kolonne)", nn : "Relatert innhald (visast i høgre kolonne)"),
     rssFeeds : (en : "Show content from RSS-streams (from blog, Twitter or alike)", no : "Vis innhold fra RSS-strømmer (fra blogg, Twitter e.l.)", nn :"Vis innhald frå RSS-straumar (frå blogg, Twitter e.l.)"),
     rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
     rssUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilete"),
-    vCard : (en : "Download contact info", no : "Last ned visittkort", nn : "Last ned visittkort"),
+    vCard : (en : "Add to address book", no : "Legg til i adressebok", nn : "Legg til i adressebok"),
     room : (en : "Room", no : "Rom", nn : "Rom"),
     images : (en : "Images", no : "Bilder", nn : "Bilete"),
     contactInformation : (en : "Primary contact information", no : "Primære kontaktopplysninger", nn : "Primære kontaktopplysingar"),

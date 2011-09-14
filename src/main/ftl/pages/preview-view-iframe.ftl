@@ -75,13 +75,13 @@
   }
 
   $(document).ready(function() {
+     
      $('iframe').load(function() {
-        $("iframe").contents().find("a").each(function(i) {
-	      $(this).attr("target", "_top");
-        });
+        $(this).contents().find("a").attr("target", "_top");
+        
         <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'> 
+        
         $("body").prepend('<span id="vrtx-link-check-spinner"><@vrtx.msg code="linkcheck.spinner" default="Checking links..."/></span>');
-
         visualizeBrokenLinks({
             selection : 'iframe',
             validationURL : '${linkcheck.URL?html}',

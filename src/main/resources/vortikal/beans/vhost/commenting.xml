@@ -273,6 +273,7 @@
         <property name="resourceCommentsFeedService" ref="commenting.feedService" />
         <property name="publishedDatePropDef" ref="publishedDatePropDef" />
         <property name="includeCommentsFromUnpublished" value="true" />
+        <property name="trustedToken" ref="trustedToken" />
       </bean>    
     </property>
     <property name="attributesMap">
@@ -293,6 +294,7 @@
         <property name="recentCommentsService" ref="commenting.resourceCommentsService" />
         <property name="resourceCommentsFeedService" ref="commenting.feedService" />
         <property name="publishedDatePropDef" ref="publishedDatePropDef" />
+        <property name="trustedToken" ref="trustedToken" />
       </bean>    
     </property>  
   </bean>
@@ -380,6 +382,7 @@
           <property name="resourceCommentsFeedService" ref="commenting.feedService" />
           <property name="loginService" ref="loginService" />
           <property name="formSessionAttributeName" ref="commenting.postFormSessionAttributeName" />
+          <property name="trustedToken" ref="trustedToken" />
         </bean>
         <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
           <property name="service" ref="staticResourceService" />

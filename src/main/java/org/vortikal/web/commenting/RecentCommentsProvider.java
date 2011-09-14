@@ -62,6 +62,7 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
     private Service recentCommentsService;
     private boolean includeCommentsFromUnpublished;
     private PropertyTypeDefinition publishedDatePropDef;
+    private String trustedToken;
 
     public void setDeepCommentsListing(boolean deepCommentsListing) {
         this.deepCommentsListing = deepCommentsListing;
@@ -93,6 +94,10 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
 
     public void setPublishedDatePropDef(PropertyTypeDefinition publishedDatePropDef) {
         this.publishedDatePropDef = publishedDatePropDef;
+    }
+    
+    public void setTrustedToken(String trustedToken) {
+        this.trustedToken = trustedToken;
     }
 
     @SuppressWarnings(value = { "rawtypes", "unchecked" })
@@ -162,7 +167,8 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
         }
 
         model.put("commentsEnabled", false);
-        RepositoryTraversal traversal = requestContext.rootTraversal(token, uri);
+        String traversalToken = this.trustedToken != null ? this.trustedToken : token;
+        RepositoryTraversal traversal = requestContext.rootTraversal(traversalToken, uri);
         traversal.traverse(new TraversalCallback() {
             @Override
             public boolean callback(Resource resource) {

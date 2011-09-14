@@ -60,6 +60,7 @@ public class CommentsProvider implements ReferenceDataProvider {
     private Service loginService;
     private Service resourceCommentsFeedService;
     private String formSessionAttributeName;
+    private String trustedToken = null;
     
 
     @Required public void setPostCommentService(Service postCommentService) {
@@ -84,6 +85,10 @@ public class CommentsProvider implements ReferenceDataProvider {
     
     public void setFormSessionAttributeName(String formSessionAttributeName) {
         this.formSessionAttributeName = formSessionAttributeName;
+    }
+    
+    public void setTrustedToken(String trustedToken) {
+        this.trustedToken = trustedToken;
     }
     
     @SuppressWarnings(value={"rawtypes", "unchecked"}) 
@@ -122,7 +127,9 @@ public class CommentsProvider implements ReferenceDataProvider {
         model.put("commentsLocked", commentsAllowed && locked);
         
         model.put("commentsEnabled", false);
-        RepositoryTraversal traversal = requestContext.rootTraversal(token, uri);
+        
+        String traversalToken = this.trustedToken != null ? this.trustedToken : token;
+        RepositoryTraversal traversal = requestContext.rootTraversal(traversalToken, uri);
         traversal.traverse(new TraversalCallback() {
             @Override
             public boolean callback(Resource resource) {

@@ -15,6 +15,12 @@ import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent;
 
 public class CommentsFeedUrlProvider extends ViewRenderingDecoratorComponent {
+    
+    private String trustedToken = null;
+    
+    public void setTrustedToken(String trustedToken) {
+        this.trustedToken = trustedToken;
+    }
 
     protected void processModel(final Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -32,7 +38,8 @@ public class CommentsFeedUrlProvider extends ViewRenderingDecoratorComponent {
         model.put("commentsAllowed", commentsAllowed);
         
         model.put("commentsEnabled", false);
-        RepositoryTraversal traversal = requestContext.rootTraversal(token, uri);
+        String traversalToken = this.trustedToken != null ? this.trustedToken : token;
+        RepositoryTraversal traversal = requestContext.rootTraversal(traversalToken, uri);
         traversal.traverse(new TraversalCallback() {
             @Override
             public boolean callback(Resource resource) {

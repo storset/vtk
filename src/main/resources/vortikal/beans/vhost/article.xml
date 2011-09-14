@@ -353,6 +353,7 @@
 
   <bean id="article.commentsFeedLinkComponent"
         class="org.vortikal.web.commenting.CommentsFeedUrlProvider">
+    <property name="trustedToken" ref="trustedToken" />
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="comments-feed-link" />
     <property name="description" value="Inserts a link reference to the feed of comments for articles" />

@@ -79,7 +79,7 @@ function VrtxAdmin() {
 
 var vrtxAdmin = new VrtxAdmin();
 
-// Browser info: used for progressive enhancement / performance scaling based on knowledge of current JS-engine
+// Browser info: used for progressive enhancement and performance scaling based on knowledge of current JS-engine
 vrtxAdmin.isIE = $.browser.msie;
 vrtxAdmin.browserVersion = $.browser.version;
 vrtxAdmin.isIE7 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7;
@@ -115,8 +115,6 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
 \*-------------------------------------------------------------------*/
                                             
 $(window).load(function() {
-
-  alert(ua);
 
   // More compact when no left resource menu and only 'Read permission' in right resource menu
   // Should never occur in IE because of "Show in file explorer" in root-folder 

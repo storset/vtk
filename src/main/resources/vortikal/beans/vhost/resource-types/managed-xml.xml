@@ -232,6 +232,11 @@
         </entry>
 
         <!-- muv -->
+        <entry key="http://www.uio.no/xsd/muv/muv-forside/v00./muv-forside.xsd">
+          <bean parent="abstractXPathEvaluator">
+            <property name="expression" value="/muv-forside/tittel" />
+          </bean>
+        </entry>
         <entry key="http://www.uio.no/xsd/muv/muv-artikkel/v00./muv-artikkel.xsd">
           <bean parent="abstractXPathEvaluator">
             <property name="expression" value="/muv-artikkel/tittel" />

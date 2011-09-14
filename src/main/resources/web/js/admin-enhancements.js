@@ -170,8 +170,6 @@ $(document).ready(function () {
   if (!activeTabMsg.text().length) {
    activeTabMsg.remove();
   }
-  // Hack for fixing XML-edit error message
-  $("#contents").find(".errormessage").closest("table").addClass("xml-error");
   
   // Hack for setting iframe width if english i18n
   if ($(".localeSelection li.active").hasClass("en")) {

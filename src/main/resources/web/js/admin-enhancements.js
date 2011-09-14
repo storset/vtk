@@ -57,13 +57,10 @@ function VrtxAdmin() {
   this.isIE6 = null;
   this.isIE5OrHigher = null;
   this.isOpera = null;
-  this.isMozilla = null;
-  this.isChrome = null;
   this.isIPhone = null;
   this.isIPad = null;
   this.isAndroid = null;
   this.isMobileWebkitDevice = null;
-  this.isSafari = null;
   this.isWin = null;
   
   // v3.?: this.supportsFileAPI = null;
@@ -82,20 +79,17 @@ function VrtxAdmin() {
 
 var vrtxAdmin = new VrtxAdmin();
 
-// Browser info
+// Browser info: used for progressive enhancement / performance scaling based on knowledge of current JS-engine
 vrtxAdmin.isIE = $.browser.msie;
 vrtxAdmin.browserVersion = $.browser.version;
 vrtxAdmin.isIE7 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7;
 vrtxAdmin.isIE6 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 6;
 vrtxAdmin.isIE5OrHigher = vrtxAdmin.isIE && vrtxAdmin.browserVersion >= 5;
 vrtxAdmin.isOpera = $.browser.opera;
-vrtxAdmin.isMozilla = $.browser.mozilla;
-vrtxAdmin.isChrome = /chrome/.test(ua);
 vrtxAdmin.isIPhone = /iphone/.test(ua);
 vrtxAdmin.isIPad= /ipad/.test(ua);
 vrtxAdmin.isAndroid = /android/.test(ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
 vrtxAdmin.isMobileWebkitDevice = (vrtxAdmin.isIPhone || vrtxAdmin.isIPad || vrtxAdmin.isAndroid); 
-vrtxAdmin.isSafari = /safari/.test(ua) && !vrtxAdmin.isChrome && !vrtxAdmin.isMobileWebkitDevice;
 vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
 
 // v3.?: vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;
@@ -121,6 +115,8 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
 \*-------------------------------------------------------------------*/
                                             
 $(window).load(function() {
+
+  alert(ua);
 
   // More compact when no left resource menu and only 'Read permission' in right resource menu
   // Should never occur in IE because of "Show in file explorer" in root-folder 
@@ -952,7 +948,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
                     
                     // If all went wrong
                     if(!resultHtml) {
-                      vrtxAdm.error({args: args, msg: "retrieved existing expandedForm from " + modeUrl + " is null"});
+                      vrtxAdm.error({args: args, msg: "trying to retrieve existing expandedForm from " + modeUrl + " returned null"});
                     }
                     var node = expanded.parent().parent();
                     if(node.is("tr")) {  // Because 'this' is tr > td > div
@@ -972,7 +968,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
                 
                 // If all went wrong
                 if(!resultHtml) {
-                  vrtxAdm.error({args: args, msg: "retrieved existing expandedForm from " + url + " is null"});
+                  vrtxAdm.error({args: args, msg: "trying to retrieve existing expandedForm from " + url + " returned null"});
                 }
                 var node = expanded.parent().parent();
                 if(node.is("tr")) {  // Because 'this' is tr > td > div
@@ -1257,10 +1253,11 @@ VrtxAdmin.prototype.displayErrorContainers = function(results, form, errorContai
 };
 
 VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
-  if (xhr.readyState == 4 && xhr.status == 200) {
+  var status = xhr.status;
+  if (xhr.readyState == 4 && status == 200) {
     var msg = "The service is not active: " + textStatus;
   } else {
-    if (xhr.status == 403) { // if you have no access anymore -- reload from server
+    if (xhr.status == 403 || status == 404) { // if you have no access anymore or page is poff -- gone: reload from server
       location.reload(true);
     } 
     var msg = "The service returned " + xhr.status + " and failed to retrieve/post form.";

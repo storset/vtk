@@ -93,7 +93,9 @@ div.vrtx-permission-tree span.file a {
 
 div.vrtx-report-break {
   clear: left;
-  height: 10px;
+  background: url(../images/line-dotted.gif) repeat-x bottom left;
+  padding-bottom: 25px;
+  margin-bottom: 15px;
 }
 
 div.vrtx-report-diagram {

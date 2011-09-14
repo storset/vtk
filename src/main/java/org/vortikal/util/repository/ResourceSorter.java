@@ -33,10 +33,9 @@ package org.vortikal.util.repository;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Privilege;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.PrincipalFactory;
 
@@ -60,7 +59,7 @@ public class ResourceSorter {
         BY_PUBLISHED
     }
 
-    public static void sort(Resource[] resources, Order order, boolean inverted) {
+    public static void sort(Resource[] resources, Order order, boolean inverted, RequestContext rc) {
         Comparator<Resource> comparator = null;
 
         switch (order) {
@@ -94,7 +93,7 @@ public class ResourceSorter {
             break;
             
         case BY_RESOURCE_TYPE:
-            comparator = new ResourceTypeComparator(inverted);
+            comparator = new ResourceTypeComparator(inverted, rc);
             break;
 
         case BY_PERMISSIONS:
@@ -245,17 +244,25 @@ public class ResourceSorter {
     
     private static class ResourceTypeComparator implements Comparator<Resource> {
         private boolean invert = false;
+        private RequestContext rc;
 
-        public ResourceTypeComparator(boolean invert) {
+        public ResourceTypeComparator(boolean invert, RequestContext rc) {
             this.invert = invert;
+            this.rc = rc;
         }
 
         @Override
         public int compare(Resource r1, Resource r2) {
+            
+            String key1 = "resourcetype.name." + r1.getResourceType();
+            String localizedResourceType1 = this.rc.getMessage(key1, r1.getResourceType());
+            String key2 = "resourcetype.name." + r2.getResourceType();
+            String localizedResourceType2 = this.rc.getMessage(key2, r2.getResourceType());
+            
             if (!this.invert) {
-                return r1.getResourceType().compareTo(r2.getResourceType());
+                return localizedResourceType1.compareTo(localizedResourceType2);
             }
-            return r2.getResourceType().compareTo(r1.getResourceType());
+            return localizedResourceType2.compareTo(localizedResourceType1);
         }
     }
 

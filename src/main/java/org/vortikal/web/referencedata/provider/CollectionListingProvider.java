@@ -55,84 +55,71 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
+import org.vortikal.web.view.freemarker.MessageLocalizer;
 
 /**
  * Directory listing model builder. Creates a model map 'collectionListing' with
- * a list of children and associated data for the
- * requested collection.
+ * a list of children and associated data for the requested collection.
  * <p>
  * Configurable properties:
  * <ul>
- *  <li><code>repository</code> - the repository is required
- *   <li><code>retrieveForProcessing</code> - boolean indicating
- *   whether to retrieve resources using the
- *   <code>forProcessing</code> flag set to <code>false</code> or
- *   false. The default is <code>true</code>.
- *  <li><code>linkedServices</code> - map of services providing the
- *  possible operations for each child, e.g. delete,
- *  <li><code>browsingService</code> - the service used for linking to
- *  the children and the parent collection
- *  <li><code>matchingResourceTypes</code> - set of resource types to filter with.
- *  <li><code>childInfoItems</code> - list of info items to be
- *      displayed for the children. Valid items are
- *      <code>title</code>, <code>name</code>,
- *      <code>size</code>, <code>locked</code>,
- *      <code>content-type</code>, <code>owner</code> and
- *      <code>last-modified</code>. Default is <code>name</code>,
- *      <code>content-length</code>, <code>last-modified</code>.
+ * <li><code>repository</code> - the repository is required
+ * <li><code>retrieveForProcessing</code> - boolean indicating whether to
+ * retrieve resources using the <code>forProcessing</code> flag set to
+ * <code>false</code> or false. The default is <code>true</code>.
+ * <li><code>linkedServices</code> - map of services providing the possible
+ * operations for each child, e.g. delete,
+ * <li><code>browsingService</code> - the service used for linking to the
+ * children and the parent collection
+ * <li><code>matchingResourceTypes</code> - set of resource types to filter
+ * with.
+ * <li><code>childInfoItems</code> - list of info items to be displayed for the
+ * children. Valid items are <code>title</code>, <code>name</code>,
+ * <code>size</code>, <code>locked</code>, <code>content-type</code>,
+ * <code>owner</code> and <code>last-modified</code>. Default is
+ * <code>name</code>, <code>content-length</code>, <code>last-modified</code>.
  * </ul>
  * 
  * Possible input:
- * <ul> 
- *  <li><code>sort-by = (name | size | locked | content-type | owner | *  last-modified)</code>
- *      - default <code>name</code>
- *  <li><code>invert = (true | false)</code> - default <code>false</code>
+ * <ul>
+ * <li>
+ * <code>sort-by = (name | size | locked | content-type | owner | *  last-modified)</code>
+ * - default <code>name</code>
+ * <li><code>invert = (true | false)</code> - default <code>false</code>
  * </ul>
  * 
  * Model data provided:
  * <ul>
- *   <li><code>children</code> - list of this resource' child
- *   resources
- *   <li><code>linkedServiceNames</code> - the key set for the
- *   childLinks (linkedServices)
- *   <li><code>childLinks</code> (Map[]) - for every child, a map of
- *      links to all linkedServices specified on this ModelBuilder
- *      (with service name as key)
- *   <li><code>sortByLinks</code> (Map) - links to collection listing,
- *      sorted by the different configured childInfoItems
- *   <li><code>childInfoItems</code> - the configured child
- *      information to support sorting for
- *   <li><code>sortedBy</code> - the name of the info item the child
- *   list is sorted by
- *   <li><code>invertedSort</code> - is the child list inverted?
- *   <li><code>browsingLinks</code> - array of the links to the
- *   browsing service for each child
- *   <li><code>resourceURIs</code> - array of the resource URI for 
- *   each child (used in naming the check boxes for copy/move 
- *   <li><code>parentURL</code> - link to the parent collection,
- *       generated using the <code>browsingService</code>. If the
- *       parent collection is the root, or the user is not allowed to
- *       navigate to the parent, the URL is set to <code>null</code>
+ * <li><code>children</code> - list of this resource' child resources
+ * <li><code>linkedServiceNames</code> - the key set for the childLinks
+ * (linkedServices)
+ * <li><code>childLinks</code> (Map[]) - for every child, a map of links to all
+ * linkedServices specified on this ModelBuilder (with service name as key)
+ * <li><code>sortByLinks</code> (Map) - links to collection listing, sorted by
+ * the different configured childInfoItems
+ * <li><code>childInfoItems</code> - the configured child information to support
+ * sorting for
+ * <li><code>sortedBy</code> - the name of the info item the child list is
+ * sorted by
+ * <li><code>invertedSort</code> - is the child list inverted?
+ * <li><code>browsingLinks</code> - array of the links to the browsing service
+ * for each child
+ * <li><code>resourceURIs</code> - array of the resource URI for each child
+ * (used in naming the check boxes for copy/move
+ * <li><code>parentURL</code> - link to the parent collection, generated using
+ * the <code>browsingService</code>. If the parent collection is the root, or
+ * the user is not allowed to navigate to the parent, the URL is set to
+ * <code>null</code>
  * </ul>
  */
 public class CollectionListingProvider implements ReferenceDataProvider {
 
     public static final String DEFAULT_SORT_BY_PARAMETER = "name";
 
-    
-    private static final Set<String> supportedResourceColumns = 
-        new HashSet<String>(Arrays.asList(new String[] {
-                                      DEFAULT_SORT_BY_PARAMETER,
-                                      "title",
-                                      "content-length", 
-                                      "last-modified",
-                                      "locked",
-                                      "published",
-                                      "permissions",
-                                      "content-type",
-                                      "resource-type", 
-                                      "owner" }));
-    
+    private static final Set<String> supportedResourceColumns = new HashSet<String>(Arrays.asList(new String[] {
+            DEFAULT_SORT_BY_PARAMETER, "title", "content-length", "last-modified", "locked", "published",
+            "permissions", "content-type", "resource-type", "owner" }));
+
     private Map<String, Service> linkedServices = new HashMap<String, Service>();
     private Service browsingService;
     private boolean retrieveForProcessing = false;
@@ -141,16 +128,14 @@ public class CollectionListingProvider implements ReferenceDataProvider {
     public void setBrowsingService(Service browsingService) {
         this.browsingService = browsingService;
     }
-    
-    private String[] childInfoItems = 
-        new String[] {DEFAULT_SORT_BY_PARAMETER, "content-length", "last-modified"};
-    
 
-    public void setLinkedServices(Map<String, Service> linkedServices)  {
+    private String[] childInfoItems = new String[] { DEFAULT_SORT_BY_PARAMETER, "content-length", "last-modified" };
+
+    public void setLinkedServices(Map<String, Service> linkedServices) {
         this.linkedServices = linkedServices;
     }
 
-    public void setChildInfoItems(String[] childInfoItems)  {
+    public void setChildInfoItems(String[] childInfoItems) {
         this.childInfoItems = childInfoItems;
     }
 
@@ -160,24 +145,20 @@ public class CollectionListingProvider implements ReferenceDataProvider {
 
     public void afterPropertiesSet() {
         if (this.browsingService == null) {
-            throw new BeanInitializationException(
-                    "JavaBean Property 'browsingService' must be set");    
+            throw new BeanInitializationException("JavaBean Property 'browsingService' must be set");
         }
 
         for (int i = 0; i < this.childInfoItems.length; i++) {
             String column = this.childInfoItems[i];
-            if (! supportedResourceColumns.contains(column))
-                throw new BeanInitializationException(
-                    "JavaBean Property 'childInfoColumns' " +
-                    "can only contain supported resource properties. Expected one of " 
-                    + supportedResourceColumns + ", not '" + column + "'");
+            if (!supportedResourceColumns.contains(column))
+                throw new BeanInitializationException("JavaBean Property 'childInfoColumns' "
+                        + "can only contain supported resource properties. Expected one of " + supportedResourceColumns
+                        + ", not '" + column + "'");
         }
     }
 
-    
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request)
-        throws Exception {
+    @SuppressWarnings( { "unchecked", "rawtypes" })
+    public void referenceData(Map model, HttpServletRequest request) throws Exception {
 
         Map<String, Object> collectionListingModel = new HashMap<String, Object>();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -188,8 +169,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         collectionListingModel.put("childInfoItems", this.childInfoItems);
         Resource[] children = null;
 
-        Resource resource = repository.retrieve(token, uri,
-                                                this.retrieveForProcessing);
+        Resource resource = repository.retrieve(token, uri, this.retrieveForProcessing);
         if (!resource.isCollection()) {
             // Can't do anything unless resource is a collection
             return;
@@ -197,33 +177,36 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         children = repository.listChildren(token, uri, true);
         children = filterChildren(requestContext, children);
 
-        // Sort children according to input parameters 
+        // Sort children according to input parameters
         String sortBy = request.getParameter("sort-by");
         boolean invertedSort = "true".equals(request.getParameter("invert"));
         boolean validSortByParameter = false;
         for (String childInfoItem : this.childInfoItems) {
-            if (childInfoItem.equals(sortBy)) validSortByParameter = true;
+            if (childInfoItem.equals(sortBy))
+                validSortByParameter = true;
         }
-        if (!validSortByParameter) sortBy = DEFAULT_SORT_BY_PARAMETER;
-        sortChildren(children, sortBy, invertedSort);
+        if (!validSortByParameter)
+            sortBy = DEFAULT_SORT_BY_PARAMETER;
+        org.springframework.web.servlet.support.RequestContext rc = new org.springframework.web.servlet.support.RequestContext(
+                request);
+        this.sortChildren(children, sortBy, invertedSort, rc);
         collectionListingModel.put("sortedBy", sortBy);
         collectionListingModel.put("invertedSort", invertedSort);
         collectionListingModel.put("children", children);
-        
         List<String> linkedServiceNames = new ArrayList<String>();
-        
-        for (String linkName: this.linkedServices.keySet()) {
+
+        for (String linkName : this.linkedServices.keySet()) {
             linkedServiceNames.add(linkName);
         }
-       
+
         collectionListingModel.put("linkedServiceNames", linkedServiceNames);
-        
+
         Map<String, String>[] childLinks = new HashMap[children.length];
         String[] browsingLinks = new String[children.length];
         for (int i = 0; i < children.length; i++) {
             Resource child = children[i];
             Map<String, String> linkMap = new HashMap<String, String>();
-            for (String linkName: this.linkedServices.keySet()) {
+            for (String linkName : this.linkedServices.keySet()) {
                 Service service = this.linkedServices.get(linkName);
                 try {
                     String url = service.constructLink(child, principal);
@@ -233,10 +216,9 @@ public class CollectionListingProvider implements ReferenceDataProvider {
                 }
             }
             childLinks[i] = linkMap;
-            
+
             try {
-                browsingLinks[i] = 
-                    this.browsingService.constructLink(child, principal);
+                browsingLinks[i] = this.browsingService.constructLink(child, principal);
             } catch (ServiceUnlinkableException e) {
                 // do nothing
             }
@@ -244,9 +226,9 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         collectionListingModel.put("childLinks", childLinks);
         collectionListingModel.put("browsingLinks", browsingLinks);
 
-        Map<String, String> sortByLinks = new HashMap<String, String>(); 
+        Map<String, String> sortByLinks = new HashMap<String, String>();
 
-        for (String column: this.childInfoItems) {
+        for (String column : this.childInfoItems) {
             Map<String, String> parameters = new HashMap<String, String>();
             parameters.put("sort-by", column);
             if (sortBy.equals(column) && !invertedSort) {
@@ -281,20 +263,20 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         }
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
-        
+
         List<Resource> filteredChildren = new ArrayList<Resource>();
-        for (Resource resource: children) {
+        for (Resource resource : children) {
             TypeInfo type = repository.getTypeInfo(token, resource.getURI());
-            for (ResourceTypeDefinition resourceDef: this.matchingResourceTypes) {
+            for (ResourceTypeDefinition resourceDef : this.matchingResourceTypes) {
                 if (type.isOfType(resourceDef))
                     filteredChildren.add(resource);
             }
         }
         return filteredChildren.toArray(new Resource[filteredChildren.size()]);
     }
-    
 
-    private void sortChildren(Resource[] children, String sortBy, boolean invert) {
+    private void sortChildren(Resource[] children, String sortBy, boolean invert,
+            org.springframework.web.servlet.support.RequestContext rc) {
         Order order = ResourceSorter.Order.BY_NAME;
 
         if ("title".equals(sortBy)) {
@@ -316,12 +298,11 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         } else if ("published".equals(sortBy)) {
             order = ResourceSorter.Order.BY_PUBLISHED;
         }
-        
-        ResourceSorter.sort(children, order, invert);
+
+        ResourceSorter.sort(children, order, invert, rc);
     }
 
-    public void setMatchingResourceTypes(
-            Set<ResourceTypeDefinition> matchingResourceTypes) {
+    public void setMatchingResourceTypes(Set<ResourceTypeDefinition> matchingResourceTypes) {
         this.matchingResourceTypes = matchingResourceTypes;
     }
 

@@ -1,5 +1,13 @@
+body#vrtx-report-diagram h2 {
+  background: url(../images/line-dotted.gif) repeat-x bottom left;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
 .vrtx-report-nav .back {
   margin-bottom: 15px;
+  padding-left: 13px;
+  background: url(../images/back-link-grey.png) no-repeat left center;
 }
 
 ul.vrtx-reporters {
@@ -100,15 +108,11 @@ div.vrtx-report-diagram-table {
 
 div.vrtx-report-diagram-img {
   float: left;
-}
-
-tr.vrtx-report-diagram-total {
-  border-top: 5px solid #fff;
+  margin-top: -20px;
 }
 
 tr.vrtx-report-diagram-total td {
-  background: url(../images/line-dotted.gif) repeat-x top left;
-  padding-top: 5px;
+  padding-top: 10px;
 }
 
 td.vrtx-report-diagram-count {

@@ -380,7 +380,7 @@
         <#local more = true />
         <#break />
       </#if>
-      <li>${file?split("/")?last}</li>
+      <li>${file?split("/")?last?html}</li>
     </#list>
     </ul>
     <#if more>

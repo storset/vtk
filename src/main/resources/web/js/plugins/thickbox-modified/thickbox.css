@@ -1,3 +1,5 @@
+/* USIT changed: opacity from 0.75->0.35
+
 /* ----------------------------------------------------------------------------------------------------------------*/
 /* ---------->>> global settings needed for thickbox <<<-----------------------------------------------------------*/
 /* ----------------------------------------------------------------------------------------------------------------*/
@@ -37,9 +39,9 @@
 .TB_overlayMacFFBGHack {background: url(macFFBgHack.png) repeat;}
 .TB_overlayBG {
 	background-color:#000;
-	filter:alpha(opacity=75);
-	-moz-opacity: 0.75;
-	opacity: 0.75;
+	filter:alpha(opacity=35);
+	-moz-opacity: 0.35;
+	opacity: 0.35;
 }
 
 * html #TB_overlay { /* ie6 hack */

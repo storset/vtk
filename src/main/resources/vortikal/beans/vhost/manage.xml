@@ -926,7 +926,9 @@
     <property name="commandName" value="renameCommand" />
     <property name="commandClass" value="org.vortikal.web.actions.copymove.RenameCommand" />
     <property name="validator">
-      <bean class="org.vortikal.web.actions.copymove.RenameCommandValidator" />
+      <bean class="org.vortikal.web.actions.copymove.RenameCommandValidator">
+        <property name="replaceNameChars" ref="createResource.nameReplacementMap" />
+      </bean>
     </property>
   </bean>
 

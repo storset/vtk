@@ -30,9 +30,13 @@
  */
 package org.vortikal.web.actions.copymove;
 
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.vortikal.repository.Path;
@@ -43,6 +47,7 @@ import org.vortikal.web.RequestContext;
 public class RenameCommandValidator implements Validator {
 
     private static Log logger = LogFactory.getLog(RenameCommandValidator.class);
+    private Map<String, String> replaceNameChars;
 
     @SuppressWarnings("rawtypes")
     public boolean supports(Class clazz) {
@@ -64,7 +69,7 @@ public class RenameCommandValidator implements Validator {
 
         }
         name = name.trim();
-        if (name.contains("/") || name.contains("?") || name.equals(".") || name.equals("..")) {
+        if (this.isInvalid(name)) {
             errors.rejectValue("name", "manage.create.document.invalid.name", "This is an invalid name");
             return;
         }
@@ -94,4 +99,25 @@ public class RenameCommandValidator implements Validator {
             errors.reject("manage.rename.resource.validation.failed", "Validiation failed");
         }
     }
+
+    private boolean isInvalid(String name) {
+        if (name.contains("/") || name.equals(".") || name.equals("..")) {
+            return true;
+        }
+        for (String s : this.replaceNameChars.keySet()) {
+            if (Character.isLetter(s.charAt(0))) {
+                continue;
+            }
+            if (Pattern.compile(s).matcher(name).find()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Required
+    public void setReplaceNameChars(Map<String, String> replaceNameChars) {
+        this.replaceNameChars = replaceNameChars;
+    }
+
 }

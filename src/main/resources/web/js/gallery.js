@@ -2,7 +2,7 @@
  * Vortex Simple Gallery jQuery plugin v0.3
  * w/ paging, centered thumbnail navigation and crossfade effect
  *
- * by Øyvind Hatland - UiO / USIT
+ * by ï¿½yvind Hatland - UiO / USIT
  *
  */
 
@@ -198,7 +198,7 @@
         imgWidth = imgWidth + "px";
       }
 
-      galleryLog(src + " [" + imgWidth + ", " + imgHeight + "]");
+      // For Debugging: galleryLog(src + " [" + imgWidth + ", " + imgHeight + "]");
 
       setMultipleCSS([wrapperContainer + "-nav a", wrapperContainer + "-nav span",
                                wrapperContainerLink], "height", imgHeight);

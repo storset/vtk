@@ -37,7 +37,7 @@
     <table id="directory-listing" class="report-document-listing">
       <thead>
         <tr>
-          <th id="vrtx-report-name"><@vrtx.msg code="report.name" default="Name" /></th>
+          <th id="vrtx-report-name"><@vrtx.msg code="report.title" default="Name" /></th>
           <th id="vrtx-report-last-modified"><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
           <th id="vrtx-report-modified-by"><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
           <th id="vrtx-report-permission-set"><@vrtx.msg code="report.permission-set" default="Permissions set" /></th>

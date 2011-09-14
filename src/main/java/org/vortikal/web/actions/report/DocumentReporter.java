@@ -47,7 +47,7 @@ import org.vortikal.web.service.URL;
 public abstract class DocumentReporter extends AbstractReporter {
 
     private int pageSize = DEFAULT_SEARCH_LIMIT;
-    private Service viewService;
+    private Service manageService;
     private int backURL;
 
     protected abstract Search getSearch(String token, Resource currentResource);
@@ -111,7 +111,7 @@ public abstract class DocumentReporter extends AbstractReporter {
             try {
                 Resource r = this.repository.retrieve(token, p.getURI(), true);
                 isReadRestricted[i] = r.isReadRestricted();
-                viewURLs[i] = this.viewService.constructURL(p.getURI());
+                viewURLs[i] = this.manageService.constructURL(p.getURI());
             } catch (Exception e) {
             }
         }
@@ -120,8 +120,8 @@ public abstract class DocumentReporter extends AbstractReporter {
         return result;
     }
 
-    public void setViewService(Service viewService) {
-        this.viewService = viewService;
+    public void setManageService(Service manageService) {
+        this.manageService = manageService;
     }
 
     public void setBackURL(int backURL) {

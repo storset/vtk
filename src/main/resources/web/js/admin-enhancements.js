@@ -107,6 +107,16 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
                                             width: 300, 
                                             max: 30,
                                             delay: 800 };
+                           
+// funcComplete for postAjaxForm() depending on checkStillAdmin (funcProceedCondition)
+var doReloadFromServer = false;             
+var reloadFromServer = function() {
+  if(doReloadFromServer) {
+    location.reload(true);
+  } else {
+    return;
+  }
+};
 
 
 
@@ -309,7 +319,8 @@ $(document).ready(function () {
                           ".resource-menu.read-permissions"],
         errorContainer: "errorContainer",
         errorContainerInsertAfter: ".groups-wrapper",
-        funcProceedCondition: checkStillAdmin
+        funcProceedCondition: checkStillAdmin,
+        funcComplete: reloadFromServer
       });
     }
   
@@ -747,12 +758,13 @@ function toggleConfigCustomPermissions(selectorClass) {
 
 function checkStillAdmin(selector) {
   var stillAdmin = selector.find(".still-admin").text();
+  doReloadFromServer = false;
   if(stillAdmin == "false") {
     var confirmRemoveAllAdmin = confirm("Are you sure you want to remove all admin permissions for yourself?");
     if(!confirmRemoveAllAdmin) {
       return false;
     } else {
-      location.reload(true); // reload from server
+      doReloadFromServer = true;
     }
   }
   return true; 

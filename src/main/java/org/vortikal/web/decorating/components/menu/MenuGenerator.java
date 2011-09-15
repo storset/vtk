@@ -166,56 +166,21 @@ public final class MenuGenerator {
         List<MenuItem<PropertySet>> allItems = menu.getItemsSorted();
 
         int groupResultSetsBy = menuRequest.getGroupResultSetsBy();
+        int allItemsSize = allItems.size();
 
-        if (resultSets > allItems.size()) {
-            resultSets = allItems.size();
+        if (resultSets > allItemsSize) {
+            resultSets = allItemsSize;
         }
 
-        int itemsPerResultSet = Math.round((float) allItems.size() / (float) resultSets);
-        int remainder = allItems.size() - (resultSets * itemsPerResultSet);
+        int itemsPerResultSet = Math.round((float) allItemsSize / (float) resultSets);
+        int remainder = allItemsSize % itemsPerResultSet;
+        int limit = allItemsSize / itemsPerResultSet;
 
-        // Moving startIdx and endIdx when remainder > 0
-        int startMov = 0;
-        int endMov = 0;
-
-        boolean lastOne = false;
-
-        for (int i = 0; i < resultSets; i++) {
+        for (int i = 0; i <= limit; i++) {
             int startIdx = i * itemsPerResultSet;
             int endIdx = startIdx + itemsPerResultSet;
-
-            /*
-             * Old code for remainder, places them last if (i == resultSets - 1
-             * && remainder > 0) { endIdx += remainder; }
-             */
-
-            if (endIdx > allItems.size()) {
-                endIdx = allItems.size();
-            } else {
-
-                if (lastOne == true) {
-                    startMov++;
-                    lastOne = false;
-                }
-
-                if (remainder > 0) {
-
-                    if (i > 0) {
-                        startMov++;
-                    }
-
-                    endMov++;
-                    remainder--;
-
-                    if (remainder == 0) {
-                        lastOne = true;
-                    }
-
-                }
-
-                startIdx = startIdx + startMov;
-                endIdx = endIdx + endMov;
-
+            if (endIdx > allItemsSize) {
+                endIdx = startIdx + remainder;
             }
 
             List<MenuItem<PropertySet>> subList = allItems.subList(startIdx, endIdx);

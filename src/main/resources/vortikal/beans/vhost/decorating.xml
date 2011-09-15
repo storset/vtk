@@ -9,7 +9,6 @@
         <ref bean="decorating.templateDecorator" />
       </list>
     </property>
-    <property name="preventDecoratingParameter" value="x-prevent-decorating" />
   </bean>
 
   <bean id="decorating.templateDecorator"
@@ -19,6 +18,7 @@
     <property name="initialFilters" ref="decorating.initialFilters" />
     <property name="userFilters" ref="decorating.userFilters" />
     <property name="tidyXhtml" value="${decorating.tidyXhtml}" />
+    <property name="preventDecoratingParameter" value="x-prevent-decorating" />
     <!--
     <property name="postFilters">
       <list>

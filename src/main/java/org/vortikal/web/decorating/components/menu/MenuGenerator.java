@@ -164,6 +164,9 @@ public final class MenuGenerator {
 
         int resultSets = menuRequest.getResultSets();
         List<MenuItem<PropertySet>> allItems = menu.getItemsSorted();
+        if (allItems == null || allItems.isEmpty()) {
+            return null;
+        }
 
         int groupResultSetsBy = menuRequest.getGroupResultSetsBy();
         int allItemsSize = allItems.size();

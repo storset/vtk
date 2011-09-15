@@ -108,8 +108,8 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
                                             max: 30,
                                             delay: 800 };
                            
-// funcComplete for postAjaxForm() depending on checkStillAdmin (funcProceedCondition)
-var doReloadFromServer = false;             
+// funcComplete for postAjaxForm()
+var doReloadFromServer = false; // global var changed by checkStillAdmin() (funcProceedCondition)             
 var reloadFromServer = function() {
   if(doReloadFromServer) {
     location.reload(true);

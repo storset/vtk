@@ -105,12 +105,12 @@ div.vrtx-report-diagram {
 div.vrtx-report-diagram-table {
   clear: left;
   float: left;
-  width: 220px;
+  width: 210px;
 }
 
 div.vrtx-report-diagram-img {
   float: left;
-  margin-top: -20px;
+  margin: -20px 0 20px 0;
 }
 
 tr.vrtx-report-diagram-total td {

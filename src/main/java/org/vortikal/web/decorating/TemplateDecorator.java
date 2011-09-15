@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +69,8 @@ public class TemplateDecorator implements Decorator {
     private List<HtmlNodeFilter> initialFilters;
     private List<HtmlNodeFilter> userFilters;
     private List<HtmlPageFilter> postFilters;
+
+    private String preventDecoratingParameter;
 
     private static final String DECORATION_DESCRIPTOR_REQ_ATTR = 
         TemplateDecorator.class.getName() + ".DecorationDescriptor";
@@ -214,7 +217,37 @@ public class TemplateDecorator implements Decorator {
     
     protected DecorationDescriptor resolveDecorationDescriptor(
             HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return this.decorationResolver.resolve(request, response);
+        
+        final DecorationDescriptor desc = this.decorationResolver.resolve(request, response);
+        final boolean override = this.preventDecoratingParameter != null 
+                && request.getParameter(this.preventDecoratingParameter) != null;
+        
+        if (!override) {
+            return desc;
+        }
+        
+        return new DecorationDescriptor() {
+            @Override
+            public boolean decorate() {
+                return true;
+            }
+            @Override
+            public boolean tidy() {
+                return desc.tidy();
+            }
+            @Override
+            public boolean parse() {
+                return true;
+            }
+            @Override
+            public List<Template> getTemplates() {
+                return Collections.emptyList();
+            }
+            @Override
+            public Map<String, Object> getParameters(Template template) {
+                return Collections.emptyMap();
+            }
+        };
     }
         
     public void setUserFilters(List<HtmlNodeFilter> userFilters) {
@@ -241,4 +274,7 @@ public class TemplateDecorator implements Decorator {
         this.tidyXhtml = tidyXhtml;
     }
 
+    public void setPreventDecoratingParameter(String preventDecoratingParameter) {
+        this.preventDecoratingParameter = preventDecoratingParameter;
+    }
 }

@@ -4,6 +4,13 @@
  *
  */
 
+ul.list-menu.resourceMenuLeft,
+ul.list-menu.resourceMenuRight {
+  position: relative;
+}
 
+#main {
+  position: relative;
+}
 
 /* ^ Vortex IE 6 */

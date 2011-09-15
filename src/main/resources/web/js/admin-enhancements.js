@@ -418,6 +418,12 @@ $(document).ready(function () {
 
   // Fix IE 6 collectionlisting hover
   if (vrtxAdmin.isIE6) {
+    var ie6Msg = "IE 6 er ikke støttet. Oppgrader nettleseren.";
+    if ($("#app-content > .message").length) {
+      $("#app-content > .message").html(ie6Msg);
+    } else {
+      $("#app-content").prepend("<div class='infomessage'>" + ie6Msg + "</div>");
+    }
     $("#directory-listing tr").hover(function () {
       $(this).toggleClass('hover');
     }, function () {
@@ -1265,7 +1271,7 @@ VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
   if (xhr.readyState == 4 && status == 200) {
     var msg = "The service is not active: " + textStatus;
   } else {
-    if (xhr.status == 403 || status == 404) { // if you have no access anymore or page is poff -- gone: reload from server
+    if (xhr.status == 401 || xhr.status == 403 || status == 404) { // if you have no access anymore or page is poff -- gone: reload from server
       location.reload(true);
     } 
     var msg = "The service returned " + xhr.status + " and failed to retrieve/post form.";

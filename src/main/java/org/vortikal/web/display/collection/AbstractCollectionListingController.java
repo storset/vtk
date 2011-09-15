@@ -92,10 +92,11 @@ public abstract class AbstractCollectionListingController implements ListingCont
         Map<String, Object> model = new HashMap<String, Object>();
 
         Map<String, Object> subfolders = getSubFolderMenu(collection, request);
-
-        int size = (Integer) subfolders.get("size");
-        if (size > 0) {
-            model.put("subFolderMenu", subfolders);
+        if (subfolders != null) {
+            int size = (Integer) subfolders.get("size");
+            if (size > 0) {
+                model.put("subFolderMenu", subfolders);
+            }
         }
         model.put("collection", this.resourceManager.createResourceWrapper(collection));
 
@@ -148,6 +149,9 @@ public abstract class AbstractCollectionListingController implements ListingCont
         Map<String, Object> result = new HashMap<String, Object>();
 
         result = subFolderMenuProvider.getSubfolderMenuWithGeneratedResultSets(collection, request);
+        if (result == null) {
+            return null;
+        }
         HttpServletRequest servletRequest = request;
         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
                 servletRequest);

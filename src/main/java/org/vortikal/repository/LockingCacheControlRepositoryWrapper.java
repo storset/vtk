@@ -87,11 +87,15 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         // Synchronize on:
         // - Destination parent URI
         // - Destination URI
+        // - Any cached descendant of destination URI in case of overwrite.
         List<Path> lockUris = new ArrayList<Path>(2);
         if (destUri.getParent() != null) {
             lockUris.add(destUri.getParent());
         }
         lockUris.add(destUri);
+        if (overwrite) {
+            lockUris.addAll(getCachedDescendants(destUri));
+        }
                 
         final List<Path> locked = this.lockManager.lock(lockUris, true);
         
@@ -118,6 +122,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         // - Source parent URI
         // - Destination parent URI (may be same as source parent URI)
         // - Destination URI
+        // - Any cached descendant of destination URI in case of overwrite.
         List<Path> lockUris = new ArrayList<Path>();
         Path srcParent = srcUri.getParent();
         Path destParent = destUri.getParent();
@@ -132,7 +137,10 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
             lockUris.add(destParent);
         }
         if (!srcUri.equals(destUri)) {
-            lockUris.add(destUri);            
+            lockUris.add(destUri);
+            if (overwrite) {
+                lockUris.addAll(getCachedDescendants(destUri));
+            }
         }
         
         final List<Path> locked = this.lockManager.lock(lockUris, true);

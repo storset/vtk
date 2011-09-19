@@ -57,8 +57,8 @@
             if(hasPostMessage) {
               parent.postMessage("fullsize", vrtxAdminOrigin);
             } else { // use the hash stuff in plugin from jQuery "Cowboy"
-             // var parent_url = decodeURIComponent(document.location.hash.replace(/^#/,''));
-             // $.postMessage({fullsize: true}, parent_url, parent);  
+              var parent_url = decodeURIComponent(document.location.hash.replace(/^#/,''));
+              $.postMessage({fullsize: true}, parent_url, parent);  
             }
           }
         });

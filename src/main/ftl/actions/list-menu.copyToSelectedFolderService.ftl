@@ -28,11 +28,15 @@
   </p>
 </#if>
 
-<form id="vrtx-copy-to-selected-folder" action="${actionURL?html}" method="${method}" class="vrtx-admin-button">
-   <div class="vrtx-button-small"><button title="${titleMsg}" type="submit"
-            id="vrtx-copy-to-selected-folder.submit"
-            value="copy-resources-to-this-folder" name="action">${item.title?html}</button></div>
-</form>
+<#if !resourcesDisclosed?exists>
+  <form id="vrtx-copy-to-selected-folder" action="${actionURL?html}" method="${method}" class="vrtx-admin-button">
+     <div class="vrtx-button-small"><button title="${titleMsg}" type="submit"
+          id="vrtx-copy-to-selected-folder.submit"
+          value="copy-resources-to-this-folder" name="action">${item.title?html}</button></div>
+  </form>
+<#else>
+  <a class="vrtx-button-small thickbox" title="${titleMsg}" id="vrtx-copy-to-selected-folder" href="${actionURL?html}"><span>${item.title?html}</span></a>
+</#if>
 
 <#recover>
 ${.error}

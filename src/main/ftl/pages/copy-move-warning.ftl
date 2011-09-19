@@ -62,8 +62,9 @@
 	
 	$(document).ready(function(){
 	   setTimeout("focus();",0);
-	   $("#cancelAction").remove(); 
-	   $("#vrtx-confirm-copy-move").append('<button tabindex="2" type="button" onclick="tb_remove();" id="cancelAction" name="cancelAction">${vrtx.getMsg("copyMove.discloseWarning.cancel")}</button>');
+	   $("#cancelAction").parent().remove(); 
+	   $("#vrtx-confirm-copy-move")
+	     .append('<div class="vrtx-button"><button tabindex="2" type="button" onclick="tb_remove();" id="cancelAction" name="cancelAction">${vrtx.getMsg("copyMove.discloseWarning.cancel")}</button></div>');
 	});
         //-->
 </script>

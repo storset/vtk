@@ -11,8 +11,6 @@
  */
  
 $(document).ready(function () {
-  var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
-  var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
   if ($.browser.msie) {
     if($.browser.version > 7) {
       // iframe load event not firing in IE8 when page w. iframe is inside another iframe
@@ -43,6 +41,10 @@ $(document).ready(function () {
 });
 
 function resize(iframe) {
+
+  var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
+  var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
+
   try {
     // Set inline style to equal the body height of the iframed content,
     // when body content is at least 350px height

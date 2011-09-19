@@ -25,13 +25,16 @@ $(document).ready(function () {
         resize(this); 
       });
     } else {
-      var previewIframeReady = setInterval(function() {
-        var offsetHeight = $('iframe#previewViewIframe')[0].contentWindow.document.body.offsetHeight;
-        if(typeof offsetHeight !== "undefined" && offsetHeight > 0) {
-          clearInterval(previewIframeReady);
-          resize($('iframe#previewViewIframe')[0]);
-        }
-      }, 25);
+   
+ // TODO: IE 7     
+ //     var previewIframeReady = setInterval(function() {
+ //       var offsetHeight = $('iframe#previewViewIframe')[0].contentWindow.document.body.offsetHeight;
+ //       if(typeof offsetHeight !== "undefined" && offsetHeight > 0) {
+ //         clearInterval(previewIframeReady);
+ //         resize($('iframe#previewViewIframe')[0]);
+ //       }
+ //     }, 25);
+      
     }
   } else {
     $('iframe#previewViewIframe').load(function (e) {

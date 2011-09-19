@@ -13,7 +13,7 @@ $(document).ready(function () {
   var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
   var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
   
-  if ($.browser.msie) {
+  if ($.browser.msie && $.browser.version > 7) {
     // iframe load event not firing in IE8 when page w. iframe is inside another iframe
     // Setting the iframe src seems to fix the problem
     var previewViewIframe = $("iframe#previewViewIframe")[0];

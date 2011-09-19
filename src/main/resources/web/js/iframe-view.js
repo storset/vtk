@@ -31,7 +31,7 @@ $(document).ready(function () {
         var offsetHeight = $('iframe#previewViewIframe')[0].contentWindow.document.body.offsetHeight;
         if(typeof offsetHeight !== "undefined" && offsetHeight > 0) {
           clearInterval(previewIframeReady);
-          resize($('iframe#previewViewIframe'));
+          resize($('iframe#previewViewIframe')[0]);
         }
       }, 25);
     }

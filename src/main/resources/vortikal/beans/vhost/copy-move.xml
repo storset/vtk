@@ -114,7 +114,7 @@
     <property name="confirmationService" ref="copyMove.confirmationService" />
     <property name="categories">
       <set>
-        <value>resourceMenuLeft.referenceDataProvider</value>
+        <value>resourceMenuRight.referenceDataProvider</value>
       </set>
     </property>
   </bean>

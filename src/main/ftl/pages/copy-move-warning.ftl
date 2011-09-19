@@ -16,9 +16,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <#if action = "move-resources">
-<title>${vrtx.getMsg("copyMove.move.title")}</title>
+  <title>${vrtx.getMsg("copyMove.move.title")}</title>
 <#else>
-<title>${vrtx.getMsg("copyMove.copy.title")}</title>
+  <title>${vrtx.getMsg("copyMove.copy.title")}</title>
 </#if>
 </head>
 <body>

@@ -107,6 +107,11 @@ vrtxAdmin.permissionsAutocompleteParams = { minChars: 4,
                                             width: 300, 
                                             max: 30,
                                             delay: 800 };
+         
+// When to timeout AJAX GET/POST                                   
+$.ajaxSetup({
+  timeout: 20000 // 20s
+});
                            
 // funcComplete for postAjaxForm()
 var doReloadFromServer = false; // global var changed by checkStillAdmin() (funcProceedCondition)             

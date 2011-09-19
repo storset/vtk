@@ -1276,10 +1276,11 @@ VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
   if (xhr.readyState == 4 && status == 200) {
     var msg = "The service is not active: " + textStatus;
   } else {
-    if (xhr.status == 401 || xhr.status == 403 || status == 404) { // if you have no access anymore or page is poff -- gone: reload from server
+    // if you have no access anymore or page is removed: reload from server
+    if (status == 401 || status == 403 || status == 404) {
       location.reload(true);
     } 
-    var msg = "The service returned " + xhr.status + " and failed to retrieve/post form.";
+    var msg = "The service returned " + xhr.status + " and failed to retrieve/post form: " + textStatus;
   }
   if ($("#app-content > .errormessage").length) {
     $("#app-content > .errormessage").html(msg);

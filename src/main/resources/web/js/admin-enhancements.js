@@ -321,7 +321,7 @@ $(document).ready(function () {
       vrtxAdmin.postAjaxForm({
         selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
         updateSelectors: [".permissions-" + privilegiesPermissions[i] + "-wrapper",
-                          ".resource-menu.read-permissions"],
+                          ".readPermission"],
         errorContainer: "errorContainer",
         errorContainerInsertAfter: ".groups-wrapper",
         funcProceedCondition: checkStillAdmin,

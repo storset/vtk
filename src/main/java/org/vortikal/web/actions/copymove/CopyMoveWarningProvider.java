@@ -73,8 +73,6 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
 
-        System.out.println("**************************************** Hello hello hello ");
-        
         HttpSession session = request.getSession(false);
         if (session == null) {
             return;
@@ -84,8 +82,6 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
         if (sessionBean == null) {
             return;
         }
-        
-        System.out.println("**************************************** Hello hello hello " + sessionBean.filesToBeCopied.size());
         
         Path destinationUri = requestContext.getCurrentCollection();
         Path sourceParentUri = findSourceParentUri(sessionBean);

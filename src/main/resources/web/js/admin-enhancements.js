@@ -190,7 +190,7 @@ $(document).ready(function () {
   // Remove active tab-message if it is empty
   var activeTabMsg = activeTab.find(" > .tabMessage");
   if (!activeTabMsg.text().length) {
-   activeTabMsg.remove();
+    activeTabMsg.remove();
   }
   
   // Hack for setting iframe width if english i18n

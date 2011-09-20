@@ -93,7 +93,7 @@ public class DiagramReport extends AbstractReporter {
              */
             String[] types = { "webpage", "image", "audio", "video", "pdf", "doc", "ppt", "xls", "text", "other" };
             TermOperator[] t = { null, TermOperator.IN, TermOperator.IN, TermOperator.IN, TermOperator.IN,
-                    TermOperator.IN, TermOperator.IN, TermOperator.IN, TermOperator.EQ };
+                    TermOperator.IN, TermOperator.IN, TermOperator.IN, TermOperator.EQ, null };
             int typeCount[] = new int[types.length];
             URL typeURL[] = new URL[types.length];
 

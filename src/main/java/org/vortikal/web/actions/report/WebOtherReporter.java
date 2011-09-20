@@ -61,15 +61,15 @@ public class WebOtherReporter extends DocumentReporter {
         query.add(new TypeTermQuery("json-resource", TermOperator.IN));
         q.add(query);
 
-        q.add(new TypeTermQuery("structured-article", TermOperator.NE));
-        q.add(new TypeTermQuery("structured-event", TermOperator.NE));
-        q.add(new TypeTermQuery("person", TermOperator.NE));
-        q.add(new TypeTermQuery("structured-project", TermOperator.NE));
-        q.add(new TypeTermQuery("research-group", TermOperator.NE));
-        q.add(new TypeTermQuery("organizational-unit", TermOperator.NE));
-        q.add(new TypeTermQuery("managed-xml", TermOperator.NE));
-        q.add(new TypeTermQuery("html", TermOperator.NE));
-        q.add(new TypeTermQuery("php", TermOperator.NE));
+        q.add(new TypeTermQuery("structured-article", TermOperator.NI));
+        q.add(new TypeTermQuery("structured-event", TermOperator.NI));
+        q.add(new TypeTermQuery("person", TermOperator.NI));
+        q.add(new TypeTermQuery("structured-project", TermOperator.NI));
+        q.add(new TypeTermQuery("research-group", TermOperator.NI));
+        q.add(new TypeTermQuery("organizational-unit", TermOperator.NI));
+        q.add(new TypeTermQuery("managed-xml", TermOperator.NI));
+        q.add(new TypeTermQuery("html", TermOperator.NI));
+        q.add(new TypeTermQuery("php", TermOperator.NI));
 
         /* In current resource but not in /vrtx. */
         q.add(new UriPrefixQuery(currentResource.getURI().toString(), TermOperator.IN, false));

@@ -39,21 +39,19 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public abstract class DocumentReporter extends AbstractReporter {
 
     private int pageSize = DEFAULT_SEARCH_LIMIT;
-    private Service manageService;
+    private Service manageService, reportService;
     private int backURL;
 
     protected abstract Search getSearch(String token, Resource currentResource);
 
     @Override
-    public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
+    public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("reportname", this.getName());
 
@@ -65,18 +63,13 @@ public abstract class DocumentReporter extends AbstractReporter {
             else
                 backURLname = "BACKURL_SET-BUT_UNKNOWN";
 
-            RequestContext requestContext = RequestContext.getRequestContext();
-            SecurityContext securityContext = SecurityContext.getSecurityContext();
-            Service service = requestContext.getService();
-
-            URL backURL = new URL(service.constructURL(currentResource, securityContext.getPrincipal()));
-            backURL.addParameter(REPORT_TYPE_PARAM, backURLname);
+            URL backURL = new URL(reportService.constructURL(resource)).addParameter(REPORT_TYPE_PARAM, backURLname);
 
             result.put("backURLname", backURLname);
             result.put("backURL", backURL);
         }
 
-        Search search = this.getSearch(token, currentResource);
+        Search search = this.getSearch(token, resource);
         if (search == null) {
             return result;
         }
@@ -122,6 +115,10 @@ public abstract class DocumentReporter extends AbstractReporter {
 
     public void setManageService(Service manageService) {
         this.manageService = manageService;
+    }
+
+    public void setReportService(Service reportService) {
+        this.reportService = reportService;
     }
 
     public void setBackURL(int backURL) {

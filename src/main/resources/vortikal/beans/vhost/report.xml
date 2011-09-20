@@ -106,6 +106,7 @@
 
   <bean id="documentReporter" abstract="true" class="org.vortikal.web.actions.report.DocumentReporter" parent="reporter">
     <property name="manageService" ref="manageService" />
+    <property name="reportService" ref="reportService" />
     <property name="backURL" value="0" />
     <property name="viewName" value="documentReport" />
   </bean>

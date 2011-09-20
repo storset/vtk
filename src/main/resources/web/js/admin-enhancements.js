@@ -202,10 +202,12 @@ $(document).ready(function () {
   var titleSplits = $("h1 .title-split");
   var resourceMenuLeft = $(".resourceMenuLeft");
   var titleSplitsLength = titleSplits.length;
-  if(titleSplitsLength == 2) {
-    resourceMenuLeft.css("marginTop", "-22px");
-  } else if(titleSplitsLength >= 3) {
-    resourceMenuLeft.css("marginTop", "0px"); 
+  if (resourceMenuLeft.length) {
+    if (titleSplitsLength == 2) {
+      resourceMenuLeft.css("marginTop", "-22px");
+    } else if(titleSplitsLength >= 3) {
+      resourceMenuLeft.css("marginTop", "0px"); 
+    }
   }
   
   // Open Webdav collectionlisting in window

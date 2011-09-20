@@ -15,6 +15,9 @@
   <body${document:element-attributes select=[html.body]}>
     <div id="app-head-wrapper"> 
       <div id="app-head">
+        <div id="app-name"> 
+          ${manage:localized-text code=[title.browse] default=[Create link to resource]
+        </div>
         <div id="global-menu-top">
           <div class="global-menu-small last">
             <a href="" onclick="window.close()">${manage:localized-text code=[default.window.close]default=[close window]}

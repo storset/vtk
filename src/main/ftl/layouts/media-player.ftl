@@ -114,11 +114,10 @@
 	  </script>
 	  
     <#elseif (!streamType?exists) && contentType == "video/x-flv" || contentType == "video/mp4">
-	  <div id="mediaspiller-${dateStr}" class="vrtx-media-player-no-flash" style="background-image: url('<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png</#if>')">
-	  
-	  <link type="text/css" rel="stylesheet" media="all" href="/vrtx/__vrtx/static-resources/themes/default/view-mediaplayer.css" />
-
-	  <a class="playbutton" href="${media?html}"></a>
+      <link type="text/css" rel="stylesheet" media="all" href="/vrtx/__vrtx/static-resources/themes/default/view-mediaplayer.css" />
+	  <div id="mediaspiller-${dateStr}" class="vrtx-media-player-no-flash">
+	    <img src="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png</#if>" alt="poster image" />
+	    <a class="playbutton" href="${media?html}"></a>
 	  </div>
 	  <script type="text/javascript"><!--
 	    var flashvars = {

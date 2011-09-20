@@ -27,6 +27,7 @@
   visibility: hidden;
 }
 
+.media .vrtx-textfield,
 .image-ref .vrtx-textfield {
   margin-right: 20px;
 }

@@ -9,7 +9,7 @@ function updateParent(editField, browseURL) {
 
 $(document).ready(function() {
   var contents = $("#contents");
-  if(!contents.find("> div").length) {
+  if(!contents.find("table").length) {
     contents.parent().remove();
   }
 });

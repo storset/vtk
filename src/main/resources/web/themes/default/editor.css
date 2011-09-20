@@ -27,6 +27,16 @@
   visibility: hidden;
 }
 
+.start-date .vrtx-textfield.date,
+.end-date .vrtx-textfield.date {
+  margin-right: 15px;
+}
+
+.start-date .vrtx-textfield.hours,
+.end-date .vrtx-textfield.hours {
+  margin-right: 5px;
+}
+
 .media .vrtx-textfield,
 .image-ref .vrtx-textfield {
   margin-right: 20px;

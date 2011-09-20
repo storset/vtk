@@ -38,7 +38,6 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
@@ -52,14 +51,8 @@ public class WebOtherReporter extends DocumentReporter {
     @Override
     protected Search getSearch(String token, Resource currentResource) {
         AndQuery q = new AndQuery();
-
-        OrQuery query = new OrQuery();
-        query.add(new TypeTermQuery("apt-resource", TermOperator.IN));
-        query.add(new TypeTermQuery("php", TermOperator.IN));
-        query.add(new TypeTermQuery("html", TermOperator.IN));
-        query.add(new TypeTermQuery("managed-xml", TermOperator.IN));
-        query.add(new TypeTermQuery("json-resource", TermOperator.IN));
-        q.add(query);
+        
+        q.add(new TypeTermQuery("json-resource", TermOperator.IN));
 
         q.add(new TypeTermQuery("structured-article", TermOperator.NI));
         q.add(new TypeTermQuery("structured-event", TermOperator.NI));
@@ -67,9 +60,8 @@ public class WebOtherReporter extends DocumentReporter {
         q.add(new TypeTermQuery("structured-project", TermOperator.NI));
         q.add(new TypeTermQuery("research-group", TermOperator.NI));
         q.add(new TypeTermQuery("organizational-unit", TermOperator.NI));
-        q.add(new TypeTermQuery("managed-xml", TermOperator.NI));
-        q.add(new TypeTermQuery("html", TermOperator.NI));
-        q.add(new TypeTermQuery("php", TermOperator.NI));
+        q.add(new TypeTermQuery("contact-supervisor", TermOperator.NI));
+        q.add(new TypeTermQuery("frontpage", TermOperator.NI));
 
         /* In current resource but not in /vrtx. */
         q.add(new UriPrefixQuery(currentResource.getURI().toString(), TermOperator.IN, false));

@@ -95,10 +95,17 @@ vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
 // v3.?: vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;
 
 // Upgrade easing algorithm from 'linear' to 'easeOutQuad' and 'easeInQuad'
-// -- if not < IE 9 and not iPhone, iPad and Android devices
+// -- if not < IE 9 (and not iPhone, iPad and Android devices)
 if(!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) && !vrtxAdmin.isMobileWebkitDevice) {
   vrtxAdmin.transitionEasingSlideDown = "easeOutQuad";
   vrtxAdmin.transitionEasingSlideUp = "easeInQuad";
+}
+
+if(vrtxAdmin.isMobileWebkitDevice) { // turn off animation in iPhone, iPad and Android (consider when iOS 5)
+  vrtxAdmin.transitionSpeed = 0;
+  vrtxAdmin.transitionCustomPermissionSpeed = 0;
+  vrtxAdmin.transitionPropSpeed = 0;
+  vrtxAdmin.transitionDropdownSpeed = 0;
 }
 
 // Permission Autocomplete parameters

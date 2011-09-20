@@ -987,6 +987,12 @@ ul.list-menu.resourceMenuRight p span,
   border: none !important;
 }
 
+.tip.vrtx-create-tree .no-create-permission {
+  white-space: nowrap;
+  padding-top: 4px;
+  display: block;
+}
+
 /* ^ Create dialog */
 
 /* ^ Tooltip */

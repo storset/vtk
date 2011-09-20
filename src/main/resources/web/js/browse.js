@@ -10,6 +10,6 @@ function updateParent(editField, browseURL) {
 $(document).ready(function() {
   var contents = $("#contents");
   if(!contents.find("> div").length) {
-    contents.remove();
+    contents.parent().remove();
   }
 });

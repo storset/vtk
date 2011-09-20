@@ -61,8 +61,14 @@ public class OtherReporter extends DocumentReporter {
         q.add(new TypeTermQuery("doc", TermOperator.NI));
         q.add(new TypeTermQuery("ppt", TermOperator.NI));
         q.add(new TypeTermQuery("xls", TermOperator.NI));
-        q.add(new TypeTermQuery("text", TermOperator.NI));
+        q.add(new TypeTermQuery("text", TermOperator.NE));
 
+        q.add(new TypeTermQuery("apt-resource", TermOperator.NI));
+        q.add(new TypeTermQuery("php", TermOperator.NI));
+        q.add(new TypeTermQuery("html", TermOperator.NI));
+        q.add(new TypeTermQuery("managed-xml", TermOperator.NI));
+        q.add(new TypeTermQuery("json-resource", TermOperator.NI));
+        
         /* In current resource but not in /vrtx. */
         q.add(new UriPrefixQuery(currentResource.getURI().toString(), TermOperator.IN, false));
         q.add(new UriPrefixQuery("/vrtx", true));

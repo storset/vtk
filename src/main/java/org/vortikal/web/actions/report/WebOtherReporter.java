@@ -38,6 +38,7 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
@@ -51,8 +52,11 @@ public class WebOtherReporter extends DocumentReporter {
     @Override
     protected Search getSearch(String token, Resource currentResource) {
         AndQuery q = new AndQuery();
+        OrQuery orq = new OrQuery();
         
-        q.add(new TypeTermQuery("json-resource", TermOperator.IN));
+        orq.add(new TypeTermQuery("json-resource", TermOperator.IN));
+        orq.add(new TypeTermQuery("apt-resource", TermOperator.IN));
+        q.add(orq);
 
         q.add(new TypeTermQuery("structured-article", TermOperator.NI));
         q.add(new TypeTermQuery("structured-event", TermOperator.NI));

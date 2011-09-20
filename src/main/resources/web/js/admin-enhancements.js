@@ -211,8 +211,9 @@ $(document).ready(function () {
   // Zebra-tables
   vrtxAdmin.zebraTables(".resourceInfo");
   
-  // AJAX INIT: Resource menu service forms
+  // AJAX initialization
 
+  // Resource menus
   var resourceMenuLeftServices = ["renameService",
                                   "manage\\.createArchiveService",
                                   "manage\\.expandArchiveService"];
@@ -247,10 +248,7 @@ $(document).ready(function () {
         transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
     });
   }
-  
 
-  // AJAX INIT: Tab menu service forms
-  
   if($("body#vrtx-manage-collectionlisting").length) {
     var tabMenuServices = ["fileUploadService",
                            "createDocumentService",
@@ -298,16 +296,15 @@ $(document).ready(function () {
     }
   }
 
-  // AJAX INIT: Permission privilegie forms (READ, READ_WRITE, ALL)
+  // Permission privilegie forms (READ, READ_WRITE, ALL)
   if($("body#vrtx-permissions").length) {
     var privilegiesPermissions = ["read",
                                   "read-write",
                                   "all"];
-
+                                  
     for (i = privilegiesPermissions.length; i--;) {
       initPermissionForm("expandedForm-" + privilegiesPermissions[i]);
     }
-
     for (i = privilegiesPermissions.length; i--;) {
       vrtxAdmin.getAjaxForm({
         selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax",
@@ -329,11 +326,10 @@ $(document).ready(function () {
       });
     }
   
-    // AJAX INIT: More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
-  
+    // More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
     var privilegiesPermissionsInTable = ["add-comment",
                                          "read-processed"];
-
+                                         
     for (i = privilegiesPermissionsInTable.length; i--;) {
       vrtxAdmin.getAjaxForm({
         selector: ".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax",
@@ -358,13 +354,13 @@ $(document).ready(function () {
         transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
       });
     }
-    
+    // Remove/add permissions
     vrtxAdmin.ajaxRemove("input.removePermission", ".principalList");
     vrtxAdmin.ajaxAdd("span.addGroup", ".groups-wrapper", "errorContainer");
     vrtxAdmin.ajaxAdd("span.addUser", ".users-wrapper", "errorContainer");
   }
   
-  // AJAX INIT: About property forms
+  // About property forms
 
   if($("body#vrtx-about").length && !vrtxAdmin.isIE7) { // turn of tmp. in IE7
     var propsAbout = [
@@ -398,8 +394,6 @@ $(document).ready(function () {
       });
     }
   }
-
-  // AJAX INIT: Remove/add permissions
 
   // Show/hide multiple properties (initalization / config)
   // TODO: better / easier to understand interface (and remove old "." in CSS-ids / classes)

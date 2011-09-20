@@ -191,6 +191,7 @@
       <map>
         <entry key="jsURLs">
           <list>
+            <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
             <value>${jsBaseURL}/browse.js</value>
           </list>
         </entry>

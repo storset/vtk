@@ -7,11 +7,17 @@
 body,
 #app-content,
 #app-head {
-  width: 914px;
+  width: 884px;
   max-width: none !important;
   min-width: 0 !important;
   padding-left: 0px !important;
   padding-right: 0px !important;
+}
+
+#app-head-wrapper {
+  margin-left: 15px;
+  border-right: 1px solid #DAD9D9;
+  border-left: 1px solid #DAD9D9;
 }
 
 #vrtx-breadcrumb-wrapper {
@@ -24,6 +30,11 @@ body,
 
 #app-head {
   height: 55px !important;
+}
+
+#app-content #main {
+  padding: 5px 0 0 0;
+  margin: 0 0 0 15px;
 }
 
 div.resource-title {

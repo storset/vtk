@@ -6,3 +6,10 @@ function updateParent(editField, browseURL) {
   self.close();
   return false;
 }
+
+$(document).ready(function() {
+  var contents = $("#contents");
+  if(!contents.find("> div").length) {
+    contents.remove();
+  }
+});

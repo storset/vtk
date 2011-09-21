@@ -124,7 +124,6 @@
             </map>
           </property>
         </bean>
-        <ref bean="manage.refreshLockURLProvider" />
       </list>
     </property>
   </bean>

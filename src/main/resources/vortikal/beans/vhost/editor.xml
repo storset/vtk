@@ -237,7 +237,6 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />
-        <ref bean="manage.refreshLockURLProvider" />
         <ref bean="manage.unlockURLProvider" />
         <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
           <property name="service" ref="staticResourceService" />

@@ -1,5 +1,4 @@
 <#ftl strip_whitespace=true>
-<#import "/lib/ping.ftl" as ping />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "include/scripts.ftl" as scripts />
 <#import "/lib/editor/common.ftl" as editor />
@@ -10,7 +9,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Edit structured resource</title>
-  <@ping.ping url=pingURL['url'] interval=300 />
   <@editor.addCkScripts />
   <@vrtxJSONJavascript.script />
   

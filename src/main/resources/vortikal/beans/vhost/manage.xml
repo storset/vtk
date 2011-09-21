@@ -1382,6 +1382,7 @@
         <ref bean="resourceContextProvider" />
         <ref bean="resourceMenuLeftProvider" />
         <ref bean="resourceMenuRightProvider" />
+        <ref bean="manage.refreshLockURLProvider" />
       </list>
     </property>
     <property name="attributesMap">

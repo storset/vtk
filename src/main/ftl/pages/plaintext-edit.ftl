@@ -12,7 +12,6 @@
   -
   -->
 <#import "/lib/vortikal.ftl" as vrtx />
-<#import "/lib/ping.ftl" as ping />
 <#if !plaintextEditForm?exists>
   <#stop "Unable to render model: required submodel
   'plaintextEditForm' missing">
@@ -23,7 +22,6 @@
 <head>
   <title>Plain text edit</title>
   <script type="text/javascript" src="${md5jsURL?html}"></script>
-  <@ping.ping url=pingURL['url'] interval=300/>
   <script type="text/javascript"><!--
 
     var before = null;

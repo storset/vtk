@@ -10,7 +10,6 @@
   -  ckBrowse.url
   -
   -->
-<#import "/lib/ping.ftl" as ping />
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/autocomplete.ftl" as autocomplete />
@@ -20,7 +19,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Editor</title>
-    <@ping.ping url=pingURL['url'] interval=300 />    
     <@editor.addCkScripts />
 
     <script type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>

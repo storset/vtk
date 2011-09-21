@@ -110,7 +110,6 @@
     <property name="staticAttributes" ref="xslTransformerParameterMap" />
     <property name="referenceDataProviders">
       <list>
-        <ref bean="manage.refreshLockURLProvider" />
         <ref bean="rawXmlQueryURLProvider" />
         <ref bean="editMessageProvider" />
         <ref bean="editTabHelpURLProvider" />

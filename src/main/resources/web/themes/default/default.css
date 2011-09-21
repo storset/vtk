@@ -1685,6 +1685,11 @@ div#system-message-wrapper div.system-message div.system-message-text {
   margin: 0 0 0 45px;
 }
 
+div#system-message-wrapper div.system-message div.system-message-text a {
+  color: #88dfed;
+  text-decoration:underline;
+}
+
 div.tabMessage {
   background: url(images/info-small.gif) no-repeat 0 0;
   padding: 0 0 5px 25px;

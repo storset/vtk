@@ -70,12 +70,13 @@
         </#if>
         
           <#assign contentType = vrtx.propValue(res, 'contentType') />
+          <#assign isCollection = vrtx.propValue(res, 'collection') />
         
           <#assign rowType = "odd" />
           <#if (res_index % 2 == 0) >
             <#assign rowType = "even" />
           </#if>
-          
+
           <#assign firstLast = ""  />
           <#if (res_index == 0) && (res_index == (collectionSize - 1))>
             <#assign firstLast = " first last" />
@@ -84,8 +85,8 @@
           <#elseif (res_index == (collectionSize - 1))>
             <#assign firstLast = " last" />     
           </#if>
-
-          <tr class="${rowType} <@vrtx.iconResolver res.resourceType contentType />${firstLast}">  
+          
+          <tr class="${rowType} <@vrtx.iconResolver res.resourceType contentType /> ${isCollection}${firstLast}">
             <td class="vrtx-report-name"><a href="${url?html}"><@vrtx.breakSpecificChar nchars=48 splitClass="name">${res.name?html}</@vrtx.breakSpecificChar></a></td>
             <td class="vrtx-report-last-modified">${lastModifiedTime?html}</td>
             <td class="vrtx-report-last-modified-by">${modifiedBy}</td>

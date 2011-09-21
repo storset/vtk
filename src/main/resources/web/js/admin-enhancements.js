@@ -181,13 +181,9 @@ $(document).ready(function () {
   });
   dropdown({selector: "ul.manage-create"});
   
-  // Slide up when choose something in dropdown
-  $(".dropdown-shortcut-menu li a").click(function() {
-    $(".dropdown-shortcut-menu-container").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
-  });
-  $(".dropdown-shortcut-menu-container li a").click(function() {
-    $(".dropdown-shortcut-menu-container").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");    
-  });
+  $(window).click("click", function(e){
+    closeDropdowns();
+  }); 
 
   // Remove active tab if it has no children
   var activeTab = $("#main .activeTab");
@@ -571,7 +567,7 @@ function logoutButtonAsLink() {
           + btn.attr('value') + '</a>');
   $('#logoutAction\\.link').click(function (e) {
     btn.click();
-    e.stopPropagation();
+    e.stopPropagation(); closeDropdowns();
     e.preventDefault();
   });
 }
@@ -639,7 +635,7 @@ function placeCopyMoveButtonInActiveTab(options) {
     } else {
       $("#" + options.btnId).click();
     }
-    e.stopPropagation();
+    e.stopPropagation(); closeDropdowns();
     e.preventDefault();
   });
 }
@@ -670,7 +666,7 @@ function placeDeleteButtonInActiveTab() {
         $('#collectionListing\\.action\\.delete-resources').click();
       }
     }
-    e.stopPropagation();
+    e.stopPropagation(); closeDropdowns();
     e.preventDefault();
   });
 }
@@ -689,7 +685,7 @@ function placeRecoverButtonInActiveTab() {
     } else {
       $('.recoverResource').click();
     }
-    e.stopPropagation();
+    e.stopPropagation(); closeDropdowns();
     e.preventDefault();
   });
 }
@@ -721,7 +717,7 @@ function placeDeletePermanentButtonInActiveTab() {
         $('.deleteResourcePermanent').click();
       }
     }
-    e.stopPropagation();
+    e.stopPropagation(); closeDropdowns();
     e.preventDefault();
   });
 }
@@ -780,11 +776,11 @@ function toggleConfigCustomPermissions(selectorClass) {
   }
   $("#app-content").delegate("." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
     $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideDown);
-    e.stopPropagation();
+    e.stopPropagation(); closeDropdowns();
   });
   $("#app-content").delegate("." + selectorClass + " ul.shortcuts label:not([for=custom])", "click", function (e) {
     $(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideUp);
-    e.stopPropagation();
+    e.stopPropagation(); closeDropdowns();
   });
 }
 
@@ -847,9 +843,8 @@ function dropdown(options) {
     var shortcutMenu = list.siblings(".dropdown-shortcut-menu-container");
     shortcutMenu.find("li.first").remove();
     shortcutMenu.css("left", (list.width() - 24) + "px");
-
     list.find("li.first #dropdown-shortcut-menu-click-area").click(function (e) {
-      shortcutMenu.slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
+      shortcutMenu.slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");   
       e.stopPropagation();
       e.preventDefault();
     });
@@ -863,6 +858,13 @@ function dropdown(options) {
       $this.parent().toggleClass('unhover');
       $this.prev().toggleClass('hover');
     });
+  }
+}
+
+function closeDropdowns() {
+  var dropdowns = $(".dropdown-shortcut-menu-container:visible");
+  if(dropdowns.length) {
+    dropdowns.slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
   }
 }
 
@@ -1039,7 +1041,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
       }
     });
 
-    e.stopPropagation();
+    e.stopPropagation(); closeDropdowns();
     e.preventDefault();
   });
 };
@@ -1075,7 +1077,7 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitio
           $this.prepareTableRowForSliding();
         }
         $this.slideUp(transitionSpeed, transitionEasingSlideUp);
-        e.stopPropagation();
+        e.stopPropagation(); closeDropdowns();
         e.preventDefault();     
       });
       $this.find("button[type=submit][name*=Cancel]").click(function(e) {
@@ -1083,7 +1085,7 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitio
           $this.prepareTableRowForSliding();
         }
         $this.slideUp(transitionSpeed, transitionEasingSlideUp);
-        e.stopPropagation();
+        e.stopPropagation(); closeDropdowns();
         e.preventDefault();     
       });
     }
@@ -1168,7 +1170,7 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
 
     }
 
-    e.stopPropagation();
+    e.stopPropagation(); closeDropdowns();
     e.preventDefault();
   });
 };
@@ -1205,7 +1207,7 @@ VrtxAdmin.prototype.ajaxRemove = function ajaxRemove(selector, updateSelector) {
       }
     });
 
-    e.stopPropagation();
+    e.stopPropagation(); closeDropdowns();
     e.preventDefault();
   });
 };
@@ -1254,7 +1256,7 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
       }
     });
 
-    e.stopPropagation();
+    e.stopPropagation(); closeDropdowns();
     e.preventDefault();
   });
 };

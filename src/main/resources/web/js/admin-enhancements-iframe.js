@@ -10,13 +10,8 @@
 
 $(document).ready(function () {   
   dropdown({selector: "ul.manage-create"});
-  
-  // Slide up when choose something in dropdown
-  $(".dropdown-shortcut-menu li a").click(function() {
-    $(".dropdown-shortcut-menu-container").slideUp(100, "swing");
-  });
-  $(".dropdown-shortcut-menu-container li a").click(function() {
-    $(".dropdown-shortcut-menu-container").slideUp(100, "swing");    
+  $(window).click("click", function(e){
+    closeDropdowns();
   });
 });
 
@@ -57,6 +52,13 @@ function dropdown(options) {
       $this.parent().toggleClass('unhover');
       $this.prev().toggleClass('hover');
     });
+  }
+}
+
+function closeDropdowns() {
+  var dropdowns = $(".dropdown-shortcut-menu-container:visible");
+  if(dropdowns.length) {
+    dropdowns.hide(0);
   }
 }
 

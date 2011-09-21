@@ -232,35 +232,34 @@
       var classes = baseclass + " " + elem.name;
       htmlTemplate = '<div class=\"' + classes + '\">';
       htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
-      htmlTemplate += '<div>';
       htmlTemplate += '<textarea name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" ';
       htmlTemplate += ' rows=\"7\" cols=\"60\" ><\/textarea>';
-      htmlTemplate += '<\/div><\/div>';
+      htmlTemplate += '<\/div>';
       return htmlTemplate;
     }
     
     function addBooleanField(elem, inputFieldName) {
       htmlTemplate = '<div class=\"vrtx-radio\">';
       htmlTemplate += '<div><label>elem.title<\/label><\/div>';
-      htmlTemplate += '<div>';
       htmlTemplate += '<input name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '-true\" type=\"radio\" value=\"true\" \/>';
       htmlTemplate += '<label for=\"' + inputFieldName + '-true\">True<\/label>';
       htmlTemplate += '<input name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '-false\" type=\"radio\" value=\"false\" \/>';
       htmlTemplate += '<label for=\"' + inputFieldName + '-false\">False<\/label>';
-      htmlTemplate += '<\/div><\/div>';
+      htmlTemplate += '<\/div>';
       return htmlTemplate;
     }
     
     function addImageRef(elem, inputFieldName) {
       htmlTemplate = '<div class=\"vrtx-image-ref\">';
-      htmlTemplate += '<div>';
+      htmlTemplate += '<div class=\"vrtx-image-ref-label\">';
       htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
-      htmlTemplate += '<\/div><div>';
-      htmlTemplate += '<div class=\"vrtx-textfield\"><input type=\"text\" id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage(' + inputFieldName + ');\" size=\"30\" \/><\/div>';
-      htmlTemplate += '<div class=\"vrtx-button\"><button type=\"button\" onclick=\"browseServer(\'' + inputFieldName + '\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button><\/div>';
       htmlTemplate += '<\/div>';
-      htmlTemplate += '<div id=\"' + inputFieldName + '.preview\">';
-      htmlTemplate += '<\/div><\/div>';
+      htmlTemplate += '<div class=\"vrtx-image-ref-browse\">';
+      htmlTemplate += '<div class=\"vrtx-textfield\"><input type=\"text\" id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage(\'' + inputFieldName + '\');\" size=\"30\" \/><\/div>';
+      htmlTemplate += '<div class=\"vrtx-button\"><button type=\"button\" onclick=\"browseServer(\'' + inputFieldName + '\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button><\/div>';
+      htmlTemplate += '<div id=\"' + inputFieldName + '.preview\"><\/div>';
+      htmlTemplate += '<\/div>';
+      htmlTemplate += '<\/div>';
       return htmlTemplate;
     }
     
@@ -291,7 +290,7 @@
       htmlTemplate = '<div class=\"vrtx-media-ref\">';
       htmlTemplate += '<div><label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
       htmlTemplate += '<\/div><div>';
-      htmlTemplate += '<div class=\"vrtx-textfield\"><input type=\"text\" id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage(' + inputFieldName + ');\" size=\"30\"\/><\/div>';
+      htmlTemplate += '<div class=\"vrtx-textfield\"><input type=\"text\" id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\" value=\"\" size=\"30\"\/><\/div>';
       htmlTemplate += '<div class=\"vrtx-button\"><button type=\"button\" onclick=\"browseServer(\'' + inputFieldName + '\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\', \'Media\');\"><@vrtx.msg code="editor.browseImages" /><\/button><\/div>';
       htmlTemplate += '<\/div><\/div>'
       return htmlTemplate;
@@ -352,6 +351,8 @@
         var val2 = element2.val();
         element1.val(val2);
         element2.val(val1);
+        element1.blur();
+        element2.blur();
         element1.change();
         element2.change();
       }

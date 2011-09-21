@@ -46,6 +46,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.report.subresource.SubResource;
 import org.vortikal.web.service.Service;
@@ -101,10 +102,11 @@ public class CreateDropDownJSON implements Controller {
 
             Path pURI = Path.fromString(sr.getUri());
             Resource resource = this.repository.retrieve(token, pURI, true);
+            Principal principal = RequestContext.getRequestContext().getPrincipal();
 
             String title;
             try {
-                String url = service.constructURL(resource).getPathRepresentation();
+                String url = service.constructURL(resource, principal).getPathRepresentation();
 
                 title = "<a target=&quot;_top&quot; class=&quot;vrtx-button-small&quot; href=&quot;" + url + "&quot;>"
                         + "<span>" + provider.getLocalizedTitle(request, buttonText, null) + "</span>" + "</a>";

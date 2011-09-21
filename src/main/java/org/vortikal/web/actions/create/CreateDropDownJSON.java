@@ -122,7 +122,7 @@ public class CreateDropDownJSON implements Controller {
             }
 
             o.put("hasChildren", sr.hasChildren());
-            o.put("text", pURI.isRoot() ? request.getServerName() : sr.getName());
+            o.put("text", pURI.isRoot() ? repository.getId() : sr.getName());
             o.put("uri", sr.getUri());
             o.put("spanClasses", "folder");
             o.put("title", title);

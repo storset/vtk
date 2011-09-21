@@ -93,6 +93,8 @@ public class RequestContextInitializer implements ContextInitializer {
     
     private Set<String> nonRepositoryRoots = new HashSet<String>();
     
+    private String plainServiceModeParameter = null;
+    
     @Required public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -162,6 +164,7 @@ public class RequestContextInitializer implements ContextInitializer {
     }
 
 
+    @Override
     public void createContext(HttpServletRequest request) throws Exception {
 
         SecurityContext securityContext = SecurityContext.getSecurityContext();
@@ -215,13 +218,15 @@ public class RequestContextInitializer implements ContextInitializer {
                 
             }
         }
+        boolean plainServiceMode = isPlainServiceMode(request);
+        
         for (Service service: this.rootServices) {
 
             // Set an initial request context (with the resource, but
             // without the matched service)
             RequestContext.setRequestContext(
                 new RequestContext(request, securityContext, service, resource, 
-                        uri, indexFileUri, isIndexFile, inRepository, this.repository));
+                        uri, indexFileUri, isIndexFile, plainServiceMode, inRepository, this.repository));
             
             // Resolve the request to a service:
             if (resolveService(service, request, resource, securityContext)) {
@@ -288,7 +293,8 @@ public class RequestContextInitializer implements ContextInitializer {
                 new RequestContext(request, securityContext, service, resource,
                                    requestContext.getResourceURI(),
                                    requestContext.getIndexFileURI(), 
-                                   requestContext.isIndexFile(), 
+                                   requestContext.isIndexFile(),
+                                   requestContext.isPlainServiceMode(),
                                    requestContext.isInRepository(),
                                    this.repository));
             throw(e);
@@ -316,13 +322,15 @@ public class RequestContextInitializer implements ContextInitializer {
             new RequestContext(request, securityContext, service, resource,
                                requestContext.getResourceURI(),
                                requestContext.getIndexFileURI(), 
-                               requestContext.isIndexFile(), 
+                               requestContext.isIndexFile(),
+                               requestContext.isPlainServiceMode(),
                                requestContext.isInRepository(),
                                this.repository));
         return true;
     }
 
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName());
@@ -397,5 +405,13 @@ public class RequestContextInitializer implements ContextInitializer {
             parents += " " + s.getName();
         }
         return parents;
+    }
+    
+    private boolean isPlainServiceMode(HttpServletRequest request) {
+        return this.plainServiceModeParameter != null && request.getParameter(this.plainServiceModeParameter) != null;
+    }
+    
+    public void setPlainServiceModeParameter(String plainServiceModeParamter) {
+        this.plainServiceModeParameter = plainServiceModeParamter;
     }
 }

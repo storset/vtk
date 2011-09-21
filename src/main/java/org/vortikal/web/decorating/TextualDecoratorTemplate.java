@@ -121,7 +121,7 @@ public class TextualDecoratorTemplate implements Template {
                         sb.append(f.buffer.toString());
                         continue;
                     }
-                    
+
                     Locale locale = 
                         new org.springframework.web.servlet.support.RequestContext(this.request).getLocale();
                     DecoratorRequest decoratorRequest = new DecoratorRequestImpl(

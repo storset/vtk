@@ -64,34 +64,42 @@ public class MockStringDecoratorRequest implements DecoratorRequest {
         this.page = page;
     }
 
+    @Override
     public Locale getLocale() {
         return Locale.getDefault();
     }
         
+    @Override
     public HtmlPage getHtmlPage() {
         return this.page;
     }
         
+    @Override
     public String getDoctype() {
         return this.page.getDoctype();
     }
 
+    @Override
     public HttpServletRequest getServletRequest() {
         throw new IllegalStateException("Not implemented");
     }
     
+    @Override
     public Map<Object, Object> getMvcModel() {
         return new HashMap<Object, Object>();
     }
         
+    @Override
     public Object getRawParameter(String name) {
         return this.parameters.get(name);
     }
 
+    @Override
     public String getStringParameter(String name) {
         return (String) this.parameters.get(name);
     }
         
+    @Override
     public Iterator<String> getRequestParameterNames() {
         List<String> l = new ArrayList<String>();
         for (Object o: this.parameters.keySet()) {

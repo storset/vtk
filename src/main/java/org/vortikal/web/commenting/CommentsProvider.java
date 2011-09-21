@@ -113,6 +113,11 @@ public class CommentsProvider implements ReferenceDataProvider {
         Service currentService = requestContext.getService();
         Repository repository = requestContext.getRepository();
 
+        // VTK-2460
+        if (requestContext.isPlainServiceMode()) {
+            principal = null;
+        }
+
         model.put("principal", principal);
 
         Resource resource = repository.retrieve(token, uri, true);

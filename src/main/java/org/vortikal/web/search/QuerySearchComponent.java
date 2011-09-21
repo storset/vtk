@@ -93,7 +93,7 @@ public abstract class QuerySearchComponent implements SearchComponent {
         }
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        String token = requestContext.getSecurityToken();
+        String token = requestContext.isPlainServiceMode() ? null : requestContext.getSecurityToken(); // VTK-2460
         Repository repository = requestContext.getRepository();
 
         String[] sortingParams = request.getParameterValues(Listing.SORTING_PARAM);

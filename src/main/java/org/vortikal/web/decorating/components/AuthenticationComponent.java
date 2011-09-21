@@ -89,6 +89,11 @@ public class AuthenticationComponent extends ViewRenderingDecoratorComponent {
         model.put("principal", principal);
 
         Resource resource = repository.retrieve(token, uri, true);
+        
+        // VTK-2460
+        if (requestContext.isPlainServiceMode()) {
+            principal = null;
+        }
 
         String destinationService = request.getStringParameter("destination-service");
         Service alternativeService = alternativeLoginServices.get(destinationService);

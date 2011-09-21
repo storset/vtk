@@ -71,7 +71,7 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
     protected Resource retrieveLocalResource(URL feedURL) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
-        String token = requestContext.getSecurityToken();
+        String token = requestContext.isPlainServiceMode() ? null : requestContext.getSecurityToken(); // VTK-2460
         return repository.retrieve(token, feedURL.getPath(), true);
     }
 

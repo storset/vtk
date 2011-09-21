@@ -61,6 +61,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             + " reached no siblings are going to be displayed. Default limit is: " + Integer.MAX_VALUE;
     protected static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the menu";
 
+    @Override
     public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
@@ -88,6 +89,12 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
                 breadCrumbElements.remove(0);
             }
         }
+        
+        // From here on we typically load other resources than current resource
+        // and must respect plainServiceMode.
+        if (requestContext.isPlainServiceMode()) {
+            token = null;
+        }
 
         if (!currentResource.isCollection()) {
             try {
@@ -107,7 +114,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         breadCrumbElements.add(new BreadcrumbElement(markedUrl, getMenuTitle(currentResource)));
 
         List<MenuItem<PropertySet>> childElements = null;
-        childElements = generateChildElements(currentResource.getChildURIs(), currentResource, requestContext);
+        childElements = generateChildElements(currentResource.getChildURIs(), currentResource, requestContext, token);
 
         // If there is no children of the current resource, then we shall
         // instead display the children of the parent node.
@@ -120,7 +127,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
             }
 
             if (childResource != null) {
-                childElements = generateChildElements(childResource.getChildURIs(), currentResource, requestContext);
+                childElements = generateChildElements(childResource.getChildURIs(), currentResource, requestContext, token);
                 breadCrumbElements.remove(breadCrumbElements.size() - 1);
                 if (childElements.size() > maxSiblings) {
                     childElements = new ArrayList<MenuItem<PropertySet>>();
@@ -159,9 +166,8 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
     }
 
     private List<MenuItem<PropertySet>> generateChildElements(List<Path> children, Resource currentResource,
-            RequestContext requestContext) throws Exception {
+            RequestContext requestContext, String token) throws Exception {
         Repository repository = requestContext.getRepository();
-        String token = requestContext.getSecurityToken();
         List<MenuItem<PropertySet>> items = new ArrayList<MenuItem<PropertySet>>();
         for (Path childPath : children) {
             Resource childResource = null;
@@ -209,6 +215,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         throw new DecoratorComponentException("Parameter '" + prameter + "' must be an integer > 0");
     }
 
+    @Override
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PARAMETER_DISPLAY_FROM_LEVEL, PARAMETER_DISPLAY_FROM_LEVEL_DESC);

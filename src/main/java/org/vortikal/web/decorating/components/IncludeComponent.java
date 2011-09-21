@@ -176,6 +176,12 @@ implements ServletContextAware {
 
         boolean asCurrentPrincipal = "true".equals(request.getStringParameter(
                 PARAMETER_AS_CURRENT_USER));
+        
+        // VTK-2460
+        if (requestContext.isPlainServiceMode()) {
+            asCurrentPrincipal = false;
+        }
+        
         if (asCurrentPrincipal) {
             token = requestContext.getSecurityToken();
         }

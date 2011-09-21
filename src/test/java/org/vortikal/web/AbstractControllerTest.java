@@ -36,7 +36,7 @@ public abstract class AbstractControllerTest extends TestCase {
         BaseContext.pushContext();
         SecurityContext securityContext = new SecurityContext(null, null);
         SecurityContext.setSecurityContext(securityContext);
-        RequestContext requestContext = new RequestContext(null, securityContext, null, null, getRequestPath(), null, false, true, mockRepository);
+        RequestContext requestContext = new RequestContext(null, securityContext, null, null, getRequestPath(), null, false, false, true, mockRepository);
         RequestContext.setRequestContext(requestContext);
     }
 

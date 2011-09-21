@@ -70,18 +70,22 @@ public class DecoratorRequestImpl implements DecoratorRequest {
         this.locale = locale;
     }
     
+    @Override
     public HtmlPage getHtmlPage() {
         return this.html;
     }
     
+    @Override
     public HttpServletRequest getServletRequest() {
         return this.servletRequest;
     }
 
+    @Override
     public Map<Object, Object> getMvcModel() {
         return Collections.unmodifiableMap(this.mvcModel);
     }
    
+    @Override
     public Object getRawParameter(String name) {
         Object value = null;
         if (this.decoratorParameters != null) {
@@ -90,6 +94,7 @@ public class DecoratorRequestImpl implements DecoratorRequest {
         return value;
     }
     
+    @Override
     public String getStringParameter(String name) {
         Object value = getRawParameter(name);
         if (value == null) {
@@ -98,15 +103,18 @@ public class DecoratorRequestImpl implements DecoratorRequest {
         return expandParameter(value.toString());
     }
     
+    @Override
     public String getDoctype() {
         return this.doctype;
     }
         
 
+    @Override
     public Locale getLocale() {
         return this.locale;
     }
     
+    @Override
     public Iterator<String> getRequestParameterNames() {
         Set<String> s = new HashSet<String>();
         s.addAll(this.decoratorParameters.keySet());
@@ -141,3 +149,4 @@ public class DecoratorRequestImpl implements DecoratorRequest {
         return param;
     }
 }
+

@@ -118,6 +118,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
 
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
 
+    @Override
     public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
@@ -130,7 +131,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             }
         }
         RequestContext requestContext = RequestContext.getRequestContext();
-        String token = requestContext.getSecurityToken();
+        String token = requestContext.isPlainServiceMode() ? null : requestContext.getSecurityToken(); // VTK-2460
         Repository repository = requestContext.getRepository();
 
         Search search = buildSearch(menuRequest);
@@ -184,10 +185,12 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         return search;
     }
 
+    @Override
     protected String getDescriptionInternal() {
         return DESCRIPTION;
     }
 
+    @Override
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
@@ -206,6 +209,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         return map;
     }
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
         if (this.searchLimit <= 0) {

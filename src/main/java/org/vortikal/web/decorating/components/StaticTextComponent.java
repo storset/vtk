@@ -31,6 +31,7 @@
 package org.vortikal.web.decorating.components;
 
 import java.io.Writer;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -44,6 +45,7 @@ public class StaticTextComponent extends AbstractDecoratorComponent
 
     private String text;
     
+    @Override
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
         Writer writer = response.getWriter();
@@ -64,7 +66,6 @@ public class StaticTextComponent extends AbstractDecoratorComponent
     
     @Override
     protected Map<String, String> getParameterDescriptionsInternal() {
-        Map<String, String> map = new LinkedHashMap<String, String>();
-        return map;
+        return Collections.emptyMap();
     }
 }

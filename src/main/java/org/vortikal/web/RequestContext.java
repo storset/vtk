@@ -66,6 +66,7 @@ public class RequestContext {
     private final Path currentCollection;
     private final Path indexFileURI;
     private final boolean isIndexFile;
+    private final boolean plainServiceMode;
     private List<Message> infoMessages = new ArrayList<Message>();
     private List<Message> errorMessages = new ArrayList<Message>();
     
@@ -82,13 +83,14 @@ public class RequestContext {
     public RequestContext(HttpServletRequest servletRequest,
                           SecurityContext securityContext,
                           Service service, Resource resource, Path uri,
-                          Path indexFileURI, boolean isIndexFile, 
+                          Path indexFileURI, boolean isIndexFile, boolean plainServiceMode,
                           boolean inRepository, Repository repository) {
         this.servletRequest = servletRequest;
         this.securityContext = securityContext;
         this.indexFileURI = indexFileURI;
         this.service = service;
         this.isIndexFile = isIndexFile;
+        this.plainServiceMode = plainServiceMode;
         this.repository = repository;
         this.inRepository = inRepository;
         if (resource != null) {
@@ -103,14 +105,14 @@ public class RequestContext {
             this.currentCollection = null;
         }
     }
-    
+
     /**
      * Creates a new request context without a resource object.
      * @deprecated this constructor is used only in unit tests
      */
     public RequestContext(HttpServletRequest servletRequest,
                           Service service, Path uri) {
-        this(servletRequest, null, service, null, uri, null, false, true, null);
+        this(servletRequest, null, service, null, uri, null, false, false, true, null);
     }
     
     public static void setRequestContext(RequestContext requestContext) {
@@ -218,6 +220,7 @@ public class RequestContext {
         return Collections.unmodifiableList(this.errorMessages);
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getClass().getName());
         sb.append(": [");
@@ -230,6 +233,10 @@ public class RequestContext {
 
     public boolean isIndexFile() {
         return isIndexFile;
+    }
+    
+    public boolean isPlainServiceMode() {
+        return this.plainServiceMode;
     }
     
     public boolean isInRepository() {

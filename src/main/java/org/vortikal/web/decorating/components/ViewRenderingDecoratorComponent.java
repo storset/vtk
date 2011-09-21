@@ -66,6 +66,7 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
         this.exposeMvcModel = exposeMvcModel;
     }
 
+    @Override
     public final void render(DecoratorRequest request, DecoratorResponse response) throws Exception {
         Map<Object, Object> model = new HashMap<Object, Object>();
         if (this.exposeMvcModel) {
@@ -128,17 +129,20 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
         out.close();
     }
 
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName()).append(": [");
         sb.append("view = ").append(this.view).append("]");
         return sb.toString();
     }
 
+    @Override
     protected String getDescriptionInternal() {
         return null;
     }
 
+    @Override
     protected Map<String, String> getParameterDescriptionsInternal() {
         return null;
     }

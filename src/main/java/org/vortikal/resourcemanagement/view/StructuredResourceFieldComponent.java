@@ -70,6 +70,7 @@ public class StructuredResourceFieldComponent extends
         return map;
     }
 
+    @Override
     public List<HtmlContent> render(DecoratorRequest request) throws Exception {
         String select = request.getStringParameter(PARAMETER_SELECT);
         if (select == null || "".equals(select.trim())) {
@@ -91,6 +92,7 @@ public class StructuredResourceFieldComponent extends
             return null;
         }
         HtmlContent c = new HtmlText() {
+            @Override
             public String getContent() {
                 return prop.toString();
             }
@@ -98,6 +100,7 @@ public class StructuredResourceFieldComponent extends
         return Collections.singletonList(c);
     }
 
+    @Override
     public void render(DecoratorRequest request, DecoratorResponse response)
             throws Exception {
         List<HtmlContent> l = render(request);

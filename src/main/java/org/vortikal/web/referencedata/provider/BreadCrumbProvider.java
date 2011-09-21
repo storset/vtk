@@ -138,6 +138,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         this.navigationTitlePropDef = navigationTitlePropDef;
     }
 
+    @Override
     public final void afterPropertiesSet() throws Exception {
         if (this.service == null) {
             throw new BeanInitializationException(
@@ -150,11 +151,12 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
     public void referenceData(Map model, HttpServletRequest request) {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
-        String token = requestContext.getSecurityToken();
+        String token = requestContext.isPlainServiceMode() ? null : requestContext.getSecurityToken(); // VTK-2460
         Path uri = requestContext.getResourceURI();
 
         try{
@@ -226,7 +228,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         }
         
         Repository repository = requestContext.getRepository();
-        String token = requestContext.getSecurityToken();
+        String token = requestContext.isPlainServiceMode() ? null : requestContext.getSecurityToken(); // VTK-2460
         Principal principal = requestContext.getPrincipal();
 
         for (int i = displayFromLevel; i < length; i++) {
@@ -306,6 +308,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         return null;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(" [ ");

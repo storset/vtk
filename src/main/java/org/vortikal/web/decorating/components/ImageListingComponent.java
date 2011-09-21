@@ -58,8 +58,8 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
-        String url = request.getStringParameter("uri");
-        if (url == null || "".equals(url.trim()) || !isValidPath(url)) {
+        String path = request.getStringParameter("uri");
+        if (path == null || "".equals(path.trim()) || !isValidPath(path)) {
             return;
         }
 
@@ -83,15 +83,15 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
-        String token = requestContext.getSecurityToken();
-        Resource requestedResource = repository.retrieve(token, Path.fromString(url), false);
+        String token = requestContext.isPlainServiceMode() ? null : requestContext.getSecurityToken(); // VTK-2460
+        Resource requestedResource = repository.retrieve(token, Path.fromString(path), false);
 
         if (!requestedResource.isCollection()) {
             return;
         }
 
         AndQuery mainQuery = new AndQuery();
-        mainQuery.add(new UriPrefixQuery(url));
+        mainQuery.add(new UriPrefixQuery(path));
         mainQuery.add(new TypeTermQuery("image", TermOperator.IN));
 
         Search search = new Search();
@@ -103,7 +103,7 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
         model.put("images", rs.getAllResults());
         model.put("folderTitle", requestedResource.getTitle());
-        model.put("folderUrl", url);
+        model.put("folderUrl", path);
         model.put("fadeEffect", fadeEffect);
 
     }

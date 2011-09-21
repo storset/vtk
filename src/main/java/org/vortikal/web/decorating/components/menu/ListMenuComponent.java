@@ -512,7 +512,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         private String token;
         private List<String> excludedChildren = new ArrayList<String>();
 
-        public ListMenuRequest(DecoratorRequest request) {
+        ListMenuRequest(DecoratorRequest request) {
             RequestContext requestContext = RequestContext.getRequestContext();
             this.currentURI = requestContext.getResourceURI();
             this.currentFolder = requestContext.getCurrentCollection();
@@ -553,6 +553,12 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             }
 
             boolean authenticated = "true".equals(request.getStringParameter(PARAMETER_AUTENTICATED));
+            
+            // VTK-2460
+            if (requestContext.isPlainServiceMode()) {
+                authenticated = false;
+            }
+
             if (authenticated) {
                 this.token = requestContext.getSecurityToken();
             }

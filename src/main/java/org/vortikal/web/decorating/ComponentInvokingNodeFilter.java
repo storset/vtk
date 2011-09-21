@@ -247,8 +247,8 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
 
 
     private String invokeComponentsAsString(ComponentInvocation[] componentInvocations) {
-        HttpServletRequest servletRequest =
-            RequestContext.getRequestContext().getServletRequest();
+        HttpServletRequest servletRequest = 
+                RequestContext.getRequestContext().getServletRequest();
 
         org.springframework.web.servlet.support.RequestContext ctx =
             new org.springframework.web.servlet.support.RequestContext(servletRequest);

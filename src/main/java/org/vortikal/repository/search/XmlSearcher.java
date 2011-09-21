@@ -127,6 +127,11 @@ public class XmlSearcher {
 
     public Document executeDocumentQuery(String query, String sort,
             int maxResults, String fields, boolean authorizeCurrentPrincipal) throws QueryException {
+        // VTK-2460
+        if (RequestContext.getRequestContext().isPlainServiceMode()) {
+            authorizeCurrentPrincipal = false;
+        }
+        
         String token = null;
         if (authorizeCurrentPrincipal) {
             RequestContext requestContext = RequestContext.getRequestContext();
@@ -343,8 +348,9 @@ public class XmlSearcher {
             return set;
         }
         
+        @Override
         public String toString() {
-            StringBuffer sb = new StringBuffer(this.getClass().getName());
+            StringBuilder sb = new StringBuilder(this.getClass().getName());
             sb.append(": formats = ").append(this.formats);
             return sb.toString();
         }
@@ -384,6 +390,7 @@ public class XmlSearcher {
             return this.locale;
         }
         
+        @Override
         public String toString() {
             StringBuilder sb = new StringBuilder(this.getClass().getName());
             sb.append(": select = ").append(this.select);

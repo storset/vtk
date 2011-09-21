@@ -31,6 +31,7 @@
 package org.vortikal.web.actions.copymove;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -104,11 +105,13 @@ public class RenameCommandValidator implements Validator {
         if (name.contains("/") || name.equals(".") || name.equals("..")) {
             return true;
         }
-        for (String s : this.replaceNameChars.keySet()) {
-            if (Character.isLetter(s.charAt(0))) {
+        for (Entry<String, String> entry : this.replaceNameChars.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if (!StringUtils.isBlank(value)) {
                 continue;
             }
-            if (Pattern.compile(s).matcher(name).find()) {
+            if (Pattern.compile(key).matcher(name).find()) {
                 return true;
             }
         }

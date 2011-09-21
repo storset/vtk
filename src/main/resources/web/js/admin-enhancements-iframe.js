@@ -10,9 +10,6 @@
 
 $(document).ready(function () {   
   dropdown({selector: "ul.manage-create"});
-  $(window).click("click", function(e){
-    closeDropdowns();
-  });
 });
 
 
@@ -52,13 +49,6 @@ function dropdown(options) {
       $this.parent().toggleClass('unhover');
       $this.prev().toggleClass('hover');
     });
-  }
-}
-
-function closeDropdowns() {
-  var dropdowns = $(".dropdown-shortcut-menu-container:visible");
-  if(dropdowns.length) {
-    dropdowns.hide(0);
   }
 }
 

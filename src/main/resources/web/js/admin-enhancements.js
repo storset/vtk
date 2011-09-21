@@ -180,10 +180,6 @@ $(document).ready(function () {
     }
   });
   dropdown({selector: "ul.manage-create"});
-  
-  $(window).click("click", function(e){
-    closeDropdowns();
-  }); 
 
   // Remove active tab if it has no children
   var activeTab = $("#main .activeTab");
@@ -567,7 +563,7 @@ function logoutButtonAsLink() {
           + btn.attr('value') + '</a>');
   $('#logoutAction\\.link').click(function (e) {
     btn.click();
-    e.stopPropagation(); closeDropdowns();
+    e.stopPropagation();
     e.preventDefault();
   });
 }
@@ -635,7 +631,7 @@ function placeCopyMoveButtonInActiveTab(options) {
     } else {
       $("#" + options.btnId).click();
     }
-    e.stopPropagation(); closeDropdowns();
+    e.stopPropagation();
     e.preventDefault();
   });
 }
@@ -666,7 +662,7 @@ function placeDeleteButtonInActiveTab() {
         $('#collectionListing\\.action\\.delete-resources').click();
       }
     }
-    e.stopPropagation(); closeDropdowns();
+    e.stopPropagation(); 
     e.preventDefault();
   });
 }
@@ -685,7 +681,7 @@ function placeRecoverButtonInActiveTab() {
     } else {
       $('.recoverResource').click();
     }
-    e.stopPropagation(); closeDropdowns();
+    e.stopPropagation(); 
     e.preventDefault();
   });
 }
@@ -717,7 +713,7 @@ function placeDeletePermanentButtonInActiveTab() {
         $('.deleteResourcePermanent').click();
       }
     }
-    e.stopPropagation(); closeDropdowns();
+    e.stopPropagation(); 
     e.preventDefault();
   });
 }
@@ -776,11 +772,11 @@ function toggleConfigCustomPermissions(selectorClass) {
   }
   $("#app-content").delegate("." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
     $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideDown);
-    e.stopPropagation(); closeDropdowns();
+    e.stopPropagation(); 
   });
   $("#app-content").delegate("." + selectorClass + " ul.shortcuts label:not([for=custom])", "click", function (e) {
     $(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideUp);
-    e.stopPropagation(); closeDropdowns();
+    e.stopPropagation(); 
   });
 }
 
@@ -1041,7 +1037,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
       }
     });
 
-    e.stopPropagation(); closeDropdowns();
+    e.stopPropagation(); 
     e.preventDefault();
   });
 };
@@ -1077,7 +1073,7 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitio
           $this.prepareTableRowForSliding();
         }
         $this.slideUp(transitionSpeed, transitionEasingSlideUp);
-        e.stopPropagation(); closeDropdowns();
+        e.stopPropagation(); 
         e.preventDefault();     
       });
       $this.find("button[type=submit][name*=Cancel]").click(function(e) {
@@ -1085,7 +1081,7 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitio
           $this.prepareTableRowForSliding();
         }
         $this.slideUp(transitionSpeed, transitionEasingSlideUp);
-        e.stopPropagation(); closeDropdowns();
+        e.stopPropagation(); 
         e.preventDefault();     
       });
     }
@@ -1170,7 +1166,7 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
 
     }
 
-    e.stopPropagation(); closeDropdowns();
+    e.stopPropagation(); 
     e.preventDefault();
   });
 };
@@ -1207,7 +1203,7 @@ VrtxAdmin.prototype.ajaxRemove = function ajaxRemove(selector, updateSelector) {
       }
     });
 
-    e.stopPropagation(); closeDropdowns();
+    e.stopPropagation(); 
     e.preventDefault();
   });
 };
@@ -1256,7 +1252,7 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
       }
     });
 
-    e.stopPropagation(); closeDropdowns();
+    e.stopPropagation(); 
     e.preventDefault();
   });
 };

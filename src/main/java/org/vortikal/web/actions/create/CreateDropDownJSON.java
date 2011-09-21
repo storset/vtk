@@ -46,7 +46,6 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.report.subresource.SubResource;
 import org.vortikal.web.service.Service;
@@ -56,6 +55,7 @@ public class CreateDropDownJSON implements Controller {
 
     private CreateDropDownProvider provider;
     private Service service;
+    private Repository repository;
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -72,7 +72,7 @@ public class CreateDropDownJSON implements Controller {
 
         String token = RequestContext.getRequestContext().getSecurityToken();
         List<SubResource> subresources = provider.buildSearchAndPopulateSubresources(uri, token, request);
-        writeResults(subresources, request, response);
+        writeResults(subresources, request, response, token);
         return null;
     }
 
@@ -86,14 +86,9 @@ public class CreateDropDownJSON implements Controller {
         }
     }
 
-    private void writeResults(List<SubResource> subresources, HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
+    private void writeResults(List<SubResource> subresources, HttpServletRequest request, HttpServletResponse response,
+            String token) throws Exception {
         JSONArray list = new JSONArray();
-
-        RequestContext requestContext = RequestContext.getRequestContext();
-        Repository repository = requestContext.getRepository();
-        String token = requestContext.getSecurityToken();
-        Principal principal = requestContext.getPrincipal();
 
         String buttonText;
         if ((buttonText = request.getParameter("service")) != null && buttonText.equals("upload-file-from-drop-down"))
@@ -105,13 +100,13 @@ public class CreateDropDownJSON implements Controller {
             JSONObject o = new JSONObject();
 
             Path pURI = Path.fromString(sr.getUri());
-            Resource resource = repository.retrieve(token, pURI, true);
+            Resource resource = this.repository.retrieve(token, pURI, true);
 
             String title;
             try {
-                String uri = service.constructURL(resource, principal).getPathRepresentation();
+                String url = service.constructURL(resource).getPathRepresentation();
 
-                title = "<a target=&quot;_top&quot; class=&quot;vrtx-button-small&quot; href=&quot;" + uri + "&quot;>"
+                title = "<a target=&quot;_top&quot; class=&quot;vrtx-button-small&quot; href=&quot;" + url + "&quot;>"
                         + "<span>" + provider.getLocalizedTitle(request, buttonText, null) + "</span>" + "</a>";
             } catch (ServiceUnlinkableException e) {
                 title = "<span class=&quot;no-create-permission&quot;>"
@@ -138,6 +133,11 @@ public class CreateDropDownJSON implements Controller {
         } finally {
             writer.close();
         }
+    }
+
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
     @Required

@@ -22,6 +22,7 @@
   <bean id="createDocumentDropDown.handler" class="org.vortikal.web.actions.create.CreateDropDownJSON">
     <property name="provider" ref="createDropDown.provider" />
     <property name="service" ref="createDocumentService" />
+    <property name="repository" ref="repository" />
   </bean>
 
   <bean id="createCollectionDropDown.retrieveService" class="org.vortikal.web.service.ServiceImpl">
@@ -41,6 +42,7 @@
   <bean id="createCollectionDropDown.handler" class="org.vortikal.web.actions.create.CreateDropDownJSON">
     <property name="provider" ref="createDropDown.provider" />
     <property name="service" ref="createCollectionService" />
+    <property name="repository" ref="repository" />
   </bean>
 
   <bean id="uploadFileDropDown.retrieveService" class="org.vortikal.web.service.ServiceImpl">
@@ -60,6 +62,7 @@
   <bean id="uploadFileDropDown.handler" class="org.vortikal.web.actions.create.CreateDropDownJSON">
     <property name="provider" ref="createDropDown.provider" />
     <property name="service" ref="fileUploadService" />
+    <property name="repository" ref="repository" />
   </bean>
   
   <bean id="createDropDown.provider" class="org.vortikal.web.actions.create.CreateDropDownProvider">

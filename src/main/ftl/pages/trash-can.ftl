@@ -1,13 +1,11 @@
 <#ftl strip_whitespace=true>
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
-<#import "/lib/ping.ftl" as ping />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>Trash Can</title>
-    <@ping.ping url=resourceContext.currentServiceURL interval=900 />       
+    <title>Trash Can</title>     
   <#if cssURLs?exists>
     <#list cssURLs as cssURL>
     <link rel="stylesheet" href="${cssURL}" />

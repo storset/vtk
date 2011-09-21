@@ -110,11 +110,6 @@
 
   <bean id="visualProfileAspect.formView" parent="freemarkerView">
     <property name="url" value="pages/visual-profile-aspect.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-      </list>
-    </property>
   </bean>
 
 </beans>

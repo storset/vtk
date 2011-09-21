@@ -13,7 +13,6 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/propertyList.ftl" as propList />
-<#import "/lib/ping.ftl" as ping />
 
 <#if !aboutItems?exists>
   <#stop "This template only works with 'aboutItems' model map supplied." />
@@ -32,7 +31,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>About</title>
-  <@ping.ping url=resourceContext.currentServiceURL interval=900 />    
 </head>
 <body id="vrtx-about">
 <#assign resource = resourceContext.currentResource />

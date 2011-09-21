@@ -50,7 +50,6 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="overDueLimitMessageProvider" />
-        <ref bean="resourceContextProvider" />
       </list>
     </property>
     <property name="attributesMap">

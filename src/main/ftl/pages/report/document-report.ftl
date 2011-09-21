@@ -1,5 +1,6 @@
 <#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/ping.ftl" as ping />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="${cssURL}" />
     </#list>
   </#if>
+  <@ping.ping url=pingURL['url'] interval=900 />  
   </head>
   <body id="vrtx-report-documents">
   <div class="resourceInfo">

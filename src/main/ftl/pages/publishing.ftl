@@ -3,6 +3,7 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/propertyList.ftl" as propList />
+<#import "/lib/ping.ftl" as ping />
 
 <#if !resourceContext?exists>
   <#stop "Unable to render model: required submodel 'resourceContext' missing">
@@ -12,6 +13,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Publishing status on document</title>
+    <@ping.ping url=pingURL['url'] interval=900 />  
     
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
     

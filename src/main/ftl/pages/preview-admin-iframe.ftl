@@ -19,6 +19,7 @@
   -->
 
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/ping.ftl" as ping />
 
 <#if !resourceReference?exists>
   <#stop "Unable to render model: required submodel
@@ -43,7 +44,9 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head><title>${(title.title)?default(resourceContext.currentResource.name)}</title>
+  <head>
+    <title>${(title.title)?default(resourceContext.currentResource.name)}</title>
+    <@ping.ping url=pingURL['url'] interval=900 />    
   </head>
   <body id="vrtx-preview">
 

@@ -13,11 +13,13 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/propertyList.ftl" as propList />
+<#import "/lib/ping.ftl" as ping />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title><@vrtx.msg code="visualProfileAspect.edit" default="Edit visual profile"/></title>
+  <@ping.ping url=pingURL['url'] interval=900 />
 </head>
 <body id="vrtx-visual-profile">
   <#if form.configError?exists>

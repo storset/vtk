@@ -16,7 +16,7 @@
     </#list>
   </#if>
   </head>
-  <@ping.ping url=pingURL['url'] interval=900 />  
+  <@ping.ping url=resourceContext.currentServiceURL interval=900 />   
   <body id="vrtx-report">
     <div class="resourceInfo">
       <h2><@vrtx.msg code="report.heading" default="Reports" /></h2>

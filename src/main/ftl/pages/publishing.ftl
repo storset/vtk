@@ -13,7 +13,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Publishing status on document</title>
-    <@ping.ping url=pingURL['url'] interval=900 />  
+    <@ping.ping url=resourceContext.currentServiceURL interval=900 />  
     
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
     

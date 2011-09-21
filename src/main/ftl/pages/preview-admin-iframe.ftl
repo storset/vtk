@@ -46,7 +46,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>${(title.title)?default(resourceContext.currentResource.name)}</title>
-    <@ping.ping url=pingURL['url'] interval=900 />    
+    <@ping.ping url=resourceContext.currentServiceURL interval=900 />    
   </head>
   <body id="vrtx-preview">
 

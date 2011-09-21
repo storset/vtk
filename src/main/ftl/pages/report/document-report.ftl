@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="${cssURL}" />
     </#list>
   </#if>
-  <@ping.ping url=pingURL['url'] interval=900 />  
+  <@ping.ping url=resourceContext.currentServiceURL interval=900 />  
   </head>
   <body id="vrtx-report-documents">
   <div class="resourceInfo">

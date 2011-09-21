@@ -19,7 +19,7 @@
 <head>
   <#-- Add table-tr hover support to IE6 browsers -->
   <title>Manage: collection listing</title>
-  <@ping.ping url=pingURL['url'] interval=900 />   
+  <@ping.ping url=resourceContext.currentServiceURL interval=900 />     
 </head>
 <body id="vrtx-manage-collectionlisting">
   <#assign copyTitle = vrtx.getMsg("tabMenu2.copyResourcesService") />

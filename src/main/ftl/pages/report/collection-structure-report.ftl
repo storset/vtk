@@ -47,7 +47,7 @@
      });
   // -->
   </script>
-  <@ping.ping url=pingURL['url'] interval=900 />  
+  <@ping.ping url=resourceContext.currentServiceURL interval=900 />   
   </head>
   <body id="vrtx-report">
   <div class="resourceInfo">

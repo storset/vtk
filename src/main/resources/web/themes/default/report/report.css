@@ -4,6 +4,10 @@ body#vrtx-report-diagram h2 {
   margin-bottom: 20px;
 }
 
+body#vrtx-report-diagram h3 {
+  margin-top: 0px;
+}
+
 .vrtx-report-nav .back {
   margin-bottom: 15px;
   padding-left: 13px;
@@ -91,15 +95,19 @@ div.vrtx-permission-tree span.file a {
   margin-top: 10px;
 }
 
-div.vrtx-report-break {
+div.vrtx-report-diagram {
   clear: left;
   background: url(../images/line-dotted.gif) repeat-x bottom left;
   padding-bottom: 25px;
   margin-bottom: 15px;
+  float: left;
+  width: 100%;
 }
 
-div.vrtx-report-diagram {
-  clear: left;
+div.vrtx-report-diagram.vrtx-report-diagram-last {
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+  background: none;
 }
 
 div.vrtx-report-diagram-table {

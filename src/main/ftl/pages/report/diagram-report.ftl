@@ -67,7 +67,7 @@
     </div>
   </#if>
   <#if (report.firsttotal?exists && report.firsttotal > 0)>
-    <div class="vrtx-report-diagram">
+    <div class="vrtx-report-diagram vrtx-report-diagram-last">
       <h3><@vrtx.msg code="report.diagram.folderandfiletitle" /></h3>
       <div class="vrtx-report-diagram-table">
         <table id="vrtx-report-diagram-filesandfolders">

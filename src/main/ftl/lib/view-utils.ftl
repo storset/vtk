@@ -173,7 +173,7 @@
   
   <#if isValidStartDate>
     <span class="vrtx-add-event">
-      <a class="vrtx-ical" href='${resource.URI?html}?vrtx=ical'><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")?html}" title="${vrtx.getMsg("event.add-to-calendar.help")?html}"></a>
+      <a class="vrtx-ical" href="${resource.URI?html}?vrtx=ical"><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")?html}" title="${vrtx.getMsg("event.add-to-calendar.help")?html}"></a>
     </span>
   </#if>
   

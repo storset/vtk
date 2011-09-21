@@ -90,27 +90,29 @@ public class CreateDropDownJSON implements Controller {
             throws Exception {
         JSONArray list = new JSONArray();
 
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Principal principal = requestContext.getPrincipal();
+
+        String buttonText;
+        if ((buttonText = request.getParameter("service")) != null && buttonText.equals("upload-file-from-drop-down"))
+            buttonText = "manage.upload-here";
+        else
+            buttonText = "manage.place-here";
+
         for (SubResource sr : subresources) {
             JSONObject o = new JSONObject();
 
-            RequestContext requestContext = RequestContext.getRequestContext();
-            Repository repository = requestContext.getRepository();
-            String token = requestContext.getSecurityToken();
-            Principal principal = requestContext.getPrincipal();
-            Resource resource = repository.retrieve(token, Path.fromString(sr.getUri()), true);
+            Path pURI = Path.fromString(sr.getUri());
+            Resource resource = repository.retrieve(token, pURI, true);
 
             String title;
             try {
                 String uri = service.constructURL(resource, principal).getPathRepresentation();
 
-                String buttonText;
-                if (uri.contains("upload-file"))
-                    buttonText = "manage.upload-here";
-                else
-                    buttonText = "manage.place-here";
-
-                title = "<a target=&quot;_top&quot; class=&quot;vrtx-button-small&quot; href=&quot;" + uri + "&quot;>" + "<span>"
-                        + provider.getLocalizedTitle(request, buttonText, null) + "</span>" + "</a>";
+                title = "<a target=&quot;_top&quot; class=&quot;vrtx-button-small&quot; href=&quot;" + uri + "&quot;>"
+                        + "<span>" + provider.getLocalizedTitle(request, buttonText, null) + "</span>" + "</a>";
             } catch (ServiceUnlinkableException e) {
                 title = "<span class=&quot;no-create-permission&quot;>"
                         + provider.getLocalizedTitle(request, "manage.no-permission", null) + "</span>";
@@ -120,7 +122,7 @@ public class CreateDropDownJSON implements Controller {
             }
 
             o.put("hasChildren", sr.hasChildren());
-            o.put("text", sr.getName());
+            o.put("text", pURI.isRoot() ? request.getServerName() : sr.getName());
             o.put("uri", sr.getUri());
             o.put("spanClasses", "folder");
             o.put("title", title);

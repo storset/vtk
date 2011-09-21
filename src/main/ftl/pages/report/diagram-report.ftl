@@ -43,7 +43,6 @@
     </div>
   </#if>
   <#if (report.secondtotal?exists && report.secondtotal > 0)>
-    <div class="vrtx-report-break"></div>
     <div class="vrtx-report-diagram">
       <h3><@vrtx.msg code="report.diagram.filetypetitle" /></h3>
       <div class="vrtx-report-diagram-table">
@@ -68,7 +67,6 @@
     </div>
   </#if>
   <#if (report.firsttotal?exists && report.firsttotal > 0)>
-    <div class="vrtx-report-break"></div>
     <div class="vrtx-report-diagram">
       <h3><@vrtx.msg code="report.diagram.folderandfiletitle" /></h3>
       <div class="vrtx-report-diagram-table">

@@ -44,7 +44,7 @@ resourcetype structured-article : structured-document {
       [def theshowAdditionalContent document.properties.showAdditionalContent]
       [def theRelated-content document.properties.related-content]
 
-      [if (theshowAdditionalContent = "true")]
+      [if (theshowAdditionalContent = "true") || (theshowAdditionalContent = null)]
         [if theRelated-content != null]
           <div id="vrtx-additional-content">
             <div id="vrtx-related-content">

@@ -30,9 +30,6 @@
  */
 package org.vortikal.web.view.components.menu;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,36 +49,45 @@ import org.vortikal.web.service.URL;
  * <p>
  * Constructor arguments:
  * <ul>
- * <li><code>services</code> - required array of {@link Service}s to create ListMenu to
+ * <li><code>services</code> - required array of {@link Service}s to create
+ * ListMenu to
  * <li><code>label</code> - required ListMenu type descriptor
- * <li> <code>modelName</code> - the name to use as model key. The default is 'label', override if you have multiple list
- * menus with the same label.
- * <li> <code>matchAssertions</code> - boolean defaults to <code>true</code>, if the link construction should match
- * assertion.
- * <li> <code>retrieveForProcessing</code> - whether or not to set the <code>forProcessing</code> flag to
- * <code>true</code> when {@link Repository#retrieve retrieving} the resource from the repository (default
- * <code>false</code>).
+ * <li> <code>modelName</code> - the name to use as model key. The default is
+ * 'label', override if you have multiple list menus with the same label.
+ * <li> <code>matchAssertions</code> - boolean defaults to <code>true</code>, if
+ * the link construction should match assertion.
+ * <li> <code>retrieveForProcessing</code> - whether or not to set the
+ * <code>forProcessing</code> flag to <code>true</code> when
+ * {@link Repository#retrieve retrieving} the resource from the repository
+ * (default <code>false</code>).
  * </ul>
  * 
  * <p>
  * Configurable JavaBean properties:
  * <ul>
- * <li><code>matchAncestorServices</code> - a boolean deciding whether or not to check ancestors of the current service
- * when checking if a menu item is selected (or "active"). The default is <code>false</code> (i.e. an exact service
- * match is required).
+ * <li><code>matchAncestorServices</code> - a boolean deciding whether or not to
+ * check ancestors of the current service when checking if a menu item is
+ * selected (or "active"). The default is <code>false</code> (i.e. an exact
+ * service match is required).
  * </ul>
  * 
  * Model data provided:
  * <ul>
- * <li><code>'modelName'</code> - a {@link ListMenu} object. A note about the <code>title</code> fields of this list menu's items: It is
- * looked up from message localization using the following steps:
+ * <li><code>'modelName'</code> - a {@link ListMenu} object. A note about the <code>title</code>
+ * fields of this list menu's items: It is looked up from message localization
+ * using the following steps:
  * <ol>
- * <li>A message key is constructed as follows: <code>[label].[serviceName].[resourceType].[contentType]</code> where
- * <code>[serviceName]</code> is the name of the service and <code>[resourceType]</code> is the name of the resource's
- * {@link Resource#getResourceType resource type}. <code>[contentType]</code> is the MIME type of the resource (not
- * applicable to collections). A lookup attempt is then made using this key.</li>
- * <li>If that lookup does not produce a message, the <code>.[resourceType]</code> and <code>.[contentType]</code>
- * suffices are removed from the key, and the lookup is performed again, using the service name as the default value.</li>
+ * <li>A message key is constructed as follows:
+ * <code>[label].[serviceName].[resourceType].[contentType]</code> where
+ * <code>[serviceName]</code> is the name of the service and
+ * <code>[resourceType]</code> is the name of the resource's
+ * {@link Resource#getResourceType resource type}. <code>[contentType]</code> is
+ * the MIME type of the resource (not applicable to collections). A lookup
+ * attempt is then made using this key.</li>
+ * <li>If that lookup does not produce a message, the
+ * <code>.[resourceType]</code> and <code>.[contentType]</code> suffices are
+ * removed from the key, and the lookup is performed again, using the service
+ * name as the default value.</li>
  * </ol>
  * </ul>
  * 
@@ -97,11 +103,9 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
     private boolean matchAssertions;
     private boolean retrieveForProcessing = false;
 
-
     public DefaultListMenuProvider(String label, Service[] services) {
         this(label, label, true, services);
     }
-
 
     public DefaultListMenuProvider(String label, String modelName, Service[] services) {
         this(label, modelName, true, services);
@@ -113,9 +117,12 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
 
     public DefaultListMenuProvider(String label, String modelName, boolean matchAssertions, Service[] services,
             ReferenceDataProvider[] referenceDataProviders) {
-        if (label == null) throw new IllegalArgumentException("Argument 'label' cannot be null");
-        if (modelName == null) throw new IllegalArgumentException("Argument 'modelName' cannot be null");
-        if (services == null) throw new IllegalArgumentException("Argument 'services' cannot be null");
+        if (label == null)
+            throw new IllegalArgumentException("Argument 'label' cannot be null");
+        if (modelName == null)
+            throw new IllegalArgumentException("Argument 'modelName' cannot be null");
+        if (services == null)
+            throw new IllegalArgumentException("Argument 'services' cannot be null");
 
         this.label = label;
         this.modelName = modelName;
@@ -123,12 +130,15 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         this.matchAssertions = matchAssertions;
         this.referenceDataProviders = referenceDataProviders;
     }
-    
+
     public DefaultListMenuProvider(String label, String modelName, boolean matchAssertions, Service[] services,
             ReferenceDataProvider[] referenceDataProviders, ReferenceDataProvider referenceDataProvider) {
-        if (label == null) throw new IllegalArgumentException("Argument 'label' cannot be null");
-        if (modelName == null) throw new IllegalArgumentException("Argument 'modelName' cannot be null");
-        if (services == null) throw new IllegalArgumentException("Argument 'services' cannot be null");
+        if (label == null)
+            throw new IllegalArgumentException("Argument 'label' cannot be null");
+        if (modelName == null)
+            throw new IllegalArgumentException("Argument 'modelName' cannot be null");
+        if (services == null)
+            throw new IllegalArgumentException("Argument 'services' cannot be null");
 
         this.label = label;
         this.modelName = modelName;
@@ -137,18 +147,16 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         this.referenceDataProviders = referenceDataProviders;
         this.referenceDataProvider = referenceDataProvider;
     }
-    
+
     public void setMatchAncestorServices(boolean matchAncestorServices) {
         this.matchAncestorServices = matchAncestorServices;
     }
-
 
     public void setRetrieveForProcessing(boolean retrieveForProcessing) {
         this.retrieveForProcessing = retrieveForProcessing;
     }
 
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings( { "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
 
         ListMenu<String> menu = new ListMenu<String>();
@@ -157,8 +165,7 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         RequestContext requestContext = RequestContext.getRequestContext();
         Principal principal = requestContext.getPrincipal();
         Repository repository = requestContext.getRepository();
-        Resource resource = repository.retrieve(requestContext.getSecurityToken(), 
-                requestContext.getResourceURI(),
+        Resource resource = repository.retrieve(requestContext.getSecurityToken(), requestContext.getResourceURI(),
                 this.retrieveForProcessing);
         Service currentService = requestContext.getService();
 
@@ -189,18 +196,17 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
 
         menu.setActiveItem(activeItem);
         model.put(this.modelName, menu);
-        
+
         if (this.referenceDataProviders != null) {
             for (ReferenceDataProvider provider : this.referenceDataProviders) {
                 provider.referenceData(model, request);
             }
         }
-        
+
         if (this.referenceDataProvider != null) {
             this.referenceDataProvider.referenceData(model, request);
         }
     }
-
 
     private String getTitle(Resource resource, Service service, HttpServletRequest request) {
 
@@ -222,10 +228,10 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         return title;
     }
 
-
     /**
-     * Checks whether a service is "active" (that is, the current service of the request is either the same as, or a
-     * descendant of this service), depending on the value of <code>matchAncestorServices</code>.
+     * Checks whether a service is "active" (that is, the current service of the
+     * request is either the same as, or a descendant of this service),
+     * depending on the value of <code>matchAncestorServices</code>.
      * 
      * @param currentService
      *            the current service of the request
@@ -249,9 +255,8 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         return (service == currentService);
     }
 
-
     public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
+        StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(" [ ");
         sb.append("modelName = ").append(this.modelName);
         sb.append(",services = ").append(java.util.Arrays.asList(this.services));

@@ -104,7 +104,7 @@ public abstract class DocumentReporter extends AbstractReporter {
             try {
                 Resource r = this.repository.retrieve(token, p.getURI(), true);
                 isReadRestricted[i] = r.isReadRestricted();
-                viewURLs[i] = this.manageService.constructURL(p.getURI());
+                viewURLs[i] = this.manageService.constructURL(p.getURI()).setProtocol("http");
             } catch (Exception e) {
             }
         }

@@ -30,7 +30,7 @@ public class ListResourceTitleComponent extends ViewRenderingDecoratorComponent 
         Property resourceRefProp = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE,
                 getMultipleResourceRefField());
 
-        if (requestContext.isPlainServiceMode()) { // VTK-2460
+        if (requestContext.isViewUnauthenticated()) { // VTK-2460
             token = null;
         }
         

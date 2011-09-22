@@ -92,7 +92,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         
         // From here on we typically load other resources than current resource
         // and must respect plainServiceMode.
-        if (requestContext.isPlainServiceMode()) {
+        if (requestContext.isViewUnauthenticated()) {
             token = null;
         }
 

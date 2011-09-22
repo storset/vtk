@@ -66,7 +66,7 @@ public class RequestContext {
     private final Path currentCollection;
     private final Path indexFileURI;
     private final boolean isIndexFile;
-    private final boolean plainServiceMode;
+    private final boolean viewUnauthenticated;
     private List<Message> infoMessages = new ArrayList<Message>();
     private List<Message> errorMessages = new ArrayList<Message>();
     
@@ -78,19 +78,20 @@ public class RequestContext {
      * @param resource the current resource (may be null)
      * @param uri the URI of the current resource
      * @param indexFileURI the URI of the current index file
+     * @param viewUnauthenticated
      * (<code>null</code> if no index file exists)
      */
     public RequestContext(HttpServletRequest servletRequest,
                           SecurityContext securityContext,
                           Service service, Resource resource, Path uri,
-                          Path indexFileURI, boolean isIndexFile, boolean plainServiceMode,
+                          Path indexFileURI, boolean isIndexFile, boolean viewUnauthenticated,
                           boolean inRepository, Repository repository) {
         this.servletRequest = servletRequest;
         this.securityContext = securityContext;
         this.indexFileURI = indexFileURI;
         this.service = service;
         this.isIndexFile = isIndexFile;
-        this.plainServiceMode = plainServiceMode;
+        this.viewUnauthenticated = viewUnauthenticated;
         this.repository = repository;
         this.inRepository = inRepository;
         if (resource != null) {
@@ -235,8 +236,13 @@ public class RequestContext {
         return isIndexFile;
     }
     
-    public boolean isPlainServiceMode() {
-        return this.plainServiceMode;
+    /**
+     * This flag will be set to <code>true</code> if request should be
+     * processed for viewing as unauthenticated principal.
+     * @return 
+     */
+    public boolean isViewUnauthenticated() {
+        return this.viewUnauthenticated;
     }
     
     public boolean isInRepository() {

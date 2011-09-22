@@ -555,7 +555,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
             boolean authenticated = "true".equals(request.getStringParameter(PARAMETER_AUTENTICATED));
             
             // VTK-2460
-            if (requestContext.isPlainServiceMode()) {
+            if (requestContext.isViewUnauthenticated()) {
                 authenticated = false;
             }
 

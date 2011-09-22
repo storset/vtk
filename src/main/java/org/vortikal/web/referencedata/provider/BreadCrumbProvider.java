@@ -156,7 +156,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
 
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
-        String token = requestContext.isPlainServiceMode() ? null : requestContext.getSecurityToken(); // VTK-2460
+        String token = requestContext.isViewUnauthenticated() ? null : requestContext.getSecurityToken(); // VTK-2460
         Path uri = requestContext.getResourceURI();
 
         try{
@@ -228,7 +228,7 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         }
         
         Repository repository = requestContext.getRepository();
-        String token = requestContext.isPlainServiceMode() ? null : requestContext.getSecurityToken(); // VTK-2460
+        String token = requestContext.isViewUnauthenticated() ? null : requestContext.getSecurityToken(); // VTK-2460
         Principal principal = requestContext.getPrincipal();
 
         for (int i = displayFromLevel; i < length; i++) {

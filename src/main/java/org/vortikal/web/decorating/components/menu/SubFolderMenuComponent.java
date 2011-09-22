@@ -131,7 +131,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
             }
         }
         RequestContext requestContext = RequestContext.getRequestContext();
-        String token = requestContext.isPlainServiceMode() ? null : requestContext.getSecurityToken(); // VTK-2460
+        String token = requestContext.isViewUnauthenticated() ? null : requestContext.getSecurityToken(); // VTK-2460
         Repository repository = requestContext.getRepository();
 
         Search search = buildSearch(menuRequest);

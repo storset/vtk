@@ -91,7 +91,7 @@ public class AuthenticationComponent extends ViewRenderingDecoratorComponent {
         Resource resource = repository.retrieve(token, uri, true);
         
         // VTK-2460
-        if (requestContext.isPlainServiceMode()) {
+        if (requestContext.isViewUnauthenticated()) {
             principal = null;
         }
 

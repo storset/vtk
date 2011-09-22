@@ -65,7 +65,7 @@ public abstract class AbstractEventComponent extends ViewRenderingDecoratorCompo
     protected Resource retrieveLocalResource(URL feedURL) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
-        String token = requestContext.isPlainServiceMode() ? null : requestContext.getSecurityToken(); // VTK-2460
+        String token = requestContext.isViewUnauthenticated() ? null : requestContext.getSecurityToken(); // VTK-2460
         return repository.retrieve(token, feedURL.getPath(), true);
     }
 

@@ -122,7 +122,7 @@ public class TagCloudComponent extends ViewRenderingDecoratorComponent implement
         super.processModel(model, request, response);
         RequestContext requestContext = RequestContext.getRequestContext();
         Path scopeUri = requestContext.getCurrentCollection();
-        String token = requestContext.isPlainServiceMode() ? null : requestContext.getSecurityToken(); // VTK-2460
+        String token = requestContext.isViewUnauthenticated() ? null : requestContext.getSecurityToken(); // VTK-2460
 
         if (request.getStringParameter(PARAMETER_SCOPE) != null) {
             scopeUri = buildScopePath(request.getStringParameter(PARAMETER_SCOPE));

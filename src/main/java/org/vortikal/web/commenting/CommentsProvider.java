@@ -114,7 +114,7 @@ public class CommentsProvider implements ReferenceDataProvider {
         Repository repository = requestContext.getRepository();
 
         // VTK-2460
-        if (requestContext.isPlainServiceMode()) {
+        if (requestContext.isViewUnauthenticated()) {
             principal = null;
         }
 

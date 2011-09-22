@@ -83,7 +83,7 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
-        String token = requestContext.isPlainServiceMode() ? null : requestContext.getSecurityToken(); // VTK-2460
+        String token = requestContext.isViewUnauthenticated() ? null : requestContext.getSecurityToken(); // VTK-2460
         Resource requestedResource = repository.retrieve(token, Path.fromString(path), false);
 
         if (!requestedResource.isCollection()) {

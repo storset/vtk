@@ -128,7 +128,7 @@ public class XmlSearcher {
     public Document executeDocumentQuery(String query, String sort,
             int maxResults, String fields, boolean authorizeCurrentPrincipal) throws QueryException {
         // VTK-2460
-        if (RequestContext.getRequestContext().isPlainServiceMode()) {
+        if (RequestContext.getRequestContext().isViewUnauthenticated()) {
             authorizeCurrentPrincipal = false;
         }
         

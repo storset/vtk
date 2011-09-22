@@ -21,7 +21,7 @@
         <value>${vrtx.staticResourcesBaseURL}</value>
       </set>
     </property>
-    <property name="plainServiceModeParameter" value="x-prevent-decorating"/>
+    <property name="viewUnauthenticatedParameter" value="x-prevent-decorating"/>
   </bean>
   
   <bean id="services" class="org.vortikal.beans.factory.BeansListingFactoryBean">

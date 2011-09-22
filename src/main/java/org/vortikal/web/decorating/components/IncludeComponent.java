@@ -178,7 +178,7 @@ implements ServletContextAware {
                 PARAMETER_AS_CURRENT_USER));
         
         // VTK-2460
-        if (requestContext.isPlainServiceMode()) {
+        if (requestContext.isViewUnauthenticated()) {
             asCurrentPrincipal = false;
         }
         

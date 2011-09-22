@@ -93,7 +93,7 @@ public class RequestContextInitializer implements ContextInitializer {
     
     private Set<String> nonRepositoryRoots = new HashSet<String>();
     
-    private String plainServiceModeParameter = null;
+    private String viewUnauthenticatedParameter = null;
     
     @Required public void setRepository(Repository repository) {
         this.repository = repository;
@@ -218,7 +218,7 @@ public class RequestContextInitializer implements ContextInitializer {
                 
             }
         }
-        boolean plainServiceMode = isPlainServiceMode(request);
+        final boolean viewUnauthenticated = isViewUnauthenticated(request);
         
         for (Service service: this.rootServices) {
 
@@ -226,7 +226,7 @@ public class RequestContextInitializer implements ContextInitializer {
             // without the matched service)
             RequestContext.setRequestContext(
                 new RequestContext(request, securityContext, service, resource, 
-                        uri, indexFileUri, isIndexFile, plainServiceMode, inRepository, this.repository));
+                        uri, indexFileUri, isIndexFile, viewUnauthenticated, inRepository, this.repository));
             
             // Resolve the request to a service:
             if (resolveService(service, request, resource, securityContext)) {
@@ -294,7 +294,7 @@ public class RequestContextInitializer implements ContextInitializer {
                                    requestContext.getResourceURI(),
                                    requestContext.getIndexFileURI(), 
                                    requestContext.isIndexFile(),
-                                   requestContext.isPlainServiceMode(),
+                                   requestContext.isViewUnauthenticated(),
                                    requestContext.isInRepository(),
                                    this.repository));
             throw(e);
@@ -323,7 +323,7 @@ public class RequestContextInitializer implements ContextInitializer {
                                requestContext.getResourceURI(),
                                requestContext.getIndexFileURI(), 
                                requestContext.isIndexFile(),
-                               requestContext.isPlainServiceMode(),
+                               requestContext.isViewUnauthenticated(),
                                requestContext.isInRepository(),
                                this.repository));
         return true;
@@ -407,11 +407,11 @@ public class RequestContextInitializer implements ContextInitializer {
         return parents;
     }
     
-    private boolean isPlainServiceMode(HttpServletRequest request) {
-        return this.plainServiceModeParameter != null && request.getParameter(this.plainServiceModeParameter) != null;
+    private boolean isViewUnauthenticated(HttpServletRequest request) {
+        return this.viewUnauthenticatedParameter != null && request.getParameter(this.viewUnauthenticatedParameter) != null;
     }
     
-    public void setPlainServiceModeParameter(String plainServiceModeParamter) {
-        this.plainServiceModeParameter = plainServiceModeParamter;
+    public void setViewUnauthenticatedParameter(String viewUnauthenticatedParameter) {
+        this.viewUnauthenticatedParameter = viewUnauthenticatedParameter;
     }
 }

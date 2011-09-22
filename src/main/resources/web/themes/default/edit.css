@@ -6,18 +6,20 @@
 
 /* Headings */
 /*
-h1,h2,h3,h4 {font-weight: bold; display:inline;}
+
 
 h1 {font-size: 150%;}
 h2 {font-size: 130%;}
 h3 {font-size: 115%;}
 
-.documentTitle {font-size: 150%; font-weight: bold;} 
+
 */
 /* List */
 
 /* ul {margin: 1em 1em 1em 2.5em;} */
 
+h2,h3,h4 {display:inline;}
+.documentTitle {font-size: 150%; font-weight: bold;} 
 
 /* Form section */
 

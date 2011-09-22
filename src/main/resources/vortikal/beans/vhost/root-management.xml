@@ -4,7 +4,6 @@
 
 <beans>
 
-
   <bean id="repositoryManageService" 
         class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="webService" />
@@ -32,6 +31,7 @@
     <property name="attributes">
       <map>
         <entry key-ref="system.decoratorTemplateAttribute" value="root-admin.html" />
+        <entry key="remove-caching" value="true" />
       </map>
     </property>
   </bean>

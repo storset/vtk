@@ -89,38 +89,44 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
             return;
         }
 
+        Resource srcAclResource = findNearestAcl(requestContext, sourceParentUri);
+        Resource destAclResource = findNearestAcl(requestContext, destinationUri);
+        URL url = this.confirmationService.constructURL(destinationUri);
         if ("copy-resources".equals(sessionBean.getAction())) {
             try {
-                Resource destAclResource = findNearestAcl(requestContext, destinationUri);
+                boolean addWarning = false;
                 Acl destAcl = destAclResource.getAcl();
                 if (destAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
                         || destAcl.containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL)) {
                     for (String uri : sessionBean.getFilesToBeCopied()) {
+                        Path resourceToBeCopiedPath = Path.fromString(uri);
                         // Resource to copy might have been deleted or moved,
                         // check for existence
-                        if (!repository.exists(token, Path.fromString(uri))) {
+                        if (!repository.exists(token, resourceToBeCopiedPath)) {
                             continue;
                         }
-                        Resource srcAclResource = findNearestAcl(requestContext, Path.fromString(uri));
-                        Acl srcAcl = srcAclResource.getAcl();
-                        if (!srcAclResource.isInheritedAcl()
+                        Resource resourceToBeCopied = findNearestAcl(requestContext, resourceToBeCopiedPath);
+                        Acl srcAcl = resourceToBeCopied.getAcl();
+                        if (!resourceToBeCopied.isInheritedAcl()
                                 && !(srcAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL) || srcAcl
                                         .containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
 
-                            URL url = this.confirmationService.constructURL(destinationUri);
                             url.setCollection(true);
-                            model.put("resourcesDisclosed", Boolean.TRUE);
-                            model.put("warningDialogURL", url);
-                            model.put("action", sessionBean.getAction());
-                            return;
+                            addWarning = true;
+                            break;
                         }
                     }
+                }
+                addWarning = !addWarning ? this.checkForWarning(srcAclResource, sessionBean, token) : addWarning;
+                if (addWarning) {
+                    this.addWarning(model, url, sessionBean);
                 }
             } catch (AuthorizationException ae) {
                 // No warning necessary at this point, the controller that does
                 // the actual copy/move handles it.
             }
         }
+
         if (sourceParentUri.equals(destinationUri)) {
             // Copying/moving within same folder
             return;
@@ -132,14 +138,12 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
         // 2. exists((uri in (filesToBeCopied)/*) and inherits-from
         // sourceParentUri)
 
-        Resource srcAclResource = findNearestAcl(requestContext, sourceParentUri);
         Acl srcAcl = srcAclResource.getAcl();
         if (srcAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
                 || srcAcl.containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL)) {
             return;
         }
 
-        Resource destAclResource = findNearestAcl(requestContext, destinationUri);
         Acl destAcl = destAclResource.getAcl();
         if (!(destAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL) || destAcl.containsEntry(
                 Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
@@ -150,6 +154,21 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
             return;
         }
 
+        if (!this.checkForWarning(srcAclResource, sessionBean, token)) {
+            return;
+        }
+
+        this.addWarning(model, url, sessionBean);
+    }
+
+    @SuppressWarnings( { "rawtypes", "unchecked" })
+    private void addWarning(Map model, URL url, CopyMoveSessionBean sessionBean) {
+        model.put("resourcesDisclosed", Boolean.TRUE);
+        model.put("warningDialogURL", url);
+        model.put("action", sessionBean.getAction());
+    }
+
+    private boolean checkForWarning(Resource srcAclResource, CopyMoveSessionBean sessionBean, String token) {
         OrQuery orQuery = new OrQuery();
         for (String uri : sessionBean.getFilesToBeCopied()) {
             orQuery.add(new UriPrefixQuery(uri));
@@ -171,12 +190,9 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
         });
         ResultSet rs = this.searcher.execute(token, search);
         if (rs.getSize() == 0) {
-            return;
+            return false;
         }
-        URL url = this.confirmationService.constructURL(destinationUri);
-        model.put("resourcesDisclosed", Boolean.TRUE);
-        model.put("warningDialogURL", url);
-        model.put("action", sessionBean.getAction());
+        return true;
     }
 
     private Resource findNearestAcl(RequestContext requestContext, Path uri) throws Exception {

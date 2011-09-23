@@ -24,7 +24,7 @@
     <script type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>
     
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
-    <#assign isCollection = resource.resourceType = 'collection' || resource.resourceType?contains("-listing") />
+    <#assign isCollection = resource.resource.collection />
     <#assign simpleHTML = resource.resourceType = 'xhtml10trans' || resource.resourceType = 'html' />
 
     <#global baseFolder = "/" />
@@ -122,9 +122,8 @@
         <@propsForm resource.postContentProperties />
       </div>
       
-      <#-- Margin-bottom before save- cancel button for collection, event- or articlelisting -->
-      <#if (resource.resourceType = 'event-listing' ||
-            resource.resourceType = 'article-listing' || resource.resourceType = 'collection')>
+      <#-- Margin-bottom before save- cancel button for collections -->
+      <#if isCollection>
       	<div id="allowedValues"></div>
       </#if>
 
@@ -184,10 +183,7 @@
         </div><#-- On the fly div STOP caption -->
 
       <#-- hack for setting collection titles: -->
-      <#elseif (type = 'HTML' && name='userTitle') || (type = 'STRING' && name='navigationTitle')
-        && (resource.resourceType = 'event-listing' || resource.resourceType = 'article-listing' || resource.resourceType = 'collection' ||
-            resource.resourceType = 'person-listing' || resource.resourceType = 'project-listing' || resource.resourceType = 'research-group-listing' ||
-            resource.resourceType = 'blog-listing' || resource.resourceType = 'image-listing' || resource.resourceType = 'master-listing')>
+      <#elseif isCollection && (name='userTitle' || name='navigationTitle')>
 
         <#if value = '' && name='userTitle'>
           <#local value = resource.title?html />

@@ -120,6 +120,7 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
                 addWarning = !addWarning ? this.checkForWarning(srcAclResource, sessionBean, token) : addWarning;
                 if (addWarning) {
                     this.addWarning(model, url, sessionBean);
+                    return;
                 }
             } catch (AuthorizationException ae) {
                 // No warning necessary at this point, the controller that does

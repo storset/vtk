@@ -18,7 +18,7 @@ h3 {font-size: 115%;}
 
 /* ul {margin: 1em 1em 1em 2.5em;} */
 
-h2,h3,h4 {display:inline;}
+#contents h2, #contents h3, #contents h4 {display:inline;}
 .documentTitle {font-size: 150%; font-weight: bold;} 
 
 /* Form section */

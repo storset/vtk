@@ -1,21 +1,15 @@
 /* Not supported by flash */
 
-.vrtx-media-player-no-flash {
+.vrtx-media-player-no-flash,
+.vrtx-media-player-no-flash img {
   width: 507px;
   height: 282px;
+}
+
+.vrtx-media-player-no-flash {
   background-color: #000000;
   position: relative;
 }
-
-.vrtx-media-player-no-flash img {
-  max-width: 507px;
-  max-height: 282px;
-}
-
-* html .vrtx-media-player-no-flash img {
-  width: 507px;
-  height: 282px;
-} 
 
 .vrtx-media-player-no-flash .playbutton {
   position: absolute; /* take out of flow */

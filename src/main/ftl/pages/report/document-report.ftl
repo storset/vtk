@@ -24,7 +24,7 @@
     <h2><@vrtx.msg code="report.${report.reportname}" /></h2>
     
   <#if (report.result?exists && report.result?size > 0)>
-    <p>
+    <p id="vrtx-report-info-paging-top">
       <@vrtx.msg code="report.${report.reportname}.about"
                  args=[report.from, report.to, report.total]
                  default="Listing results " + report.from + " - "

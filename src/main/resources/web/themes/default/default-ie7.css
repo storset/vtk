@@ -43,6 +43,11 @@ body#vrtx-permissions .removePermission {
   max-height: 99999px; /* instead of invalid zoom: 1 */
 }
 
+#vrtx-report-info-paging-top .vrtx-report-paging {
+  display: block;
+  margin-top: -15px;
+}
+
 .vrtx-textfield,
 .vrtx-textfield-big,
 .vrtx-button,

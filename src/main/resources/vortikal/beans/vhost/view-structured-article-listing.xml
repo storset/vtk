@@ -48,7 +48,7 @@
     <property name="configurablePropertySelectPointers">
       <list>
         <value>title</value>
-        <value>resource:published-date</value>
+        <value>publish-date</value>
         <value>resource:picture</value>
         <value>resource:caption</value>
         <value>resource:introduction</value>

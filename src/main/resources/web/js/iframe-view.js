@@ -45,8 +45,9 @@ function resize(iframe) {
       if(hasPostMessage) {
         parent.postMessage(setHeight, vrtxAdminOrigin);
       } else { // use the hash stuff in plugin from jQuery "Cowboy"
-        var parent_url = decodeURIComponent(document.location.hash.replace(/^#/,''));
-        $.postMessage({height: setHeight}, parent_url, parent);        
+        // TODO: fix IE 7 endless loop because of setting iframe.src
+        // var parent_url = decodeURIComponent(document.location.hash.replace(/^#/,''));
+        // $.postMessage({height: setHeight}, parent_url, parent);        
       }
     }
   } catch(e){

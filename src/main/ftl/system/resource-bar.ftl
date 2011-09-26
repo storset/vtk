@@ -2,9 +2,12 @@
 <#import "/lib/menu/list-menu.ftl" as listMenu />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/ping.ftl" as ping />
-<@ping.ping url=pingURL['url'] interval=300/>
 
 <#assign resource = resourceContext.currentResource />
+
+<#if !resourceContext.currentServiceName?lower_case?contains("preview")>
+  <@ping.ping url=pingURL['url'] interval=300/> 
+</#if>
 
 <#if resource?exists && resourceMenuLeft?exists && resourceMenuRight?exists>
   <@gen resource resourceMenuLeft resourceMenuRight />

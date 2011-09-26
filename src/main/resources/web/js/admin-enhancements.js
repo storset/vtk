@@ -142,7 +142,7 @@ $(window).load(function() {
   // Should never occur in IE because of "Show in file explorer" in root-folder 
   var resourceMenuRight = $("ul.list-menu.resourceMenuRight"); 
   var resourceMenuRightListElements = resourceMenuRight.find("li");
-  if(!$("ul.resourceMenuLeft").length && resourceMenuRightListElements.length == 1) {
+  if(!$("ul.resourceMenuLeft li").length && resourceMenuRightListElements.length == 1) {
     resourceMenuRight.addClass("smaller-seperator");
   }
   

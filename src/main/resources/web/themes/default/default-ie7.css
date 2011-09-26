@@ -19,7 +19,8 @@ div.tabs {
   z-index: 1;
 }
 
-ul.list-menu.resourceMenuRight {
+ul.list-menu.resourceMenuRight,
+ul.list-menu.resourceMenuLeft {
   margin-bottom: 0px;
   padding-bottom: 20px;
 }

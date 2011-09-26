@@ -277,7 +277,7 @@
     }
     
     function addDateField(elem, inputFieldName) {
-      htmlTemplate = '<div class=\"vrtx-string date\">';
+      htmlTemplate = '<div class=\"vrtx-string\">';
       htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
       htmlTemplate += '<div class=\"inputfield vrtx-textfield\">';
       htmlTemplate += '<input size=\"20\" type=\"text\" name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" value=\"\" class=\"date\" \/>';

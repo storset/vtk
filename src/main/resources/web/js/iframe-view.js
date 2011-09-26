@@ -12,35 +12,18 @@
  
 $(document).ready(function () {
   if ($.browser.msie) {
-    if($.browser.version > 7) {
-      // iframe load event not firing in IE8 when page w. iframe is inside another iframe
-      // Setting the iframe src seems to fix the problem
-      var previewViewIframe = $("iframe#previewViewIframe")[0];
-      if (previewViewIframe) {
-        var iSource = previewViewIframe.src;
-        previewViewIframe.src = '';
-        previewViewIframe.src = iSource; 
-      } 
-      $('iframe#previewViewIframe').load(function (e) {
-        resize(this); 
-      });
-    } else {
-   
- // TODO: IE 7     
- //     var previewIframeReady = setInterval(function() {
- //       var offsetHeight = $('iframe#previewViewIframe')[0].contentWindow.document.body.offsetHeight;
- //       if(typeof offsetHeight !== "undefined" && offsetHeight > 0) {
- //         clearInterval(previewIframeReady);
- //         resize($('iframe#previewViewIframe')[0]);
- //       }
- //     }, 25);
-      
-    }
-  } else {
-    $('iframe#previewViewIframe').load(function (e) {
-      resize(this); 
-    });
+    // iframe load event not firing in IE8 / IE9 when page w. iframe is inside another iframe
+    // Setting the iframe src seems to fix the problem
+    var previewViewIframe = $("iframe#previewViewIframe")[0];
+    if (previewViewIframe) {
+      var iSource = previewViewIframe.src;
+      previewViewIframe.src = '';
+      previewViewIframe.src = iSource; 
+    } 
   }
+  $('iframe#previewViewIframe').load(function (e) {
+    resize(this); 
+  });
 });
 
 function resize(iframe) {

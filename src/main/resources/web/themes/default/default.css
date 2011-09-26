@@ -2191,6 +2191,11 @@ form button::-moz-focus-inner {
     -webkit-border-radius: 0;
   }
 
+  .vrtx-report-diagram-img img {
+     max-width: 200px;
+     height: auto;
+  }
+
 }
 
 /* ^ iPhone hacks */
@@ -2203,6 +2208,11 @@ form button::-moz-focus-inner {
   input {
     -webkit-appearance: none;
     -webkit-border-radius: 0;
+  }
+
+  .vrtx-report-diagram-img img {
+     max-width: 200px;
+     height: auto;
   }
 
 }

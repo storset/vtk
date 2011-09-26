@@ -243,7 +243,7 @@
     <property name="urlTemplates">
       <map>
         <entry key="Facebook" value="http://www.facebook.com/share.php?u=%{url}&amp;amp;t=%{title}" />
-        <entry key="Twitter" value="http://twitter.com/intent/tweet?text=%{title}&amp;url=%{url}" />
+        <entry key="Twitter" value="http://twitter.com/intent/tweet?text=%{title}&amp;amp;url=%{url}" />
         <!-- <entry key="Nettby" value="http://www.nettby.no/user/edit_link.php?name=%{title}&amp;amp;url=%{url}&amp;amp;description=%{resource:introduction}" 
           />me -->
         <entry key="Delicious" value="http://del.icio.us/post?url=%{url}&amp;amp;title=%{title}" />

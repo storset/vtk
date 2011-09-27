@@ -795,7 +795,11 @@ function checkStillAdmin(selector) {
   var stillAdmin = selector.find(".still-admin").text();
   doReloadFromServer = false;
   if(stillAdmin == "false") {
-    var confirmRemoveAllAdmin = confirm("Are you sure you want to remove all admin permissions for yourself?");
+    var msg = "Are you sure you want to remove all admin permissions for yourself?";
+    if(removeAdminPermissionsMsg !== "undefined") {
+      msg = removeAdminPermissionsMsg;
+    }
+    var confirmRemoveAllAdmin = confirm(msg);
     if(!confirmRemoveAllAdmin) {
       return false;
     } else {

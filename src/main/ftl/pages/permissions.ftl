@@ -35,6 +35,11 @@
            code="permissions.header.${resource.resourceType}"
            default="${defaultHeader}"/>
       </h2>
+      
+      <script type="text/javascript"><!--
+        var removeAdminPermissionsMsg = '<@vrtx.msg code="permissions.all.confirm.remove.yourself" default="Are you sure you want to remove all admin permissions for yourself?" />';
+      // -->
+      </script>
 
       <#assign defaultNotInherited = vrtx.getMsg("permissions.notInherited", "Custom permissions") />
 

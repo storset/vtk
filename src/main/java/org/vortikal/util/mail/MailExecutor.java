@@ -71,6 +71,7 @@ public class MailExecutor {
     }
 
     public void SendMail(JavaMailSenderImpl javaMailSenderImpl, MimeMessage msg) throws Exception {
+        // TODO: we dont get mail exceptions with this method.. e.g. invalid address
         taskExecutor.execute(new SendMailTask(javaMailSenderImpl, msg));
     }
     

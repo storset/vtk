@@ -8,7 +8,7 @@
 <p>${comment}</p>
 </#if>
 
-<p>Les heile artikkelen her: <a href="${uri?html}">${uri?string}</a></p>
+<p>Les heile artikkelen her: <a href="${uri?html}">${uri?html}</a></p>
 
 <p>Med vennleg helsing ${mailFrom}</p>
 

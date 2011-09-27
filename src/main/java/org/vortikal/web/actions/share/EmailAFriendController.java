@@ -54,6 +54,7 @@ import org.vortikal.util.mail.MailExecutor;
 import org.vortikal.util.mail.MailHelper;
 import org.vortikal.util.mail.MailTemplateProvider;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 public class EmailAFriendController implements Controller {
 
@@ -117,8 +118,10 @@ public class EmailAFriendController implements Controller {
                     String[] emailMultipleTo = emailTo.split(",");
                     if (MailHelper.isValidEmail(emailMultipleTo) && MailHelper.isValidEmail(emailFrom)) {
 
+                        String url = this.viewService.constructURL(uri).toString();
+                        
                         MimeMessage mimeMessage = MailHelper.createMimeMessage(javaMailSenderImpl,
-                                mailTemplateProvider, this.viewService, this.siteName, resource, emailMultipleTo,
+                                mailTemplateProvider, this.siteName, url, resource.getTitle(), emailMultipleTo,
                                 emailFrom, comment, resource.getTitle());
 
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);

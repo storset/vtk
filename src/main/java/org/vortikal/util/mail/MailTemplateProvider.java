@@ -47,7 +47,7 @@ public class MailTemplateProvider {
 
     private View view;
     
-    public String generateMailBody(String title, URL url, String mailFrom, 
+    public String generateMailBody(String title, String url, String mailFrom, 
             String comment, String site) throws Exception {
 
         Map<String, Object> model = new HashMap<String, Object>();

@@ -31,7 +31,9 @@
 
 package org.vortikal.web.actions.feedback;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -54,6 +56,7 @@ import org.vortikal.util.mail.MailExecutor;
 import org.vortikal.util.mail.MailHelper;
 import org.vortikal.util.mail.MailTemplateProvider;
 import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 public class FeedbackController implements Controller {
 
@@ -65,16 +68,16 @@ public class FeedbackController implements Controller {
     private MailTemplateProvider mailTemplateProvider;
     private LocaleResolver localeResolver;
     private Service viewService;
-    
+
     private String emailTo;
     private String emailFrom;
-    
+
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = requestContext.getResourceURI();
 
         Resource resource = repository.retrieve(token, uri, true);
         if (resource == null) {
@@ -86,7 +89,6 @@ public class FeedbackController implements Controller {
             Locale locale = localeResolver.resolveLocale(request);
             language = locale.toString();
         }
-
         Map<String, Object> m = new HashMap<String, Object>();
         String method = request.getMethod();
         if (method.equals("POST")) {
@@ -103,12 +105,17 @@ public class FeedbackController implements Controller {
 
                         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
                                 request);
+                        
+                        String url = this.viewService.constructURL(uri).toString();
+                        
+                        if(request.getParameter("query") != null) {
+                           url += "?vrtx=search&query=" + request.getParameter("extra");  
+                        }
 
                         MimeMessage mimeMessage = MailHelper.createMimeMessage(javaMailSenderImpl,
-                                mailTemplateProvider, this.viewService, this.siteName, resource, emailMultipleTo,
-                                emailFrom, yourComment, springRequestContext
-                                        .getMessage("feedback.mail.subject-header-prefix")
-                                        + ": " + resource.getTitle());
+                                mailTemplateProvider, this.siteName, url.toString(), resource.getTitle(), emailMultipleTo, emailFrom, yourComment,
+                                springRequestContext.getMessage("feedback.mail.subject-header-prefix") + ": "
+                                        + resource.getTitle());
 
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 
@@ -132,54 +139,67 @@ public class FeedbackController implements Controller {
         }
 
         m.put("resource", this.resourceManager.createResourceWrapper());
+        if(request.getParameter("query") != null) {
+           m.put("query", request.getParameter("query")); 
+        }
         return new ModelAndView(this.viewName, m);
     }
+
 
     @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
 
+
     @Required
     public void setResourceManager(ResourceWrapperManager resourceManager) {
         this.resourceManager = resourceManager;
     }
+
 
     @Required
     public void setJavaMailSenderImpl(JavaMailSenderImpl javaMailSenderImpl) {
         this.javaMailSenderImpl = javaMailSenderImpl;
     }
 
+
     @Required
     public void setMailExecutor(MailExecutor mailExecutor) {
         this.mailExecutor = mailExecutor;
     }
+
 
     @Required
     public void setMailTemplateProvider(MailTemplateProvider mailTemplateProvider) {
         this.mailTemplateProvider = mailTemplateProvider;
     }
 
+
     @Required
     public void setLocaleResolver(LocaleResolver localeResolver) {
         this.localeResolver = localeResolver;
     }
-    
-    @Required 
+
+
+    @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
-    
+
+
     @Required
     public void setSiteName(String siteName) {
         this.siteName = siteName;
     }
-    
+
+
     @Required
     public void setEmailTo(String emailTo) {
         this.emailTo = emailTo;
     }
-    
+
+
     @Required
     public void setEmailFrom(String emailFrom) {
         this.emailFrom = emailFrom;

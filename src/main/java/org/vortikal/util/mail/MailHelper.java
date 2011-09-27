@@ -6,6 +6,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -36,12 +37,10 @@ public class MailHelper {
     
 
     public static MimeMessage createMimeMessage(JavaMailSenderImpl sender, MailTemplateProvider mailTemplateProvider,
-            Service viewService, String siteName, Resource resource, String[] mailMultipleTo, String emailFrom,
+            String siteName, String uri, String title, String[] mailMultipleTo, String emailFrom,
             String comment, String subject) throws Exception {
-
-        URL url = viewService.constructURL(resource.getURI());
-
-        String mailBody = mailTemplateProvider.generateMailBody(resource.getTitle(), url, emailFrom, comment, siteName);
+        
+        String mailBody = mailTemplateProvider.generateMailBody(title, uri, emailFrom, comment, siteName);
 
         MimeMessage mimeMessage = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);

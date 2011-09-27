@@ -104,7 +104,7 @@
        </#if>
        
        <#if query?exists> 
-         <input type="hidden" name="query" "${query}" />
+         <input type="hidden" name="query" value="${query}" />
        </#if>
        
        <input type="submit" class="submit-email-form" value="Send" name="submit"/>

@@ -109,7 +109,7 @@ public class FeedbackController implements Controller {
                         String url = this.viewService.constructURL(uri).toString();
                         
                         if(request.getParameter("query") != null) {
-                           url += "?vrtx=search&query=" + request.getParameter("extra");  
+                           url += "?vrtx=search&query=" + request.getParameter("query");  
                         }
 
                         MimeMessage mimeMessage = MailHelper.createMimeMessage(javaMailSenderImpl,

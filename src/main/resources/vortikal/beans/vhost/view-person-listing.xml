@@ -46,6 +46,7 @@
         <value>title</value>
         <value>resource:picture</value>
         <value>tags</value>
+        <value>lastModified</value>
       </list>
     </property>
   </bean>

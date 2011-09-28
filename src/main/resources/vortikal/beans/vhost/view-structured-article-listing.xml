@@ -22,6 +22,7 @@
         <value>resource:introduction</value>
         <value>resource:hasBodyContent</value>
         <value>numberOfComments</value>
+        <value>lastModified</value>
       </list>
     </property>
   </bean>

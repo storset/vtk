@@ -25,6 +25,7 @@
         <value>resource:mapurl</value>
         <value>resource:hasBodyContent</value>
         <value>numberOfComments</value>
+        <value>lastModified</value>
         <!-- additionalContent -->
       </list>
     </property>

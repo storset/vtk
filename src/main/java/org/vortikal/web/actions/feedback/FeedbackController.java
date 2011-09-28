@@ -108,8 +108,8 @@ public class FeedbackController implements Controller {
                         
                         String url = this.viewService.constructURL(uri).toString();
                         
-                        if(request.getParameter("query") != null) {
-                           url += "?vrtx=search&query=" + request.getParameter("query");  
+                        if(request.getParameter("theurl") != null) {
+                           url = request.getParameter("theurl");  
                         }
 
                         MimeMessage mimeMessage = MailHelper.createMimeMessage(javaMailSenderImpl,
@@ -139,8 +139,8 @@ public class FeedbackController implements Controller {
         }
 
         m.put("resource", this.resourceManager.createResourceWrapper());
-        if(request.getParameter("query") != null) {
-           m.put("query", request.getParameter("query")); 
+        if (request.getParameter("theurl") != null) {
+          m.put("theurl", request.getParameter("theurl"));  
         }
         return new ModelAndView(this.viewName, m);
     }

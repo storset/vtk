@@ -109,7 +109,7 @@ public class FeedbackController implements Controller {
                         String url = this.viewService.constructURL(uri).toString();
 
                         MimeMessage mimeMessage = MailHelper.createMimeMessage(javaMailSenderImpl,
-                                mailTemplateProvider, this.siteName, url.toString(), resource.getTitle(), emailMultipleTo, emailFrom, yourComment,
+                                mailTemplateProvider, this.siteName, url, resource.getTitle(), emailMultipleTo, emailFrom, yourComment,
                                 springRequestContext.getMessage("feedback.mail.subject-header-prefix") + ": "
                                         + resource.getTitle());
 

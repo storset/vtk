@@ -107,10 +107,6 @@ public class FeedbackController implements Controller {
                                 request);
                         
                         String url = this.viewService.constructURL(uri).toString();
-                        
-                        if(request.getParameter("theurl") != null) {
-                           url = request.getParameter("theurl");  
-                        }
 
                         MimeMessage mimeMessage = MailHelper.createMimeMessage(javaMailSenderImpl,
                                 mailTemplateProvider, this.siteName, url.toString(), resource.getTitle(), emailMultipleTo, emailFrom, yourComment,
@@ -139,9 +135,6 @@ public class FeedbackController implements Controller {
         }
 
         m.put("resource", this.resourceManager.createResourceWrapper());
-        if (request.getParameter("theurl") != null) {
-          m.put("theurl", request.getParameter("theurl"));  
-        }
         return new ModelAndView(this.viewName, m);
     }
 

@@ -103,10 +103,6 @@
          <textarea rows="9" cols="10" id="yourComment" name="yourComment" value=""></textarea> 
        </#if>
        
-       <#if theurl?exists> 
-         <input type="hidden" name="theurl" value="${theurl}" />
-       </#if>
-       
        <input type="submit" class="submit-email-form" value="Send" name="submit"/>
     </form>
        

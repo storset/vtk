@@ -13,22 +13,7 @@
       </list>
     </property>
     <property name="searchSorting" ref="structured.eventListing.upcoming.searchSorting" />
-    <property name="configurablePropertySelectPointers">
-      <list>
-        <value>title</value>
-        <value>resource:introduction</value>
-        <value>resource:picture</value>
-        <value>resource:caption</value>
-        <value>resource:location</value>
-        <value>resource:end-date</value>
-        <value>resource:start-date</value>
-        <value>resource:mapurl</value>
-        <value>resource:hasBodyContent</value>
-        <value>numberOfComments</value>
-        <value>lastModified</value>
-        <!-- additionalContent -->
-      </list>
-    </property>
+    <property name="configurablePropertySelectPointers" ref="event.configurablePropertySelectPointersList" />
   </bean>
 
   <bean id="structured.eventListing.upcoming.searchSorting" parent="eventListing.upcoming.searchSorting">
@@ -50,20 +35,7 @@
       </list>
     </property>
     <property name="searchSorting" ref="structured.eventListing.previous.searchSorting" />
-    <property name="configurablePropertySelectPointers">
-      <list>
-        <value>title</value>
-        <value>resource:introduction</value>
-        <value>resource:picture</value>
-        <value>resource:caption</value>
-        <value>resource:location</value>
-        <value>resource:end-date</value>
-        <value>resource:start-date</value>
-        <value>resource:mapurl</value>
-        <value>resource:hasBodyContent</value>
-        <value>numberOfComments</value>
-      </list>
-    </property>
+    <property name="configurablePropertySelectPointers" ref="event.configurablePropertySelectPointersList" />
   </bean>
 
   <bean id="structured.eventListing.previous.searchSorting" parent="eventListing.previous.searchSorting">
@@ -175,6 +147,24 @@
         <ref bean="resourceContextProvider" />
       </list>
     </property>
+  </bean>
+
+  <bean id="event.configurablePropertySelectPointersList" class="java.util.ArrayList">
+    <constructor-arg>
+        <list>
+          <value>title</value>
+          <value>resource:introduction</value>
+          <value>resource:picture</value>
+          <value>resource:caption</value>
+          <value>resource:location</value>
+          <value>resource:end-date</value>
+          <value>resource:start-date</value>
+          <value>resource:mapurl</value>
+          <value>resource:hasBodyContent</value>
+          <value>numberOfComments</value>
+          <value>lastModified</value>
+        </list>
+    </constructor-arg>
   </bean>
 
 </beans>

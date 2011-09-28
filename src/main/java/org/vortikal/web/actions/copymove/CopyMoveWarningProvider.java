@@ -40,7 +40,6 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PropertySet;
@@ -96,52 +95,17 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
         Resource destAclResource = findNearestAcl(requestContext, destinationUri);
         URL url = this.confirmationService.constructURL(destinationUri);
         if ("copy-resources".equals(sessionBean.getAction())) {
-            try {
-                boolean addWarning = false;
-                Acl destAcl = destAclResource.getAcl();
-                if (destAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
-                        || destAcl.containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL)) {
-                    for (String uri : sessionBean.getFilesToBeCopied()) {
-                        Path resourceToBeCopiedPath = Path.fromString(uri);
-                        // Resource to copy might have been deleted or moved,
-                        // check for existence
-                        if (!repository.exists(token, resourceToBeCopiedPath)) {
-                            continue;
-                        }
-                        Resource resourceToBeCopied = findNearestAcl(requestContext, resourceToBeCopiedPath);
-                        Acl srcAcl = resourceToBeCopied.getAcl();
-                        if (!resourceToBeCopied.isInheritedAcl()
-                                && !(srcAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL) || srcAcl
-                                        .containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
-
-                            url.setCollection(true);
-                            addWarning = true;
-                            break;
-                        }
-                    }
-                    if (!addWarning) {
-                        ResultSet rs = this.indexAclSearch(sessionBean, token, new ACLExistsQuery());
-                        if (rs.getSize() == 0) {
-                            return;
-                        }
-                        for (PropertySet ps : rs.getAllResults()) {
-                            Resource resource = repository.retrieve(token, ps.getURI(), false);
-                            Acl acl = resource.getAcl();
-                            if (!(acl.containsEntry(Privilege.READ, PrincipalFactory.ALL) || acl.containsEntry(
-                                    Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
-                                addWarning = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (addWarning) {
+            ResultSet rs = this.indexAclSearch(sessionBean, token, new ACLExistsQuery());
+            if (rs.getSize() > 0) {
+                for (PropertySet ps : rs.getAllResults()) {
+                    Resource resource = repository.retrieve(token, ps.getURI(), false);
+                    Acl acl = resource.getAcl();
+                    if (!(acl.containsEntry(Privilege.READ, PrincipalFactory.ALL) || acl.containsEntry(
+                            Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
                         this.addWarning(model, url, sessionBean);
-                        return;
+                        break;
                     }
                 }
-            } catch (AuthorizationException ae) {
-                // No warning necessary at this point, the controller that does
-                // the actual copy/move handles it.
             }
         }
 
@@ -149,12 +113,6 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
             // Copying/moving within same folder
             return;
         }
-
-        // A warning is triggered when these conditions are met:
-        // 1. sourceParentUri does not have read:all or read-processed:all
-        // 2. destParentUri has read:all or read-processed:all
-        // 3. exists((uri in (filesToBeCopied)/*) and inherits-from
-        // sourceParentUri)
 
         Acl srcAcl = srcAclResource.getAcl();
         if (srcAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
@@ -173,11 +131,10 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
         }
 
         ResultSet rs = this.indexAclSearch(sessionBean, token, new ACLInheritedFromQuery(srcAclResource.getURI()));
-        if (rs.getSize() == 0) {
-            return;
+        if (rs.getSize() > 0) {
+            this.addWarning(model, url, sessionBean);
         }
 
-        this.addWarning(model, url, sessionBean);
     }
 
     @SuppressWarnings( { "rawtypes", "unchecked" })

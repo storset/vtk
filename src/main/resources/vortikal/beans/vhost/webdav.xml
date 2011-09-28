@@ -442,6 +442,7 @@
 
   <bean id="webdavMoveHandler" class="org.vortikal.webdav.MoveController">
     <property name="supportIfHeaders" value="${webdavSupportIfHeaders}" />
+     <property name="trustedToken" ref="trustedToken" />    
   </bean>
 
   <bean id="webdavDeleteHandler" class="org.vortikal.webdav.DeleteController">

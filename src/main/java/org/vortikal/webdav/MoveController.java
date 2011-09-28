@@ -56,6 +56,9 @@ import org.vortikal.webdav.ifheader.IfHeaderImpl;
  *
  */
 public class MoveController extends AbstractWebdavController {
+    
+    private String trustedToken = null;
+
 
 	/**
      * Performs the WebDAV 'MOVE' method.      
@@ -75,7 +78,7 @@ public class MoveController extends AbstractWebdavController {
         Map<String, Object> model = new HashMap<String, Object>();
 
         try {
-            Resource resource = repository.retrieve(token, uri, false);
+            Resource resource = repository.retrieve(trustedToken, uri, false);
             this.ifHeader = new IfHeaderImpl(request);
             verifyIfHeader(resource, true);
             
@@ -152,5 +155,8 @@ public class MoveController extends AbstractWebdavController {
         return new ModelAndView("MOVE", model);
     }
    
-   
+    public void setTrustedToken(String trustedToken) {
+        this.trustedToken = trustedToken;
+    }
+
 }

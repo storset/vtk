@@ -95,6 +95,7 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
         Resource destAclResource = findNearestAcl(requestContext, destinationUri);
         URL url = this.confirmationService.constructURL(destinationUri);
         if ("copy-resources".equals(sessionBean.getAction())) {
+            // XXX index search can be optimized to avoid iterating resourceset
             ResultSet rs = this.indexAclSearch(sessionBean, token, new ACLExistsQuery(), false);
             if (rs.getSize() > 0) {
                 for (PropertySet ps : rs.getAllResults()) {

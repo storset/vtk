@@ -318,7 +318,7 @@ resourcetype person {
         [resource-props "."]
         <div id="vrtx-person-contact-info-extras">
         [if pressPhoto != null]
-              <a id="vrtx-press-photo" href="[val pressPhoto]">[localized "pressPhoto"]</a>
+              <a id="vrtx-press-photo" href="[call "resource:person-press-photo-link"]">[localized "pressPhoto"]</a>
         [endif]
         [if surname != null || firstName != null]
         	  <a id="vrtx-person-vcard" href="?vrtx=vcf">[localized "vCard"]</a>

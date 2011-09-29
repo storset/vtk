@@ -578,4 +578,15 @@
     <property name="url" value="layouts/search-form.ftl" />
   </bean>
 
+  <bean id="decorating.resourcePressPhotoLink" class="org.vortikal.web.decorating.components.PersonPressPhotoLinkComponent">
+    <property name="namespace" ref="decorating.resourceNamespace" />
+    <property name="name" value="person-press-photo-link" />
+    <property name="view" ref="decorating.resourcePressPhotoLink.view" />
+    <property name="viewAsWebpage" ref="viewImageInfoService" />
+  </bean>
+
+  <bean id="decorating.resourcePressPhotoLink.view" parent="freemarkerView">
+    <property name="url" value="layouts/person-press-photo-link.ftl" />
+  </bean>
+
 </beans>

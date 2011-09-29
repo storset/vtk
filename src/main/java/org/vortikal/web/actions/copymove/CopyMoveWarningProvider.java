@@ -95,7 +95,8 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
         Resource destAclResource = findNearestAcl(requestContext, destinationUri);
         URL url = this.confirmationService.constructURL(destinationUri);
         if ("copy-resources".equals(sessionBean.getAction())) {
-            ResultSet rs = this.indexAclSearch(sessionBean, token, new ACLExistsQuery());
+            // XXX index search can be optimized to avoid iterating resourceset
+            ResultSet rs = this.indexAclSearch(sessionBean, token, new ACLExistsQuery(), false);
             if (rs.getSize() > 0) {
                 for (PropertySet ps : rs.getAllResults()) {
                     Resource resource = repository.retrieve(token, ps.getURI(), false);
@@ -130,7 +131,8 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
             return;
         }
 
-        ResultSet rs = this.indexAclSearch(sessionBean, token, new ACLInheritedFromQuery(srcAclResource.getURI()));
+        ResultSet rs = this
+                .indexAclSearch(sessionBean, token, new ACLInheritedFromQuery(srcAclResource.getURI()), true);
         if (rs.getSize() > 0) {
             this.addWarning(model, url, sessionBean);
         }
@@ -144,7 +146,8 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
         model.put("action", sessionBean.getAction());
     }
 
-    private ResultSet indexAclSearch(CopyMoveSessionBean sessionBean, String token, ACLQuery aclTypeQuery) {
+    private ResultSet indexAclSearch(CopyMoveSessionBean sessionBean, String token, ACLQuery aclTypeQuery,
+            boolean setLimit) {
         OrQuery orQuery = new OrQuery();
         for (String uri : sessionBean.getFilesToBeCopied()) {
             orQuery.add(new UriPrefixQuery(uri));
@@ -157,7 +160,9 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
         Search search = new Search();
         search.setSorting(null);
         search.setQuery(andQuery);
-        search.setLimit(1);
+        if (setLimit) {
+            search.setLimit(1);
+        }
         search.setPropertySelect(new PropertySelect() {
             public boolean isIncludedProperty(PropertyTypeDefinition propertyDefinition) {
                 return false;
@@ -205,3 +210,4 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
         return Collections.unmodifiableSet(this.categories);
     }
 }
+

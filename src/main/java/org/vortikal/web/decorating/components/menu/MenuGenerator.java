@@ -179,7 +179,7 @@ public final class MenuGenerator {
         int remainder = allItemsSize % itemsPerResultSet;
         int limit = allItemsSize / itemsPerResultSet;
 
-        for (int i = 0; i <= limit; i++) {
+        for (int i = 0; i < limit; i++) {
             int startIdx = i * itemsPerResultSet;
             int endIdx = startIdx + itemsPerResultSet;
             if (endIdx > allItemsSize) {

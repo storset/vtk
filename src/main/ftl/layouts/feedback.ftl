@@ -15,19 +15,6 @@
 <#macro genFeedback link jsUrl addFullUrl="">
   <!-- begin feedback js -->
   <script type="text/javascript" src="${jsUrl?html}"></script>
-  <script type="text/javascript"><!--
-    $(function() {
-      var feedBackForm = $("#send-feedback-form");
-      feedBackForm.hide(0);
-      feedBackForm.next().click(function(e) {
-        alert($(this).prev()[0].nodeType);
-        $(this).prev().submit();
-        e.prevendPropagation();
-        e.preventDefault();
-      });
-    });
-  // -->
-  </script>
   <!-- end feedback js -->
 
   <div class="vrtx-feedback">

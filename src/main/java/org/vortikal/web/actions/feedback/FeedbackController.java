@@ -92,15 +92,15 @@ public class FeedbackController implements Controller {
         String url = this.viewService.constructURL(uri).toString();
         
         // Override if parameters are set
-        String queryUrl = request.getParameter("query");
-        String queryTitle = request.getParameter("title"); 
+        String fullUrl = request.getParameter("fullurl");
+        String pageTitle = request.getParameter("pagetitle"); 
 
-        if (!StringUtils.isBlank(queryUrl)) {
-            model.put("query", queryUrl);
-            url = queryUrl;
-            if (!StringUtils.isBlank(queryTitle)) {
-                model.put("title", queryTitle);
-                title = queryTitle; 
+        if (!StringUtils.isBlank(fullUrl)) {
+            model.put("fullurl", fullUrl);
+            url = fullUrl;
+            if (!StringUtils.isBlank(pageTitle)) {
+                model.put("pagetitle", pageTitle);
+                title = pageTitle; 
             }
         }
         

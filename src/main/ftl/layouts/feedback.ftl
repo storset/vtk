@@ -12,7 +12,7 @@
   <@genFeedback emailLink.url url />
 </#if>
 
-<#macro genFeedback link jsUrl addFullUrl="" addTitle="">
+<#macro genFeedback link jsUrl addFullUrl="" addPageTitle="">
   <!-- begin feedback js -->
   <script type="text/javascript" src="${jsUrl?html}"></script>
   <!-- end feedback js -->
@@ -21,9 +21,9 @@
     <span class="vrtx-feedback-title">
       <span class="feedback-title"><@vrtx.msg code="feedback.could-not-find" default="Did you find what you were looking for?" /></span>
       <#if addFullUrl != "">
-       <#assign href = link?html + "&amp;query=" + addFullUrl?url('UTF-8') />
-        <#if addTitle != "">
-          <#assign href = href + "&amp;title=" + addTitle?url('UTF-8') />
+       <#assign href = link?html + "&amp;fullurl=" + addFullUrl?url('UTF-8') />
+        <#if addPageTitle != "">
+          <#assign href = href + "&amp;pagetitle=" + addPageTitle?url('UTF-8') />
         </#if>
         <a class="feedback" href="${href}" onClick="javascript:popup('${href}'); return false">
       <#else>

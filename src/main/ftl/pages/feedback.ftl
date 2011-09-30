@@ -103,12 +103,12 @@
          <textarea rows="9" cols="10" id="yourComment" name="yourComment" value=""></textarea> 
        </#if>
        
-       <#if query?has_content>
-         <input type="hidden" name="query" value="${query}" />
+       <#if fullurl?has_content>
+         <input type="hidden" name="fullurl" value="${fullurl}" />
        </#if>
        
-       <#if title?has_content>
-         <input type="hidden" name="title" value="${title}" />
+       <#if pagetitle?has_content>
+         <input type="hidden" name="pagetitle" value="${pagetitle}" />
        </#if>
        
        <input type="submit" class="submit-email-form" value="Send" name="submit"/>

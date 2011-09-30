@@ -107,6 +107,10 @@
          <input type="hidden" name="query" value="${query}" />
        </#if>
        
+       <#if title?has_content>
+         <input type="hidden" name="title" value="${title}" />
+       </#if>
+       
        <input type="submit" class="submit-email-form" value="Send" name="submit"/>
     </form>
        

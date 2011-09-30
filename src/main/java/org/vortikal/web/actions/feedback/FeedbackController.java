@@ -88,12 +88,22 @@ public class FeedbackController implements Controller {
         Map<String, Object> model = new HashMap<String, Object>();
         String method = request.getMethod();
 
+        String title = resource.getTitle();
+        String url = this.viewService.constructURL(uri).toString();
+        
+        // Override if parameters are set
         String queryUrl = request.getParameter("query");
-        boolean useQueryUrl = false;
+        String queryTitle = request.getParameter("title"); 
+
         if (!StringUtils.isBlank(queryUrl)) {
             model.put("query", queryUrl);
-            useQueryUrl = true;
+            url = queryUrl;
+            if (!StringUtils.isBlank(queryTitle)) {
+                model.put("title", queryTitle);
+                title = queryTitle; 
+            }
         }
+        
 
         if (method.equals("POST")) {
             String yourComment = request.getParameter("yourComment");
@@ -106,14 +116,12 @@ public class FeedbackController implements Controller {
 
                         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
                                 request);
-
-                        String url = useQueryUrl ? queryUrl : this.viewService.constructURL(uri).toString();
-
+                        
                         MimeMessage mimeMessage = MailHelper.createMimeMessage(javaMailSenderImpl,
-                                mailTemplateProvider, this.siteName, url, resource.getTitle(), emailMultipleTo,
+                                mailTemplateProvider, this.siteName, url, title, emailMultipleTo,
                                 emailFrom, yourComment, springRequestContext
                                         .getMessage("feedback.mail.subject-header-prefix")
-                                        + ": " + resource.getTitle());
+                                        + ": " + title);
 
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 

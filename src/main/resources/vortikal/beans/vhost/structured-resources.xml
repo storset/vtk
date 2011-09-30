@@ -26,7 +26,34 @@
     </property>
     <property name="handler" ref="previewAdminIframeHandler" />
   </bean>
-  
+
+  <bean id="previewPersonService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="structuredResources.previewService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+          <property name="resourceType" value="person" />
+        </bean>
+      </list>
+    </property>
+    <property name="handlerInterceptors" ref="invalidUidServiceInterceptor" />
+  </bean>
+
+  <bean id="invalidUidServiceInterceptor" class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
+    <property name="providers">
+     <list>
+       <ref bean="invalidUidMessageProvider" />
+     </list>
+    </property>
+  </bean>
+
+  <bean id="invalidUidMessageProvider" class="org.vortikal.web.referencedata.provider.InvalidUidMessageProvider">
+    <property name="modelName" value="tabMessage" />
+    <property name="localizationKey" value="preview.invalid.uid" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="principalFactory" ref="principalFactory" />
+  </bean>
+
   <bean id="mayPreviewUnpublishedResourceAssertion" class="org.vortikal.web.service.AndAssertion">
     <property name="assertions">
       <list>
@@ -35,8 +62,7 @@
       </list>
     </property>
   </bean>
-  
- 
+
   <bean id="structuredResources.editService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-9800" />

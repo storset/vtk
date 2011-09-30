@@ -1,4 +1,4 @@
-/* Copyright (c) 2008 University of Oslo, Norway
+/* Copyright (c) 2011 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -31,9 +31,7 @@
 
 package org.vortikal.web.actions.feedback;
 
-import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -51,15 +49,13 @@ import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.web.RequestContext;
 import org.vortikal.util.mail.MailExecutor;
 import org.vortikal.util.mail.MailHelper;
 import org.vortikal.util.mail.MailTemplateProvider;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
 
 public class FeedbackController implements Controller {
-
     private String viewName;
     private String siteName;
     private ResourceWrapperManager resourceManager;
@@ -71,7 +67,6 @@ public class FeedbackController implements Controller {
 
     private String emailTo;
     private String emailFrom;
-
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -89,15 +84,21 @@ public class FeedbackController implements Controller {
             Locale locale = localeResolver.resolveLocale(request);
             language = locale.toString();
         }
-        Map<String, Object> m = new HashMap<String, Object>();
+
+        Map<String, Object> model = new HashMap<String, Object>();
         String method = request.getMethod();
+
+        String queryUrl = request.getParameter("query");
+        boolean useQueryUrl = false;
+        if (!StringUtils.isBlank(queryUrl)) {
+            model.put("query", queryUrl);
+            useQueryUrl = true;
+        }
+
         if (method.equals("POST")) {
-
             String yourComment = request.getParameter("yourComment");
-
-            // Checks for userinput
             if (StringUtils.isBlank(yourComment)) {
-                m.put("tipResponse", "FAILURE-NULL-FORM");
+                model.put("tipResponse", "FAILURE-NULL-FORM");
             } else {
                 try {
                     String[] emailMultipleTo = emailTo.split(",");
@@ -105,37 +106,34 @@ public class FeedbackController implements Controller {
 
                         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
                                 request);
-                        
-                        String url = this.viewService.constructURL(uri).toString();
+
+                        String url = useQueryUrl ? queryUrl : this.viewService.constructURL(uri).toString();
 
                         MimeMessage mimeMessage = MailHelper.createMimeMessage(javaMailSenderImpl,
-                                mailTemplateProvider, this.siteName, url, resource.getTitle(), emailMultipleTo, emailFrom, yourComment,
-                                springRequestContext.getMessage("feedback.mail.subject-header-prefix") + ": "
-                                        + resource.getTitle());
+                                mailTemplateProvider, this.siteName, url, resource.getTitle(), emailMultipleTo,
+                                emailFrom, yourComment, springRequestContext
+                                        .getMessage("feedback.mail.subject-header-prefix")
+                                        + ": " + resource.getTitle());
 
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 
-                        m.put("emailSentTo", emailTo);
-                        m.put("tipResponse", "OK");
-
+                        model.put("emailSentTo", emailTo);
+                        model.put("tipResponse", "OK");
                     } else {
-
-                        if (yourComment != null && (!yourComment.equals(""))) {
-                            m.put("yourSavedComment", yourComment);
+                        if (!StringUtils.isBlank(yourComment)) {
+                            model.put("yourSavedComment", yourComment);
                         }
-
-                        m.put("tipResponse", "FAILURE-INVALID-EMAIL");
+                        model.put("tipResponse", "FAILURE-INVALID-EMAIL");
                     }
-                    // Unreachable because of thread
-                } catch (Exception mtex) {
-                    m.put("tipResponse", "FAILURE");
-                    m.put("tipResponseMsg", mtex.getMessage());
+                } catch (Exception mtex) { // Unreachable because of thread / executor
+                    model.put("tipResponse", "FAILURE");
+                    model.put("tipResponseMsg", mtex.getMessage());
                 }
             }
         }
 
-        m.put("resource", this.resourceManager.createResourceWrapper());
-        return new ModelAndView(this.viewName, m);
+        model.put("resource", this.resourceManager.createResourceWrapper());
+        return new ModelAndView(this.viewName, model);
     }
 
 

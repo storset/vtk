@@ -8,20 +8,39 @@
 
 <#import "/lib/vortikal.ftl" as vrtx/>
 
-<#if !emailLink?exists || !emailLink.url?exists>
-  <#stop "Missing 'emailLink' entry in model"/>
+<#if emailLink?exists && emailLink.url?exists>
+  <@genFeedback emailLink.url url />
 </#if>
 
-<!-- begin feedback js -->
-<script type="text/javascript" src="${url?html}"></script>
-<!-- end feedback js -->
+<#macro genFeedback link jsUrl addFullUrl="">
+  <!-- begin feedback js -->
+  <script type="text/javascript" src="${jsUrl?html}"></script>
+  <script type="text/javascript"><!--
+    $(function() {
+      var feedBackForm = $("#send-feedback-form");
+      feedBackForm.hide(0);
+      feedBackForm.next().click(function(e) {
+        alert($(this).prev()[0].nodeType);
+        $(this).prev().submit();
+        e.prevendPropagation();
+        e.preventDefault();
+      });
+    });
+  // -->
+  </script>
+  <!-- end feedback js -->
 
-<div class="vrtx-feedback">
-  <span class="vrtx-feedback-title">
-    <span class="feedback-title"><@vrtx.msg code="feedback.could-not-find" default="Did you find what you were looking for?" /></span>
-    <a class="feedback" href="${emailLink.url?html}" onClick="javascript:popup('${emailLink.url?html}'); return false">
-      <@vrtx.msg code="feedback.title" default="Give feedback" />
-    </a>
-  </span>
-  <span class="vrtx-feedback-bottom"></span>
-</div>
+  <div class="vrtx-feedback">
+    <span class="vrtx-feedback-title">
+      <span class="feedback-title"><@vrtx.msg code="feedback.could-not-find" default="Did you find what you were looking for?" /></span>
+      <#if addFullUrl != "">
+        <a class="feedback" href="${link?html}&amp;query=${addFullUrl?url('UTF-8')}" onClick="javascript:popup('${link?html}'); return false">
+      <#else>
+        <a class="feedback" href="${link?html}" onClick="javascript:popup('${link?html}'); return false">
+      </#if>
+          <@vrtx.msg code="feedback.title" default="Give feedback" />
+        </a>
+    </span>
+    <span class="vrtx-feedback-bottom"></span>
+  </div>
+</#macro>

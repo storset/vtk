@@ -49,15 +49,13 @@ import org.vortikal.edit.editor.ResourceWrapperManager;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.web.RequestContext;
 import org.vortikal.util.mail.MailExecutor;
 import org.vortikal.util.mail.MailHelper;
 import org.vortikal.util.mail.MailTemplateProvider;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
 
 public class EmailAFriendController implements Controller {
-
     private String viewName;
     private String siteName;
     private ResourceWrapperManager resourceManager;
@@ -66,13 +64,12 @@ public class EmailAFriendController implements Controller {
     private MailTemplateProvider mailTemplateProvider;
     private LocaleResolver localeResolver;
     private Service viewService;
-    
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = requestContext.getResourceURI();
 
         Resource resource = repository.retrieve(token, uri, true);
         if (resource == null) {
@@ -85,72 +82,59 @@ public class EmailAFriendController implements Controller {
             language = locale.toString();
         }
 
-        Map<String, Object> m = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<String, Object>();
         String method = request.getMethod();
-        if (method.equals("POST")) {
 
+        if (method.equals("POST")) {
             String emailTo = request.getParameter("emailTo");
             String emailFrom = request.getParameter("emailFrom");
             String yourComment = request.getParameter("yourComment");
-
-            // Checks for userinput
             if (StringUtils.isBlank(emailTo) || StringUtils.isBlank(emailFrom)) {
-                // Save data from form and return it
                 if (StringUtils.isNotBlank(emailTo)) {
-                    m.put("emailSavedTo", emailTo);
+                    model.put("emailSavedTo", emailTo);
                 }
                 if (StringUtils.isNotBlank(emailFrom)) {
-                    m.put("emailSavedFrom", emailFrom);
+                    model.put("emailSavedFrom", emailFrom);
                 }
                 if (StringUtils.isNotBlank(yourComment)) {
-                    m.put("yourSavedComment", yourComment);
+                    model.put("yourSavedComment", yourComment);
                 }
-                m.put("tipResponse", "FAILURE-NULL-FORM");
-
+                model.put("tipResponse", "FAILURE-NULL-FORM");
             } else {
                 try {
-
                     String comment = "";
                     if (StringUtils.isNotBlank(yourComment)) {
-                        comment = (String) yourComment;
+                        comment = yourComment;
                     }
-
                     String[] emailMultipleTo = emailTo.split(",");
                     if (MailHelper.isValidEmail(emailMultipleTo) && MailHelper.isValidEmail(emailFrom)) {
-
                         String url = this.viewService.constructURL(uri).toString();
-                        
+
                         MimeMessage mimeMessage = MailHelper.createMimeMessage(javaMailSenderImpl,
                                 mailTemplateProvider, this.siteName, url, resource.getTitle(), emailMultipleTo,
                                 emailFrom, comment, resource.getTitle());
 
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 
-                        m.put("emailSentTo", emailTo);
-                        m.put("tipResponse", "OK");
-
+                        model.put("emailSentTo", emailTo);
+                        model.put("tipResponse", "OK");
                     } else {
+                        model.put("emailSavedTo", emailTo);
+                        model.put("emailSavedFrom", emailFrom);
 
-                        // Save data from form and return it
-                        m.put("emailSavedTo", emailTo);
-                        m.put("emailSavedFrom", emailFrom);
-
-                        if (yourComment != null && (!yourComment.equals(""))) {
-                            m.put("yourSavedComment", yourComment);
+                        if (!StringUtils.isBlank(yourComment)) {
+                            model.put("yourSavedComment", yourComment);
                         }
-
-                        m.put("tipResponse", "FAILURE-INVALID-EMAIL");
+                        model.put("tipResponse", "FAILURE-INVALID-EMAIL");
                     }
-                    // Unreachable because of thread
-                } catch (Exception mtex) {
-                    m.put("tipResponse", "FAILURE");
-                    m.put("tipResponseMsg", mtex.getMessage());
+                } catch (Exception mtex) { // Unreachable because of thread
+                    model.put("tipResponse", "FAILURE");
+                    model.put("tipResponseMsg", mtex.getMessage());
                 }
             }
         }
-
-        m.put("resource", this.resourceManager.createResourceWrapper());
-        return new ModelAndView(this.viewName, m);
+        model.put("resource", this.resourceManager.createResourceWrapper());
+        return new ModelAndView(this.viewName, model);
     }
 
 
@@ -159,36 +143,43 @@ public class EmailAFriendController implements Controller {
         this.viewName = viewName;
     }
 
+
     @Required
     public void setResourceManager(ResourceWrapperManager resourceManager) {
         this.resourceManager = resourceManager;
     }
+
 
     @Required
     public void setJavaMailSenderImpl(JavaMailSenderImpl javaMailSenderImpl) {
         this.javaMailSenderImpl = javaMailSenderImpl;
     }
 
+
     @Required
     public void setMailExecutor(MailExecutor mailExecutor) {
         this.mailExecutor = mailExecutor;
     }
+
 
     @Required
     public void setMailTemplateProvider(MailTemplateProvider mailTemplateProvider) {
         this.mailTemplateProvider = mailTemplateProvider;
     }
 
+
     @Required
     public void setLocaleResolver(LocaleResolver localeResolver) {
         this.localeResolver = localeResolver;
     }
-    
-    @Required 
+
+
+    @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
-    
+
+
     @Required
     public void setSiteName(String siteName) {
         this.siteName = siteName;

@@ -103,6 +103,10 @@
          <textarea rows="9" cols="10" id="yourComment" name="yourComment" value=""></textarea> 
        </#if>
        
+       <#if query?has_content>
+         <input type="hidden" name="query" value="${query}" />
+       </#if>
+       
        <input type="submit" class="submit-email-form" value="Send" name="submit"/>
     </form>
        

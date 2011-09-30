@@ -6,10 +6,6 @@ import javax.mail.internet.MimeMessage;
 
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.vortikal.repository.Path;
-import org.vortikal.repository.Resource;
-import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
 
 public class MailHelper {
 
@@ -48,8 +44,7 @@ public class MailHelper {
         helper.setSubject(subject);
         helper.setFrom(emailFrom);
         helper.setTo(mailMultipleTo);
-        // HTML (TRUE | FALSE)
-        helper.setText(mailBody, true);
+        helper.setText(mailBody, true); // send HTML
 
         return mimeMessage;
     }

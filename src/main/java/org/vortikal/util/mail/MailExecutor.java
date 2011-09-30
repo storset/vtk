@@ -72,6 +72,7 @@ public class MailExecutor {
 
     public void SendMail(JavaMailSenderImpl javaMailSenderImpl, MimeMessage msg) throws Exception {
         // TODO: we dont get mail exceptions with this method.. e.g. invalid address
+        //       in Spring 3.0 a Callable can be used as task in ThreadPoolTaskExecutor
         taskExecutor.execute(new SendMailTask(javaMailSenderImpl, msg));
     }
     

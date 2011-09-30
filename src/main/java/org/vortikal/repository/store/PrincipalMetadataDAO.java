@@ -31,59 +31,67 @@
 package org.vortikal.repository.store;
 
 import java.util.List;
-
+import java.util.Locale;
 import java.util.Set;
+
 import org.vortikal.security.Principal;
 
 /**
- * This interface contains methods for acquiring metadata about a system's 
- * principals. Methods should return <code>null</code> if nothing is found
- * for a search or lookup.
- *
+ * This interface contains methods for acquiring metadata about a system's
+ * principals. Methods should return <code>null</code> if nothing is found for a
+ * search or lookup.
+ * 
  */
 public interface PrincipalMetadataDAO {
 
     /**
-     * Get metadata instance for principal with the given
-     * fully qualified name (username/id+domain).
+     * Get metadata instance for principal with the given fully qualified name
+     * (username/id+domain).
      * 
      * 
-     * @param qualifiedName The fully qualified name of the principal to get the description for.
-     * @return A <code>PrincipalMetadata</code> instance with description
-     *         or <code>null</code> if no metadata could be found.
+     * @param qualifiedName
+     *            The fully qualified name of the principal to get the
+     *            description for.
+     * @return A <code>PrincipalMetadata</code> instance with description or
+     *         <code>null</code> if no metadata could be found.
      * 
      */
-    PrincipalMetadata getMetadata(String qualifiedName);
-    
+    PrincipalMetadata getMetadata(String qualifiedName, Locale preferredLocale);
+
     /**
      * Get metadata instance for given principal instance.
      * 
-     * @param principal The <code>Principal</code> instance to get the description for.
-     * @return A <code>PrincipalMetadata</code> instance or <code>null</code> if none found.
+     * @param principal
+     *            The <code>Principal</code> instance to get the description
+     *            for.
+     * @return A <code>PrincipalMetadata</code> instance or <code>null</code> if
+     *         none found.
      * 
      */
-    PrincipalMetadata getMetadata(Principal principal);
+    PrincipalMetadata getMetadata(Principal principal, Locale preferredLocale);
 
     /**
      * Searches for principals which satisfy the supplied search criteria.
      * 
-     * @return List of metadata-instances (<code>PrincipalMetadata</code>) 
-     *         for each principal that satisfies the search criteria
-     *         or <code>null</code> if nothing suitable was found.
+     * @return List of metadata-instances (<code>PrincipalMetadata</code>) for
+     *         each principal that satisfies the search criteria or
+     *         <code>null</code> if nothing suitable was found.
      */
-    List<PrincipalMetadata> search(PrincipalSearch search);
+    List<PrincipalMetadata> search(PrincipalSearch search, Locale preferredLocale);
 
     /**
      * List all employees for a given unit and all its sub-units.
-     *
+     * 
      * @param areacodeOrDn
      * @return
      */
-    List<PrincipalMetadata> listPrincipalsInUnit(String areacodeOrDn);
+    List<PrincipalMetadata> listPrincipalsInUnit(String areacodeOrDn, Locale preferredLocale);
+
+    List<PrincipalMetadata> listPrincipalsInUnitXX(String areacodeOrDn, Locale preferredLocale, boolean considerSubUnits);
 
     /**
      * Return set of supported principal domains for this DAO.
      */
     Set<String> getSupportedPrincipalDomains();
-    
+
 }

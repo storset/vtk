@@ -35,8 +35,11 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.LocaleResolver;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.repository.LocaleHelper;
 import org.vortikal.web.RequestContext;
@@ -46,20 +49,23 @@ import org.vortikal.web.RequestContext.TraversalCallback;
 /**
  * Resolves locale for the current resource.
  * 
- * <p>The locale is set to the first match:
+ * <p>
+ * The locale is set to the first match:
  * <ul>
- *   <li>The resource {@link Resource#getContentLanguage() contentLanguage}
- *   <li>The nearest parent with {@link Resource#getContentLanguage() contentLanguage} set
- *   <li>defaultLocale
- *   
+ * <li>The resource {@link Resource#getContentLanguage() contentLanguage}
+ * <li>The nearest parent with {@link Resource#getContentLanguage()
+ * contentLanguage} set
+ * <li>defaultLocale
+ * 
  */
 public class ResourceAwareLocaleResolver implements LocaleResolver {
-    
-    protected static final String LOCALE_CACHE_REQUEST_ATTRIBUTE_NAME =
-        ResourceAwareLocaleResolver.class.getName() + ".RequestAttribute";
-    
+
+    protected static final String LOCALE_CACHE_REQUEST_ATTRIBUTE_NAME = ResourceAwareLocaleResolver.class.getName()
+            + ".RequestAttribute";
+
     private Locale defaultLocale;
-    private String trustedToken = null;
+    private String trustedToken;
+    private Repository repository;
 
     @Override
     public Locale resolveLocale(HttpServletRequest request) {
@@ -71,7 +77,6 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
         }
         return resolveResourceLocale(uri);
     }
-
 
     public Locale resolveResourceLocale(Path uri) {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -94,7 +99,8 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
                 @Override
                 public boolean error(Path uri, Throwable error) {
                     return false;
-                }});
+                }
+            });
             if (lang.length() == 0) {
                 return this.defaultLocale;
             }
@@ -102,140 +108,42 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
             if (l != null) {
                 locale = l;
             }
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
         return locale;
     }
-    
-    /*
-    @SuppressWarnings("unchecked")
-    public Locale resolveResourceLocale(HttpServletRequest request, Path uri) {
 
-        Map<Path, Locale> localeCache = null;
-        if (request != null) {
-            localeCache = (Map<Path,Locale>) request.getAttribute(LOCALE_CACHE_REQUEST_ATTRIBUTE_NAME);
-            if (localeCache != null) {
-                Locale locale = localeCache.get(uri);
-                if (locale != null) {
-                    return locale;
-                }
-            }
-        }
-        
-        String token = this.trustedToken;
-        if (token == null) {
-            token = SecurityContext.getSecurityContext().getToken();
-        }
-        
-        Locale locale = null;
-        NearestAncestorLocale nearestAncestorLocale = null; // Used by caching mechanism
-        try {
-            Resource resource = this.repository.retrieve(token, uri, true);
-            locale = LocaleHelper.getLocale(resource.getContentLanguage());
-
-            if (locale == null && localeCache != null) {
-                // Check for parent locale in cache (we might get lucky)
-                Path parentUri = uri.getParent();
-                if (parentUri != null) {
-                    locale = localeCache.get(parentUri);
-                }
-            }
-
-            if (locale == null) {
-                // Check for the nearest ancestor that has a locale set and use it (repository lookup)
-                nearestAncestorLocale = getNearestAncestorLocale(token, resource);
-                if (nearestAncestorLocale != null){
-                    locale = nearestAncestorLocale.locale;
-                }
-            }
-            
-            if (locale == null) {
-                // If no ancestor has a locale set, use the default of the host
-            	locale = this.defaultLocale;
-                nearestAncestorLocale = new NearestAncestorLocale(locale, null); // Used by caching mechanism
-            }
-        } catch (Throwable t) { 
-            // Don't cache value if something goes terribly wrong. Just return default.
-            return this.defaultLocale;
-        }
-
-        // locale should be != null by this point
-
-        // Cache locale for given path, and trail up to locale-defining ancestor (if any)
-        if (request != null) {
-            if (localeCache == null) {
-                localeCache = new HashMap<Path,Locale>();
-                request.setAttribute(LOCALE_CACHE_REQUEST_ATTRIBUTE_NAME, localeCache);
-            }
-
-            if (nearestAncestorLocale != null) {
-                // Locale found in ancestor or host default, cache the info.
-                Path localeAncestor = nearestAncestorLocale.uri;
-                if (localeAncestor == null) {
-                    // Host default locale was selected for the current URI, cache that fact
-                    for (Path path: uri.getAncestors()) {
-                        localeCache.put(path, locale);
-                    }
-                } else {
-                    // Some ancestor had the locale set, cache up to ancestor
-                    Path ancestor = uri.getParent();
-                    int localeAncestorDepth = localeAncestor.getDepth();
-                    while (ancestor != null && ancestor.getDepth() >= localeAncestorDepth) {
-                        localeCache.put(ancestor, locale);
-                        ancestor = ancestor.getParent();
-                    }
-                }
-            }
-
-            localeCache.put(uri, locale);            
-        }
-        
-        return locale;
-    }
-    
-
-    private NearestAncestorLocale getNearestAncestorLocale(String token,
-                                            Resource resource) throws Exception {
-        Path parentUri = resource.getURI().getParent();
+    public Locale getNearestAncestorLocale(Path uri) {
+        Path parentUri = uri.getParent();
 
         Locale locale = null;
         while (parentUri != null) {
-            Resource parent = this.repository.retrieve(token, parentUri, true);
-            if (StringUtils.isNotBlank(parent.getContentLanguage())) {
-                locale = LocaleHelper.getLocale(parent.getContentLanguage());
-                break;
+            try {
+                Resource parent = repository.retrieve(this.trustedToken, parentUri, true);
+                if (StringUtils.isNotBlank(parent.getContentLanguage())) {
+                    locale = LocaleHelper.getLocale(parent.getContentLanguage());
+                    break;
+                }
+                parentUri = parentUri.getParent();
+            } catch (Exception e) {
+                return this.defaultLocale;
             }
-            parentUri = parentUri.getParent();
         }
-
-        if (locale != null) {
-            return new NearestAncestorLocale(locale, parentUri);
+        if (locale == null) {
+            locale = this.defaultLocale;
         }
-
-        return null; // No luck
+        return locale;
     }
 
-    private static class NearestAncestorLocale {
-        Locale locale;
-        Path uri;
-
-        public NearestAncestorLocale(Locale locale, Path uri) {
-            this.locale = locale;
-            this.uri = uri;
-        }
-    }
-
-    */
     public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
         throw new UnsupportedOperationException(
                 "This locale resolver does not support explicitly setting the request locale");
     }
 
-    
     /**
-     * Set the default locale that this resolver will return if
-     * the request does not contain a cookie. If the default
-     * locale is not set, the accept header locale of the client
-     * is returned.
+     * Set the default locale that this resolver will return if the request does
+     * not contain a cookie. If the default locale is not set, the accept header
+     * locale of the client is returned.
      */
     public void setDefaultLocale(Locale defaultLocale) {
         this.defaultLocale = defaultLocale;
@@ -243,6 +151,11 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
 
     public void setTrustedToken(String trustedToken) {
         this.trustedToken = trustedToken;
+    }
+
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
 }

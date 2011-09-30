@@ -31,6 +31,7 @@
 package org.vortikal.repository.store;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -40,61 +41,72 @@ import org.vortikal.util.cache.SimpleCache;
 import org.vortikal.util.cache.SimpleCacheImpl;
 
 /**
- * Wraps another <code>PrincipalMetadataDAO</code> and provides simple result caching
- * for methods {@link #getMetadata(String)} and {@link #getMetadata(Principal)}.
- *
+ * Wraps another <code>PrincipalMetadataDAO</code> and provides simple result
+ * caching for methods {@link #getMetadata(String)} and
+ * {@link #getMetadata(Principal)}.
+ * 
  */
-public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO,
-                                                InitializingBean {
+public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO, InitializingBean {
 
     private PrincipalMetadataDAO wrappedDao;
     private SimpleCache<String, CacheItem> cache;
     private int timeoutSeconds = 60;
-    
+
     public void afterPropertiesSet() throws Exception {
-        SimpleCacheImpl<String, CacheItem> cacheImpl
-                = new SimpleCacheImpl<String, CacheItem>(this.timeoutSeconds);
+        SimpleCacheImpl<String, CacheItem> cacheImpl = new SimpleCacheImpl<String, CacheItem>(this.timeoutSeconds);
         cacheImpl.setRefreshTimestampOnGet(false);
         this.cache = cacheImpl;
     }
-    
-    /* (non-Javadoc)
-     * @see org.vortikal.repository.store.PrincipalMetadataDAO#getMetadata(org.vortikal.security.Principal)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.vortikal.repository.store.PrincipalMetadataDAO#getMetadata(org.vortikal
+     * .security.Principal)
      */
-    public PrincipalMetadata getMetadata(Principal principal) {
+    public PrincipalMetadata getMetadata(Principal principal, Locale preferredLocale) {
         if (principal == null) {
             throw new IllegalArgumentException("Principal cannot be null");
         }
 
-        return getMetadata(principal.getQualifiedName());
+        return getMetadata(principal.getQualifiedName(), preferredLocale);
     }
-    
-    /* (non-Javadoc)
-     * @see org.vortikal.repository.store.PrincipalMetadataDAO#getMetadata(java.lang.String)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.vortikal.repository.store.PrincipalMetadataDAO#getMetadata(java.lang
+     * .String)
      */
-    public PrincipalMetadata getMetadata(String qualifiedName) {
+    public PrincipalMetadata getMetadata(String qualifiedName, Locale preferredLocale) {
         if (qualifiedName == null) {
             throw new IllegalArgumentException("Qualified name cannot be null");
         }
-        
-        CacheItem item = this.cache.get(qualifiedName);
+
+        String cacheKey = qualifiedName;
+        if (preferredLocale != null) {
+            cacheKey = qualifiedName.concat(preferredLocale.toString());
+        }
+        CacheItem item = this.cache.get(cacheKey);
         if (item != null) {
             return item.value;
         }
 
         // Ignore any unchecked exceptions, let them propagate to caller.
-        PrincipalMetadata result = this.wrappedDao.getMetadata(qualifiedName);
+        PrincipalMetadata result = this.wrappedDao.getMetadata(qualifiedName, preferredLocale);
 
         // Note: will also cache null-results
         // (indicates that metadata is unavailable for the principal).
-        this.cache.put(qualifiedName, new CacheItem(result));
-        
+        this.cache.put(cacheKey, new CacheItem(result));
+
         return result;
     }
-    
+
     @Override
-    public List<PrincipalMetadata> search(PrincipalSearch search) {
-        return this.wrappedDao.search(search);
+    public List<PrincipalMetadata> search(PrincipalSearch search, Locale preferredLocale) {
+        return this.wrappedDao.search(search, preferredLocale);
     }
 
     @Override
@@ -103,13 +115,19 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO,
     }
 
     @Override
-    public List<PrincipalMetadata> listPrincipalsInUnit(String areacodeOrDn) {
-        return this.wrappedDao.listPrincipalsInUnit(areacodeOrDn);
+    public List<PrincipalMetadata> listPrincipalsInUnit(String areacodeOrDn, Locale preferredLocale) {
+        return this.wrappedDao.listPrincipalsInUnit(areacodeOrDn, preferredLocale);
     }
-    
+
+    @Override
+    public List<PrincipalMetadata> listPrincipalsInUnitXX(String areacodeOrDn, Locale preferredLocale,
+            boolean considerSubUnits) {
+        return this.wrappedDao.listPrincipalsInUnitXX(areacodeOrDn, preferredLocale, considerSubUnits);
+    }
+
     private static final class CacheItem {
         PrincipalMetadata value;
-        
+
         CacheItem(PrincipalMetadata value) {
             this.value = value;
         }
@@ -121,9 +139,10 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO,
     }
 
     /**
-     * Default cache item expiry time in seconds. 
+     * Default cache item expiry time in seconds.
      * 
-     * Default value is 60. Increase if wrapped data source is slow (LDAP is NOT slow).
+     * Default value is 60. Increase if wrapped data source is slow (LDAP is NOT
+     * slow).
      */
     public void setTimeoutSeconds(int timeoutSeconds) {
         if (timeoutSeconds < 1) {

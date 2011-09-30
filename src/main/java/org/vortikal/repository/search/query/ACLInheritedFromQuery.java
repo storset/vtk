@@ -60,7 +60,6 @@ public class ACLInheritedFromQuery implements ACLQuery {
     
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
-        sb.append(";uri=").append(this.uri);
         if (this.inverted) {
             sb.append(";uri!=").append(this.uri);
         } else {

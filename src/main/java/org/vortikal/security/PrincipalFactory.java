@@ -32,6 +32,7 @@ package org.vortikal.security;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,25 +46,29 @@ import org.vortikal.security.Principal.Type;
 public class PrincipalFactory {
 
     private final Log logger = LogFactory.getLog(PrincipalFactory.class);
-    
+
     public static final String NAME_ALL = "pseudo:all";
 
-    public static Principal ALL =  new PrincipalImpl(NAME_ALL);
-    
+    public static Principal ALL = new PrincipalImpl(NAME_ALL);
+
     // This dao will only be used if configured.
     private PrincipalMetadataDAO principalMetadataDao;
 
     public Principal getPrincipal(String id, Type type) throws InvalidPrincipalException {
-        return getPrincipal(id, type, true);
+        return this.getPrincipal(id, type, true);
     }
 
-    public Principal getPrincipal(String id, Type type, boolean includeMetadata)
-        throws InvalidPrincipalException {
+    public Principal getPrincipal(String id, Type type, boolean includeMetadata) {
+        return this.getPrincipal(id, type, includeMetadata, null);
+    }
+
+    public Principal getPrincipal(String id, Type type, boolean includeMetadata, Locale preferredLocale)
+            throws InvalidPrincipalException {
 
         if (type == null) {
             throw new InvalidPrincipalException("Principal must have a type");
         }
-        
+
         if (type == Type.PSEUDO) {
             return getPseudoPrincipal(id);
         }
@@ -73,15 +78,16 @@ public class PrincipalFactory {
         }
 
         id = id.trim();
-        
+
         if (id.equals(""))
             throw new InvalidPrincipalException("Tried to get \"\" (empty string) principal");
 
         PrincipalImpl principal = new PrincipalImpl(id, type);
         if (principal.getType() == Type.USER && includeMetadata && this.principalMetadataDao != null) {
-            // Set metadata for principal if requested and we are able to fetch it
+            // Set metadata for principal if requested and we are able to fetch
+            // it
             try {
-                PrincipalMetadata metadata = this.principalMetadataDao.getMetadata(principal);
+                PrincipalMetadata metadata = this.principalMetadataDao.getMetadata(principal, preferredLocale);
                 if (metadata != null) {
                     principal.setDescription((String) metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE));
                     principal.setURL((String) metadata.getValue(PrincipalMetadata.URL_ATTRIBUTE));
@@ -93,7 +99,7 @@ public class PrincipalFactory {
                 logger.warn("Exception while fetching principal metadata", e);
             }
         }
-        
+
         return principal;
     }
 
@@ -104,7 +110,7 @@ public class PrincipalFactory {
             PrincipalSearch search = new PrincipalSearchImpl(type, filter);
 
             try {
-                List<PrincipalMetadata> results = this.principalMetadataDao.search(search);
+                List<PrincipalMetadata> results = this.principalMetadataDao.search(search, null);
                 if (results != null) {
                     retval = new ArrayList<Principal>(results.size());
                     for (PrincipalMetadata metadata : results) {
@@ -116,20 +122,22 @@ public class PrincipalFactory {
                         retval.add(principal);
                     }
                 }
-            } catch (Exception e) {} // Just keep old behaviour of not propagating
-                                     // any size limit exceeded exceptions from this method ...
-                                     // XXX remove/refactor this method or fixup client code to handle it.
+            } catch (Exception e) {
+            } // Just keep old behaviour of not propagating
+            // any size limit exceeded exceptions from this method ...
+            // XXX remove/refactor this method or fixup client code to handle
+            // it.
         }
 
         return retval;
     }
 
     private Principal getPseudoPrincipal(String name) throws InvalidPrincipalException {
-        if (NAME_ALL.equals(name)) return ALL;
-        throw new InvalidPrincipalException("Pseudo principal with name '"
-                + name + "' doesn't exist");
+        if (NAME_ALL.equals(name))
+            return ALL;
+        throw new InvalidPrincipalException("Pseudo principal with name '" + name + "' doesn't exist");
     }
-    
+
     public void setPrincipalMetadataDao(PrincipalMetadataDAO principalMetadataDao) {
         this.principalMetadataDao = principalMetadataDao;
     }

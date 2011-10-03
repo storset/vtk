@@ -335,15 +335,6 @@
 
   <bean id="decorating.eventComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/event-listing.ftl" />
-    <property name="attributesMap">
-      <map>
-        <entry key="cssURLs">
-          <list>
-            <value>${webResources.baseURL}/themes/default/view-event-component.css</value>
-          </list>
-        </entry>
-      </map>
-    </property>
   </bean>
 
   <bean id="decorating.feedComponent" class="org.vortikal.web.decorating.components.FeedComponent">

@@ -1,5 +1,3 @@
-@import url('view-event-date-icon.css');
-
 /* Event listing grid */
 
 #vrtx-main-content {
@@ -177,4 +175,9 @@
 
 .vrtx-paging-feed-wrapper {
   clear: both;
+}
+
+#vrtx-daily-events .vrtx-last-daily-event .vevent {
+  background-image: none !important;
+  margin-bottom: 0px !important;	
 }

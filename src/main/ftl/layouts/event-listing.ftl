@@ -2,12 +2,6 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
 
-<#if cssURLs?exists>
-  <#list cssURLs as cssURL>
-    <link rel="stylesheet" href="${cssURL}" />
-  </#list>
-</#if>
-
 <#if conf.includeIfEmpty>
   <#if psd?has_content>
     <div class="vrtx-event-component vrtx-event-component-psd">

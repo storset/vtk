@@ -114,7 +114,17 @@
 	  </script>
 	  
     <#elseif (!streamType?exists) && contentType == "video/x-flv" || contentType == "video/mp4">
-      <link type="text/css" rel="stylesheet" media="all" href="/vrtx/__vrtx/static-resources/themes/default/view-mediaplayer.css" />
+      <style type="text/css">
+        .vrtx-media-player-no-flash, .vrtx-media-player-no-flash img { width: 507px; height: 282px; }
+        .vrtx-media-player-no-flash { background-color: #000000; position: relative; }
+        .vrtx-media-player-no-flash .playbutton { 
+          position: absolute; /* take out of flow */ top: 90px; left: 195px; width: 115px; height: 106px; display: block;
+        }
+        .vrtx-media-player-no-flash .playbutton,.vrtx-media-player-no-flash .playbutton:visited,.vrtx-media-player-no-flash .playbutton:active {
+          background: url('icons/video-playbutton.png') no-repeat center center;
+        }
+        .vrtx-media-player-no-flash .playbutton:hover { background-image: url('icons/video-playbutton-hover.png'); }
+      </style>
 	  <div id="mediaspiller-${dateStr}" class="vrtx-media-player-no-flash">
 	    <img src="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png</#if>" alt="poster image" />
 	    <a class="playbutton" href="${media?html}"></a>

@@ -713,7 +713,7 @@ ul.dropdown-shortcut-menu li.first {
 ul.dropdown-shortcut-menu li.first #dropdown-shortcut-menu-click-area {
   display: block;
   width: 26px;
-  height: 22px;
+  height: 28px;
   position: absolute;
   right: -4px;
   top: 0;

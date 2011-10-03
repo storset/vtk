@@ -2,12 +2,6 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
 
-<#if cssURLs?exists>
-  <#list cssURLs as cssURL>
-    <link rel="stylesheet" href="${cssURL}" />
-  </#list>
-</#if>
-
 <#if conf.includeIfEmpty>
   <#if psd?has_content>
     <div class="vrtx-event-component vrtx-event-component-psd">
@@ -62,9 +56,9 @@
           <#local tomorrowLocalized = vrtx.getMsg("eventListing.calendar.tomorrow", "tomorrow") />
 
           <#if (vrtx.parseInt(currentDay) == vrtx.parseInt(todayDay)) && (vrtx.parseInt(currentMonth) == vrtx.parseInt(todayMonth)) >
-            <span class="vrtx-daily-events-date-day" id="vrtx-daily-events-date-today">${todayLocalized}</span>
+            <span class="vrtx-daily-events-date-day vrtx-daily-events-date-today">${todayLocalized}</span>
           <#elseif (vrtx.parseInt(currentDay) == vrtx.parseInt(tomorrowDay)) && (vrtx.parseInt(currentMonth) == vrtx.parseInt(tomorrowMonth)) > 
-            <span class="vrtx-daily-events-date-day" id="vrtx-daily-events-date-tomorrow">${tomorrowLocalized}</span>
+            <span class="vrtx-daily-events-date-day vrtx-daily-events-date-tomorrow">${tomorrowLocalized}</span>
           <#else>
             <span class="vrtx-daily-events-date-day">${currentDay}</span>
           </#if>

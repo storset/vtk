@@ -3,12 +3,6 @@
 <#import "/lib/gallery.ftl" as gallery />
 
 <#if !excludeScripts?exists>
-  <#if cssURLs?exists>
-    <#list cssURLs as cssURL>
-      <link rel="stylesheet" href="${cssURL}" />
-    </#list>
-  </#if>
-
   <#if jsURLs?exists && type == 'gallery'>
     <#list jsURLs as jsURL>
       <script type="text/javascript" src="${jsURL}"></script>

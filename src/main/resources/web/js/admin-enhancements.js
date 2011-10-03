@@ -1412,7 +1412,7 @@ function addFormField(value, removeName, browsName, editorBase, baseFolder, edit
     var deleteRow = "";
   } else {
     var deleteRow = "<div class=\"vrtx-button\"><button type='button' id='" + idstr
-                  + "remove' onClick='removeFormField(\"#" + idstr + "row-" + countId + "\"); return false;'>" 
+                  + "remove' onclick='removeFormField(\"#" + idstr + "row-" + countId + "\"); return false;'>" 
                   + removeName + "</button></div>";
   }
 

@@ -25,9 +25,9 @@
         <#if addPageTitle != "">
           <#assign href = href + "&amp;pagetitle=" + addPageTitle?url('UTF-8') />
         </#if>
-        <a class="feedback" href="${href}" onClick="javascript:popup('${href}'); return false">
+        <a class="feedback" href="${href}" onclick="javascript:popup('${href}'); return false">
       <#else>
-        <a class="feedback" href="${link?html}" onClick="javascript:popup('${link?html}'); return false">
+        <a class="feedback" href="${link?html}" onclick="javascript:popup('${link?html}'); return false">
       </#if>
           <@vrtx.msg code="feedback.title" default="Give feedback" />
         </a>

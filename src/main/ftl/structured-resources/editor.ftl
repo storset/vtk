@@ -75,13 +75,13 @@
     <#include "/system/help.ftl" />
       <a class="help-link" href="${form.listComponentServiceURL?html}" target="new_window"><@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" /></a>
       <div class="vrtx-button">
-      <input type="button" onClick="$('#updateViewAction').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
+      <input type="button" onclick="$('#updateViewAction').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
     </div>
     <div class="vrtx-focus-button">
-      <input type="button" onClick="$('#updateAction').click()"  value="${vrtx.getMsg("editor.save")}" />
+      <input type="button" onclick="$('#updateAction').click()"  value="${vrtx.getMsg("editor.save")}" />
     </div>
     <div class="vrtx-button">
-      <input type="button" onClick="$('#cancelAction').click()"  value="${vrtx.getMsg("editor.cancel")}" />
+      <input type="button" onclick="$('#cancelAction').click()"  value="${vrtx.getMsg("editor.cancel")}" />
     </div>
   </div>  
 
@@ -116,13 +116,13 @@
     
     <div class="submit submitButtons">
       <div class="vrtx-button">
-        <input type="submit" id="updateViewAction" onClick="performSave();" name="updateViewAction" value="${vrtx.getMsg("editor.saveAndView")}" />
+        <input type="submit" id="updateViewAction" onclick="performSave();" name="updateViewAction" value="${vrtx.getMsg("editor.saveAndView")}" />
       </div>
       <div class="vrtx-focus-button">
-        <input type="submit" id="updateAction" onClick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
+        <input type="submit" id="updateAction" onclick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">
-        <input type="submit" onClick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
+        <input type="submit" onclick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
       </div>
     </div>
   </form>

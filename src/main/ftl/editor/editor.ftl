@@ -95,13 +95,13 @@
 	  <div class="submitButtons submit-extra-buttons">
 	  	<#include "/system/help.ftl" />
 	  	<div class="vrtx-button">
-		  <input type="button" onClick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
+		  <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
 		</div>
 		<div class="vrtx-focus-button">
-		  <input type="button" onClick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
+		  <input type="button" onclick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
 		</div>
 		<div class="vrtx-button">
-		  <input type="button" onClick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
+		  <input type="button" onclick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
 		</div>
 	  </div>
     <form action="" method="post" id="editor">
@@ -129,13 +129,13 @@
 
       <div id="submit" class="submitButtons save-cancel">
         <div class="vrtx-button">
-          <input type="submit" id="saveAndViewButton" onClick="formatFeaturedArticlesData();performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
+          <input type="submit" id="saveAndViewButton" onclick="formatFeaturedArticlesData();performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
         </div>
         <div class="vrtx-focus-button">
-          <input type="submit" id="saveButton" onClick="formatFeaturedArticlesData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
+          <input type="submit" id="saveButton" onclick="formatFeaturedArticlesData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
         </div>
         <div class="vrtx-button">
-          <input type="submit" id="cancel" onClick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
+          <input type="submit" id="cancel" onclick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
         </div>
       </div>
 

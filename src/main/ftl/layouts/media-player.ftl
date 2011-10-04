@@ -115,7 +115,7 @@
 	  
     <#elseif (!streamType?exists) && contentType == "video/x-flv" || contentType == "video/mp4">
       <style type="text/css">
-        .vrtx-media-player-no-flash, .vrtx-media-player-no-flash img { width: 507px; height: 282px; }
+        .vrtx-media-player-no-flash, .vrtx-media-player-no-flash img { width: 507px; height: 282px; float: left; }
         .vrtx-media-player-no-flash { background-color: #000000; position: relative; }
         .vrtx-media-player-no-flash .playbutton { 
           position: absolute; /* take out of flow */ top: 90px; left: 195px; width: 115px; height: 106px; display: block;

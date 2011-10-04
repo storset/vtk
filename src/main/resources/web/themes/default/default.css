@@ -64,13 +64,16 @@ h2 {
 h3 {
   font-size: 1.538em;
   font-weight: normal;
-  margin: 10px 0 8px 0;
 }
 
 h4 {
   font-size: 1em;
   font-weight: bold;
-  margin: 10px 0 8px 0;
+}
+
+h3,
+h4 { 
+  margin: 10px 0 8px 0; 
 }
 
 p {
@@ -103,8 +106,7 @@ table {
 }
 
 a {
-  /* color: #0b5a9d; */
-  color: #005aab;
+  color: #005aab; /* color: #0b5a9d; */
   text-decoration: none;
 }
 
@@ -195,28 +197,31 @@ a:hover {
   margin: 1px 0 0 0;
 }
 
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span a,
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active,
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span span.vrtx-breadcrumb-delimiter {
+  float: left;
+  display: block;
+}
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span a,
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active {
+  height: 25px;
+}
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span a {
   color: #363534;
   text-decoration: none;
-  display: block;
-  float: left;
-  height: 25px;
   padding: 5px 11px 0 11px;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active {
-  display: block;
-  float: left;
-  height: 25px;
   padding: 5px 21px 0 11px;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span span.vrtx-breadcrumb-delimiter {
   background: url(images/app-head-breadcrumb-delimiter.png) no-repeat right bottom;
   height: 30px;
-  display: block;
-  float: left;
   width: 10px;
   margin: 0 0 0 0;
   overflow: hidden;
@@ -591,7 +596,7 @@ div.localeSelection.js-on .localeSelectionHeader {
 
 /* ^ Language menu */
 
-/* Global menu */
+/* Resource menus */
 
 .iframe-fullscreen {
   position: fixed;
@@ -784,10 +789,6 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 /* Button in dropdown menu */
 
-/* ^ Global menu */
-
-/* Resource menus */
-
 ul.list-menu.resourceMenuRight {
   float: left;
   min-height: 86px;
@@ -918,10 +919,6 @@ ul.list-menu.resourceMenuRight p span,
   text-align: left !important;
 }
 
-#TB_closeAjaxWindow.create-tree-close-window {
-  display: block;
-}
-
 #TB_closeAjaxWindow a {
   background: url(images/thickbox-close.png) no-repeat center center;
   overflow: hidden;
@@ -936,6 +933,10 @@ ul.list-menu.resourceMenuRight p span,
 }
 
 /* ^ Thickbox mod */
+
+#TB_closeAjaxWindow.create-tree-close-window {
+  display: block;
+}
 
 .vrtx-create-tree .tree-create {
   position: absolute;
@@ -969,13 +970,6 @@ ul.list-menu.resourceMenuRight p span,
   background: url(images/tree-collapse.gif) no-repeat 0 0 !important;
   margin-top: 9px;
 }
-
-/*
-.vrtx-create-tree a.tree-link,
-.filetree span.folder,
-.filetree span.file { 
-  z-index: 9999999; 
-}*/
 
 .tip.vrtx-create-tree {
   /*
@@ -1169,162 +1163,155 @@ ul.list-menu.tabMenu2 li.deleteResourcePermanentService a {
 
 /* 3.5 Directorylisting */
 
-#vrtx-manage-collectionlisting #app-content #main #contents,
-#vrtx-trash-can #app-content #main #contents,
-#vrtx-report-documents #app-content #main #contents .vrtx-report {
+#vrtx-manage-collectionlisting #contents,
+#vrtx-trash-can #contents,
+#vrtx-report-documents #contents .vrtx-report {
   padding: 5px 0 0 0;
   border: 1px solid #d9d9d9;
 }
 
-#vrtx-report-documents #app-content #main #contents .vrtx-report {
+#vrtx-report-documents #contents .vrtx-report {
   margin-top: 15px;
 }
 
-#vrtx-report #app-content #main #contents {
+#vrtx-report #contents {
   position: relative;
 }
 
-/*
-#vrtx-manage-collectionlisting #app-content #main,
-#vrtx-trash-can #app-content #main,
-#vrtx-report-documents #app-content #main {
-  padding-bottom: 34px;
-} */
-
-#app-content #main #contents #directory-listing {
+#directory-listing {
   width: 100%;
 }
 
-#app-content #main #contents #directory-listing tr td {
+#directory-listing tr td {
   font-size: 1.15em;
   border-top: 1px solid #f0f0f0;
   padding: 5px 15px 4px 0;
 }
 
-#app-content #main #contents #directory-listing tr.first td {
+#directory-listing tr.first td {
   border-top: none;
   padding-top: 8px;
 }
 
-#app-content #main #contents #directory-listing tr th {
+#directory-listing tr th {
   background: url(images/line-dotted.gif) repeat-x bottom left;
   padding: 0 15px 8px 0;
   text-align: left;
   white-space: nowrap;  
 }
 
-#app-content #main #contents #directory-listing .checkbox {
+#directory-listing .checkbox {
   padding-right: 30px;
 }
 
-#app-content #main #contents #directory-listing th.permissions,
-#app-content #main #contents #directory-listing th.resource-type,
-#app-content #main #contents #directory-listing th#vrtx-trash-can\.deletedBy {
+#directory-listing th.permissions,
+#directory-listing th.resource-type,
+#directory-listing th#vrtx-trash-can\.deletedBy {
   width: 10%;
 }
 
-#app-content #main #contents #directory-listing th.last-modified,
-#app-content #main #contents #directory-listing th#vrtx-trash-can\.deletedTime,
-#app-content #main #contents #directory-listing th#vrtx-report-last-modified,
-#app-content #main #contents #directory-listing th#vrtx-report-modified-by,
-#app-content #main #contents #directory-listing th#vrtx-report-permission-set,
-#app-content #main #contents #directory-listing th#vrtx-report-permissions,
-#app-content #main #contents #directory-listing th#vrtx-report-published {
+#directory-listing th.last-modified,
+#directory-listing th#vrtx-trash-can\.deletedTime,
+#directory-listing th#vrtx-report-last-modified,
+#directory-listing th#vrtx-report-modified-by,
+#directory-listing th#vrtx-report-permission-set,
+#directory-listing th#vrtx-report-permissions,
+#directory-listing th#vrtx-report-published {
   width: 1%;
 }
 
-#app-content #main #contents #directory-listing td.permissions,
-#app-content #main #contents #directory-listing td.resource-type,
-#app-content #main #contents #directory-listing td.last-modified,
-#app-content #main #contents #directory-listing td.vrtx-trash-can-deleted-by,
-#app-content #main #contents #directory-listing td.vrtx-trash-can-deleted-time,
-#app-content #main #contents #directory-listing td.vrtx-report-last-modified,
-#app-content #main #contents #directory-listing td.vrtx-report-last-modified-by,
-#app-content #main #contents #directory-listing td.vrtx-report-permission-set,
-#app-content #main #contents #directory-listing td.vrtx-report-permissions,
-#app-content #main #contents #directory-listing td.vrtx-report-published {
+#directory-listing td.permissions,
+#directory-listing td.resource-type,
+#directory-listing td.last-modified,
+#directory-listing td.vrtx-trash-can-deleted-by,
+#directory-listing td.vrtx-trash-can-deleted-time,
+#directory-listing td.vrtx-report-last-modified,
+#directory-listing td.vrtx-report-last-modified-by,
+#directory-listing td.vrtx-report-permission-set,
+#directory-listing td.vrtx-report-permissions,
+#directory-listing td.vrtx-report-published {
   white-space: nowrap;
 }
 
-#app-content #main #contents #directory-listing th.name,
-#app-content #main #contents #directory-listing td.name,
-#app-content #main #contents #directory-listing th#vrtx-trash-can\.name,
-#app-content #main #contents #directory-listing td.vrtx-trash-can-name,
-body#vrtx-report-documents #app-content #main #contents #directory-listing th#vrtx-report-name,
-body#vrtx-report-documents #app-content #main #contents #directory-listing td.vrtx-report-name {
+#directory-listing th.name,
+#directory-listing td.name,
+#directory-listing th#vrtx-trash-can\.name,
+#directory-listing td.vrtx-trash-can-name,
+body#vrtx-report-documents #directory-listing th#vrtx-report-name,
+body#vrtx-report-documents #directory-listing td.vrtx-report-name {
   padding-left: 15px;
   width: 40%;
 }
 
-#app-content #main #contents #directory-listing td.name span.name-split,
-#app-content #main #contents #directory-listing td.vrtx-trash-can-name span.name-split,
-body#vrtx-report-documents #app-content #main #contents #directory-listing td.vrtx-report-name span.name-split {
+#directory-listing td.name span.name-split,
+#directory-listing td.vrtx-trash-can-name span.name-split,
+body#vrtx-report-documents #directory-listing td.vrtx-report-name span.name-split {
   display: block;
 }
 
-#app-content #main #contents #directory-listing th.last-modified,
-#app-content #main #contents #directory-listing td.last-modified,
-#app-content #main #contents #directory-listing th#vrtx-trash-can\.deletedTime,
-#app-content #main #contents #directory-listing td.vrtx-trash-can\.deletedTime,
-#app-content #main #contents #directory-listing th#vrtx-report-published,
-#app-content #main #contents #directory-listing td.vrtx-report-published {
+#directory-listing th.last-modified,
+#directory-listing td.last-modified,
+#directory-listing th#vrtx-trash-can\.deletedTime,
+#directory-listing td.vrtx-trash-can\.deletedTime,
+#directory-listing th#vrtx-report-published,
+#directory-listing td.vrtx-report-published {
   padding-right: 15px;
 }
 
-#app-content #main #contents #directory-listing tr.even td {
+#directory-listing tr.even td {
   background-color: #f9f9f9;
 }
 
-#app-content #main #contents #directory-listing tr:hover td,
-#app-content #main #contents #directory-listing tr.hover td {
+#directory-listing tr:hover td,
+#directory-listing tr.hover td {
   background-color: #ecf3f9;
   border-top: 1px solid #c7dadf;
   border-bottom: 1px solid #c7dadf;
 }
 
-#app-content #main #contents #directory-listing tr#trash-can-empty:hover td,
-#app-content #main #contents #directory-listing tr#trash-can-empty.hover td,
-#app-content #main #contents #directory-listing tr#collectionlisting-empty:hover td,
-#app-content #main #contents #directory-listing tr#collectionlisting-empty.hover td {
+#directory-listing tr#trash-can-empty:hover td,
+#directory-listing tr#trash-can-empty.hover td,
+#directory-listing tr#collectionlisting-empty:hover td,
+#directory-listing tr#collectionlisting-empty.hover td {
   background: none;
 }
 
-#app-content #main #contents #directory-listing tr.first:hover td,
-#app-content #main #contents #directory-listing tr.first.hover td {
+#directory-listing tr.first:hover td,
+#directory-listing tr.first.hover td {
   border-top: none;
 }
 
-#app-content #main #contents #directory-listing tr.last:hover td,
-#app-content #main #contents #directory-listing tr.last.hover td {
+#directory-listing tr.last:hover td,
+#directory-listing tr.last.hover td {
   border-bottom: none;
 }
 
-#app-content #main #contents #directory-listing tr.checked {
+#directory-listing tr.checked {
   background-color: #eaeaea;
 }
 
-#app-content #main #contents #directory-listing tr.checked td {
+#directory-listing tr.checked td {
   background-color: #eaeaea;
   border-top: 1px solid #d9d9d9;
   border-bottom: 1px solid #d9d9d9;
 }
 
-#app-content #main #contents #directory-listing tr.checked.first td {
+#directory-listing tr.checked.first td {
   border-top: none;
 }
 
-#app-content #main #contents #directory-listing tr.checked.last td {
+#directory-listing tr.checked.last td {
   border-bottom: none;
 }
 
-#app-content #main #contents #directory-listing td span.allowed-for-all,
+#directory-listing td span.allowed-for-all,
 .resourceMenuRight span.allowed-for-all,
 .resourceMenuRight span.published,
 #publishing-status span.published {
   color: #549401;
 }
 
-#app-content #main #contents #directory-listing td span.restricted,
+#directory-listing td span.restricted,
 .resourceMenuRight span.restricted,
 .resourceMenuRight span.unpublished,
 #publishing-status span.unpublished {
@@ -1339,71 +1326,71 @@ body#vrtx-report-documents #app-content #main #contents #directory-listing td.vr
 
 /* Icons */
 
-#app-content #main #contents #directory-listing tr td.name a,
-#app-content #main #contents #directory-listing tr td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents #directory-listing tr td.vrtx-report-name a {
+#directory-listing tr td.name a,
+#directory-listing tr td.name span.vrtx-trash-can-name-text,
+#directory-listing tr td.vrtx-report-name a {
   padding: 2px 0 2px 31px;
   display: block;
   background: url(images/file-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents #directory-listing tr.true td.name a,
-#app-content #main #contents #directory-listing tr.true td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents #directory-listing tr.true td.vrtx-report-name a {
+#directory-listing tr.true td.name a,
+#directory-listing tr.true td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.true td.vrtx-report-name a {
   background: url(images/folder-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents #directory-listing tr.binary td.name a,
-#app-content #main #contents #directory-listing tr.binary td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents #directory-listing tr.binary td.vrtx-report-name a {
+#directory-listing tr.binary td.name a,
+#directory-listing tr.binary td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.binary td.vrtx-report-name a {
   background: url(images/file-binary-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents #directory-listing tr.doc td.name a,
-#app-content #main #contents #directory-listing tr.doc td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents #directory-listing tr.doc td.vrtx-report-name a {
+#directory-listing tr.doc td.name a,
+#directory-listing tr.doc td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.doc td.vrtx-report-name a {
   background: url(images/file-word-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents #directory-listing tr.pdf td.name a,
-#app-content #main #contents #directory-listing tr.pdf td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents #directory-listing tr.pdf td.vrtx-report-name a {
+#directory-listing tr.pdf td.name a,
+#directory-listing tr.pdf td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.pdf td.vrtx-report-name a {
   background: url(images/file-pdf-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents #directory-listing tr.xls td.name a,
-#app-content #main #contents #directory-listing tr.xls td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents #directory-listing tr.xls td.vrtx-report-name a {
+#directory-listing tr.xls td.name a,
+#directory-listing tr.xls td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.xls td.vrtx-report-name a {
   background: url(images/file-xls-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents #directory-listing tr.text td.name a,
-#app-content #main #contents #directory-listing tr.text td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents #directory-listing tr.text td.vrtx-report-name a {
+#directory-listing tr.text td.name a,
+#directory-listing tr.text td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.text td.vrtx-report-name a {
   background: url(images/file-txt-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents #directory-listing tr.ppt td.name a,
-#app-content #main #contents #directory-listing tr.ppt td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents #directory-listing tr.ppt td.vrtx-report-name a {
+#directory-listing tr.ppt td.name a,
+#directory-listing tr.ppt td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.ppt td.vrtx-report-name a {
   background: url(images/file-ppt-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents #directory-listing tr.image td.name a,
-#app-content #main #contents #directory-listing tr.image td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents #directory-listing tr.image td.vrtx-report-name a {
+#directory-listing tr.image td.name a,
+#directory-listing tr.image td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.image td.vrtx-report-name a {
   background: url(images/file-image-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents #directory-listing tr.audio td.name a,
-#app-content #main #contents #directory-listing tr.audio td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents #directory-listing tr.audio td.vrtx-report-name a {
+#directory-listing tr.audio td.name a,
+#directory-listing tr.audio td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.audio td.vrtx-report-name a {
   background: url(images/file-audio-small.gif) no-repeat center left;
 }
 
-#app-content #main #contents #directory-listing tr.video td.name a,
-#app-content #main #contents #directory-listing tr.video td.name span.vrtx-trash-can-name-text,
-#app-content #main #contents #directory-listing tr.video td.vrtx-report-name a {
+#directory-listing tr.video td.name a,
+#directory-listing tr.video td.name span.vrtx-trash-can-name-text,
+#directory-listing tr.video td.vrtx-report-name a {
   background: url(images/file-video-small.gif) no-repeat center left;
 }
 
@@ -1413,21 +1400,21 @@ body#vrtx-report-documents #app-content #main #contents #directory-listing td.vr
 
 /* 3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile  */
 
-body#vrtx-preview #app-content #main #contents {
+body#vrtx-preview #app-content #contents {
   border: 1px solid #d9d9d9;
 }
 
-body#vrtx-preview #app-content #main #contents .previewUnavailable {
+body#vrtx-preview #app-content #contents .previewUnavailable {
   margin: 10px 14px;
 }
 
-body#vrtx-trash-can #app-content #main #contents #trash-can-empty,
-body#vrtx-manage-collectionlisting #app-content #main #contents #collectionlisting-empty {
+body#vrtx-trash-can #trash-can-empty,
+body#vrtx-manage-collectionlisting #collectionlisting-empty {
   text-align: center;
 }
 
-body#vrtx-trash-can #app-content #main #contents #trash-can-empty td,
-body#vrtx-manage-collectionlisting #app-content #main #contents #collectionlisting-empty td {
+body#vrtx-trash-can #contents #trash-can-empty td,
+body#vrtx-manage-collectionlisting#contents #collectionlisting-empty td {
   padding: 25px 0 30px 0;
 }
 

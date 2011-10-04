@@ -178,8 +178,8 @@ public final class MenuGenerator {
         int itemsPerResultSet = Math.round((float) allItemsSize / (float) resultSets);
         int remainder = allItemsSize % itemsPerResultSet;
         int limit = allItemsSize / itemsPerResultSet;
-
-        for (int i = 0; i < limit; i++) {
+        
+        for (int i = 0; i <= limit; i++) {
             int startIdx = i * itemsPerResultSet;
             int endIdx = startIdx + itemsPerResultSet;
             if (endIdx > allItemsSize) {
@@ -187,6 +187,10 @@ public final class MenuGenerator {
             }
 
             List<MenuItem<PropertySet>> subList = allItems.subList(startIdx, endIdx);
+            if(subList.isEmpty()) {    
+                continue;
+            }
+                
             ListMenu<PropertySet> m = new ListMenu<PropertySet>();
             m.setComparator(new ListMenuComparator(menuRequest.getLocale(), this.importancePropDef,
                     this.navigationTitlePropDef, menuRequest.isAscendingSort(), menuRequest.isSortByName(), menuRequest

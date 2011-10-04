@@ -48,7 +48,6 @@
     <property name="mailExecutor" ref="feedback.mailExecutor" />
     <property name="mailTemplateProvider" ref="feedback.mailTemplateProvider" />
     <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
-    <property name="emailTo" value="oyvind.hatland@usit.uio.no" />
     <property name="emailFrom" value="noreply@usit.uio.no" />  
   </bean>
 
@@ -60,10 +59,16 @@
     <property name="concurrencyLimit" value="${emailAFriend.concurrencyLimit}" />
   </bean>
 
-  <bean id="decorating.feedbackURLComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+  <bean id="decorating.feedbackURLComponent" class="org.vortikal.web.decorating.components.FeedbackComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="feedback" />
-    <property name="description" value="Inserts a URL to send-feedback service" />
+    <property name="description" value="Component for sending feedback" />
+    <property name="parameterDescriptions">
+      <map>
+        <!-- <entry key="type" value="'Like' a page instead of sending feedback" /> -->
+        <entry key="mail-to" value="Specify who will receive feedback mail. Default is tilbakemelding@admin.uio.no" />
+      </map>
+    </property>
     <property name="view" ref="decorating.feedbackURLComponent.view" />
   </bean>
 

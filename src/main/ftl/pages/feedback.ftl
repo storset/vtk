@@ -111,6 +111,10 @@
          <input type="hidden" name="pagetitle" value="${pagetitle}" />
        </#if>
        
+       <#if mailto?has_content>
+         <input type="hidden" name="mailto" value="${mailto}" />
+       </#if>
+       
        <input type="submit" class="submit-email-form" value="Send" name="submit"/>
     </form>
        

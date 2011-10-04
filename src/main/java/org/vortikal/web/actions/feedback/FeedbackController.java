@@ -65,7 +65,6 @@ public class FeedbackController implements Controller {
     private LocaleResolver localeResolver;
     private Service viewService;
 
-    private String emailTo;
     private String emailFrom;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -91,6 +90,11 @@ public class FeedbackController implements Controller {
         String title = resource.getTitle();
         String url = this.viewService.constructURL(uri).toString();
         
+        String mailTo = request.getParameter("mailto");
+        if (!StringUtils.isBlank(mailTo)) {
+            model.put("mailto", mailTo);
+        }
+        
         // Override if parameters are set
         String fullUrl = request.getParameter("fullurl");
         String pageTitle = request.getParameter("pagetitle"); 
@@ -111,7 +115,7 @@ public class FeedbackController implements Controller {
                 model.put("tipResponse", "FAILURE-NULL-FORM");
             } else {
                 try {
-                    String[] emailMultipleTo = emailTo.split(",");
+                    String[] emailMultipleTo = mailTo.split(",");
                     if (MailHelper.isValidEmail(emailMultipleTo) && MailHelper.isValidEmail(emailFrom)) {
 
                         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
@@ -125,7 +129,7 @@ public class FeedbackController implements Controller {
 
                         mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
 
-                        model.put("emailSentTo", emailTo);
+                        model.put("emailSentTo", mailTo);
                         model.put("tipResponse", "OK");
                     } else {
                         if (!StringUtils.isBlank(yourComment)) {
@@ -190,12 +194,6 @@ public class FeedbackController implements Controller {
     @Required
     public void setSiteName(String siteName) {
         this.siteName = siteName;
-    }
-
-
-    @Required
-    public void setEmailTo(String emailTo) {
-        this.emailTo = emailTo;
     }
 
 

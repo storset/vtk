@@ -8,11 +8,11 @@
 
 <#import "/lib/vortikal.ftl" as vrtx/>
 
-<#if emailLink?exists && emailLink.url?exists>
-  <@genFeedback emailLink.url url />
+<#if emailLink?exists && emailLink.url?exists && mailTo?exists>
+  <@genFeedback emailLink.url url mailTo />
 </#if>
 
-<#macro genFeedback link jsUrl addFullUrl="" addPageTitle="">
+<#macro genFeedback link jsUrl emailTo="" addFullUrl="" addPageTitle="">
   <!-- begin feedback js -->
   <script type="text/javascript" src="${jsUrl?html}"></script>
   <!-- end feedback js -->
@@ -21,12 +21,18 @@
     <span class="vrtx-feedback-title">
       <span class="feedback-title"><@vrtx.msg code="feedback.could-not-find" default="Did you find what you were looking for?" /></span>
       <#if addFullUrl != "">
-       <#assign href = link?html + "&amp;fullurl=" + addFullUrl?url('UTF-8') />
+       <#local link = link?html + "&amp;fullurl=" + addFullUrl?url('UTF-8') />
         <#if addPageTitle != "">
-          <#assign href = href + "&amp;pagetitle=" + addPageTitle?url('UTF-8') />
+          <#local link = link + "&amp;pagetitle=" + addPageTitle?url('UTF-8') />
         </#if>
-        <a class="feedback" href="${href}" onclick="javascript:popup('${href}'); return false">
+        <#if emailTo != "">
+          <#local link = link + "&amp;mailto=" + emailTo?url('UTF-8') />
+        </#if>
+        <a class="feedback" href="${link}" onclick="javascript:popup('${link}'); return false">
       <#else>
+        <#if emailTo != "">
+          <#local link = link + "&amp;mailto=" + emailTo?url('UTF-8') />
+        </#if>
         <a class="feedback" href="${link?html}" onclick="javascript:popup('${link?html}'); return false">
       </#if>
           <@vrtx.msg code="feedback.title" default="Give feedback" />

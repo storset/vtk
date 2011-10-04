@@ -989,7 +989,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 /* 3.3 Tabs */
 
-div.tabs {
+#app-tabs {
   margin: 1px 0 0 0;
   padding: 0;
   position: relative;
@@ -999,7 +999,7 @@ div.tabs {
   height: 34px;
 }
 
-div.tabs ul {
+#app-tabs ul {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1011,7 +1011,7 @@ div.tabs ul {
   border-left: 1px solid #d8d8d8;
 }
 
-div.tabs ul li {
+#app-tabs ul li {
   margin: 0;
   padding: 0;
   display: block;
@@ -1019,8 +1019,8 @@ div.tabs ul li {
   float: left;
 }
 
-div.tabs ul li a,
-div.tabs ul li.current a {
+#app-tabs ul li a,
+#app-tabs ul li.current a {
   line-height: 1.25em;
   display: block;
   float: left;
@@ -1033,14 +1033,14 @@ div.tabs ul li.current a {
   color: #363534;    
 }
 
-div.tabs ul li a {
+#app-tabs ul li a {
   border: 1px solid #d8d8d8;
   border-left: none;
 }
 
 /* Override this class to get different colors and size on a specific tab */
 
-div.tabs ul li a:hover {
+#app-tabs ul li a:hover {
   background: #4a9ce2;
   color: #fff;
   border-color: #4a9ce2; 
@@ -1049,14 +1049,14 @@ div.tabs ul li a:hover {
   padding-left: 20px;
 }
 
-div.tabs ul li.activeTab a:hover {
+#app-tabs ul li.activeTab a:hover {
   border-color: #d8d8d8;
   margin-left: 0px;
   padding-left: 19px;
 }
 
-div.tabs ul li.activeTab a,
-div.tabs ul li.activeTab a:hover {
+#app-tabs ul li.activeTab a,
+#app-tabs ul li.activeTab a:hover {
   background: #fff;
   color: #363534;
   border-bottom: 1px solid #fff;
@@ -1077,12 +1077,12 @@ div.tabs ul li.activeTab a:hover {
 
 /* Tab Menu 1 (left) */
 
-ul.list-menu#tabMenu1,
-ul.list-menu#tabMenu1 li {
+#tabMenu1,
+#tabMenu1 li {
   float: left;
 }
 
-ul.list-menu#tabMenu1 li.navigateToParentService a {
+#tabMenu1 a#navigateToParentService {
   display: block;
   background: url(images/tab-menu-navigate-up.png) no-repeat center left;
   padding: 5px 0 5px 28px;

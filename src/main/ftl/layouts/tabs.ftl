@@ -12,7 +12,7 @@
 <#if !tabs?exists>
   <#stop "Unable to render model: required submodel 'tabs' missing">
 </#if>
-<div class="tabs">
+<div id="app-tabs">
 <ul class="${tabs.label}">
   <#list tabs.items as tab>
     <#if tab.url?exists>

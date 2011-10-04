@@ -4,8 +4,8 @@
  *
  */
 
-ul.list-menu#resourceMenuLeft,
-ul.list-menu#resourceMenuRight {
+#resourceMenuLeft,
+#resourceMenuRight {
   position: relative;
 }
 

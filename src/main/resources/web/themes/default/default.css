@@ -527,14 +527,8 @@ a:hover {
 
 /* ^ Icons */
 
-ul.list-menu#resourceMenuLeft,
-ul.list-menu#resourceMenuLeft li,
-ul.list-menu#resourceMenuRight,
-ul.list-menu#resourceMenuRight li,
-ul.list-menu#tabMenu1,
-ul.list-menu#tabMenu1 li,
-ul.list-menu#tabMenu2,
-ul.list-menu#tabMenu2 li,
+ul.list-menu,
+ul.list-menu li,
 .global-menu ul,
 .global-menu ul li,
 ul.manage-create,
@@ -604,13 +598,13 @@ ul.manage-create li,
   left: 0px;
 }
 
-ul.list-menu#resourceMenuLeft {
+#resourceMenuLeft {
   margin: -50px 0 20px 0;
   clear: left;
   float: left;
 }
 
-ul.list-menu#resourceMenuLeft li {
+#resourceMenuLeft li {
   background: url(images/dropdown-left.gif) no-repeat -5px 0;
   display: inline-block;
   height: 27px;
@@ -620,13 +614,13 @@ ul.list-menu#resourceMenuLeft li {
 }
 
 ul.dropdown-shortcut-menu li.first,
-ul.list-menu#resourceMenuLeft li.first {
+#resourceMenuLeft li.first {
   background-position: 0 0;
   margin: 0 0 0 0;
 }
 
 ul.dropdown-shortcut-menu li a,
-ul.list-menu#resourceMenuLeft li a {
+#resourceMenuLeft li a {
   color: #363534;
   background: url(images/button-open-right.png) no-repeat top right;
   display: inline-block;
@@ -635,23 +629,23 @@ ul.list-menu#resourceMenuLeft li a {
   margin: 0 -5px 0 0;
 }
 
-ul.list-menu#resourceMenuLeft li.last a {
+#resourceMenuLeft li.last a {
   background: url(images/button-closed-right.gif) no-repeat top right;
 }
 
-ul.list-menu#resourceMenuLeft li:hover {
+#resourceMenuLeft li:hover {
   background-image: url(images/dropdown-left-rollover.gif);
   margin-right: -5px;
 }
 
-ul.list-menu#resourceMenuLeft li:hover a {
+#resourceMenuLeft li:hover a {
   background: none;
   color: #fff;
   text-decoration: none;
   margin: 0px;
 }
 
-ul.list-menu#resourceMenuLeft li.last:hover a {
+#resourceMenuLeft li.last:hover a {
   background: url(images/button-closed-right-rollover.gif) no-repeat top right;
   margin: 0 -5px 0 0;
 }
@@ -789,13 +783,13 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 /* Button in dropdown menu */
 
-ul.list-menu#resourceMenuRight {
+#resourceMenuRight {
   float: left;
   min-height: 86px;
   margin: -12px 0 20px 0;
 }
 
-ul.list-menu#resourceMenuRight li {
+#resourceMenuRight li {
   background: url(images/seperator-grey-gradient-big.png) no-repeat top left;
   float: left;
   margin: 0 0 0 25px;
@@ -803,38 +797,38 @@ ul.list-menu#resourceMenuRight li {
   min-height: 86px;
 }
 
-ul.list-menu#resourceMenuRight.smaller-seperator {
+#resourceMenuRight.smaller-seperator {
   min-height: 65px;
   margin-bottom: 0px;
 }
 
-ul.list-menu#resourceMenuRight.smaller-seperator li {
+#resourceMenuRight.smaller-seperator li {
   background-image: url(images/seperator-grey-gradient.png);
   background-repeat: no-repeat;
   background-position: 0 5px;
   min-height: 65px;
 }
 
-ul.list-menu#resourceMenuRight li h3 {
+#resourceMenuRight li h3 {
   font-size: 1.15em;
   font-weight: bold;
   margin: 9px 0 5px 0;
 }
 
-ul.list-menu#resourceMenuRight .manage\.unlockFormService h3 {
+#resourceMenuRight .manage\.unlockFormService h3 {
   background: url(images/lock.png) no-repeat 100% 1px;
   padding-right: 18px;
   /* display: inline-block; */
 }
 
 
-ul.list-menu#resourceMenuRight span.published,
+#resourceMenuRight span.published,
 #publishing-status span.published {
   background: url(images/menu-active-green.gif) no-repeat 100% 1px;
   padding-right: 18px;
 }
 
-ul.list-menu#resourceMenuRight p span,
+#resourceMenuRight p span,
 #publishing-status span.published,
 #publishing-status span.unpublished {
   font-weight: bold;
@@ -1096,44 +1090,44 @@ ul.list-menu#tabMenu1 li.navigateToParentService a {
 
 /* Tab Menu 2 (right) */
 
-ul.list-menu#tabMenu2 {
+#tabMenu2 {
   float: right;
 }
 
-ul.list-menu#tabMenu2 li {
+#tabMenu2 li {
   float: left;
 }
 
-ul.list-menu#tabMenu2 li a {
+#tabMenu2 li a {
   display: block;
   margin: 0 0 0 30px;
   padding: 5px 0 5px 30px;
 }
 
-ul.list-menu#tabMenu2 li.deleteResourcesService a {
+#tabMenu2 li.deleteResourcesService a {
   background: url(images/tab-menu-delete.png) no-repeat center left;
   padding-left: 25px;
 }
 
-ul.list-menu#tabMenu2 li.moveResourcesService a {
+#tabMenu2 li.moveResourcesService a {
   background: url(images/tab-menu-move.png) no-repeat center left;
   padding-left: 41px;
 }
 
-ul.list-menu#tabMenu2 li.copyResourcesService a {
+#tabMenu2 li.copyResourcesService a {
   background: url(images/tab-menu-copy.png) no-repeat center left;
   padding-left: 38px;
 }
 
-ul.list-menu#tabMenu2 li.fileUploadService a {
+#tabMenu2 li.fileUploadService a {
   background: url(images/tab-menu-upload.png) no-repeat center left; 
 }
 
-ul.list-menu#tabMenu2 li.createDocumentService a {
+#tabMenu2 li.createDocumentService a {
   background: url(images/tab-menu-new-file.png) no-repeat center left; 
 }
 
-ul.list-menu#tabMenu2 li.createCollectionService a {
+#tabMenu2 li.createCollectionService a {
   background: url(images/tab-menu-new-folder.png) no-repeat center left;
 }
 
@@ -1151,8 +1145,8 @@ p#vrtx-file-upload-info-text {
 
 /* Trash can */
 
-ul.list-menu#tabMenu2 li.recoverResourceService a,
-ul.list-menu#tabMenu2 li.deleteResourcePermanentService a {
+#tabMenu2 li.recoverResourceService a,
+#tabMenu2 li.deleteResourcePermanentService a {
   background: none; /* TODO: need to design icon */
   padding-left: 0;
 }

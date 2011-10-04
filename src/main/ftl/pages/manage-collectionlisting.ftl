@@ -20,25 +20,25 @@
   <title>Manage: collection listing</title>   
 </head>
 <body id="vrtx-manage-collectionlisting">
-  <#assign copyTitle = vrtx.getMsg("tabMenu2.copyResourcesService") />
-  <#assign moveTitle = vrtx.getMsg("tabMenu2.moveResourcesService") />
-  <#assign deleteTitle = vrtx.getMsg("tabMenu2.deleteResourcesService") />
+  <#assign copyTitle = vrtx.getMsg("tabMenuRight.copyResourcesService") />
+  <#assign moveTitle = vrtx.getMsg("tabMenuRight.moveResourcesService") />
+  <#assign deleteTitle = vrtx.getMsg("tabMenuRight.deleteResourcesService") />
   
-  <#assign moveUnCheckedMessage = vrtx.getMsg("tabMenu2.moveUnCheckedMessage",
+  <#assign moveUnCheckedMessage = vrtx.getMsg("tabMenuRight.moveUnCheckedMessage",
          "You must check at least one element to move") />
          
-  <#assign copyUnCheckedMessage = vrtx.getMsg("tabMenu2.copyUnCheckedMessage",
+  <#assign copyUnCheckedMessage = vrtx.getMsg("tabMenuRight.copyUnCheckedMessage",
          "You must check at least one element to copy") />
          
   <script type="text/javascript"><!-- 
     var moveUncheckedMessage = '${moveUnCheckedMessage}';
     var copyUncheckedMessage = '${copyUnCheckedMessage}';
-    var deleteUncheckedMessage = '${vrtx.getMsg("tabMenu2.deleteUnCheckedMessage")}';         
-    var confirmDelete = '${vrtx.getMsg("tabMenu2.deleteResourcesMessage")}';         
-    var confirmDeleteAnd = '${vrtx.getMsg("tabMenu2.deleteResourcesAnd")}';
-    var confirmDeleteMore = '${vrtx.getMsg("tabMenu2.deleteResourcesMore")}';
-    var multipleFilesInfoText = '<strong>${vrtx.getMsg("tabMenu2.fileUploadMultipleInfo.line1")}</strong><br />'
-                            + '${vrtx.getMsg("tabMenu2.fileUploadMultipleInfo.line2")}'; 
+    var deleteUncheckedMessage = '${vrtx.getMsg("tabMenuRight.deleteUnCheckedMessage")}';         
+    var confirmDelete = '${vrtx.getMsg("tabMenuRight.deleteResourcesMessage")}';         
+    var confirmDeleteAnd = '${vrtx.getMsg("tabMenuRight.deleteResourcesAnd")}';
+    var confirmDeleteMore = '${vrtx.getMsg("tabMenuRight.deleteResourcesMore")}';
+    var multipleFilesInfoText = '<strong>${vrtx.getMsg("tabMenuRight.fileUploadMultipleInfo.line1")}</strong><br />'
+                            + '${vrtx.getMsg("tabMenuRight.fileUploadMultipleInfo.line2")}'; 
   //-->
   </script>
 

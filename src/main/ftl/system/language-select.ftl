@@ -12,8 +12,8 @@
 
 <#if switchLocaleActions?exists>
   <#compress>
-    <div class="localeSelection">
-      <span class="localeSelectionHeader"><@vrtx.msg code="localeSelection.selectLocale" default="Language settings"/>:</span>
+    <div id="locale-selection">
+      <span id="locale-selection-header"><@vrtx.msg code="localeSelection.selectLocale" default="Language settings"/>:</span>
       <ul>
         <#list switchLocaleActions.localeServiceNames as locale>
           <#assign active = switchLocaleActions.localeServiceActive[locale]?html />

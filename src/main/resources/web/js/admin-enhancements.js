@@ -147,10 +147,10 @@ $(window).load(function() {
   }
   
   // When AJAX is turned of because of http->https we need to ensure form is in the right place
-  var formResourceMenu = $("#titleContainer:last-child").hasClass("expandedForm");
+  var formResourceMenu = $("#title-container:last-child").hasClass("expandedForm");
   if(!formResourceMenu) {
-    var expandedForm = $("#titleContainer .expandedForm").remove();
-    $("#titleContainer").append(expandedForm);
+    var expandedForm = $("#title-container .expandedForm").remove();
+    $("#title-container").append(expandedForm);
   }
   
   vrtxAdmin.log({msg: "window.load() in " + (+new Date - startLoadTime) + "ms"});
@@ -174,7 +174,7 @@ $(document).ready(function () {
   // Dropdowns
   dropdownLanguageMenu();
   dropdown({
-    selector: "#titleContainer #resource-title.true ul.resourceMenuLeft",
+    selector: "#title-container #resource-title.true ul.resourceMenuLeft",
     proceedCondition: function(numOfListElements) {
       return numOfListElements > 1;
     }
@@ -205,7 +205,7 @@ $(document).ready(function () {
   }
   
   // Hack for setting iframe width if english i18n
-  if ($(".localeSelection li.active").hasClass("en")) {
+  if ($("#locale-selection li.active").hasClass("en")) {
     $("#create-iframe").css("width", "162px");
   }
   
@@ -250,9 +250,9 @@ $(document).ready(function () {
 
   for (var i = resourceMenuLeftServices.length; i--;) {
     vrtxAdmin.getAjaxForm({
-        selector: "#titleContainer a#" + resourceMenuLeftServices[i],
+        selector: "#title-container a#" + resourceMenuLeftServices[i],
         selectorClass: "globalmenu",
-        insertAfterOrReplaceClass: "#titleContainer ul.resourceMenuLeft",
+        insertAfterOrReplaceClass: "#title-container ul.resourceMenuLeft",
         isReplacing: false,
         nodeType: "div",
         simultanSliding: true,
@@ -267,9 +267,9 @@ $(document).ready(function () {
 
   for (var i = resourceMenuRightServices.length; i--;) {
     vrtxAdmin.getAjaxForm({
-        selector: "#titleContainer #" + resourceMenuRightServices[i],
+        selector: "#title-container #" + resourceMenuRightServices[i],
         selectorClass: "globalmenu",
-        insertAfterOrReplaceClass: "#titleContainer ul.resourceMenuLeft",
+        insertAfterOrReplaceClass: "#title-container ul.resourceMenuLeft",
         isReplacing: false,
         nodeType: "div",
         simultanSliding: true,
@@ -816,22 +816,22 @@ function checkStillAdmin(selector) {
 \*-------------------------------------------------------------------*/
 
 function dropdownLanguageMenu() {
-  var languageMenu = $(".localeSelection ul");
+  var languageMenu = $("#locale-selection ul");
   if (!languageMenu.length) return;
   
   var parent = languageMenu.parent();
   parent.addClass("js-on");
 
   // Remove ':' and replace <span> with <a>
-  var header = parent.find(".localeSelectionHeader");
+  var header = parent.find("#locale-selection-header");
   var headerText = header.text();
   // outerHtml
-  header.replaceWith("<a href='javascript:void(0);' class='localeSelectionHeader'>"
+  header.replaceWith("<a href='javascript:void(0);' id='locale-selection-header'>"
                    + headerText.substring(0, headerText.length - 1) + "</a>");
 
   languageMenu.addClass("dropdown-shortcut-menu-container");
 
-  $(".localeSelection").delegate(".localeSelectionHeader", "click", function (e) {
+  $("#locale-selection").delegate("#locale-selection-header", "click", function (e) {
     $(this).next(".dropdown-shortcut-menu-container").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
     e.stopPropagation();
     e.preventDefault();

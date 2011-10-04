@@ -452,7 +452,7 @@ a:hover {
 
 /* 3.2 Resource title */
 
-#titleContainer {
+#title-container {
   position: relative;
 }
 
@@ -539,8 +539,8 @@ ul.list-menu.tabMenu2 li,
 .global-menu ul li,
 ul.manage-create,
 ul.manage-create li,
-div.localeSelection ul,
-div.localeSelection ul li {
+#locale-selection ul,
+#locale-selection ul li {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -548,24 +548,24 @@ div.localeSelection ul li {
 
 /* Language menu */
 
-div.localeSelection {
+#locale-selection {
   background: url(images/globe.png) no-repeat 0px 1px;
   padding: 0 0 1px 23px;
   z-index: 100;
 }
 
-div.localeSelection ul,
-div.localeSelection ul li {
+#locale-selection ul,
+#locale-selection ul li {
   display: inline;
 }
 
 /* Dropdown */
 
-div.localeSelection.js-on {
+#locale-selection.js-on {
   position: relative;
 }
 
-div.localeSelection.js-on ul.dropdown-shortcut-menu-container {
+#locale-selection.js-on ul.dropdown-shortcut-menu-container {
   display: none;
   top: 24px;
   left: auto;
@@ -573,20 +573,20 @@ div.localeSelection.js-on ul.dropdown-shortcut-menu-container {
   /* right: -72px; */
 }
 
-div.localeSelection.js-on ul.dropdown-shortcut-menu-container li {
+#locale-selectionjs-on ul.dropdown-shortcut-menu-container li {
   display: block;
 }
 
-div.localeSelection.js-on ul.dropdown-shortcut-menu-container li a,
-div.localeSelection.js-on ul.dropdown-shortcut-menu-container li span {
+#locale-selection.js-on ul.dropdown-shortcut-menu-container li a,
+#locale-selection.js-on ul.dropdown-shortcut-menu-container li span {
   padding-left: 28px !important;
 }
 
-div.localeSelection.js-on ul.dropdown-shortcut-menu-container li.active span {
+#locale-selection.js-on ul.dropdown-shortcut-menu-container li.active span {
   background: url(images/list-active.gif) no-repeat 10px 10px;
 }
 
-div.localeSelection.js-on .localeSelectionHeader {
+#locale-selection.js-on #locale-selection-header {
   background: url(images/arrow-down.png) no-repeat 100% 8px;
   padding-right: 12px;
   display: inline-block;
@@ -861,13 +861,13 @@ ul.list-menu.resourceMenuRight p span,
   border-bottom: 1px solid #cbcbcb;
 }
 
-#titleContainer abbr {
+#title-container abbr {
   color: #797979;
   cursor: pointer;
   border-bottom: 1px dotted #a9a9a9;
 }
 
-#titleContainer .tip ul {
+#title-container .tip ul {
   margin-top: 0px;
   margin-bottom: 0px;
   padding-left: 10px;
@@ -1750,7 +1750,7 @@ div.tabMessage {
 #app-footer:after,
 #app-content:after,
 #main:after,
-#titleContainer:after,
+#title-container:after,
 #resource-title:after,
 ul.resourceMenuLeft:after,
 ul.resourceMenuRight:after,

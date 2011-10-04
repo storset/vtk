@@ -12,8 +12,8 @@ div.tabs {
 #app-head-wrapper,
 #app-head,
 #global-menu-top,
-.localeSelection,
-#titleContainer,
+#locale-selection,
+#title-container,
 #resource-title,
 .dropdown-shortcut-menu-container {
   z-index: 1;

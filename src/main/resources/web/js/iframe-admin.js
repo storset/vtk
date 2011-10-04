@@ -36,7 +36,7 @@ $(document).ready(function () {
         if (previewCreateIframe) {
           // Hack for width when english i18n
           var originalWidth = 150;
-          if ($(".localeSelection li.active").hasClass("en")) {
+          if ($("#locale-selection li.active").hasClass("en")) {
             originalWidth = 162;
           }
           if(isMsgCreateIframeFullSize) {

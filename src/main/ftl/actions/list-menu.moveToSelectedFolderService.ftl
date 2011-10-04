@@ -18,7 +18,7 @@
 <#if session.filesToBeCopied?exists>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js"></script>
   <script type="text/javascript"><!--
-    $("#titleContainer").vortexTips("abbr", "#titleContainer", 200, 300, 250, 300, 20, 0, false);
+    $("#title-container").vortexTips("abbr", "#title-container", 200, 300, 250, 300, 20, 0, false);
   // -->
   </script>
   <p>

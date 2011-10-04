@@ -18,7 +18,7 @@
 </#if>
 
 <#macro gen resource resourceMenuLeft="" resourceMenuRight="">
-  <div id="titleContainer">
+  <div id="title-container">
     <div id="resource-title" class="<@vrtx.iconResolver resource.resourceType resource.contentType /> ${resource.collection?string}">
       <h1>
         <#if resource.URI == '/'>

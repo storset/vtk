@@ -41,7 +41,7 @@ div#resource-title {
   margin: -8px 20px 0 20px !important;
 }
 
-ul.list-menu.resourceMenuLeft {
+ul.list-menu#resourceMenuLeft {
   margin: 0 0 0 20px !important;
   clear: none !important;
 }

@@ -140,9 +140,9 @@ $(window).load(function() {
 
   // More compact when no left resource menu and only 'Read permission' in right resource menu
   // Should never occur in IE because of "Show in file explorer" in root-folder 
-  var resourceMenuRight = $("ul.list-menu.resourceMenuRight"); 
+  var resourceMenuRight = $("#resourceMenuRight"); 
   var resourceMenuRightListElements = resourceMenuRight.find("li");
-  if(!$("ul.resourceMenuLeft li").length && resourceMenuRightListElements.length == 1) {
+  if(!$("ul#resourceMenuLeft li").length && resourceMenuRightListElements.length == 1) {
     resourceMenuRight.addClass("smaller-seperator");
   }
   
@@ -174,7 +174,7 @@ $(document).ready(function () {
   // Dropdowns
   dropdownLanguageMenu();
   dropdown({
-    selector: "#title-container #resource-title.true ul.resourceMenuLeft",
+    selector: "#resource-title.true ul#resourceMenuLeft",
     proceedCondition: function(numOfListElements) {
       return numOfListElements > 1;
     }
@@ -211,7 +211,7 @@ $(document).ready(function () {
   
   // Move down resource menu when long title
   var titleSplits = $("h1 .title-split");
-  var resourceMenuLeft = $(".resourceMenuLeft");
+  var resourceMenuLeft = $("#resourceMenuLeft");
   var titleSplitsLength = titleSplits.length;
   if (resourceMenuLeft.length) {
     if (titleSplitsLength == 2) {
@@ -252,7 +252,7 @@ $(document).ready(function () {
     vrtxAdmin.getAjaxForm({
         selector: "#title-container a#" + resourceMenuLeftServices[i],
         selectorClass: "globalmenu",
-        insertAfterOrReplaceClass: "#title-container ul.resourceMenuLeft",
+        insertAfterOrReplaceClass: "ul#resourceMenuLeft",
         isReplacing: false,
         nodeType: "div",
         simultanSliding: true,
@@ -269,7 +269,7 @@ $(document).ready(function () {
     vrtxAdmin.getAjaxForm({
         selector: "#title-container #" + resourceMenuRightServices[i],
         selectorClass: "globalmenu",
-        insertAfterOrReplaceClass: "#title-container ul.resourceMenuLeft",
+        insertAfterOrReplaceClass: "ul#resourceMenuLeft",
         isReplacing: false,
         nodeType: "div",
         simultanSliding: true,
@@ -287,9 +287,9 @@ $(document).ready(function () {
     for (i = tabMenuServices.length; i--;) {
       if(tabMenuServices[i] != "fileUploadService") { // half-async for file upload
         vrtxAdmin.getAjaxForm({
-          selector: "ul.tabMenu2 a#" + tabMenuServices[i],
+          selector: "ul#tabMenu2 a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",
-          insertAfterOrReplaceClass: "#active-tab ul.tabMenu2",
+          insertAfterOrReplaceClass: "#active-tab ul#tabMenu2",
           isReplacing: false,
           nodeType: "div",
           simultanSliding: true,
@@ -310,9 +310,9 @@ $(document).ready(function () {
       
       } else {
         vrtxAdmin.getAjaxForm({
-          selector: "ul.tabMenu2 a#" + tabMenuServices[i],
+          selector: "ul#tabMenu2 a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",
-          insertAfterOrReplaceClass: "#active-tab ul.tabMenu2",
+          insertAfterOrReplaceClass: "#active-tab ul#tabMenu2",
           isReplacing: false,
           nodeType: "div",
           funcComplete: function(p){ initFileUpload() },
@@ -682,7 +682,7 @@ function placeRecoverButtonInActiveTab() {
   var btn = $('.recoverResource');
   if (!btn.length) return;
   btn.hide();
-  $("#active-tab").prepend('<ul class="list-menu tabMenu2"><li class="recoverResourceService">'
+  $("#active-tab").prepend('<ul class="list-menu" id="tabMenu2"><li class="recoverResourceService">'
                               + '<a id="recoverResourceService" href="javascript:void(0);">' 
                               + btn.attr('value') + '</a></li></ul>');
   $('#recoverResourceService').click(function (e) {
@@ -701,7 +701,7 @@ function placeDeletePermanentButtonInActiveTab() {
   var btn = $('.deleteResourcePermanent');
   if (!btn.length) return;
   btn.hide();
-  $("#active-tab .tabMenu2")
+  $("#tabMenu2")
     .append('<li class="deleteResourcePermanentService"><a id="deleteResourcePermanentService" href="javascript:void(0);">' 
           + btn.attr('value') + '</a></li>');
   $('#deleteResourcePermanentService').click(function (e) {

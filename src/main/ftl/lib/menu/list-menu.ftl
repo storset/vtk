@@ -36,7 +36,7 @@
   <#if (menu.items?size > 0 || menu.label == "resourceMenuRight")>
 
     <#-- Output the menu links: -->
-    <ul class="list-menu ${menu.label}">
+    <ul class="list-menu" id="${menu.label}">
 
       <#assign size = 0 />
       <#list menu.items as item> 

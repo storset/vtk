@@ -592,12 +592,6 @@ ul.manage-create li,
 
 /* Resource menus */
 
-.iframe-fullscreen {
-  position: fixed;
-  top: 0px;
-  left: 0px;
-}
-
 #resourceMenuLeft {
   margin: -50px 0 20px 0;
   clear: left;
@@ -781,7 +775,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   margin: 0;
 }
 
-/* Button in dropdown menu */
+/* ^ Dropdown */
 
 #resourceMenuRight {
   float: left;
@@ -927,6 +921,12 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 }
 
 /* ^ Thickbox mod */
+
+.iframe-fullscreen {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+}
 
 #TB_closeAjaxWindow.create-tree-close-window {
   display: block;

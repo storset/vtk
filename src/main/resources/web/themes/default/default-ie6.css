@@ -13,4 +13,8 @@ ul.list-menu.resourceMenuRight {
   position: relative;
 }
 
+input {
+  border: none;
+}
+
 /* ^ Vortex IE 6 */

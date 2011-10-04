@@ -2160,40 +2160,21 @@ form button::-moz-focus-inner {
 
 /* ^ Mozilla hacks */
 
-/* IE 6 hacks */
-
-* html input {
-  border: none;
-}
-
-/* ^ IE 6 hacks */
-
-/* iPhone hacks */
+/* iPhone and iPad hacks */
 
 @media only screen and (max-device-width: 480px) {
-
-  /* input reset */
-  input {
+  input { /* input reset */
     -webkit-appearance: none;
     -webkit-border-radius: 0;
   }
-
 }
-
-/* ^ iPhone hacks */
-
-/* iPad hacks */
-
 @media only screen and (max-device-width: 1024px) {
-
-/* input reset */
-  input {
+  input { /* input reset */
     -webkit-appearance: none;
     -webkit-border-radius: 0;
   }
-
 }
 
-/* ^ iPad hacks */
+/* ^ iPhone and iPad hacks */
 
 /* ^ UiO design - Apps - Vortex */

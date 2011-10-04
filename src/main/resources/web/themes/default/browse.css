@@ -37,7 +37,7 @@ body,
   margin: 0 0 0 15px;
 }
 
-div.resource-title {
+div#resource-title {
   margin: -8px 20px 0 20px !important;
 }
 

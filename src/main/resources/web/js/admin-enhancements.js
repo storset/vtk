@@ -174,7 +174,7 @@ $(document).ready(function () {
   // Dropdowns
   dropdownLanguageMenu();
   dropdown({
-    selector: "#titleContainer .resource-title.true ul.resourceMenuLeft",
+    selector: "#titleContainer #resource-title.true ul.resourceMenuLeft",
     proceedCondition: function(numOfListElements) {
       return numOfListElements > 1;
     }
@@ -193,7 +193,7 @@ $(document).ready(function () {
   });
 
   // Remove active tab if it has no children
-  var activeTab = $("#main .activeTab");
+  var activeTab = $("#active-tab");
   if (!activeTab.find(" > *").length) {
     activeTab.remove();
   }
@@ -289,7 +289,7 @@ $(document).ready(function () {
         vrtxAdmin.getAjaxForm({
           selector: "ul.tabMenu2 a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",
-          insertAfterOrReplaceClass: ".activeTab ul.tabMenu2",
+          insertAfterOrReplaceClass: "#active-tab ul.tabMenu2",
           isReplacing: false,
           nodeType: "div",
           simultanSliding: true,
@@ -312,7 +312,7 @@ $(document).ready(function () {
         vrtxAdmin.getAjaxForm({
           selector: "ul.tabMenu2 a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",
-          insertAfterOrReplaceClass: ".activeTab ul.tabMenu2",
+          insertAfterOrReplaceClass: "#active-tab ul.tabMenu2",
           isReplacing: false,
           nodeType: "div",
           funcComplete: function(p){ initFileUpload() },
@@ -682,7 +682,7 @@ function placeRecoverButtonInActiveTab() {
   var btn = $('.recoverResource');
   if (!btn.length) return;
   btn.hide();
-  $("#main .activeTab").prepend('<ul class="list-menu tabMenu2"><li class="recoverResourceService">'
+  $("#active-tab").prepend('<ul class="list-menu tabMenu2"><li class="recoverResourceService">'
                               + '<a id="recoverResourceService" href="javascript:void(0);">' 
                               + btn.attr('value') + '</a></li></ul>');
   $('#recoverResourceService').click(function (e) {
@@ -701,7 +701,7 @@ function placeDeletePermanentButtonInActiveTab() {
   var btn = $('.deleteResourcePermanent');
   if (!btn.length) return;
   btn.hide();
-  $("#main .activeTab .tabMenu2")
+  $("#active-tab .tabMenu2")
     .append('<li class="deleteResourcePermanentService"><a id="deleteResourcePermanentService" href="javascript:void(0);">' 
           + btn.attr('value') + '</a></li>');
   $('#deleteResourcePermanentService').click(function (e) {

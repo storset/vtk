@@ -14,7 +14,7 @@ div.tabs {
 #global-menu-top,
 .localeSelection,
 #titleContainer,
-.resource-title,
+#resource-title,
 .dropdown-shortcut-menu-container {
   z-index: 1;
 }
@@ -36,9 +36,9 @@ body#vrtx-permissions .removePermission {
   font-size: 0;
 }
 
-.resource-title,
-#main .activeTab,
-#main #contents,
+#resource-title,
+#active-tab,
+#contents,
 .expandedForm {
   max-height: 99999px; /* instead of invalid zoom: 1 */
 }

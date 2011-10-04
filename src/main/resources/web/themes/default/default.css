@@ -458,70 +458,70 @@ a:hover {
 
 /* Icons */
 
-div.resource-title {
+#resource-title {
   background: transparent url(images/file.gif) no-repeat 0px 3px;
   padding-top: 8px;
   position: relative;
 }
-div.resource-title h1 {
+#resource-title h1 {
   margin:  0 0 15px 36px;
   float: left;
   min-width: 85px; /* at least as wide as 'Endre navn' in dropdown + 15px */
 }
 
-div.resource-title h1 .title-split {
+#resource-title h1 .title-split {
   display: block;
 } 
 
-div.resource-title.true {
+#resource-title.true {
   background: transparent url(images/folder.gif) no-repeat 0px 5px;
 }
-div.resource-title.true h1 {
+#resource-title.true h1 {
   margin-left: 42px;
 }
 
-div.resource-title.binary {
+#resource-title.binary {
   background: transparent url(images/file-binary.gif) no-repeat 0px 3px;
 }
 
-div.resource-title.doc {
+#resource-title.doc {
   background: transparent url(images/file-word.gif) no-repeat 0px 2px;
 }
 
-div.resource-title.pdf {
+#resource-title.pdf {
   background: transparent url(images/file-pdf.gif) no-repeat 0px 2px;
 }
 
-div.resource-title.xls {
+#resource-title.xls {
   background: transparent url(images/file-xls.gif) no-repeat 0px 2px;
 }
 
-div.resource-title.text {
+#resource-title.text {
   background: transparent url(images/file-txt.gif) no-repeat 0px 2px;
 }
 
-div.resource-title.ppt {
+#resource-title.ppt {
   background: transparent url(images/file-ppt.gif) no-repeat 0px 2px;
 }
 
-div.resource-title.image {
+#resource-title.image {
   background: transparent url(images/file-image.gif) no-repeat 0px 10px;
 }
-div.resource-title.image h1 {
+#resource-title.image h1 {
   margin-left: 39px;
 }
 
-div.resource-title.audio {
+#resource-title.audio {
   background: transparent url(images/file-audio.gif) no-repeat 0px 12px;
 }
-div.resource-title.audio h1 {
+#resource-title.audio h1 {
   margin-left: 26px;
 }
 
-div.resource-title.video {
+#resource-title.video {
   background: transparent url(images/file-video.gif) no-repeat 0px 5px;
 }
-div.resource-title.video h1 {
+#resource-title.video h1 {
   margin-left: 40px;
 }
 
@@ -1073,11 +1073,11 @@ div.tabs ul li.activeTab a:hover {
 
 /* 3.4 Tab Menus */
 
-.activeTab {
+#active-tab {
   margin: 0 0 15px 0;
 }
 
-.activeTab ul.list-menu a {
+#active-tab  ul.list-menu a {
   font-weight: bold;
 }
 
@@ -1749,15 +1749,14 @@ div.tabMessage {
 #app-head:after,
 #app-footer:after,
 #app-content:after,
-#app-content #main:after,
+#main:after,
 #titleContainer:after,
-div.resource-title:after,
-#app-content .resource-title:after,
-#app-content ul.resourceMenuLeft:after,
-#app-content ul.resourceMenuRight:after,
-#app-content div.globalmenu:after,
-#app-content #main .activeTab:after,
-#app-content #main #contents:after,
+#resource-title:after,
+ul.resourceMenuLeft:after,
+ul.resourceMenuRight:after,
+div.globalmenu:after,
+#active-tab:after,
+#contents:after,
 #app-content .principalList:after,
 #app-content form:after {
   clear: both;
@@ -2155,8 +2154,6 @@ form button::-moz-focus-inner {
   padding-top: 2px;
   height: 31px;
 }
-
-/* ^ Vertical aligning text in textfields: targets Firefox 1.5 and newer */
 
 /* ^ Mozilla hacks */
 

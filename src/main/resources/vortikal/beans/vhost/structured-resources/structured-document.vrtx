@@ -92,8 +92,8 @@ resourcetype structured-document {
       [if publish-date != null]
         <div class="vrtx-date-info">
         <span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
-        [if publish-date < contentLastModified]
-          - <span class="last-modified-date">[localized "contentLastModifiedDate"]</span> <span class="last-modified-date">[val contentLastModified]</span>
+        [if publish-date < lastModified]
+          - <span class="last-modified-date">[localized "lastModifiedDate"]</span> <span class="last-modified-date">[val lastModified]</span>
         [endif]
         </div>
       [endif]
@@ -131,7 +131,7 @@ resourcetype structured-document {
     share-link : (en : "Share at...", no : "Del på...", nn : "Del på..."),
     share-close : (en : "Close", no : "Lukk", nn : "Lukk"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
-    contentLastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra"),
+    lastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra"),
     header : (en : "Edit document", no : "Rediger dokument", nn : "Rediger dokument")
   }
 }

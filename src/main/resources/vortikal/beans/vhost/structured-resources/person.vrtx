@@ -278,8 +278,8 @@ resourcetype person {
       [if publish-date != null]
            <div class="vrtx-date-info">
            <span class="published-date-label">[localized "publishedDate"]</span> <span class="published-date">[val publish-date] </span>
-           [if publish-date < contentLastModified]
-              - <span class="last-modified-date">[localized "contentLastModifiedDate"]</span> <span class="last-modified-date">[val contentLastModified]</span>
+           [if publish-date < lastModified]
+              - <span class="last-modified-date">[localized "lastModifiedDate"]</span> <span class="last-modified-date">[val lastModified]</span>
            [endif]
            </div>
         [endif]
@@ -447,7 +447,7 @@ resourcetype person {
     header : (en : "Edit person", no : "Rediger person", nn : "Rediger person"),
     fax : (en : "Fax", no : "Faks", nn : "Faks"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
-    contentLastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra"),
+    lastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra"),
     no-external-user-metadata : (en : "Could not get user data from external service",
                                  no : "Kan ikke hente personopplysninger fra ekstern kilde",
                                  nn : "Kan ikkje hente personopplysningar frå ekstern kilde"),

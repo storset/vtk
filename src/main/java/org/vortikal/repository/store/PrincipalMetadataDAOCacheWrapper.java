@@ -120,9 +120,9 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO, I
     }
 
     @Override
-    public List<PrincipalMetadata> listPrincipalsInUnitXX(String areacodeOrDn, Locale preferredLocale,
+    public List<PrincipalMetadata> listPrincipalsInUnit(String areacodeOrDn, Locale preferredLocale,
             boolean considerSubUnits) {
-        return this.wrappedDao.listPrincipalsInUnitXX(areacodeOrDn, preferredLocale, considerSubUnits);
+        return this.wrappedDao.listPrincipalsInUnit(areacodeOrDn, preferredLocale, considerSubUnits);
     }
 
     private static final class CacheItem {

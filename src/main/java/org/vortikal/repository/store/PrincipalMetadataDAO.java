@@ -83,11 +83,21 @@ public interface PrincipalMetadataDAO {
      * List all employees for a given unit and all its sub-units.
      * 
      * @param areacodeOrDn
+     * @param preferredLocale
      * @return
      */
     List<PrincipalMetadata> listPrincipalsInUnit(String areacodeOrDn, Locale preferredLocale);
 
-    List<PrincipalMetadata> listPrincipalsInUnitXX(String areacodeOrDn, Locale preferredLocale, boolean considerSubUnits);
+    /**
+     * List all employees for a given unit. Flag if search is do be done
+     * considering subunits.
+     * 
+     * @param areacodeOrDn
+     * @param preferredLocale
+     * @param considerSubUnits
+     * @return
+     */
+    List<PrincipalMetadata> listPrincipalsInUnit(String areacodeOrDn, Locale preferredLocale, boolean considerSubUnits);
 
     /**
      * Return set of supported principal domains for this DAO.

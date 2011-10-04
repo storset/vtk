@@ -1840,7 +1840,7 @@
 
   <bean id="collectionMenuProvider" class="org.vortikal.web.view.components.menu.DefaultListMenuProvider"
     lazy-init="true">
-    <constructor-arg value="tabMenu2" />
+    <constructor-arg value="tabMenuRight" />
     <constructor-arg ref="collectionActionServicesFactory" />
   </bean>
 

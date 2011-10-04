@@ -1077,12 +1077,12 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 /* Tab Menu 1 (left) */
 
-#tabMenu1,
-#tabMenu1 li {
+#tabMenuLeft,
+#tabMenuLeft li {
   float: left;
 }
 
-#tabMenu1 a#navigateToParentService {
+#tabMenuLeft a#navigateToParentService {
   display: block;
   background: url(images/tab-menu-navigate-up.png) no-repeat center left;
   padding: 5px 0 5px 28px;
@@ -1090,44 +1090,44 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 /* Tab Menu 2 (right) */
 
-#tabMenu2 {
+#tabMenuRight {
   float: right;
 }
 
-#tabMenu2 li {
+#tabMenuRight li {
   float: left;
 }
 
-#tabMenu2 li a {
+#tabMenuRight li a {
   display: block;
   margin: 0 0 0 30px;
   padding: 5px 0 5px 30px;
 }
 
-#tabMenu2 li.deleteResourcesService a {
+#tabMenuRight li.deleteResourcesService a {
   background: url(images/tab-menu-delete.png) no-repeat center left;
   padding-left: 25px;
 }
 
-#tabMenu2 li.moveResourcesService a {
+#tabMenuRight li.moveResourcesService a {
   background: url(images/tab-menu-move.png) no-repeat center left;
   padding-left: 41px;
 }
 
-#tabMenu2 li.copyResourcesService a {
+#tabMenuRight li.copyResourcesService a {
   background: url(images/tab-menu-copy.png) no-repeat center left;
   padding-left: 38px;
 }
 
-#tabMenu2 li.fileUploadService a {
+#tabMenuRight li.fileUploadService a {
   background: url(images/tab-menu-upload.png) no-repeat center left; 
 }
 
-#tabMenu2 li.createDocumentService a {
+#tabMenuRight li.createDocumentService a {
   background: url(images/tab-menu-new-file.png) no-repeat center left; 
 }
 
-#tabMenu2 li.createCollectionService a {
+#tabMenuRight li.createCollectionService a {
   background: url(images/tab-menu-new-folder.png) no-repeat center left;
 }
 
@@ -1145,8 +1145,8 @@ p#vrtx-file-upload-info-text {
 
 /* Trash can */
 
-#tabMenu2 li.recoverResourceService a,
-#tabMenu2 li.deleteResourcePermanentService a {
+#tabMenuRight li.recoverResourceService a,
+#tabMenuRight li.deleteResourcePermanentService a {
   background: none; /* TODO: need to design icon */
   padding-left: 0;
 }

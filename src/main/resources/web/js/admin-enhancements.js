@@ -287,9 +287,9 @@ $(document).ready(function () {
     for (i = tabMenuServices.length; i--;) {
       if(tabMenuServices[i] != "fileUploadService") { // half-async for file upload
         vrtxAdmin.getAjaxForm({
-          selector: "ul#tabMenu2 a#" + tabMenuServices[i],
+          selector: "ul#tabMenuRight a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",
-          insertAfterOrReplaceClass: "#active-tab ul#tabMenu2",
+          insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
           simultanSliding: true,
@@ -310,9 +310,9 @@ $(document).ready(function () {
       
       } else {
         vrtxAdmin.getAjaxForm({
-          selector: "ul#tabMenu2 a#" + tabMenuServices[i],
+          selector: "ul#tabMenuRight a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",
-          insertAfterOrReplaceClass: "#active-tab ul#tabMenu2",
+          insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
           funcComplete: function(p){ initFileUpload() },
@@ -682,7 +682,7 @@ function placeRecoverButtonInActiveTab() {
   var btn = $('.recoverResource');
   if (!btn.length) return;
   btn.hide();
-  $("#active-tab").prepend('<ul class="list-menu" id="tabMenu2"><li class="recoverResourceService">'
+  $("#active-tab").prepend('<ul class="list-menu" id="tabMenuRight"><li class="recoverResourceService">'
                               + '<a id="recoverResourceService" href="javascript:void(0);">' 
                               + btn.attr('value') + '</a></li></ul>');
   $('#recoverResourceService').click(function (e) {
@@ -701,7 +701,7 @@ function placeDeletePermanentButtonInActiveTab() {
   var btn = $('.deleteResourcePermanent');
   if (!btn.length) return;
   btn.hide();
-  $("#tabMenu2")
+  $("#tabMenuRight")
     .append('<li class="deleteResourcePermanentService"><a id="deleteResourcePermanentService" href="javascript:void(0);">' 
           + btn.attr('value') + '</a></li>');
   $('#deleteResourcePermanentService').click(function (e) {

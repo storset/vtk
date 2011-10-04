@@ -191,7 +191,7 @@
   <bean id="parentLinkProvider"
         class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="service" ref="manageService" />
-    <property name="modelName" value="tabMenu1" />
+    <property name="modelName" value="tabMenuLeft" />
     <property name="linkToParent" value="true" />
     <property name="matchAssertions" value="true" />
   </bean>

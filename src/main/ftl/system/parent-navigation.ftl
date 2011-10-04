@@ -1,10 +1,10 @@
 <#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
-<#if tabMenu1?exists>
-  <#if (tabMenu1.url)?exists>
-    <ul class="list-menu" id="tabMenu1">
+<#if tabMenuLeft?exists>
+  <#if (tabMenuLeft.url)?exists>
+    <ul class="list-menu" id="tabMenuLeft">
       <li class="navigateToParentService">
-        <a id="navigateToParentService" href="${tabMenu1.url?html}">
+        <a id="navigateToParentService" href="${tabMenuLeft.url?html}">
           <@vrtx.msg code="collectionListing.navigateToParent" default="Up"/>
         </a>
       </li>

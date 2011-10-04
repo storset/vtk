@@ -187,7 +187,7 @@ public final class MenuGenerator {
             }
 
             List<MenuItem<PropertySet>> subList = allItems.subList(startIdx, endIdx);
-            if(subList.isEmpty()) {    
+            if(subList.isEmpty()) {  // TODO: tmp fix  
                 continue;
             }
                 

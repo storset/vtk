@@ -62,8 +62,7 @@ function VrtxAdmin() {
   this.isAndroid = null;
   this.isMobileWebkitDevice = null;
   this.isWin = null;
-  
-  // v3.?: this.supportsFileAPI = null;
+  this.supportsFileAPI = null;
   
   this.permissionsAutocompleteParams = null;
   
@@ -91,8 +90,7 @@ vrtxAdmin.isIPad= /ipad/.test(ua);
 vrtxAdmin.isAndroid = /android/.test(ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
 vrtxAdmin.isMobileWebkitDevice = (vrtxAdmin.isIPhone || vrtxAdmin.isIPad || vrtxAdmin.isAndroid); 
 vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
-
-// v3.?: vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList && window.Blob;
+vrtxAdmin.supportsFileAPI = window.File && window.FileReader && window.FileList;
 
 // Upgrade easing algorithm from 'linear' to 'easeOutQuad' and 'easeInQuad'
 // -- if not < IE 9 (and not iPhone, iPad and Android devices)
@@ -488,6 +486,12 @@ function initFileUpload() {
   inputFile.change(function(e) {
     var filePath = $(this).val();
     filePath = filePath.substring(filePath.lastIndexOf("\\")+1);
+    if (vrtxAdmin.supportsFileAPI) {
+      var files = this.files;
+      if(files.length > 1) {
+        filePath = files.length + " files selected";
+      }
+    }
     form.find("#fake-file").val(filePath);
   });
 
@@ -499,41 +503,22 @@ function initFileUpload() {
  
   if (supportsMultipleAttribute(document.getElementById("file"))) {
     inputFile.attr("multiple", "multiple");
+    if(supportsReadOnly(document.getElementById("fake-file"))) {
+     form.find("#fake-file").attr("readOnly", "readOnly");  
+    }
     if(typeof multipleFilesInfoText !== "undefined") {
       $("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-textfield");
     }
   }
 }
 
-// Taken from: http://miketaylr.com/code/input-type-attr.html (MIT license)
+// Both methods taken from: http://miketaylr.com/code/input-type-attr.html (MIT license)
 function supportsMultipleAttribute(inputfield) {
   return (!!(inputfield.multiple === false) && !!(inputfield.multiple !== "undefined"));
 }
-
-// Credits: http://www.html5rocks.com/en/tutorials/file/dndfiles/
-/* File API for v3.?
-
-function fileInfo(file) {  
-  if (vrtxAdmin.supportsFileAPI) {
-    var files = document.getElementById(file).files;
-    if(files) {
-      var output = [];
-      for (var i = 0, f; f = files[i]; i++) {
-        output.push('<li><strong>', f.name, '</strong> (', f.type || 'n/a', ') - ',
-                    f.size, ' bytes, last modified: ',
-                    f.lastModifiedDate.toLocaleDateString(), '</li>');
-      }
-      var fileList = $("#vrtx-file-upload-file-list");
-      if(fileList.length) {
-        fileList.html(output.join(""));
-      } else {
-        $("<ul id='vrtx-file-upload-file-list'>" 
-          + output.join("") + "</ul>").insertAfter("a.vrtx-button");
-      }
-    }
-  }
+function supportsReadOnly(inputfield) {
+  return (!!(inputfield.readOnly === false) && !!(inputfield.readOnly !== "undefined"));
 }
-*/
 
 
 

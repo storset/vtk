@@ -1101,7 +1101,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 #tabMenuRight li a {
   display: block;
   margin: 0 0 0 30px;
-  padding: 5px 0 6px 30px;
+  padding: 5px 0 7px 30px;
 }
 
 #tabMenuRight li.deleteResourcesService a {
@@ -1222,18 +1222,6 @@ p#vrtx-file-upload-info-text {
 #directory-listing th#vrtx-report-permission-set {
   width: 13%;
 }
-
-/*
-#directory-listing th.last-modified,
-#directory-listing th#vrtx-trash-can\.deletedTime,
-#directory-listing th#vrtx-report-last-modified,
-#directory-listing th#vrtx-report-modified-by,
-#directory-listing th#vrtx-report-permission-set,
-#directory-listing th#vrtx-report-permissions,
-#directory-listing th#vrtx-report-published {
-  width: 1%;
-}
-*/
 
 #directory-listing td.permissions,
 #directory-listing td.resource-type,

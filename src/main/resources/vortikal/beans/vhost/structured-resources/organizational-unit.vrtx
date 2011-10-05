@@ -249,6 +249,7 @@ resourcetype organizational-unit {
           <div id="vrtx-main-content">
             <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">
               <h1>[call "comp:title"]</h1>
+              [call "resource:organizational-unit-language-link"]
               [call "comp:introduction-image"]
               [call "comp:introduction"]
               [call "comp:responsibilities"]

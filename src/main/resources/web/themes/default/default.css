@@ -2091,6 +2091,10 @@ div.vrtx-admin-form {
   height: 25px;
   cursor: pointer !important;
 
+  /* Transparent */
+  opacity: 0;
+  -moz-opacity: 0;
+  filter:alpha(opacity: 0);
 }
 
 #file-upload-container .vrtx-textfield {
@@ -2152,7 +2156,7 @@ form button::-moz-focus-inner {
 }
 
 /* TODO: is there -moz extension for file upload button?
-         it seems unfortunately not: https://developer.mozilla.org/en/CSS_Reference/Mozilla_Extensions
+         it seems not: https://developer.mozilla.org/en/CSS_Reference/Mozilla_Extensions
 
 #file-upload-container input.js-on, x:-moz-any-link, x:only-child {
   left: 180px;

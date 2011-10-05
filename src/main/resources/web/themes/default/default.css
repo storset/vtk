@@ -1421,7 +1421,7 @@ body#vrtx-manage-collectionlisting #collectionlisting-empty {
 }
 
 body#vrtx-trash-can #contents #trash-can-empty td,
-body#vrtx-manage-collectionlisting#contents #collectionlisting-empty td {
+body#vrtx-manage-collectionlisting #contents #collectionlisting-empty td {
   padding: 25px 0 30px 0;
 }
 

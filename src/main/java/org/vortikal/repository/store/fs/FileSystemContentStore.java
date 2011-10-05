@@ -151,7 +151,7 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
         File dest = new File(fileName);
         try {
             FileOutputStream outputStream = new FileOutputStream(dest);
-            StreamUtil.pipe(inputStream, outputStream, 16384, true);
+            StreamUtil.pipe(inputStream, outputStream, 122880, true);
         } catch (IOException e) {
             throw new DataAccessException("Store content [" + uri + "] failed", e);
         }

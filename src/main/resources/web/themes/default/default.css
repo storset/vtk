@@ -1101,7 +1101,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 #tabMenuRight li a {
   display: block;
   margin: 0 0 0 30px;
-  padding: 5px 0 5px 30px;
+  padding: 5px 0 6px 30px;
 }
 
 #tabMenuRight li.deleteResourcesService a {
@@ -1174,6 +1174,11 @@ p#vrtx-file-upload-info-text {
 
 #directory-listing {
   width: 100%;
+  table-layout: fixed;
+}
+
+#directory-listing td {
+  word-wrap: break-word;
 }
 
 #directory-listing tr td {
@@ -1198,12 +1203,27 @@ p#vrtx-file-upload-info-text {
   padding-right: 30px;
 }
 
+
 #directory-listing th.permissions,
 #directory-listing th.resource-type,
+#directory-listing th#vrtx-report-permissions,
 #directory-listing th#vrtx-trash-can\.deletedBy {
-  width: 10%;
+  width: 15%;
 }
 
+#directory-listing th#vrtx-report-last-modified {
+  width: 19%;
+}
+
+#directory-listing th#vrtx-report-modified-by {
+  width: 14%;
+}
+
+#directory-listing th#vrtx-report-permission-set {
+  width: 13%;
+}
+
+/*
 #directory-listing th.last-modified,
 #directory-listing th#vrtx-trash-can\.deletedTime,
 #directory-listing th#vrtx-report-last-modified,
@@ -1213,6 +1233,7 @@ p#vrtx-file-upload-info-text {
 #directory-listing th#vrtx-report-published {
   width: 1%;
 }
+*/
 
 #directory-listing td.permissions,
 #directory-listing td.resource-type,
@@ -1234,7 +1255,7 @@ p#vrtx-file-upload-info-text {
 body#vrtx-report-documents #directory-listing th#vrtx-report-name,
 body#vrtx-report-documents #directory-listing td.vrtx-report-name {
   padding-left: 15px;
-  width: 40%;
+  width: 30%;
 }
 
 #directory-listing td.name span.name-split,
@@ -1326,6 +1347,7 @@ body#vrtx-report-documents #directory-listing td.vrtx-report-name span.name-spli
   padding: 2px 0 2px 31px;
   display: block;
   background: url(images/file-small.gif) no-repeat center left;
+  overflow: hidden;
 }
 
 #directory-listing tr.true td.name a,

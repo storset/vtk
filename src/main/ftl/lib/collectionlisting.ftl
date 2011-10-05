@@ -166,7 +166,7 @@
                   <#local resourceTypeName = vrtx.resourceTypeName(child) />
                   <a href="${collectionListing.browsingLinks[child_index]?html}" title="${resourceTypeName}">
                     <span class="authorizedListedResource">
-                      <@vrtx.breakSpecificChar nchars=64 splitClass="name">${child.name}</@vrtx.breakSpecificChar>
+                      ${child.name}
                     </span>
                   </a>
                   <#if withForm>
@@ -174,7 +174,7 @@
                   </#if>
                 <#else>
                   <span class="unauthorizedListedResource">
-                    <@vrtx.breakSpecificChar nchars=64 splitClass="name">${child.name}</@vrtx.breakSpecificChar>
+                    ${child.name}
                   </span>
                   <#if withForm>
                     </td><td class="checkbox">&nbsp;

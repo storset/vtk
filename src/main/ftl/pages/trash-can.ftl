@@ -68,7 +68,7 @@
       <#else>
         <tr class="${rowType} <@vrtx.iconResolver rr.resourceType rr.contentType />${firstLast}">
       </#if>
-          <td class="vrtx-trash-can-name name trash"><span class="vrtx-trash-can-name-text"><@vrtx.breakSpecificChar nchars=64 splitClass="name">${rr.name?html}</@vrtx.breakSpecificChar></span></td>
+          <td class="vrtx-trash-can-name name trash"><span class="vrtx-trash-can-name-text">${rr.name?html}</span></td>
           <td class="checkbox">
           <@spring.bind "trashcan.trashCanObjects[${tco_index}].selectedForRecovery" />
           <#assign checked = "" />

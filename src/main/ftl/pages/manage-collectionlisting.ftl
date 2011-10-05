@@ -38,7 +38,8 @@
     var confirmDeleteAnd = '${vrtx.getMsg("tabMenuRight.deleteResourcesAnd")}';
     var confirmDeleteMore = '${vrtx.getMsg("tabMenuRight.deleteResourcesMore")}';
     var multipleFilesInfoText = '<strong>${vrtx.getMsg("tabMenuRight.fileUploadMultipleInfo.line1")}</strong><br />'
-                            + '${vrtx.getMsg("tabMenuRight.fileUploadMultipleInfo.line2")}'; 
+                            + '${vrtx.getMsg("tabMenuRight.fileUploadMultipleInfo.line2")}';
+    var fileUploadMoreFilesTailMessage = '${vrtx.getMsg("tabMenuRight.fileUploadMoreFilesTailMessage")}';
   //-->
   </script>
 

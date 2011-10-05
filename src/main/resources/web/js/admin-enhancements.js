@@ -488,8 +488,12 @@ function initFileUpload() {
     filePath = filePath.substring(filePath.lastIndexOf("\\")+1);
     if (vrtxAdmin.supportsFileList) {
       var files = this.files;
-      if(files.length > 1) {
-        filePath = files.length + " files selected";
+      if (files.length > 1) {
+        var tailMsg = "files selected";
+        if (typeof fileUploadMoreFilesTailMessage !== "undefined") { 
+          tailMsg = fileUploadMoreFilesTailMessage;
+        }
+        filePath = files.length + " " + tailMsg;
       }
     }
     form.find("#fake-file").val(filePath);

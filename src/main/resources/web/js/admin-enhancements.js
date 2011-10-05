@@ -490,13 +490,7 @@ function initFileUpload() {
     filePath = filePath.substring(filePath.lastIndexOf("\\")+1);
     form.find("#fake-file").val(filePath);
   });
-    
-  // "Changing the cursor on the upload element to cursor: pointer is not possible, unfortunately.
-  //  (...)
-  //  Unfortunately this is pure theory, it does not work, 
-  //  since the nerds at Mozilla and Opera decided not to support the click() method on file upload elements for whatever reason: (...)"
-  //  http://chipsandtv.com/articles/styling-upload-elements
-    
+
   inputFile.hover(function () {
     $("a.vrtx-file-upload").addClass("hover");
   }, function () {

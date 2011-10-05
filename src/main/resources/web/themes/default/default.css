@@ -2089,12 +2089,21 @@ div.vrtx-admin-form {
   background: none;
   width: 83px;
   height: 25px;
-  cursor: pointer;
+  cursor: pointer !important;
 
   /* Transparent */
   opacity: 0;
   -moz-opacity: 0;
   filter:alpha(opacity: 0);
+}
+
+/* The only way (it seems) to set cursor:pointer for file upload button in Webkit
+   http://chipsandtv.com/articles/styling-upload-elements
+   http://stackoverflow.com/questions/7554845/the-cursorpointer-property-doesnt-apply-to-file-upload-buttons-in-webkit-browse
+*/
+    
+::-webkit-file-upload-button {
+  cursor: pointer;
 }
 
 #file-upload-container .vrtx-textfield {

@@ -52,15 +52,6 @@
         <ref bean="overDueLimitMessageProvider" />
       </list>
     </property>
-    <property name="attributesMap">
-      <map>
-        <entry key="cssURLs">
-          <list>
-            <value>${themeBaseURL}/default.css</value>
-          </list>
-        </entry>
-      </map>
-    </property>
   </bean>
 
   <bean id="overDueLimitMessageProvider" class="org.vortikal.web.referencedata.provider.OverDueLimitMessageProvider">

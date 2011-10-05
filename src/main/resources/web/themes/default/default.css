@@ -2091,19 +2091,6 @@ div.vrtx-admin-form {
   height: 25px;
   cursor: pointer !important;
 
-  /* Transparent */
-  opacity: 0;
-  -moz-opacity: 0;
-  filter:alpha(opacity: 0);
-}
-
-/* The only way (it seems) to set cursor:pointer for file upload button in Webkit
-   http://chipsandtv.com/articles/styling-upload-elements
-   http://stackoverflow.com/questions/7554845/the-cursorpointer-property-doesnt-apply-to-file-upload-buttons-in-webkit-browse
-*/
-    
-::-webkit-file-upload-button {
-  cursor: pointer;
 }
 
 #file-upload-container .vrtx-textfield {
@@ -2143,6 +2130,19 @@ div.vrtx-admin-form {
 
 /* ^ Tooltips */
 
+/* Webkit hacks */
+
+/* The only way (it seems) to set cursor:pointer for file upload button in Webkit
+   http://chipsandtv.com/articles/styling-upload-elements
+   http://stackoverflow.com/questions/7554845/the-cursorpointer-property-doesnt-apply-to-file-upload-buttons-in-webkit-browse
+*/
+    
+::-webkit-file-upload-button {
+  cursor: pointer;
+}
+
+/* ^ Webkit hacks */
+
 /* Mozilla hacks */
 
 form::-moz-focus-inner,
@@ -2150,6 +2150,15 @@ form button::-moz-focus-inner {
   border: none;
   padding: 0;
 }
+
+/* TODO: is there -moz extension for file upload button?
+         it seems unfortunately not: https://developer.mozilla.org/en/CSS_Reference/Mozilla_Extensions
+
+#file-upload-container input.js-on, x:-moz-any-link, x:only-child {
+  left: 180px;
+}
+
+*/
 
 /* Vertical aligning text in textfields: targets Firefox 1.5 and newer */
 /* Credits: http://perishablepress.com/press/2009/06/28/css-hacks-for-different-versions-of-firefox/ */

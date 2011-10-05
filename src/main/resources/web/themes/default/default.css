@@ -1420,12 +1420,12 @@ body#vrtx-manage-collectionlisting #collectionlisting-empty {
   text-align: center;
 }
 
-body#vrtx-trash-can #contents #trash-can-empty td,
-body#vrtx-manage-collectionlisting #contents #collectionlisting-empty td {
+body#vrtx-trash-can #trash-can-empty td,
+body#vrtx-manage-collectionlisting #collectionlisting-empty td {
   padding: 25px 0 30px 0;
 }
 
-body#vrtx-permissions #permissions-read-write-admin {
+#permissions-read-write-admin {
   padding-bottom: 15px;
   padding-top: 5px;
   margin: 15px 0;
@@ -1433,8 +1433,8 @@ body#vrtx-permissions #permissions-read-write-admin {
   border-bottom: 1px solid #d9d9d9;
 }
 
-body#vrtx-permissions #permissions-read-write-admin .permissions-read-wrapper,
-body#vrtx-permissions #permissions-read-write-admin .permissions-read-write-wrapper {
+#permissions-read-write-admin .permissions-read-wrapper,
+#permissions-read-write-admin .permissions-read-write-wrapper {
   padding-bottom: 15px;
   border-bottom: 1px solid #d9d9d9; 
 }
@@ -1464,18 +1464,18 @@ body#vrtx-permissions ul.shortcuts {
   margin-bottom: 15px;
 }
 
-body#vrtx-permissions #permissions-inheritance,
-body#vrtx-permissions #permissions-read-write-admin div.read,
-body#vrtx-permissions #permissions-read-write-admin div.read-write,
-body#vrtx-permissions #permissions-read-write-admin div.all,
+#permissions-inheritance,
+#permissions-read-write-admin div.read,
+#permissions-read-write-admin div.read-write,
+#permissions-read-write-admin div.all,
 body#vrtx-permissions ul.shortcuts li {
   font-size: 1.154em;
 }
 
-body#vrtx-permissions #permissions-inheritance .vrtx-button-small,
-body#vrtx-permissions #permissions-read-write-admin div.read a.vrtx-button-small,
-body#vrtx-permissions #permissions-read-write-admin div.read-write a.vrtx-button-small,
-body#vrtx-permissions #permissions-read-write-admin div.all a.vrtx-button-small {
+#permissions-inheritance .vrtx-button-small,
+#permissions-read-write-admin div.read a.vrtx-button-small,
+#permissions-read-write-admin div.read-write a.vrtx-button-small,
+#permissions-read-write-admin div.all a.vrtx-button-small {
   font-size: 0.867em;
 }
 

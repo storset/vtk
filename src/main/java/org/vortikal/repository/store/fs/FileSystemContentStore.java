@@ -149,21 +149,9 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
     public void storeContent(Path uri, InputStream inputStream) throws DataAccessException {
         String fileName = getLocalFilename(uri);
         File dest = new File(fileName);
-
         try {
-            if (inputStream instanceof FileInputStream) {
-                // Optimized path for local file streams
-                FileChannel srcChannel = ((FileInputStream) inputStream).getChannel();
-                FileChannel dstChannel = new FileOutputStream(dest).getChannel();
-                dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
-                srcChannel.close();
-                dstChannel.close();
-                return;
-            }
-
             FileOutputStream outputStream = new FileOutputStream(dest);
             StreamUtil.pipe(inputStream, outputStream, 16384, true);
-
         } catch (IOException e) {
             throw new DataAccessException("Store content [" + uri + "] failed", e);
         }

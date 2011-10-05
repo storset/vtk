@@ -1340,6 +1340,8 @@
     </property>
   </bean>
   
+  <!-- resource bar in iframe
+  
   <bean id="manage.resourceBarService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-200" />
@@ -1355,7 +1357,7 @@
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
   
-  <bean name="manage.resourceBarHandler" class="org.vortikal.web.display.AController">
+  <bean name="manage.resourceBarHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName" value="manage.resourceBarIframeView" />
   </bean>
   
@@ -1366,6 +1368,8 @@
       </map>
     </property>
   </bean>
+  
+  -->
   
   <bean id="manage.resourceBarComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
@@ -1392,6 +1396,8 @@
     </property>
   </bean>
   
+  <!-- resource bar in iframe
+  
   <bean id="manage.resourceBarIframeView" parent="freemarkerView">
     <property name="url" value="system/resource-bar-iframe.ftl" />
     <property name="referenceDataProviders">
@@ -1407,7 +1413,9 @@
       </map>
     </property>
   </bean>
-
+  
+  -->
+  
   <bean id="manage.infoMessageComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="system-message" />

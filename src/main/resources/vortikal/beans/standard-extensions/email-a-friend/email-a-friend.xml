@@ -32,7 +32,7 @@
     </property>
   </bean>
 
-  <bean id="javaMailSenderImpl" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+  <bean id="emailafriend.javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
     <property name="host" value="${emailAFriend.mailServer}" />
     <property name="port" value="${emailAFriend.mailServerPort}" />
     <property name="protocol" value="${emailAFriend.mailServerProtocol}" />
@@ -44,7 +44,6 @@
     <property name="viewName" value="emailafriend.view" />
     <property name="siteName" value="${emailAFriend.siteName}" />
     <property name="resourceManager" ref="resourceManager" />
-    <property name="javaMailSenderImpl" ref="javaMailSenderImpl" />
     <property name="mailExecutor" ref="emailafriend.mailExecutor" />
     <property name="mailTemplateProvider" ref="emailafriend.mailTemplateProvider" />
     <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
@@ -52,6 +51,7 @@
 
   <bean id="emailafriend.mailExecutor" class="org.vortikal.util.mail.MailExecutor">
     <constructor-arg ref="emailafriend.taskExecutor" />
+    <constructor-arg ref="emailafriend.javaMailSender" />
   </bean>
 
   <bean id="emailafriend.taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">

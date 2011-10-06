@@ -32,7 +32,7 @@
     </property>
   </bean>
 
-  <bean id="javaMailSenderImpl" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+  <bean id="feedback.javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
     <property name="host" value="${emailAFriend.mailServer}" />
     <property name="port" value="${emailAFriend.mailServerPort}" />
     <property name="protocol" value="${emailAFriend.mailServerProtocol}" />
@@ -44,15 +44,16 @@
     <property name="viewName" value="feedback.view" />
     <property name="siteName" value="${emailAFriend.siteName}" />
     <property name="resourceManager" ref="resourceManager" />
-    <property name="javaMailSenderImpl" ref="javaMailSenderImpl" />
     <property name="mailExecutor" ref="feedback.mailExecutor" />
     <property name="mailTemplateProvider" ref="feedback.mailTemplateProvider" />
     <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
-    <property name="emailFrom" value="noreply@usit.uio.no" />  
+    <property name="recipients" value="${mailFeedback.recipients}" />
+    <property name="sender" value="${mailFeedback.sender}" />
   </bean>
 
   <bean id="feedback.mailExecutor" class="org.vortikal.util.mail.MailExecutor">
     <constructor-arg ref="feedback.taskExecutor" />
+    <constructor-arg ref="feedback.javaMailSender" />
   </bean>
 
   <bean id="feedback.taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">

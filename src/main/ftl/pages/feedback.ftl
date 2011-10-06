@@ -100,7 +100,7 @@
        <#if yourSavedComment?exists && yourSavedComment?has_content>
          <textarea rows="9" cols="10" id="yourComment" name="yourComment">${yourSavedComment}</textarea>
        <#else>
-         <textarea rows="9" cols="10" id="yourComment" name="yourComment" value=""></textarea> 
+         <textarea rows="9" cols="10" id="yourComment" name="yourComment"></textarea> 
        </#if>
        
        <#if fullurl?has_content>

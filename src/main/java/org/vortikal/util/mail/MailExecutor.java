@@ -30,50 +30,82 @@
  */
 package org.vortikal.util.mail;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
+public final class MailExecutor {
+    private static final Log logger = LogFactory.getLog(MailExecutor.class);
 
-public class MailExecutor {
+    private JavaMailSender mailSender;
+    private TaskExecutor taskExecutor;
 
-    private static Log logger = LogFactory.getLog(MailExecutor.class);
+    public MailExecutor(TaskExecutor taskExecutor, JavaMailSender mailSender) {
+        this.taskExecutor = taskExecutor;
+        this.mailSender = mailSender;
+    }
+    
+    public void enqueue(MimeMessage msg) throws Exception {
+        taskExecutor.execute(new SendMailTask(this.mailSender, msg));
+    }
+    
+    public MimeMessage createMimeMessage(MailTemplateProvider mailTemplateProvider,
+            String siteName, String uri, String title, String[] mailMultipleTo, String emailFrom,
+            String comment, String subject) throws Exception {
+        
+        String mailBody = mailTemplateProvider.generateMailBody(title, uri, emailFrom, comment, siteName);
 
-    private class SendMailTask implements Runnable {
+        MimeMessage mimeMessage = this.mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+
+        helper.setSubject(subject);
+        helper.setFrom(emailFrom);
+        helper.setTo(mailMultipleTo);
+        helper.setText(mailBody, true); // send HTML
+
+        return mimeMessage;
+    }
+    
+    public static boolean isValidEmail(String addr) {
+        if (addr == null || addr.trim().equals("")) {
+            return false;
+        }
+        if (org.springframework.util.StringUtils.countOccurrencesOf(addr, "@") == 0) {
+            return false;
+        }
+        try {
+            new InternetAddress(addr);
+            return true;
+        } catch (AddressException e) {
+            return false;
+        }
+    }
+    
+    private static class SendMailTask implements Runnable {
 
         private MimeMessage msg;
-        private JavaMailSenderImpl javaMailSenderImpl;
+        private JavaMailSender sender;
 
-        public SendMailTask(JavaMailSenderImpl javaMailSenderImpl, MimeMessage msg) {
+        public SendMailTask(JavaMailSender javaMailSender, MimeMessage msg) {
             this.msg = msg;
-            this.javaMailSenderImpl = javaMailSenderImpl;
+            this.sender = javaMailSender;
         }
 
         public void run() {
             try {
+                this.sender.send(msg);
                 if (logger.isDebugEnabled()) {
-                    logger.info("Attempting to send message " + this.msg);
+                    logger.info("Sent message " + this.msg);
                 }
-                javaMailSenderImpl.send(msg);
             } catch (Throwable t) {
                 logger.warn("Sending message " + this.msg + " failed", t);
             }
         }
     }
-
-    private TaskExecutor taskExecutor;
-
-    public MailExecutor(TaskExecutor taskExecutor) {
-        this.taskExecutor = taskExecutor;
-    }
-
-    public void SendMail(JavaMailSenderImpl javaMailSenderImpl, MimeMessage msg) throws Exception {
-        // TODO: we dont get mail exceptions with this method.. e.g. invalid address
-        //       in Spring 3.0 a Callable can be used as task in ThreadPoolTaskExecutor
-        taskExecutor.execute(new SendMailTask(javaMailSenderImpl, msg));
-    }
-    
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2011 University of Oslo, Norway
+/* Copyright (c) 2011, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -50,7 +49,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.mail.MailExecutor;
-import org.vortikal.util.mail.MailHelper;
 import org.vortikal.util.mail.MailTemplateProvider;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -59,13 +57,15 @@ public class FeedbackController implements Controller {
     private String viewName;
     private String siteName;
     private ResourceWrapperManager resourceManager;
-    private JavaMailSenderImpl javaMailSenderImpl;
     private MailExecutor mailExecutor;
     private MailTemplateProvider mailTemplateProvider;
     private LocaleResolver localeResolver;
     private Service viewService;
 
-    private String emailFrom;
+    private String[] recipients;
+    private String recipientsStr;
+    
+    private String sender;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -85,14 +85,32 @@ public class FeedbackController implements Controller {
         }
 
         Map<String, Object> model = new HashMap<String, Object>();
+        
+        model.put("resource", this.resourceManager.createResourceWrapper());
+
         String method = request.getMethod();
 
         String title = resource.getTitle();
         String url = this.viewService.constructURL(uri).toString();
         
-        String mailTo = request.getParameter("mailto");
-        if (!StringUtils.isBlank(mailTo)) {
-            model.put("mailto", mailTo);
+        String[] recipients = this.recipients;
+        String recipientsStr = this.recipientsStr;
+        boolean validAddresses = true;
+        
+        String mailToParam = request.getParameter("mailto");
+        if (!StringUtils.isBlank(mailToParam)) {
+            String[] addresses = mailToParam.split(",");
+            for (String addr: addresses) {
+                if (!MailExecutor.isValidEmail(addr)) {
+                    validAddresses = false;
+                }
+            }
+            recipientsStr = mailToParam;
+            recipients = addresses;
+        }
+        if (!validAddresses) {
+            model.put("tipResponse", "FAILURE-INVALID-EMAIL");
+            return new ModelAndView(this.viewName, model);
         }
         
         // Override if parameters are set
@@ -108,47 +126,39 @@ public class FeedbackController implements Controller {
             }
         }
         
+        if (!method.equals("POST")) {
+            return new ModelAndView(this.viewName, model);
+        }    
+        String yourComment = request.getParameter("yourComment");
 
-        if (method.equals("POST")) {
-            String yourComment = request.getParameter("yourComment");
-            if (StringUtils.isBlank(yourComment)) {
-                model.put("tipResponse", "FAILURE-NULL-FORM");
-            } else {
-                try {
-                    String[] emailMultipleTo = mailTo.split(",");
-                    if (MailHelper.isValidEmail(emailMultipleTo) && MailHelper.isValidEmail(emailFrom)) {
-
-                        org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
-                                request);
-                        
-                        MimeMessage mimeMessage = MailHelper.createMimeMessage(javaMailSenderImpl,
-                                mailTemplateProvider, this.siteName, url, title, emailMultipleTo,
-                                emailFrom, yourComment, springRequestContext
-                                        .getMessage("feedback.mail.subject-header-prefix")
-                                        + ": " + title);
-
-                        mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
-
-                        model.put("emailSentTo", mailTo);
-                        model.put("tipResponse", "OK");
-                    } else {
-                        if (!StringUtils.isBlank(yourComment)) {
-                            model.put("yourSavedComment", yourComment);
-                        }
-                        model.put("tipResponse", "FAILURE-INVALID-EMAIL");
-                    }
-                } catch (Exception mtex) { // Unreachable because of thread / executor
-                    model.put("tipResponse", "FAILURE");
-                    model.put("tipResponseMsg", mtex.getMessage());
-                }
-            }
+        if (StringUtils.isBlank(yourComment)) {
+            model.put("tipResponse", "FAILURE-NULL-FORM");
+            return new ModelAndView(this.viewName, model);
         }
 
-        model.put("resource", this.resourceManager.createResourceWrapper());
+        model.put("yourSavedComment", yourComment);
+
+        try {
+            org.springframework.web.servlet.support.RequestContext springRequestContext = 
+                    new org.springframework.web.servlet.support.RequestContext(request);
+            
+            MimeMessage mimeMessage = mailExecutor.createMimeMessage(
+                    mailTemplateProvider, this.siteName, url, title, 
+                    recipients, this.sender, yourComment, springRequestContext
+                    .getMessage("feedback.mail.subject-header-prefix")
+                    + ": " + title);
+
+            mailExecutor.enqueue(mimeMessage);
+
+            model.put("emailSentTo", recipientsStr);
+            model.put("tipResponse", "OK");
+        } catch (Exception mtex) { // Unreachable because of thread / executor
+            model.put("tipResponse", "FAILURE");
+            model.put("tipResponseMsg", mtex.getMessage());
+        }
         return new ModelAndView(this.viewName, model);
     }
-
-
+    
     @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
@@ -158,12 +168,6 @@ public class FeedbackController implements Controller {
     @Required
     public void setResourceManager(ResourceWrapperManager resourceManager) {
         this.resourceManager = resourceManager;
-    }
-
-
-    @Required
-    public void setJavaMailSenderImpl(JavaMailSenderImpl javaMailSenderImpl) {
-        this.javaMailSenderImpl = javaMailSenderImpl;
     }
 
 
@@ -198,8 +202,25 @@ public class FeedbackController implements Controller {
 
 
     @Required
-    public void setEmailFrom(String emailFrom) {
-        this.emailFrom = emailFrom;
+    public void setSender(String sender) {
+        if (!MailExecutor.isValidEmail(sender)) {
+            throw new IllegalArgumentException("Invalid 'sender' field: '" + sender + "'");
+        }
+        this.sender = sender;
+    }
+
+    public void setRecipients(String str) {
+        if (str == null || "".equals(str.trim())) {
+            return;
+        }
+        String[] list = str.split(",");
+        for (String addr: list) {
+            if (!MailExecutor.isValidEmail(addr)) {
+                throw new IllegalArgumentException("Invalid recipient: '" + addr + "'");
+            }
+        }
+        this.recipients = list;
+        this.recipientsStr = str;
     }
 
 }

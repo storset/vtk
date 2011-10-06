@@ -41,7 +41,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -50,7 +49,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.util.mail.MailExecutor;
-import org.vortikal.util.mail.MailHelper;
 import org.vortikal.util.mail.MailTemplateProvider;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -59,7 +57,6 @@ public class EmailAFriendController implements Controller {
     private String viewName;
     private String siteName;
     private ResourceWrapperManager resourceManager;
-    private JavaMailSenderImpl javaMailSenderImpl;
     private MailExecutor mailExecutor;
     private MailTemplateProvider mailTemplateProvider;
     private LocaleResolver localeResolver;
@@ -106,15 +103,25 @@ public class EmailAFriendController implements Controller {
                     if (StringUtils.isNotBlank(yourComment)) {
                         comment = yourComment;
                     }
+                    boolean validAddresses = true;
                     String[] emailMultipleTo = emailTo.split(",");
-                    if (MailHelper.isValidEmail(emailMultipleTo) && MailHelper.isValidEmail(emailFrom)) {
+                    for (String addr: emailMultipleTo) {
+                        if (!MailExecutor.isValidEmail(addr)) {
+                            validAddresses = false;
+                            break;
+                        }
+                    }
+                    validAddresses = validAddresses && MailExecutor.isValidEmail(emailFrom);
+                    
+                    if (validAddresses) {
                         String url = this.viewService.constructURL(uri).toString();
 
-                        MimeMessage mimeMessage = MailHelper.createMimeMessage(javaMailSenderImpl,
-                                mailTemplateProvider, this.siteName, url, resource.getTitle(), emailMultipleTo,
+                        MimeMessage mimeMessage = mailExecutor.createMimeMessage(
+                                mailTemplateProvider, this.siteName, url, resource.getTitle(), 
+                                emailMultipleTo,
                                 emailFrom, comment, resource.getTitle());
 
-                        mailExecutor.SendMail(javaMailSenderImpl, mimeMessage);
+                        mailExecutor.enqueue(mimeMessage);
 
                         model.put("emailSentTo", emailTo);
                         model.put("tipResponse", "OK");
@@ -147,12 +154,6 @@ public class EmailAFriendController implements Controller {
     @Required
     public void setResourceManager(ResourceWrapperManager resourceManager) {
         this.resourceManager = resourceManager;
-    }
-
-
-    @Required
-    public void setJavaMailSenderImpl(JavaMailSenderImpl javaMailSenderImpl) {
-        this.javaMailSenderImpl = javaMailSenderImpl;
     }
 
 

@@ -31,6 +31,8 @@
      $(document).ready(function(){
        var timestamp = 1 - new Date();
        
+       $("#tree li").remove();
+       
        $("#tree").treeview({
          animated: "fast",
          url: "?vrtx=admin&service=subresource-retrieve&uri=${report.uri}&ts=" + timestamp,
@@ -60,7 +62,7 @@
 	</p>
 	<div class="vrtx-report vrtx-permission-tree">
 	
-	  <ul id="tree" class="filetree treeview-gray"></ul>
+	  <ul id="tree" class="filetree treeview-gray"><li>null</li></ul>
 	  
 	  <div id="vrtx-report-help">
 	    <h2><@vrtx.msg code="report.collection-structure.help" /></h2>

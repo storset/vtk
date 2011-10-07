@@ -37,6 +37,7 @@ import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
+import org.vortikal.text.html.HtmlUtil;
 
 /**
  * Value formatter for {@link Principal} values.
@@ -71,9 +72,9 @@ public class PrincipalValueFormatter implements ValueFormatter {
 
         Principal principal = value.getPrincipalValue();
         if (LINK_FORMAT.equals(format) && principal.getURL() != null) {
-            return "<a href=\"" + principal.getURL() + "\">" + principal.getDescription() + "</a>"; 
+            return "<a href=\"" + HtmlUtil.escapeHtmlString(principal.getURL()) + "\">" + principal.getDescription() + "</a>"; 
         } else if (NAME_LINK_FORMAT.equals(format) && principal.getURL() != null) {
-            return "<a href=\"" + principal.getURL() + "\">" + principal.getName() + "</a>";
+            return "<a href=\"" + HtmlUtil.escapeHtmlString(principal.getURL()) + "\">" + principal.getName() + "</a>";
         } else if (NAME_FORMAT.equals(format)) {
             return principal.getDescription();
         }

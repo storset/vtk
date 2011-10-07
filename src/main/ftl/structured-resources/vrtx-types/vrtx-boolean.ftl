@@ -5,7 +5,7 @@
   <#local value = defaultValue />
   </#if>
   <div class="vrtx-radio ${classes}">
-    <label for="${inputFieldName}">${title}</label><#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>
+    <label>${title}</label><#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>
     <div class="vrtx-radio-buttons">
       <input name="${inputFieldName}" id="${inputFieldName}-true" type="radio" value="true" <#if value == "true" > checked="checked" </#if> />
       <label for="${inputFieldName}-true">${description.getVocabularyValue(locale,"true")}</label> 

@@ -16,9 +16,9 @@
             </#list>
           <#else>
             <#if value != "">
-              <option value="${key?html}" <#if value == key> selected </#if>>${valuemap[key]}</option>
+              <option value="${key?html}" <#if value == key> selected="selected" </#if>>${valuemap[key]}</option>
             <#else>
-              <option value="${key?html}" <#if key == "undefined"> selected </#if>>${valuemap[key]}</option>
+              <option value="${key?html}" <#if key == "undefined"> selected="selected" </#if>>${valuemap[key]}</option>
             </#if>
           </#if>
 	    </#list>

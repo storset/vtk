@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2011, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -37,16 +37,12 @@ import org.vortikal.web.decorating.DecoratorResponse;
 
 public class FeedbackComponent extends ViewRenderingDecoratorComponent {
     
-    private static final String DEFAULT_EMAIL_TO_ADDRESS = "tilbakemelding@admin.uio.no";
-
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
         String emailTo = request.getStringParameter("mail-to");
         if(emailTo != null && !emailTo.equals("")) {
             model.put("mailTo", emailTo);
-        } else {
-            model.put("mailTo", DEFAULT_EMAIL_TO_ADDRESS);
         }
         
         super.processModel(model, request, response);

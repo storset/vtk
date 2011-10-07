@@ -106,13 +106,14 @@ public class FeedbackController implements Controller {
                 }
             }
             recipientsStr = mailToParam;
-            model.put("mailto", recipientsStr);
             recipients = addresses;
         }
         if (!validAddresses) {
             model.put("tipResponse", "FAILURE-INVALID-EMAIL");
             return new ModelAndView(this.viewName, model);
         }
+        
+        model.put("mailto", recipientsStr);
         
         // Override if parameters are set
         String fullUrl = request.getParameter("fullurl");

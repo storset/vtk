@@ -8,8 +8,12 @@
 
 <#import "/lib/vortikal.ftl" as vrtx/>
 
-<#if emailLink?exists && emailLink.url?exists && mailTo?exists>
-  <@genFeedback emailLink.url url mailTo />
+<#if emailLink?exists && emailLink.url?exists>
+  <#if mailTo?exists>
+    <@genFeedback emailLink.url url mailTo />
+  <#else>
+    <@genFeedback emailLink.url url />
+  </#if>
 </#if>
 
 <#macro genFeedback link jsUrl emailTo="" addFullUrl="" addPageTitle="">

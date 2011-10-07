@@ -153,6 +153,10 @@ div.subbuttons {
   margin-bottom: 10px;
 }
 
+.bgcolorExpanded .attributevaluecell input[type=radio] {
+  margin-bottom: 0px;
+}
+
 .xml-edit-link {
   padding-left: 10px;
 }

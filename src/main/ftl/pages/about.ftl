@@ -282,7 +282,7 @@
       </#if>
       </#compress>
       <#if editURL != "">
-        ${editURL?html}
+        ${editURL}
       </#if>
     </td>
   </tr>

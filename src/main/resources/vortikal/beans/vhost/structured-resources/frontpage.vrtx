@@ -355,7 +355,7 @@ resourcetype frontpage {
        nn : ("true" = "Ja", "false" = "Nei")
      },
      main-content:boxCssColor {
-       en : ("white-box" = "White box", "grey-box" = "Grey box", "undefined" = "Blanc"),
+       en : ("white-box" = "White box", "grey-box" = "Grey box", "undefined" = "Blank"),
        no : ("white-box" = "Hvit boks", "grey-box" = "Grå boks", "undefined" = "Blank"),
        nn : ("white-box" = "Hvit boks", "grey-box" = "Grå boks", "undefined" = "Blank")
      },

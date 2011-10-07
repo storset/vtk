@@ -13,9 +13,7 @@
      $(function() {
        $("#create-iframe")[0].allowTransparency = true;
      });
-  
-     // avoid flickering by set real height after 500ms
-     setTimeout(function() {
+     setTimeout(function() { // avoid flickering by set real height after 500ms
        $("#create-iframe").css("height", "135px");
      }, 500);
      

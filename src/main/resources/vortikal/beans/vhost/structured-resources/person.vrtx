@@ -435,7 +435,7 @@ resourcetype person {
     rssTitle : (en : "Title",no : "Tittel", nn : "Tittel"),
     rssUrl : (en : "Web address", no : "Webadresse", nn :"Webadresse"),
     pressPhoto : (en : "Press photo", no : "Pressebilde", nn : "Pressebilete"),
-    vCard : (en : "Add to address book", no : "Legg til i adressebok", nn : "Legg til i adressebok"),
+    vCard : (en : "Download business card", no : "Last ned visittkort", nn : "Last ned visittkort"),
     room : (en : "Room", no : "Rom", nn : "Rom"),
     images : (en : "Images", no : "Bilder", nn : "Bilete"),
     contactInformation : (en : "Primary contact information", no : "Primære kontaktopplysninger", nn : "Primære kontaktopplysingar"),

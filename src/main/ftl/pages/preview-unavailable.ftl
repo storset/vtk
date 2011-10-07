@@ -21,7 +21,7 @@
   </head>
   <body>
     <p class="previewUnavailable">Preview not available.<br /><br />
-    See the resource on: <a href="${resourceDetail.viewURL}">${resourceDetail.viewURL}</a></p>
+    See the resource on: <a href="${resourceDetail.viewURL?html}">${resourceDetail.viewURL?html}</a></p>
   </body>
 </html>
 

@@ -21,6 +21,6 @@
   </head>
   <body>
     <p class="previewUnavailable">Innholdet kan ikke forh&aring;ndsvises innenfor "Administrasjon av webdokumenter".<br /><br />
-    Men du kan se p&aring; eller laste ned dokumentet p&aring; webadressen:<br><a href="${resourceDetail.viewURL}">${resourceDetail.viewURL}</a></p>
+    Men du kan se p&aring; eller laste ned dokumentet p&aring; webadressen:<br><a href="${resourceDetail.viewURL?html}">${resourceDetail.viewURL?html}</a></p>
   </body>
 </html>

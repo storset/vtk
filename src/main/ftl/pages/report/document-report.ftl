@@ -17,7 +17,7 @@
         <#if report.backURL?exists>
         <a href="${report.backURL?html}" ><@vrtx.msg code="report.${report.backURLname}" default="Back" /></a>
         <#else>
-        <a href="${serviceURL}" ><@vrtx.msg code="report.back" default="Back" /></a>
+        <a href="${serviceURL?html}" ><@vrtx.msg code="report.back" default="Back" /></a>
         </#if>
       </div>
     </div>

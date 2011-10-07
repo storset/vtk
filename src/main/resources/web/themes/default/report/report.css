@@ -231,11 +231,11 @@ div.vrtx-report #vrtx-report-help {
   background: url(images/treeview-gray-line-not-inherited.gif) no-repeat -5px 0;
 }
 
-#vrtx-report-help-allowed-for-all-inherited-folder,
-#vrtx-report-help-allowed-for-all-not-inherited-folder,
-#vrtx-report-help-restricted-inherited-file,
-#vrtx-report-help-allowed-for-all-inherited-file,
-#vrtx-report-help-allowed-for-all-not-inherited-file {
+.vrtx-report-help-allowed-for-all-inherited-folder,
+.vrtx-report-help-allowed-for-all-not-inherited-folder,
+.vrtx-report-help-restricted-inherited-file,
+.vrtx-report-help-allowed-for-all-inherited-file,
+.vrtx-report-help-allowed-for-all-not-inherited-file {
   width: 16px;
   height: 14px;
   display: block;
@@ -243,23 +243,23 @@ div.vrtx-report #vrtx-report-help {
   margin-right: 3px;
 }
 
-#vrtx-report-help-allowed-for-all-inherited-folder {
+.vrtx-report-help-allowed-for-all-inherited-folder {
   background: url(images/folder-closed-allowed-for-all.gif) no-repeat 0 0;
 }
 
-#vrtx-report-help-allowed-for-all-not-inherited-folder {
+.vrtx-report-help-allowed-for-all-not-inherited-folder {
   background: url(images/folder-closed-allowed-for-all-not-inherited.gif) no-repeat 0 0;
 }
 
-#vrtx-report-help-restricted-inherited-file {
+.vrtx-report-help-restricted-inherited-file {
   background: url(images/file-restricted.gif) no-repeat 0 0;
 }
 
-#vrtx-report-help-allowed-for-all-inherited-file {
+.vrtx-report-help-allowed-for-all-inherited-file {
   background: url(images/file-allowed-for-all.gif) no-repeat 0 0;
 }
 
-#vrtx-report-help-allowed-for-all-not-inherited-file {
+.vrtx-report-help-allowed-for-all-not-inherited-file {
   background: url(images/file-allowed-for-all-not-inherited.gif) no-repeat 0 0;
 }
 

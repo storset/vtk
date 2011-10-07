@@ -24,7 +24,7 @@
           <ul class="vrtx-primary-reporters">
           <#list primaryReporters as reporter>
             <li class="${reporter.name}">
-              <a href="${reporter.url}">
+              <a href="${reporter.url?html}">
                 <span class="vrtx-primary-reporters-title"><@vrtx.msg code="report.${reporter.name}" default="${reporter.name}" /></span>
                 <img class="vrtx-primary-reporters-image" src="/vrtx/__vrtx/static-resources/themes/default/images/report-${reporter.name}.gif" alt="${reporter.name} icon" />
                 <span class="vrtx-primary-reporters-info"><@vrtx.msg code="report.primaries.info.${reporter.name}" default="${reporter.name}" /></span>
@@ -38,7 +38,7 @@
   	      <h4 class="vrtx-reporters-title"><@vrtx.msg code="report.heading.others" default="Other reports" /></h4>
           <ul class="vrtx-reporters">
           <#list reporters as reporter>
-            <li class="${reporter.name}"><a href="${reporter.url}"><@vrtx.msg code="report.${reporter.name}" default="${reporter.name}" /></a></li>
+            <li class="${reporter.name}"><a href="${reporter.url?html}"><@vrtx.msg code="report.${reporter.name}" default="${reporter.name}" /></a></li>
           </#list>
   	      </ul>
   	    </#if>

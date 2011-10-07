@@ -928,6 +928,15 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   left: 0px;
 }
 
+#create-iframe {
+  height: 40px;
+  width: 150px;
+  overflow: visible;
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+}
+
 #TB_closeAjaxWindow.create-tree-close-window {
   display: block;
 }

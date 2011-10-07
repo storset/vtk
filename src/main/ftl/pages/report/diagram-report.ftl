@@ -14,7 +14,7 @@
   <div class="resourceInfo">
     <div class="vrtx-report-nav">
       <div class="back">
-        <a href="${serviceURL}" ><@vrtx.msg code="report.back" default="Back" /></a>
+        <a href="${serviceURL?html}" ><@vrtx.msg code="report.back" default="Back" /></a>
       </div>
     </div>
     <h2><@vrtx.msg code="report.${report.reportname}" /></h2>
@@ -38,7 +38,7 @@
       </div>
       <div class="vrtx-report-diagram-img">
         <img id="webtypesimg" width="660" height="220" alt="<@vrtx.msg code="report.${report.reportname}.webpagepiechart" />" 
-             src="https://chart.googleapis.com/chart?chco=ed1c24&chs=660x220&cht=p3&chd=s:Sm&chdl=<#assign first = 0><#list report.webTypes as type><#if (report.webTypeCount[type_index] > 0)><#if (first != 0)>|</#if><@vrtx.msg code="report.webDiagram.+${type}" /><#assign first = 1></#if></#list>&chl=<#assign first = 0><#list report.webTypes as type><#if (report.webTypeCount[type_index] > 0)><#if (first != 0)>|</#if><@vrtx.msg code="report.webDiagram.+${type}" /><#assign first = 1></#if></#list>&chd=t:<#assign first = 0><#list report.webTypes as type><#if (report.webTypeCount[type_index] > 0)><#if (first != 0)>,</#if>${((report.webTypeCount[type_index]/report.thirdtotal)*100)?string("0")}<#assign first = 1></#if></#list>" />
+             src="https://chart.googleapis.com/chart?chco=ed1c24&amp;chs=660x220&amp;cht=p3&amp;chd=s:Sm&amp;chdl=<#assign first = 0><#list report.webTypes as type><#if (report.webTypeCount[type_index] > 0)><#if (first != 0)>|</#if><@vrtx.msg code="report.webDiagram.+${type}" /><#assign first = 1></#if></#list>&amp;chl=<#assign first = 0><#list report.webTypes as type><#if (report.webTypeCount[type_index] > 0)><#if (first != 0)>|</#if><@vrtx.msg code="report.webDiagram.+${type}" /><#assign first = 1></#if></#list>&amp;chd=t:<#assign first = 0><#list report.webTypes as type><#if (report.webTypeCount[type_index] > 0)><#if (first != 0)>,</#if>${((report.webTypeCount[type_index]/report.thirdtotal)*100)?string("0")}<#assign first = 1></#if></#list>" />
       </div>
     </div>
   </#if>
@@ -62,7 +62,7 @@
       </div>
       <div class="vrtx-report-diagram-img">
         <img id="filetypesimg" width="660" height="220" alt="<@vrtx.msg code="report.${report.reportname}.filetypepiechart" />" 
-             src="https://chart.googleapis.com/chart?chco=ed1c24&chs=660x220&cht=p3&chd=s:Sm&chdl=<#assign first = 0><#list report.types as type><#if (report.typeCount[type_index] > 0)><#if (first != 0)>|</#if><@vrtx.msg code="report.diagram.+${type}" /><#assign first = 1></#if></#list>&chl=<#assign first = 0><#list report.types as type><#if (report.typeCount[type_index] > 0)><#if (first != 0)>|</#if><@vrtx.msg code="report.diagram.+${type}" /><#assign first = 1></#if></#list>&chd=t:<#assign first = 0><#list report.types as type><#if (report.typeCount[type_index] > 0)><#if (first != 0)>,</#if>${((report.typeCount[type_index]/report.secondtotal)*100)?string("0")}<#assign first = 1></#if></#list>" />
+             src="https://chart.googleapis.com/chart?chco=ed1c24&amp;chs=660x220&amp;cht=p3&amp;chd=s:Sm&amp;chdl=<#assign first = 0><#list report.types as type><#if (report.typeCount[type_index] > 0)><#if (first != 0)>|</#if><@vrtx.msg code="report.diagram.+${type}" /><#assign first = 1></#if></#list>&amp;chl=<#assign first = 0><#list report.types as type><#if (report.typeCount[type_index] > 0)><#if (first != 0)>|</#if><@vrtx.msg code="report.diagram.+${type}" /><#assign first = 1></#if></#list>&amp;chd=t:<#assign first = 0><#list report.types as type><#if (report.typeCount[type_index] > 0)><#if (first != 0)>,</#if>${((report.typeCount[type_index]/report.secondtotal)*100)?string("0")}<#assign first = 1></#if></#list>" />
       </div>
     </div>
   </#if>
@@ -87,7 +87,7 @@
       </div>
       <div class="vrtx-report-diagram-img">
         <img id="filesandfoldersimg" width="660" height="220" alt="<@vrtx.msg code="report.${report.reportname}.filesandfolderspiechart" />" 
-             src="https://chart.googleapis.com/chart?chco=ed1c24&chs=660x220&cht=p3&chd=s:Sm&chdl=<@vrtx.msg code="report.diagram.folder" />|<@vrtx.msg code="report.diagram.file" />&chl=<#if (report.folders > 0)><@vrtx.msg code="report.diagram.folder" /></#if>|<#if (report.files > 0)><@vrtx.msg code="report.diagram.file" /></#if>&chd=t:${((report.folders/report.firsttotal)*100)?string("0")},${((report.files/report.firsttotal)*100)?string("0")}" />
+             src="https://chart.googleapis.com/chart?chco=ed1c24amp;chs=660x220amp;cht=p3amp;chd=s:Sm&amp;chdl=<@vrtx.msg code="report.diagram.folder" />|<@vrtx.msg code="report.diagram.file" />&amp;chl=<#if (report.folders > 0)><@vrtx.msg code="report.diagram.folder" /></#if>|<#if (report.files > 0)><@vrtx.msg code="report.diagram.file" /></#if>&amp;chd=t:${((report.folders/report.firsttotal)*100)?string("0")},${((report.files/report.firsttotal)*100)?string("0")}" />
       </div>
     </div>
   </#if>

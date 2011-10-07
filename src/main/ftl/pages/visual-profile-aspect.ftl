@@ -25,7 +25,7 @@
   <#else>
   <div class="resourceInfo visualProfile">
   <h2><@vrtx.msg code="visualProfileAspect.edit" default="Edit visual profile"/></h2>
-  <form action="${form.submitURL}" method="post">
+  <form action="${form.submitURL?html}" method="post">
     <#assign formElementsSize = form.elements?size />
     <#list form.elements as element>
       <#if (element_index == (formElementsSize-1))>

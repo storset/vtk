@@ -51,7 +51,7 @@
   <div class="resourceInfo">
     <div class="vrtx-report-nav">
   	  <div class="back">
-	    <a href="${serviceURL}"><@vrtx.msg code="report.back" default="Back" /></a>
+	    <a href="${serviceURL?html}"><@vrtx.msg code="report.back" default="Back" /></a>
 	  </div>
 	</div> 
 	<h2><@vrtx.msg code="report.collection-structure" /></h2>
@@ -65,21 +65,21 @@
 	  <div id="vrtx-report-help">
 	    <h2><@vrtx.msg code="report.collection-structure.help" /></h2>
 	    <p id="vrtx-report-help-restricted">
-	      <span id="vrtx-report-help-restricted-inherited-file"></span>
+	      <span class="vrtx-report-help-restricted-inherited-file"></span>
 	      <@vrtx.msg code="report.collection-structure.help.restricted" />
 	    </p>
 	    <p id="vrtx-report-help-allowed-for-all">
-	      <span id="vrtx-report-help-allowed-for-all-inherited-file"></span>
+	      <span class="vrtx-report-help-allowed-for-all-inherited-file"></span>
 	      <@vrtx.msg code="report.collection-structure.help.allowed-for-all" />
 	    </p>
 	    <p id="vrtx-report-help-inherited">
-	      <span id="vrtx-report-help-allowed-for-all-inherited-folder"></span>
-	      <span id="vrtx-report-help-allowed-for-all-inherited-file"></span>
+	      <span class="vrtx-report-help-allowed-for-all-inherited-folder"></span>
+	      <span class="vrtx-report-help-allowed-for-all-inherited-file"></span>
 	      <@vrtx.msg code="report.collection-structure.help.inherited" />
 	    </p>
 	    <p id="vrtx-report-help-not-inherited">
-	      <span id="vrtx-report-help-allowed-for-all-not-inherited-folder"></span>
-	      <span id="vrtx-report-help-allowed-for-all-not-inherited-file"></span>
+	      <span class="vrtx-report-help-allowed-for-all-not-inherited-folder"></span>
+	      <span class="vrtx-report-help-allowed-for-all-not-inherited-file"></span>
 	      <@vrtx.msg code="report.collection-structure.help.not-inherited" />
 	    </p>
 	  </div>

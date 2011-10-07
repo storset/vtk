@@ -58,9 +58,9 @@
 </#if>
 
 <p>
-  <#if .vars["copyrightHelpURL." + lang]?exists>
-  <#assign url = .vars["copyrightHelpURL." + lang] />
-  <#if url?exists>${url}</#if>
+  <#if .vars["copyrightHelpURL." + lang]?exists && .vars["copyrightHelpURL." + lang]?trim != "">
+    <#assign url = .vars["copyrightHelpURL." + lang] />
+    <#if url?exists>${url}</#if>
   </#if>
 </p>
 

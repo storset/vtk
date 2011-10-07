@@ -171,9 +171,8 @@ a:hover {
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper {
-  height: 32px;
-  background: url(images/app-head-breadcrumb-bg.png) repeat-x left bottom;
-  margin-bottom: -1px;
+  background: url(images/app-head-breadcrumb-bg.png) repeat left top;
+  overflow: hidden;
 }
 
 #app-head-wrapper #line-top #uiologo,
@@ -186,50 +185,52 @@ a:hover {
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb {
-  text-align: left;
-  height: 32px;
+  text-align: left; 
+  height: auto;
+  overflow: hidden;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span {
-  display: block;
-  float: left;
   font-size: 1.15em;
-  margin: 1px 0 0 0;
+  margin: 0 0 0 0; 
 }
 
-#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span a,
-#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active,
-#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span span.vrtx-breadcrumb-delimiter {
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span {
   float: left;
   display: block;
+  height: 32px;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span a,
-#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active {
-  height: 25px;
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span span.vrtx-breadcrumb-delimiter {
+  display: block;
+  float: left;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span a {
   color: #363534;
   text-decoration: none;
-  padding: 5px 11px 0 11px;
-}
-
-#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active {
-  padding: 5px 21px 0 11px;
+  padding: 6px 11px 0 11px;
+  height: 26px;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span span.vrtx-breadcrumb-delimiter {
   background: url(images/app-head-breadcrumb-delimiter.png) no-repeat right bottom;
   height: 30px;
   width: 10px;
-  margin: 0 0 0 0;
-  overflow: hidden;
+  margin: 1px 0 0 0;
   text-indent: -9999px;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level-1 {
   margin-left: -11px;
+}
+
+/* Active */
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active {
+  padding: 5px 21px 0 11px;
+  height: 25px;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-before-active span.vrtx-breadcrumb-delimiter {
@@ -238,6 +239,7 @@ a:hover {
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active  {
   background: #d9d9d9 url(images/app-head-breadcrumb-active-bg.png) no-repeat right bottom;
+  margin: 1px 0 0 0;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb .breadcrumb-prefix {
@@ -248,31 +250,31 @@ a:hover {
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span:hover {
   background: #4a9ce2 url(images/app-head-breadcrumb-delimiter-rollover-left.png) no-repeat left bottom;
-  margin: 0 0 0 -10px;
+  margin-left: -10px;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span:hover a {
   color: #fff;
-  height: 26px;
-  padding: 6px 11px 0 21px;
+  padding-left: 21px;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span:hover span.vrtx-breadcrumb-delimiter {
   background: url(images/app-head-breadcrumb-delimiter-rollover-right.png) no-repeat right bottom;
-  height: 32px;
-}
-
-#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-before-active:hover span.vrtx-breadcrumb-delimiter {
-  background-image: url(images/app-head-breadcrumb-delimiter-rollover-right-active.png);
+  height: 33px;
+  margin-top: -1px;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level-1:hover {
   background: #4a9ce2;
-  margin: 0 0 0 -11px;
+  margin-left: -11px;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level-1:hover a {
   padding-left: 11px;
+}
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-before-active:hover span.vrtx-breadcrumb-delimiter {
+  background-image: url(images/app-head-breadcrumb-delimiter-rollover-right-active.png);
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active:hover {

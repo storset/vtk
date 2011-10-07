@@ -5,11 +5,15 @@
 <#if preview>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/iframe-admin.js"></script>
 
-  <iframe id="create-iframe" src="${create.url?html}#${resourceContext.currentServiceURL?html}" allowTransparency="true" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0">
+  <iframe id="create-iframe" src="${create.url?html}#${resourceContext.currentServiceURL?html}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0">
     [Du har ikke iframe]
   </iframe>
 
   <script type="text/javascript">
+     $(function() {
+       $("#create-iframe")[0].allowTransparency = true;
+     });
+  
      // avoid flickering by set real height after 500ms
      setTimeout(function() {
        $("#create-iframe").css("height", "135px");

@@ -177,6 +177,7 @@ div.buttons {
   left: 0px;
   right: 0px;
   z-index: 1;
+  min-width: 760px;
 }
 
 div.buttons ul {

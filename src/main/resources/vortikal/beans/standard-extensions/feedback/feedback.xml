@@ -64,6 +64,11 @@
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="feedback" />
     <property name="description" value="Component for sending feedback" />
+    <property name="exposedParameters">
+      <set>
+        <value>mail-to</value>
+      </set>
+    </property>
     <property name="parameterDescriptions">
       <map>
         <!-- <entry key="type" value="'Like' a page instead of sending feedback" /> -->

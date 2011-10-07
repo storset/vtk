@@ -106,6 +106,7 @@ public class FeedbackController implements Controller {
                 }
             }
             recipientsStr = mailToParam;
+            model.put("mailto", recipientsStr);
             recipients = addresses;
         }
         if (!validAddresses) {

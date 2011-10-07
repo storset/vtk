@@ -12,7 +12,7 @@
           <#if key = "range">
             <#local rangeList = valuemap[key] />
             <#list rangeList as rangeEntry >
-              <option value="<#if rangeEntry?string != defaultValue>${rangeEntry?html}</#if>" <#if value == rangeEntry?string> selected </#if>>${rangeEntry}</option>
+              <option value="<#if rangeEntry?string != defaultValue>${rangeEntry?html}</#if>" <#if value == rangeEntry?string> selected="selected" </#if>>${rangeEntry}</option>
             </#list>
           <#else>
             <#if value != "">

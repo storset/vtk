@@ -9,7 +9,7 @@
     [Du har ikke iframe]
   </iframe>
 
-  <script type="text/javascript">
+  <script type="text/javascript"><!--
      $(function() {
        $("#create-iframe")[0].allowTransparency = true;
      });
@@ -18,6 +18,8 @@
      setTimeout(function() {
        $("#create-iframe").css("height", "135px");
      }, 500);
+     
+  // -->
   </script>
 <#else>
   <@dropdownUtils.genDropdown />

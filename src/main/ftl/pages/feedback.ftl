@@ -98,21 +98,21 @@
        <label for="yourComment"><@vrtx.msg code="feedback.form.yourcomment" default="Your comment" /></label> 
        
        <#if yourSavedComment?exists && yourSavedComment?has_content>
-         <textarea rows="9" cols="10" id="yourComment" name="yourComment">${yourSavedComment}</textarea>
+         <textarea rows="9" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
        <#else>
          <textarea rows="9" cols="10" id="yourComment" name="yourComment"></textarea> 
        </#if>
        
        <#if fullurl?has_content>
-         <input type="hidden" name="fullurl" value="${fullurl}" />
+         <input type="hidden" name="fullurl" value="${fullurl?html}" />
        </#if>
        
        <#if pagetitle?has_content>
-         <input type="hidden" name="pagetitle" value="${pagetitle}" />
+         <input type="hidden" name="pagetitle" value="${pagetitle?html}" />
        </#if>
        
        <#if mailto?has_content>
-         <input type="hidden" name="mailto" value="${mailto}" />
+         <input type="hidden" name="mailto" value="${mailto?html}" />
        </#if>
        
        <input type="submit" class="submit-email-form" value="Send" name="submit"/>

@@ -159,7 +159,7 @@ $(window).load(function() {
 });
 
 $(window).resize(function() {
-  adaptiveBreadcrumbs();
+  adaptiveBreadcrumbs(); // TODO: only run when prevWidth-changedWith (delta) is e.g. 50px(?)
 });
 
 
@@ -884,7 +884,7 @@ function closeDropdowns() {
 
 function adaptiveBreadcrumbs() {
   var breadcrumbs = $("#vrtx-breadcrumb > span"), i = breadcrumbs.length;
-  while(i--) {
+  while(i--) { // TODO: maybe make async with setInterval(?)
     var breadcrumb = $(breadcrumbs[i]);
     var breadcrumbPos = breadcrumb.position();
     if (breadcrumbPos.top > 0 && breadcrumbPos.left == 50) {

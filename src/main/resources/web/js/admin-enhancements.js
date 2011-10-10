@@ -8,6 +8,7 @@
  *  TODO: consider using HTML 5 localStorage (can store max 5 MB) for browser info (e.g. store 3 hours)
  *        -- have a working example of this at home
  *        -- the issue goes on security (e.g. override this on another host to e.g. "isIE" will give you IE experience in e.g. Chrome for e.g. 3 hours)
+ *        -- advise from owasp: https://www.owasp.org/index.php/HTML5_Security_Cheat_Sheet (never store sensitive info in local storage)
  */
  
 /* 

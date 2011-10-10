@@ -191,6 +191,15 @@ $(document).ready(function () {
   });
   $(document).click(function() {
     $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
+    // Communicate this to create-iframe if exists
+    var previewCreateIframe = $("#create-iframe");
+    if(previewCreateIframe.length) { 
+      var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
+      var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
+      if(hasPostMessage) {
+        previewCreateIframe[0].contentWindow.postMessage("closedropdown", vrtxAdminOrigin);
+      }
+    }
   });
 
   // Remove active tab if it has no children

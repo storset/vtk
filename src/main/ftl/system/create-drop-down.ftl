@@ -65,16 +65,28 @@
         
         $.receiveMessage(function(e) {
           var recievedData = e.data;
-         
-          if(recievedData.replace) {
-            var createDropdownOriginalTop = Number(recievedData.replace(/.*top=(\d+)(?:&|.*$)/, '$1' ));  
-            var createDropdownOriginalLeft = Number(recievedData.replace(/.*left=(\d+)(?:&|$)/, '$1' ));
-          }  
-          $("ul.manage-create").css({
-              "position": "absolute", 
-              "top": createDropdownOriginalTop + "px",
-              "left": createDropdownOriginalLeft + "px"
-            });
+          
+          if(recievedData.indexOf) {
+            if(recievedData.indexOf("closedropdown") != -1) {
+              $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing");
+            } else {
+              try {
+                if(recievedData.replace) {
+                  var createDropdownOriginalTop = Number(recievedData.replace(/.*top=(\d+)(?:&|.*$)/, '$1' ));  
+                  var createDropdownOriginalLeft = Number(recievedData.replace(/.*left=(\d+)(?:&|$)/, '$1' ));
+                }  
+                $("ul.manage-create").css({
+                    "position": "absolute", 
+                    "top": createDropdownOriginalTop + "px",
+                    "left": createDropdownOriginalLeft + "px"
+                  });
+              } catch(e){
+                if(typeof console !== "undefined" && console.log) {
+                  console.log("Error parsing original position for create-iframe: " + e.message);
+                }
+              }
+            }
+          }
         });    
         
       });

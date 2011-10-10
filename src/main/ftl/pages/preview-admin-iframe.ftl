@@ -68,8 +68,6 @@
       <#assign origUrl = origUrl + "&amp;action=preview" />
     </#if>
     
-    
-    
     <#if url?contains("?")>
       <#assign url = url + "&amp;" + previewViewParameter />
     <#else>

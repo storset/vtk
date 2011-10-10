@@ -85,7 +85,7 @@
        <#-- Email to -->
        <label for="emailTo"><@vrtx.msg code="tip.form.emailto" default="Send e-mail to" /></label> 
        <#if emailSavedTo?exists && emailSavedTo?has_content>
-         <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo}"/>
+         <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}"/>
        <#else>
          <input type="text" id="emailTo" name="emailTo" value=""/>
        </#if>
@@ -96,7 +96,7 @@
        <label for="emailFrom"><@vrtx.msg code="tip.form.emailfrom" default="Your e-mail address" /></label>  
          
        <#if emailSavedFrom?exists && emailSavedFrom?has_content>
-         <input type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom}"/>
+         <input type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom?html}"/>
        <#else>
          <input type="text" id="emailFrom" name="emailFrom" value=""/>
        </#if>
@@ -105,7 +105,7 @@
        <label for="yourComment"><@vrtx.msg code="tip.form.yourcomment" default="Your comment" /></label> 
        
        <#if yourSavedComment?exists && yourSavedComment?has_content>
-         <textarea rows="5" cols="10" id="yourComment" name="yourComment">${yourSavedComment}</textarea>
+         <textarea rows="5" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
        <#else>
          <textarea rows="5" cols="10" id="yourComment" name="yourComment" value=""></textarea> 
        </#if>

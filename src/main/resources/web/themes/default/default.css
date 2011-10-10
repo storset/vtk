@@ -222,7 +222,8 @@ a:hover {
   text-indent: -9999px;
 }
 
-#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level-1 {
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level-1,
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-left {
   margin-left: -11px;
 }
 
@@ -240,6 +241,10 @@ a:hover {
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active  {
   background: #d9d9d9 url(images/app-head-breadcrumb-active-bg.png) no-repeat right bottom;
   margin: 1px 0 0 0;
+}
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active.vrtx-breadcrumb-left {
+  margin-left: -11px;
 }
 
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb .breadcrumb-prefix {
@@ -264,12 +269,14 @@ a:hover {
   margin-top: -1px;
 }
 
-#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level-1:hover {
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level-1:hover,
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-left:hover {
   background: #4a9ce2;
   margin-left: -11px;
 }
 
-#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level-1:hover a {
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-level-1:hover a,
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-left:hover a {
   padding-left: 11px;
 }
 
@@ -280,6 +287,10 @@ a:hover {
 #app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active:hover {
   background: #d9d9d9 url(images/app-head-breadcrumb-active-bg.png) no-repeat right bottom;
   margin: 1px 0 0 0;
+}
+
+#app-head-wrapper #vrtx-breadcrumb-wrapper #vrtx-breadcrumb span.vrtx-breadcrumb-active.vrtx-breadcrumb-left:hover {
+  margin-left: -11px;
 }
 
 /* ^ Hover */

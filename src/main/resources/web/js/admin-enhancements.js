@@ -158,6 +158,9 @@ $(window).load(function() {
   
 });
 
+$(window).resize(function() {
+  adaptiveBreadcrumbs();
+});
 
 
 /*-------------------------------------------------------------------*\
@@ -218,6 +221,8 @@ $(document).ready(function () {
   if ($("#locale-selection li.active").hasClass("en")) {
     $("#create-iframe").css("width", "162px");
   }
+  
+  adaptiveBreadcrumbs();
   
   // Move down resource menu when long title
   var titleSplits = $("h1 .title-split");
@@ -874,6 +879,33 @@ function closeDropdowns() {
   var dropdowns = $(".dropdown-shortcut-menu-container:visible");
   if(dropdowns.length) {
     dropdowns.slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
+  }
+}
+
+function adaptiveBreadcrumbs() {
+  var breadcrumbs = $("#vrtx-breadcrumb > span"), i = breadcrumbs.length;
+  while(i--) {
+    var breadcrumb = $(breadcrumbs[i]);
+    var breadcrumbPos = breadcrumb.position();
+    if (breadcrumbPos.top > 0 && breadcrumbPos.left == 50) {
+      breadcrumb.addClass("vrtx-breadcrumb-left");
+      if (breadcrumb.hasClass("vrtx-breadcrumb-active")) {
+        prevBreadcrumb = breadcrumb.prev();
+        if(prevBreadcrumb.hasClass("vrtx-breadcrumb-before-active")) {
+          prevBreadcrumb.removeClass("vrtx-breadcrumb-before-active");
+        }
+      }
+    } else {
+      if (breadcrumb.hasClass("vrtx-breadcrumb-left")) {
+        breadcrumb.removeClass("vrtx-breadcrumb-left");
+      }
+      if (breadcrumb.hasClass("vrtx-breadcrumb-active")) {
+        prevBreadcrumb = breadcrumb.prev();
+        if(!prevBreadcrumb.hasClass("vrtx-breadcrumb-before-active")) {
+          prevBreadcrumb.addClass("vrtx-breadcrumb-before-active");
+        }
+      }
+    }
   }
 }
 

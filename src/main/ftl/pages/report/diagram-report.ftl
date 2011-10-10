@@ -87,7 +87,7 @@
       </div>
       <div class="vrtx-report-diagram-img">
         <img id="filesandfoldersimg" width="660" height="220" alt="<@vrtx.msg code="report.${report.reportname}.filesandfolderspiechart" />" 
-             src="https://chart.googleapis.com/chart?chco=ed1c24amp;chs=660x220amp;cht=p3amp;chd=s:Sm&amp;chdl=<@vrtx.msg code="report.diagram.folder" />|<@vrtx.msg code="report.diagram.file" />&amp;chl=<#if (report.folders > 0)><@vrtx.msg code="report.diagram.folder" /></#if>|<#if (report.files > 0)><@vrtx.msg code="report.diagram.file" /></#if>&amp;chd=t:${((report.folders/report.firsttotal)*100)?string("0")},${((report.files/report.firsttotal)*100)?string("0")}" />
+             src="https://chart.googleapis.com/chart?chco=ed1c24&amp;chs=660x220&amp;cht=p3&amp;chd=s:Sm&amp;chdl=<@vrtx.msg code="report.diagram.folder" />|<@vrtx.msg code="report.diagram.file" />&amp;chl=<#if (report.folders > 0)><@vrtx.msg code="report.diagram.folder" /></#if>|<#if (report.files > 0)><@vrtx.msg code="report.diagram.file" /></#if>&amp;chd=t:${((report.folders/report.firsttotal)*100)?string("0")},${((report.files/report.firsttotal)*100)?string("0")}" />
       </div>
     </div>
   </#if>

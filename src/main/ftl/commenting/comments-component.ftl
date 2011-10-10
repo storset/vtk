@@ -111,6 +111,7 @@
           </form>
         </#if>
       </div>
+      <span class="vrtx-comment-background-hook-1"></span>
     </div>
     <#assign rowclass><#if rowclass="even">odd<#else>even</#if></#assign>
   </#list>

@@ -884,13 +884,13 @@ function closeDropdowns() {
 
 function adaptiveBreadcrumbs() {
   var breadcrumbs = $("#vrtx-breadcrumb > span"), i = breadcrumbs.length;
-  while(i--) { // TODO: maybe make async with setInterval(?)
+  while(i--) {
     var breadcrumb = $(breadcrumbs[i]);
     var breadcrumbPos = breadcrumb.position();
     if (breadcrumbPos.top > 0 && breadcrumbPos.left == 50) {
       breadcrumb.addClass("vrtx-breadcrumb-left");
       if (breadcrumb.hasClass("vrtx-breadcrumb-active")) {
-        prevBreadcrumb = breadcrumb.prev();
+        var prevBreadcrumb = breadcrumb.prev();
         if(prevBreadcrumb.hasClass("vrtx-breadcrumb-before-active")) {
           prevBreadcrumb.removeClass("vrtx-breadcrumb-before-active");
         }
@@ -900,7 +900,7 @@ function adaptiveBreadcrumbs() {
         breadcrumb.removeClass("vrtx-breadcrumb-left");
       }
       if (breadcrumb.hasClass("vrtx-breadcrumb-active")) {
-        prevBreadcrumb = breadcrumb.prev();
+        var prevBreadcrumb = breadcrumb.prev();
         if(!prevBreadcrumb.hasClass("vrtx-breadcrumb-before-active")) {
           prevBreadcrumb.addClass("vrtx-breadcrumb-before-active");
         }

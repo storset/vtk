@@ -72,7 +72,8 @@
                $("#TB_ajaxContent").scrollTo(scrollToLink, 250, {
                  easing: "swing",
                  queue: true,
-                 axis: 'y'
+                 axis: 'y',
+                 complete: link.trigger("mouseenter")
                });
              });
            }

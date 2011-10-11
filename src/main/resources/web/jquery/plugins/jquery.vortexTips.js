@@ -28,6 +28,7 @@
 
     $(this).delegate(subSelector, "mouseenter mouseleave", function (e) {
       if (e.type == "mouseenter") {
+        $(this).attr('title', tipText);
         clearTimeout(fadeOutTimer);
         if (tip) {
           tip.remove();

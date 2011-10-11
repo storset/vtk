@@ -28,6 +28,10 @@
     var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];
     
     $(document).ready(function() {
+    
+       $(".tree-create").css("display", "none");
+       $("#TB_ajaxContent").css("background", "url(/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif) no-repeat center center");
+    
        var timestamp = 1 - new Date();
        $("#TB_closeAjaxWindow").addClass("create-tree-close-window");
        var pathNum = 0;
@@ -61,10 +65,13 @@
            var hit = link.closest("li").find("> .hitarea");
            hit.click();
            if(lastNode) { // If last: scroll to node
-             $("#TB_ajaxContent").scrollTo(link, 250, {
-               easing: "swing",
-               queue: true,
-               axis: 'y'
+             $("#TB_ajaxContent").css("background", "none");
+             $(".tree-create").fadeIn(200, function() {
+               $("#TB_ajaxContent").scrollTo(link, 250, {
+                 easing: "swing",
+                 queue: true,
+                 axis: 'y'
+               });
              });
            }
          }

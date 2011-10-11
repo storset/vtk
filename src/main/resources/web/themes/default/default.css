@@ -989,19 +989,26 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 }
 
 .tip.vrtx-create-tree {
-  /*
-  background-color: #ecf3f9;
-  border: 1px solid #c7dadf;
-  padding: 4px 9px !important;
-  */
-  padding: 4px 0px !important;
+  padding: 4px 0px 4px 0 !important;
   border: none !important;
+  background-color: #ecf3f9;
+  border-top: 1px solid #c7dadf !important;
+  border-bottom: 1px solid #c7dadf !important;
 }
 
 .tip.vrtx-create-tree .no-create-permission {
-  white-space: nowrap;
-  padding-top: 4px;
   display: block;
+  white-space: nowrap;
+  padding: 4px 0px 4px 0 !important;
+  background-color: #ecf3f9;
+  border-top: 1px solid #c7dadf !important;
+  border-bottom: 1px solid #c7dadf !important;
+}
+
+.tipextra {
+  background-color: #ecf3f9;
+  border: 1px solid #c7dadf;
+  height: 30px;
 }
 
 /* ^ Create dialog */

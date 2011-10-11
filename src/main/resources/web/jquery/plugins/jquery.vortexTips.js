@@ -15,19 +15,34 @@
  *
  */
 (function ($) {
-  $.fn.vortexTips = function (subSelector, appendTo, containerWidth, animInSpeed, animOutPreDelay, animOutSpeed, xOffset, yOffset, autoWidth) {
+  $.fn.vortexTips = function (subSelector, appendTo, containerWidth, animInSpeed, animOutPreDelay, animOutSpeed, xOffset, yOffset, autoWidth, extra) {
 
     var html = "<span class='tip " + appendTo.substring(1) + "'>&nbsp;</span>";
+    if (extra) {
+      var extraHtml = "<span class='tipextra " + appendTo.substring(1) + "'>&nbsp;</span>"
+    }
     var tip;
+    var tipExtra;
     var tipText;
     var fadeOutTimer;
 
     $(this).delegate(subSelector, "mouseenter mouseleave", function (e) {
       if (e.type == "mouseenter") {
-        clearTimeout(fadeOutTimer); // remove fadeOutTimer
+        clearTimeout(fadeOutTimer);
+        if (tip) {
+          tip.remove();
+        }
+        if (tipExtra) {
+          tipExtra.remove();
+        }
         $(appendTo).append(html);
         tip = $(".tip." + appendTo.substring(1));
         tip.hide();
+        if (extra) {
+         $(appendTo).append(extraHtml);
+         tipExtra = $(".tipextra." + appendTo.substring(1));
+         tipExtra.hide();
+        }
         var link = $(this);
         var linkParent = link.parent();
         var classes = linkParent.attr("class") + " " + linkParent.parent().attr("class");
@@ -37,20 +52,34 @@
         var title = tipText = link.attr('title');
         tip.html(title);
         link.attr('title', '');
-        var pos = link.position();
-        var nPos = pos;
-        nPos.top = pos.top + yOffset;
-        if(autoWidth) {
-          tip.css('position', 'absolute').css('z-index', '1000').css('width', pos.left + link.width() + xOffset + 'px');
+        var nPos = link.position();
+        nPos.top = nPos.top + yOffset;
+        var left = nPos.left + link.width() + xOffset;
+        if (extra) {
+          var ePos = link.position();
+          ePos.top = ePos.top + yOffset;
+          tipExtra.css('position', 'absolute').css('z-index', '-1').css('width', '100%');
+          ePos.left = 0;
+        }
+        if (autoWidth) {
+          tip.css('position', 'absolute').css('z-index', '1000').css('width', left + 'px');
           nPos.left = 0;
         } else {
-          nPos.left = pos.left + link.width() + xOffset;
+          nPos.left = left;
           tip.css('position', 'absolute').css('z-index', '1000').css('width', containerWidth + 'px');        
         }
         tip.css(nPos).fadeIn(animInSpeed);
+        if (extra) {
+          tipExtra.css(ePos).fadeIn(animInSpeed);
+        }
       } else if (e.type == "mouseleave") {
         $(this).attr('title', tipText);
         fadeOutTimer = setTimeout(function () {
+          if (extra) {
+            tipExtra.fadeOut(animOutSpeed, function () {
+              $(this).remove();
+            });
+          }
           tip.fadeOut(animOutSpeed, function () {
             $(this).remove();
           });

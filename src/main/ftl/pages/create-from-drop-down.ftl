@@ -30,7 +30,7 @@
     $(document).ready(function() {
     
        $(".tree-create").css("display", "none");
-       $("#TB_ajaxContent").css("background", "url(/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif) no-repeat center center");
+       $("#TB_ajaxContent").css("background", "url(/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif) no-repeat center 158px");
     
        var timestamp = 1 - new Date();
        $("#TB_closeAjaxWindow").addClass("create-tree-close-window");

@@ -173,6 +173,7 @@ a:hover {
 #app-head-wrapper #vrtx-breadcrumb-wrapper {
   background: url(images/app-head-breadcrumb-bg.png) repeat left top;
   overflow: hidden;
+  margin: 0 0 -1px 0;
 }
 
 #app-head-wrapper #line-top #uiologo,

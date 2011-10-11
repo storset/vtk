@@ -58,7 +58,7 @@
         if (extra) {
           var ePos = link.position();
           ePos.top = ePos.top + yOffset;
-          tipExtra.css('position', 'absolute').css('z-index', '-1').css('width', '100%');
+          tipExtra.css('position', 'absolute').css('z-index', '-1').css('width', '99%');
           ePos.left = 0;
         }
         if (autoWidth) {

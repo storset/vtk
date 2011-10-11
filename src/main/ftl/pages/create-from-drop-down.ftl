@@ -67,7 +67,9 @@
            if(lastNode) { // If last: scroll to node
              $("#TB_ajaxContent").css("background", "none");
              $(".tree-create").fadeIn(200, function() {
-               $("#TB_ajaxContent").scrollTo(link, 250, {
+               var scrollToLink = (link.position().top - 145);
+               scrollToLink = scrollToLink < 0 ? 0 : scrollToLink;
+               $("#TB_ajaxContent").scrollTo(scrollToLink, 250, {
                  easing: "swing",
                  queue: true,
                  axis: 'y'

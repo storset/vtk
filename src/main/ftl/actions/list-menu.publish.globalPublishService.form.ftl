@@ -1,7 +1,7 @@
 <#attempt>
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
-<#if type = "publish.publishResourceConfirmedService">
+<#if type = "publish.globalPublishResourceConfirmedService">
 <div class="globalmenu expandedForm">
 <form name="vrtx-publish-resource" id="vrtx-publish-resource" action="${url}" method="post">
   <h3>${vrtx.getMsg("confirm-publish.confirmation.publish")}?</h3>

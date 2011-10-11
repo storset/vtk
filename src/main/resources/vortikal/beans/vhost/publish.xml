@@ -62,12 +62,12 @@
 
   <bean id="publish.globalConfirmPublishHandler" class="org.vortikal.web.actions.publish.ConfirmPublishController">
     <property name="viewName" value="admin" />
-    <property name="publishService" ref="publish.publishResourceConfirmedService" />
+    <property name="publishService" ref="publish.globalPublishResourceConfirmedService" />
   </bean>
 
   <bean id="publish.globalConfirmUnpublishHandler" class="org.vortikal.web.actions.publish.ConfirmPublishController">
     <property name="viewName" value="admin" />
-    <property name="publishService" ref="publish.unpublishResourceConfirmedService" />
+    <property name="publishService" ref="publish.globalUnpublishResourceConfirmedService" />
   </bean>
 
 
@@ -169,8 +169,43 @@
     </property>
     <property name="handler" ref="publishResourceHandler" />
   </bean>
+    
+  <bean id="publish.globalUnpublishResourceConfirmedService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="480" />
+    <property name="assertions">
+      <list>
+        <ref bean="manage.postRequestAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="global-unpublish-confirmed" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="globalPublishResourceHandler" />
+  </bean>
+  
+  <bean id="publish.globalPublishResourceConfirmedService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="480" />
+    <property name="assertions">
+      <list>
+        <ref bean="manage.postRequestAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="global-publish-confirmed" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="globalPublishResourceHandler" />
+  </bean>
 
   <bean id="publishResourceHandler" class="org.vortikal.web.actions.publish.PublishResourceController">
+    <property name="viewName" value="redirectToPublish" />
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
+  </bean>
+  
+  <bean id="globalPublishResourceHandler" class="org.vortikal.web.actions.publish.PublishResourceController">
     <property name="viewName" value="redirectToManage" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
   </bean>

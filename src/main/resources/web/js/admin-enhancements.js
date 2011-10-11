@@ -884,7 +884,9 @@ function closeDropdowns() {
 }
 
 function adaptiveBreadcrumbs() {
-  var breadcrumbs = $("#vrtx-breadcrumb > span"), i = breadcrumbs.length, runnedAtStart = false;
+  var breadcrumbs = $("#vrtx-breadcrumb > span"), 
+      i = breadcrumbs.length,
+      runnedAtStart = false;
   while(i--) {
     var breadcrumb = $(breadcrumbs[i]);
     var breadcrumbPos = breadcrumb.position();
@@ -899,7 +901,9 @@ function adaptiveBreadcrumbs() {
       runnedAtStart = true;
     }
     if (breadcrumbPosTop > 0 && breadcrumbPosLeft == 50) {
-      breadcrumb.addClass("vrtx-breadcrumb-left");
+      if (!breadcrumb.hasClass("vrtx-breadcrumb-left")) {
+        breadcrumb.addClass("vrtx-breadcrumb-left");
+      }
       if (breadcrumb.hasClass("vrtx-breadcrumb-active")) {
         var prevBreadcrumb = breadcrumb.prev();
         if(prevBreadcrumb.hasClass("vrtx-breadcrumb-before-active")) {

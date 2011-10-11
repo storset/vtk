@@ -90,6 +90,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 
   config.baseHref = baseDocumentUrl;
   config.contentsCss = cssFileList;
+  // config.skin = 'chris';
 
   // Don't use HTML-entities for structured-documents
   if (name.indexOf("resource.") != 0) {
@@ -132,6 +133,9 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
   config.autoGrow_minHeight = minHeight + 'px';
 
   config.forcePasteAsPlainText = false;
+
+  config.disableNativeTableHandles = false;
+  config.disableObjectResizing = true;
 
   // Configure tag formatting in source
   config.on = {

@@ -969,6 +969,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 
 .vrtx-create-tree .treeview li {
   background: none !important;
+  overflow: hidden;
 }
 
 .vrtx-create-tree .filetree span.folder {
@@ -976,6 +977,7 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   padding-left: 30px;
   padding-top: 5px !important;
   padding-bottom: 5px !important;
+  cursor: pointer;
 }
 
 .vrtx-create-tree .filetree .expandable-hitarea {

@@ -28,7 +28,11 @@
 
     $(this).delegate(subSelector, "mouseenter mouseleave", function (e) {
       if (e.type == "mouseenter") {
-        $(this).attr('title', tipText);
+        var link = $(this);
+        if (typeof link.attr("href") === "undefined") {
+          link = link.find("a");
+        }
+        link.attr('title', tipText);
         clearTimeout(fadeOutTimer);
         if (tip) {
           tip.remove();
@@ -44,7 +48,6 @@
          tipExtra = $(".tipextra." + appendTo.substring(1));
          tipExtra.hide();
         }
-        var link = $(this);
         var linkParent = link.parent();
         var classes = linkParent.attr("class") + " " + linkParent.parent().attr("class");
         if(typeof classes !== "undefined") {
@@ -74,7 +77,11 @@
           tipExtra.css(ePos).fadeIn(animInSpeed);
         }
       } else if (e.type == "mouseleave") {
-        $(this).attr('title', tipText);
+        var link = $(this);
+        if (typeof link.attr("href") === "undefined") {
+          link = link.find("a");
+        }
+        link.attr('title', tipText);
         fadeOutTimer = setTimeout(function () {
           if (extra) {
             tipExtra.fadeOut(animOutSpeed, function () {

@@ -158,8 +158,9 @@ $(window).load(function() {
   
 });
 
+var lastBreadcrumbPosLeft = -999;
 $(window).resize(function() {
-  adaptiveBreadcrumbs(); // TODO: only run when prevWidth-changedWith (delta) is e.g. 50px(?)
+  adaptiveBreadcrumbs();
 });
 
 
@@ -883,11 +884,21 @@ function closeDropdowns() {
 }
 
 function adaptiveBreadcrumbs() {
-  var breadcrumbs = $("#vrtx-breadcrumb > span"), i = breadcrumbs.length;
+  var breadcrumbs = $("#vrtx-breadcrumb > span"), i = breadcrumbs.length, runnedAtStart = false;
   while(i--) {
     var breadcrumb = $(breadcrumbs[i]);
     var breadcrumbPos = breadcrumb.position();
-    if (breadcrumbPos.top > 0 && breadcrumbPos.left == 50) {
+    var breadcrumbPosTop = breadcrumbPos.top;
+    var breadcrumbPosLeft = breadcrumbPos.left;
+    if (!runnedAtStart) {
+      if (lastBreadcrumbPosLeft == breadcrumbPosLeft) {
+        return;     
+      } else {
+        lastBreadcrumbPosLeft = breadcrumbPosLeft;
+      }
+      runnedAtStart = true;
+    }
+    if (breadcrumbPosTop > 0 && breadcrumbPosLeft == 50) {
       breadcrumb.addClass("vrtx-breadcrumb-left");
       if (breadcrumb.hasClass("vrtx-breadcrumb-active")) {
         var prevBreadcrumb = breadcrumb.prev();

@@ -358,7 +358,7 @@ resourcetype person {
         </div>
         <div id="vrtx-additional-content">
           [call "comp:feeds"]
-          [call "resource:project-list"]
+          [call "resource:project-list" {"include-completed":false}]
           [call "resource:resarch-group-list"]
           [call "comp:related-content-in-additional-column"]
         </div>

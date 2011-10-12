@@ -56,7 +56,7 @@
        $(".tree-create").vortexTips("li span.folder", ".vrtx-create-tree", 80, 300, 4000, 300, 10, -8, false, true);
      });
      
-     function callback(link) {
+     function treeCreateScrollToCallback(link) {
        linkTriggeredMouseEnter = link;
        linkTriggeredMouseEnterTipText = linkTriggeredMouseEnter.attr('title');
        link.parent().trigger("mouseenter");
@@ -79,7 +79,7 @@
                  easing: "swing",
                  queue: true,
                  axis: 'y',
-                 complete: callback(link)
+                 complete: treeCreateScrollToCallback(link)
                });
              });
            }

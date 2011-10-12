@@ -82,9 +82,10 @@ div.vrtx-permission-tree {
   min-height: 219px;
 }
 
-div.vrtx-permission-tree span.file a {
+div.vrtx-permission-tree span.file a,
+div.vrtx-permission-tree span.folder a {
   text-decoration: none !important;
-  color: black !important;
+  color: #363534 !important;
 }
 
 .vrtx-report-paging {

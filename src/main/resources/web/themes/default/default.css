@@ -860,7 +860,12 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   display: block;
   padding-bottom: 5px;
   margin-bottom: 10px;
-  border-bottom: 1px solid #cbcbcb;
+  background: url(images/line-dotted.gif) repeat-x bottom left;
+}
+
+.tip.file #title-wrapper,
+.tip.folder #title-wrapper {
+  padding-bottom: 11px;
 }
 
 #title-container abbr {
@@ -965,29 +970,6 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 .vrtx-create-tree a.tree-link {
   color: #2b2b2b !important;
   font-size: 1.231em;
-}
-
-.vrtx-create-tree .treeview li {
-  background: none !important;
-  overflow: hidden;
-}
-
-.vrtx-create-tree .filetree span.folder {
-  background: url(images/folder-small.gif) no-repeat left center !important;
-  padding-left: 30px;
-  padding-top: 5px !important;
-  padding-bottom: 5px !important;
-  cursor: pointer;
-}
-
-.vrtx-create-tree .filetree .expandable-hitarea {
-  background: url(images/tree-expand.gif) no-repeat 0 0 !important;
-  margin-top: 8px;
-}
-
-.vrtx-create-tree .filetree .collapsable-hitarea {
-  background: url(images/tree-collapse.gif) no-repeat 0 0 !important;
-  margin-top: 9px;
 }
 
 .tip.vrtx-create-tree {

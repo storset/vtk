@@ -74,11 +74,12 @@
 	      <span class="vrtx-report-help-allowed-for-all-inherited-file"></span>
 	      <@vrtx.msg code="report.collection-structure.help.allowed-for-all" />
 	    </p>
+	    <#--
 	    <p id="vrtx-report-help-inherited">
 	      <span class="vrtx-report-help-allowed-for-all-inherited-folder"></span>
 	      <span class="vrtx-report-help-allowed-for-all-inherited-file"></span>
 	      <@vrtx.msg code="report.collection-structure.help.inherited" />
-	    </p>
+	    </p>-->
 	    <p id="vrtx-report-help-not-inherited">
 	      <span class="vrtx-report-help-allowed-for-all-not-inherited-folder"></span>
 	      <span class="vrtx-report-help-allowed-for-all-not-inherited-file"></span>

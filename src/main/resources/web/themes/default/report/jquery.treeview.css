@@ -36,7 +36,59 @@
 
 .treeview .hover { text-decoration: underline; cursor: pointer; }
 
-.treeview li { background: url(images/treeview-default-line.gif) 0 0 no-repeat; }
+.treeview .expandable-hitarea {
+  background: url(../images/tree-expand.gif) no-repeat 0 0 !important;
+  margin-top: 8px;
+}
+
+.treeview .collapsable-hitarea {
+  background: url(../images/tree-collapse.gif) no-repeat 0 0 !important;
+  margin-top: 9px;
+}
+
+.treeview li {
+  overflow: hidden;
+  padding: 3px 0 2px 20px;
+}
+
+.treeview span.file,
+.treeview span.folder {
+  background: url(../images/folder-small.gif) no-repeat left center;
+  padding: 5px 0 5px 30px;
+  cursor: pointer;
+  display: block;
+}
+
+.treeview span.file {
+  background-image: url(../images/file-small.gif);
+}
+
+.treeview li.not-inherited > span.file {
+  background-image: url(../images/file-small-own-permissions.gif);
+}
+
+.treeview span.file.restricted  {
+  background-image: url(../images/file-small-restricted.gif);
+}
+
+.treeview li.not-inherited > span.file.restricted {
+  background-image: url(../images/file-small-restricted-own-permissions.gif);
+}
+
+.treeview li.not-inherited > span.folder {
+  background-image: url(../images/folder-small-own-permissions.gif);
+}
+
+.treeview span.folder.restricted {
+  background-image: url(../images/folder-small-restricted.gif);
+}
+
+.treeview li.not-inherited > span.folder.restricted {
+  background-image: url(../images/folder-small-restricted-own-permissions.gif);
+}
+
+/* OLD
+.treeview li { background: none; url(images/treeview-default-line.gif) 0 0 no-repeat; }
 .treeview li.collapsable, .treeview li.expandable { background-position: 0 -176px; }
 
 .treeview .expandable-hitarea { background-position: -80px -3px; }
@@ -59,32 +111,32 @@
 
 .treeview-famfamfam li { background-image: url(images/treeview-famfamfam-line.gif); }
 .treeview-famfamfam .hitarea, .treeview-famfamfam li.lastCollapsable, .treeview-famfamfam li.lastExpandable { background-image: url(images/treeview-famfamfam.gif); } 
-
-
-.filetree li { padding: 3px 0 2px 20px; }
-.filetree span.folder, .filetree span.file { padding: 1px 0 1px 20px; display: block; }
+*/
+/*
 .filetree span.folder { background: transparent url(images/folder.gif) 0 0 no-repeat; }
 .filetree li.expandable span.folder, .filetree li.closed span.folder { background: transparent url(images/folder-closed.gif) 0 0 no-repeat; }
 .filetree span.file { background: transparent url(images/file.gif) 0 0 no-repeat; }
+*/
 
-/* Folder / file icons for permission visualization */
+/* Folder / file icons for permission visualization
 .filetree span.folder.restricted  { background: url(images/folder-restricted.gif) 0 0 no-repeat; }
 .filetree span.folder.allowed-for-all  { background: url(images/folder-allowed-for-all.gif) 0 0 no-repeat; }
 .filetree li.expandable span.folder.restricted, .filetree li.closed span.folder.restricted { background: url(images/folder-closed-restricted.gif) 0 0 no-repeat; }
 .filetree li.expandable span.folder.allowed-for-all, .filetree li.closed span.folder.allowed-for-all { background: url(images/folder-closed-allowed-for-all.gif) 0 0 no-repeat; }
-
 .filetree span.file.restricted  { background: url(images/file-restricted.gif) 0 0 no-repeat; }
 .filetree span.file.allowed-for-all  { background: url(images/file-allowed-for-all.gif) 0 0 no-repeat; }
-
-/* Not inherited folder / file icons */
+ */
+ 
+/* Not inherited folder / file icons
 .filetree li.not-inherited > span.folder.restricted  { background: url(images/folder-restricted-not-inherited.gif) 0 0 no-repeat; }
 .filetree li.not-inherited > span.folder.allowed-for-all  { background: url(images/folder-allowed-for-all-not-inherited.gif) 0 0 no-repeat; }
 .filetree li.expandable.not-inherited > span.folder.restricted, .filetree li.closed.not-inherited span.folder.restricted { background-image: url(images/folder-closed-restricted-not-inherited.gif); }
 .filetree li.expandable.not-inherited > span.folder.allowed-for-all, .filetree li.closed.not-inherited span.folder.allowed-for-all { background: url(images/folder-closed-allowed-for-all-not-inherited.gif) 0 0 no-repeat; }
-
 .filetree li.not-inherited > span.file.restricted  { background: url(images/file-restricted-not-inherited.gif) 0 0 no-repeat; }
 .filetree li.not-inherited > span.file.allowed-for-all  { background: url(images/file-allowed-for-all-not-inherited.gif) 0 0 no-repeat; }
+*/
 
-/* Not inherited lines */
+/* Not inherited lines 
 .treeview-gray li.not-inherited { background-image: url(images/treeview-gray-line-not-inherited.gif); }
 .treeview-gray .not-inherited-hitarea, .treeview-gray li.not-inherited.lastCollapsable, .treeview-gray li.not-inherited.lastExpandable {  background-image: url(images/treeview-gray-not-inherited.gif); }
+*/

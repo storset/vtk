@@ -34,7 +34,7 @@
           linkTriggeredMouseEnter;
           linkTriggeredMouseEnterTipText;
         }
-        if (typeof link.attr("href") === "undefined") {
+        if (typeof link.attr("href") === "undefined" && !link.is("abbr")) {
           link = link.find("a");
         }
         clearTimeout(fadeOutTimer);
@@ -82,7 +82,7 @@
         }
       } else if (e.type == "mouseleave") {
         var link = $(this);
-        if (typeof link.attr("href") === "undefined") {
+        if (typeof link.attr("href") === "undefined" && !link.is("abbr")) {
           link = link.find("a");
         }
         link.attr('title', tipText);

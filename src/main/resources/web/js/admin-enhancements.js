@@ -195,6 +195,7 @@ $(document).ready(function () {
   });
   $(document).click(function() {
     $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
+    $(".tip:visible").fadeOut(vrtxAdmin.transitionDropdownSpeed, "swing");
     // Communicate this to create-iframe if exists
     var previewCreateIframe = $("#create-iframe");
     if(previewCreateIframe.length) { 

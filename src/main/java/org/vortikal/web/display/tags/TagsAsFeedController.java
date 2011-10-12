@@ -88,7 +88,7 @@ public class TagsAsFeedController extends AtomFeedController {
     }
 
     @Override
-    protected Date getLastModified(Resource collection) {
+    protected Date getLastModified(PropertySet collection) {
         return new Date();
     }
 

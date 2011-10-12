@@ -80,7 +80,7 @@ public abstract class AtomFeedController implements Controller {
     protected int entryCountLimit = 200;
 
     private PropertyTypeDefinition titlePropDef;
-    private PropertyTypeDefinition lastModifiedPropDef;
+    protected PropertyTypeDefinition lastModifiedPropDef;
     private PropertyTypeDefinition creationTimePropDef;
 
     private HtmlUtil htmlUtil;
@@ -128,8 +128,8 @@ public abstract class AtomFeedController implements Controller {
     protected abstract Property getPublishDate(PropertySet resource);
 
     // To be overridden where necessary
-    protected Date getLastModified(Resource collection) {
-        return collection.getLastModified();
+    protected Date getLastModified(PropertySet collection) {
+        return collection.getProperty(lastModifiedPropDef).getDateValue();
     }
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -187,7 +187,7 @@ public abstract class AtomFeedController implements Controller {
             }
         }
 
-        Date lastModified = this.getLastModified(collection);
+        Date lastModified = getLastModified(collection);
         if (lastModified != null) {
             feed.setUpdated(lastModified);
         }
@@ -234,9 +234,9 @@ public abstract class AtomFeedController implements Controller {
                 entry.setPublished(publishDate.getDateValue());
             }
 
-            Property updated = result.getProperty(this.lastModifiedPropDef);
+            Date updated = getLastModified(result);
             if (updated != null) {
-                entry.setUpdated(updated.getDateValue());
+                entry.setUpdated(updated);
             }
 
             Property author = getAuthor(result);

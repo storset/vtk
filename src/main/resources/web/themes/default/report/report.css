@@ -252,10 +252,12 @@ div.vrtx-report #vrtx-report-help {
 
 #vrtx-report-help-restricted {
   background: url(../images/folder-small-restricted.gif) no-repeat 0 0;
+  height: 19px;
 }
 
 #vrtx-report-help-allowed-for-all {
   background: url(../images/folder-small.gif) no-repeat 0 0;
+  height: 19px;
 }
 
 .vrtx-report-help-allowed-for-all-inherited-folder {

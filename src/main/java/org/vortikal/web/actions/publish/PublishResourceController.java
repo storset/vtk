@@ -58,7 +58,9 @@ public class PublishResourceController extends SimpleFormController implements I
     private PropertyTypeDefinition publishDatePropDef;
     private static final String ACTION_PARAM = "action";
     private static final String PUBLISH_PARAM = "publish-confirmed";
+    private static final String PUBLISH_PARAM_GLOBAL = "global-publish-confirmed";
     private static final String UNPUBLISH_PARAM = "unpublish-confirmed";
+    private static final String UNPUBLISH_PARAM_GLOBAL = "global-unpublish-confirmed";
 
     public void afterPropertiesSet() throws Exception {
         if (this.viewName == null)
@@ -96,7 +98,7 @@ public class PublishResourceController extends SimpleFormController implements I
         if (publishResourceCommand.getPublishResourceAction() != null) {
             String msgCode = "publish.permission.";
 
-            if (PUBLISH_PARAM.equals(action)) {
+            if (PUBLISH_PARAM.equals(action) || PUBLISH_PARAM_GLOBAL.equals(action)) {
                 Property publishDateProp = resource.getProperty(this.publishDatePropDef);
                 if (publishDateProp == null) {
                     publishDateProp = this.publishDatePropDef.createProperty();
@@ -104,7 +106,7 @@ public class PublishResourceController extends SimpleFormController implements I
                 }
                 publishDateProp.setDateValue(Calendar.getInstance().getTime());
                 msgCode += "publish";
-            } else if (UNPUBLISH_PARAM.equals(action)) {
+            } else if (UNPUBLISH_PARAM.equals(action) || UNPUBLISH_PARAM_GLOBAL.equals(action)) {
                 resource.removeProperty(this.publishDatePropDef);
                 msgCode += "unpublish";
             }

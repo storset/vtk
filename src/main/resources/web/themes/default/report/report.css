@@ -159,9 +159,12 @@ td.vrtx-report-diagram-text {
   background-position: 12px 14px;
 }
 
-.tip.file #title,
+.tip.file #title {
+  padding-left: 22px;
+}
+
 .tip.folder #title {
-  padding-left: 18px;
+  padding-left: 26px;
 }
 
 .tip.allowed-for-all.folder {

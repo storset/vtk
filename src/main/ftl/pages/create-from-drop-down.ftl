@@ -56,12 +56,18 @@
        $(".tree-create").vortexTips("li span.folder", ".vrtx-create-tree", 80, 300, 4000, 300, 10, -8, false, true);
      });
      
+     function callback(link) {
+       linkTriggeredMouseEnter = link;
+       linkTriggeredMouseEnterTipText = linkTriggeredMouseEnter.attr('title');
+       link.parent().trigger("mouseenter");
+     }
+     
      function traverseNode(treeTravNode, lastNode) {
        var windowTree = $(".tree-create");
        var checkNodeAvailable = setInterval(function() {
          var link = windowTree.find("a[href$='" + treeTravNode + "']");  
          if(link.length) {
-           clearInterval(checkNodeAvailable );
+           clearInterval(checkNodeAvailable);
            var hit = link.closest("li").find("> .hitarea");
            hit.click();
            if(lastNode) { // If last: scroll to node
@@ -73,7 +79,7 @@
                  easing: "swing",
                  queue: true,
                  axis: 'y',
-                 complete: link.parent().trigger("mouseenter")
+                 complete: callback(link)
                });
              });
            }

@@ -29,10 +29,14 @@
     $(this).delegate(subSelector, "mouseenter mouseleave", function (e) {
       if (e.type == "mouseenter") {
         var link = $(this);
+        if (typeof linkTriggeredMouseEnter !== "undefined" && linkTriggeredMouseEnter) {
+          linkTriggeredMouseEnter.attr('title', linkTriggeredMouseEnterTipText);
+          linkTriggeredMouseEnter;
+          linkTriggeredMouseEnterTipText;
+        }
         if (typeof link.attr("href") === "undefined") {
           link = link.find("a");
         }
-        link.attr('title', tipText);
         clearTimeout(fadeOutTimer);
         if (tip) {
           tip.remove();

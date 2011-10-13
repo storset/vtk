@@ -165,6 +165,10 @@
   width: 576px;
 }
 
+.contactInformation .visitingAddress {
+  display: none !important;
+}
+
 /* ^ JSON-boxes - explicit settings */
 
 .vrtx-grouped-horizontal:after,

@@ -175,22 +175,26 @@ public final class MenuGenerator {
             resultSets = allItemsSize;
         }
 
-        int itemsPerResultSet = Math.round((float) allItemsSize / (float) resultSets);
-        int remainder = allItemsSize % itemsPerResultSet;
-        int limit = allItemsSize / itemsPerResultSet;
-        
-        for (int i = 0; i <= limit; i++) {
-            int startIdx = i * itemsPerResultSet;
-            int endIdx = startIdx + itemsPerResultSet;
-            if (endIdx > allItemsSize) {
-                endIdx = startIdx + remainder;
+        int itemsPerResultSet = allItemsSize / resultSets;
+        int remainder = allItemsSize % resultSets;
+
+        int startIdx = 0;
+        int endIdx = itemsPerResultSet;
+        for (int i = 0; i < resultSets; i++) {
+
+            // If you have remainders, keep adding an extra element to each
+            // result set menu, starting from the first one until all remainders
+            // are distributed
+            if (remainder > 0) {
+                endIdx++;
+                remainder--;
             }
 
             List<MenuItem<PropertySet>> subList = allItems.subList(startIdx, endIdx);
-            if(subList.isEmpty()) {  // TODO: tmp fix  
-                continue;
-            }
-                
+
+            startIdx = endIdx;
+            endIdx = startIdx + itemsPerResultSet;
+
             ListMenu<PropertySet> m = new ListMenu<PropertySet>();
             m.setComparator(new ListMenuComparator(menuRequest.getLocale(), this.importancePropDef,
                     this.navigationTitlePropDef, menuRequest.isAscendingSort(), menuRequest.isSortByName(), menuRequest

@@ -36,27 +36,28 @@
   <#assign includeIfEmpty = false />
  </#if>
  
-  <ul class="items">
-
-  <#list comments as comment>
-    <#if comment_index &gt; number - 1><#break /></#if>
-    <li>
-      <a class="item-title" href="${(commentURLMap[comment.ID] + '#comment-' + comment.ID)?html}">
-      ${comment.author.description?html} <@vrtx.msg code="commenting.comments.on" default="about" />
-        "${resourceMap[comment.URI].title?html}"
-      </a>
-      <span class="published-date"><@vrtx.date value=comment.time format='long' /></span>
-      <div class="item-description">
-      <#assign description>
-      <@vrtx.limit nchars=50 elide=true>
-        <@vrtx.flattenHtml value=comment.content escape=false />
-      </@vrtx.limit>
-      </#assign>
-      ${description?html}
-      </div>
-    </li>
-  </#list>
-  </ul>
+  <#if comments?has_content>
+    <ul class="items">
+      <#list comments as comment>
+        <#if comment_index &gt; number - 1><#break /></#if>
+        <li>
+          <a class="item-title" href="${(commentURLMap[comment.ID] + '#comment-' + comment.ID)?html}">
+            ${comment.author.description?html} <@vrtx.msg code="commenting.comments.on" default="about" />
+              "${resourceMap[comment.URI].title?html}"
+          </a>
+          <span class="published-date"><@vrtx.date value=comment.time format='long' /></span>
+          <div class="item-description">
+            <#assign description>
+              <@vrtx.limit nchars=50 elide=true>
+                <@vrtx.flattenHtml value=comment.content escape=false />
+              </@vrtx.limit>
+            </#assign>
+            ${description?html}
+          </div>
+        </li>
+      </#list>
+    </ul>
+  </#if>
   
   <a class="all-comments" href="${recentCommentsURL?html}"><@vrtx.msg code="commenting.comments.more" default="More..." /></a>
   

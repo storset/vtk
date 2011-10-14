@@ -45,6 +45,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
@@ -112,6 +113,7 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
         // VTK-2460
         if (requestContext.isViewUnauthenticated()) {
             token = null;
+            principal = null;
         }
 
         Resource resource = repository.retrieve(token, uri, true);
@@ -128,23 +130,28 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
         Map<String, URL> commentURLMap = new HashMap<String, URL>();
         List<Comment> filteredComments = new ArrayList<Comment>();
         for (Comment comment : comments) {
-            try {
+            try { 
                 Resource r = repository.retrieve(token, comment.getURI(), true);
-                // Don't include comments from resources that have no published
-                // date
+                
+                // Don't include comments from resources that are not published
                 Property publishedDate = null;
                 if (publishedDatePropDef != null) {
                     publishedDate = r.getProperty(publishedDatePropDef);
                     if (publishedDate == null) {
-                      publishedDate = r.getProperty(Namespace.DEFAULT_NAMESPACE, "published");
+                      publishedDate = r.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.PUBLISHED_PROP_NAME);
                       if (!publishedDate.getBooleanValue()) {
                           publishedDate = null;
                       }
                     }
                 }
-                if (!this.includeCommentsFromUnpublished && publishedDate == null) {
+                
+                // Don't include comments from resources that have not commenting turned on
+                Property commentsEnabled = r.getProperty(Namespace.DEFAULT_NAMESPACE, "commentsEnabled"); 
+                
+                if ((!this.includeCommentsFromUnpublished && publishedDate == null) || !commentsEnabled.getBooleanValue()) {
                     continue;
                 }
+                
                 filteredComments.add(comment);
                 resourceMap.put(r.getURI().toString(), r);
                 URL commentURL = this.viewService.constructURL(r, principal);

@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Comment;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -107,6 +108,11 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
         String token = requestContext.getSecurityToken();
         Principal principal = requestContext.getPrincipal();
         Path uri = RequestContext.getRequestContext().getResourceURI();
+        
+        // VTK-2460
+        if (requestContext.isViewUnauthenticated()) {
+            token = null;
+        }
 
         Resource resource = repository.retrieve(token, uri, true);
         // If deepCommentListing is specified, always find the nearest
@@ -129,6 +135,12 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
                 Property publishedDate = null;
                 if (publishedDatePropDef != null) {
                     publishedDate = r.getProperty(publishedDatePropDef);
+                    if (publishedDate == null) {
+                      publishedDate = r.getProperty(Namespace.DEFAULT_NAMESPACE, "published");
+                      if (!publishedDate.getBooleanValue()) {
+                          publishedDate = null;
+                      }
+                    }
                 }
                 if (!this.includeCommentsFromUnpublished && publishedDate == null) {
                     continue;

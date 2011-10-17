@@ -116,12 +116,12 @@
     <#assign rowclass><#if rowclass="even">odd<#else>even</#if></#assign>
   </#list>
   
-  <#if commentsEnabled>
-
   <div class="add-comment" id="comment-form">
     <div class="add-comment-header"><@vrtx.msg code="commenting.form.add-comment" default="Add comment" /></div>
-
-    <#if !principal?exists>
+    <#if !commentsEnabled>
+       <p><@vrtx.msg code="commenting.disabled"
+                  default="Commenting is disabled on this resource." /></p>
+    <#elseif !principal?exists>
       <#assign completeLoginURL>${loginURL?html}&amp;anchor=comment-form</#assign>
       <#assign defaultMsg>
         To comment on this resource you have to <a href="${completeLoginURL}">log in</a>
@@ -197,6 +197,4 @@
       <@ck.editorInTextarea textarea="comments-text" toolbar="AddComment" runOnLoad=false  />
     </#if>
   </div>
-  
-  </#if>
 </div>

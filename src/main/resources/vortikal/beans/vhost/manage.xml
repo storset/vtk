@@ -1387,6 +1387,12 @@
         <ref bean="resourceMenuLeftProvider" />
         <ref bean="resourceMenuRightProvider" />
         <ref bean="manage.refreshLockURLProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
+          <property name="modelName" value="writePermission" />
+          <property name="permission" ref="ACTION_WRITE" />
+          <property name="anonymous" value="false" />
+          <property name="considerLocks" value="true" />
+        </bean>
       </list>
     </property>
     <property name="attributesMap">
@@ -1395,7 +1401,8 @@
       </map>
     </property>
   </bean>
-  
+
+
   <!-- resource bar in iframe
   
   <bean id="manage.resourceBarIframeView" parent="freemarkerView">

@@ -58,12 +58,24 @@
     <property name="namespace" ref="decorating.documentNamespace" />
     <property name="name" value="element" />
     <property name="description" value="Outputs the contents of a specified element" />
+    <property name="examples">
+      <map>
+        <entry key="select=[html.body.div] enclosed=[false] exclude=[pre]"
+               value="Output the contents of the first &lt;div&gt; element in &lt;body&gt; and exclude &lt;pre&gt; elements" />
+      </map>
+    </property>
   </bean>
 
   <bean id="decorating.elementAttributesComponent" class="org.vortikal.web.decorating.components.HtmlAttributesComponent">
     <property name="namespace" ref="decorating.documentNamespace" />
     <property name="name" value="element-attributes" />
     <property name="description" value="Outputs the attributes of a specified element" />
+    <property name="examples">
+      <map>
+        <entry key="select=[html.body] exclude=[class,style]"
+               value="Output the attributes of the &lt;body&gt; element, except 'class' and 'style'" />
+      </map>
+    </property>
   </bean>
 
 
@@ -167,6 +179,12 @@
   <bean id="decorating.includeMediaComponent" class="org.vortikal.web.decorating.components.IncludeMediaPlayerComponent"
     parent="decorating.resourceMediaComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="examples">
+      <map>
+        <entry key="url=[rtmp://stream-prod01.uio.no/vod/mp4:uio/usit/test/big_buck_bunny_1200.mp4] width=[720] height=[406] content-type=[video/mp4]"
+               value="" />
+      </map>
+    </property>
   </bean>
 
   <bean id="decorating.resourceMediaComponent" class="org.vortikal.web.decorating.components.ResourceMediaPlayerComponent">
@@ -199,6 +217,11 @@
     <property name="description" value="Inserts the resource keywords, linked to the tags view" />
     <property name="defaultURLpattern" value="${tagService.defaultExpression}" />
     <property name="view" ref="decorating.keywordsComponent.view" />
+    <property name="examples">
+      <map>
+        <entry key="title=[Tags]" value="" />
+      </map>
+    </property>
   </bean>
 
   <bean id="decorating.tagCloudComponent" class="org.vortikal.web.decorating.components.TagCloudComponent">
@@ -206,6 +229,12 @@
     <property name="name" value="tag-cloud" />
     <property name="view" ref="decorating.tagCloudComponent.view" />
     <property name="tagElementsProvider" ref="tags.tagElementsProvider" />
+    <property name="examples">
+      <map>
+        <entry key="scope=[/my/folder] limit=[15] tag-occurence-min=[5]  magnitude-max=[8] magnitude-min=[1]"
+               value="" />
+      </map>
+    </property>
   </bean>
 
   <bean id="decorating.tagsComponent" class="org.vortikal.web.decorating.components.TagsComponent">
@@ -214,6 +243,12 @@
     <property name="view" ref="decorating.tagsComponent.view" />
     <property name="tagElementsProvider" ref="tags.tagElementsProvider" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="examples">
+      <map>
+        <entry key="scope=[/example/folder] limit=[15] result-sets=[2] show-occurence=[true] resource-type=[structured-article,structured-event]"
+               value="" />
+      </map>
+    </property>
   </bean>
 
   <bean id="decorating.shareAtComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
@@ -253,6 +288,34 @@
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="property" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="examples">
+      <map>
+        <entry key="id=[uri] uri=[/example/folder/index.html]" value="URI from /example/folder/index.html" />
+        <entry key="id=[name] uri=[/example/folder/index.html]" value="Name from /example/folder/index.html" />
+        <entry key="id=[type] uri=[/example/folder/index.html]" value="Type from /example/folder/index.html" />
+        <entry key="id=[lastModified] uri=[/example/folder/index.html]" value="Last modified date from /example/folder/index.html" />
+        <entry key="id=[lastModified] uri-level=[2]" value="Last modified two levels from root (/example/folder)" />
+        <entry key="id=[uri]" value="" />
+        <entry key="id=[name]" value="" />
+        <entry key="id=[type]" value="" />
+        <entry key="id=[lastModified]" value="" />
+        <entry key="id=[resource:author]" value="" />
+        <entry key="id=[tags]" value="" />
+        <entry key="id=[creationTime] format=[short]" value="" />
+        <entry key="id=[creationTime] format=[short_no]" value="" />
+        <entry key="id=[creationTime] format=[long]" value="" />
+        <entry key="id=[creationTime] format=[long_no]" value="" />
+        <entry key="id=[creationTime] format=[iso-8601]" value="" />
+        <entry key="id=[creationTime] format=[iso-8601-short]" value="" />
+        <entry key="id=[creationTime] format=[rfc-822]" value="" />
+        <entry key="id=[creationTime] format=[yyyy-MM-dd'T'HH:mm:ssZZ]" value="" />
+        <entry key="id=[owner]" value="" />
+        <entry key="id=[createdBy]" value="" />
+        <entry key="id=[contentLastModified]" value="" />
+        <entry key="id=[contentModifiedBy]" value="" />
+        <entry key="id=[title]" value="" />
+      </map>
+    </property>
   </bean>
 
   <bean id="decorating.includeResourcePropertyComponent" 
@@ -288,6 +351,11 @@
         <entry key="display-from-level" value="Defines the starting URI level for the breadcrumb" />
         <entry key="display-services" value="Display name of service. The default is 'true'." />
         <entry key="display-folders-hidden-from-navigation" value="Display folders hidden from navigation in breadcrumb trail. The default is 'false'." />
+      </map>
+    </property>
+    <property name="examples">
+      <map>
+        <entry key="downcase=[true]" value="" />
       </map>
     </property>
   </bean>
@@ -331,6 +399,12 @@
         <value>location</value>
       </list>
     </property>
+    <property name="examples">
+      <map>
+        <entry key="uri=[/my/events/folder/] event-description=[true] list-only-once=[true] show-picture=[true] add-to-calendar=[true]"
+               value="" />
+      </map>
+    </property>    
   </bean>
 
   <bean id="decorating.eventComponent.view" parent="freemarkerView">
@@ -341,7 +415,6 @@
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="feed" />
     <property name="view" ref="decorating.feedComponent.view" />
-    <property name="description" value="Inserts a feed (RSS, Atom) component on the page" />
     <property name="contentCache" ref="decorating.feedComponent.contentCache" />
     <property name="localFeedFetcher" ref="decorating.feedComponent.localFeedFetcher" />
     <property name="htmlUtil" ref="htmlUtil" />
@@ -353,13 +426,24 @@
         <value>description</value>
       </list>
     </property>
+    <property name="description" value="Inserts a feed (RSS, Atom) component on the page" />
+    <property name="examples">
+      <map>
+        <entry key="url=[/news/?vrtx=feed]" value="" />
+        <entry key="item-picture=[true] item-description=[true]"
+               value="Show item-picture and item-description (introduction-picture and introduction)" />
+        <entry key="url=[/news/?vrtx=feed] sort=[asc]" value="" />
+        <entry key="url=[/news/?vrtx=feed] sort=[item-title desc]" value="" />
+        <entry key="url=[/news/?vrtx=feed] sort=[published-date asc]" value="" />
+        <entry key="url=[/news/?vrtx=feed] element-order=[description,title,picture]" value="Element-order-example" />
+      </map>
+    </property>
   </bean>
 
   <bean id="decorating.aggregatedFeedComponent" class="org.vortikal.web.decorating.components.AggregatedFeedsComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="feeds" />
     <property name="view" ref="decorating.feedComponent.view" />
-    <property name="description" value="Inserts an aggregated feed (RSS, Atom) component on the page" />
     <property name="contentCache" ref="decorating.feedComponent.contentCache" />
     <property name="localFeedFetcher" ref="decorating.feedComponent.localFeedFetcher" />
     <property name="htmlUtil" ref="htmlUtil" />
@@ -372,6 +456,12 @@
         <value>channel</value>
         <value>categories</value>
       </list>
+    </property>
+    <property name="description" value="Inserts an aggregated feed (RSS, Atom) component on the page" />
+    <property name="examples">
+      <map>
+        <entry key="url=[/news/?vrtx=feed,/events/?vrtx=feed]" value="Merge two feeds" />
+      </map>
     </property>
   </bean>
 
@@ -423,6 +513,14 @@
     <property name="name" value="uri-menu" />
     <property name="view" ref="decorating.listMenuComponent.view" />
     <property name="searchLimit" value="${decorating.listMenuComponent.searchLimit}" />
+    <property name="examples">
+      <map>
+        <entry key="style=[horizontal] uri=[/example/folder] include-parent-folder=[true] parent-folder-title=[Home] authenticated=[true]"
+               value="Horizontal menu. Include parent folder and set your own title on it. Let a user who is logged in see all of his/her permitted subfolders" />
+        <entry key="display-from-level=[2] depth=[3] exclude-children=[bilder,intern]"
+               value="Vertical menu. Include from level 2 and alow menu to expand three levels. Exclude subfolders you don't want to show"/>
+      </map>
+    </property>
   </bean>
 
   <bean name="decorating.listMenuComponent.view" parent="freemarkerView">
@@ -448,6 +546,12 @@
     <property name="view" ref="decorating.subFolderMenuComponent.view" />
     <property name="modelName" value="subFolderMenu" />
     <property name="description" value="Lists the subfolders of the current folder" />
+    <property name="examples">
+      <map>
+        <entry key="title=[Subareas] result-sets=[2]"
+               value="" />
+      </map>
+    </property>
   </bean>
 
   <bean id="subFolderMenuProvider" class="org.vortikal.web.decorating.components.menu.SubFolderMenuProvider"
@@ -473,10 +577,16 @@
       </map>
     </property>
     <property name="logoutService" ref="logoutService" />
-    <property name="description" value="Displays a login or logout URL" />
     <property name="parameterDescriptions">
       <map>
         <entry key="destination-service" value="Destination service. Default destination is view, the other possible value is 'admin'." />
+      </map>
+    </property>
+    <property name="description" value="Displays a login or logout URL" />
+    <property name="examples">
+      <map>
+        <entry key="" value="" />
+        <entry key="destination-service=[admin]" value="" />
       </map>
     </property>
   </bean>
@@ -489,10 +599,15 @@
   <bean id="decorating.includeComponent" class="org.vortikal.web.decorating.components.IncludeComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="file" />
-    <property name="description" value="Includes the contents of another document in the page" />
     <property name="httpIncludeCache" ref="decorating.includeComponent.httpIncludeCache" />
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="uriPreProcessor" ref="uriPreProcessor" />
+    <property name="description" value="Includes the contents of another document in the page" />
+    <property name="examples">
+      <map>
+        <entry key="file=[/about/address.html] element=[html.body.h1]" value="" />
+      </map>
+    </property>
   </bean>
 
   <bean id="uriPreProcessor" class="org.vortikal.repository.search.preprocessor.QueryStringPreProcessorImpl">
@@ -524,7 +639,6 @@
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="image-listing" />
     <property name="view" ref="decorating.imageListing.view" />
-    <property name="description" value="Inserts a simple image list." />
     <property name="parameterDescriptions">
       <map>
         <entry key="uri" value="URI of the image folder to include pictures from. Must not end with '/' unless it is the root-folder." />
@@ -536,6 +650,12 @@
       </map>
     </property>
     <property name="searchSorting" ref="collectionListing.searchSorting" />
+    <property name="description" value="Inserts a simple image list." />
+    <property name="examples">
+      <map>
+        <entry key="uri=[/about/images] type=[gallery] fade-effect=[200]" value="" />
+      </map>
+    </property>
   </bean>
 
   <bean name="decorating.imageListing.view" parent="freemarkerView">

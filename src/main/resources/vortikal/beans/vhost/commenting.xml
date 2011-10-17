@@ -332,6 +332,11 @@
         <entry key="include-if-empty" value="Set to 'false' if you don't want to display empty comments. Default is 'true'." />
       </map>
     </property>
+    <property name="examples">
+      <map>
+        <entry key="max-comments=[5] include-if-empty=[false]" value="" />
+      </map>
+    </property>
     <property name="exposedParameters">
       <set>
         <value>max-comments</value>

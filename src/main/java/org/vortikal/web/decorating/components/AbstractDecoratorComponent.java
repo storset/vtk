@@ -30,11 +30,14 @@
  */
 package org.vortikal.web.decorating.components;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
-
 import org.vortikal.web.decorating.DecoratorComponent;
 
 /**
@@ -56,6 +59,8 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
     private String name;
 
     private String description;
+    
+    private Collection<UsageExample> usageExamples;
 
     private Map<String, String> parameterDescriptions;
 
@@ -63,14 +68,17 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
         this.namespace = namespace;
     }
 
+    @Override
     public String getNamespace() {
         return this.namespace;
     }
 
-    @Required public void setName(String name) {
+    @Required
+    public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return this.name;
     }
@@ -79,6 +87,7 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
         this.description = description;
     }
 
+    @Override
     public final String getDescription() {
         if (this.description == null) {
             return getDescriptionInternal();
@@ -88,17 +97,36 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
     }
 
     public void setParameterDescriptions(Map<String, String> parameterDescriptions) {
-        this.parameterDescriptions = parameterDescriptions;
+        this.parameterDescriptions = Collections.unmodifiableMap(parameterDescriptions);
     }
 
+    @Override 
     public final Map<String, String> getParameterDescriptions() {
         return this.parameterDescriptions;
+    }
+    
+    public void setExamples(Map<String, String> examples) {
+        if (examples == null) {
+            return;
+        }
+        List<UsageExample> result = new ArrayList<UsageExample>();
+        for (String key: examples.keySet()) {
+            String value = examples.get(key);
+            result.add(new UsageExample(value, key));
+        }
+        this.usageExamples = Collections.unmodifiableCollection(result);
+    }
+    
+    @Override
+    public Collection<UsageExample> getUsageExamples() {
+        return this.usageExamples;
     }
 
     protected abstract String getDescriptionInternal();
 
     protected abstract Map<String, String> getParameterDescriptionsInternal();
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (this.description == null)
             this.description = getDescriptionInternal();
@@ -108,6 +136,7 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
 
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(": ").append(this.namespace).append(":").append(this.name);

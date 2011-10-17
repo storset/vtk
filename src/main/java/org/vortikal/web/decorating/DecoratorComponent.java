@@ -30,6 +30,10 @@
  */
 package org.vortikal.web.decorating;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 
@@ -51,8 +55,161 @@ public interface DecoratorComponent {
     public String getDescription();
 
     public Map<String, String> getParameterDescriptions();
+    
+    public Collection<UsageExample> getUsageExamples();
 
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception;
 
+
+    public static final class UsageExample {
+        
+        private String description = null;
+        private List<Param> parameters = null;
+        
+        public String example(String name) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("${");
+            sb.append(name);
+            if (this.parameters != null) {
+                for (Param p: this.parameters) {
+                    sb.append(" ").append(p.name)
+                        .append("=[").append(p.value).append("]");
+                }
+            }
+            sb.append("}");
+            return sb.toString();
+        }
+        
+        public String description() {
+            return this.description;
+        }
+        
+        public UsageExample(String syntax) {
+            this(null, syntax);
+        }
+        
+        public UsageExample(String description, String syntax) {
+            if (description != null && !"".equals(description.trim())) {
+                this.description = description;
+            }
+            State state = State.BETWEEN;
+            
+            List<Param> params = new ArrayList<Param>();
+            
+            Param cur = new Param();
+            boolean escape = false;
+            for (int i = 0; i < syntax.length(); i++) {
+                char c = syntax.charAt(i);
+                
+                if (c == '\\') {
+                    if (!escape) {
+                        escape = true;
+                        continue;
+                    }
+                }
+                if (escape) {
+                    if (c != '[' && c != ']' && c != '\\') {
+                        throw new IllegalArgumentException(
+                                "Illegal escape sequence at position " 
+                        + (i - 1) + " in input string '" + syntax + "'");
+                    }
+                    escape = false;
+                    if (state == State.PARAM_NAME) {
+                        cur.name.append(c);
+                        continue;
+                    }
+                    if (state == State.PARAM_VALUE) {
+                        cur.value.append(c);
+                        continue;
+                    }
+                    throw new IllegalArgumentException(
+                            "Unexpected character '\\' at position " 
+                                    + (i - 1) + " in input string '" + syntax + "'");
+                }
+
+                if (Character.isWhitespace(c)) {
+                    if (state == State.BETWEEN) {
+                        continue;
+                    }
+                    if (state == State.PARAM_NAME) {
+                        cur.name.append(c);
+                        continue;
+                    }
+                    if (state == State.PARAM_VALUE) {
+                        cur.value.append(c);
+                        continue;
+                    }
+                }
+                if (c == '=') {
+                    if (state == State.PARAM_NAME) {
+                        state = State.EQ;
+                        continue;
+                    }
+                }
+                if (state == State.EQ && c != '[') {
+                    throw new IllegalArgumentException(
+                            "Unexpected character '[' at position " 
+                                    + i + " in input string '" + syntax + "'");
+                    
+                }
+                if (c == '[') {
+                    if (state == State.EQ) {
+                        state = State.PARAM_VALUE;
+                        continue;
+                    }
+                    throw new IllegalArgumentException(
+                            "Unexpected character '[' at position " 
+                                    + i + " in input string '" + syntax + "'");
+                }
+                if (c == ']') {
+                    if (state == State.PARAM_VALUE) {
+                        params.add(cur);
+                        cur = new Param();
+                        state = State.BETWEEN;
+                        continue;
+                    }
+                    throw new IllegalArgumentException(
+                            "Unexpected character ']' at position " 
+                                    + i + " in input string '" + syntax + "'");
+                }
+                // c == whatever:
+                if (state == State.BETWEEN) {
+                    cur.name.append(c);
+                    state = State.PARAM_NAME;
+                    continue;
+                }
+                if (state == State.PARAM_NAME) {
+                    cur.name.append(c);
+                    continue;
+                }
+                if (state == State.PARAM_VALUE) {
+                    cur.value.append(c);
+                    continue;
+                }
+            }
+            if (state != State.BETWEEN) {
+                if (cur.value.length() > 0) {
+                    throw new IllegalArgumentException(
+                            "Unterminated parameter: '" 
+                    + cur.name + "[" + cur.value + "'");
+                }
+                throw new IllegalArgumentException(
+                        "Unterminated parameter: '" + cur.name + "'");
+            }
+            this.parameters = Collections.unmodifiableList(params);
+        }
+        
+        private static final class Param {
+            StringBuilder name = new StringBuilder();
+            StringBuilder value = new StringBuilder();
+            public String toString() {
+                return name + "=[" + value + "]";
+            }
+        }
+        
+        private enum State {
+            BETWEEN, PARAM_NAME, EQ, PARAM_VALUE;
+        }
+    }
 }

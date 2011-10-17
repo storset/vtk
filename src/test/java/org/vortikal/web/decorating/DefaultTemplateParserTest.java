@@ -34,6 +34,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -141,27 +142,38 @@ public class DefaultTemplateParserTest extends TestCase {
 
     private class DummyComponent implements DecoratorComponent {
         private String namespace, name;
+        
         public DummyComponent(String namespace, String name) {
             this.namespace = namespace;
             this.name = name;
         }
-        
+
+        @Override
         public String getNamespace() {
             return this.namespace;
         }
         
+        @Override
         public String getName() {
             return this.name;
         }
         
+        @Override
         public String getDescription() {
             return "Dummy component " + this.namespace + ":" + this.name;
         }
         
+        @Override
         public Map<String, String> getParameterDescriptions() {
             return null;
         }
         
+        @Override
+        public Collection<UsageExample> getUsageExamples() {
+            return null;
+        }
+        
+        @Override
         public void render(DecoratorRequest request, DecoratorResponse response)
             throws Exception {
             response.getWriter().write("component: " + this.namespace + ":" + this.name);

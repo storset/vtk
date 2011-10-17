@@ -22,10 +22,10 @@
           are 'comments' and 'config'">
 </#if>
 
-<#if !commentsEnabled>
-  <#-- display nothing -->
-<#else>
-<@ck.declareEditor />
+<#if commentsEnabled>
+  <@ck.declareEditor />
+</#if>
+
 <div class="vrtx-comments" id="comments">
   <#if comments?exists>
     <div class="comments-header">
@@ -115,6 +115,8 @@
     </div>
     <#assign rowclass><#if rowclass="even">odd<#else>even</#if></#assign>
   </#list>
+  
+  <#if commentsEnabled>
 
   <div class="add-comment" id="comment-form">
     <div class="add-comment-header"><@vrtx.msg code="commenting.form.add-comment" default="Add comment" /></div>
@@ -195,5 +197,6 @@
       <@ck.editorInTextarea textarea="comments-text" toolbar="AddComment" runOnLoad=false  />
     </#if>
   </div>
+  
+  </#if>
 </div>
-</#if>

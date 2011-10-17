@@ -29,10 +29,19 @@
   <bean id="contentTypeMatchesVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
     <property name="pattern" value="video/(.+)" />
   </bean>
-
-  <bean id="videoPlayerService" class="org.vortikal.web.service.ServiceImpl">
+  
+  <bean id="mediaPlayerService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
     <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="asWebpageAssertion" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="videoPlayerService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="mediaPlayerService" />
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesVideo" />
@@ -43,8 +52,7 @@
   </bean>
   
   <bean id="audioPlayerService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="viewService" />
-    <property name="order" value="0" />
+    <property name="parent" ref="mediaPlayerService" />
     <property name="assertions">
       <list>
         <ref bean="contentTypeMatchesAudio" />
@@ -131,7 +139,7 @@
   <bean id="mediaPlayerService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="modelName" value="previewImage" />
     <property name="urlName" value="URL" />
-    <property name="service" ref="videoPlayerService" />
+    <property name="service" ref="mediaPlayerService" />
   </bean>
 
   <bean id="posterImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">

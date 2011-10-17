@@ -48,6 +48,7 @@
     <property name="rememberAuthMethod" value="${security.rememberAuthMethod}" />
     <property name="spCookieDomain" value="${security.spCookieDomain}" />
     <property name="spCookieAssertion" ref="securityInitializer.spCookieAssertion" />
+    <property name="serviceProviderURI" value="${saml.serviceProviderURI}" />
   </bean>
 
   <bean id="securityInitializer.spCookieAssertion" class="org.vortikal.web.service.AndAssertion">

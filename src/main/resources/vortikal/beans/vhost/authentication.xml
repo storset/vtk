@@ -284,17 +284,18 @@
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
   </bean>
 
-  <bean id="authTarget.redirectOpenResourceService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="authTarget.redirectOpenResourceServiceHttps" class="org.vortikal.web.service.ServiceImpl">
     <!--
-   <property name="parent" ref="webService" />
-    <property name="order" value="-10000" />
-   -->
+      <property name="parent" ref="webService" />
+      <property name="order" value="-10000" />
+    -->
     <property name="order" value="-2" />
     <property name="assertions">
       <list>
         <ref bean="authTarget.enabledAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="authTarget" />
+          <property name="parameterValue" value="https" />
         </bean>
         <bean class="org.vortikal.web.service.IsAuthenticatedAssertion" />
         <bean class="org.vortikal.web.service.RequestProtocolAssertion">
@@ -310,10 +311,74 @@
     <property name="handler">
       <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
         <property name="removedParameters" value="authTarget" />
+        <property name="protocol" value="https" />
+      </bean>
+    </property>
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
+  </bean>
+  
+  <bean id="authTarget.redirectOpenResourceServiceHttp" class="org.vortikal.web.service.ServiceImpl">
+    <!--
+   <property name="parent" ref="webService" />
+    <property name="order" value="-10000" />
+   -->
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
+        <ref bean="authTarget.enabledAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="authTarget" />
+        </bean>
+        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion" />
+        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
+          <property name="protocol" value="https" />
+        </bean>       
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <ref bean="isReadRestrictedAssertion" />
+          </property>
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
+        <property name="removedParameters" value="authTarget" />
         <property name="protocol" value="http" />
       </bean>
     </property>
     <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
+  </bean>
+
+  <bean id="authTarget.redirectSSLServiceAuthenticated" class="org.vortikal.web.service.ServiceImpl">
+    <!--
+   <property name="parent" ref="webService" />
+    <property name="order" value="-10000" />
+   -->
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
+        <ref bean="authTarget.enabledAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="authTarget" />
+          <property name="parameterValue" value="https" />
+        </bean>
+        <bean class="org.vortikal.web.service.IsAuthenticatedAssertion" />
+        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
+          <property name="protocol" value="http" />
+        </bean>        
+      </list>
+    </property>
+    <property name="handler">
+      <bean class="org.vortikal.web.interceptors.ConfigurableRedirector">
+        <property name="protocol" value="https" />
+      </bean>
+    </property>
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
+    <property name="attributes">
+      <map>
+        <entry key="inhibit-caching" value="true" />
+      </map>
+    </property>
   </bean>
 
   <bean id="authTarget.removeRequestParameterService" class="org.vortikal.web.service.ServiceImpl">

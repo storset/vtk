@@ -117,6 +117,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
     private String spCookieDomain = null;
 
+    private String serviceProviderURI;
+
     // Only relevant when using both https AND http and
     // different session cookie name for each protocol:
     private boolean cookieLinksEnabled = false;
@@ -201,12 +203,14 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                         + "will proceed to check authentication");
             }
         } else if (getCookie(req, UIO_AUTH_SSO) != null && getCookie(req, VRTXLINK_COOKIE) == null
-                && req.getParameter("authTarget") == null) {
-            URL currentURL = URL.parse(req.getRequestURL().toString());
-            if (req.getScheme().equals("http")) {
-                currentURL.addParameter("authTarget", "http");
-                resp.sendRedirect(currentURL.toString());
+                && req.getParameter("authTarget") == null && !req.getRequestURI().contains(serviceProviderURI)) {
+            StringBuffer url = req.getRequestURL();
+            if (req.getQueryString() != null) {
+                url = url.append(req.getQueryString());
             }
+            URL currentURL = URL.parse(url.toString());
+            currentURL.addParameter("authTarget", req.getScheme());
+            resp.sendRedirect(currentURL.toString());
         }
 
         for (AuthenticationHandler handler : this.authenticationHandlers) {
@@ -483,6 +487,10 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         if (spCookieDomain != null && !"".equals(spCookieDomain.trim())) {
             this.spCookieDomain = spCookieDomain;
         }
+    }
+
+    public void setServiceProviderURI(String serviceProviderURI) {
+        this.serviceProviderURI = serviceProviderURI;
     }
 
     public void setSpCookieAssertion(Assertion spCookieAssertion) {

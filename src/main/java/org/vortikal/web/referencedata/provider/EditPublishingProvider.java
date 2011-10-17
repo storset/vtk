@@ -67,17 +67,30 @@ public class EditPublishingProvider implements ReferenceDataProvider {
 
         Principal principal = requestContext.getPrincipal();
 
-        URL editPublishDateUrl = this.editPublishDateService.constructURL(resource, principal);
+        URL editPublishDateUrl = null;
+        try {
+            editPublishDateUrl = this.editPublishDateService.constructURL(resource, principal);
+        } catch (Throwable t) { }
         model.put("editPublishDateUrl", editPublishDateUrl);
 
-        URL editUnpublishDateUrl = this.editUnpublishDateService.constructURL(resource, principal);
+        URL editUnpublishDateUrl = null;
+        try {
+            editUnpublishDateUrl = this.editUnpublishDateService.constructURL(resource, principal);
+        } catch (Throwable t) { }
         model.put("editUnpublishDateUrl", editUnpublishDateUrl);
 
         if (publishedProp != null && publishedProp.getBooleanValue()) {
-            URL unPublishUrl = this.unpublishResourceService.constructURL(resource, principal);
+
+            URL unPublishUrl = null;
+            try {
+                unPublishUrl = this.unpublishResourceService.constructURL(resource, principal);
+            } catch (Throwable t) { }
             model.put("unPublishUrl", unPublishUrl);
         } else {
-            URL publishUrl = this.publishResourceService.constructURL(resource, principal);
+            URL publishUrl = null;
+            try {
+                publishUrl = this.publishResourceService.constructURL(resource, principal);
+            } catch (Throwable t) { }
             model.put("publishUrl", publishUrl);
         }
 

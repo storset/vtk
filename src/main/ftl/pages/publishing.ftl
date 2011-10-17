@@ -49,24 +49,27 @@
             <@vrtx.msg code=publishedStatusMsgKey default="" />
             <#assign titleMsg = vrtx.getMsg("confirm-publish.title.unpublish") />
           </span>
+          <#if unPublishUrl?exists>
           &nbsp;<a class="vrtx-button-small thickbox" href="${unPublishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" title="${titleMsg}"><span><@vrtx.msg code="publish.action.unpublish" default="Unpublish" /></span></a>
+          </#if>
         <#else>
           <span class="unpublished">
             <@vrtx.msg code=publishedStatusMsgKey default="" />
             <#assign titleMsg = vrtx.getMsg("confirm-publish.title.publish") />      
           </span>
+          <#if publishUrl?exists>
           &nbsp;<a class="vrtx-button-small thickbox" href="${publishUrl?html}&amp;showAsHtml=true&amp;height=80&amp;width=230" title="${titleMsg}"><span><@vrtx.msg code="publish.action.publish" default="Publish" /></span></a>
+          </#if>
         </#if>
         
       </div>
-        
       <@displayOrEdit "publish-date" "publishDate" editPublishDateUrl />
       <@displayOrEdit "unpublish-date" "unpublishDate" editUnpublishDateUrl />
     </div>
   </body>
 </html>
 
-<#macro displayOrEdit propName bindName editUrl >
+<#macro displayOrEdit propName bindName editUrl="" >
   <#if formName?exists && formName == propName >
     <div id="publishing-${propName}" class="expandedForm">
       <@spring.bind formName + ".submitURL" />
@@ -84,12 +87,12 @@
           <h3><@vrtx.msg code="publishing." + propName default="${propName}" />:</h3>
           <@displayValidationErrors spring.status.errorMessages />
           <ul class="property">
-          	<li>
-          	  <div class="vrtx-textfield">
-          	    <input class="date" type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${dateTimeValue?html}" />
-          	  </div>
-		  	</li>
-		  </ul>
+             <li>
+              <div class="vrtx-textfield">
+                <input class="date" type="text" id="${spring.status.expression}" name="${spring.status.expression}" value="${dateTimeValue?html}" />
+              </div>
+             </li>
+          </ul>
         <div id="submitButtons" class="submitButtons">
           <div class="vrtx-focus-button">
             <input type="submit" id="${bindName}UpdateAction" name="${bindName}UpdateAction" value="${vrtx.getMsg("editor.save")}" onclick="saveDateAndTimeFields();"/>
@@ -110,9 +113,11 @@
       <#else>
         <@vrtx.msg code="publishing.date.not-set" default="Not set" />
       </#if>
+      <#if editUrl != "">
       &nbsp;<a class="vrtx-button-small" href="${editUrl?html}"><span><@vrtx.msg code="publishing.edit" default="edit" /></span></a>
-	  </div>
-	</div>
+      </#if>
+      </div>
+    </div>
   </#if>
 </#macro>
 

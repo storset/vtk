@@ -299,7 +299,6 @@
     </property>
     <property name="assertions">
       <list>
-        <ref bean="writePermissionAssertion" />
         <ref bean="structuredResources.typeAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="mode" />
@@ -318,6 +317,7 @@
     <property name="parent" ref="publish.editPublishingService" />
     <property name="assertions">
       <list>
+        <ref bean="writePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="edit-publish-date" />
@@ -331,6 +331,7 @@
     <property name="parent" ref="publish.editPublishingService" />
     <property name="assertions">
       <list>
+        <ref bean="writePermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="edit-unpublish-date" />

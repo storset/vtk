@@ -137,18 +137,15 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
                 Property publishedDate = null;
                 if (publishedDatePropDef != null) {
                     publishedDate = r.getProperty(publishedDatePropDef);
-                    if (publishedDate == null) {
+                    if (publishedDate == null && "application/json".equals(r.getContentType())) {
                       publishedDate = r.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.PUBLISHED_PROP_NAME);
                       if (!publishedDate.getBooleanValue()) {
                           publishedDate = null;
                       }
                     }
                 }
-                
-                // Don't include comments from resources that have not commenting turned on
-                Property commentsEnabled = r.getProperty(Namespace.DEFAULT_NAMESPACE, "commentsEnabled"); 
-                
-                if ((!this.includeCommentsFromUnpublished && publishedDate == null) || !commentsEnabled.getBooleanValue()) {
+
+                if (!this.includeCommentsFromUnpublished && publishedDate == null) {
                     continue;
                 }
                 

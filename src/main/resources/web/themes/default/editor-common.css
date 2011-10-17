@@ -119,6 +119,9 @@ div.userTitle input {
 
 div.additionalContent,
 div.introduction,
+div.image-description,
+div.video-description,
+div.audio-description,
 div.description {
   width: 500px;
 }
@@ -128,6 +131,9 @@ div.additionalContent iframe {
 }
 
 div.introduction,
+div.image-description,
+div.video-description,
+div.audio-description,
 div.description {
   clear: left;
   float: left;
@@ -136,6 +142,9 @@ div.description {
 }
 
 div.introduction textarea,
+div.image-description textarea,
+div.video-description textarea,
+div.audio-description textarea,
 div.description textarea {
   height: 200px;
 }
@@ -166,11 +175,17 @@ div.responsibilities textarea {
 }
 
 div.introduction iframe,
+div.image-description iframe,
+div.video-description iframe,
+div.audio-description iframe,
 div.description iframe {
   width: 476px !important;
 }
 
 div.introduction textarea,
+div.image-description textarea,
+div.video-description textarea,
+div.audio-description textarea,
 div.description textarea {
   width: 497px !important;
 }

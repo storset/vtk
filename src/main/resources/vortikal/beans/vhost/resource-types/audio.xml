@@ -20,9 +20,18 @@
         <ref bean="audioGenrePropDef" />
         <ref bean="audioOverriddenTitlePropDef" />
         <ref bean="audioDurationPropDef" />
+        <ref bean="audioHtmlDescriptionPropDef" />
       </list>
     </property>
   </bean>
+
+  <bean id="audioHtmlDescriptionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="audio-description" /> 
+    <property name="type" value="HTML" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+  
 
   <bean id="audioDurationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="duration" />

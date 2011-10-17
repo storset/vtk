@@ -46,7 +46,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var isSimpleHTML = simpleHTML != null ? simpleHTML : false;
 
   // CKEditor configurations
-  if (name.indexOf("introduction") != -1 || name.indexOf("resource.description") != -1) {
+  if (name.indexOf("introduction") != -1 || name.indexOf("resource.description") != -1 || name.indexOf("resource.image-description") != -1 || name.indexOf("resource.video-description") != -1 || name.indexOf("resource.audio-description") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar,
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (name.indexOf("caption") != -1) {

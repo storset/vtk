@@ -21,8 +21,16 @@
         <ref bean="imageWidthPropDef" />
         <ref bean="thumbnailPropDef" />
         <ref bean="photographerPropDef"/>
+        <ref bean="imageHtmlDescriptionPropDef" />
       </list>
     </property>
+  </bean>
+
+  <bean id="imageHtmlDescriptionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="image-description" /> 
+    <property name="type" value="HTML" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
   </bean>
 
   <bean id="asWebpageAssertion" class="org.vortikal.web.service.RequestParameterAssertion">

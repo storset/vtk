@@ -21,10 +21,11 @@
         <ref bean="generatedPosterImagePropDef" />
         <ref bean="videoWidthPropDef" />
         <ref bean="videoHeightPropDef" />
+        <ref bean="videoHtmlDescriptionPropDef" />
       </list>
     </property>
   </bean>
-
+  
   <bean id="contentTypeMatchesVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
     <property name="pattern" value="video/(.+)" />
   </bean>
@@ -100,7 +101,14 @@
       </map>
     </property>
   </bean>
-
+  
+  <bean id="videoHtmlDescriptionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="video-description" /> 
+    <property name="type" value="HTML" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+  
   <bean id="mediaPlayerService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="modelName" value="previewImage" />
     <property name="urlName" value="URL" />

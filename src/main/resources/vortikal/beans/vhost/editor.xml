@@ -434,7 +434,7 @@
           <list>
             <ref bean="userTitlePropDef" />
             <ref bean="photographerPropDef" />
-            <ref bean="descriptionPropDef" />
+            <ref bean="imageHtmlDescriptionPropDef" />
           </list>
         </property>
       </bean>
@@ -451,7 +451,7 @@
         <property name="preContentProperties">
           <list>
             <ref bean="userTitlePropDef" />
-            <ref bean="descriptionPropDef" />
+            <ref bean="videoHtmlDescriptionPropDef" />
             <ref bean="posterImagePropDef" />
           </list>
         </property>
@@ -468,7 +468,7 @@
         <property name="preContentProperties">
           <list>
             <ref bean="userTitlePropDef" />
-            <ref bean="descriptionPropDef" />
+            <ref bean="audioHtmlDescriptionPropDef" />
           </list>
         </property>
       </bean>

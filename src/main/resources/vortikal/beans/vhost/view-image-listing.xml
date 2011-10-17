@@ -46,7 +46,7 @@
       <list>
         <value>title</value>
         <value>lastModified</value>
-        <value>content:description</value>
+        <value>image-description</value>
         <value>pixelHeight</value>
         <value>pixelWidth</value>
         <value>creationTime</value>

@@ -30,17 +30,30 @@
     <property name="pattern" value="video/(.+)" />
   </bean>
 
-  <bean id="mediaPlayerService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="videoPlayerService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
     <property name="order" value="0" />
     <property name="assertions">
       <list>
-        <ref bean="contentTypeMatchesMedia" />
+        <ref bean="contentTypeMatchesVideo" />
         <ref bean="asWebpageAssertion" />
       </list>
     </property>
-    <property name="handler" ref="displayMediaResource" />
+    <property name="handler" ref="displayVideoResource" />
   </bean>
+  
+  <bean id="audioPlayerService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="contentTypeMatchesAudio" />
+        <ref bean="asWebpageAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="displayAudioResource" />
+  </bean>
+
 
   <bean id="mediaPlayer" class="org.vortikal.web.display.media.MediaPlayer">
     <property name="extentionToMimetype">
@@ -58,10 +71,16 @@
     <property name="thumbnailService" ref="displayThumbnailService" />
   </bean>
 
-  <bean id="displayMediaResource" class="org.vortikal.web.display.media.DisplayMediaController">
+  <bean id="displayAudioResource" class="org.vortikal.web.display.media.DisplayMediaController">
     <property name="mediaPlayer" ref="mediaPlayer" />
     <property name="viewName" value="viewMediaPlayer" />
-    <property name="descriptionPropDef" ref="descriptionPropDef" />
+    <property name="descriptionPropDef" ref="audioHtmlDescriptionPropDef" />
+  </bean>
+  
+  <bean id="displayVideoResource" class="org.vortikal.web.display.media.DisplayMediaController">
+    <property name="mediaPlayer" ref="mediaPlayer" />
+    <property name="viewName" value="viewMediaPlayer" />
+    <property name="descriptionPropDef" ref="videoHtmlDescriptionPropDef" />
   </bean>
 
   <bean id="displayMediaResourceViewResolver" parent="decoratorViewResolver">
@@ -112,7 +131,7 @@
   <bean id="mediaPlayerService.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
     <property name="modelName" value="previewImage" />
     <property name="urlName" value="URL" />
-    <property name="service" ref="mediaPlayerService" />
+    <property name="service" ref="videoPlayerService" />
   </bean>
 
   <bean id="posterImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">

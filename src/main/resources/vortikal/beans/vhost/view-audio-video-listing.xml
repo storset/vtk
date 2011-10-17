@@ -26,7 +26,7 @@
   </bean>
 
   <bean id="audioVideoListing.searchComponent" parent="collectionListing.searchComponent">
-    <property name="viewService" ref="mediaPlayerService" />
+    <property name="viewService" ref="videoPlayerService" />
     <property name="name" value="audioVideoListing.defaultListing" />
     <property name="queryBuilders">
       <list>

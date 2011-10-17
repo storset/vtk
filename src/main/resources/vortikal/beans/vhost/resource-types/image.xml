@@ -59,7 +59,7 @@
   <bean id="imageWithInfoHandler" class="org.vortikal.web.display.image.DisplayImageWithInfoController">
     <property name="viewName" value="imageWithInfoView" />
     <property name="titlePropDef" ref="titlePropDef" />
-    <property name="descriptionPropDef" ref="descriptionPropDef" />
+    <property name="descriptionPropDef" ref="imageHtmlDescriptionPropDef" />
   </bean>
 
   <bean id="imageWithInfoViewResolver" parent="decoratorViewResolver">

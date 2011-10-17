@@ -128,6 +128,14 @@
     <property name="pattern" value="(audio/(.+))|(video/(.+))" />
   </bean>
 
+  <bean id="contentTypeMatchesAudio" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="(audio/(.+))" />
+  </bean>
+  
+  <bean id="contentTypeMatchesVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
+    <property name="pattern" value="(video/(.+))" />
+  </bean>
+
   <bean id="contentTypeMatchesZip" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
     <property name="pattern" value="application/zip" />
   </bean>

@@ -265,14 +265,14 @@ public class ResourceArchiver {
             }
         }
 
-        String path = this.getCommentAttributes(entryLinePrefix + "parent", commentContent);
-        String author = this.getCommentAttributes(entryLinePrefix + "author", commentContent);
-        String time = this.getCommentAttributes(entryLinePrefix + "time", commentContent);
+        String path = this.getRequiredCommentAttribute(entryLinePrefix + "parent", commentContent);
+        String author = this.getRequiredCommentAttribute(entryLinePrefix + "author", commentContent);
+        String time = this.getRequiredCommentAttribute(entryLinePrefix + "time", commentContent);
         String title = null;
         if (commentContent.containsKey(entryLinePrefix + "title")) {
             title = commentContent.get(entryLinePrefix + "title").toString();
         }
-        String content = this.getCommentAttributes(entryLinePrefix + "content", commentContent);
+        String content = this.getRequiredCommentAttribute(entryLinePrefix + "content", commentContent);
 
         Comment comment = new Comment();
         comment.setURI(Path.fromString(getExpandedEntryUri(base, path)));
@@ -284,7 +284,7 @@ public class ResourceArchiver {
         return comment;
     }
 
-    private String getCommentAttributes(String key, Map<String, StringBuilder> commentContent) {
+    private String getRequiredCommentAttribute(String key, Map<String, StringBuilder> commentContent) {
         StringBuilder sb = commentContent.get(key);
         if (sb == null) {
             logger.warn("Could not add comment, missing required key " + key + ". Check archive file contents.");

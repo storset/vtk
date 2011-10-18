@@ -207,8 +207,9 @@
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:keywords' inputSize=40 />
 
     <!-- content:description -->
-    <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:description' inputSize=100 />
-
+    <#if resource.resourceType != "audio" && resource.resourceType != "video" && resource.resourceType != "image" >
+        <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:description' inputSize=100 />
+    </#if>
     <!-- content:verifiedDate -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:verifiedDate' />
     

@@ -26,6 +26,8 @@
   <@ck.declareEditor />
 </#if>
 
+<#if (commentsEnabled || comments?size > 0)>
+
 <div class="vrtx-comments" id="comments">
   <#if comments?exists>
     <div class="comments-header">
@@ -198,3 +200,5 @@
     </#if>
   </div>
 </div>
+
+</#if>

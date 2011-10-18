@@ -73,9 +73,8 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
-import org.vortikal.web.RequestContext;
+import org.vortikal.security.Principal.Type;
 
 public class ResourceArchiver {
 
@@ -141,7 +140,7 @@ public class ResourceArchiver {
                 Manifest manifest = new Manifest(new FileInputStream(tmp));
                 logger.info("Manifest written, creating jar...");
                 JarOutputStream jo = new JarOutputStream(out, manifest);
-                addEntry(token, rootLevel, r, jo, listener, ignoreList);
+                addEntry(token, rootLevel, r, jo, listener, ignoreList, r.getURI());
                 jo.close();
                 out.close();
             } finally {
@@ -486,7 +485,7 @@ public class ResourceArchiver {
     }
 
     private void addEntry(String token, int fromLevel, Resource r, JarOutputStream jarOut, EventListener listener,
-            List<String> ignoreList) throws Exception {
+            List<String> ignoreList, Path baseResourceToArchivePath) throws Exception {
 
         String path = getJarPath(r, fromLevel);
 
@@ -499,7 +498,7 @@ public class ResourceArchiver {
         if (r.isCollection()) {
             Resource[] children = this.repository.listChildren(token, r.getURI(), false);
             for (Resource child : children) {
-                addEntry(token, fromLevel, child, jarOut, listener, ignoreList);
+                addEntry(token, fromLevel, child, jarOut, listener, ignoreList, baseResourceToArchivePath);
             }
         } else {
 
@@ -514,33 +513,32 @@ public class ResourceArchiver {
                 }
                 bi.close();
 
-                // We don't break the archiving if something should go wrong
-                // with comments
-                try {
-                    archiveComments(token, r, jarOut);
-                } catch (Throwable t) {
-                    logger.error("Could not archive comment for resource '" + r.getURI() + "': " + t.getMessage());
-                }
-
             } catch (Throwable t) {
                 logger.error("Colud not archive content for resource '" + r.getURI() + "': " + t.getMessage());
+            }
+
+            // We don't break the archiving if something should go wrong with
+            // comments
+            try {
+                archiveComments(token, r, jarOut, baseResourceToArchivePath);
+            } catch (Throwable t) {
+                logger.error("Could not archive comment for resource '" + r.getURI() + "': " + t.getMessage());
             }
 
         }
         listener.archived(r.getURI());
     }
 
-    private void archiveComments(String token, Resource r, JarOutputStream jo) throws IOException {
+    private void archiveComments(String token, Resource r, JarOutputStream jo, Path baseResourceToArchivePath)
+            throws IOException {
         List<Comment> comments = this.repository.getComments(token, r);
         for (Comment comment : comments) {
             JarEntry je = new JarEntry(commentPath + comment.getID() + ".txt");
             jo.putNextEntry(je);
             StringBuilder sb = new StringBuilder();
-            RequestContext rc = RequestContext.getRequestContext();
-            Path currentCollection = rc.getCurrentCollection();
             Path archivedResourcePath = r.getURI();
-            int subStringIndex = currentCollection.isRoot() ? currentCollection.toString().length() : currentCollection
-                    .toString().length() + 1;
+            int subStringIndex = baseResourceToArchivePath.isRoot() ? baseResourceToArchivePath.toString().length()
+                    : baseResourceToArchivePath.toString().length() + 1;
             String archivedCommentParentPath = archivedResourcePath.toString().substring(subStringIndex);
             sb.append("X-vrtx-comment-parent: " + archivedCommentParentPath + "\n");
             sb.append("X-vrtx-comment-author: " + comment.getAuthor() + "\n");

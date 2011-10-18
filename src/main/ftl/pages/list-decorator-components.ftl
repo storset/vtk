@@ -53,19 +53,12 @@
           </dl>
         </#list>
       </#if>
-      <#if (component.usageExamples)?exists>
+      <#if (component.usageExamples)?exists && component.usageExamples?size &gt; 0>
         <h3>Examples</h3>
         <#list component.usageExamples as example>
-          <dl class="examples">
-            <dt>
-              ${example.example(component.name)}
-            </dt>
-            <dd>
-              <#if (example.description())?exists>
-                ${example.description()?html}
-              </#if>
-            </dd>
-          </dl>
+        <div style="font-family: monospace;">
+            ${example.example(component.name)}
+        </div>
         </#list>
       </#if>
       </#if>

@@ -513,16 +513,16 @@ public class ResourceArchiver {
                 }
                 bi.close();
 
+                // We don't break the archiving if something should go wrong
+                // with comments
+                try {
+                    archiveComments(token, r, jarOut, baseResourceToArchivePath);
+                } catch (Throwable t) {
+                    logger.error("Could not archive comment for resource '" + r.getURI() + "': " + t.getMessage());
+                }
+
             } catch (Throwable t) {
                 logger.error("Colud not archive content for resource '" + r.getURI() + "': " + t.getMessage());
-            }
-
-            // We don't break the archiving if something should go wrong with
-            // comments
-            try {
-                archiveComments(token, r, jarOut, baseResourceToArchivePath);
-            } catch (Throwable t) {
-                logger.error("Could not archive comment for resource '" + r.getURI() + "': " + t.getMessage());
             }
 
         }

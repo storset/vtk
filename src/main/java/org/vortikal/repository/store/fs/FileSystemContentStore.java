@@ -35,7 +35,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.FileChannel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -189,11 +188,23 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
     }
 
     private void copyFile(File from, File to) throws IOException {
-        FileChannel srcChannel = new FileInputStream(from).getChannel();
-        FileChannel dstChannel = new FileOutputStream(to).getChannel();
-        dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
-        srcChannel.close();
-        dstChannel.close();
+        FileInputStream src = null;
+        FileOutputStream dst = null;
+        try {
+            src = new FileInputStream(from);
+            dst = new FileOutputStream(to);
+            StreamUtil.pipe(src, dst, 122880, true);
+        } finally {
+            try {
+                if (src != null) {
+                    src.close();
+                }
+            } finally {
+                if (dst != null) {
+                    dst.close();
+                }
+            }
+        }
     }
 
     @Override

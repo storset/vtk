@@ -1233,11 +1233,11 @@ p#vrtx-file-upload-info-text {
 }
 
 #directory-listing th#vrtx-report-modified-by {
-  width: 14%;
+  width: 11%;
 }
 
 #directory-listing th#vrtx-report-permission-set {
-  width: 13%;
+  width: 10%;
 }
 
 #directory-listing td.permissions,
@@ -1700,7 +1700,7 @@ div.errormessage {
 
 div.tabMessage {
   background: url(images/info-small.gif) no-repeat 0 0;
-  padding: 0 0 5px 25px;
+  padding: 0 0 10px 25px;
 }
 
 /* ^ 3.7 Messages */

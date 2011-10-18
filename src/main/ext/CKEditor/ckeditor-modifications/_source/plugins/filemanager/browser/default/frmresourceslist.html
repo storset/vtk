@@ -86,10 +86,11 @@ function GetUrlParam( paramName )
 	var oRegex = new RegExp( '[\?&amp;]' + paramName + '=([^&amp;]+)', 'i' ) ;
 	var oMatch = oRegex.exec( window.top.location.search ) ;
  
-	if ( oMatch && oMatch.length > 1 )
+	if ( oMatch && oMatch.length > 1 ) {
 		return decodeURIComponent( oMatch[1] ) ;
-	else
+	} else {
 		return '' ;
+    }
 }
 
 function OpenFolder( folderPath )
@@ -107,13 +108,14 @@ function OpenFile( fileUrl )
 	  // window.top.opener.CKEDITOR.tools.callFunction( funcNum, encodeURI( fileUrl ).replace( '#', '%23' ));
 	  window.top.opener.CKEDITOR.tools.callFunction( funcNum, fileUrl);
 	  window.top.opener.SetUrl( fileUrl ) ;
-       }
-	else {
-          window.top.opener.SetUrl( fileUrl ) ;
-        }
+    } else {
+      window.top.opener.SetUrl( fileUrl ) ;
+    }
 
    window.top.close() ;
-   window.top.opener.focus() ;
+   // Bugfix - comment out line under:
+   // Confuses iPad/iPhone that closes window.top.opener instead of window.top
+   // window.top.opener.focus() ;
 }
 
 function LoadResources( resourceType, folderPath )

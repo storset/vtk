@@ -1568,7 +1568,7 @@ function openServerBrowser(url, width, height) {
 }
 
 // Callback from the CKEditor image browser:
-function SetUrl(url, width, height, alt) {
+function SetUrl(url) {
   url = decodeURIComponent(url);
   if (urlobj) {
     document.getElementById(urlobj).value = url;

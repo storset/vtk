@@ -205,9 +205,12 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         } else if (getCookie(req, UIO_AUTH_SSO) != null && getCookie(req, VRTXLINK_COOKIE) == null
                 && req.getParameter("authTarget") == null && !req.getRequestURI().contains(serviceProviderURI)) {
             StringBuffer url = req.getRequestURL();
-            if (req.getQueryString() != null) {
-                url = url.append(req.getQueryString());
+            String queryString = req.getQueryString();
+            if (queryString != null) {
+                url = url.append("?");
+                url = url.append(queryString);
             }
+
             URL currentURL = URL.parse(url.toString());
             currentURL.addParameter("authTarget", req.getScheme());
             resp.sendRedirect(currentURL.toString());

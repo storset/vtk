@@ -1,6 +1,6 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#if feed.entries?size &gt; 0 || conf.includeIfEmpty>
-<div class="vrtx-feed <#if conf.itemPicture?exists >with-images</#if>">
+<div class="vrtx-feed<#if conf.itemPicture?exists > with-images</#if>">
   <#if overrideFeedTitle?exists>
   	<a class="feed-title" href="${feed.link}">${overrideFeedTitle}</a>
   <#elseif conf.feedTitle?exists>

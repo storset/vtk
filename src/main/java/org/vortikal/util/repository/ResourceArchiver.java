@@ -90,25 +90,30 @@ public class ResourceArchiver {
     private final String commentPath = "META-INF/COMMENTS/";
     private final String versionAttribute = "X-vrtx-archive-version";
     private final String encodedAttribute = "X-vrtx-archive-encoded";
-    
+
     private Map<String, String> legacyPrincipalMappings = new HashMap<String, String>();
     private Map<String, String> legacyActionMappings = new HashMap<String, String>();
-    
 
     public interface EventListener {
         public void expanded(Path uri);
+
         public void archived(Path uri);
+
         public void warn(Path uri, String msg);
     }
-    
+
     private static final EventListener NULL_LISTENER = new EventListener() {
-        public void expanded(Path uri) { }
-        public void archived(Path uri) { }
+        public void expanded(Path uri) {
+        }
+
+        public void archived(Path uri) {
+        }
+
         public void warn(Path uri, String msg) {
-            logger.warn(uri + ": "+  msg);
+            logger.warn(uri + ": " + msg);
         }
     };
-    
+
     public void createArchive(String token, Resource r, OutputStream out, Map<String, Object> properties)
             throws Exception {
         createArchive(token, r, out, properties, NULL_LISTENER);
@@ -120,7 +125,7 @@ public class ResourceArchiver {
         if (listener == null) {
             listener = NULL_LISTENER;
         }
-        
+
         List<String> ignoreList = this.getIgnoreList(properties);
 
         logger.info("Creating archive '" + r.getURI() + "'");
@@ -260,14 +265,14 @@ public class ResourceArchiver {
             }
         }
 
-        String path = commentContent.get(entryLinePrefix + "parent").toString();
-        String author = commentContent.get(entryLinePrefix + "author").toString();
-        String time = commentContent.get(entryLinePrefix + "time").toString();
+        String path = this.getCommentAttributes(entryLinePrefix + "parent", commentContent);
+        String author = this.getCommentAttributes(entryLinePrefix + "author", commentContent);
+        String time = this.getCommentAttributes(entryLinePrefix + "time", commentContent);
         String title = null;
         if (commentContent.containsKey(entryLinePrefix + "title")) {
             title = commentContent.get(entryLinePrefix + "title").toString();
         }
-        String content = commentContent.get(entryLinePrefix + "content").toString();
+        String content = this.getCommentAttributes(entryLinePrefix + "content", commentContent);
 
         Comment comment = new Comment();
         comment.setURI(Path.fromString(getExpandedEntryUri(base, path)));
@@ -277,6 +282,15 @@ public class ResourceArchiver {
         comment.setContent(content.toString());
 
         return comment;
+    }
+
+    private String getCommentAttributes(String key, Map<String, StringBuilder> commentContent) {
+        StringBuilder sb = commentContent.get(key);
+        if (sb == null) {
+            logger.warn("Could not add comment, missing required key " + key + ". Check archive file contents.");
+            return null;
+        }
+        return sb.toString();
     }
 
     private String getExpandedEntryUri(Path base, String entryPath) {
@@ -553,7 +567,7 @@ public class ResourceArchiver {
         // ACL will only be explicitly stored if resource does not inherit ACL
         Acl acl = Acl.EMPTY_ACL;
         boolean aclModified = false;
-        
+
         for (Object key : attributes.keySet()) {
 
             String name = key.toString();
@@ -562,21 +576,19 @@ public class ResourceArchiver {
                     propsModified = true;
                 }
             } else if (name.startsWith("X-vrtx-acl-")) {
-                acl = setAclEntry(resource.getURI(), acl, name, 
-                        attributes, decode, legacyAcl, listener);
+                acl = setAclEntry(resource.getURI(), acl, name, attributes, decode, legacyAcl, listener);
                 aclModified = true;
             }
         }
         if (propsModified) {
             this.repository.store(token, resource);
         }
-        
+
         if (!aclModified) {
             return;
         }
-        
-        resource = this.repository.storeACL(
-                token, resource.getURI(), acl, false);
+
+        resource = this.repository.storeACL(token, resource.getURI(), acl, false);
     }
 
     private boolean setProperty(Resource resource, String name, Attributes attributes, boolean decode,
@@ -665,8 +677,8 @@ public class ResourceArchiver {
         return valueString.substring(idx);
     }
 
-    private Acl setAclEntry(Path uri, Acl acl, String name, Attributes attributes, boolean decode,
-            boolean legacyAcl, EventListener listener) throws Exception {
+    private Acl setAclEntry(Path uri, Acl acl, String name, Attributes attributes, boolean decode, boolean legacyAcl,
+            EventListener listener) throws Exception {
 
         String actionName = name.substring("X-vrtx-acl-".length());
         if (legacyAcl) {
@@ -696,8 +708,7 @@ public class ResourceArchiver {
                         listener.warn(uri, "legacy: dropping principal from ACL: " + value.substring(2));
                         continue;
                     }
-                    listener.warn(uri, "legacy: mapping principal in ACL: " 
-                            + value + ": " + mapping);
+                    listener.warn(uri, "legacy: mapping principal in ACL: " + value + ": " + mapping);
                     value = mapping;
                 }
             }
@@ -827,7 +838,7 @@ public class ResourceArchiver {
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
     }
-    
+
     public void setLegacyPrincipalMappings(Map<String, String> legacyPrincipalMappings) {
         for (Map.Entry<String, String> entry : legacyPrincipalMappings.entrySet()) {
             this.legacyPrincipalMappings.put(entry.getKey(), entry.getValue());

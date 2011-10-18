@@ -32,7 +32,8 @@ package org.vortikal.web.decorating;
 
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +48,7 @@ public class StaticTextComponent implements HtmlDecoratorComponent {
         this.content = content;
     }
     
+    @Override
     public void render(DecoratorRequest request, DecoratorResponse response)
         throws Exception {
         
@@ -55,6 +57,7 @@ public class StaticTextComponent implements HtmlDecoratorComponent {
         out.close();
     }
 
+    @Override
     public List<HtmlContent> render(DecoratorRequest request) throws Exception {
         List<HtmlContent> result = new ArrayList<HtmlContent>();
         result.add(new HtmlText() {
@@ -65,22 +68,32 @@ public class StaticTextComponent implements HtmlDecoratorComponent {
         return result;
     }
     
+    @Override
     public String getNamespace() {
         return null;
     }
 
+    @Override
     public String getName() {    
         return "StaticText";
     }
 
+    @Override
     public String getDescription() {
         return "";
     }
 
+    @Override
     public Map<String, String> getParameterDescriptions() {
-        return new HashMap<String, String>();
+        return Collections.emptyMap();
+    }
+    
+    @Override
+    public Collection<UsageExample> getUsageExamples() {
+        return null;
     }
 
+    @Override
     public String toString() {
         return getName();
     }

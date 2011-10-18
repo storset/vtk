@@ -1649,6 +1649,7 @@
           <property name="modelDataMap">
             <map>
               <entry key="enableSelectiveProtocols" value="${manage.enableSelectiveProtocols}" />
+              <entry key="webProtocol" value="${webProtocol}" />
             </map>
           </property>
          </bean>

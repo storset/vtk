@@ -40,6 +40,10 @@
   <#stop "Unable to render model: required submodel
   'enableSelectiveProtocols' missing">
 </#if>
+<#if !webProtocol?exists>
+  <#stop "Unable to render model: required submodel
+  'webProtocol' missing">
+</#if>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -79,7 +83,7 @@
     <#if ((permissions_ACTION_READ.permissionsQueryResult = 'true') || 
           (permissions_ACTION_READ_PROCESSED.permissionsQueryResult = 'true')) 
          && (permissions_ACTION_READ.requestScheme = 'https')
-         && (enableSelectiveProtocols = 'true')>
+         && (enableSelectiveProtocols = 'true') && (webProtocol = 'http')>
       <p class="previewUnavailable">${vrtx.getMsg("preview.httpOnly")}</p>
     
     <#else>

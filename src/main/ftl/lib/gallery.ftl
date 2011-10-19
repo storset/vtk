@@ -30,7 +30,7 @@
 <#macro galleryListImages images maxWidth maxHeight activeImage="" imageListing="">
   <#local count = 1 />
   <#list images as image>
-    <#local description = vrtx.propValue(image, 'image-description', '', 'content')?html />
+    <#local description = vrtx.propValue(image, 'image-description')?html />
     <#local title = vrtx.propValue(image, 'title')?html />
     <#local width = vrtx.propValue(image, 'pixelWidth') />
     <#local height = vrtx.propValue(image, 'pixelHeight') />

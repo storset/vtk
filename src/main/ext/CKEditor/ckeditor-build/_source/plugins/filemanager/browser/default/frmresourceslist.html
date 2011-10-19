@@ -113,9 +113,7 @@ function OpenFile( fileUrl )
     }
 
    window.top.close() ;
-   // Bugfix - comment out line under:
-   // Confuses iPad/iPhone that closes window.top.opener instead of window.top
-   // window.top.opener.focus() ;
+   window.top.opener.focus() ;
 }
 
 function LoadResources( resourceType, folderPath )

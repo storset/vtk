@@ -1233,11 +1233,15 @@ p#vrtx-file-upload-info-text {
 }
 
 #directory-listing th#vrtx-report-modified-by {
-  width: 11%;
+  width: 12%;
 }
 
 #directory-listing th#vrtx-report-permission-set {
-  width: 10%;
+  width: 12%;
+}
+
+#directory-listing th#vrtx-report-published {
+  width: 9%;
 }
 
 #directory-listing td.permissions,

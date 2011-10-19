@@ -48,8 +48,6 @@
     <property name="reporters">
       <list>
         <ref bean="lastModifiedReporter" />
-        <ref bean="overriddenLDAPPersonReporter" />
-        <ref bean="overriddenLDAPOrganizationalUnitReporter" />
       </list>
     </property>
     <property name="hiddenReporters">
@@ -332,18 +330,6 @@
     <property name="type" value="php" />
     <property name="backURL" value="1" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
-  </bean>
-
-  <bean id="overriddenLDAPPersonReporter" class="org.vortikal.web.actions.report.OverriddenLDAPPersonReporter"
-    parent="documentReporter">
-    <property name="name" value="overridden-LDAP-person" />
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
-  </bean>
-
-  <bean id="overriddenLDAPOrganizationalUnitReporter" class="org.vortikal.web.actions.report.OverriddenLDAPOrganizationalUnitReporter"
-    parent="documentReporter">
-    <property name="name" value="overridden-LDAP-organizational-unit" />
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <bean id="report.viewResolver" parent="system.decoratingViewResolver">

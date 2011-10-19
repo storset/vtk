@@ -80,6 +80,7 @@ div.vrtx-report div.vrtx-subfolder-menu {
 div.vrtx-permission-tree {
   position: relative;
   min-height: 219px;
+  padding: 0 0 90px 0;
 }
 
 div.vrtx-permission-tree span.file a,

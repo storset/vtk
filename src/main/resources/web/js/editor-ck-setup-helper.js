@@ -140,7 +140,6 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 
   config.forcePasteAsPlainText = false;
 
-  config.disableNativeTableHandles = false;
   config.disableObjectResizing = true;
 
   // Configure tag formatting in source

@@ -121,9 +121,9 @@
           position: absolute; /* take out of flow */ top: 90px; left: 195px; width: 115px; height: 106px; display: block;
         }
         .vrtx-media-player-no-flash .playbutton,.vrtx-media-player-no-flash .playbutton:visited,.vrtx-media-player-no-flash .playbutton:active {
-          background: url('icons/video-playbutton.png') no-repeat center center;
+          background: url('/vrtx/__vrtx/static-resources/themes/default/icons/video-playbutton.png') no-repeat center center;
         }
-        .vrtx-media-player-no-flash .playbutton:hover { background-image: url('icons/video-playbutton-hover.png'); }
+        .vrtx-media-player-no-flash .playbutton:hover { background-image: url('/vrtx/__vrtx/static-resources/themes/default/icons/video-playbutton-hover.png'); }
       </style>
 	  <div id="mediaspiller-${dateStr}" class="vrtx-media-player-no-flash">
 	    <img src="<#if poster?exists>${poster?html}<#else>/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png</#if>" alt="poster image" />

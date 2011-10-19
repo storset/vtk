@@ -62,7 +62,6 @@ function VrtxAdmin() {
   this.isIPad = null;
   this.isAndroid = null;
   this.isMobileWebkitDevice = null;
-  this.isIOS5 = null;
   this.isWin = null;
   this.supportsFileAPI = null;
   
@@ -91,7 +90,6 @@ vrtxAdmin.isIPhone = /iphone/.test(ua);
 vrtxAdmin.isIPad= /ipad/.test(ua);
 vrtxAdmin.isAndroid = /android/.test(ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
 vrtxAdmin.isMobileWebkitDevice = (vrtxAdmin.isIPhone || vrtxAdmin.isIPad || vrtxAdmin.isAndroid);
-vrtxAdmin.isIOS5 = /os 5/.test(ua) && (vrtxAdmin.isIPhone || vrtxAdmin.isIPad);
 vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
 vrtxAdmin.supportsFileList = window.FileList;
 

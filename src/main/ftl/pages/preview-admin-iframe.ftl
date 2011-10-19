@@ -83,7 +83,7 @@
     <#if ((permissions_ACTION_READ.permissionsQueryResult = 'true') || 
           (permissions_ACTION_READ_PROCESSED.permissionsQueryResult = 'true')) 
          && (permissions_ACTION_READ.requestScheme = 'https')
-         && (enableSelectiveProtocols = 'true') && (webProtocol = 'http') && (Request.serverPort = '443') >
+         && (enableSelectiveProtocols = 'true') && (webProtocol = 'http') >
       <p class="previewUnavailable">${vrtx.getMsg("preview.httpOnly")}</p>
     
     <#else>

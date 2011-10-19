@@ -113,7 +113,11 @@ function OpenFile( fileUrl )
     }
 
    window.top.close() ;
-   window.top.opener.focus() ;
+   var ua = navigator.userAgent.toLowerCase(); 
+   window.top.close() ;
+   if(!(/iphone/.test(ua) || /ipad/.test(ua) || /ipod/.test(ua) || /android/.test(ua))) {
+     window.top.opener.focus() ;
+   }
 }
 
 function LoadResources( resourceType, folderPath )

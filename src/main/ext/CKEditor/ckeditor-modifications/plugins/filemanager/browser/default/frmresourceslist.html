@@ -111,9 +111,12 @@ function OpenFile( fileUrl )
     } else {
       window.top.opener.SetUrl( fileUrl ) ;
     }
-
+    
+   var ua = navigator.userAgent.toLowerCase(); 
    window.top.close() ;
-   window.top.opener.focus() ;
+   if(!(/iphone/.test(ua) || /ipad/.test(ua) || /ipod/.test(ua) || /android/.test(ua))) {
+     window.top.opener.focus() ;
+   }
 }
 
 function LoadResources( resourceType, folderPath )

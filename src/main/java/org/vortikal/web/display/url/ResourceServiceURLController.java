@@ -90,6 +90,12 @@ public class ResourceServiceURLController implements Controller {
 
         Resource resource = repository.retrieve(token, uri, false);
         String resourceURL = this.service.constructLink(resource, principal, false);
+        
+        // Hack to ensure https for preview of direct access interfaces
+        if ((arg0.getScheme() == "https") && (arg0.getServerPort() != 443)
+            && resourceURL.startsWith("http:")) { 
+            resourceURL = resourceURL.replaceFirst("http:", "https:");
+        }
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("resource", resource);

@@ -1199,6 +1199,7 @@ p#vrtx-file-upload-info-text {
   font-size: 1.15em;
   border-top: 1px solid #f0f0f0;
   padding: 5px 15px 4px 0;
+  overflow: hidden;
 }
 
 #directory-listing tr.first td {

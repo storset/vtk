@@ -82,7 +82,7 @@
     <#-- Do not show preview if resource is "Allowed for all" and we are on https. Should not normally happen -->
     <#if ((permissions_ACTION_READ.permissionsQueryResult = 'true') || 
           (permissions_ACTION_READ_PROCESSED.permissionsQueryResult = 'true')) 
-         && (permissions_ACTION_READ.requestScheme = 'https')
+         && (permissions_ACTION_READ.requestScheme = 'https') && (permissions_ACTION_READ.requestPort = 9322)
          && (enableSelectiveProtocols = 'true') && (webProtocol = 'http') >
       <p class="previewUnavailable">${vrtx.getMsg("preview.httpOnly")}</p>
     

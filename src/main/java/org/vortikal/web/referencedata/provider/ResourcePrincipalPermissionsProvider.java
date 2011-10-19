@@ -67,6 +67,7 @@ import org.vortikal.web.service.ResourcePrincipalPermissionAssertion;
  * <ul>
  *  <li><code>permissionsQueryResult</code> - string ('true' or 'false')
  *  <li><code>requestScheme</code> - string, generally 'http' or 'https')
+ *  <li><code>requestPort</code> - port number
  * </ul>
  */
 public class ResourcePrincipalPermissionsProvider implements ReferenceDataProvider, InitializingBean {
@@ -115,6 +116,7 @@ public class ResourcePrincipalPermissionsProvider implements ReferenceDataProvid
         Map<String, Object> permissionsModel = new HashMap<String, Object>();
         RequestContext requestContext = RequestContext.getRequestContext();
         String scheme = request.getScheme();
+        Integer port = request.getServerPort();
         
         Principal principal = requestContext.getPrincipal();
         Path uri = requestContext.getResourceURI();
@@ -154,6 +156,7 @@ public class ResourcePrincipalPermissionsProvider implements ReferenceDataProvid
             permissionsModel.put("permissionsQueryResult", "false");            
         }
         permissionsModel.put("requestScheme", scheme);            
+        permissionsModel.put("requestPort", port);            
         model.put(modelName, permissionsModel);
     }
 

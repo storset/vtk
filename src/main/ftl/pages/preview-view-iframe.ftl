@@ -44,6 +44,10 @@
   <#stop "Unable to render model: required submodel
   'resourceContext' missing">
 </#if>
+<#if !permissions_ACTION_READ?exists>
+  <#stop "Unable to render model: required submodel
+  'permissions_ACTION_READ' missing">
+</#if>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -109,15 +113,14 @@
     <#assign dateStr = constructor("java.util.Date")?string("yyyymmddhhmmss") />
 
     <#assign url = resourceReference />
-    <#-- XXX: remove hard-coded 'authTarget' parameter: -->
     <#if url?contains("?")>
       <#assign url = url + "&amp;" + previewUnpublishedParameter + "="  + "true" 
                + "&amp;link-check=" + visualizeBrokenLinks?default('false')
-               + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=http" />
+               + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=" + permissions_ACTION_READ.requestScheme />
     <#else>
       <#assign url = url + "?" + previewUnpublishedParameter + "=" + "true"
                + "&amp;link-check=" + visualizeBrokenLinks?default('false')
-               + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=http" />
+               + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=" + permissions_ACTION_READ.requestScheme />
     </#if>
 
     <iframe class="previewView" name="previewViewIframe" id="previewViewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">

@@ -137,6 +137,11 @@
           <property name="modelName" value="linkcheck" />
           <property name="urlName" value="URL" />
         </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
+          <property name="modelName" value="permissions_ACTION_READ" />
+          <property name="permission" ref="ACTION_READ" />
+          <property name="anonymous" value="true" />
+        </bean>  
       </list>
     </property>
   </bean>

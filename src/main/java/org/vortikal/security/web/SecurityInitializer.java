@@ -207,7 +207,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
             StringBuffer url = req.getRequestURL();
             Boolean whiteWord = false;
-            String[] wordWhiteList = { "/", "html", "htm", "xml" };
+            String[] wordWhiteList = { "/", "html", "htm", "xml", "php" };
 
             for (String word : wordWhiteList) {
                 if (url.toString().endsWith(word)) {

@@ -631,7 +631,6 @@
       </bean>
     </property>
     <property name="localeResolver" ref="manageLocaleResolver" />
-    <property name="viewName" value="redirectToManage" />
   </bean>
 
   <bean id="setNorwegianNNLocaleController" class="org.vortikal.web.actions.locale.SetLocaleController">
@@ -641,7 +640,6 @@
       </bean>
     </property>
     <property name="localeResolver" ref="manageLocaleResolver" />
-    <property name="viewName" value="redirectToManage" />
   </bean>
 
   <bean id="setEnglishLocaleController" class="org.vortikal.web.actions.locale.SetLocaleController">
@@ -651,7 +649,6 @@
       </bean>
     </property>
     <property name="localeResolver" ref="manageLocaleResolver" />
-    <property name="viewName" value="redirectToManage" />
   </bean>
 
   <!-- preview services -->

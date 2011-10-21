@@ -46,8 +46,7 @@ public class SetLocaleController implements Controller, InitializingBean {
 
     private Locale locale;
     private LocaleResolver localeResolver;
-    private String viewName;
-
+    
     /**
      * Sets the value of locale
      * 
@@ -68,16 +67,6 @@ public class SetLocaleController implements Controller, InitializingBean {
         this.localeResolver = localeResolver;
     }
 
-    /**
-     * Sets the value of viewName
-     * 
-     * @param viewName
-     *            Value to assign to this.viewName
-     */
-    public void setViewName(String viewName) {
-        this.viewName = viewName;
-    }
-
     public void afterPropertiesSet() throws Exception {
         if (this.locale == null) {
             throw new BeanInitializationException("Property 'locale' not set.");
@@ -86,21 +75,13 @@ public class SetLocaleController implements Controller, InitializingBean {
             throw new BeanInitializationException("Property 'localeResolver' not set.");
         }
 
-        if (this.viewName == null) {
-            throw new BeanInitializationException("Property 'viewName' not set.");
-        }
-
     }
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
         this.localeResolver.setLocale(request, response, this.locale);
-
         URL url = URL.create(request);
         url.removeParameter("locale");
-
         response.sendRedirect(url.toString());
-
         return null;
     }
 }

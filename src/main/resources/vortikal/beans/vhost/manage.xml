@@ -3,8 +3,8 @@
 "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-  <!-- Temporarily redirect ?vrtx=thumbnail on manage hostname to view hostname
-       until editor is fixed to use thumbnail service to generate image URLs -->
+	  <!-- Temporarily redirect ?vrtx=thumbnail on manage hostname to view hostname until editor is fixed to use thumbnail service 
+    to generate image URLs -->
   <bean id="manage.redirectThumbnails" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-3" />
     <property name="assertions">
@@ -124,8 +124,7 @@
       </list>
     </property>
   </bean>
-  <!--
-  -->
+  <!-- -->
 
   <bean id="manage.urlPostProcessors" class="org.springframework.beans.factory.config.ListFactoryBean">
     <property name="sourceList">
@@ -172,6 +171,7 @@
 
   <bean id="setNorwegianNBLocaleService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
+    <property name="order" value="-10000" />
     <property name="assertions">
       <list>
         <ref bean="requestLocaleNotNorwegianNB" />
@@ -182,7 +182,9 @@
   </bean>
 
   <bean id="setNorwegianNNLocaleService" class="org.vortikal.web.service.ServiceImpl">
+
     <property name="parent" ref="manageService" />
+    <property name="order" value="-10000" />
     <property name="assertions">
       <list>
         <ref bean="requestLocaleNotNorwegianNN" />
@@ -194,6 +196,7 @@
 
   <bean id="setEnglishLocaleService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
+    <property name="order" value="-10000" />
     <property name="assertions">
       <list>
         <ref bean="requestLocaleNotEnglish" />
@@ -336,12 +339,8 @@
     </property>
     <property name="assertions">
       <list>
-        <!--
-        <ref bean="manage.postRequestAssertion" />
-        <bean class="org.vortikal.web.service.RequestContentTypeRegexpAssertion">
-          <property name="pattern" value="multipart/form-data" />
-        </bean>
-        -->
+        <!-- <ref bean="manage.postRequestAssertion" /> <bean class="org.vortikal.web.service.RequestContentTypeRegexpAssertion"> 
+          <property name="pattern" value="multipart/form-data" /> </bean> -->
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="upload-file" />
@@ -422,7 +421,7 @@
     </property>
     <property name="handler" ref="renameHandler" />
   </bean>
-  
+
   <bean id="resourceIsLocked" class="org.vortikal.web.service.ResourceIsLockedAssertion">
   </bean>
 
@@ -513,22 +512,11 @@
     <property name="handler" ref="editAddCommentPermissionsHandler" />
   </bean>
 
-  <!--
-  <bean id="editBindPermissionsService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="permissionsService" />
-    <property name="assertions">
-      <list>
-        <ref local="writeACLPermissionAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="edit-bind-permissions" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="editBindPermissionsHandler" />
-  </bean>
-  -->
-  
+  <!-- <bean id="editBindPermissionsService" class="org.vortikal.web.service.ServiceImpl"> <property name="parent" ref="permissionsService" 
+    /> <property name="assertions"> <list> <ref local="writeACLPermissionAssertion" /> <bean class="org.vortikal.web.service.RequestParameterAssertion"> 
+    <property name="parameterName" value="action" /> <property name="parameterValue" value="edit-bind-permissions" /> </bean> 
+    </list> </property> <property name="handler" ref="editBindPermissionsHandler" /> </bean> -->
+
   <bean id="editReadProcessedPermissionsService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="permissionsService" />
     <property name="assertions">
@@ -712,7 +700,7 @@
     <property name="handler" ref="previewImageHandler" />
     <property name="handlerInterceptors" ref="previewAsWebpageServiceInterceptor" />
   </bean>
-  
+
   <bean id="previewMediaService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="previewService" />
     <property name="assertions">
@@ -721,7 +709,7 @@
       </list>
     </property>
     <property name="handler" ref="previewMediaHandler" />
-      <property name="handlerInterceptors" ref="previewAsWebpageServiceInterceptor" />
+    <property name="handlerInterceptors" ref="previewAsWebpageServiceInterceptor" />
   </bean>
 
   <bean id="previewTextService" class="org.vortikal.web.service.ServiceImpl">
@@ -748,8 +736,7 @@
     <property name="handler" ref="previewText.documentTooLargeHandler" />
   </bean>
 
-  <bean id="previewText.documentTooLargeHandler"
-        class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+  <bean id="previewText.documentTooLargeHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName" value="previewText.documentTooLarge" />
   </bean>
 
@@ -783,17 +770,17 @@
 
   <bean id="previewCollectionListingServiceInterceptor" class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
     <property name="providers">
-     <list>
-       <ref bean="indexFileMessageProvider" />
-     </list>
+      <list>
+        <ref bean="indexFileMessageProvider" />
+      </list>
     </property>
   </bean>
-  
-    <bean id="previewAsWebpageServiceInterceptor" class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
+
+  <bean id="previewAsWebpageServiceInterceptor" class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">
     <property name="providers">
-     <list>
-       <ref bean="viewAsWebpageMessageProvider" />
-     </list>
+      <list>
+        <ref bean="viewAsWebpageMessageProvider" />
+      </list>
     </property>
   </bean>
 
@@ -801,12 +788,12 @@
     <property name="modelName" value="tabMessage" />
     <property name="localizationKey" value="preview.folderWithIndexFile.tabMessage" />
   </bean>
- 
-   <bean id="viewAsWebpageMessageProvider" class="org.vortikal.web.referencedata.provider.ResourceMessageProvider">
+
+  <bean id="viewAsWebpageMessageProvider" class="org.vortikal.web.referencedata.provider.ResourceMessageProvider">
     <property name="modelName" value="tabMessage" />
     <property name="localizationKey" value="preview.viewAsWebpage.tabMessage" />
   </bean>
-  
+
   <!-- MANAGE controllers -->
   <bean id="aboutResourceHandler" class="org.vortikal.web.actions.properties.PropertyEditController">
     <property name="propertyTypeDefinitions">
@@ -823,10 +810,8 @@
         <ref bean="contentLengthPropDef" />
         <ref bean="userTitlePropDef" />
         <ref bean="titlePropDef" />
-        <!--
-          Don't pass in hidden and navigational importance <ref bean="hiddenPropDef" /> <ref
-          bean="importancePropDef" />
-        -->
+        <!-- Don't pass in hidden and navigational importance <ref bean="hiddenPropDef" /> <ref bean="importancePropDef" 
+          /> -->
         <ref bean="keywordsPropDef" />
         <ref bean="descriptionPropDef" />
         <ref bean="verifiedDatePropDef" />
@@ -958,7 +943,7 @@
     <property name="principalFactory" ref="principalFactory" />
     <property name="permissionShortcuts" ref="permissionShortcuts" />
     <property name="permissionShortcutsConfig" ref="permissionShortcutsProvider.config" />
-    <property name="roleManager" ref="roleManager"/>
+    <property name="roleManager" ref="roleManager" />
   </bean>
 
   <bean id="editReadPermissionsHandler" parent="abstractPermissionsHandler">
@@ -979,14 +964,10 @@
     <property name="commandName" value="permissionsForm_all" />
   </bean>
 
-  <!--
-  <bean id="editBindPermissionsHandler" parent="abstractPermissionsHandler">
-    <property name="privilege" ref="PRIVILEGE_BIND_TEMPLATE" />
-    <property name="successView" value="redirectToPermissions" />
-    <property name="commandName" value="permissionsForm_bind-template" />
-  </bean>
-  -->
-  
+  <!-- <bean id="editBindPermissionsHandler" parent="abstractPermissionsHandler"> <property name="privilege" ref="PRIVILEGE_BIND_TEMPLATE" 
+    /> <property name="successView" value="redirectToPermissions" /> <property name="commandName" value="permissionsForm_bind-template" 
+    /> </bean> -->
+
   <bean id="editReadProcessedPermissionsHandler" parent="abstractPermissionsHandler">
     <property name="privilege" ref="PRIVILEGE_READ_PROCESSED" />
     <property name="successView" value="redirectToPermissions" />
@@ -1104,14 +1085,14 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="manage.unlockFormResolver" parent="adminViewResolver">
     <property name="views">
       <map>
         <entry key="manage.unlockForm" value-ref="manage.unlockFormView" />
       </map>
     </property>
-  </bean>  
+  </bean>
 
   <bean id="manage.unlockFormView" parent="freemarkerView">
     <property name="url" value="pages/unlock-form.ftl" />
@@ -1323,7 +1304,7 @@
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="localized-text" />
   </bean>
-  
+
   <bean id="manage.messagesComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="messages" />
@@ -1339,38 +1320,16 @@
       </list>
     </property>
   </bean>
-  
-  <!-- resource bar in iframe
-  
-  <bean id="manage.resourceBarService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="manageService" />
-    <property name="order" value="-200" />
-    <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="mode" />
-          <property name="parameterValue" value="show-resource-bar" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="manage.resourceBarHandler" />
-    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
-  </bean>
-  
-  <bean name="manage.resourceBarHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-    <property name="viewName" value="manage.resourceBarIframeView" />
-  </bean>
-  
-  <bean id="manage.resourceBar.viewResolver" class="org.vortikal.web.decorating.MappingViewResolver">
-    <property name="views">
-      <map>
-        <entry key="manage.resourceBarIframeView" value-ref="manage.resourceBarIframeView" />
-      </map>
-    </property>
-  </bean>
-  
-  -->
-  
+
+  <!-- resource bar in iframe <bean id="manage.resourceBarService" class="org.vortikal.web.service.ServiceImpl"> <property 
+    name="parent" ref="manageService" /> <property name="order" value="-200" /> <property name="assertions"> <list> <bean class="org.vortikal.web.service.RequestParameterAssertion"> 
+    <property name="parameterName" value="mode" /> <property name="parameterValue" value="show-resource-bar" /> </bean> </list> 
+    </property> <property name="handler" ref="manage.resourceBarHandler" /> <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" 
+    /> </bean> <bean name="manage.resourceBarHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController"> 
+    <property name="viewName" value="manage.resourceBarIframeView" /> </bean> <bean id="manage.resourceBar.viewResolver" class="org.vortikal.web.decorating.MappingViewResolver"> 
+    <property name="views"> <map> <entry key="manage.resourceBarIframeView" value-ref="manage.resourceBarIframeView" /> </map> 
+    </property> </bean> -->
+
   <bean id="manage.resourceBarComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="resource-bar" />
@@ -1378,7 +1337,7 @@
     <property name="view" ref="manage.resourceBarView" />
     <property name="exposeMvcModel" value="true" />
   </bean>
- 
+
   <bean id="manage.resourceBarView" parent="freemarkerView">
     <property name="url" value="system/resource-bar.ftl" />
     <property name="referenceDataProviders">
@@ -1403,26 +1362,11 @@
   </bean>
 
 
-  <!-- resource bar in iframe
-  
-  <bean id="manage.resourceBarIframeView" parent="freemarkerView">
-    <property name="url" value="system/resource-bar-iframe.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <ref bean="resourceMenuLeftProvider" />
-        <ref bean="resourceMenuRightProvider" />
-      </list>
-    </property>
-    <property name="attributesMap">
-      <map>
-        <entry key="repositoryID" value="${repositoryID}" />
-      </map>
-    </property>
-  </bean>
-  
-  -->
-  
+  <!-- resource bar in iframe <bean id="manage.resourceBarIframeView" parent="freemarkerView"> <property name="url" value="system/resource-bar-iframe.ftl" 
+    /> <property name="referenceDataProviders"> <list> <ref bean="resourceContextProvider" /> <ref bean="resourceMenuLeftProvider" 
+    /> <ref bean="resourceMenuRightProvider" /> </list> </property> <property name="attributesMap"> <map> <entry key="repositoryID" 
+    value="${repositoryID}" /> </map> </property> </bean> -->
+
   <bean id="manage.infoMessageComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
     <property name="name" value="system-message" />
@@ -1573,7 +1517,7 @@
         <ref bean="resourceContextProvider" />
         <ref bean="viewImageInfoService.urlProvider" />
         <ref bean="iframeJSProvider" />
-         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
+        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ" />
           <property name="permission" ref="ACTION_READ" />
           <property name="anonymous" value="true" />
@@ -1590,12 +1534,12 @@
               <entry key="webProtocol" value="${webProtocol}" />
             </map>
           </property>
-         </bean>
+        </bean>
       </list>
     </property>
 
   </bean>
-  
+
   <bean id="previewMediaPlayerView" parent="freemarkerView">
     <property name="url" value="pages/preview-admin-iframe.ftl" />
     <property name="referenceDataProviders">
@@ -1603,7 +1547,7 @@
         <ref bean="resourceContextProvider" />
         <ref bean="mediaPlayerService.urlProvider" />
         <ref bean="iframeJSProvider" />
-         <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
+        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
           <property name="modelName" value="permissions_ACTION_READ" />
           <property name="permission" ref="ACTION_READ" />
           <property name="anonymous" value="true" />
@@ -1620,11 +1564,11 @@
               <entry key="webProtocol" value="${webProtocol}" />
             </map>
           </property>
-         </bean>
+        </bean>
       </list>
     </property>
   </bean>
-  
+
 
   <bean id="previewAdminIframeView" parent="freemarkerView">
     <property name="url" value="pages/preview-admin-iframe.ftl" />
@@ -1654,7 +1598,7 @@
               <entry key="webProtocol" value="${webProtocol}" />
             </map>
           </property>
-         </bean>
+        </bean>
       </list>
     </property>
   </bean>
@@ -1699,9 +1643,8 @@
       </list>
     </property>
   </bean>
-  
-  <bean id="permissionShortcuts"
-        class="org.springframework.beans.factory.config.MapFactoryBean">
+
+  <bean id="permissionShortcuts" class="org.springframework.beans.factory.config.MapFactoryBean">
     <property name="sourceMap">
       <map>
         <entry key-ref="PRIVILEGE_READ" value-ref="permissionShortcutsProvider.readShortcuts" />
@@ -1711,27 +1654,27 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="permissionShortcutsProvider.readShortcuts" class="org.vortikal.context.CSVListFactoryBean">
     <property name="csvList" value="${permissions.shortcuts.read}" />
     <property name="trim" value="true" />
   </bean>
-  
+
   <bean id="permissionShortcutsProvider.readWriteShortcuts" class="org.vortikal.context.CSVListFactoryBean">
     <property name="csvList" value="${permissions.shortcuts.read-write}" />
     <property name="trim" value="true" />
   </bean>
-  
+
   <bean id="permissionShortcutsProvider.addCommentShortcuts" class="org.vortikal.context.CSVListFactoryBean">
     <property name="csvList" value="${permissions.shortcuts.add-comment}" />
     <property name="trim" value="true" />
   </bean>
-  
+
   <bean id="permissionShortcutsProvider.readProcessedShortcuts" class="org.vortikal.context.CSVListFactoryBean">
     <property name="csvList" value="${permissions.shortcuts.read-processed}" />
     <property name="trim" value="true" />
   </bean>
-  
+
   <bean id="permissionShortcutsProvider.config" class="org.vortikal.context.JSONFactoryBean">
     <constructor-arg value="${permissions.shortcuts}" />
   </bean>
@@ -1802,7 +1745,7 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="iframeJSProviderAlone" class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
     <property name="modelDataMap">
       <map>
@@ -1849,7 +1792,7 @@
     </property>
     <property name="linkedServices">
       <map>
-        <!-- <entry key="delete" value-ref="delete.viewService" />  -->
+        <!-- <entry key="delete" value-ref="delete.viewService" /> -->
         <!-- entry key="duplicate" value-ref="duplicateResourceService" / -->
       </map>
     </property>
@@ -1862,8 +1805,7 @@
     <constructor-arg ref="collectionActionServicesFactory" />
   </bean>
 
-  <bean id="collectionActionServicesFactory" class="org.vortikal.context.CategoryResolvingFactoryBean"
-    lazy-init="true">
+  <bean id="collectionActionServicesFactory" class="org.vortikal.context.CategoryResolvingFactoryBean" lazy-init="true">
     <property name="clazz" value="org.vortikal.web.service.Service" />
     <property name="category" value="collectionMenu" />
   </bean>
@@ -1890,7 +1832,7 @@
     <property name="clazz" value="org.vortikal.web.referencedata.CategorizableReferenceDataProvider" />
     <property name="category" value="resourceMenuLeft.referenceDataProvider" />
   </bean>
-  
+
   <bean id="resourceMenuRightProvider" class="org.vortikal.web.view.components.menu.DefaultListMenuProvider">
     <constructor-arg value="resourceMenuRight" />
     <constructor-arg value="resourceMenuRight" />
@@ -2024,8 +1966,7 @@
     <property name="inverted" value="true" />
   </bean>
 
-  <bean id="manage.portAssertion"
-        class="org.vortikal.web.service.RequestPortAssertion">
+  <bean id="manage.portAssertion" class="org.vortikal.web.service.RequestPortAssertion">
     <property name="port" value="${manage.port}" />
   </bean>
 
@@ -2059,8 +2000,7 @@
   </bean>
 
   <!-- MANAGE error handlers -->
-  <bean id="abstractReferencedataProvidingErrorHandler" class="org.vortikal.web.DefaultErrorHandler"
-    abstract="true">
+  <bean id="abstractReferencedataProvidingErrorHandler" class="org.vortikal.web.DefaultErrorHandler" abstract="true">
     <property name="referenceDataProviders" ref="manageErrorHandler.referenceDataProviders" />
   </bean>
 
@@ -2068,9 +2008,9 @@
     <constructor-arg>
       <list>
         <ref bean="leaveAdminLinkProvider" />
-        <ref bean="createFromDropDown.docService.urlProvider" /> 
-        <ref bean="createFromDropDown.collService.urlProvider" /> 
-        <ref bean="createFromDropDown.upService.urlProvider" /> 
+        <ref bean="createFromDropDown.docService.urlProvider" />
+        <ref bean="createFromDropDown.collService.urlProvider" />
+        <ref bean="createFromDropDown.upService.urlProvider" />
         <ref bean="tabsProvider" />
         <ref bean="resourceContextProvider" />
         <ref bean="versionProvider" />
@@ -2087,7 +2027,7 @@
       </list>
     </constructor-arg>
   </bean>
-  
+
   <bean id="sessionBeanProvider" class="org.vortikal.web.referencedata.provider.SessionBeanProvider">
     <property name="attributeName" value="copymovesession" />
     <property name="modelName" value="session" />
@@ -2154,7 +2094,7 @@
     <property name="localeResolver" ref="manageLocaleResolver" />
   </bean>
 
-  <!-- Locale resolver for manage service  -->
+  <!-- Locale resolver for manage service -->
   <bean id="manageLocaleResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
     <property name="cookieDomain" value="${manage.localeResolver.cookieDomain}" />
     <property name="cookieName" value="${manage.localeresolver.cookieName}" />

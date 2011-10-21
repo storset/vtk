@@ -40,70 +40,67 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-
-
+import org.vortikal.web.service.URL;
 
 public class SetLocaleController implements Controller, InitializingBean {
 
     private Locale locale;
     private LocaleResolver localeResolver;
     private String viewName;
-    
-    
+
     /**
      * Sets the value of locale
-     *
-     * @param locale Value to assign to this.locale
+     * 
+     * @param locale
+     *            Value to assign to this.locale
      */
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
 
-
     /**
      * Sets the value of localeResolver
-     *
-     * @param localeResolver Value to assign to this.localeResolver
+     * 
+     * @param localeResolver
+     *            Value to assign to this.localeResolver
      */
     public void setLocaleResolver(LocaleResolver localeResolver) {
         this.localeResolver = localeResolver;
     }
 
-
     /**
      * Sets the value of viewName
-     *
-     * @param viewName Value to assign to this.viewName
+     * 
+     * @param viewName
+     *            Value to assign to this.viewName
      */
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
-
-
 
     public void afterPropertiesSet() throws Exception {
         if (this.locale == null) {
             throw new BeanInitializationException("Property 'locale' not set.");
         }
         if (this.localeResolver == null) {
-            throw new BeanInitializationException(
-                "Property 'localeResolver' not set.");
+            throw new BeanInitializationException("Property 'localeResolver' not set.");
         }
 
         if (this.viewName == null) {
-            throw new BeanInitializationException(
-                "Property 'viewName' not set.");
+            throw new BeanInitializationException("Property 'viewName' not set.");
         }
 
     }
 
-
-
-    public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response)
-        throws Exception {
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         this.localeResolver.setLocale(request, response, this.locale);
-        return new ModelAndView(this.viewName);
+
+        URL url = URL.create(request);
+        url.removeParameter("locale");
+
+        response.sendRedirect(url.toString());
+
+        return null;
     }
 }

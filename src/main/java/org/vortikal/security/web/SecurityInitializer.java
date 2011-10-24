@@ -119,6 +119,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
     private String serviceProviderURI;
 
+    private String[] wordWhitelist;
+
     // Only relevant when using both https AND http and
     // different session cookie name for each protocol:
     private boolean cookieLinksEnabled = false;
@@ -207,9 +209,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
             StringBuffer url = req.getRequestURL();
             Boolean whiteWord = false;
-            String[] wordWhiteList = { "/", "html", "htm", "xml", "php" };
 
-            for (String word : wordWhiteList) {
+            for (String word : wordWhitelist) {
                 if (url.toString().endsWith(word)) {
                     whiteWord = true;
                 }
@@ -505,6 +506,10 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
     public void setServiceProviderURI(String serviceProviderURI) {
         this.serviceProviderURI = serviceProviderURI;
+    }
+
+    public void setWordWhitelist(String[] wordWhitelist) {
+        this.wordWhitelist = wordWhitelist;
     }
 
     public void setSpCookieAssertion(Assertion spCookieAssertion) {

@@ -7,7 +7,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -24,17 +23,20 @@ public class PersonPressPhotoLinkComponent extends ViewRenderingDecoratorCompone
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
-        Path uri = requestContext.getResourceURI();
         Repository repository = requestContext.getRepository();
-        Resource currentDocument = repository.retrieve(token, uri, true);
+        Resource currentDocument = repository.retrieve(token, requestContext.getResourceURI(), true);
 
         Property picture = currentDocument.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE,
                 PRESS_PHOTO_PROROPERTY_NAME);
-
+        
         Path imageUri = null;
         Resource pictureResource = null;
         try {
-            imageUri = Path.fromString(picture.getStringValue());
+            if (picture.getStringValue().startsWith("/")) {
+                imageUri = Path.fromString(picture.getStringValue());
+            } else {
+                imageUri = requestContext.getCurrentCollection().expand(picture.getStringValue());
+            }
             pictureResource = repository.retrieve(token, imageUri, true);
         } catch (Exception e) {
             model.put(PRESS_PHOTO_PROROPERTY_NAME, picture.getStringValue());

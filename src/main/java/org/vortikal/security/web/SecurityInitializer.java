@@ -33,6 +33,7 @@ package org.vortikal.security.web;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +119,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     private String spCookieDomain = null;
 
     private String serviceProviderURI;
+
+    private Long ssoTimeout;
 
     private String[] wordWhitelist;
 
@@ -208,15 +211,22 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                 && req.getParameter("authTarget") == null && !req.getRequestURI().contains(serviceProviderURI)) {
 
             StringBuffer url = req.getRequestURL();
-            Boolean whiteWord = false;
+            Boolean doRedirect = false;
 
             for (String word : wordWhitelist) {
                 if (url.toString().endsWith(word)) {
-                    whiteWord = true;
+                    doRedirect = true;
                 }
             }
 
-            if (whiteWord) {
+            Long cookieTimestamp = Long.valueOf(getCookie(req, UIO_AUTH_SSO).getValue());
+            Long currentTime = new Date().getTime();
+
+            if (currentTime - cookieTimestamp > ssoTimeout) {
+                doRedirect = false;
+            }
+
+            if (doRedirect) {
                 String queryString = req.getQueryString();
                 if (queryString != null) {
                     url = url.append("?");
@@ -508,6 +518,10 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         this.serviceProviderURI = serviceProviderURI;
     }
 
+    public void setSsoTimeout(Long ssoTimeout) {
+        this.ssoTimeout = ssoTimeout;
+    }
+
     public void setWordWhitelist(String[] wordWhitelist) {
         this.wordWhitelist = wordWhitelist;
     }
@@ -582,13 +596,10 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             List<String> spCookies = new ArrayList<String>();
             spCookies.add(VRTX_AUTH_SP_COOKIE);
             spCookies.add(UIO_AUTH_IDP);
-            spCookies.add(UIO_AUTH_SSO);
 
             for (String cookie : spCookies) {
                 Cookie c = new Cookie(cookie, handler.getIdentifier());
-                if (!cookie.equals(UIO_AUTH_SSO)) {
-                    c.setSecure(true);
-                }
+                c.setSecure(true);
                 c.setPath("/");
 
                 if (this.spCookieDomain != null) {
@@ -599,6 +610,19 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                 if (logger.isDebugEnabled()) {
                     logger.debug("Setting cookie: " + cookie + ": " + handler.getIdentifier());
                 }
+            }
+
+            String currentTime = String.valueOf(new Date().getTime());
+            Cookie ssoCookie = new Cookie(UIO_AUTH_SSO, currentTime);
+            ssoCookie.setPath("/");
+
+            if (this.spCookieDomain != null) {
+                ssoCookie.setDomain(this.spCookieDomain);
+            }
+
+            resp.addCookie(ssoCookie);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Setting cookie: " + ssoCookie + ": " + handler.getIdentifier());
             }
 
         }

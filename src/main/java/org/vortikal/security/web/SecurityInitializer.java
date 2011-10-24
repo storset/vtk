@@ -64,7 +64,6 @@ import org.vortikal.security.web.AuthenticationHandler.AuthResult;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Assertion;
 import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
 
 /**
  * Initializer for the {@link SecurityContext security context}. A security context is created for every request. Also
@@ -202,30 +201,31 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                 logger.debug("Invalid token '" + token + "' in request session, "
                         + "will proceed to check authentication");
             }
-        } else if (getCookie(req, UIO_AUTH_SSO) != null && getCookie(req, VRTXLINK_COOKIE) == null
-                && req.getParameter("authTarget") == null && !req.getRequestURI().contains(serviceProviderURI)) {
-
-            StringBuffer url = req.getRequestURL();
-            Boolean whiteWord = false;
-            String[] wordWhiteList = { "/", "html", "htm", "xml", "php" };
-
-            for (String word : wordWhiteList) {
-                if (url.toString().endsWith(word)) {
-                    whiteWord = true;
-                }
-            }
-
-            if (whiteWord) {
-                String queryString = req.getQueryString();
-                if (queryString != null) {
-                    url = url.append("?");
-                    url = url.append(queryString);
-                }
-                URL currentURL = URL.parse(url.toString());
-                currentURL.addParameter("authTarget", req.getScheme());
-                resp.sendRedirect(currentURL.toString());
-            }
         }
+        // else if (getCookie(req, UIO_AUTH_SSO) != null && getCookie(req, VRTXLINK_COOKIE) == null
+        // && req.getParameter("authTarget") == null && !req.getRequestURI().contains(serviceProviderURI)) {
+        //
+        // StringBuffer url = req.getRequestURL();
+        // Boolean whiteWord = false;
+        // String[] wordWhiteList = { "/", "html", "htm", "xml", "php" };
+        //
+        // for (String word : wordWhiteList) {
+        // if (url.toString().endsWith(word)) {
+        // whiteWord = true;
+        // }
+        // }
+        //
+        // if (whiteWord) {
+        // String queryString = req.getQueryString();
+        // if (queryString != null) {
+        // url = url.append("?");
+        // url = url.append(queryString);
+        // }
+        // URL currentURL = URL.parse(url.toString());
+        // currentURL.addParameter("authTarget", req.getScheme());
+        // resp.sendRedirect(currentURL.toString());
+        // }
+        // }
 
         for (AuthenticationHandler handler : this.authenticationHandlers) {
 
@@ -577,7 +577,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             List<String> spCookies = new ArrayList<String>();
             spCookies.add(VRTX_AUTH_SP_COOKIE);
             spCookies.add(UIO_AUTH_IDP);
-            spCookies.add(UIO_AUTH_SSO);
+            // spCookies.add(UIO_AUTH_SSO);
 
             for (String cookie : spCookies) {
                 Cookie c = new Cookie(cookie, handler.getIdentifier());

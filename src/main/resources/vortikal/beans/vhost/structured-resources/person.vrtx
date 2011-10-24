@@ -237,19 +237,12 @@ resourcetype person {
         [def publications document.properties.selectedPublications]
         [if (publications != null && publications != "") || (externalPublications != null && externalPublications != "")]
           [if (publications != null && publications != "") && (externalPublications != null && externalPublications != "")]
-            <h2>[localized "scientificInformation"]</h2>
-            <div id="vrtx-publication-tabs" class="vrtx-person-publications">
-               [call "resource:publications"]
-            </div>
+            [call "resource:publications"]
           [else]
             [if (publications != null && publications != "")]
-              <h2>[localized "selectedPublications"]</h2>
               [val publications # unescaped]
             [else]
-              <h2>[localized "scientificInformation"]</h2>
-              <div id="vrtx-publication-tabs" class="vrtx-person-publications">
               [call "resource:publications"]
-              </div>
             [endif]
           [endif]
         [endif]
@@ -414,7 +407,6 @@ resourcetype person {
     picture-alt-found : (en : "Image of", no : "Bilde av", nn : "Bilete av"),
     picture-alt-unknown-person : (en : "person", no : "person", nn : "person"),
     getExternalScientificInformation : (en : "Show publications rapported in Cristin", no : "Vis publikasjoner rapportert i Cristin", nn : "Vis publikasjonar rapporterte i Cristin"),
-    scientificInformation : (en : "Publications", no : "Publikasjoner", nn : "Publikasjonar"),
     selectedPublications : (en : "Selected publications", no : "Utvalgte publikasjoner", nn : "Utvalde publikasjonar"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
     content : (en : "Content", no :"Innhold", nn:"Innhald"),

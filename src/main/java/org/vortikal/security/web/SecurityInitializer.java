@@ -219,7 +219,14 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                 }
             }
 
-            Long cookieTimestamp = Long.valueOf(getCookie(req, UIO_AUTH_SSO).getValue());
+            Long cookieTimestamp = new Long(0);
+            try {
+                cookieTimestamp = Long.valueOf(getCookie(req, UIO_AUTH_SSO).getValue());
+            } catch (NumberFormatException e) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Cannot parse, old SSO cookie format");
+                }
+            }
             Long currentTime = new Date().getTime();
 
             if (currentTime - cookieTimestamp > ssoTimeout) {

@@ -54,7 +54,10 @@
     <property name="searchComponent" ref="collectionListing.searchComponent" />
   </bean>
 
-  <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.QueryPartsSearchComponent">
+  <!-- Will e overridden with required properties where available (e.g. multihostsearcher) -->
+  <bean id="collectionListing.baseSearchComponent" abstract="true" class="org.vortikal.web.search.QueryPartsSearchComponent" />
+
+  <bean id="collectionListing.searchComponent" parent="collectionListing.baseSearchComponent">
     <property name="name" value="collectionListing.searchComponent" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />

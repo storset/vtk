@@ -31,7 +31,6 @@
 package org.vortikal.web.search;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -45,15 +44,12 @@ import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
-import org.vortikal.web.service.manuallyapprove.ManuallyApproveResourcesSearcher;
 
 public class ListingUriQueryBuilder implements QueryBuilder {
 
     private PropertyTypeDefinition recursivePropDef;
     private AggregationResolver aggregationResolver;
-    private ManuallyApproveResourcesSearcher manuallyApproveResourcesSearcher;
     private boolean defaultRecursive;
 
     @Override
@@ -91,16 +87,6 @@ public class ListingUriQueryBuilder implements QueryBuilder {
             baseQuery = or;
         }
 
-        // Any manually approved resources? Well then add those as well
-//        Set<String> uriSet = this.manuallyApproveResourcesSearcher.getManuallyApprovedUris(collection);
-//        if (uriSet != null && uriSet.size() > 0) {
-//            UriSetQuery uriSetQuery = new UriSetQuery(uriSet);
-//            OrQuery or = new OrQuery();
-//            or.add(baseQuery);
-//            or.add(uriSetQuery);
-//            baseQuery = or;
-//        }
-
         return baseQuery;
     }
 
@@ -112,11 +98,6 @@ public class ListingUriQueryBuilder implements QueryBuilder {
     @Required
     public void setAggregationResolver(AggregationResolver aggregationResolver) {
         this.aggregationResolver = aggregationResolver;
-    }
-
-    //@Required
-    public void setManuallyApproveResourcesSearcher(ManuallyApproveResourcesSearcher manuallyApproveResourcesSearcher) {
-        this.manuallyApproveResourcesSearcher = manuallyApproveResourcesSearcher;
     }
 
     public void setDefaultRecursive(boolean defaultRecursive) {

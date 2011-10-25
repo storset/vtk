@@ -11,9 +11,14 @@
     </#if>
     
     <#list resources as r>
+      <#assign url = r.URI />
+      <#assign solrUrl = vrtx.propValue(r, "solr.url", "", "") />
+      <#if solrUrl?exists && solrUrl?has_content>
+        <#assign url = solrUrl>
+      </#if>
       <div class="vrtx-resource">
 		<div class="vrtx-title">
-        <a class="vrtx-title" href="${collectionListing.urls[r.URI]?html}">${vrtx.propValue(r, "title", "", "")?html}</a>
+        <a class="vrtx-title" href="${url?html}">${vrtx.propValue(r, "title", "", "")?html}</a>
 		</div>
         <#list collectionListing.displayPropDefs as displayPropDef>
 

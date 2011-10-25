@@ -30,11 +30,12 @@
  */
 package org.vortikal.web.search;
 
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 
 public interface MultiHostSearchComponent {
-    
-    public ResultSet search(String token, Search search);
+
+    public ResultSet search(Resource collection, String token, Search search);
 
 }

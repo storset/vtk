@@ -66,13 +66,15 @@ public abstract class QuerySearchComponent implements SearchComponent {
     private List<String> configurablePropertySelectPointers;
     private ResourceTypeTree resourceTypeTree;
 
+    private MultiHostSearchComponent multiHostSearchComponent;
+    private boolean searchMultiHosts;
+
     protected abstract Query getQuery(Resource collection, HttpServletRequest request);
 
     public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset)
             throws Exception {
 
         Search search = new Search();
-
         Query query = getQuery(collection, request);
         int offset = baseOffset + (pageLimit * (page - 1));
 
@@ -93,7 +95,7 @@ public abstract class QuerySearchComponent implements SearchComponent {
         }
 
         RequestContext requestContext = RequestContext.getRequestContext();
-        String token = requestContext.isViewUnauthenticated() ? null : requestContext.getSecurityToken(); // VTK-2460
+        String token = requestContext.isViewUnauthenticated() ? null : requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
 
         String[] sortingParams = request.getParameterValues(Listing.SORTING_PARAM);
@@ -103,7 +105,12 @@ public abstract class QuerySearchComponent implements SearchComponent {
             search.setSorting(new SortingImpl(this.searchSorting.getSortFields(collection)));
         }
 
-        ResultSet result = repository.search(token, search);
+        ResultSet result = null;
+        if (this.performMultiHostSearch()) {
+            result = this.multiHostSearchComponent.search(collection, token, search);
+        } else {
+            result = repository.search(token, search);
+        }
 
         boolean more = result.getSize() == pageLimit + 1;
         int num = result.getSize();
@@ -150,6 +157,13 @@ public abstract class QuerySearchComponent implements SearchComponent {
         return listing;
     }
 
+    private boolean performMultiHostSearch() {
+
+        // XXX other checks on whether or not to run multi host search
+
+        return this.multiHostSearchComponent != null && this.searchMultiHosts;
+    }
+
     @Required
     public void setName(String name) {
         this.name = name;
@@ -194,6 +208,14 @@ public abstract class QuerySearchComponent implements SearchComponent {
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
+    }
+
+    public void setMultiHostSearchComponent(MultiHostSearchComponent multiHostSearchComponent) {
+        this.multiHostSearchComponent = multiHostSearchComponent;
+    }
+
+    public void setSearchMultiHosts(boolean searchMultiHosts) {
+        this.searchMultiHosts = searchMultiHosts;
     }
 
 }

@@ -56,6 +56,11 @@
       <name>Øyvind Hatland</name>
       <url>http://www.uio.no/?vrtx=person-view=oyvihatl</url>
     </developer>
+    <developer>
+      <id>dave</id>
+      <name>David Egeland</name>
+      <url>http://www.uio.no/?vrtx=person-view=dave</url>
+    </developer>
   </developers>
   <mailingLists>
     <mailingList>

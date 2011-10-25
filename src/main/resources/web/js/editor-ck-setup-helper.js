@@ -142,6 +142,8 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 
   config.disableObjectResizing = true;
 
+  config.disableNativeSpellChecker = false;
+
   // Configure tag formatting in source
   config.on = {
     instanceReady: function (ev) {

@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -619,7 +620,9 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                 }
             }
 
-            String currentTime = String.valueOf(new Date().getTime());
+            Random generator = new Random();
+            String currentTime = String.valueOf(new Date().getTime() + generator.nextInt(120000));
+
             Cookie ssoCookie = new Cookie(UIO_AUTH_SSO, currentTime);
             ssoCookie.setPath("/");
 

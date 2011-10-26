@@ -49,7 +49,9 @@
     <property name="spCookieDomain" value="${security.spCookieDomain}" />
     <property name="spCookieAssertion" ref="securityInitializer.spCookieAssertion" />
     <property name="serviceProviderURI" value="${saml.serviceProviderURI}" />
-  </bean>
+    <property name="wordWhitelist" value="${security.ssoWordWhitelist}"/>
+    <property name="ssoTimeout" value="${security.ssoTimeoutMilliseconds}" />
+   </bean>
 
   <bean id="securityInitializer.spCookieAssertion" class="org.vortikal.web.service.AndAssertion">
     <property name="assertions">

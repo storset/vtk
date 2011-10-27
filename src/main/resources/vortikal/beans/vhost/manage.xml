@@ -1121,6 +1121,23 @@
   <bean id="decorating.manageNamespace" class="java.lang.String">
     <constructor-arg type="java.lang.String" value="manage" />
   </bean>
+  
+  
+  <bean id="manage.isUpscopedHostComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.manageNamespace" />
+    <property name="name" value="is-upscoped-host" />
+    <property name="description" value="Inserts true/false if host has upscoping" />
+    <property name="view" ref="manage.isUpscopedHostView" />
+  </bean>
+  
+  <bean id="manage.isUpscopedHostView" parent="freemarkerView">
+    <property name="url" value="system/is-upscoped-host.ftl" />
+    <property name="attributes">
+      <map>
+        <entry key="displayUpscoping" value="${displayUpscoping}" />
+      </map>
+    </property>
+  </bean>
 
   <bean id="manage.titleComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />

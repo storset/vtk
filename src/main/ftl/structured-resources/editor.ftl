@@ -35,6 +35,12 @@
       if (typeof(MULTIPLE_INPUT_FIELD_NAMES) !== "undefined") {
         saveMultipleInputFields();  // js/editor-multipleinputfields.js
       }
+      var boxUrlTextFields = $(".boxUrlText input");
+      var i = boxUrlTextFields.length;
+      while(i--) {
+        var boxUrlTextField = $(boxUrlTextFields[i]);
+        boxUrlTextField.val($.trim(boxUrlTextField.val()));
+      }
       NEED_TO_CONFIRM = false;
     }
 

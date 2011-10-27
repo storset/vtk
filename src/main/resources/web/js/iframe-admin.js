@@ -16,7 +16,7 @@ $(document).ready(function () {
       var isMsgPreviewIframeInnerHeight = !isMsgCreateIframeFullSize && !isMsgCreateIframeOriginalSize;
 
       if(isMsgPreviewIframeInnerHeight) {
-        var previewIframe = $("iframe#previewIframe")[0]
+        var previewIframe = $("iframe#previewIframe")[0];
         if (previewIframe) {
           var previewIframeMinHeight = 350;
           var previewIframeMaxHeight = 20000;

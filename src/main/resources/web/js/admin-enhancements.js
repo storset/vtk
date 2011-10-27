@@ -1505,13 +1505,13 @@ function previewImage(urlobj) {
   var previewNode = document.getElementById(urlobj + '.preview');
   if (previewNode) {
     var url = document.getElementById(urlobj).value;
-    if (url) {
+    if (url && url != "") {
       previewNode.innerHTML = '<img src="' + url + '?vrtx=thumbnail" alt="thumbnail" />';
+      adjustImageAndCaptionContainer(previewNode);
     } else {
       previewNode.innerHTML = '';
     }
   }
-  adjustImageAndCaptionContainer(previewNode);
 }
 
 // Make sure these is space below previewed image

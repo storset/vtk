@@ -165,7 +165,7 @@ a:hover {
 
 /* 2.2 Top (UiO-logo) and bottom line (breadcrumb) */
 
-body.not-upscoped-host #app-head-wrapper #line-top {
+#app-head-wrapper #line-top.not-upscoped-host {
   height: 7px;
 }
 
@@ -304,10 +304,6 @@ body.not-upscoped-host #app-head-wrapper #line-top {
  * Don't want that extra empty span from Levin Alexander method
  * (although it is used elsewhere in Ny UiO design and have an extra advantage).
  */
-
-body.not-upscoped-host #app-head-wrapper #line-top #uiologo {
-  display: none;
-}
 
 #app-head-wrapper #line-top #uiologo a {
   background: url(images/uio-app-uio-small-black.png) no-repeat 0 0;

@@ -13,13 +13,9 @@
     
     <title>${manage:title}</title>
   </head>
-  <body${document:element-attributes select=[html.body]} class="app-fluid ${manage:is-upscoped-host}">
+  <body${document:element-attributes select=[html.body]} class="app-fluid">
     <div id="app-head-wrapper"> 
-      <div id="line-top">
-        <div id="uiologo">
-          <a href="http://www.uio.no/">Universitetet i Oslo</a>
-        </div> 
-      </div>
+      ${manage:display-line-top}
       <div id="app-head">
         <div id="app-name"> 
           <a href='/?vrtx=admin'>${manage:repository-id}</a> 

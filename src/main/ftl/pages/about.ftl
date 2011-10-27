@@ -184,6 +184,16 @@
     </#if>
   </table>
 
+  <#if urchinStats?exists>
+    <h3 class="resourceVisitHeader">
+      <@vrtx.msg code="resource.metadata.about.visit" default="Visit count"/>
+    </h3>
+
+    <iframe id="urchin-iframe" src="${urchinStats?html}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" width="1160" height="300">
+      [Du har ikke iframe]
+    </iframe>
+  </#if>
+
 
   <h3 class="resourceInfoHeader">
     <@vrtx.msg

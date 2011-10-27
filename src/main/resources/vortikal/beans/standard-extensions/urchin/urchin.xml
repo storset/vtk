@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="urchinResourceStats" class="org.vortikal.urchin.UrchinResourceStats">
+    <property name="urchinUser" value="${urchinUser}" />
+    <property name="urchinPassword" value="${urchinPassword}" />
+    <!--property name="visitPropDef" ref="visitPropDef" /-->
+  </bean>
+
+  <bean id="urchinResourceStats.retrieveService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="view" />
+          <property name="parameterValue" value="urchin-stats" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="urchinResourceStats.handler" />
+  </bean>
+
+  <bean id="urchinResourceStats.handler" class="org.vortikal.urchin.UrchinResourceStatsController">
+    <property name="urchinResourceStats" ref="urchinResourceStats" />
+    <property name="repository" ref="repository" />
+    <property name="viewName" value="urchinResourceStats.view" />
+  </bean>
+
+  <bean id="urchinResourceStats.viewResolver" parent="viewResolver">
+    <property name="views">
+      <map>
+        <entry key="urchinResourceStats.view" value-ref="urchinResourceStats.view" />
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="urchinResourceStats.view" parent="freemarkerView">
+    <property name="url" value="pages/urchin-stats.ftl" />
+    <property name="referenceDataProviders">
+      <ref bean="resourceContextProvider" />
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/default.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+</beans>

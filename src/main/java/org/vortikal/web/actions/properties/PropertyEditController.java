@@ -42,6 +42,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -68,46 +71,47 @@ import org.vortikal.web.referencedata.ReferenceDataProviding;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
-
 /**
- * A {@link Property property} edit controller. This class is both a
- * form controller and {@link ReferenceDataProvider}, allowing it to
- * both display and edit a list of properties based on their {@link
- * PropertyTyeDefinition definitions}.
- *
- * <p>When invoked as a reference data provider, the list of property
- * definitions is traversed, and for each property found on the
- * current resource, a {@link PropertyItem} is placed in the model,
- * containing the property itself, along with a URL to edit the
- * property. The property items are placed in the model both as a list
- * and a map, using configurable (sub)model names.
- *
- * <p>When acting as a form controller, the formObject must be a
- * {@link PropertyEditCommand}. Only one property may be edited at a
- * time, and the property must be "focused" (using the editURL from
- * the PropertyItem) before any values are submitted.
- *
- * <p>Configurable JavaBean properties:
+ * A {@link Property property} edit controller. This class is both a form
+ * controller and {@link ReferenceDataProvider}, allowing it to both display and
+ * edit a list of properties based on their {@link PropertyTyeDefinition
+ * definitions}.
+ * 
+ * <p>
+ * When invoked as a reference data provider, the list of property definitions
+ * is traversed, and for each property found on the current resource, a
+ * {@link PropertyItem} is placed in the model, containing the property itself,
+ * along with a URL to edit the property. The property items are placed in the
+ * model both as a list and a map, using configurable (sub)model names.
+ * 
+ * <p>
+ * When acting as a form controller, the formObject must be a
+ * {@link PropertyEditCommand}. Only one property may be edited at a time, and
+ * the property must be "focused" (using the editURL from the PropertyItem)
+ * before any values are submitted.
+ * 
+ * <p>
+ * Configurable JavaBean properties:
  * <ul>
- *   <li><code>repository</code> - the content {@link Repository repository}
- *   <li><code>propertyTypeDefinitions</code> - the list of {@link
- *   PropertyTypeDefinition} objects to display and/or edit
- *   <li><code>valueFactory</code> - a {@link ValueFactoryImpl} for
- *   creating property values.
- *   <li><code>dateFormat</code> - a date format (string) used to
- *   parse date values
- *   <li><code>propertyListModelName</code> - the name to use (in the
- *   model) for the property list
- *   <li><code>propertyMapModelName</code> - the name to use (in the
- *   model) for the property map
- *   <li><code>editHooks</code> - a list of {@link
- *   PropertyEditHook} objects, allowing hooks to be run when specific
- *   properties are created, removed and edited.
+ * <li><code>repository</code> - the content {@link Repository repository}
+ * <li><code>propertyTypeDefinitions</code> - the list of
+ * {@link PropertyTypeDefinition} objects to display and/or edit
+ * <li><code>valueFactory</code> - a {@link ValueFactoryImpl} for creating
+ * property values.
+ * <li><code>dateFormat</code> - a date format (string) used to parse date
+ * values
+ * <li><code>propertyListModelName</code> - the name to use (in the model) for
+ * the property list
+ * <li><code>propertyMapModelName</code> - the name to use (in the model) for
+ * the property map
+ * <li><code>editHooks</code> - a list of {@link PropertyEditHook} objects,
+ * allowing hooks to be run when specific properties are created, removed and
+ * edited.
  * </ul>
- *
+ * 
  */
-public class PropertyEditController extends SimpleFormController
-  implements ReferenceDataProvider, ReferenceDataProviding {
+public class PropertyEditController extends SimpleFormController implements ReferenceDataProvider, BeanFactoryAware,
+        ReferenceDataProviding {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
@@ -115,26 +119,27 @@ public class PropertyEditController extends SimpleFormController
 
     private PropertyTypeDefinition[] propertyTypeDefinitions;
     private PropertyEditHook[] editHooks;
-    
+
     private ValueFactory valueFactory;
-    
+
     private String dateFormat;
-    
+
     private String propertyListModelName;
     private String propertyMapModelName;
 
     private PrincipalManager principalManager;
 
-    protected Object formBackingObject(HttpServletRequest request)
-        throws Exception {
+    private BeanFactory beanFactory;
+
+    protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
         String inputNamespace = request.getParameter("namespace");
         String inputName = request.getParameter("name");
         PropertyTypeDefinition definition = null;
 
-        for (PropertyTypeDefinition propertyTypeDefinition: this.propertyTypeDefinitions) {
+        for (PropertyTypeDefinition propertyTypeDefinition : this.propertyTypeDefinitions) {
             if (isFocusedProperty(propertyTypeDefinition, inputNamespace, inputName)) {
-                definition  = propertyTypeDefinition;
+                definition = propertyTypeDefinition;
                 break;
             }
         }
@@ -142,21 +147,20 @@ public class PropertyEditController extends SimpleFormController
         return buildPropertyEditCommand(definition);
     }
 
-    private PropertyEditCommand buildPropertyEditCommand(PropertyTypeDefinition definition)
-            throws Exception {
+    private PropertyEditCommand buildPropertyEditCommand(PropertyTypeDefinition definition) throws Exception {
         if (definition == null) {
             return new PropertyEditCommand(null, null, null, null, null);
         }
 
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
-        Resource resource = repository.retrieve(requestContext.getSecurityToken(),
-                requestContext.getResourceURI(), false);
+        Resource resource = repository.retrieve(requestContext.getSecurityToken(), requestContext.getResourceURI(),
+                false);
         String value = null;
 
         Property property = resource.getProperty(definition);
         if (property != null) {
-            PropertyType.Type t = property.getDefinition().getType(); 
+            PropertyType.Type t = property.getDefinition().getType();
             if (t == PropertyType.Type.DATE || t == PropertyType.Type.TIMESTAMP) {
                 value = property.getFormattedValue(this.dateFormat, null);
             } else {
@@ -184,17 +188,15 @@ public class PropertyEditController extends SimpleFormController
                 formAllowedValues.add(v.toString());
             }
         }
-        
+
         Service service = requestContext.getService();
-        String editURL = service.constructLink(resource, 
-                requestContext.getPrincipal(), urlParameters);
+        String editURL = service.constructLink(resource, requestContext.getPrincipal(), urlParameters);
 
         return new PropertyEditCommand(editURL, definition, value, formAllowedValues, hierarchicalHelpUrl);
     }
 
     @Override
-    protected void onBindAndValidate(HttpServletRequest request,
-            Object object, BindException errors) throws Exception {
+    protected void onBindAndValidate(HttpServletRequest request, Object object, BindException errors) throws Exception {
         PropertyEditCommand command = (PropertyEditCommand) object;
         if (command.getCancelAction() != null) {
             return;
@@ -202,12 +204,12 @@ public class PropertyEditController extends SimpleFormController
 
         PropertyTypeDefinition def = command.getDefinition();
         // Special handling of 'take ownership' action:
-        if (Namespace.DEFAULT_NAMESPACE.equals(def.getNamespace()) &&
-                PropertyType.OWNER_PROP_NAME.equals(def.getName()) &&
-                "true".equals(request.getParameter(this.toggleRequestParameter))) {
+        if (Namespace.DEFAULT_NAMESPACE.equals(def.getNamespace())
+                && PropertyType.OWNER_PROP_NAME.equals(def.getName())
+                && "true".equals(request.getParameter(this.toggleRequestParameter))) {
             return;
-        }        
-        
+        }
+
         if (isToggleProperty(command.getDefinition())) {
             return;
         }
@@ -221,48 +223,47 @@ public class PropertyEditController extends SimpleFormController
         }
 
         try {
-            
+
             if (command.getDefinition().isMultiple()) {
                 String[] splitValues = formValue.split(",");
-                Value[] values = this.valueFactory.createValues(
-                    splitValues, command.getDefinition().getType());
+                Value[] values = this.valueFactory.createValues(splitValues, command.getDefinition().getType());
 
                 if (command.getDefinition().getType() == PropertyType.Type.PRINCIPAL) {
-                    for (Value v: values) {
+                    for (Value v : values) {
                         if (!this.principalManager.validatePrincipal(v.getPrincipalValue())) {
                             throw new ValueFormatException("Invalid principal " + v);
                         }
-                    } 
-                }
-
-            } else {
-                
-                Value value = this.valueFactory.createValue(
-                    formValue, command.getDefinition().getType());
-                if (command.getDefinition().getType() == PropertyType.Type.PRINCIPAL) {
-                    if (!this.principalManager.validatePrincipal(value.getPrincipalValue())) {
-                            throw new ValueFormatException("Invalid principal " + value);
                     }
                 }
 
-//                Constraint constraint = command.getDefinition().getConstraint();
-//                if (constraint != null) {
-//                    constraint.validate(value);
-//                }
+            } else {
+
+                Value value = this.valueFactory.createValue(formValue, command.getDefinition().getType());
+                if (command.getDefinition().getType() == PropertyType.Type.PRINCIPAL) {
+                    if (!this.principalManager.validatePrincipal(value.getPrincipalValue())) {
+                        throw new ValueFormatException("Invalid principal " + value);
+                    }
+                }
+
+                // Constraint constraint =
+                // command.getDefinition().getConstraint();
+                // if (constraint != null) {
+                // constraint.validate(value);
+                // }
 
                 Vocabulary<Value> vocabulary = command.getDefinition().getVocabulary();
 
                 if (vocabulary == null) {
                     return;
                 }
-                
+
                 Value[] allowedValues = vocabulary.getAllowedValues();
 
                 if (allowedValues == null) {
                     return;
                 }
 
-                for (Value v: allowedValues) {
+                for (Value v : allowedValues) {
                     if (value.equals(v)) {
                         return;
                     }
@@ -278,15 +279,14 @@ public class PropertyEditController extends SimpleFormController
     }
 
     @Override
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
-                                    Object command, BindException errors) throws Exception {    
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
+            BindException errors) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
-        
+
         String token = requestContext.getSecurityToken();
 
-        PropertyEditCommand propertyCommand =
-            (PropertyEditCommand) command;
+        PropertyEditCommand propertyCommand = (PropertyEditCommand) command;
 
         if (propertyCommand.getCancelAction() != null) {
             propertyCommand.clear();
@@ -296,26 +296,24 @@ public class PropertyEditController extends SimpleFormController
         Path uri = requestContext.getResourceURI();
         Resource resource = repository.retrieve(token, uri, false);
         TypeInfo typeInfo = repository.getTypeInfo(token, uri);
-        for (PropertyTypeDefinition def: this.propertyTypeDefinitions) {
-            
-            if (isFocusedProperty(def, propertyCommand.getNamespace(),
-                                  propertyCommand.getName())) {
+        for (PropertyTypeDefinition def : this.propertyTypeDefinitions) {
+
+            if (isFocusedProperty(def, propertyCommand.getNamespace(), propertyCommand.getName())) {
                 Property property = resource.getProperty(def);
 
                 String stringValue = propertyCommand.getValue();
 
-                boolean removed = false, created = false, modified = false;                
+                boolean removed = false, created = false, modified = false;
 
-                if (Namespace.DEFAULT_NAMESPACE.equals(def.getNamespace()) &&
-                    PropertyType.OWNER_PROP_NAME.equals(def.getName()) &&
-                    !resource.getOwner().equals(requestContext.getPrincipal()) &&
-                    "true".equals(request.getParameter(this.toggleRequestParameter))) {
+                if (Namespace.DEFAULT_NAMESPACE.equals(def.getNamespace())
+                        && PropertyType.OWNER_PROP_NAME.equals(def.getName())
+                        && !resource.getOwner().equals(requestContext.getPrincipal())
+                        && "true".equals(request.getParameter(this.toggleRequestParameter))) {
 
                     // Using toggle submit parameter to take ownership:
                     stringValue = requestContext.getPrincipal().getQualifiedName();
-                    
-                } else if (isToggleProperty(def)
-                    && "true".equals(request.getParameter(this.toggleRequestParameter))) {
+
+                } else if (isToggleProperty(def) && "true".equals(request.getParameter(this.toggleRequestParameter))) {
 
                     Value toggleValue = getToggleValue(def, property);
                     if (toggleValue == null) {
@@ -335,22 +333,20 @@ public class PropertyEditController extends SimpleFormController
                         resource.removeProperty(def.getNamespace(), def.getName());
                         removed = true;
 
-
                     } else {
                         if (property == null) {
                             if (this.logger.isDebugEnabled()) {
                                 this.logger.debug("Property does not exist on resource " + resource
-                                                  + ", creating from definition: " + def);
+                                        + ", creating from definition: " + def);
                             }
                             property = typeInfo.createProperty(def.getNamespace(), def.getName());
                             resource.addProperty(property);
                             created = true;
                         }
-                    
+
                         if (def.isMultiple()) {
                             String[] splitValues = stringValue.trim().split(" *, *");
-                            Value[] values = this.valueFactory.createValues(
-                                splitValues, def.getType());
+                            Value[] values = this.valueFactory.createValues(splitValues, def.getType());
                             property.setValues(values);
                             modified = true;
                         } else {
@@ -359,33 +355,34 @@ public class PropertyEditController extends SimpleFormController
                             modified = true;
                         }
                         if (this.logger.isDebugEnabled()) {
-                            String debugOutput = def.isMultiple()
-                                ? java.util.Arrays.asList(property.getValues()).toString()
-                                : property.getValue().toString();
-                            this.logger.debug("Setting property '" + property + "'for resource "
-                                              + resource + " to value " + debugOutput);
+                            String debugOutput = def.isMultiple() ? java.util.Arrays.asList(property.getValues())
+                                    .toString() : property.getValue().toString();
+                            this.logger.debug("Setting property '" + property + "'for resource " + resource
+                                    + " to value " + debugOutput);
                         }
                     }
                     if (this.editHooks != null) {
                         for (int j = 0; j < this.editHooks.length; j++) {
                             PropertyEditHook hook = this.editHooks[j];
-                            if (created) hook.created(def, resource);
-                            if (removed) hook.removed(def, resource);
-                            if (modified) hook.modified(def, resource);
+                            if (created)
+                                hook.created(def, resource);
+                            if (removed)
+                                hook.removed(def, resource);
+                            if (modified)
+                                hook.modified(def, resource);
                         }
                     }
-                    
+
                     repository.store(token, resource);
                 } catch (ConstraintViolationException e) {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Error storing resource " + resource
-                                     + ": constraint violation", e);
+                        logger.debug("Error storing resource " + resource + ": constraint violation", e);
                     }
                     errors.rejectValue("value", "Illegal value: " + e.getMessage());
                     return showForm(request, response, errors);
                 }
                 break;
-            } 
+            }
         }
 
         propertyCommand.clear();
@@ -393,26 +390,26 @@ public class PropertyEditController extends SimpleFormController
         return new ModelAndView(getSuccessView());
 
     }
-    
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+
+    @SuppressWarnings( { "unchecked" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
         Service service = requestContext.getService();
         String token = requestContext.getSecurityToken();
         Path uri = requestContext.getResourceURI();
-        
+
         Resource resource = repository.retrieve(token, uri, false);
         TypeInfo typeInfo = repository.getTypeInfo(token, uri);
         List<PropertyItem> propsList = new ArrayList<PropertyItem>();
         Map<String, PropertyItem> propsMap = new HashMap<String, PropertyItem>();
 
-        for (PropertyTypeDefinition def: this.propertyTypeDefinitions) {
+        for (PropertyTypeDefinition def : this.propertyTypeDefinitions) {
 
             if (!typeInfo.getResourceType().hasPropertyDefinition(def)) {
                 if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Property type definition " + def
-                                 + " not applicable for resource " + resource + ", skipping");
+                    this.logger.debug("Property type definition " + def + " not applicable for resource " + resource
+                            + ", skipping");
                 }
                 continue;
             }
@@ -421,37 +418,32 @@ public class PropertyEditController extends SimpleFormController
             String format = null;
             String toggleURL = null;
             String toggleValue = null;
-            
-            if (repository.isAuthorized(resource, def.getProtectionLevel(),
-                                      requestContext.getPrincipal(), true)) {
-                
+
+            if (repository.isAuthorized(resource, def.getProtectionLevel(), requestContext.getPrincipal(), true)) {
+
                 Map<String, String> urlParameters = new HashMap<String, String>();
                 String namespaceURI = def.getNamespace().getUri();
                 if (namespaceURI != null) {
                     urlParameters.put("namespace", namespaceURI);
                 }
                 urlParameters.put("name", def.getName());
-                if (def.getType() == PropertyType.Type.TIMESTAMP ||
-                        def.getType() == PropertyType.Type.DATE) {
+                if (def.getType() == PropertyType.Type.TIMESTAMP || def.getType() == PropertyType.Type.DATE) {
                     format = this.dateFormat;
                 }
 
                 try {
-                    editURL = service.constructLink(resource, requestContext.getPrincipal(),
-                            urlParameters);
+                    editURL = service.constructLink(resource, requestContext.getPrincipal(), urlParameters);
                 } catch (ServiceUnlinkableException e) {
                     // Assertion doesn't match, OK in this case
                 }
 
-                if (Namespace.DEFAULT_NAMESPACE.equals(def.getNamespace()) &&
-                    PropertyType.OWNER_PROP_NAME.equals(def.getName()) &&
-                    !resource.getOwner().equals(requestContext.getPrincipal())) {
+                if (Namespace.DEFAULT_NAMESPACE.equals(def.getNamespace())
+                        && PropertyType.OWNER_PROP_NAME.equals(def.getName())
+                        && !resource.getOwner().equals(requestContext.getPrincipal())) {
 
                     // Using toggle parameter to take ownership:
                     urlParameters.put(this.toggleRequestParameter, "true");
-                    toggleURL = service.constructLink(resource,
-                                                      requestContext.getPrincipal(),
-                                                      urlParameters);
+                    toggleURL = service.constructLink(resource, requestContext.getPrincipal(), urlParameters);
 
                 } else if (isToggleProperty(def)) {
                     Value toggleValueObject = getToggleValue(def, property);
@@ -459,14 +451,11 @@ public class PropertyEditController extends SimpleFormController
                         toggleValue = getValueAsString(toggleValueObject);
                     }
                     urlParameters.put(this.toggleRequestParameter, "true");
-                    toggleURL = service.constructLink(resource, 
-                                                      requestContext.getPrincipal(),
-                                                      urlParameters);
+                    toggleURL = service.constructLink(resource, requestContext.getPrincipal(), urlParameters);
                 }
             }
 
-            PropertyItem item = new PropertyItem(property, def, editURL, format,
-                                                 toggleURL, toggleValue);
+            PropertyItem item = new PropertyItem(property, def, editURL, format, toggleURL, toggleValue);
             propsList.add(item);
             if (def.getNamespace() == Namespace.DEFAULT_NAMESPACE) {
                 propsMap.put(def.getName(), item);
@@ -475,32 +464,38 @@ public class PropertyEditController extends SimpleFormController
             }
         }
 
+        try {
+            Service urchinService = (Service) beanFactory.getBean("urchinResourceStats.retrieveService");
+            model.put("urchinStats", urchinService.constructURL(resource));
+        } catch (Exception e) {
+        }
+
         model.put(this.propertyListModelName, propsList);
         model.put(this.propertyMapModelName, propsMap);
     }
-    
+
     private boolean isToggleProperty(PropertyTypeDefinition def) {
         Vocabulary<Value> vocabulary = def.getVocabulary();
-        
+
         if (vocabulary == null) {
             return false;
         }
-        
+
         Value[] allowedValues = vocabulary.getAllowedValues();
 
         if (allowedValues == null) {
             return false;
         }
-        
+
         if (def.isMandatory()) {
             return (allowedValues.length == 2);
         }
 
         return (allowedValues.length == 1);
     }
-    
+
     private Value getToggleValue(PropertyTypeDefinition def, Property property) {
-        
+
         Value[] allowedValues = def.getVocabulary().getAllowedValues();
 
         if (!def.isMandatory() && allowedValues != null && allowedValues.length == 1) {
@@ -519,13 +514,13 @@ public class PropertyEditController extends SimpleFormController
 
         throw new IllegalArgumentException("Property " + def + " is not a toggleable property");
     }
-    
+
     private String getValueAsString(Value value) throws IllegalOperationException {
         String stringValue;
 
         switch (value.getType()) {
 
-        case DATE:    
+        case DATE:
         case TIMESTAMP:
             SimpleDateFormat format = new SimpleDateFormat(this.dateFormat);
             Date date = value.getDateValue();
@@ -534,17 +529,18 @@ public class PropertyEditController extends SimpleFormController
 
         default:
             stringValue = value.toString();
-            
+
         }
         return stringValue;
     }
 
-    private boolean isFocusedProperty(PropertyTypeDefinition propDef,
-                                      String inputNamespace, String inputName) {
+    private boolean isFocusedProperty(PropertyTypeDefinition propDef, String inputNamespace, String inputName) {
 
-        if (inputNamespace != null) inputNamespace = inputNamespace.trim();
-        if (inputName != null) inputName = inputName.trim();
-        
+        if (inputNamespace != null)
+            inputNamespace = inputNamespace.trim();
+        if (inputName != null)
+            inputName = inputName.trim();
+
         if (inputName == null || "".equals(inputName)) {
             return false;
         }
@@ -552,11 +548,10 @@ public class PropertyEditController extends SimpleFormController
         if (!inputName.equals(propDef.getName())) {
             return false;
         }
-        
+
         // We now know it is the same name, check namespace:
 
-        if (propDef.getNamespace().getUri() == null
-            && (inputNamespace == null || "".equals(inputNamespace))) {
+        if (propDef.getNamespace().getUri() == null && (inputNamespace == null || "".equals(inputNamespace))) {
             return true;
         }
 
@@ -568,34 +563,42 @@ public class PropertyEditController extends SimpleFormController
         this.valueFactory = valueFactory;
     }
 
-
     @Required
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
     }
 
-    @Required public void setPropertyListModelName(String propertyListModelName) {
+    @Required
+    public void setPropertyListModelName(String propertyListModelName) {
         this.propertyListModelName = propertyListModelName;
     }
-    
-    @Required public void setPropertyMapModelName(String propertyMapModelName) {
+
+    @Required
+    public void setPropertyMapModelName(String propertyMapModelName) {
         this.propertyMapModelName = propertyMapModelName;
     }
-    
-    @Required public void setPropertyTypeDefinitions(PropertyTypeDefinition[] propertyTypeDefinitions) {
+
+    @Required
+    public void setPropertyTypeDefinitions(PropertyTypeDefinition[] propertyTypeDefinitions) {
         this.propertyTypeDefinitions = propertyTypeDefinitions;
     }
-    
+
     public void setEditHooks(PropertyEditHook[] editHooks) {
         this.editHooks = editHooks;
     }
-    
-    @Required public void setDateFormat(String dateFormat) {
+
+    @Required
+    public void setDateFormat(String dateFormat) {
         this.dateFormat = dateFormat;
     }
 
     public ReferenceDataProvider[] getReferenceDataProviders() {
-        return new ReferenceDataProvider[] {this};
+        return new ReferenceDataProvider[] { this };
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
     }
 
 }

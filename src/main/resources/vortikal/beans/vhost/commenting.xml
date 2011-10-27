@@ -361,7 +361,7 @@
       <property name="attributesMap">
       <map>
         <entry key="jsBaseURL" value="${jsBaseURL}" />
-         <entry key="jquery" value="${jquery.baseURL}/jquery-${jquery.version}.min.js" />
+         <entry key="jquery" value="${jquery.baseURL}/jquery.min.js" />
       </map>
     </property>
   </bean>

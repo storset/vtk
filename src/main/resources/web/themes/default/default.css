@@ -460,6 +460,7 @@ a:hover {
 #app-content #main {
   padding: 19px;
   border: 1px solid #d9d9d9;
+  overflow: hidden;
 }
 
 /* ^ 3.1 App content grid */

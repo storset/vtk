@@ -1181,7 +1181,7 @@
       <map>
         <entry key="jsURLs">
           <list>
-            <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
+            <value>${jquery.baseURL}/jquery.min.js</value>
             <value>${jquery.baseURL}/plugins/ui/jquery-ui-1.8.8.custom/js/jquery-ui-1.8.8.custom.min.js</value>
             <value>${jquery.baseURL}/plugins/jquery.ba-postmessage.min.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
@@ -1730,7 +1730,7 @@
       <map>
         <entry key="jsURLs">
           <list>
-            <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
+            <value>${jquery.baseURL}/jquery.min.js</value>
             <value>${jquery.baseURL}/plugins/ui/jquery-ui-1.8.8.custom/js/jquery-ui-1.8.8.custom.min.js</value>
             <value>${jquery.baseURL}/plugins/jquery.ba-postmessage.min.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
@@ -1748,7 +1748,7 @@
       <map>
         <entry key="jsURLs">
           <list>
-            <value>${jquery.baseURL}/jquery-${jquery.version}.min.js</value>
+            <value>${jquery.baseURL}/jquery.min.js</value>
             <value>${jquery.baseURL}/plugins/jquery.ba-postmessage.min.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/iframe-admin-alone.js</value>

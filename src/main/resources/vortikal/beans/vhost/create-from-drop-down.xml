@@ -210,7 +210,7 @@
         </entry>
         <entry key="jsURLs">
           <list>
-           <value>${webResources.baseURL}/jquery/jquery-${jquery.version}.min.js"></value>
+           <value>${webResources.baseURL}/jquery/jquery.min.js"></value>
            <value>${jquery.baseURL}/plugins/jquery.ba-postmessage.min.js</value>
            <value>${webResources.baseURL}/js/admin-enhancements-iframe.js"></value>
            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>

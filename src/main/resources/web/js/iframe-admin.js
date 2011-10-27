@@ -26,8 +26,12 @@ $(document).ready(function () {
           } else { // recieved with postMessage
             var dataHeight = parseInt(recievedData, 10);
           }
-          if (!$.isNaN(dataHeight) && (dataHeight > previewIframeMinHeight) && (dataHeight <= previewIframeMaxHeight)) {
-            newHeight = dataHeight
+          if (!$.isNaN(dataHeight) && (dataHeight > previewIframeMinHeight)) {
+            if (dataHeight <= previewIframeMaxHeight) {
+              newHeight = dataHeight;
+            } else {
+              newHeight = previewIframeMaxHeight;
+            }
           }
           previewIframe.style.height = newHeight + "px";
         }

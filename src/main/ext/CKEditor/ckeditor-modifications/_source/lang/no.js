@@ -599,12 +599,6 @@ CKEDITOR.lang['no'] =
 		remove				: 'Fjern Div'
   	},
 
-        mediaembed : 
-        {
-                edit:'Mediaegenskaper',
-                remove:'Fjern media'
-        },
-
 	iframe :
 	{
 		title		: 'iFrame Properties', // MISSING

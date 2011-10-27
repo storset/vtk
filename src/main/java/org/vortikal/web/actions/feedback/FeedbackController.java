@@ -93,6 +93,8 @@ public class FeedbackController implements Controller {
         String title = resource.getTitle();
         String url = this.viewService.constructURL(uri).toString();
         
+        String yourComment = request.getParameter("yourComment");
+        
         String[] recipients = this.recipients;
         String recipientsStr = this.recipientsStr;
         boolean validAddresses = true;
@@ -110,6 +112,7 @@ public class FeedbackController implements Controller {
         }
         if (!validAddresses) {
             model.put("tipResponse", "FAILURE-INVALID-EMAIL");
+            model.put("yourSavedComment", yourComment);
             return new ModelAndView(this.viewName, model);
         }
         
@@ -131,14 +134,11 @@ public class FeedbackController implements Controller {
         if (!method.equals("POST")) {
             return new ModelAndView(this.viewName, model);
         }    
-        String yourComment = request.getParameter("yourComment");
 
         if (StringUtils.isBlank(yourComment)) {
             model.put("tipResponse", "FAILURE-NULL-FORM");
             return new ModelAndView(this.viewName, model);
         }
-
-        model.put("yourSavedComment", yourComment);
 
         try {
             org.springframework.web.servlet.support.RequestContext springRequestContext = 

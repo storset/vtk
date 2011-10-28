@@ -38,14 +38,14 @@
 
     <script type="text/javascript">
     <!--
-   	  shortcut.add("Ctrl+S",function() {
- 		$("#saveButton").click();
- 	  });
- 	  
- 	  $(window).load(function() {
- 	    loadFeaturedArticles('${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
+       shortcut.add("Ctrl+S",function() {
+     $("#saveButton").click();
+     });
+     
+     $(window).load(function() {
+       loadFeaturedArticles('${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
                              '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
- 	  });
+     });
     
       $(document).ready(function() {
           <#if !isCollection>
@@ -92,18 +92,18 @@
       <@vrtx.msg code="editor.edit" args=[vrtx.resourceTypeName(resource)?lower_case] />
     </#assign>
     <h2>${header}</h2>
-	  <div class="submitButtons submit-extra-buttons">
-	  	<#include "/system/help.ftl" />
-	  	<div class="vrtx-button">
-		  <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
-		</div>
-		<div class="vrtx-focus-button">
-		  <input type="button" onclick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
-		</div>
-		<div class="vrtx-button">
-		  <input type="button" onclick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
-		</div>
-	  </div>
+    <div class="submitButtons submit-extra-buttons">
+      <#include "/system/help.ftl" />
+      <div class="vrtx-button">
+      <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
+    </div>
+    <div class="vrtx-focus-button">
+      <input type="button" onclick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
+    </div>
+    <div class="vrtx-button">
+      <input type="button" onclick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
+    </div>
+    </div>
     <form action="" method="post" id="editor">
 
       <div class="properties">
@@ -124,7 +124,7 @@
       
       <#-- Margin-bottom before save- cancel button for collections -->
       <#if isCollection>
-      	<div id="allowedValues"></div>
+        <div id="allowedValues"></div>
       </#if>
 
       <div id="submit" class="submitButtons save-cancel">
@@ -210,7 +210,7 @@
         
       <#elseif type = 'IMAGE_REF'>
       
-      	<#if name == "picture">
+        <#if name == "picture">
         <div class="picture-and-caption">
           <div class="input-and-button-container">
             <div class="vrtx-textfield">
@@ -224,50 +224,50 @@
           <div id="resource.${name}.preview">
           
             <#local thumbnail = '' />
-    		<#if value?exists && value != "">
-    			<#if  vrtx.linkConstructor(value, 'displayThumbnailService')?exists >
-					<#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService').getPathRepresentation() />
-				<#else>
-					<#local thumbnail = value />
-				</#if> 
-    		</#if>          
+            <#if value?exists && value != "">
+              <#if  vrtx.linkConstructor(value, 'displayThumbnailService')?exists >
+                <#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService').getPathRepresentation() />
+              <#else>
+                <#local thumbnail = value />
+              </#if> 
+            </#if>          
             <#if thumbnail != ''>
               <img src="${thumbnail?html}" alt="preview" />
             <#else>
               <img src="" alt="no-image" style="visibility: hidden; width: 10px;" />
             </#if>
           </div>
-          <#else>
+        </div>
+        <#else>
         
-	        <div class="image-ref vrtx-image-ref.${name}">
-	          <div class="input-and-button-container.${name}">
-	            <div class="vrtx-textfield">
-	              <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" />
-	            </div>
-                <div class="vrtx-button">
-	              <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
-	                '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
-	            </div>
-	          </div>
-	          <div id="resource.${name}.preview">
-	          
-	            <#local thumbnail = '' />
-	    		<#if value?exists && value != "">
-	    			<#if  vrtx.linkConstructor(value, 'displayThumbnailService')?exists >
-						<#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService').getPathRepresentation() />
-					<#else>
-						<#local thumbnail = value />
-					</#if> 
-	    		</#if>          
-	            <#if thumbnail != ''>
-	              <img src="${thumbnail?html}" alt="preview" />
-	            <#else>
-	              <img src="" alt="no-image" style="visibility: hidden; width: 10px;" />
-	            </#if>
-	          </div>
-                    
-          
-          </#if>
+          <div class="image-ref vrtx-image-ref.${name}">
+            <div class="input-and-button-container.${name}">
+              <div class="vrtx-textfield">
+                <input type="text" id="resource.${name}" onblur="previewImage(id);" name="resource.${name}" value="${value?html}" />
+              </div>
+              <div class="vrtx-button">
+                <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
+                  '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
+              </div>
+            </div>
+            <div id="resource.${name}.preview">
+            
+              <#local thumbnail = '' />
+              <#if value?exists && value != "">
+                <#if  vrtx.linkConstructor(value, 'displayThumbnailService')?exists >
+                  <#local thumbnail = vrtx.linkConstructor(value, 'displayThumbnailService').getPathRepresentation() />
+                <#else>
+                  <#local thumbnail = value />
+                </#if> 
+              </#if>          
+              <#if thumbnail != ''>
+                <img src="${thumbnail?html}" alt="preview" />
+              <#else>
+                <img src="" alt="no-image" style="visibility: hidden; width: 10px;" />
+              </#if>
+            </div>
+          </div>
+        </#if>
       <#elseif type = 'DATE' || type = 'TIMESTAMP'>
 
         <#local dateVal = value />

@@ -39,14 +39,17 @@
           <td>
         </tr>
         <tr>
-          <td id="vrtx-resourceVisit-visits">
+          <td id="vrtx-resourceVisit-visits-total">
             ${ursTotal} <@vrtx.msg code="resource.metadata.about.visit.total" />
           </td>
-          <td id="vrtx-resourceVisit-visits">
-            ${ursYesterdayTotal} <@vrtx.msg code="resource.metadata.about.visit.yesterday" />
+          <td id="vrtx-resourceVisit-visits-thirty">
+            ${ursThirtyTotal} <@vrtx.msg code="resource.metadata.about.visit.thirty" />
           </td>
-          <td id="vrtx-resourceVisit-visits vrtx-resourceVisit-visits-last">
+          <td id="vrtx-resourceVisit-visits-week">
             ${ursWeekTotal} <@vrtx.msg code="resource.metadata.about.visit.week" />
+          </td>
+          <td id="vrtx-resourceVisit-visits-yesterday vrtx-resourceVisit-visits-last">
+            ${ursYesterdayTotal} <@vrtx.msg code="resource.metadata.about.visit.yesterday" />
           </td>
         </tr>
       </table>

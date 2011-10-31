@@ -95,6 +95,18 @@ public class UrchinResourceStats {
         return fetch(r, token, urchinStartDate + todayDate, id, "total");
     }
 
+    public int thirtyTotal(Resource r, String token, String id) {
+        Calendar ecal = Calendar.getInstance();
+        Calendar scal = Calendar.getInstance();
+        scal.setTimeInMillis(ecal.getTimeInMillis() - (86400000 * 30));
+
+        String date = "&start-date=" + scal.get(Calendar.YEAR) + "-" + (scal.get(Calendar.MONTH) + 1) + "-"
+                + scal.get(Calendar.DATE) + "&end-date=" + ecal.get(Calendar.YEAR) + "-"
+                + (ecal.get(Calendar.MONTH) + 1) + "-" + ecal.get(Calendar.DATE);
+
+        return fetch(r, token, date, id, "thrity");
+    }
+
     public int weekTotal(Resource r, String token, String id) {
         Calendar ecal = Calendar.getInstance();
         Calendar scal = Calendar.getInstance();

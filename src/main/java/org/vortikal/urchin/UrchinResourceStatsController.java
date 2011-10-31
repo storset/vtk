@@ -84,6 +84,7 @@ public class UrchinResourceStatsController implements Controller {
             model.put("thisMonth", urs.thisMonth());
             model.put("ursMonths", urs.months(resource, token, id));
             model.put("ursTotal", urs.total(resource, token, id));
+            model.put("ursThirtyTotal", urs.thirtyTotal(resource, token, id));
             model.put("ursWeekTotal", urs.weekTotal(resource, token, id));
             model.put("ursYesterdayTotal", urs.yesterdayTotal(resource, token, id));
         } catch (Exception e) {

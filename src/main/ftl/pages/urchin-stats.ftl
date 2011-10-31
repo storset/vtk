@@ -28,7 +28,7 @@
        <div id="vrtx-resource-visit">
          <div id="vrtx-resource-visit-chart">
            <img id="vrtx-resource-visit-chart-image" width="600" height="225" alt="Visit chart"
-             src="http://chart.apis.google.com/chart?chl=<#list 0..11 as i>${months[thisMonth]}<#if i != 11>|</#if><#if thisMonth != 0><#assign thisMonth = thisMonth - 1><#else><#assign thisMonth = 11></#if></#list>&chxr=0,28.333,${ursMonths[12]?string("0")}&chxt=y,x&chbh=a&chs=600x225&cht=bvg&chco=3D7930&chds=0,${ursMonths[12]?string("0")}&chd=t:<#list 0..11 as i>${ursMonths[thisMonth]?string("0")}<#if i != 11>,</#if><#if thisMonth != 0><#assign thisMonth = thisMonth - 1><#else><#assign thismonth = 11></#if></#list>&chtt=<@vrtx.msg code="resource.metadata.about.visit.last12months" />" />
+             src="http://chart.apis.google.com/chart?chl=<#list 0..11 as i>${months[thisMonth]}<#if i != 11>|</#if><#if thisMonth != 0><#assign thisMonth = thisMonth - 1><#else><#assign thisMonth = 11></#if></#list>&amp;chxr=0,28.333,${ursMonths[12]?string("0")}&amp;chxt=y,x&amp;chbh=a&amp;chs=600x225&amp;cht=bvg&amp;chco=ed1c24&amp;chds=0,${ursMonths[12]?string("0")}&amp;chd=t:<#list 0..11 as i>${ursMonths[thisMonth]?string("0")}<#if i != 11>,</#if><#if thisMonth != 0><#assign thisMonth = thisMonth - 1><#else><#assign thismonth = 11></#if></#list>&amp;chtt=<@vrtx.msg code="resource.metadata.about.visit.last12months" />" />
          <div>
          <div class="vrtx-resource-visit-stat first" id="vrtx-resource-visit-total">
            ${ursTotal} <@vrtx.msg code="resource.metadata.about.visit.total" />

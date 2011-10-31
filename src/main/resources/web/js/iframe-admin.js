@@ -44,7 +44,7 @@ $(document).ready(function () {
             originalWidth = 162;
           }
           if(isMsgCreateIframeFullSize) {
-            var winHeight = $(window).height();
+            var winHeight = window.innerHeight ? window.innerHeight : $(window).height();
             var winWidth = $(window).width();
           
             // Get original iframe position

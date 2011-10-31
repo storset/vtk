@@ -14,6 +14,7 @@
     <!--[if lte IE 6]>
       <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css"/> 
     <![endif]--> 
+    <link rel="stylesheet" href="http://129.240.93.72:9322/vrtx/__vrtx/static-resources/themes/default/urchin.css" type="text/css"/> 
   </head>
   <body>
     <#if thisMonth?exists && (ursTotal > 0)>

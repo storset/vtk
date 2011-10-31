@@ -215,7 +215,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             Boolean doRedirect = false;
 
             for (String word : wordWhitelist) {
-                if (url.toString().endsWith(word)) {
+                if (url.toString().endsWith(word.trim())) {
                     doRedirect = true;
                 }
             }

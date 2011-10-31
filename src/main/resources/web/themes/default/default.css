@@ -2235,4 +2235,9 @@ form button::-moz-focus-inner {
 
 /* ^ iPhone and iPad hacks */
 
+.vrtx-resource-visit-stat {
+  color: #a6a6a6;
+}
+
+
 /* ^ UiO design - Apps - Vortex */

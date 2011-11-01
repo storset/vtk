@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta name="viewport" content="width=1140, user-scalable=yes" /> 
     ${manage:css}
     <!--[if lte IE 7]>
       <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css"/> 
@@ -9,8 +10,7 @@
       <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css"/> 
     <![endif]--> 
     ${manage:javascript}
-    ${document:element select=[html.head] exclude=[title]}
-    
+    ${document:element select=[html.head] exclude=[title]} 
     <title>${manage:title}</title>
   </head>
   <body${document:element-attributes select=[html.body]} class="app-fluid"> 

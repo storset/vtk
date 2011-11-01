@@ -2217,19 +2217,11 @@ form button::-moz-focus-inner {
     -webkit-appearance: none;
     -webkit-border-radius: 0;
   }
-  body#vrtx-preview #contents {
-     overflow: scroll !important;
-     -webkit-overflow-scrolling: touch !important; 
-  }
 }
 @media only screen and (max-device-width: 1024px) {
   input { /* input reset */
     -webkit-appearance: none;
     -webkit-border-radius: 0;
-  }
-  body#vrtx-preview #contents {
-     overflow: scroll !important;
-     -webkit-overflow-scrolling: touch !important; 
   }
 }
 

@@ -1,0 +1,66 @@
+/*
+ *
+ *  UiO design - Apps - Vortex
+ *
+ */
+
+body,
+html {
+  background-color: #fff;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+#vrtx-resource-visit {
+  clear: left;
+  float: left;
+  width: 100%;
+}
+
+#vrtx-resource-visit-chart {
+  clear: left;
+  float: left;
+}
+
+#vrtx-resource-visit-stats {
+  float: right;
+}
+
+ul {
+  display: none;
+}
+
+/* Responsive design */
+
+.vrtx-resource-visit-stat {
+  float: left;
+  text-align: center;
+  margin: 0 3.317535545023696682% 1.5em 0;
+  width: 46.6824645%;	
+  color: #363534;
+  font-size: 1.154em;
+}
+
+.vrtx-resource-visit-stat span {
+  color: #a6a6a6;
+  font-weight: bold;
+  font-size: 2em;
+  display: block;
+}
+
+@media screen and (max-width: 1080px) {
+  .vrtx-resource-visit-stat {
+    width: 14%;
+  }
+  #vrtx-resource-visit-stats {
+    clear: left;
+    float: left;
+    width: 100%;
+    margin: 10px 0 0 0;
+  }
+}
+
+/* ^ Responsive design */
+
+/* ^ UiO design - Apps - Vortex */

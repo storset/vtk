@@ -24,7 +24,7 @@ html {
 }
 
 #vrtx-resource-visit-stats {
-  float: right;
+  float: left;
 }
 
 ul {
@@ -55,7 +55,6 @@ ul {
   }
   #vrtx-resource-visit-stats {
     clear: left;
-    float: left;
     width: 100%;
     margin: 10px 0 0 0;
   }

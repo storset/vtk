@@ -21,7 +21,7 @@
       <#assign months = [vrtx.getMsg("jan"), vrtx.getMsg("feb"), vrtx.getMsg("mar"), vrtx.getMsg("apr"), vrtx.getMsg("may"), vrtx.getMsg("jun"),
         vrtx.getMsg("jul"), vrtx.getMsg("aug"), vrtx.getMsg("sep"), vrtx.getMsg("oct"), vrtx.getMsg("nov"), vrtx.getMsg("dec")]>
 
-       <ul style="margin:0; padding:0; list-style: none">
+       <ul>
          <li>
            <#list hosts as host><a href="${host?html}">${hostnames[host_index]?html}</a> </#list>
          </li>

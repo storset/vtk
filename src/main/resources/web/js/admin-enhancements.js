@@ -391,8 +391,8 @@ $(document).ready(function () {
     }
     // Remove/add permissions
     vrtxAdmin.ajaxRemove("input.removePermission", ".principalList");
-    vrtxAdmin.ajaxAdd("span.addGroup", ".groups-wrapper", "errorContainer");
-    vrtxAdmin.ajaxAdd("span.addUser", ".users-wrapper", "errorContainer");
+    vrtxAdmin.ajaxAdd("span.addGroup", ".principalList", ".groups-wrapper", "errorContainer");
+    vrtxAdmin.ajaxAdd("span.addUser", ".principalList", ".users-wrapper", "errorContainer");
   }
   
   // About property forms
@@ -1265,7 +1265,7 @@ VrtxAdmin.prototype.ajaxRemove = function ajaxRemove(selector, updateSelector) {
  * @param errorContainer: selector for error container
  */
 
-VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorContainer) {
+VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorContainerInsertAfter, errorContainer) {
   var args = arguments;
   var vrtxAdm = this;
 
@@ -1288,7 +1288,7 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
       dataType: "html",
       success: function (results, status, resp) {
         if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
-          vrtxAdm.displayErrorContainers(results, form, updateSelector, errorContainer);
+          vrtxAdm.displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
         } else {
           var upSelector = form.find(updateSelector);
           upSelector.parent().find("div." + errorContainer).remove();

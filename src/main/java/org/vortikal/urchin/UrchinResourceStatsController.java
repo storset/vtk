@@ -63,36 +63,32 @@ public class UrchinResourceStatsController implements Controller {
 
         Map<String, Object> model = new HashMap<String, Object>();
 
-        try {
-            String id;
-            if ((id = request.getParameter("host")) == null)
-                id = "www.uio.no";
+        String id;
+        if ((id = request.getParameter("host")) == null)
+            id = "www.uio.no";
 
-            URL[] hosts = new URL[12];
-            String[] host = { "www.uio.no", "www.hf.uio.no", "www.khm.uio.no", "www.odont.uio.no", "www.sv.uio.no",
-                    "www.tf.uio.no", "www.ub.uio.no", "www.uv.uio.no", "www.jus.uio.no", "www.uniforum.uio.no",
-                    "www.mn.uio.no", "www.med.uio.no" };
-            String[] hostnames = { "UiO", "HF", "KHM", "Odont", "SV", "TF", "UB", "UV", "JUS", "Uniforum", "MN", "MED" };
+        URL[] hosts = new URL[12];
+        String[] host = { "www.uio.no", "www.hf.uio.no", "www.khm.uio.no", "www.odont.uio.no", "www.sv.uio.no",
+                "www.tf.uio.no", "www.ub.uio.no", "www.uv.uio.no", "www.jus.uio.no", "www.uniforum.uio.no",
+                "www.mn.uio.no", "www.med.uio.no" };
+        String[] hostnames = { "UiO", "HF", "KHM", "Odont", "SV", "TF", "UB", "UV", "JUS", "Uniforum", "MN", "MED" };
 
-            for (int i = 0; i < 12; i++) {
-                URL base = URL.create(request).removeParameter("host");
-                hosts[i] = base.addParameter("host", host[i]);
-            }
-
-            model.put("hosts", hosts);
-            model.put("hostnames", hostnames);
-            model.put("thisMonth", urs.thisMonth());
-            model.put("ursMonths", urs.months(resource, token, id));
-            model.put("ursTotal", urs.total(resource, token, id));
-            model.put("ursThirtyTotal", urs.thirtyTotal(resource, token, id));
-            model.put("ursWeekTotal", urs.weekTotal(resource, token, id));
-            model.put("ursYesterdayTotal", urs.yesterdayTotal(resource, token, id));
-            model.put("ursNMonths", urs.nMonths());
-
-            urs.flush();
-        } catch (Exception e) {
-            return null;
+        for (int i = 0; i < 12; i++) {
+            URL base = URL.create(request).removeParameter("host");
+            hosts[i] = base.addParameter("host", host[i]);
         }
+
+        model.put("hosts", hosts);
+        model.put("hostnames", hostnames);
+        model.put("thisMonth", urs.thisMonth());
+        model.put("ursMonths", urs.months(resource, token, id));
+        model.put("ursTotal", urs.total(resource, token, id));
+        model.put("ursThirtyTotal", urs.thirtyTotal(resource, token, id));
+        model.put("ursWeekTotal", urs.weekTotal(resource, token, id));
+        model.put("ursYesterdayTotal", urs.yesterdayTotal(resource, token, id));
+        model.put("ursNMonths", urs.nMonths());
+
+        urs.flush();
 
         return new ModelAndView(this.viewName, model);
     }

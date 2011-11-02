@@ -57,7 +57,7 @@
         <h3>Examples</h3>
         <#list component.usageExamples as example>
         <div style="font-family: monospace;">
-            ${example.example(component.name)}
+            ${example.example(componentID)}
         </div>
         </#list>
       </#if>

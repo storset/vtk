@@ -71,6 +71,7 @@
           <value>resource:hasBodyContent</value>
           <value>numberOfComments</value>
           <value>lastModified</value>
+          <value>resource:media</value>
         </list>
     </constructor-arg>
   </bean>

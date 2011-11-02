@@ -21,6 +21,8 @@
       <#assign months = [vrtx.getMsg("jan"), vrtx.getMsg("feb"), vrtx.getMsg("mar"), vrtx.getMsg("apr"), vrtx.getMsg("may"), vrtx.getMsg("jun"),
         vrtx.getMsg("jul"), vrtx.getMsg("aug"), vrtx.getMsg("sep"), vrtx.getMsg("oct"), vrtx.getMsg("nov"), vrtx.getMsg("dec")]>
 
+      <#assign thisMonthBak = thisMonth>
+
        <ul>
          <li>
            <#list hosts as host><a href="${host?html}">${hostnames[host_index]?html}</a> </#list>
@@ -29,7 +31,7 @@
        <div id="vrtx-resource-visit">
          <div id="vrtx-resource-visit-chart">
            <img id="vrtx-resource-visit-chart-image" width="600" height="225" alt="Visit chart"
-             src="http://chart.apis.google.com/chart?chl=<#list 0..11 as i>${months[thisMonth]}<#if i != 11>|</#if><#if thisMonth != 0><#assign thisMonth = thisMonth - 1><#else><#assign thisMonth = 11></#if></#list>&amp;chxr=0,28.333,${ursMonths[12]?string("0")}&amp;chxt=y,x&amp;chbh=a&amp;chs=600x225&amp;cht=bvg&amp;chco=ed1c24&amp;chds=0,${ursMonths[12]?string("0")}&amp;chd=t:<#list 0..11 as i>${ursMonths[thisMonth]?string("0")}<#if i != 11>,</#if><#if thisMonth != 0><#assign thisMonth = thisMonth - 1><#else><#assign thismonth = 11></#if></#list>&amp;chtt=<@vrtx.msg code="resource.metadata.about.visit.last12months" />" />
+             src="http://chart.apis.google.com/chart?chl=<#list 0..ursNMonths as i>${months[thisMonth]}<#if i != ursNMonths>|</#if><#if thisMonth != 0><#assign thisMonth = thisMonth - 1><#else><#assign thisMonth = 11></#if></#list>&amp;chxr=0,28.333,${ursMonths[12]?string("0")}&amp;chxt=y,x&amp;chbh=a&amp;chs=600x225&amp;cht=bvg&amp;chco=ed1c24&amp;chds=0,${ursMonths[12]?string("0")}&amp;chd=t:<#list 0..ursNMonths as i>${ursMonths[thisMonthBak]?string("0")}<#if i != ursNMonths>,</#if><#if thisMonthBak != 0><#assign thisMonthBak = thisMonthBak - 1><#else><#assign thisMonthBak = 11></#if></#list>&amp;chtt=<@vrtx.msg code="resource.metadata.about.visit.last${ursNMonths}months" />" />
          </div>
          <div id="vrtx-resource-visit-stats">
            <div class="vrtx-resource-visit-stat first" id="vrtx-resource-visit-total">

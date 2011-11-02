@@ -35,15 +35,19 @@ import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.List;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 
 //import org.vortikal.web.RequestContext;
 
-public class UrchinResourceStats {
+public class UrchinResourceStats implements InitializingBean {
     private String base = "https://statistikk.uio.no/services/v2/reportservice/data";
     private String urchinUser;
     private String urchinPassword;
@@ -52,16 +56,60 @@ public class UrchinResourceStats {
     private String table = "&table=12";
     private String idAndFilter;
 
+    private CacheManager cacheManager;
+    private Cache cache;
+    private net.sf.ehcache.Element cached;
+    private UrchinRes ur;
+
+    public static class UrchinRes implements java.io.Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public String date;
+        public int res;
+    }
+
     public int thisMonth() {
         return Calendar.getInstance().get(Calendar.MONTH);
     }
 
+    public int nMonths() {
+        Calendar cal = Calendar.getInstance();
+        
+        if(cal.get(Calendar.YEAR) == 2011) {
+            if(cal.get(Calendar.MONTH) == 10)
+                return 3;
+            if(cal.get(Calendar.MONTH) == 11)
+                return 4;
+        } else if(cal.get(Calendar.YEAR) == 2012) {
+            if(cal.get(Calendar.MONTH) == 0)
+                return 5;
+            if(cal.get(Calendar.MONTH) == 1)
+                return 6;
+            if(cal.get(Calendar.MONTH) == 2)
+                return 7;
+            if(cal.get(Calendar.MONTH) == 3)
+                return 8;
+            if(cal.get(Calendar.MONTH) == 4)
+                return 9;
+            if(cal.get(Calendar.MONTH) == 5)
+                return 10;
+        }
+        
+        return 11;
+    }
+
     public int[] months(Resource r, String token, String id) {
+        Calendar urchinStartCal = Calendar.getInstance();
+        urchinStartCal.set(2011, 7, 1);
+
         int[] months = new int[13];
 
         Calendar cal = Calendar.getInstance();
 
         for (int i = 0; i < 12; i++) {
+            if (cal.get(Calendar.MONTH) < urchinStartCal.get(Calendar.MONTH))
+                break;
+
             String sdate = "&start-date=" + cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH) + 1) + "-"
                     + cal.getActualMinimum(Calendar.DATE);
             String edate = "&end-date=" + cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH) + 1) + "-"
@@ -98,18 +146,22 @@ public class UrchinResourceStats {
     public int thirtyTotal(Resource r, String token, String id) {
         Calendar ecal = Calendar.getInstance();
         Calendar scal = Calendar.getInstance();
-        scal.setTimeInMillis(ecal.getTimeInMillis() - (86400000 * 30));
+
+        // Need to do this twice because 86400000 * 30 = -1702967296.
+        scal.setTimeInMillis(ecal.getTimeInMillis() - (86400000 * 20));
+        scal.setTimeInMillis(scal.getTimeInMillis() - (86400000 * 10));
 
         String date = "&start-date=" + scal.get(Calendar.YEAR) + "-" + (scal.get(Calendar.MONTH) + 1) + "-"
                 + scal.get(Calendar.DATE) + "&end-date=" + ecal.get(Calendar.YEAR) + "-"
                 + (ecal.get(Calendar.MONTH) + 1) + "-" + ecal.get(Calendar.DATE);
 
-        return fetch(r, token, date, id, "thrity");
+        return fetch(r, token, date, id, "thirty");
     }
 
     public int weekTotal(Resource r, String token, String id) {
         Calendar ecal = Calendar.getInstance();
         Calendar scal = Calendar.getInstance();
+
         scal.setTimeInMillis(ecal.getTimeInMillis() - (86400000 * 7));
 
         String date = "&start-date=" + scal.get(Calendar.YEAR) + "-" + (scal.get(Calendar.MONTH) + 1) + "-"
@@ -147,13 +199,64 @@ public class UrchinResourceStats {
 
         if (r.isCollection()) {
             try {
-                sum += parseDOMToStats(parseXMLFileToDOM(url.toString(), r.getURI().expand("index.html").toString()));
-                sum += parseDOMToStats(parseXMLFileToDOM(url.toString(), r.getURI().expand("index.xml").toString()));
+                String expanded = r.getURI().expand("index.html").toString();
+                String html = url.toString().concat(expanded);
+
+                cached = this.cache.get(idAndFilter + expanded + key);
+                if (cached != null)
+                    ur = (UrchinRes) cached.getObjectValue();
+                else
+                    ur = new UrchinRes();
+
+                if (ur.date != null && ur.date.equals(date)) {
+                    sum += ur.res;
+                } else {
+                    ur.res = parseDOMToStats(parseXMLFileToDOM(html));
+                    ur.date = date;
+                    sum += ur.res;
+                    this.cache.put(new net.sf.ehcache.Element(idAndFilter + expanded + key, ur));
+                }
+            } catch (Exception e) {
+            }
+
+            try {
+                String expanded = r.getURI().expand("index.xml").toString();
+                String xml = url.toString().concat(expanded);
+
+                cached = this.cache.get(idAndFilter + expanded + key);
+                if (cached != null)
+                    ur = (UrchinRes) cached.getObjectValue();
+                else
+                    ur = new UrchinRes();
+
+                if (ur.date != null && ur.date.equals(date)) {
+                    sum += ur.res;
+                } else {
+                    ur.res = parseDOMToStats(parseXMLFileToDOM(xml));
+                    ur.date = date;
+                    sum += ur.res;
+                    this.cache.put(new net.sf.ehcache.Element(idAndFilter + expanded + key, ur));
+                }
             } catch (Exception e) {
             }
         } else {
             try {
-                sum += parseDOMToStats(parseXMLFileToDOM(url.toString(), r.getURI().toString()));
+                String resource = url.toString().concat(r.getURI().toString());
+
+                cached = this.cache.get(idAndFilter + r.getURI().toString() + key);
+                if (cached != null)
+                    ur = (UrchinRes) cached.getObjectValue();
+                else
+                    ur = new UrchinRes();
+
+                if (ur.date != null && ur.date.equals(date)) {
+                    sum += ur.res;
+                } else {
+                    ur.res = parseDOMToStats(parseXMLFileToDOM(resource));
+                    ur.date = date;
+                    sum += ur.res;
+                    this.cache.put(new net.sf.ehcache.Element(idAndFilter + r.getURI().toString() + key, ur));
+                }
             } catch (Exception e) {
             }
         }
@@ -161,12 +264,16 @@ public class UrchinResourceStats {
         return sum;
     }
 
-    private Document parseXMLFileToDOM(String service, String uri) {
+    public void flush() {
+        this.cache.flush();
+    }
+
+    private Document parseXMLFileToDOM(String request) {
         Document dom = null;
         SAXBuilder builder = new SAXBuilder("org.apache.xerces.parsers.SAXParser");
 
         try {
-            URL url = new URL(service.concat(uri));
+            URL url = new URL(request);
             URLConnection conn = url.openConnection();
             if ("text/xml".equalsIgnoreCase(conn.getContentType())) {
                 dom = builder.build(conn.getInputStream());
@@ -179,18 +286,22 @@ public class UrchinResourceStats {
 
     @SuppressWarnings("unchecked")
     private int parseDOMToStats(Document dom) {
-        List<Element> elements, records, metrics;
+        try {
+            List<Element> elements, records, metrics;
 
-        if ((elements = dom.getRootElement().getChildren()) == null)
-            return -1;
+            if ((elements = dom.getRootElement().getChildren()) == null)
+                return -1;
 
-        if ((records = elements.get(0).getChildren()) == null)
-            return -1;
+            if ((records = elements.get(0).getChildren()) == null)
+                return -1;
 
-        if ((metrics = records.get(2).getChildren()) == null)
-            return -1;
+            if ((metrics = records.get(2).getChildren()) == null)
+                return -1;
 
-        return Integer.parseInt(metrics.get(0).getText());
+            return Integer.parseInt(metrics.get(0).getText());
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     private String setIdAndFilter(String id) {
@@ -236,6 +347,16 @@ public class UrchinResourceStats {
     @Required
     public void setUrchinPassword(String urchinPassword) {
         this.urchinPassword = urchinPassword;
+    }
+
+    @Required
+    public void setCacheManager(CacheManager cacheManager) {
+        this.cacheManager = cacheManager;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.cache = this.cacheManager.getCache("org.vortikal.URCHIN_CACHE");
     }
 
 }

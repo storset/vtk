@@ -6,7 +6,7 @@
   <bean id="urchinResourceStats" class="org.vortikal.urchin.UrchinResourceStats">
     <property name="urchinUser" value="${urchinUser}" />
     <property name="urchinPassword" value="${urchinPassword}" />
-    <!--property name="visitPropDef" ref="visitPropDef" /-->
+    <property name="cacheManager" ref="ehCacheManager" />
   </bean>
 
   <bean id="urchinResourceStats.retrieveService" class="org.vortikal.web.service.ServiceImpl">

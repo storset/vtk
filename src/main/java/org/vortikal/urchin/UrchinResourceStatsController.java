@@ -88,8 +88,6 @@ public class UrchinResourceStatsController implements Controller {
         model.put("ursYesterdayTotal", urs.yesterdayTotal(resource, token, id));
         model.put("ursNMonths", urs.nMonths());
 
-        urs.flush();
-
         return new ModelAndView(this.viewName, model);
     }
 

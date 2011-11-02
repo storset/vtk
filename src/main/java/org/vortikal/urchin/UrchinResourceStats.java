@@ -264,10 +264,6 @@ public class UrchinResourceStats implements InitializingBean {
         return sum;
     }
 
-    public void flush() {
-        this.cache.flush();
-    }
-
     private Document parseXMLFileToDOM(String request) {
         Document dom = null;
         SAXBuilder builder = new SAXBuilder("org.apache.xerces.parsers.SAXParser");

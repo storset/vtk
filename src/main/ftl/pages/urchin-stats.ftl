@@ -48,8 +48,10 @@
            </div>
          </div>
        </div>
-    <#else>
+    <#elseif (ursTotal = 0)>
       <p><@vrtx.msg code="resource.metadata.about.visit.nostats" /></p>
+    <#else>
+      <p>Cache is null</p>
     </#if>
   </body>
   </html>

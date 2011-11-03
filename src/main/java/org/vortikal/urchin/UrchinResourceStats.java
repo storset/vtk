@@ -74,27 +74,27 @@ public class UrchinResourceStats implements InitializingBean {
 
     public int nMonths() {
         Calendar cal = Calendar.getInstance();
-        
-        if(cal.get(Calendar.YEAR) == 2011) {
-            if(cal.get(Calendar.MONTH) == 10)
+
+        if (cal.get(Calendar.YEAR) == 2011) {
+            if (cal.get(Calendar.MONTH) == 10)
                 return 3;
-            if(cal.get(Calendar.MONTH) == 11)
+            if (cal.get(Calendar.MONTH) == 11)
                 return 4;
-        } else if(cal.get(Calendar.YEAR) == 2012) {
-            if(cal.get(Calendar.MONTH) == 0)
+        } else if (cal.get(Calendar.YEAR) == 2012) {
+            if (cal.get(Calendar.MONTH) == 0)
                 return 5;
-            if(cal.get(Calendar.MONTH) == 1)
+            if (cal.get(Calendar.MONTH) == 1)
                 return 6;
-            if(cal.get(Calendar.MONTH) == 2)
+            if (cal.get(Calendar.MONTH) == 2)
                 return 7;
-            if(cal.get(Calendar.MONTH) == 3)
+            if (cal.get(Calendar.MONTH) == 3)
                 return 8;
-            if(cal.get(Calendar.MONTH) == 4)
+            if (cal.get(Calendar.MONTH) == 4)
                 return 9;
-            if(cal.get(Calendar.MONTH) == 5)
+            if (cal.get(Calendar.MONTH) == 5)
                 return 10;
         }
-        
+
         return 11;
     }
 
@@ -183,6 +183,9 @@ public class UrchinResourceStats implements InitializingBean {
 
     private int fetch(Resource r, String token, String date, String id, String key) {
         int sum = 0;
+
+        if (cache == null)
+            return -1;
 
         if (urchinUser.equals("") || urchinPassword.equals(""))
             return sum;

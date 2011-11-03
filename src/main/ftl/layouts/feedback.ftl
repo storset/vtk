@@ -21,7 +21,7 @@
   <script type="text/javascript" src="${jsUrl?html}"></script>
   <script type="text/javascript"><!--
     $(function() {
-      if (urchinTracker !== "undefined") {
+      if (typeof urchinTracker !== "undefined") {
         $(".feedback-yes").click(function() {  
           urchinTracker("/like" + document.location.pathname); 
         });

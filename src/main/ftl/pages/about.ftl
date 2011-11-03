@@ -184,7 +184,7 @@
     </#if>
   </table>
 
-  <#if XurchinStats?exists>
+  <#if urchinStats?exists>
     <h3 class="resourceVisitHeader">
       <@vrtx.msg code="resource.metadata.about.visit" default="Visit count"/>
     </h3>

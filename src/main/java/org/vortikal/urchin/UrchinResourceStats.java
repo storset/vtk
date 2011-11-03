@@ -206,7 +206,11 @@ public class UrchinResourceStats implements InitializingBean {
                 String expanded = r.getURI().expand("index.html").toString();
                 String html = url.toString().concat(expanded);
 
-                cached = this.cache.get(idAndFilter + expanded + key);
+                if (cache != null)
+                    cached = this.cache.get(idAndFilter + expanded + key);
+                else
+                    cached = null;
+
                 if (cached != null)
                     ur = (UrchinRes) cached.getObjectValue();
                 else
@@ -218,7 +222,8 @@ public class UrchinResourceStats implements InitializingBean {
                     ur.res = parseDOMToStats(parseXMLFileToDOM(html));
                     ur.date = date;
                     sum += ur.res;
-                    this.cache.put(new net.sf.ehcache.Element(idAndFilter + expanded + key, ur));
+                    if (cache != null)
+                        this.cache.put(new net.sf.ehcache.Element(idAndFilter + expanded + key, ur));
                 }
             } catch (Exception e) {
             }
@@ -227,7 +232,11 @@ public class UrchinResourceStats implements InitializingBean {
                 String expanded = r.getURI().expand("index.xml").toString();
                 String xml = url.toString().concat(expanded);
 
-                cached = this.cache.get(idAndFilter + expanded + key);
+                if (cache != null)
+                    cached = this.cache.get(idAndFilter + expanded + key);
+                else
+                    cached = null;
+
                 if (cached != null)
                     ur = (UrchinRes) cached.getObjectValue();
                 else
@@ -239,7 +248,8 @@ public class UrchinResourceStats implements InitializingBean {
                     ur.res = parseDOMToStats(parseXMLFileToDOM(xml));
                     ur.date = date;
                     sum += ur.res;
-                    this.cache.put(new net.sf.ehcache.Element(idAndFilter + expanded + key, ur));
+                    if (cache != null)
+                        this.cache.put(new net.sf.ehcache.Element(idAndFilter + expanded + key, ur));
                 }
             } catch (Exception e) {
             }
@@ -247,7 +257,11 @@ public class UrchinResourceStats implements InitializingBean {
             try {
                 String resource = url.toString().concat(r.getURI().toString());
 
-                cached = this.cache.get(idAndFilter + r.getURI().toString() + key);
+                if (cache != null)
+                    cached = this.cache.get(idAndFilter + r.getURI().toString() + key);
+                else
+                    cached = null;
+
                 if (cached != null)
                     ur = (UrchinRes) cached.getObjectValue();
                 else
@@ -259,7 +273,8 @@ public class UrchinResourceStats implements InitializingBean {
                     ur.res = parseDOMToStats(parseXMLFileToDOM(resource));
                     ur.date = date;
                     sum += ur.res;
-                    this.cache.put(new net.sf.ehcache.Element(idAndFilter + r.getURI().toString() + key, ur));
+                    if (cache != null)
+                        this.cache.put(new net.sf.ehcache.Element(idAndFilter + r.getURI().toString() + key, ur));
                 }
             } catch (Exception e) {
             }

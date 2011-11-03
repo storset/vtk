@@ -1337,7 +1337,7 @@ VrtxAdmin.prototype.displayErrorContainers = function(results, form, errorContai
     var outer = vrtxAdmin.outerHTML(results, "div." + errorContainer); 
     $(outer).insertAfter(wrapper.find(errorContainerInsertAfter));
   }
-};
+}; 
 
 VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
   var status = xhr.status;

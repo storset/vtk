@@ -92,31 +92,27 @@
     </p>
 
      <#-- Feedback form -->
-     <form id="email-a-friend-form" method="post" action="?vrtx=send-feedback">
+     <#if !like?exists || (like?exists && like = "false")>
+       <form id="email-a-friend-form" method="post" action="?vrtx=send-feedback">
+         <#-- Your comment -->
+         <label for="yourComment"><@vrtx.msg code="feedback.form.yourcomment" default="Your comment" /></label> 
+         <#if yourSavedComment?exists && yourSavedComment?has_content>
+           <textarea rows="9" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
+         <#else>
+           <textarea rows="9" cols="10" id="yourComment" name="yourComment"></textarea> 
+         </#if>
        
-       <#-- Your comment -->
-       <label for="yourComment"><@vrtx.msg code="feedback.form.yourcomment" default="Your comment" /></label> 
+         <#if like?has_content>
+           <input type="hidden" name="like" value="${like?html}" />
+         </#if>
        
-       <#if yourSavedComment?exists && yourSavedComment?has_content>
-         <textarea rows="9" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
-       <#else>
-         <textarea rows="9" cols="10" id="yourComment" name="yourComment"></textarea> 
-       </#if>
-       
-       <#if fullurl?has_content>
-         <input type="hidden" name="fullurl" value="${fullurl?html}" />
-       </#if>
-       
-       <#if pagetitle?has_content>
-         <input type="hidden" name="pagetitle" value="${pagetitle?html}" />
-       </#if>
-       
-       <#if mailto?has_content>
-         <input type="hidden" name="mailto" value="${mailto?html}" />
-       </#if>
+         <#if mailto?has_content>
+           <input type="hidden" name="mailto" value="${mailto?html}" />
+         </#if>
        
        <input type="submit" class="submit-email-form" value="Send" name="submit"/>
-    </form>
+      </form>
+    </#if>
        
     <#-- Postback from Controller -->
     <div id="tip-response"> 

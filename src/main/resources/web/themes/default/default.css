@@ -2206,7 +2206,7 @@ form button::-moz-focus-inner {
 .vrtx-textfield-big input, x:-moz-any-link, x:only-child {
   padding-top: 2px;
   height: 31px;
-}
+} 
 
 /* ^ Mozilla hacks */
 

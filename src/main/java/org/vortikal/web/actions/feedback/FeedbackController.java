@@ -110,26 +110,21 @@ public class FeedbackController implements Controller {
             recipientsStr = mailToParam;
             recipients = addresses;
         }
+        
+        // Override if parameters are set
+        String like = request.getParameter("like");
+        if (!StringUtils.isBlank(like)) {
+            model.put("like", like);
+        }
+        
         if (!validAddresses) {
             model.put("tipResponse", "FAILURE-INVALID-EMAIL");
             model.put("yourSavedComment", yourComment);
             return new ModelAndView(this.viewName, model);
         }
         
-        model.put("mailto", recipientsStr);
-        
-        // Override if parameters are set
-        String fullUrl = request.getParameter("fullurl");
-        String pageTitle = request.getParameter("pagetitle"); 
+        model.put("mailto", recipientsStr); 
 
-        if (!StringUtils.isBlank(fullUrl)) {
-            model.put("fullurl", fullUrl);
-            url = fullUrl;
-            if (!StringUtils.isBlank(pageTitle)) {
-                model.put("pagetitle", pageTitle);
-                title = pageTitle; 
-            }
-        }
         
         if (!method.equals("POST")) {
             return new ModelAndView(this.viewName, model);

@@ -55,11 +55,13 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFactoryImpl;
@@ -130,6 +132,8 @@ public class PropertyEditController extends SimpleFormController implements Refe
     private PrincipalManager principalManager;
 
     private BeanFactory beanFactory;
+    
+    private ResourceTypeTree resourceTypeTree;
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
@@ -466,12 +470,23 @@ public class PropertyEditController extends SimpleFormController implements Refe
 
         try {
             Service urchinService = (Service) beanFactory.getBean("urchinResourceStats.retrieveService");
-            model.put("urchinStats", urchinService.constructURL(resource));
+            if (hasUrchinStats(resource)) {
+                model.put("urchinStats", urchinService.constructURL(resource));
+            }
         } catch (Exception e) {
         }
 
         model.put(this.propertyListModelName, propsList);
         model.put(this.propertyMapModelName, propsMap);
+    }
+
+    private boolean hasUrchinStats(Resource resource) {
+        if (resource.isCollection())
+            return true;
+
+        ResourceTypeDefinition def = resourceTypeTree.getResourceTypeDefinitionByName("text");
+        
+        return resourceTypeTree.isContainedType(def, resource.getResourceType());
     }
 
     private boolean isToggleProperty(PropertyTypeDefinition def) {
@@ -599,6 +614,11 @@ public class PropertyEditController extends SimpleFormController implements Refe
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;
+    }
+
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
     }
 
 }

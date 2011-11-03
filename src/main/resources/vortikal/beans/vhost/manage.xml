@@ -835,6 +835,7 @@
     <property name="dateFormat" value="dd.MM.yyyy HH:mm:ss" />
     <property name="valueFactory" ref="valueFactory" />
     <property name="principalManager" ref="principalManager" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <bean id="fileUploadHandler" class="org.vortikal.web.actions.create.FileUploadController">

@@ -148,8 +148,9 @@ public class UrchinResourceStats implements InitializingBean {
         Calendar scal = Calendar.getInstance();
 
         // Need to do this twice because 86400000 * 30 = -1702967296.
-        scal.setTimeInMillis(ecal.getTimeInMillis() - (86400000 * 20));
-        scal.setTimeInMillis(scal.getTimeInMillis() - (86400000 * 10));
+        long half = 86400000 * 15;
+        scal.setTimeInMillis(ecal.getTimeInMillis() - half);
+        scal.setTimeInMillis(scal.getTimeInMillis() - half);
 
         String date = "&start-date=" + scal.get(Calendar.YEAR) + "-" + (scal.get(Calendar.MONTH) + 1) + "-"
                 + scal.get(Calendar.DATE) + "&end-date=" + ecal.get(Calendar.YEAR) + "-"

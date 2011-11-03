@@ -49,10 +49,8 @@
            </div>
          </div>
        </div>
-    <#elseif (ursTotal = 0)>
-      <p><@vrtx.msg code="resource.metadata.about.visit.nostats" /></p>
     <#else>
-      <p>Cache is null</p>
+      <p><@vrtx.msg code="resource.metadata.about.visit.nostats" /></p>
     </#if>
   </body>
   </html>

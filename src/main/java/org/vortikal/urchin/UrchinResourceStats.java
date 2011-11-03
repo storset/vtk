@@ -184,9 +184,6 @@ public class UrchinResourceStats implements InitializingBean {
     private int fetch(Resource r, String token, String date, String id, String key) {
         int sum = 0;
 
-        if (cache == null)
-            return -1;
-
         if (urchinUser.equals("") || urchinPassword.equals(""))
             return sum;
 

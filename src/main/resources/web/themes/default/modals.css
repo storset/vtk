@@ -4,6 +4,10 @@
   display: none;
 }
 
+#TB_window {
+  font-size: 1.154em;
+}
+
 form#email-a-friend-form {
   width: 310px; 
   text-align: left;

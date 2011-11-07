@@ -110,13 +110,17 @@ public class FeedbackController implements Controller {
             recipientsStr = mailToParam;
             recipients = addresses;
         }
+ 
+        String contactUrl = request.getParameter("contacturl");
+        if (!StringUtils.isBlank(contactUrl)) {
+            model.put("contacturl", contactUrl);
+        }
         
-        // Override if parameters are set
         String like = request.getParameter("like");
         if (!StringUtils.isBlank(like)) {
             model.put("like", like);
         }
-        
+
         if (!validAddresses) {
             model.put("tipResponse", "FAILURE-INVALID-EMAIL");
             model.put("yourSavedComment", yourComment);

@@ -30,6 +30,15 @@
         <ref bean="resourceContextProvider" />
       </list>
     </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/modals.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
   </bean>
 
   <bean id="emailafriend.javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
@@ -78,9 +87,13 @@
         <ref bean="resourceContextProvider" />
       </list>
     </property>
-    <property name="attributes">
+    <property name="attributesMap">
       <map>
-        <entry key="url" value="${jsBaseURL}/social/email-a-friend.js" />
+        <entry key="jsURLs">
+          <list>
+           <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
+          </list>
+        </entry>
       </map>
     </property>
   </bean>

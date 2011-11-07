@@ -13,7 +13,11 @@
 </#if>
 
 <!-- begin email a friend js -->
-<script type="text/javascript" src="${url?html}"></script>
+<#if jsURLs?exists>
+  <#list jsURLs as jsURL>
+    <script type="text/javascript" src="${jsURL}"></script>
+  </#list>
+</#if>
 <!-- end email a friend js -->
 
-<a class="vrtx-email-friend" href="${emailLink.url?html}" onclick="javascript:popup('${emailLink.url?html}'); return false"><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" default="E-mail a friend" /></a>
+<a class="vrtx-email-friend thickbox" href="${emailLink.url?html}"><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" default="E-mail a friend" /></a>

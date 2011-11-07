@@ -30,6 +30,15 @@
         <ref bean="resourceContextProvider" />
       </list>
     </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/modals.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
   </bean>
 
   <bean id="feedback.javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
@@ -67,12 +76,13 @@
     <property name="exposedParameters">
       <set>
         <value>mail-to</value>
+        <value>contact-url</value>
       </set>
     </property>
     <property name="parameterDescriptions">
       <map>
-        <!-- <entry key="type" value="'Like' a page instead of sending feedback" /> -->
         <entry key="mail-to" value="Specify who will receive feedback email. Default is tilbakemelding@admin.uio.no" />
+        <entry key="contact-url" value="Specify contact url. Default is http://www.uio.no/om/kontaktinformasjon/" />
       </map>
     </property>
     <property name="view" ref="decorating.feedbackURLComponent.view" />
@@ -86,9 +96,18 @@
         <ref bean="resourceContextProvider" />
       </list>
     </property>
-    <property name="attributes">
+    <property name="attributesMap">
       <map>
-        <entry key="url" value="${jsBaseURL}/social/email-a-friend.js" />
+        <entry key="cssURLs">
+          <list>
+            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.css</value>
+          </list>
+        </entry>
+        <entry key="jsURLs">
+          <list>
+           <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
+          </list>
+        </entry>
       </map>
     </property>
   </bean>

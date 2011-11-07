@@ -1,5 +1,64 @@
 /* USIT changed: opacity from 0.75->0.35
 
+/* USIT Thickbox mod */
+
+#TB_window {
+  border-radius: 8px;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border: 2px solid #646464 !important;
+}
+
+#TB_overlay,
+#TB_window {
+  z-index: 9999 !important;
+}
+
+#TB_ajaxContent,
+.vrtx-create-tree {
+  position: relative;
+  max-height: 99999px;
+}
+
+#TB_title {
+  height: auto !important;
+  background-color: transparent !important;
+  margin: 0;
+  font-size: 1.667em; /* 20px <- 12px <- 13px */
+}
+
+#TB_ajaxWindowTitle {
+  float: none !important;
+  margin: 30px 30px 0 30px !important;
+  padding: 0px !important;
+}
+
+#TB_closeAjaxWindow {
+  display: none;
+  overflow: hidden;
+  text-indent: -9999px;
+  width: 31px;
+  height: 32px;
+  padding: 0 !important;
+  margin: -32px 30px 0 0 !important;
+  text-align: left !important;
+}
+
+#TB_closeAjaxWindow a {
+  background: url(images/thickbox-close.png) no-repeat center center;
+  overflow: hidden;
+  width: 31px;
+  height: 32px;
+  display: block;
+  text-indent: -9999px;
+}
+
+#TB_ajaxContent {
+  padding: 2px 0 30px 30px !important;
+}
+
+/* ^ USIT Thickbox mod */
+
 /* ----------------------------------------------------------------------------------------------------------------*/
 /* ---------->>> global settings needed for thickbox <<<-----------------------------------------------------------*/
 /* ----------------------------------------------------------------------------------------------------------------*/

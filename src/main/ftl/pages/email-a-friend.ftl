@@ -13,66 +13,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-
-    <title><@vrtx.msg code="tip.emailtitle" default="E-mail a friend" /> - ${resource.title}</title>
-    
-    <style type="text/css">
-    /* Email-a-friend */
-
-    form#email-a-friend-form {
-      width: 310px; 
-      text-align: left;
-    }
-
-    form#email-a-friend-form label {display: block;}
-  
-    form#email-a-friend-form input.submit-email-form {margin:0;}
-
-    form#email-a-friend-form input#emailTo, 
-    form#email-a-friend-form input#emailFrom {
-      width: 100%;
-      border: 1px solid #888;
-      margin: 0.25em 0 1em 0; 
-    }
-
-    form#email-a-friend-form input#emailTo {
-      margin-bottom: 0; 
-    }
- 
-    form#email-a-friend-form textarea {
-      margin: 0.25em 0 1em 0; 
-      width: 100%;
-      border: 1px solid #888;
-    }
-
-    form#email-a-friend-form div.email-help {
-      margin-top: 5px;
-      padding-top: 0em;
-      font-size: 70%; 
-      color: #888; 
-      padding-bottom: 1em;
-    }
-      
-    div#tip-response {
-      margin-top: 1em;
-      font-style: italic;
-      font-size: 80%;
-    }
-    
-    div#tip-response span.failure {
-      color: #cc0000;
-    }
-    
-    a#tip-close-link {
-      display: block;
-      font-size: 90%;
-      float:right;
-    }
-    
-    </style>
-    
-    <meta name="robots" content="noindex"/> 
-
+  <title><@vrtx.msg code="tip.emailtitle" default="E-mail a friend" /> - ${resource.title}</title>
+  <#if cssURLs?exists>
+    <#list cssURLs as cssUrl>
+      <link href="${cssUrl}" type="text/css" rel="stylesheet"/>
+    </#list>
+  </#if> 
+  <meta name="robots" content="noindex"/> 
  </head>
  <body>
     <a id="tip-close-link" href="javascript:window.close();"><@vrtx.msg code="tip.form.close" default="Close" /></a>

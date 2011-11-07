@@ -1,0 +1,59 @@
+/* Email-a-friend */
+
+form#email-a-friend-form {
+  width: 310px; 
+  text-align: left;
+}
+form#email-a-friend-form label {
+  display: block;
+}
+  
+form#email-a-friend-form input.submit-email-form {
+  margin:0;
+}
+
+form#email-a-friend-form input#emailTo, 
+form#email-a-friend-form input#emailFrom {
+  width: 100%;
+  border: 1px solid #888;
+  margin: 0.25em 0 1em 0; 
+}
+
+form#email-a-friend-form input#emailTo {
+  margin-bottom: 0; 
+}
+ 
+form#email-a-friend-form textarea {
+  margin: 0.25em 0 1em 0; 
+  width: 100%;
+  border: 1px solid #888;
+}
+
+form#email-a-friend-form div.email-help {
+  margin-top: 5px;
+  padding-top: 0;
+  font-size: 70%; 
+  color: #888; 
+  padding-bottom: 1em;
+}
+      
+div#tip-response {
+  margin-top: 1em;
+  font-style: italic;
+  font-size: 80%;
+}
+    
+div#tip-response span.failure {
+  color: #cc0000;
+}
+    
+a#tip-close-link {
+  display: block;
+  font-size: 90%;
+  float:right;
+}
+    
+a#vrtx-feedback-contact {
+  display: inline !important;
+}
+    

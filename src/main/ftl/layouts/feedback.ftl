@@ -23,10 +23,14 @@
 <script type="text/javascript"><!--
   $(function() {
     if (typeof urchinTracker !== "undefined") {
-      $(".feedback-yes").click(function() {  
+      $(".feedback-yes").click(function(e) { 
         urchinTracker("/like" + document.location.pathname); 
+        $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
+        e.preventPropagation();
+        e.preventDefault(); 
       });
       $(".feedback-no").click(function() {
+        $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
         urchinTracker("/dislike" + document.location.pathname);
       });
     }
@@ -36,26 +40,24 @@
 <!-- end feedback js -->
 
 <div class="vrtx-feedback">
-  <span class="vrtx-feedback-title">
-    <span class="feedback-title"><@vrtx.msg code="feedback.title" default="Did you find what you were looking for?" /></span>
-    <#if mailTo?has_content>
-      <#assign link = link + "&mailto=" + mailTo?url('UTF-8') />
-    </#if>
-    <#if contactUrl?has_content>
-      <#assign link = link + "&contacturl=" + contactUrl?url('UTF-8') />
-    </#if>
-    <ul>
-      <li>
-        <a class="feedback-yes thickbox" title='<@vrtx.msg code="feedback.title" default="Give feedback" />' href="${link?html}&amp;like=true&amp;height=180&amp;width=370">
-          <@vrtx.msg code="feedback.link.yes" default="Yes I found it" />
-        </a>
-      </li>
-      <li>
-        <a class="feedback-no thickbox" title='<@vrtx.msg code="feedback.title" default="Give feedback" />' href="${link?html}&amp;like=false&amp;height=400&amp;width=370">
-          <@vrtx.msg code="feedback.link.no" default="No I did not find it" />
-        </a>
-      </li>
-    </ul>
-  </span>
+  <span class="feedback-title"><@vrtx.msg code="feedback.title" default="Did you find what you were looking for?" /></span>
+  <#if mailTo?has_content>
+    <#assign link = link + "&mailto=" + mailTo?url('UTF-8') />
+  </#if>
+  <#if contactUrl?has_content>
+    <#assign link = link + "&contacturl=" + contactUrl?url('UTF-8') />
+  </#if>
+  <ul>
+    <li>
+      <a class="feedback-yes" title='<@vrtx.msg code="feedback.title" default="Give feedback" />' href="#">
+        <@vrtx.msg code="feedback.link.yes" default="Yes I found it" />
+      </a>
+    </li>
+    <li>
+      <a class="feedback-no thickbox" title='<@vrtx.msg code="feedback.title" default="Give feedback" />' href="${link?html}&amp;like=false&amp;height=400&amp;width=370">
+        <@vrtx.msg code="feedback.link.no" default="No I did not find it" />
+      </a>
+    </li>
+  </ul>
   <span class="vrtx-feedback-bottom"></span>
 </div>

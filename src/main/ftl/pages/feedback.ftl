@@ -46,7 +46,7 @@
 
      <#-- Feedback form -->
      <#if !like?exists || (like?exists && like = "false")>
-       <form id="email-a-friend-form" method="post" action="?vrtx=send-feedback">
+       <form id="feedback-form" method="post" action="?vrtx=send-feedback">
          <#-- Your comment -->
          <label for="yourComment"><@vrtx.msg code="feedback.form.yourcomment" default="Your comment" /></label> 
          <#if yourSavedComment?exists && yourSavedComment?has_content>

@@ -8,15 +8,23 @@
   font-size: 1.154em;
 }
 
-form#email-a-friend-form {
+form#email-a-friend-form,
+form#feedback-form {
   width: 310px; 
   text-align: left;
 }
-form#email-a-friend-form label {
+
+form#feedback-form {
+  width: 335px;
+}
+
+form#email-a-friend-form label,
+form#feedback-form label {
   display: block;
 }
   
-form#email-a-friend-form input.submit-email-form {
+form#email-a-friend-form input.submit-email-form,
+form#feedback-form input.submit-email-form {
   margin:0;
 }
 
@@ -31,7 +39,8 @@ form#email-a-friend-form input#emailTo {
   margin-bottom: 0; 
 }
  
-form#email-a-friend-form textarea {
+form#email-a-friend-form textarea,
+form#feedback-form textarea {
   margin: 0.25em 0 1em 0; 
   width: 100%;
   border: 1px solid #888;

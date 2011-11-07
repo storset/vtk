@@ -57,9 +57,9 @@
        <label for="yourComment"><@vrtx.msg code="tip.form.yourcomment" default="Your comment" /></label> 
        
        <#if yourSavedComment?exists && yourSavedComment?has_content>
-         <textarea rows="5" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
+         <textarea rows="6" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
        <#else>
-         <textarea rows="5" cols="10" id="yourComment" name="yourComment" value=""></textarea> 
+         <textarea rows="6" cols="10" id="yourComment" name="yourComment" value=""></textarea> 
        </#if>
        
        <input type="submit" class="submit-email-form" value="Send" name="submit"/>

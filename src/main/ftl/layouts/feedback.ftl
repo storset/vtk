@@ -22,7 +22,7 @@
 </#if>
 <script type="text/javascript"><!--
   $(function() {
-    if (typeof urchinTracker !== "undefined") {
+    // if (typeof urchinTracker !== "undefined") {
       $(".feedback-yes").click(function(e) { 
         $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
         urchinTracker("/like" + document.location.pathname); 
@@ -33,9 +33,9 @@
         $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
         urchinTracker("/dislike" + document.location.pathname);
       });
-    } else {
-      $(".vrtx-feedback").replaceWith('<p><@vrtx.msg code="feedback.no-urchin" default="Urchin is not available" /></p>');
-    }
+    // } else {
+    //  $(".vrtx-feedback").replaceWith('<p><@vrtx.msg code="feedback.no-urchin" default="Urchin is not available" /></p>');
+    // }
   }); 
 // -->
 </script>

@@ -1,5 +1,9 @@
 /* Email-a-friend */
 
+h1 {
+  display: none;
+}
+
 form#email-a-friend-form {
   width: 310px; 
   text-align: left;

@@ -902,10 +902,6 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   background-color: transparent;
 }
 
-#TB_closeAjaxWindow.create-tree-close-window {
-  display: block;
-}
-
 .vrtx-create-tree .tree-create {
   position: absolute;
   top: 0px;

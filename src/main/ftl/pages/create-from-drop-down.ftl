@@ -27,13 +27,13 @@
     
     var treeTrav = [<#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list>];
     
-    $(document).ready(function() {
+    $(function() {
     
        $(".tree-create").css("display", "none");
        $("#TB_ajaxContent").css("background", "url(/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif) no-repeat center 158px");
     
        var timestamp = 1 - new Date();
-       $("#TB_closeAjaxWindow").addClass("create-tree-close-window");
+       $("#TB_closeAjaxWindow").addClass("show-close-window");
        var pathNum = 0;
        $(".tree-create").treeview({
          animated: "fast",

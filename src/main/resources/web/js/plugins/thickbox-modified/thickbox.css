@@ -217,6 +217,10 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
   text-indent: -9999px;
 }
 
+#TB_closeAjaxWindow.show-close-window {
+  display: block;
+}
+
 #TB_ajaxContent {
   padding: 2px 0 30px 30px !important;
 }

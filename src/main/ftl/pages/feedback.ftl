@@ -19,6 +19,12 @@
       <link href="${cssUrl}" type="text/css" rel="stylesheet"/>
     </#list>
   </#if>
+  <script type="text/javascript"><!--
+    $(function() {
+      $("#TB_closeAjaxWindow").addClass("show-close-window");
+    });
+  // -->
+  </script>
   <meta name="robots" content="noindex"/> 
  </head>
  <body>

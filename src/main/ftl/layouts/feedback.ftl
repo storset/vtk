@@ -23,6 +23,7 @@
 <script type="text/javascript"><!--
   $(function() {
     // if (typeof urchinTracker !== "undefined") {
+      _udn="uio.no";
       $(".feedback-yes").click(function(e) { 
         $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
         urchinTracker("/like" + document.location.pathname); 

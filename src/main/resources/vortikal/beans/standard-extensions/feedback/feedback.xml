@@ -98,14 +98,9 @@
     </property>
     <property name="attributesMap">
       <map>
-        <entry key="cssURLs">
-          <list>
-            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.css</value>
-          </list>
-        </entry>
         <entry key="jsURLs">
           <list>
-           <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
+           <value>${jsBaseURL}/plugins/thickbox-modified/include-thickbox.js</value>
           </list>
         </entry>
       </map>

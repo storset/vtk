@@ -22,7 +22,6 @@
   <meta name="robots" content="noindex"/> 
  </head>
  <body>
-    <a id="tip-close-link" href="javascript:window.close();"><@vrtx.msg code="tip.form.close" default="Close" /></a>
     <h1><@vrtx.msg code="tip.emailtitle" default="E-mail a friend" /></h1>   
     <h2>${resource.title}</h2>
 

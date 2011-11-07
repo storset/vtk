@@ -91,7 +91,7 @@
       <map>
         <entry key="jsURLs">
           <list>
-           <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
+           <value>${jsBaseURL}/plugins/thickbox-modified/include-thickbox.js</value>
           </list>
         </entry>
       </map>

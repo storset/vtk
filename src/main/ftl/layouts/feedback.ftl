@@ -46,12 +46,12 @@
     </#if>
     <ul>
       <li>
-        <a class="feedback-yes thickbox" href="${link?html}&amp;like=true">
+        <a class="feedback-yes thickbox" href="${link?html}&amp;like=true&amp;height=390&amp;width=330">
           <@vrtx.msg code="feedback.link.yes" default="Yes I found it" />
         </a>
       </li>
       <li>
-        <a class="feedback-no thickbox" href="${link?html}&amp;like=false">
+        <a class="feedback-no thickbox" href="${link?html}&amp;like=false&amp;height=390&amp;width=330">
           <@vrtx.msg code="feedback.link.no" default="No I did not find it" />
         </a>
       </li>

@@ -47,12 +47,6 @@ div#tip-response span.failure {
   color: #cc0000;
 }
     
-a#tip-close-link {
-  display: block;
-  font-size: 90%;
-  float:right;
-}
-    
 a#vrtx-feedback-contact {
   display: inline !important;
 }

@@ -190,7 +190,8 @@
     </h3>
 
     <iframe id="urchin-iframe" src="${urchinStats?html}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" width="100%" height="330">
-      [Du har ikke iframe]
+      [Your user agent does not support frames or is currently configured
+      not to display frames.]
     </iframe>
   </#if>
 

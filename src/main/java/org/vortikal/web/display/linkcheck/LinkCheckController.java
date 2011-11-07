@@ -145,10 +145,10 @@ public class LinkCheckController implements Controller, InitializingBean {
             return null;
         }
         if (input.startsWith("#") 
-                || input.startsWith("mailto:") 
-                || input.startsWith("ftp:")
-                || input.startsWith("javascript:")
-                || input.startsWith("file:")) {
+         || input.startsWith("mailto:") 
+         || input.startsWith("ftp:")
+         || input.startsWith("javascript:")
+         || input.startsWith("file:")) {
             return null;
         }
         return input;

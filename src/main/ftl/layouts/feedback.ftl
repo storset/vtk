@@ -24,8 +24,8 @@
   $(function() {
     if (typeof urchinTracker !== "undefined") {
       $(".feedback-yes").click(function(e) { 
-        urchinTracker("/like" + document.location.pathname); 
         $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
+        urchinTracker("/like" + document.location.pathname); 
         e.preventPropagation();
         e.preventDefault(); 
       });
@@ -33,6 +33,8 @@
         $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
         urchinTracker("/dislike" + document.location.pathname);
       });
+    } else {
+      $(".vrtx-feedback").replaceWith('<p><@vrtx.msg code="feedback.no-urchin" default="Urchin is not available" /></p>');
     }
   }); 
 // -->
@@ -40,7 +42,7 @@
 <!-- end feedback js -->
 
 <div class="vrtx-feedback">
-  <span class="feedback-title"><@vrtx.msg code="feedback.title" default="Did you find what you were looking for?" /></span>
+  <span class="vrtx-feedback-title"><@vrtx.msg code="feedback.title" default="Did you find what you were looking for?" /></span>
   <#if mailTo?has_content>
     <#assign link = link + "&mailto=" + mailTo?url('UTF-8') />
   </#if>

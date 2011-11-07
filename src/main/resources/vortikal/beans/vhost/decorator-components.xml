@@ -61,7 +61,7 @@
     <property name="examples">
       <map>
         <entry key="select=[html.body.div] enclosed=[false] exclude=[pre]"
-               value="Output the contents of the first &lt;div&gt; element in &lt;body&gt; and exclude &lt;pre&gt; elements" />
+          value="Output the contents of the first &lt;div&gt; element in &lt;body&gt; and exclude &lt;pre&gt; elements" />
       </map>
     </property>
   </bean>
@@ -72,8 +72,7 @@
     <property name="description" value="Outputs the attributes of a specified element" />
     <property name="examples">
       <map>
-        <entry key="select=[html.body] exclude=[class,style]"
-               value="Output the attributes of the &lt;body&gt; element, except 'class' and 'style'" />
+        <entry key="select=[html.body] exclude=[class,style]" value="Output the attributes of the &lt;body&gt; element, except 'class' and 'style'" />
       </map>
     </property>
   </bean>
@@ -181,8 +180,9 @@
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="examples">
       <map>
-        <entry key="url=[rtmp://stream-prod01.uio.no/vod/mp4:uio/usit/test/big_buck_bunny_1200.mp4] width=[720] height=[406] content-type=[video/mp4]"
-               value="" />
+        <entry
+          key="url=[rtmp://stream-prod01.uio.no/vod/mp4:uio/usit/test/big_buck_bunny_1200.mp4] width=[720] height=[406] content-type=[video/mp4]"
+          value="" />
       </map>
     </property>
   </bean>
@@ -209,8 +209,7 @@
     </property>
   </bean>
 
-  <bean id="decorating.resourceTagsComponent"
-    class="org.vortikal.web.decorating.components.PropertyLinkedValueDecoratorComponent">
+  <bean id="decorating.resourceTagsComponent" class="org.vortikal.web.decorating.components.PropertyLinkedValueDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="tags" />
     <property name="propertyTypeDefinition" ref="tagsPropDef" />
@@ -232,7 +231,7 @@
     <property name="examples">
       <map>
         <entry key="scope=[/my/folder] limit=[15] tag-occurence-min=[5]  magnitude-max=[8] magnitude-min=[1]"
-               value="" />
+          value="" />
       </map>
     </property>
   </bean>
@@ -245,8 +244,9 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="examples">
       <map>
-        <entry key="scope=[/example/folder] limit=[15] result-sets=[2] show-occurence=[true] resource-type=[structured-article,structured-event]"
-               value="" />
+        <entry
+          key="scope=[/example/folder] limit=[15] result-sets=[2] show-occurence=[true] resource-type=[structured-article,structured-event]"
+          value="" />
       </map>
     </property>
   </bean>
@@ -283,8 +283,7 @@
     </property>
   </bean>
 
-  <bean id="decorating.resourcePropertyComponent" 
-        class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">
+  <bean id="decorating.resourcePropertyComponent" class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="property" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
@@ -318,8 +317,7 @@
     </property>
   </bean>
 
-  <bean id="decorating.includeResourcePropertyComponent" 
-        class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">
+  <bean id="decorating.includeResourcePropertyComponent" class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="property" />
     <property name="relative" value="true" />
@@ -401,10 +399,11 @@
     </property>
     <property name="examples">
       <map>
-        <entry key="uri=[/my/events/folder/] event-description=[true] list-only-once=[true] show-picture=[true] add-to-calendar=[true]"
-               value="" />
+        <entry
+          key="uri=[/my/events/folder/] event-description=[true] list-only-once=[true] show-picture=[true] add-to-calendar=[true]"
+          value="" />
       </map>
-    </property>    
+    </property>
   </bean>
 
   <bean id="decorating.eventComponent.view" parent="freemarkerView">
@@ -417,6 +416,7 @@
     <property name="view" ref="decorating.feedComponent.view" />
     <property name="contentCache" ref="decorating.feedComponent.contentCache" />
     <property name="localFeedFetcher" ref="decorating.feedComponent.localFeedFetcher" />
+    <property name="safeHtmlFilter" ref="safeHtml.filter" />
     <property name="htmlUtil" ref="htmlUtil" />
     <property name="defaultElementOrder">
       <list>
@@ -430,8 +430,7 @@
     <property name="examples">
       <map>
         <entry key="url=[/news/?vrtx=feed]" value="" />
-        <entry key="item-picture=[true] item-description=[true]"
-               value="Show item-picture and item-description (introduction-picture and introduction)" />
+        <entry key="item-picture=[true] item-description=[true]" value="Show item-picture and item-description (introduction-picture and introduction)" />
         <entry key="url=[/news/?vrtx=feed] sort=[asc]" value="" />
         <entry key="url=[/news/?vrtx=feed] sort=[item-title desc]" value="" />
         <entry key="url=[/news/?vrtx=feed] sort=[published-date asc]" value="" />
@@ -447,6 +446,7 @@
     <property name="contentCache" ref="decorating.feedComponent.contentCache" />
     <property name="localFeedFetcher" ref="decorating.feedComponent.localFeedFetcher" />
     <property name="htmlUtil" ref="htmlUtil" />
+    <property name="safeHtmlFilter" ref="safeHtml.filter" />
     <property name="defaultElementOrder">
       <list>
         <value>picture</value>
@@ -491,7 +491,7 @@
 
   <bean id="decorating.feedComponent.feedBuilder" class="org.vortikal.web.decorating.components.SyndFeedBuilder">
     <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="safeHtmlFilter" ref="safeHtml.filter" />
+    <property name="safeHtmlFilter" ref="safeHtml.filterWithClass" />
   </bean>
 
   <bean id="decorating.menuGenerator" class="org.vortikal.web.decorating.components.menu.MenuGenerator">
@@ -508,17 +508,18 @@
   </bean>
 
   <bean id="decorating.listMenuComponent" class="org.vortikal.web.decorating.components.menu.ListMenuComponent"
-        parent="decorating.abstractListMenuComponent">
+    parent="decorating.abstractListMenuComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="uri-menu" />
     <property name="view" ref="decorating.listMenuComponent.view" />
     <property name="searchLimit" value="${decorating.listMenuComponent.searchLimit}" />
     <property name="examples">
       <map>
-        <entry key="style=[horizontal] uri=[/example/folder] include-parent-folder=[true] parent-folder-title=[Home] authenticated=[true]"
-               value="Horizontal menu. Include parent folder and set your own title on it. Let a user who is logged in see all of his/her permitted subfolders" />
+        <entry
+          key="style=[horizontal] uri=[/example/folder] include-parent-folder=[true] parent-folder-title=[Home] authenticated=[true]"
+          value="Horizontal menu. Include parent folder and set your own title on it. Let a user who is logged in see all of his/her permitted subfolders" />
         <entry key="display-from-level=[2] depth=[3] exclude-children=[bilder,intern]"
-               value="Vertical menu. Include from level 2 and alow menu to expand three levels. Exclude subfolders you don't want to show"/>
+          value="Vertical menu. Include from level 2 and alow menu to expand three levels. Exclude subfolders you don't want to show" />
       </map>
     </property>
   </bean>
@@ -548,14 +549,13 @@
     <property name="description" value="Lists the subfolders of the current folder" />
     <property name="examples">
       <map>
-        <entry key="title=[Subareas] result-sets=[2]"
-               value="" />
+        <entry key="title=[Subareas] result-sets=[2]" value="" />
       </map>
     </property>
   </bean>
 
   <bean id="subFolderMenuProvider" class="org.vortikal.web.decorating.components.menu.SubFolderMenuProvider"
-        depends-on="resourceTypeTree">
+    depends-on="resourceTypeTree">
     <property name="menuGenerator" ref="decorating.menuGenerator" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="sortPropDef" ref="collection.sortingPropDef" />
@@ -641,12 +641,12 @@
     <property name="view" ref="decorating.imageListing.view" />
     <property name="parameterDescriptions">
       <map>
-        <entry key="uri" value="URI of the image folder to include pictures from. Must not end with '/' unless it is the root-folder." />
+        <entry key="uri"
+          value="URI of the image folder to include pictures from. Must not end with '/' unless it is the root-folder." />
         <entry key="limit" value="Maximum number of images to show in list. Default is 5." />
         <entry key="type"
           value="How to the display the component. Default is 'list'. 'gallery' will display an embedded gallery." />
-        <entry key="fade-effect"
-          value="Milliseconds of fade effect for choosen image. Default is 0 or off, and max is 999 ms" />
+        <entry key="fade-effect" value="Milliseconds of fade effect for choosen image. Default is 0 or off, and max is 999 ms" />
       </map>
     </property>
     <property name="searchSorting" ref="collectionListing.searchSorting" />

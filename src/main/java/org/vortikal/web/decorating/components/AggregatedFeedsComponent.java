@@ -42,7 +42,6 @@ import java.util.StringTokenizer;
 
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlFragment;
-import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.util.cache.ContentCache;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
@@ -57,18 +56,14 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
 
     private ContentCache<String, SyndFeed> cache;
     private LocalFeedFetcher localFeedFetcher;
-    private HtmlUtil htmlUtil;
-
 
     public void setContentCache(ContentCache<String, SyndFeed> cache) {
         this.cache = cache;
     }
 
-
     public void setLocalFeedFetcher(LocalFeedFetcher localFeedFetcher) {
         this.localFeedFetcher = localFeedFetcher;
     }
-
 
     @Override
     protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
@@ -81,21 +76,21 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         if (urls == null) {
             throw new DecoratorComponentException("Component parameter 'urls' is required");
         }
-        
+
         String feedTitle = request.getStringParameter(Parameter.FEED_TITLE.getId());
         if (feedTitle != null) {
             conf.put("feedTitleValue", feedTitle.trim());
         }
 
-        if(prameterHasValue(PARAMETER_ITEM_PICTURE, "true", request)){
+        if (prameterHasValue(PARAMETER_ITEM_PICTURE, "true", request)) {
             conf.put("itemPicture", true);
         }
-        
-        if(!prameterHasValue(Parameter.DISPLAY_CHANNEL.getId(),"false",request)){
+
+        if (!prameterHasValue(Parameter.DISPLAY_CHANNEL.getId(), "false", request)) {
             conf.put("displayChannel", true);
         }
 
-        if(prameterHasValue(Parameter.ITEM_DESCRIPTION.getId(),"true",request)){
+        if (prameterHasValue(Parameter.ITEM_DESCRIPTION.getId(), "true", request)) {
             conf.put("itemDescription", true);
         }
 
@@ -127,7 +122,8 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         // desc item-title
         // etc..
         String sortString = request.getStringParameter(Parameter.SORT.getId());
-        boolean directionSpecified = false; // Indicates explicitly set sort direction
+        boolean directionSpecified = false; // Indicates explicitly set sort
+                                            // direction
         if (sortString != null) {
             StringTokenizer tokenizer = new StringTokenizer(sortString);
             while (tokenizer.hasMoreTokens()) {
@@ -191,22 +187,21 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
             throw new MissingPublishedDateException("Unable to sort feed '" + f.getUri()
                     + "': does not contain published date");
         }
-               
+
         List<String> elementOrder = getElementOrder(PARAMETER_FEED_ELEMENT_ORDER, request);
         model.put("elementOrder", elementOrder);
 
-        model.put("descriptionNoImage", descriptionNoImage);        
+        model.put("descriptionNoImage", descriptionNoImage);
         model.put("imageMap", imgMap);
-    
+
         String displayIfEmptyMessage = request.getStringParameter(PARAMETER_IF_EMPTY_MESSAGE);
         if (displayIfEmptyMessage != null && displayIfEmptyMessage.length() > 0) {
             model.put("displayIfEmptyMessage", displayIfEmptyMessage);
-        }        
-        
+        }
+
         model.put("feed", feed);
         model.put("conf", conf);
     }
-
 
     void sort(List<SyndEntry> entries) throws MissingPublishedDateException {
         Collections.sort(entries, new Comparator<SyndEntry>() {
@@ -225,11 +220,9 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         });
     }
 
-
-    void parseFeeds(DecoratorRequest request, List<SyndEntry> entries, 
-            Map<SyndEntry, SyndFeed> feedMapping,
-            Map<String, String> imgMap, Map<String, String> descriptionNoImage,
-            URL requestURL, String[] urlArray) throws Exception {
+    void parseFeeds(DecoratorRequest request, List<SyndEntry> entries, Map<SyndEntry, SyndFeed> feedMapping,
+            Map<String, String> imgMap, Map<String, String> descriptionNoImage, URL requestURL, String[] urlArray)
+            throws Exception {
 
         for (String url : urlArray) {
             url = url.trim();
@@ -257,10 +250,10 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
             }
             @SuppressWarnings("unchecked")
             List<SyndEntry> tmpEntries = tmpFeed.getEntries();
-
-            for (SyndEntry entry: tmpEntries) {
+            boolean filter = !prameterHasValue(PARMATER_DISPLAY_CLASS, "true", request);
+            for (SyndEntry entry : tmpEntries) {
                 feedMapping.put(entry, tmpFeed);
-                HtmlFragment description = getDescription(entry, baseURL, requestURL);
+                HtmlFragment description = getDescription(entry, baseURL, requestURL, filter);
                 if (description == null) {
                     descriptionNoImage.put(entry.toString(), null);
                     continue;
@@ -269,7 +262,7 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
                 if (image != null) {
                     imgMap.put(entry.toString(), image.getEnclosedContent());
                 }
-                descriptionNoImage.put(entry.toString(),description.getStringRepresentation());
+                descriptionNoImage.put(entry.toString(), description.getStringRepresentation());
             }
             entries.addAll(tmpEntries);
         }
@@ -279,23 +272,19 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
     class MissingPublishedDateException extends RuntimeException {
         private SyndEntry entry;
 
-
         public MissingPublishedDateException(String message) {
             super(message);
         }
-
 
         public MissingPublishedDateException(SyndEntry entry) {
             super();
             this.entry = entry;
         }
 
-
         public SyndEntry getEntry() {
             return entry;
         }
     }
-
 
     protected String getDescriptionInternal() {
         return "Inserts a feed (RSS, Atom) component on the page";
@@ -320,29 +309,25 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         private final String id;
         private final String desc;
 
-
         private Parameter(String id, String desc) {
             this.id = id;
             this.desc = desc;
         }
 
-
         public String getId() {
             return id;
         }
-
 
         public String getDesc() {
             return desc;
         }
     }
 
-
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PARAMETER_ITEM_PICTURE, PARAMETER_ITEM_PICTURE_DESC);
         map.put(PARAMETER_IF_EMPTY_MESSAGE, PARAMETER_IF_EMPTY_MESSAGE_DESC);
-        map.put(PARAMETER_FEED_ELEMENT_ORDER,PARAMETER_FEED_ELEMENT_ORDER_DESC);
+        map.put(PARAMETER_FEED_ELEMENT_ORDER, PARAMETER_FEED_ELEMENT_ORDER_DESC);
         map.put(Parameter.URLS.getId(), Parameter.URLS.getDesc());
         map.put(Parameter.FEED_TITLE.getId(), Parameter.FEED_TITLE.getDesc());
         map.put(Parameter.MAX_MESSAGES.getId(), Parameter.MAX_MESSAGES.getDesc());
@@ -355,28 +340,17 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         return map;
     }
 
-    public void setHtmlUtil(HtmlUtil htmlUtil) {
-        this.htmlUtil = htmlUtil;
-    }
-
-    public HtmlUtil getHtmlUtil() {
-        return htmlUtil;
-    }
-
     public class FeedMapping {
         Map<SyndEntry, SyndFeed> feedMapping = new HashMap<SyndEntry, SyndFeed>();
-
 
         public FeedMapping(Map<SyndEntry, SyndFeed> feedMapping) {
             super();
             this.feedMapping = feedMapping;
         }
 
-
         public String getTitle(SyndEntry entry) {
             return this.feedMapping.get(entry).getTitle();
         }
-
 
         public String getUrl(SyndEntry entry) {
             return this.feedMapping.get(entry).getLink();

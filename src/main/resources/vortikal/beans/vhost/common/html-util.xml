@@ -2,16 +2,16 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
 "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-  
+
   <bean id="htmlUtil" class="org.vortikal.text.html.HtmlUtil">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlEntityMap" ref="htmlEntityMap" />
   </bean>
-  
+
   <bean id="htmlFormatter" class="org.vortikal.repository.resourcetype.HtmlValueFormatter">
     <property name="htmlUtil" ref="htmlUtil" />
   </bean>
-  
+
   <bean id="htmlEntityMap" class="org.springframework.beans.factory.config.MapFactoryBean">
     <property name="sourceMap">
       <map>
@@ -22,8 +22,7 @@
 
         <!-- http://www.w3.org/TR/REC-html40/sgml/entities.html -->
 
-        <!-- Section 24.2: "Character entity references for ISO 8859-1
-             characters" -->
+        <!-- Section 24.2: "Character entity references for ISO 8859-1 characters" -->
 
         <!-- Latin 1 entities -->
         <entry key="nbsp" value="&#160;" />
@@ -124,11 +123,10 @@
         <entry key="yuml" value="ÿ" />
 
 
-        <!-- Section 24.3: "Character entity references for symbols,
-             mathematical symbols, and Greek letters" -->
+        <!-- Section 24.3: "Character entity references for symbols, mathematical symbols, and Greek letters" -->
 
         <!-- Latin Extended-B -->
-        <entry key="fnof" value="&#402;" /> 
+        <entry key="fnof" value="&#402;" />
         <!-- Greek -->
         <entry key="Alpha" value="&#913;" />
         <entry key="Beta" value="&#914;" />
@@ -197,8 +195,8 @@
         <entry key="real" value="&#8476;" />
         <entry key="trade" value="&#8482;" />
         <entry key="alefsym" value="&#8501;" />
-        <!-- alef symbol is NOT the same as hebrew letter alef,
-             U+05D0 although the same glyph could be used to depict both characters -->
+        <!-- alef symbol is NOT the same as hebrew letter alef, U+05D0 although the same glyph could be used to depict both 
+          characters -->
         <!-- Arrows -->
         <entry key="larr" value="&#8592;" />
         <entry key="uarr" value="&#8593;" />
@@ -207,14 +205,12 @@
         <entry key="harr" value="&#8596;" />
         <entry key="crarr" value="&#8629;" />
         <entry key="lArr" value="&#8656;" />
-        <!-- ISO 10646 does not say that lArr is the same as the 'is implied by' arrow
-             but also does not have any other character for that function. So ? lArr can
-             be used for 'is implied by' as ISOtech suggests -->
+        <!-- ISO 10646 does not say that lArr is the same as the 'is implied by' arrow but also does not have any other character 
+          for that function. So ? lArr can be used for 'is implied by' as ISOtech suggests -->
         <entry key="uArr" value="&#8657;" />
         <entry key="rArr" value="&#8658;" />
-        <!-- ISO 10646 does not say this is the 'implies' character but does not have 
-             another character with this function so ?
-             rArr can be used for 'implies' as ISOtech suggests -->
+        <!-- ISO 10646 does not say this is the 'implies' character but does not have another character with this function 
+          so ? rArr can be used for 'implies' as ISOtech suggests -->
         <entry key="dArr" value="&#8659;" />
         <entry key="hArr" value="&#8660;" />
         <!-- Mathematical Operators -->
@@ -228,11 +224,10 @@
         <entry key="ni" value="&#8715;" />
         <!-- should there be a more memorable name than 'ni'? -->
         <entry key="prod" value="&#8719;" />
-        <!-- prod is NOT the same character as U+03A0 'greek capital letter pi' though
-             the same glyph might be used for both -->
+        <!-- prod is NOT the same character as U+03A0 'greek capital letter pi' though the same glyph might be used for both -->
         <entry key="sum" value="&#8721;" />
-        <!-- sum is NOT the same character as U+03A3 'greek capital letter sigma'
-             though the same glyph might be used for both -->
+        <!-- sum is NOT the same character as U+03A3 'greek capital letter sigma' though the same glyph might be used for 
+          both -->
         <entry key="minus" value="&#8722;" />
         <entry key="lowast" value="&#8727;" />
         <entry key="radic" value="&#8730;" />
@@ -246,8 +241,8 @@
         <entry key="int" value="&#8747;" />
         <entry key="there4" value="&#8756;" />
         <entry key="sim" value="&#8764;" />
-        <!-- tilde operator is NOT the same character as the tilde, U+007E,
-             although the same glyph might be used to represent both  -->
+        <!-- tilde operator is NOT the same character as the tilde, U+007E, although the same glyph might be used to represent 
+          both -->
         <entry key="cong" value="&#8773;" />
         <entry key="asymp" value="&#8776;" />
         <entry key="ne" value="&#8800;" />
@@ -256,9 +251,8 @@
         <entry key="ge" value="&#8805;" />
         <entry key="sub" value="&#8834;" />
         <entry key="sup" value="&#8835;" />
-        <!-- note that nsup, 'not a superset of, U+2283' is not covered by the Symbol 
-             font encoding and is not included. Should it be, for symmetry?
-             It is in ISOamsn  --> 
+        <!-- note that nsup, 'not a superset of, U+2283' is not covered by the Symbol font encoding and is not included. 
+          Should it be, for symmetry? It is in ISOamsn -->
         <entry key="nsub" value="&#8836;" />
         <entry key="sube" value="&#8838;" />
         <entry key="supe" value="&#8839;" />
@@ -273,11 +267,9 @@
         <entry key="lfloor" value="&#8970;" />
         <entry key="rfloor" value="&#8971;" />
         <entry key="lang" value="&#9001;" />
-        <!-- lang is NOT the same character as U+003C 'less than' 
-             or U+2039 'single left-pointing angle quotation mark' -->
+        <!-- lang is NOT the same character as U+003C 'less than' or U+2039 'single left-pointing angle quotation mark' -->
         <entry key="rang" value="&#9002;" />
-        <!-- rang is NOT the same character as U+003E 'greater than' 
-             or U+203A 'single right-pointing angle quotation mark' -->
+        <!-- rang is NOT the same character as U+003E 'greater than' or U+203A 'single right-pointing angle quotation mark' -->
         <!-- Geometric Shapes -->
         <entry key="loz" value="&#9674;" />
         <!-- Miscellaneous Symbols -->
@@ -289,13 +281,12 @@
 
 
 
-        <!-- Section 24.4.1 ("markup-significant and
-             internationalization characters") -->
+        <!-- Section 24.4.1 ("markup-significant and internationalization characters") -->
 
         <entry key="quot" value="&#34;" />
-        <entry key="amp"  value="&#38;" />
-        <entry key="lt"   value="&#60;" />
-        <entry key="gt"   value="&#62;" />
+        <entry key="amp" value="&#38;" />
+        <entry key="lt" value="&#60;" />
+        <entry key="gt" value="&#62;" />
         <!-- Latin Extended-A -->
         <entry key="OElig" value="&#338;" />
         <entry key="oelig" value="&#339;" />
@@ -310,9 +301,9 @@
         <entry key="emsp" value="&#8195;" />
         <entry key="thinsp" value="&#8201;" />
         <entry key="zwnj" value="&#8204;" />
-        <entry key="zwj"  value="&#8205;" />
-        <entry key="lrm"  value="&#8206;" />
-        <entry key="rlm"  value="&#8207;" />
+        <entry key="zwj" value="&#8205;" />
+        <entry key="lrm" value="&#8206;" />
+        <entry key="rlm" value="&#8207;" />
         <entry key="ndash" value="&#8211;" />
         <entry key="mdash" value="&#8212;" />
         <entry key="lsquo" value="&#8216;" />
@@ -332,9 +323,12 @@
       </map>
     </property>
   </bean>
-  
 
-  
+  <bean id="safeHtml.filterWithClass" class="org.vortikal.text.html.SimpleHtmlPageFilter">
+    <property name="illegalElements" ref="safeHtml.illegalElementSet" />
+    <property name="validElements" ref="safeHtmlFilterWithClass.validElementSet" />
+  </bean>
+
   <bean id="safeHtml.filter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
     <property name="illegalElements" ref="safeHtml.illegalElementSet" />
     <property name="validElements" ref="safeHtml.validElementSet" />
@@ -346,11 +340,11 @@
   </bean>
 
   <bean id="noImgHtml.filter" class="org.vortikal.text.html.SimpleHtmlPageFilter">
-      <property name="illegalElements" ref="no.illegalElementSet" />
-      <property name="validElements" ref="noImgeHtml.validElementSet" />
+    <property name="illegalElements" ref="no.illegalElementSet" />
+    <property name="validElements" ref="noImgeHtml.validElementSet" />
   </bean>
 
- 
+
   <bean id="imgHtml.illegalElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
       <set>
@@ -359,18 +353,18 @@
       </set>
     </property>
   </bean>
-  
+
   <bean id="no.illegalElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
-    <set>
-    </set>
+      <set>
+      </set>
     </property>
   </bean>
-  
-   <bean id="imgHtml.validElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
+
+  <bean id="imgHtml.validElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
       <set>
-          <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
           <property name="name" value="img" />
           <property name="validAsEmpty" value="true" />
           <property name="attributes">
@@ -383,8 +377,8 @@
       </set>
     </property>
   </bean>
-  
-    <bean id="noImgeHtml.validElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
+
+  <bean id="noImgeHtml.validElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
       <set>
         <bean class="org.vortikal.text.html.HtmlElementDescriptor">
@@ -431,7 +425,7 @@
       </set>
     </property>
   </bean>
-  
+
   <bean id="safeHtml.illegalElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
       <set>
@@ -449,7 +443,7 @@
       </set>
     </property>
   </bean>
-  
+
   <bean id="safeHtml.validElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
       <set>
@@ -507,12 +501,84 @@
       </set>
     </property>
   </bean>
-  
+
+  <bean id="safeHtmlFilterWithClass.validElementSet" class="org.springframework.beans.factory.config.SetFactoryBean">
+    <property name="sourceSet">
+      <set>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="a" />
+          <property name="attributes">
+            <set>
+              <value>href</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="div" />
+          <property name="attributes">
+            <set>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="span" />
+          <property name="attributes">
+            <set>
+              <value>class</value>
+            </set>
+          </property>
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="p" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="ul" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="li" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="ol" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="em" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="strong" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="cite" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="code" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="strike" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="u" />
+        </bean>
+        <bean class="org.vortikal.text.html.HtmlElementDescriptor">
+          <property name="name" value="img" />
+          <property name="validAsEmpty" value="true" />
+          <property name="attributes">
+            <set>
+              <value>src</value>
+              <value>alt</value>
+            </set>
+          </property>
+        </bean>
+      </set>
+    </property>
+  </bean>
+
+
   <bean id="decorating.htmlParser" class="org.vortikal.text.html.HtmlPageParser">
     <property name="compositeTags" ref="decorating.htmlParser.compositeTags" />
     <property name="emptyTags" ref="decorating.htmlParser.emptyTags" />
   </bean>
-  
+
   <bean id="decorating.htmlParser.compositeTags" class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
       <set>
@@ -545,7 +611,7 @@
       </set>
     </property>
   </bean>
-  
+
   <bean id="decorating.htmlParser.emptyTags" class="org.springframework.beans.factory.config.SetFactoryBean">
     <property name="sourceSet">
       <set>
@@ -564,5 +630,5 @@
       </set>
     </property>
   </bean>
-  
+
 </beans>

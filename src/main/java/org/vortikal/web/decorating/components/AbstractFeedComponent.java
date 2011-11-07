@@ -50,7 +50,8 @@ import com.sun.syndication.feed.synd.SyndEntry;
 
 public abstract class AbstractFeedComponent extends ViewRenderingDecoratorComponent {
 
-    private HtmlUtil htmlUtil;
+    protected HtmlUtil htmlUtil;
+    protected HtmlPageFilter safeHtmlFilter;
 
     protected static final String PARAMETER_ITEM_PICTURE = "item-picture";
     protected static final String PARAMETER_ITEM_PICTURE_DESC = "Must be set to 'true' to show item picture";
@@ -61,6 +62,10 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
     protected static final String PARAMETER_FEED_ELEMENT_ORDER = "element-order";
     protected static final String PARAMETER_FEED_ELEMENT_ORDER_DESC = "The order that the elementes are listed";
 
+    protected static final String PARMATER_DISPLAY_CLASS = "display-class";
+    protected static final String PARAMTER_DISPLAY_CLASS_DESC = "Set to 'true' to include span elements and class attributes";
+
+    
     private HtmlPageParser parser = new HtmlPageParser();
     private List<String> defaultElementOrder;
 
@@ -133,17 +138,26 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         }
     }
 
-    protected HtmlFragment getDescription(SyndEntry entry, URL baseURL, URL requestURL) {
+    protected HtmlFragment getDescription(SyndEntry entry, URL baseURL, URL requestURL, boolean filter) throws Exception {
         if (entry.getDescription() == null) {
             return null;
         }
+
+        String value = null;
+        HtmlFragment html;
         
-        String html = entry.getDescription().getValue();
-        if (html == null) {
+        if(filter){
+            html = filterEntry(entry, safeHtmlFilter);
+            value = html.getStringRepresentation();
+        }else{
+            value = entry.getDescription().getValue();
+        }
+        
+        if (value == null) {
             return null;
         }
         
-        return getHtmlUtil().linkResolveFilter(html, baseURL, requestURL);
+        return htmlUtil.linkResolveFilter(value, baseURL, requestURL);
     }
 
     protected List<String> getElementOrder(String param, DecoratorRequest request) {
@@ -186,4 +200,9 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
     public HtmlUtil getHtmlUtil() {
         return htmlUtil;
     }
+
+    public void setSafeHtmlFilter(HtmlPageFilter safeHtmlFilter) {
+        this.safeHtmlFilter = safeHtmlFilter;
+    }
+
 }

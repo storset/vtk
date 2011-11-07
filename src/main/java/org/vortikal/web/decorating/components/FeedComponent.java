@@ -219,9 +219,10 @@ public class FeedComponent extends AbstractFeedComponent {
 
         @SuppressWarnings("unchecked")
         List<SyndEntry> entries = (List<SyndEntry>) feed.getEntries();
+        boolean filter = !prameterHasValue(PARMATER_DISPLAY_CLASS, "true", request);
         for (SyndEntry entry : entries) {
 
-            HtmlFragment description = getDescription(entry, baseURL, requestURL);
+            HtmlFragment description = getDescription(entry, baseURL, requestURL, filter);
 
             if (description == null) {
                 descriptionNoImage.put(entry.toString(), null);
@@ -234,6 +235,7 @@ public class FeedComponent extends AbstractFeedComponent {
             }
 
             descriptionNoImage.put(entry.toString(), description.getStringRepresentation());
+
         }
         model.put("descriptionNoImage", descriptionNoImage);
         model.put("imageMap", imgMap);

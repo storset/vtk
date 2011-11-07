@@ -4,6 +4,10 @@
   display: none;
 }
 
+#TB_ajaxContent h2 {
+  margin-top: 10px;
+}
+
 #TB_window {
   font-size: 1.154em;
 }

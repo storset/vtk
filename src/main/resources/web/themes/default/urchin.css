@@ -15,16 +15,16 @@ html {
 #vrtx-resource-visit {
   clear: left;
   float: left;
-  width: 100%;
+  width: 99%;
   border: 1px solid #D9D9D9;
   padding: 10px 5px;
   position: relative;
 }
 
 #vrtx-resource-visit-info {
-  position: absolute:
+  position: absolute;
   bottom: 10px;
-  right: 3px;
+  right: 10px;
   color: #5e5e5e;
   font-size: 0.85em;
 }

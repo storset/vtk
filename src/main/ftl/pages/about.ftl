@@ -189,7 +189,7 @@
       <@vrtx.msg code="resource.metadata.about.visit" default="Visit count"/>
     </h3>
 
-    <iframe id="urchin-iframe" src="${urchinStats?html}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" width="100%" height="270">
+    <iframe id="urchin-iframe" src="${urchinStats?html}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" width="100%" height="275">
       [Your user agent does not support frames or is currently configured
       not to display frames.]
     </iframe>

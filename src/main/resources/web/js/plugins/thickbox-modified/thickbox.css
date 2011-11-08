@@ -188,12 +188,14 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
   height: auto !important;
   background-color: transparent !important;
   margin: 0;
+  padding-right: 70px;
   font-size: 1.667em; /* 20px <- 12px <- 13px */
+  position: relative;
 }
 
 #TB_ajaxWindowTitle {
   float: none !important;
-  margin: 30px 30px 0 30px !important;
+  margin: 30px 0 0 30px !important;
   padding: 0px !important;
 }
 
@@ -204,7 +206,10 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
   width: 31px;
   height: 32px;
   padding: 0 !important;
-  margin: -32px 30px 0 0 !important;
+  margin: 0 !important;
+  right: 25px;
+  top: 0px;
+  position: absolute;
   text-align: left !important;
 }
 

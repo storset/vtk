@@ -54,12 +54,12 @@
   </#if>
   <ul>
     <li>
-      <a class="feedback-yes" title='<@vrtx.msg code="feedback.title" default="Give feedback" />' href="#">
+      <a class="feedback-yes" title='<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />' href="#">
         <@vrtx.msg code="feedback.link.yes" default="Yes I found it" />
       </a>
     </li>
     <li>
-      <a class="feedback-no thickbox" title='<@vrtx.msg code="feedback.title" default="Give feedback" />' href="${link?html}&amp;like=false&amp;height=400&amp;width=370">
+      <a class="feedback-no thickbox" title='<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />' href="${link?html}&amp;like=false&amp;height=400&amp;width=370">
         <@vrtx.msg code="feedback.link.no" default="No I did not find it" />
       </a>
     </li>

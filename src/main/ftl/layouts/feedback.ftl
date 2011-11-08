@@ -34,7 +34,7 @@
     // } else {
       // $(".vrtx-feedback").replaceWith('<p><@vrtx.msg code="feedback.no-urchin" default="Urchin is not available" /></p>');
     // }
-  // });
+  });
   function urchinTrack(action) {
     $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
     _udn="uio.no";

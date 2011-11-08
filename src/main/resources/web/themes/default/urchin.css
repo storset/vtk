@@ -14,7 +14,7 @@ html {
 
 body {
   border: 1px solid #D9D9D9;
-  padding: 3px 5px;
+  padding: 10px 5px;
 }
 
 #vrtx-resource-visit {
@@ -26,6 +26,7 @@ body {
 #vrtx-resource-visit-chart {
   clear: left;
   float: left;
+  margin: 0 50px 0 0;
 }
 
 #vrtx-resource-visit-stats {

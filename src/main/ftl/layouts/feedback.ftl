@@ -23,21 +23,23 @@
 <script type="text/javascript"><!--
   $(function() {
     // if (typeof urchinTracker !== "undefined") {
-      _udn="uio.no";
       $(".feedback-yes").click(function(e) { 
-        $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
-        urchinTracker("/like" + document.location.pathname); 
+        urchinTrack("/like");
         e.preventPropagation();
         e.preventDefault(); 
       });
       $(".feedback-no").click(function() {
-        $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
-        urchinTracker("/dislike" + document.location.pathname);
+        urchinTrack("/dislike");
       });
     // } else {
-    //  $(".vrtx-feedback").replaceWith('<p><@vrtx.msg code="feedback.no-urchin" default="Urchin is not available" /></p>');
+      // $(".vrtx-feedback").replaceWith('<p><@vrtx.msg code="feedback.no-urchin" default="Urchin is not available" /></p>');
     // }
-  }); 
+  // });
+  function urchinTrack(action) {
+    $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
+    _udn="uio.no";
+    urchinTracker(action + document.location.pathname);
+  }
 // -->
 </script>
 <!-- end feedback js -->

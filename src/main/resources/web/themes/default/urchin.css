@@ -12,15 +12,12 @@ html {
   overflow: hidden;
 }
 
-body {
-  border: 1px solid #D9D9D9;
-  padding: 10px 5px;
-}
-
 #vrtx-resource-visit {
   clear: left;
   float: left;
   width: 100%;
+  border: 1px solid #D9D9D9;
+  padding: 10px 5px;
 }
 
 #vrtx-resource-visit-chart {
@@ -33,7 +30,7 @@ body {
   float: left;
 }
 
-/* TMP overview */
+/* TMP overview */  
 ul {
   margin: 0 0 10px 0;
   padding: 0;

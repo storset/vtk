@@ -48,9 +48,9 @@
          <#-- Your comment -->
          <label for="yourComment"><@vrtx.msg code="feedback.form.yourcomment" default="Your comment" /></label> 
          <#if yourSavedComment?exists && yourSavedComment?has_content>
-           <textarea rows="9" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
+           <textarea rows="11" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
          <#else>
-           <textarea rows="9" cols="10" id="yourComment" name="yourComment"></textarea> 
+           <textarea rows="11" cols="10" id="yourComment" name="yourComment"></textarea> 
          </#if>
        
          <#if like?has_content>

@@ -115,11 +115,6 @@ public class FeedbackController implements Controller {
         if (!StringUtils.isBlank(contactUrl)) {
             model.put("contacturl", contactUrl);
         }
-        
-        String like = request.getParameter("like");
-        if (!StringUtils.isBlank(like)) {
-            model.put("like", like);
-        }
 
         if (!validAddresses) {
             model.put("tipResponse", "FAILURE-INVALID-EMAIL");

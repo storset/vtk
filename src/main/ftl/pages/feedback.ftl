@@ -53,10 +53,6 @@
            <textarea rows="11" cols="10" id="yourComment" name="yourComment"></textarea> 
          </#if>
        
-         <#if like?has_content>
-           <input type="hidden" name="like" value="${like?html}" />
-         </#if>
-       
          <#if mailto?has_content>
            <input type="hidden" name="mailto" value="${mailto?html}" />
          </#if>

@@ -59,7 +59,7 @@
       </a>
     </li>
     <li>
-      <a class="feedback-no thickbox" title='<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />' href="${link?html}&amp;like=false&amp;height=400&amp;width=370">
+      <a class="feedback-no thickbox" title='<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />' href="${link?html}&amp;like=false&amp;height=350&amp;width=370">
         <@vrtx.msg code="feedback.link.no" default="No I did not find it" />
       </a>
     </li>

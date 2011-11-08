@@ -8,7 +8,6 @@
         <link rel="stylesheet" href="${cssURL}" />
       </#list>
     </#if>
-    <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/urchin.css" type="text/css"/> 
     <!--[if IE 7]>
       <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css"/> 
     <![endif]--> 

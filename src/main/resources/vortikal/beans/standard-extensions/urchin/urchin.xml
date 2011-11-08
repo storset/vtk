@@ -52,6 +52,7 @@
         </entry>
         <entry key="jsURLs">
           <list>
+            <value>${webResources.baseURL}/jquery/jquery.min.js</value>
             <value>${webResources.baseURL}/jquery/plugins/jquery.mediaqueries.js</value>
           </list>
         </entry>

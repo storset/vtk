@@ -8,6 +8,20 @@
         <link rel="stylesheet" href="${cssURL}" />
       </#list>
     </#if>
+    <!-- Graceful degradate responsive design to unresponsive design -->
+    <!-- [if lt IE 9]>
+      <style type="text/css">
+         .vrtx-resource-visit-stat {
+          width: 14%;
+        }
+
+        #vrtx-resource-visit-stats {
+          clear: left;
+          width: 100%;
+          margin: 10px 0 0 0;
+        }
+      </style>
+    <![endif]-->
     <!--[if IE 7]>
       <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css"/> 
     <![endif]--> 

@@ -66,14 +66,4 @@ body#vrtx-permissions .removePermission {
   margin-top: -2px;
 }
 
-.vrtx-resource-visit-stat {
-  width: 14%;
-}
-
-#vrtx-resource-visit-stats {
-  clear: left;
-  width: 100%;
-  margin: 10px 0 0 0;
-}
-
 /* ^ Vortex IE 7 */

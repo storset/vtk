@@ -9,9 +9,9 @@
       </#list>
     </#if>
     <!-- Graceful degradate responsive design to unresponsive design -->
-    <!-- [if lt IE 9]>
+    <!--[if lt IE 9]>
       <style type="text/css">
-         .vrtx-resource-visit-stat {
+        .vrtx-resource-visit-stat {
           width: 14%;
         }
 

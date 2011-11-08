@@ -18,6 +18,13 @@ html {
   width: 100%;
   border: 1px solid #D9D9D9;
   padding: 10px 5px;
+  position: relative;
+}
+
+#vrtx-resource-visit-info {
+  position: absolute:
+  bottom: 10px;
+  right: 3px;
 }
 
 #vrtx-resource-visit-chart {

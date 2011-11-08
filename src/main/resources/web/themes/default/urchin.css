@@ -25,6 +25,8 @@ html {
   position: absolute:
   bottom: 10px;
   right: 3px;
+  color: #5e5e5e;
+  font-size: 0.85em;
 }
 
 #vrtx-resource-visit-chart {

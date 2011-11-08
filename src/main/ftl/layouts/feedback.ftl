@@ -22,7 +22,7 @@
 </#if>
 <script type="text/javascript"><!--
   $(function() {
-    // if (typeof urchinTracker !== "undefined") {
+    if (typeof urchinTracker !== "undefined") {
       $(".feedback-yes").click(function(e) { 
         urchinTrack("/like");
         e.preventPropagation();
@@ -31,9 +31,12 @@
       $(".feedback-no").click(function() {
         urchinTrack("/dislike");
       });
-    // } else {
-      // $(".vrtx-feedback").replaceWith('<p><@vrtx.msg code="feedback.no-urchin" default="Urchin is not available" /></p>');
-    // }
+    } else {
+      var noLink = $(".vrtx-feedback a.feedback-no").parent();
+      noLink.find("a").text('<@vrtx.msg code="feedback.link" default="Give feedback" />');
+      $(".vrtx-feedback ul").replaceWith('<p>' + noLink.html() + '</p>');
+      tb_init("a.feedback-no");
+    }
   });
   function urchinTrack(action) {
     $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
@@ -59,7 +62,7 @@
       </a>
     </li>
     <li>
-      <a class="feedback-no thickbox" title='<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />' href="${link?html}&amp;like=false&amp;height=350&amp;width=370">
+      <a class="feedback-no thickbox" title='<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />' href="${link?html}&amp;height=350&amp;width=370">
         <@vrtx.msg code="feedback.link.no" default="No I did not find it" />
       </a>
     </li>

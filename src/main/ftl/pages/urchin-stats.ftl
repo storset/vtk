@@ -13,7 +13,12 @@
     <![endif]--> 
     <!--[if lte IE 6]>
       <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css"/> 
-    <![endif]--> 
+    <![endif]-->
+    <#if jsURLs?exists>
+      <#list jsURLs as jsURL>
+        <script type="text/javascript" src="${jsURL}"></script>
+      </#list>
+    </#if>
   </head>
   <body>
     <#if thisMonth?exists && (ursTotal > 0)>

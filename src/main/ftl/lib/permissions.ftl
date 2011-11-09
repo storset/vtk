@@ -167,9 +167,9 @@
   <@spring.bind formName + ".submitURL" /> 
   <#assign submitUrl = spring.status.value />
 
-  <@spring.bind formName + ".yourselfStillAdmin" /> 
-  <#assign yourselfStillAdmin = spring.status.value?string />
-  
+  <@spring.bind formName + ".losingPrivileges" /> 
+  <#assign losingPrivileges = spring.status.value />
+
   <h3>${privilegeHeading}</h3>
   
   <form class="aclEdit" action="${submitUrl?html}" method="post">
@@ -178,7 +178,7 @@
     <ul class="principalList" id="principalList">
       <@editACLFormGroupsOrUsers "group" privilegeName submitUrl />
       <@editACLFormGroupsOrUsers "user" privilegeName submitUrl />
-      <li class="still-admin" style="display:none;">${yourselfStillAdmin}</li>
+      <li class="still-admin" style="display:none;">${(!losingPrivileges)?string}</li>
     </ul>
     <div id="submitButtons" class="submitButtons">
       <div class="vrtx-focus-button">

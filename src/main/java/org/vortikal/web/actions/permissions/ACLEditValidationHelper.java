@@ -33,12 +33,11 @@ package org.vortikal.web.actions.permissions;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.resource.ResourcetreeParser.edithint_return;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
+import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.Principal.Type;
 
 public class ACLEditValidationHelper {
 

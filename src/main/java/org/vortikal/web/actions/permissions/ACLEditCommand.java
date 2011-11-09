@@ -56,7 +56,7 @@ public class ACLEditCommand extends UpdateCancelCommand {
 
     private String saveAction = null;
     
-    private boolean isYourselfStillAdmin = true;
+    private boolean losingPrivileges = false;
 
     private String ac_userNames[] = new String[0];
     private List<String> userNameEntries = new ArrayList<String>();
@@ -192,14 +192,6 @@ public class ACLEditCommand extends UpdateCancelCommand {
         this.saveAction = saveAction;
     }
     
-    public boolean isYourselfStillAdmin() {
-        return isYourselfStillAdmin;
-    }
-
-    public void setYourselfStillAdmin(boolean isYourselfStillAdmin) {
-        this.isYourselfStillAdmin = isYourselfStillAdmin;
-    }
-
     public String[] getAc_userNames() {
         return ac_userNames;
     }
@@ -224,4 +216,11 @@ public class ACLEditCommand extends UpdateCancelCommand {
         this.updatedShortcut = updatedShortcut;
     }
 
+    public boolean isLosingPrivileges() {
+        return this.losingPrivileges;
+    }
+
+    public void setLosingPrivileges(boolean losingPrivileges) {
+        this.losingPrivileges = losingPrivileges;
+    }
 }

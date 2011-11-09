@@ -185,16 +185,26 @@
   </table>
 
   <#if urchinStats?exists>
-    <h3 class="resourceVisitHeader">
-      <@vrtx.msg code="resource.metadata.about.visit" default="Visit count"/>
-    </h3>
-
-    <iframe id="urchin-iframe" src="${urchinStats?html}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" width="100%" height="275">
-      [Your user agent does not support frames or is currently configured
-      not to display frames.]
-    </iframe>
+    <script type="text/javascript"><!--
+      $(function() {
+        $.ajax({
+          type: "GET",
+          url: "${urchinStats}",
+          dataType: "html",
+          success: function (results, status, resp) {
+            var urchinStats = $(results).find("#vrtx-resource-visit-body");
+            if(urchinStats && urchinStats.find("> *").length) { // if there are nodes
+              $(urchinStats.html()).insertAfter("#vrtx-resourceInfoMain");
+            }
+          },
+          error: function (xhr, textStatus) {
+            vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
+          }
+        });
+      }); 
+    // -->
+    </script>
   </#if>
-
 
   <h3 class="resourceInfoHeader">
     <@vrtx.msg

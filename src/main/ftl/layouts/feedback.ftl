@@ -8,9 +8,7 @@
 
 <#import "/lib/vortikal.ftl" as vrtx/>
 
-<#if !emailLink?exists || !emailLink.url?exists>
-  <#stop "Missing 'emailLink' entry in model"/>
-</#if>
+<#if emailLink?exists && !emailLink.url?exists>
 
 <#assign link = emailLink.url />
   
@@ -69,3 +67,4 @@
   </ul>
   <span class="vrtx-feedback-bottom"></span>
 </div>
+</#if>

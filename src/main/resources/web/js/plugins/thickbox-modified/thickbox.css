@@ -1,4 +1,4 @@
-/* USIT changed: opacity from 0.75->0.35 + Mod at the bottom
+/* USIT changed: opacity from 0.75->0.35 + remove padding for paragraph-tags + Mod at the bottom
 
 /* ----------------------------------------------------------------------------------------------------------------*/
 /* ---------->>> global settings needed for thickbox <<<-----------------------------------------------------------*/
@@ -117,9 +117,11 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
 	padding:15px;
 }
 
+/*
 #TB_ajaxContent p{
 	padding:5px 0px 5px 0px;
 }
+*/
 
 #TB_load{
 	position: fixed;

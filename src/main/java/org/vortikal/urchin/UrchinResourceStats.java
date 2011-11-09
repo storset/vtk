@@ -103,6 +103,7 @@ public class UrchinResourceStats implements InitializingBean {
         urchinStartCal.set(2011, 7, 1);
 
         int[] months = new int[13];
+        boolean now = true;
 
         Calendar cal = Calendar.getInstance();
 
@@ -112,8 +113,14 @@ public class UrchinResourceStats implements InitializingBean {
 
             String sdate = "&start-date=" + cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH) + 1) + "-"
                     + cal.getActualMinimum(Calendar.DATE);
-            String edate = "&end-date=" + cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH) + 1) + "-"
-                    + cal.getActualMaximum(Calendar.DATE);
+
+            String edate = "&end-date=" + cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH) + 1) + "-";
+
+            if (now) {
+                edate += cal.get(Calendar.DATE);
+                now = false;
+            } else
+                edate += cal.getActualMaximum(Calendar.DATE);
 
             months[cal.get(Calendar.MONTH)] = fetch(r, token, sdate + edate, id, "" + cal.get(Calendar.MONTH));
             if (months[cal.get(Calendar.MONTH)] > months[12]) {

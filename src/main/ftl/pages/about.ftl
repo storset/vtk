@@ -190,7 +190,10 @@
                and dataType is set to 'html'
                Reproduced here: http://www.vortex-demo.uio.no/om/y/hent-med-ajax.html
                with same result when artikkel3.html is 'text/plain' and works fine
-               when it is 'text/html'
+               when it is 'text/html'. Alternatively, if all else fails, we could
+               just remove all but the content we want to retrieve in urchin-stats.ftl,
+               and just insert the text-string without trying to find html-node
+               (it should also be faster).
       $(function() {
         $.ajax({
           type: "GET",

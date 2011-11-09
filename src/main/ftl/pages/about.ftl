@@ -186,6 +186,11 @@
 
   <#if urchinStats?exists>
     <script type="text/javascript"><!--
+      // TODO: Retrieved resource is 'text/plain' even though response header is 'text/html'
+               and dataType is set to 'html'
+               Reproduced here: http://www.vortex-demo.uio.no/om/y/hent-med-ajax.html
+               with same result when artikkel3.html is 'text/plain' and works fine
+               when it is 'text/html'
       $(function() {
         $.ajax({
           type: "GET",

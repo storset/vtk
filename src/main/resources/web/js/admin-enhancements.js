@@ -1306,7 +1306,13 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
   });
 };
 
-function getAJAXHtmlAsText(url, insertAfterSelector) {
+function getAJAXHtmlAsText(url, insertAfterSelector, wrapperSelector) {
+  var wrapper = $(wrapperSelector);
+  if(wrapper.length) {
+    wrapper.html("Laster...");
+  } else {
+    $("Laster...").insertAfter(insertAfterSelector);
+  }
   $.ajax({
     type: "GET",
     url: url,
@@ -1314,7 +1320,11 @@ function getAJAXHtmlAsText(url, insertAfterSelector) {
     success: function (results, status, resp) {
       var trimmedResults = $.trim(results);
       if(trimmedResults.length) { // if there is text
-        $(trimmedResults).insertAfter(insertAfterSelector);
+        if(wrapper.length) {
+          wrapper.html(trimmedResults);
+        } else {
+          $(trimmedResults).insertAfter(insertAfterSelector);
+        }
       }
     },
     error: function (xhr, textStatus) {

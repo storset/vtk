@@ -1309,9 +1309,9 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
 function getAJAXHtmlAsText(url, insertAfterSelector, wrapperSelector) {
   var wrapper = $(wrapperSelector);
   if(wrapper.length) {
-    wrapper.html("<span id='#urchin-loading'></span>");
+    wrapper.html("<span id='urchin-loading'></span>");
   } else {
-    $("<div id='" + wrapperSelector.substring(1) + "'><span id='#urchin-loading'></span></div>").insertAfter(insertAfterSelector);
+    $("<div id='" + wrapperSelector.substring(1) + "'><span id='urchin-loading'></span></div>").insertAfter(insertAfterSelector);
   }
   $.ajax({
     type: "GET",

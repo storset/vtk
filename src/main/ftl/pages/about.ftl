@@ -185,6 +185,19 @@
   </table>
 
   <#if urchinStats?exists>
+    <!--[if lt IE 9]>
+      <style type="text/css">
+        .vrtx-resource-visit-stat {
+          width: 20%;
+        }
+        #vrtx-resource-visit-stats {
+          clear: left;
+          width: 100%;
+          margin: 10px 0 0 0;
+          top: 0px;
+        } 
+      </style>
+    <![endif]-->
     <script type="text/javascript"><!--
       $(function() {
         getAJAXHtmlAsText("${urchinStats}", "#vrtx-resourceInfoMain", "#vrtx-resource-visit-wrapper");

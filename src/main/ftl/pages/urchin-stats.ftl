@@ -2,20 +2,6 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#if thisMonth?exists && (ursTotal > 0)>
-  <!--[if lt IE 9]>
-    <style type="text/css">
-      .vrtx-resource-visit-stat {
-         width: 20%;
-       }
-       #vrtx-resource-visit-stats {
-         clear: left;
-         width: 100%;
-         margin: 10px 0 0 0;
-         top: 0px;
-       } 
-    </style>
-  <![endif]-->
-
   <h3 class="resourceVisitHeader">
     <@vrtx.msg code="resource.metadata.about.visit" default="Visit count"/>
   </h3>

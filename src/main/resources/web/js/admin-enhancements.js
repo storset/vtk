@@ -1309,9 +1309,9 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
 function getAJAXHtmlAsText(url, insertAfterSelector, wrapperSelector) {
   var wrapper = $(wrapperSelector);
   if(wrapper.length) {
-    wrapper.html("Laster...");
+    wrapper.html("<p>Laster...</p>");
   } else {
-    $("Laster...").insertAfter(insertAfterSelector);
+    $("<div id='" + wrapperSelector.substring(1) + "'><p>Laster...</p></div>").insertAfter(insertAfterSelector);
   }
   $.ajax({
     type: "GET",
@@ -1319,6 +1319,7 @@ function getAJAXHtmlAsText(url, insertAfterSelector, wrapperSelector) {
     dataType: "text",
     success: function (results, status, resp) {
       var trimmedResults = $.trim(results);
+      var wrapper = $(wrapperSelector);
       if(trimmedResults.length) { // if there is text
         if(wrapper.length) {
           wrapper.html(trimmedResults);

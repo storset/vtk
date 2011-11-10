@@ -2,8 +2,6 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#if thisMonth?exists && (ursTotal > 0)>
-<div id="vrtx-resource-visit-wrapper">
-
   <h3 class="resourceVisitHeader">
     <@vrtx.msg code="resource.metadata.about.visit" default="Visit count"/>
   </h3>
@@ -40,6 +38,4 @@
     </div>
     <span id="vrtx-resource-visit-info"><@vrtx.msg code="resource.metadata.about.visit.info" /> <a href="https://www.uio.no/for-ansatte/arbeidsstotte/nettpublisering/statistikk/">Urchin</a></span>
   </div>
-  
-</div>
 </#if>

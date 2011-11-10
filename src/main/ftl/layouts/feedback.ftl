@@ -31,7 +31,9 @@
       });
     } else {
       var noLink = $(".vrtx-feedback a.feedback-no").parent();
-      noLink.find("a").text('<@vrtx.msg code="feedback.link" default="Give feedback" />');
+      noLink.find("a").removeClass("feedback-no")
+                      .addClass("feedback")
+                      .text('<@vrtx.msg code="feedback.link" default="Give feedback" />');
       $(".vrtx-feedback ul").replaceWith('<p>' + noLink.html() + '</p>');
       tb_init("a.feedback-no");
     }

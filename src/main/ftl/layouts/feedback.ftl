@@ -58,12 +58,12 @@
   <ul>
     <li>
       <a class="feedback-yes" title='<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />' href="#">
-        <@vrtx.msg code="feedback.link.yes" default="Yes I found it" />
+        <@vrtx.msg code="feedback.link.yes" default="Yes, my questions were answered" />
       </a>
     </li>
     <li>
       <a class="feedback-no thickbox" title='<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />' href="${link?html}&amp;height=350&amp;width=370">
-        <@vrtx.msg code="feedback.link.no" default="No I did not find it" />
+        <@vrtx.msg code="feedback.link.no" default="No, I didn't find what I was looking for" />
       </a>
     </li>
   </ul>

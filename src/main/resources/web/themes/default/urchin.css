@@ -4,14 +4,6 @@
  *
  */
 
-body,
-html {
-  background-color: #fff;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
 #vrtx-resource-visit {
   clear: left;
   float: left;
@@ -19,6 +11,11 @@ html {
   border: 1px solid #D9D9D9;
   padding: 10px 5px;
   position: relative;
+  margin-bottom: 20px;
+}
+
+h3.resourceInfoHeader {
+  clear: left;
 }
 
 #vrtx-resource-visit-info {

@@ -67,26 +67,29 @@ public class UrchinResourceStatsController implements Controller {
         if ((id = request.getParameter("host")) == null)
             id = "www.uio.no";
 
-        URL[] hosts = new URL[12];
-        String[] host = { "www.uio.no", "www.hf.uio.no", "www.khm.uio.no", "www.odont.uio.no", "www.sv.uio.no",
-                "www.tf.uio.no", "www.ub.uio.no", "www.uv.uio.no", "www.jus.uio.no", "www.uniforum.uio.no",
-                "www.mn.uio.no", "www.med.uio.no" };
-        String[] hostnames = { "UiO", "HF", "KHM", "Odont", "SV", "TF", "UB", "UV", "JUS", "Uniforum", "MN", "MED" };
+        int total = urs.total(resource, token, id);
+        if (total > 0) {
+            URL[] hosts = new URL[12];
+            String[] host = { "www.uio.no", "www.hf.uio.no", "www.khm.uio.no", "www.odont.uio.no", "www.sv.uio.no",
+                    "www.tf.uio.no", "www.ub.uio.no", "www.uv.uio.no", "www.jus.uio.no", "www.uniforum.uio.no",
+                    "www.mn.uio.no", "www.med.uio.no" };
+            String[] hostnames = { "UiO", "HF", "KHM", "Odont", "SV", "TF", "UB", "UV", "JUS", "Uniforum", "MN", "MED" };
 
-        for (int i = 0; i < 12; i++) {
-            URL base = URL.create(request).removeParameter("host");
-            hosts[i] = base.addParameter("host", host[i]);
+            for (int i = 0; i < 12; i++) {
+                URL base = URL.create(request).removeParameter("host");
+                hosts[i] = base.addParameter("host", host[i]);
+            }
+
+            model.put("ursTotal", total);
+            model.put("hosts", hosts);
+            model.put("hostnames", hostnames);
+            model.put("thisMonth", urs.thisMonth());
+            model.put("ursMonths", urs.months(resource, token, id));
+            model.put("ursThirtyTotal", urs.thirtyTotal(resource, token, id));
+            model.put("ursWeekTotal", urs.weekTotal(resource, token, id));
+            model.put("ursYesterdayTotal", urs.yesterdayTotal(resource, token, id));
+            model.put("ursNMonths", urs.nMonths());
         }
-
-        model.put("hosts", hosts);
-        model.put("hostnames", hostnames);
-        model.put("thisMonth", urs.thisMonth());
-        model.put("ursMonths", urs.months(resource, token, id));
-        model.put("ursTotal", urs.total(resource, token, id));
-        model.put("ursThirtyTotal", urs.thirtyTotal(resource, token, id));
-        model.put("ursWeekTotal", urs.weekTotal(resource, token, id));
-        model.put("ursYesterdayTotal", urs.yesterdayTotal(resource, token, id));
-        model.put("ursNMonths", urs.nMonths());
 
         return new ModelAndView(this.viewName, model);
     }

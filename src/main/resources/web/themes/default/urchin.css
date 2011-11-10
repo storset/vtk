@@ -63,8 +63,7 @@ ul {
   display: block;
 }
 
-/* @media screen and (max-width: 1080px) {
-
+@media screen and (max-width: 1080px) {
   .vrtx-resource-visit-stat {
     width: 14%;
   }
@@ -73,8 +72,7 @@ ul {
     width: 100%;
     margin: 10px 0 0 0;
   } 
-
-} */
+}
 
 /* ^ Responsive design */
 

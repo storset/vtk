@@ -18,6 +18,13 @@ h3.resourceInfoHeader {
   clear: left;
 }
 
+#urchin-loading {
+  display: block;
+  width: 100%;
+  height: 200px;
+  background: url(/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif) no-repeat center center;
+}
+
 #vrtx-resource-visit-info {
   position: absolute;
   bottom: 10px;

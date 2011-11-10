@@ -34,6 +34,9 @@ h3.resourceInfoHeader {
 
 #vrtx-resource-visit-stats {
   float: left;
+  position: relative;
+  top: 45px;
+  left: 0px;
 }
 
 /* TMP overview */  

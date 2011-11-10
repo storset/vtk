@@ -1,15 +1,46 @@
 /* Email-a-friend */
 
-#TB_ajaxContent h1 {
+h1 {
   display: none;
 }
 
-#TB_ajaxContent h2 {
-  margin-top: 10px;
+h2 {
+  font-family: Arial, sans-serif;
+  font-size: 1.38em;
+  line-height: 1.33em;
+  font-weight: bold;
+  margin: 10px 0 8px;
 }
 
-#TB_window {
-  font-size: 1.154em;
+h3 {
+  font-family: Arial, sans-serif; /* Old line-height 20px*/
+  font-size: 1.23em;
+  line-height: 1.29em;
+  font-weight: bold; 
+}
+
+h4 {
+  font-family: Arial, sans-serif;
+  font-size: 1em;
+  line-height: 1.06em;
+  font-weight: bold;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  margin: 10px 0 5px;  
+}
+
+body {
+  color: #2b2b2b;
+  font: normal 93.8%/1.31em Arial, sans-serif; /* 13 / 17 */
+  margin: 10px 30px 0 30px;
+}
+
+p {
+  margin: 3px 0 8px 0;
 }
 
 form#email-a-friend-form,

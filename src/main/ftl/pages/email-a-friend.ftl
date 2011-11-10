@@ -22,6 +22,7 @@
   <meta name="robots" content="noindex"/> 
  </head>
  <body>
+    <h1><@vrtx.msg code="tip.emailtitle" default="E-mail a friend" /></h1>   
     <h2>${resource.title}</h2>
 
     <#-- E-mail a friend form -->

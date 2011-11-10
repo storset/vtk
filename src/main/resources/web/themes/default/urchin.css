@@ -30,6 +30,7 @@ h3.resourceInfoHeader {
   clear: left;
   float: left;
   margin: 0 50px 0 0;
+  width: 45%;
 }
 
 #vrtx-resource-visit-stats {
@@ -37,6 +38,7 @@ h3.resourceInfoHeader {
   position: relative;
   top: 45px;
   left: 0px;
+  width: 45%;
 }
 
 /* TMP overview */  
@@ -66,14 +68,15 @@ ul {
   display: block;
 }
 
-@media screen and (max-width: 1080px) {
+@media screen and (max-width: 1100px) {
   .vrtx-resource-visit-stat {
-    width: 14%;
+    width: 20%;
   }
   #vrtx-resource-visit-stats {
     clear: left;
     width: 100%;
     margin: 10px 0 0 0;
+    top: 0px;
   } 
 }
 

@@ -187,20 +187,7 @@
   <#if urchinStats?exists>
     <script type="text/javascript"><!--
       $(function() {
-        $.ajax({
-          type: "GET",
-          url: "${urchinStats}",
-          dataType: "text",
-          success: function (results, status, resp) {
-            var trimmedResults = $.trim(results);
-            if(trimmedResults.length) { // if there is text
-              $(trimmedResults).insertAfter("#vrtx-resourceInfoMain");
-            }
-          },
-          error: function (xhr, textStatus) {
-            vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
-          }
-        });
+        insertHtmlFromTextAfter("${urchinStats}", "#vrtx-resourceInfoMain");
       }); 
     // -->
     </script>

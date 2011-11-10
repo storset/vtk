@@ -1306,6 +1306,22 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
   });
 };
 
+function insertHtmlFromTextAfter(url, insertAfterSelector) {
+  $.ajax({
+    type: "GET",
+    url: url,
+    dataType: "text",
+    success: function (results, status, resp) {
+      var trimmedResults = $.trim(results);
+      if(trimmedResults.length) { // if there is text
+        $(trimmedResults).insertAfter(insertAfterSelector);
+      }
+    },
+    error: function (xhr, textStatus) {
+      vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
+    }
+  });
+}
 
 
 /*-------------------------------------------------------------------*\

@@ -3,7 +3,7 @@
 
 <#if thisMonth?exists && (ursTotal > 0)>
   <#-- tmp. for development -->
-  <link rel="stylesheet" href="http://129.240.93.72/vrtx/__vrtx/static-resources/themes/default/urchin.css" type="text/css" /> 
+  <link rel="stylesheet" href="http://129.240.93.72:9322/vrtx/__vrtx/static-resources/themes/default/urchin.css" type="text/css" /> 
 
   <h3 class="resourceVisitHeader">
     <@vrtx.msg code="resource.metadata.about.visit" default="Visit count"/>

@@ -1326,6 +1326,8 @@ function getAJAXHtmlAsText(url, insertAfterSelector, wrapperSelector) {
         } else {
           $(trimmedResults).insertAfter(insertAfterSelector);
         }
+      } else {
+        wrapper.remove();
       }
     },
     error: function (xhr, textStatus) {

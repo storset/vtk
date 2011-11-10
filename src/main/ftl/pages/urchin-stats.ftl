@@ -2,10 +2,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#if thisMonth?exists && (ursTotal > 0)>
-  <div id="vrtx-resource-visit-wrapper">
-  
-  <#-- tmp. for development -->
-  <link rel="stylesheet" href="http://129.240.93.72:9322/vrtx/__vrtx/static-resources/themes/default/urchin.css" type="text/css" /> 
+<div id="vrtx-resource-visit-wrapper">
 
   <h3 class="resourceVisitHeader">
     <@vrtx.msg code="resource.metadata.about.visit" default="Visit count"/>
@@ -44,5 +41,5 @@
     <span id="vrtx-resource-visit-info"><@vrtx.msg code="resource.metadata.about.visit.info" /> <a href="https://www.uio.no/for-ansatte/arbeidsstotte/nettpublisering/statistikk/">Urchin</a></span>
   </div>
   
-  </div>
+</div>
 </#if>

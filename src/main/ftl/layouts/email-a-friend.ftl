@@ -20,4 +20,4 @@
 </#if>
 <!-- end email a friend js -->
 
-<a class="vrtx-email-friend thickbox" title='<@vrtx.msg code="tip.emailtitle" default="E-mail a friend" />' href="${emailLink.url?html}&amp;height=400&amp;width=345&amp;TB_iframe=true"><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" default="E-mail a friend" /></a>
+<a class="vrtx-email-friend thickbox" title='<@vrtx.msg code="tip.emailtitle" default="E-mail a friend" />' href="${emailLink.url?html}&amp;height=420&amp;width=345&amp;TB_iframe=true"><@vrtx.msg code="decorating.emailAFriendComponent.emaillink" default="E-mail a friend" /></a>

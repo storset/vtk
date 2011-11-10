@@ -187,7 +187,7 @@
   <#if urchinStats?exists>
     <script type="text/javascript"><!--
       $(function() {
-        insertHtmlFromTextAfter("${urchinStats}", "#vrtx-resourceInfoMain");
+        getAJAXHtmlAsText("${urchinStats}", "#vrtx-resourceInfoMain");
       }); 
     // -->
     </script>

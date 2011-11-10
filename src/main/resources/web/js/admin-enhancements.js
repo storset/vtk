@@ -1306,7 +1306,7 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
   });
 };
 
-function insertHtmlFromTextAfter(url, insertAfterSelector) {
+function getAJAXHtmlAsText(url, insertAfterSelector) {
   $.ajax({
     type: "GET",
     url: url,

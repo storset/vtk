@@ -19,16 +19,9 @@
       <link href="${cssUrl}" type="text/css" rel="stylesheet"/>
     </#list>
   </#if> 
- <script type="text/javascript"><!--
-    $(function() {
-      $("#TB_closeAjaxWindow").addClass("show-close-window");
-    });
-  // -->
-  </script>
   <meta name="robots" content="noindex"/> 
  </head>
  <body>
-    <h1><@vrtx.msg code="tip.emailtitle" default="E-mail a friend" /></h1>   
     <h2>${resource.title}</h2>
 
     <#-- E-mail a friend form -->

@@ -28,10 +28,7 @@
   <meta name="robots" content="noindex"/> 
  </head>
  <body>
-    <h1><@vrtx.msg code="feedback.title" default="Give feedback" /></h1>  
-
     <p><@vrtx.msg code="feedback.cant-respond" default="We can unfortunately not respond directly." /></p>
-
     <p>
       <@vrtx.msg code="feedback.contact-pre" default="See" />&nbsp;
       <#if contacturl?has_content>

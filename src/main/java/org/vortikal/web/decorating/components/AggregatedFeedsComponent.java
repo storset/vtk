@@ -250,7 +250,7 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
             }
             @SuppressWarnings("unchecked")
             List<SyndEntry> tmpEntries = tmpFeed.getEntries();
-            boolean filter = !prameterHasValue(PARMATER_DISPLAY_CLASS, "true", request);
+            boolean filter = !prameterHasValue(PARMATER_ALLOW_MARKUP, "true", request);
             for (SyndEntry entry : tmpEntries) {
                 feedMapping.put(entry, tmpFeed);
                 HtmlFragment description = getDescription(entry, baseURL, requestURL, filter);

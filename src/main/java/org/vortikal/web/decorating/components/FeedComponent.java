@@ -219,7 +219,7 @@ public class FeedComponent extends AbstractFeedComponent {
 
         @SuppressWarnings("unchecked")
         List<SyndEntry> entries = (List<SyndEntry>) feed.getEntries();
-        boolean filter = !prameterHasValue(PARMATER_DISPLAY_CLASS, "true", request);
+        boolean filter = !prameterHasValue(PARMATER_ALLOW_MARKUP, "true", request);
         for (SyndEntry entry : entries) {
 
             HtmlFragment description = getDescription(entry, baseURL, requestURL, filter);

@@ -981,10 +981,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
     }
     //---
     
-    $.ajax({
-      type: "GET",
-      url: url,
-      dataType: "html",
+    vrtxAdmin.serverFacade.getHtml(url, {
       success: function (results, status, resp) {
         var form = $(results).find("." + selectorClass).html();
 
@@ -1080,9 +1077,6 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
         if ((!existExpandedForm || simultanSliding) && !fromModeToNotMode) {
           vrtxAdm.getAjaxFormShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
         }
-      },
-      error: function (xhr, textStatus) {
-        vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
       }
     });
 
@@ -1172,10 +1166,6 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
     var form = link.closest("form");
     if(!funcProceedCondition || funcProceedCondition(form)) {
       var url = form.attr("action");
-      var encType = form.attr("enctype");
-       if (typeof encType === "undefined" || !encType.length) {
-        encType = "application/x-www-form-urlencoded";
-      }
 
       // TODO: test with form.serialize()
       var vrtxAdmAppendInputNameValuePairsToDataString = vrtxAdm.appendInputNameValuePairsToDataString; // cache to function scope
@@ -1186,12 +1176,7 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
       dataString += '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
                   + "&" + link.attr("name");
 
-      $.ajax({
-        type: "POST",
-        url: url,
-        data: dataString,
-        dataType: "html",
-        contentType: encType,
+      vrtxAdmin.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
           if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
             vrtxAdm.displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
@@ -1207,9 +1192,6 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
               $(this).remove();
             });
           }
-        },
-        error: function (xhr, textStatus) {
-          vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
         }
       });
 
@@ -1239,16 +1221,10 @@ VrtxAdmin.prototype.ajaxRemove = function ajaxRemove(selector, updateSelector) {
 
     var dataString = '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
                    + "&" + link.attr("name");
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: dataString,
-      dataType: "html",
+    
+    vrtxAdmin.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {
         form.find(updateSelector).html($(results).find(updateSelector).html());
-      },
-      error: function (xhr, textStatus) {
-        vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
       }
     });
 
@@ -1280,12 +1256,8 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
     var dataString = textfieldName + '=' + textfieldVal
                    + '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
                    + "&" + link.attr("name");
-
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: dataString,
-      dataType: "html",
+    
+    vrtxAdmin.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {
         if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
           vrtxAdm.displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
@@ -1295,9 +1267,6 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
           upSelector.html($(results).find(updateSelector).html());
           textfield.val("");
         }
-      },
-      error: function (xhr, textStatus) {
-        vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
       }
     });
 
@@ -1323,11 +1292,9 @@ VrtxAdmin.prototype.getAJAXHtmlAsText = function getAJAXHtmlAsText(url, insertAf
   } else {
     $("<div id='" + wrapperSelector.substring(1) + "'><span id='urchin-loading'></span></div>").insertAfter(insertAfterSelector);
   }
-  $.ajax({
-    type: "GET",
-    url: url,
-    dataType: "text",
-    success: function (results, status, resp) {
+  
+  vrtxAdmin.serverFacade.getText(url, {
+    success : function (results, status, resp) {
       var trimmedResults = $.trim(results);
       var wrapper = $(wrapperSelector);
       if(trimmedResults.length) { // if there is text
@@ -1339,13 +1306,10 @@ VrtxAdmin.prototype.getAJAXHtmlAsText = function getAJAXHtmlAsText(url, insertAf
       } else {
         wrapper.remove();
       }
-    },
-    error: function (xhr, textStatus) {
-      vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
     }
   });
+  
 };
-
 
 
 /*-------------------------------------------------------------------*\
@@ -1394,6 +1358,42 @@ VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
     $("#app-content > .errormessage").html(msg);
   } else {
     $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
+  }
+};
+
+VrtxAdmin.prototype.serverFacade = {
+  getText: function(url, callbacks) {
+    this.get(url, callbacks, "text");
+  },
+  getHtml: function(url, callbacks) {
+    this.get(url, callbacks, "html");
+  },
+  postHtml: function(url, params, callbacks) {
+    this.post(url, params, callbacks, "html");
+  },
+  get: function(url, callbacks, type) {
+    $.ajax({
+      type: "GET",
+      url: url,
+      dataType: type,
+      success: callbacks.success,
+      error: function (xhr, textStatus) {
+        this.displayAjaxErrorMessage(xhr, textStatus);
+      }
+    });
+  },
+  post: function(url, params, callbacks, type) {
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: params,
+      dataType: type,
+      contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+      success: callbacks.success,
+      error: function (xhr, textStatus) {
+        this.displayAjaxErrorMessage(xhr, textStatus);
+      }
+    });
   }
 };
 

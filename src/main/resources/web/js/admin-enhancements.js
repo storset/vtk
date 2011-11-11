@@ -23,7 +23,7 @@
  * 7.  Permissions
  * 8.  Dropdowns
  * 9.  AJAX functions
- * 10. AJAX helper functions
+ * 10. AJAX helper functions and server façade
  * 11. Show and hide properties
  * 12. Featured articles
  * 13. CK browse server integration
@@ -1313,7 +1313,7 @@ VrtxAdmin.prototype.getAJAXHtmlAsText = function getAJAXHtmlAsText(url, insertAf
 
 
 /*-------------------------------------------------------------------*\
-    10. AJAX helper functions	
+    10. AJAX helper functions and server façade	
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function(inputFields) {

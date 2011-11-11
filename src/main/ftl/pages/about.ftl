@@ -200,7 +200,7 @@
     <![endif]-->
     <script type="text/javascript"><!--
       $(function() {
-        getAJAXHtmlAsText("${urchinStats}", "#vrtx-resourceInfoMain", "#vrtx-resource-visit-wrapper");
+        vrtxAdmin.getAJAXHtmlAsText("${urchinStats}", "#vrtx-resourceInfoMain", "#vrtx-resource-visit-wrapper");
       }); 
     // -->
     </script>

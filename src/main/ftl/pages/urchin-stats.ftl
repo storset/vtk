@@ -14,7 +14,7 @@
 
   <ul>
     <li>
-      <#list hosts as host><a href="${host?html}" onclick="javascript:getAJAXHtmlAsText('${host?html}', '#vrtx-resourceInfoMain', '#vrtx-resource-visit-wrapper'); return false;">${hostnames[host_index]?html}</a> </#list>
+      <#list hosts as host><a href="${host?html}" onclick="javascript:vrtxAdmin.getAJAXHtmlAsText('${host?html}', '#vrtx-resourceInfoMain', '#vrtx-resource-visit-wrapper'); return false;">${hostnames[host_index]?html}</a> </#list>
     </li>
   </ul>
   <div id="vrtx-resource-visit">

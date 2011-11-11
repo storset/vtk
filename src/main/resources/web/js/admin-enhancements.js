@@ -1306,7 +1306,17 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
   });
 };
 
-function getAJAXHtmlAsText(url, insertAfterSelector, wrapperSelector) {
+/**
+ * GET HTML as text
+ * 
+ * @param url: url that retrieves HTML-text
+ * @param insertAfterSelector: where to insert the HTML
+ * @param wrapperSelector: wrapper for the HTML
+ */
+VrtxAdmin.prototype.getAJAXHtmlAsText = function getAJAXHtmlAsText(url, insertAfterSelector, wrapperSelector) {
+  var args = arguments;
+  var vrtxAdm = this;
+
   var wrapper = $(wrapperSelector);
   if(wrapper.length) {
     wrapper.html("<span id='urchin-loading'></span>");
@@ -1334,7 +1344,7 @@ function getAJAXHtmlAsText(url, insertAfterSelector, wrapperSelector) {
       vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
     }
   });
-}
+};
 
 
 

@@ -1343,17 +1343,7 @@ VrtxAdmin.prototype.displayErrorContainers = function(results, form, errorContai
   }
 }; 
 
-VrtxAdmin.prototype.displayAjaxErrorMessage = function(xhr, textStatus) {
-  var status = xhr.status;
-  if (xhr.readyState == 4 && status == 200) {
-    var msg = "The service is not active: " + textStatus;
-  } else {
-    // if you have no access anymore or page is removed: reload from server
-    if (status == 401 || status == 403 || status == 404) {
-      location.reload(true);
-    } 
-    var msg = "The service returned " + xhr.status + " and failed to retrieve/post form: " + textStatus;
-  }
+VrtxAdmin.prototype.displayErrorMsg = function(msg) {
   if ($("#app-content > .errormessage").length) {
     $("#app-content > .errormessage").html(msg);
   } else {
@@ -1378,7 +1368,7 @@ VrtxAdmin.prototype.serverFacade = {
       dataType: type,
       success: callbacks.success,
       error: function (xhr, textStatus) {
-        this.displayAjaxErrorMessage(xhr, textStatus);
+        this.displayErrorMsg(this.error(xhr, textStatus));
       }
     });
   },
@@ -1391,9 +1381,21 @@ VrtxAdmin.prototype.serverFacade = {
       contentType: "application/x-www-form-urlencoded;charset=UTF-8",
       success: callbacks.success,
       error: function (xhr, textStatus) {
-        this.displayAjaxErrorMessage(xhr, textStatus);
+        this.displayErrorMsg(this.error(xhr, textStatus));
       }
     });
+  },
+  error: function(xhr, textStatus) {
+    var status = xhr.status;
+    if (xhr.readyState == 4 && status == 200) {
+      var msg = "The service is not active: " + textStatus;
+    } else {
+      if (status == 401 || status == 403 || status == 404) {
+        location.reload(true); // if you have no access anymore or page is removed: reload from server
+      } 
+      var msg = "The service returned " + xhr.status + " and failed to retrieve/post form: " + textStatus;
+    }
+    return msg;
   }
 };
 

@@ -1023,10 +1023,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
 
               // When we need the 'mode=' HTML when requesting a 'not mode=' service
               if(fromModeToNotMode) {
-                $.ajax({
-                  type: "GET",
-                  url: modeUrl,
-                  dataType: "html",
+                vrtxAdmin.serverFacade.getHtml(modeUrl, {
                   success: function (results, status, resp) {
                     var resultHtml = vrtxAdm.outerHTML(results, $.trim(resultSelectorClass));
                     
@@ -1042,9 +1039,6 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
                     }
 
                     vrtxAdm.getAjaxFormShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
-                  },
-                  error: function (xhr, textStatus) {
-                    vrtxAdm.displayAjaxErrorMessage(xhr, textStatus);
                   }
                 });
               } else {

@@ -31,7 +31,7 @@
   </bean>
 
   <bean id="reports.viewPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
-    <property name="permission" ref="ACTION_ALL" />
+    <property name="permission" ref="ACTION_READ_WRITE" />
     <property name="considerLocks" value="false" />
   </bean>
 

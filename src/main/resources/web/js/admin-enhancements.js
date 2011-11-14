@@ -1665,10 +1665,8 @@ VrtxAdmin.prototype.zebraTables = function(selector) {
 	Override slideUp() / slideDown() to animate rows in a table
 	
 	Credits: 
-    o http://stackoverflow.com/questions/467336/
-      jquery-how-to-use-slidedown-or-show-function-on-a-table-row/920480#920480
-    o http://www.bennadel.com/blog/
-      1624-Ask-Ben-Overriding-Core-jQuery-Methods.htm
+    o http://stackoverflow.com/questions/467336/jquery-how-to-use-slidedown-or-show-function-on-a-table-row/920480#920480
+    o http://www.bennadel.com/blog/1624-Ask-Ben-Overriding-Core-jQuery-Methods.htm
 */	
 
 jQuery.fn.prepareTableRowForSliding = function() {

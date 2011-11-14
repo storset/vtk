@@ -1630,27 +1630,18 @@ VrtxAdmin.prototype.outerHTML = function(selector, subselector) {
 
 VrtxAdmin.prototype.log = function(options) {
   if(vrtxAdmin.hasConsoleLog) {
-    if(options.args) {
-      console.log("Vortex admin log -> " + options.args.callee.name + ": " + options.msg);
-    } else {
-      console.log("Vortex admin log: " + options.msg);    
-    }
+    var msgMid = options.args ? " -> " + options.args.callee.name : "";
+    console.log("Vortex admin log" + msgMid + ": " + options.msg);
   }
 };
 
 VrtxAdmin.prototype.error = function(options) {
   if(vrtxAdmin.hasConsoleError) {
-    if(options.args) {
-      console.error("Vortex admin error -> " + options.args.callee.name + ": " + options.msg);
-    } else {
-      console.error("Vortex admin error: " + options.msg);     
-    }
+    var msgMid = options.args ? " -> " + options.args.callee.name : "";
+    console.error("Vortex admin error" + msgMid + ": " + options.msg);
   } else if(vrtxAdmin.hasConsoleLog) {
-    if(options.args) {
-      console.log("Vortex admin error -> " + options.args.callee.name + ": " + options.msg);   
-    } else {
-      console.log("Vortex admin error: " + options.msg);        
-    } 
+    var msgMid = options.args ? " -> " + options.args.callee.name : "";
+    console.log("Vortex admin error" + msgMid + ": " + options.msg);
   }
 };
 

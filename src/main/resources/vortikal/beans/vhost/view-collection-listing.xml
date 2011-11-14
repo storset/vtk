@@ -54,7 +54,7 @@
     <property name="searchComponent" ref="collectionListing.searchComponent" />
   </bean>
 
-  <!-- Will e overridden with required properties where available (e.g. multihostsearcher) -->
+  <!-- Will be overridden with required properties where available (e.g. multihostsearcher) -->
   <bean id="collectionListing.baseSearchComponent" abstract="true" class="org.vortikal.web.search.QueryPartsSearchComponent" />
 
   <bean id="collectionListing.searchComponent" parent="collectionListing.baseSearchComponent">

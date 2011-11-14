@@ -1188,9 +1188,8 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
           }
         }
       });
-
+      
     }
-
     e.stopPropagation(); 
     e.preventDefault();
   });
@@ -1204,8 +1203,8 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
  */
 
 VrtxAdmin.prototype.ajaxRemove = function ajaxRemove(selector, updateSelector) {
-  var args = arguments;
-  var vrtxAdm = this;
+  var args = arguments,
+      vrtxAdm = this;
 
   $("#app-content").delegate(selector, "click", function (e) {
     var link = $(this);

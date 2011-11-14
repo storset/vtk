@@ -982,6 +982,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
             if(hashes[i].indexOf("mode=") != -1) {
               fromModeToNotMode = true; 
               modeUrl = currentHref;
+              break;
             }
           } 
         }

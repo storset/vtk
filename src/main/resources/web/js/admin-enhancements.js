@@ -320,7 +320,8 @@ $(document).ready(function () {
           funcComplete: collectionListingInteraction,
           transitionSpeed: vrtxAdmin.transitionSpeed,
           transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
-          transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
+          transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp,
+          post: true
         });
       
       } else {
@@ -367,7 +368,8 @@ $(document).ready(function () {
         errorContainer: "errorContainer",
         errorContainerInsertAfter: ".groups-wrapper",
         funcProceedCondition: checkStillAdmin,
-        funcComplete: reloadFromServer
+        funcComplete: reloadFromServer,
+        post: true
       });
     }
   
@@ -396,7 +398,8 @@ $(document).ready(function () {
         errorContainerInsertAfter: ".groups-wrapper",
         transitionSpeed: vrtxAdmin.transitionSpeed,
         transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
-        transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
+        transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp,
+        post: true
       });
     }
     // Remove/add permissions
@@ -1107,25 +1110,6 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitio
   $(nodeType + "." + selectorClass).hide().slideDown(transitionSpeed, transitionEasingSlideDown, function() {
     var $this = $(this);
     $this.find("input[type=text]:first").focus();
-    // TODO: same for replaced html
-    if(!isReplacing) {
-      $this.find("input[type=submit][name*=cancel]").click(function(e) {
-        if (nodeType == "tr") {
-          $this.prepareTableRowForSliding();
-        }
-        $this.slideUp(transitionSpeed, transitionEasingSlideUp);
-        e.stopPropagation(); 
-        e.preventDefault();     
-      });
-      $this.find("button[type=submit][name*=Cancel]").click(function(e) {
-        if (nodeType == "tr") {
-          $this.prepareTableRowForSliding();
-        }
-        $this.slideUp(transitionSpeed, transitionEasingSlideUp);
-        e.stopPropagation(); 
-        e.preventDefault();     
-      });
-    }
   });
 };
 
@@ -1142,6 +1126,7 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitio
  *                transitionEasing: transition easing algorithm
  *                transitionEasingSlideDown: transition easing algorithm for slideDown()
  *                transitionEasingSlideUp: transition easing algorithm for slideUp()
+ *                post: actually post
  */
 
 VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
@@ -1157,42 +1142,51 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
         funcProceedCondition = options.funcProceedCondition,
         funcComplete = options.funcComplete,
         transitionSpeed = options.transitionSpeed || 0,
-        transitionEasingSlideDown = options.transitionEasingSlideDown || "linear";
-        transitionEasingSlideUp = options.transitionEasingSlideUp || "linear";
+        transitionEasingSlideDown = options.transitionEasingSlideDown || "linear",
+        transitionEasingSlideUp = options.transitionEasingSlideUp || "linear",
+        post = options.post || false;
   
     var link = $(this);
     var form = link.closest("form");
-    if(!funcProceedCondition || funcProceedCondition(form)) {
-      var url = form.attr("action");
-
-      // TODO: test with form.serialize()
-      var vrtxAdmAppendInputNameValuePairsToDataString = vrtxAdm.appendInputNameValuePairsToDataString; // cache to function scope
-      var dataString = vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=text]"));
-      dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=file]"));
-      dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=radio]:checked"));
-      dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=checkbox]:checked"));
-      dataString += '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
-                  + "&" + link.attr("name");
-
-      vrtxAdmin.serverFacade.postHtml(url, dataString, {
-        success: function (results, status, resp) {
-          if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
-            vrtxAdm.displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
-          } else {
-            for(var i = updateSelectors.length; i--;) {
-              var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
-              $("#app-content " + updateSelectors[i]).replaceWith(outer);
-            }
-            if(funcComplete) {
-              funcComplete();
-            }
-            form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
-              $(this).remove();
-            });
-          }
-        }
+    
+    var isCancelAction = link.attr("name").toLowerCase().indexOf("cancel") != -1;
+    
+    if(isCancelAction) {
+      form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
+        $(this).remove();
       });
-      
+    } else {
+      if((!funcProceedCondition || funcProceedCondition(form)) && post) {
+        var url = form.attr("action");
+
+        // TODO: test with form.serialize()
+        var vrtxAdmAppendInputNameValuePairsToDataString = vrtxAdm.appendInputNameValuePairsToDataString; // cache to function scope
+        var dataString = vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=text]"));
+        dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=file]"));
+        dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=radio]:checked"));
+        dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=checkbox]:checked"));
+        dataString += '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
+                    + "&" + link.attr("name");
+
+        vrtxAdmin.serverFacade.postHtml(url, dataString, {
+          success: function (results, status, resp) {
+            if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
+              vrtxAdm.displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
+            } else {
+              for(var i = updateSelectors.length; i--;) {
+                var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
+                $("#app-content " + updateSelectors[i]).replaceWith(outer);
+              }
+              if(funcComplete) {
+                funcComplete();
+              }
+              form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
+                $(this).remove();
+              });
+            }
+          }
+        });
+      }
     }
     e.stopPropagation(); 
     e.preventDefault();

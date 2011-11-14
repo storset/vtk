@@ -41,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.edit.editor.ResourceWrapperManager;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
@@ -48,6 +49,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
@@ -72,6 +74,7 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
     private MultiHostSearchComponent multiHostSearchComponent;
     private boolean searchMultiHosts;
+    private PropertyTypeDefinition aggregationPropDef;
 
     protected abstract Query getQuery(Resource collection, HttpServletRequest request);
 
@@ -110,13 +113,14 @@ public abstract class QuerySearchComponent implements SearchComponent {
         }
 
         ResultSet result = null;
-        if (this.performMultiHostSearch()) {
+        boolean multiHostResults = false;
+        if (this.performMultiHostSearch(collection)) {
             try {
                 result = this.multiHostSearchComponent.search(collection, token, search);
+                multiHostResults = true;
             } catch (Throwable t) {
-                logger
-                        .error("An error occured while searching multiple hosts (defaulting to local repository search): "
-                                + t);
+                logger.error("An error occured while searching multiple hosts. "
+                        + "Defaulting to local repository search: " + t);
                 result = repository.search(token, search);
             }
         } else {
@@ -135,6 +139,10 @@ public abstract class QuerySearchComponent implements SearchComponent {
             PropertySet res = result.getResult(i);
             files.add(res);
             URL url = this.viewService.constructURL(res.getURI());
+            if (multiHostResults) {
+                Property urlProp = res.getProperty(Namespace.DEFAULT_NAMESPACE, "solr.url");
+                url = URL.parse(urlProp.getStringValue());
+            }
             urls.put(res.getURI().toString(), url);
         }
 
@@ -168,11 +176,27 @@ public abstract class QuerySearchComponent implements SearchComponent {
         return listing;
     }
 
-    private boolean performMultiHostSearch() {
+    private boolean performMultiHostSearch(Resource collection) {
 
-        // XXX other checks on whether or not to run multi host search
+        if (this.multiHostSearchComponent == null || !this.searchMultiHosts || this.aggregationPropDef == null) {
+            return false;
+        }
 
-        return this.multiHostSearchComponent != null && this.searchMultiHosts;
+        Property aggregationProp = collection.getProperty(this.aggregationPropDef);
+        if (aggregationProp != null) {
+            for (Value value : aggregationProp.getValues()) {
+                if (isUrl(value.getStringValue())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isUrl(String stringValue) {
+        // XXX implement proper check for urls
+        return stringValue.startsWith("http");
     }
 
     @Required
@@ -227,6 +251,10 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
     public void setSearchMultiHosts(boolean searchMultiHosts) {
         this.searchMultiHosts = searchMultiHosts;
+    }
+
+    public void setAggregationPropDef(PropertyTypeDefinition aggregationPropDef) {
+        this.aggregationPropDef = aggregationPropDef;
     }
 
 }

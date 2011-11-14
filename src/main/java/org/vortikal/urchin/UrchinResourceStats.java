@@ -52,7 +52,8 @@ public class UrchinResourceStats implements InitializingBean {
     private String urchinUser;
     private String urchinPassword;
     private String dimensions = "&dimensions=u:request_stem";
-    private String metrics = "&metrics=u:visits";
+    private String metricVisit = "&metrics=u:visits";
+    private String metricPages = "&metrics=u:pages";
     private String table = "&table=12";
     private String idAndFilter;
 
@@ -137,19 +138,6 @@ public class UrchinResourceStats implements InitializingBean {
         return months;
     }
 
-    public int total(Resource r, String token, String id) {
-        Calendar urchinStartCal = Calendar.getInstance();
-        urchinStartCal.set(2011, 7, 1);
-        String urchinStartDate = "&start-date=" + urchinStartCal.get(Calendar.YEAR) + "-"
-                + (urchinStartCal.get(Calendar.MONTH) + 1) + "-" + urchinStartCal.get(Calendar.DATE);
-
-        Calendar today = Calendar.getInstance();
-        String todayDate = "&end-date=" + today.get(Calendar.YEAR) + "-" + (today.get(Calendar.MONTH) + 1) + "-"
-                + today.get(Calendar.DATE);
-
-        return fetch(r, token, urchinStartDate + todayDate, id, "total");
-    }
-
     public int thirtyTotal(Resource r, String token, String id) {
         Calendar ecal = Calendar.getInstance();
         Calendar scal = Calendar.getInstance();
@@ -166,26 +154,48 @@ public class UrchinResourceStats implements InitializingBean {
         return fetch(r, token, date, id, "thirty");
     }
 
-    public int weekTotal(Resource r, String token, String id) {
+    public int sixtyTotal(Resource r, String token, String id) {
         Calendar ecal = Calendar.getInstance();
         Calendar scal = Calendar.getInstance();
 
-        scal.setTimeInMillis(ecal.getTimeInMillis() - (86400000 * 7));
+        // Need to do this four times because 86400000 * 30 = -1702967296.
+        long half = 86400000 * 15;
+        scal.setTimeInMillis(ecal.getTimeInMillis() - half);
+        scal.setTimeInMillis(scal.getTimeInMillis() - half);
+        scal.setTimeInMillis(scal.getTimeInMillis() - half);
+        scal.setTimeInMillis(scal.getTimeInMillis() - half);
 
         String date = "&start-date=" + scal.get(Calendar.YEAR) + "-" + (scal.get(Calendar.MONTH) + 1) + "-"
                 + scal.get(Calendar.DATE) + "&end-date=" + ecal.get(Calendar.YEAR) + "-"
                 + (ecal.get(Calendar.MONTH) + 1) + "-" + ecal.get(Calendar.DATE);
 
-        return fetch(r, token, date, id, "week");
+        return fetch(r, token, date, id, "sixty");
     }
 
-    public int yesterdayTotal(Resource r, String token, String id) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(cal.getTimeInMillis() - 86400000);
+    public int visitsTotal(Resource r, String token, String id) {
+        Calendar urchinStartCal = Calendar.getInstance();
+        urchinStartCal.set(2011, 7, 1);
+        String urchinStartDate = "&start-date=" + urchinStartCal.get(Calendar.YEAR) + "-"
+                + (urchinStartCal.get(Calendar.MONTH) + 1) + "-" + urchinStartCal.get(Calendar.DATE);
 
-        String date = cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.DATE);
+        Calendar today = Calendar.getInstance();
+        String todayDate = "&end-date=" + today.get(Calendar.YEAR) + "-" + (today.get(Calendar.MONTH) + 1) + "-"
+                + today.get(Calendar.DATE);
 
-        return fetch(r, token, "&start-date=" + date + "&end-date=" + date, id, "yesterday");
+        return fetch(r, token, urchinStartDate + todayDate, id, "visitsTotal");
+    }
+
+    public int pagesTotal(Resource r, String token, String id) {
+        Calendar urchinStartCal = Calendar.getInstance();
+        urchinStartCal.set(2011, 7, 1);
+        String urchinStartDate = "&start-date=" + urchinStartCal.get(Calendar.YEAR) + "-"
+                + (urchinStartCal.get(Calendar.MONTH) + 1) + "-" + urchinStartCal.get(Calendar.DATE);
+
+        Calendar today = Calendar.getInstance();
+        String todayDate = "&end-date=" + today.get(Calendar.YEAR) + "-" + (today.get(Calendar.MONTH) + 1) + "-"
+                + today.get(Calendar.DATE);
+
+        return fetch(r, token, urchinStartDate + todayDate, id, "pagesTotal");
     }
 
     private int fetch(Resource r, String token, String date, String id, String key) {
@@ -198,7 +208,10 @@ public class UrchinResourceStats implements InitializingBean {
         url.append("?login=" + urchinUser + "&password=" + urchinPassword);
         url.append(date);
         url.append(dimensions);
-        url.append(metrics);
+        if (key.equals("pagesTotal"))
+            url.append(metricPages);
+        else
+            url.append(metricVisit);
         url.append(table);
         if ((idAndFilter = setIdAndFilter(id)) != null)
             url.append(idAndFilter);

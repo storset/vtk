@@ -67,8 +67,8 @@ public class UrchinResourceStatsController implements Controller {
         if ((id = request.getParameter("host")) == null)
             id = "www.uio.no";
 
-        int total = urs.total(resource, token, id);
-        if (total > 0) {
+        int visitsTotal = urs.visitsTotal(resource, token, id);
+        if (visitsTotal > 0) {
             URL[] hosts = new URL[12];
             String[] host = { "www.uio.no", "www.hf.uio.no", "www.khm.uio.no", "www.odont.uio.no", "www.sv.uio.no",
                     "www.tf.uio.no", "www.ub.uio.no", "www.uv.uio.no", "www.jus.uio.no", "www.uniforum.uio.no",
@@ -80,14 +80,14 @@ public class UrchinResourceStatsController implements Controller {
                 hosts[i] = base.addParameter("host", host[i]);
             }
 
-            model.put("ursTotal", total);
+            model.put("ursTotalVisits", visitsTotal);
             model.put("hosts", hosts);
             model.put("hostnames", hostnames);
             model.put("thisMonth", urs.thisMonth());
             model.put("ursMonths", urs.months(resource, token, id));
+            model.put("ursSixtyTotal", urs.sixtyTotal(resource, token, id));
             model.put("ursThirtyTotal", urs.thirtyTotal(resource, token, id));
-            model.put("ursWeekTotal", urs.weekTotal(resource, token, id));
-            model.put("ursYesterdayTotal", urs.yesterdayTotal(resource, token, id));
+            model.put("ursTotalPages", urs.pagesTotal(resource, token, id));
             model.put("ursNMonths", urs.nMonths());
         }
 

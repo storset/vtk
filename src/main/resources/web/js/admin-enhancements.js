@@ -97,6 +97,7 @@ vrtxAdmin.isMobileWebkitDevice = (vrtxAdmin.isIPhone || vrtxAdmin.isIPad || vrtx
 vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
 vrtxAdmin.supportsFileList = window.FileList;
 
+// Logging capabilities
 vrtxAdmin.hasConsole = typeof console !== "undefined";
 vrtxAdmin.hasConsoleLog = vrtxAdmin.hasConsole && console.log;
 vrtxAdmin.hasConsoleError = vrtxAdmin.hasConsole && console.error;

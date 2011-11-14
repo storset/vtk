@@ -231,6 +231,7 @@ $(document).ready(function () {
     $("#create-iframe").css("width", "162px");
   }
   
+  // Make breadcrumbs play along when you minimize window and have multiple rows of it
   adaptiveBreadcrumbs();
   
   // Move down resource menu when long title

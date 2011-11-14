@@ -51,7 +51,7 @@ function VrtxAdmin() {
   instance = new VrtxAdmin(); // instance
   instance.constructor = VrtxAdmin; // reset construction pointer
   //--
-  
+
   this.isIE = null;
   this.browserVersion = null;
   this.isIE7 = null;
@@ -64,6 +64,10 @@ function VrtxAdmin() {
   this.isMobileWebkitDevice = null;
   this.isWin = null;
   this.supportsFileAPI = null;
+  
+  this.hasConsole = null;
+  this.hasConsoleLog = null;
+  this.hasConsoleError = null;
   
   this.permissionsAutocompleteParams = null;
   
@@ -92,6 +96,10 @@ vrtxAdmin.isAndroid = /android/.test(ua); // http://www.gtrifonov.com/2011/04/15
 vrtxAdmin.isMobileWebkitDevice = (vrtxAdmin.isIPhone || vrtxAdmin.isIPad || vrtxAdmin.isAndroid);
 vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
 vrtxAdmin.supportsFileList = window.FileList;
+
+vrtxAdmin.hasConsole = typeof console !== "undefined";
+vrtxAdmin.hasConsoleLog = vrtxAdmin.hasConsole && console.log;
+vrtxAdmin.hasConsoleError = vrtxAdmin.hasConsole && console.error;
 
 // Upgrade easing algorithm from 'linear' to 'easeOutQuad' and 'easeInQuad'
 // -- if not < IE 9 (and not iPhone, iPad and Android devices)
@@ -1619,7 +1627,7 @@ VrtxAdmin.prototype.outerHTML = function(selector, subselector) {
 };
 
 VrtxAdmin.prototype.log = function(options) {
-  if(typeof console !== "undefined" && console.log) {
+  if(vrtxAdmin.hasConsoleLog) {
     if(options.args) {
       console.log("Vortex admin log -> " + options.args.callee.name + ": " + options.msg);
     } else {
@@ -1629,27 +1637,24 @@ VrtxAdmin.prototype.log = function(options) {
 };
 
 VrtxAdmin.prototype.error = function(options) {
-  if(typeof console !== "undefined") {
-    if(console.error) {
-      if(options.args) {
-        console.error("Vortex admin error -> " + options.args.callee.name + ": " + options.msg);
-      } else {
-        console.error("Vortex admin error: " + options.msg);     
-      }
-    } else if(console.log) {
-      if(options.args) {
-        console.log("Vortex admin error -> " + options.args.callee.name + ": " + options.msg);   
-      } else {
-        console.log("Vortex admin error: " + options.msg);        
-      } 
+  if(vrtxAdmin.hasConsoleError) {
+    if(options.args) {
+      console.error("Vortex admin error -> " + options.args.callee.name + ": " + options.msg);
+    } else {
+      console.error("Vortex admin error: " + options.msg);     
     }
+  } else if(vrtxAdmin.hasConsoleLog) {
+    if(options.args) {
+      console.log("Vortex admin error -> " + options.args.callee.name + ": " + options.msg);   
+    } else {
+      console.log("Vortex admin error: " + options.msg);        
+    } 
   }
 };
 
 VrtxAdmin.prototype.zebraTables = function(selector) {
-  if(!$("table" + selector).length || $("table" + selector).hasClass("revisions")) return;
-  // http://www.quirksmode.org/css/contents.html
-  if((vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) || vrtxAdmin.isOpera) {
+  if(!$("table" + selector).length || $("table" + selector).hasClass("revisions")) return; 
+  if((vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) || vrtxAdmin.isOpera) { // http://www.quirksmode.org/css/contents.html
     $("table" + selector + " tbody tr:odd").addClass("even"); // hmm.. somehow even is odd and odd is even
     $("table" + selector + " tbody tr:first-child").addClass("first");
   }

@@ -61,6 +61,9 @@ public class UrchinResourceStats implements InitializingBean {
     private Cache cache;
     private net.sf.ehcache.Element cached;
     private UrchinRes ur;
+    
+    private static long twentyDays = 86400000 * 20;
+    private static long fifteenDays = 86400000 * 15;
 
     public static class UrchinRes implements java.io.Serializable {
         private static final long serialVersionUID = 1L;
@@ -104,7 +107,7 @@ public class UrchinResourceStats implements InitializingBean {
         urchinStartCal.set(2011, 7, 1);
 
         int[] months = new int[13];
-        boolean now = true;
+        boolean today = true;
 
         Calendar cal = Calendar.getInstance();
 
@@ -117,9 +120,9 @@ public class UrchinResourceStats implements InitializingBean {
 
             String edate = "&end-date=" + cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH) + 1) + "-";
 
-            if (now) {
+            if (today) {
                 edate += cal.get(Calendar.DATE);
-                now = false;
+                today = false;
             } else
                 edate += cal.getActualMaximum(Calendar.DATE);
 
@@ -143,9 +146,8 @@ public class UrchinResourceStats implements InitializingBean {
         Calendar scal = Calendar.getInstance();
 
         // Need to do this twice because 86400000 * 30 = -1702967296.
-        long half = 86400000 * 15;
-        scal.setTimeInMillis(ecal.getTimeInMillis() - half);
-        scal.setTimeInMillis(scal.getTimeInMillis() - half);
+        scal.setTimeInMillis(ecal.getTimeInMillis() - fifteenDays);
+        scal.setTimeInMillis(scal.getTimeInMillis() - fifteenDays);
 
         String date = "&start-date=" + scal.get(Calendar.YEAR) + "-" + (scal.get(Calendar.MONTH) + 1) + "-"
                 + scal.get(Calendar.DATE) + "&end-date=" + ecal.get(Calendar.YEAR) + "-"
@@ -158,12 +160,10 @@ public class UrchinResourceStats implements InitializingBean {
         Calendar ecal = Calendar.getInstance();
         Calendar scal = Calendar.getInstance();
 
-        // Need to do this four times because 86400000 * 30 = -1702967296.
-        long half = 86400000 * 15;
-        scal.setTimeInMillis(ecal.getTimeInMillis() - half);
-        scal.setTimeInMillis(scal.getTimeInMillis() - half);
-        scal.setTimeInMillis(scal.getTimeInMillis() - half);
-        scal.setTimeInMillis(scal.getTimeInMillis() - half);
+        // Need to do this three times.
+        scal.setTimeInMillis(ecal.getTimeInMillis() - twentyDays);
+        scal.setTimeInMillis(scal.getTimeInMillis() - twentyDays);
+        scal.setTimeInMillis(scal.getTimeInMillis() - twentyDays);
 
         String date = "&start-date=" + scal.get(Calendar.YEAR) + "-" + (scal.get(Calendar.MONTH) + 1) + "-"
                 + scal.get(Calendar.DATE) + "&end-date=" + ecal.get(Calendar.YEAR) + "-"

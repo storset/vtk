@@ -1020,15 +1020,11 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
           $("#app-content .expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
             if(existExpandedFormIsReplacing) {
               var expanded = $(this);
-
-              // When we need the 'mode=' HTML when requesting a 'not mode=' service
-              if(fromModeToNotMode) {
+              if(fromModeToNotMode) { // When we need the 'mode=' HTML when requesting a 'not mode=' service
                 vrtxAdmin.serverFacade.getHtml(modeUrl, {
                   success: function (results, status, resp) {
                     var resultHtml = vrtxAdm.outerHTML(results, $.trim(resultSelectorClass));
-                    
-                    // If all went wrong
-                    if(!resultHtml) {
+                    if(!resultHtml) { // If all went wrong
                       vrtxAdm.error({args: args, msg: "trying to retrieve existing expandedForm from " + modeUrl + " returned null"});
                     }
                     var node = expanded.parent().parent();
@@ -1037,15 +1033,12 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
                     } else {
                       expanded.replaceWith(resultHtml).show(0);              
                     }
-
                     vrtxAdm.getAjaxFormShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
                   }
                 });
               } else {
                 var resultHtml = vrtxAdm.outerHTML(results, $.trim(resultSelectorClass));
-                
-                // If all went wrong
-                if(!resultHtml) {
+                if(!resultHtml) { // If all went wrong
                   vrtxAdm.error({args: args, msg: "trying to retrieve existing expandedForm from " + url + " returned null"});
                 }
                 var node = expanded.parent().parent();

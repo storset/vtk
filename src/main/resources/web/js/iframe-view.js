@@ -37,11 +37,7 @@ function resize(iframe) {
     var setHeight = 350;
     
     // When login redirect fails
-    var iSource = iframe.src;
-    if(iSource.indexOf("https://weblogin.uio.no/") != -1
-    || iSource.indexOf("https://weblogin-test.uio.no/") != -1
-    || iSource.indexOf("https://idp.feide.no/") != -1
-    || iSource.indexOf("https://idp-test.feide.no/") != -1) {
+    if(typeof iframe.contentWindow.document === "undefined") {
       setHeight = 700;
     } else {
       var computedHeight = iframe.contentWindow.document.body.offsetHeight + 45; 

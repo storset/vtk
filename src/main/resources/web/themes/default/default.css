@@ -1609,15 +1609,6 @@ body#vrtx-edit-plaintext .contextual-help {
   margin-bottom: 20px;
 }
 
-#vrtx-resource-visit-no-stat {
-  display: block;
-  position: relative;
-  left: 35%;
-  height: 30px;
-  padding: 30px;
-  font-size: 1.154em;
-}
-
 h3.resourceInfoHeader {
   clear: left;
 }

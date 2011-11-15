@@ -195,8 +195,12 @@ public abstract class QuerySearchComponent implements SearchComponent {
     }
 
     private boolean isUrl(String stringValue) {
-        // XXX implement proper check for urls
-        return stringValue.startsWith("http");
+        try {
+            URL.parse(stringValue);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Required

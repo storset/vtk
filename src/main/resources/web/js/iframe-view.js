@@ -35,9 +35,19 @@ function resize(iframe) {
     // Set inline style to equal the body height of the iframed content,
     // when body content is at least 350px height
     var setHeight = 350;
-    var computedHeight = iframe.contentWindow.document.body.offsetHeight + 45;
-    if (computedHeight > setHeight) {
-      setHeight = computedHeight;
+    
+    // When login redirect fails
+    var iSource = iframe.src;
+    if(iSource.indexOf("https://weblogin.uio.no/") != -1
+    || iSource.indexOf("https://weblogin-test.uio.no/") != -1
+    || iSource.indexOf("https://idp.feide.no/") != -1
+    || iSource.indexOf("https://idp-test.feide.no/") != -1) {
+      setHeight = 700;
+    } else {
+      var computedHeight = iframe.contentWindow.document.body.offsetHeight + 45; 
+      if (computedHeight > setHeight) {
+        setHeight = computedHeight;
+      }
     }
     iframe.style.height = setHeight + "px";
     if (parent) {

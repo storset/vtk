@@ -385,7 +385,7 @@ $(document).ready(function () {
         simultanSliding: false
       });
       vrtxAdmin.postAjaxForm({
-        selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit]",
+        selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper .submitButtons input",
         isReplacing: true,
         updateSelectors: [".permissions-" + privilegiesPermissions[i] + "-wrapper",
                           ".readPermission"],
@@ -415,7 +415,7 @@ $(document).ready(function () {
         transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
       });
       vrtxAdmin.postAjaxForm({
-        selector: "tr." +  privilegiesPermissionsInTable[i] + " input[type=submit]",
+        selector: "tr." +  privilegiesPermissionsInTable[i] + " .submitButtons input",
         isReplacing: true,
         updateSelectors: ["tr." +  privilegiesPermissionsInTable[i],
                           ".resource-menu.read-permissions"],

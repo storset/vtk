@@ -185,7 +185,7 @@
   </table>
 
   <#if urchinStats?exists>
-    <h3 class="resourceVisitHeader">
+    <h3 id="resourceVisitHeader">
       <@vrtx.msg code="resource.metadata.about.visit" default="Visit count"/>
     </h3>
     <!--[if lt IE 9]>
@@ -203,7 +203,7 @@
     <![endif]-->
     <script type="text/javascript"><!--
       $(function() {
-        vrtxAdmin.getAJAXHtmlAsText("${urchinStats}", "#vrtx-resourceInfoMain", "#vrtx-resource-visit-wrapper");
+        vrtxAdmin.getAJAXHtmlAsText("${urchinStats}", "#resourceVisitHeader", "#vrtx-resource-visit-wrapper");
       }); 
     // -->
     </script>

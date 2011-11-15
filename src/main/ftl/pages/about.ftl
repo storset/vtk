@@ -203,7 +203,7 @@
     <![endif]-->
     <script type="text/javascript"><!--
       $(function() {
-        vrtxAdmin.getAJAXHtmlAsText("${urchinStats}", "#resourceVisitHeader", "#vrtx-resource-visit-wrapper");
+        vrtxAdmin.getHtmlAsTextAsync("${urchinStats}", "#resourceVisitHeader", "#vrtx-resource-visit-wrapper");
       }); 
     // -->
     </script>

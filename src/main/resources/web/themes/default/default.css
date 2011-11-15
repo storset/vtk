@@ -1610,12 +1610,12 @@ body#vrtx-edit-plaintext .contextual-help {
 }
 
 #vrtx-resource-visit-no-stat {
-  position: relative;
-  top: 40%;
-  left: 45%;
-  font-size: 1.154em;
-  height: 80px;
   display: block;
+  position: relative;
+  left: 35%;
+  height: 30px;
+  padding: 30px;
+  font-size: 1.154em;
 }
 
 h3.resourceInfoHeader {

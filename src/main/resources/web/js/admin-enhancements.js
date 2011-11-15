@@ -1207,7 +1207,6 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
             }
             if (isReplacing) {
               form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
-                $(this).remove();
                 for(var i = updateSelectors.length; i--;) {
                   var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
                   $("#app-content " + updateSelectors[i]).replaceWith(outer);

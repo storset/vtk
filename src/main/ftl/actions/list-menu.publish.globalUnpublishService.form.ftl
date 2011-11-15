@@ -3,7 +3,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#if type = "publish.globalUnpublishResourceConfirmedService">
 <div class="globalmenu expandedForm">
-<form name="vrtx-publish-resource" id="vrtx-publish-resource" action="${url}" method="post">
+<form name="vrtx-unpublish-document" id="vrtx-unpublish-document" action="${url}" method="post">
   <h3>${vrtx.getMsg("confirm-publish.confirmation.unpublish")}?</h3>
   <div class="submitButtons">
     <div class="vrtx-focus-button">

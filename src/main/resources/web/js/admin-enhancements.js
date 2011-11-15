@@ -275,6 +275,14 @@ $(document).ready(function () {
         transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
         transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
     });
+    vrtxAdmin.postAjaxForm({
+        selector: "form[name=" + resourceMenuLeftServices[i] + "] input[type=submit]",
+        isReplacing: false,
+        updateSelectors: [],
+        transitionSpeed: vrtxAdmin.transitionSpeed,
+        transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
+        transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
+    });
   }
   
   var resourceMenuRightServices = ["vrtx-unpublish-document",
@@ -282,12 +290,20 @@ $(document).ready(function () {
 
   for (var i = resourceMenuRightServices.length; i--;) {
     vrtxAdmin.getAjaxForm({
-        selector: "#title-container #" + resourceMenuRightServices[i],
+        selector: "#title-container a#" + resourceMenuRightServices[i],
         selectorClass: "globalmenu",
         insertAfterOrReplaceClass: "ul#resourceMenuLeft",
         isReplacing: false,
         nodeType: "div",
         simultanSliding: true,
+        transitionSpeed: vrtxAdmin.transitionSpeed,
+        transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
+        transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
+    });
+    vrtxAdmin.postAjaxForm({
+        selector: "form[name=" + resourceMenuRightServices[i] + "] .submitButtons button",
+        isReplacing: false,
+        updateSelectors: [],
         transitionSpeed: vrtxAdmin.transitionSpeed,
         transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
         transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
@@ -323,7 +339,6 @@ $(document).ready(function () {
           transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp,
           post: true
         });
-      
       } else {
         vrtxAdmin.getAjaxForm({
           selector: "ul#tabMenuRight a#" + tabMenuServices[i],
@@ -333,6 +348,14 @@ $(document).ready(function () {
           nodeType: "div",
           funcComplete: function(p){ initFileUpload() },
           simultanSliding: true,
+          transitionSpeed: vrtxAdmin.transitionSpeed,
+          transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
+          transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
+        });
+        vrtxAdmin.postAjaxForm({
+          selector: "form[name=" + tabMenuServices[i] + "] input[type=submit]",
+          isReplacing: false,
+          updateSelectors: ["#contents"],
           transitionSpeed: vrtxAdmin.transitionSpeed,
           transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
           transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
@@ -362,7 +385,8 @@ $(document).ready(function () {
         simultanSliding: false
       });
       vrtxAdmin.postAjaxForm({
-        selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit][name=saveAction]",
+        selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper input[type=submit]",
+        isReplacing: true,
         updateSelectors: [".permissions-" + privilegiesPermissions[i] + "-wrapper",
                           ".readPermission"],
         errorContainer: "errorContainer",
@@ -391,7 +415,8 @@ $(document).ready(function () {
         transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
       });
       vrtxAdmin.postAjaxForm({
-        selector: "tr." +  privilegiesPermissionsInTable[i] + " input[type=submit][name=saveAction]",
+        selector: "tr." +  privilegiesPermissionsInTable[i] + " input[type=submit]",
+        isReplacing: true,
         updateSelectors: ["tr." +  privilegiesPermissionsInTable[i],
                           ".resource-menu.read-permissions"],
         errorContainer: "errorContainer",
@@ -436,6 +461,14 @@ $(document).ready(function () {
         isReplacing: true,
         nodeType: "tr",
         simultanSliding: true,
+        transitionSpeed: vrtxAdmin.transitionSpeed,
+        transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
+        transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
+      });
+      vrtxAdmin.postAjaxForm({
+        selector: "body#vrtx-about .prop-" + propsAbout[i] + " form input[type=submit]",
+        isReplacing: true,
+        updateSelectors: ["tr.prop-" + propsAbout[i]],
         transitionSpeed: vrtxAdmin.transitionSpeed,
         transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
         transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
@@ -1108,8 +1141,7 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitio
     $(nodeType + "." + selectorClass).prepareTableRowForSliding();
   }
   $(nodeType + "." + selectorClass).hide().slideDown(transitionSpeed, transitionEasingSlideDown, function() {
-    var $this = $(this);
-    $this.find("input[type=text]:first").focus();
+    $(this).find("input[type=text]:first").focus();
   });
 };
 
@@ -1117,6 +1149,7 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitio
  * POST form with AJAX
  *
  * @param option: selector: selector for links that should POST asynchronous form
+ *                isReplacing: replace instead of insert after
  *                updateSelectors: one or more selectors for markup that should update after POST (Array)
  *                errorContainer: selector for error container
  *                errorContainerInsertAfter: selector for where error container should be inserted after
@@ -1134,8 +1167,9 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
       vrtxAdm = this;   
 
   $("#app-content").delegate(options.selector, "click", function (e) {
-  
+
     var selector = options.selector,
+        isReplacing = options.isReplacing,
         updateSelectors = options.updateSelectors,
         errorContainer = options.errorContainer,
         errorContainerInsertAfter = options.errorContainerInsertAfter,
@@ -1151,27 +1185,34 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
     
     var isCancelAction = link.attr("name").toLowerCase().indexOf("cancel") != -1;
     
-    if(isCancelAction) {
-      form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
-        $(this).remove();
-      });
-    } else {
-      if((!funcProceedCondition || funcProceedCondition(form)) && post) {
-        var url = form.attr("action");
+    if(isCancelAction || (post && (!funcProceedCondition || funcProceedCondition(form)) )) {
+      var url = form.attr("action");
 
-        // TODO: test with form.serialize()
-        var vrtxAdmAppendInputNameValuePairsToDataString = vrtxAdm.appendInputNameValuePairsToDataString; // cache to function scope
-        var dataString = vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=text]"));
-        dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=file]"));
-        dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=radio]:checked"));
-        dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=checkbox]:checked"));
-        dataString += '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
-                    + "&" + link.attr("name");
-
-        vrtxAdmin.serverFacade.postHtml(url, dataString, {
-          success: function (results, status, resp) {
-            if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
-              vrtxAdm.displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
+      // TODO: test with form.serialize()
+      var vrtxAdmAppendInputNameValuePairsToDataString = vrtxAdm.appendInputNameValuePairsToDataString; // cache to function scope
+      var dataString = vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=text]"));
+      dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=file]"));
+      dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=radio]:checked"));
+      dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=checkbox]:checked"));
+      dataString += '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
+                  + "&" + link.attr("name");
+                      
+      vrtxAdmin.serverFacade.postHtml(url, dataString, {
+        success: function (results, status, resp) {
+          if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
+            vrtxAdm.displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
+          } else {
+            if (isReplacing) {
+              if(funcComplete) {
+                funcComplete();
+              }
+              form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
+                $(this).remove();
+                for(var i = updateSelectors.length; i--;) {
+                  var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
+                  $("#app-content " + updateSelectors[i]).replaceWith(outer);
+                }
+              });
             } else {
               for(var i = updateSelectors.length; i--;) {
                 var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
@@ -1182,14 +1223,14 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
               }
               form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
                 $(this).remove();
-              });
+              });            
             }
           }
-        });
-      }
+        }
+      });
+      e.stopPropagation(); 
+      e.preventDefault();
     }
-    e.stopPropagation(); 
-    e.preventDefault();
   });
 };
 

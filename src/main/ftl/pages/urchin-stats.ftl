@@ -36,6 +36,6 @@
         <span>${ursThirtyTotal}</span> <@vrtx.msg code="resource.metadata.about.visit.thirty" />
       </div>
     </div>
-    <!-- <span id="vrtx-resource-visit-info"><@vrtx.msg code="resource.metadata.about.visit.info" /> <a href="https://www.uio.no/for-ansatte/arbeidsstotte/nettpublisering/statistikk/">Urchin</a></span> -->
+    <span id="vrtx-resource-visit-info"><@vrtx.msg code="resource.metadata.about.visit.info" /></span>
   </div>
 </#if>

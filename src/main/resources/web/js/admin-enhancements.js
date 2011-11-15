@@ -1202,10 +1202,10 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
           if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
             vrtxAdm.displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
           } else {
+            if (funcComplete) {
+              funcComplete();
+            }
             if (isReplacing) {
-              if(funcComplete) {
-                funcComplete();
-              }
               form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
                 $(this).remove();
                 for(var i = updateSelectors.length; i--;) {
@@ -1217,9 +1217,6 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
               for(var i = updateSelectors.length; i--;) {
                 var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
                 $("#app-content " + updateSelectors[i]).replaceWith(outer);
-              }
-              if(funcComplete) {
-                funcComplete();
               }
               form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
                 $(this).remove();

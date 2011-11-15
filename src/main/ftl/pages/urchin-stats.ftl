@@ -36,5 +36,7 @@
     <span id="vrtx-resource-visit-info"><@vrtx.msg code="resource.metadata.about.visit.info" /></span>
   </div>
 <#else>
-  <p id="vrtx-resource-visit-no-stats"><@vrtx.msg code="resource.metadata.about.visit.nostats" /></p> 
+  <div id="vrtx-resource-visit">
+    <span id="vrtx-resource-visit-no-stat"><@vrtx.msg code="resource.metadata.about.visit.nostats" /></span>
+  </div>
 </#if>

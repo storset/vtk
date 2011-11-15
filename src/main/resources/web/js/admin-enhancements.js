@@ -22,8 +22,8 @@
  * 6.  Collectionlisting interaction
  * 7.  Permissions
  * 8.  Dropdowns
- * 9.  AJAX functions
- * 10. AJAX helper functions and server façade
+ * 9.  Async functions
+ * 10. Async helper functions and AJAX server façade
  * 11. Show and hide properties
  * 12. Featured articles
  * 13. CK browse server integration
@@ -256,7 +256,7 @@ $(document).ready(function () {
   // Zebra-tables
   vrtxAdmin.zebraTables(".resourceInfo");
   
-  // AJAX initialization
+  // Async initialization
 
   // Resource menus
   var resourceMenuLeftServices = ["renameService",
@@ -264,7 +264,7 @@ $(document).ready(function () {
                                   "manage\\.expandArchiveService"];
 
   for (var i = resourceMenuLeftServices.length; i--;) {
-    vrtxAdmin.getAjaxForm({
+    vrtxAdmin.getFormAsync({
         selector: "#title-container a#" + resourceMenuLeftServices[i],
         selectorClass: "globalmenu",
         insertAfterOrReplaceClass: "ul#resourceMenuLeft",
@@ -275,7 +275,7 @@ $(document).ready(function () {
         transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
         transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
     });
-    vrtxAdmin.postAjaxForm({
+    vrtxAdmin.completeFormAsync({
         selector: "form[name=" + resourceMenuLeftServices[i] + "] input[type=submit]",
         isReplacing: false,
         updateSelectors: [],
@@ -289,7 +289,7 @@ $(document).ready(function () {
                                    "vrtx-publish-document"];
 
   for (var i = resourceMenuRightServices.length; i--;) {
-    vrtxAdmin.getAjaxForm({
+    vrtxAdmin.getFormAsync({
         selector: "#title-container a#" + resourceMenuRightServices[i],
         selectorClass: "globalmenu",
         insertAfterOrReplaceClass: "ul#resourceMenuLeft",
@@ -300,7 +300,7 @@ $(document).ready(function () {
         transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
         transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
     });
-    vrtxAdmin.postAjaxForm({
+    vrtxAdmin.completeFormAsync({
         selector: "form[name=" + resourceMenuRightServices[i] + "] .submitButtons button",
         isReplacing: false,
         updateSelectors: [],
@@ -317,7 +317,7 @@ $(document).ready(function () {
 
     for (i = tabMenuServices.length; i--;) {
       if(tabMenuServices[i] != "fileUploadService") { // half-async for file upload
-        vrtxAdmin.getAjaxForm({
+        vrtxAdmin.getFormAsync({
           selector: "ul#tabMenuRight a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
@@ -328,7 +328,7 @@ $(document).ready(function () {
           transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
           transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
         });
-        vrtxAdmin.postAjaxForm({
+        vrtxAdmin.completeFormAsync({
           selector: "form[name=" + tabMenuServices[i] + "] input[type=submit]",
           updateSelectors: ["#contents"],
           errorContainer: "errorContainer",
@@ -340,7 +340,7 @@ $(document).ready(function () {
           post: true
         });
       } else {
-        vrtxAdmin.getAjaxForm({
+        vrtxAdmin.getFormAsync({
           selector: "ul#tabMenuRight a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
@@ -352,7 +352,7 @@ $(document).ready(function () {
           transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
           transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
         });
-        vrtxAdmin.postAjaxForm({
+        vrtxAdmin.completeFormAsync({
           selector: "form[name=" + tabMenuServices[i] + "] input[type=submit]",
           isReplacing: false,
           updateSelectors: ["#contents"],
@@ -375,7 +375,7 @@ $(document).ready(function () {
       initPermissionForm("expandedForm-" + privilegiesPermissions[i]);
     }
     for (i = privilegiesPermissions.length; i--;) {
-      vrtxAdmin.getAjaxForm({
+      vrtxAdmin.getFormAsync({
         selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax",
         selectorClass: "expandedForm-" + privilegiesPermissions[i],
         insertAfterOrReplaceClass: "div.permissions-" + privilegiesPermissions[i] + "-wrapper",
@@ -384,7 +384,7 @@ $(document).ready(function () {
         funcComplete: initPermissionForm,
         simultanSliding: false
       });
-      vrtxAdmin.postAjaxForm({
+      vrtxAdmin.completeFormAsync({
         selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper .submitButtons input",
         isReplacing: true,
         updateSelectors: [".permissions-" + privilegiesPermissions[i] + "-wrapper",
@@ -402,7 +402,7 @@ $(document).ready(function () {
                                          "read-processed"];
                                          
     for (i = privilegiesPermissionsInTable.length; i--;) {
-      vrtxAdmin.getAjaxForm({
+      vrtxAdmin.getFormAsync({
         selector: ".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax",
         selectorClass: privilegiesPermissionsInTable[i],
         insertAfterOrReplaceClass: "tr." + privilegiesPermissionsInTable[i],
@@ -414,7 +414,7 @@ $(document).ready(function () {
         transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
         transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
       });
-      vrtxAdmin.postAjaxForm({
+      vrtxAdmin.completeFormAsync({
         selector: "tr." +  privilegiesPermissionsInTable[i] + " .submitButtons input",
         isReplacing: true,
         updateSelectors: ["tr." +  privilegiesPermissionsInTable[i],
@@ -428,9 +428,9 @@ $(document).ready(function () {
       });
     }
     // Remove/add permissions
-    vrtxAdmin.ajaxRemove("input.removePermission", ".principalList");
-    vrtxAdmin.ajaxAdd("span.addGroup", ".principalList", ".groups-wrapper", "errorContainer");
-    vrtxAdmin.ajaxAdd("span.addUser", ".principalList", ".users-wrapper", "errorContainer");
+    vrtxAdmin.removePermissionAsync("input.removePermission", ".principalList");
+    vrtxAdmin.addPermissionAsync("span.addGroup", ".principalList", ".groups-wrapper", "errorContainer");
+    vrtxAdmin.addPermissionAsync("span.addUser", ".principalList", ".users-wrapper", "errorContainer");
   }
   
   // About property forms
@@ -454,7 +454,7 @@ $(document).ready(function () {
       ];
 
     for (i = propsAbout.length; i--;) {
-      vrtxAdmin.getAjaxForm({
+      vrtxAdmin.getFormAsync({
         selector: "body#vrtx-about .prop-" + propsAbout[i] + " a.vrtx-button-small",
         selectorClass: "expandedForm-prop-" + propsAbout[i],
         insertAfterOrReplaceClass: "tr.prop-" + propsAbout[i],
@@ -465,7 +465,7 @@ $(document).ready(function () {
         transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
         transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
       });
-      vrtxAdmin.postAjaxForm({
+      vrtxAdmin.completeFormAsync({
         selector: "body#vrtx-about .prop-" + propsAbout[i] + " form input[type=submit]",
         isReplacing: true,
         updateSelectors: ["tr.prop-" + propsAbout[i]],
@@ -962,11 +962,11 @@ function adaptiveBreadcrumbs() {
 
 
 /*-------------------------------------------------------------------*\
-    9. AJAX functions	
+    9. Async functions	
 \*-------------------------------------------------------------------*/
 
 /**
- * GET form with AJAX
+ * Retrieve form async
  *
  * @param options: selector: selector for links that should GET asynchronous form
  *                 selectorClass: selector for form
@@ -981,7 +981,7 @@ function adaptiveBreadcrumbs() {
  *                 transitionEasingSlideUp: transition easing algorithm for slideUp()
  */
 
-VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
+VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
   var args = arguments, // this function
       vrtxAdm = this; // use prototypal hierarchy 
 
@@ -1080,7 +1080,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
                     } else {
                       expanded.replaceWith(resultHtml).show(0);              
                     }
-                    vrtxAdm.getAjaxFormShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
+                    vrtxAdm.getFormAsyncShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
                   }
                 });
               } else {
@@ -1104,12 +1104,12 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
               }
             }
             if(!simultanSliding && !fromModeToNotMode) {
-              vrtxAdm.getAjaxFormShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
+              vrtxAdm.getFormAsyncShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
             }
           });
         }
         if ((!existExpandedForm || simultanSliding) && !fromModeToNotMode) {
-          vrtxAdm.getAjaxFormShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
+          vrtxAdm.getFormAsyncShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
         }
       }
     });
@@ -1119,7 +1119,7 @@ VrtxAdmin.prototype.getAjaxForm = function getAjaxForm(options) {
   });
 };
 
-VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form) {
+VrtxAdmin.prototype.getFormAsyncShow = function(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form) {
   var vrtxAdm = this,
       insertAfterOrReplaceClass = options.insertAfterOrReplaceClass,
       isReplacing = options.isReplacing,
@@ -1146,7 +1146,7 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitio
 };
 
 /**
- * POST form with AJAX
+ * Complete form async
  *
  * @param option: selector: selector for links that should POST asynchronous form
  *                isReplacing: replace instead of insert after
@@ -1159,10 +1159,10 @@ VrtxAdmin.prototype.getAjaxFormShow = function(options, selectorClass, transitio
  *                transitionEasing: transition easing algorithm
  *                transitionEasingSlideDown: transition easing algorithm for slideDown()
  *                transitionEasingSlideUp: transition easing algorithm for slideUp()
- *                post: actually post
+ *                post: post also or only cancel
  */
 
-VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
+VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
   var args = arguments,
       vrtxAdm = this;   
 
@@ -1231,13 +1231,13 @@ VrtxAdmin.prototype.postAjaxForm = function postAjaxForm(options) {
 };
 
 /**
- * POST remove-links (value is in the name)
+ * Remove permission async (value is in the name)
  * 
  * @param selector: selector for links that should post asynchronous
  * @param updateSelector: selector for markup to update
  */
 
-VrtxAdmin.prototype.ajaxRemove = function ajaxRemove(selector, updateSelector) {
+VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selector, updateSelector) {
   var args = arguments,
       vrtxAdm = this;
 
@@ -1262,14 +1262,14 @@ VrtxAdmin.prototype.ajaxRemove = function ajaxRemove(selector, updateSelector) {
 };
 
 /**
- * POST add-links (values is in the textfield)
+ * Add permission async (values is in the textfield)
  * 
  * @param selector: selector for links that should post asynchronous
  * @param updateSelector: selector for markup to update
  * @param errorContainer: selector for error container
  */
 
-VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorContainerInsertAfter, errorContainer) {
+VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, updateSelector, errorContainerInsertAfter, errorContainer) {
   var args = arguments;
   var vrtxAdm = this;
 
@@ -1304,13 +1304,13 @@ VrtxAdmin.prototype.ajaxAdd = function ajaxAdd(selector, updateSelector, errorCo
 };
 
 /**
- * GET HTML as text
+ * Retrieve HTML async as text
  * 
  * @param url: url that retrieves HTML-text
  * @param insertAfterSelector: where to insert the HTML
  * @param wrapperSelector: wrapper for the HTML
  */
-VrtxAdmin.prototype.getAJAXHtmlAsText = function getAJAXHtmlAsText(url, insertAfterSelector, wrapperSelector) {
+VrtxAdmin.prototype.getHtmlAsTextAsync = function getHtmlAsTextAsync(url, insertAfterSelector, wrapperSelector) {
   var args = arguments;
   var vrtxAdm = this;
 
@@ -1341,7 +1341,7 @@ VrtxAdmin.prototype.getAJAXHtmlAsText = function getAJAXHtmlAsText(url, insertAf
 
 
 /*-------------------------------------------------------------------*\
-    10. AJAX helper functions and server façade	
+    10. Async helper functions and AJAX server façade	
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function(inputFields) {

@@ -2,9 +2,6 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#if thisMonth?exists && (ursTotalVisits > 0)>
-  <h3 class="resourceVisitHeader">
-    <@vrtx.msg code="resource.metadata.about.visit" default="Visit count"/>
-  </h3>
     
   <#assign months = [vrtx.getMsg("jan"), vrtx.getMsg("feb"), vrtx.getMsg("mar"), vrtx.getMsg("apr"), vrtx.getMsg("may"), vrtx.getMsg("jun"),
     vrtx.getMsg("jul"), vrtx.getMsg("aug"), vrtx.getMsg("sep"), vrtx.getMsg("oct"), vrtx.getMsg("nov"), vrtx.getMsg("dec")]>
@@ -38,4 +35,6 @@
     </div>
     <span id="vrtx-resource-visit-info"><@vrtx.msg code="resource.metadata.about.visit.info" /></span>
   </div>
+<#else>
+  <@vrtx.msg code="resource.metadata.about.visit.nostats" />  
 </#if>

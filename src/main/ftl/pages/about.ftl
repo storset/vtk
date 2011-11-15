@@ -185,6 +185,9 @@
   </table>
 
   <#if urchinStats?exists>
+    <h3 class="resourceVisitHeader">
+      <@vrtx.msg code="resource.metadata.about.visit" default="Visit count"/>
+    </h3>
     <!--[if lt IE 9]>
       <style type="text/css">
         .vrtx-resource-visit-stat {

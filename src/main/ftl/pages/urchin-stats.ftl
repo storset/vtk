@@ -38,8 +38,7 @@
   </div>
 <#else>
   <p id="vrtx-resource-visit-no-stat"><@vrtx.msg code="resource.metadata.about.visit.nostats" />
-  <#assign creationTime = resourceContext.currentResource.getCreationTime()?string("MMdd") />
-  <#if (creationTime?number >= aWeekAgo?string("MMdd")?number)>
+  <#if newResource>
     <@vrtx.msg code="resource.metadata.about.visit.nostats.new-resource" />
   </#if>
   </p>

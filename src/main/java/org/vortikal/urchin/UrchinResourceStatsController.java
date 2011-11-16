@@ -92,11 +92,16 @@ public class UrchinResourceStatsController implements Controller {
             model.put("ursTotalPages", urs.pagesTotal(resource, token, id));
             model.put("ursNMonths", urs.nMonths());
         } else {
+          // Whether or not it is a resource created within the last week
           Calendar calendar = Calendar.getInstance();
-          calendar.setTime(new Date());
           calendar.add(Calendar.DAY_OF_YEAR, -7);
-          Date aWeekAgo = calendar.getTime();
-          model.put("aWeekAgo", aWeekAgo);      
+          Date aWeekAgoTime = calendar.getTime();
+          Date creationTime = resource.getCreationTime();
+          boolean newResource = false;
+          if(aWeekAgoTime.compareTo(creationTime)<0) {
+              newResource = true;   
+          }
+          model.put("newResource", newResource);      
         }
         
         return new ModelAndView(this.viewName, model);

@@ -204,23 +204,25 @@ $(window).load(function () {
 
 /* Store initial values of inputfields */
 function storeInitPropValues() {
-  var inputFields = $("input").not("[type=submit]").not("[type=button]")
-                              .not("[type=checkbox]").not("[type=radio]");
+  var contents = $("#contents");
+
+  var inputFields = contents.find("input").not("[type=submit]").not("[type=button]")
+                                          .not("[type=checkbox]").not("[type=radio]");
   for(var i = 0, len = inputFields.length; i < len; i++) {
     INITIAL_INPUT_FIELDS[i] = inputFields[i].value;
   }
   
-  var selects = $("select");
+  var selects = contents.find("select");
   for(var i = 0, len = selects.length; i < len; i++) {
     INITIAL_SELECTS[i] = selects[i].value;
   }
   
-  var checkboxes = $("input[type=checkbox]:checked");
+  var checkboxes = contents.find("input[type=checkbox]:checked");
   for(var i = 0, len = checkboxes.length; i < len; i++) {
     INITIAL_CHECKBOXES[i] = checkboxes[i].name;
   }
   
-  var radioButtons = $("input[type=radio]:checked");
+  var radioButtons = contents.find("input[type=radio]:checked");
   for(var i = 0, len = radioButtons.length; i < len; i++) {
     INITIAL_RADIO_BUTTONS[i] = radioButtons[i].name + " " + radioButtons[i].value;
   }
@@ -229,31 +231,33 @@ function storeInitPropValues() {
 
 function unsavedChangesInEditor() {
   if (!NEED_TO_CONFIRM) return false;
+  
+  var contents = $("#contents");
 
   // Inputfields (not submit and button)
-  var currentStateOfInputFields = $("input").not("[type=submit]").not("[type=button]")
-                                            .not("[type=checkbox]").not("[type=radio]");
+  var currentStateOfInputFields = contents.find("input").not("[type=submit]").not("[type=button]")
+                                                        .not("[type=checkbox]").not("[type=radio]");
   var textLen = currentStateOfInputFields.length;
   if(textLen != INITIAL_INPUT_FIELDS.length) { // if something is removed or added
     return true;
   }
 
   // Selects
-  var currentStateOfSelects = $("select");
+  var currentStateOfSelects = contents.find("select");
   var selectsLen = currentStateOfSelects.length;
   if( selectsLen != INITIAL_SELECTS.length) { // if something is removed or added
     return true;
   }
   
   // Checkboxes
-  var currentStateOfCheckboxes = $("input[type=checkbox]:checked");
+  var currentStateOfCheckboxes = contents.find("input[type=checkbox]:checked");
   var checkboxLen = currentStateOfCheckboxes.length;
   if(checkboxLen != INITIAL_CHECKBOXES.length) { // if something is removed or added
     return true;
   }
   
   // Radio buttons
-  var currentStateOfRadioButtons = $("input[type=radio]:checked");
+  var currentStateOfRadioButtons = contents.find("input[type=radio]:checked");
   var radioLen = currentStateOfRadioButtons.length;
   if(radioLen != INITIAL_RADIO_BUTTONS.length) { // if something is removed or added
     return true;
@@ -289,7 +293,7 @@ function unsavedChangesInEditor() {
   //---
 
   // Textareas (CK->checkDirty())
-  var currentStateOfTextFields = $("textarea");
+  var currentStateOfTextFields = contents.find("textarea");
   for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
     if (typeof (CKEDITOR) !== "undefined") {
       if (getCkInstance(currentStateOfTextFields[i].name)) {

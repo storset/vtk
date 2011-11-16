@@ -106,14 +106,14 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
 
 #TB_ajaxWindowTitle{
     float: none;
-    margin: 20px 0 0 20px;
+    margin: 0 0 0 20px;
     padding: 0px;
 }
 
 #TB_title{
   min-height: 31px;
   background-color: transparent;
-  margin: 0;
+  margin: 20px 0 0 0;
   padding: 0 70px 0 0;
   font-size: 1.667em; /* 20px <- 12px <- 13px */
   position: relative;

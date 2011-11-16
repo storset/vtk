@@ -61,26 +61,33 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         int userDisplayPage = featuredArticlesPage;
 
         boolean atLeastOneFeaturedArticle = false;
+        Listing featuredArticles = null;
         if (collection.getProperty(searcher.getFeaturedArticlesPropDef()) != null) {
-            atLeastOneFeaturedArticle = this.searcher.getFeaturedArticles(request, collection, 1, 1, 0).size() > 0;
+            featuredArticles = this.searcher.getFeaturedArticles(request, collection, 1, 1, 0);
+            atLeastOneFeaturedArticle = featuredArticles != null && featuredArticles.size() > 0;
         }
 
         List<Listing> results = new ArrayList<Listing>();
-        Listing featuredArticles = null;
         if (request.getParameter(ListingPager.PREVIOUS_PAGE_PARAM) == null) {
             // Search featured articles
             featuredArticles = this.searcher.getFeaturedArticles(request, collection, featuredArticlesPage, pageLimit,
                     0);
-            totalHits += featuredArticles.getTotalHits();
-            featuredArticlesTotalHits = featuredArticles.getTotalHits();
-            if (featuredArticles.size() > 0) {
-                results.add(featuredArticles);
+            if (featuredArticles != null) {
+                int hits = featuredArticles.getTotalHits();
+                totalHits += hits;
+                featuredArticlesTotalHits = hits;
+                if (featuredArticles.size() > 0) {
+                    results.add(featuredArticles);
+                }
             }
         } else {
             featuredArticles = this.searcher.getFeaturedArticles(request, collection, featuredArticlesPage, 0, 0);
-            totalHits += featuredArticles.getTotalHits();
-            featuredArticlesTotalHits = featuredArticles.getTotalHits();
-            featuredArticles = null;
+            if (featuredArticles != null) {
+                int hits = featuredArticles.getTotalHits();
+                totalHits += hits;
+                featuredArticlesTotalHits = hits;
+                featuredArticles = null;
+            }
         }
 
         if (featuredArticles == null || featuredArticles.size() == 0) {
@@ -114,9 +121,9 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         }
         Service service = RequestContext.getRequestContext().getService();
         URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
-        
-        List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, featuredArticlesTotalHits,
-                baseURL, true, userDisplayPage);
+
+        List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit,
+                featuredArticlesTotalHits, baseURL, true, userDisplayPage);
         model.put(MODEL_KEY_SEARCH_COMPONENTS, results);
         model.put(MODEL_KEY_PAGE, userDisplayPage);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);

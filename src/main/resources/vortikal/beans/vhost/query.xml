@@ -35,17 +35,7 @@
           <property name="wrappedEvaluator">
             <bean class="org.vortikal.repository.search.preprocessor.CurrentFolderExpressionEvaluator" />
           </property>
-        </bean>
-        
-        <!-- TODO: Wrap FeaturedArticlesExpressionEvaluator, like CurrentFolderExpressionEvaluator??? -->
-        <bean class="org.vortikal.repository.search.preprocessor.FeaturedArticlesExpressionEvaluator">
-          <property name="featuredArticlesPropDef" ref="articleListing.featuredArticlesPropDef" />
-        </bean>
-              
-        <bean class="org.vortikal.repository.search.preprocessor.SubfoldersExpressionEvaluator">
-          <property name="recursiveListingPropDef" ref="articleListing.recursiveListingPropDef" />
-          <property name="subfolderPropDef" ref="articleListing.recursiveListingSubfoldersPropDef" />
-        </bean>
+        </bean>        
 
         <bean class="org.vortikal.repository.search.preprocessor.CurrentTimeExpressionEvaluator" />
         

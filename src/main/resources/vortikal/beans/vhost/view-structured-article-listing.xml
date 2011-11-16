@@ -7,9 +7,7 @@
     <property name="queryBuilders">
       <list>
         <ref bean="articleListing.listingUriQueryBuilder" />
-        <bean parent="queryStringParser">
-          <property name="queryString" value="(uri NOT IN {$featuredArticles}) AND (type IN structured-article))" />
-        </bean>
+        <ref bean="structured.articleListing.defaultQueryBuilder" />
       </list>
     </property>
     <property name="searchSorting" ref="structured.articleListing.searchSorting" />
@@ -29,26 +27,19 @@
     <property name="name" value="structured.articleListing.featuredArticles" />
     <property name="queryBuilders">
       <list>
-        <bean parent="queryStringParser">
-          <property name="queryString" value="(uri IN {$featuredArticles}) AND (type IN structured-article)" />
-        </bean>
+        <ref bean="structured.articleListing.featuredArticlesQueryBuilder" />
       </list>
     </property>
     <property name="searchSorting" ref="structured.articleListing.searchSorting" />
     <property name="configurablePropertySelectPointers" ref="article.configurablePropertySelectPointersList" />
   </bean>
 
-  <!-- Fetch articles from explicitly specified subfolders -->
-  <bean id="structured.articleListing.subfoldersSearchComponent" parent="articleListing.subfoldersSearchComponent">
-    <property name="name" value="structured.articleListing.subfolderArticles" />
-    <property name="queryBuilders">
-      <list>
-        <bean parent="queryStringParser">
-          <property name="queryString" value="(uri IN {$subfolders}* AND uri NOT IN {$featuredArticles}) AND (type IN structured-article)" />
-        </bean>
-      </list>
-    </property>
-    <property name="searchSorting" ref="structured.articleListing.searchSorting" />
+  <bean id="structured.articleListing.defaultQueryBuilder" parent="articleListing.defaultQueryBuilder">
+    <property name="resourceType" value="structured-article" />
+  </bean>
+
+  <bean id="structured.articleListing.featuredArticlesQueryBuilder" parent="structured.articleListing.defaultQueryBuilder">
+    <property name="invert" value="true" />
   </bean>
 
   <bean id="structured.articleListing.view" parent="freemarkerView">

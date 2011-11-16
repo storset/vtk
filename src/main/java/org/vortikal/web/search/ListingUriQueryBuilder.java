@@ -30,7 +30,9 @@
  */
 package org.vortikal.web.search;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,6 +41,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
@@ -51,6 +54,7 @@ public class ListingUriQueryBuilder implements QueryBuilder {
     private PropertyTypeDefinition recursivePropDef;
     private AggregationResolver aggregationResolver;
     private boolean defaultRecursive;
+    private PropertyTypeDefinition subfolderPropDef;
 
     @Override
     public Query build(Resource collection, HttpServletRequest request) {
@@ -61,16 +65,55 @@ public class ListingUriQueryBuilder implements QueryBuilder {
         // The default query, simple uri match on the current resource
         UriPrefixQuery uriPrefixQuery = new UriPrefixQuery(collectionUri.toString());
 
-        // If no recursion is defined, supplement the default query with limited
-        // depth when searching
         Property recursiveProp = collection.getProperty(this.recursivePropDef);
-        if (!this.defaultRecursive || (recursiveProp != null && !recursiveProp.getBooleanValue())) {
-            AndQuery and = new AndQuery();
-            UriDepthQuery uriDepthQuery = new UriDepthQuery(collectionUri.getDepth() + 1);
-            and.add(uriPrefixQuery);
-            and.add(uriDepthQuery);
-            baseQuery = and;
+
+        // If explicit subfolders to retrieve from are defined
+        Property subfolderProp = null;
+        if (this.subfolderPropDef != null) {
+            subfolderProp = collection.getProperty(this.subfolderPropDef);
+        }
+        if (subfolderProp != null && recursiveProp == null) {
+            Set<String> set = new HashSet<String>();
+            for (Value value : subfolderProp.getValues()) {
+                try {
+                    String subfolder = value.getStringValue();
+                    if (subfolder.startsWith("/")) {
+                        // Absolute paths are not allowed!!!
+                        continue;
+                    }
+                    subfolder = subfolder.endsWith("/") ? subfolder.substring(0, subfolder.lastIndexOf("/"))
+                            : subfolder;
+                    Path subfolderPath = collectionUri.expand(subfolder);
+                    subfolder = subfolderPath.toString().concat("/");
+                    set.add(subfolder);
+                } catch (IllegalArgumentException iae) {
+                    // Just continue
+                }
+            }
+            if (set.size() > 0) {
+                if (set.size() == 1) {
+                    baseQuery = new UriPrefixQuery(set.iterator().next());
+                } else {
+                    OrQuery or = new OrQuery();
+                    for (String s : set) {
+                        or.add(new UriPrefixQuery(s));
+                    }
+                    baseQuery = or;
+                }
+            }
         } else {
+            // If no recursion is defined, supplement the default query with
+            // limited depth when searching
+            if (!this.defaultRecursive || (recursiveProp != null && !recursiveProp.getBooleanValue())) {
+                AndQuery and = new AndQuery();
+                UriDepthQuery uriDepthQuery = new UriDepthQuery(collectionUri.getDepth() + 1);
+                and.add(uriPrefixQuery);
+                and.add(uriDepthQuery);
+                baseQuery = and;
+            }
+        }
+
+        if (baseQuery == null) {
             baseQuery = uriPrefixQuery;
         }
 
@@ -102,6 +145,10 @@ public class ListingUriQueryBuilder implements QueryBuilder {
 
     public void setDefaultRecursive(boolean defaultRecursive) {
         this.defaultRecursive = defaultRecursive;
+    }
+
+    public void setSubfolderPropDef(PropertyTypeDefinition subfolderPropDef) {
+        this.subfolderPropDef = subfolderPropDef;
     }
 
 }

@@ -49,10 +49,7 @@ public class ArticleListingSearcher {
 
     private SearchComponent defaultSearch;
     private SearchComponent featuredArticlesSearch;
-    private SearchComponent subfoldersSearch;
 
-    private PropertyTypeDefinition subfolderPropDef;
-    private PropertyTypeDefinition recursiveListingPropDef;
     private PropertyTypeDefinition featuredArticlesPropDef;
 
     public Listing getDefaultArticles(HttpServletRequest request, Resource collection, int page, int pageLimit,
@@ -63,9 +60,13 @@ public class ArticleListingSearcher {
     public Listing getFeaturedArticles(HttpServletRequest request, Resource collection, int page, int pageLimit,
             int offset) throws Exception {
 
+        Property featuredArticlesProp = collection.getProperty(featuredArticlesPropDef);
+        if (featuredArticlesProp == null) {
+            return null;
+        }
+
         Listing result = this.featuredArticlesSearch.execute(request, collection, page, pageLimit, offset);
         if (result.size() > 1) {
-            Property featuredArticlesProp = collection.getProperty(featuredArticlesPropDef);
             sortFeaturedArticles(result, featuredArticlesProp);
         }
 
@@ -74,15 +75,7 @@ public class ArticleListingSearcher {
 
     public Listing getArticles(HttpServletRequest request, Resource collection, int page, int pageLimit, int offset)
             throws Exception {
-
-        Property recursiveListing = collection.getProperty(recursiveListingPropDef);
-        Property subfolders = collection.getProperty(subfolderPropDef);
-        if ((recursiveListing != null && recursiveListing.getBooleanValue() == false)
-                || (subfolders == null || subfolders.getValues().length == 0)) {
-            return this.defaultSearch.execute(request, collection, page, pageLimit, offset);
-        }
-
-        return this.subfoldersSearch.execute(request, collection, page, pageLimit, offset);
+        return this.defaultSearch.execute(request, collection, page, pageLimit, offset);
     }
 
     // Sort the featured articles listing according to the propdef
@@ -108,19 +101,6 @@ public class ArticleListingSearcher {
     @Required
     public void setFeaturedArticlesSearch(SearchComponent featuredArticlesSearch) {
         this.featuredArticlesSearch = featuredArticlesSearch;
-    }
-
-    @Required
-    public void setSubfoldersSearch(SearchComponent subfoldersSearch) {
-        this.subfoldersSearch = subfoldersSearch;
-    }
-
-    public void setSubfolderPropDef(PropertyTypeDefinition subfolderPropDef) {
-        this.subfolderPropDef = subfolderPropDef;
-    }
-
-    public void setRecursiveListingPropDef(PropertyTypeDefinition recursiveListingPropDef) {
-        this.recursiveListingPropDef = recursiveListingPropDef;
     }
 
     public void setFeaturedArticlesPropDef(PropertyTypeDefinition featuredArticlesPropDef) {

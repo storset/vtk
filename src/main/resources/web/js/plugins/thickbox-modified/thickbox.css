@@ -1,4 +1,4 @@
-/* USIT changed: opacity from 0.75->0.35 + remove padding for paragraph-tags + Mod at the bottom
+/* USIT modified */
 
 /* ----------------------------------------------------------------------------------------------------------------*/
 /* ---------->>> global settings needed for thickbox <<<-----------------------------------------------------------*/
@@ -55,11 +55,15 @@
 	z-index: 102;
 	color:#000000;
 	display:none;
-	border: 4px solid #525252;
+	border: border: 2px solid #646464;
 	text-align:left;
 	top:50%;
 	left:50%;
+    border-radius: 8px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
 }
+
 
 * html #TB_window { /* ie6 hack */
 position: absolute;
@@ -87,22 +91,32 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
 	float:right;
 }
 
-#TB_closeAjaxWindow{
-	padding:7px 10px 5px 0;
-	margin-bottom:1px;
-	text-align:right;
-	float:right;
+#TB_closeAjaxWindow {
+  overflow: hidden;
+  text-indent: -9999px;
+  width: 31px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  right: 25px;
+  top: 0px;
+  position: absolute;
+  text-align: left;
 }
 
 #TB_ajaxWindowTitle{
-	float:left;
-	padding:7px 0 5px 10px;
-	margin-bottom:1px;
+    float: none;
+    margin: 20px 0 0 20px;
+    padding: 0px;
 }
 
 #TB_title{
-	background-color:#e8e8e8;
-	height:27px;
+  min-height: 31px;
+  background-color: transparent;
+  margin: 0;
+  padding: 0 70px 0 0;
+  font-size: 1.667em; /* 20px <- 12px <- 13px */
+  position: relative;
 }
 
 #TB_ajaxContent{
@@ -116,12 +130,6 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
 #TB_ajaxContent.TB_modal{
 	padding:15px;
 }
-
-/*
-#TB_ajaxContent p{
-	padding:5px 0px 5px 0px;
-}
-*/
 
 #TB_load{
 	position: fixed;
@@ -166,15 +174,6 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
 	_margin-bottom:1px;
 }
 
-/* USIT Thickbox mod */
-
-#TB_window {
-  border-radius: 8px;
-  -moz-border-radius: 8px;
-  -webkit-border-radius: 8px;
-  border: 2px solid #646464 !important;
-}
-
 #TB_overlay,
 #TB_window {
   z-index: 9999 !important;
@@ -186,35 +185,6 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
   max-height: 99999px;
 }
 
-#TB_title {
-  height: auto !important;
-  background-color: transparent !important;
-  margin: 0;
-  padding-right: 70px;
-  font-size: 1.667em; /* 20px <- 12px <- 13px */
-  position: relative;
-}
-
-#TB_ajaxWindowTitle {
-  float: none !important;
-  margin: 30px 0 0 30px !important;
-  padding: 0px !important;
-}
-
-#TB_closeAjaxWindow {
-  display: none;
-  overflow: hidden;
-  text-indent: -9999px;
-  width: 31px;
-  height: 32px;
-  padding: 0 !important;
-  margin: 0 !important;
-  right: 25px;
-  top: 0px;
-  position: absolute;
-  text-align: left !important;
-}
-
 #TB_closeAjaxWindow a {
   background: url(../../../themes/default/images/thickbox-close.png) no-repeat center center;
   overflow: hidden;
@@ -223,13 +193,3 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
   display: block;
   text-indent: -9999px;
 }
-
-#TB_closeAjaxWindow.show-close-window {
-  display: block;
-}
-
-#TB_ajaxContent {
-  padding: 2px 0 30px 30px !important;
-}
-
-/* ^ USIT Thickbox mod */

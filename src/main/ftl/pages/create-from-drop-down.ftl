@@ -33,7 +33,7 @@
        $("#TB_ajaxContent").css("background", "url(/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif) no-repeat center 158px");
     
        var timestamp = 1 - new Date();
-       $("#TB_closeAjaxWindow").addClass("show-close-window");
+       $("#TB_title").addClass("show-close-window");
        var pathNum = 0;
        $(".tree-create").treeview({
          animated: "fast",

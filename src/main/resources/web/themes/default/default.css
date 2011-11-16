@@ -937,6 +937,30 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   height: 30px;
 }
 
+#TB_ajaxWindowTitle {
+  margin: 30px 0 0 30px !important;
+}
+
+#TB_closeAjaxWindow {
+  display: none;
+}
+
+#TB_title {
+  padding-right: 0px !important;
+}
+
+#TB_title.show-close-window {
+  padding-right: 70px !important;
+}
+
+#TB_title.show-close-window #TB_closeAjaxWindow {
+  display: block;
+}
+
+#TB_ajaxContent {
+  padding: 2px 0 30px 30px !important;
+}
+
 /* ^ Create dialog */
 
 /* ^ Tooltip */

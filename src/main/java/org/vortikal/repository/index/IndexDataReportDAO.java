@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -82,10 +83,8 @@ public class IndexDataReportDAO implements DataReportDAO {
     private IndexDataReportScopeFilterFactory scopeFilterFactory;
     private int maxIndexDirtyAge = 0;
 
-    @SuppressWarnings("unchecked")
     @Override
-    public List<Pair<Value, Integer>>
-            executePropertyFrequencyValueQuery(PropertyValueFrequencyQuery query)
+    public List<Pair<Value, Integer>> executePropertyFrequencyValueQuery(PropertyValueFrequencyQuery query)
             throws DataReportException {
 
         IndexReader reader = null;
@@ -96,7 +95,8 @@ public class IndexDataReportDAO implements DataReportDAO {
 
             BooleanFilter mainFilter = new BooleanFilter();
 
-            // Optimization: only consider resources that actually have the property in question
+            // Optimization: only consider resources that actually have the
+            // property in question
             Filter propertyExistsFilter = getPropertyExistsFilter(def);
 
             // Get general scope filter from factory
@@ -112,6 +112,7 @@ public class IndexDataReportDAO implements DataReportDAO {
             FieldSelector fieldSelector = this.documentMapper.getDocumentFieldSelector(selector);
 
             FastMap valFreqMap = new FastMap(1024);
+            HashMap<String, Value> caseInSensitiveValueMap = new HashMap<String, Value>();
 
             DocIdSet allowedDocs = mainFilter.getDocIdSet(reader);
             DocIdSetIterator iterator = allowedDocs.iterator();
@@ -128,17 +129,23 @@ public class IndexDataReportDAO implements DataReportDAO {
                 }
 
                 if (def.isMultiple()) {
-                    Value[] values = this.fieldValueMapper.getValuesFromStoredBinaryFields(
-                                                                          Arrays.asList(fields),
-                                                                          def.getType());
+                    Value[] values = this.fieldValueMapper.getValuesFromStoredBinaryFields(Arrays.asList(fields),
+                            def.getType());
                     for (Value value : values) {
-                        addValue(valFreqMap, value);
+                        if (!caseInSensitiveValueMap.containsKey(value.getStringValue().toUpperCase())) {
+                            caseInSensitiveValueMap.put(value.getStringValue().toUpperCase(), value);
+                        }
+                        addValue(valFreqMap, caseInSensitiveValueMap.get(value.getStringValue().toUpperCase())); 
                     }
                 } else {
                     if (fields.length != 1) {
                         throw new DataReportException("Index error (multiple values for single valued property)");
                     }
-                    addValue(valFreqMap, this.fieldValueMapper.getValueFromStoredBinaryField(fields[0], def.getType()));
+                    Value value = fieldValueMapper.getValueFromStoredBinaryField(fields[0], def.getType());
+                    if (!caseInSensitiveValueMap.containsValue(value.getStringValue().toUpperCase())) {
+                        caseInSensitiveValueMap.put(value.getStringValue().toUpperCase(), value);
+                    }
+                    addValue(valFreqMap, caseInSensitiveValueMap.get(value.getStringValue().toUpperCase()));
                 }
             }
 
@@ -211,7 +218,8 @@ public class IndexDataReportDAO implements DataReportDAO {
     }
 
     /**
-     * @param scopeFilterFactory the scopeFilterFactory to set
+     * @param scopeFilterFactory
+     *            the scopeFilterFactory to set
      */
     @Required
     public void setScopeFilterFactory(IndexDataReportScopeFilterFactory scopeFilterFactory) {
@@ -219,7 +227,8 @@ public class IndexDataReportDAO implements DataReportDAO {
     }
 
     /**
-     * @param maxIndexDirtyAge the maxIndexDirtyAge to set
+     * @param maxIndexDirtyAge
+     *            the maxIndexDirtyAge to set
      */
     public void setMaxIndexDirtyAge(int maxIndexDirtyAge) {
         this.maxIndexDirtyAge = maxIndexDirtyAge;

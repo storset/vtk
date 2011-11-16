@@ -23,7 +23,7 @@
       if (typeof urchinTracker !== "undefined") {
         $(".feedback-yes").click(function(e) { 
           urchinTrack("/like");
-          e.preventPropagation();
+          e.stopPropagation();
           e.preventDefault(); 
         });
         $(".feedback-no").click(function() {

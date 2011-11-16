@@ -30,6 +30,8 @@
  */
 package org.vortikal.urchin;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,8 +91,14 @@ public class UrchinResourceStatsController implements Controller {
             model.put("ursThirtyTotal", urs.thirtyTotal(resource, token, id));
             model.put("ursTotalPages", urs.pagesTotal(resource, token, id));
             model.put("ursNMonths", urs.nMonths());
+        } else {
+          Calendar calendar = Calendar.getInstance();
+          calendar.setTime(new Date());
+          calendar.add(Calendar.DAY_OF_YEAR, -7);
+          Date aWeekAgo = calendar.getTime();
+          model.put("aWeekAgo", aWeekAgo);      
         }
-
+        
         return new ModelAndView(this.viewName, model);
     }
 

@@ -112,7 +112,6 @@ public class IndexDataReportDAO implements DataReportDAO {
             FieldSelector fieldSelector = this.documentMapper.getDocumentFieldSelector(selector);
 
             FastMap valFreqMap = new FastMap(1024);
-            HashMap<String, Value> caseInSensitiveValueMap = new HashMap<String, Value>();
 
             DocIdSet allowedDocs = mainFilter.getDocIdSet(reader);
             DocIdSetIterator iterator = allowedDocs.iterator();
@@ -132,33 +131,43 @@ public class IndexDataReportDAO implements DataReportDAO {
                     Value[] values = this.fieldValueMapper.getValuesFromStoredBinaryFields(Arrays.asList(fields),
                             def.getType());
                     for (Value value : values) {
-                        if (!caseInSensitiveValueMap.containsKey(value.getStringValue().toUpperCase())) {
-                            caseInSensitiveValueMap.put(value.getStringValue().toUpperCase(), value);
-                        }
-                        addValue(valFreqMap, caseInSensitiveValueMap.get(value.getStringValue().toUpperCase())); 
+                        addValue(valFreqMap, value);
                     }
                 } else {
                     if (fields.length != 1) {
                         throw new DataReportException("Index error (multiple values for single valued property)");
                     }
                     Value value = fieldValueMapper.getValueFromStoredBinaryField(fields[0], def.getType());
-                    if (!caseInSensitiveValueMap.containsValue(value.getStringValue().toUpperCase())) {
-                        caseInSensitiveValueMap.put(value.getStringValue().toUpperCase(), value);
-                    }
-                    addValue(valFreqMap, caseInSensitiveValueMap.get(value.getStringValue().toUpperCase()));
+                    addValue(valFreqMap, value);
                 }
             }
 
-            int minFreq = query.getMinValueFrequency();
-            List<Pair<Value, Integer>> retval = new ArrayList<Pair<Value, Integer>>(valFreqMap.size());
+            HashMap<String, Pair<Value, Integer>> caseInsensitiveResult = new HashMap<String, Pair<Value, Integer>>();
             for (Object o : valFreqMap.entrySet()) {
                 Map.Entry entry = (Map.Entry) o;
 
                 Integer freq = (Integer) entry.getValue();
                 Value value = (Value) entry.getKey();
 
-                if (freq.intValue() >= minFreq) {
-                    retval.add(new Pair<Value, Integer>(value, freq));
+                String key = value.getStringValue().toUpperCase();
+                if (caseInsensitiveResult.containsKey(key)) {
+                    Pair<Value, Integer> stored = caseInsensitiveResult.get(key);
+                    Pair<Value, Integer> x = null;
+                    if (freq > stored.second()) {
+                        x = new Pair<Value, Integer>(value, freq + stored.second());
+                    } else {
+                        x = new Pair<Value, Integer>(stored.first(), freq + stored.second());
+                    }
+                    caseInsensitiveResult.put(key, x);
+                }
+            }
+
+            int minFreq = query.getMinValueFrequency();
+            List<Pair<Value, Integer>> retval = new ArrayList<Pair<Value, Integer>>(valFreqMap.size());
+            for (String key : caseInsensitiveResult.keySet()) {
+                Pair<Value, Integer> stored = caseInsensitiveResult.get(key);
+                if (stored.second() >= minFreq) {
+                    retval.add(stored);
                 }
             }
 

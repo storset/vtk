@@ -36,7 +36,7 @@ h6 {
 body {
   color: #2b2b2b;
   font: normal 93.8%/1.31em Arial, sans-serif; /* 13 / 17 */
-  margin: 10px 30px 0 30px;
+  margin: 10px 20px 0 20px;
 }
 
 p {
@@ -45,12 +45,12 @@ p {
 
 form#email-a-friend-form,
 form#feedback-form {
-  width: 310px; 
+  width: 328px; 
   text-align: left;
 }
 
 form#feedback-form {
-  width: 335px;
+  width: 353px;
 }
 
 form#email-a-friend-form label,
@@ -103,3 +103,6 @@ a#vrtx-feedback-contact {
   display: inline !important;
 }
     
+#TB_ajaxWindowTitle {
+  margin: 20px 0 0 20px !important;
+}

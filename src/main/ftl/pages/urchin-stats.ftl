@@ -18,7 +18,7 @@
     <div id="vrtx-resource-visit-chart">
       <img id="vrtx-resource-visit-chart-image" width="${width}" height="225" alt="Visit chart"
            src='https://chart.googleapis.com/chart?chts=676767,15&amp;chxs=0,676767,13,0,l,676767|1,676767,13,0,l,676767&amp;chl=<#list 0..ursNMonths as i>${months[thisMonth]}<#if i != ursNMonths>|</#if><#if thisMonth != 0><#assign thisMonth = thisMonth - 1><#else><#assign thisMonth = 11></#if></#list>&amp;chxr=0,28.333,${ursMonths[12]?string("0")}&amp;chxt=y,x&amp;chbh=a&amp;chs=${width}x225&amp;cht=bvg&amp;chco=ed1c24&amp;chds=0,${ursMonths[12]?string("0")}&amp;chd=t:<#assign thisMonth = thisMonthBak><#list 0..ursNMonths as i>${ursMonths[thisMonth]?string("0")}<#if i != ursNMonths>,</#if><#if thisMonth != 0><#assign thisMonth = thisMonth - 1><#else><#assign thisMonth = 11></#if></#list>' 
-           title='Visits: Nov: 234234, Oct: 234234, Sep: 234234, Aug: 23423234' />
+           title='Visits: ' />
     </div>
     <div id="vrtx-resource-visit-stats">
       <div class="vrtx-resource-visit-stat first" id="vrtx-resource-visit-total-visits">

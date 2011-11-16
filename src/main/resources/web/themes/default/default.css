@@ -1604,7 +1604,6 @@ body#vrtx-edit-plaintext .contextual-help {
   float: left;
   width: 100%;
   position: relative;
-  margin: 0 0 25px 0;
 }
 
 h3#resourceVisitHeader {
@@ -1620,6 +1619,11 @@ h3.resourceInfoHeader {
   width: 100%;
   height: 200px;
   background: url(/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif) no-repeat center center;
+}
+
+#vrtx-resource-visit,
+#vrtx-resource-visit-no-stat {
+  margin-bottom: 25px;
 }
 
 #vrtx-resource-visit-info {

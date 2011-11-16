@@ -159,7 +159,10 @@ public class IndexDataReportDAO implements DataReportDAO {
                         x = new Pair<Value, Integer>(stored.first(), freq + stored.second());
                     }
                     caseInsensitiveResult.put(key, x);
-                }
+                }else{
+                    Pair<Value, Integer> x = new Pair<Value, Integer>(value, freq);
+                    caseInsensitiveResult.put(key, x);
+                }            
             }
 
             int minFreq = query.getMinValueFrequency();

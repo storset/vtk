@@ -98,7 +98,7 @@ public class UrchinResourceStatsController implements Controller {
           Date upTilAWeekAgoTime = calendar.getTime();
           Date creationTime = resource.getCreationTime();
           boolean newResource = false;
-          if(upTilAWeekAgoTime .compareTo(creationTime)<0) {
+          if(upTilAWeekAgoTime.compareTo(creationTime)<0) {
               newResource = true;   
           }
           model.put("newResource", newResource);      

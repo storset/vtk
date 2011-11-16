@@ -94,11 +94,11 @@ public class UrchinResourceStatsController implements Controller {
         } else {
           // Whether or not it is a resource created within the last week
           Calendar calendar = Calendar.getInstance();
-          calendar.add(Calendar.DAY_OF_YEAR, -7);
-          Date aWeekAgoTime = calendar.getTime();
+          calendar.add(Calendar.DAY_OF_YEAR, -6);
+          Date upTilAWeekAgoTime = calendar.getTime();
           Date creationTime = resource.getCreationTime();
           boolean newResource = false;
-          if(aWeekAgoTime.compareTo(creationTime)<0) {
+          if(upTilAWeekAgoTime .compareTo(creationTime)<0) {
               newResource = true;   
           }
           model.put("newResource", newResource);      

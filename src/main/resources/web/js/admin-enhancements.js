@@ -1014,15 +1014,10 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
       if($(".expandedForm").hasClass("expandedFormIsReplaced")) {                      
         if(url.indexOf("&mode=") == -1) {
           var currentHref = location.href;
-          // Partly based on: http://snipplr.com/view/799/get-url-variables/
-          var hashes = currentHref.slice(currentHref.indexOf('?') + 1).split('&');
-          for(var i = hashes.length; i--;) {
-            if(hashes[i].indexOf("mode=") != -1) {
-              fromModeToNotMode = true; 
-              modeUrl = currentHref;
-              break;
-            }
-          } 
+          if(currentHref.indexOf("&mode=") != -1) {
+            fromModeToNotMode = true; 
+            modeUrl = currentHref;
+          }
         }
         existExpandedFormIsReplacing = true;
       }

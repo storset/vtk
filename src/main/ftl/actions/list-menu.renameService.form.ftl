@@ -5,7 +5,7 @@
 
   <#if renameCommand?exists>
     <div class="globalmenu expandedForm">
-    <form name="renameService" action="${renameCommand.submitURL?html}" method="post">
+    <form name="renameService" id="renameService-form" action="${renameCommand.submitURL?html}" method="post">
       <h3><@vrtx.msg code="actions.renameService" default="Change name"/>:</h3>
       <@spring.bind "renameCommand" + ".name" /> 
       <#if spring.status.errorMessages?size &gt; 0>

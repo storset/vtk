@@ -4,7 +4,7 @@
 
   <#if createDocumentForm?exists && !createDocumentForm.done>
   <div class="expandedForm vrtx-admin-form">
-  <form name="createDocumentService" action="${createDocumentForm.submitURL?html}"
+  <form name="createDocumentService" id="createDocumentService-form" action="${createDocumentForm.submitURL?html}"
         method="post" accept-charset="utf-8">
     <h3><@vrtx.msg code="actions.createDocumentService" default="Create Document"/></h3>
     <h4><@vrtx.msg code="actions.createDocumentService.subtitle" default="Choose a template"/></h4>

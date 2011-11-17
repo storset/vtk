@@ -4,7 +4,7 @@
 
   <#if createCollectionForm?exists && !createCollectionForm.done>
   <div class="expandedForm vrtx-admin-form">
-  <form name="createCollectionService" action="${createCollectionForm.submitURL?html}" method="post">
+  <form name="createCollectionService" id="createCollectionService-form" action="${createCollectionForm.submitURL?html}" method="post">
     <h3 class="nonul"><@vrtx.msg code="actions.createCollectionService" default="Create collection"/></h3>
     <h4><@vrtx.msg code="actions.createCollectionService.subtitle" default="Choose a folder type"/></h4>
     <@spring.bind "createCollectionForm.name" /> 

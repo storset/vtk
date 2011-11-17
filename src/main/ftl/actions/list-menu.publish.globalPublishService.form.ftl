@@ -3,7 +3,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#if type = "publish.globalPublishResourceConfirmedService">
 <div class="globalmenu expandedForm">
-<form name="vrtx-publish-document" id="vrtx-publish-document" action="${url}" method="post">
+<form name="vrtx-publish-document" id="vrtx-publish-document-form" action="${url}" method="post">
   <h3>${vrtx.getMsg("confirm-publish.confirmation.publish")}?</h3>
   <div class="submitButtons">
     <div class="vrtx-focus-button">

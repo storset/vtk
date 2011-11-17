@@ -276,7 +276,7 @@ $(document).ready(function () {
         transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
     });
     vrtxAdmin.completeFormAsync({
-        selector: "form[name=" + resourceMenuLeftServices[i] + "] input[type=submit]",
+        selector: "form#" + resourceMenuLeftServices[i] + "-form input[type=submit]",
         isReplacing: false,
         updateSelectors: [],
         transitionSpeed: vrtxAdmin.transitionSpeed,
@@ -301,7 +301,7 @@ $(document).ready(function () {
         transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
     });
     vrtxAdmin.completeFormAsync({
-        selector: "form[name=" + resourceMenuRightServices[i] + "] .submitButtons button",
+        selector: "form#" + resourceMenuRightServices[i] + "-form .submitButtons button",
         isReplacing: false,
         updateSelectors: [],
         transitionSpeed: vrtxAdmin.transitionSpeed,
@@ -329,7 +329,7 @@ $(document).ready(function () {
           transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
         });
         vrtxAdmin.completeFormAsync({
-          selector: "form[name=" + tabMenuServices[i] + "] input[type=submit]",
+          selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
           updateSelectors: ["#contents"],
           errorContainer: "errorContainer",
           errorContainerInsertAfter: "> ul",
@@ -353,7 +353,7 @@ $(document).ready(function () {
           transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
         });
         vrtxAdmin.completeFormAsync({
-          selector: "form[name=" + tabMenuServices[i] + "] input[type=submit]",
+          selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
           isReplacing: false,
           updateSelectors: ["#contents"],
           transitionSpeed: vrtxAdmin.transitionSpeed,
@@ -1165,7 +1165,7 @@ VrtxAdmin.prototype.getFormAsyncShow = function(options, selectorClass, transiti
 VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
   var args = arguments,
       vrtxAdm = this;   
-
+      
   $("#app-content").delegate(options.selector, "click", function (e) {
 
     var selector = options.selector,

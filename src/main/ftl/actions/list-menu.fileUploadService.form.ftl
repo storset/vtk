@@ -4,7 +4,7 @@
 
 <#if uploadForm?exists && !uploadForm.done>
 <div class="expandedForm vrtx-admin-form">
-<form name="fileUploadService" action="${uploadForm.submitURL?html}" method="post" enctype="multipart/form-data">
+<form name="fileUploadService" id="fileUploadService-form" action="${uploadForm.submitURL?html}" method="post" enctype="multipart/form-data">
     <h3><@vrtx.msg code="actions.fileUploadService" default="Upload File"/></h3>
     <@spring.bind "uploadForm.file" /> 
       <#if spring.status.errorMessages?size &gt; 0>

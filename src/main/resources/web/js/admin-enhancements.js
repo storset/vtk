@@ -988,21 +988,19 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
       vrtxAdm = this; // use prototypal hierarchy 
 
   $("#app-content").delegate(options.selector, "click", function (e) {
+  
+    var url = $(this).attr("href") || $(this).closest("form").attr("action");
+    if(location.protocol == "http:" && url.indexOf("https://") != -1) {
+      return; // no AJAX when http -> https (tmp. solution)
+    }
 
     var selector = options.selector,
         selectorClass = options.selectorClass,
         simultanSliding = options.simultanSliding,
         transitionSpeed = options.transitionSpeed || 0,
         transitionEasingSlideDown = options.transitionEasingSlideDown || "linear";
-        transitionEasingSlideUp = options.transitionEasingSlideUp || "linear";
-
-    var url = $(this).attr("href") || $(this).closest("form").attr("action");
-            
-    if(location.protocol == "http:" && url.indexOf("https://") != -1) {
-      return; // no AJAX when http -> https (tmp. solution)
-    }
-    
-    var fromModeToNotMode = false,
+        transitionEasingSlideUp = options.transitionEasingSlideUp || "linear",
+        fromModeToNotMode = false,
         modeUrl = location.href,
         existExpandedFormIsReplaced = false,
         expandedForm = $(".expandedForm"),

@@ -1006,18 +1006,14 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     // -- only if a expandedForm exists and is of the replaced kind..
     //
     var fromModeToNotMode = false;
-    var modeUrl = "";
+    var modeUrl = location.href;
     var existExpandedFormIsReplacing = false;
     var existExpandedForm = false;
 
     if($(".expandedForm").length) {
       if($(".expandedForm").hasClass("expandedFormIsReplaced")) {                      
-        if(url.indexOf("&mode=") == -1) {
-          var currentHref = location.href;
-          if(currentHref.indexOf("&mode=") != -1) {
-            fromModeToNotMode = true; 
-            modeUrl = currentHref;
-          }
+        if(url.indexOf("&mode=") == -1 && modeUrl.indexOf("&mode=") != -1) {
+          fromModeToNotMode = true; 
         }
         existExpandedFormIsReplacing = true;
       }

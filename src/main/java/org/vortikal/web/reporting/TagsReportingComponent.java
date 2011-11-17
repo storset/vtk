@@ -56,6 +56,7 @@ public class TagsReportingComponent {
 
         PropertyValueFrequencyQuery query = new PropertyValueFrequencyQuery();
         query.setPropertyTypeDefinition(this.tagsPropDef);
+        query.setCaseInsensitive(true);
 
         // Sort by highest frequency first.
         query.setOrdering(PropertyValueFrequencyQuery.Ordering.DESCENDING_BY_FREQUENCY);
@@ -89,7 +90,7 @@ public class TagsReportingComponent {
                         new HashSet<ResourceTypeDefinition>(resourceTypeDefs));
             query.addScope(rtscope);
         }
-
+        
         return (PropertyValueFrequencyQueryResult) this.dataReportManager.executeReportQuery(query, token);
     }
 

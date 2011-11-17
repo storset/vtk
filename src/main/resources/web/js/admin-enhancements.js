@@ -1219,11 +1219,11 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
                 var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
                 $("#app-content " + updateSelectors[i]).replaceWith(outer);
               }
+              if (funcComplete) {
+                funcComplete();
+              }
               form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
                 $(this).remove();
-                if (funcComplete) {
-                  funcComplete();
-                }
               });            
             }
           }

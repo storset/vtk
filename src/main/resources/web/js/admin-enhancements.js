@@ -1005,10 +1005,10 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     // Make sure we get the mode markup (current page) if service is not mode
     // -- only if a expandedForm exists and is of the replaced kind..
     //
-    var fromModeToNotMode = false;
-    var modeUrl = location.href;
-    var existExpandedFormIsReplacing = false;
-    var existExpandedForm = false;
+    var fromModeToNotMode = false,
+        modeUrl = location.href,
+        existExpandedFormIsReplacing = false,
+        existExpandedForm = false;
 
     if($(".expandedForm").length) {
       if($(".expandedForm").hasClass("expandedFormIsReplaced")) {                      

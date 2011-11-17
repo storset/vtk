@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.reporting;
 
+import org.vortikal.repository.resourcetype.PropertyType;
+
 /**
  * Finds all unique values for the property and returns a report with a list of
  * value<->frequency pairs.
@@ -42,11 +44,8 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
     public static final int LIMIT_UNLIMITED = -1;
 
     public static enum Ordering {
-        ASCENDING_BY_FREQUENCY("FREQ_ASC"),
-        DESCENDING_BY_FREQUENCY("FREQ_DESC"),
-        ASCENDING_BY_PROPERTY_VALUE("VALUE_ASC"),
-        DESCENDING_BY_PROPERTY_VALUE("VALUE_DESC"),
-        NONE("NONE");
+        ASCENDING_BY_FREQUENCY("FREQ_ASC"), DESCENDING_BY_FREQUENCY("FREQ_DESC"), ASCENDING_BY_PROPERTY_VALUE(
+                "VALUE_ASC"), DESCENDING_BY_PROPERTY_VALUE("VALUE_DESC"), NONE("NONE");
 
         private String value;
 
@@ -63,6 +62,7 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
     private int limit = LIMIT_UNLIMITED;
     private int minValueFrequency = DEFAULT_MIN_VALUE_FREQUENCY;
     private Ordering ordering = Ordering.NONE;
+    private boolean caseInsensitive = false;
 
     public void setLimit(int limit) {
         if (limit < 0 && limit != LIMIT_UNLIMITED) {
@@ -104,6 +104,10 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
         code = 31 * code + this.limit;
         code = 31 * code + this.minValueFrequency;
 
+        if (isCaseInsensitive()) {
+            code = code + 11;
+        }
+
         return code;
     }
 
@@ -122,7 +126,8 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
         if (!getPropertyTypeDefintion().equals(otherQuery.getPropertyTypeDefintion()))
             return false;
 
-        if (!getScoping().equals(otherQuery.getScoping())) return false;
+        if (!getScoping().equals(otherQuery.getScoping()))
+            return false;
 
         if (this.ordering != otherQuery.ordering)
             return false;
@@ -131,6 +136,9 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
             return false;
 
         if (this.minValueFrequency != otherQuery.minValueFrequency)
+            return false;
+
+        if (this.caseInsensitive != otherQuery.isCaseInsensitive())
             return false;
 
         return true;
@@ -154,15 +162,24 @@ public class PropertyValueFrequencyQuery extends AbstractPropertyValueQuery {
     public Object clone() {
         PropertyValueFrequencyQuery clone = new PropertyValueFrequencyQuery();
         clone.setPropertyTypeDefinition(getPropertyTypeDefintion());
-        for (ReportScope scope: getScoping()) {
-            clone.addScope((ReportScope)scope.clone());
+        for (ReportScope scope : getScoping()) {
+            clone.addScope((ReportScope) scope.clone());
         }
 
         clone.setLimit(this.limit);
         clone.setOrdering(this.ordering);
         clone.setMinValueFrequency(this.minValueFrequency);
-
+        clone.setCaseInsensitive(isCaseInsensitive());
+        
         return clone;
     }
 
+    public void setCaseInsensitive(boolean caseInsensitive) {
+        this.caseInsensitive = caseInsensitive;
+    }
+
+    public boolean isCaseInsensitive() {
+        return caseInsensitive && getPropertyTypeDefintion() != null
+                && getPropertyTypeDefintion().getType().equals(PropertyType.Type.STRING);
+    }
 }

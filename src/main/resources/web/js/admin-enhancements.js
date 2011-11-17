@@ -1050,16 +1050,12 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
           // (meaning which is the unique selector class)
           // TODO: add a postfix to original markup, e.g. 'ajax-' to unique class where we use AJAX
           //       -- to avoid filtering out others
+          
+          var filterOut = {"expandedForm":"", "nodeType":"", "even":"", "odd":"", "first":"", "last":""};
           for(var i = resultSelectorClasses.length; i--;) {
             var resultSelectorClassCache = resultSelectorClasses[i];
-            if(resultSelectorClassCache.indexOf("expandedForm") == -1
-               && resultSelectorClassCache.indexOf("nodeType") == -1
-               && resultSelectorClassCache 
-               && resultSelectorClass.indexOf(resultSelectorClasses[i]) == -1
-               && resultSelectorClassCache.indexOf("even") == -1
-               && resultSelectorClassCache.indexOf("odd") == -1
-               && resultSelectorClassCache.indexOf("first") == -1
-               && resultSelectorClassCache.indexOf("last") == -1) {
+            if(resultSelectorClassCache && resultSelectorClassCache != ""
+               && !(resultSelectorClassCache in filterOut)) {
                  resultSelectorClass = "." + resultSelectorClasses[i];
                  break;
             }  

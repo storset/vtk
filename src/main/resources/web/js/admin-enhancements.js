@@ -1034,9 +1034,18 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
         if(existExpandedForm) {
           var expandedHtml = vrtxAdm.outerHTML("#app-content", ".expandedForm");
 
-          // Get class for original markup - should be last
+          // Get class for original markup
           var resultSelectorClasses = $(expandedHtml).attr("class").split(" ");
-          var resultSelectorClass = "." + resultSelectorClasses[resultSelectorClasses.length-1];
+          var resultSelectorClass = "";
+          var ignoreClasses = {"even":"", "odd":"", "first":"", "last":""};
+          for(var i = resultSelectorClasses.length; i--;) {
+            var resultSelectorClassCache = resultSelectorClasses[i];
+            if(resultSelectorClassCache && resultSelectorClassCache != ""
+               && !(resultSelectorClassCache in ignoreClasses)) {
+                 resultSelectorClass = "." + resultSelectorClasses[i];
+                 break;
+            }  
+          } 
 
           $("#app-content .expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
             if(existExpandedFormIsReplacing) {
@@ -1044,30 +1053,12 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
               if(fromModeToNotMode) { // When we need the 'mode=' HTML when requesting a 'not mode=' service
                 vrtxAdmin.serverFacade.getHtml(modeUrl, {
                   success: function (results, status, resp) {
-                    var resultHtml = vrtxAdm.outerHTML(results, resultSelectorClass);
-                    if(!resultHtml) { // If all went wrong
-                      vrtxAdm.error({args: args, msg: "trying to retrieve existing expandedForm from " + modeUrl + " returned null"});
-                    }
-                    var node = expanded.parent().parent();
-                    if(node.is("tr")) {  // Because 'this' is tr > td > div
-                      node.replaceWith(resultHtml).show(0);
-                    } else {
-                      expanded.replaceWith(resultHtml).show(0);              
-                    }
+                    vrtxAdm.addOriginalMarkupForReplacedExpandedForm(modeUrl, results, resultSelectorClass, expanded);
                     vrtxAdm.getFormAsyncShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
                   }
                 });
               } else {
-                var resultHtml = vrtxAdm.outerHTML(results, resultSelectorClass);
-                if(!resultHtml) { // If all went wrong
-                  vrtxAdm.error({args: args, msg: "trying to retrieve existing expandedForm from " + url + " returned null"});
-                }
-                var node = expanded.parent().parent();
-                if(node.is("tr")) {  // Because 'this' is tr > td > div
-                  node.replaceWith(resultHtml).show(0);
-                } else {
-                  expanded.replaceWith(resultHtml).show(0);              
-                }
+                vrtxAdm.addOriginalMarkupForReplacedExpandedForm(url, results, resultSelectorClass, expanded);
               }
             } else {
               var node = $(this).parent().parent();
@@ -1091,6 +1082,22 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     e.stopPropagation(); 
     e.preventDefault();
   });
+};
+
+VrtxAdmin.prototype.addOriginalMarkupForReplacedExpandedForm = function addOriginalMarkupForReplacedExpandedForm(url, results, resultSelectorClass, expanded) {
+  var args = arguments,
+      vrtxAdm = this;
+
+  var resultHtml = vrtxAdm.outerHTML(results, resultSelectorClass);
+  if(!resultHtml) { // If all went wrong
+    vrtxAdm.error({args: args, msg: "trying to retrieve existing expandedForm from " + url + " returned null"});
+  }
+  var node = expanded.parent().parent();
+  if(node.is("tr")) {  // Because 'this' is tr > td > div
+    node.replaceWith(resultHtml).show(0);
+  } else {
+    expanded.replaceWith(resultHtml).show(0);              
+  }
 };
 
 VrtxAdmin.prototype.getFormAsyncShow = function(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form) {

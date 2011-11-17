@@ -1202,14 +1202,14 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
           if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
             vrtxAdm.displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
           } else {
-            if (funcComplete) {
-              funcComplete();
-            }
             if (isReplacing) {
               form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
                 for(var i = updateSelectors.length; i--;) {
                   var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
                   $("#app-content " + updateSelectors[i]).replaceWith(outer);
+                }
+                if (funcComplete) {
+                  funcComplete();
                 }
               });
             } else {
@@ -1219,6 +1219,9 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
               }
               form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
                 $(this).remove();
+                if (funcComplete) {
+                  funcComplete();
+                }
               });            
             }
           }

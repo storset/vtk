@@ -1007,7 +1007,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     //
     var fromModeToNotMode = false,
         modeUrl = location.href,
-        existExpandedFormIsReplacing = false,
+        existExpandedFormIsReplaced = false,
         existExpandedForm = false;
 
     if($(".expandedForm").length) {
@@ -1015,7 +1015,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
         if(url.indexOf("&mode=") == -1 && modeUrl.indexOf("&mode=") != -1) {
           fromModeToNotMode = true; 
         }
-        existExpandedFormIsReplacing = true;
+        existExpandedFormIsReplaced = true;
       }
       existExpandedForm = true;
     }
@@ -1048,7 +1048,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
           } 
 
           $("#app-content .expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
-            if(existExpandedFormIsReplacing) {
+            if(existExpandedFormIsReplaced) {
               var expanded = $(this);
               if(fromModeToNotMode) { // When we need the 'mode=' HTML when requesting a 'not mode=' service
                 vrtxAdmin.serverFacade.getHtml(modeUrl, {

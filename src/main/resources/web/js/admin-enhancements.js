@@ -1045,12 +1045,12 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
               if(fromModeToNotMode) { // When we need the 'mode=' HTML when requesting a 'not mode=' service
                 vrtxAdmin.serverFacade.getHtml(modeUrl, {
                   success: function (results, status, resp) {
-                    vrtxAdm.addOriginalMarkupForReplacedExpandedForm(modeUrl, results, resultSelectorClass, expandedForm);
-                    vrtxAdm.getFormAsyncShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
+                    vrtxAdm.addOriginalMarkup(modeUrl, results, resultSelectorClass, expandedForm);
+                    vrtxAdm.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
                   }
                 });
               } else {
-                vrtxAdm.addOriginalMarkupForReplacedExpandedForm(url, results, resultSelectorClass, expandedForm);
+                vrtxAdm.addOriginalMarkup(url, results, resultSelectorClass, expandedForm);
               }
             } else {
               var node = $(this).parent().parent();
@@ -1061,12 +1061,12 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
               }
             }
             if(!simultanSliding && !fromModeToNotMode) {
-              vrtxAdm.getFormAsyncShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
+              vrtxAdm.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
             }
           });
         }
         if ((!existExpandedForm || simultanSliding) && !fromModeToNotMode) {
-          vrtxAdm.getFormAsyncShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
+          vrtxAdm.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
         }
       }
     });
@@ -1076,7 +1076,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
   });
 };
 
-VrtxAdmin.prototype.addOriginalMarkupForReplacedExpandedForm = function addOriginalMarkupForReplacedExpandedForm(url, results, resultSelectorClass, expanded) {
+VrtxAdmin.prototype.addOriginalMarkup= function addOriginalMarkupForReplacedExpandedForm(url, results, resultSelectorClass, expanded) {
   var args = arguments,
       vrtxAdm = this;
 
@@ -1092,7 +1092,7 @@ VrtxAdmin.prototype.addOriginalMarkupForReplacedExpandedForm = function addOrigi
   }
 };
 
-VrtxAdmin.prototype.getFormAsyncShow = function(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form) {
+VrtxAdmin.prototype.addNewMarkup = function(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form) {
   var vrtxAdm = this,
       insertAfterOrReplaceClass = options.insertAfterOrReplaceClass,
       isReplacing = options.isReplacing,

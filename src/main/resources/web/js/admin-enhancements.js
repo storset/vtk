@@ -1002,24 +1002,21 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
       return; // no AJAX when http -> https (tmp. solution)
     }
     
-    // Make sure we get the mode markup (current page) if service is not mode
-    // -- only if a expandedForm exists and is of the replaced kind..
-    //
     var fromModeToNotMode = false,
         modeUrl = location.href,
         existExpandedFormIsReplaced = false,
-        existExpandedForm = false;
+        expandedForm = $(".expandedForm"),
+        existExpandedForm = expandedForm.length;
 
-    if($(".expandedForm").length) {
-      if($(".expandedForm").hasClass("expandedFormIsReplaced")) {                      
-        if(url.indexOf("&mode=") == -1 && modeUrl.indexOf("&mode=") != -1) {
-          fromModeToNotMode = true; 
-        }
-        existExpandedFormIsReplaced = true;
+    // Make sure we get the mode markup (current page) if service is not mode
+    // -- only if a expandedForm exists and is of the replaced kind..
+    //
+    if(expandedForm.hasClass("expandedFormIsReplaced")) {                      
+      if(url.indexOf("&mode=") == -1 && modeUrl.indexOf("&mode=") != -1) {
+        fromModeToNotMode = true; 
       }
-      existExpandedForm = true;
+      existExpandedFormIsReplaced = true;
     }
-    //---
     
     vrtxAdmin.serverFacade.getHtml(url, {
       success: function (results, status, resp) {
@@ -1032,8 +1029,6 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
 
         // Another form is already open
         if(existExpandedForm) {
-          var expandedForm = $(".expandedForm");
-
           // Get class for original markup
           var resultSelectorClasses = expandedForm.attr("class").split(" ");
           var resultSelectorClass = "";

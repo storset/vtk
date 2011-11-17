@@ -142,7 +142,8 @@ public class IndexDataReportDAO implements DataReportDAO {
                 }
             }
 
-            HashMap<String, Pair<Value, Integer>> caseInsensitiveResult = new HashMap<String, Pair<Value, Integer>>();
+            // Sort the values in a case insensitive map
+            HashMap<String, List<Pair<Value, Integer>>> tmpResultMap = new HashMap<String, List<Pair<Value, Integer>>>();
             for (Object o : valFreqMap.entrySet()) {
                 Map.Entry entry = (Map.Entry) o;
 
@@ -150,28 +151,38 @@ public class IndexDataReportDAO implements DataReportDAO {
                 Value value = (Value) entry.getKey();
 
                 String key = value.getStringValue().toUpperCase();
-                if (caseInsensitiveResult.containsKey(key)) {
-                    Pair<Value, Integer> stored = caseInsensitiveResult.get(key);
-                    Pair<Value, Integer> x = null;
-                    if (freq > stored.second()) {
-                        x = new Pair<Value, Integer>(value, freq + stored.second());
-                    } else {
-                        x = new Pair<Value, Integer>(stored.first(), freq + stored.second());
-                    }
-                    caseInsensitiveResult.put(key, x);
-                }else{
-                    Pair<Value, Integer> x = new Pair<Value, Integer>(value, freq);
-                    caseInsensitiveResult.put(key, x);
-                }            
+                List<Pair<Value, Integer>> l = null;
+                if (tmpResultMap.containsKey(key)) {
+                    l = tmpResultMap.get(key);
+                } else {
+                    l = new ArrayList<Pair<Value, Integer>>();
+                }
+                Pair<Value, Integer> x = new Pair<Value, Integer>(value, freq);
+                l.add(x);
+                tmpResultMap.put(key, l);
             }
 
+            // Calculate frequency for case insensitive result and add to result
+            // on condition. The most frequently used value is selected as a common
+            // value.
             int minFreq = query.getMinValueFrequency();
-            List<Pair<Value, Integer>> retval = new ArrayList<Pair<Value, Integer>>(valFreqMap.size());
-            for (String key : caseInsensitiveResult.keySet()) {
-                Pair<Value, Integer> stored = caseInsensitiveResult.get(key);
-                if (stored.second() >= minFreq) {
-                    retval.add(stored);
+            List<Pair<Value, Integer>> retval = new ArrayList<Pair<Value, Integer>>();
+            for (String key : tmpResultMap.keySet()) {
+                List<Pair<Value, Integer>> l = tmpResultMap.get(key);
+                int freq = 0;
+                Value value = null;
+                int maxFreq = 0;
+                for (Pair<Value, Integer> p : l) {
+                    freq += p.second();
+                    if (maxFreq < p.second()) {
+                        maxFreq = p.second();
+                        value = p.first();
+                    }
                 }
+                if (freq >= minFreq) {
+                    retval.add(new Pair<Value, Integer>(value, freq));
+                }
+
             }
 
             // Sort

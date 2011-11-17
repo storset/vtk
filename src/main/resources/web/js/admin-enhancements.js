@@ -1043,18 +1043,9 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
         if(existExpandedForm) {
           var expandedHtml = vrtxAdm.outerHTML("#app-content", ".expandedForm");
 
-          // Filter out to get class for original markup (ignore added/generic classes)
+          // Get class for original markup - should be last
           var resultSelectorClasses = $(expandedHtml).attr("class").split(" ");
-          var resultSelectorClass = "";
-          var ignoreClasses = {"expandedForm":"", "nodeType":"", "even":"", "odd":"", "first":"", "last":""};
-          for(var i = resultSelectorClasses.length; i--;) {
-            var resultSelectorClassCache = resultSelectorClasses[i];
-            if(resultSelectorClassCache && resultSelectorClassCache != ""
-               && !(resultSelectorClassCache in ignoreClasses)) {
-                 resultSelectorClass = "." + resultSelectorClasses[i];
-                 break;
-            }  
-          } 
+          var resultSelectorClass = "." + resultSelectorClasses[resultSelectorClasses.length-1];
 
           $("#app-content .expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
             if(existExpandedFormIsReplacing) {
@@ -1062,7 +1053,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
               if(fromModeToNotMode) { // When we need the 'mode=' HTML when requesting a 'not mode=' service
                 vrtxAdmin.serverFacade.getHtml(modeUrl, {
                   success: function (results, status, resp) {
-                    var resultHtml = vrtxAdm.outerHTML(results, $.trim(resultSelectorClass));
+                    var resultHtml = vrtxAdm.outerHTML(results, resultSelectorClass);
                     if(!resultHtml) { // If all went wrong
                       vrtxAdm.error({args: args, msg: "trying to retrieve existing expandedForm from " + modeUrl + " returned null"});
                     }
@@ -1076,7 +1067,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
                   }
                 });
               } else {
-                var resultHtml = vrtxAdm.outerHTML(results, $.trim(resultSelectorClass));
+                var resultHtml = vrtxAdm.outerHTML(results, resultSelectorClass);
                 if(!resultHtml) { // If all went wrong
                   vrtxAdm.error({args: args, msg: "trying to retrieve existing expandedForm from " + url + " returned null"});
                 }

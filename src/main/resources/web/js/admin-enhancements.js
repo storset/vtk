@@ -330,6 +330,7 @@ $(document).ready(function () {
         });
         vrtxAdmin.completeFormAsync({
           selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
+          isReplacing: false,
           updateSelectors: ["#contents"],
           errorContainer: "errorContainer",
           errorContainerInsertAfter: "> ul",
@@ -356,6 +357,7 @@ $(document).ready(function () {
           selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
           isReplacing: false,
           updateSelectors: ["#contents"],
+          funcComplete: collectionListingInteraction,
           transitionSpeed: vrtxAdmin.transitionSpeed,
           transitionEasingSlideDown: vrtxAdmin.transitionEasingSlideDown,
           transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp

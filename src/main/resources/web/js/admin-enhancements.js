@@ -1032,10 +1032,10 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
 
         // Another form is already open
         if(existExpandedForm) {
-          var expandedHtml = vrtxAdm.outerHTML("#app-content", ".expandedForm");
+          var expandedForm = $(".expandedForm");
 
           // Get class for original markup
-          var resultSelectorClasses = $(expandedHtml).attr("class").split(" ");
+          var resultSelectorClasses = expandedForm.attr("class").split(" ");
           var resultSelectorClass = "";
           var ignoreClasses = {"even":"", "odd":"", "first":"", "last":""};
           for(var i = resultSelectorClasses.length; i--;) {
@@ -1047,18 +1047,17 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
             }  
           } 
 
-          $("#app-content .expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
+          expandedForm.slideUp(transitionSpeed, transitionEasingSlideUp, function() {
             if(existExpandedFormIsReplaced) {
-              var expanded = $(this);
               if(fromModeToNotMode) { // When we need the 'mode=' HTML when requesting a 'not mode=' service
                 vrtxAdmin.serverFacade.getHtml(modeUrl, {
                   success: function (results, status, resp) {
-                    vrtxAdm.addOriginalMarkupForReplacedExpandedForm(modeUrl, results, resultSelectorClass, expanded);
+                    vrtxAdm.addOriginalMarkupForReplacedExpandedForm(modeUrl, results, resultSelectorClass, expandedForm);
                     vrtxAdm.getFormAsyncShow(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
                   }
                 });
               } else {
-                vrtxAdm.addOriginalMarkupForReplacedExpandedForm(url, results, resultSelectorClass, expanded);
+                vrtxAdm.addOriginalMarkupForReplacedExpandedForm(url, results, resultSelectorClass, expandedForm);
               }
             } else {
               var node = $(this).parent().parent();

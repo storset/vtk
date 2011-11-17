@@ -1055,8 +1055,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
                  break;
             }  
           } 
-          // --
-          
+
           $("#app-content .expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
             if(existExpandedFormIsReplacing) {
               var expanded = $(this);

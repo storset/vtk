@@ -1043,19 +1043,14 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
         if(existExpandedForm) {
           var expandedHtml = vrtxAdm.outerHTML("#app-content", ".expandedForm");
 
-          // Filter out selector class to get original markup for the existing form
+          // Filter out to get class for original markup (ignore added/generic classes)
           var resultSelectorClasses = $(expandedHtml).attr("class").split(" ");
           var resultSelectorClass = "";
-          // Must have full control over additional classes in FTL we need to remove
-          // (meaning which is the unique selector class)
-          // TODO: add a postfix to original markup, e.g. 'ajax-' to unique class where we use AJAX
-          //       -- to avoid filtering out others
-          
-          var filterOut = {"expandedForm":"", "nodeType":"", "even":"", "odd":"", "first":"", "last":""};
+          var ignoreClasses = {"expandedForm":"", "nodeType":"", "even":"", "odd":"", "first":"", "last":""};
           for(var i = resultSelectorClasses.length; i--;) {
             var resultSelectorClassCache = resultSelectorClasses[i];
             if(resultSelectorClassCache && resultSelectorClassCache != ""
-               && !(resultSelectorClassCache in filterOut)) {
+               && !(resultSelectorClassCache in ignoreClasses)) {
                  resultSelectorClass = "." + resultSelectorClasses[i];
                  break;
             }  

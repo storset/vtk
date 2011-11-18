@@ -231,7 +231,7 @@ resourcetype organizational-unit {
     subunits {
       ##
       [def areacode resource-prop(".", "areacode")]
-       [call "resource:org-unit-subunits" {"areacode":areacode}]
+       [call "resource:org-unit-subunits" {"areacode":areacode,"display-subsubunits":"true"}]
       ##
     }
     

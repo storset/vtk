@@ -20,8 +20,9 @@
 
 <h3>${headerMsg}</h3>
 <p>${lockedBy}</p>
+<#if writePermission.permissionsQueryResult = 'true'>
 <a id="vrtx-unlock" class="vrtx-button-small vrtx-admin-button" title="${titleMsg}" href="${actionURL?html}"><span>${item.title?html}</span></a>
-
+</#if>
 <#recover>
 ${.error}
 </#recover>

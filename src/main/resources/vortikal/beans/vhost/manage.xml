@@ -296,7 +296,6 @@
     </property>
     <property name="assertions">
       <list>
-        <ref bean="unlockPermissionAssertion" />
         <ref bean="resourceIsLocked" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />

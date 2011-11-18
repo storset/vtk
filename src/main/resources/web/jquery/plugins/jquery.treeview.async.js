@@ -30,15 +30,18 @@
   function load(settings, root, child, container) {
     function createNode(parent) {
       var linkOrPlainText = "";
-      if (this.uri) {
-        if (this.title) {
-          var theuri = this.uri;
-          linkOrPlainText = "<a class='tree-link' href='" + theuri + "' title='" + this.title + "'>" + this.text + "</a>"
+      var theuri = this.uri;
+      var text = this.text;
+      if (theuri) {
+        var title = this.title;
+        title = title.replace(/'/g, "&#145;");
+        if (title) {
+          linkOrPlainText = "<a class='tree-link' href='" + theuri + "' title='" + title+ "'>" + text + "</a>"
         } else {
-          linkOrPlainText = "<a href='" + this.uri + "'>" + this.text + "</a>"
+          linkOrPlainText = "<a href='" + theuri + "'>" + text + "</a>"
         }
       } else {
-        linkOrPlainText = this.text;
+        linkOrPlainText = text;
       }
       var current = $("<li/>").attr("id", this.id || "").html("<span>" + linkOrPlainText + "</span>").appendTo(parent);
 

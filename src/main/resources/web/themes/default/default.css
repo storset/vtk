@@ -937,6 +937,12 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   height: 30px;
 }
 
+#TB_window {
+  border-radius: 8px;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+}
+
 #TB_ajaxWindowTitle {
   margin: 0 0 0 30px !important;
 }

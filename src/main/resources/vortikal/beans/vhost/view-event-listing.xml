@@ -72,7 +72,7 @@
     <property name="eventTypeTitlePropDef" ref="eventListing.eventTypeTitlePropDef" />
   </bean>
 
-  <bean id="eventListing.upcomingEventsSearchComponent" class="org.vortikal.web.search.QueryPartsSearchComponent">
+  <bean id="eventListing.upcomingEventsSearchComponent" parent="collectionListing.baseSearchComponent">
     <property name="name" value="eventListing.upcomingEventsSearchComponent" />
     <property name="titleLocalizationKey" value="eventListing.upcomingEvents" />
     <property name="viewService" ref="webService" />

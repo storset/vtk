@@ -52,10 +52,7 @@
     <property name="featuredArticlesPropDef" ref="articleListing.featuredArticlesPropDef" />
   </bean>
 
-  <!-- Will be overridden with required properties where available (e.g. multihostsearcher) -->
-  <bean id="articleListing.baseSearchComponent" abstract="true" class="org.vortikal.web.search.QueryPartsSearchComponent" />
-
-  <bean id="articleListing.searchComponent" parent="articleListing.baseSearchComponent">
+  <bean id="articleListing.searchComponent" parent="collectionListing.baseSearchComponent">
     <property name="name" value="articleListing.defaultArticles" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />

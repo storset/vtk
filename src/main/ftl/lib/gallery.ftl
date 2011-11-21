@@ -86,23 +86,28 @@
     <#if photographer != "">
       <#local description = description + " ${vrtx.getMsg('imageAsHtml.byline')}: " + photographer + "." />
     </#if>
-    
+
+    <#assign url = image.URI />
+    <#assign solrUrl = vrtx.propValue(image, "solr.url", "", "") />
+    <#if solrUrl?exists && solrUrl?has_content>
+      <#assign url = solrUrl>
+    </#if>
     <#if activeImage != "" && imageListing != "">
-	  <#if (activeImage == image.URI) >
-	     <a href="${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}" class="active">
-	       <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
+	  <#if (activeImage == url) >
+	     <a href="${vrtx.relativeLinkConstructor(url, 'viewService')}" class="active">
+	       <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
 	   <#else>
-	     <a href="${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}">
-	       <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
+	     <a href="${vrtx.relativeLinkConstructor(url, 'viewService')}">
+	       <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
 	   </#if>
 	 <#else>
 	   <#if imageListing != "">
 	     <#if (image_index == 0) >
-	       <a href="${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}" class="active">
-	         <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
+	       <a href="${vrtx.relativeLinkConstructor(url, 'viewService')}" class="active">
+	         <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
 	     <#else>
-	       <a href="${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}">
-	         <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
+	       <a href="${vrtx.relativeLinkConstructor(url, 'viewService')}">
+	         <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
 	     </#if>
 	   <#else>
 	     <#assign finalFolderUrl = vrtx.relativeLinkConstructor(folderUrl, 'viewService') />
@@ -110,18 +115,18 @@
 	       <#assign finalFolderUrl = finalFolderUrl + "/" /> 
 	     </#if>
 	     <#if (image_index == 0) >
-            <a href="${finalFolderUrl}?actimg=${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}&amp;display=gallery" class="active">
-              <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
+            <a href="${finalFolderUrl}?actimg=${vrtx.relativeLinkConstructor(url, 'viewService')}&amp;display=gallery" class="active">
+              <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> />
          <#else>
-            <a href="${finalFolderUrl}?actimg=${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}&amp;display=gallery">
-              <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> /> 
+            <a href="${finalFolderUrl}?actimg=${vrtx.relativeLinkConstructor(url, 'viewService')}&amp;display=gallery">
+              <img class="vrtx-thumbnail-image" src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" alt='${description}' <#if showTitle>title="${title}"</#if> /> 
          </#if>
 	   </#if>
 	 </#if>
 	        <#if imageListing != "">
-	          <span><img class="vrtx-full-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')?split("?")[0]}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span>
+	          <span><img class="vrtx-full-image" src="${vrtx.relativeLinkConstructor(url, 'viewService')?split("?")[0]}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span>
 	        <#else>  
-	          <span><img class="vrtx-full-image" src="${vrtx.relativeLinkConstructor(image.URI.toString(), 'viewService')}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span> 
+	          <span><img class="vrtx-full-image" src="${vrtx.relativeLinkConstructor(url, 'viewService')}" alt='${description}' style="width: ${width}px; height: ${height}px" <#if showTitle>title="${title}"</#if> /></span> 
 	        </#if>
 	          <span class="hiddenWidth" style="display: none">${width}</span>
 	          <span class="hiddenHeight" style="display: none">${height}</span>

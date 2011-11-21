@@ -61,11 +61,11 @@ public class UrchinResourceStats implements InitializingBean {
     private Cache cache;
     private net.sf.ehcache.Element cached;
     private UrchinRes ur;
-    
+
     private static long twentyDays = 86400000 * 20;
     private static long fifteenDays = 86400000 * 15;
 
-    public static class UrchinRes implements java.io.Serializable {
+    private static class UrchinRes implements java.io.Serializable {
         private static final long serialVersionUID = 1L;
 
         public String date;
@@ -225,8 +225,6 @@ public class UrchinResourceStats implements InitializingBean {
 
                 if (cache != null)
                     cached = this.cache.get(idAndFilter + expanded + key);
-                else
-                    cached = null;
 
                 if (cached != null)
                     ur = (UrchinRes) cached.getObjectValue();
@@ -251,8 +249,6 @@ public class UrchinResourceStats implements InitializingBean {
 
                 if (cache != null)
                     cached = this.cache.get(idAndFilter + expanded + key);
-                else
-                    cached = null;
 
                 if (cached != null)
                     ur = (UrchinRes) cached.getObjectValue();
@@ -276,8 +272,6 @@ public class UrchinResourceStats implements InitializingBean {
 
                 if (cache != null)
                     cached = this.cache.get(idAndFilter + r.getURI().toString() + key);
-                else
-                    cached = null;
 
                 if (cached != null)
                     ur = (UrchinRes) cached.getObjectValue();
@@ -339,7 +333,7 @@ public class UrchinResourceStats implements InitializingBean {
     private String setIdAndFilter(String id) {
         String ids = "&ids=";
         String filters = "&filters=u:request_stem%3D~^/";
-        // Use below in prod. Different now for testing.
+        // TODO Use below in prod. Different now for testing.
         // String id =
         // RequestContext.getRequestContext().getRepository().getId();
 

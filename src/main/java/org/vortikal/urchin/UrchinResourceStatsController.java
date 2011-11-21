@@ -31,7 +31,6 @@
 package org.vortikal.urchin;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,18 +91,17 @@ public class UrchinResourceStatsController implements Controller {
             model.put("ursTotalPages", urs.pagesTotal(resource, token, id));
             model.put("ursNMonths", urs.nMonths());
         } else {
-          // Whether or not it is a resource created within the last week
-          Calendar calendar = Calendar.getInstance();
-          calendar.add(Calendar.DAY_OF_YEAR, -7);
-          Date upTilAWeekAgoTime = calendar.getTime();
-          Date creationTime = resource.getCreationTime();
-          boolean newResource = false;
-          if(upTilAWeekAgoTime.compareTo(creationTime)<0) {
-              newResource = true;   
-          }
-          model.put("newResource", newResource);      
+            // Whether or not it is a resource created within the last week
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(calendar.getTimeInMillis() - (86400000 * 7));
+
+            boolean newResource = false;
+            if (calendar.getTime().compareTo(resource.getCreationTime()) < 0) {
+                newResource = true;
+            }
+            model.put("newResource", newResource);
         }
-        
+
         return new ModelAndView(this.viewName, model);
     }
 

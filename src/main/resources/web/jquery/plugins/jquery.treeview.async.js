@@ -21,6 +21,7 @@
  *      * added error debug to AJAX function
  *      * callback on data load:
  *        http://stackoverflow.com/questions/4905101/how-to-add-jquery-treeview-callback-on-data-load
+ *      * replace single quotes with HTML-entity
  *
  */
 
@@ -34,7 +35,7 @@
       var text = this.text;
       if (theuri) {
         var title = this.title;
-        title = title.replace(/'/g, "&#145;");
+        title = title.replace(/'/g, "&#145;"); // Single quote => HTML-entity
         if (title) {
           linkOrPlainText = "<a class='tree-link' href='" + theuri + "' title='" + title+ "'>" + text + "</a>"
         } else {

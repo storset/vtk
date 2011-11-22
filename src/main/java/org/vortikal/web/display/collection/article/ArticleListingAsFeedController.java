@@ -64,7 +64,7 @@ public class ArticleListingAsFeedController extends AtomFeedController {
         List<Listing> results = new ArrayList<Listing>();
         HttpServletRequest request = requestContext.getServletRequest();
         Listing featuredArticles = this.searcher.getFeaturedArticles(request, collection, 1, this.entryCountLimit, 0);
-        if (featuredArticles.size() > 0) {
+        if (featuredArticles != null && featuredArticles.size() > 0) {
             results.add(featuredArticles);
         }
 

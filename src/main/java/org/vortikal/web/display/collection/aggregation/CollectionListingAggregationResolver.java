@@ -50,8 +50,8 @@ public class CollectionListingAggregationResolver implements AggregationResolver
 
     private PropertyTypeDefinition aggregationPropDef;
 
-    private final static int DEFAULT_LIMIT = 5;
-    private final static int DEFAULT_RECURSIVE_DEPTH = 2;
+    public final static int DEFAULT_LIMIT = 5;
+    public final static int DEFAULT_RECURSIVE_DEPTH = 2;
 
     /**
      * Limit the number of folders to aggregate from

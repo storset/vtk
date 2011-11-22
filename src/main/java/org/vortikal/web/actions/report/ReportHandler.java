@@ -38,6 +38,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -49,11 +52,13 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public class ReportHandler implements Controller {
+public class ReportHandler implements Controller, BeanFactoryAware {
 
     private Repository repository;
     private String viewName;
     private List<Reporter> primaryReporters, reporters, hiddenReporters;
+    
+    private BeanFactory beanFactory;
 
     private static final String REPORT_TYPE_PARAM = "report-type";
 
@@ -102,6 +107,13 @@ public class ReportHandler implements Controller {
             reporterURL.addParameter(REPORT_TYPE_PARAM, reporter.getName());
             reporterObjects.add(new ReporterObject(reporter.getName(), reporterURL));
         }
+        try {
+            Reporter urchinReporter = (Reporter) beanFactory.getBean("urchinSearchReport");
+            URL reporterURL = new URL(serviceURL);
+            reporterURL.addParameter(REPORT_TYPE_PARAM, urchinReporter.getName());
+            reporterObjects.add(new ReporterObject(urchinReporter.getName(), reporterURL));
+        } catch (Exception e) {
+        }
         model.put("primaryReporters", reporterObjects);
 
         reporterObjects = new ArrayList<ReporterObject>();
@@ -131,6 +143,13 @@ public class ReportHandler implements Controller {
                 return reporter;
             }
         }
+        try {
+            Reporter urchinReporter = (Reporter) beanFactory.getBean("urchinSearchReport");
+            if (urchinReporter.getName().equals(reportType)) {
+                return urchinReporter;
+            }
+        } catch (Exception e) {
+        }
         return null;
     }
 
@@ -142,6 +161,11 @@ public class ReportHandler implements Controller {
     @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
     }
 
     public class ReporterObject {

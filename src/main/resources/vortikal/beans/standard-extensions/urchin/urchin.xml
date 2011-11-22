@@ -54,4 +54,13 @@
     </property>
   </bean>
 
+  <bean id="urchinSearchReport" class="org.vortikal.web.actions.report.UrchinSearchReport" parent="reporter">
+    <property name="name" value="urchinSearch" />
+    <property name="viewName" value="urchinSearch" />
+    <property name="user" value="${urchinUser}" />
+    <property name="password" value="${urchinPassword}" />
+    <property name="cacheManager" ref="ehCacheManager" />
+    <property name="service" ref="aboutResourceService" />
+  </bean>
+
 </beans>

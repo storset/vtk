@@ -70,11 +70,7 @@
         <#else>
           <li class="vrtx-image-entry">
         </#if>
-        <#assign url = image.URI />
-        <#assign solrUrl = vrtx.propValue(image, "solr.url", "", "") />
-        <#if solrUrl?exists && solrUrl?has_content>
-          <#assign url = solrUrl>
-        </#if>
+        <#assign url = vrtx.getUri(image) />
             <div class="vrtx-image-container">
               <a href="${imageListing.urls[image.URI]?html}">
                 <img src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" title="${title}" alt="${title}" />
@@ -143,11 +139,7 @@
         </thead>
         <tbody>
         <#list images as image>
-          <#assign url = image.URI />
-          <#assign solrUrl = vrtx.propValue(image, "solr.url", "", "") />
-          <#if solrUrl?exists && solrUrl?has_content>
-            <#assign url = solrUrl>
-          </#if>
+          <#assign url = vrtx.getUri(image) />
           <tr>
             <#local title = vrtx.propValue(image, 'title')?html />
             <td class="vrtx-table-image"><a href="${imageListing.urls[image.URI]?html}"><img src="${vrtx.relativeLinkConstructor(url, 'displayThumbnailService')}" alt="${title}" /></a></td>

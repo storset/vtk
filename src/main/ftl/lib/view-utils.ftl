@@ -173,7 +173,8 @@
   
   <#if isValidStartDate>
     <span class="vrtx-add-event">
-      <a class="vrtx-ical" href="${resource.URI?html}?vrtx=ical"><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")?html}" title="${vrtx.getMsg("event.add-to-calendar.help")?html}"></a>
+      <#assign uri = vrtx.getUri(resource) />
+      <a class="vrtx-ical" href="${uri?html}?vrtx=ical"><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")?html}" title="${vrtx.getMsg("event.add-to-calendar.help")?html}"></a>
     </span>
   </#if>
   
@@ -205,7 +206,8 @@
 <#macro displayNumberOfComments resource locale  >
   <#local numberOfComments = vrtx.prop(resource, "numberOfComments") />
   <#if numberOfComments?has_content >
-    <a href="${resource.URI}#comments" class="vrtx-number-of-comments">
+    <#assign uri = vrtx.getUri(resource) />
+    <a href="${uri}#comments" class="vrtx-number-of-comments">
     <#if numberOfComments.intValue?number &gt; 1>
       <@vrtx.localizeMessage code="viewCollectionListing.numberOfComments" default="" args=[numberOfComments.intValue] locale=locale />
     <#else>

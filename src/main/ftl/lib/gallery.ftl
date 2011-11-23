@@ -87,11 +87,7 @@
       <#local description = description + " ${vrtx.getMsg('imageAsHtml.byline')}: " + photographer + "." />
     </#if>
 
-    <#assign url = image.URI />
-    <#assign solrUrl = vrtx.propValue(image, "solr.url", "", "") />
-    <#if solrUrl?exists && solrUrl?has_content>
-      <#assign url = solrUrl>
-    </#if>
+    <#assign url = vrtx.getUri(image) />
     <#if activeImage != "" && imageListing != "">
 	  <#if (activeImage == url) >
 	     <a href="${vrtx.relativeLinkConstructor(url, 'viewService')}" class="active">

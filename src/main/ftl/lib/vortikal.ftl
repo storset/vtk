@@ -17,6 +17,15 @@
 </#if>
 
 
+<#function getUri resource>
+  <#assign uri = resource.URI />
+  <#assign solrUri = vrtx.propValue(resource, "solr.url", "", "") />
+  <#if solrUri?exists && solrUri?has_content>
+    <#assign uri = solrUri>
+  </#if>
+  <#return uri />
+</#function>
+
 <#-- XXX: remove this when properties 'introduction' and 'description'
      are merged: -->
 <#function getIntroduction resource>

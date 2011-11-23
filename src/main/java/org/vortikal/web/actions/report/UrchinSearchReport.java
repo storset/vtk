@@ -36,11 +36,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -182,7 +177,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
     private UrchinVisitRes fetch(String sdate, String edate, String key, String token, Resource resource) {
         UrchinVisitRes uvr;
         Repository repo = RequestContext.getRequestContext().getRepository();
-        // TODO Change for prod.
+        // TODO For prod.
         // String uri = "/" + repo.getId() + resource.getURI().toString();
         String uri = "/www.uio.no" + resource.getURI().toString();
 
@@ -258,26 +253,49 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
 
                 StringBuilder b = new StringBuilder();
 
-                CharsetDecoder decoder = Charset.forName("US-ASCII").newDecoder();
-
+                // TODO For prod:
+                // int id = repo.getId().length() + 1;
+                int id = "www.uio.no".length() + 1;
+                int count = 1;
+                String tmp = "";
+                Resource r;
                 while ((line = rd.readLine()) != null) {
-                    if (line.trim().equals("<record id=\"" + (maxResults * 2) + "\">")) {
-                        b.append("   </dataset>\n");
-                        b.append("</urchindata>\n");
+                    b.append(line + "\n");
+                    if (line.trim().startsWith("<ncols>")) {
+                        break;
+                    }
+                }
+                while ((line = rd.readLine()) != null) {
+                    if (count > maxResults) {
                         break;
                     }
 
-                    byte bytearray[] = line.getBytes();
-
-                    try {
-                        CharBuffer r = decoder.decode(ByteBuffer.wrap(bytearray));
-                        b.append(r.toString() + "\n");
-                    } catch (CharacterCodingException e) {
-                        System.out.println(new String(line.getBytes("US-ASCII")) + "\n");
-                        b.append(new String(line.getBytes("US-ASCII") + "\n"));
+                    if (line.trim().startsWith("<record id=\"")) {
+                        if ((line = rd.readLine()) != null && line.trim().startsWith("<name>")) {
+                            tmp = line.substring(line.indexOf('/') + id, line.lastIndexOf('<'));
+                            try {
+                                r = repo.retrieve(token, Path.fromString(tmp), false);
+                                b.append("      <record id=\"" + count++ + "\">\n");
+                                b.append("         <name>" + r.getURI() + "</name>\n");
+                                b.append(rd.readLine() + "\n");
+                                while ((line = rd.readLine()) != null) {
+                                    if (line.trim().equals("</record>")) {
+                                        b.append(line + "\n");
+                                        break;
+                                    }
+                                }
+                            } catch (Exception e) {
+                                while ((line = rd.readLine()) != null) {
+                                    if (line.trim().equals("</record>")) {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                     }
-
                 }
+                b.append("   </dataset>\n");
+                b.append("</urchindata>\n");
 
                 rd.close();
 
@@ -292,12 +310,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                 if ((dataset = urchindata.get(3).getChildren()) == null)
                     return null;
 
-                String tmp;
-                // TODO For prod:
-                // int id =
-                // RequestContext.getRequestContext().getRepository().getId().length()
-                // + 1;
-                int id = "www.uio.no".length() + 1, j = 0;
+                int j = 0;
                 List<String> uris = new ArrayList<String>();
                 List<Integer> visits = new ArrayList<Integer>();
                 for (int i = 0; i < maxResults; i++) {
@@ -306,9 +319,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                     record = dataset.get(8 + j++).getChildren();
 
                     try {
-                        tmp = record.get(0).getText().substring(id);
-                        repo.retrieve(token, Path.fromString(tmp), false);
-                        uris.add(tmp);
+                        uris.add(record.get(0).getText());
                         visits.add(Integer.parseInt(record.get(1).getText()));
                     } catch (Exception e) {
                         i--;

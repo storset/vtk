@@ -91,26 +91,30 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
 #TB_closeAjaxWindow {
   overflow: hidden;
   text-indent: -9999px;
-  width: 31px;
-  height: 32px;
   padding: 0;
   margin: 0;
-  right: 25px;
-  top: -5px;
+  right: 0;
+  top: 1px;
   position: absolute;
   text-align: left;
 }
 
+#TB_closeAjaxWindow,
+#TB_closeAjaxWindow a {
+  width: 20px;
+  height: 18px;
+}
+
 #TB_ajaxWindowTitle{
     float: none;
-    margin: 0 0 0 20px;
+    margin: 0;
     padding: 0px;
 }
 
 #TB_title{
   min-height: 31px;
-  background-color: transparent;
-  margin: 20px 0 0 0;
+  background: transparent url(../../../themes/default/images/line-dotted.gif) repeat-x bottom left;
+  margin: 20px 20px 0 20px;
   padding: 0 70px 0 0;
   font-size: 1.667em; /* 20px <- 12px <- 13px */
   position: relative;
@@ -185,8 +189,6 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
 #TB_closeAjaxWindow a {
   background: url(../../../themes/default/images/thickbox-close.png) no-repeat center center;
   overflow: hidden;
-  width: 31px;
-  height: 32px;
   display: block;
   text-indent: -9999px;
 }

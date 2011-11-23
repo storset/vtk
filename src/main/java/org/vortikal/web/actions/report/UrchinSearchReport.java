@@ -254,8 +254,8 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                 StringBuilder b = new StringBuilder();
 
                 // TODO For prod:
-                // int id = repo.getId().length() + 1;
-                int id = "www.uio.no".length() + 1;
+                // int id = ("/" + repo.getId()).length();
+                int id = ("/" + "www.uio.no").length();
                 int count = 1;
                 String tmp = "";
                 Resource r;
@@ -273,22 +273,33 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                     if (line.trim().startsWith("<record id=\"")) {
                         if ((line = rd.readLine()) != null && line.trim().startsWith("<name>")) {
                             tmp = line.substring(line.indexOf('/') + id, line.lastIndexOf('<'));
+
                             try {
                                 r = repo.retrieve(token, Path.fromString(tmp), false);
                                 b.append("      <record id=\"" + count++ + "\">\n");
                                 b.append("         <name>" + r.getURI() + "</name>\n");
                                 b.append(rd.readLine() + "\n");
-                                while ((line = rd.readLine()) != null) {
-                                    if (line.trim().equals("</record>")) {
-                                        b.append(line + "\n");
-                                        break;
-                                    }
-                                }
                             } catch (Exception e) {
-                                while ((line = rd.readLine()) != null) {
-                                    if (line.trim().equals("</record>")) {
-                                        break;
-                                    }
+                                r = null;
+                            }
+
+                            if (r == null && tmp.endsWith("index.html")) {
+                                try {
+                                    r = repo.retrieve(token, Path.fromString(tmp.substring(0, tmp.lastIndexOf('/'))),
+                                            false);
+                                    b.append("      <record id=\"" + count++ + "\">\n");
+                                    b.append("         <name>" + r.getURI() + "</name>\n");
+                                    b.append(rd.readLine() + "\n");
+                                } catch (Exception e) {
+                                    r = null;
+                                }
+                            }
+
+                            while ((line = rd.readLine()) != null) {
+                                if (line.trim().equals("</record>")) {
+                                    if (r != null)
+                                        b.append(line + "\n");
+                                    break;
                                 }
                             }
                         }
@@ -336,8 +347,6 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                 return uvr;
             }
         } catch (Exception e) {
-            System.out.println("\n\n\n" + e.getMessage() + "\n\n");
-            e.printStackTrace();
             return null;
         }
     }

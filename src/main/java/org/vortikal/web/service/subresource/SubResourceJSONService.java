@@ -45,6 +45,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
+import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.report.subresource.SubResourcePermissions;
 import org.vortikal.web.actions.report.subresource.SubResourcePermissionsProvider;
@@ -107,17 +108,17 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             
             // Generate title
             StringBuilder title = new StringBuilder();
-            title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + sr.getName() + "</strong>");
+            title.append("<span id='title-wrapper'><strong id='title'>" + sr.getName() + "</strong>");
             
             String uriService = permissionsService.constructURL(Path.fromString(sr.getUri())).getPathRepresentation();
 
             if (sr.isInheritedAcl()) {
-              title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.inherited-permissions", null) + " (<a href=&quot;" + uriService
-                         + "&quot;>" + provider.getLocalizedTitle(request, "report.collection-structure.edit", null)
-                         + "</a>)</span><span class=&quot;inherited-permissions&quot;>");
+              title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.inherited-permissions", null) + " (<a href='" + uriService
+                         + "'>" + provider.getLocalizedTitle(request, "report.collection-structure.edit", null)
+                         + "</a>)</span><span class='inherited-permissions'>");
             } else {
-              title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.own-permissions", null) + " (<a href=&quot;" + uriService 
-                         + "&quot;>" + provider.getLocalizedTitle(request, "report.collection-structure.edit", null) + "</a>)</span>");
+              title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.own-permissions", null) + " (<a href='" + uriService 
+                         + "'>" + provider.getLocalizedTitle(request, "report.collection-structure.edit", null) + "</a>)</span>");
               listClasses = "not-inherited";
             }
             
@@ -141,9 +142,9 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             }
             
             // Add to JSON-object
-            o.put("text", sr.getName());
-            o.put("uri", sr.getUri());
-            o.put("title", title.toString());
+            o.put("text", HtmlUtil.escapeHtmlString(sr.getName()));
+            o.put("uri", HtmlUtil.escapeHtmlString(sr.getUri()));
+            o.put("title", HtmlUtil.escapeHtmlString(title.toString()));
             o.put("listClasses", listClasses);
             o.put("spanClasses", spanClasses);
             

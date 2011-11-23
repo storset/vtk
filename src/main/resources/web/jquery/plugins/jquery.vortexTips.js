@@ -17,9 +17,9 @@
 (function ($) {
   $.fn.vortexTips = function (subSelector, appendTo, containerWidth, animInSpeed, animOutPreDelay, animOutSpeed, xOffset, yOffset, autoWidth, extra) {
 
-    var html = "<span class='tip " + appendTo.substring(1) + "'>&nbsp;</span>";
+    var html = '<span class="tip ' + appendTo.substring(1) + '">&nbsp;</span>';
     if (extra) {
-      var extraHtml = "<span class='tipextra " + appendTo.substring(1) + "'>&nbsp;</span>"
+      var extraHtml = '<span class="tipextra ' + appendTo.substring(1) + '">&nbsp;</span>';
     }
     var tip;
     var tipExtra;
@@ -45,11 +45,11 @@
           tipExtra.remove();
         }
         $(appendTo).append(html);
-        tip = $(".tip." + appendTo.substring(1));
+        tip = $('.tip.' + appendTo.substring(1));
         tip.hide();
         if (extra) {
          $(appendTo).append(extraHtml);
-         tipExtra = $(".tipextra." + appendTo.substring(1));
+         tipExtra = $('.tipextra.' + appendTo.substring(1));
          tipExtra.hide();
         }
         var linkParent = link.parent();

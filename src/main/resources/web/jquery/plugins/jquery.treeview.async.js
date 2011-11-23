@@ -35,7 +35,6 @@
       var text = this.text;
       if (theuri) {
         var title = this.title;
-        title = title.replace(/'/g, "&#145;"); // Single quote => HTML-entity
         if (title) {
           linkOrPlainText = "<a class='tree-link' href='" + theuri + "' title='" + title+ "'>" + text + "</a>"
         } else {
@@ -44,8 +43,10 @@
       } else {
         linkOrPlainText = text;
       }
-      var current = $("<li/>").attr("id", this.id || "").html("<span>" + linkOrPlainText + "</span>").appendTo(parent);
-
+      var current = $("<li/>").attr("id", this.id || "")
+                              .html("<span>" + linkOrPlainText + "</span>")
+                              .appendTo(parent);
+                             
       if (this.listClasses) current.addClass(this.listClasses);
       if (this.spanClasses) current.children("span").addClass(this.spanClasses);
       if (this.expanded) current.addClass("open");

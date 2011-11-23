@@ -173,9 +173,9 @@ resourcetype structured-master{
   
   vocabulary {
      status-available {
-       en : ("true" = "Available", "false" = "Unavailable"),
-       no : ("true" = "Ledig", "false" = "Tatt"),
-       nn : ("true" = "Ledig", "false" = "Tatt")
+       en : ("true" = "Available", "false" = "Not available"),
+       no : ("true" = "Tilgjengelig", "false" = "Ikke tilgjengelig"),
+       nn : ("true" = "Tilgjengeleg", "false" = "Ikkje tilgjengeleg")
      }
 	credits {
        en : (range = "60,45,30"),
@@ -211,6 +211,6 @@ resourcetype structured-master{
       en : "Number of supervisors to show",
       no : "Antall veiledere som skal vises",
       nn : "Antall veiledarar som skal visast"),
-    completed : (en : "unavailable", no : "tatt", nn : "tatt")
+    completed : (en : "not available", no : "ikke tilgjengelig", nn : "ikkje tilgjengeleg")
   }
 }

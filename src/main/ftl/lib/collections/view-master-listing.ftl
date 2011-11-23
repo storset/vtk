@@ -153,6 +153,6 @@
 
 <#macro completed >
 	<#if viewOngoingMastersLink?exists>
-		<span>(${vrtx.getMsg("masters.completed")})</span>
+		<span>(${vrtx.getMsg("masters.listCompleted")})</span>
 	</#if>
 </#macro>

@@ -41,27 +41,22 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.web.search.QueryBuilder;
 
-public class ArticleListingQueryBuilder implements QueryBuilder {
+public class FeaturedArticlesQueryBuilder implements QueryBuilder {
 
     private PropertyTypeDefinition featuredArticlesPropDef;
-    private String resourceType;
     private boolean invert;
 
     @Override
     public Query build(Resource collection, HttpServletRequest request) {
 
-        Query query = new TypeTermQuery(resourceType, TermOperator.IN);
-
         Property featuredArtilesProp = collection.getProperty(this.featuredArticlesPropDef);
         if (featuredArtilesProp == null) {
-            return query;
+            return null;
         }
 
         Set<String> set = new HashSet<String>();
@@ -75,27 +70,18 @@ public class ArticleListingQueryBuilder implements QueryBuilder {
             }
         }
         if (set.size() > 0) {
-            AndQuery and = new AndQuery();
-            and.add(query);
             if (!invert) {
-                and.add(new UriSetQuery(set, TermOperator.NI));
+                return new UriSetQuery(set, TermOperator.NI);
             } else {
-                and.add(new UriSetQuery(set));
+                return new UriSetQuery(set);
             }
-            return and;
         }
-
-        return query;
+        return null;
     }
 
     @Required
     public void setFeaturedArticlesPropDef(PropertyTypeDefinition featuredArticlesPropDef) {
         this.featuredArticlesPropDef = featuredArticlesPropDef;
-    }
-
-    @Required
-    public void setResourceType(String resourceType) {
-        this.resourceType = resourceType;
     }
 
     public void setInvert(boolean invert) {

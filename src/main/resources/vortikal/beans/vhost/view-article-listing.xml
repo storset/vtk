@@ -75,9 +75,9 @@
     <property name="queryBuilders">
       <list>
         <ref bean="articleListing.listingUriQueryBuilder" />
-        <ref bean="articleListing.defaultQueryBuilder" />
+        <ref bean="articleListing.excludeFeaturedArticlesQueryBuilder" />
         <bean parent="queryStringParser">
-          <property name="queryString" value="published-date &lt;= {$currentTime}" />
+          <property name="queryString" value="(type IN article AND published-date &lt;= {$currentTime})" />
         </bean>
       </list>
     </property>
@@ -91,13 +91,12 @@
     <property name="subfolderPropDef" ref="articleListing.recursiveListingSubfoldersPropDef" />
   </bean>
 
-  <bean id="articleListing.defaultQueryBuilder"
-    class="org.vortikal.web.search.articlelisting.ArticleListingQueryBuilder">
+  <bean id="articleListing.excludeFeaturedArticlesQueryBuilder"
+    class="org.vortikal.web.search.articlelisting.FeaturedArticlesQueryBuilder">
     <property name="featuredArticlesPropDef" ref="articleListing.featuredArticlesPropDef" />
-    <property name="resourceType" value="article" />
   </bean>
 
-  <bean id="articleListing.featuredArticlesQueryBuilder" parent="articleListing.defaultQueryBuilder">
+  <bean id="articleListing.featuredArticlesQueryBuilder" parent="articleListing.excludeFeaturedArticlesQueryBuilder">
     <property name="invert" value="true" />
   </bean>
 
@@ -143,7 +142,7 @@
       <list>
         <ref bean="articleListing.featuredArticlesQueryBuilder" />
         <bean parent="queryStringParser">
-          <property name="queryString" value="published-date &lt;= {$currentTime}" />
+          <property name="queryString" value="(type IN article AND published-date &lt;= {$currentTime})" />
         </bean>
       </list>
     </property>

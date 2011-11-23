@@ -7,8 +7,12 @@
     <property name="queryBuilders">
       <list>
         <ref bean="articleListing.listingUriQueryBuilder" />
-        <ref bean="structured.articleListing.defaultQueryBuilder" />
+        <ref bean="articleListing.excludeFeaturedArticlesQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN structured-article" />
+        </bean>
       </list>
+
     </property>
     <property name="searchSorting" ref="structured.articleListing.searchSorting" />
     <property name="configurablePropertySelectPointers" ref="article.configurablePropertySelectPointersList" />
@@ -27,19 +31,14 @@
     <property name="name" value="structured.articleListing.featuredArticles" />
     <property name="queryBuilders">
       <list>
-        <ref bean="structured.articleListing.featuredArticlesQueryBuilder" />
+        <ref bean="articleListing.featuredArticlesQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN structured-article" />
+        </bean>
       </list>
     </property>
     <property name="searchSorting" ref="structured.articleListing.searchSorting" />
     <property name="configurablePropertySelectPointers" ref="article.configurablePropertySelectPointersList" />
-  </bean>
-
-  <bean id="structured.articleListing.defaultQueryBuilder" parent="articleListing.defaultQueryBuilder">
-    <property name="resourceType" value="structured-article" />
-  </bean>
-
-  <bean id="structured.articleListing.featuredArticlesQueryBuilder" parent="structured.articleListing.defaultQueryBuilder">
-    <property name="invert" value="true" />
   </bean>
 
   <bean id="structured.articleListing.view" parent="freemarkerView">

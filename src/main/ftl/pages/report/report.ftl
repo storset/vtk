@@ -21,7 +21,7 @@
       <div class="vrtx-report">
       
         <#if primaryReporters?has_content>
-          <ul class="vrtx-primary-reporters">
+          <ul class="vrtx-primary-reporters first">
           <#list primaryReporters as reporter>
             <li class="${reporter.name}">
               <a href="${reporter.url?html}">
@@ -30,12 +30,16 @@
                 <span class="vrtx-primary-reporters-info"><@vrtx.msg code="report.primaries.info.${reporter.name}" default="${reporter.name}" /></span>
               </a>
             </li>
+            <#if ((reporter_index+1) % 3 == 0)>
+              </ul>
+              <ul class="vrtx-primary-reporters">
+            </#if>
           </#list>
   	      </ul>
   	    </#if>
   	    
   	    <#if reporters?has_content>
-  	      <h4 class="vrtx-reporters-title"><@vrtx.msg code="report.heading.others" default="Other reports" /></h4>
+  	      <h3 class="vrtx-reporters-title"><@vrtx.msg code="report.heading.others" default="Other reports" /></h3>
           <ul class="vrtx-reporters">
           <#list reporters as reporter>
             <li class="${reporter.name}"><a href="${reporter.url?html}"><@vrtx.msg code="report.${reporter.name}" default="${reporter.name}" /></a></li>

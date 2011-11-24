@@ -20,18 +20,28 @@ ul.vrtx-reporters {
   margin-left: 0px;
 }
 
-h4.vrtx-reporters-title {
+h3.vrtx-reporters-title {
   margin: 25px 0 0 0;
 }
 
-h4.vrtx-reporters-title,
+h3.vrtx-reporters-title,
+ul.vrtx-primary-reporters,
 ul.vrtx-reporters {
   clear: both;
   width: 100%;
   float: left;
 }
 
-ul.vrtx-primary-reporters,
+ul.vrtx-primary-reporters {
+  list-style: none;
+  margin: 30px 0 0 0;
+  padding: 0;
+}
+
+ul.vrtx-primary-reporters.first {
+  margin: 0;
+}
+
 ul.vrtx-primary-reporters li {
   list-style: none;
   margin: 0;
@@ -50,6 +60,7 @@ ul.vrtx-primary-reporters li a {
   background: #f9f9f9;
   float: left;
   display: block;
+  min-height: 90px;
 }
 
 ul.vrtx-primary-reporters li a:hover {

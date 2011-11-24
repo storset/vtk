@@ -31,6 +31,7 @@
 package org.vortikal.web.actions.report;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
@@ -48,11 +49,20 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
 
-public class UrchinSearchReport extends AbstractReporter implements InitializingBean {
+public class UrchinVisitReport extends AbstractReporter implements InitializingBean {
     private static final int maxResults = 50;
 
     private CacheManager cacheManager;
@@ -61,33 +71,29 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
 
     private String name;
     private String viewName;
+    private Service service;
 
     private String user;
     private String password;
 
     private static long fifteenDays = 86400000 * 15;
 
-    // TODO sette på parametere
-    private static final String SEARCHUIO_PARAM = "searchuio";
-    private static final String SEARCH_PARAM = "search";
-    private static final String QUERY_PARAM = "query";
-
-    private static class UrchinSearchRes implements java.io.Serializable {
+    private static class UrchinVisitRes implements java.io.Serializable {
         private static final long serialVersionUID = 1L;
 
         public String sdate;
         public String edate;
-        public List<String> query;
-        public List<Integer> hit;
+        public List<String> uri;
+        public List<Integer> visit;
     }
 
     @Override
     public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("reportname", this.getName());
-
-        org.vortikal.web.service.URL resourceurl = org.vortikal.web.service.URL.create(request);
-        System.out.println(resourceurl);
+        Principal p = SecurityContext.getSecurityContext().getPrincipal();
+        Repository repo = RequestContext.getRequestContext().getRepository();
+        Resource r;
 
         NumberFormat myFormat = NumberFormat.getInstance();
         myFormat.setMinimumIntegerDigits(2);
@@ -102,16 +108,20 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         String edate = ecal.get(Calendar.YEAR) + myFormat.format((ecal.get(Calendar.MONTH) + 1))
                 + myFormat.format(ecal.get(Calendar.DATE));
 
-        UrchinSearchRes usr = fetch(sdate, edate, "SearchTotal" + maxResults, token, resource);
+        UrchinVisitRes uvr = fetch(sdate, edate, "VisitTotal" + maxResults, token, resource);
         List<org.vortikal.web.service.URL> url = new ArrayList<org.vortikal.web.service.URL>();
         List<String> title = new ArrayList<String>();
-        for (int i = 0; i < usr.query.size(); i++) {
-            title.add(usr.query.get(i));
-            url.add(resourceurl);
+        for (int i = 0; i < uvr.uri.size(); i++) {
+            try {
+                r = repo.retrieve(token, Path.fromString(uvr.uri.get(i)), false);
+                title.add(r.getTitle());
+                url.add(service.constructURL(r, p));
+            } catch (Exception e) {
+            }
         }
         result.put("urlsTotal", url);
         result.put("titlesTotal", title);
-        result.put("numbersTotal", usr.hit);
+        result.put("numbersTotal", uvr.visit);
 
         /* Thirty days */
         scal = ecal;
@@ -123,19 +133,20 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         sdate = scal.get(Calendar.YEAR) + myFormat.format((scal.get(Calendar.MONTH) + 1))
                 + myFormat.format(scal.get(Calendar.DATE));
 
-        usr = fetch(sdate, edate, "Search30" + maxResults, token, resource);
+        uvr = fetch(sdate, edate, "Visit30" + maxResults, token, resource);
         url = new ArrayList<org.vortikal.web.service.URL>();
         title = new ArrayList<String>();
-        for (int i = 0; i < usr.query.size(); i++) {
+        for (int i = 0; i < uvr.uri.size(); i++) {
             try {
-                title.add(usr.query.get(i));
-                url.add(resourceurl);
+                r = repo.retrieve(token, Path.fromString(uvr.uri.get(i)), false);
+                title.add(r.getTitle());
+                url.add(service.constructURL(r, p));
             } catch (Exception e) {
             }
         }
         result.put("urlsThirty", url);
         result.put("titlesThirty", title);
-        result.put("numbersThirty", usr.hit);
+        result.put("numbersThirty", uvr.visit);
 
         /* Sixty days */
         scal.setTimeInMillis(scal.getTimeInMillis() - fifteenDays);
@@ -144,42 +155,43 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         sdate = scal.get(Calendar.YEAR) + myFormat.format((scal.get(Calendar.MONTH) + 1))
                 + myFormat.format(scal.get(Calendar.DATE));
 
-        usr = fetch(sdate, edate, "Search60" + maxResults, token, resource);
+        uvr = fetch(sdate, edate, "Visit60" + maxResults, token, resource);
         url = new ArrayList<org.vortikal.web.service.URL>();
         title = new ArrayList<String>();
-        for (int i = 0; i < usr.query.size(); i++) {
-            title.add(usr.query.get(i));
-            url.add(resourceurl);
+        for (int i = 0; i < uvr.uri.size(); i++) {
+            try {
+                r = repo.retrieve(token, Path.fromString(uvr.uri.get(i)), false);
+                title.add(r.getTitle());
+                url.add(service.constructURL(r, p));
+            } catch (Exception e) {
+            }
         }
         result.put("urlsSixty", url);
         result.put("titlesSixty", title);
-        result.put("numbersSixty", usr.hit);
+        result.put("numbersSixty", uvr.visit);
 
         return result;
     }
 
-    private UrchinSearchRes fetch(String sdate, String edate, String key, String token, Resource resource) {
-        UrchinSearchRes usr;
+    @SuppressWarnings("unchecked")
+    private UrchinVisitRes fetch(String sdate, String edate, String key, String token, Resource resource) {
+        UrchinVisitRes uvr;
+        Repository repo = RequestContext.getRequestContext().getRepository();
         // TODO For prod.
         // String uri = "/" + repo.getId() + resource.getURI().toString();
         String uri = "/www.uio.no" + resource.getURI().toString();
-        if (resource.isCollection()) {
-            if (!uri.endsWith("/"))
-                uri += "/";
-            uri += "index.html";
-        }
 
         try {
             if (cache != null)
                 cached = this.cache.get(resource.getURI().toString() + key);
 
             if (cached != null)
-                usr = (UrchinSearchRes) cached.getObjectValue();
+                uvr = (UrchinVisitRes) cached.getObjectValue();
             else
-                usr = new UrchinSearchRes();
+                uvr = new UrchinVisitRes();
 
-            if ((usr.edate != null && usr.edate.equals(edate)) && (usr.sdate != null && usr.sdate.equals(sdate))) {
-                return usr;
+            if ((uvr.edate != null && uvr.edate.equals(edate)) && (uvr.sdate != null && uvr.sdate.equals(sdate))) {
+                return uvr;
             } else {
                 URL url = new URL("https://statistikk.uio.no/session.cgi");
 
@@ -216,14 +228,12 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                 surl += "&action=prop";
                 surl += "&rid=1"; // TODO Profil id
                 surl += "&hl=en-US";
-                surl += "&vid=1307";
+                surl += "&vid=1304";
                 surl += "&bd=" + sdate;
                 surl += "&ed=" + edate;
-                surl += "&qt=" + uri + "|query|";
-                surl += "&lv=2";
                 surl += "&ns=10";
                 surl += "&ss=0";
-                surl += "&fd=";
+                surl += "&fd=" + uri;
                 surl += "&ft=2";
                 surl += "&sf=2";
                 surl += "&sb=1";
@@ -236,22 +246,25 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                 surl += "&xd=1";
                 surl += "&x=7";
 
-                System.out.println(surl);
-
                 url = new URL(surl);
                 conn = (HttpsURLConnection) url.openConnection();
 
-                List<String> queries = new ArrayList<String>();
-                List<Integer> hits = new ArrayList<Integer>();
                 rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
+                StringBuilder b = new StringBuilder();
+
+                // TODO For prod:
+                // int id = ("/" + repo.getId()).length();
+                int id = ("/" + "www.uio.no").length();
+                int count = 1;
+                String tmp = "";
+                Resource r;
                 while ((line = rd.readLine()) != null) {
+                    b.append(line + "\n");
                     if (line.trim().startsWith("<ncols>")) {
                         break;
                     }
                 }
-
-                int count = 1;
                 while ((line = rd.readLine()) != null) {
                     if (count > maxResults) {
                         break;
@@ -259,26 +272,79 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
 
                     if (line.trim().startsWith("<record id=\"")) {
                         if ((line = rd.readLine()) != null && line.trim().startsWith("<name>")) {
-                            queries.add(line.substring(line.indexOf('>') + 1, line.lastIndexOf('<')));
+                            tmp = line.substring(line.indexOf('/') + id, line.lastIndexOf('<'));
+
+                            try {
+                                r = repo.retrieve(token, Path.fromString(tmp), false);
+                                b.append("      <record id=\"" + count++ + "\">\n");
+                                b.append("         <name>" + r.getURI() + "</name>\n");
+                                b.append(rd.readLine() + "\n");
+                            } catch (Exception e) {
+                                r = null;
+                            }
+
+                            if (r == null && tmp.endsWith("index.html")) {
+                                try {
+                                    r = repo.retrieve(token, Path.fromString(tmp.substring(0, tmp.lastIndexOf('/'))),
+                                            false);
+                                    b.append("      <record id=\"" + count++ + "\">\n");
+                                    b.append("         <name>" + r.getURI() + "</name>\n");
+                                    b.append(rd.readLine() + "\n");
+                                } catch (Exception e) {
+                                    r = null;
+                                }
+                            }
+
+                            while ((line = rd.readLine()) != null) {
+                                if (line.trim().equals("</record>")) {
+                                    if (r != null)
+                                        b.append(line + "\n");
+                                    break;
+                                }
+                            }
                         }
-                        if ((line = rd.readLine()) != null && line.trim().startsWith("<value1>")) {
-                            hits.add(Integer.parseInt(line.substring(line.indexOf('>') + 1, line.lastIndexOf('<'))));
-                        }
-                        rd.readLine();
-                        count++;
                     }
                 }
+                b.append("   </dataset>\n");
+                b.append("</urchindata>\n");
 
                 rd.close();
 
-                usr.sdate = sdate;
-                usr.edate = edate;
-                usr.query = queries;
-                usr.hit = hits;
+                SAXBuilder builder = new SAXBuilder("org.apache.xerces.parsers.SAXParser");
+                Document dom = builder.build(new ByteArrayInputStream(b.toString().getBytes()));
 
-                this.cache.put(new net.sf.ehcache.Element(resource.getURI().toString() + key, usr));
+                List<Element> urchindata, dataset, record;
 
-                return usr;
+                if ((urchindata = dom.getRootElement().getChildren()) == null)
+                    return null;
+
+                if ((dataset = urchindata.get(3).getChildren()) == null)
+                    return null;
+
+                int j = 0;
+                List<String> uris = new ArrayList<String>();
+                List<Integer> visits = new ArrayList<Integer>();
+                for (int i = 0; i < maxResults; i++) {
+                    if (dataset.size() <= 8 + j)
+                        break;
+                    record = dataset.get(8 + j++).getChildren();
+
+                    try {
+                        uris.add(record.get(0).getText());
+                        visits.add(Integer.parseInt(record.get(1).getText()));
+                    } catch (Exception e) {
+                        i--;
+                    }
+                }
+
+                uvr.sdate = sdate;
+                uvr.edate = edate;
+                uvr.uri = uris;
+                uvr.visit = visits;
+
+                this.cache.put(new net.sf.ehcache.Element(resource.getURI().toString() + key, uvr));
+
+                return uvr;
             }
         } catch (Exception e) {
             return null;
@@ -316,6 +382,11 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
     @Required
     public void setCacheManager(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
+    }
+
+    @Required
+    public void setService(Service service) {
+        this.service = service;
     }
 
     @Override

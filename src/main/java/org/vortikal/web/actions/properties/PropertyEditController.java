@@ -45,6 +45,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -113,7 +115,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * 
  */
 public class PropertyEditController extends SimpleFormController implements ReferenceDataProvider, BeanFactoryAware,
-        ReferenceDataProviding {
+        ReferenceDataProviding, InitializingBean  {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
@@ -132,7 +134,8 @@ public class PropertyEditController extends SimpleFormController implements Refe
     private PrincipalManager principalManager;
 
     private BeanFactory beanFactory;
-    
+    private Service urchinService;
+
     private ResourceTypeTree resourceTypeTree;
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -468,12 +471,8 @@ public class PropertyEditController extends SimpleFormController implements Refe
             }
         }
 
-        try {
-            Service urchinService = (Service) beanFactory.getBean("urchinResourceStats.retrieveService");
-            if (hasUrchinStats(resource)) {
-                model.put("urchinStats", urchinService.constructURL(resource));
-            }
-        } catch (Exception e) {
+        if (urchinService != null && hasUrchinStats(resource)) {
+            model.put("urchinStats", urchinService.constructURL(resource));
         }
 
         model.put(this.propertyListModelName, propsList);
@@ -485,7 +484,7 @@ public class PropertyEditController extends SimpleFormController implements Refe
             return true;
 
         ResourceTypeDefinition def = resourceTypeTree.getResourceTypeDefinitionByName("text");
-        
+
         return resourceTypeTree.isContainedType(def, resource.getResourceType());
     }
 
@@ -614,6 +613,15 @@ public class PropertyEditController extends SimpleFormController implements Refe
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        try {
+            urchinService = (Service) beanFactory.getBean("urchinResourceStats.retrieveService");
+        } catch (NoSuchBeanDefinitionException e) {
+            urchinService = null;
+        }
     }
 
     @Required

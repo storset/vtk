@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -52,12 +53,12 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public class ReportHandler implements Controller, BeanFactoryAware {
+public class ReportHandler implements Controller, BeanFactoryAware, InitializingBean {
 
     private Repository repository;
     private String viewName;
     private List<Reporter> primaryReporters, reporters, hiddenReporters;
-    
+
     private BeanFactory beanFactory;
 
     private static final String REPORT_TYPE_PARAM = "report-type";
@@ -66,7 +67,7 @@ public class ReportHandler implements Controller, BeanFactoryAware {
     public void setPrimaryReporters(List<Reporter> primaryReporters) {
         this.primaryReporters = primaryReporters;
     }
-    
+
     @Required
     public void setReporters(List<Reporter> reporters) {
         this.reporters = reporters;
@@ -100,19 +101,12 @@ public class ReportHandler implements Controller, BeanFactoryAware {
                 return new ModelAndView(reporter.getViewName(), model);
             }
         }
-        
+
         List<ReporterObject> reporterObjects = new ArrayList<ReporterObject>();
         for (Reporter reporter : this.primaryReporters) {
             URL reporterURL = new URL(serviceURL);
             reporterURL.addParameter(REPORT_TYPE_PARAM, reporter.getName());
             reporterObjects.add(new ReporterObject(reporter.getName(), reporterURL));
-        }
-        try {
-            Reporter urchinReporter = (Reporter) beanFactory.getBean("urchinSearchReport");
-            URL reporterURL = new URL(serviceURL);
-            reporterURL.addParameter(REPORT_TYPE_PARAM, urchinReporter.getName());
-            reporterObjects.add(new ReporterObject(urchinReporter.getName(), reporterURL));
-        } catch (Exception e) {
         }
         model.put("primaryReporters", reporterObjects);
 
@@ -143,13 +137,6 @@ public class ReportHandler implements Controller, BeanFactoryAware {
                 return reporter;
             }
         }
-        try {
-            Reporter urchinReporter = (Reporter) beanFactory.getBean("urchinSearchReport");
-            if (urchinReporter.getName().equals(reportType)) {
-                return urchinReporter;
-            }
-        } catch (Exception e) {
-        }
         return null;
     }
 
@@ -166,6 +153,18 @@ public class ReportHandler implements Controller, BeanFactoryAware {
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        try {
+            primaryReporters.add((Reporter) beanFactory.getBean("urchinVisitReport"));
+        } catch (Exception e) {
+        }
+        try {
+            primaryReporters.add((Reporter) beanFactory.getBean("urchinSearchReport"));
+        } catch (Exception e) {
+        }
     }
 
     public class ReporterObject {

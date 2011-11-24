@@ -51,6 +51,7 @@ import net.sf.ehcache.CacheManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
+import org.vortikal.urchin.UrchinHosts;
 
 public class UrchinSearchReport extends AbstractReporter implements InitializingBean {
     private static final int maxResults = 50;
@@ -64,6 +65,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
 
     private String user;
     private String password;
+    private UrchinHosts urchinHosts;
 
     private static long fifteenDays = 86400000 * 15;
 
@@ -227,7 +229,12 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                 surl += "sid=" + sid;
                 surl += "&app=urchin.cgi";
                 surl += "&action=prop";
-                surl += "&rid=1"; // TODO Profil id
+                int id;
+                // TODO For prod:
+                // if ((id = urchinHosts.getProfilId(repo.getId())) == -1)
+                if ((id = urchinHosts.getProfilId("www.uio.no")) == -1)
+                    return null;
+                surl += "&rid=" + id;
                 surl += "&hl=en-US";
                 surl += "&vid=1307";
                 surl += "&bd=" + sdate;
@@ -329,6 +336,11 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
     @Required
     public void setCacheManager(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
+    }
+
+    @Required
+    public void setUrchinHosts(UrchinHosts urchinHosts) {
+        this.urchinHosts = urchinHosts;
     }
 
     @Override

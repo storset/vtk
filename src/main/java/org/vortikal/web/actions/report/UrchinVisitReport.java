@@ -59,6 +59,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.urchin.UrchinHosts;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -75,6 +76,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
 
     private String user;
     private String password;
+    private UrchinHosts urchinHosts;
 
     private static long fifteenDays = 86400000 * 15;
 
@@ -226,7 +228,12 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
                 surl += "sid=" + sid;
                 surl += "&app=urchin.cgi";
                 surl += "&action=prop";
-                surl += "&rid=1"; // TODO Profil id
+                int id;
+                // TODO For prod:
+                // if ((id = urchinHosts.getProfilId(repo.getId())) == -1)
+                if ((id = urchinHosts.getProfilId("www.uio.no")) == -1)
+                    return null;
+                surl += "&rid=" + id;
                 surl += "&hl=en-US";
                 surl += "&vid=1304";
                 surl += "&bd=" + sdate;
@@ -387,6 +394,11 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
     @Required
     public void setService(Service service) {
         this.service = service;
+    }
+
+    @Required
+    public void setUrchinHosts(UrchinHosts urchinHosts) {
+        this.urchinHosts = urchinHosts;
     }
 
     @Override

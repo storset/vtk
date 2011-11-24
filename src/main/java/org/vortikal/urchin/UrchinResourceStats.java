@@ -45,17 +45,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 
-//import org.vortikal.web.RequestContext;
-
 public class UrchinResourceStats implements InitializingBean {
-    private String base = "https://statistikk.uio.no/services/v2/reportservice/data";
     private String urchinUser;
     private String urchinPassword;
-    private String dimensions = "&dimensions=u:request_stem";
-    private String metricVisit = "&metrics=u:visits";
-    private String metricPages = "&metrics=u:pages";
-    private String table = "&table=12";
-    private String idAndFilter;
+    private UrchinHosts urchinHosts;
 
     private CacheManager cacheManager;
     private Cache cache;
@@ -204,27 +197,30 @@ public class UrchinResourceStats implements InitializingBean {
         if (urchinUser.equals("") || urchinPassword.equals(""))
             return sum;
 
-        StringBuilder url = new StringBuilder(base);
-        url.append("?login=" + urchinUser + "&password=" + urchinPassword);
-        url.append(date);
-        url.append(dimensions);
+        String url = "https://statistikk.uio.no/services/v2/reportservice/data";
+        url += "?login=" + urchinUser + "&password=" + urchinPassword;
+        url += date;
+        url += "&dimensions=u:request_stem";
         if (key.equals("pagesTotal"))
-            url.append(metricPages);
+            url += "&metrics=u:pages";
         else
-            url.append(metricVisit);
-        url.append(table);
-        if ((idAndFilter = setIdAndFilter(id)) != null)
-            url.append(idAndFilter);
-        else
+            url += "&metrics=u:visits";
+        url += "&table=12";
+        int profileId;
+        // TODO For prod:
+        // if ((profileId = urchinHosts.getProfilId(repo.getId())) == -1)
+        if ((profileId = urchinHosts.getProfilId(id)) == -1)
             return sum;
+        url += "&ids=" + profileId;
+        url += "&filters=u:request_stem%3D~^/" + id;
 
         if (r.isCollection()) {
             try {
                 String expanded = r.getURI().expand("index.html").toString();
-                String html = url.toString().concat(expanded);
+                String html = url.concat(expanded);
 
                 if (cache != null)
-                    cached = this.cache.get(idAndFilter + expanded + key);
+                    cached = this.cache.get(id + expanded + key);
 
                 if (cached != null)
                     ur = (UrchinRes) cached.getObjectValue();
@@ -238,17 +234,18 @@ public class UrchinResourceStats implements InitializingBean {
                     ur.date = date;
                     sum += ur.res;
                     if (cache != null)
-                        this.cache.put(new net.sf.ehcache.Element(idAndFilter + expanded + key, ur));
+                        this.cache.put(new net.sf.ehcache.Element(id + expanded + key, ur));
+                    // TODO For prod: Shorter key, droppe id.
                 }
             } catch (Exception e) {
             }
 
             try {
                 String expanded = r.getURI().expand("index.xml").toString();
-                String xml = url.toString().concat(expanded);
+                String xml = url.concat(expanded);
 
                 if (cache != null)
-                    cached = this.cache.get(idAndFilter + expanded + key);
+                    cached = this.cache.get(id + expanded + key);
 
                 if (cached != null)
                     ur = (UrchinRes) cached.getObjectValue();
@@ -262,16 +259,16 @@ public class UrchinResourceStats implements InitializingBean {
                     ur.date = date;
                     sum += ur.res;
                     if (cache != null)
-                        this.cache.put(new net.sf.ehcache.Element(idAndFilter + expanded + key, ur));
+                        this.cache.put(new net.sf.ehcache.Element(id + expanded + key, ur));
                 }
             } catch (Exception e) {
             }
         } else {
             try {
-                String resource = url.toString().concat(r.getURI().toString());
+                String resource = url.concat(r.getURI().toString());
 
                 if (cache != null)
-                    cached = this.cache.get(idAndFilter + r.getURI().toString() + key);
+                    cached = this.cache.get(id + r.getURI().toString() + key);
 
                 if (cached != null)
                     ur = (UrchinRes) cached.getObjectValue();
@@ -285,7 +282,7 @@ public class UrchinResourceStats implements InitializingBean {
                     ur.date = date;
                     sum += ur.res;
                     if (cache != null)
-                        this.cache.put(new net.sf.ehcache.Element(idAndFilter + r.getURI().toString() + key, ur));
+                        this.cache.put(new net.sf.ehcache.Element(id + r.getURI().toString() + key, ur));
                 }
             } catch (Exception e) {
             }
@@ -330,41 +327,6 @@ public class UrchinResourceStats implements InitializingBean {
         }
     }
 
-    private String setIdAndFilter(String id) {
-        String ids = "&ids=";
-        String filters = "&filters=u:request_stem%3D~^/";
-        // TODO Use below in prod. Different now for testing.
-        // String id =
-        // RequestContext.getRequestContext().getRepository().getId();
-
-        if (id.equals("www.uio.no"))
-            return ids + "1" + filters + id;
-        if (id.equals("www.hf.uio.no"))
-            return ids + "2" + filters + id;
-        if (id.equals("www.khm.uio.no"))
-            return ids + "3" + filters + id;
-        if (id.equals("www.odont.uio.no"))
-            return ids + "4" + filters + id;
-        if (id.equals("www.sv.uio.no"))
-            return ids + "5" + filters + id;
-        if (id.equals("www.tf.uio.no"))
-            return ids + "6" + filters + id;
-        if (id.equals("www.ub.uio.no"))
-            return ids + "7" + filters + id;
-        if (id.equals("www.uv.uio.no"))
-            return ids + "8" + filters + id;
-        if (id.equals("www.jus.uio.no"))
-            return ids + "10" + filters + id;
-        if (id.equals("www.uniforum.uio.no"))
-            return ids + "11" + filters + id;
-        if (id.equals("www.mn.uio.no"))
-            return ids + "14" + filters + id;
-        if (id.equals("www.med.uio.no"))
-            return ids + "20" + filters + id;
-
-        return null;
-    }
-
     @Required
     public void setUrchinUser(String urchinUser) {
         this.urchinUser = urchinUser;
@@ -378,6 +340,11 @@ public class UrchinResourceStats implements InitializingBean {
     @Required
     public void setCacheManager(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
+    }
+
+    @Required
+    public void setUrchinHosts(UrchinHosts urchinHosts) {
+        this.urchinHosts = urchinHosts;
     }
 
     @Override

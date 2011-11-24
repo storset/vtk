@@ -262,7 +262,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
 
                 // TODO For prod:
                 // int id = ("/" + repo.getId()).length();
-                int id = ("/" + "www.uio.no").length();
+                id = ("/" + "www.uio.no").length();
                 int count = 1;
                 String tmp = "";
                 Resource r;

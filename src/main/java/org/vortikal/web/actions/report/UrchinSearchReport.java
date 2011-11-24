@@ -67,7 +67,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
 
     private static long fifteenDays = 86400000 * 15;
 
-    // TODO sette på parametere
+    private static final String VRTX_PARAM = "vrtx";
     private static final String SEARCHUIO_PARAM = "searchuio";
     private static final String SEARCH_PARAM = "search";
     private static final String QUERY_PARAM = "query";
@@ -86,8 +86,17 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("reportname", this.getName());
 
-        org.vortikal.web.service.URL resourceurl = org.vortikal.web.service.URL.create(request);
-        System.out.println(resourceurl);
+        org.vortikal.web.service.URL resourceurl = org.vortikal.web.service.URL.create(request).clearParameters();
+        org.vortikal.web.service.URL tmp;
+        // TODO For prod:
+        // Repository repo = RequestContext.getRequestContext().getRepository();
+        // if ((repo.getId().equals("www.uio.no")) &&
+        // (resource.getURI().toString().equals("/") ||
+        // resource.getURI().toString().equals("/english")))
+        if (resource.getURI().toString().equals("/") || resource.getURI().toString().equals("/english"))
+            resourceurl.setParameter(VRTX_PARAM, SEARCHUIO_PARAM);
+        else
+            resourceurl.setParameter(VRTX_PARAM, SEARCH_PARAM);
 
         NumberFormat myFormat = NumberFormat.getInstance();
         myFormat.setMinimumIntegerDigits(2);
@@ -107,7 +116,9 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         List<String> title = new ArrayList<String>();
         for (int i = 0; i < usr.query.size(); i++) {
             title.add(usr.query.get(i));
-            url.add(resourceurl);
+            tmp = new org.vortikal.web.service.URL(resourceurl);
+            tmp.addParameter(QUERY_PARAM, usr.query.get(i));
+            url.add(tmp);
         }
         result.put("urlsTotal", url);
         result.put("titlesTotal", title);
@@ -129,7 +140,9 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         for (int i = 0; i < usr.query.size(); i++) {
             try {
                 title.add(usr.query.get(i));
-                url.add(resourceurl);
+                tmp = new org.vortikal.web.service.URL(resourceurl);
+                tmp.addParameter(QUERY_PARAM, usr.query.get(i));
+                url.add(tmp);
             } catch (Exception e) {
             }
         }
@@ -149,7 +162,9 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         title = new ArrayList<String>();
         for (int i = 0; i < usr.query.size(); i++) {
             title.add(usr.query.get(i));
-            url.add(resourceurl);
+            tmp = new org.vortikal.web.service.URL(resourceurl);
+            tmp.addParameter(QUERY_PARAM, usr.query.get(i));
+            url.add(tmp);
         }
         result.put("urlsSixty", url);
         result.put("titlesSixty", title);
@@ -163,11 +178,9 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         // TODO For prod.
         // String uri = "/" + repo.getId() + resource.getURI().toString();
         String uri = "/www.uio.no" + resource.getURI().toString();
-        if (resource.isCollection()) {
-            if (!uri.endsWith("/"))
-                uri += "/";
-            uri += "index.html";
-        }
+        if (!uri.endsWith("/"))
+            uri += "/";
+        uri += "index.html";
 
         try {
             if (cache != null)

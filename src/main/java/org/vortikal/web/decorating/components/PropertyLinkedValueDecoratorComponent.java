@@ -33,6 +33,7 @@ package org.vortikal.web.decorating.components;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -45,12 +46,15 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.search.context.NearestContextResolver;
+
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.service.URL;
 
 public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecoratorComponent {
-    
+
     private static final String DESCRIPTION = "Display the value(s) of a string property, with link(s) to search";
     private static final String PARAMETER_TITLE = "title";
     private static final String PARAMETER_TITLE_DESC = "Optional title (default is 'Tags')";
@@ -58,6 +62,7 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
 
     private String defaultURLpattern;
     private PropertyTypeDefinition propertyTypeDefinition;
+    private NearestContextResolver nearestContextResolver;
 
     private boolean forProcessing = true;
 
@@ -94,19 +99,29 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
             for (Value value : values) {
                 String s = value.getStringValue();
                 valueList.add(s);
-                urlList.add(getUrl(s, serviceURL));
+                urlList.add(getUrl(s, serviceURL,requestContext.getRequestURL(),request.getLocale()));
             }
         } else {
             String value = prop.getValue().getStringValue();
-            urlList.add(getUrl(value, serviceURL));
+            urlList.add(getUrl(value, serviceURL,requestContext.getRequestURL(),request.getLocale()));
             valueList.add(value);
         }
     }
 
-    private String getUrl(String value, String serviceUrl) {
+    private String getUrl(String value, String serviceUrl, URL requestURL, Locale locale) {
         if (value == null) {
             throw new IllegalArgumentException("Value is NULL");
         }
+
+        if (nearestContextResolver != null) {
+            URL closestContextURL = nearestContextResolver.getClosestContext(requestURL, locale);
+            if (closestContextURL != null) {
+                closestContextURL.addParameter("vrtx", "tags");
+                closestContextURL.addParameter("tag", value);
+                return closestContextURL.toString();
+            }
+        }
+
         value = Matcher.quoteReplacement(value);
         if (serviceUrl == null) {
             return this.defaultURLpattern.replaceAll("%v", value);
@@ -149,5 +164,9 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
         map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
         map.put(PARAMETER_SERVICEURL, "Optional URL to tag service (default is '" + defaultURLpattern + "')");
         return map;
+    }
+    
+    public void setNearestContextResolver(NearestContextResolver nearestContextResolver) {
+        this.nearestContextResolver = nearestContextResolver;
     }
 }

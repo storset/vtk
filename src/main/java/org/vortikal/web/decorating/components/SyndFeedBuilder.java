@@ -51,7 +51,7 @@ import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
 public class SyndFeedBuilder {
-    
+
     private HtmlPageParser htmlParser;
     private HtmlPageFilter safeHtmlFilter;
 
@@ -73,20 +73,26 @@ public class SyndFeedBuilder {
         return feed;
     }
 
-    
     private void clean(SyndFeed feed) throws Exception {
-        
+
         URL base = null;
         try {
             base = URL.parse(feed.getLink());
-        } catch (Throwable t) {
+        } catch (Exception e) {
+        }
+
+        // fall back to uri
+        try {
+            base = URL.parse(feed.getUri());
+        } catch (Exception e) {
         }
 
         for (Object o : feed.getEntries()) {
             SyndEntry entry = (SyndEntry) o;
-            String link = base.relativeURL(entry.getLink()).toString();
-            entry.setLink(link);
-            
+            if (base != null) {
+                String link = base.relativeURL(entry.getLink()).toString();
+                entry.setLink(link);
+            }
             SyndContent desc = entry.getDescription();
             if (desc != null) {
                 String value = desc.getValue();
@@ -117,13 +123,16 @@ public class SyndFeedBuilder {
 
     private class ImageFilter implements HtmlPageFilter {
         private URL base;
+
         public ImageFilter(URL base) {
             this.base = base;
         }
+
         @Override
         public boolean match(HtmlPage page) {
             return true;
         }
+
         @Override
         public NodeResult filter(HtmlContent node) {
             if (node instanceof HtmlElement) {
@@ -141,25 +150,27 @@ public class SyndFeedBuilder {
             return NodeResult.keep;
         }
     }
-    
+
     private void filterXhtml(HtmlFragment fragment, URL base) {
         fragment.filter(this.safeHtmlFilter);
         fragment.filter(new ImageFilter(base));
-        
+
         final Set<HtmlContent> toplevel = new HashSet<HtmlContent>(fragment.getContent());
         fragment.filter(new HtmlPageFilter() {
             public boolean match(HtmlPage page) {
                 return true;
             }
+
             public NodeResult filter(HtmlContent node) {
                 if (toplevel.contains(node)) {
-                   if (node instanceof HtmlElement) {
-                       return NodeResult.skip;
-                   }
-                   return NodeResult.exclude;
+                    if (node instanceof HtmlElement) {
+                        return NodeResult.skip;
+                    }
+                    return NodeResult.exclude;
                 }
                 return NodeResult.keep;
-            }});
+            }
+        });
     }
 
     private void filterHtml(HtmlFragment fragment, URL base) {

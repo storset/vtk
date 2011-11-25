@@ -149,6 +149,43 @@ td.vrtx-report-diagram-text {
   width: 115px;
 }
 
+.report-urchin {
+  float: left;
+  margin: 0 30px 0 0;
+}
+
+.report-urchin table {
+  table-layout: fixed;
+  width: 300px;
+  padding: 5px 0 0 0;
+}
+
+.report-urchin table td {
+  word-wrap: break-word;
+  border-top: 1px solid #f0f0f0;
+  padding: 5px 15px 4px 0;
+  overflow: hidden;
+}
+
+.report-urchin table th {
+  background: url(../images/line-dotted.gif) repeat-x bottom left;
+  padding: 0 15px 8px 0;
+  text-align: left;
+  white-space: nowrap;  
+}
+
+.report-urchin table th.report-urchin-table-data-title {
+  width: 70%;
+}
+
+.report-urchin table th.report-urchin-table-data-count {
+  width: 9%;
+}
+
+.report-urchin table th.report-urchin-table-data-number {
+  width: 12%;
+}
+
 /* Tooltip */
 
 .tip {

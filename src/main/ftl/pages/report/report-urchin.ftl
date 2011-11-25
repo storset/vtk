@@ -18,106 +18,115 @@
         </div>
       </div>
       <h2><@vrtx.msg code="report.${report.reportname}" /></h2>
-      <div class="report-urchin-div" id="report-urchin-div-total">
+      <div class="report-urchin" id="report-urchin-total">
         <h3><@vrtx.msg code="report.${report.reportname}.total" /></h3>
         <table class="report-urchin-table" id="report-urchin-table-total">
-          <tr class="report-urchin-table-row-top">
-            <td class="report-urchin-table-data-top" id="report-urchin-table-data-count-top">
-            </td>
-            <td class="report-urchin-table-data-top" id="report-urchin-table-data-title-top">
-              <@vrtx.msg code="report.${report.reportname}.title" />
-            </td>
-            <td class="report-urchin-table-data-top" id="report-urchin-table-data-number-top">
-              <@vrtx.msg code="report.${report.reportname}.number" />
-            </td>
-          </tr>
+          <thead>
+            <tr>
+              <th class="report-urchin-table-data-count"></th>
+              <th class="report-urchin-table-data-title">
+                <@vrtx.msg code="report.${report.reportname}.title" />
+              </th>
+              <th class="report-urchin-table-data-numbers">
+                <@vrtx.msg code="report.${report.reportname}.number" />
+              </th>
+            </tr>
+          </thead>
+          <tbody>
           <#assign count = 1>
           <#list report.titlesTotal as title >
           <#assign rowType = "odd" />
           <#if (title_index % 2 == 0) >
             <#assign rowType = "even" />
           </#if>
-          <tr class="report-urchin-tablerow report-urchin-tablerow-${rowType}">
-            <td class="report-urchin-table-data" id="report-urchin-table-data-count">
+          <tr class="report-urchin-table-row ${rowType}">
+            <td class="report-urchin-table-data-count">
               ${count?html}.
             </td>
-            <td class="report-urchin-table-data" id="report-urchin-table-data-title">
+            <td class="report-urchin-table-data-title">
               <a href="${report.urlsTotal[title_index]?html}">${title?html}</a>
             </td>
-            <td class="report-urchin-table-data" id="report-urchin-table-data-number">
+            <td class="report-urchin-table-data-number">
               ${report.numbersTotal[title_index]?html}
             </td>
           </tr>
           <#assign count = count + 1>
           </#list>
+          </tbody>
         </table>
       </div>
-      <div class="report-urchin-div" id="report-urchin-div-sixty">
+      <div class="report-urchin" id="report-urchin-sixty">
         <h3><@vrtx.msg code="report.${report.reportname}.sixty" /></h3>
         <table class="report-urchin-table" id="report-urchin-table-sixty">
-          <tr class="report-urchin-table-row-top">
-            <td class="report-urchin-table-data-top" id="report-urchin-table-data-count-top">
-            </td>
-            <td class="report-urchin-table-data-top" id="report-urchin-table-data-title-top">
-              <@vrtx.msg code="report.${report.reportname}.title" />
-            </td>
-            <td class="report-urchin-table-data-top" id="report-urchin-table-data-number-top">
-              <@vrtx.msg code="report.${report.reportname}.number" />
-            </td>
-          </tr>
+          <thead>
+            <tr>
+              <th class="report-urchin-table-data-count"></th>
+              <th class="report-urchin-table-data-title">
+                <@vrtx.msg code="report.${report.reportname}.title" />
+              </th>
+              <th class="report-urchin-table-data-number">
+                <@vrtx.msg code="report.${report.reportname}.number" />
+              </td>
+            </tr>
+          </thead>
+          <tbody>
           <#assign count = 1>
           <#list report.titlesSixty as title >
           <#assign rowType = "odd" />
           <#if (title_index % 2 == 0) >
             <#assign rowType = "even" />
           </#if>
-          <tr class="report-urchin-tablerow report-urchin-tablerow-${rowType}">
-            <td class="report-urchin-table-data" id="report-urchin-table-data-count">
+          <tr class="report-urchin-table-row ${rowType}">
+            <td class="report-urchin-table-data-count">
               ${count?html}.
             </td>
-            <td class="report-urchin-table-data" id="report-urchin-table-data-title">
+            <td class="report-urchin-table-data-title">
               <a href="${report.urlsSixty[title_index]?html}">${title?html}</a>
             </td>
-            <td class="report-urchin-table-data" id="report-urchin-table-data-number">
+            <td class="report-urchin-table-data-number">
               ${report.numbersSixty[title_index]?html}
             </td>
           </tr>
           <#assign count = count + 1>
           </#list>
+          </tbody>
         </table>
       </div>
-      <div class="urchin-report-div" id="report-urchin-div-thirty">
+      <div class="report-urchin" id="report-urchin-thirty">
         <h3><@vrtx.msg code="report.${report.reportname}.thirty" /></h3>
         <table class="report-urchin-table" id="report-urchin-table-thirty">
-          <tr class="report-urchin-table-row-top">
-            <td class="report-urchin-table-data-top" id="report-urchin-table-data-count-top">
-            </td>
-            <td class="report-urchin-table-data-top" id="report-urchin-table-data-title-top">
-              <@vrtx.msg code="report.${report.reportname}.title" />
-            </td>
-            <td class="report-urchin-table-data-top" id="report-urchin-table-data-number-top">
-              <@vrtx.msg code="report.${report.reportname}.number" />
-            </td>
-          </tr>
+          <thead>
+            <tr>
+              <th class="report-urchin-table-data-count"></th>
+              <th class="report-urchin-table-data-title">
+                <@vrtx.msg code="report.${report.reportname}.title" />
+              </th>
+              <th class="report-urchin-table-data-number">
+                <@vrtx.msg code="report.${report.reportname}.number" />
+              </th>
+            </tr>
+          </thead>
+          <tbody>
           <#assign count = 1>
           <#list report.titlesThirty as title >
           <#assign rowType = "odd" />
           <#if (title_index % 2 == 0) >
             <#assign rowType = "even" />
           </#if>
-          <tr class="report-urchin-tablerow report-urchin-tablerow-${rowType}">
-            <td class="report-urchin-table-data" id="report-urchin-table-data-count">
+          <tr class="report-urchin-table-row ${rowType}">
+            <td class="report-urchin-table-data-count">
               ${count?html}.
             </td>
-            <td class="report-urchin-table-data" id="report-urchin-table-data-title">
+            <td class="report-urchin-table-data-title">
               <a href="${report.urlsThirty[title_index]?html}">${title?html}</a>
             </td>
-            <td class="report-urchin-table-data" id="report-urchin-table-data-number">
+            <td class=="report-urchin-table-data-number">
               ${report.numbersThirty[title_index]?html}
             </td>
           </tr>
           <#assign count = count + 1>
           </#list>
+          </tbody>
         </table>
       </div>
     </div>

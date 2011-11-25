@@ -7,6 +7,7 @@
     <property name="urchinUser" value="${urchinUser}" />
     <property name="urchinPassword" value="${urchinPassword}" />
     <property name="cacheManager" ref="ehCacheManager" />
+    <property name="urchinHosts" ref="urchinHosts" />
   </bean>
 
   <bean id="urchinResourceStats.retrieveService" class="org.vortikal.web.service.ServiceImpl">
@@ -73,8 +74,7 @@
     <property name="urchinHosts" ref="urchinHosts" />
   </bean>
 
-  <bean id="urchinHosts" class="org.vortikal.web.actions.report.UrchinHosts">
-    <property name="name" value="urchinHosts" />
+  <bean id="urchinHosts" class="org.vortikal.urchin.UrchinHosts">
   </bean>
 
 </beans>

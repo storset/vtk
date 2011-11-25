@@ -179,7 +179,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         UrchinSearchRes usr;
         // TODO For prod.
         // String uri = "/" + repo.getId() + resource.getURI().toString();
-        String uri = "/www.med.uio.no" + resource.getURI().toString();
+        String uri = "/www.uio.no" + resource.getURI().toString();
         if (!uri.endsWith("/"))
             uri += "/";
         uri += "index.html";
@@ -196,9 +196,6 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
             if ((usr.edate != null && usr.edate.equals(edate)) && (usr.sdate != null && usr.sdate.equals(sdate))) {
                 return usr;
             } else {
-                
-                System.out.println("************ hello");
-                
                 URL url = new URL("https://statistikk.uio.no/session.cgi");
 
                 HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
@@ -232,7 +229,12 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                 surl += "sid=" + sid;
                 surl += "&app=urchin.cgi";
                 surl += "&action=prop";
-                surl += "&rid=" + 20;
+                int id;
+                // TODO For prod:
+                // if ((id = urchinHosts.getProfilId(repo.getId())) == -1)
+                if ((id = urchinHosts.getProfilId("www.uio.no")) == -1)
+                    return null;
+                surl += "&rid=" + id;
                 surl += "&hl=en-US";
                 surl += "&vid=1307";
                 surl += "&bd=" + sdate;

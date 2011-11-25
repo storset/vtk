@@ -228,12 +228,12 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
                 surl += "sid=" + sid;
                 surl += "&app=urchin.cgi";
                 surl += "&action=prop";
-                int id;
+                int profileId;
                 // TODO For prod:
                 // if ((id = urchinHosts.getProfilId(repo.getId())) == -1)
-                if ((id = urchinHosts.getProfilId("www.uio.no")) == -1)
+                if ((profileId = urchinHosts.getProfilId("www.uio.no")) == -1)
                     return null;
-                surl += "&rid=" + id;
+                surl += "&rid=" + profileId;
                 surl += "&hl=en-US";
                 surl += "&vid=1304";
                 surl += "&bd=" + sdate;

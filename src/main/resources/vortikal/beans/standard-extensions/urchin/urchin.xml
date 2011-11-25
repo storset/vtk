@@ -73,7 +73,7 @@
     <property name="urchinHosts" ref="urchinHosts" />
   </bean>
 
-  <bean id="urchinHosts" class="org.vortikal.web.actions.report.UrchinHosts">
+  <bean id="urchinHosts" class="org.vortikal.urchin.UrchinHosts">
     <property name="name" value="urchinHosts" />
   </bean>
 

@@ -175,15 +175,19 @@ td.vrtx-report-diagram-text {
 }
 
 .report-urchin table th.report-urchin-table-data-title {
-  width: 55%;
+  width: 60%;
 }
 
 .report-urchin table th.report-urchin-table-data-count {
-  width: 12%;
+  width: 24px;
+}
+
+.report-urchin table td.report-urchin-table-data-count {
+  white-space: nowrap;
 }
 
 .report-urchin table th.report-urchin-table-data-number {
-  width: 22%;
+  width: 20%;
 }
 
 /* Tooltip */

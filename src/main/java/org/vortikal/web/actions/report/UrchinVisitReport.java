@@ -97,6 +97,8 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
         Repository repo = RequestContext.getRequestContext().getRepository();
         Resource r;
 
+        boolean recache = request.getParameter("recache") != null ? true : false;
+
         NumberFormat myFormat = NumberFormat.getInstance();
         myFormat.setMinimumIntegerDigits(2);
 
@@ -110,7 +112,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
         String edate = ecal.get(Calendar.YEAR) + myFormat.format((ecal.get(Calendar.MONTH) + 1))
                 + myFormat.format(ecal.get(Calendar.DATE));
 
-        UrchinVisitRes uvr = fetch(sdate, edate, "VisitTotal" + maxResults, token, resource);
+        UrchinVisitRes uvr = fetch(sdate, edate, "VisitTotal" + maxResults, token, resource, recache);
         List<org.vortikal.web.service.URL> url = new ArrayList<org.vortikal.web.service.URL>();
         List<String> title = new ArrayList<String>();
         for (int i = 0; i < uvr.uri.size(); i++) {
@@ -135,7 +137,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
         sdate = scal.get(Calendar.YEAR) + myFormat.format((scal.get(Calendar.MONTH) + 1))
                 + myFormat.format(scal.get(Calendar.DATE));
 
-        uvr = fetch(sdate, edate, "Visit30" + maxResults, token, resource);
+        uvr = fetch(sdate, edate, "Visit30" + maxResults, token, resource, recache);
         url = new ArrayList<org.vortikal.web.service.URL>();
         title = new ArrayList<String>();
         for (int i = 0; i < uvr.uri.size(); i++) {
@@ -157,7 +159,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
         sdate = scal.get(Calendar.YEAR) + myFormat.format((scal.get(Calendar.MONTH) + 1))
                 + myFormat.format(scal.get(Calendar.DATE));
 
-        uvr = fetch(sdate, edate, "Visit60" + maxResults, token, resource);
+        uvr = fetch(sdate, edate, "Visit60" + maxResults, token, resource, recache);
         url = new ArrayList<org.vortikal.web.service.URL>();
         title = new ArrayList<String>();
         for (int i = 0; i < uvr.uri.size(); i++) {
@@ -176,7 +178,8 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
     }
 
     @SuppressWarnings("unchecked")
-    private UrchinVisitRes fetch(String sdate, String edate, String key, String token, Resource resource) {
+    private UrchinVisitRes fetch(String sdate, String edate, String key, String token, Resource resource,
+            boolean recache) {
         UrchinVisitRes uvr;
         Repository repo = RequestContext.getRequestContext().getRepository();
         // TODO For prod.
@@ -184,8 +187,10 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
         String uri = "/www.uio.no" + resource.getURI().toString();
 
         try {
-            if (cache != null)
+            if ((cache != null) && !recache)
                 cached = this.cache.get(resource.getURI().toString() + key);
+            else
+                cached = null;
 
             if (cached != null)
                 uvr = (UrchinVisitRes) cached.getObjectValue();

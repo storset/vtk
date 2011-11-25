@@ -62,13 +62,15 @@ public class UrchinResourceStatsController implements Controller {
         String token = securityContext.getToken();
         Resource resource = this.repository.retrieve(token, uri, false);
 
+        boolean recache = request.getParameter("recache") != null ? true : false;
+        
         Map<String, Object> model = new HashMap<String, Object>();
 
         String id;
         if ((id = request.getParameter("host")) == null)
             id = "www.uio.no";
 
-        int visitsTotal = urs.visitsTotal(resource, token, id);
+        int visitsTotal = urs.visitsTotal(resource, token, id, recache);
         if (visitsTotal > 0) {
             URL[] hosts = new URL[12];
             String[] host = { "www.uio.no", "www.hf.uio.no", "www.khm.uio.no", "www.odont.uio.no", "www.sv.uio.no",
@@ -85,10 +87,10 @@ public class UrchinResourceStatsController implements Controller {
             model.put("hosts", hosts);
             model.put("hostnames", hostnames);
             model.put("thisMonth", urs.thisMonth());
-            model.put("ursMonths", urs.months(resource, token, id));
-            model.put("ursSixtyTotal", urs.sixtyTotal(resource, token, id));
-            model.put("ursThirtyTotal", urs.thirtyTotal(resource, token, id));
-            model.put("ursTotalPages", urs.pagesTotal(resource, token, id));
+            model.put("ursMonths", urs.months(resource, token, id, recache));
+            model.put("ursSixtyTotal", urs.sixtyTotal(resource, token, id, recache));
+            model.put("ursThirtyTotal", urs.thirtyTotal(resource, token, id, recache));
+            model.put("ursTotalPages", urs.pagesTotal(resource, token, id, recache));
             model.put("ursNMonths", urs.nMonths());
         } else {
             // Whether or not it is a resource created within the last week

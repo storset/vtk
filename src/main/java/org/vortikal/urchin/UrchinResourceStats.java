@@ -95,7 +95,7 @@ public class UrchinResourceStats implements InitializingBean {
         return 11;
     }
 
-    public int[] months(Resource r, String token, String id) {
+    public int[] months(Resource r, String token, String id, boolean recache) {
         Calendar urchinStartCal = Calendar.getInstance();
         urchinStartCal.set(2011, 7, 1);
 
@@ -119,7 +119,7 @@ public class UrchinResourceStats implements InitializingBean {
             } else
                 edate += cal.getActualMaximum(Calendar.DATE);
 
-            months[cal.get(Calendar.MONTH)] = fetch(r, token, sdate + edate, id, "" + cal.get(Calendar.MONTH));
+            months[cal.get(Calendar.MONTH)] = fetch(r, token, sdate + edate, id, "" + cal.get(Calendar.MONTH), recache);
             if (months[cal.get(Calendar.MONTH)] > months[12]) {
                 months[12] = months[cal.get(Calendar.MONTH)];
             }
@@ -134,7 +134,7 @@ public class UrchinResourceStats implements InitializingBean {
         return months;
     }
 
-    public int thirtyTotal(Resource r, String token, String id) {
+    public int thirtyTotal(Resource r, String token, String id, boolean recache) {
         Calendar ecal = Calendar.getInstance();
         Calendar scal = Calendar.getInstance();
 
@@ -146,10 +146,10 @@ public class UrchinResourceStats implements InitializingBean {
                 + scal.get(Calendar.DATE) + "&end-date=" + ecal.get(Calendar.YEAR) + "-"
                 + (ecal.get(Calendar.MONTH) + 1) + "-" + ecal.get(Calendar.DATE);
 
-        return fetch(r, token, date, id, "thirty");
+        return fetch(r, token, date, id, "thirty", recache);
     }
 
-    public int sixtyTotal(Resource r, String token, String id) {
+    public int sixtyTotal(Resource r, String token, String id, boolean recache) {
         Calendar ecal = Calendar.getInstance();
         Calendar scal = Calendar.getInstance();
 
@@ -162,10 +162,10 @@ public class UrchinResourceStats implements InitializingBean {
                 + scal.get(Calendar.DATE) + "&end-date=" + ecal.get(Calendar.YEAR) + "-"
                 + (ecal.get(Calendar.MONTH) + 1) + "-" + ecal.get(Calendar.DATE);
 
-        return fetch(r, token, date, id, "sixty");
+        return fetch(r, token, date, id, "sixty", recache);
     }
 
-    public int visitsTotal(Resource r, String token, String id) {
+    public int visitsTotal(Resource r, String token, String id, boolean recache) {
         Calendar urchinStartCal = Calendar.getInstance();
         urchinStartCal.set(2011, 7, 1);
         String urchinStartDate = "&start-date=" + urchinStartCal.get(Calendar.YEAR) + "-"
@@ -175,10 +175,10 @@ public class UrchinResourceStats implements InitializingBean {
         String todayDate = "&end-date=" + today.get(Calendar.YEAR) + "-" + (today.get(Calendar.MONTH) + 1) + "-"
                 + today.get(Calendar.DATE);
 
-        return fetch(r, token, urchinStartDate + todayDate, id, "visitsTotal");
+        return fetch(r, token, urchinStartDate + todayDate, id, "visitsTotal", recache);
     }
 
-    public int pagesTotal(Resource r, String token, String id) {
+    public int pagesTotal(Resource r, String token, String id, boolean recache) {
         Calendar urchinStartCal = Calendar.getInstance();
         urchinStartCal.set(2011, 7, 1);
         String urchinStartDate = "&start-date=" + urchinStartCal.get(Calendar.YEAR) + "-"
@@ -188,10 +188,10 @@ public class UrchinResourceStats implements InitializingBean {
         String todayDate = "&end-date=" + today.get(Calendar.YEAR) + "-" + (today.get(Calendar.MONTH) + 1) + "-"
                 + today.get(Calendar.DATE);
 
-        return fetch(r, token, urchinStartDate + todayDate, id, "pagesTotal");
+        return fetch(r, token, urchinStartDate + todayDate, id, "pagesTotal", recache);
     }
 
-    private int fetch(Resource r, String token, String date, String id, String key) {
+    private int fetch(Resource r, String token, String date, String id, String key, boolean recache) {
         int sum = 0;
 
         if (urchinUser.equals("") || urchinPassword.equals(""))
@@ -219,8 +219,10 @@ public class UrchinResourceStats implements InitializingBean {
                 String expanded = r.getURI().expand("index.html").toString();
                 String html = url.concat(expanded);
 
-                if (cache != null)
+                if ((cache != null) && !recache)
                     cached = this.cache.get(id + expanded + key);
+                else
+                    cached = null;
 
                 if (cached != null)
                     ur = (UrchinRes) cached.getObjectValue();
@@ -244,8 +246,10 @@ public class UrchinResourceStats implements InitializingBean {
                 String expanded = r.getURI().expand("index.xml").toString();
                 String xml = url.concat(expanded);
 
-                if (cache != null)
+                if ((cache != null) && !recache)
                     cached = this.cache.get(id + expanded + key);
+                else
+                    cached = null;
 
                 if (cached != null)
                     ur = (UrchinRes) cached.getObjectValue();
@@ -267,8 +271,10 @@ public class UrchinResourceStats implements InitializingBean {
             try {
                 String resource = url.concat(r.getURI().toString());
 
-                if (cache != null)
+                if ((cache != null) && !recache)
                     cached = this.cache.get(id + r.getURI().toString() + key);
+                else
+                    cached = null;
 
                 if (cached != null)
                     ur = (UrchinRes) cached.getObjectValue();

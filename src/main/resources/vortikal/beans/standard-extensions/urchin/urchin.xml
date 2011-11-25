@@ -74,7 +74,6 @@
     <property name="urchinHosts" ref="urchinHosts" />
   </bean>
 
-  <bean id="urchinHosts" class="org.vortikal.urchin.UrchinHosts">
-  </bean>
+  <bean id="urchinHosts" class="org.vortikal.urchin.UrchinHosts" />
 
 </beans>

@@ -88,6 +88,8 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("reportname", this.getName());
 
+        boolean recache = request.getParameter("recache") != null ? true : false;
+
         org.vortikal.web.service.URL resourceurl = org.vortikal.web.service.URL.create(request).clearParameters();
         org.vortikal.web.service.URL tmp;
         // TODO For prod:
@@ -113,7 +115,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         String edate = ecal.get(Calendar.YEAR) + myFormat.format((ecal.get(Calendar.MONTH) + 1))
                 + myFormat.format(ecal.get(Calendar.DATE));
 
-        UrchinSearchRes usr = fetch(sdate, edate, "SearchTotal" + maxResults, token, resource);
+        UrchinSearchRes usr = fetch(sdate, edate, "SearchTotal" + maxResults, token, resource, recache);
         List<org.vortikal.web.service.URL> url = new ArrayList<org.vortikal.web.service.URL>();
         List<String> title = new ArrayList<String>();
         for (int i = 0; i < usr.query.size(); i++) {
@@ -136,7 +138,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         sdate = scal.get(Calendar.YEAR) + myFormat.format((scal.get(Calendar.MONTH) + 1))
                 + myFormat.format(scal.get(Calendar.DATE));
 
-        usr = fetch(sdate, edate, "Search30" + maxResults, token, resource);
+        usr = fetch(sdate, edate, "Search30" + maxResults, token, resource, recache);
         url = new ArrayList<org.vortikal.web.service.URL>();
         title = new ArrayList<String>();
         for (int i = 0; i < usr.query.size(); i++) {
@@ -159,7 +161,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         sdate = scal.get(Calendar.YEAR) + myFormat.format((scal.get(Calendar.MONTH) + 1))
                 + myFormat.format(scal.get(Calendar.DATE));
 
-        usr = fetch(sdate, edate, "Search60" + maxResults, token, resource);
+        usr = fetch(sdate, edate, "Search60" + maxResults, token, resource, recache);
         url = new ArrayList<org.vortikal.web.service.URL>();
         title = new ArrayList<String>();
         for (int i = 0; i < usr.query.size(); i++) {
@@ -175,7 +177,8 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         return result;
     }
 
-    private UrchinSearchRes fetch(String sdate, String edate, String key, String token, Resource resource) {
+    private UrchinSearchRes fetch(String sdate, String edate, String key, String token, Resource resource,
+            boolean recache) {
         UrchinSearchRes usr;
         // TODO For prod.
         // String uri = "/" + repo.getId() + resource.getURI().toString();
@@ -185,8 +188,10 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         uri += "index.html";
 
         try {
-            if (cache != null)
+            if ((cache != null) && !recache)
                 cached = this.cache.get(resource.getURI().toString() + key);
+            else
+                cached = null;
 
             if (cached != null)
                 usr = (UrchinSearchRes) cached.getObjectValue();

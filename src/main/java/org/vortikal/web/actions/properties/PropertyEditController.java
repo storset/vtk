@@ -115,7 +115,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * 
  */
 public class PropertyEditController extends SimpleFormController implements ReferenceDataProvider, BeanFactoryAware,
-        ReferenceDataProviding, InitializingBean  {
+        ReferenceDataProviding, InitializingBean {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
@@ -472,7 +472,10 @@ public class PropertyEditController extends SimpleFormController implements Refe
         }
 
         if (urchinService != null && hasUrchinStats(resource)) {
-            model.put("urchinStats", urchinService.constructURL(resource));
+            if (request.getParameter("recache") == null)
+                model.put("urchinStats", urchinService.constructURL(resource));
+            else
+                model.put("urchinStats", urchinService.constructURL(resource).addParameter("recache", ""));
         }
 
         model.put(this.propertyListModelName, propsList);

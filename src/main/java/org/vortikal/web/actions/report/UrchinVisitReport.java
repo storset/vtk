@@ -31,7 +31,6 @@
 package org.vortikal.web.actions.report;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
@@ -49,9 +48,8 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
@@ -59,12 +57,14 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.urchin.UrchinHosts;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 public class UrchinVisitReport extends AbstractReporter implements InitializingBean {
-    private static final int maxResults = 50;
+    // TODO 50 in prod.
+    private static final int maxResults = 5;
+
+    private final Log logger = LogFactory.getLog(getClass());
 
     private CacheManager cacheManager;
     private Cache cache;
@@ -76,7 +76,8 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
 
     private String user;
     private String password;
-    private UrchinHosts urchinHosts;
+    private String webHostName;
+    private Map<String, Integer> urchinHostsToProfile;
 
     private static long fifteenDays = 86400000 * 15;
 
@@ -177,7 +178,6 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     private UrchinVisitRes fetch(String sdate, String edate, String key, String token, Resource resource,
             boolean recache) {
         UrchinVisitRes uvr;
@@ -229,14 +229,18 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
                     }
                 }
 
+                if (sid.equals(""))
+                    logger.warn("Could not get session id for urchin in " + this.getName() + ".");
+
                 String surl = "https://statistikk.uio.no/session.cgi?";
                 surl += "sid=" + sid;
                 surl += "&app=urchin.cgi";
                 surl += "&action=prop";
-                int profileId;
+                Integer profileId;
                 // TODO For prod:
-                // if ((id = urchinHosts.getProfilId(repo.getId())) == -1)
-                if ((profileId = urchinHosts.getProfilId("www.uio.no")) == -1)
+                // if ((profileId = urchinHostsToProfile.get(this.webHostName))
+                // == null)
+                if ((profileId = urchinHostsToProfile.get("www.uio.no")) == null)
                     return null;
                 surl += "&rid=" + profileId;
                 surl += "&hl=en-US";
@@ -258,13 +262,15 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
                 surl += "&xd=1";
                 surl += "&x=7";
 
+                logger.info("GET url in fetch: " + surl);
+
                 url = new URL(surl);
                 conn = (HttpsURLConnection) url.openConnection();
 
                 rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-                StringBuilder b = new StringBuilder();
-
+                List<String> uris = new ArrayList<String>();
+                List<Integer> visits = new ArrayList<Integer>();
                 // TODO For prod:
                 // int id = ("/" + repo.getId()).length();
                 int id = ("/" + "www.uio.no").length();
@@ -272,7 +278,6 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
                 String tmp = "";
                 Resource r;
                 while ((line = rd.readLine()) != null) {
-                    b.append(line + "\n");
                     if (line.trim().startsWith("<ncols>")) {
                         break;
                     }
@@ -288,9 +293,12 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
 
                             try {
                                 r = repo.retrieve(token, Path.fromString(tmp), false);
-                                b.append("      <record id=\"" + count++ + "\">\n");
-                                b.append("         <name>" + r.getURI() + "</name>\n");
-                                b.append(rd.readLine() + "\n");
+                                uris.add(r.getURI().toString());
+                                if ((line = rd.readLine()) != null && line.trim().startsWith("<value1>")) {
+                                    visits.add(Integer.parseInt(line.substring(line.indexOf('>') + 1, line
+                                            .lastIndexOf('<'))));
+                                }
+                                count++;
                             } catch (Exception e) {
                                 r = null;
                             }
@@ -299,55 +307,26 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
                                 try {
                                     r = repo.retrieve(token, Path.fromString(tmp.substring(0, tmp.lastIndexOf('/'))),
                                             false);
-                                    b.append("      <record id=\"" + count++ + "\">\n");
-                                    b.append("         <name>" + r.getURI() + "</name>\n");
-                                    b.append(rd.readLine() + "\n");
+                                    uris.add(r.getURI().toString());
+                                    if ((line = rd.readLine()) != null && line.trim().startsWith("<value1>")) {
+                                        visits.add(Integer.parseInt(line.substring(line.indexOf('>') + 1, line
+                                                .lastIndexOf('<'))));
+                                    }
+                                    count++;
                                 } catch (Exception e) {
-                                    r = null;
                                 }
                             }
 
                             while ((line = rd.readLine()) != null) {
                                 if (line.trim().equals("</record>")) {
-                                    if (r != null)
-                                        b.append(line + "\n");
                                     break;
                                 }
                             }
                         }
                     }
                 }
-                b.append("   </dataset>\n");
-                b.append("</urchindata>\n");
 
                 rd.close();
-
-                SAXBuilder builder = new SAXBuilder("org.apache.xerces.parsers.SAXParser");
-                Document dom = builder.build(new ByteArrayInputStream(b.toString().getBytes()));
-
-                List<Element> urchindata, dataset, record;
-
-                if ((urchindata = dom.getRootElement().getChildren()) == null)
-                    return null;
-
-                if ((dataset = urchindata.get(3).getChildren()) == null)
-                    return null;
-
-                int j = 0;
-                List<String> uris = new ArrayList<String>();
-                List<Integer> visits = new ArrayList<Integer>();
-                for (int i = 0; i < maxResults; i++) {
-                    if (dataset.size() <= 8 + j)
-                        break;
-                    record = dataset.get(8 + j++).getChildren();
-
-                    try {
-                        uris.add(record.get(0).getText());
-                        visits.add(Integer.parseInt(record.get(1).getText()));
-                    } catch (Exception e) {
-                        i--;
-                    }
-                }
 
                 uvr.sdate = sdate;
                 uvr.edate = edate;
@@ -402,8 +381,20 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
     }
 
     @Required
-    public void setUrchinHosts(UrchinHosts urchinHosts) {
-        this.urchinHosts = urchinHosts;
+    public void setUrchinHostsToProfile(Map<String, Integer> urchinHostsToProfile) {
+        this.urchinHostsToProfile = urchinHostsToProfile;
+    }
+
+    @Required
+    public void setWebHostName(String webHostName) {
+        String[] names = webHostName.trim().split("\\s*,\\s*");
+        for (String name : names) {
+            if ("*".equals(name)) {
+                this.webHostName = "localhost";
+                return; // Use default value
+            }
+        }
+        this.webHostName = names[0];
     }
 
     @Override

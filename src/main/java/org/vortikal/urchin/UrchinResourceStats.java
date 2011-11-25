@@ -34,10 +34,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -46,9 +49,12 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 
 public class UrchinResourceStats implements InitializingBean {
+    private final Log logger = LogFactory.getLog(getClass());
+
     private String urchinUser;
     private String urchinPassword;
-    private UrchinHosts urchinHosts;
+    private String webHostName;
+    private Map<String, Integer> urchinHostsToProfile;
 
     private CacheManager cacheManager;
     private Cache cache;
@@ -198,26 +204,26 @@ public class UrchinResourceStats implements InitializingBean {
             return sum;
 
         String url = "https://statistikk.uio.no/services/v2/reportservice/data";
-        url += "?login=" + urchinUser + "&password=" + urchinPassword;
-        url += date;
-        url += "&dimensions=u:request_stem";
+        String login = "?login=" + urchinUser + "&password=" + urchinPassword;
+        String parameters = date;
+        parameters += "&dimensions=u:request_stem";
         if (key.equals("pagesTotal"))
-            url += "&metrics=u:pages";
+            parameters += "&metrics=u:pages";
         else
-            url += "&metrics=u:visits";
-        url += "&table=12";
-        int profileId;
+            parameters += "&metrics=u:visits";
+        parameters += "&table=12";
+        Integer profileId;
         // TODO For prod:
-        // if ((profileId = urchinHosts.getProfilId(repo.getId())) == -1)
-        if ((profileId = urchinHosts.getProfilId(id)) == -1)
+        // if ((profileId = urchinHostsToProfile.get(this.webHostName)) == null)
+        if ((profileId = urchinHostsToProfile.get(id)) == null)
             return sum;
-        url += "&ids=" + profileId;
-        url += "&filters=u:request_stem%3D~^/" + id;
+        parameters += "&ids=" + profileId;
+        parameters += "&filters=u:request_stem%3D~^/" + id;
 
         if (r.isCollection()) {
             try {
                 String expanded = r.getURI().expand("index.html").toString();
-                String html = url.concat(expanded);
+                String html = url + login + parameters + expanded;
 
                 if ((cache != null) && !recache)
                     cached = this.cache.get(id + expanded + key);
@@ -232,6 +238,7 @@ public class UrchinResourceStats implements InitializingBean {
                 if (ur.date != null && ur.date.equals(date)) {
                     sum += ur.res;
                 } else {
+                    logger.info("GET url in fetch: " + url + "?login=X&password=X" + parameters + expanded);
                     ur.res = parseDOMToStats(parseXMLFileToDOM(html));
                     ur.date = date;
                     sum += ur.res;
@@ -239,12 +246,12 @@ public class UrchinResourceStats implements InitializingBean {
                         this.cache.put(new net.sf.ehcache.Element(id + expanded + key, ur));
                     // TODO For prod: Shorter key, droppe id.
                 }
-            } catch (Exception e) {
+            } catch (Exception ignore) {
             }
 
             try {
                 String expanded = r.getURI().expand("index.xml").toString();
-                String xml = url.concat(expanded);
+                String xml = url + login + parameters + expanded;
 
                 if ((cache != null) && !recache)
                     cached = this.cache.get(id + expanded + key);
@@ -259,17 +266,19 @@ public class UrchinResourceStats implements InitializingBean {
                 if (ur.date != null && ur.date.equals(date)) {
                     sum += ur.res;
                 } else {
+                    logger.info("GET url in fetch: " + url + "?login=X&password=X" + parameters + expanded);
                     ur.res = parseDOMToStats(parseXMLFileToDOM(xml));
                     ur.date = date;
                     sum += ur.res;
                     if (cache != null)
                         this.cache.put(new net.sf.ehcache.Element(id + expanded + key, ur));
                 }
-            } catch (Exception e) {
+            } catch (Exception ignore) {
             }
         } else {
             try {
-                String resource = url.concat(r.getURI().toString());
+                String uri = r.getURI().toString();
+                String resource = url + login + parameters + uri;
 
                 if ((cache != null) && !recache)
                     cached = this.cache.get(id + r.getURI().toString() + key);
@@ -284,13 +293,14 @@ public class UrchinResourceStats implements InitializingBean {
                 if (ur.date != null && ur.date.equals(date)) {
                     sum += ur.res;
                 } else {
+                    logger.info("GET url in fetch: " + url + "?login=X&password=X" + parameters + uri);
                     ur.res = parseDOMToStats(parseXMLFileToDOM(resource));
                     ur.date = date;
                     sum += ur.res;
                     if (cache != null)
                         this.cache.put(new net.sf.ehcache.Element(id + r.getURI().toString() + key, ur));
                 }
-            } catch (Exception e) {
+            } catch (Exception ignore) {
             }
         }
 
@@ -349,8 +359,20 @@ public class UrchinResourceStats implements InitializingBean {
     }
 
     @Required
-    public void setUrchinHosts(UrchinHosts urchinHosts) {
-        this.urchinHosts = urchinHosts;
+    public void setUrchinHostsToProfile(Map<String, Integer> urchinHostsToProfile) {
+        this.urchinHostsToProfile = urchinHostsToProfile;
+    }
+
+    @Required
+    public void setWebHostName(String webHostName) {
+        String[] names = webHostName.trim().split("\\s*,\\s*");
+        for (String name : names) {
+            if ("*".equals(name)) {
+                this.webHostName = "localhost";
+                return; // Use default value
+            }
+        }
+        this.webHostName = names[0];
     }
 
     @Override

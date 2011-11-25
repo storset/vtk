@@ -48,13 +48,16 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
-import org.vortikal.urchin.UrchinHosts;
 
 public class UrchinSearchReport extends AbstractReporter implements InitializingBean {
     private static final int maxResults = 50;
+
+    private final Log logger = LogFactory.getLog(getClass());
 
     private CacheManager cacheManager;
     private Cache cache;
@@ -65,7 +68,8 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
 
     private String user;
     private String password;
-    private UrchinHosts urchinHosts;
+    private String webHostName;
+    private Map<String, Integer> urchinHostsToProfile;
 
     private static long fifteenDays = 86400000 * 15;
 
@@ -230,14 +234,18 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                     }
                 }
 
+                if (sid.equals(""))
+                    logger.warn("Could not get session id for urchin in " + this.getName() + ".");
+
                 String surl = "https://statistikk.uio.no/session.cgi?";
                 surl += "sid=" + sid;
                 surl += "&app=urchin.cgi";
                 surl += "&action=prop";
-                int profileId;
+                Integer profileId;
                 // TODO For prod:
-                // if ((id = urchinHosts.getProfilId(repo.getId())) == -1)
-                if ((profileId = urchinHosts.getProfilId("www.uio.no")) == -1)
+                // if ((profileId = urchinHostsToProfile.get(this.webHostName))
+                // == null)
+                if ((profileId = urchinHostsToProfile.get("www.uio.no")) == null)
                     return null;
                 surl += "&rid=" + profileId;
                 surl += "&hl=en-US";
@@ -261,7 +269,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                 surl += "&xd=1";
                 surl += "&x=7";
 
-                System.out.println(surl);
+                logger.info("GET url in fetch: " + surl);
 
                 url = new URL(surl);
                 conn = (HttpsURLConnection) url.openConnection();
@@ -344,8 +352,20 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
     }
 
     @Required
-    public void setUrchinHosts(UrchinHosts urchinHosts) {
-        this.urchinHosts = urchinHosts;
+    public void setUrchinHostsToProfile(Map<String, Integer> urchinHostsToProfile) {
+        this.urchinHostsToProfile = urchinHostsToProfile;
+    }
+
+    @Required
+    public void setWebHostName(String webHostName) {
+        String[] names = webHostName.trim().split("\\s*,\\s*");
+        for (String name : names) {
+            if ("*".equals(name)) {
+                this.webHostName = "localhost";
+                return; // Use default value
+            }
+        }
+        this.webHostName = names[0];
     }
 
     @Override

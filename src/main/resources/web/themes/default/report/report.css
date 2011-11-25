@@ -175,7 +175,7 @@ td.vrtx-report-diagram-text {
 }
 
 .report-urchin table th.report-urchin-table-data-title {
-  width: 70%;
+  width: 60%;
 }
 
 .report-urchin table th.report-urchin-table-data-count {
@@ -183,7 +183,7 @@ td.vrtx-report-diagram-text {
 }
 
 .report-urchin table th.report-urchin-table-data-number {
-  width: 12%;
+  width: 22%;
 }
 
 /* Tooltip */

@@ -27,7 +27,7 @@
               <th class="report-urchin-table-data-title">
                 <@vrtx.msg code="report.${report.reportname}.title" />
               </th>
-              <th class="report-urchin-table-data-numbers">
+              <th class="report-urchin-table-data-number">
                 <@vrtx.msg code="report.${report.reportname}.number" />
               </th>
             </tr>

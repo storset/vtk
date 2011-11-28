@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,7 +62,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
 
     private CacheManager cacheManager;
     private Cache cache;
-    private net.sf.ehcache.Element cached;
+    private Element cached;
 
     private String name;
     private String viewName;
@@ -309,7 +310,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                 usr.query = queries;
                 usr.hit = hits;
 
-                this.cache.put(new net.sf.ehcache.Element(resource.getURI().toString() + key, usr));
+                this.cache.put(new Element(resource.getURI().toString() + key, usr));
 
                 return usr;
             }

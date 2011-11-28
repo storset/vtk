@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,7 +69,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
 
     private CacheManager cacheManager;
     private Cache cache;
-    private net.sf.ehcache.Element cached;
+    private Element cached;
 
     private String name;
     private String viewName;
@@ -333,7 +334,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
                 uvr.uri = uris;
                 uvr.visit = visits;
 
-                this.cache.put(new net.sf.ehcache.Element(resource.getURI().toString() + key, uvr));
+                this.cache.put(new Element(resource.getURI().toString() + key, uvr));
 
                 return uvr;
             }

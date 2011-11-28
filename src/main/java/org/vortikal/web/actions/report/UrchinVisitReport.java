@@ -86,7 +86,6 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
         private static final long serialVersionUID = 1L;
 
         public String sdate;
-        public String edate;
         public List<String> uri;
         public List<Integer> visit;
     }
@@ -117,17 +116,19 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
         UrchinVisitRes uvr = fetch(sdate, edate, "VisitTotal" + maxResults, token, resource, recache);
         List<org.vortikal.web.service.URL> url = new ArrayList<org.vortikal.web.service.URL>();
         List<String> title = new ArrayList<String>();
-        for (int i = 0; i < uvr.uri.size(); i++) {
-            try {
-                r = repo.retrieve(token, Path.fromString(uvr.uri.get(i)), false);
-                title.add(r.getTitle());
-                url.add(service.constructURL(r, p));
-            } catch (Exception e) {
+        if (uvr != null) {
+            for (int i = 0; i < uvr.uri.size(); i++) {
+                try {
+                    r = repo.retrieve(token, Path.fromString(uvr.uri.get(i)), false);
+                    title.add(r.getTitle());
+                    url.add(service.constructURL(r, p));
+                } catch (Exception e) {
+                }
             }
+            result.put("urlsTotal", url);
+            result.put("titlesTotal", title);
+            result.put("numbersTotal", uvr.visit);
         }
-        result.put("urlsTotal", url);
-        result.put("titlesTotal", title);
-        result.put("numbersTotal", uvr.visit);
 
         /* Thirty days */
         scal = ecal;
@@ -140,19 +141,21 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
                 + myFormat.format(scal.get(Calendar.DATE));
 
         uvr = fetch(sdate, edate, "Visit30" + maxResults, token, resource, recache);
-        url = new ArrayList<org.vortikal.web.service.URL>();
-        title = new ArrayList<String>();
-        for (int i = 0; i < uvr.uri.size(); i++) {
-            try {
-                r = repo.retrieve(token, Path.fromString(uvr.uri.get(i)), false);
-                title.add(r.getTitle());
-                url.add(service.constructURL(r, p));
-            } catch (Exception e) {
+        if (uvr != null) {
+            url = new ArrayList<org.vortikal.web.service.URL>();
+            title = new ArrayList<String>();
+            for (int i = 0; i < uvr.uri.size(); i++) {
+                try {
+                    r = repo.retrieve(token, Path.fromString(uvr.uri.get(i)), false);
+                    title.add(r.getTitle());
+                    url.add(service.constructURL(r, p));
+                } catch (Exception e) {
+                }
             }
+            result.put("urlsThirty", url);
+            result.put("titlesThirty", title);
+            result.put("numbersThirty", uvr.visit);
         }
-        result.put("urlsThirty", url);
-        result.put("titlesThirty", title);
-        result.put("numbersThirty", uvr.visit);
 
         /* Sixty days */
         scal.setTimeInMillis(scal.getTimeInMillis() - fifteenDays);
@@ -162,29 +165,31 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
                 + myFormat.format(scal.get(Calendar.DATE));
 
         uvr = fetch(sdate, edate, "Visit60" + maxResults, token, resource, recache);
-        url = new ArrayList<org.vortikal.web.service.URL>();
-        title = new ArrayList<String>();
-        for (int i = 0; i < uvr.uri.size(); i++) {
-            try {
-                r = repo.retrieve(token, Path.fromString(uvr.uri.get(i)), false);
-                title.add(r.getTitle());
-                url.add(service.constructURL(r, p));
-            } catch (Exception e) {
+        if (uvr != null) {
+            url = new ArrayList<org.vortikal.web.service.URL>();
+            title = new ArrayList<String>();
+            for (int i = 0; i < uvr.uri.size(); i++) {
+                try {
+                    r = repo.retrieve(token, Path.fromString(uvr.uri.get(i)), false);
+                    title.add(r.getTitle());
+                    url.add(service.constructURL(r, p));
+                } catch (Exception e) {
+                }
             }
+            result.put("urlsSixty", url);
+            result.put("titlesSixty", title);
+            result.put("numbersSixty", uvr.visit);
         }
-        result.put("urlsSixty", url);
-        result.put("titlesSixty", title);
-        result.put("numbersSixty", uvr.visit);
 
         return result;
     }
 
     private UrchinVisitRes fetch(String sdate, String edate, String key, String token, Resource resource,
             boolean recache) {
-        UrchinVisitRes uvr;
+        UrchinVisitRes uvr = null;
         Repository repo = RequestContext.getRequestContext().getRepository();
         // TODO For prod.
-        // String uri = "/" + repo.getId() + resource.getURI().toString();
+        // String uri = "/" + this.webHostName + resource.getURI().toString();
         String uri = "/www.uio.no" + resource.getURI().toString();
 
         try {
@@ -198,7 +203,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
             else
                 uvr = new UrchinVisitRes();
 
-            if ((uvr.edate != null && uvr.edate.equals(edate)) && (uvr.sdate != null && uvr.sdate.equals(sdate))) {
+            if (uvr.sdate != null && uvr.sdate.equals(sdate)) {
                 return uvr;
             } else {
                 URL url = new URL("https://statistikk.uio.no/session.cgi");
@@ -273,7 +278,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
                 List<String> uris = new ArrayList<String>();
                 List<Integer> visits = new ArrayList<Integer>();
                 // TODO For prod:
-                // int id = ("/" + repo.getId()).length();
+                // int id = ("/" + this.webHostName).length();
                 int id = ("/" + "www.uio.no").length();
                 int count = 1;
                 String tmp = "";
@@ -330,7 +335,6 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
                 rd.close();
 
                 uvr.sdate = sdate;
-                uvr.edate = edate;
                 uvr.uri = uris;
                 uvr.visit = visits;
 
@@ -338,7 +342,8 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
 
                 return uvr;
             }
-        } catch (Exception e) {
+        } catch (Exception warn) {
+            logger.warn(warn.getMessage());
             return null;
         }
     }

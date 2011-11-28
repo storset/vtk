@@ -45,7 +45,6 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.service.URL;
 
 public class UrchinResourceStatsController implements Controller {
 
@@ -63,34 +62,17 @@ public class UrchinResourceStatsController implements Controller {
         Resource resource = this.repository.retrieve(token, uri, false);
 
         boolean recache = request.getParameter("recache") != null ? true : false;
-        
+
         Map<String, Object> model = new HashMap<String, Object>();
 
-        String id;
-        if ((id = request.getParameter("host")) == null)
-            id = "www.uio.no";
-
-        int visitsTotal = urs.visitsTotal(resource, token, id, recache);
+        int visitsTotal = urs.visitsTotal(resource, token, recache);
         if (visitsTotal > 0) {
-            URL[] hosts = new URL[12];
-            String[] host = { "www.uio.no", "www.hf.uio.no", "www.khm.uio.no", "www.odont.uio.no", "www.sv.uio.no",
-                    "www.tf.uio.no", "www.ub.uio.no", "www.uv.uio.no", "www.jus.uio.no", "www.uniforum.uio.no",
-                    "www.mn.uio.no", "www.med.uio.no" };
-            String[] hostnames = { "UiO", "HF", "KHM", "Odont", "SV", "TF", "UB", "UV", "JUS", "Uniforum", "MN", "MED" };
-
-            for (int i = 0; i < 12; i++) {
-                URL base = URL.create(request).removeParameter("host");
-                hosts[i] = base.addParameter("host", host[i]);
-            }
-
             model.put("ursTotalVisits", visitsTotal);
-            model.put("hosts", hosts);
-            model.put("hostnames", hostnames);
             model.put("thisMonth", urs.thisMonth());
-            model.put("ursMonths", urs.months(resource, token, id, recache));
-            model.put("ursSixtyTotal", urs.sixtyTotal(resource, token, id, recache));
-            model.put("ursThirtyTotal", urs.thirtyTotal(resource, token, id, recache));
-            model.put("ursTotalPages", urs.pagesTotal(resource, token, id, recache));
+            model.put("ursMonths", urs.months(resource, token, recache));
+            model.put("ursSixtyTotal", urs.sixtyTotal(resource, token, recache));
+            model.put("ursThirtyTotal", urs.thirtyTotal(resource, token, recache));
+            model.put("ursTotalPages", urs.pagesTotal(resource, token, recache));
             model.put("ursNMonths", urs.nMonths());
         } else {
             // Whether or not it is a resource created within the last week

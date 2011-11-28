@@ -86,7 +86,6 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         private static final long serialVersionUID = 1L;
 
         public String sdate;
-        public String edate;
         public List<String> query;
         public List<Integer> hit;
     }
@@ -98,13 +97,10 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
 
         boolean recache = request.getParameter("recache") != null ? true : false;
 
-        // org.vortikal.web.service.URL resourceurl =
-        // org.vortikal.web.service.URL.create(request).clearParameters();
         org.vortikal.web.service.URL resourceurl = service.constructURL(resource);
         org.vortikal.web.service.URL tmp;
         // TODO For prod:
-        // Repository repo = RequestContext.getRequestContext().getRepository();
-        // if ((repo.getId().equals("www.uio.no")) &&
+        // if ((this.webHostName.equals("www.uio.no")) &&
         // (resource.getURI().toString().equals("/") ||
         // resource.getURI().toString().equals("/english")))
         if (resource.getURI().toString().equals("/") || resource.getURI().toString().equals("/english"))
@@ -128,15 +124,17 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         UrchinSearchRes usr = fetch(sdate, edate, "SearchTotal" + maxResults, token, resource, recache);
         List<org.vortikal.web.service.URL> url = new ArrayList<org.vortikal.web.service.URL>();
         List<String> title = new ArrayList<String>();
-        for (int i = 0; i < usr.query.size(); i++) {
-            title.add(usr.query.get(i));
-            tmp = new org.vortikal.web.service.URL(resourceurl);
-            tmp.addParameter(QUERY_PARAM, usr.query.get(i));
-            url.add(tmp);
+        if (usr != null) {
+            for (int i = 0; i < usr.query.size(); i++) {
+                title.add(usr.query.get(i));
+                tmp = new org.vortikal.web.service.URL(resourceurl);
+                tmp.addParameter(QUERY_PARAM, usr.query.get(i));
+                url.add(tmp);
+            }
+            result.put("urlsTotal", url);
+            result.put("titlesTotal", title);
+            result.put("numbersTotal", usr.hit);
         }
-        result.put("urlsTotal", url);
-        result.put("titlesTotal", title);
-        result.put("numbersTotal", usr.hit);
 
         /* Thirty days */
         scal = ecal;
@@ -149,20 +147,22 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                 + myFormat.format(scal.get(Calendar.DATE));
 
         usr = fetch(sdate, edate, "Search30" + maxResults, token, resource, recache);
-        url = new ArrayList<org.vortikal.web.service.URL>();
-        title = new ArrayList<String>();
-        for (int i = 0; i < usr.query.size(); i++) {
-            try {
-                title.add(usr.query.get(i));
-                tmp = new org.vortikal.web.service.URL(resourceurl);
-                tmp.addParameter(QUERY_PARAM, usr.query.get(i));
-                url.add(tmp);
-            } catch (Exception e) {
+        if (usr != null) {
+            url = new ArrayList<org.vortikal.web.service.URL>();
+            title = new ArrayList<String>();
+            for (int i = 0; i < usr.query.size(); i++) {
+                try {
+                    title.add(usr.query.get(i));
+                    tmp = new org.vortikal.web.service.URL(resourceurl);
+                    tmp.addParameter(QUERY_PARAM, usr.query.get(i));
+                    url.add(tmp);
+                } catch (Exception e) {
+                }
             }
+            result.put("urlsThirty", url);
+            result.put("titlesThirty", title);
+            result.put("numbersThirty", usr.hit);
         }
-        result.put("urlsThirty", url);
-        result.put("titlesThirty", title);
-        result.put("numbersThirty", usr.hit);
 
         /* Sixty days */
         scal.setTimeInMillis(scal.getTimeInMillis() - fifteenDays);
@@ -172,26 +172,28 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                 + myFormat.format(scal.get(Calendar.DATE));
 
         usr = fetch(sdate, edate, "Search60" + maxResults, token, resource, recache);
-        url = new ArrayList<org.vortikal.web.service.URL>();
-        title = new ArrayList<String>();
-        for (int i = 0; i < usr.query.size(); i++) {
-            title.add(usr.query.get(i));
-            tmp = new org.vortikal.web.service.URL(resourceurl);
-            tmp.addParameter(QUERY_PARAM, usr.query.get(i));
-            url.add(tmp);
+        if (usr != null) {
+            url = new ArrayList<org.vortikal.web.service.URL>();
+            title = new ArrayList<String>();
+            for (int i = 0; i < usr.query.size(); i++) {
+                title.add(usr.query.get(i));
+                tmp = new org.vortikal.web.service.URL(resourceurl);
+                tmp.addParameter(QUERY_PARAM, usr.query.get(i));
+                url.add(tmp);
+            }
+            result.put("urlsSixty", url);
+            result.put("titlesSixty", title);
+            result.put("numbersSixty", usr.hit);
         }
-        result.put("urlsSixty", url);
-        result.put("titlesSixty", title);
-        result.put("numbersSixty", usr.hit);
 
         return result;
     }
 
     private UrchinSearchRes fetch(String sdate, String edate, String key, String token, Resource resource,
             boolean recache) {
-        UrchinSearchRes usr;
+        UrchinSearchRes usr = null;
         // TODO For prod.
-        // String uri = "/" + repo.getId() + resource.getURI().toString();
+        // String uri = "/" + this,webHostName + resource.getURI().toString();
         String uri = "/www.uio.no" + resource.getURI().toString();
         if (!uri.endsWith("/"))
             uri += "/";
@@ -208,7 +210,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
             else
                 usr = new UrchinSearchRes();
 
-            if ((usr.edate != null && usr.edate.equals(edate)) && (usr.sdate != null && usr.sdate.equals(sdate))) {
+            if (usr.sdate != null && usr.sdate.equals(sdate)) {
                 return usr;
             } else {
                 URL url = new URL("https://statistikk.uio.no/session.cgi");
@@ -311,7 +313,6 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                 rd.close();
 
                 usr.sdate = sdate;
-                usr.edate = edate;
                 usr.query = queries;
                 usr.hit = hits;
 
@@ -319,7 +320,8 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
 
                 return usr;
             }
-        } catch (Exception e) {
+        } catch (Exception warn) {
+            logger.warn(warn.getMessage());
             return null;
         }
     }

@@ -60,10 +60,12 @@ public class UriSetQuery implements UriQuery {
         return this.operator;
     }
     
+    @Override
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
     
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append(getClass().getName()).append(", ");

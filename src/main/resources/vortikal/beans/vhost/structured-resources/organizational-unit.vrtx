@@ -3,6 +3,7 @@ resourcetype organizational-unit {
   properties {
     areacode : string trim,
     getExternalUnitInfo : boolean,
+    showExtendedUnitList : boolean defaultvalue("false"),
     displayAcronym : boolean,
     name : string external:organizationMetadataLdapService,
     acronym : string external:organizationMetadataLdapService,
@@ -197,8 +198,8 @@ resourcetype organizational-unit {
       ##
       [resource-props "."]
       [def document structured-document()]
-      [def related document.properties.related-content]
-      [if related != null && related != ""]
+      [def subsubunits document.properties.showExtendedUnitList]
+      [if subsubunits = null || subsubunits = "false"]
         <div id="vrtx-related-content">
           [val related # unescaped]
         </div>
@@ -230,8 +231,15 @@ resourcetype organizational-unit {
     
     subunits {
       ##
+      [resource-props "."]
       [def areacode resource-prop(".", "areacode")]
-       [call "resource:org-unit-subunits" {"areacode":areacode,"display-subsubunits":"true"}]
+      [def document structured-document()]
+      [def subsubunits document.properties.showExtendedUnitList]
+      	[if subsubunits = "false" || subsubunits = null]
+	       [call "resource:org-unit-subunits" {"areacode":areacode} ]
+	    [else]
+	       [call "resource:org-unit-subunits" {"areacode":areacode, "display-subsubunits":"true"} ]
+	    [endif]
       ##
     }
     
@@ -239,6 +247,9 @@ resourcetype organizational-unit {
 
   view {
     ##
+    [resources-props "."]
+	[def document structured-document()]
+	[def subsubunits document.properties.showExtendedUnitList]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
@@ -246,25 +257,60 @@ resourcetype organizational-unit {
       </head>
       <body id="vrtx-organizational-unit">
         <div id="vrtx-content">
-          <div id="vrtx-main-content">
-            <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">
-              [call "resource:organizational-unit-language-link"]
+        [resources-props "."]
+        [def document structured-document()]
+        [def subsubunits document.properties.showExtendedUnitList]
+        [if subsubunits = "true"]
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">         
+          <div class="vrtx-frontpage-box vrtx-header-false white-box vrtx-main-content-first" id="vrtx-organizational-unit-main">
+          [call "resource:organizational-unit-language-link"]
+          <h1>[call "comp:title"]</h1>
+          [call "comp:contact-information"]
+          [call "comp:introduction-image"]
+          [call "comp:introduction"]
+          [call "comp:responsibilities"]
+          </div>
+          [call "comp:subunits"]
+          [call "comp:employees"]
+          [call "comp:content"]
+          [call "comp:related-content"]
+          </div>
+        [else]
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
+          [call "resource:organizational-unit-language-link"]
+          <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">
+        
+            
+              
               <h1>[call "comp:title"]</h1> 
+              [if subsubunits = "true"]
+	              [call "comp:contact-information"]
+	              </div>
+	              <div class="vrtx-frontpage-box white-box">
+              [endif]
               [call "comp:introduction-image"]
               [call "comp:introduction"]
               [call "comp:responsibilities"]
-            </div>
-            [call "comp:subunits"]
+              [call "comp:subunits"]
+              [if subsubunits != "true"]
+            	</div>        
+              [endif]
             [call "comp:employees"]
             [call "comp:content"]
+            [if subsubunits = "true"]
+ 	         	[call "comp:related-content"]
+ 	        [endif]
           </div>
+          [if subsubunits = "false" || subsubunits = null]
           <div id="vrtx-additional-content">
             <div class="vrtx-frontpage-box">
               [call "comp:contact-information"]
             </div>
             [call "comp:related-content"]
           </div>
+          [endif]
         </div>
+        [endif]
       </body>
     </html>
     ##
@@ -281,6 +327,11 @@ resourcetype organizational-unit {
        no : ("true" = "Ja", "false" = "Nei"),
        nn : ("true" = "Ja", "false" = "Nei")
      },
+     showExtendedUnitList {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
+     }
      displayEmployees {
        en : ("true" = "Yes", "false" = "No"),
        no : ("true" = "Ja", "false" = "Nei"),
@@ -316,10 +367,10 @@ resourcetype organizational-unit {
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
     introduction : (en: "Introduction", no: "Innledning", nn : "Innleiing"),
     responsibilities : (en : "Responsibilities", no : "Ansvarsområder", nn : "Ansvarsområder"),
-    employees : (en : "Employees", no : "Ansatte", nn : "Ansatte"),
+    employees : (en : "Staff", no : "Ansatte", nn : "Ansatte"),
     employeesLink : (en : "All employees in", no : "Alle ansatte i", nn : "Alle ansatte i"),
     displayEmployees : (
-      en : "Show employees registrated in UiO's payroll- and personalsystem (requires valid area code)",
+      en : "Show employees registrated in UiO's payroll- and personnel system (requires valid area code)",
       no : "Vis ansatte registrert i UiOs lønns- og personalsystem (krever gyldig stedkode)",
       nn : "Vis ansatte registrerte i lønns- og personalsystemet til UiO (krev gyldig stedkode)"),
     selectedEmployees : (
@@ -335,6 +386,7 @@ resourcetype organizational-unit {
       no : "Webadresse til liste over alle ansatte",
       nn : "Webadresse til liste over alle ansatte"),
     content : (en: "Content", no: "Innhold", nn : "Innhald"),
+    showExtendedUnitList : (en: "Show two levels of sub units (disables the right column)", no: "Vis to nivåer av underenheter (skjuler høyrekolonnen)", nn : "Vis to nivåer av undereiningar (skjular høgrekolonnen)"),
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
     no-external-unit-metadata : (en : "Could not get unit data from external service",
                                  no : "Kan ikke hente opplysninger om enhet fra ekstern kilde",

@@ -54,6 +54,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
+import org.vortikal.web.service.Service;
 
 public class UrchinSearchReport extends AbstractReporter implements InitializingBean {
     private static final int maxResults = 50;
@@ -66,6 +67,8 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
 
     private String name;
     private String viewName;
+
+    private Service service;
 
     private String user;
     private String password;
@@ -95,7 +98,9 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
 
         boolean recache = request.getParameter("recache") != null ? true : false;
 
-        org.vortikal.web.service.URL resourceurl = org.vortikal.web.service.URL.create(request).clearParameters();
+        // org.vortikal.web.service.URL resourceurl =
+        // org.vortikal.web.service.URL.create(request).clearParameters();
+        org.vortikal.web.service.URL resourceurl = service.constructURL(resource);
         org.vortikal.web.service.URL tmp;
         // TODO For prod:
         // Repository repo = RequestContext.getRequestContext().getRepository();
@@ -337,6 +342,11 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
     @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
+    }
+
+    @Required
+    public void setService(Service service) {
+        this.service = service;
     }
 
     public void setUser(String user) {

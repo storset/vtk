@@ -198,10 +198,11 @@ resourcetype organizational-unit {
       ##
       [resource-props "."]
       [def document structured-document()]
+      [def theRelated-content document.properties.related-content]
       [def subsubunits document.properties.showExtendedUnitList]
       [if subsubunits = null || subsubunits = "false"]
         <div id="vrtx-related-content">
-          [val related # unescaped]
+          [val theRelated-content # unescaped]
         </div>
       [endif]
       ##

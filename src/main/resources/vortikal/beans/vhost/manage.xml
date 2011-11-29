@@ -1366,6 +1366,12 @@
           <property name="anonymous" value="false" />
           <property name="considerLocks" value="true" />
         </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
+          <property name="modelName" value="unlockPermission" />
+          <property name="permission" ref="ACTION_UNLOCK" />
+          <property name="anonymous" value="false" />
+          <property name="considerLocks" value="false" />
+        </bean>
       </list>
     </property>
     <property name="attributesMap">

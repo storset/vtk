@@ -25,7 +25,7 @@
         <table class="report-urchin-table" id="report-urchin-table-total">
           <thead>
             <tr>
-              <th class="report-urchin-table-data-count"></th>
+              <th class="report-urchin-table-data-count">Nr.</th>
               <th class="report-urchin-table-data-title">
                 <@vrtx.msg code="report.${report.reportname}.title" />
               </th>

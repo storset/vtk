@@ -200,9 +200,11 @@ resourcetype organizational-unit {
       [def theRelated-content document.properties.related-content]
       [def subsubunits document.properties.showExtendedUnitList]
       [if subsubunits = null || subsubunits = "false"]
+        [if theRelated-content != null]
         <div id="vrtx-related-content">
           [val theRelated-content # unescaped]
         </div>
+       [endif]
       [endif]
       ##
     }

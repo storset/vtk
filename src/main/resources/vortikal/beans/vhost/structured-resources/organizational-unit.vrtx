@@ -199,12 +199,10 @@ resourcetype organizational-unit {
       [def document structured-document()]
       [def theRelated-content document.properties.related-content]
       [def subsubunits document.properties.showExtendedUnitList]
-      [if subsubunits = null || subsubunits = "false"]
-        [if theRelated-content != null]
+      [if theRelated-content != null]
         <div id="vrtx-related-content">
           [val theRelated-content # unescaped]
         </div>
-       [endif]
       [endif]
       ##
     }
@@ -264,33 +262,34 @@ resourcetype organizational-unit {
         [def subsubunits document.properties.showExtendedUnitList]
         [if subsubunits = "true"]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">         
-          <div class="vrtx-frontpage-box white-box">
-            [call "resource:organizational-unit-language-link"]
-            <h1>[call "comp:title"]</h1>
-            [call "comp:contact-information"]
-          </div>  
-          <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">  
-            [call "comp:introduction-image"]
-            [call "comp:introduction"]
-            [call "comp:responsibilities"]
-          </div>
-          [call "comp:subunits"]
-          [call "comp:employees"]
-          [call "comp:content"]
-          [call "comp:related-content"]
+            <div class="vrtx-frontpage-box white-box">
+              [call "resource:organizational-unit-language-link"]
+              <h1>[call "comp:title"]</h1>
+              [call "comp:contact-information"]
+            </div>  
+            <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">  
+              [call "comp:introduction-image"]
+              [call "comp:introduction"]
+              [call "comp:responsibilities"]
+            </div>
+            [call "comp:subunits"]
+            [call "comp:employees"]
+            [call "comp:content"]
+            [call "comp:related-content"]
           </div>
         [else]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
-          [call "resource:organizational-unit-language-link"]
-          <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">
-            <h1>[call "comp:title"]</h1> 
-            [call "comp:introduction-image"]
-            [call "comp:introduction"]
-            [call "comp:responsibilities"] 
+            [call "resource:organizational-unit-language-link"]
+            <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">
+              <h1>[call "comp:title"]</h1> 
+              [call "comp:introduction-image"]
+              [call "comp:introduction"]
+              [call "comp:responsibilities"] 
+            </div>
+            [call "comp:subunits"]
+            [call "comp:employees"]
+            [call "comp:content"]
           </div>
-          [call "comp:subunits"]
-          [call "comp:employees"]
-          [call "comp:content"]
           <div id="vrtx-additional-content">
             <div class="vrtx-frontpage-box">
               <h2>[localized "contactHeader"]</h2>
@@ -298,7 +297,6 @@ resourcetype organizational-unit {
             </div>
             [call "comp:related-content"]
           </div>
-        </div>
         [endif]
       </body>
     </html>

@@ -342,7 +342,7 @@ public class UrchinResourceStats implements InitializingBean {
 
             return Integer.parseInt(metrics.get(0).getText());
         } catch (Exception ignore) {
-            logger.debug("parseDOMToStats: " + ignore.getMessage());
+            logger.trace("parseDOMToStats: " + ignore.getMessage());
             return 0;
         }
     }

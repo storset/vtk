@@ -141,7 +141,9 @@ public abstract class QuerySearchComponent implements SearchComponent {
             URL url = this.viewService.constructURL(res.getURI());
             if (multiHostResults) {
                 Property urlProp = res.getProperty(Namespace.DEFAULT_NAMESPACE, "solr.url");
-                url = URL.parse(urlProp.getStringValue());
+                if (urlProp != null) {
+                    url = URL.parse(urlProp.getStringValue());
+                }
             }
             urls.put(res.getURI().toString(), url);
         }

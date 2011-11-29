@@ -252,7 +252,12 @@ public abstract class AtomFeedController implements Controller {
             }
 
             Link link = abdera.getFactory().newLink();
-            link.setHref(viewService.constructLink(result.getURI()));
+            String urlString = viewService.constructLink(result.getURI());
+            Property urlProp = result.getProperty(Namespace.DEFAULT_NAMESPACE, "solr.url");
+            if (urlProp != null) {
+                urlString = URL.parse(urlProp.getStringValue()).toString();
+            }
+            link.setHref(urlString);
             link.setRel("alternate");
             entry.addLink(link);
 

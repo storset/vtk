@@ -82,9 +82,11 @@ public class SyndFeedBuilder {
         }
 
         // fall back to uri
-        try {
-            base = URL.parse(feed.getUri());
-        } catch (Exception e) {
+        if (base == null) {
+            try {
+                base = URL.parse(feed.getUri());
+            } catch (Exception e) {
+            }
         }
 
         for (Object o : feed.getEntries()) {

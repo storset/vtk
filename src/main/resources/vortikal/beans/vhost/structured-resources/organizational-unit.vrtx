@@ -78,7 +78,6 @@ resourcetype organizational-unit {
             [if title != null]
               <span class="fn org" style="display:none">[val title]</span>
             [endif]
-            <h2>[localized "contactHeader"]</h2>
             [if postalAddress != null && postalAddress != ""]
               <span class="vrtx-organizational-unit-postal-address adr">
                 <span class="vrtx-label">[localized "postalAddress"]</span>
@@ -264,12 +263,12 @@ resourcetype organizational-unit {
         [if subsubunits = "true"]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">         
           <div class="vrtx-frontpage-box vrtx-header-false white-box vrtx-main-content-first" id="vrtx-organizational-unit-main">
-          [call "resource:organizational-unit-language-link"]
-          <h1>[call "comp:title"]</h1>
-          [call "comp:contact-information"]
-          [call "comp:introduction-image"]
-          [call "comp:introduction"]
-          [call "comp:responsibilities"]
+            [call "resource:organizational-unit-language-link"]
+            <h1>[call "comp:title"]</h1>
+            [call "comp:contact-information"]
+            [call "comp:introduction-image"]
+            [call "comp:introduction"]
+            [call "comp:responsibilities"]
           </div>
           [call "comp:subunits"]
           [call "comp:employees"]
@@ -280,36 +279,21 @@ resourcetype organizational-unit {
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
           [call "resource:organizational-unit-language-link"]
           <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">
-        
-            
-              
-              <h1>[call "comp:title"]</h1> 
-              [if subsubunits = "true"]
-	              [call "comp:contact-information"]
-	              </div>
-	              <div class="vrtx-frontpage-box white-box">
-              [endif]
-              [call "comp:introduction-image"]
-              [call "comp:introduction"]
-              [call "comp:responsibilities"]
-              [call "comp:subunits"]
-              [if subsubunits != "true"]
-            	</div>        
-              [endif]
-            [call "comp:employees"]
-            [call "comp:content"]
-            [if subsubunits = "true"]
- 	         	[call "comp:related-content"]
- 	        [endif]
+            <h1>[call "comp:title"]</h1> 
+            [call "comp:introduction-image"]
+            [call "comp:introduction"]
+            [call "comp:responsibilities"] 
           </div>
-          [if subsubunits = "false" || subsubunits = null]
+          [call "comp:subunits"]
+          [call "comp:employees"]
+          [call "comp:content"]
           <div id="vrtx-additional-content">
             <div class="vrtx-frontpage-box">
+              <h2>[localized "contactHeader"]</h2>
               [call "comp:contact-information"]
             </div>
             [call "comp:related-content"]
           </div>
-          [endif]
         </div>
         [endif]
       </body>

@@ -82,7 +82,7 @@
       <list>
         <ref bean="eventListing.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
-          <property name="queryString" value="(type IN event) AND ((end-date not exists AND start-date &gt;= {$currentDate}) OR (end-date &gt;= {$currentTime}))" />
+          <property name="queryString" value="(type IN event) AND (start-date &gt;= {$currentDate} OR (end-date exists AND end-date &gt;= {$currentTime}))" />
         </bean>
       </list>
     </property>
@@ -119,7 +119,7 @@
       <list>
         <ref bean="eventListing.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
-          <property name="queryString" value="(type IN event) AND (end-date &lt; {$currentTime} OR (end-date not exists AND start-date &lt; {$currentDate}))" />
+          <property name="queryString" value="(type IN event) AND ((end-date exists AND end-date &lt; {$currentTime}) OR start-date &lt; {$currentDate})" />
         </bean>
       </list>
     </property>

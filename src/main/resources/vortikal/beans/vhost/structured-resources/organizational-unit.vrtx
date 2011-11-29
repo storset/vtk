@@ -279,8 +279,8 @@ resourcetype organizational-unit {
           </div>
         [else]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
-            [call "resource:organizational-unit-language-link"]
             <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">
+              [call "resource:organizational-unit-language-link"]
               <h1>[call "comp:title"]</h1> 
               [call "comp:introduction-image"]
               [call "comp:introduction"]

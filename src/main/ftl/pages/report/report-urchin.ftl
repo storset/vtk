@@ -74,7 +74,7 @@
         <table class="report-urchin-table" id="report-urchin-table-sixty">
           <thead>
             <tr>
-              <th class="report-urchin-table-data-count"></th>
+              <th class="report-urchin-table-data-count">Nr.</th>
               <th class="report-urchin-table-data-title">
                 <@vrtx.msg code="report.${report.reportname}.title" />
               </th>
@@ -116,14 +116,14 @@
         </div>
         </#if>
       </div>
-      <div class="report-urchin" id="report-urchin-thirty">
+      <div class="report-urchin last" id="report-urchin-thirty">
         <h3><@vrtx.msg code="report.${report.reportname}.thirty" /></h3>
         <#if report.titlesThirty?exists>
         <#if report.titlesThirty?has_content>
         <table class="report-urchin-table" id="report-urchin-table-thirty">
           <thead>
             <tr>
-              <th class="report-urchin-table-data-count"></th>
+              <th class="report-urchin-table-data-count">Nr.</th>
               <th class="report-urchin-table-data-title">
                 <@vrtx.msg code="report.${report.reportname}.title" />
               </th>
@@ -155,14 +155,14 @@
           </tbody>
         </table>
         <#else>
-        <div>
-          <p><@vrtx.msg code="report.urchin.nodata" /></p>
-        </div>
+          <div>
+            <p><@vrtx.msg code="report.urchin.nodata" /></p>
+          </div>
         </#if>
         <#else>
-        <div>
-          <p><@vrtx.msg code="report.urchin.nodata" /></p>
-        </div>
+          <div>
+            <p><@vrtx.msg code="report.urchin.nodata" /></p>
+          </div>
         </#if>
       </div>
     </div>

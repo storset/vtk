@@ -262,10 +262,12 @@ resourcetype organizational-unit {
         [def subsubunits document.properties.showExtendedUnitList]
         [if subsubunits = "true"]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">         
-          <div class="vrtx-frontpage-box vrtx-header-false white-box vrtx-main-content-first" id="vrtx-organizational-unit-main">
+          <div class="vrtx-frontpage-box white-box">
             [call "resource:organizational-unit-language-link"]
             <h1>[call "comp:title"]</h1>
             [call "comp:contact-information"]
+          </div>  
+          <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">  
             [call "comp:introduction-image"]
             [call "comp:introduction"]
             [call "comp:responsibilities"]

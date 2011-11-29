@@ -384,6 +384,8 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
     @Override
     public void afterPropertiesSet() throws Exception {
         this.cache = this.cacheManager.getCache("org.vortikal.URCHIN_CACHE");
+        if (cache == null)
+            logger.warn("Cache is null.");
     }
 
 }

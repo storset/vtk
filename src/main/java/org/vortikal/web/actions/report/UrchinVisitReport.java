@@ -338,7 +338,8 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
                 uvr.uri = uris;
                 uvr.visit = visits;
 
-                this.cache.put(new Element(resource.getURI().toString() + key, uvr));
+                if (cache != null)
+                    this.cache.put(new Element(resource.getURI().toString() + key, uvr));
 
                 return uvr;
             }
@@ -406,6 +407,8 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
     @Override
     public void afterPropertiesSet() throws Exception {
         this.cache = this.cacheManager.getCache("org.vortikal.URCHIN_CACHE");
+        if (cache == null)
+            logger.warn("Cache is null.");
     }
 
 }

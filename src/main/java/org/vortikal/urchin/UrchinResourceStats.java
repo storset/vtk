@@ -319,7 +319,8 @@ public class UrchinResourceStats implements InitializingBean {
             if ("text/xml".equalsIgnoreCase(conn.getContentType())) {
                 dom = builder.build(conn.getInputStream());
             }
-        } catch (Exception ignore) {
+        } catch (Exception warn) {
+            logger.warn("parseXMLFileToDOM: " + warn.getMessage() + " GET: " + request);
         }
 
         return dom;
@@ -341,6 +342,7 @@ public class UrchinResourceStats implements InitializingBean {
 
             return Integer.parseInt(metrics.get(0).getText());
         } catch (Exception ignore) {
+            logger.debug("parseDOMToStats: " + ignore.getMessage());
             return 0;
         }
     }
@@ -380,6 +382,8 @@ public class UrchinResourceStats implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         this.cache = this.cacheManager.getCache("org.vortikal.URCHIN_CACHE");
+        if (cache == null)
+            logger.warn("Cache is null.");
     }
 
 }

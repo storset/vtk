@@ -21,7 +21,8 @@
   <script type="text/javascript"><!--
     $(function() {
       if (typeof urchinTracker !== "undefined") {
-        $(".feedback-yes").click(function(e) { 
+        $(".feedback-yes").click(function(e) {
+          $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
           urchinTrack("/like");
           e.stopPropagation();
           e.preventDefault(); 
@@ -39,7 +40,6 @@
       }
     });
     function urchinTrack(action) {
-      $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
       _udn="uio.no";
       urchinTracker(action + document.location.pathname);
     }

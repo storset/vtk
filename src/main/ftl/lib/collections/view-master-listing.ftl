@@ -2,12 +2,13 @@
 
 <#macro displayMastersAlphabetical masterListing>
   <#list alpthabeticalOrdredResult?keys as key >
-	<ul  class="vrtx-alphabetical-master-listing">
+	<ul class="vrtx-alphabetical-master-listing">
 		<li>${key}
 		<ul>
 		<#list alpthabeticalOrdredResult[key] as master>
 			<#local title = vrtx.propValue(master, 'title') />
-			<li><a href="${masterListing.urls[master.URI]?html}">${title}</a></li>
+			<#local uri = vrtx.getUri(master) />
+			<li><a href="${uri?html}">${title}</a></li>
 		</#list>
 		</ul>
 		</li>
@@ -41,6 +42,7 @@
       <#local introImg = vrtx.prop(master, 'picture')  />
       <#local intro = vrtx.prop(master, 'introduction')  />
       <#local caption = vrtx.propValue(master, 'caption')  />
+      <#local uri = vrtx.getUri(master) />
       <#-- Flattened caption for alt-tag in image -->
       <#local captionFlattened>
       <@vrtx.flattenHtml value=caption escape=true />
@@ -54,7 +56,7 @@
     	 	<#else>
     			<#local thumbnail = "" />
    		   	</#if>
-            	<a class="vrtx-image" href="${masterListing.urls[master.URI]?html}">
+            	<a class="vrtx-image" href="${uri?html}">
                 <#if caption != ''>
                 	<img src="${thumbnail?html}" alt="${captionFlattened}" />
                 <#else>
@@ -63,7 +65,7 @@
                 </a>
             </#if>
             <div class="vrtx-title">
-              <a class="vrtx-title summary" href="${masterListing.urls[master.URI]?html}">${title?html}</a>
+              <a class="vrtx-title summary" href="${uri?html}">${title?html}</a>
 			</div>
         	<#if intro?has_content && masterListing.hasDisplayPropDef(intro.definition.name)>
         	  <div class="description introduction">
@@ -71,7 +73,7 @@
         	  </div>
             </#if>
              <div class="vrtx-read-more">
-              <a href="${masterListing.urls[master.URI]?html}" class="more">
+              <a href="${uri?html}" class="more">
                 <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
               </a>
             </div>
@@ -103,7 +105,8 @@
             <tr id="vrtx-master-${masterCount}">
           </#if>
             <#local title = vrtx.propValue(master, 'title')?html />
-            <td class="vrtx-table-title"><a href="${master.URI}">${title}</a></td>
+            <#local uri = vrtx.getUri(master) />
+            <td class="vrtx-table-title"><a href="${uri}">${title}</a></td>
             <#local publishDate = vrtx.propValue(master, 'publish-date', 'short', '') />
             <td class="vrtx-table-creation-time">${publishDate}</td>
             <td class="vrtx-table-scope">${vrtx.propValue(master, 'credits')?html}</td>
@@ -151,7 +154,7 @@
   </#if>
 </#macro>
 
-<#macro completed >
+<#macro completed>
 	<#if viewOngoingMastersLink?exists>
 		<span>(${vrtx.getMsg("masters.listCompleted")})</span>
 	</#if>

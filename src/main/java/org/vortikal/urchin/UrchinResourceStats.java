@@ -67,7 +67,7 @@ public class UrchinResourceStats implements InitializingBean {
     private static class UrchinRes implements java.io.Serializable {
         private static final long serialVersionUID = 1L;
 
-        public String date;
+        public String edate;
         public int res;
     }
 
@@ -235,12 +235,12 @@ public class UrchinResourceStats implements InitializingBean {
                 else
                     ur = new UrchinRes();
 
-                if (ur.date != null && ur.date.equals(edate)) {
+                if (ur.edate != null && ur.edate.equals(edate)) {
                     sum += ur.res;
                 } else {
                     logger.info("GET url in fetch: " + url + "?login=X&password=X" + parameters + expanded);
                     ur.res = parseDOMToStats(parseXMLFileToDOM(html));
-                    ur.date = edate;
+                    ur.edate = edate;
                     sum += ur.res;
                     if (cache != null)
                         this.cache.put(new net.sf.ehcache.Element(expanded + key, ur));
@@ -262,12 +262,12 @@ public class UrchinResourceStats implements InitializingBean {
                 else
                     ur = new UrchinRes();
 
-                if (ur.date != null && ur.date.equals(edate)) {
+                if (ur.edate != null && ur.edate.equals(edate)) {
                     sum += ur.res;
                 } else {
                     logger.info("GET url in fetch: " + url + "?login=X&password=X" + parameters + expanded);
                     ur.res = parseDOMToStats(parseXMLFileToDOM(xml));
-                    ur.date = edate;
+                    ur.edate = edate;
                     sum += ur.res;
                     if (cache != null)
                         this.cache.put(new net.sf.ehcache.Element(expanded + key, ur));
@@ -289,12 +289,12 @@ public class UrchinResourceStats implements InitializingBean {
                 else
                     ur = new UrchinRes();
 
-                if (ur.date != null && ur.date.equals(edate)) {
+                if (ur.edate != null && ur.edate.equals(edate)) {
                     sum += ur.res;
                 } else {
                     logger.info("GET url in fetch: " + url + "?login=X&password=X" + parameters + uri);
                     ur.res = parseDOMToStats(parseXMLFileToDOM(resource));
-                    ur.date = edate;
+                    ur.edate = edate;
                     sum += ur.res;
                     if (cache != null)
                         this.cache.put(new net.sf.ehcache.Element(r.getURI().toString() + key, ur));

@@ -85,7 +85,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
     private static class UrchinVisitRes implements java.io.Serializable {
         private static final long serialVersionUID = 1L;
 
-        public String sdate;
+        public String edate;
         public List<String> uri;
         public List<Integer> visit;
     }
@@ -203,7 +203,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
             else
                 uvr = new UrchinVisitRes();
 
-            if (uvr.sdate != null && uvr.sdate.equals(sdate)) {
+            if (uvr.edate != null && uvr.edate.equals(sdate)) {
                 return uvr;
             } else {
                 URL url = new URL("https://statistikk.uio.no/session.cgi");
@@ -334,7 +334,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
 
                 rd.close();
 
-                uvr.sdate = sdate;
+                uvr.edate = edate;
                 uvr.uri = uris;
                 uvr.visit = visits;
 

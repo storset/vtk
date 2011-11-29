@@ -471,7 +471,7 @@ public class PropertyEditController extends SimpleFormController implements Refe
             }
         }
 
-        if (urchinService != null && hasUrchinStats(resource)) {
+        if (urchinService != null && hasUrchinStats(resource) && !resource.isReadRestricted()) {
             if (request.getParameter("recache") == null)
                 model.put("urchinStats", urchinService.constructURL(resource));
             else

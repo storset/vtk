@@ -85,7 +85,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
     private static class UrchinSearchRes implements java.io.Serializable {
         private static final long serialVersionUID = 1L;
 
-        public String sdate;
+        public String edate;
         public List<String> query;
         public List<Integer> hit;
     }
@@ -210,7 +210,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
             else
                 usr = new UrchinSearchRes();
 
-            if (usr.sdate != null && usr.sdate.equals(sdate)) {
+            if (usr.edate != null && usr.edate.equals(sdate)) {
                 return usr;
             } else {
                 URL url = new URL("https://statistikk.uio.no/session.cgi");
@@ -312,7 +312,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
 
                 rd.close();
 
-                usr.sdate = sdate;
+                usr.edate = edate;
                 usr.query = queries;
                 usr.hit = hits;
 

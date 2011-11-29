@@ -210,7 +210,7 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
             else
                 usr = new UrchinSearchRes();
 
-            if (usr.edate != null && usr.edate.equals(sdate)) {
+            if (usr.edate != null && usr.edate.equals(edate)) {
                 return usr;
             } else {
                 URL url = new URL("https://statistikk.uio.no/session.cgi");

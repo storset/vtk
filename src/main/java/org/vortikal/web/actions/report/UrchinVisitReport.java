@@ -203,7 +203,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
             else
                 uvr = new UrchinVisitRes();
 
-            if (uvr.edate != null && uvr.edate.equals(sdate)) {
+            if (uvr.edate != null && uvr.edate.equals(edate)) {
                 return uvr;
             } else {
                 URL url = new URL("https://statistikk.uio.no/session.cgi");
@@ -305,7 +305,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
                                             .lastIndexOf('<'))));
                                 }
                                 count++;
-                            } catch (Exception e) {
+                            } catch (Exception ignore) {
                                 r = null;
                             }
 
@@ -319,7 +319,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
                                                 .lastIndexOf('<'))));
                                     }
                                     count++;
-                                } catch (Exception e) {
+                                } catch (Exception ignore) {
                                 }
                             }
 

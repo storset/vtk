@@ -245,7 +245,8 @@ public class UrchinResourceStats implements InitializingBean {
                     if (cache != null)
                         this.cache.put(new net.sf.ehcache.Element(expanded + key, ur));
                 }
-            } catch (Exception ignore) {
+            } catch (Exception warn) {
+                logger.warn(warn.getMessage());
             }
 
             try {
@@ -272,7 +273,8 @@ public class UrchinResourceStats implements InitializingBean {
                     if (cache != null)
                         this.cache.put(new net.sf.ehcache.Element(expanded + key, ur));
                 }
-            } catch (Exception ignore) {
+            } catch (Exception warn) {
+                logger.warn(warn.getMessage());
             }
         } else {
             try {
@@ -299,7 +301,8 @@ public class UrchinResourceStats implements InitializingBean {
                     if (cache != null)
                         this.cache.put(new net.sf.ehcache.Element(r.getURI().toString() + key, ur));
                 }
-            } catch (Exception ignore) {
+            } catch (Exception warn) {
+                logger.warn(warn.getMessage());
             }
         }
 
@@ -316,8 +319,7 @@ public class UrchinResourceStats implements InitializingBean {
             if ("text/xml".equalsIgnoreCase(conn.getContentType())) {
                 dom = builder.build(conn.getInputStream());
             }
-        } catch (Exception warn) {
-            logger.warn(warn.getMessage());
+        } catch (Exception ignore) {
         }
 
         return dom;
@@ -338,8 +340,7 @@ public class UrchinResourceStats implements InitializingBean {
                 return -1;
 
             return Integer.parseInt(metrics.get(0).getText());
-        } catch (Exception warn) {
-            logger.warn(warn.getMessage());
+        } catch (Exception ignore) {
             return 0;
         }
     }

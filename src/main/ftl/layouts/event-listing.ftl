@@ -43,6 +43,7 @@
       <#local intro = vrtx.propValue(event, 'introduction')  />
       <#local introImg = vrtx.prop(event, 'picture')  />
       <#local caption = vrtx.propValue(event, 'caption')  />    
+      <#local uri = vrtx.getUri(event) />
 
       <#if conf.dateIcon>
         <div class="vrtx-daily-events-date">
@@ -78,7 +79,7 @@
             <#else>
               <#local thumbnail = "" />
             </#if>
-            <a class="vrtx-image" href="${event.URI?html}">
+            <a class="vrtx-image" href="${uri?html}">
               <#if caption != ''>
                 <img src="${thumbnail?html}" alt="${captionFlattened}" />
               <#else>
@@ -89,7 +90,7 @@
        </#if>
 
         <div class="vrtx-event-component-title">
-          <a class="vrtx-event-component-title summary vrtx-link-check" href="${event.URI?html}">${title?html}</a>
+          <a class="vrtx-event-component-title summary vrtx-link-check" href="${uri?html}">${title?html}</a>
         </div>
 
         <div class="vrtx-event-component-misc">
@@ -113,7 +114,7 @@
           <#if conf.addToCalendar>
             <div class="vrtx-number-of-comments-add-event-container">
               <span class="vrtx-add-event">
-                <a class="vrtx-ical vrtx-link-check" href="${event.URI?html}?vrtx=ical"><@vrtx.msg code="event.add-to-calendar" /></a>
+                <a class="vrtx-ical vrtx-link-check" href="${uri?html}?vrtx=ical"><@vrtx.msg code="event.add-to-calendar" /></a>
                 <a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")?html}" title="${vrtx.getMsg("event.add-to-calendar.help")?html}"></a>
               </span>
             </div> 
@@ -143,9 +144,10 @@
     <#local endDateShort = vrtx.propValue(event, 'end-date', 'short') />
     <#local endDateTime = vrtx.propValue(event, 'end-date', 'hours-minutes') />
     <#local intro = vrtx.propValue(event, 'introduction')  />
+    <#local uri = vrtx.getUri(event) />
 
     <div class="vrtx-event-component-title">
-      <a class="vrtx-event-component-title summary vrtx-link-check" href="${event.URI?html}">${title?html}</a>
+      <a class="vrtx-event-component-title summary vrtx-link-check" href="${uri?html}">${title?html}</a>
     </div>
 
     <#local startiso8601 = vrtx.propValue(event, "start-date", "iso-8601") />
@@ -177,7 +179,7 @@
 
       <#if conf.addToCalendar>
         <span class="vrtx-add-event">
-          <a class="vrtx-ical vrtx-link-check" href="${event.URI?html}?vrtx=ical"><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")?html}" title="${vrtx.getMsg("event.add-to-calendar.help")?html}"></a>
+          <a class="vrtx-ical vrtx-link-check" href="${uri?html}?vrtx=ical"><@vrtx.msg code="event.add-to-calendar" /></a><a class="vrtx-ical-help" href="${vrtx.getMsg("event.add-to-calendar.help-url")?html}" title="${vrtx.getMsg("event.add-to-calendar.help")?html}"></a>
         </span>
       </#if>
     </div>

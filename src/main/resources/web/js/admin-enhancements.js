@@ -145,7 +145,6 @@ var reloadFromServer = function() {
 \*-------------------------------------------------------------------*/
                                             
 $(window).load(function() {
-
   // More compact when no left resource menu and only 'Read permission' in right resource menu
   // Should never occur in IE because of "Show in file explorer" in root-folder 
   var resourceMenuRight = $("#resourceMenuRight"); 
@@ -162,7 +161,6 @@ $(window).load(function() {
   }
   
   vrtxAdmin.log({msg: "window.load() in " + (+new Date - startLoadTime) + "ms"});
-  
 });
 
 var lastBreadcrumbPosLeft = -999;
@@ -177,7 +175,6 @@ $(window).resize(function() {
 \*-------------------------------------------------------------------*/
 
 $(document).ready(function () {   
-
   var startReadyTime = +new Date();
 
   // Buttons into links
@@ -1140,7 +1137,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
       vrtxAdm = this;   
       
   $("#app-content").delegate(options.selector, "click", function (e) {
-
+  
     var selector = options.selector,
         isReplacing = options.isReplacing,
         updateSelectors = options.updateSelectors,
@@ -1158,7 +1155,17 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     
     var isCancelAction = link.attr("name").toLowerCase().indexOf("cancel") != -1;
     
-    if(isCancelAction || (post && (!funcProceedCondition || funcProceedCondition(form)) )) {
+    if(isCancelAction && !isReplacing && !post) {
+      $(".expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
+        $(this).remove();
+      });
+    } else {
+      if(!post) {
+        return;
+      }
+    }
+
+    if((isCancelAction && isReplacing) || (post && (!funcProceedCondition || funcProceedCondition(form)) )) {
       var url = form.attr("action");
 
       // TODO: test with form.serialize()

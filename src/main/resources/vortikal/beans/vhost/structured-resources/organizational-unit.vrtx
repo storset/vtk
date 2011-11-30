@@ -100,12 +100,12 @@ resourcetype organizational-unit {
               <span class="vrtx-organizational-unit-phone-fax">
                 [if phone != null && phone != ""]
                   <span class="vrtx-organizational-unit-phone">
-                    [localized 'phone']: <span class="tel"><span class="type" style="display: none">Work</span><span class="value">[val phone]</span></span>
+                    <span class="vrtx-label">[localized 'phone']:</span> <span class="tel"><span class="type" style="display: none">Work</span><span class="value">[val phone]</span></span>
                   </span>
                 [endif]
                 [if fax != null && fax != ""]
                   <span class="vrtx-organizational-unit-fax">
-                    [localized 'fax']: <span class="tel"><span class="type" style="display: none">Fax</span><span class="value">[val fax]</span></span>
+                    <span class="vrtx-label">[localized 'fax']:</span> <span class="tel"><span class="type" style="display: none">Fax</span><span class="value">[val fax]</span></span>
                   </span>
                 [endif]
               </span>
@@ -113,7 +113,7 @@ resourcetype organizational-unit {
               
             [if email != null]
               <span class="vrtx-organizational-unit-email">
-                [localized 'email']: 
+                <span class="vrtx-label">[localized 'email']:</span> 
                 [list email anEmail]
                   [if anEmail.length() < 25]
                      <a href="mailto:[val anEmail]"><span class="email">[val anEmail]</span></a>
@@ -131,7 +131,7 @@ resourcetype organizational-unit {
         
             [if areacode != null && areacode != ""]
               <span class="vrtx-organizational-unit-areacode">
-                [localized 'areacode']: [val areacode]
+                <span class="vrtx-label">[localized 'areacode']:</span> [val areacode]
               </span>
             [endif]
           </div>

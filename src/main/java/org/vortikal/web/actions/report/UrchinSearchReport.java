@@ -192,6 +192,9 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
         if ((profileId = urchinHostsToProfile.get(this.webHostName)) == null)
             return null;
 
+        if (user.equals("") || password.equals(""))
+            return null;
+
         UrchinSearchRes usr = null;
         String uri = "/" + this.webHostName + resource.getURI().toString();
         if (!uri.endsWith("/"))

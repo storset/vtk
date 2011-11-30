@@ -189,6 +189,9 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
         if ((profileId = urchinHostsToProfile.get(this.webHostName)) == null)
             return null;
 
+        if (user.equals("") || password.equals(""))
+            return null;
+
         UrchinVisitRes uvr = null;
         Repository repo = RequestContext.getRequestContext().getRepository();
         String uri = "/" + this.webHostName + resource.getURI().toString();

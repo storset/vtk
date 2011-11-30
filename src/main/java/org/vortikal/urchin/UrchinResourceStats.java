@@ -198,6 +198,10 @@ public class UrchinResourceStats implements InitializingBean {
     private int fetch(Resource r, String token, String sdate, String edate, String key, boolean recache) {
         int sum = 0;
 
+        Integer profileId;
+        if ((profileId = urchinHostsToProfile.get(this.webHostName)) == null)
+            return sum;
+
         if (urchinUser.equals("") || urchinPassword.equals(""))
             return sum;
 
@@ -210,15 +214,8 @@ public class UrchinResourceStats implements InitializingBean {
         else
             parameters += "&metrics=u:visits";
         parameters += "&table=12";
-        Integer profileId;
-        // TODO For prod:
-        // if ((profileId = urchinHostsToProfile.get(this.webHostName)) == null)
-        if ((profileId = urchinHostsToProfile.get("www.uio.no")) == null)
-            return sum;
         parameters += "&ids=" + profileId;
-        // TODO For prod:
-        // parameters += "&filters=u:request_stem%3D~^/" + this.webHostName;
-        parameters += "&filters=u:request_stem%3D~^/" + "www.uio.no";
+        parameters += "&filters=u:request_stem%3D~^/" + this.webHostName;
 
         if (r.isCollection()) {
             try {

@@ -99,11 +99,8 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
 
         org.vortikal.web.service.URL resourceurl = service.constructURL(resource);
         org.vortikal.web.service.URL tmp;
-        // TODO For prod:
-        // if ((this.webHostName.equals("www.uio.no")) &&
-        // (resource.getURI().toString().equals("/") ||
-        // resource.getURI().toString().equals("/english")))
-        if (resource.getURI().toString().equals("/") || resource.getURI().toString().equals("/english"))
+        if ((this.webHostName.equals("www.uio.no"))
+                && (resource.getURI().toString().equals("/") || resource.getURI().toString().equals("/english")))
             resourceurl.setParameter(VRTX_PARAM, SEARCHUIO_PARAM);
         else
             resourceurl.setParameter(VRTX_PARAM, SEARCH_PARAM);
@@ -191,10 +188,12 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
 
     private UrchinSearchRes fetch(String sdate, String edate, String key, String token, Resource resource,
             boolean recache) {
+        Integer profileId;
+        if ((profileId = urchinHostsToProfile.get(this.webHostName)) == null)
+            return null;
+
         UrchinSearchRes usr = null;
-        // TODO For prod.
-        // String uri = "/" + this,webHostName + resource.getURI().toString();
-        String uri = "/www.uio.no" + resource.getURI().toString();
+        String uri = "/" + this.webHostName + resource.getURI().toString();
         if (!uri.endsWith("/"))
             uri += "/";
         uri += "index.html";
@@ -249,12 +248,6 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
                 surl += "sid=" + sid;
                 surl += "&app=urchin.cgi";
                 surl += "&action=prop";
-                Integer profileId;
-                // TODO For prod:
-                // if ((profileId = urchinHostsToProfile.get(this.webHostName))
-                // == null)
-                if ((profileId = urchinHostsToProfile.get("www.uio.no")) == null)
-                    return null;
                 surl += "&rid=" + profileId;
                 surl += "&hl=en-US";
                 surl += "&vid=1307";

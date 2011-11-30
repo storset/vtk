@@ -112,7 +112,7 @@
         </#if>
         <#else>
         <div>
-          <p><@vrtx.msg code="report.urchin.nodata" /></p>
+          <p><@vrtx.msg code="report.urchin.error" /></p>
         </div>
         </#if>
       </div>
@@ -161,7 +161,7 @@
         </#if>
         <#else>
           <div>
-            <p><@vrtx.msg code="report.urchin.nodata" /></p>
+            <p><@vrtx.msg code="report.urchin.error" /></p>
           </div>
         </#if>
       </div>

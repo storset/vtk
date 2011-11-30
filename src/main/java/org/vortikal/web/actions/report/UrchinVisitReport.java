@@ -62,8 +62,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 public class UrchinVisitReport extends AbstractReporter implements InitializingBean {
-    // TODO 50 in prod.
-    private static final int maxResults = 5;
+    private static final int maxResults = 50;
 
     private final Log logger = LogFactory.getLog(getClass());
 
@@ -186,11 +185,13 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
 
     private UrchinVisitRes fetch(String sdate, String edate, String key, String token, Resource resource,
             boolean recache) {
+        Integer profileId;
+        if ((profileId = urchinHostsToProfile.get(this.webHostName)) == null)
+            return null;
+
         UrchinVisitRes uvr = null;
         Repository repo = RequestContext.getRequestContext().getRepository();
-        // TODO For prod.
-        // String uri = "/" + this.webHostName + resource.getURI().toString();
-        String uri = "/www.uio.no" + resource.getURI().toString();
+        String uri = "/" + this.webHostName + resource.getURI().toString();
 
         try {
             if ((cache != null) && !recache)
@@ -242,12 +243,6 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
                 surl += "sid=" + sid;
                 surl += "&app=urchin.cgi";
                 surl += "&action=prop";
-                Integer profileId;
-                // TODO For prod:
-                // if ((profileId = urchinHostsToProfile.get(this.webHostName))
-                // == null)
-                if ((profileId = urchinHostsToProfile.get("www.uio.no")) == null)
-                    return null;
                 surl += "&rid=" + profileId;
                 surl += "&hl=en-US";
                 surl += "&vid=1304";
@@ -277,9 +272,7 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
 
                 List<String> uris = new ArrayList<String>();
                 List<Integer> visits = new ArrayList<Integer>();
-                // TODO For prod:
-                // int id = ("/" + this.webHostName).length();
-                int id = ("/" + "www.uio.no").length();
+                int id = ("/" + this.webHostName).length();
                 int count = 1;
                 String tmp = "";
                 Resource r;

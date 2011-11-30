@@ -189,11 +189,15 @@ public class UrchinSearchReport extends AbstractReporter implements Initializing
     private UrchinSearchRes fetch(String sdate, String edate, String key, String token, Resource resource,
             boolean recache) {
         Integer profileId;
-        if ((profileId = urchinHostsToProfile.get(this.webHostName)) == null)
+        if ((profileId = urchinHostsToProfile.get(this.webHostName)) == null) {
+            logger.warn("Could not get profile id for this host.");
             return null;
+        }
 
-        if (user.equals("") || password.equals(""))
+        if (user.equals("") || password.equals("")) {
+            logger.warn("user or password is blank.");
             return null;
+        }
 
         UrchinSearchRes usr = null;
         String uri = "/" + this.webHostName + resource.getURI().toString();

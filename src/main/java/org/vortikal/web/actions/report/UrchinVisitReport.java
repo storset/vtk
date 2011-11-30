@@ -186,11 +186,15 @@ public class UrchinVisitReport extends AbstractReporter implements InitializingB
     private UrchinVisitRes fetch(String sdate, String edate, String key, String token, Resource resource,
             boolean recache) {
         Integer profileId;
-        if ((profileId = urchinHostsToProfile.get(this.webHostName)) == null)
+        if ((profileId = urchinHostsToProfile.get(this.webHostName)) == null) {
+            logger.warn("Could not get profile id for this host.");
             return null;
+        }
 
-        if (user.equals("") || password.equals(""))
+        if (user.equals("") || password.equals("")) {
+            logger.warn("user or password is blank.");
             return null;
+        }
 
         UrchinVisitRes uvr = null;
         Repository repo = RequestContext.getRequestContext().getRepository();

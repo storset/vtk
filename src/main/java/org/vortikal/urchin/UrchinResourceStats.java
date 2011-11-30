@@ -199,11 +199,15 @@ public class UrchinResourceStats implements InitializingBean {
         int sum = 0;
 
         Integer profileId;
-        if ((profileId = urchinHostsToProfile.get(this.webHostName)) == null)
+        if ((profileId = urchinHostsToProfile.get(this.webHostName)) == null) {
+            logger.warn("Could not get profile id for this host.");
             return sum;
+        }
 
-        if (urchinUser.equals("") || urchinPassword.equals(""))
+        if (urchinUser.equals("") || urchinPassword.equals("")) {
+            logger.warn("urchinUser or urchinPassword is blank.");
             return sum;
+        }
 
         String url = "https://statistikk.uio.no/services/v2/reportservice/data";
         String login = "?login=" + urchinUser + "&password=" + urchinPassword;

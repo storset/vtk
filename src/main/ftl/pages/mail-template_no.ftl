@@ -5,7 +5,7 @@
 <h2>${title}</h2>     
 
 <#if comment?exists && comment?has_content>
-<p>${comment}</p>
+<pre>${comment}</pre>
 </#if>
 
 

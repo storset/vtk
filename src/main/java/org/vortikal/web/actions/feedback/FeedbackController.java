@@ -94,7 +94,7 @@ public class FeedbackController implements Controller {
         String url = this.viewService.constructURL(uri).toString();
         
         String yourComment = request.getParameter("yourComment");
-        
+
         String[] recipients = this.recipients;
         String recipientsStr = this.recipientsStr;
         boolean validAddresses = true;

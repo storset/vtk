@@ -3,5 +3,5 @@
 
 <#if comment?exists && comment?has_content>
   <p>Comment:</p>
-  <p>${comment}</p>
+  <pre>${comment}</pre>
 </#if>

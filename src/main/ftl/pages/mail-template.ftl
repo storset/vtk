@@ -5,7 +5,7 @@
 <h2>${title}</h2>
 
 <#if comment?exists && comment?has_content>
-<p>${comment}</p>
+<pre>${comment}</pre>
 </#if>
 
 <p>Read the entire article here: <a href="${uri?html}">${uri?html}</a></p>

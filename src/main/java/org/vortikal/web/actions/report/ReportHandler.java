@@ -38,10 +38,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -53,29 +49,23 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public class ReportHandler implements Controller, BeanFactoryAware, InitializingBean {
+public class ReportHandler implements Controller {
 
     private Repository repository;
     private String viewName;
-    private List<Reporter> primaryReporters, reporters, hiddenReporters;
 
-    private BeanFactory beanFactory;
+    // Primary reports, i.e. most visible and "important" reports
+    protected List<Reporter> primaryReporters;
+
+    // Set of simple reports, displayed as simple list to choose from
+    protected List<Reporter> reporters;
+
+    // Reports used as part of other reports, i.e. not explicit reports on
+    // report flap, but only accessible via other reports (primarily via
+    // "primaryReportes"
+    protected List<Reporter> hiddenReporters;
 
     private static final String REPORT_TYPE_PARAM = "report-type";
-
-    @Required
-    public void setPrimaryReporters(List<Reporter> primaryReporters) {
-        this.primaryReporters = primaryReporters;
-    }
-
-    @Required
-    public void setReporters(List<Reporter> reporters) {
-        this.reporters = reporters;
-    }
-
-    public void setHiddenReporters(List<Reporter> hiddenReporters) {
-        this.hiddenReporters = hiddenReporters;
-    }
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -102,39 +92,37 @@ public class ReportHandler implements Controller, BeanFactoryAware, Initializing
             }
         }
 
-        List<ReporterObject> reporterObjects = new ArrayList<ReporterObject>();
-        for (Reporter reporter : this.primaryReporters) {
-            URL reporterURL = new URL(serviceURL);
-            reporterURL.addParameter(REPORT_TYPE_PARAM, reporter.getName());
-            reporterObjects.add(new ReporterObject(reporter.getName(), reporterURL));
-        }
-        model.put("primaryReporters", reporterObjects);
-
-        reporterObjects = new ArrayList<ReporterObject>();
-        for (Reporter reporter : this.reporters) {
-            URL reporterURL = new URL(serviceURL);
-            reporterURL.addParameter(REPORT_TYPE_PARAM, reporter.getName());
-            reporterObjects.add(new ReporterObject(reporter.getName(), reporterURL));
-        }
-        model.put("reporters", reporterObjects);
+        this.addReports(this.primaryReporters, "primaryReporters", model, serviceURL);
+        this.addReports(this.reporters, "reporters", model, serviceURL);
 
         return new ModelAndView(this.viewName, model);
     }
 
+    private void addReports(List<Reporter> reportList, String modelKey, Map<String, Object> model, URL serviceURL) {
+        if (reportList != null) {
+            List<ReporterObject> reporterObjects = new ArrayList<ReporterObject>();
+            for (Reporter reporter : reportList) {
+                URL reporterURL = new URL(serviceURL);
+                reporterURL.addParameter(REPORT_TYPE_PARAM, reporter.getName());
+                reporterObjects.add(new ReporterObject(reporter.getName(), reporterURL));
+            }
+            model.put(modelKey, reporterObjects);
+        }
+    }
+
     private Reporter getReporter(String reportType) {
-        for (Reporter reporter : this.primaryReporters) {
-            if (reporter.getName().equals(reportType)) {
-                return reporter;
-            }
-        }
-        for (Reporter reporter : this.reporters) {
-            if (reporter.getName().equals(reportType)) {
-                return reporter;
-            }
-        }
-        for (Reporter reporter : this.hiddenReporters) {
-            if (reporter.getName().equals(reportType)) {
-                return reporter;
+        Reporter reporter = this.getReporter(this.primaryReporters, reportType);
+        reporter = reporter == null ? this.getReporter(this.reporters, reportType) : reporter;
+        reporter = reporter == null ? this.getReporter(this.hiddenReporters, reportType) : reporter;
+        return reporter;
+    }
+
+    private Reporter getReporter(List<Reporter> reportList, String reportType) {
+        if (reportList != null) {
+            for (Reporter reporter : reportList) {
+                if (reporter.getName().equals(reportType)) {
+                    return reporter;
+                }
             }
         }
         return null;
@@ -148,23 +136,6 @@ public class ReportHandler implements Controller, BeanFactoryAware, Initializing
     @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
-    }
-
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        try {
-            primaryReporters.add((Reporter) beanFactory.getBean("urchinVisitReport"));
-        } catch (Exception e) {
-        }
-        try {
-            primaryReporters.add((Reporter) beanFactory.getBean("urchinSearchReport"));
-        } catch (Exception e) {
-        }
     }
 
     public class ReporterObject {
@@ -185,6 +156,18 @@ public class ReportHandler implements Controller, BeanFactoryAware, Initializing
             return url;
         }
 
+    }
+
+    public void setPrimaryReporters(List<Reporter> primaryReporters) {
+        this.primaryReporters = primaryReporters;
+    }
+
+    public void setReporters(List<Reporter> reporters) {
+        this.reporters = reporters;
+    }
+
+    public void setHiddenReporters(List<Reporter> hiddenReporters) {
+        this.hiddenReporters = hiddenReporters;
     }
 
 }

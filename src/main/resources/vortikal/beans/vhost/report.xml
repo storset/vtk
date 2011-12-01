@@ -35,8 +35,8 @@
     <property name="considerLocks" value="false" />
   </bean>
 
-  <!-- structuredResourceReporters.xml in vortex overrides this bean so make sure to add refs there also -->
-  <bean id="reportHandler" class="org.vortikal.web.actions.report.ReportHandler" parent="repositoryAware">
+  <bean id="abstractReportHandler" abstract="true"
+    class="org.vortikal.web.actions.report.ReportHandler" parent="repositoryAware">
     <property name="viewName" value="report" />
     <property name="primaryReporters">
       <list>
@@ -79,6 +79,9 @@
       </list>
     </property>
   </bean>
+
+  <!-- Default report handler -->
+  <bean id="reportHandler" parent="abstractReportHandler" />
 
   <bean id="reporter" abstract="true" class="org.vortikal.web.actions.report.AbstractReporter" parent="repositoryAware">
     <property name="searcher" ref="systemIndexSearcher" />

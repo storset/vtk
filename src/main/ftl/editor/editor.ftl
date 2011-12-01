@@ -237,7 +237,6 @@
               <img src="" alt="no-image" style="visibility: hidden; width: 10px;" />
             </#if>
           </div>
-        </div>
         <#else>
         
           <div class="image-ref vrtx-image-ref.${name}">

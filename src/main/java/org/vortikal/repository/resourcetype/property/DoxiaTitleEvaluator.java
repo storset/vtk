@@ -50,7 +50,7 @@ public class DoxiaTitleEvaluator implements PropertyEvaluator {
     private PropertyTypeDefinition characterEncodingPropDef;
     private Class<AbstractParser> parserClass;
     
-    private static Log logger = LogFactory.getLog(HtmlTitleElementEvaluator.class);
+    private static Log logger = LogFactory.getLog(DoxiaTitleEvaluator.class);
 
     
     @Required public void setCharacterEncodingPropertyDefinition(PropertyTypeDefinition characterEncodingPropDef) {

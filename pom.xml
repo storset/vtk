@@ -594,9 +594,9 @@
       <version>1.6</version>
     </dependency>
     <dependency>
-      <groupId>net.htmlparser.jericho</groupId>
-      <artifactId>jericho-html</artifactId>
-      <version>2.5</version>
+      <groupId>org.ccil.cowan.tagsoup</groupId>
+      <artifactId>tagsoup</artifactId>
+      <version>1.2.1</version>
     </dependency>
     <dependency>
       <groupId>xalan</groupId>

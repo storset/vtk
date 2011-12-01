@@ -184,6 +184,8 @@
   <bean id="imageContentFactory" class="org.vortikal.repository.content.ImageContentFactory" />
   <bean id="audioFileContentFactory" class="org.vortikal.repository.content.AudioFileContentFactory" />
 
+  <bean id="htmlInfoContentFactory" class="org.vortikal.repository.content.HtmlInfoContentFactory" />
+
   <bean id="jsonObjectContentFactory" class="org.vortikal.repository.content.JSONObjectContentFactory" />
 
   <bean id="pdfContentFactory" class="org.vortikal.repository.content.PDFContentFactory" />

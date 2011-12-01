@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, University of Oslo, Norway
+/* Copyright (c) 2011, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,39 +28,38 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.resourcetype.property;
+package org.vortikal.repository.content;
 
-import java.util.Date;
+public class HtmlInfo {
 
-import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.security.Principal;
-
-import au.id.jericho.lib.html.CharacterReference;
-import au.id.jericho.lib.html.Element;
-import au.id.jericho.lib.html.Source;
-import au.id.jericho.lib.html.Tag;
-
-
-public class HtmlTitleElementEvaluator extends AbstractJerichoHtmlContentEvaluator {
-
-    protected boolean doContentModification(
-        Principal principal, Property property, PropertySet ancestorPropertySet,
-        Date time, Source source) throws PropertyEvaluationException {
-        
-        Element titleElement = source.findNextElement(0, Tag.TITLE);
-        if (titleElement == null) {
-            return false;
-        }
-        String title = CharacterReference.decodeCollapseWhiteSpace(titleElement.getContent());
-        if ("".equals(title.trim())) {
-            return false;
-        }
-
-        property.setStringValue(title);
-
-        return true;
+    private String docType = null;
+    private String encoding = null;
+    private String title = null;
+    
+    public String getDocType() {
+        return this.docType;
     }
-    
-    
+    public void setDocType(String docType) {
+        this.docType = docType;
+    }
+    public String getEncoding() {
+        return this.encoding;
+    }
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+    public String getTitle() {
+        return this.title;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    public String toString() {
+        StringBuilder sb = new StringBuilder("{");
+        sb.append("docType: ").append(this.docType);
+        sb.append(", encoding: ").append(this.encoding);
+        sb.append(", title: ").append(this.title);
+        sb.append("}");
+        return sb.toString();
+    }
 }

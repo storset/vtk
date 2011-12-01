@@ -73,7 +73,9 @@
         class="org.vortikal.repository.resourcetype.property.ChainedPropertyEvaluator">
     <property name="propertyEvaluators">
       <list>
-        <bean class="org.vortikal.repository.resourcetype.property.HtmlCharacterEncodingEvaluator" />
+        <bean class="org.vortikal.repository.resourcetype.property.HtmlPropertyEvaluator">
+          <property name="field" value="encoding" />
+        </bean>
         <bean class="org.vortikal.repository.resourcetype.property.XMLCharacterEncodingEvaluator" />
       </list>
     </property>
@@ -114,8 +116,8 @@
 
 
   <bean id="xhtmlOverriddenHtmlTitlePropertyEvaluator"
-        class="org.vortikal.repository.resourcetype.property.HtmlTitleElementEvaluator">
-    <property name="characterEncodingPropertyDefinition" ref="characterEncodingPropDef" />
+        class="org.vortikal.repository.resourcetype.property.HtmlPropertyEvaluator">
+    <property name="field" value="title" />
   </bean>
 
 

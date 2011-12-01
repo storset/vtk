@@ -45,6 +45,7 @@
     <property name="pattern">
       <value>(&lt;!--\s*#include\s+\w+\s*="[^"]+"\s*--&gt;)|(\$\{[^\}]+\})</value>
     </property>
+    <property name="maxLength" value="1000000" />
   </bean>
 
 </beans>

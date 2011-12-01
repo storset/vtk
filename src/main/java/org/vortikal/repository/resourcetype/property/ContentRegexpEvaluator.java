@@ -62,6 +62,7 @@ public class ContentRegexpEvaluator implements PropertyEvaluator {
     private String characterEncoding = "ascii";
     private String pattern;
     private Pattern compiledPattern;
+    private long maxLength = -1;
     
     private int flags = Pattern.CASE_INSENSITIVE | Pattern.DOTALL;
 
@@ -74,6 +75,10 @@ public class ContentRegexpEvaluator implements PropertyEvaluator {
         this.flags = flags;
     }
     
+    public void setMaxLength(long maxLength) {
+        this.maxLength = maxLength;
+    }
+    
     public void afterPropertiesSet() {
         if (this.pattern == null) {
             throw new BeanInitializationException(
@@ -84,6 +89,9 @@ public class ContentRegexpEvaluator implements PropertyEvaluator {
     }
     
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        if (this.maxLength > 0 && ctx.getNewResource().getContentLength() > this.maxLength) {
+            return false;
+        }
         if (property.getDefinition().getType() != PropertyType.Type.BOOLEAN) {
             throw new PropertyEvaluationException("Type of property " + property
                                                   + " is not boolean, cannot evaluate ");

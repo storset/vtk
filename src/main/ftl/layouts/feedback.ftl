@@ -22,14 +22,11 @@
     $(function() {
       if (typeof urchinTracker !== "undefined") {
         $(".feedback-yes").click(function(e) {
-          $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>')
-            .css("position", "relative");
-            .append("<div class='feedback-thanks-slider'></div>");
-            .find(".feedback-thanks-slider").animate({ left: 200 },
-                                                     { queue: false,
-                                                       duration: 200 });
-          });
-          
+          $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
+          $(".vrtx-feedback > p").css("position", "relative")
+                                 .append("<div class='feedback-thanks-slider'></div>").animate({ left: 200 },
+                                                                                               { queue: false,
+                                                                                                 duration: 200 });
           urchinTrack("/like");
           e.stopPropagation();
           e.preventDefault(); 

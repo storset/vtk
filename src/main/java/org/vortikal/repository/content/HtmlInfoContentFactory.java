@@ -130,12 +130,10 @@ public class HtmlInfoContentFactory implements ContentFactory {
                     return;
                 }
                 for (String elem: this.stack) {
-                    System.out.println("  " + elem);
                     if ("body".equals(elem.toLowerCase())) {
                         String s = new String(chars, start, length);
                         if (!"".equals(s.trim())) {
                             this.htmlInfo.setBody(true);
-                            System.out.println("__stopping: " + s);
                             throw new StopException();
                         }
                     }

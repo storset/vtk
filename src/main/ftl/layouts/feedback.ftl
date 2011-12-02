@@ -22,11 +22,10 @@
     $(function() {
       if (typeof urchinTracker !== "undefined") {
         $(".feedback-yes").click(function(e) {
-          $(".vrtx-feedback ul").replaceWith('<p><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /></p>');
-          $(".vrtx-feedback > p").css("position", "relative")
-                                 .append("<div class='feedback-thanks-slider'></div>").animate({ left: 200 },
-                                                                                               { queue: false,
-                                                                                                 duration: 200 });
+          $(".vrtx-feedback ul").replaceWith('<p class="vrtx-feedback-thanks"><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /><div class='vrtx-feedback-thanks-slider'></div></p>');
+          $(".vrtx-feedback-thanks-slider").animate({ left: 200 },
+                                                    { queue: false,
+                                                      duration: 200 });
           urchinTrack("/like");
           e.stopPropagation();
           e.preventDefault(); 
@@ -50,6 +49,22 @@
   // -->
   </script>
   <!-- end feedback js -->
+  <!-- start feedback css -->
+  <style type="text/css">
+    .vrtx-feedback,
+    .vrtx-feedback-thanks {
+      position: relative;
+    }
+    .vrtx-feedback-thanks-slider {
+      background: #fff;
+      width: 200px;
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      height: 18px;
+    }
+  </style>
+  <!-- end feedback css -->
 
   <div class="vrtx-feedback">
     <span class="vrtx-feedback-title"><@vrtx.msg code="feedback.title" default="Did you find what you were looking for?" /></span>

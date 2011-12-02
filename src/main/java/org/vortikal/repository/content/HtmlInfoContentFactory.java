@@ -78,6 +78,7 @@ public class HtmlInfoContentFactory implements ContentFactory {
         @Override
         public void startElement(String namespaceUri, String localName, String qName,
                 Attributes attrs) throws SAXException {
+            
             this.stack.push(localName);
             
             if ("meta".equals(localName)) {
@@ -117,9 +118,6 @@ public class HtmlInfoContentFactory implements ContentFactory {
             if (!this.stack.isEmpty()) {
                 this.stack.pop();
             }
-            if ("head".equals(localName.toLowerCase())) {
-                throw new StopException();
-            }
         }
 
         @Override
@@ -129,7 +127,20 @@ public class HtmlInfoContentFactory implements ContentFactory {
                 String top = this.stack.peek();
                 if ("title".equals(top)) {
                     this.htmlInfo.setTitle(new String(chars, start, length));
+                    return;
                 }
+                for (String elem: this.stack) {
+                    System.out.println("  " + elem);
+                    if ("body".equals(elem.toLowerCase())) {
+                        String s = new String(chars, start, length);
+                        if (!"".equals(s.trim())) {
+                            this.htmlInfo.setBody(true);
+                            System.out.println("__stopping: " + s);
+                            throw new StopException();
+                        }
+                    }
+                }
+                
             }
         }
 

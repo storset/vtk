@@ -35,30 +35,46 @@ public class HtmlInfo {
     private String docType = null;
     private String encoding = null;
     private String title = null;
+    private boolean body = false;
     
     public String getDocType() {
         return this.docType;
     }
+    
     public void setDocType(String docType) {
         this.docType = docType;
     }
+    
     public String getEncoding() {
         return this.encoding;
     }
+    
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
+    
     public String getTitle() {
         return this.title;
     }
+    
     public void setTitle(String title) {
         this.title = title;
     }
+    
+    public boolean getBody() {
+        return this.body;
+    }
+    
+    public void setBody(boolean body) {
+        this.body = body;
+    }
+    
     public String toString() {
         StringBuilder sb = new StringBuilder("{");
         sb.append("docType: ").append(this.docType);
         sb.append(", encoding: ").append(this.encoding);
         sb.append(", title: ").append(this.title);
+        sb.append(", body: ").append(this.body);
         sb.append("}");
         return sb.toString();
     }

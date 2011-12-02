@@ -112,12 +112,9 @@
     <property name="propertyEvaluator" ref="htmlHasBodyContentEvaluator" />
   </bean>
 
-
   <bean id="htmlHasBodyContentEvaluator"
-        class="org.vortikal.repository.resourcetype.property.HtmlHasBodyContentEvaluator">
-    <property name="htmlUtil" ref="htmlUtil" />
-    <property name="characterEncodingPropDef" ref="characterEncodingPropDef" />
-    
+        class="org.vortikal.repository.resourcetype.property.HtmlPropertyEvaluator">
+    <property name="field" value="body" />
   </bean>
 
 

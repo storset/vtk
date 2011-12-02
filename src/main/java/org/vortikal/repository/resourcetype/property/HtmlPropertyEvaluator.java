@@ -82,6 +82,10 @@ public class HtmlPropertyEvaluator implements PropertyEvaluator {
                 property.setStringValue(title);
                 return true;
             }
+            if ("body".equals(this.field)) {
+                property.setBooleanValue(htmlInfo.getBody());
+                return true;
+            }
             return false;
             
         } catch (Throwable t) {        

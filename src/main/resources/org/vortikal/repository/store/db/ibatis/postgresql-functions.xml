@@ -36,6 +36,14 @@
     #destUri# || substring(uri, length(#srcUri#) + 1)
   </sql>
 
+  <sql id="nextContentRevisionID">
+    nextval('simple_content_revision_seq_pk')
+  </sql>
+
+  <sql id="nextRevisionAclEntryId">
+    nextval('revision_acl_entry_seq_pk')
+  </sql>
+
   <sql id="nextVortexCommentId">
     nextval('vortex_comment_seq_pk')
   </sql>

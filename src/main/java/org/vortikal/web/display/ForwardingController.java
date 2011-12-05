@@ -30,7 +30,9 @@
  */
 package org.vortikal.web.display;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -55,6 +57,7 @@ public class ForwardingController implements Controller, ServletContextAware {
     private Map<String, String> headers;
     private Map<String, Object> requestAttributes;
     private Map<String, String> requestParameters;
+    private Set<String> preservedRequestParameters;
     
     @Override
     public ModelAndView handleRequest(HttpServletRequest request,
@@ -64,6 +67,16 @@ public class ForwardingController implements Controller, ServletContextAware {
         URL requestedURL = requestContext.getRequestURL();
         URL dispatchURL = this.service.constructURL(uri).setCollection(requestedURL.isCollection());
 
+        if (this.preservedRequestParameters != null) {
+            for (String name: this.preservedRequestParameters) {
+                List<String> values = requestedURL.getParameters(name);
+                if (values != null) {
+                    for (String value: values) {
+                        dispatchURL.addParameter(name, value);
+                    }
+                }
+            }
+        }
         if (this.requestParameters != null) {
             for (String name: this.requestParameters.keySet()) {
                 dispatchURL.addParameter(name, this.requestParameters.get(name));
@@ -107,5 +120,9 @@ public class ForwardingController implements Controller, ServletContextAware {
 
     public void setRequestParameters(Map<String, String> requestParameters) {
         this.requestParameters = requestParameters;
+    }
+    
+    public void setPreservedRequestParameters(Set<String> preservedRequestParameters) {
+        this.preservedRequestParameters = preservedRequestParameters;
     }
 }

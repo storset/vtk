@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -44,6 +45,7 @@ import org.vortikal.security.Principal;
  * webDAV-like functionality.
  */
 public interface Repository {
+    
     /**
      * Is the repository set to read only mode?
      */
@@ -83,6 +85,9 @@ public interface Repository {
      *                if an I/O error occurs
      */
     public Resource retrieve(String token, Path uri, boolean forProcessing) throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, Exception;
+
+    public Resource retrieve(String token, Path uri, boolean forProcessing, Revision revision) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, Exception;
 
     public TypeInfo getTypeInfo(Resource resource);
@@ -156,7 +161,7 @@ public interface Repository {
      *            identifies the client's authenticated session
      * @param uri
      *            the resource identifier
-     * @param byteStream
+     * @param stream
      *            a <code>java.io.InputStream</code> representing the byte
      *            stream to be read from
      * @return the modified resource object
@@ -174,9 +179,13 @@ public interface Repository {
      * @exception Exception
      *                if an I/O error occurs
      */
-    public Resource storeContent(String token, Path uri, InputStream byteStream) throws AuthorizationException,
+    public Resource storeContent(String token, Path uri, InputStream stream) throws AuthorizationException,
             AuthenticationException, ResourceNotFoundException, ResourceLockedException, IllegalOperationException,
             ReadOnlyException, Exception;
+    
+    public Resource storeContent(String token, Path uri, InputStream stream, Revision revision) throws AuthorizationException,
+        AuthenticationException, ResourceNotFoundException, ResourceLockedException, IllegalOperationException,
+        ReadOnlyException, Exception;
 
     /**
      * Obtains a stream to input bytes from a resource stored in the repository.
@@ -204,6 +213,9 @@ public interface Repository {
     public InputStream getInputStream(String token, Path uri, boolean forProcessing) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, Exception;
 
+    public InputStream getInputStream(String token, Path uri, boolean forProcessing, Revision revision) throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, Exception;
+    
     /**
      * Creates a new document in the repository.
      * 
@@ -641,7 +653,16 @@ public interface Repository {
      */
     public boolean isAuthorized(Resource resource, RepositoryAction action, Principal principal, boolean considerLocks)
             throws Exception;
+    
+    
+    public List<Revision> getRevisions(String token, Path uri) throws AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException;
+    
+    public Revision createRevision(String token, Path uri, Revision.Type type) throws AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException;
 
+    
+    public void deleteRevision(String token, Path uri, Revision revision) throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, Exception;
+    
     /**
      * Lists all comments on a resource. Comments on child resources will not be
      * listed.

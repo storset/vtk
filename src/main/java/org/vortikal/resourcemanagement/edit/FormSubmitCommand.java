@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.vortikal.resourcemanagement.EditRule;
+import org.vortikal.resourcemanagement.EditRule.EditRuleType;
 import org.vortikal.resourcemanagement.EditablePropertyDescription;
 import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
 import org.vortikal.resourcemanagement.JSONPropertyDescription;
@@ -43,21 +44,29 @@ import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.SimplePropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
-import org.vortikal.resourcemanagement.EditRule.EditRuleType;
 import org.vortikal.web.actions.UpdateCancelCommand;
 import org.vortikal.web.service.URL;
 
 @SuppressWarnings("unchecked")
 public class FormSubmitCommand extends UpdateCancelCommand {
 
+    private String saveWorkingCopyAction;
+    private String makePublicVersionAction;
+    private String deleteWorkingCopyAction;
+    private boolean workingCopy;
+    private boolean published;
+    
     private StructuredResource resource;
     private List<FormElementBox> elements = new ArrayList<FormElementBox>();
     private URL listComponentServiceURL;
 
-    public FormSubmitCommand(StructuredResource resource, URL url, URL listComponentServiceURL) {
+    public FormSubmitCommand(StructuredResource resource, URL url, 
+            URL listComponentServiceURL, boolean workingCopy, boolean published) {
         super(url.toString());
         this.listComponentServiceURL = listComponentServiceURL;
         this.resource = resource;
+        this.workingCopy = workingCopy;
+        this.published = published;
         StructuredResourceDescription type = resource.getType();
 
         for (PropertyDescription def : type.getAllPropertyDescriptions()) {
@@ -226,4 +235,43 @@ public class FormSubmitCommand extends UpdateCancelCommand {
         return listComponentServiceURL;
     }
 
+    public String getSaveWorkingCopyAction() {
+        return saveWorkingCopyAction;
+    }
+
+    public void setSaveWorkingCopyAction(String saveWorkingCopyAction) {
+        this.saveWorkingCopyAction = saveWorkingCopyAction;
+    }
+
+    public String getMakePublicVersionAction() {
+        return makePublicVersionAction;
+    }
+
+    public void setMakePublicVersionAction(String makePublicVersionAction) {
+        this.makePublicVersionAction = makePublicVersionAction;
+    }
+    
+    public String getDeleteWorkingCopyAction() {
+        return deleteWorkingCopyAction;
+    }
+
+    public void setDeleteWorkingCopyAction(String deleteWorkingCopyAction) {
+        this.deleteWorkingCopyAction = deleteWorkingCopyAction;
+    }
+
+    public boolean isWorkingCopy() {
+        return this.workingCopy;
+    }
+    
+    public void setWorkingCopy(boolean workingCopy) {
+        this.workingCopy = workingCopy;
+    }
+    
+    public boolean isPublished() {
+        return this.published;
+    }
+    
+    public void setPublished(boolean published) {
+        this.published = published;
+    }
 }

@@ -148,7 +148,22 @@ public final class AuthorizationManager {
                 throw new IllegalArgumentException("Cannot authorize action " + action);
         }
     }
+
+    public void authorizeReadRevision(Principal principal, Revision revision) {
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT) ||
+                this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING))
+            return;
+        
+        aclAuthorize(revision.getAcl(), READ_AUTH_PRIVILEGES, principal);
+    }
     
+    public void authorizeDeleteRevision(Principal principal, Revision revision) {
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT) ||
+                this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING))
+            return;
+        
+        aclAuthorize(revision.getAcl(), ADMIN_AUTH_PRIVILEGES, principal);
+    }
     
     private static final Privilege[] READ_PROCESSED_AUTH_PRIVILEGES = 
         new Privilege[] {Privilege.ALL, Privilege.READ_WRITE, Privilege.READ, Privilege.READ_PROCESSED};
@@ -547,12 +562,46 @@ public final class AuthorizationManager {
         
     }
     
+    /**
+     * Authorizes a principal to perform a given action 
+     * (or a set of actions) on a resource. 
+     * 
+     * Delegates to {@link #aclAuthorize(Acl, Privilege[], Principal)}
+     * 
+     * @param principal the principal performing an action
+     * @param resource the resource in question
+     * @param privileges the set of privileges to authorize for
+     * @throws AuthenticationException if the principal is not authenticated 
+     *  and the action requires a principal
+     * @throws AuthorizationException if the principal is authenticated but 
+     *  does not have sufficient privileges to perform the action
+     */
+    private void aclAuthorize(Principal principal, Resource resource, Privilege[] privileges) 
+        throws AuthenticationException, AuthorizationException {
+
+        Acl acl = resource.getAcl();
+        try {
+            aclAuthorize(acl, privileges, principal);
+        } catch (AuthenticationException e) {
+            throw new AuthenticationException(
+                    "Unauthenticated principal not authorized to access " 
+                    + resource.getURI() + " for privilege(s) " 
+                    + Arrays.asList(privileges));
+            
+        } catch (AuthorizationException e) {
+            throw new AuthorizationException(
+                    "Principal " + principal + " not authorized to access " 
+                    + resource.getURI() + " for privilege(s) " 
+                    + Arrays.asList(privileges));
+        }
+    }
+    
     
     /**
      * A principal is granted access if one of these conditions are met for one
      * of the privileges supplied:
      * 
-     * <p>1) (ALL, privilege) is present in the resource's ACL.<br> 
+     * <p>1) (ALL, privilege) is present in the ACL.<br> 
      * NOTE: This is limited to read privileges
      * 
      * <p>The rest requires that the user is authenticated:
@@ -563,12 +612,8 @@ public final class AuthorizationManager {
      * 
      * <p>3) (g, privilege) is present in the resource's ACL, where g is a group
      * identifier and the user is a member of that group
-     **/
-    private void aclAuthorize(Principal principal, Resource resource, Privilege[] privileges) 
-        throws AuthenticationException, AuthorizationException {
-        
-        Acl acl = resource.getAcl();
-
+     */
+    private void aclAuthorize(Acl acl, Privilege[] privileges, Principal principal) {
         for (int i = 0; i < privileges.length; i++) {
             Privilege privilege = privileges[i];
             Set<Principal> principalSet = acl.getPrincipalSet(privilege);
@@ -598,9 +643,8 @@ public final class AuthorizationManager {
         // At this point a principal should always be available:
         if (principal == null) {
             throw new AuthenticationException(
-                    "Principal NULL not authorized to access " 
-                    + resource.getURI() + " for privilege(s) " 
-                    + Arrays.asList(privileges));
+                    "Unauthenticated principal not authorized by ACL " 
+                    + acl + " for any of privilege(s) " + Arrays.asList(privileges));
         }
 
         for (int i = 0; i < privileges.length; i++) {
@@ -613,9 +657,8 @@ public final class AuthorizationManager {
             }
         }
         throw new AuthorizationException(
-                "Principal " + principal + " not authorized to access " 
-                + resource.getURI() + " for privilege(s) " 
-                + Arrays.asList(privileges));
+                "Principal " + principal + " not authorized by ACL " 
+                + acl + " for any of privilege(s) " + Arrays.asList(privileges));
     }
     
     // Temporary fix for problems with DAO returning null for resources not found
@@ -654,5 +697,4 @@ public final class AuthorizationManager {
     public void setDao(DataAccessor dao) {
         this.dao = dao;
     }
-
 }

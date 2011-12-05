@@ -32,39 +32,38 @@ package org.vortikal.repository;
 
 import java.io.IOException;
 
+import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 
 public interface RepositoryResourceHelper {
 
-    public ResourceImpl create(Principal principal, Path uri, boolean collection) throws IOException;
+    public ResourceImpl create(Principal principal, ResourceImpl resource, boolean collection, Content content) throws IOException;
 
     /**
      * Evaluates and validates properties on a resource before storing.
      * 
-     * @param resource
-     *            a the original resource
-     * @param principal
-     *            the principal performing the store operation
-     * @param dto
-     *            the user-supplied resource
+     * @param resource the original resource
+     * @param principal the principal performing the store operation
+     * @param dto the user-supplied resource
+     * @param content the resource's content
      * @return the resulting resource after property evaluation
      */
-    public ResourceImpl propertiesChange(ResourceImpl resource, Principal principal, ResourceImpl dto)
+    public ResourceImpl propertiesChange(ResourceImpl resource, Principal principal, ResourceImpl dto, Content content)
             throws AuthenticationException, AuthorizationException, CloneNotSupportedException, IOException;
 
-    public ResourceImpl contentModification(ResourceImpl resource, Principal principal) throws IOException;
+    public ResourceImpl contentModification(ResourceImpl resource, Principal principal, Content content) throws IOException;
 
-    public ResourceImpl nameChange(ResourceImpl originalResource, ResourceImpl resource, Principal principal)
+    public ResourceImpl nameChange(ResourceImpl originalResource, ResourceImpl resource, Principal principal, Content content)
             throws IOException;
 
-    public ResourceImpl commentsChange(ResourceImpl originalResource, Principal principal, ResourceImpl suppliedResource)
+    public ResourceImpl commentsChange(ResourceImpl originalResource, Principal principal, ResourceImpl suppliedResource, Content content)
             throws IOException;
 
     public PropertySet getFixedCopyProperties(ResourceImpl resource, Principal principal, Path destUri)
             throws CloneNotSupportedException;
 
-    public ResourceImpl systemChange(ResourceImpl resource, Principal principal, ResourceImpl dto)
+    public ResourceImpl systemChange(ResourceImpl resource, Principal principal, ResourceImpl dto, Content content)
             throws AuthenticationException, AuthorizationException, CloneNotSupportedException, IOException;
 
 }

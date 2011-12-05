@@ -45,6 +45,11 @@ public enum RepositoryOperation {
     MOVE("move", true),
     DELETE("delete", true),
     EXISTS("exists", false),
+    
+    GET_REVISIONS("getRevisions", false),
+    CREATE_REVISION("createRevision", true),
+    DELETE_REVISION("deleteRevision", true),
+    
     LOCK("lock", true),
     UNLOCK("unlock", true),
     LIST_CHILDREN("listChildren", false),
@@ -84,33 +89,13 @@ public enum RepositoryOperation {
     private static final Map<String,RepositoryOperation> ALL_OPERATIONS;
     static {
         ALL_OPERATIONS = new HashMap<String, RepositoryOperation>();
-        ALL_OPERATIONS.put(SET_READ_ONLY.getName(), SET_READ_ONLY);
-        ALL_OPERATIONS.put(RETRIEVE.getName(), RETRIEVE);
-        ALL_OPERATIONS.put(CREATE.getName(), CREATE);
-        ALL_OPERATIONS.put(CREATE_COLLECTION.getName(), CREATE_COLLECTION);
-        ALL_OPERATIONS.put(CREATE_DOCUMENT.getName(), CREATE_DOCUMENT);
-        ALL_OPERATIONS.put(COPY.getName(), COPY);
-        ALL_OPERATIONS.put(MOVE.getName(), MOVE);
-        ALL_OPERATIONS.put(DELETE.getName(), DELETE);
-        ALL_OPERATIONS.put(EXISTS.getName(), EXISTS);
-        ALL_OPERATIONS.put(LOCK.getName(), LOCK);
-        ALL_OPERATIONS.put(UNLOCK.getName(), UNLOCK);
-        ALL_OPERATIONS.put(LIST_CHILDREN.getName(), LIST_CHILDREN);
-        ALL_OPERATIONS.put(STORE.getName(), STORE);
-        ALL_OPERATIONS.put(GET_INPUTSTREAM.getName(), GET_INPUTSTREAM);
-        ALL_OPERATIONS.put(STORE_CONTENT.getName(), STORE_CONTENT);
-        ALL_OPERATIONS.put(STORE_ACL.getName(), STORE_ACL);
-        ALL_OPERATIONS.put(GET_COMMENTS.getName(), GET_COMMENTS);
-        ALL_OPERATIONS.put(ADD_COMMENT.getName(), ADD_COMMENT);
-        ALL_OPERATIONS.put(DELETE_COMMENT.getName(), DELETE_COMMENT);
-        ALL_OPERATIONS.put(DELETE_ALL_COMMENTS.getName(), DELETE_ALL_COMMENTS);
-        ALL_OPERATIONS.put(UPDATE_COMMENT.getName(), UPDATE_COMMENT);
-        ALL_OPERATIONS.put(SEARCH.getName(), SEARCH);
-        ALL_OPERATIONS.put(GET_TYPE_INFO.getName(), GET_TYPE_INFO);
-        
+        for (RepositoryOperation op: values()) {
+            ALL_OPERATIONS.put(op.getName(), op);
+        }
     }
     
     public static RepositoryOperation byName(String name) {
         return ALL_OPERATIONS.get(name);
     }
+    
 }

@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +92,7 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
     public Comment addComment(String token, Comment comment) throws AuthenticationException {
         return this.wrappedRepository.addComment(token, comment); // Tx
     }
-
+    
     @Override
     public void copy(String token, Path srcUri, Path destUri, Depth depth, boolean overwrite, boolean preserveACL)
             throws IllegalOperationException, AuthorizationException, AuthenticationException,
@@ -256,6 +257,12 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
     }
 
     @Override
+    public InputStream getInputStream(String token, Path uri, boolean forProcessing, Revision revision) throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, Exception {
+        return this.wrappedRepository.getInputStream(token, uri, forProcessing, revision); // Tx
+    }
+
+    @Override
     public boolean isReadOnly() {
         return this.wrappedRepository.isReadOnly(); // Tx
     }
@@ -277,6 +284,12 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
     public Resource retrieve(String token, Path uri, boolean forProcessing) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, Exception {
         return this.wrappedRepository.retrieve(token, uri, forProcessing); // Tx
+    }
+
+    @Override
+    public Resource retrieve(String token, Path uri, boolean forProcessing, Revision revision) throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, Exception {
+        return this.wrappedRepository.retrieve(token, uri, forProcessing, revision); // Tx
     }
 
     @Override
@@ -325,6 +338,13 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
             AuthenticationException, ResourceNotFoundException, ResourceLockedException, IllegalOperationException,
             ReadOnlyException, Exception {
         return this.wrappedRepository.storeContent(token, uri, byteStream); // Tx
+    }
+
+    @Override
+    public Resource storeContent(String token, Path uri, InputStream byteStream, Revision revision) throws AuthorizationException,
+            AuthenticationException, ResourceNotFoundException, ResourceLockedException, IllegalOperationException,
+            ReadOnlyException, Exception {
+        return this.wrappedRepository.storeContent(token, uri, byteStream, revision); // Tx
     }
 
     @Override
@@ -385,6 +405,23 @@ public class CachePurgeControlRepositoryWrapper implements Repository {
     
     public void purgeTrash() {
         this.wrappedRepository.purgeTrash();
+    }
+
+    @Override
+    public List<Revision> getRevisions(String token, Path uri) throws AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException {
+        return this.wrappedRepository.getRevisions(token, uri);
+    }
+
+    @Override
+    public Revision createRevision(String token, Path uri, Revision.Type type) throws AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException {
+        return this.wrappedRepository.createRevision(token, uri, type);
+    }
+
+    @Override
+    public void deleteRevision(String token, Path uri, Revision revision)
+            throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, Exception {
+        this.wrappedRepository.deleteRevision(token, uri, revision);
     }
 
 }

@@ -78,4 +78,5 @@ public interface ContentStore {
     public void recover(Path destURI, RecoverableResource recoverableResource) throws DataAccessException;
     
     public void deleteRecoverable(RecoverableResource recoverableResource) throws DataAccessException;
+
 }

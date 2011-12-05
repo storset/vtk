@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="versioning.displayRevisionsService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="categories">
+      <set>
+        <value>tabMenu</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="tabOrder"><value type="java.lang.Integer">350</value></entry>
+      </map>
+    </property>
+    <property name="order" value="-100" />
+    <property name="assertions">
+      <list>
+        <ref bean="versioning.displayActionParameter" />
+        <ref bean="json.isManagedObjectResourceType" />
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="versioning.displayRevisionsHandler" />
+    </property>
+  </bean>
+
+  <bean id="versioning.displayRevisionsHandler"
+        class="org.vortikal.web.actions.versioning.DisplayRevisionsController">
+    <property name="viewName" value="versioning.displayRevisions" />
+    <property name="viewService" ref="decorating.plainViewUnpublishedService" />
+    <property name="deleteService" ref="versioning.deleteRevisionService" />
+    <property name="restoreService" ref="versioning.restoreRevisionService" />
+  </bean>
+  
+  <bean id="versioning.displayRevisionsView" parent="freemarkerView">
+    <property name="url" value="pages/display-revisions.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+            </map>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="versioning.deleteRevisionService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-100" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method" value="POST" />
+        </bean>
+        <ref bean="versioning.deleteActionParameter" />
+        <ref bean="resourceTypeIsText" />
+        <!-- XXX: which permission is required to delete a revision? -->
+        <bean parent="abstractResourcePrincipalPermissionAssertion">
+          <property name="permission" ref="ACTION_ALL" />
+          <property name="considerLocks" value="true" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="versioning.deleteRevisionHandler" />
+    </property>
+  </bean>
+
+  <bean id="versioning.deleteRevisionHandler"
+        class="org.vortikal.web.actions.versioning.DeleteRevisionController">
+    <property name="redirectService" ref="versioning.displayRevisionsService" />
+  </bean>
+
+
+  <bean id="versioning.restoreRevisionService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-100" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestMethodAssertion">
+          <property name="method" value="POST" />
+        </bean>
+        <ref bean="versioning.restoreActionParameter" />
+        <ref bean="resourceTypeIsText" />
+        <!-- XXX: which permission is required to restore  revision? -->
+        <bean parent="abstractResourcePrincipalPermissionAssertion">
+          <property name="permission" ref="ACTION_ALL" />
+          <property name="considerLocks" value="true" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler">
+      <ref bean="versioning.restoreRevisionHandler" />
+    </property>
+  </bean>
+
+  <bean id="versioning.restoreRevisionHandler"
+        class="org.vortikal.web.actions.versioning.RestoreRevisionController">
+    <property name="redirectService" ref="versioning.displayRevisionsService" />
+    <!--property name="deleteWorkingCopy" value="true" /-->
+  </bean>
+
+
+  <bean id="versioning.viewResolver" parent="adminViewResolver">
+    <property name="views">
+      <map>
+        <entry key="versioning.displayRevisions" value-ref="versioning.displayRevisionsView" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="versioning.displayActionParameter"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="action" />
+    <property name="parameterValue" value="revisions" />
+  </bean>
+
+  <bean id="versioning.deleteActionParameter"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="action" />
+    <property name="parameterValue" value="delete-revision" />
+  </bean>
+
+  <bean id="versioning.restoreActionParameter"
+        class="org.vortikal.web.service.RequestParameterAssertion">
+    <property name="parameterName" value="action" />
+    <property name="parameterValue" value="restore-revision" />
+  </bean>
+</beans>

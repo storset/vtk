@@ -219,19 +219,46 @@
         </bean>
       </list>
     </property>
-    <property name="handler">
-      <bean class="org.vortikal.web.display.ForwardingController">
-        <property name="service" ref="viewService" />
-        <property name="requestParameters">
-          <map>
-            <entry key="x-prevent-decorating" value="true" />
-          </map>
-        </property>
-      </bean>
-    </property>
+    <property name="handler" ref="decorating.plainViewHandler" />
     <property name="attributes">
       <map>
         <entry key="remove-caching" value="true" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="decorating.plainViewHandler" class="org.vortikal.web.display.ForwardingController">
+    <property name="service" ref="viewService" />
+    <property name="preservedRequestParameters">
+      <set>
+        <value>revision</value>
+      </set>
+    </property>
+    <property name="requestParameters">
+      <map>
+        <entry key="x-prevent-decorating" value="true" />
+      </map>
+    </property>
+  </bean>
+
+
+  <bean id="decorating.plainViewUnpublishedService" parent="decorating.plainViewService">
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="x-decorating-mode" />
+          <property name="parameterValue" value="plain-unpublished" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="decorating.plainViewUnpublishedHandler" />
+  </bean>
+
+  <bean id="decorating.plainViewUnpublishedHandler" parent="decorating.plainViewHandler">
+    <property name="requestParameters">
+      <map>
+        <entry key="x-prevent-decorating" value="true" />
+        <entry key="vrtxPreviewUnpublished" value="true" />
       </map>
     </property>
   </bean>

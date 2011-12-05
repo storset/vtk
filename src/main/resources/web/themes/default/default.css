@@ -20,7 +20,7 @@
  *   3.3 Tabs
  *   3.4 Tab Menus
  *   3.5 Directorylisting
- *   3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile
+ *   3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile / Versioning
  *   3.7 Messages
  * 4. Fluid design
  * 5. Clearing
@@ -550,6 +550,8 @@ ul.list-menu,
 ul.list-menu li,
 .global-menu ul,
 .global-menu ul li,
+#editor-menu,
+#editor-menu li,
 ul.manage-create,
 ul.manage-create li,
 #locale-selection ul,
@@ -617,7 +619,8 @@ ul.manage-create li,
   float: left;
 }
 
-#resourceMenuLeft li {
+#resourceMenuLeft li,
+#editor-menu li {
   background: url(images/dropdown-left.gif) no-repeat -5px 0;
   display: inline-block;
   height: 27px;
@@ -627,13 +630,15 @@ ul.manage-create li,
 }
 
 ul.dropdown-shortcut-menu li.first,
-#resourceMenuLeft li.first {
+#resourceMenuLeft li.first,
+#editor-menu li.first {
   background-position: 0 0;
   margin: 0 0 0 0;
 }
 
 ul.dropdown-shortcut-menu li a,
-#resourceMenuLeft li a {
+#resourceMenuLeft li a,
+#editor-menu li a {
   color: #363534;
   background: url(images/button-open-right.png) no-repeat top right;
   display: inline-block;
@@ -642,59 +647,73 @@ ul.dropdown-shortcut-menu li a,
   margin: 0 -5px 0 0;
 }
 
-#resourceMenuLeft li.last a {
+#resourceMenuLeft li.last a,
+#editor-menu li.last a {
   background: url(images/button-closed-right.gif) no-repeat top right;
 }
 
-#resourceMenuLeft li:hover {
+#resourceMenuLeft li:hover,
+#editor-menu li:hover {
   background-image: url(images/dropdown-left-rollover.gif);
   margin-right: -5px;
 }
 
-#resourceMenuLeft li:hover a {
+#resourceMenuLeft li:hover a,
+#editor-menu li:hover a {
   background: none;
   color: #fff;
   text-decoration: none;
   margin: 0px;
 }
 
-#resourceMenuLeft li.last:hover a {
+#resourceMenuLeft li.last:hover,
+#editor-menu li.last:hover {
+  margin-right: 0px;
+}
+
+#resourceMenuLeft li.last:hover a,
+#editor-menu li.last:hover a {
   background: url(images/button-closed-right-rollover.gif) no-repeat top right;
   margin: 0 -5px 0 0;
 }
 
 /* Dropdown */
 
-ul.dropdown-shortcut-menu li a {
-  background: none !important;
-}
-
-ul.dropdown-shortcut-menu li.first {
+ul.dropdown-shortcut-menu li.dropdown-init {
   display: inline-block !important;
   border: none;
-  background: url(images/dropdown-left.gif) no-repeat top left !important;
+  background: url(images/dropdown-left.gif) no-repeat -5px 0;
+  margin-right: 0px !important;
 }
 
-ul.dropdown-shortcut-menu li.first a {
+ul.dropdown-shortcut-menu li.dropdown-init.first {
+  background-position: 0 0;
+}
+
+ul.dropdown-shortcut-menu li.dropdown-init a {
   background: url(images/dropdown-right.gif) no-repeat top right !important;
   padding-right: 44px !important;
 }
 
-ul.dropdown-shortcut-menu li.first:hover {
+ul.dropdown-shortcut-menu li.dropdown-init:hover {
   background-image: url(images/dropdown-left-rollover.gif) !important;
 }
 
-ul.dropdown-shortcut-menu li.first.unhover {
+ul.dropdown-shortcut-menu li.dropdown-init.unhover.first {
   background: url(images/dropdown-left.gif) no-repeat top left !important;
 }
 
-ul.dropdown-shortcut-menu li.first:hover a {
+ul.dropdown-shortcut-menu li.dropdown-init.unhover {
+  background: url(images/dropdown-left.gif) no-repeat -5px 0 !important;
+}
+
+ul.dropdown-shortcut-menu li.dropdown-init:hover a {
   margin: 0 -5px 0 0 !important;
   color: #fff;
   text-decoration: none;
 }
 
-ul.dropdown-shortcut-menu li.first a.hover {
+ul.dropdown-shortcut-menu li.dropdown-init a.hover {
   background-image: url(images/dropdown-right-rollover.gif) !important;
   color: #363534 !important;
   margin: 0 -5px 0 0 !important;
@@ -712,17 +731,37 @@ ul.dropdown-shortcut-menu-container {
   background-color: #fff;
 }
 
-.global-menu div.dropdown-shortcut-menu-container {
-  top: 37px;
+.global-menu div.dropdown-shortcut-menu-container,
+#editor-shortcuts div.dropdown-shortcut-menu-container {
   left: auto !important;
+}
+
+.global-menu div.dropdown-shortcut-menu-container {
   right: -5px;
 }
 
-ul.dropdown-shortcut-menu li.first {
+#editor-shortcuts div.dropdown-shortcut-menu-container {
+  right: 0px;
+}
+
+.global-menu div.dropdown-shortcut-menu-container {
+  top: 37px;
+}
+
+#editor-shortcuts div.dropdown-shortcut-menu-container {
+  top: 28px;
+}
+
+#editor-shortcuts,
+ul.dropdown-shortcut-menu li.dropdown-init {
   position: relative;
 }
 
-ul.dropdown-shortcut-menu li.first #dropdown-shortcut-menu-click-area {
+#editor-shortcuts #editor-menu {
+  padding: 0 7px 0 0;
+}
+
+ul.dropdown-shortcut-menu li.dropdown-init #dropdown-shortcut-menu-click-area {
   display: block;
   width: 26px;
   height: 28px;
@@ -1393,9 +1432,9 @@ body#vrtx-report-documents #directory-listing td.vrtx-report-name span.name-spli
 
 /* ^ 3.5 Directorylisting */
 
-/* 3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile  */
+/* 3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile / Versioning  */
 
-body#vrtx-preview #app-content #contents {
+body#vrtx-preview #app-content #contents iframe#previewIframe {
   border: 1px solid #d9d9d9;
 }
 
@@ -1724,6 +1763,61 @@ h3.resourceInfoHeader {
 
 /* ^ 3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile  */
 
+/* Versioning */
+
+#vrtx-revisions table.resourceInfo { 
+  border: none;
+}
+
+#vrtx-revisions .resourceInfo td,
+#vrtx-revisions .resourceInfo th {
+  border: none;
+  border-bottom: 1px solid #D9D9D9;
+}
+
+#vrtx-revisions .resourceInfo td {
+  font-size: 1.154em;
+  padding: 14px 10px 14px 0;
+}
+
+table.resourceInfo.revisions tr:nth-child(even) td {
+  background-color: #fff;
+}
+
+#vrtx-revisions .resourceInfo th {
+  padding: 0 0 10px 0;
+  text-align: left;
+}
+
+#vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column {
+  font-size: 1em;
+  width: 40%;
+} 
+
+#vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column form {
+  display: inline;
+  margin-left: 10px;
+}
+
+#vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column form:after {
+  display: none;
+}
+
+#vrtx-revisions .resourceInfo tr#vrtx-revisions-working-copy td {
+  font-style: italic;
+  color: #999;
+}
+
+#vrtx-revisions .resourceInfo tr#vrtx-revisions-working-copy td.vrtx-revisions-buttons-column {
+  font-style: normal;
+}
+
+#vrtx-revisions .resourceInfo td#vrtx-revisions-current {
+  color: #549401;
+} 
+
+/* ^ 3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile / Versioning */
+
 /* 3.7 Messages */
 
 div.message,
@@ -1773,6 +1867,23 @@ div.errormessage {
 div.tabMessage {
   background: url(images/info-small.gif) no-repeat 0 0;
   padding: 0 0 10px 25px;
+}
+
+.tabMessage-big {
+  background: #4a9ce2 url(images/info-white-blue-bg.png) no-repeat 19px center;
+  padding: 12px 0 12px 58px;
+  color: #fff;
+  margin: 0 -19px 15px -19px;
+  font-size: 1.231em;
+}
+
+.tabMessage-big a {
+  color: #88dfed;
+  text-decoration:underline;
+}
+
+body#vrtx-preview .tabMessage-big {
+  margin: 0 -20px 19px -20px;
 }
 
 /* ^ 3.7 Messages */

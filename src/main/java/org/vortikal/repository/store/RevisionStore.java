@@ -1,4 +1,4 @@
-/* Copyright (c) 2008, University of Oslo, Norway
+/* Copyright (c) 2011, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,41 +28,38 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.util.codec;
+package org.vortikal.repository.store;
 
-import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.List;
 
-import junit.framework.TestCase;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceImpl;
+import org.vortikal.repository.Revision;
+import org.vortikal.repository.content.InputStreamWrapper;
+import org.vortikal.security.Principal;
 
-import org.apache.commons.io.output.NullOutputStream;
-import org.vortikal.util.io.StreamUtil;
+public interface RevisionStore {
 
-public class MD5Test extends TestCase {
+    /** from revisiondao: **/
+    
+    public List<Revision> list(Resource resource);
+    
+    public Revision create(ResourceImpl resource, Principal principal, String name, InputStream content);
 
-    public void testMd5sum() {
-        assertEquals("900150983cd24fb0d6963f7d28e17f72", MD5.md5sum("abc"));
-        assertEquals("d41d8cd98f00b204e9800998ecf8427e", MD5.md5sum(""));
-        assertEquals("37b51d194a7513e45b56f6524f2d51f2", MD5.md5sum("bar"));
-        assertEquals("5db1de9f01225e0c9b89df9e1e96d240", MD5.md5sum("FOO bar"));
-        assertEquals("69a8f8b65843545e07e264782a632e2b", 
-                MD5.md5sum("\\%$powjegpokjewgi39i310ut31+iujas0gh+2r1+ut139gtuwpjgo"));
-    }
+    public void delete(ResourceImpl resource, Revision revision);
 
-    public void testStreams() throws Exception {
-        String s = "bar";
-        byte[] buf = s.getBytes();
-        MD5.MD5InputStream is = MD5.wrap(new ByteArrayInputStream(buf));
-        StreamUtil.pipe(is, new NullOutputStream());
-        
-        String sum1 = MD5.md5sum(new ByteArrayInputStream(buf));
-        String sum2 = MD5.md5sum(buf);
-        String sum3 = MD5.md5sum(s);
-        String sum4 = is.md5sum();
-        
-        assertEquals("37b51d194a7513e45b56f6524f2d51f2", sum1);
-        assertEquals(sum1, sum2);
-        assertEquals(sum2, sum3);
-        assertEquals(sum3, sum4);
-    }
+    /** from contentstore: **/
+    
+    public void store(ResourceImpl resource, Principal principal, Revision revision, InputStream inputStream) throws DataAccessException;
 
+    public InputStreamWrapper getContent(ResourceImpl resource, Revision revision) throws DataAccessException;
+
+    public long getContentLength(ResourceImpl resource, Revision revision) throws DataAccessException;
+
+    //public void deleteRevision(ResourceImpl resource, Revision revision) throws DataAccessException;
+    
+    /** new methods: **/
+    
+    //public void gc();
 }

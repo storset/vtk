@@ -48,6 +48,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Revision;
 import org.vortikal.resourcemanagement.ComponentDefinition;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
@@ -97,9 +98,29 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         Path uri = requestContext.getResourceURI();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
-        Resource r = repository.retrieve(token, uri, true);
+        String revisionParam = request.getParameter("revision");
+        Revision revision = null;
+        if (revisionParam != null) {
+            for (Revision rev: repository.getRevisions(token, uri)) {
+                if (rev.getName().equals(revisionParam)) {
+                    revision = rev;
+                    break;
+                }
+            }
+        }
+        Resource r;
+        if (revision != null) {
+            r = repository.retrieve(token, uri, true, revision);
+        } else {
+            r = repository.retrieve(token, uri, true);
+        }
 
-        InputStream stream = repository.getInputStream(token, uri, true);
+        InputStream stream;
+        if (revision != null) {
+            stream = repository.getInputStream(token, uri, true, revision);
+        } else {
+            stream = repository.getInputStream(token, uri, true);
+        }
         byte[] buff = StreamUtil.readInputStream(stream);
         String encoding = "utf-8";
         String source = new String(buff, encoding);

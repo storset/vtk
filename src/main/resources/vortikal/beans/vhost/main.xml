@@ -66,6 +66,7 @@
   <import resource="windows-webdav-explorer.xml" />
   <import resource="editor.xml" />
   <import resource="plaintextedit.xml" />
+  <import resource="versioning.xml" />
   <import resource="copy-move.xml" />
   <import resource="errorhandlers.xml" />
   <import resource="templates.xml" />

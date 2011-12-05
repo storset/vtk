@@ -31,7 +31,6 @@
 package org.vortikal.repository;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,8 +38,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.PropertyEvaluationContext.Type;
-import org.vortikal.repository.content.ContentImpl;
-import org.vortikal.repository.content.ContentRepresentationRegistry;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
@@ -50,7 +47,6 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.store.ContentStore;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.web.service.RepositoryAssertion;
@@ -62,20 +58,11 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     private AuthorizationManager authorizationManager;
     private ResourceTypeTree resourceTypeTree;
 
-    // Needed for property-evaluation. Should be a reasonable dependency.
-    private ContentStore contentStore;
-    private ContentRepresentationRegistry contentRepresentationRegistry;
-
     @Override
-    public ResourceImpl create(Principal principal, Path uri, boolean collection) throws IOException {
+    public ResourceImpl create(Principal principal, ResourceImpl resource, boolean collection, Content content) throws IOException {
         if (logger.isDebugEnabled()) {
-            logger.debug("Evaluate create: " + uri);
+            logger.debug("Evaluate create: " + resource.getURI());
         }
-        ResourceImpl resource = new ResourceImpl(uri);
-        if (collection) {
-            resource.setChildURIs(new ArrayList<Path>());
-        }
-        Content content = getContent(resource);
         PropertyEvaluationContext ctx = PropertyEvaluationContext
                 .createResourceContext(resource, collection, principal, content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
@@ -84,13 +71,12 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
 
     @Override
     public ResourceImpl propertiesChange(ResourceImpl originalResource, Principal principal,
-            ResourceImpl suppliedResource) throws AuthenticationException, AuthorizationException,
+            ResourceImpl suppliedResource, Content content) throws AuthenticationException, AuthorizationException,
             InternalRepositoryException, IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("Evaluate properties change: " + originalResource.getURI());
         }
 
-        Content content = getContent(originalResource);
         PropertyEvaluationContext ctx = PropertyEvaluationContext.propertiesChangeContext(originalResource,
                 suppliedResource, principal, content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
@@ -99,13 +85,13 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     }
 
     @Override
-    public ResourceImpl commentsChange(ResourceImpl originalResource, Principal principal, ResourceImpl suppliedResource)
+    public ResourceImpl commentsChange(ResourceImpl originalResource, Principal principal, 
+            ResourceImpl suppliedResource, Content content)
             throws AuthenticationException, AuthorizationException, InternalRepositoryException, IOException {
 
         if (logger.isDebugEnabled()) {
             logger.debug("Evaluate comments change: " + originalResource.getURI());
         }
-        Content content = getContent(originalResource);
         PropertyEvaluationContext ctx = PropertyEvaluationContext.commentsChangeContext(originalResource,
                 suppliedResource, principal, content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
@@ -114,11 +100,10 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     }
 
     @Override
-    public ResourceImpl contentModification(ResourceImpl resource, Principal principal) throws IOException {
+    public ResourceImpl contentModification(ResourceImpl resource, Principal principal, Content content) throws IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("Evaluate content modification: " + resource.getURI());
         }
-        Content content = getContent(resource);
         PropertyEvaluationContext ctx = PropertyEvaluationContext.contentChangeContext(resource, principal, content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
         checkForDeadAndZombieProperties(ctx);
@@ -126,12 +111,11 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     }
 
     @Override
-    public ResourceImpl nameChange(ResourceImpl original, ResourceImpl resource, Principal principal)
+    public ResourceImpl nameChange(ResourceImpl original, ResourceImpl resource, Principal principal, Content content)
             throws IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("Evaluate name change: " + resource.getURI());
         }
-        Content content = getContent(original);
         PropertyEvaluationContext ctx = PropertyEvaluationContext.nameChangeContext(original, resource, principal,
                 content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
@@ -140,13 +124,13 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
     }
 
     @Override
-    public ResourceImpl systemChange(ResourceImpl originalResource, Principal principal, ResourceImpl suppliedResource)
+    public ResourceImpl systemChange(ResourceImpl originalResource, Principal principal, 
+            ResourceImpl suppliedResource, Content content)
             throws AuthenticationException, AuthorizationException, InternalRepositoryException, IOException {
 
         if (logger.isDebugEnabled()) {
             logger.debug("Evaluate system change: " + originalResource.getURI());
         }
-        Content content = getContent(originalResource);
         PropertyEvaluationContext ctx = PropertyEvaluationContext.systemChangeContext(originalResource,
                 suppliedResource, principal, content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
@@ -501,23 +485,6 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
                     + " succeeded, assertions matched: " + (assertions != null ? Arrays.asList(assertions) : null));
         }
         return true;
-    }
-
-    private Content getContent(Resource resource) {
-        if (resource == null || resource.isCollection()) {
-            return null;
-        }
-        return new ContentImpl(resource.getURI(), this.contentStore, this.contentRepresentationRegistry);
-    }
-
-    @Required
-    public void setContentStore(ContentStore contentStore) {
-        this.contentStore = contentStore;
-    }
-
-    @Required
-    public void setContentRepresentationRegistry(ContentRepresentationRegistry contentRepresentationRegistry) {
-        this.contentRepresentationRegistry = contentRepresentationRegistry;
     }
 
     @Required

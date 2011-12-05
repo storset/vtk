@@ -393,6 +393,7 @@
   <bean id="previewViewIframeHandler" class="org.vortikal.web.display.url.ResourceServiceURLController">
     <property name="viewName" value="previewViewIframe" />
     <property name="service" ref="viewService" />
+    <property name="displayWorkingRevision" value="true" />
   </bean>
 
 

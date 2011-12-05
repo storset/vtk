@@ -364,6 +364,18 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     }
 
     @Override
+    public InputStream getInputStream(String token, Path uri, boolean forProcessing, Revision revision) throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, Exception {
+        
+        List<Path> locked = this.lockManager.lock(uri, false);
+        try {
+            return this.wrappedRepository.getInputStream(token, uri, forProcessing, revision); // Tx
+        } finally {
+            this.lockManager.unlock(locked, false);
+        }
+    }
+
+    @Override
     public boolean isReadOnly() {
         return this.wrappedRepository.isReadOnly(); // Tx
     }
@@ -417,6 +429,18 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         final List<Path> locked = this.lockManager.lock(uri, false);
         try {
             return this.wrappedRepository.retrieve(token, uri, forProcessing); // Tx
+        } finally {
+            this.lockManager.unlock(locked, false);
+        }
+    }
+    
+    @Override
+    public Resource retrieve(String token, Path uri, boolean forProcessing, Revision revision) throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, Exception {
+        // Acquire a shared read-lock on path
+        final List<Path> locked = this.lockManager.lock(uri, false);
+        try {
+            return this.wrappedRepository.retrieve(token, uri, forProcessing, revision); // Tx
         } finally {
             this.lockManager.unlock(locked, false);
         }
@@ -540,6 +564,21 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         }    
     }
 
+    @Override
+    public Resource storeContent(String token, Path uri, InputStream byteStream, Revision revision) throws AuthorizationException,
+            AuthenticationException, ResourceNotFoundException, ResourceLockedException, IllegalOperationException,
+            ReadOnlyException, Exception {
+        
+        // Synchronize on:
+        // - URI
+        final List<Path> locked = this.lockManager.lock(uri, true);
+        try {
+           return this.wrappedRepository.storeContent(token, uri, byteStream, revision); // Tx
+        } finally {
+            this.lockManager.unlock(locked, true);
+        }    
+    }
+
 
     @Override
     public Comment updateComment(String token, Resource resource, Comment comment) throws RepositoryException,
@@ -629,4 +668,20 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         return this.cache.getCachedDescendantPaths(uri);
     }
 
+    @Override
+    public List<Revision> getRevisions(String token, Path uri) throws AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException {
+        return this.wrappedRepository.getRevisions(token, uri);
+    }
+
+    @Override
+    public Revision createRevision(String token, Path uri, Revision.Type type) throws AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException {
+        return this.wrappedRepository.createRevision(token, uri, type);
+    }
+
+    @Override
+    public void deleteRevision(String token, Path uri, Revision revision)
+            throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, Exception {
+        this.wrappedRepository.deleteRevision(token, uri, revision);
+    }
 }

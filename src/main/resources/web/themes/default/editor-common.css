@@ -29,8 +29,17 @@ h2 {
   padding-top: 0px;
 }
 
+#buttons-or-text {
+  padding: 0 10px;
+  color: #666;
+}
+
 .help-link {
   margin-right: 25px;
+}
+
+.dropdown-shortcut-menu-container .help-link {
+  margin-right: 0px;
 }
 
 .property-item,

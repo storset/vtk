@@ -76,6 +76,11 @@
     <property name="resourceManager" ref="structuredResources.resourceManager" />
   </bean>
 
+  <bean id="json.isManagedObjectResourceType" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="json.managedObjectResourceType" />
+  </bean>
+
+
   <bean id="overridingPublishDatePropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="publishDatePropDef" />
       <!-- NullEvaluator removes the property evaluated the first time by publishDateEvaluator (on CREATE) -->

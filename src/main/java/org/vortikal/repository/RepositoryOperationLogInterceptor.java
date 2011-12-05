@@ -79,6 +79,13 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
         Object[] args = invocation.getArguments();
         String token = (String)args[0];
         String params = null;
+        Revision rev = null;
+        
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] != null && args[i] instanceof Revision) {
+                rev = (Revision) args[i];
+            }
+        }
         
         // Reduce avg. overhead by putting most common ops early in list ..
         if (operation == RepositoryOperation.RETRIEVE                ||
@@ -93,10 +100,20 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
                 operation == RepositoryOperation.STORE_CONTENT       ||
                 operation == RepositoryOperation.STORE_ACL           ||
                 operation == RepositoryOperation.DELETE_ACL          ||
-                operation == RepositoryOperation.GET_COMMENTS) {            
+                operation == RepositoryOperation.GET_COMMENTS        ||
+                operation == RepositoryOperation.GET_REVISIONS       ||
+                operation == RepositoryOperation.DELETE_REVISION) {            
 
-            Path uri = (Path)args[1];            
-            params = "(" + uri + ")";
+            Path uri = (Path)args[1];
+            if (rev != null) {
+                params = "(" + uri + ", r" + rev.getID() + ")";
+            } else {
+                params = "(" + uri + ")";
+            }
+        } else if (RepositoryOperation.CREATE_REVISION == operation) {
+            Path uri = (Path) args[1];
+            Revision.Type type = (Revision.Type) args[2];
+            params = "(" + uri + ", " + type + ")";
             
         } else if (RepositoryOperation.COPY == operation ||
                    RepositoryOperation.MOVE == operation) {

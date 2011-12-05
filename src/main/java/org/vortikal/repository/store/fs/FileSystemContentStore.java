@@ -57,6 +57,8 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
 
     private static Log logger = LogFactory.getLog(FileSystemContentStore.class);
 
+    private static final int COPY_BUF_SIZE = 122880;
+    
     private String repositoryDataDirectory;
     private String repositoryTrashCanDirectory;
 
@@ -150,7 +152,7 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
         File dest = new File(fileName);
         try {
             FileOutputStream outputStream = new FileOutputStream(dest);
-            StreamUtil.pipe(inputStream, outputStream, 122880, true);
+            StreamUtil.pipe(inputStream, outputStream, COPY_BUF_SIZE, true);
         } catch (IOException e) {
             throw new DataAccessException("Store content [" + uri + "] failed", e);
         }
@@ -193,7 +195,7 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
         try {
             src = new FileInputStream(from);
             dst = new FileOutputStream(to);
-            StreamUtil.pipe(src, dst, 122880, true);
+            StreamUtil.pipe(src, dst, COPY_BUF_SIZE, true);
         } finally {
             try {
                 if (src != null) {
@@ -251,6 +253,7 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
         String filePath = this.repositoryTrashCanDirectory + "/" + recoverableResource.getTrashID();
         this.deleteFiles(new File(filePath));
     }
+    
 
     private String getLocalFilename(Path uri) {
         Path path = this.getEncodedPathIfConfigured(uri);
@@ -263,7 +266,7 @@ public class FileSystemContentStore implements InitializingBean, ContentStore {
         }
         return original;
     }
-
+    
     @Required
     public void setRepositoryDataDirectory(String repositoryDataDirectory) {
         this.repositoryDataDirectory = repositoryDataDirectory;

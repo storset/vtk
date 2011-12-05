@@ -9,7 +9,7 @@
  */
  
 /* 
- * ToC:
+ * ToC: 
  *
  * 1.  Config
  * 2.  DOM is fully loaded
@@ -157,6 +157,12 @@ $(window).load(function() {
     $("#title-container").append(expandedForm);
   }
   
+  $("#app-content").delegate("a.vrtx-revisions-view", "click", function(e) {
+    openServerBrowser(this.href, 800, 700);
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  
   vrtxAdmin.log({msg: "window.load() in " + (+new Date - startLoadTime) + "ms"});
 });
 
@@ -186,6 +192,10 @@ $(document).ready(function () {
     }
   });
   dropdown({selector: "ul.manage-create"});
+  dropdown({
+    selector: "ul#editor-menu",
+    start: 3
+  });
   
   // Slide up when choose something in dropdown
   $(".dropdown-shortcut-menu li a").click(function() {
@@ -881,21 +891,30 @@ function dropdown(options) {
 
   if (!options.proceedCondition || (options.proceedCondition && options.proceedCondition(numOfListElements))) {
     list.addClass("dropdown-shortcut-menu");
+    
     // Move listelements except .first into container
-    list.parent().append("<div class='dropdown-shortcut-menu-container'><ul>" + list.html() + "</ul></div>");
-    list.find("li").not(".first").remove();
-    list.find("li.first").append("<span id='dropdown-shortcut-menu-click-area'></span>");
-
-    var shortcutMenu = list.siblings(".dropdown-shortcut-menu-container");
-    shortcutMenu.find("li.first").remove();
-    shortcutMenu.css("left", (list.width() - 24) + "px");
-    list.find("li.first #dropdown-shortcut-menu-click-area").click(function (e) {
+    var listParent = list.parent();
+    listParent.append("<div class='dropdown-shortcut-menu-container'><ul>" + list.html() + "</ul></div>");
+    
+    var startDropdown = options.start != null ? ":nth-child(-n+" + options.start + ")" : ".first";
+    var dropdownClickArea = options.start != null ? ":nth-child(3)" : ".first";
+    
+    list.find("li").not(startDropdown).remove();
+    list.find("li" + dropdownClickArea).append("<span id='dropdown-shortcut-menu-click-area'></span>");
+ 
+    var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
+    shortcutMenu.find("li" + startDropdown).remove();
+    shortcutMenu.css("left", (list.width()+5) + "px");
+    
+    list.find("li" + dropdownClickArea).addClass("dropdown-init");
+    
+    list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").click(function (e) {
       shortcutMenu.slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");   
       e.stopPropagation();
       e.preventDefault();
     });
 
-    list.find("li.first #dropdown-shortcut-menu-click-area").hover(function () {
+    list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").hover(function () {
       var $this = $(this);
       $this.parent().toggleClass('unhover');
       $this.prev().toggleClass('hover');
@@ -1660,8 +1679,9 @@ VrtxAdmin.prototype.error = function(options) {
 };
 
 VrtxAdmin.prototype.zebraTables = function(selector) {
-  if(!$("table" + selector).length || $("table" + selector).hasClass("revisions")) return; 
-  if((vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) || vrtxAdmin.isOpera) { // http://www.quirksmode.org/css/contents.html
+  if(!$("table" + selector).length || $("table" + selector).hasClass("revisions")) return;
+  // http://www.quirksmode.org/css/contents.html
+  if((vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) || vrtxAdmin.isOpera) {
     $("table" + selector + " tbody tr:odd").addClass("even"); // hmm.. somehow even is odd and odd is even
     $("table" + selector + " tbody tr:first-child").addClass("first");
   }

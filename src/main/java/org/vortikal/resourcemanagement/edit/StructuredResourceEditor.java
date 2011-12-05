@@ -47,9 +47,12 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Revision;
+import org.vortikal.repository.store.Revisions;
 import org.vortikal.resourcemanagement.EditablePropertyDescription;
 import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
 import org.vortikal.resourcemanagement.JSONPropertyDescription;
@@ -76,17 +79,39 @@ public class StructuredResourceEditor extends SimpleFormController {
         super();
         setCommandName("form");
     }
+    
 
+    @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         lock();
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
+        
         Resource resource = repository.retrieve(token, uri, false);
+        boolean published = false;
+        Property p = resource.getPropertyByPrefix(null, "published");
+        if (p != null && p.getBooleanValue()) {
+            published = true;
+        }
         StructuredResourceDescription description = this.resourceManager.get(resource.getResourceType());
 
-        InputStream stream = repository.getInputStream(token, uri, true);
+        Revision workingCopy = null;
+        for (Revision rev: repository.getRevisions(token, uri)) {
+            if (rev.getType() == Revision.Type.WORKING_COPY) {
+                workingCopy = rev;
+                break;
+            }
+        }
+        
+        InputStream stream = null;
+
+        if (workingCopy !=  null) {
+            stream = repository.getInputStream(token, uri, true, workingCopy);
+        } else {
+            stream = repository.getInputStream(token, uri, true);
+        }
         String encoding = resource.getCharacterEncoding();
         if (encoding == null) {
             encoding = "utf-8";
@@ -98,9 +123,11 @@ public class StructuredResourceEditor extends SimpleFormController {
         URL url = RequestContext.getRequestContext().getService().constructURL(uri);
         URL listComponentServiceURL = listComponentsService.constructURL(uri);
 
-        return new FormSubmitCommand(structuredResource, url, listComponentServiceURL);
+        return new FormSubmitCommand(structuredResource, url, listComponentServiceURL, 
+                workingCopy != null, published);
     }
 
+    @Override
     protected ModelAndView onSubmit(Object command) throws Exception {
         FormSubmitCommand form = (FormSubmitCommand) command;
         if (form.getCancelAction() != null) {
@@ -114,19 +141,63 @@ public class StructuredResourceEditor extends SimpleFormController {
         Repository repository = requestContext.getRepository();
         Path uri = RequestContext.getRequestContext().getResourceURI();
         String token = requestContext.getSecurityToken();
+        
+        boolean saveWorkingCopy = form.getSaveWorkingCopyAction() != null;
+        boolean makePublicVersion = form.getMakePublicVersionAction() != null;
+        boolean deleteWorkingCopy = form.getDeleteWorkingCopyAction() != null;
 
-        InputStream stream = new ByteArrayInputStream(form.getResource().toJSON().toString(3).getBytes("utf-8"));
-        repository.storeContent(token, uri, stream);
+        Revision workingCopy = null;
+        for (Revision rev: repository.getRevisions(token, uri)) {
+            if (rev.getType() == Revision.Type.WORKING_COPY) {
+                workingCopy = rev;
+                break;
+            }
+        }
+        
+        if (deleteWorkingCopy && workingCopy != null) {
+            repository.deleteRevision(token, uri, workingCopy);
+            form.setWorkingCopy(false);
+            return new ModelAndView(getFormView(), model);
+        }
+
+        byte[] buffer = form.getResource().toJSON().toString(3).getBytes("utf-8");
+        InputStream stream = new ByteArrayInputStream(buffer);
+        
+        if (saveWorkingCopy && workingCopy == null) {
+            workingCopy = repository.createRevision(token, uri, Revision.Type.WORKING_COPY);
+        }
+
+        if (makePublicVersion && workingCopy != null) {
+            repository.createRevision(token, uri, Revision.Type.REGULAR);
+            
+            repository.storeContent(token, uri, stream, workingCopy);
+            repository.storeContent(token, uri, 
+                    repository.getInputStream(token, uri, false, workingCopy));
+            repository.deleteRevision(token, uri, workingCopy);
+            form.setWorkingCopy(false);
+            
+        } else if (saveWorkingCopy) {
+            repository.storeContent(token, uri, stream, workingCopy);
+            form.setWorkingCopy(true);
+            
+        } else {
+            List<Revision> revisions = repository.getRevisions(token, uri);
+            Revision prev = revisions.size() == 0 ? null : revisions.get(0);
+            String checksum = Revisions.checksum(buffer);
+            
+            if (prev == null || !checksum.equals(prev.getChecksum())) {
+                // Take snapshot of previous version:
+                repository.createRevision(token, uri, Revision.Type.REGULAR);
+            }
+            repository.storeContent(token, uri, stream);
+            form.setWorkingCopy(false);
+        }
 
         if (form.getUpdateViewAction() != null) {
             unlock();
             return new ModelAndView(getSuccessView());
         }
         return new ModelAndView(getFormView(), model);
-    }
-
-    public void setResourceManager(StructuredResourceManager resourceManager) {
-        this.resourceManager = resourceManager;
     }
 
     @Override
@@ -262,6 +333,10 @@ public class StructuredResourceEditor extends SimpleFormController {
         Path uri = requestContext.getResourceURI();
         Principal principal = requestContext.getPrincipal();
         requestContext.getRepository().lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 600, null);
+    }
+
+    public void setResourceManager(StructuredResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 
     public void setSafeHtmlFilter(HtmlPageFilter safeHtmlFilter) {

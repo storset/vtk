@@ -59,8 +59,10 @@
     <property name="authorizationManager" ref="authorizationManager" />
     <property name="principalManager" ref="principalManager" />
     <property name="dao" ref="${repositoryBackend}" />
+    <property name="revisionStore" ref="${repository.revisionStore}" />
     <property name="commentDAO" ref="${repository.commentDao}" />
     <property name="contentStore" ref="${repository.contentStore}" />
+    <property name="contentRepresentationRegistry" ref="contentRepresentationRegistry" />
     <property name="repositoryResourceHelper" ref="repositoryResourceHelper" />
     <property name="maxResourceChildren" value="${repository.maxResourceChildren}" />
     <property name="permanentDeleteOverdueLimitInDays" value="${repository.permanentDeleteOverdueLimitInDays}" />
@@ -145,6 +147,15 @@
     <property name="wrappedAccessor" ref="${repository.dao}" />
   </bean>
 
+  <bean id="repository.defaultRevisionStore" class="org.vortikal.repository.store.DefaultRevisionStore">
+    <property name="sqlMapClient" ref="repository.sqlMapClient" />
+    <property name="sqlMaps" ref="repository.statementMappings" />
+    <property name="principalFactory" ref="principalFactory" />
+    <property name="revisionDirectory" value="${repositoryRevisionDirectory}" />
+    <property name="tempDir" value="${revisionStore.tempDir}" />
+    <property name="contentStore" ref="${repository.contentStore}" />
+  </bean>
+
   <bean id="repository.sqlMapCommentDao" class="org.vortikal.repository.store.db.SqlMapCommentDAO">
     <property name="sqlMapClient" ref="repository.sqlMapClient" />
     <property name="sqlMaps" ref="repository.statementMappings" />
@@ -164,8 +175,6 @@
   <bean id="repositoryResourceHelper" class="org.vortikal.repository.RepositoryResourceHelperImpl">
     <property name="authorizationManager" ref="authorizationManager" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="contentStore" ref="${repository.contentStore}" />
-    <property name="contentRepresentationRegistry" ref="contentRepresentationRegistry" />
   </bean>
 
   <bean id="typeLocalizationProvider" class="org.vortikal.repository.resourcetype.MessageSourceTypeLocalizationProvider">

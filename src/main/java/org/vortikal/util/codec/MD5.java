@@ -31,6 +31,9 @@
 package org.vortikal.util.codec;
 
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -42,17 +45,88 @@ import org.vortikal.util.text.TextUtils;
  * result in a hex string representation.
  */
 public class MD5 {
-    
-    public static String md5sum(String str) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
 
-            byte[] digest = md.digest(str.getBytes());
+    /**
+     * Computes the MD5 sum of a string.
+     * @param str the input
+     * @return the hex representation of the MD5 sum
+     */
+    public static String md5sum(String str) {
+        if (str == null) {
+            throw new IllegalArgumentException("Argument is NULL");
+        }
+        MessageDigest md = instance();
+        byte[] digest = md.digest(str.getBytes());
+        char[] result = TextUtils.toHex(digest);
+        return new String(result);
+    }
+    
+    /**
+     * Computes the MD5 sum of a byte buffer. 
+     * @param bytes the byte buffer
+     * @return a string containing the hex representation of the MD5 sum
+     * @throws IOException if an I/O error occurs
+     */
+    public static String md5sum(byte[] bytes) {
+        MessageDigest md = instance();
+        byte[] digest = md.digest(bytes);
+        char[] result = TextUtils.toHex(digest);
+        return new String(result);
+    }
+
+    /**
+     * Computes the MD5 sum of an input stream. 
+     * (Does not close the stream afterwards.)
+     * @param in the input stream
+     * @return a string containing the hex representation of the MD5 sum
+     * @throws IOException if an I/O error occurs
+     */
+    public static String md5sum(InputStream in) throws IOException {
+        if (in == null) {
+            throw new IllegalArgumentException("Argument is NULL");
+        }
+        MessageDigest md = instance();
+        byte[] buffer = new byte[1024];
+        int n = 0;
+        while ((n = in.read(buffer)) > 0) {
+            md.update(buffer, 0, n);
+        }
+        byte[] digest = md.digest();
+        char[] result = TextUtils.toHex(digest);
+        return new String(result);
+    }
+    
+
+    /**
+     * Creates a wrapper around an input stream that computes the MD5 sum 
+     * while the stream is being read.
+     * @param in the input stream
+     * @return a string containing the hex representation of the MD5 sum
+     * @throws IOException if an I/O error occurs
+     */
+    public static MD5InputStream wrap(InputStream in) {
+        MessageDigest md = instance();
+        return new MD5InputStream(in, md);
+    }
+    
+    public static final class MD5InputStream extends DigestInputStream {
+        private MessageDigest md = null;
+        private MD5InputStream(InputStream in, MessageDigest md) {
+            super(in, md);
+            this.md = md;
+        }
+        public String md5sum() {
+            byte[] digest = this.md.digest();
             char[] result = TextUtils.toHex(digest);
             return new String(result);
+        }
+    }
+    
+    private static MessageDigest instance() {
+        try {
+            return MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(
-                "MD5 digest not available in JVM");
+            throw new IllegalStateException("MD5 digest not available in JVM");
         }
     }
 }

@@ -17,13 +17,13 @@
   <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
   
   <script type="text/javascript"><!--
-  	
- 	shortcut.add("Ctrl+S",function() {
-  		$("#updateAction").click();
-	});
-	
-	$(document).ready(function() {
-      initDatePicker("${language}");
+    
+    shortcut.add("Ctrl+S",function() {
+        $(".vrtx-focus-button input:last").click();
+    });
+
+    $(document).ready(function() {
+        initDatePicker("${language}");
     });
   
     UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
@@ -75,20 +75,44 @@
 
   <#assign locale = springMacroRequestContext.getLocale() />
   <#assign header = form.resource.getLocalizedMsg("header", locale, null) />
+  
+  <#if form.workingCopy>
+    <div class="tabMessage-big">
+      <@vrtx.msg code="editor.workingCopyMsg" /> <@vrtx.msg code="workingCopyMsgPre" /> <a class="vrtx-revisions-view" href="${resourceContext.currentURI?html}?x-decorating-mode=plain"><@vrtx.msg code="workingCopyMsgPost" /></a>.
+    </div>
+  </#if>
+
   <h2>${header}</h2>
 
-  <div class="submitButtons submit-extra-buttons">
-    <#include "/system/help.ftl" />
+  <div class="submitButtons submit-extra-buttons" id="editor-shortcuts">
+    <#if !form.workingCopy>
+      <#include "/system/help.ftl" />
       <a class="help-link" href="${form.listComponentServiceURL?html}" target="new_window"><@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" /></a>
-      <div class="vrtx-button">
-      <input type="button" onclick="$('#updateViewAction').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
-    </div>
-    <div class="vrtx-focus-button">
-      <input type="button" onclick="$('#updateAction').click()"  value="${vrtx.getMsg("editor.save")}" />
-    </div>
-    <div class="vrtx-button">
-      <input type="button" onclick="$('#cancelAction').click()"  value="${vrtx.getMsg("editor.cancel")}" />
-    </div>
+    </#if>
+    
+    <#if !form.published && !form.workingCopy>
+      <a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('#updateAction').click()"><span>${vrtx.getMsg("editor.save")}</span></a>
+      <a class="vrtx-button" href="javascript:void(0)" onclick="$('#cancelAction').click()"><span>${vrtx.getMsg("editor.cancel")}</span></a>
+    <#elseif form.workingCopy>
+      <ul id="editor-menu">
+        <li class="first"><a href="javascript:void(0)" onclick="$('#saveWorkingCopyAction').click()">${vrtx.getMsg("editor.saveWorkingCopy")}</a></li>
+        <li><a href="javascript:void(0)" onclick="$('#cancelAction').click()">${vrtx.getMsg("editor.cancel")}</a></li>
+        <li><a href="javascript:void(0)" onclick="$('#makePublicVersionAction').click()">${vrtx.getMsg("editor.makePublicVersion")}</a></li>
+        <li><a href="javascript:void(0)" onclick="$('#deleteWorkingCopyAction').click()">${vrtx.getMsg("editor.deleteWorkingCopy")}</a></li>
+        <li><#include "/system/help.ftl" /></li>
+        <li class="last">
+          <a class="help-link" href="${form.listComponentServiceURL?html}" target="new_window">
+            <@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" />
+          </a>
+        </li>
+      </ul>
+    <#else>
+      <a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('#updateAction').click()"><span>${vrtx.getMsg("editor.save")}</span></a>
+      <a class="vrtx-button" href="javascript:void(0)" onclick="$('#cancelAction').click()"><span>${vrtx.getMsg("editor.cancel")}</span></a>
+      <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
+      &nbsp;
+      <a class="vrtx-button" href="javascript:void(0)" onclick="$('#saveWorkingCopyAction').click()"><span>${vrtx.getMsg("editor.saveAsWorkingCopy")}</span></a>
+   </#if>
   </div>  
 
   <form action="${form.submitURL?html}" method="post" id="editor">
@@ -121,16 +145,47 @@
     </#list>
     
     <div class="submit submitButtons">
-      <div class="vrtx-button">
-        <input type="submit" id="updateViewAction" onclick="performSave();" name="updateViewAction" value="${vrtx.getMsg("editor.saveAndView")}" />
-      </div>
+    <#if !form.published && !form.workingCopy>
       <div class="vrtx-focus-button">
         <input type="submit" id="updateAction" onclick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">
         <input type="submit" onclick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
       </div>
+
+    <#elseif form.workingCopy>
+      <div class="vrtx-focus-button">
+        <input type="submit" id="saveWorkingCopyAction" onclick="performSave();" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.saveWorkingCopy")}" />
+      </div>
+      <div class="vrtx-button">
+        <input type="submit" onclick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
+      </div>
+
+      <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
+      &nbsp;
+      <div class="vrtx-button">
+        <input type="submit" id="makePublicVersionAction" onclick="performSave();" name="makePublicVersionAction" value="${vrtx.getMsg("editor.makePublicVersion")}" />
+      </div>
+      <div class="vrtx-button">
+        <input type="submit" id="deleteWorkingCopyAction" onclick="performSave();" name="deleteWorkingCopyAction" value="${vrtx.getMsg("editor.deleteWorkingCopy")}" />
+      </div>
+      
+    <#else>
+      <div class="vrtx-focus-button">
+        <input type="submit" id="updateAction" onclick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
+      </div>
+      <div class="vrtx-button">
+        <input type="submit" onclick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
+      </div>
+
+      <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
+      &nbsp;
+      <div class="vrtx-button">
+        <input type="submit" id="saveWorkingCopyAction" onclick="performSave();" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.saveAsWorkingCopy")}" />
+      </div>
+    </#if>
     </div>
   </form>
 </body>
 </html>
+

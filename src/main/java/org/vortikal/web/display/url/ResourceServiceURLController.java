@@ -42,6 +42,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Revision;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -69,18 +70,24 @@ public class ResourceServiceURLController implements Controller {
     public static final String DEFAULT_VIEW_NAME = "resourceReference";
     
     private Service service = null;
+    private boolean displayWorkingRevision = false;
     private String viewName = DEFAULT_VIEW_NAME;
 
-    @Required public void setService(Service service) {
+    @Required 
+    public void setService(Service service) {
         this.service = service;
+    }
+    
+    public void setDisplayWorkingRevision(boolean displayWorkingRevision) {
+        this.displayWorkingRevision = displayWorkingRevision;
     }
 
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
     
-    public ModelAndView handleRequest(HttpServletRequest arg0,
-                                      HttpServletResponse arg1) throws Exception {
+    public ModelAndView handleRequest(HttpServletRequest request,
+                                      HttpServletResponse response) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         Principal principal = requestContext.getPrincipal();
@@ -88,21 +95,37 @@ public class ResourceServiceURLController implements Controller {
         Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
 
+        Map<String, Object> model = new HashMap<String, Object>();
+        
         Resource resource = repository.retrieve(token, uri, false);
+        if (this.displayWorkingRevision) {
+            Revision workingCopy = null;
+            for (Revision rev: repository.getRevisions(token, uri)) {
+                if (rev.getType() == Revision.Type.WORKING_COPY) {
+                    workingCopy = rev;
+                    break;
+                }
+            }
+            if (workingCopy != null) {
+                try {
+                    resource = repository.retrieve(token, uri, false, workingCopy);
+                    model.put("workingCopy", workingCopy);
+                } catch(Throwable t) { }
+            }
+        }
         String resourceURL = this.service.constructLink(resource, principal, false);
         
         // Hack to ensure https for preview of direct access interfaces
-        if ((arg0.getScheme() == "https") && (arg0.getServerPort() != 443)
+        if ((request.getScheme() == "https") && (request.getServerPort() != 443)
             && resourceURL.startsWith("http:")) { 
             resourceURL = resourceURL.replaceFirst("http:", "https:");
         }
 
-        Map<String, Object> model = new HashMap<String, Object>();
         model.put("resource", resource);
         model.put("resourceReference", resourceURL);
 
         return new ModelAndView(this.viewName, model);
     }
-
+    
 }
 

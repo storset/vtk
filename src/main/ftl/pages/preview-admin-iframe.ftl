@@ -51,7 +51,12 @@
     <title>${(title.title)?default(resourceContext.currentResource.name)}</title>  
   </head>
   <body id="vrtx-preview">
-
+    <#if workingCopy?exists>
+      <div class="tabMessage-big">
+        <@vrtx.msg code="preview.workingCopyMsg" /> <@vrtx.msg code="workingCopyMsgPre" /> <a class="vrtx-revisions-view" href="${resourceContext.currentURI?html}?x-decorating-mode=plain"><@vrtx.msg code="workingCopyMsgPost" /></a>.
+      </div>
+    </#if>
+    
     <#assign previewRefreshParameter = 'outer-iframe-refresh' />
     <#assign constructor = "freemarker.template.utility.ObjectConstructor"?new() />
     <#assign dateStr = constructor("java.util.Date")?string("yyyymmddhhmmss") />
@@ -60,10 +65,10 @@
       <#assign previewViewParameter = 'vrtx=previewViewIframe' />
     </#if>
     
-	<#if previewImage?exists >
-		<#assign url = previewImage.URL />
-	<#elseif resourceReference?exists >
-    	<#assign url = resourceReference />	  
+    <#if previewImage?exists >
+      <#assign url = previewImage.URL />
+      <#elseif resourceReference?exists >
+      <#assign url = resourceReference />	  
     </#if>
     
     <#-- current URL to use in hash communication with iframe (Opera and IE 7) -->
@@ -78,7 +83,7 @@
       <#assign url = url + "?" + previewViewParameter />
     </#if>
     <#assign url = url + "&amp;" + previewRefreshParameter + "=" + dateStr />
-    
+
     <#-- Do not show preview if resource is "Allowed for all" and we are on https. Should not normally happen -->
     <#if ((permissions_ACTION_READ.permissionsQueryResult = 'true') || 
           (permissions_ACTION_READ_PROCESSED.permissionsQueryResult = 'true')) 

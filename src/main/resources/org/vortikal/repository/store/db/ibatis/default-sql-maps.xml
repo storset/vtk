@@ -811,6 +811,83 @@
       where id = #ID#
   </update>
 
+
+  <!-- Versioning section -->
+
+
+  <resultMap id="Revision" class="java.util.HashMap">
+    <result property="id" column="id" />
+    <result property="resourceId" column="resource_id" />
+    <result property="name" column="revision_name"/>
+    <result property="uid" column="user_id"/>
+    <result property="timestamp" column="timestamp" jdbcType="TIMESTAMP" javaType="java.sql.Timestamp" />
+    <result property="checksum" column="checksum" />
+    <result property="changeAmount" column="change_amount" />
+  </resultMap>
+
+  <resultMap id="RevisionAclEntry" class="java.util.HashMap">
+    <result property="id" column="id" javaType="int" />
+    <result property="revisionId" column="revision_id" javaType="long" />
+    <result property="action" column="action_type" />
+    <result property="principal" column="user_or_group_name" />
+    <result property="isUser" column="is_user" />
+  </resultMap>
+
+
+  <select id="nextRevisionID" resultClass="Long">
+    select <include refid="nextContentRevisionID" />
+  </select>
+
+  <insert id="insertRevision" parameterClass="java.util.Map">
+    insert into simple_content_revision
+      (id, resource_id, revision_name, user_id, timestamp, checksum, change_amount)
+    values (#revisionId#, #resourceId#, #name#, #uid#, #timestamp#, #checksum#, #changeAmount#)
+  </insert>
+
+  <update id="updateRevision" parameterClass="java.util.Map">
+     update simple_content_revision
+      set revision_name = #name#,
+          user_id = #uid#,
+          timestamp = #timestamp#,
+          checksum = #checksum#,
+          change_amount = #changeAmount#
+      where id = #revisionId# and resource_id = #resourceId#
+  </update>
+
+  <delete id="deleteRevision" parameterClass="java.util.Map">
+    delete from simple_content_revision where id = #revisionId# and resource_id = #resourceId#
+  </delete>
+
+  <select id="listRevisionsByResource" parameterClass="java.util.Map" resultMap="Revision">
+    select id, resource_id, revision_name, user_id, timestamp, checksum, change_amount
+         from simple_content_revision where resource_id = #resourceId#
+         order by id desc
+  </select>
+
+  <select id="listRevisionsByResourceIds" parameterClass="java.util.Map" resultClass="Long">
+    select distinct resource_id from simple_content_revision
+    where resource_id in 
+    <iterate prepend="" property="resourceIds" open="(" close=")" conjunction=","> 
+             #resourceIds[]# 
+    </iterate> 
+  </select>
+
+  <insert id="insertRevisionAclEntry" parameterClass="java.util.Map">
+    insert into revision_acl_entry
+      (id, action_type_id, revision_id, user_or_group_name,
+       is_user, granted_by_user_name, granted_date)
+    values (<include refid="nextRevisionAclEntryId" />, #actionId#, #revisionId#, #principal#,
+            #isUser#, #grantedBy#, #grantedDate#)
+  </insert>
+
+  <select id="listRevisionAclEntriesByResource" parameterClass="java.util.Map" resultMap="RevisionAclEntry">
+    select a.id, t.name as action_type, a.revision_id, a.user_or_group_name, a.is_user, a.granted_by_user_name, a.granted_date
+    from revision_acl_entry a
+      inner join action_type t on a.action_type_id = t.action_type_id
+    where a.revision_id in
+       (select id from simple_content_revision where resource_id = #resourceId#)
+  </select>
+
   <!-- System index DAO statement section -->
   <select id="nextTempTableSessionId" resultClass="java.lang.Integer">
     select <include refid="nextTempTableSessionId" />

@@ -53,6 +53,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceOverwriteException;
+import org.vortikal.repository.Revision;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
@@ -163,6 +164,15 @@ public class RequestLocalRepository implements Repository {
         }
     }
 
+    
+    
+    @Override
+    public Resource retrieve(String token, Path uri, boolean forProcessing,
+            Revision revision) throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, Exception {
+        return this.repository.retrieve(token, uri, forProcessing, revision);
+    }
+
     @Override
     public Resource[] listChildren(String token, Path uri, boolean forProcessing) throws Exception {
         return this.repository.listChildren(token, uri, forProcessing);
@@ -190,9 +200,25 @@ public class RequestLocalRepository implements Repository {
     }
 
     @Override
+    public Resource storeContent(String token, Path uri, InputStream byteStream, Revision revision) throws Exception {
+
+        RepositoryContext ctx = RepositoryContext.getRepositoryContext();
+        if (ctx != null) {
+            ctx.clear();
+        }
+        return this.repository.storeContent(token, uri, byteStream, revision);
+    }
+
+    @Override
     public InputStream getInputStream(String token, Path uri, boolean forProcessing) throws Exception {
 
         return this.repository.getInputStream(token, uri, forProcessing);
+    }
+
+    @Override
+    public InputStream getInputStream(String token, Path uri, boolean forProcessing, Revision revision) throws Exception {
+
+        return this.repository.getInputStream(token, uri, forProcessing, revision);
     }
 
     @Override
@@ -451,4 +477,20 @@ public class RequestLocalRepository implements Repository {
         this.repository.purgeTrash();
     }
 
+    @Override
+    public List<Revision> getRevisions(String token, Path uri) throws AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException {
+        return this.repository.getRevisions(token, uri);
+    }
+
+    @Override
+    public Revision createRevision(String token, Path uri, Revision.Type type) throws AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException {
+        return this.repository.createRevision(token, uri, type);
+    }
+
+    @Override
+    public void deleteRevision(String token, Path uri, Revision revision)
+            throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, Exception {
+        this.repository.deleteRevision(token, uri, revision);
+    }
 }

@@ -4,8 +4,9 @@
   <groupId>vortikal</groupId>
   <artifactId>vortikal</artifactId>
   <version>0.8.7-SNAPSHOT</version>
+  <version>0.8.6-versioning-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>The Vortikal Web Framework</name>
+  <name>The Vortikal Web Framework [versioning-branch]</name>
   <url>http://www.usit.uio.no/it/vortex/</url>
   <modelVersion>4.0.0</modelVersion>
   <description> The Vortikal Web Framework is an open source web publishing solution. It consists of two
@@ -619,6 +620,12 @@
       <version>3.2.1</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>com.googlecode.java-diff-utils</groupId>
+      <artifactId>diffutils</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+
 
     <!-- runtime dependencies -->
     <dependency>

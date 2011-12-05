@@ -123,6 +123,10 @@
                + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=" + permissions_ACTION_READ.requestScheme />
     </#if>
 
+    <#if workingCopy?exists>
+      <#assign url = url + "&amp;revision=WORKING_COPY" />
+    </#if>
+
     <iframe class="previewView" name="previewViewIframe" id="previewViewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">
       [Your user agent does not support frames or is currently configured
       not to display frames. However, you may visit

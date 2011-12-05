@@ -219,7 +219,7 @@ public class FeedComponent extends AbstractFeedComponent {
 
         @SuppressWarnings("unchecked")
         List<SyndEntry> entries = (List<SyndEntry>) feed.getEntries();
-        boolean filter = !prameterHasValue(PARMATER_ALLOW_MARKUP, "true", request);
+        boolean filter = !prameterHasValue(PARAMETER_ALLOW_MARKUP, "true", request);
         for (SyndEntry entry : entries) {
 
             HtmlFragment description = getDescription(entry, baseURL, requestURL, filter);
@@ -264,6 +264,7 @@ public class FeedComponent extends AbstractFeedComponent {
         map.put(PARAMETER_SORT, PARAMETER_SORT_DESC);
         map.put(PARAMETER_INCLUDE_IF_EMPTY, PARAMETER_INCLUDE_IF_EMPTY_DESC);
         map.put(PARAMETER_DISPLAY_CATEGORIES, PARAMETER_DISPLAY_CATEGORIES_DESC);
+        map.put(PARAMETER_ALLOW_MARKUP, PARAMETER_ALLOW_MARKUP_DESC);
         return map;
     }
 

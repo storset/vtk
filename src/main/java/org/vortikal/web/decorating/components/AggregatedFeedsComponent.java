@@ -250,7 +250,7 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
             }
             @SuppressWarnings("unchecked")
             List<SyndEntry> tmpEntries = tmpFeed.getEntries();
-            boolean filter = !prameterHasValue(PARMATER_ALLOW_MARKUP, "true", request);
+            boolean filter = !prameterHasValue(PARAMETER_ALLOW_MARKUP, "true", request);
             for (SyndEntry entry : tmpEntries) {
                 feedMapping.put(entry, tmpFeed);
                 HtmlFragment description = getDescription(entry, baseURL, requestURL, filter);
@@ -337,6 +337,7 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         map.put(Parameter.SORT.getId(), Parameter.SORT.getDesc());
         map.put(Parameter.INCLUDE_IF_EMPTY.getId(), Parameter.INCLUDE_IF_EMPTY.getDesc());
         map.put(Parameter.DISPLAY_CATEGORIES.getId(), Parameter.DISPLAY_CATEGORIES.getDesc());
+        map.put(PARAMETER_ALLOW_MARKUP, PARAMETER_ALLOW_MARKUP_DESC);
         return map;
     }
 

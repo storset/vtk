@@ -62,8 +62,8 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
     protected static final String PARAMETER_FEED_ELEMENT_ORDER = "element-order";
     protected static final String PARAMETER_FEED_ELEMENT_ORDER_DESC = "The order that the elementes are listed";
 
-    protected static final String PARMATER_ALLOW_MARKUP = "allow-markup";
-    protected static final String PARAMTER_ALLOW_MARKUP_DESC = "Set to 'true' to include span elements and class attributes";
+    protected static final String PARAMETER_ALLOW_MARKUP = "allow-markup";
+    protected static final String PARAMETER_ALLOW_MARKUP_DESC = "Set to 'true' to include span elements and class attributes";
 
     
     private HtmlPageParser parser = new HtmlPageParser();

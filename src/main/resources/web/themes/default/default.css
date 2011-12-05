@@ -1706,7 +1706,7 @@ h3.resourceInfoHeader {
   clear: left;
   float: left;
   margin: 0 50px 0 0;
-  width: 45%;
+  width: 600px;
 }
 
 #vrtx-resource-visit-stats {
@@ -1714,7 +1714,7 @@ h3.resourceInfoHeader {
   position: relative;
   top: 45px;
   left: 0px;
-  width: 45%;
+  width: 35%;
 }
 
 /* TMP overview */  

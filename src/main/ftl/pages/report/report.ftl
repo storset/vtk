@@ -19,7 +19,6 @@
     <div class="resourceInfo">
       <h2><@vrtx.msg code="report.heading" default="Reports" /></h2>
       <div class="vrtx-report">
-      
         <#if primaryReporters?has_content>
           <ul class="vrtx-primary-reporters first">
           <#list primaryReporters as reporter>
@@ -30,7 +29,7 @@
                 <span class="vrtx-primary-reporters-info"><@vrtx.msg code="report.primaries.info.${reporter.name}" default="${reporter.name}" /></span>
               </a>
             </li>
-            <#if ((reporter_index+1) % 3 == 0)>
+            <#if (((reporter_index+1) % 3 == 0) && reporter_has_next)>
               </ul>
               <ul class="vrtx-primary-reporters">
             </#if>

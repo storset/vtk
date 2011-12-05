@@ -41,6 +41,9 @@
           <#if (title_index % 2 == 0) >
             <#assign rowType = "even" />
           </#if>
+          <#if (title_index == 0)>
+            <#assign rowType = rowType + " first" />
+          </#if>
           <tr class="report-urchin-table-row ${rowType}">
             <td class="report-urchin-table-data-count">
               ${count?html}.
@@ -90,6 +93,9 @@
           <#if (title_index % 2 == 0) >
             <#assign rowType = "even" />
           </#if>
+          <#if (title_index == 0)>
+            <#assign rowType = rowType + " first" />
+          </#if>
           <tr class="report-urchin-table-row ${rowType}">
             <td class="report-urchin-table-data-count">
               ${count?html}.
@@ -138,6 +144,9 @@
           <#assign rowType = "odd" />
           <#if (title_index % 2 == 0) >
             <#assign rowType = "even" />
+          </#if>
+          <#if (title_index == 0)>
+            <#assign rowType = rowType + " first" />
           </#if>
           <tr class="report-urchin-table-row ${rowType}">
             <td class="report-urchin-table-data-count">

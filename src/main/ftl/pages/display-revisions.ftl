@@ -12,11 +12,10 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#macro changeAmount amount>
-  <#if amount &gt; 0>
-  <#local max = amount />
-  <#if max &gt; 9><#local max = 10 /></#if>
-  <span style="color: black;">&nbsp;<#list 1..max as i>|&nbsp;</#list></span>
-  </#if>
+  <#if amount &gt; 9><#local amount = 10 /></#if>
+  <#local rest = 10 - amount />
+  <#if amount &gt; 0><span style="color: darkgray; font-weight: bold;"><#list 1..amount as  i>|</#list></span></#if><#rt />
+  <#lt/><#if rest &gt; 0><span style="color: lightgray; font-weight: bold;"><#list 1..rest as i>|</#list></span></#if>
 </#macro>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -31,7 +30,7 @@
           <th><@vrtx.msg code="versions.table.title" />  #</th>
           <th><@vrtx.msg code="versions.table.modified-by" /></th>
           <th><@vrtx.msg code="versions.table.time" /></th>
-          <th></th>
+          <th><@vrtx.msg code="versions.table.change-amount" /></th>
           <th></th>
         </tr>
       </head>
@@ -41,6 +40,11 @@
             <td><@vrtx.msg code="versions.table.working-copy" /></td>
             <td>${workingCopy.principal}</td>
             <td>${workingCopy.timestamp?datetime}</td>
+            <td>
+              <#if (workingCopy.changeAmount)?exists>
+                <@changeAmount workingCopy.changeAmount />
+              </#if>
+            </td>
             <td class="vrtx-revisions-buttons-column">
               <#if (workingCopy.displayURL)?exists>
               <a class="vrtx-revisions-view vrtx-button-small" href="${workingCopy.displayURL?html}"><span><@vrtx.msg code="versions.table.buttons.view" /></span></a>
@@ -60,24 +64,19 @@
                 </form>
               </#if>
             </td>
-            <td>
-              <#if (workingCopy.changeAmount)?exists>
-                <@changeAmount workingCopy.changeAmount />
-              </#if>
-            </td>
           </tr>
         </#if>
         <tr>
           <td id="vrtx-revisions-current"><strong><@vrtx.msg code="versions.table.current-version" /></strong></td>
           <td>${resource.modifiedBy}</td>
           <td>${resource.lastModified?datetime}</td>
-          <td class="vrtx-revisions-buttons-column">
-            <a class="vrtx-revisions-view vrtx-button-small" href="${displayURL?html}"><span><@vrtx.msg code="versions.table.buttons.view" /></span></a>
-          </td>
           <td>
             <#if (resourceChangeAmount?exists)>
                 <@changeAmount resourceChangeAmount />
             </#if>
+          </td>
+          <td class="vrtx-revisions-buttons-column">
+            <a class="vrtx-revisions-view vrtx-button-small" href="${displayURL?html}"><span><@vrtx.msg code="versions.table.buttons.view" /></span></a>
           </td>
         </tr>
         <#assign number = regularRevisions?size />
@@ -86,6 +85,11 @@
             <td><@vrtx.msg code="versions.table.title" /> ${number?html}</td>
             <td>${revision.principal}</td>
             <td>${revision.timestamp?datetime}</td>
+            <td>
+              <#if (revision.changeAmount)?exists>
+                <@changeAmount revision.changeAmount />
+              </#if>
+            </td>
             <td class="vrtx-revisions-buttons-column">
               <#if (revision.displayURL)?exists>
                 <a class="vrtx-revisions-view  vrtx-button-small" href="${revision.displayURL?html}"><span><@vrtx.msg code="versions.table.buttons.view" /></span></a>
@@ -103,11 +107,6 @@
                     <input type="submit" value="${vrtx.getMsg("versions.table.buttons.restore")}" />
                   </div>
                 </form>
-              </#if>
-            </td>
-            <td>
-              <#if (revision.changeAmount)?exists>
-                <@changeAmount revision.changeAmount />
               </#if>
             </td>
           </tr>

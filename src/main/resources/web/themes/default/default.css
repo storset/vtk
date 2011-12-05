@@ -1814,7 +1814,24 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 
 #vrtx-revisions .resourceInfo td#vrtx-revisions-current {
   color: #549401;
-} 
+}
+
+.vrtx-revision-amount-grey,
+.vrtx-revision-amount-dark-grey {
+  display: block;
+  width: 3px;
+  height: 10px;
+  float: left;
+  margin: 0 4px 0 0;
+}
+
+.vrtx-revision-amount-grey {
+  background: url(images/report-revision-change-amount-grey.png) no-repeat center center;
+}
+
+.vrtx-revision-amount-dark-grey {
+  background: url(images/report-revision-change-amount-dark-grey.png) no-repeat center center;
+}
 
 /* ^ 3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile / Versioning */
 

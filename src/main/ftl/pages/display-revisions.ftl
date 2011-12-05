@@ -14,8 +14,8 @@
 <#macro changeAmount amount>
   <#if amount &gt; 9><#local amount = 10 /></#if>
   <#local rest = 10 - amount />
-  <#if amount &gt; 0><span style="color: darkgray; font-weight: bold;"><#list 1..amount as  i>|</#list></span></#if><#rt />
-  <#lt/><#if rest &gt; 0><span style="color: lightgray; font-weight: bold;"><#list 1..rest as i>|</#list></span></#if>
+  <#if amount &gt; 0><#list 1..amount as i><span class="vrtx-revision-amount-dark-grey"></span></#list></#if><#rt />
+  <#lt/><#if rest &gt; 0><#list 1..rest as i><span class="vrtx-revision-amount-grey"></span></#list></#if>
 </#macro>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

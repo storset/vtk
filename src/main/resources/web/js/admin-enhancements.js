@@ -1155,35 +1155,45 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     
     var isCancelAction = link.attr("name").toLowerCase().indexOf("cancel") != -1;
     
-    if(isCancelAction && !isReplacing && !post) {
-      $(".expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
-        $(this).remove();
-      });
-    } else {
-      if(!post) {
+    if(!post) {
+      if(isCancelAction && !isReplacing) {
+        $(".expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
+          $(this).remove();
+        });
+        e.stopPropagation(); 
+        e.preventDefault();
+      } else {
         return;
       }
-    }
+    } else {
+      if(!funcProceedCondition || funcProceedCondition(form)) {
+        var url = form.attr("action");
 
-    if((isCancelAction && isReplacing) || (post && (!funcProceedCondition || funcProceedCondition(form)) )) {
-      var url = form.attr("action");
-
-      // TODO: test with form.serialize()
-      var vrtxAdmAppendInputNameValuePairsToDataString = vrtxAdm.appendInputNameValuePairsToDataString; // cache to function scope
-      var dataString = vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=text]"));
-      dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=file]"));
-      dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=radio]:checked"));
-      dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=checkbox]:checked"));
-      dataString += '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
-                  + "&" + link.attr("name");
+        // TODO: test with form.serialize()
+        var vrtxAdmAppendInputNameValuePairsToDataString = vrtxAdm.appendInputNameValuePairsToDataString; // cache to function scope
+        var dataString = vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=text]"));
+        dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=file]"));
+        dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=radio]:checked"));
+        dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=checkbox]:checked"));
+        dataString += '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
+                    + "&" + link.attr("name");
                       
-      vrtxAdmin.serverFacade.postHtml(url, dataString, {
-        success: function (results, status, resp) {
-          if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
-            vrtxAdm.displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
-          } else {
-            if (isReplacing) {
-              form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
+        vrtxAdmin.serverFacade.postHtml(url, dataString, {
+          success: function (results, status, resp) {
+            if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
+              vrtxAdm.displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
+            } else {
+              if (isReplacing) {
+                form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
+                  for(var i = updateSelectors.length; i--;) {
+                    var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
+                    $("#app-content " + updateSelectors[i]).replaceWith(outer);
+                  }
+                  if (funcComplete) {
+                    funcComplete();
+                  }
+                });
+              } else {
                 for(var i = updateSelectors.length; i--;) {
                   var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
                   $("#app-content " + updateSelectors[i]).replaceWith(outer);
@@ -1191,22 +1201,14 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
                 if (funcComplete) {
                   funcComplete();
                 }
-              });
-            } else {
-              for(var i = updateSelectors.length; i--;) {
-                var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
-                $("#app-content " + updateSelectors[i]).replaceWith(outer);
+                form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
+                  $(this).remove();
+                });            
               }
-              if (funcComplete) {
-                funcComplete();
-              }
-              form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
-                $(this).remove();
-              });            
             }
           }
-        }
-      });
+        });
+      }
       e.stopPropagation(); 
       e.preventDefault();
     }

@@ -488,7 +488,8 @@ public class PropertyEditController extends SimpleFormController implements Refe
 
         ResourceTypeDefinition def = resourceTypeTree.getResourceTypeDefinitionByName("text");
 
-        return resourceTypeTree.isContainedType(def, resource.getResourceType());
+        return resourceTypeTree.isContainedType(def, resource.getResourceType())
+                && !resource.getResourceType().equals("text");
     }
 
     private boolean isToggleProperty(PropertyTypeDefinition def) {

@@ -342,8 +342,6 @@
         <entry key="collectionStructure" value-ref="collectionStructureView" />
         <entry key="documentReport" value-ref="documentReportView" />
         <entry key="diagramReport" value-ref="diagramReportView" />
-        <entry key="urchinVisit" value-ref="urchinReportView" />
-        <entry key="urchinSearch" value-ref="urchinReportView" />
       </map>
     </property>
     <property name="referenceDataProviders">
@@ -402,19 +400,6 @@
 
   <bean id="diagramReportView" parent="freemarkerView">
     <property name="url" value="pages/report/diagram-report.ftl" />
-    <property name="attributesMap">
-      <map>
-        <entry key="cssURLs">
-          <list>
-            <value>${themeBaseURL}/report/report.css</value>
-          </list>
-        </entry>
-      </map>
-    </property>
-  </bean>
-
-  <bean id="urchinReportView" parent="freemarkerView">
-    <property name="url" value="pages/report/report-urchin.ftl" />
     <property name="attributesMap">
       <map>
         <entry key="cssURLs">

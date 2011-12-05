@@ -5,10 +5,7 @@
  *  TODO: prototypes vs. static (memory vs. speed?) -- it seem to be boiling down to using at the right time and test alot:
  *        http://stackoverflow.com/questions/3493252/javascript-prototype-operator-performance-saves-memory-but-is-it-faster
  *  TODO: CPU usage in ready() vs. wait for it in load()
- *  TODO: consider using HTML 5 localStorage (can store max 5 MB) for browser info (e.g. store 3 hours)
- *        -- have a working example of this at home
- *        -- the issue goes on security (e.g. override this on another host to e.g. "isIE" will give you IE experience in e.g. Chrome for e.g. 3 hours)
- *        -- advise from owasp: https://www.owasp.org/index.php/HTML5_Security_Cheat_Sheet (never store sensitive info in local storage)
+ *
  */
  
 /* 

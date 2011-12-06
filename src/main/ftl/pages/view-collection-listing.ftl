@@ -105,9 +105,12 @@
   </#if>
   
 <#if !isEventCalendarListing>
+	<#if viewOngoingMastersLink?exists>
+		<h1><@master.completed />
+	<#else>
     <h1>${title?html}
       <@projects.completed />
-      <@master.completed />
+    </#if>
       <#if page?has_content>
         <#if "${page}" != "1"> - <@vrtx.msg code="viewCollectionListing.page" /> ${page}</#if>
       </#if>

@@ -2369,6 +2369,11 @@ form button::-moz-focus-inner {
   padding: 0;
 }
 
+/* Fix rendering bug in Firefox for hover in table (VTK-2562) */
+#directory-listing tr input, x:-moz-any-link, x:only-child {
+  margin: 3px 3px 3px 4px;
+}
+
 /* TODO: is there -moz extension for file upload button?
          it seems not: https://developer.mozilla.org/en/CSS_Reference/Mozilla_Extensions
 

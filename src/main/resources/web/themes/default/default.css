@@ -2370,6 +2370,7 @@ form button::-moz-focus-inner {
 }
 
 /* Fix rendering bug in Firefox for hover in table (VTK-2562) */
+/* TODO: the problems lays though with 'overflow:hidden' on table cells and resource link */
 #directory-listing tr input, x:-moz-any-link, x:only-child {
   margin: 3px 3px 3px 4px;
 }

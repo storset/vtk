@@ -161,6 +161,7 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
             OutputStream out = new FileOutputStream(tempFile);
             StreamUtil.pipe(wrapper, out, COPY_BUF_SIZE, true);
             checksum = wrapper.checksum();
+            Principal modifiedBy = resource.getModifiedBy();
 
             if (prev != null && tempFile != null) {
                 changeAmount = Revisions.changeAmount(
@@ -168,7 +169,7 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
                 
             }
             content = new FileInputStream(tempFile);
-            return insertRevision(resource, principal, name, 
+            return insertRevision(resource, modifiedBy, name, 
                     checksum, changeAmount, content);
         } catch (IOException e) {
             throw new DataAccessException(e);

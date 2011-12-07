@@ -60,6 +60,14 @@ form#feedback-form textarea {
   border: 1px solid #888;
 }
 
+form#feedback-form textarea {
+  height: 205px;
+}
+
+form#email-a-friend-form textarea {
+  height: 125px;
+}
+
 form#email-a-friend-form div.email-help {
   margin-top: 5px;
   padding-top: 0;

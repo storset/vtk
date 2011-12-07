@@ -22,6 +22,9 @@
   <meta name="robots" content="noindex"/> 
  </head>
  <body>
+   <#if tipResponse?has_content && tipResponse = "OK">
+     <p><@vrtx.msg code="tip.form.success" args=[emailSentTo] /></p>
+   <#else>
     <h1><@vrtx.msg code="tip.emailtitle" default="E-mail a friend" /></h1>   
     <h2>${resource.title}</h2>
 
@@ -60,20 +63,17 @@
     </form>
        
     <#-- Postback from Controller -->
-    <div id="tip-response"> 
-
-       <#if tipResponse?exists && tipResponse?has_content>
-         <#if tipResponse = "FAILURE-NULL-FORM">
-             <span class="failure"><@vrtx.msg code="tip.form.fail.null" default="You have to write something in both fields" />.</span>
-         <#elseif tipResponse = "FAILURE-INVALID-EMAIL">
-             <span class="failure"><@vrtx.msg code="tip.form.fail.invalidate" default="One of the e-mail addresses is invalid" />.</span>
-         <#elseif tipResponse = "FAILURE">
-             <span class="failure"><@vrtx.msg code="tip.form.fail.general" default="Tip was not sent" /><#if tipResponseMsg?exists && tipResponseMsg?has_content>${tipResponseMsg}</#if>.</span>
-         <#elseif tipResponse = "OK">
-           <@vrtx.msg code="tip.form.success" args=[emailSentTo] />
-           <#--@vrtx.msg code="tip.form.success" default="Tip is sent to " />&nbsp;<#if emailSentTo?exists && emailSentTo?has_content>${emailSentTo}</#if-->
-         </#if> 
-      </#if>  
-    </div>
+    <#if tipResponse?has_content>
+      <div id="tip-response">
+      <#if tipResponse = "FAILURE-NULL-FORM">
+        <span class="failure"><@vrtx.msg code="tip.form.fail.null" default="You have to write something in both fields" />.</span>
+      <#elseif tipResponse = "FAILURE-INVALID-EMAIL">
+        <span class="failure"><@vrtx.msg code="tip.form.fail.invalidate" default="One of the e-mail addresses is invalid" />.</span>
+      <#elseif tipResponse = "FAILURE">
+        <span class="failure"><@vrtx.msg code="tip.form.fail.general" default="Tip was not sent" /><#if tipResponseMsg?exists && tipResponseMsg?has_content>${tipResponseMsg}</#if>.</span>
+      </#if> 
+      </div>
+    </#if>  
+  </#if>
 </body>
 </html>

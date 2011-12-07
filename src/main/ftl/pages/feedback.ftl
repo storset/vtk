@@ -24,22 +24,24 @@
       <script type="text/javascript" src="${jsURL}"></script>
     </#list>
   </#if>
-  <script type="text/javascript">
-    var thanksTitle = 
-    $(function() {
-      $(".submit-email-form").click(function() {
-        var TBTitle = window.parent.document.getElementById("TB_ajaxWindowTitle");
-        $(TBTitle).text('<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />');
-      });
-    });
-  </script>
+  
   <meta name="robots" content="noindex"/> 
  </head>
  <body>
-    <h1><@vrtx.msg code="feedback.title" default="Give feedback" /></h1> 
+    <#if tipResponse?has_content && tipResponse = "OK">
+      <p><@vrtx.msg code="feedback.form.success" args=[emailSentTo] /></p>
+      <script type="text/javascript"><!--
+        $(function() {
+          var TBTitle = window.parent.document.getElementById("TB_ajaxWindowTitle");
+          $(TBTitle).text('<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />');
+        });
+      // -->
+      </script>
+    <#else>
+      <h1><@vrtx.msg code="feedback.title" default="Give feedback" /></h1> 
 
-    <!-- <p><@vrtx.msg code="feedback.cant-respond" default="We can unfortunately not respond directly." /></p>
-    <p>
+      <p><@vrtx.msg code="feedback.cant-respond" default="We can unfortunately not respond directly." /></p>
+      <p>
       <@vrtx.msg code="feedback.contact-pre" default="See" />&nbsp;
       <#if contacturl?has_content>
         <a id="vrtx-feedback-contact" target="_top" href='${contacturl?html}'>
@@ -47,44 +49,44 @@
         <a id="vrtx-feedback-contact" target="_top" href='<@vrtx.msg code="feedback.contact-link" default="http://www.uio.no/english/about/contact/" />'>
       </#if>
       <@vrtx.msg code="feedback.contact-middle" default="our points of contact" /></a>&nbsp;<@vrtx.msg code="feedback.contact-post" default="if you need answers from anyone." />
-    </p> -->
+      </p>
 
-     <#-- Feedback form -->
-     <#if !like?exists || (like?exists && like = "false")>
-       <form id="feedback-form" method="post" action="?vrtx=send-feedback">
-         <#-- Your comment -->
-         <label for="yourComment" style="display: none;"><@vrtx.msg code="feedback.form.yourcomment" default="Your comment" /></label> 
-         <#if yourSavedComment?exists && yourSavedComment?has_content>
-           <textarea rows="15" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
-         <#else>
-           <textarea rows="15" cols="10" id="yourComment" name="yourComment"></textarea> 
-         </#if>
+       <#-- Feedback form -->
+       <#if !like?exists || (like?exists && like = "false")>
+         <form id="feedback-form" method="post" action="?vrtx=send-feedback">
+           <#-- Your comment -->
+           <label for="yourComment" style="display: none;"><@vrtx.msg code="feedback.form.yourcomment" default="Your comment" /></label> 
+           <#if yourSavedComment?exists && yourSavedComment?has_content>
+             <textarea rows="15" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
+           <#else>
+             <textarea rows="15" cols="10" id="yourComment" name="yourComment"></textarea> 
+           </#if>
        
-         <#if mailto?has_content>
-           <input type="hidden" name="mailto" value="${mailto?html}" />
-         </#if>
+           <#if mailto?has_content>
+             <input type="hidden" name="mailto" value="${mailto?html}" />
+           </#if>
          
-         <#if contacturl?has_content>
-           <input type="hidden" name="contacturl" value="${contacturl?html}" />
-         </#if>
+           <#if contacturl?has_content>
+             <input type="hidden" name="contacturl" value="${contacturl?html}" />
+           </#if>
        
-         <input type="submit" class="submit-email-form" value="Send" name="submit"/>
-      </form>
-    </#if>
+           <input type="submit" class="submit-email-form" value="Send" name="submit"/>
+         </form>
+       </#if>
        
-    <#-- Postback from Controller -->
-    <div id="tip-response"> 
-       <#if tipResponse?exists && tipResponse?has_content>
-         <#if tipResponse = "FAILURE-NULL-FORM">
+       <#-- Postback from Controller -->
+       
+       <#if tipResponse?has_content>
+         <div id="tip-response"> 
+           <#if tipResponse = "FAILURE-NULL-FORM">
              <span class="failure"><@vrtx.msg code="feedback.form.fail.null" default="You have to write a comment" />.</span>
-         <#elseif tipResponse = "FAILURE-INVALID-EMAIL">
+           <#elseif tipResponse = "FAILURE-INVALID-EMAIL">
              <span class="failure"><@vrtx.msg code="feedback.form.fail.invalidate" default="One of the e-mail addresses is invalid" />.</span>
-         <#elseif tipResponse = "FAILURE">
+           <#elseif tipResponse = "FAILURE">
              <span class="failure"><@vrtx.msg code="feedback.form.fail.general" default="Feedback was not sent" /><#if tipResponseMsg?exists && tipResponseMsg?has_content>${tipResponseMsg}</#if>.</span>
-         <#elseif tipResponse = "OK">
-           <@vrtx.msg code="feedback.form.success" args=[emailSentTo] />
-         </#if> 
-      </#if>  
-    </div>
+           </#if>
+         </div>
+       </#if>
+    </#if>
 </body>
 </html>

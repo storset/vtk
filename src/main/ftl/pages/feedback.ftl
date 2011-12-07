@@ -19,12 +19,26 @@
       <link href="${cssUrl}" type="text/css" rel="stylesheet"/>
     </#list>
   </#if>
+  <#if jsURLs?exists>
+    <#list jsURLs as jsURL>
+      <script type="text/javascript" src="${jsURL}"></script>
+    </#list>
+  </#if>
+  <script type="text/javascript">
+    var thanksTitle = 
+    $(function() {
+      $(".submit-email-form").click(function() {
+        var TBTitle = window.parent.document.getElementById("TB_ajaxWindowTitle");
+        $(TBTitle).text('<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />');
+      });
+    });
+  </script>
   <meta name="robots" content="noindex"/> 
  </head>
  <body>
     <h1><@vrtx.msg code="feedback.title" default="Give feedback" /></h1> 
 
-    <p><@vrtx.msg code="feedback.cant-respond" default="We can unfortunately not respond directly." /></p>
+    <!-- <p><@vrtx.msg code="feedback.cant-respond" default="We can unfortunately not respond directly." /></p>
     <p>
       <@vrtx.msg code="feedback.contact-pre" default="See" />&nbsp;
       <#if contacturl?has_content>
@@ -33,17 +47,17 @@
         <a id="vrtx-feedback-contact" target="_top" href='<@vrtx.msg code="feedback.contact-link" default="http://www.uio.no/english/about/contact/" />'>
       </#if>
       <@vrtx.msg code="feedback.contact-middle" default="our points of contact" /></a>&nbsp;<@vrtx.msg code="feedback.contact-post" default="if you need answers from anyone." />
-    </p>
+    </p> -->
 
      <#-- Feedback form -->
      <#if !like?exists || (like?exists && like = "false")>
        <form id="feedback-form" method="post" action="?vrtx=send-feedback">
          <#-- Your comment -->
-         <label for="yourComment"><@vrtx.msg code="feedback.form.yourcomment" default="Your comment" /></label> 
+         <label for="yourComment" style="display: none;"><@vrtx.msg code="feedback.form.yourcomment" default="Your comment" /></label> 
          <#if yourSavedComment?exists && yourSavedComment?has_content>
-           <textarea rows="10" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
+           <textarea rows="15" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
          <#else>
-           <textarea rows="10" cols="10" id="yourComment" name="yourComment"></textarea> 
+           <textarea rows="15" cols="10" id="yourComment" name="yourComment"></textarea> 
          </#if>
        
          <#if mailto?has_content>

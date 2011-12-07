@@ -22,7 +22,7 @@
     $(function() {
       if (typeof urchinTracker !== "undefined") {
         $(".feedback-yes").click(function(e) {
-          $(".vrtx-feedback ul").replaceWith('<p class="vrtx-feedback-thanks"><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /><div class='vrtx-feedback-thanks-slider'></div></p>');
+          $(".vrtx-feedback ul").replaceWith('<p class="vrtx-feedback-thanks"><@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" /><div class="vrtx-feedback-thanks-slider"></div></p>');
           $(".vrtx-feedback-thanks-slider").animate({ left: 200 },
                                                     { queue: false,
                                                       duration: 200 });
@@ -76,12 +76,12 @@
     </#if>
     <ul>
       <li>
-        <a class="feedback-yes" title='<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />' href="#">
+        <a class="feedback-yes" title='<@vrtx.msg code="feedback.send" default="Send us your feedback" />' href="#">
           <@vrtx.msg code="feedback.link.yes" default="Yes, my questions were answered" />
         </a>
       </li>
       <li>
-        <a class="feedback-no thickbox" title='<@vrtx.msg code="feedback.thanks" default="Thank you for giving us feedback" />' href="${link?html}&amp;height=350&amp;width=370&amp;KeepThis=true&amp;TB_iframe=true">
+        <a class="feedback-no thickbox" title='<@vrtx.msg code="feedback.send" default="Send us your feedback" />' href="${link?html}&amp;height=350&amp;width=370&amp;KeepThis=true&amp;TB_iframe=true">
           <@vrtx.msg code="feedback.link.no" default="No, I didn't find what I was looking for" />
         </a>
       </li>

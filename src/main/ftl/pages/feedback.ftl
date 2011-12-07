@@ -30,6 +30,7 @@
  <body>
     <#if tipResponse?has_content && tipResponse = "OK">
       <p><@vrtx.msg code="feedback.form.success" args=[emailSentTo] /></p>
+      <button onclick="javascript:window.parent.tb_remove();" class="button"><span><@vrtx.msg code="tip.form.close" default="Close" /></span></button>
       <script type="text/javascript"><!--
         $(function() {
           var TBTitle = window.parent.document.getElementById("TB_ajaxWindowTitle");

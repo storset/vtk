@@ -24,6 +24,7 @@
  <body>
    <#if tipResponse?has_content && tipResponse = "OK">
      <p><@vrtx.msg code="tip.form.success" args=[emailSentTo] /></p>
+     <button onclick="javascript:window.parent.tb_remove();" class="button"><span><@vrtx.msg code="tip.form.close" default="Close" /></span></button>
    <#else>
     <h1><@vrtx.msg code="tip.emailtitle" default="E-mail a friend" /></h1>   
     <h2>${resource.title}</h2>

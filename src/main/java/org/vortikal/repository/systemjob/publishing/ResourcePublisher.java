@@ -40,6 +40,7 @@ import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
+import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.systemjob.SystemJob;
 
 public class ResourcePublisher extends SystemJob {
@@ -50,30 +51,32 @@ public class ResourcePublisher extends SystemJob {
 
     @Override
     protected Query getSearchQuery() {
-        OrQuery mainQuery = new OrQuery();
+        OrQuery or = new OrQuery();
 
         long now = Calendar.getInstance().getTimeInMillis();
 
-        AndQuery q1 = new AndQuery();
-        q1.add(new PropertyTermQuery(this.publishedPropDef, "false", TermOperator.EQ));
-        q1.add(new PropertyTermQuery(this.publishDatePropDef, String.valueOf(now), TermOperator.LT));
+        AndQuery notPublished = new AndQuery();
+        notPublished.add(new PropertyTermQuery(this.publishedPropDef, "false", TermOperator.EQ));
+        notPublished.add(new PropertyTermQuery(this.publishDatePropDef, String.valueOf(now), TermOperator.LT));
         AndQuery subAnd = new AndQuery();
         OrQuery subOr = new OrQuery();
         subOr.add(new PropertyExistsQuery(this.unpublishDatePropDef, true));
         subOr.add(new PropertyTermQuery(this.unpublishDatePropDef, String.valueOf(now), TermOperator.GT));
         subAnd.add(subOr);
-        q1.add(subAnd);
+        notPublished.add(subAnd);
 
-        AndQuery q2 = new AndQuery();
-        q2.add(new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.EQ));
-        q2.add(new PropertyTermQuery(this.unpublishDatePropDef, String.valueOf(now), TermOperator.LT));
+        AndQuery alreadyPublished = new AndQuery();
+        alreadyPublished.add(new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.EQ));
+        alreadyPublished.add(new PropertyTermQuery(this.unpublishDatePropDef, String.valueOf(now), TermOperator.LT));
 
-        mainQuery.add(q1);
-        mainQuery.add(q2);
-        
-        // XXX check system-job-status property
+        or.add(notPublished);
+        or.add(alreadyPublished);
 
-        return mainQuery;
+        AndQuery and = new AndQuery();
+        and.add(or);
+        and.add(new TypeTermQuery("json-resource", TermOperator.IN));
+
+        return and;
     }
 
     @Required

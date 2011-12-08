@@ -275,7 +275,8 @@ public abstract class AtomFeedController implements Controller {
                     entry.addLink(mediaLink);
                 } catch (Throwable t) {
                     // Don't break the entire entry if media link breaks
-                    logger.warn("An error occured while setting media link for feed entry, " + result.getURI(), t);
+                    logger.warn("An error occured while setting media link for feed entry, " + result.getURI() + ": "
+                            + t.getMessage());
                 }
             }
 

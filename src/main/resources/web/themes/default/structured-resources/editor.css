@@ -93,6 +93,11 @@
   clear: left;
 }
 
+.vrtx-add-button {
+  position: relative;
+  min-width: 0;
+}
+
 .getExternalPersonInfo label,
 .getExternalUnitInfo label {
   display: inline;

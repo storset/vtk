@@ -19,7 +19,7 @@
   <script type="text/javascript"><!--
     
     shortcut.add("Ctrl+S",function() {
-        $(".vrtx-focus-button input:last").click();
+        $(".vrtx-focus-button:last input").click();
     });
 
     $(document).ready(function() {
@@ -89,32 +89,40 @@
       <a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('saveAndViewButton').click()"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
       <a class="vrtx-button" href="javascript:void(0)" onclick="$('#updateAction').click()"><span>${vrtx.getMsg("editor.save")}</span></a>
       <a class="vrtx-button" href="javascript:void(0)" onclick="$('#cancelAction').click()"><span>${vrtx.getMsg("editor.cancel")}</span></a>
-      <ul id="editor-help-menu" style="display: none"> 
-        <li><#include "/system/help.ftl" /></li>
-        <li>
-          <a class="help-link" href="${form.listComponentServiceURL?html}" target="new_window">
-            <@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" />
-          </a>
-        </li>
-      </ul>
+      <div id="editor-help-menu">
+        <span id="editor-help-menu-header">Hjelp:</span>
+        <ul>
+          <li><#include "/system/help.ftl" /></li>
+          <li>
+            <a class="help-link" href="${form.listComponentServiceURL?html}" target="new_window">
+              <@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" />
+            </a>
+          </li>
+        </ul>
+      </div>
     <#elseif form.workingCopy>
       <a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('#saveAndViewButton').click()"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
       <a class="vrtx-button" href="javascript:void(0)" onclick="$('#saveWorkingCopyAction').click()"><span>${vrtx.getMsg("editor.saveWorkingCopy")}</span></a>
       <a class="vrtx-button" href="javascript:void(0)" onclick="$('#cancelAction').click()"><span>${vrtx.getMsg("editor.cancel")}</span></a>
       <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
       &nbsp;
-      <ul id="editor-menu">
-        <li class="first"><a href="javascript:void(0)" onclick="$('#makePublicVersionAction').click()">${vrtx.getMsg("editor.makePublicVersion")}</a></li>
-        <li class="last"><a href="javascript:void(0)" onclick="$('#deleteWorkingCopyAction').click()">${vrtx.getMsg("editor.deleteWorkingCopy")}</a></li>
-      </ul>
-      <ul id="editor-help-menu" style="display: none"> 
-        <li><#include "/system/help.ftl" /></li>
-        <li>
-          <a class="help-link" href="${form.listComponentServiceURL?html}" target="new_window">
-            <@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" />
-          </a>
-        </li>
-      </ul>
+      <div id="editor-menu-wrapper">
+        <ul id="editor-menu">
+          <li class="first"><a href="javascript:void(0)" onclick="$('#makePublicVersionAction').click()">${vrtx.getMsg("editor.makePublicVersion")}</a></li>
+          <li class="last"><a href="javascript:void(0)" onclick="$('#deleteWorkingCopyAction').click()">${vrtx.getMsg("editor.deleteWorkingCopy")}</a></li>
+        </ul>
+      </div>
+      <div id="editor-help-menu">
+        <span id="editor-help-menu-header">Hjelp:</span>
+        <ul>
+          <li><#include "/system/help.ftl" /></li>
+          <li>
+            <a class="help-link" href="${form.listComponentServiceURL?html}" target="new_window">
+              <@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" />
+            </a>
+          </li>
+        </ul>
+      </div>
     <#else>
       <a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('saveAndViewButton').click()"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
       <a class="vrtx-button" href="javascript:void(0)" onclick="$('#updateAction').click()"><span>${vrtx.getMsg("editor.save")}</span></a>
@@ -122,14 +130,17 @@
       <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
       &nbsp;
       <a class="vrtx-button" href="javascript:void(0)" onclick="$('#saveWorkingCopyAction').click()"><span>${vrtx.getMsg("editor.saveAsWorkingCopy")}</span></a>
-      <ul id="editor-help-menu" style="display: none"> 
-        <li><#include "/system/help.ftl" /></li>
-        <li>
-          <a class="help-link" href="${form.listComponentServiceURL?html}" target="new_window">
-            <@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" />
-          </a>
-        </li>
-      </ul>
+      <div id="editor-help-menu">
+        <span id="editor-help-menu-header">Hjelp:</span>
+        <ul>
+          <li><#include "/system/help.ftl" /></li>
+          <li>
+            <a class="help-link" href="${form.listComponentServiceURL?html}" target="new_window">
+              <@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" />
+            </a>
+          </li>
+        </ul>
+      </div>
    </#if>
   </div>  
 

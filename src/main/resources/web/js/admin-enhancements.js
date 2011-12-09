@@ -184,7 +184,9 @@ $(document).ready(function () {
   logoutButtonAsLink();
 
   // Dropdowns
-  dropdownLanguageMenu();
+  dropdownLanguageMenu("#locale-selection");
+  dropdownLanguageMenu("#editor-help-menu");
+  
   dropdown({
     selector: "#resource-title.true ul#resourceMenuLeft",
     proceedCondition: function(numOfListElements) {
@@ -857,23 +859,23 @@ function checkStillAdmin(selector) {
     8. Dropdowns	
 \*-------------------------------------------------------------------*/
 
-function dropdownLanguageMenu() {
-  var languageMenu = $("#locale-selection ul");
+function dropdownLanguageMenu(selector) {
+  var languageMenu = $(selector + " ul");
   if (!languageMenu.length) return;
   
   var parent = languageMenu.parent();
   parent.addClass("js-on");
 
   // Remove ':' and replace <span> with <a>
-  var header = parent.find("#locale-selection-header");
+  var header = parent.find(selector + "-header");
   var headerText = header.text();
   // outerHtml
-  header.replaceWith("<a href='javascript:void(0);' id='locale-selection-header'>"
+  header.replaceWith("<a href='javascript:void(0);' id='" + selector.substring(1) + "-header'>"
                    + headerText.substring(0, headerText.length - 1) + "</a>");
 
   languageMenu.addClass("dropdown-shortcut-menu-container");
 
-  $("#locale-selection").delegate("#locale-selection-header", "click", function (e) {
+  $(selector).delegate(selector + "-header", "click", function (e) {
     $(this).next(".dropdown-shortcut-menu-container").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
     e.stopPropagation();
     e.preventDefault();

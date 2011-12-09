@@ -205,7 +205,14 @@
   <div id="editor-help-menu">
     <span id="editor-help-menu-header"><@vrtx.msg code="manage.help" default="Help" />:</span>
     <ul>
-      <li><#include "/system/help.ftl" /></li>
+      <li> 
+        <#-- TODO: refactor with code in old editor.ftl -->
+        <#assign lang><@vrtx.requestLanguage/></#assign>
+        <#assign url = helpURL />
+        <#if .vars["helpURL." + lang]?exists>
+          <#assign url = .vars["helpURL." + lang] />
+        </#if>
+        <a href="${url?html}" target="_blank" class="help-link"><@vrtx.msg code="manage.help.editing" default="Help in editing" /></a></li>
       <li>
         <a class="help-link" href="${form.listComponentServiceURL?html}" target="new_window">
           <@vrtx.msg code="plaintextEdit.tooltip.listDecoratorComponentsService" />

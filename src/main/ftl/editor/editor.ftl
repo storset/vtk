@@ -93,7 +93,7 @@
     </#assign>
     <h2>${header}</h2>
     <div class="submitButtons submit-extra-buttons">
-      <#include "/system/help.ftl" />
+      <@displayHelpLink />
       <div class="vrtx-button">
       <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
     </div>
@@ -416,4 +416,13 @@
       <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label><br />
     </#if>
   </#list>
+</#macro>
+
+<#macro displayHelpLink>
+  <#assign lang><@vrtx.requestLanguage/></#assign>
+  <#assign url = helpURL />
+  <#if .vars["helpURL." + lang]?exists>
+     <#assign url = .vars["helpURL." + lang] />
+  </#if>
+  <a href="${url?html}" target="_blank" class="help-link"><@vrtx.msg code="manage.help.editing" default="Help in editing" /></a>
 </#macro>

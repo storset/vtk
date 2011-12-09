@@ -94,9 +94,8 @@
         </bean>
         <ref bean="versioning.restoreActionParameter" />
         <ref bean="resourceTypeIsText" />
-        <!-- XXX: which permission is required to restore  revision? -->
         <bean parent="abstractResourcePrincipalPermissionAssertion">
-          <property name="permission" ref="ACTION_ALL" />
+          <property name="permission" ref="ACTION_READ_WRITE" />
           <property name="considerLocks" value="true" />
         </bean>
       </list>

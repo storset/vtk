@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1281,20 +1282,55 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         Principal principal = this.tokenManager.getPrincipal(token);
         
         this.authorizationManager.authorizeReadWrite(resource.getURI(), principal);
-        List<Revision> revs = this.revisionStore.list(resource);
 
         Revision found = null;
-        for (Revision rev: revs) {
+        Revision older = null;
+        Revision newer = null;
+        Iterator<Revision> it = this.revisionStore.list(resource).iterator();
+        while (it.hasNext()) {
+            Revision rev = it.next();
             if (revision.getID() == rev.getID()) {
                 found = rev;
+                if (it.hasNext()) {
+                    Revision next = it.next();
+                    if (next.getType() != Type.WORKING_COPY) {
+                        older = next;
+                    }
+                }
                 break;
             }
+            if (rev.getType() != Type.WORKING_COPY) {
+                newer = rev;
+            }
         }
+
+        
         if (found == null) {
             throw new IllegalOperationException("Revision not found: " + revision.getID());
         }
+        
+        System.out.println("__delete_rev: " + revision + "; older: " + older + "; newer: " + newer);
         this.authorizationManager.authorizeDeleteRevision(principal, revision);
         this.revisionStore.delete(resource, revision);
+        
+        if (newer != null && older != null) {
+            // compare newer -> older (like newer.storecontent)
+            Revision.Builder builder = newer.changeBuilder();
+            InputStream newerStream = this.revisionStore.getContent(resource, newer);
+            InputStream olderStream = this.revisionStore.getContent(resource, older);
+            Integer changeAmount = Revisions.changeAmount(newerStream, olderStream);
+            builder.changeAmount(changeAmount);
+            newer = builder.build();
+            this.revisionStore.store(resource, newer, 
+                    this.revisionStore.getContent(resource, newer));
+            
+        } else if (newer != null) {
+            Revision.Builder builder = newer.changeBuilder();
+            builder.changeAmount(null);
+            newer = builder.build();
+            this.revisionStore.store(resource, newer, 
+                    this.revisionStore.getContent(resource, newer));
+        }
     }
     
 

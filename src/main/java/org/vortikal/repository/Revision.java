@@ -108,6 +108,19 @@ public final class Revision {
         this.toString = sb.toString();
     }
     
+    public Builder changeBuilder() {
+        Builder builder = new Builder();
+        builder.id = this.id;
+        builder.type = this.type;
+        builder.name = this.name;
+        builder.uid = this.uid;
+        builder.timestamp = this.timestamp;
+        builder.acl = this.acl;
+        builder.checksum = this.checksum;
+        builder.changeAmount = changeAmount;
+        return builder;
+    }
+    
     public static Builder newBuilder() {
         return new Builder();
     }

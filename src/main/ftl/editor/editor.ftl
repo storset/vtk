@@ -94,10 +94,10 @@
     <h2>${header}</h2>
     <div class="submitButtons submit-extra-buttons">
       <#include "/system/help.ftl" />
-      <div class="vrtx-focus-button">
+      <div class="vrtx-button">
       <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
     </div>
-    <div class="vrtx-button">
+    <div class="vrtx-focus-button">
       <input type="button" onclick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
     </div>
     <div class="vrtx-button">
@@ -128,10 +128,10 @@
       </#if>
 
       <div id="submit" class="submitButtons save-cancel">
-        <div class="vrtx-focus-button">
+        <div class="vrtx-button">
           <input type="submit" id="saveAndViewButton" onclick="formatFeaturedArticlesData();performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
         </div>
-        <div class="vrtx-button">
+        <div class="vrtx-focus-button">
           <input type="submit" id="saveButton" onclick="formatFeaturedArticlesData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
         </div>
         <div class="vrtx-button">

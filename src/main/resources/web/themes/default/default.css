@@ -552,6 +552,8 @@ ul.list-menu li,
 .global-menu ul li,
 #editor-menu,
 #editor-menu li,
+#editor-button-row,
+#editor-button-row li,
 ul.manage-create,
 ul.manage-create li,
 #locale-selection ul,
@@ -564,8 +566,13 @@ ul.manage-create li,
 }
 
 #editor-help-menu,
-#editor-menu-wrapper {
+#editor-menu-wrapper,
+#editor-button-row {
   display: inline-block;
+}
+
+#editor-button-row {
+  margin-right: 10px;
 }
 
 /* Language menu / editor help menu */
@@ -588,6 +595,10 @@ ul.manage-create li,
 #editor-help-menu.js-on,
 #locale-selection.js-on {
   position: relative;
+}
+
+#editor-help-menu {
+  margin-left: 5px;
 }
 
 #editor-help-menu.js-on ul.dropdown-shortcut-menu-container,
@@ -628,7 +639,8 @@ ul.manage-create li,
 }
 
 #resourceMenuLeft li,
-#editor-menu li {
+#editor-menu li,
+#editor-button-row li {
   background: url(images/dropdown-left.gif) no-repeat -5px 0;
   display: inline-block;
   height: 27px;
@@ -639,14 +651,16 @@ ul.manage-create li,
 
 ul.dropdown-shortcut-menu li.first,
 #resourceMenuLeft li.first,
-#editor-menu li.first {
+#editor-menu li.first,
+#editor-button-row li.first {
   background-position: 0 0;
   margin: 0 0 0 0;
 }
 
 ul.dropdown-shortcut-menu li a,
 #resourceMenuLeft li a,
-#editor-menu li a {
+#editor-menu li a,
+#editor-button-row li a {
   color: #363534;
   background: url(images/button-open-right.png) no-repeat top right;
   display: inline-block;
@@ -656,18 +670,21 @@ ul.dropdown-shortcut-menu li a,
 }
 
 #resourceMenuLeft li.last a,
-#editor-menu li.last a {
+#editor-menu li.last a,
+#editor-button-row li.last a {
   background: url(images/button-closed-right.gif) no-repeat top right;
 }
 
 #resourceMenuLeft li:hover,
-#editor-menu li:hover {
+#editor-menu li:hover,
+#editor-button-row li:hover {
   background-image: url(images/dropdown-left-rollover.gif);
   margin-right: -5px;
 }
 
 #resourceMenuLeft li:hover a,
-#editor-menu li:hover a {
+#editor-menu li:hover a,
+#editor-button-row li:hover a {
   background: none;
   color: #fff;
   text-decoration: none;
@@ -675,12 +692,14 @@ ul.dropdown-shortcut-menu li a,
 }
 
 #resourceMenuLeft li.last:hover,
-#editor-menu li.last:hover {
+#editor-menu li.last:hover,
+#editor-button-row li.last:hover {
   margin-right: 0px;
 }
 
 #resourceMenuLeft li.last:hover a,
-#editor-menu li.last:hover a {
+#editor-menu li.last:hover a,
+#editor-button-row li.last:hover a {
   background: url(images/button-closed-right-rollover.gif) no-repeat top right;
   margin: 0 -5px 0 0;
 }

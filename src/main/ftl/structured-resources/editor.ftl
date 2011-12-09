@@ -86,14 +86,16 @@
 
   <div class="submitButtons submit-extra-buttons" id="editor-shortcuts">  
     <#if !form.published && !form.workingCopy>
-      <a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('saveAndViewButton').click()"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
-      <a class="vrtx-button" href="javascript:void(0)" onclick="$('#updateAction').click()"><span>${vrtx.getMsg("editor.save")}</span></a>
+      <a class="vrtx-button" href="javascript:void(0)" onclick="$('saveAndViewButton').click()"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
+      <a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('#updateAction').click()"><span>${vrtx.getMsg("editor.save")}</span></a>
       <a class="vrtx-button" href="javascript:void(0)" onclick="$('#cancelAction').click()"><span>${vrtx.getMsg("editor.cancel")}</span></a>
       <@genEditorHelpMenu />
     <#elseif form.workingCopy>
-      <a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('#saveAndViewButton').click()"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
-      <a class="vrtx-button" href="javascript:void(0)" onclick="$('#saveWorkingCopyAction').click()"><span>${vrtx.getMsg("editor.save")}</span></a>
-      <a class="vrtx-button" href="javascript:void(0)" onclick="$('#cancelAction').click()"><span>${vrtx.getMsg("editor.cancel")}</span></a>
+      <ul id="editor-button-row">
+        <li class="first"><a href="javascript:void(0)" onclick="$('#saveAndViewButton').click()">${vrtx.getMsg("editor.saveAndView")}</a></li>
+        <li><a href="javascript:void(0)" onclick="$('#saveWorkingCopyAction').click()">${vrtx.getMsg("editor.save")}</a></li>
+        <li class="last"><a href="javascript:void(0)" onclick="$('#cancelAction').click()">${vrtx.getMsg("editor.cancel")}</a></li>
+      </ul>
       <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
       &nbsp;
       <div id="editor-menu-wrapper">
@@ -104,9 +106,11 @@
       </div>
       <@genEditorHelpMenu />
     <#else>
-      <a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('saveAndViewButton').click()"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
-      <a class="vrtx-button" href="javascript:void(0)" onclick="$('#updateAction').click()"><span>${vrtx.getMsg("editor.save")}</span></a>
-      <a class="vrtx-button" href="javascript:void(0)" onclick="$('#cancelAction').click()"><span>${vrtx.getMsg("editor.cancel")}</span></a>
+      <ul id="editor-button-row">
+        <li class="first"><a href="javascript:void(0)" onclick="$('#saveAndViewButton').click()">${vrtx.getMsg("editor.saveAndView")}</a></li>
+        <li><a href="javascript:void(0)" onclick="$('#updateAction').click()">${vrtx.getMsg("editor.save")}</a></li>
+        <li class="last"><a href="javascript:void(0)" onclick="$('#cancelAction').click()">${vrtx.getMsg("editor.cancel")}</a></li>
+      </ul>
       <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
       &nbsp;
       <a class="vrtx-button" href="javascript:void(0)" onclick="$('#saveWorkingCopyAction').click()"><span>${vrtx.getMsg("editor.saveAsWorkingCopy")}</span></a>
@@ -145,10 +149,10 @@
     
     <div class="submit submitButtons">
     <#if !form.published && !form.workingCopy>
-      <div class="vrtx-focus-button">
+      <div class="vrtx-button">
         <input type="submit" id="saveAndViewButton" onclick="performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
-      <div class="vrtx-button">
+      <div class="vrtx-focus-button">
         <input type="submit" id="updateAction" onclick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">
@@ -156,10 +160,10 @@
       </div>
 
     <#elseif form.workingCopy>
-      <div class="vrtx-focus-button">
+      <div class="vrtx-button">
         <input type="submit" id="saveAndViewButton" onclick="performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
-      <div class="vrtx-button">
+      <div class="vrtx-focus-button">
         <input type="submit" id="saveWorkingCopyAction" onclick="performSave();" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">
@@ -176,10 +180,10 @@
       </div>
       
     <#else>
-      <div class="vrtx-focus-button">
+      <div class="vrtx-button">
         <input type="submit" id="saveAndViewButton" onclick="performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
-      <div class="vrtx-button">
+      <div class="vrtx-focus-button">
         <input type="submit" id="updateAction" onclick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">

@@ -21,6 +21,7 @@
     <property name="assertions">
       <list>
         <ref bean="resourceInCollection" />
+        <ref bean="trashCan.displayPermissionAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="mode" />
           <property name="parameterValue" value="trash-can" />
@@ -28,6 +29,11 @@
       </list>
     </property>
     <property name="handler" ref="trashCanHandler" />
+  </bean>
+
+  <bean id="trashCan.displayPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" ref="ACTION_READ_WRITE" />
+    <property name="considerLocks" value="false" />
   </bean>
 
   <bean id="trashCanHandler" class="org.vortikal.web.actions.trashcan.TrashCanController">

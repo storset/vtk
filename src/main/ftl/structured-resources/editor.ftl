@@ -92,7 +92,7 @@
       <@genEditorHelpMenu />
     <#elseif form.workingCopy>
       <a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('#saveAndViewButton').click()"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
-      <a class="vrtx-button" href="javascript:void(0)" onclick="$('#saveWorkingCopyAction').click()"><span>${vrtx.getMsg("editor.saveWorkingCopy")}</span></a>
+      <a class="vrtx-button" href="javascript:void(0)" onclick="$('#saveWorkingCopyAction').click()"><span>${vrtx.getMsg("editor.save")}</span></a>
       <a class="vrtx-button" href="javascript:void(0)" onclick="$('#cancelAction').click()"><span>${vrtx.getMsg("editor.cancel")}</span></a>
       <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
       &nbsp;
@@ -160,7 +160,7 @@
         <input type="submit" id="saveAndViewButton" onclick="performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
       <div class="vrtx-button">
-        <input type="submit" id="saveWorkingCopyAction" onclick="performSave();" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.saveWorkingCopy")}" />
+        <input type="submit" id="saveWorkingCopyAction" onclick="performSave();" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">
         <input type="submit" onclick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />

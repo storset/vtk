@@ -82,7 +82,8 @@
         <#assign number = regularRevisions?size />
         <#list regularRevisions as revision>
           <tr>
-            <td><@vrtx.msg code="versions.table.title" /> ${number?html}</td>
+            <td><#--<@vrtx.msg code="versions.table.title" /> ${number?html}-->
+                <@vrtx.msg code="versions.table.title" /> ${revision.name?html}</td>
             <td>${revision.principal}</td>
             <td>${revision.timestamp?datetime}</td>
             <td>

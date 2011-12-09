@@ -37,29 +37,21 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.Revision;
 import org.vortikal.repository.content.InputStreamWrapper;
-import org.vortikal.security.Principal;
 
 public interface RevisionStore {
 
-    /** from revisiondao: **/
-    
-    public List<Revision> list(Resource resource);
-    
-    public Revision create(ResourceImpl resource, Principal principal, String name, InputStream content);
+    public List<Revision> list(Resource resource) throws DataAccessException;
 
-    public void delete(ResourceImpl resource, Revision revision);
+    public long newRevisionID() throws DataAccessException;
 
-    /** from contentstore: **/
-    
-    public void store(ResourceImpl resource, Principal principal, Revision revision, InputStream inputStream) throws DataAccessException;
+    public void create(ResourceImpl resource, Revision revision, InputStream content) throws DataAccessException;
+
+    public void store(ResourceImpl resource, Revision revision, InputStream inputStream) throws DataAccessException;
+
+    public void delete(ResourceImpl resource, Revision revision) throws DataAccessException;
 
     public InputStreamWrapper getContent(ResourceImpl resource, Revision revision) throws DataAccessException;
 
     public long getContentLength(ResourceImpl resource, Revision revision) throws DataAccessException;
 
-    //public void deleteRevision(ResourceImpl resource, Revision revision) throws DataAccessException;
-    
-    /** new methods: **/
-    
-    //public void gc();
 }

@@ -30,8 +30,12 @@
  */
 package org.vortikal.repository;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -68,11 +72,14 @@ import org.vortikal.repository.store.ContentStore;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.repository.store.RevisionStore;
+import org.vortikal.repository.store.Revisions;
+import org.vortikal.repository.store.Revisions.ChecksumWrapper;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.token.TokenManager;
+import org.vortikal.util.io.StreamUtil;
 
 /**
  * A semi-transactional implementation of the
@@ -107,6 +114,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private int maxComments = 1000;
     private PeriodicThread periodicThread;
     private int maxResourceChildren = 3000;
+    private File tempDir;
 
     private Map<Privilege, List<Pattern>> usersBlacklist = 
             new EnumMap<Privilege, List<Pattern>>(Privilege.class);
@@ -124,6 +132,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private long lockDefaultTimeout = LOCK_DEFAULT_TIMEOUT;
     private long lockMaxTimeout = LOCK_DEFAULT_TIMEOUT;
 
+    private static final int FILE_COPY_BUF_SIZE = 122880;
+    
     private static Log searchLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Search");
     private static Log trashLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Trash");
 
@@ -426,6 +436,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             ResourceImpl newResource = src.createCopy(destUri);
             Content content = getContent(src);
+            // XXX: why nameChange() on copy?
             newResource = this.resourceHelper.nameChange(src, newResource, principal, content);
 
             final ResourceImpl destParentOriginal = (ResourceImpl)destParent.clone();
@@ -923,25 +934,71 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("resource is collection");
         }
         
-        Revision workingCopy = null;
+        Revision existing = null;
         for (Revision rev: this.revisionStore.list(r)) {
-            if (rev.getType() == Type.WORKING_COPY) {
-                workingCopy = rev;
+            if (rev.getID() == revision.getID()) {
+                existing = rev;
                 break;
             }
         }
-        if (workingCopy == null) {
+        if (existing == null) {
             throw new IllegalOperationException(
                     "No revision WORKING_COPY exists for resource " + r);
+        }
+        if (existing.getType() != Type.WORKING_COPY) {
+            throw new IllegalOperationException(
+                    "Only revisions of type WORKING_COPY may be updated" + r);
         }
         
         checkLock(r, principal);
         this.authorizationManager.authorizeReadWrite(uri, principal);
-        this.revisionStore.store(r, principal, workingCopy, stream);
+        
+        long id = existing.getID();
+        Acl acl = r.getAcl();
+        String name = existing.getName();
+        String uid = principal.getQualifiedName();
+        Type type = existing.getType();
+        Date timestamp = new Date();
+        String checksum = null;
+        Integer changeAmount = null;
+        
+        File tempFile = null;
+        try {
+            tempFile = File.createTempFile("revision", null, this.tempDir);
+            ChecksumWrapper wrapper = Revisions.wrap(stream);
+            OutputStream out = new FileOutputStream(tempFile);
+            StreamUtil.pipe(wrapper, out, FILE_COPY_BUF_SIZE, true);
+            checksum = wrapper.checksum();
+            changeAmount = Revisions.changeAmount(new FileInputStream(tempFile), 
+                    this.contentStore.getInputStream(r.getURI()));
 
-        Content content = getContent(r, workingCopy);
-        ResourceImpl result = this.resourceHelper.contentModification(r, principal, content);
-        return result;
+            stream = new FileInputStream(tempFile);
+            
+            Revision.Builder builder = Revision.newBuilder();
+            
+            Revision rev = 
+                    builder.id(id)
+                    .acl(acl)
+                    .changeAmount(changeAmount)
+                    .checksum(checksum)
+                    .name(name)
+                    .type(type)
+                    .timestamp(timestamp)
+                    .uid(uid).build();
+            this.revisionStore.store(r, rev, stream);
+            
+            Content content = getContent(r, existing);
+            ResourceImpl result = this.resourceHelper.contentModification(r, principal, content);
+            return result;
+            
+        } finally {
+            if (tempFile != null) {
+                if (!tempFile.delete()) {
+                    throw new DataAccessException("Failed to delete temporary file " + tempFile);
+                }
+            }
+            
+        }
     }
 
     @Override
@@ -1131,7 +1188,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 }
                 continue;
             }
-            
             if (rev.getType() == Type.WORKING_COPY) {
                 continue;
             }
@@ -1153,8 +1209,58 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         
         InputStream content = this.contentStore.getInputStream(resource.getURI());
-        Revision created = this.revisionStore.create(resource, principal, name, content);
-        return created;
+        InputStream prev = null;
+        
+        if (Revision.Type.WORKING_COPY.name().equals(name)) {
+            prev = this.contentStore.getInputStream(resource.getURI());
+        } else {
+            List<Revision> list = this.revisionStore.list(resource);
+            if (list.size() > 0) {
+                Revision r = list.get(0);
+                prev = this.revisionStore.getContent(resource, r);
+            }
+        }
+        
+        long id = this.revisionStore.newRevisionID();
+        Integer changeAmount = null;
+        String uid = resource.getModifiedBy().getQualifiedName();
+        String checksum = null;
+        Date timestamp = new Date();
+        Acl acl = resource.getAcl();
+        
+        File tempFile = null;
+        try {
+            tempFile = File.createTempFile("revision", null, this.tempDir);
+            Revisions.ChecksumWrapper wrapper = Revisions.wrap(content);
+            OutputStream out = new FileOutputStream(tempFile);
+            StreamUtil.pipe(wrapper, out, FILE_COPY_BUF_SIZE, true);
+            checksum = wrapper.checksum();
+
+            if (prev != null && tempFile != null) {
+                changeAmount = Revisions.changeAmount(
+                        prev, new FileInputStream(tempFile));
+                
+            }
+            content = new FileInputStream(tempFile);
+            Revision.Builder builder = Revision.newBuilder();
+            
+            Revision revision = 
+                    builder.id(id)
+                    .acl(acl)
+                    .changeAmount(changeAmount)
+                    .checksum(checksum)
+                    .name(name)
+                    .type(type)
+                    .timestamp(timestamp)
+                    .uid(uid).build();
+            this.revisionStore.create(resource, revision, content);
+            return revision;
+
+        } finally {
+            if (tempFile != null && tempFile.exists()) {
+                tempFile.delete();
+            }
+        }
     }
     
     @Override
@@ -1586,6 +1692,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Required
     public void setContentRepresentationRegistry(ContentRepresentationRegistry contentRepresentationRegistry) {
         this.contentRepresentationRegistry = contentRepresentationRegistry;
+    }
+    
+    public void setTempDir(String tempDir) {
+        File f = new File(tempDir);
+        if (!f.exists()) {
+            throw new IllegalStateException(
+                    "Directory " + tempDir + " does not exist");
+            
+        }
+        this.tempDir = f;
     }
 
     public void setMaxComments(int maxComments) {

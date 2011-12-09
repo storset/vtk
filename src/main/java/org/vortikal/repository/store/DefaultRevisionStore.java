@@ -35,7 +35,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -56,7 +55,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.Revision;
 import org.vortikal.repository.content.InputStreamWrapper;
-import org.vortikal.repository.store.Revisions.ChecksumWrapper;
 import org.vortikal.repository.store.db.AbstractSqlMapDataAccessor;
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
@@ -70,20 +68,13 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
     private static final int COPY_BUF_SIZE = 122880;
     
     private String revisionDirectory;
-    private File tempDir = new File(System.getProperty("java.io.tmpdir"));
     private PrincipalFactory principalFactory;
-    private ContentStore contentStore;
     
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
     }
     
-    @Required
-    public void setContentStore(ContentStore contentStore) {
-        this.contentStore = contentStore;
-    }
-
     @Override
     public List<Revision> list(Resource resource) {
 
@@ -132,54 +123,56 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
         return Collections.unmodifiableList(result);
     }
 
-    
     @Override
-    public Revision create(ResourceImpl resource, Principal principal, String name, InputStream content) {
+    public long newRevisionID() {
+        return (Long) getSqlMapClientTemplate()
+                .queryForObject(getSqlMap("nextRevisionID"));
+    }
 
-        InputStream prev = null;
-        if (Revision.Type.WORKING_COPY.name().equals(name)) {
-            prev = this.contentStore.getInputStream(resource.getURI());
-        } else {
-            List<Revision> list = list(resource);
-            if (list.size() > 0) {
-                Revision r = list.get(0);
-                File file = revisionFile(resource, r, false);
-                try {
-                    prev = new FileInputStream(file);
-                } catch (IOException e) {
-                    throw new DataAccessException(e);
-                }
-            }
+    @Override
+    public void create(ResourceImpl resource, Revision revision, InputStream content) {
+        insertRevision(resource, revision);
+        File revisionFile = revisionFile(resource, revision, true);
+        if (!revisionFile.exists()) {
+            throw new DataAccessException("Cannot create revision " + revision.getID() 
+                    + ", unable to create file: " + revisionFile.getAbsolutePath());
         }
-        
-        File tempFile = null;
-        Integer changeAmount = null;
-        String checksum = null;
         try {
-            tempFile = File.createTempFile("revision", null, this.tempDir);
-            Revisions.ChecksumWrapper wrapper = Revisions.wrap(content);
-            OutputStream out = new FileOutputStream(tempFile);
-            StreamUtil.pipe(wrapper, out, COPY_BUF_SIZE, true);
-            checksum = wrapper.checksum();
-            Principal modifiedBy = resource.getModifiedBy();
-
-            if (prev != null && tempFile != null) {
-                changeAmount = Revisions.changeAmount(
-                        prev, new FileInputStream(tempFile));
-                
-            }
-            content = new FileInputStream(tempFile);
-            return insertRevision(resource, modifiedBy, name, 
-                    checksum, changeAmount, content);
+            FileOutputStream out = new FileOutputStream(revisionFile);
+            StreamUtil.pipe(content, out, COPY_BUF_SIZE, true);
         } catch (IOException e) {
             throw new DataAccessException(e);
-        } finally {
-            if (tempFile != null && tempFile.exists()) {
-                tempFile.delete();
-            }
         }
     }
     
+    private void insertRevision(ResourceImpl resource, Revision revision) {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("resourceId", resource.getID());
+        parameters.put("revisionId", revision.getID());
+        parameters.put("uid", revision.getUid());
+        parameters.put("name", revision.getName());
+        parameters.put("timestamp", revision.getTimestamp());
+        parameters.put("checksum", revision.getChecksum());
+        parameters.put("changeAmount", revision.getChangeAmount());
+        
+        String sqlMap = getSqlMap("insertRevision");
+        getSqlMapClientTemplate().insert(sqlMap, parameters);
+
+        insertAcl(resource, revision.getID());
+        
+        List<Revision> list = list(resource);
+        Revision found = null;
+        
+        for (Revision r: list) {
+            if (revision.getID() == r.getID()) {
+                found = r;
+            }
+        }
+        if (found == null) {
+            throw new IllegalStateException("Newly inserted revision not found");
+        }
+    }
+
     @Override
     public void delete(ResourceImpl resource, Revision revision) {
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -229,94 +222,29 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
     
 
     @Override
-    public void store(ResourceImpl resource, Principal principal, Revision revision, InputStream content)
+    public void store(ResourceImpl resource, Revision revision, InputStream content)
             throws DataAccessException {
-
-        File tempFile = null;
-        String checksum = null;
-        Integer changeAmount = null;
         try {
-            tempFile = File.createTempFile("revision", null, this.tempDir);
-            ChecksumWrapper wrapper = Revisions.wrap(content);
-            OutputStream out = new FileOutputStream(tempFile);
-            StreamUtil.pipe(wrapper, out, COPY_BUF_SIZE, true);
-            checksum = wrapper.checksum();
-            
-            if (tempFile != null) {
-                changeAmount = Revisions.changeAmount(new FileInputStream(tempFile), 
-                        this.contentStore.getInputStream(resource.getURI()));
-            }
+            // XXX: update acl
             
             Map<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("resourceId", resource.getID());
             parameters.put("revisionId", revision.getID());
-            parameters.put("uid", principal.getQualifiedName());
+            parameters.put("uid", revision.getUid());
             parameters.put("name", revision.getName());
-            parameters.put("timestamp", resource.getLastModified());
-            parameters.put("checksum", checksum);
-            parameters.put("changeAmount", changeAmount);
+            parameters.put("timestamp", revision.getTimestamp());
+            parameters.put("checksum", revision.getChecksum());
+            parameters.put("changeAmount", revision.getChangeAmount());
             
             String sqlMap = getSqlMap("updateRevision");
             getSqlMapClientTemplate().update(sqlMap, parameters);
             
             File dest = revisionFile(resource, revision, false);
             FileOutputStream outputStream = new FileOutputStream(dest);
-            content = new FileInputStream(tempFile);
             StreamUtil.pipe(content, outputStream, COPY_BUF_SIZE, true);
         } catch (IOException e) {
             throw new DataAccessException("Store revision content [" + revision + "] failed", e);
-        } finally {
-            if (tempFile.exists() && !tempFile.delete()) {
-                throw new DataAccessException("Failed to delete temporary file " + tempFile);
-            }
         }
-    }
-    
-
-    private Revision insertRevision(ResourceImpl resource, Principal principal, String name, 
-            String checksum, Integer changeAmount, InputStream content) {
-        
-        Long revisionID = (Long) getSqlMapClientTemplate()
-                .queryForObject(getSqlMap("nextRevisionID"));
-        
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("resourceId", resource.getID());
-        parameters.put("revisionId", revisionID);
-        parameters.put("uid", principal.getQualifiedName());
-        parameters.put("name", name);
-        parameters.put("timestamp", resource.getLastModified());
-        parameters.put("checksum", checksum);
-        parameters.put("changeAmount", changeAmount);
-        
-        String sqlMap = getSqlMap("insertRevision");
-        getSqlMapClientTemplate().insert(sqlMap, parameters);
-
-        insertAcl(resource, revisionID);
-        
-        List<Revision> list = list(resource);
-        Revision revision = null;
-        for (Revision r: list) {
-            if (name.equals(r.getName())) {
-                revision = r;
-            }
-        }
-        if (revision == null) {
-            throw new IllegalStateException("Newly inserted revision not found");
-        }
-        
-        File revisionFile = revisionFile(resource, revision, true);
-        if (!revisionFile.exists()) {
-            throw new DataAccessException("Cannot create revision " + revision.getID() 
-                    + ", unable to create file: " + revisionFile.getAbsolutePath());
-        }
-        
-        try {
-            FileOutputStream out = new FileOutputStream(revisionFile);
-            StreamUtil.pipe(content, out, COPY_BUF_SIZE, true);
-        } catch (IOException e) {
-            throw new DataAccessException(e);
-        }
-        return revision;
     }
     
     
@@ -434,7 +362,6 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
         return this.revisionDirectory + File.separator + result.toString();
     }
 
-
     @Required
     public void setRevisionDirectory(String revisionDirectory) {
         this.revisionDirectory = revisionDirectory;
@@ -444,14 +371,6 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
         }
     }
     
-    public void setTempDir(String tempDirPath) {
-        if (!createRootDirectory(tempDirPath)) {
-            throw new IllegalStateException(
-                    "Unable to create directory " + tempDirPath);
-        }
-        this.tempDir = new File(tempDirPath);
-    }
-
     private boolean createRootDirectory(String directoryPath) {
         File root = new File(directoryPath);
 

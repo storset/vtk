@@ -93,16 +93,16 @@
     </#assign>
     <h2>${header}</h2>
     <div class="submitButtons submit-extra-buttons">
-      <@displayHelpLink />
       <div class="vrtx-button">
-      <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
-    </div>
-    <div class="vrtx-focus-button">
-      <input type="button" onclick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
-    </div>
-    <div class="vrtx-button">
-      <input type="button" onclick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
-    </div>
+        <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
+      </div>
+      <div class="vrtx-focus-button">
+        <input type="button" onclick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
+      </div>
+      <div class="vrtx-button">
+        <input type="button" onclick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
+      </div>
+      <@genEditorHelpMenu />
     </div>
     <form action="" method="post" id="editor">
 
@@ -418,11 +418,18 @@
   </#list>
 </#macro>
 
-<#macro displayHelpLink>
-  <#assign lang><@vrtx.requestLanguage/></#assign>
-  <#assign url = helpURL />
-  <#if .vars["helpURL." + lang]?exists>
-     <#assign url = .vars["helpURL." + lang] />
-  </#if>
-  <a href="${url?html}" target="_blank" class="help-link"><@vrtx.msg code="manage.help.editing" default="Help in editing" /></a>
+<#macro genEditorHelpMenu>
+  <div id="editor-help-menu">
+    <span id="editor-help-menu-header"><@vrtx.msg code="manage.help" default="Help" />:</span>
+    <ul>
+      <li> 
+        <#assign lang><@vrtx.requestLanguage/></#assign>
+        <#assign url = helpURL />
+        <#if .vars["helpURL.editor." + lang]?exists>
+          <#assign url = .vars["helpURL.editor." + lang] />
+        </#if>
+        <a href="${url?html}" target="_blank" class="help-link"><@vrtx.msg code="manage.help.editing" default="Help in editing" /></a>
+      </li>
+    </ul>
+  </div>
 </#macro>

@@ -232,6 +232,10 @@
         <entry key="helpURL.no" value="${helpURL.no}" />
         <entry key="helpURL.nn" value="${helpURL.nn}" />
         <entry key="helpURL.en" value="${helpURL.en}" />
+        <entry key="helpURL.editor" value="${helpURL.editor}" />
+        <entry key="helpURL.editor.no" value="${helpURL.editor.no}" />
+        <entry key="helpURL.editor.nn" value="${helpURL.editor.nn}" />
+        <entry key="helpURL.editor.en" value="${helpURL.editor.en}" />
       </map>
     </property>
     <property name="referenceDataProviders">

@@ -59,8 +59,8 @@ public final class Revisions {
     public static class ChecksumWrapper extends InputStreamWrapper {
         private MD5.MD5InputStream md5Wrapper;
         private ChecksumWrapper(InputStream input) {
-            super(input);
-            this.md5Wrapper = MD5.wrap(input);
+            super(MD5.wrap(input));
+            this.md5Wrapper = (MD5.MD5InputStream)super.getInputStream();
         }
         
         public String checksum() {
@@ -73,10 +73,10 @@ public final class Revisions {
         try {
             List<String> lines1 = getLines(stream1);
             List<String> lines2 = getLines(stream2);
-            if (lines1.size() == 0) {
+            if (lines1.isEmpty()) {
                 return lines2.size();
             }
-            if (lines2.size() == 0) {
+            if (lines2.isEmpty()) {
                 return lines1.size();
             }
             Patch diff = DiffUtils.diff(lines1, lines2);

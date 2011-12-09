@@ -69,6 +69,7 @@
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="permissionBlacklist" ref="repository.acl.blacklist" />
+    <property name="tempDir" value="${repository.tempDir}" />
   </bean>
 
   <!-- Repository lock and cache control wrapper -->
@@ -152,8 +153,6 @@
     <property name="sqlMaps" ref="repository.statementMappings" />
     <property name="principalFactory" ref="principalFactory" />
     <property name="revisionDirectory" value="${repositoryRevisionDirectory}" />
-    <property name="tempDir" value="${revisionStore.tempDir}" />
-    <property name="contentStore" ref="${repository.contentStore}" />
   </bean>
 
   <bean id="repository.sqlMapCommentDao" class="org.vortikal.repository.store.db.SqlMapCommentDAO">

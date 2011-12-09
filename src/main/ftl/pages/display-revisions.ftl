@@ -24,6 +24,8 @@
     <title>Revisions</title>
   </head>
   <body id="vrtx-revisions">
+    <h2><@vrtx.msg code="versions.title" /></h2>
+
     <table class="resourceInfo revisions">
       <thead>
         <tr>
@@ -82,8 +84,10 @@
         <#assign number = regularRevisions?size />
         <#list regularRevisions as revision>
           <tr>
-            <td><#--<@vrtx.msg code="versions.table.title" /> ${number?html}-->
-                <@vrtx.msg code="versions.table.title" /> ${revision.name?html}</td>
+            <td>
+                <#--@vrtx.msg code="versions.table.entry.name" args=[number] /-->
+                <@vrtx.msg code="versions.table.entry.name" args=[revision.name] />
+            </td>
             <td>${revision.principal}</td>
             <td>${revision.timestamp?datetime}</td>
             <td>

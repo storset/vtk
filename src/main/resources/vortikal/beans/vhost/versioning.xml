@@ -19,12 +19,18 @@
     <property name="assertions">
       <list>
         <ref bean="versioning.displayActionParameter" />
+        <ref bean="versioning.displayPermissionAssertion" />
         <ref bean="json.isManagedObjectResourceType" />
       </list>
     </property>
     <property name="handler">
       <ref bean="versioning.displayRevisionsHandler" />
     </property>
+  </bean>
+
+  <bean id="versioning.displayPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" ref="ACTION_READ_WRITE" />
+    <property name="considerLocks" value="false" />
   </bean>
 
   <bean id="versioning.displayRevisionsHandler"

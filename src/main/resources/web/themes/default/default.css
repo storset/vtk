@@ -561,6 +561,10 @@ ul.manage-create li,
   padding: 0;
 }
 
+#editor-menu {
+  display: inline-block;
+}
+
 /* Language menu */
 
 #locale-selection {

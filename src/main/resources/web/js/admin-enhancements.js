@@ -192,10 +192,7 @@ $(document).ready(function () {
     }
   });
   dropdown({selector: "ul.manage-create"});
-  dropdown({
-    selector: "ul#editor-menu",
-    start: 3
-  });
+  dropdown({selector: "ul#editor-menu"});
   
   // Slide up when choose something in dropdown
   $(".dropdown-shortcut-menu li a").click(function() {

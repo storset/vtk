@@ -359,8 +359,8 @@ function tb_detectMacXFF() {
 
 function tb_postMessageClose() {
   // Pass our height to parent since it is typically cross domain (and can't access it directly)
-  // Also check that it is the right dialog in Vortex admin
-  if($("ul.manage-create").length && parent) {
+  // Also check that it is the right dialog in Vortex admin (contains "ul.manage-create")
+  if(parent && $("ul.manage-create").length) {
     var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
     var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
     if (hasPostMessage) {

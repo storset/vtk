@@ -158,7 +158,7 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
         String sqlMap = getSqlMap("insertRevision");
         getSqlMapClientTemplate().insert(sqlMap, parameters);
 
-        insertAcl(resource, revision.getID());
+        insertAcl(resource, revision);
         
         List<Revision> list = list(resource);
         Revision found = null;
@@ -225,7 +225,6 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
     public void store(ResourceImpl resource, Revision revision, InputStream content)
             throws DataAccessException {
         try {
-            // XXX: update acl
             
             Map<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("resourceId", resource.getID());
@@ -239,20 +238,36 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
             String sqlMap = getSqlMap("updateRevision");
             getSqlMapClientTemplate().update(sqlMap, parameters);
             
-            File dest = revisionFile(resource, revision, false);
-            FileOutputStream outputStream = new FileOutputStream(dest);
+            File dest = revisionFile(resource, revision, true);
+            
+            // Go via a temporary file in case the source input stream is 
+            // passed as the content parameter:
+            File tmp = File.createTempFile("foo", "bar");
+            FileOutputStream outputStream = new FileOutputStream(tmp);
             StreamUtil.pipe(content, outputStream, COPY_BUF_SIZE, true);
+
+            // File.renameTo() is unstable sometimes:
+            FileInputStream srcStream = new FileInputStream(tmp);
+            FileOutputStream destStream = new FileOutputStream(dest);
+            StreamUtil.pipe(srcStream, destStream, COPY_BUF_SIZE, true);
+
+            /*
+            if (!tmp.renameTo(dest)) {
+                throw new DataAccessException("Store revision content [" + revision + "] " 
+                        + "failed: unable to rename file " + tmp + " to " + dest);
+            }
+            */
         } catch (IOException e) {
             throw new DataAccessException("Store revision content [" + revision + "] failed", e);
         }
     }
     
     
-    private void insertAcl(final ResourceImpl resource, final Long revisionID) {
+    private void insertAcl(final ResourceImpl resource, final Revision revision) {
         final Map<String, Integer> actionTypes = loadActionTypes();
-        final Acl acl = resource.getAcl();
+        final Acl acl = revision.getAcl();
         if (acl == null) {
-            throw new DataAccessException("Resource " + resource + " has no ACL");
+            throw new DataAccessException("Revision has no ACL: " + revision);
         }
         final Set<Privilege> actions = acl.getActions();
         final String sqlMap = getSqlMap("insertRevisionAclEntry");
@@ -272,7 +287,7 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
                         }
 
                         parameters.put("actionId", actionID);
-                        parameters.put("revisionId", revisionID);
+                        parameters.put("revisionId", revision.getID());
                         parameters.put("principal", p.getQualifiedName());
                         parameters.put("isUser", p.getType() == Principal.Type.GROUP ? "N" : "Y");
                         parameters.put("grantedBy", resource.getOwner().getQualifiedName());

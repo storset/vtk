@@ -207,7 +207,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
         
-        
         if (forProcessing) {
             this.authorizationManager.authorizeReadProcessed(uri, principal);
         } else {
@@ -229,7 +228,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         
         this.authorizationManager.authorizeReadRevision(principal, revision);
         
-        // 3. evaluate revision content (as content-modification)
+        // Evaluate revision content (as content-modification)
         Content content = getContent(resource, revision);
         ResourceImpl result = this.resourceHelper.contentModification(resource, principal, content);
         result.setAcl(revision.getAcl());
@@ -954,6 +953,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         checkLock(r, principal);
         this.authorizationManager.authorizeReadWrite(uri, principal);
         
+        this.authorizationManager.authorizeWriteRevision(principal, revision); 
+                
         long id = existing.getID();
         Acl acl = r.getAcl();
         String name = existing.getName();
@@ -1208,7 +1209,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } else {
             name = "1";
         }
-        
         InputStream content = this.contentStore.getInputStream(resource.getURI());
         InputStream prev = null;
         
@@ -1309,9 +1309,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("Revision not found: " + revision.getID());
         }
         
-        System.out.println("__delete_rev: " + revision + "; older: " + older + "; newer: " + newer);
         this.authorizationManager.authorizeDeleteRevision(principal, revision);
         this.revisionStore.delete(resource, revision);
+
         
         if (newer != null && older != null) {
             // compare newer -> older (like newer.storecontent)

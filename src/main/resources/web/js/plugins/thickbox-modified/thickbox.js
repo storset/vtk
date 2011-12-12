@@ -358,22 +358,20 @@ function tb_detectMacXFF() {
 }
 
 function tb_postMessageClose() {
-  if(typeof parent.vrtxAdmin !== "undefined") {
+  // Pass our height to parent since it is typically cross domain (and can't access it directly)
+  // Also check that it is the right dialog in Vortex admin
+  if($("ul.manage-create").length && parent) {
     var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
     var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
-
-    if (parent) {
-      // Pass our height to parent since it is typically cross domain (and can't access it directly)
-      if (hasPostMessage) {
-        $("ul.manage-create").css("position", "static"); // reset position
-        parent.postMessage("originalsize", vrtxAdminOrigin);
-      } else { // use the hash stuff in plugin from jQuery "Cowboy"
-        $("ul.manage-create").css("position", "static"); // reset position
-        var parent_url = decodeURIComponent(document.location.hash.replace(/^#/, ''));
-        $.postMessage({
-          originalsize: true
-        }, parent_url, parent);
-      }
+    if (hasPostMessage) {
+      $("ul.manage-create").css("position", "static"); // reset position
+      parent.postMessage("originalsize", vrtxAdminOrigin);
+    } else { // use the hash stuff in plugin from jQuery "Cowboy"
+      $("ul.manage-create").css("position", "static"); // reset position
+      var parent_url = decodeURIComponent(document.location.hash.replace(/^#/, ''));
+      $.postMessage({
+        originalsize: true
+      }, parent_url, parent);
     }
   }
 }

@@ -157,6 +157,14 @@ public final class AuthorizationManager {
         aclAuthorize(revision.getAcl(), READ_AUTH_PRIVILEGES, principal);
     }
     
+    public void authorizeWriteRevision(Principal principal, Revision revision) {
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT) ||
+                this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING))
+            return;
+        
+        aclAuthorize(revision.getAcl(), READ_WRITE_AUTH_PRIVILEGES, principal);
+    }
+    
     public void authorizeDeleteRevision(Principal principal, Revision revision) {
         if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT) ||
                 this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING))

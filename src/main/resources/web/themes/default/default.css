@@ -1771,7 +1771,7 @@ h3.resourceInfoHeader {
   display: block;
 }
 
-@media screen and (max-width: 1050px) {
+@media screen and (max-width: 1140px) {
   .vrtx-resource-visit-stat {
     width: 20%;
     margin-bottom: 0px;

@@ -40,7 +40,13 @@
         <#if workingCopy?exists>
           <tr id="vrtx-revisions-working-copy">
             <td><@vrtx.msg code="versions.table.working-copy" /></td>
-            <td>${workingCopy.principal}</td>
+            <td>
+              <#if (workingCopy.principal.URL)?exists>
+                <a href="${workingCopy.principal.URL?html}">${workingCopy.principal.description?html}</a>
+              <#else>
+                ${workingCopy.principal.description?html}
+              </#if>
+            </td>
             <td>${workingCopy.timestamp?datetime}</td>
             <td>
               <#if (workingCopy.changeAmount)?exists>
@@ -70,7 +76,13 @@
         </#if>
         <tr>
           <td id="vrtx-revisions-current"><strong><@vrtx.msg code="versions.table.current-version" /></strong></td>
-          <td>${resource.modifiedBy}</td>
+          <td>
+            <#if (resource.modifiedBy.URL)?exists>
+              <a href="${resource.modifiedBy.URL?html}">${resource.modifiedBy.description?html}</a>
+            <#else>
+              ${resource.modifiedBy.description?html}
+            </#if>
+          </td>
           <td>${resource.lastModified?datetime}</td>
           <td>
             <#if (resourceChangeAmount?exists)>
@@ -88,7 +100,13 @@
                 <#--@vrtx.msg code="versions.table.entry.name" args=[number] /-->
                 <@vrtx.msg code="versions.table.entry.name" args=[revision.name] />
             </td>
-            <td>${revision.principal}</td>
+            <td>
+              <#if (revision.principal.URL)?exists>
+                <a href="${revision.principal.URL?html}">${revision.principal.description?html}</a>
+              <#else>
+                ${revision.principal.description?html}
+              </#if>
+            </td>
             <td>${revision.timestamp?datetime}</td>
             <td>
               <#if (revision.changeAmount)?exists>

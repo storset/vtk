@@ -48,6 +48,8 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.Revision;
 import org.vortikal.repository.store.Revisions;
 import org.vortikal.security.Principal;
+import org.vortikal.security.Principal.Type;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -58,6 +60,7 @@ public class DisplayRevisionsController implements Controller {
     private Service deleteService = null;
     private Service restoreService = null;
     private String viewName = null;
+    private PrincipalFactory principalFactory;
     
     @Override
     public ModelAndView handleRequest(HttpServletRequest request,
@@ -75,13 +78,13 @@ public class DisplayRevisionsController implements Controller {
         Revision latest = null;
         List<Object> allRevisions = new ArrayList<Object>();
         List<Object> regularRevisions = new ArrayList<Object>();
-        
+
         for (Revision revision: revisions) {
             Map<String, Object> rev = new HashMap<String, Object>();
             rev.put("id", revision.getID());
             rev.put("name", revision.getName());
             rev.put("timestamp", revision.getTimestamp());
-            rev.put("principal", revision.getUid());
+            rev.put("principal", this.principalFactory.getPrincipal(revision.getUid(), Type.USER));
             rev.put("acl", revision.getAcl());
             rev.put("checksum", revision.getChecksum());
             rev.put("changeAmount", revision.getChangeAmount());
@@ -174,6 +177,11 @@ public class DisplayRevisionsController implements Controller {
     @Required
     public void setRestoreService(Service restoreService) {
         this.restoreService = restoreService;
+    }
+    
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
     }
 
 }

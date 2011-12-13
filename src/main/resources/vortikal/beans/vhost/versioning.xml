@@ -39,6 +39,7 @@
     <property name="viewService" ref="decorating.viewUnpublishedService" />
     <property name="deleteService" ref="versioning.deleteRevisionService" />
     <property name="restoreService" ref="versioning.restoreRevisionService" />
+    <property name="principalFactory" ref="principalFactory" />
   </bean>
   
   <bean id="versioning.displayRevisionsView" parent="freemarkerView">

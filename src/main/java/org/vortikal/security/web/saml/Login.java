@@ -53,14 +53,13 @@ import org.vortikal.web.service.URL;
 public class Login extends SamlService {
 
     private static Log logger = LogFactory.getLog(Login.class);
-    
+
     int replayMinutes = 60;
     private StorageService<String, ReplayCacheEntry> replayStorage = new MapBasedStorageService<String, ReplayCacheEntry>();
     private ReplayCache replayCache = new ReplayCache(replayStorage, 60 * 1000 * replayMinutes);
-    
+
     private String urlSessionAttribute = null;
 
-    
     public void setUrlSessionAttribute(String urlSessionAttribute) {
         if (urlSessionAttribute != null && !"".equals(urlSessionAttribute.trim())) {
             this.urlSessionAttribute = urlSessionAttribute;
@@ -88,10 +87,11 @@ public class Login extends SamlService {
                 return false;
             }
             return true;
-        } catch (Throwable t) { }
+        } catch (Throwable t) {
+        }
         return false;
     }
-    
+
     public boolean isUnsolicitedLoginResponse(HttpServletRequest req) {
         return isLoginResponse(req) && req.getSession(false) == null;
     }
@@ -105,8 +105,7 @@ public class Login extends SamlService {
         URL url = URL.parse(relayState);
         UUID expectedRequestID = getRequestIDSessionAttribute(request, url);
         if (expectedRequestID == null) {
-            throw new InvalidRequestException(
-                    "Missing request ID attribute in session"
+            throw new InvalidRequestException("Missing request ID attribute in session"
                     + " for authentication attempt: " + relayState);
         }
         setRequestIDSessionAttribute(request, url, null);
@@ -120,8 +119,9 @@ public class Login extends SamlService {
         }
         return userData;
     }
-    
-    public void redirectAfterLogin(HttpServletRequest request, HttpServletResponse response) throws AuthenticationProcessingException {
+
+    public void redirectAfterLogin(HttpServletRequest request, HttpServletResponse response)
+            throws AuthenticationProcessingException {
         // Get original request URL (saved in challenge()) from session, redirect to it
         String relayState = request.getParameter("RelayState");
         if (relayState == null) {
@@ -134,41 +134,46 @@ public class Login extends SamlService {
                 url = (URL) session.getAttribute(this.urlSessionAttribute);
             }
         }
+
+        if (url.getParameter("authTicket") != null) {
+            url.removeParameter("authTicket");
+        }
+
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         response.setHeader("Location", url.toString());
     }
-    
+
     UserData getUserData(HttpServletRequest request, UUID expectedRequestID) {
         String encodedSamlResponseString = request.getParameter("SAMLResponse");
 
         Response samlResponse = decodeSamlResponse(encodedSamlResponseString);
-        
+
         checkReplay(samlResponse);
-        
+
         String inResponseToID = samlResponse.getInResponseTo();
         if (!expectedRequestID.toString().equals(inResponseToID)) {
             throw new AuthenticationException("Request ID mismatch");
-            //throw new InvalidRequestException("Request ID mismatch");
+            // throw new InvalidRequestException("Request ID mismatch");
         }
-        
+
         verifyStatusCodeIsSuccess(samlResponse);
         verifyDestinationAddressIsCorrect(samlResponse);
-        
+
         Assertion assertion = samlResponse.getAssertions().get(0);
         verifyCryptographicAssertionSignature(assertion);
         validateAssertionContent(assertion);
-        
+
         return new UserData(assertion);
-        
+
     }
-    
+
     public void setReplayMinutes(int replayMinutes) {
         if (replayMinutes <= 0) {
             throw new IllegalArgumentException("Replay cache minutes must be greater than 0");
         }
         this.replayMinutes = replayMinutes;
     }
-    
+
     private void checkReplay(Response response) {
         boolean replay = this.replayCache.isReplay(response.getIssuer().getValue(), response.getID());
         if (replay) {
@@ -182,7 +187,7 @@ public class Login extends SamlService {
         StringBuilder message = new StringBuilder("Login: " + userData.getUsername());
         message.append(", attributes: [");
         String separator = "";
-        for (String attr: userData.getAttributeNames()) {
+        for (String attr : userData.getAttributeNames()) {
             message.append(separator).append(attr).append(":");
             message.append(userData.getAttribute(attr));
             if ("".equals(separator)) {

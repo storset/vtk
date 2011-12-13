@@ -30,29 +30,35 @@
  */
 package org.vortikal.security.web.saml;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.opensaml.saml2.core.AuthnRequest;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.web.service.URL;
 
 public class Challenge extends SamlService {
-    private static final String UNSOLICITED_AUTH_REDIRECT = 
-        Challenge.class.getName() + ".unsolicitedRedirectURL";
-    
+    private static final String UNSOLICITED_AUTH_REDIRECT = Challenge.class.getName() + ".unsolicitedRedirectURL";
+
+    private static Log logger = LogFactory.getLog(Challenge.class);
 
     private String urlSessionAttribute = null;
-    
+
     public void setUrlSessionAttribute(String urlSessionAttribute) {
         if (urlSessionAttribute != null && !"".equals(urlSessionAttribute.trim())) {
             this.urlSessionAttribute = urlSessionAttribute;
         }
     }
-    
+
     public void challenge(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException {
 
@@ -71,7 +77,6 @@ public class Challenge extends SamlService {
         redirectToIDP(request, response);
     }
 
-    
     public void prepareUnsolicitedChallenge(HttpServletRequest request) {
         String relayState = request.getParameter("RelayState");
         request.setAttribute(UNSOLICITED_AUTH_REDIRECT, URL.parse(relayState));
@@ -92,25 +97,37 @@ public class Challenge extends SamlService {
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         response.setHeader("Location", redirectURL.toString());
     }
-    
+
     private void redirectToIDP(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(true);
         URL url = URL.create(request);
         if (this.urlSessionAttribute != null) {
             session.setAttribute(this.urlSessionAttribute, url);
         }
+        UUID requestID = UUID.randomUUID();
+
+        byte[] bytesOfMessage;
+        byte[] thedigest = null;
+        try {
+            bytesOfMessage = requestID.toString().getBytes("UTF-8");
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            thedigest = md.digest(bytesOfMessage);
+            url.addParameter("authTicket", URLEncoder.encode(thedigest.toString(), ""));
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e);
+        } catch (NoSuchAlgorithmException e) {
+            logger.error(e);
+        }
+
         String relayState = url.toString();
-        
+
         SamlConfiguration samlConfiguration = newSamlConfiguration(request);
 
         // Generate request ID, save in session
-        UUID requestID = UUID.randomUUID();
         setRequestIDSessionAttribute(request, url, requestID);
 
         String redirectURL = urlToLoginServiceForDomain(samlConfiguration, requestID, relayState);
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         response.setHeader("Location", redirectURL.toString());
     }
-    
-    
 }

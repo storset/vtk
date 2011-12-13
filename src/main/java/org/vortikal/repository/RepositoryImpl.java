@@ -1178,6 +1178,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         Principal principal = this.tokenManager.getPrincipal(token);
         
+        checkLock(resource, principal);
         this.authorizationManager.authorizeReadWrite(resource.getURI(), principal);
         List<Revision> revs = this.revisionStore.list(resource);
 
@@ -1281,6 +1282,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         Principal principal = this.tokenManager.getPrincipal(token);
         
+        checkLock(resource, principal);
         this.authorizationManager.authorizeReadWrite(resource.getURI(), principal);
 
         Revision found = null;

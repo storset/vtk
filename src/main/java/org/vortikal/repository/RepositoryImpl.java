@@ -1025,12 +1025,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     checkLock(parent, principal);
                     checkLock(resource, principal);
 
-                } else if (action == RepositoryAction.ALL || action == RepositoryAction.ADD_COMMENT
+                } else if (action == RepositoryAction.ALL 
+                        || action == RepositoryAction.ADD_COMMENT
                         || action == RepositoryAction.EDIT_COMMENT
                         || action == RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION
                         || action == RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION
-                        || action == RepositoryAction.UNEDITABLE_ACTION || action == RepositoryAction.UNLOCK
-                        || action == RepositoryAction.CREATE || action == RepositoryAction.WRITE
+                        || action == RepositoryAction.UNEDITABLE_ACTION 
+                        || action == RepositoryAction.UNLOCK
+                        || action == RepositoryAction.CREATE 
+                        || action == RepositoryAction.WRITE 
+                        || action == RepositoryAction.READ_WRITE
                         || action == RepositoryAction.WRITE_ACL) {
                     checkLock(resource, principal);
                 }

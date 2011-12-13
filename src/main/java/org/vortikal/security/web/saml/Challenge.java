@@ -112,7 +112,7 @@ public class Challenge extends SamlService {
             bytesOfMessage = requestID.toString().getBytes("UTF-8");
             MessageDigest md = MessageDigest.getInstance("MD5");
             thedigest = md.digest(bytesOfMessage);
-            url.addParameter("authTicket", URLEncoder.encode(thedigest.toString(), ""));
+            url.addParameter("authTicket", URLEncoder.encode(thedigest.toString(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             logger.error(e);
         } catch (NoSuchAlgorithmException e) {

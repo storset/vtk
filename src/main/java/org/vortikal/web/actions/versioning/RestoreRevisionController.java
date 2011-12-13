@@ -89,22 +89,27 @@ public class RestoreRevisionController implements Controller {
         }
 
         Repository repository = requestContext.getRepository();
-        repository.createRevision(token, uri, Revision.Type.REGULAR);
+        try {
+            
+            repository.createRevision(token, uri, Revision.Type.REGULAR);
+            
+            repository.storeContent(token, uri, 
+                    repository.getInputStream(token, uri, false, revision));
 
-        repository.storeContent(token, uri, 
-                repository.getInputStream(token, uri, false, revision));
+            Path parentUri = uri.getParent();
+            Resource parent = repository.retrieve(token, parentUri, true);
+            if (!parent.getAcl().equals(revision.getAcl())) {
+                repository.storeACL(token, uri, revision.getAcl(), false);
+            }
 
-        Path parentUri = uri.getParent();
-        Resource parent = repository.retrieve(token, parentUri, true);
-        if (!parent.getAcl().equals(revision.getAcl())) {
-            repository.storeACL(token, uri, revision.getAcl(), false);
+            if (this.deleteWorkingCopy && 
+                    revision.getType() == Revision.Type.WORKING_COPY) {
+                repository.deleteRevision(token, uri, revision);
+            }
+            
+        } catch (Throwable t) {
+            throw new RuntimeException("Failed to create new revision on " + uri, t);
         }
-
-        if (this.deleteWorkingCopy && 
-                revision.getType() == Revision.Type.WORKING_COPY) {
-            repository.deleteRevision(token, uri, revision);
-        }
-
         response.sendRedirect(redirectURL.toString());
         return null;
     }

@@ -100,6 +100,7 @@
         <bean class="org.vortikal.web.FullDomainRedirectInterceptor">
           <property name="hostName" value="${manage.hostName}" />
         </bean>
+        <bean class="org.vortikal.web.FrameHeaderInterceptor" />
         <ref bean="manage.selectiveProtocolManager" />
       </list>
     </property>

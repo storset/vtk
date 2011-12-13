@@ -64,7 +64,6 @@ public class WorkingCopyAssertion implements Assertion {
             List<Revision> revisions = repository.getRevisions(token, resource.getURI());
             for (Revision r: revisions) {
                 if (r.getType() == Type.WORKING_COPY) {
-                    System.out.println("     ______________________found working copy");
                     return true;
                 }
             }

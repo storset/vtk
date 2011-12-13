@@ -158,7 +158,7 @@ $(window).load(function() {
   }
   
   $("#app-content").delegate("a.vrtx-revisions-view", "click", function(e) {
-    openServerBrowser(this.href, 800, 700);
+    openServerBrowser(this.href, 900, 800);
     e.stopPropagation();
     e.preventDefault();
   });

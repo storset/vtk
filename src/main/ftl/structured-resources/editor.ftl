@@ -78,7 +78,8 @@
   
   <#if form.workingCopy>
     <div class="tabMessage-big">
-      <@vrtx.msg code="editor.workingCopyMsg" /> <@vrtx.msg code="workingCopyMsgPre" /> <a class="vrtx-revisions-view" href="${resourceContext.currentURI?html}?x-decorating-mode=plain"><@vrtx.msg code="workingCopyMsgPost" /></a>.
+      <@vrtx.msg code="editor.workingCopyMsg" /> <@vrtx.msg code="workingCopyMsgPre" />
+      <a class="vrtx-revisions-view" target="popup" href="${resourceContext.currentURI?html}?x-decorating-mode=view-unpublished"><@vrtx.msg code="workingCopyMsgPost" /></a>.
     </div>
   </#if>
 

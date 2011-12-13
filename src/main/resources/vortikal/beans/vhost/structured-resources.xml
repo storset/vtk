@@ -84,11 +84,19 @@
         <entry key="tabOrder">
           <value type="java.lang.Integer">152</value>
         </entry>
+        <entry key="ListMenu.titleResolver" value-ref="structuredResources.workingCopyTabTitle" />
       </map>
     </property>
     <property name="handler" ref="structuredResources.editHandler" />
   </bean>
 
+  <bean id="structuredResources.workingCopyTabTitle"
+        class="org.vortikal.web.view.components.menu.AssertionTitleResolver">
+    <property name="assertion">
+      <bean class="org.vortikal.web.service.WorkingCopyAssertion" />
+    </property>
+    <property name="messageKey" value="tabs.editWorkingCopy" />
+  </bean>
 
   
   <bean id="structuredResources.displayHandler"

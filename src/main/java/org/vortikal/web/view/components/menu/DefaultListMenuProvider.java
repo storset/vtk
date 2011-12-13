@@ -207,15 +207,26 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
             this.referenceDataProvider.referenceData(model, request);
         }
     }
-
+    
+    
     private String getTitle(Resource resource, Service service, HttpServletRequest request) {
-
-        org.springframework.web.servlet.support.RequestContext springContext = new org.springframework.web.servlet.support.RequestContext(
-                request);
+        String title;
+        
+        Object attr = service.getAttribute("ListMenu.titleResolver");
+        if (attr != null && (attr instanceof ListMenuTitleResolver)) {
+            ListMenuTitleResolver resolver = (ListMenuTitleResolver) attr;
+            title = resolver.resolve(resource, service, request);
+            if (title != null) {
+                return title;
+            }
+        }
+        
+        org.springframework.web.servlet.support.RequestContext springContext 
+            = new org.springframework.web.servlet.support.RequestContext(request);
         String name = service.getName();
 
         String messageCode = this.label + "." + name;
-        String title = springContext.getMessage(messageCode, name);
+        title = springContext.getMessage(messageCode, name);
 
         messageCode += "." + resource.getResourceType();
         title = springContext.getMessage(messageCode, title);

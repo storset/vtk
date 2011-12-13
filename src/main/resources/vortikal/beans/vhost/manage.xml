@@ -661,6 +661,7 @@
         <entry key="tabOrder">
           <value type="java.lang.Integer">100</value>
         </entry>
+        <entry key="ListMenu.titleResolver" value-ref="preview.workingCopyTabTitle" />
       </map>
     </property>
     <property name="assertions">
@@ -676,6 +677,15 @@
     </property>
     <property name="handler" ref="previewFallbackHandler" />
   </bean>
+
+  <bean id="preview.workingCopyTabTitle"
+        class="org.vortikal.web.view.components.menu.AssertionTitleResolver">
+    <property name="assertion">
+      <bean class="org.vortikal.web.service.WorkingCopyAssertion" />
+    </property>
+    <property name="messageKey" value="tabs.previewWorkingCopy" />
+  </bean>
+
 
   <bean id="previewHTMLService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="previewService" />

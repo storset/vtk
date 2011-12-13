@@ -158,9 +158,12 @@ $(window).load(function() {
   }
   
   $("#app-content").delegate("a.vrtx-revisions-view", "click", function(e) {
-    openServerBrowser(this.href, 900, 800);
-    e.stopPropagation();
-    e.preventDefault();
+      window.open(this.href, 'Display revision ' + new Date(),
+                              'width=1000,height=800,toolbar=yes,\
+                               location=yes,menubar=yes,scrollbars=yes,\
+                              status=yes,resizable=yes,directories=yes');
+      e.stopPropagation();
+      e.preventDefault();
   });
   
   vrtxAdmin.log({msg: "window.load() in " + (+new Date - startLoadTime) + "ms"});

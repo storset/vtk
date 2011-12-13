@@ -242,22 +242,22 @@
   </bean>
 
 
-  <bean id="decorating.plainViewUnpublishedService" parent="decorating.plainViewService">
+  <bean id="decorating.viewUnpublishedService" parent="decorating.plainViewService">
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="x-decorating-mode" />
-          <property name="parameterValue" value="plain-unpublished" />
+          <property name="parameterValue" value="view-unpublished" />
         </bean>
       </list>
     </property>
-    <property name="handler" ref="decorating.plainViewUnpublishedHandler" />
+    <property name="handler" ref="decorating.viewUnpublishedHandler" />
   </bean>
 
-  <bean id="decorating.plainViewUnpublishedHandler" parent="decorating.plainViewHandler">
+  <bean id="decorating.viewUnpublishedHandler" parent="decorating.plainViewHandler">
     <property name="requestParameters">
       <map>
-        <entry key="x-prevent-decorating" value="true" />
+        <!--entry key="x-prevent-decorating" value="true" /-->
         <entry key="vrtxPreviewUnpublished" value="true" />
       </map>
     </property>

@@ -36,7 +36,7 @@
   <bean id="versioning.displayRevisionsHandler"
         class="org.vortikal.web.actions.versioning.DisplayRevisionsController">
     <property name="viewName" value="versioning.displayRevisions" />
-    <property name="viewService" ref="decorating.plainViewUnpublishedService" />
+    <property name="viewService" ref="decorating.viewUnpublishedService" />
     <property name="deleteService" ref="versioning.deleteRevisionService" />
     <property name="restoreService" ref="versioning.restoreRevisionService" />
   </bean>
@@ -98,6 +98,11 @@
           <property name="permission" ref="ACTION_READ_WRITE" />
           <property name="considerLocks" value="true" />
         </bean>
+        <bean class="org.vortikal.web.service.InvertAssertion">
+          <property name="assertion">
+            <bean id="resourceIsLocked" class="org.vortikal.web.service.ResourceIsLockedAssertion" />
+          </property>
+        </bean>
       </list>
     </property>
     <property name="handler">
@@ -137,4 +142,5 @@
     <property name="parameterName" value="action" />
     <property name="parameterValue" value="restore-revision" />
   </bean>
+
 </beans>

@@ -1231,7 +1231,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         Integer changeAmount = null;
         String uid = resource.getModifiedBy().getQualifiedName();
         String checksum = null;
-        Date timestamp = new Date();
+        Date timestamp = resource.getLastModified();
         Acl acl = resource.getAcl();
         
         File tempFile = null;

@@ -790,10 +790,10 @@ ul.dropdown-shortcut-menu li.dropdown-init {
 
 ul.dropdown-shortcut-menu li.dropdown-init #dropdown-shortcut-menu-click-area {
   display: block;
-  width: 26px;
+  width: 28px;
   height: 28px;
   position: absolute;
-  right: -4px;
+  right: -5px;
   top: 0;
   cursor: pointer
 }
@@ -1818,7 +1818,7 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 
 #vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column {
   font-size: 1em;
-  width: 40%;
+  width: 320px;
 } 
 
 #vrtx-revisions .resourceInfo td.vrtx-revisions-buttons-column form {

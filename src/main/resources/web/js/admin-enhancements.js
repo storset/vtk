@@ -201,10 +201,10 @@ $(document).ready(function () {
   
   // Slide up when choose something in dropdown
   $(".dropdown-shortcut-menu li a").click(function() {
-    $(".dropdown-shortcut-menu-container").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
+    $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
   });
   $(".dropdown-shortcut-menu-container li a").click(function() {
-    $(".dropdown-shortcut-menu-container").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");    
+    $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");    
   });
   $(document).click(function() {
     $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
@@ -879,7 +879,8 @@ function dropdownLanguageMenu(selector) {
   languageMenu.addClass("dropdown-shortcut-menu-container");
 
   $(selector).delegate(selector + "-header", "click", function (e) {
-    $(this).next(".dropdown-shortcut-menu-container").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
+    $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
+    $(this).next(".dropdown-shortcut-menu-container").not(":visible").slideDown(vrtxAdmin.transitionDropdownSpeed, "swing");
     e.stopPropagation();
     e.preventDefault();
   });
@@ -911,7 +912,8 @@ function dropdown(options) {
     list.find("li" + dropdownClickArea).addClass("dropdown-init");
     
     list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").click(function (e) {
-      shortcutMenu.slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");   
+      $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
+      shortcutMenu.not(":visible").slideDown(vrtxAdmin.transitionDropdownSpeed, "swing");   
       e.stopPropagation();
       e.preventDefault();
     });

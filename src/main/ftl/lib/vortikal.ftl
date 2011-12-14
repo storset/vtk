@@ -98,7 +98,7 @@
  * @param args (optional) arguments for the message
  *
 -->
-<#macro rawMsg code default args=[] >
+<#macro rawMsg code default=code args=[] >
   <#compress>
     <#local localizer =
     "org.vortikal.web.view.freemarker.MessageLocalizer"?new(code, default, args, springMacroRequestContext) />

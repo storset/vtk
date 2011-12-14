@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.store;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -53,5 +54,6 @@ public interface RevisionStore {
     public InputStreamWrapper getContent(ResourceImpl resource, Revision revision) throws DataAccessException;
 
     public long getContentLength(ResourceImpl resource, Revision revision) throws DataAccessException;
-
+    
+    public void gc() throws IOException;
 }

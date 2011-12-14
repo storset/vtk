@@ -38,6 +38,8 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -402,12 +404,30 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
         return true;
     }
     
+    private Set<Integer> gcHours = new HashSet<Integer>(
+            Arrays.asList(new Integer[]{20}));
+    
+    private int lastGCHour = -1;
+    
     public void gc() throws IOException {
+        
+        Calendar cal = Calendar.getInstance();
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        if (!gcHours.contains(hour)) {
+            return;
+        }
+        if (hour == lastGCHour) {
+            return;
+        }
+        
+        logger.info("Starting revisions GC");
         Set<Long> batch = new HashSet<Long>();
         traverse(new File(this.revisionDirectory), 0, batch);
         if (batch.size() > 0) {
             clean(batch);
         }
+        this.lastGCHour = hour;
+        logger.info("Finished revisions GC");
     }
 
     private void traverse(File dir, int level, Set<Long> batch) throws IOException {
@@ -463,12 +483,14 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
     }
     
     private void purgeDeleted(Set<Long> batch) {
+
         for (Long resourceID: batch) {
             File revisionDir = new File(revisionPath(resourceID));
             if (!revisionDir.exists()) {
                 continue;
             }
             File[] children = revisionDir.listFiles();
+            logger.info("Revisions GC: purge " + children.length + " files");
             for (File child: children) {
                 if (!child.delete()) {
                     throw new IllegalStateException("Unable to delete: " + child);

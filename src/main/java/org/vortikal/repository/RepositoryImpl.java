@@ -1639,10 +1639,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.authorizationManager.authorizeRootRoleAction(principal);
         this.authorizationManager.setReadOnly(readOnly);
     }
+    
 
-    private void periodicJob() {
+    private void periodicJob() throws Exception {
         if (!this.isReadOnly()) {
             this.dao.deleteExpiredLocks(new Date());
+        }
+        if (!this.isReadOnly()) {
+            this.revisionStore.gc();
         }
     }
 

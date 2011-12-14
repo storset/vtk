@@ -179,7 +179,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         try {
             return (Resource) resource.clone();
         } catch (CloneNotSupportedException e) {
-            throw new IOException("An internal error occurred: unable to " + "clone() resource: " + resource);
+            throw new IOException("Failed to clone object", e);
         }
     }
     
@@ -334,7 +334,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 children[i] = (Resource) list[i].clone();
 
             } catch (CloneNotSupportedException e) {
-                throw new IOException("An internal error occurred: unable to " + "clone() resource: " + list[i]);
+                throw new IOException("Failed to clone object", e);
             }
         }
 
@@ -351,7 +351,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         ResourceImpl parent = this.dao.load(uri.getParent());
         if ((parent == null) || !parent.isCollection()) {
-            throw new IllegalOperationException("Either parent doesn't exist " + "or parent is document");
+            throw new IllegalOperationException(
+                    "Either parent doesn't exist or parent is document");
         }
 
         checkLock(parent, principal);
@@ -384,7 +385,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.context.publishEvent(new ResourceCreationEvent(this, (Resource)newResource.clone()));
             return (Resource)newResource.clone();
         } catch (CloneNotSupportedException e) {
-            throw new IOException("An internal error occurred: unable to " + "clone() resource: " + uri);
+            throw new IOException("Failed to clone object", e);
         }
 
     }
@@ -454,7 +455,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.context.publishEvent(new ContentModificationEvent(this, destParent, destParentOriginal));
             
         } catch (CloneNotSupportedException e) {
-            throw new IOException("An internal error occurred: unable to clone()", e);
+            throw new IOException("Failed to clone object", e);
         }
     }
 
@@ -538,7 +539,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));
             this.context.publishEvent(new ResourceDeletionEvent(this, srcUri, src.getID(), src.isCollection()));
         } catch (CloneNotSupportedException e) {
-            throw new IOException("clone() operation failed");
+            throw new IOException("Failed to clone object", e);
         }
     }
 
@@ -638,7 +639,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.context.publishEvent(new ContentModificationEvent(this, (Resource)parent.clone(), originalParent));
             
         } catch (CloneNotSupportedException c) {
-            throw new IOException("Internal error, clone failed", c);
+            throw new IOException("Failed to clone object", c);
         }
     }
 
@@ -815,7 +816,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             return (Resource) newResource.clone();
         } catch (CloneNotSupportedException e) {
-            throw new IOException("An internal error occurred: unable to " + "clone() resource: " + original);
+            throw new IOException("Failed to clone object", e);
         }
     }
 
@@ -862,7 +863,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             
             return (Resource) newResource.clone();
         } catch (CloneNotSupportedException e) {
-            throw new IOException("An internal error occurred: unable to " + "clone() resource: " + uri);
+            throw new IOException("Failed to clone object", e);
         }
     }
 
@@ -899,7 +900,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             return (Resource)newResource.clone();
         } catch (CloneNotSupportedException e) {
-            throw new IOException("An internal error occurred: unable to " + "clone() resource: " + r);
+            throw new IOException("Failed to clone object", e);
         }
     }
 
@@ -1095,7 +1096,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             return (Resource) newResource.clone(); // Clone for return value
 
         } catch (CloneNotSupportedException e) {
-            throw new IOException(e.getMessage());
+            throw new IOException("Failed to clone object", e);
         }
     }
 
@@ -1140,7 +1141,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             return (Resource) newResource.clone(); // clone for return value
 
         } catch (CloneNotSupportedException e) {
-            throw new IOException(e.getMessage());
+            throw new IOException("Failed to clone object", e);
         }
     }
 
@@ -1427,8 +1428,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             return comment;
         } catch (IOException e) {
             throw new RuntimeException("Unhandled IO exception", e);
-        } catch (CloneNotSupportedException c) {
-            throw new RuntimeException("Internal error", c);
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Internal error", e);
         }
     }
 

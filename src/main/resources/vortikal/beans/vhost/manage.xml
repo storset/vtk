@@ -1631,6 +1631,11 @@
             </map>
           </property>
         </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="service" ref="decorating.viewUnpublishedService" />
+          <property name="modelName" value="versioning" />
+          <property name="urlName" value="currentVersionURL" />
+        </bean>
       </list>
     </property>
   </bean>

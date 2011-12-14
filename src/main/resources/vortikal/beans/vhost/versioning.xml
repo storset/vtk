@@ -99,11 +99,6 @@
           <property name="permission" ref="ACTION_READ_WRITE" />
           <property name="considerLocks" value="true" />
         </bean>
-        <bean class="org.vortikal.web.service.InvertAssertion">
-          <property name="assertion">
-            <bean id="resourceIsLocked" class="org.vortikal.web.service.ResourceIsLockedAssertion" />
-          </property>
-        </bean>
       </list>
     </property>
     <property name="handler">

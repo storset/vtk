@@ -53,7 +53,7 @@
   <body id="vrtx-preview">
     <#if workingCopy?exists>
       <div class="tabMessage-big">
-        <@vrtx.msg code="preview.workingCopyMsg" /> <@vrtx.msg code="workingCopyMsgPre" /> <a class="vrtx-revisions-view" href="${resourceContext.currentURI?html}?x-decorating-mode=view-unpublished"><@vrtx.msg code="workingCopyMsgPost" /></a>.
+        <@vrtx.rawMsg code="preview.workingCopyMsg" args=[versioning.currentVersionURL?html] />
       </div>
     </#if>
     

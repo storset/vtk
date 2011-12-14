@@ -78,8 +78,7 @@
   
   <#if form.workingCopy>
     <div class="tabMessage-big">
-      <@vrtx.msg code="editor.workingCopyMsg" /> <@vrtx.msg code="workingCopyMsgPre" />
-      <a class="vrtx-revisions-view" target="popup" href="${resourceContext.currentURI?html}?x-decorating-mode=view-unpublished"><@vrtx.msg code="workingCopyMsgPost" /></a>.
+      <@vrtx.rawMsg code="editor.workingCopyMsg" args=[versioning.currentVersionURL?html] />
     </div>
   </#if>
 

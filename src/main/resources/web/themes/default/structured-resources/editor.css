@@ -94,8 +94,7 @@
 }
 
 .vrtx-add-button {
-  position: relative;
-  min-width: 0;
+  float: left;
 }
 
 .getExternalPersonInfo label,

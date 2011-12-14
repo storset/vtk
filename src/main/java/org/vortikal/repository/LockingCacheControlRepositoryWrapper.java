@@ -670,18 +670,40 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
 
     @Override
     public List<Revision> getRevisions(String token, Path uri) throws AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException {
-        return this.wrappedRepository.getRevisions(token, uri);
+        // Synchronize shared read-lock on:
+        // - URI
+        final List<Path> locked = this.lockManager.lock(uri, false);
+        try {
+            return this.wrappedRepository.getRevisions(token, uri); // Tx
+        } finally {
+            this.lockManager.unlock(locked, false);
+        }
     }
 
     @Override
     public Revision createRevision(String token, Path uri, Revision.Type type) throws AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException {
-        return this.wrappedRepository.createRevision(token, uri, type);
+        // Synchronize on:
+        // - URI
+        final List<Path> locked = this.lockManager.lock(uri, true);
+        try {
+            return this.wrappedRepository.createRevision(token, uri, type); // Tx
+        } finally {
+            this.lockManager.unlock(locked, true);
+        }
     }
 
     @Override
     public void deleteRevision(String token, Path uri, Revision revision)
             throws ResourceNotFoundException, AuthorizationException,
             AuthenticationException, Exception {
-        this.wrappedRepository.deleteRevision(token, uri, revision);
+        
+        // Synchronize on:
+        // - URI
+        final List<Path> locked = this.lockManager.lock(uri, true);
+        try {
+            this.wrappedRepository.deleteRevision(token, uri, revision); // Tx
+        } finally {
+            this.lockManager.unlock(locked, true);
+        }
     }
 }

@@ -69,7 +69,7 @@ public class ThumbnailEvaluator implements PropertyEvaluator {
             // Check max source content length constraint
             long contentLength = ctx.getContent().getContentLength();
             if (contentLength >= this.maxSourceImageFileSize) {
-                log.warn("Unable to get create thumbnail, image size exceeds maximum limit: " + contentLength);
+                log.info("Unable to create thumbnail, image size exceeds maximum limit: " + contentLength);
                 return false;
             }
             
@@ -100,7 +100,7 @@ public class ThumbnailEvaluator implements PropertyEvaluator {
             String imageFormat = mimetype.substring(mimetype.lastIndexOf("/") + 1);
 
             if (!supportedFormats.contains(imageFormat.toLowerCase())) {
-                log.warn("Unable to get create thumbnail, unsupported format: " + imageFormat);
+                log.info("Unable to create thumbnail, unsupported format: " + imageFormat);
                 return false;
             }
 
@@ -120,7 +120,11 @@ public class ThumbnailEvaluator implements PropertyEvaluator {
             return true;
 
         } catch (Exception e) {
-            log.warn("Unable to create thumbnail of content", e);
+            if (log.isDebugEnabled()) {
+                log.debug("Unable to create thumbnail of content", e);
+            } else {
+                log.info("Unable to create thumbnail of content");
+            }
             return false;
         }
     }

@@ -492,7 +492,9 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
                 continue;
             }
             File[] children = revisionDir.listFiles();
-            logger.info("Revisions GC: purge " + children.length + " files");
+            if (children.length > 0) {
+                logger.info("Revisions GC: purge " + children.length + " files");
+            }
             for (File child: children) {
                 if (!child.delete()) {
                     throw new IllegalStateException("Unable to delete: " + child);

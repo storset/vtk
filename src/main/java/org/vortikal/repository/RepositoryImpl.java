@@ -1326,10 +1326,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalOperationException("Revision not found: " + revision.getID());
         }
         
-        if (found.getType() != Type.WORKING_COPY) {
-            this.authorizationManager.authorizeDeleteRevision(principal, revision);
-        }
-        
         this.revisionStore.delete(resource, revision);
         
         if (newer != null && older != null) {

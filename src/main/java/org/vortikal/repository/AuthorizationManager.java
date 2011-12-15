@@ -167,7 +167,6 @@ public final class AuthorizationManager {
         
         aclAuthorize(revision.getAcl(), READ_WRITE_AUTH_PRIVILEGES, principal);
     }
-    */
     
     public void authorizeDeleteRevision(Principal principal, Revision revision) {
         if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT) ||
@@ -176,6 +175,7 @@ public final class AuthorizationManager {
         
         aclAuthorize(revision.getAcl(), READ_WRITE_AUTH_PRIVILEGES, principal);
     }
+    */
     
     private static final Privilege[] READ_PROCESSED_AUTH_PRIVILEGES = 
         new Privilege[] {Privilege.ALL, Privilege.READ_WRITE, Privilege.READ, Privilege.READ_PROCESSED};

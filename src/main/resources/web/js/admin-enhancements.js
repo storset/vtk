@@ -1629,6 +1629,8 @@ function openServerBrowser(url, width, height) {
   sOptions += ",height=" + height;
   sOptions += ",left=" + iLeft;
   sOptions += ",top=" + iTop;
+  var oWindow = window.open(url, "BrowseServer", sOptions); // title must be without spaces in IE
+  return oWindow;
 }
 
 function openVersioning(url, width, height) {

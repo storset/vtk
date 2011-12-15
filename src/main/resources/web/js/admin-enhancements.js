@@ -158,13 +158,13 @@ $(window).load(function() {
   }
   
   $("#app-content").delegate("a.vrtx-revisions-view", "click", function(e) {
-      var openedRevision = openVersioning(this.href, 1000, 800);
+      var openedRevision = openVersioning(this.href, 1020, 800);
       e.stopPropagation();
       e.preventDefault();
   });
 
   $("#app-content").delegate("a.vrtx-current-version-view", "click", function(e) {
-      var openedCurrentVersion = openVersioning(this.href, 1000, 800);
+      var openedCurrentVersion = openVersioning(this.href, 1020, 800);
       e.stopPropagation();
       e.preventDefault();
   });

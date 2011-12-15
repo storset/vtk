@@ -86,6 +86,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         lock();
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
+        Principal principal = requestContext.getPrincipal();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
         
@@ -142,11 +143,15 @@ public class StructuredResourceEditor extends SimpleFormController {
         Path uri = RequestContext.getRequestContext().getResourceURI();
         String token = requestContext.getSecurityToken();
         
-        boolean saveWorkingCopy = form.getSaveWorkingCopyAction() != null;
+        boolean saveWorkingCopy = form.getSaveWorkingCopyAction() != null
+                || (form.getUpdateAction() != null && form.isWorkingCopy())
+                || (form.getUpdateViewAction() != null && form.isWorkingCopy());
+        
         boolean makePublicVersion = form.getMakePublicVersionAction() != null;
         boolean deleteWorkingCopy = form.getDeleteWorkingCopyAction() != null;
 
         Revision workingCopy = null;
+        
         for (Revision rev: repository.getRevisions(token, uri)) {
             if (rev.getType() == Revision.Type.WORKING_COPY) {
                 workingCopy = rev;

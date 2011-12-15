@@ -158,14 +158,17 @@ $(window).load(function() {
   }
   
   $("#app-content").delegate("a.vrtx-revisions-view", "click", function(e) {
-      window.open(this.href, 'Display revision ' + new Date(),
-                              'width=1000,height=800,toolbar=yes,\
-                               location=yes,menubar=yes,scrollbars=yes,\
-                              status=yes,resizable=yes,directories=yes');
+      var openedRevision = openVersioning(this.href, 1000, 800);
       e.stopPropagation();
       e.preventDefault();
   });
-  
+
+  $("#app-content").delegate("a.vrtx-current-version-view", "click", function(e) {
+      var openedCurrentVersion = openVersioning(this.href, 1000, 800);
+      e.stopPropagation();
+      e.preventDefault();
+  });
+
   vrtxAdmin.log({msg: "window.load() in " + (+new Date - startLoadTime) + "ms"});
 });
 
@@ -1626,7 +1629,20 @@ function openServerBrowser(url, width, height) {
   sOptions += ",height=" + height;
   sOptions += ",left=" + iLeft;
   sOptions += ",top=" + iTop;
-  var oWindow = window.open(url, "BrowseWindow", sOptions);
+}
+
+function openVersioning(url, width, height) {
+  var iLeft = (screen.width - width) / 2;
+  var iTop = (screen.height - height) / 2;
+  var sOptions = "toolbar=yes,status=yes,resizable=yes";
+  sOptions += ",location=yes,menubar=yes,scrollbars=yes";
+  sOptions += ",directories=yes";
+  sOptions += ",width=" + width;
+  sOptions += ",height=" + height;
+  sOptions += ",left=" + iLeft;
+  sOptions += ",top=" + iTop;
+  var now = +new Date();
+  var oWindow = window.open(url, "DisplayRevision" + now, sOptions); // title must be without spaces in IE
   return oWindow;
 }
 

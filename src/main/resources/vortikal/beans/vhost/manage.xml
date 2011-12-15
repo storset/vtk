@@ -681,7 +681,18 @@
   <bean id="preview.workingCopyTabTitle"
         class="org.vortikal.web.view.components.menu.AssertionTitleResolver">
     <property name="assertion">
-      <bean class="org.vortikal.web.service.WorkingCopyAssertion" />
+      <bean class="org.vortikal.web.service.AndAssertion">
+        <property name="assertions">
+          <list>
+            <bean class="org.vortikal.web.service.WorkingCopyAssertion" />
+            <bean parent="abstractResourcePrincipalPermissionAssertion">
+              <property name="requiresAuthentication" value="true" />
+              <property name="considerLocks" value="false" />
+              <property name="permission" ref="ACTION_READ_WRITE" />
+            </bean>
+          </list>
+        </property>
+      </bean>
     </property>
     <property name="messageKey" value="tabs.previewWorkingCopy" />
   </bean>

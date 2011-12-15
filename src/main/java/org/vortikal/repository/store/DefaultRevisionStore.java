@@ -160,7 +160,9 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
         String sqlMap = getSqlMap("insertRevision");
         getSqlMapClientTemplate().insert(sqlMap, parameters);
 
-        insertAcl(resource, revision);
+        if (revision.getAcl() != null) {
+            insertAcl(resource, revision);
+        }
         
         List<Revision> list = list(resource);
         Revision found = null;

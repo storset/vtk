@@ -67,9 +67,8 @@
         </bean>
         <ref bean="versioning.deleteActionParameter" />
         <ref bean="resourceTypeIsText" />
-        <!-- XXX: which permission is required to delete a revision? -->
         <bean parent="abstractResourcePrincipalPermissionAssertion">
-          <property name="permission" ref="ACTION_ALL" />
+          <property name="permission" ref="ACTION_READ_WRITE" />
           <property name="considerLocks" value="true" />
         </bean>
       </list>
@@ -109,7 +108,7 @@
   <bean id="versioning.restoreRevisionHandler"
         class="org.vortikal.web.actions.versioning.RestoreRevisionController">
     <property name="redirectService" ref="versioning.displayRevisionsService" />
-    <!--property name="deleteWorkingCopy" value="true" /-->
+    <property name="deleteWorkingCopy" value="true" />
   </bean>
 
 

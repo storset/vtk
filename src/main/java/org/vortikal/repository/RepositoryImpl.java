@@ -225,13 +225,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (!found) {
             throw new IllegalArgumentException("No such revision: " + revision.getID());
         }
-        
-        this.authorizationManager.authorizeReadRevision(principal, revision);
+
+        if (revision.getType() != Revision.Type.WORKING_COPY) {
+            this.authorizationManager.authorizeReadRevision(principal, revision);
+        }
         
         // Evaluate revision content (as content-modification)
         Content content = getContent(resource, revision);
         ResourceImpl result = this.resourceHelper.contentModification(resource, principal, content);
-        result.setAcl(revision.getAcl());
+        result.setAcl(resource.getAcl());
         return result;
     }
 
@@ -304,7 +306,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (!found) {
             throw new IllegalOperationException("No such revision: " + revision);
         }
-        this.authorizationManager.authorizeReadRevision(principal, revision);
+        if (revision.getType() == Type.WORKING_COPY) {
+            this.authorizationManager.authorizeRead(uri, principal);
+        } else {
+            this.authorizationManager.authorizeReadRevision(principal, revision);
+        }
         return this.revisionStore.getContent(r, revision);
     }
 
@@ -952,12 +958,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         
         checkLock(r, principal);
+
         this.authorizationManager.authorizeReadWrite(uri, principal);
-        
-        this.authorizationManager.authorizeWriteRevision(principal, revision); 
+        //this.authorizationManager.authorizeWriteRevision(principal, revision); 
                 
         long id = existing.getID();
-        Acl acl = r.getAcl();
+        Acl acl = null; //r.getAcl();
         String name = existing.getName();
         String uid = principal.getQualifiedName();
         Type type = existing.getType();
@@ -1004,6 +1010,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    @Override
+    public boolean authorize(Principal principal, Acl acl, Privilege privilege) {
+        return this.authorizationManager.authorize(principal, acl, privilege);
+    }
+    
     @Override
     public boolean isAuthorized(Resource resource, RepositoryAction action, Principal principal, boolean considerLocks)
             throws Exception {
@@ -1233,7 +1244,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         String uid = resource.getModifiedBy().getQualifiedName();
         String checksum = null;
         Date timestamp = resource.getLastModified();
-        Acl acl = resource.getAcl();
+        Acl acl = type == Type.WORKING_COPY ? null : resource.getAcl();
         
         File tempFile = null;
         try {
@@ -1311,17 +1322,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
         }
 
-        
         if (found == null) {
             throw new IllegalOperationException("Revision not found: " + revision.getID());
         }
         
-        this.authorizationManager.authorizeDeleteRevision(principal, revision);
+        if (found.getType() != Type.WORKING_COPY) {
+            this.authorizationManager.authorizeDeleteRevision(principal, revision);
+        }
+        
         this.revisionStore.delete(resource, revision);
-
         
         if (newer != null && older != null) {
-            // compare newer -> older (like newer.storecontent)
             Revision.Builder builder = newer.changeBuilder();
             InputStream newerStream = this.revisionStore.getContent(resource, newer);
             InputStream olderStream = this.revisionStore.getContent(resource, older);

@@ -191,8 +191,14 @@ public final class Revision {
             if (timestamp == null) {
                 throw new IllegalStateException("timestamp must be specified");
             }
-            if (acl == null) {
-                throw new IllegalStateException("ACL must be specified");
+            if (acl == null && type != Type.WORKING_COPY) {
+                throw new IllegalStateException(
+                        "ACL must be specified unless type is " + Type.WORKING_COPY);
+            }
+            if (acl != null && type == Type.WORKING_COPY) {
+                throw new IllegalStateException(
+                        "ACL cannot be specified for revisions of type " 
+                        + Type.WORKING_COPY);
             }
             if (checksum == null) {
                 throw new IllegalStateException("checksum must be specified");

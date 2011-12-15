@@ -420,6 +420,12 @@ public class RequestLocalRepository implements Repository {
     }
 
     @Override
+    public boolean authorize(Principal principal, Acl acl, Privilege privilege) {
+        return this.repository.authorize(principal, acl, privilege);
+    }
+
+    
+    @Override
     public boolean isAuthorized(Resource resource, RepositoryAction action, Principal principal, boolean considerLocks)
             throws Exception {
         return this.repository.isAuthorized(resource, action, principal, considerLocks);

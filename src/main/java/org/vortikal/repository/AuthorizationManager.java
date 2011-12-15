@@ -32,6 +32,8 @@ package org.vortikal.repository;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.vortikal.repository.store.DataAccessor;
@@ -156,7 +158,8 @@ public final class AuthorizationManager {
         
         aclAuthorize(revision.getAcl(), READ_AUTH_PRIVILEGES, principal);
     }
-    
+
+    /*
     public void authorizeWriteRevision(Principal principal, Revision revision) {
         if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT) ||
                 this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING))
@@ -164,13 +167,14 @@ public final class AuthorizationManager {
         
         aclAuthorize(revision.getAcl(), READ_WRITE_AUTH_PRIVILEGES, principal);
     }
+    */
     
     public void authorizeDeleteRevision(Principal principal, Revision revision) {
         if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT) ||
                 this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING))
             return;
         
-        aclAuthorize(revision.getAcl(), ADMIN_AUTH_PRIVILEGES, principal);
+        aclAuthorize(revision.getAcl(), READ_WRITE_AUTH_PRIVILEGES, principal);
     }
     
     private static final Privilege[] READ_PROCESSED_AUTH_PRIVILEGES = 
@@ -605,6 +609,52 @@ public final class AuthorizationManager {
     }
     
     
+    private static Map<Privilege, Privilege[]> PRIVILEGE_HIERARCHY = new HashMap<Privilege, Privilege[]>();
+    static {
+        PRIVILEGE_HIERARCHY.put(Privilege.READ_PROCESSED, new Privilege[] {
+                Privilege.READ_PROCESSED,
+                Privilege.READ,
+                Privilege.READ_WRITE,
+                Privilege.ALL
+        });
+        PRIVILEGE_HIERARCHY.put(Privilege.READ, new Privilege[] {
+                Privilege.READ,
+                Privilege.READ_WRITE,
+                Privilege.ALL
+        });
+        PRIVILEGE_HIERARCHY.put(Privilege.READ_WRITE, new Privilege[] {
+                Privilege.READ_WRITE,
+                Privilege.ALL
+        });
+        PRIVILEGE_HIERARCHY.put(Privilege.ALL, new Privilege[] {
+                Privilege.ALL
+        });
+        PRIVILEGE_HIERARCHY.put(Privilege.ADD_COMMENT, new Privilege[] {
+                Privilege.ADD_COMMENT,
+                Privilege.READ_WRITE,
+                Privilege.ALL
+        });
+    }
+    
+    
+    public boolean authorize(Principal principal, Acl acl, Privilege privilege) {
+        if (this.roleManager.hasRole(principal, RoleManager.Role.ROOT)) {
+            return true;
+        }
+        if (privilege == Privilege.READ_PROCESSED || privilege == Privilege.READ) {
+            if (this.roleManager.hasRole(principal, RoleManager.Role.READ_EVERYTHING)) {
+                return true;
+            }
+        }
+        Privilege[] privs = PRIVILEGE_HIERARCHY.get(privilege);
+        try {
+            aclAuthorize(acl, privs, principal);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
     /**
      * A principal is granted access if one of these conditions are met for one
      * of the privileges supplied:
@@ -621,7 +671,7 @@ public final class AuthorizationManager {
      * <p>3) (g, privilege) is present in the resource's ACL, where g is a group
      * identifier and the user is a member of that group
      */
-    private void aclAuthorize(Acl acl, Privilege[] privileges, Principal principal) {
+    void aclAuthorize(Acl acl, Privilege[] privileges, Principal principal) {
         for (int i = 0; i < privileges.length; i++) {
             Privilege privilege = privileges[i];
             Set<Principal> principalSet = acl.getPrincipalSet(privilege);

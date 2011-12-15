@@ -592,6 +592,11 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     }
 
     @Override
+    public boolean authorize(Principal principal, Acl acl, Privilege privilege) {
+        return this.wrappedRepository.authorize(principal, acl, privilege);
+    }
+    
+    @Override
     public boolean isAuthorized(Resource resource, RepositoryAction action, Principal principal, boolean considerLocks)
             throws Exception {
         return this.wrappedRepository.isAuthorized(resource, action, principal, considerLocks);

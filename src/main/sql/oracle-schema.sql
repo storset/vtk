@@ -288,7 +288,8 @@ create table simple_content_revision (
     revision_name varchar2 (256) not null,
     user_id varchar2 (256) not null,
     timestamp timestamp not null,
-    checksum varchar2 (256) not null
+    checksum varchar2 (256) not null,
+    change_amount number
 );
 
 alter table simple_content_revision

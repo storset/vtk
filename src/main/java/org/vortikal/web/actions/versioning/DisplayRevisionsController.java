@@ -43,6 +43,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Revision;
@@ -78,6 +79,20 @@ public class DisplayRevisionsController implements Controller {
         Revision latest = null;
         List<Object> allRevisions = new ArrayList<Object>();
         List<Object> regularRevisions = new ArrayList<Object>();
+        
+        Resource resource = repository.retrieve(token, uri, false);
+        URL displayURL = null;
+        try {
+            displayURL = this.viewService.constructURL(resource, principal);
+        } catch (Throwable t) { }
+        URL deleteURL = null;
+        try {
+            deleteURL = this.deleteService.constructURL(resource, principal);
+        } catch (Throwable t) { }
+        URL restoreURL = null;
+        try {
+            restoreURL = this.restoreService.constructURL(resource, principal);
+        } catch (Throwable t) { }
 
         for (Revision revision: revisions) {
             Map<String, Object> rev = new HashMap<String, Object>();
@@ -99,43 +114,34 @@ public class DisplayRevisionsController implements Controller {
                 regularRevisions.add(rev);
             }
 
-            Resource resource = null;
-            try {
-                resource = repository.retrieve(token, uri, false, revision);
-            } catch (Throwable t) {
-                continue;
-            }
-            URL displayURL = null;
-            try {
-                displayURL = this.viewService.constructURL(resource, principal);
-            } catch (Throwable t) { }
-            URL deleteURL = null;
-            try {
-                deleteURL = this.deleteService.constructURL(resource, principal);
-            } catch (Throwable t) { }
-            URL restoreURL = null;
-            try {
-                restoreURL = this.restoreService.constructURL(resource, principal);
-            } catch (Throwable t) { }
+            boolean haveDisplayURL = displayURL != null
+                    && (revision.getType() == Revision.Type.REGULAR
+                        && repository.authorize(principal, revision.getAcl(), Privilege.READ)
+                        || revision.getType() == Revision.Type.WORKING_COPY);
             
-            if (displayURL != null) {
+            if (haveDisplayURL) {
                 rev.put("displayURL", new URL(displayURL)
                    .setParameter("revision", revision.getName()));
             }
-            if (deleteURL != null) {
+            
+            boolean haveDeleteURL = deleteURL != null;
+
+            if (haveDeleteURL) {
                 rev.put("deleteURL", new URL(deleteURL)
                    .setParameter("revision", revision.getName()));
             }
-            if (restoreURL != null) {
+            
+            boolean haveRestoreURL = restoreURL != null 
+                    && (revision.getType() == Revision.Type.REGULAR
+                        && repository.authorize(principal, revision.getAcl(), Privilege.READ)
+                        || revision.getType() == Revision.Type.WORKING_COPY);
+
+            if (haveRestoreURL) {
                 rev.put("restoreURL", new URL(restoreURL)
                    .setParameter("revision", revision.getName()));
             }
         }
-        Resource current = repository.retrieve(token, uri, false);
-        URL displayURL = null;
-        try {
-            displayURL = this.viewService.constructURL(current, principal);
-        } catch (Throwable t) { }
+        
         if (latest != null) {
             try {
                 InputStream s1 = repository.getInputStream(token, uri, true, latest);
@@ -145,7 +151,7 @@ public class DisplayRevisionsController implements Controller {
             } catch (Throwable t) { }
         }
 
-        model.put("resource", current);
+        model.put("resource", resource);
         model.put("displayURL", displayURL);
         
         model.put("workingCopy", workingCopy);
@@ -155,7 +161,7 @@ public class DisplayRevisionsController implements Controller {
         return new ModelAndView(this.viewName, model);
         
     }
-
+    
     @Required
     public void setViewName(String viewName) {
         if (viewName == null || "".equals(viewName.trim())) {

@@ -84,10 +84,8 @@
         <#assign number = regularRevisions?size />
         <#list regularRevisions as revision>
           <tr>
-            <td>
-                <#--@vrtx.msg code="versions.table.entry.name" args=[number] /-->
-                <@vrtx.msg code="versions.table.entry.name" args=[revision.name] />
-            </td>
+            <!-- ID: ${revision.id?c}, ACL:${revision.acl?html} -->
+            <td><@vrtx.msg code="versions.table.entry.name" args=[revision.name] /></td>
             <td>${revision.principal.description?html}</td>
             <td>${revision.timestamp?datetime}</td>
             <td>

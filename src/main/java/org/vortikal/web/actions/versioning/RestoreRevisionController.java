@@ -33,8 +33,6 @@ package org.vortikal.web.actions.versioning;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -49,7 +47,6 @@ import org.vortikal.web.service.URL;
 
 public class RestoreRevisionController implements Controller {
 
-    private static Log logger = LogFactory.getLog(RestoreRevisionController.class);
     private Service redirectService;
     private boolean deleteWorkingCopy = true;
 
@@ -90,17 +87,10 @@ public class RestoreRevisionController implements Controller {
 
         Repository repository = requestContext.getRepository();
         try {
-            
             repository.createRevision(token, uri, Revision.Type.REGULAR);
             
             repository.storeContent(token, uri, 
                     repository.getInputStream(token, uri, false, revision));
-
-            Path parentUri = uri.getParent();
-            Resource parent = repository.retrieve(token, parentUri, true);
-            if (!parent.getAcl().equals(revision.getAcl())) {
-                repository.storeACL(token, uri, revision.getAcl(), false);
-            }
 
             if (this.deleteWorkingCopy && 
                     revision.getType() == Revision.Type.WORKING_COPY) {

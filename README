@@ -12,13 +12,14 @@ are necessary:
    command 'createlang plpgsql <database>'.
 
 3. Set up the configuration. Configuration should be placed in the
-   file ~/vrtx.properties (~/.vrtx.properties will also work):
+   file ~/.vrtx.properties
 
   indexStorageRootPath = [an empty directory for storing indices]
   jdbcUsername = [your JDBC user]
   jdbcPassword = [your JDBC password]
   repositoryDataDirectory = [an empty directory for storing files]
   repositoryTrashCanDirectory = [an empty directory for storing "deleted" files]
+  repositoryRevisionDirectory = [an empty directory for storing file revisions]
   databaseURL = [your JDBC URL, e.g. jdbc:postgresql:my-user>]
   xslFilePath = [the path to webdocuments]
 

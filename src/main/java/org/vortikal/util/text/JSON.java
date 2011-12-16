@@ -59,6 +59,33 @@ public final class JSON {
         Object o = JSONSerializer.toJSON(str);
         return unwrap(o);
     }
+
+    public static Object select(JSONObject object, String expression) {
+        String[] pattern = expression.split("\\.");
+
+        JSONObject current = object;
+        Object found = null;
+        
+        for (int i = 0; i < pattern.length; i++) {
+            String elem = pattern[i];
+            Object o = current.get(elem);
+            if (o == null) {
+                found = null;
+                break;
+            }
+            if (i == pattern.length - 1) {
+                found = o;
+                break;
+            }
+            if (!(o instanceof JSONObject)) {
+                found = null;
+                break;
+            }
+            current = (JSONObject) o;
+        }
+        return found;
+    }
+    
     
     private static Object unwrap(Object object) {
         if (! (object instanceof net.sf.json.JSON)) {

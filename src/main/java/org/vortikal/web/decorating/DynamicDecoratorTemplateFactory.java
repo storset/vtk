@@ -150,6 +150,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
         }        
     }
     
+    @SuppressWarnings("unused")
     private class RequestURLFunction extends Function {
         public RequestURLFunction(Symbol symbol) {
             super(symbol, 0);

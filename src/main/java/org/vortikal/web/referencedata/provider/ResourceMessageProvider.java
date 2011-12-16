@@ -153,7 +153,7 @@ public class ResourceMessageProvider implements ReferenceDataProvider, Initializ
     }
     
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings("rawtypes")
     private Resource getResource(Map model) {
         Resource resource = null;
 

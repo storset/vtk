@@ -83,7 +83,7 @@ public class StaticURIServiceURLProvider implements ReferenceDataProvider {
         this.parameters = parameters;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 

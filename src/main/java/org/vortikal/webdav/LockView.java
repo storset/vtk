@@ -52,9 +52,6 @@ import org.vortikal.repository.Lock;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.InvalidModelException;
 
-
-
-
 /**
  * Renderer for LOCK requests.
  */
@@ -62,8 +59,7 @@ public class LockView implements View {
 
     private static Log logger = LogFactory.getLog(PropfindView.class);
 
-
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void render(Map model, HttpServletRequest request,
                                   HttpServletResponse response) throws Exception {
 

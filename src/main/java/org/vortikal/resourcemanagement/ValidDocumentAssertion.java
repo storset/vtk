@@ -37,7 +37,7 @@ import org.vortikal.repository.RepositoryContentEvaluationAssertion;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.security.Principal;
-import org.vortikal.text.JSONUtil;
+import org.vortikal.util.text.JSON;
 
 /**
  * XXX Not usable as web service assertion.
@@ -63,7 +63,7 @@ public class ValidDocumentAssertion implements RepositoryContentEvaluationAssert
             JSONObject object = 
                 (JSONObject) content.getContentRepresentation(net.sf.json.JSONObject.class);
 
-            Object o = JSONUtil.select(object, "resourcetype");
+            Object o = JSON.select(object, "resourcetype");
             if (o == null) {
                 return false;
             }

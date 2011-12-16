@@ -51,7 +51,7 @@ public class TemplateView implements HtmlRenderer, InitializingBean {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public HtmlPageContent render(Map model, HttpServletRequest request) throws Exception {
         Object o = model.get("page");
         if (o == null || !(o instanceof HtmlPage)) {
@@ -71,6 +71,7 @@ public class TemplateView implements HtmlRenderer, InitializingBean {
         };
         
         ParsedHtmlDecoratorTemplate template = getTemplate();
+        @SuppressWarnings("unchecked")
         ParsedHtmlDecoratorTemplate.Execution execution = 
             (ParsedHtmlDecoratorTemplate.Execution) 
             template.newTemplateExecution(content, request, model, new HashMap<String, Object>());
@@ -78,7 +79,7 @@ public class TemplateView implements HtmlRenderer, InitializingBean {
     }
     
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void render(Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         HtmlPageContent content = render(model, request);

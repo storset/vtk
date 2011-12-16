@@ -186,7 +186,7 @@ public class VcfController implements Controller {
 
         Property pictureProp = getProperty(person, picturePropDefPointer);
         if (pictureProp != null) {
-            String pic = b64Thumbnail(person, repository, token, currenturi, requestURL, pictureProp);
+            String pic = b64Thumbnail(repository, token, currenturi, requestURL, pictureProp);
             if (pic != null) {
                 sb.append(pic);
             }
@@ -211,7 +211,7 @@ public class VcfController implements Controller {
         return sdf.format(Calendar.getInstance().getTime());
     }
 
-    private String b64Thumbnail(Resource person, Repository repository, String token, Path currenturi, URL requestURL,
+    private String b64Thumbnail(Repository repository, String token, Path currenturi, URL requestURL,
             Property pictureProp) {
 
         String picturePath = pictureProp.getFormattedValue();

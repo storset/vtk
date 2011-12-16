@@ -85,4 +85,13 @@ public class Message {
         }
         return result;
     }
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder("{");
+        sb.append("identifier: ").append(this.identifier);
+        sb.append(", titleCode: ").append(this.titleCode);
+        sb.append(", messageCodes: ").append(this.messageCodes);
+        sb.append("}");
+        return sb.toString();
+    }
 }

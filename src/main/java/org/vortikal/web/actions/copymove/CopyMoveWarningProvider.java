@@ -68,7 +68,7 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
     private Searcher searcher;
     private Set<?> categories;
 
-    @SuppressWarnings( { "rawtypes", "unchecked" })
+    @SuppressWarnings("rawtypes")
     @Override
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();

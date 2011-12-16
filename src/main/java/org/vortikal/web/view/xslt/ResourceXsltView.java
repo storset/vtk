@@ -151,7 +151,7 @@ public class ResourceXsltView extends AbstractView
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected void renderMergedOutputModel(Map model, HttpServletRequest request,
                                            HttpServletResponse response)
         throws Exception {
@@ -316,7 +316,7 @@ public class ResourceXsltView extends AbstractView
         return this.transformerManager.getTransformer(resource, document);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected void setParameters(Map model, Transformer transformer) {
 
         if (!model.containsKey("xsltParameters")) {

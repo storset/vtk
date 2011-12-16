@@ -73,7 +73,7 @@ import org.vortikal.repository.Repository;
  *   to be in a comma separated format. Default is <code>false</code>.
  * </ul>
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("rawtypes")
 public class HashMapResource extends HashMap implements InitializingBean,
                                                         ApplicationListener {
 
@@ -192,6 +192,7 @@ public class HashMapResource extends HashMap implements InitializingBean,
         this.load(this.repository, this.uri, this.token, this.demandResourceAvailability);
     }
     
+    @SuppressWarnings("unchecked")
     private void loadInternal(Repository repository, Path uri, String token)
         throws Exception {
         InputStream inputStream = repository.getInputStream(token, uri, false);

@@ -55,7 +55,6 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
-import org.vortikal.web.view.freemarker.MessageLocalizer;
 
 /**
  * Directory listing model builder. Creates a model map 'collectionListing' with

@@ -574,34 +574,6 @@
     <property name="handler" ref="setCharacterEncodingController" />
   </bean>
 
-  <bean id="setResourcePropertyService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="aboutResourceService" />
-    <property name="assertions">
-      <list>
-        <ref bean="writePermissionAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="set-property" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="setResourcePropertyController" />
-  </bean>
-
-  <bean id="deleteResourcePropertyService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="aboutResourceService" />
-    <property name="assertions">
-      <list>
-        <ref bean="writePermissionAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="delete-property" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="deleteResourcePropertyController" />
-  </bean>
-
   <bean id="resourceTypeIsHtml" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="htmlResourceTypeDefinition" />
   </bean>
@@ -983,10 +955,6 @@
     <property name="commandName" value="permissionsForm_all" />
   </bean>
 
-  <!-- <bean id="editBindPermissionsHandler" parent="abstractPermissionsHandler"> <property name="privilege" ref="PRIVILEGE_BIND_TEMPLATE" 
-    /> <property name="successView" value="redirectToPermissions" /> <property name="commandName" value="permissionsForm_bind-template" 
-    /> </bean> -->
-
   <bean id="editReadProcessedPermissionsHandler" parent="abstractPermissionsHandler">
     <property name="privilege" ref="PRIVILEGE_READ_PROCESSED" />
     <property name="successView" value="redirectToPermissions" />
@@ -1001,20 +969,6 @@
 
   <bean id="permissionsHandler" class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
     <property name="viewName" value="permissions" />
-  </bean>
-
-  <bean id="setResourcePropertyController" class="org.vortikal.web.actions.properties.SetResourcePropertyController">
-    <property name="formView" value="admin" />
-    <property name="successView" value="redirect" />
-    <property name="commandName" value="setResourcePropertyForm" />
-    <property name="commandClass" value="org.vortikal.web.actions.properties.ResourcePropertyCommand" />
-  </bean>
-
-  <bean id="deleteResourcePropertyController" class="org.vortikal.web.actions.properties.DeleteResourcePropertyController">
-    <property name="formView" value="admin" />
-    <property name="successView" value="redirect" />
-    <property name="commandName" value="deleteResourcePropertyForm" />
-    <property name="commandClass" value="org.vortikal.web.actions.properties.ResourcePropertyCommand" />
   </bean>
 
   <bean id="setContentTypeController" class="org.vortikal.web.actions.properties.ContentTypeController">

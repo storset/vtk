@@ -32,7 +32,6 @@ package org.vortikal.web.decorating.components;
 
 import java.io.Writer;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;

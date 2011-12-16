@@ -43,7 +43,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.web.service.URL;
 
 /**
- * Interceptor that redirects requests to the same URL but with a 
+ * Intercepter that redirects requests to the same URL but with a 
  * configurable protocol, hostname and port 
  */
 public class ConfigurableRedirector implements HandlerInterceptor, Controller  {

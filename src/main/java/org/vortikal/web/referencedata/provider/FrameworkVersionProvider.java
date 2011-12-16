@@ -54,7 +54,7 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
  */
 public class FrameworkVersionProvider implements ReferenceDataProvider {
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
         Map<String, Object> versionModel = new HashMap<String, Object>();

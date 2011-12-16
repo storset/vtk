@@ -35,12 +35,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
-
 
 /**
  * A handler interceptor that can be used to run a list of reference
@@ -54,24 +51,18 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
  */
 public class ReferenceDataProvidingHandlerInterceptor implements HandlerInterceptor {
 
-    private static Log logger = LogFactory.getLog(ReferenceDataProvidingHandlerInterceptor.class);
-
-    
     private ReferenceDataProvider[] providers;
 
-    
     public void setProviders(ReferenceDataProvider[] providers) {
         this.providers = providers;
     }
     
-
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) throws Exception {
         return true;
     }
     
-
     public void postHandle(HttpServletRequest request,
                               HttpServletResponse response,
                               Object handler,
@@ -80,30 +71,22 @@ public class ReferenceDataProvidingHandlerInterceptor implements HandlerIntercep
         if (modelAndView == null) {
             return;
         }
-
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("rawtypes")
         Map model = modelAndView.getModel();
-
         if (model == null) {
             return;
         }
-
         if (this.providers != null && this.providers.length > 0) {
             for (int i = 0; i < this.providers.length; i++) {
                 ReferenceDataProvider provider = this.providers[i];
-                if (logger.isDebugEnabled()) 
-                    logger.debug("Invoking reference data provider '" + 
-                            provider + "'");
                 provider.referenceData(model, request);
             }
         }
     }
     
-
     public void afterCompletion(HttpServletRequest request,
                                 HttpServletResponse response,
                                 Object handler,
                                 Exception e) throws Exception {
     }
-    
 }

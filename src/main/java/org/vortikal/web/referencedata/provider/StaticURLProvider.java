@@ -69,8 +69,6 @@ public class StaticURLProvider implements ReferenceDataProvider, InitializingBea
     private String descriptionKey = null;
     private String target = null;
 
-
-
     public void setModelName(String modelName) {
         this.modelName = modelName;
     }
@@ -83,12 +81,10 @@ public class StaticURLProvider implements ReferenceDataProvider, InitializingBea
         this.descriptionKey = descriptionKey;
     }
     
-
     public void setTarget(String target) {
         this.target = target;
     }
     
-
     public void afterPropertiesSet() {
         if (this.modelName == null) {
             throw new BeanInitializationException(
@@ -104,9 +100,7 @@ public class StaticURLProvider implements ReferenceDataProvider, InitializingBea
         }
     }
     
-
-
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 

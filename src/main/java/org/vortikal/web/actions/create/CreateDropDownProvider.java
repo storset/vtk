@@ -56,7 +56,7 @@ public class CreateDropDownProvider {
     private Repository repository;
     private final int maxLimit = 500;
 
-    public List<SubResource> buildSearchAndPopulateSubresources(String uri, String token, HttpServletRequest request) {
+    public List<SubResource> buildSearchAndPopulateSubresources(String uri, String token) {
         AndQuery mainQuery = new AndQuery();
         if (uri.equals("")) {
             mainQuery.add(new UriDepthQuery(0));
@@ -70,11 +70,11 @@ public class CreateDropDownProvider {
         search.setLimit(maxLimit);
         ResultSet rs = searcher.execute(token, search);
 
-        List<SubResource> subresources = populateSubResource(token, rs, request);
+        List<SubResource> subresources = populateSubResource(token, rs);
         return subresources;
     }
 
-    private List<SubResource> populateSubResource(String token, ResultSet rs, HttpServletRequest request) {
+    private List<SubResource> populateSubResource(String token, ResultSet rs) {
         List<PropertySet> results = rs.getAllResults();
         List<SubResource> subresources = new ArrayList<SubResource>();
 

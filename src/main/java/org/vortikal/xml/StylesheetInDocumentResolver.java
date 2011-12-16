@@ -37,7 +37,6 @@ import org.jdom.Document;
 import org.jdom.ProcessingInstruction;
 import org.vortikal.repository.PropertySet;
 
-
 /**
  * Stylesgeet resolver that gets XSLT stylesheets from
  * "xml-stylesheet" processing instructions in XML documents.
@@ -50,7 +49,7 @@ public class StylesheetInDocumentResolver implements StylesheetReferenceResolver
     }
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private String getStylesheetURLFromDocument(Document doc) {
 
         List content = doc.getContent();

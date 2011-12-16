@@ -37,7 +37,7 @@ import org.vortikal.web.RequestContext;
 public class CopyResourceCommandValidator extends CopyCommandValidator {
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected boolean supportsClass(Class clazz) {
         return clazz == CopyCommand.class;
     }

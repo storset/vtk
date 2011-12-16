@@ -48,7 +48,7 @@ public interface Decorator {
      * @return the decorated content
      * @exception Exception if an error occurs
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public PageContent decorate(Map model, HttpServletRequest request, PageContent content) throws Exception;
 
 }

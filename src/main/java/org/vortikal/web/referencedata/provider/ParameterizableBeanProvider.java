@@ -74,7 +74,7 @@ public class ParameterizableBeanProvider implements ReferenceDataProvider, Initi
     }
     
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
         model.put(this.modelName, this.object);
     }

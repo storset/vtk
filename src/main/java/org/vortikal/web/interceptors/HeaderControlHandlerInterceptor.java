@@ -178,7 +178,7 @@ public class HeaderControlHandlerInterceptor implements HandlerInterceptor {
      * @param response the servlet response
      * @throws Exception
      */
-    @SuppressWarnings("unchecked") 
+    @SuppressWarnings("rawtypes") 
     protected void setContentLanguageHeader(Resource resource, 
                                             Map model,
                                             HttpServletRequest request,
@@ -208,7 +208,7 @@ public class HeaderControlHandlerInterceptor implements HandlerInterceptor {
      * @param response the servlet response
      * @throws Exception
      */
-    @SuppressWarnings("unchecked") 
+    @SuppressWarnings("rawtypes") 
     protected void setLastModifiedHeader(Resource resource, 
                                          Map model,
                                          HttpServletRequest request,
@@ -240,7 +240,7 @@ public class HeaderControlHandlerInterceptor implements HandlerInterceptor {
      * @param response the servlet response
      * @throws Exception
      */
-    @SuppressWarnings("unchecked") 
+    @SuppressWarnings("rawtypes") 
     protected void setEtagHeader(Resource resource, Map model, 
                                 HttpServletRequest request, 
                                 HttpServletResponse response) throws Exception {

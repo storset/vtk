@@ -37,7 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 
-
+@Deprecated
 public class HttpMethodNotImplementedHandler implements Controller {
 
     public ModelAndView handleRequest(HttpServletRequest request,

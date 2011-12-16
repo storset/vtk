@@ -70,7 +70,7 @@ public class ShellExecutionResultProvider implements ReferenceDataProvider {
     }
     
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void referenceData(Map model, HttpServletRequest request)
         throws Exception {
 

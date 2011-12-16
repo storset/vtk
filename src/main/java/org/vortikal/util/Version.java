@@ -47,7 +47,6 @@ public class Version {
     /* Retrieved from the FRAMEWORK_VERSION file in the class path: */
     private static Date buildDate = new Date(0);
     private static String buildHost = "unknown";
-    private static String versionControlID = "$Id$";
     private static String frameworkVersion = "unknown";
     private static String buildVendor = "unknown";
     private static String vendorURL = "unknown";
@@ -172,16 +171,5 @@ public class Version {
     }
     
 
-    /**
-     * Gets the ID as provided by the version control system. Examples
-     * of this include a CVS tag, or a Subversion global revision
-     * number. This information should only be used to track different
-     * development versions.
-     *
-     * @return the ID of the version control system.
-     */
-    public static final String getVersionControlID() {
-        return versionControlID;
-    }
     
 }

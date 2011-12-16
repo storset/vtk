@@ -62,7 +62,10 @@ public class ConfirmPublishController implements Controller {
         
         Resource item = repository.retrieve(token, resourceURI, true);
         Principal principal = requestContext.getPrincipal();
-        URL url = publishService.constructURL(item, principal);
+        URL url = null;
+        try {
+            url = publishService.constructURL(item, principal);
+        } catch (Throwable t) { }
 
         model.put("url", url);
         model.put("name", item.getName());

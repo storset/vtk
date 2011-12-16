@@ -40,8 +40,6 @@ import org.springframework.web.servlet.view.AbstractView;
 import org.vortikal.web.InvalidModelException;
 import org.vortikal.webdav.WebdavConstants;
 
-
-
 /**
  * Simple HTTP Status code view.
  * 
@@ -62,7 +60,7 @@ public class SimpleHttpStatusView extends AbstractView {
     
     private String body;
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected void renderMergedOutputModel(Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 

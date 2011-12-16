@@ -34,7 +34,7 @@ package org.vortikal.web.actions.convert;
 public class ArchiveCommandValidator extends CopyResourceCommandValidator {
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected boolean supportsClass(Class clazz) {
         return clazz == ArchiveCommand.class;
     }

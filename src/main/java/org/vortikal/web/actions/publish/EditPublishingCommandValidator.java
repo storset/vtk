@@ -62,7 +62,7 @@ public class EditPublishingCommandValidator implements Validator {
     private PropertyTypeDefinition unpublishDatePropDef;
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public boolean supports(Class clazz) {
         return clazz == EditPublishingCommand.class;
     }

@@ -86,7 +86,6 @@ public class StructuredResourceEditor extends SimpleFormController {
         lock();
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
-        Principal principal = requestContext.getPrincipal();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
         

@@ -73,7 +73,7 @@ public class ElementInModelDecoratorComponent extends
     }
 
     public List<HtmlContent> render(DecoratorRequest request) throws Exception {
-        @SuppressWarnings("unchecked") Map model = request.getMvcModel();
+        @SuppressWarnings("rawtypes") Map model = request.getMvcModel();
         List<HtmlContent> result = new ArrayList<HtmlContent>();
         Object o = model.get(this.modelKey);
         if (o != null && o instanceof HtmlContent) {

@@ -39,7 +39,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.View;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.service.URL;
 import org.vortikal.web.servlet.BufferedResponse;
 
 

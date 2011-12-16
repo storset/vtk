@@ -38,8 +38,8 @@ import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition.ContentRelation;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 
 public class ResourceTypeEditablePropertyProvider implements EditablePropertyProvider {
 	

@@ -94,7 +94,7 @@ public abstract class AbstractViewProcessingDecorator
      * #processInternal} method.
      * @exception Exception if an error occurs
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public final PageContent decorate(Map model, HttpServletRequest request,
                                   PageContent content) throws Exception {
 
@@ -121,7 +121,7 @@ public abstract class AbstractViewProcessingDecorator
     
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private String renderView(Map model, HttpServletRequest request) throws Exception {
 
         ConfigurableRequestWrapper requestWrapper = new ConfigurableRequestWrapper(request);

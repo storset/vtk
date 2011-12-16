@@ -75,7 +75,7 @@ public class IndexFileMessageProvider implements ReferenceDataProvider {
         this.modelName = modelName;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void referenceData(Map model, HttpServletRequest request)
             throws Exception {
 
@@ -95,11 +95,10 @@ public class IndexFileMessageProvider implements ReferenceDataProvider {
     }
     
     public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
-        sb.append(" [ ");
-        sb.append("modelName = ").append(this.modelName);
-        sb.append(", localizationKey = ").append(this.localizationKey);
-        sb.append(" ]");
+        StringBuilder sb = new StringBuilder("{");
+        sb.append("modelName : ").append(this.modelName);
+        sb.append(", localizationKey : ").append(this.localizationKey);
+        sb.append("}");
         return sb.toString();
     }
 

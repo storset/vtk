@@ -83,7 +83,6 @@ import freemarker.template.TemplateException;
  *  @see freemarker.cache.MultiTemplateLoader
  *  @see FreeMarkerTemplateLocation
  */
-@SuppressWarnings("unchecked")
 public class MultiTemplateLocationsFreeMarkerConfigurer
   implements FreeMarkerConfig, InitializingBean, ApplicationContextAware, ServletContextAware {
 
@@ -93,6 +92,7 @@ public class MultiTemplateLocationsFreeMarkerConfigurer
     private ApplicationContext applicationContext;
     private Resource configLocation;
     private Properties freemarkerSettings;
+    @SuppressWarnings("rawtypes")
     private Map freemarkerVariables;
     private ResourceLoader resourceLoader = new DefaultResourceLoader();
     private boolean preferFileSystemAccess = true;
@@ -111,6 +111,7 @@ public class MultiTemplateLocationsFreeMarkerConfigurer
         }
     }
     
+    @SuppressWarnings("rawtypes")
     public Configuration createConfiguration() throws IOException, TemplateException {
         List<TemplateLoader> loaders = new ArrayList<TemplateLoader>();
         
@@ -192,6 +193,7 @@ public class MultiTemplateLocationsFreeMarkerConfigurer
         this.freemarkerSettings = settings;
     }
 
+    @SuppressWarnings("rawtypes")
     public void setFreemarkerVariables(Map variables) {
         this.freemarkerVariables = variables;
     }

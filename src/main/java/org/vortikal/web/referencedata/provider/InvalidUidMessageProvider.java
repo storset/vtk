@@ -42,9 +42,9 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
+import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.security.Principal.Type;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
@@ -56,7 +56,7 @@ public class InvalidUidMessageProvider implements ReferenceDataProvider {
     private PrincipalFactory principalFactory;
 
     @SuppressWarnings("unchecked")
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    public void referenceData(@SuppressWarnings("rawtypes") Map model, HttpServletRequest request) throws Exception {
 
         RequestContext context = RequestContext.getRequestContext();
         Repository repository = context.getRepository();

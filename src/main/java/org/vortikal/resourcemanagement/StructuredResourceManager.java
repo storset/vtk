@@ -51,18 +51,18 @@ import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.property.PropertyEvaluationException;
 import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.EvaluationElement;
 import org.vortikal.resourcemanagement.parser.ParserConstants;
 import org.vortikal.resourcemanagement.service.ExternalServiceInvoker;
-import org.vortikal.text.JSONUtil;
+import org.vortikal.util.text.JSON;
 import org.vortikal.web.service.RepositoryAssertion;
 
 public class StructuredResourceManager {
@@ -484,7 +484,7 @@ public class StructuredResourceManager {
                     throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
                 }
                 String expression = "properties." + property.getDefinition().getName();
-                value = JSONUtil.select(json, expression);
+                value = JSON.select(json, expression);
                 if (emptyValue(value)) {
                     if (propertyDesc.isOverrides()) {
                         // XXX Consider the order of how this is done
@@ -629,7 +629,7 @@ public class StructuredResourceManager {
                     throw new PropertyEvaluationException("Unable to get JSON representation of content", e);
                 }
                 String expression = "properties." + propName;
-                Object jsonObject = JSONUtil.select(json, expression);
+                Object jsonObject = JSON.select(json, expression);
                 return Boolean.valueOf(jsonObject != null);
             }
         }

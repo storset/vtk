@@ -44,6 +44,7 @@ public class SessionBeanProvider implements ReferenceDataProvider {
     
     
     
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
         HttpSession session = request.getSession(true);

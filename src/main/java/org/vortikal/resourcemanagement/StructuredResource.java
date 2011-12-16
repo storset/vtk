@@ -41,7 +41,7 @@ import java.util.Map;
 
 import net.sf.json.JSONObject;
 
-import org.vortikal.text.JSONUtil;
+import org.vortikal.util.text.JSON;
 
 public class StructuredResource {
 
@@ -119,7 +119,7 @@ public class StructuredResource {
             if (propDesc instanceof SimplePropertyDescription) {
                 if (((SimplePropertyDescription) propDesc).isRequired()) {
 
-                    Object value = JSONUtil.select(json, "properties." + propDesc.getName());
+                    Object value = JSON.select(json, "properties." + propDesc.getName());
                     if (value == null) {
                         errors.add(new ValidationError(propDesc.getName(), 
                         "property is required"));

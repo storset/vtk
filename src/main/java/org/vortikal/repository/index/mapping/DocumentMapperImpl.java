@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.index.mapping;
 
-import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import static org.vortikal.repository.resourcetype.PropertyType.Type.BINARY;
 import static org.vortikal.repository.resourcetype.PropertyType.Type.JSON;
 
@@ -54,6 +53,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.FieldSelectorResult;
 import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.IndexReader;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
@@ -63,13 +63,13 @@ import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
-import org.vortikal.text.JSONUtil;
 
 /**
  * Simple mapping from Lucene {@link org.apache.lucene.document.Document} to
@@ -472,7 +472,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                 // Gather up values for current field
                 for (Value jsonValue : jsonPropValues) {
                     JSONObject json = JSONObject.fromObject(jsonValue.getObjectValue());
-                    Object selection = JSONUtil.select(json, jsonAttributeName);
+                    Object selection = org.vortikal.util.text.JSON.select(json, jsonAttributeName);
                     // Selection can be of type JSONArray, in which case we
                     // index it as multi-value
                     if (selection instanceof JSONArray) {

@@ -162,7 +162,7 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
         return cal;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void setCalendarTitles(HttpServletRequest request, Resource resource, Map model) {
         model.put("dayHasPlannedEventsTitle", this.helper.getEventTypeTitle(request, resource,
                 "eventListing.calendar.dayHasPlannedEvents", false));

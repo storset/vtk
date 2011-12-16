@@ -72,7 +72,7 @@ public class CreateDropDownJSON implements Controller {
         }
 
         String token = RequestContext.getRequestContext().getSecurityToken();
-        List<SubResource> subresources = provider.buildSearchAndPopulateSubresources(uri, token, request);
+        List<SubResource> subresources = provider.buildSearchAndPopulateSubresources(uri, token);
         writeResults(subresources, request, response, token);
         return null;
     }

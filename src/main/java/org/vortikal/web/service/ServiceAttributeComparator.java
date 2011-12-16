@@ -54,7 +54,7 @@ public class ServiceAttributeComparator implements Comparator<Service> {
         this.attributeName = attributeName;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public int compare(Service service1, Service service2) {
         
         Object attr1 = service1.getAttribute(this.attributeName);

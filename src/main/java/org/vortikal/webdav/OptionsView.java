@@ -42,9 +42,7 @@ import org.springframework.web.servlet.View;
  */
 public class OptionsView implements View {
 
-
-
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void render(Map model, HttpServletRequest request,
                        HttpServletResponse response) throws Exception {
 

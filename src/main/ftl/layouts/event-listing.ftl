@@ -22,7 +22,11 @@
           <@displayRes event event_index+1 resSize />
         </#list>
       <#else>
-        <@vrtx.msg code="eventListing.noPlanned.allupcoming" />
+        <#if conf.emptyMsg?exists>
+          ${conf.emptyMsg}
+        <#else>
+          <@vrtx.msg code="eventListing.noPlanned.allupcoming" />
+        </#if>
       </#if>
       <#if conf.allEventsLink>
         <div class="vrtx-more">

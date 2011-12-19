@@ -89,6 +89,9 @@ public class EventComponent extends AbstractEventComponent {
     private static final String PARAMETER_EVENTS_TITLE = "events-title";
     private static final String PARAMETER_EVENTS_TITLE_DESC = "Set to true if you want to display title of the vents folder. Default is 'false'";
 
+    private static final String PARAMETER_EVENTS_EMPTY_MSG = "if-empty-message";
+    private static final String PARAMETER_EVENTS_EMPTY_MSG_DESC = "Sets message to be shown if there are no events.";
+
     private SearchComponent search;
     private Service viewService;
 
@@ -135,6 +138,10 @@ public class EventComponent extends AbstractEventComponent {
         conf.put("showEndTime", !parameterHasValue(PARAMETER_SHOW_END_TIME, "false", request) && listOnlyOnce);
 
         conf.put("addToCalendar", parameterHasValue(PARAMETER_ADD_TO_CALENDAR, "true", request));
+
+        String emptyMsg = request.getStringParameter(PARAMETER_EVENTS_EMPTY_MSG);
+        if (emptyMsg != null)
+            conf.put("emptyMsg", emptyMsg);
 
         boolean eventsTitle = parameterHasValue(PARAMETER_EVENTS_TITLE, "true", request);
         conf.put("eventsTitle", eventsTitle);
@@ -295,6 +302,7 @@ public class EventComponent extends AbstractEventComponent {
         map.put(PARAMETER_SHOW_END_TIME, PARAMETER_SHOW_END_TIME_DESC);
         map.put(PARAMETER_ADD_TO_CALENDAR, PARAMETER_ADD_TO_CALENDAR_DESC);
         map.put(PARAMETER_EVENTS_TITLE, PARAMETER_EVENTS_TITLE_DESC);
+        map.put(PARAMETER_EVENTS_EMPTY_MSG, PARAMETER_EVENTS_EMPTY_MSG_DESC);
         return map;
     }
 

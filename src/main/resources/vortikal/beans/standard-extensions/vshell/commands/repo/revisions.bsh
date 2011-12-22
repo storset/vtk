@@ -1,0 +1,34 @@
+getDescription() {
+    return "Lists revisions on a resource";
+}
+
+getUsage() {
+    return "repo revisions <uri:path>";
+}
+
+void execute(context, args, out) {
+
+    repo = context.get("context").getBean("repository");
+    token = context.get("context").getBean("writeAllToken");
+
+    uri = args.get("uri");
+
+    if (!repo.exists(token, uri)) {
+        out.println("No such resource");
+        return;
+    }
+
+    revs = repo.getRevisions(token, uri);
+
+    out.printf("%s%14s%31s\n", new Object[] {
+            "ID", "Time", "Name"
+        });
+    out.println("-------------------------------------------------------------------");
+    for (rev: revs) {
+        out.printf("%8d    %12s   %12s\n", new Object[] {
+                rev.getID(),
+                rev.getTimestamp(),
+                rev.getName()
+            });
+    }
+}

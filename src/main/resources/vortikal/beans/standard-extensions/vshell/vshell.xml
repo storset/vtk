@@ -60,6 +60,12 @@
              script-interfaces="org.vortikal.shell.vshell.VCommand">
    </lang:bsh>
 
+   <lang:bsh id="vshell.repo.revisions"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/repo/revisions.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
    <lang:bsh id="vshell.repo.ls"
              refresh-check-delay="1000"
              script-source="${vshell.commandsLocation}/repo/ls.bsh"
@@ -165,6 +171,12 @@
    <lang:bsh id="vshell.servlet.services"
              refresh-check-delay="1000"
              script-source="${vshell.commandsLocation}/servlet/services.bsh"
+             script-interfaces="org.vortikal.shell.vshell.VCommand">
+   </lang:bsh>
+
+   <lang:bsh id="vshell.servlet.service"
+             refresh-check-delay="1000"
+             script-source="${vshell.commandsLocation}/servlet/service.bsh"
              script-interfaces="org.vortikal.shell.vshell.VCommand">
    </lang:bsh>
 

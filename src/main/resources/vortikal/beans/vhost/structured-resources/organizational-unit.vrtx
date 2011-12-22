@@ -258,6 +258,9 @@ resourcetype organizational-unit {
       <body id="vrtx-organizational-unit">
         <div id="vrtx-content">
         [resources-props "."]
+        [def introduction resource-prop(".", "introduction")]
+        [def responsibilities resource-prop(".", "responsibilities")]
+        [def picture resource-prop(".", "picture")]
         [def document structured-document()]
         [def subsubunits document.properties.showExtendedUnitList]
         [if subsubunits = "true"]
@@ -266,12 +269,14 @@ resourcetype organizational-unit {
               [call "resource:organizational-unit-language-link"]
               <h1>[call "comp:title"]</h1>
               [call "comp:contact-information"]
-            </div>  
+            </div>
+            [if introduction != null || responsibilities != null || picture != null]
             <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-main">  
               [call "comp:introduction-image"]
               [call "comp:introduction"]
               [call "comp:responsibilities"]
             </div>
+            [endif]
             [call "comp:subunits"]
             [call "comp:employees"]
             [call "comp:content"]

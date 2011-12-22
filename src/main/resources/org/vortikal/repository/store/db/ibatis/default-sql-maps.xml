@@ -861,7 +861,7 @@
   <select id="listRevisionsByResource" parameterClass="java.util.Map" resultMap="Revision">
     select id, resource_id, revision_name, user_id, timestamp, checksum, change_amount
          from simple_content_revision where resource_id = #resourceId#
-         order by id desc
+         order by timestamp desc
   </select>
 
   <select id="listRevisionsByResourceIds" parameterClass="java.util.Map" resultClass="Long">

@@ -666,7 +666,9 @@
   </select>
   
   <select id="discoverGroups" resultMap="UserOrGroupName">
-    select distinct user_or_group_name from acl_entry where is_user = 'N'
+    select user_or_group_name from acl_entry where is_user = 'N'
+    union
+    select user_or_group_name from revision_acl_entry where is_user = 'N'
   </select>
   
   

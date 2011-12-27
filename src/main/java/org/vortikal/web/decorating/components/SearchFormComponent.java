@@ -55,8 +55,8 @@ public class SearchFormComponent extends ViewRenderingDecoratorComponent {
             resourceURI = Path.fromString(uri);
         }
 
-        URL searchURL = service.constructURL(resourceURI);
-        model.put("url", searchURL);
+       // URL searchURL = service.constructURL(resourceURI);
+        model.put("url", resourceURI);
 
     }
 

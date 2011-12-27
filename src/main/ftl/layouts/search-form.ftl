@@ -9,7 +9,7 @@
   -->
 <#import "../lib/vortikal.ftl" as vrtx />
 
-<form method="get" action="${url?html}" class="vrtx-search-form">
+<form method="get" action="${url.path?html}" class="vrtx-search-form">
    <fieldset>
     <input type="text" name="query" value="" class="vrtx-search-field" />
     <button type="submit">

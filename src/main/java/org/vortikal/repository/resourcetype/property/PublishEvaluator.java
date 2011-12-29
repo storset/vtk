@@ -59,7 +59,7 @@ public class PublishEvaluator implements PropertyEvaluator {
             Date publishDate = publishDateProp.getDateValue();
             if (unpublishDateProp != null) {
                 Date unpublishDate = unpublishDateProp.getDateValue();
-                if (unpublishDate.before(publishDate)) {
+                if (publishDate.before(now) && unpublishDate.before(publishDate)) {
                     property.setBooleanValue(true);
                     ctx.getNewResource().removeProperty(this.unpublishDatePropDef);
                     return true;

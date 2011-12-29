@@ -77,38 +77,44 @@ public class EditPublishingCommandValidator implements Validator {
         }
 
         if (editPublishingCommand.getPublishDateUpdateAction() != null) {
-            if (!StringUtils.isBlank(editPublishingCommand.getPublishDate())) {
-                Date date = getValidDate(editPublishingCommand.getPublishDate(), "publishDate", errors);
-                if (date == null) {
-                    return;
-                }
-                editPublishingCommand.setPublishDateValue(new Value(date, false));
-            } else {
-                Property unpublishDateProp = editPublishingCommand.getResource().getProperty(this.unpublishDatePropDef);
-                if (unpublishDateProp != null) {
-                    editPublishingCommand.getResource().removeProperty(this.unpublishDatePropDef);
-                }
+            Date date = getValidDate(editPublishingCommand.getPublishDate(), "publishDate", errors);
+            if (date == null) {
+                editPublishingCommand.getResource().removeProperty(this.unpublishDatePropDef);
+                return;
             }
-        } else if (editPublishingCommand.getUnpublishDateUpdateAction() != null) {
-            if (!StringUtils.isBlank(editPublishingCommand.getUnpublishDate())) {
-                Date date = getValidDate(editPublishingCommand.getUnpublishDate(), "unpublishDate", errors);
-                if (date == null) {
-                    return;
-                }
-                Property publishDateProp = editPublishingCommand.getResource().getProperty(this.publishDatePropDef);
-                if (publishDateProp == null) {
-                    errors.rejectValue("unpublishDate", "publishing.edit.invalid.unpublishDateNonExisting",
-                            "Invalid date");
-                } else if (date.before(publishDateProp.getDateValue())) {
-                    errors.rejectValue("unpublishDate", "publishing.edit.invalid.unpublishDateBefore", "Invalid date");
-                }
-                editPublishingCommand.setUnpublishDateValue(new Value(date, false));
+
+            Property unpublishDateProp = editPublishingCommand.getResource().getProperty(this.unpublishDatePropDef);
+            if (unpublishDateProp != null && unpublishDateProp.getDateValue().before(date)) {
+                editPublishingCommand.getResource().removeProperty(this.unpublishDatePropDef);
             }
+
+            editPublishingCommand.setPublishDateValue(new Value(date, false));
+            return;
         }
 
+        if (editPublishingCommand.getUnpublishDateUpdateAction() != null) {
+            Date date = getValidDate(editPublishingCommand.getUnpublishDate(), "unpublishDate", errors);
+            if (date == null) {
+                return;
+            }
+
+            Property publishDateProp = editPublishingCommand.getResource().getProperty(this.publishDatePropDef);
+            if (publishDateProp == null) {
+                errors.rejectValue("unpublishDate", "publishing.edit.invalid.unpublishDateNonExisting", "Invalid date");
+            } else if (date.before(publishDateProp.getDateValue())) {
+                errors.rejectValue("unpublishDate", "publishing.edit.invalid.unpublishDateBefore", "Invalid date");
+            }
+
+            editPublishingCommand.setUnpublishDateValue(new Value(date, false));
+        }
     }
 
     private Date getValidDate(String dateString, String bindName, Errors errors) {
+
+        if (StringUtils.isBlank(dateString)) {
+            return null;
+        }
+
         Date validDate = null;
 
         for (String dateFormat : dateformats) {

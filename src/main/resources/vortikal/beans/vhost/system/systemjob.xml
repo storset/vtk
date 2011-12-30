@@ -13,6 +13,7 @@
     </property>
     <property name="systemJobStatusPropDef" ref="systemJobStatusPropDef" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="config" ref="systemjob.queryFilter.config" />
   </bean>
 
   <bean id="repository.systemJobMethodInvokingTrigger" abstract="true"
@@ -21,6 +22,19 @@
     <property name="startDelay" value="20000" />
     <property name="startTriggerAfterInitialization" value="true" />
     <property name="abortTriggerOnTargetMethodException" value="false" />
+  </bean>
+
+  <bean id="systemjob.queryFilter.config" class="org.vortikal.util.repository.JSONBackedMapResource"
+    parent="repositoryAware">
+    <property name="uri" value="${systemjob.queryFilter.configFile}" />
+  </bean>
+
+  <bean id="systemjob.queryFilter.config.refreshTrigger"
+    class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${systemjob.queryFilter.configFile}" />
+    <property name="targetObject" ref="systemjob.queryFilter.config" />
+    <property name="method" value="load" />
   </bean>
 
 </beans>

@@ -94,4 +94,9 @@ public class ResourcePublisher extends SystemJob {
         this.unpublishDatePropDef = unpublishDatePropDef;
     }
 
+    @Override
+    protected boolean handlePublishedOnly() {
+        return false;
+    }
+
 }

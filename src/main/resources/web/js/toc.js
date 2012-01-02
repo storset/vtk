@@ -66,16 +66,16 @@ function tocGen(writeTo) {
     }
 
     if (headers.length > 0) {
-      var num;
+      var headerNr;
       var headersLength = headers.length; //performance
       for (var i = 0; i < headersLength; i++) {
-        num = headers[i].nodeName.substr(1);
-        if (num > this.previous) {
+        headerNr = headers[i].nodeName.substr(1);
+        if (headerNr > this.previous) {
           this.writeOut += '<ul>';
           this.opened++;
           this.addLink(headers[i]);
-        } else if (num < this.previous) {
-          for (var j = 0; j < this.opened; j++) {
+        } else if (headerNr < this.previous) {
+          if (this.opened) {
             this.writeOut += '<\/li><\/ul>';
             this.opened--;
           }
@@ -84,21 +84,23 @@ function tocGen(writeTo) {
           this.writeout += '<\/li>';
           this.addLink(headers[i]);
         }
-        this.previous = num;
+        this.previous = headerNr;
       }
-      // Added "-1" to this.opened 
-      for (var j = 0; j <= this.opened - 1; j++) {
+      while (this.opened) {
         this.writeOut += '<\/li><\/ul>';
+        this.opened--;
       }
       document.getElementById(writeTo).innerHTML = this.writeOut;
     }
   }
 }
+
 tocGen.prototype.addLink = function (ob) {
   var id = this.getId(ob);
   var link = '<li><a href="#' + id + '">' + ob.innerHTML + '<\/a>';
   this.writeOut += link;
 }
+
 tocGen.prototype.getId = function (ob) {
   if (!ob.id) {
     ob.id = 'toc' + this.num;

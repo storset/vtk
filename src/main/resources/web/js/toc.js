@@ -75,8 +75,9 @@ function tocGen(writeTo) {
           this.opened++;
           this.addLink(headers[i]);
         } else if (headerNr < this.previous) {
-          if (this.opened) { // more than zero opened
-            this.writeOut += '<\/li><\/ul>'; 
+          var headerChange = this.previous - headerNr;
+          while (headerChange--) {
+            this.writeOut += '<\/li><\/ul>';
             this.opened--;
           }
           this.addLink(headers[i]);
@@ -86,9 +87,8 @@ function tocGen(writeTo) {
         }
         this.previous = headerNr;
       }
-      while (this.opened) { // close all opened
+      while (this.opened--) { // close all opened
         this.writeOut += '<\/li><\/ul>';
-        this.opened--;
       }
       document.getElementById(writeTo).innerHTML = this.writeOut;
     }

@@ -179,7 +179,6 @@
 .vrtx-grouped-vertical:after,
 .vrtx-grouped:after,
 .vrtx-json:after,
-.vrtx-json .fieldset:after,
 .vrtx-json .vrtx-json-element:after {
   clear: both;
   content: ".";

@@ -33,7 +33,6 @@ package org.vortikal.repository.systemjob;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,13 +49,11 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
-import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.SecurityContext;
 
 public abstract class SystemJob implements InitializingBean {
@@ -72,7 +69,6 @@ public abstract class SystemJob implements InitializingBean {
     private SecurityContext securityContext;
     private PropertyTypeDefinition systemJobStatusPropDef;
     private ResourceTypeTree resourceTypeTree;
-    private Map<String, ?> config;
 
     /**
      * List of pointers to properties that are to be affected as a result of
@@ -116,9 +112,6 @@ public abstract class SystemJob implements InitializingBean {
             String token = SecurityContext.getSecurityContext().getToken();
 
             Query query = getSearchQuery();
-            // Add paths to ignore when processing (ignore resources that are
-            // not relevant for system job maintenance)
-            query = this.addIgnorePathsQuery(query);
             Search search = new Search();
             search.setQuery(query);
             search.setSorting(null);
@@ -179,36 +172,6 @@ public abstract class SystemJob implements InitializingBean {
         return orQuery;
     }
 
-    @SuppressWarnings("unchecked")
-    private Query addIgnorePathsQuery(Query query) {
-
-        // Check configuration file for other filters to add (e.g.
-        // resourcetypes/paths to ignore)
-        if (this.config != null) {
-            Object obj = config.get(this.systemJobName);
-            if (obj != null) {
-                if (obj instanceof Map) {
-                    Map<?, ?> m = (Map<?, ?>) obj;
-                    Object ignore = m.get("ignore");
-                    if (ignore != null && (ignore instanceof ArrayList)) {
-                        AndQuery andQuery = new AndQuery();
-                        andQuery.add(query);
-                        List<String> ignoreList = (ArrayList<String>) ignore;
-                        AndQuery ignoreQuery = new AndQuery();
-                        for (String ignoreUri : ignoreList) {
-                            ignoreQuery.add(new UriPrefixQuery(ignoreUri, true));
-                        }
-                        andQuery.add(ignoreQuery);
-                        return andQuery;
-                    }
-                }
-            }
-        }
-
-        // No configuration found, or no filters for current job
-        return query;
-    }
-
     @Required
     public void setSystemJobName(String systemJobName) {
         this.systemJobName = systemJobName;
@@ -253,10 +216,6 @@ public abstract class SystemJob implements InitializingBean {
 
     public void setAffectedPropDefPointers(List<String> affectedPropDefPointers) {
         this.affectedPropDefPointers = affectedPropDefPointers;
-    }
-
-    public void setConfig(Map<String, ?> config) {
-        this.config = config;
     }
 
 }

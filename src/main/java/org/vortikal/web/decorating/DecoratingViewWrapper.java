@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.View;
+import org.vortikal.repository.Resource;
 import org.vortikal.util.io.SizeLimitException;
 import org.vortikal.util.repository.ContentTypeHelper;
 import org.vortikal.util.text.HtmlUtil;
@@ -162,6 +163,15 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
     @SuppressWarnings("rawtypes")
     public void renderView(View view, Map model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
+
+        Object o = model.get("resource");
+        if (this.maxDocumentSize > 0 && o instanceof Resource) {
+            Resource resource = (Resource) o;
+            if (resource.getContentLength() > this.maxDocumentSize) {
+                view.render(model, request, response);
+                return;
+            }
+        }
         List<Decorator> decoratorList = new ArrayList<Decorator>();
         if (this.decorators != null) {
             for (int i = 0; i < this.decorators.length; i++) {

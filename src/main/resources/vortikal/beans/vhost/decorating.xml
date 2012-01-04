@@ -9,6 +9,7 @@
         <ref bean="decorating.templateDecorator" />
       </list>
     </property>
+    <property name="maxDocumentSize" value="${decorating.maxDocumentSize}" />
   </bean>
 
   <bean id="decorating.templateDecorator"

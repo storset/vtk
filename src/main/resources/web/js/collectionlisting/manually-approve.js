@@ -57,7 +57,7 @@ $(document).ready(function() {
       var textfield = $("#resource\\.manually-approved-resources");
       var value = textfield.val();
       var uri = $(this).val();
-      if ($(this).attr("checked")) {
+      if ($(this).is(":checked")) {
         if (value.length) {
           value += ", " + uri;
         } else {

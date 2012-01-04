@@ -54,7 +54,7 @@
 }
 
 #manually-approve-container {
-  margin: 20px 0 30px 0;
+  margin: 20px 0 40px 0;
 }
 
 #manually-approve-container table {
@@ -87,6 +87,10 @@
 #manually-approve-container .approve-info {
   margin: 10px 0 0 0;
   display: block;
+}
+
+#manually-approve-container .approve-info {
+  float: left;
 }
 
 #manually-approve-container .next,

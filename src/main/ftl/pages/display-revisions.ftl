@@ -52,14 +52,14 @@
               <a class="vrtx-revisions-view vrtx-button-small" href="${workingCopy.displayURL?html}"><span><@vrtx.msg code="versions.table.buttons.view" /></span></a>
               </#if>
               <#if (workingCopy.deleteURL)?exists>
-                <form action="${workingCopy.deleteURL?html}" method="post">
+                <form action="${workingCopy.deleteURL?html}" method="post" class="vrtx-revisions-delete-form">
                   <div class="vrtx-button-small">
                     <input type="submit" value="${vrtx.getMsg("versions.table.buttons.delete")}" />
                   </div>
                 </form>
               </#if>
               <#if (workingCopy.restoreURL)?exists>
-                <form action="${workingCopy.restoreURL?html}" method="post">
+                <form action="${workingCopy.restoreURL?html}" method="post" id="vrtx-revisions-make-current-form">
                   <div class="vrtx-button-small">
                     <input type="submit" value="${vrtx.getMsg("versions.table.buttons.make-current")}" />
                   </div>
@@ -98,14 +98,14 @@
                 <a class="vrtx-revisions-view  vrtx-button-small" href="${revision.displayURL?html}"><span><@vrtx.msg code="versions.table.buttons.view" /></span></a>
               </#if>
               <#if (revision.deleteURL)?exists>
-                <form action="${revision.deleteURL?html}" method="post">
+                <form action="${revision.deleteURL?html}" method="post" class="vrtx-revisions-delete-form">
                   <div class="vrtx-button-small">
                     <input type="submit" value="${vrtx.getMsg("versions.table.buttons.delete")}" />
                   </div>
                 </form>
               </#if>
               <#if (revision.restoreURL)?exists>
-                <form action="${revision.restoreURL?html}" method="post">
+                <form action="${revision.restoreURL?html}" method="post" class="vrtx-revisions-restore-form">
                   <div class="vrtx-button-small">
                     <input type="submit" value="${vrtx.getMsg("versions.table.buttons.restore")}" />
                   </div>

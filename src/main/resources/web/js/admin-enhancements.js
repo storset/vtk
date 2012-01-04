@@ -486,6 +486,24 @@ $(document).ready(function () {
       });
     }
   }
+  
+  // Delete versions
+  $("#contents").delegate(".vrtx-revisions-delete-form input[type=submit]", "click", function(e) {
+    var form = $(this).closest("form")
+    var url = form.attr("action");
+    var dataString = form.serialize();
+    vrtxAdmin.serverFacade.postHtml(url, dataString, {
+      success: function (results, status, resp) {
+        var tr = form.closest("tr");
+        tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
+        tr.slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
+          $("#contents").html($(results).find("#contents").html());
+        });
+      }
+    });
+    e.stopPropagation();
+    e.preventDefault();
+  });
 
   // Show/hide multiple properties (initalization / config)
   // TODO: better / easier to understand interface (and remove old "." in CSS-ids / classes)

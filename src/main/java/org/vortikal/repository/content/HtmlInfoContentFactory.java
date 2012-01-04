@@ -60,7 +60,10 @@ public class HtmlInfoContentFactory implements ContentFactory {
         
         try {
             parser.parse(input);
-        } catch (StopException t) { }
+        } catch (StopException t) { 
+        } finally {
+            content.close();
+        }
         return map;
     }
     

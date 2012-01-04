@@ -274,6 +274,15 @@ div#vrtx-resource\.picture img {
 
 /* ^ Image and caption */
 
+/* Manual approval */
+
+#manually-approve-container-title {
+  display: inline-block;
+  margin-left: 20px;
+}
+
+/* ^ Manual approval */
+
 
 
 /*------------------------------------*\

@@ -7,7 +7,7 @@
 
 var lastVal = "";
 
-$(window).ready( function() {
+$(window).load(function() {
   var manuallyApproveFolders = $("#resource\\.manually-approve-from");
   if(manuallyApproveFolders.length) {
     lastVal = manuallyApproveFolders.val()
@@ -17,51 +17,60 @@ $(window).ready( function() {
 $(document).ready(function() {
 
     // Retrieve initial resources
-    var manuallyApproveFolders = $("#resource\\.manually-approve-from");
-    var aggregatedFolders = $("#resource\\.aggregation");
+    var manuallyApproveFoldersTxt = $("#resource\\.manually-approve-from");
+    var aggregatedFoldersTxt = $("#resource\\.aggregation");
+    $("#manually-approve-refresh").hide(0);
     
-    if(manuallyApproveFolders.length) {
-      var val = manuallyApproveFolders.val();
-      lastVal = val;
-      var folders = val.split(",");
-      if(aggregatedFolders.length) {
-        aggregatedFolders = aggregatedFolders.val().split(",");
+    if(manuallyApproveFoldersTxt.length) {
+      var folders, aggregatedFolders;
+      var value = manuallyApproveFoldersTxt.val();
+      lastVal = $.trim(value);
+      folders = lastVal.split(",");
+      if(aggregatedFoldersTxt.length) {
+        aggregatedFolders = $.trim(aggregatedFoldersTxt.val());
+        aggregatedFolders = aggregatedFolders.split(",");
       }
       retrieveResources(".", folders, aggregatedFolders);
     }
 
     // Refresh when folders to approve from are changed
-    $("#manually-approve-refresh").click( function(e) {
-      var val = manuallyApproveFolders.val();
-      lastVal = val;
-      var folders = val.split(",");
-      if(aggregatedFolders.length) {
-        aggregatedFolders = aggregatedFolders.val().split(",");
+    $("#manually-approve-refresh").click(function(e) {
+      if(manuallyApproveFoldersTxt.length) {
+        var folders, aggregatedFolders;
+      
+        var value = manuallyApproveFoldersTxt.val();
+        lastVal = $.trim(value);
+        folders = lastVal.split(",");
+        if(aggregatedFoldersTxt.length) {
+          aggregatedFolders = $.trim(aggregatedFoldersTxt.val());
+          aggregatedFolders = aggregatedFolders.split(",");
+        }
+        retrieveResources(".", folders, aggregatedFolders);
       }
-      retrieveResources(".", folders, aggregatedFolders);
       $(this).hide();
-      return false;
+      e.stopPropagation();
+      e.preventDefault();
     });
 
     // Add / remove manually approved uri's
     $("#manually-approve-container").delegate("input", "click", function(e) {
       var textfield = $("#resource\\.manually-approved-resources");
-      var val = textfield.val();
+      var value = textfield.val();
       var uri = $(this).val();
       if ($(this).attr("checked")) {
-        if (val.length) {
-          val += ", " + uri;
+        if (value.length) {
+          value += ", " + uri;
         } else {
-          val = uri;
+          value = uri;
         }
       } else {
-        if (val.indexOf(uri) == 0) { // not first
-          val = val.replace(uri, "");
+        if (value.indexOf(uri) == 0) { // not first
+          value = value.replace(uri, "");
         } else {
-          val = val.replace(", " + uri, "");
+          value = value.replace(", " + uri, "");
         }
       }
-      textfield.val(val);
+      textfield.val(value);
     });
 
     // Show refresh button only if textfield has changed

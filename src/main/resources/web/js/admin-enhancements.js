@@ -521,6 +521,21 @@ $(document).ready(function () {
     e.stopPropagation();
     e.preventDefault();
   });
+  
+  // Make working copy into current version
+  $("#contents").delegate("#vrtx-revisions-make-current-form input[type=submit]", "click", function(e) {
+    var form = $(this).closest("form")
+    var url = form.attr("action");
+    var dataString = form.serialize();
+    vrtxAdmin.serverFacade.postHtml(url, dataString, {
+      success: function (results, status, resp) {
+        $("#contents").html($(results).find("#contents").html());
+        vrtxAdmin.displayInfoMsg("Arbeidsversjon er satt som gjeldende versjon");
+      }
+    });
+    e.stopPropagation();
+    e.preventDefault();
+  });
 
   // Show/hide multiple properties (initalization / config)
   // TODO: better / easier to understand interface (and remove old "." in CSS-ids / classes)

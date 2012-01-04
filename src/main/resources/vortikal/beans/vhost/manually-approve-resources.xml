@@ -26,7 +26,7 @@
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
   </bean>
 
-  <bean id="editor.collection.manuallyApproveResourcesSearcher" class="org.vortikal.web.service.manuallyapprove.ManuallyApproveResourcesSearcher">
+  <bean id="abstractManuallyApproveResourcesSearcher" abstract="true" class="org.vortikal.web.service.manuallyapprove.ManuallyApproveResourcesSearcher">
     <property name="listingResourceTypeMappingPointers">
       <map>
         <entry key="article-listing" value="${override.listing.prefix}article" />
@@ -40,5 +40,7 @@
     <property name="creationTimePropDef" ref="creationTimePropDef" />
     <property name="manuallyApprovedResourcesPropDef" ref="manuallyApprovedResourcesPropDef" />
   </bean>
+
+  <bean id="editor.collection.manuallyApproveResourcesSearcher" parent="abstractManuallyApproveResourcesSearcher" />
 
 </beans>

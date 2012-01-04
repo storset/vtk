@@ -52,6 +52,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.URL;
 
 public class ManuallyApproveResourcesHandler implements Controller {
 
@@ -161,6 +162,14 @@ public class ManuallyApproveResourcesHandler implements Controller {
     }
 
     private boolean isValid(String folder, Path currentCollectionPath, Property recursiveProp) {
+
+        try {
+            URL.parse(folder);
+            return true;
+        } catch (Exception e) {
+            // Not a url, but might be a local path. Ignore and continue.
+        }
+
         try {
 
             // Make sure path is valid

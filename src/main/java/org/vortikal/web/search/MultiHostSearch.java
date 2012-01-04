@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,13 +30,33 @@
  */
 package org.vortikal.web.search;
 
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.search.Search;
 
-public interface MultiHostSearchComponent {
+public interface MultiHostSearch {
 
-    public ResultSet search(MultiHostSearch multiHostSearch);
+    public static final String SOLR_URL_PROP_NAME = "solr.url";
 
-    public PropertySet retrieve(String token, String uri);
+    public static enum Type {
+        // Complete search, map an original search to multi host search,
+        // including aggregation and manually approved resources
+        COMPLETE_SEARCH,
+        // Search for resources on a host under a given prefix
+        URI_PREFIX_SEARCH,
+        // Search for specific resource types on a given host
+        RESOURCE_TYPE_SEARCH
+    }
+
+    public String getToken();
+
+    public Search getOriginalSearch();
+
+    public Type getType();
+
+    public Resource getOriginalResource();
+
+    public String getUri();
+
+    public String getResourceType();
 
 }

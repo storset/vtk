@@ -77,7 +77,7 @@
   <import resource="publish.xml" />
   <import resource="trash-can.xml" />
   <import resource="create-from-drop-down.xml" />
-  <!--import resource="manually-approve-resources.xml" /-->
+  <import resource="manually-approve-resources.xml" />
   
   <import resource="link-check.xml" />
   

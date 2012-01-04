@@ -65,6 +65,7 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.search.MultiHostSearch;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -253,7 +254,7 @@ public abstract class AtomFeedController implements Controller {
 
             Link link = abdera.getFactory().newLink();
             String urlString = viewService.constructLink(result.getURI());
-            Property urlProp = result.getProperty(Namespace.DEFAULT_NAMESPACE, "solr.url");
+            Property urlProp = result.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearch.SOLR_URL_PROP_NAME);
             if (urlProp != null) {
                 urlString = URL.parse(urlProp.getStringValue()).toString();
             }

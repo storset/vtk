@@ -253,9 +253,11 @@
           <property name="urlName" value="documentURL" />
           <property name="staticURLProtocol" value="${webProtocolRestricted}" />
         </bean>
-        <!--bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider"> <property name="modelName" value="manuallyApprove" 
-          /> <property name="urlName" value="url" /> <property name="service" ref="editor.collection.manuallyApproveResourcesService" 
-          /> </bean -->
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="modelName" value="manuallyApprove" />
+          <property name="urlName" value="url" />
+          <property name="service" ref="editor.collection.manuallyApproveResourcesService" />
+        </bean>
         <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
           <property name="service" ref="editor.browseService" />
           <property name="path" value="${editor.fck.browseURL}" />
@@ -497,8 +499,8 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="collection.sortingPropDef" />
             <ref bean="aggregationPropDef" />
-            <!--ref bean="manuallyApproveFromPropDef" />
-            <ref bean="manuallyApprovedResourcesPropDef" /-->
+            <ref bean="manuallyApproveFromPropDef" />
+            <ref bean="manuallyApprovedResourcesPropDef" />
             <ref bean="collection.hideLastModifiedPropDef" />
             <ref bean="collection.hideIntroductionPropDef" />
             <ref bean="additionalContentPropDef" />
@@ -650,8 +652,8 @@
             <ref bean="articleListing.recursiveListingPropDef" />
             <ref bean="articleListing.recursiveListingSubfoldersPropDef" />
             <ref bean="aggregationPropDef" />
-            <!--ref bean="manuallyApproveFromPropDef" />
-            <ref bean="manuallyApprovedResourcesPropDef" /-->
+            <ref bean="manuallyApproveFromPropDef" />
+            <ref bean="manuallyApprovedResourcesPropDef" />
             <ref bean="articleListing.sortingPropDef" />
             <ref bean="articleListing.hidePublishedDatePropDef" />
             <ref bean="articleListing.hideIntroductionPropDef" />
@@ -706,8 +708,8 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="eventListing.recursiveListingPropDef" />
             <ref bean="aggregationPropDef" />
-            <!--ref bean="manuallyApproveFromPropDef" />
-            <ref bean="manuallyApprovedResourcesPropDef" /-->
+            <ref bean="manuallyApproveFromPropDef" />
+            <ref bean="manuallyApprovedResourcesPropDef" />
             <ref bean="eventListing.hideEndDatePropDef" />
             <ref bean="eventListing.hideLocationPropDef" />
             <ref bean="articleListing.hideIntroductionPropDef" />

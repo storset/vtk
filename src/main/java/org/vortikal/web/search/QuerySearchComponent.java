@@ -75,6 +75,7 @@ public abstract class QuerySearchComponent implements SearchComponent {
     private MultiHostSearchComponent multiHostSearchComponent;
     private boolean searchMultiHosts;
     private PropertyTypeDefinition aggregationPropDef;
+    private PropertyTypeDefinition manuallyApprovedResourcesPropDef;
 
     protected abstract Query getQuery(Resource collection, HttpServletRequest request);
 
@@ -116,7 +117,8 @@ public abstract class QuerySearchComponent implements SearchComponent {
         boolean multiHostResults = false;
         if (this.performMultiHostSearch(collection)) {
             try {
-                result = this.multiHostSearchComponent.search(collection, token, search);
+                MultiHostSearchImpl multiHostSearch = new MultiHostSearchImpl(token, search, collection);
+                result = this.multiHostSearchComponent.search(multiHostSearch);
                 multiHostResults = true;
             } catch (Throwable t) {
                 logger.error("An error occured while searching multiple hosts. "
@@ -140,7 +142,7 @@ public abstract class QuerySearchComponent implements SearchComponent {
             files.add(res);
             URL url = this.viewService.constructURL(res.getURI());
             if (multiHostResults) {
-                Property urlProp = res.getProperty(Namespace.DEFAULT_NAMESPACE, "solr.url");
+                Property urlProp = res.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearch.SOLR_URL_PROP_NAME);
                 if (urlProp != null) {
                     url = URL.parse(urlProp.getStringValue());
                 }
@@ -180,7 +182,8 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
     private boolean performMultiHostSearch(Resource collection) {
 
-        if (this.multiHostSearchComponent == null || !this.searchMultiHosts || this.aggregationPropDef == null) {
+        if (this.multiHostSearchComponent == null || !this.searchMultiHosts || this.aggregationPropDef == null
+                || this.manuallyApprovedResourcesPropDef == null) {
             return false;
         }
 
@@ -188,6 +191,18 @@ public abstract class QuerySearchComponent implements SearchComponent {
         if (aggregationProp != null) {
             for (Value value : aggregationProp.getValues()) {
                 if (isUrl(value.getStringValue())) {
+                    return true;
+                }
+            }
+        }
+
+        Property manuallyApprovedProp = collection.getProperty(this.manuallyApprovedResourcesPropDef);
+        if (manuallyApprovedProp != null) {
+            String repositoryId = RequestContext.getRequestContext().getRepository().getId();
+            for (Value value : manuallyApprovedProp.getValues()) {
+                // We have at least one manually approved resource that is not
+                // on local host
+                if (!value.getStringValue().contains(repositoryId)) {
                     return true;
                 }
             }
@@ -261,6 +276,10 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
     public void setAggregationPropDef(PropertyTypeDefinition aggregationPropDef) {
         this.aggregationPropDef = aggregationPropDef;
+    }
+
+    public void setManuallyApprovedResourcesPropDef(PropertyTypeDefinition manuallyApprovedResourcesPropDef) {
+        this.manuallyApprovedResourcesPropDef = manuallyApprovedResourcesPropDef;
     }
 
 }

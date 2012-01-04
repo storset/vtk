@@ -529,8 +529,12 @@ $(document).ready(function () {
     var dataString = form.serialize();
     vrtxAdmin.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {
-        $("#contents").html($(results).find("#contents").html());
-        vrtxAdmin.displayInfoMsg("Arbeidsversjon er satt som gjeldende versjon");
+        var tr = form.closest("tr");
+        tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
+        tr.slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
+          $("#contents").html($(results).find("#contents").html());
+          vrtxAdmin.displayInfoMsg("Arbeidsversjon er satt som gjeldende versjon");
+        });
       }
     });
     e.stopPropagation();

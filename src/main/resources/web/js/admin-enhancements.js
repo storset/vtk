@@ -445,7 +445,6 @@ $(document).ready(function () {
   }
   
   // About property forms
-
   if($("body#vrtx-about").length && !vrtxAdmin.isIE7) { // turn of tmp. in IE7
     var propsAbout = [
       "contentLocale",

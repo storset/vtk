@@ -487,7 +487,7 @@ $(document).ready(function () {
     }
   }
   
-  // Delete versions
+  // Delete revisions
   $("#contents").delegate(".vrtx-revisions-delete-form input[type=submit]", "click", function(e) {
     var form = $(this).closest("form")
     var url = form.attr("action");
@@ -499,6 +499,23 @@ $(document).ready(function () {
         tr.slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
           $("#contents").html($(results).find("#contents").html());
         });
+      }
+    });
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  
+  // Restore revisions
+  $("#contents").delegate(".vrtx-revisions-restore-form input[type=submit]", "click", function(e) {
+    var form = $(this).closest("form")
+    var url = form.attr("action");
+    var dataString = form.serialize();
+    vrtxAdmin.serverFacade.postHtml(url, dataString, {
+      success: function (results, status, resp) {
+        $("#contents").html($(results).find("#contents").html());
+        var revisionNr = url.substring(url.lastIndexOf("=")+1, url.length);
+        vrtxAdmin.displayInfoMsg("Versjon " + revisionNr + " er gjenopprettet og satt som gjeldende versjon");
+        scroll(0,0);
       }
     });
     e.stopPropagation();
@@ -1402,6 +1419,14 @@ VrtxAdmin.prototype.displayErrorMsg = function(msg) {
     $("#app-content > .errormessage").html(msg);
   } else {
     $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
+  }
+};
+
+VrtxAdmin.prototype.displayInfoMsg = function(msg) {
+  if ($("#app-content > .infomessage").length) {
+    $("#app-content > .infomessage").html(msg);
+  } else {
+    $("#app-content").prepend("<div class='infomessage message'>" + msg + "</div>");
   }
 };
 

@@ -46,4 +46,58 @@
   margin: 20px 0 0 0;
 }
 
+/* Manual approval */
+
+#manually-approve-container-title {
+  display: inline-block;
+  margin-left: 20px;
+}
+
+#manually-approve-container {
+  margin: 20px 0 30px 0;
+}
+
+#manually-approve-container table {
+  width: 100%;
+}
+
+#manually-approve-container table tr.even td {
+  background-color: #F9F9F9;
+}
+
+#manually-approve-container table td {
+  font-size: 1.15em;
+  border-top: 1px solid #f0f0f0;
+  padding: 5px 15px 4px 0;
+}
+
+#manually-approve-container table th {
+  background: url(images/line-dotted.gif) repeat-x bottom left;
+  padding: 0 15px 8px 0;
+  text-align: left;
+  white-space: nowrap;  
+}
+
+#manually-approve-container td .approve-link {
+  padding: 0 0 0 10px;
+}
+
+#manually-approve-container .next,
+#manually-approve-container .prev,
+#manually-approve-container .approve-info {
+  margin: 10px 0 0 0;
+  display: block;
+}
+
+#manually-approve-container .next,
+#manually-approve-container .prev {
+  float: right;
+}
+
+#manually-approve-container .next {
+  margin-left: 20px
+}
+
+/* ^ Manual approval */
+
 /* ^ Vortex - Editor - Old documenttypes and folders */

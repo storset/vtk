@@ -60,7 +60,7 @@ import org.vortikal.util.io.StreamUtil;
  */
 public class XMLCharacterEncodingEvaluator implements PropertyEvaluator {
 
-    private int maxBytes = 1000000;
+    private int maxBytes = 2000;
 
     private static Pattern CHARSET_PATTERN = Pattern.compile(
         "\\s*<\\?xml\\s+[^>]*\\s+encoding=[\"']([A-Za-z0-9._\\-]+)[\"'][^>]*\\?>.*",

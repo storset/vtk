@@ -486,60 +486,60 @@ $(document).ready(function () {
       });
     }
   }
-  
-  // Delete revisions
-  $("#contents").delegate(".vrtx-revisions-delete-form input[type=submit]", "click", function(e) {
-    var form = $(this).closest("form")
-    var url = form.attr("action");
-    var dataString = form.serialize();
-    vrtxAdmin.serverFacade.postHtml(url, dataString, {
-      success: function (results, status, resp) {
-        var tr = form.closest("tr");
-        tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
-        tr.slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
+ 
+  if($("body#vrtx-revisions").length) {
+    // Delete revisions
+    $("#contents").delegate(".vrtx-revisions-delete-form input[type=submit]", "click", function(e) {
+      var form = $(this).closest("form")
+      var url = form.attr("action");
+      var dataString = form.serialize();
+      vrtxAdmin.serverFacade.postHtml(url, dataString, {
+        success: function (results, status, resp) {
+          var tr = form.closest("tr");
+          tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
+          tr.slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
+            $("#contents").html($(results).find("#contents").html());
+          });
+        }
+      });
+      e.stopPropagation();
+      e.preventDefault();
+    });
+    // Restore revisions
+    $("#contents").delegate(".vrtx-revisions-restore-form input[type=submit]", "click", function(e) {
+      var form = $(this).closest("form")
+      var url = form.attr("action");
+      var dataString = form.serialize();
+      vrtxAdmin.serverFacade.postHtml(url, dataString, {
+        success: function (results, status, resp) {
           $("#contents").html($(results).find("#contents").html());
-        });
-      }
+          var revisionNr = url.substring(url.lastIndexOf("=")+1, url.length);
+          vrtxAdmin.displayInfoMsg("Versjon " + revisionNr + " er gjenopprettet og satt som gjeldende versjon");
+          scroll(0,0);
+        }
+      });
+      e.stopPropagation();
+      e.preventDefault();
     });
-    e.stopPropagation();
-    e.preventDefault();
-  });
-  
-  // Restore revisions
-  $("#contents").delegate(".vrtx-revisions-restore-form input[type=submit]", "click", function(e) {
-    var form = $(this).closest("form")
-    var url = form.attr("action");
-    var dataString = form.serialize();
-    vrtxAdmin.serverFacade.postHtml(url, dataString, {
-      success: function (results, status, resp) {
-        $("#contents").html($(results).find("#contents").html());
-        var revisionNr = url.substring(url.lastIndexOf("=")+1, url.length);
-        vrtxAdmin.displayInfoMsg("Versjon " + revisionNr + " er gjenopprettet og satt som gjeldende versjon");
-        scroll(0,0);
-      }
+    // Make working copy into current version
+    $("#contents").delegate("#vrtx-revisions-make-current-form input[type=submit]", "click", function(e) {
+      var form = $(this).closest("form")
+      var url = form.attr("action");
+      var dataString = form.serialize();
+      vrtxAdmin.serverFacade.postHtml(url, dataString, {
+        success: function (results, status, resp) {
+          var tr = form.closest("tr");
+          tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
+          tr.slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
+            $("#contents").html($(results).find("#contents").html());
+            vrtxAdmin.displayInfoMsg("Arbeidsversjon er satt som gjeldende versjon");
+          });
+        }
+      });
+      e.stopPropagation();
+      e.preventDefault();
     });
-    e.stopPropagation();
-    e.preventDefault();
-  });
-  
-  // Make working copy into current version
-  $("#contents").delegate("#vrtx-revisions-make-current-form input[type=submit]", "click", function(e) {
-    var form = $(this).closest("form")
-    var url = form.attr("action");
-    var dataString = form.serialize();
-    vrtxAdmin.serverFacade.postHtml(url, dataString, {
-      success: function (results, status, resp) {
-        var tr = form.closest("tr");
-        tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
-        tr.slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
-          $("#contents").html($(results).find("#contents").html());
-          vrtxAdmin.displayInfoMsg("Arbeidsversjon er satt som gjeldende versjon");
-        });
-      }
-    });
-    e.stopPropagation();
-    e.preventDefault();
-  });
+  }
 
   // Show/hide multiple properties (initalization / config)
   // TODO: better / easier to understand interface (and remove old "." in CSS-ids / classes)

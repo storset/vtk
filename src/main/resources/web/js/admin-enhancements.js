@@ -218,7 +218,7 @@ $(document).ready(function () {
       var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
       var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
       if(hasPostMessage) {
-        previewCreateIframe[0].contentWindow.postMessage("closedropdown", vrtxAdminOrigin);
+        previewCreateIframe[0].contentWindow.postMessage("collapsedsize", vrtxAdminOrigin);
       }
     }
   });

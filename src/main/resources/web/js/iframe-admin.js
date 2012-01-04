@@ -13,7 +13,12 @@ $(document).ready(function () {
       // What is the recieved message..
       var isMsgCreateIframeFullSize = recievedData.indexOf && (recievedData.indexOf("fullsize") != -1);
       var isMsgCreateIframeOriginalSize = recievedData.indexOf && (recievedData.indexOf("originalsize") != -1);
-      var isMsgPreviewIframeInnerHeight = !isMsgCreateIframeFullSize && !isMsgCreateIframeOriginalSize;
+      var isMsgCreateIframeCollapsedSize = recievedData.indexOf && (recievedData.indexOf("collapsedsize") != -1);
+      var isMsgCreateIframeExpandedSize = recievedData.indexOf && (recievedData.indexOf("expandedsize") != -1);
+      var isMsgPreviewIframeInnerHeight = !isMsgCreateIframeFullSize && 
+                                          !isMsgCreateIframeOriginalSize && 
+                                          !isMsgCreateIframeCollapsedSize &&
+                                          !isMsgCreateIframeExpandedSize;
 
       if(isMsgPreviewIframeInnerHeight) {
         var previewIframe = $("iframe#previewIframe")[0];
@@ -73,11 +78,15 @@ $(document).ready(function () {
             }
           } else if(isMsgCreateIframeOriginalSize) {
             previewCreateIframe.css({
-              "height": 135 + "px",
+              "height": 40 + "px",
               "width": originalWidth + "px"
             });
             previewCreateIframe.removeClass("iframe-fullscreen");
             $("#global-menu-create").css("zIndex", "99");
+          } else if(isMsgCreateIframeCollapsedSize) {
+            previewCreateIframe.css("height", 40 + "px");
+          } else if(isMsgCreateIframeExpandedSize) {
+            previewCreateIframe.css("height", 135 + "px");
           }
         }
       }

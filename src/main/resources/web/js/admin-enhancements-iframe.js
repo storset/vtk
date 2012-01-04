@@ -8,18 +8,27 @@
     readyState === "complete" || "DOMContentLoaded"-event (++)
 \*-------------------------------------------------------------------*/
 
+var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
+var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
+
 $(document).ready(function () {   
   dropdown({selector: "ul.manage-create"});
   
   // Slide up when choose something in dropdown
   $(".dropdown-shortcut-menu li a").click(function() {
-    $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing");
+    $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
+      notifyCollapsedDropdown(true);    
+    });
   });
   $(".dropdown-shortcut-menu-container li a").click(function() {
-    $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing");    
+    $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
+       notifyCollapsedDropdown(true);   
+    });  
   });
   $(document).click(function() {
-    $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing");
+    $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
+      notifyCollapsedDropdown(true);
+    });
   });
 });
 
@@ -53,8 +62,12 @@ function dropdown(options) {
     
     list.find("li" + dropdownClickArea).addClass("dropdown-init");
     
-    list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").click(function (e) {
-      shortcutMenu.slideToggle(100, "swing");   
+    list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").click(function (e) { 
+      var isVisible = shortcutMenu.is(":visible"); 
+      notifyExpandedDropdown(isVisible);
+      shortcutMenu.slideToggle(100, "swing", function() {
+        notifyCollapsedDropdown(isVisible);
+      });
       e.stopPropagation();
       e.preventDefault();
     });
@@ -68,6 +81,28 @@ function dropdown(options) {
       $this.parent().toggleClass('unhover');
       $this.prev().toggleClass('hover');
     });
+  }
+}
+
+function notifyExpandedDropdown(isVisible) {
+  if(parent && !isVisible) {
+    if(hasPostMessage) {
+      parent.postMessage("expandedsize", vrtxAdminOrigin);
+    } else { // use the hash stuff in plugin from jQuery "Cowboy"
+      var parentUrl = decodeURIComponent(document.location.hash.replace(/^#/, ''));
+      $.postMessage({expandedsize: true}, parentUrl, parent);
+    }
+  }
+}
+
+function notifyCollapsedDropdown(isVisible) {
+  if(parent && isVisible) {
+    if(hasPostMessage) {
+      parent.postMessage("collapsedsize", vrtxAdminOrigin);
+    } else { // use the hash stuff in plugin from jQuery "Cowboy"
+      var parentUrl = decodeURIComponent(document.location.hash.replace(/^#/, ''));
+      $.postMessage({collapsedsize: true}, parentUrl, parent);
+    }
   }
 }
 

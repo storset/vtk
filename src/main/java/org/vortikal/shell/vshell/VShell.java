@@ -261,6 +261,9 @@ public class VShell extends AbstractConsole {
         if ("path".equals(type)) {
             return Path.fromString(val);
         }
+        if ("number".equals(type)) {
+            return Integer.parseInt(val);
+        }
         return val;
     }
     

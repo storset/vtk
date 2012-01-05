@@ -117,10 +117,11 @@ public class ManuallyApproveResourcesSearcher {
             }
 
             for (String uri : folders) {
-                if (!uri.startsWith("http")) {
-                    uri = "http://".concat(repositoryId).concat(uri);
+                String searchUri = uri;
+                if (!searchUri.startsWith("http")) {
+                    searchUri = "http://".concat(repositoryId).concat(uri);
                 }
-                MultiHostSearchImpl multiHostSearch = new MultiHostSearchImpl(token, uri, resourceTypePointer);
+                MultiHostSearchImpl multiHostSearch = new MultiHostSearchImpl(token, searchUri, resourceTypePointer);
                 ResultSet rs = this.multiHostSearchComponent.search(multiHostSearch);
                 for (PropertySet ps : rs.getAllResults()) {
                     Property collectionProp = ps.getProperty(this.collectionPropDef);
@@ -295,7 +296,11 @@ public class ManuallyApproveResourcesSearcher {
 
     private ManuallyApproveResource mapPropertySetToManuallyApprovedResource(String reposirotyId, PropertySet ps,
             String source, boolean approved) {
-        String title = ps.getProperty(this.titlePropDef).getStringValue();
+        String title = ps.getName();
+        Property titleProp = ps.getProperty(this.titlePropDef);
+        if (titleProp != null) {
+            title = titleProp.getStringValue();
+        }
         String uri = "http://".concat(reposirotyId).concat(ps.getURI().toString());
         Property urlProp = ps.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearch.SOLR_URL_PROP_NAME);
         if (urlProp != null) {

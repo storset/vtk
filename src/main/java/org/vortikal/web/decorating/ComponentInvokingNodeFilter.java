@@ -299,8 +299,13 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
                 }
 
             } catch (Throwable t) {
-                logger.warn("Error invoking component on page " + 
-                        servletRequest.getRequestURI() + ": " + invocation, t);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Error invoking component on page " + 
+                            servletRequest.getRequestURI() + ": " + invocation, t);
+                } else if (logger.isInfoEnabled()) {
+                    logger.info("Error invoking component on page " + 
+                            servletRequest.getRequestURI() + ": " + invocation);
+                }
                 String msg = t.getMessage();
                 if (msg == null) {
                     msg = t.getClass().getName();

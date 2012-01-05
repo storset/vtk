@@ -230,12 +230,12 @@ public class ManuallyApproveResourcesSearcher {
             }
         }
 
+        // Sort and return
+        Collections.sort(result, new ManuallyApproveResourceComparator());
         // Handle limit
         if (result.size() > RESOURCE_LIST_LIMIT) {
             result = result.subList(0, RESOURCE_LIST_LIMIT);
         }
-        // Sort and return
-        Collections.sort(result, new ManuallyApproveResourceComparator());
         return result;
     }
 

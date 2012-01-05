@@ -1747,7 +1747,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     public void setContentRepresentationRegistry(ContentRepresentationRegistry contentRepresentationRegistry) {
         this.contentRepresentationRegistry = contentRepresentationRegistry;
     }
-    
+
+    @Required
     public void setTempDir(String tempDir) {
         File f = new File(tempDir);
         if (!f.exists()) {

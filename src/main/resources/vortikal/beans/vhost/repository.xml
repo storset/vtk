@@ -153,6 +153,7 @@
     <property name="sqlMaps" ref="repository.statementMappings" />
     <property name="principalFactory" ref="principalFactory" />
     <property name="revisionDirectory" value="${repositoryRevisionDirectory}" />
+    <property name="tempDir" value="${repository.tempDir}" />
   </bean>
 
   <bean id="repository.sqlMapCommentDao" class="org.vortikal.repository.store.db.SqlMapCommentDAO">

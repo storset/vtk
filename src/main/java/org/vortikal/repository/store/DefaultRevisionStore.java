@@ -71,12 +71,25 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
     
     private String revisionDirectory;
     private PrincipalFactory principalFactory;
+    private File tempDir;
+    
     
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
     }
     
+    @Required
+    public void setTempDir(String tempDir) {
+        File f = new File(tempDir);
+        if (!f.exists()) {
+            throw new IllegalStateException(
+                    "Directory " + tempDir + " does not exist");
+            
+        }
+        this.tempDir = f;
+    }
+
     @Override
     public List<Revision> list(Resource resource) {
 
@@ -246,21 +259,19 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
             
             // Go via a temporary file in case the source input stream is 
             // passed as the content parameter:
-            File tmp = File.createTempFile("foo", "bar");
-            FileOutputStream outputStream = new FileOutputStream(tmp);
-            StreamUtil.pipe(content, outputStream, COPY_BUF_SIZE, true);
+            File tmp = File.createTempFile("revision-" + revision.getID() + "-", null, this.tempDir);
 
-            // File.renameTo() is unstable sometimes:
-            FileInputStream srcStream = new FileInputStream(tmp);
-            FileOutputStream destStream = new FileOutputStream(dest);
-            StreamUtil.pipe(srcStream, destStream, COPY_BUF_SIZE, true);
+            try {
+                FileOutputStream outputStream = new FileOutputStream(tmp);
+                StreamUtil.pipe(content, outputStream, COPY_BUF_SIZE, true);
 
-            /*
-            if (!tmp.renameTo(dest)) {
-                throw new DataAccessException("Store revision content [" + revision + "] " 
-                        + "failed: unable to rename file " + tmp + " to " + dest);
+                FileInputStream srcStream = new FileInputStream(tmp);
+                FileOutputStream destStream = new FileOutputStream(dest);
+                StreamUtil.pipe(srcStream, destStream, COPY_BUF_SIZE, true);
+
+            } finally {
+                tmp.delete();
             }
-            */
         } catch (IOException e) {
             throw new DataAccessException("Store revision content [" + revision + "] failed", e);
         }

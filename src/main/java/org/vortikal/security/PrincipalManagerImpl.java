@@ -76,6 +76,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
     }    
 
     
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (this.principalStore == null) {
             throw new BeanInitializationException(
@@ -88,22 +89,26 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
         }
     }
     
+    @Override
     public boolean validatePrincipal(Principal principal)
         throws AuthenticationProcessingException {
         return this.principalStore.validatePrincipal(principal);
     }
 
 
+    @Override
     public boolean validateGroup(Principal group) throws AuthenticationProcessingException {
         return this.groupStore.validateGroup(group);
     }
 
 
+    @Override
     public boolean isMember(Principal principal, Principal group) {
         return this.groupStore.isMember(principal, group);
     }
 
 
+    @Override
     public Set<Principal> getMemberGroups(Principal principal) {
         return this.groupStore.getMemberGroups(principal);
     }
@@ -116,9 +121,9 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
             this.managers = managers;
         }
 
+        @Override
         public boolean validatePrincipal(Principal principal)
             throws AuthenticationProcessingException {
-
             
             for (PrincipalStore manager: this.managers) {
                 if (manager.validatePrincipal(principal)) {
@@ -128,6 +133,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
             return false;
         }
 
+        @Override
         public int getOrder() {
             // XXX: DUMMY - not used, but should be refactored
             return 0;

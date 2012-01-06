@@ -513,8 +513,11 @@ $(document).ready(function () {
       vrtxAdmin.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
           $("#contents").html($(results).find("#contents").html());
-          var revisionNr = url.substring(url.lastIndexOf("=")+1, url.length);
-          vrtxAdmin.displayInfoMsg("Versjon " + revisionNr + " er gjenopprettet og satt som gjeldende versjon");
+          if(typeof versionsRestoredInfoMsg !== "undefined") {         
+            var revisionNr = url.substring(url.lastIndexOf("=")+1, url.length);
+            var versionsRestoredInfoMsgTmp = versionsRestoredInfoMsg.replace("X", revisionNr);
+            vrtxAdmin.displayInfoMsg(versionsRestoredInfoMsgTmp);
+          }
           scroll(0,0);
         }
       });
@@ -533,7 +536,9 @@ $(document).ready(function () {
           tr.find("td").animate({padding: '0px'}, {duration: vrtxAdmin.transitionSpeed, easing: vrtxAdmin.transitionEasingSlideUp});
           tr.slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
             $("#contents").html($(results).find("#contents").html());
-            vrtxAdmin.displayInfoMsg("Arbeidsversjon er satt som gjeldende versjon");
+            if(typeof versionsMadeCurrentInfoMsg !== "undefined") {
+              vrtxAdmin.displayInfoMsg(versionsMadeCurrentInfoMsg);
+            }
           });
         }
       });

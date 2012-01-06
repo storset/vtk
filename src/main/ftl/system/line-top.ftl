@@ -2,9 +2,9 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#assign upscopedHost = "" />
-<#if !displayUpscoping?exists || (displayUpscoping?exists && (displayUpscoping = "false" || displayUpscoping?trim = ""))>
+<#-- <#if !displayUpscoping?exists || (displayUpscoping?exists && (displayUpscoping = "false" || displayUpscoping?trim = ""))>
   <#assign upscopedHost = "not-upscoped-host" />
-</#if>
+</#if> -->
 
 <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
 

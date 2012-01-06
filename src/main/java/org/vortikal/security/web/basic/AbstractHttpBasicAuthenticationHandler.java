@@ -61,6 +61,7 @@ public abstract class AbstractHttpBasicAuthenticationHandler extends AbstractAut
         this.challenge = challenge;
     }
     
+    @Override
     public boolean isRecognizedAuthenticationRequest(HttpServletRequest req)
     throws AuthenticationProcessingException {
 
@@ -77,25 +78,30 @@ public abstract class AbstractHttpBasicAuthenticationHandler extends AbstractAut
         return super.isRecognizedAuthenticationRequest(req);
     }
 
+    @Override
     public boolean postAuthentication(HttpServletRequest req, HttpServletResponse resp)
         throws AuthenticationProcessingException {
         return false;
     }
     
+    @Override
     public boolean isLogoutSupported() {
         return false;
     }
 
+    @Override
     public boolean logout(Principal principal, HttpServletRequest req,
                           HttpServletResponse resp)
         throws AuthenticationProcessingException {
         return false;
     }
     
+    @Override
     public AuthenticationChallenge getAuthenticationChallenge() {
         return this.challenge;
     }
     
+    @Override
     protected String getUserName(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
 
@@ -119,6 +125,7 @@ public abstract class AbstractHttpBasicAuthenticationHandler extends AbstractAut
     }
 
 
+    @Override
     protected String getPassword(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
 
@@ -139,6 +146,5 @@ public abstract class AbstractHttpBasicAuthenticationHandler extends AbstractAut
     public void setRequireSecureConnection(boolean requireSecureConnection) {
         this.requireSecureConnection = requireSecureConnection;
     }
-
     
 }

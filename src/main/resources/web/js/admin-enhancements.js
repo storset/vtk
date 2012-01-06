@@ -74,6 +74,7 @@ function VrtxAdmin() {
   this.transitionDropdownSpeed = 100;
   this.transitionEasingSlideDown = "linear";
   this.transitionEasingSlideUp = "linear";
+  this.infoMessageRemoveAfter = 5000; // 5 seconds
   
   return instance;
 };
@@ -1435,18 +1436,34 @@ VrtxAdmin.prototype.displayErrorContainers = function(results, form, errorContai
 }; 
 
 VrtxAdmin.prototype.displayErrorMsg = function(msg) {
+  var vrtxAdm = this;
   if ($("#app-content > .errormessage").length) {
     $("#app-content > .errormessage").html(msg);
   } else {
     $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
+    $("#app-content > .infomessage").slideUp(0, "linear", function() {
+      $(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
+    });
   }
 };
 
 VrtxAdmin.prototype.displayInfoMsg = function(msg) {
+  var vrtxAdm = this;
   if ($("#app-content > .infomessage").length) {
     $("#app-content > .infomessage").html(msg);
   } else {
-    $("#app-content").prepend("<div class='infomessage message'>" + msg + "</div>");
+    $("#app-content").prepend("<div class='infomessage message'>" + msg + "</div>")
+    $("#app-content > .infomessage").slideUp(0, "linear", function() {
+      var infoMessage = $(this);
+      infoMessage.slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
+      /*
+      setTimeout(function() {
+        infoMessage.animate({"height": "toggle", "opacity": "toggle"}, {easing: vrtxAdm.transitionEasingSlideUp, duration: 1000}, function() {
+          $(this).remove();
+        });
+      }, vrtxAdm.infoMessageRemoveAfter);
+      */
+    });
   }
 };
 

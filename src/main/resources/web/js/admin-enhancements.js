@@ -531,15 +531,10 @@ $(document).ready(function () {
       var dataString = form.serialize();
       vrtxAdmin.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
-          var tr = form.closest("tr");
-          tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
-          tr.find("td").animate({padding: '0px'}, {duration: vrtxAdmin.transitionSpeed, easing: vrtxAdmin.transitionEasingSlideUp});
-          tr.slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
-            $("#contents").html($(results).find("#contents").html());
-            if(typeof versionsMadeCurrentInfoMsg !== "undefined") {
-              vrtxAdmin.displayInfoMsg(versionsMadeCurrentInfoMsg);
-            }
-          });
+          $("#contents").html($(results).find("#contents").html());
+          if(typeof versionsMadeCurrentInfoMsg !== "undefined") {
+            vrtxAdmin.displayInfoMsg(versionsMadeCurrentInfoMsg);
+          }
         }
       });
       e.stopPropagation();

@@ -53,7 +53,7 @@
             </td>
             <td class="vrtx-revisions-buttons-column">
               <#if (workingCopy.displayURL)?exists>
-              <a class="vrtx-revisions-view vrtx-button-small" href="${workingCopy.displayURL?html}"><span><@vrtx.msg code="versions.table.buttons.view" /></span></a>
+              <a class="vrtx-revision-view vrtx-button-small" href="${workingCopy.displayURL?html}"><span><@vrtx.msg code="versions.table.buttons.view" /></span></a>
               </#if>
               <#if (workingCopy.deleteURL)?exists>
                 <form action="${workingCopy.deleteURL?html}" method="post" class="vrtx-revisions-delete-form">
@@ -82,7 +82,7 @@
             </#if>
           </td>
           <td class="vrtx-revisions-buttons-column">
-            <a class="vrtx-revisions-view vrtx-button-small" href="${displayURL?html}"><span><@vrtx.msg code="versions.table.buttons.view" /></span></a>
+            <a class="vrtx-revision-view vrtx-button-small" href="${displayURL?html}"><span><@vrtx.msg code="versions.table.buttons.view" /></span></a>
           </td>
         </tr>
         <#assign number = regularRevisions?size />
@@ -99,7 +99,7 @@
             </td>
             <td class="vrtx-revisions-buttons-column">
               <#if (revision.displayURL)?exists>
-                <a class="vrtx-revisions-view  vrtx-button-small" href="${revision.displayURL?html}"><span><@vrtx.msg code="versions.table.buttons.view" /></span></a>
+                <a class="vrtx-revision-view  vrtx-button-small" href="${revision.displayURL?html}"><span><@vrtx.msg code="versions.table.buttons.view" /></span></a>
               </#if>
               <#if (revision.deleteURL)?exists>
                 <form action="${revision.deleteURL?html}" method="post" class="vrtx-revisions-delete-form">

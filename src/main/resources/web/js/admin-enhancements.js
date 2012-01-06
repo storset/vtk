@@ -156,18 +156,6 @@ $(window).load(function() {
     var expandedForm = $("#title-container .expandedForm").remove();
     $("#title-container").append(expandedForm);
   }
-  
-  $("#app-content").delegate("a.vrtx-revisions-view", "click", function(e) {
-      var openedRevision = openVersioning(this.href, 1020, 800);
-      e.stopPropagation();
-      e.preventDefault();
-  });
-
-  $("#app-content").delegate("a.vrtx-current-version-view", "click", function(e) {
-      var openedCurrentVersion = openVersioning(this.href, 1020, 800);
-      e.stopPropagation();
-      e.preventDefault();
-  });
 
   vrtxAdmin.log({msg: "window.load() in " + (+new Date - startLoadTime) + "ms"});
 });
@@ -485,6 +473,12 @@ $(document).ready(function () {
       });
     }
   }
+  
+  $("#app-content").delegate("a.vrtx-revision-view", "click", function(e) {
+    var openedRevision = openVersioning(this.href, 1020, 800);
+    e.stopPropagation();
+    e.preventDefault();
+  });
  
   if($("body#vrtx-revisions").length) {
     // Delete revisions

@@ -504,7 +504,7 @@ $(document).ready(function () {
     // Restore revisions
     $("#contents").delegate(".vrtx-revisions-restore-form input[type=submit]", "click", function(e) {
       var form = $(this).closest("form")
-      var url = "http://129.240.203.214:9322/ssaaaa-mye-innhold.html?vrtx=admin&action=restore-revision&revision=117";
+      var url = form.attr("action");
       var dataString = form.serialize();
       $("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
       vrtxAdmin.serverFacade.postHtml(url, dataString, {

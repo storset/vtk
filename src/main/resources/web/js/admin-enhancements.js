@@ -33,9 +33,8 @@
     1. Config
 \*-------------------------------------------------------------------*/
  
-var startLoadTime = +new Date(); 
- 
-var ua = navigator.userAgent.toLowerCase();
+var startLoadTime = +new Date(),
+    ua = navigator.userAgent.toLowerCase();
 
 function VrtxAdmin() {
 

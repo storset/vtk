@@ -74,7 +74,7 @@ function VrtxAdmin() {
   this.transitionDropdownSpeed = 100;
   this.transitionEasingSlideDown = "linear";
   this.transitionEasingSlideUp = "linear";
-  this.infoMessageRemoveAfter = 5000; // 5 seconds
+  // this.infoMessageRemoveAfter = 5000; // 5 seconds
   
   return instance;
 };

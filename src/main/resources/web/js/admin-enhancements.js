@@ -490,8 +490,10 @@ $(document).ready(function () {
         success: function (results, status, resp) {
           var tr = form.closest("tr");
           tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
-          tr.find("td").animate({padding: '0px'}, {duration: vrtxAdmin.transitionDropdownSpeed, easing: vrtxAdmin.transitionEasingSlideUp});
-          tr.slideUp(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
+          $.when( // When animations are complete, credits: http://tinyurl.com/83oodnp
+            tr.find("td").animate({padding: '0px'}, {duration: vrtxAdmin.transitionDropdownSpeed, easing: vrtxAdmin.transitionEasingSlideUp}),
+            tr.slideUp(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideUp)
+          ).done(function() {
             $("#contents").html($(results).find("#contents").html());
           });
         }

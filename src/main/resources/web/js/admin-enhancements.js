@@ -504,8 +504,9 @@ $(document).ready(function () {
     // Restore revisions
     $("#contents").delegate(".vrtx-revisions-restore-form input[type=submit]", "click", function(e) {
       var form = $(this).closest("form")
-      var url = form.attr("action");
+      var url = "http://129.240.203.214:9322/ssaaaa-mye-innhold.html?vrtx=admin&action=restore-revision&revision=117";
       var dataString = form.serialize();
+      $("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
       vrtxAdmin.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
           $("#contents").html($(results).find("#contents").html());
@@ -515,6 +516,9 @@ $(document).ready(function () {
             vrtxAdmin.displayInfoMsg(versionsRestoredInfoMsgTmp);
           }
           scroll(0,0);
+        },
+        error: function (xhr, textStatus) {
+          $("td.vrtx-revisions-buttons-column input").removeAttr("disabled"); // Unlock buttons
         }
       });
       e.stopPropagation();
@@ -1449,15 +1453,7 @@ VrtxAdmin.prototype.displayInfoMsg = function(msg) {
   } else {
     $("#app-content").prepend("<div class='infomessage message'>" + msg + "</div>")
     $("#app-content > .infomessage").slideUp(0, "linear", function() {
-      var infoMessage = $(this);
-      infoMessage.slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
-      /*
-      setTimeout(function() {
-        infoMessage.animate({"height": "toggle", "opacity": "toggle"}, {easing: vrtxAdm.transitionEasingSlideUp, duration: 1000}, function() {
-          $(this).remove();
-        });
-      }, vrtxAdm.infoMessageRemoveAfter);
-      */
+      $(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
     });
   }
 };
@@ -1479,7 +1475,10 @@ VrtxAdmin.prototype.serverFacade = {
       dataType: type,
       success: callbacks.success,
       error: function (xhr, textStatus) {
-        this.displayErrorMsg(this.error(xhr, textStatus));
+        vrtxAdmin.displayErrorMsg(vrtxAdmin.serverFacade.error(xhr, textStatus));
+        if(callbacks.error) {
+          callbacks.error(xhr, textStatus);
+        }
       }
     });
   },
@@ -1492,7 +1491,10 @@ VrtxAdmin.prototype.serverFacade = {
       contentType: "application/x-www-form-urlencoded;charset=UTF-8",
       success: callbacks.success,
       error: function (xhr, textStatus) {
-        this.displayErrorMsg(this.error(xhr, textStatus));
+        vrtxAdmin.displayErrorMsg(vrtxAdmin.serverFacade.error(xhr, textStatus));
+        if(callbacks.error) {
+          callbacks.error(xhr, textStatus);
+        }
       }
     });
   },
@@ -1503,7 +1505,7 @@ VrtxAdmin.prototype.serverFacade = {
     } else {
       if (status == 401 || status == 403 || status == 404) {
         location.reload(true); // if you have no access anymore or page is removed: reload from server
-      } 
+      }
       var msg = "The service returned " + xhr.status + " and failed to retrieve/post form: " + textStatus;
     }
     return msg;

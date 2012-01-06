@@ -496,8 +496,8 @@ $(document).ready(function () {
         success: function (results, status, resp) {
           var tr = form.closest("tr");
           tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
-          tr.find("td").animate({padding: '0px'}, {duration: vrtxAdmin.transitionSpeed, easing: vrtxAdmin.transitionEasingSlideUp});
-          tr.slideUp(vrtxAdmin.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
+          tr.find("td").animate({padding: '0px'}, {duration: vrtxAdmin.transitionDropdownSpeed, easing: vrtxAdmin.transitionEasingSlideUp});
+          tr.slideUp(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
             $("#contents").html($(results).find("#contents").html());
           });
         }

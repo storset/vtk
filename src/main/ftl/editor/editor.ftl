@@ -108,7 +108,7 @@
     </div>
     <form action="" method="post" id="editor">
 
-      <div class="properties">
+      <div class="properties"<#if resource.contentType?starts_with("image")> id="image-properties"</#if>>
         <@propsForm resource.preContentProperties />
       </div>
 

@@ -106,6 +106,22 @@
 
 /* Image editor */
 
+#image-properties {
+  position: relative;
+  padding: 0 0 20px 0;
+}
+
+#image-properties #resource\.userTitle,
+#image-properties #resource\.photographer {
+  width: 317px;
+}
+
+#image-properties #vrtx-resource\.image-description {
+  position: absolute;
+  top: -20px;
+  left: 370px;
+}
+
 #vrtx-image-editor-wrapper {
   overflow-x: hidden;
   overflow-y: visible;

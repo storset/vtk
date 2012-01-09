@@ -161,7 +161,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         // Add sub menu?
         MenuItem<PropertySet> activeItem = menu.getActiveItem();
         if (activeItem != null && menuRequest.getDepth() > 1) {
-            ListMenu<PropertySet> submenu = buildSubMenu(menuRequest);
+            ListMenu<PropertySet> submenu = buildSubMenu(menuRequest,request.getServletRequest().getRequestURI());
             if (submenu != null) {
                 activeItem.setSubMenu(submenu);
             }
@@ -389,7 +389,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     /**
      * Add sub menu if current uri is below uri
      */
-    private ListMenu<PropertySet> buildSubMenu(ListMenuRequest menuRequest) {
+    private ListMenu<PropertySet> buildSubMenu(ListMenuRequest menuRequest, String requestURI) {
 
         ResultSet rs = doSubSearch(menuRequest);
 
@@ -417,7 +417,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
 
             // Hidden?
             PropertyTypeDefinition hiddenPropDef = this.menuGenerator.getHiddenPropDef();
-            if (hiddenPropDef != null && resource.getProperty(hiddenPropDef) != null) {
+            if (hiddenPropDef != null && resource.getProperty(hiddenPropDef) != null && !requestURI.startsWith(uri.toString()) ) {
                 continue;
             }
             childList.add(resource);

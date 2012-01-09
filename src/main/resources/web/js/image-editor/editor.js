@@ -3,185 +3,215 @@
  *
  */
 
-var img, canvas, ctx, rw, rh, origw, origh, 
-    ratio = 1,
-    restorePoints = [],
-    keepAspectRatio = true;
-    scaledBeforeCrop = false,
-    hasCropBeenInitialized = false;
+function VrtxImageEditor() {
+  var instance; // Class-like singleton pattern (p.145 JavaScript Patterns)
+  VrtxImageEditor = function VrtxImageEditor() {
+    return instance;
+  };
+  VrtxImageEditor.prototype = this;
+  instance = new VrtxImageEditor();
+  instance.constructor = VrtxImageEditor;
+
+  this.img = null;
+  this.canvas = null;
+  this.ctx = null;
+  this.rw = null;
+  this.rh = null;
+  this.origw = null;
+  this.origh = null;
+  this.ratio = 1;
+  this.restorePoints = [],
+  this.keepAspectRatio = true;
+  this.scaledBeforeCrop = false,
+  this.hasCropBeenInitialized = false;
+
+  return instance;
+};
+
+var vrtxImageEditor = new VrtxImageEditor();
 
 $(function () {
-  var imageEditor = $("#vrtx-image-editor-wrapper");
-  if('getContext' in document.createElement('canvas') && imageEditor.length) {
-
-    imageEditor.addClass("canvas-supported");
-    var $canvas = imageEditor.find("#vrtx-image-editor");
-    canvas = $canvas[0];
-    ctx = canvas.getContext('2d');
-
-    img = new Image();
-    var path = location.href;
-    img.src = path.substring(0, path.indexOf("?"));
-    img.onload = function () {
-      rw = origw = img.width;
-      rh = origh = img.height;
-      ratio = origw / origh;
-      canvas.setAttribute('width', rw);
-      canvas.setAttribute('height', rh);
-      canvas.width = rw;
-      canvas.height = rh;
-      displayDimensions(rw, rh);
-      saveRestorePoint();
-      ctx.drawImage(img, 0, 0);
-      $canvas.resizable({
-        aspectRatio: keepAspectRatio,
-        grid: [1, 1],
-        stop: function (event, ui) {
-          var newWidth = Math.round(ui.size.width);
-          var newHeight = Math.round(ui.size.height);
-          scale(newWidth, newHeight);
-        },
-        resize: function (event, ui) {
-          displayDimensions(Math.round(ui.size.width), Math.round(ui.size.height));
-        }
-      });
-    }
-
-    $("#app-content").delegate("#vrtx-image-crop", "click", function(e) {
-      if (hasCropBeenInitialized) {
-        rw = origw = theSelection.w;
-        rh = origh = theSelection.h;
-        ratio = origw / origh;
-        updateDimensions(rw, rh);
-        ctx.drawImage(img, theSelection.x, theSelection.y, theSelection.w, theSelection.h,
-                                        0,              0, theSelection.w, theSelection.h);
-        resetCropPlugin();
-        $(this).val("Start beskjæring...");
-        $("#vrtx-image-editor").resizable("enable");
-        saveRestorePoint();
-        renderRestorePoint();
-        hasCropBeenInitialized = false;
-      } else {
-        if (scaledBeforeCrop) {
-         saveRestorePoint();
-         img.src = restorePoints[restorePoints.length - 1];
-         img.onload = function () {
-           ctx.drawImage(img, 0, 0);
-           $(this).val("Beskjær bilde");
-           $("#vrtx-image-editor").resizable("disable");
-           init();
-           scaledBeforeCrop = false;
-         }
-        } else {
-          $(this).val("Beskjær bilde");
-          $("#vrtx-image-editor").resizable("disable");
-          init();
-        }
-        hasCropBeenInitialized = true;
-      }
-      e.stopPropagation();
-      e.preventDefault();
-    });
-
-    $("#app-content").delegate("#resource-width, #resource-height", "change", function(e) {
-      var w = parseInt($.trim($("#resource-width").val()));
-      var h = parseInt($.trim($("#resource-height").val()));
-      if(!w.isNaN && !h.isNaN) {
-        if(w !== rw) {
-          if(keepAspectRatio) {
-            h = ratio <= 1 ? w * ratio : w / ratio;
-            h = Math.round(h);
-          }
-          $("#resource-height").val(h)
-        } else if(h !== rh) {
-          if(keepAspectRatio) {
-            w = ratio <= 1 ? h / ratio : h * ratio;
-            w = Math.round(w);
-          }
-          $("#resource-width").val(w)
-        }
-        scale(w, h);
-      }
-    });
-
-    $("#app-content").delegate("#resource-width", "keydown", function(e) {
-      if (e.which == 38 || e.which == 40) {
-        var w = parseInt($.trim($("#resource-width").val()));
-        var h = parseInt($.trim($("#resource-height").val()));
-        if(!w.isNaN && !h.isNaN) {
-          if(e.which == 38) {
-            w++;
-          } else {
-            if(w > 2) {
-              w--;
-            }
-          }
-          if(keepAspectRatio) {
-            h = ratio <= 1 ? w * ratio : w / ratio;
-            h = Math.round(h);
-          }
-          $("#resource-width").val(w);
-          $("#resource-height").val(h);
-          scale(w, h);
-        }
-      }
-    });
-
-    $("#app-content").delegate("#resource-height", "keydown", function(e) {
-      if (e.which == 38 || e.which == 40) {
-        var w = parseInt($.trim($("#resource-width").val()));
-        var h = parseInt($.trim($("#resource-height").val()));
-        if(!w.isNaN && !h.isNaN) {
-          if(e.which == 38) {
-            h++;
-          } else {
-            if(h > 2) {
-              h--;
-            }
-          }
-          if(keepAspectRatio) {
-            w = ratio <= 1 ? h / ratio : h * ratio;
-            w = Math.round(w);
-          }
-          $("#resource-width").val(w);
-          $("#resource-height").val(h);
-          scale(w, h);
-        }
-      }
-    });
-
+  var imageEditorElm = $("#vrtx-image-editor-wrapper");
+  if('getContext' in document.createElement('canvas') && imageEditorElm.length) {
+    vrtxImageEditor.init(imageEditorElm);   
   }
 });
 
-function scale(newWidth, newHeight) {
-  if(newWidth < origw) { // Downscaling with Lanczos3
-    rw = newWidth;
-    rh = newHeight;
-    updateDimensions(rw, rh);
+VrtxImageEditor.prototype.init = function init(imageEditorElm) {
+  var editor = this;
+
+  imageEditorElm.addClass("canvas-supported");
+  var $canvas = imageEditorElm.find("#vrtx-image-editor");
+  editor.canvas = $canvas[0];
+  editor.ctx = editor.canvas.getContext('2d');
+
+  editor.img = new Image();
+  var path = location.href;
+  editor.img.src = path.substring(0, path.indexOf("?"));
+  editor.img.onload = function () {
+    editor.rw = editor.origw = editor.img.width;
+    editor.rh = editor.origh = editor.img.height;
+    editor.ratio = editor.origw / editor.origh;
+    editor.canvas.setAttribute('width', editor.rw);
+    editor.canvas.setAttribute('height', editor.rh);
+    editor.canvas.width = editor.rw;
+    editor.canvas.height = editor.rh;
+    editor.displayDimensions(editor.rw, editor.rh);
+    editor.saveRestorePoint();
+    editor.ctx.drawImage(editor.img, 0, 0);
+    $canvas.resizable({
+      aspectRatio: editor.keepAspectRatio,
+      grid: [1, 1],
+      stop: function (event, ui) {
+        var newWidth = Math.round(ui.size.width);
+        var newHeight = Math.round(ui.size.height);
+        editor.scale(newWidth, newHeight);
+      },
+      resize: function (event, ui) {
+        editor.displayDimensions(Math.round(ui.size.width), Math.round(ui.size.height));
+      }
+    });
+  }
+
+  $("#app-content").delegate("#vrtx-image-crop", "click", function (e) {
+    if (editor.hasCropBeenInitialized) {
+      editor.rw = editor.origw = theSelection.w;
+      editor.rh = editor.origh = theSelection.h;
+      editor.ratio = editor.origw / editor.origh;
+      editor.updateDimensions(editor.rw, editor.rh);
+      editor.ctx.drawImage(editor.img, theSelection.x, theSelection.y, theSelection.w, theSelection.h, 
+                                                    0,              0, theSelection.w, theSelection.h);
+      editor.resetCropPlugin();
+      $(this).val("Start beskjæring...");
+      $("#vrtx-image-editor").resizable("enable");
+      editor.saveRestorePoint();
+      editor.renderRestorePoint();
+      editor.hasCropBeenInitialized = false;
+    } else {
+      if (editor.scaledBeforeCrop) {
+        editor.saveRestorePoint();
+        editor.img.src = editor.restorePoints[editor.restorePoints.length - 1];
+        editor.img.onload = function () {
+          editor.ctx.drawImage(editor.img, 0, 0);
+          $(this).val("Beskjær bilde");
+          $("#vrtx-image-editor").resizable("disable");
+          initSelection(editor.canvas, editor.ctx, editor.img);
+          editor.scaledBeforeCrop = false;
+        }
+      } else {
+        $(this).val("Beskjær bilde");
+        $("#vrtx-image-editor").resizable("disable");
+        initSelection(editor.canvas, editor.ctx, editor.img);
+      }
+      editor.hasCropBeenInitialized = true;
+    }
+    e.stopPropagation();
+    e.preventDefault();
+  });
+
+  $("#app-content").delegate("#resource-width, #resource-height", "change", function (e) {
+    var w = parseInt($.trim($("#resource-width").val()));
+    var h = parseInt($.trim($("#resource-height").val()));
+    if (!w.isNaN && !h.isNaN) {
+      if (w !== editor.rw) {
+        if (editor.keepAspectRatio) {
+          h = editor.ratio <= 1 ? w * editor.ratio : w / editor.ratio;
+          h = Math.round(h);
+        }
+        $("#resource-height").val(h)
+      } else if (h !== editor.rh) {
+        if (editor.keepAspectRatio) {
+          w = editor.ratio <= 1 ? h / editor.ratio : h * editor.ratio;
+          w = Math.round(w);
+        }
+        $("#resource-width").val(w)
+      }
+      editor.scale(w, h);
+    }
+  });
+
+  $("#app-content").delegate("#resource-width", "keydown", function (e) {
+    if (e.which == 38 || e.which == 40) {
+      var w = parseInt($.trim($("#resource-width").val()));
+      var h = parseInt($.trim($("#resource-height").val()));
+      if (!w.isNaN && !h.isNaN) {
+        if (e.which == 38) {
+          w++;
+        } else {
+          if (w > 2) {
+            w--;
+          }
+        }
+        if (editor.keepAspectRatio) {
+          h = editor.ratio <= 1 ? w * editor.ratio : w / editor.ratio;
+          h = Math.round(h);
+        }
+        $("#resource-width").val(w);
+        $("#resource-height").val(h);
+        editor.scale(w, h);
+      }
+    }
+  });
+
+  $("#app-content").delegate("#resource-height", "keydown", function (e) {
+    if (e.which == 38 || e.which == 40) {
+      var w = parseInt($.trim($("#resource-width").val()));
+      var h = parseInt($.trim($("#resource-height").val()));
+      if (!w.isNaN && !h.isNaN) {
+        if (e.which == 38) {
+          h++;
+        } else {
+          if (h > 2) {
+            h--;
+          }
+        }
+        if (editor.keepAspectRatio) {
+          w = editor.ratio <= 1 ? h / editor.ratio : h * editor.ratio;
+          w = Math.round(w);
+        }
+        $("#resource-width").val(w);
+        $("#resource-height").val(h);
+        editor.scale(w, h);
+      }
+    }
+  });
+};
+
+
+
+VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
+  var editor = this;
+
+  if(newWidth < editor.origw) { // Downscaling with Lanczos3
+    editor.rw = newWidth;
+    editor.rh = newHeight;
+    editor.updateDimensions(editor.rw, editor.rh);
     $("#vrtx-image-editor-preview").addClass("loading");
     $("#vrtx-image-crop").attr("disabled", "disabled");
-    new thumbnailer(canvas, ctx, img, rw, 3);
+    new thumbnailer(editor.canvas, editor.ctx, editor.img, editor.rw, 3);
   } else { // Upscaling (I think with nearest neighbour 
            //            TODO: should be bicubic or bilinear)
-    rw = newWidth;
-    rh = newHeight;
-    updateDimensions(rw, rh);
-    ctx.drawImage(img, 0, 0, rw, rh); 
+    editor.rw = newWidth;
+    editor.rh = newHeight;
+    editor.updateDimensions(editor.rw, editor.rh);
+    editor.ctx.drawImage(editor.img, 0, 0, editor.rw, editor.rh); 
   }
-  scaledBeforeCrop = true; 
-}
+  editor.scaledBeforeCrop = true; 
+};
 
-function resetCropPlugin() {
+VrtxImageEditor.prototype.resetCropPlugin = function resetCropPlugin() {
   $("#vrtx-image-editor").unbind("mousemove").unbind("mousedown").unbind("mouseup");
   iMouseX, iMouseY = 1;
   theSelection;
-}
+};
 
-function updateDimensions(w, h) {
-  canvas.setAttribute('width', w);
-  canvas.setAttribute('height', h);
-  canvas.width = w;
-  canvas.height = h;
+VrtxImageEditor.prototype.updateDimensions = function updateDimensions(w, h) {
+  var editor = this;
+
+  editor.canvas.setAttribute('width', w);
+  editor.canvas.setAttribute('height', h);
+  editor.canvas.width = w;
+  editor.canvas.height = h;
   $(".ui-wrapper").css({
     "width": w,
     "height": h
@@ -190,10 +220,10 @@ function updateDimensions(w, h) {
     "width": w,
     "height": h
   });
-  displayDimensions(w, h);
-}
+  editor.displayDimensions(w, h);
+};
 
-function displayDimensions(w, h) {
+VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
   if ($("#vrtx-image-dimensions-crop").length) {
     $("#resource-width").val(w);
     $("#resource-height").val(h);
@@ -208,38 +238,27 @@ function displayDimensions(w, h) {
                       + '</div>';  
     $(dimensionHtml).insertBefore("#vrtx-image-editor-preview");
   }
-}
+};
 
-/* Save restore points 
+/* Save/render restore points 
  * Credits: http://hyankov.wordpress.com/2010/12/26/how-to-implement-html5-canvas-undo-function/
  * TODO: Undo/redo functionality
  */
-function saveRestorePoint() {
-  var imgSrc = canvas.toDataURL("image/png");
-  restorePoints.push(imgSrc);
-}
+VrtxImageEditor.prototype.saveRestorePoint = function saveRestorePoint() {
+  var editor = this;
 
-function renderRestorePoint() {
-  img.src = restorePoints[restorePoints.length - 1];
-  img.onload = function () {
-    ctx.drawImage(img, 0, 0);
+  var imgSrc = editor.canvas.toDataURL("image/png");
+  editor.restorePoints.push(imgSrc);
+};
+
+VrtxImageEditor.prototype.renderRestorePoint = function renderRestorePoint() {
+  var editor = this;
+
+  editor.img.src = editor.restorePoints[editor.restorePoints.length - 1];
+  editor.img.onload = function () {
+    editor.ctx.drawImage(editor.img, 0, 0);
   }
-}
-
-function save() {
-  var sImg = Canvas2Image.saveAsJPEG(canvas, true);
-  sImg.id = "canvas-image";
-  $("<p id='save-info'>Høyreklikk og velg \"Lagre bilde som...\"</p>").insertBefore(".ui-wrapper");
-  $(".ui-wrapper").addClass("canvas-image");
-  canvas.parentNode.replaceChild(sImg, canvas);
-}
-
-function reset() {
-  var sImg = document.getElementById("canvas-image");
-  $("#save-info").remove();
-  $(".ui-wrapper").removeClass("canvas-image");
-  sImg.parentNode.replaceChild(canvas, sImg);
-}
+};
 
 /* Thumbnailer / Lanczos algorithm for downscaling
  * Credits: http://stackoverflow.com/questions/2303690/resizing-an-image-in-an-html5-canvas
@@ -372,7 +391,7 @@ function Selection(x, y, w, h) {
 }
 
 // Define Selection draw method
-Selection.prototype.draw = function () {
+Selection.prototype.draw = function (ctx, img) {
   ctx.strokeStyle = '#000';
   ctx.lineWidth = 2;
   ctx.strokeRect(this.x, this.y, this.w, this.h);
@@ -388,7 +407,7 @@ Selection.prototype.draw = function () {
   ctx.fillRect(this.x - this.iCSize[3], this.y + this.h - this.iCSize[3], this.iCSize[3] * 2, this.iCSize[3] * 2);
 }
 
-function drawScene() { // Main drawScene function
+function drawScene(ctx, img) { // Main drawScene function
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // clear canvas
   // draw source image
   ctx.drawImage(img, 0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -396,10 +415,10 @@ function drawScene() { // Main drawScene function
   ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   // draw selection
-  theSelection.draw();
+  theSelection.draw(ctx, img);
 }
 
-function init() {
+function initSelection(canvas, ctx, img) {
   // create initial selection
   theSelection = new Selection(40, 40, $(canvas).width() - 40, $(canvas).height() - 40);
   $('#vrtx-image-editor').bind("mousemove", function (e) { // binding mouse move event
@@ -476,7 +495,7 @@ function init() {
       theSelection.x = iFX;
       theSelection.y = iFY;
     }
-    drawScene();
+    drawScene(ctx, img);
   });
   $('#vrtx-image-editor').bind("mousedown", function (e) { // binding mousedown event
     var canvasOffset = $(canvas).offset();
@@ -520,13 +539,13 @@ function init() {
     theSelection.px = 0;
     theSelection.py = 0;
   });
-  drawScene();
+  drawScene(ctx, img);
 }
 
 /* Filters */
 
-function bw() {
-  var imgd = ctx.getImageData(0, 0, cw, ch);
+function bw(editor) {
+  var imgd = editor.ctx.getImageData(0, 0, cw, ch);
   var pix = imgd.data;
   for (var i = 0, n = pix.length; i < n; i += 4) {
     var grayscale = pix[i] * .3 + pix[i + 1] * .59 + pix[i + 2] * .11;
@@ -534,22 +553,22 @@ function bw() {
     pix[i + 1] = grayscale; // green
     pix[i + 2] = grayscale; // blue
   }
-  ctx.putImageData(imgd, 0, 0);
-  saveRestorePoint();
-  renderRestorePoint();
+  editor.ctx.putImageData(imgd, 0, 0);
+  editor.saveRestorePoint();
+  editor.renderRestorePoint();
 }
 
-function invert() {
-  var imgd = ctx.getImageData(0, 0, cw, ch);
+function invert(editor) {
+  var imgd = editor.ctx.getImageData(0, 0, cw, ch);
   var pix = imgd.data;
   for (var i = 0, n = pix.length; i < n; i += 4) {
     pix[i] = 255 - pix[i]; // green
     pix[i + 1] = 255 - pix[i + 1]; // green
     pix[i + 2] = 255 - pix[i + 2]; // blue
   }
-  ctx.putImageData(imgd, 0, 0);
-  saveRestorePoint();
-  renderRestorePoint();
+  editor.ctx.putImageData(imgd, 0, 0);
+  editor.saveRestorePoint();
+  editor.renderRestorePoint();
 }
 
 /* ^ Filters */

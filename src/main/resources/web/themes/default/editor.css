@@ -133,14 +133,25 @@
   padding: 0 0 20px 0;
 }
 
-h3#vrtx-image-editor-preview.loading {
+.vrtx-image-filters {
   float: left;
+  margin-right: 20px;
+}
+
+h3#vrtx-image-editor-preview {
+  clear: left;
+  float: left;
+  margin: 20px 0 15px 0;
+}
+
+h3#vrtx-image-editor-preview.loading {
   padding-right: 25px;
   background: url("icons/tabmenu-spinner.gif") no-repeat center right;
 }
 
 #vrtx-image-editor-wrapper .ui-wrapper { 
   opacity: 1 !important;
+  clear: left;
 }
 
 #vrtx-image-dimensions-crop {

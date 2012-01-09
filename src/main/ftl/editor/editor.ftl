@@ -36,6 +36,8 @@
       </#if>
      </#if>
 
+    <script type="text/javascript" src="${jsBaseURL?html}/image-editor/editor.js"></script>    
+
     <script type="text/javascript">
     <!--
        shortcut.add("Ctrl+S",function() {
@@ -121,6 +123,13 @@
       <div class="properties">
         <@propsForm resource.postContentProperties />
       </div>
+ 
+     <#if resource.contentType?starts_with("image")>
+       <div id="vrtx-image-editor-wrapper">
+         <h3 id="vrtx-image-editor-preview">Forhåndsvisning</h3>
+         <canvas id="vrtx-image-editor"></canvas>
+       </div>
+     </#if>
       
       <#-- Margin-bottom before save- cancel button for collections -->
       <#if isCollection>

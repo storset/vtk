@@ -63,18 +63,18 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     private Login login;
     private Logout logout;
     private LostPostHandler postHandler;
-    
+
     private Map<String, String> staticHeaders = new HashMap<String, String>();
-    
+
     private Set<LoginListener> loginListeners;
-    
+
     private PrincipalFactory principalFactory;
 
     private Set<?> categories = Collections.EMPTY_SET;
-    
+
     @Override
-    public void challenge(HttpServletRequest request, HttpServletResponse response) throws AuthenticationProcessingException,
-            ServletException, IOException {
+    public void challenge(HttpServletRequest request, HttpServletResponse response)
+            throws AuthenticationProcessingException, ServletException, IOException {
         if ("POST".equals(request.getMethod())) {
             this.postHandler.saveState(request, response);
         }
@@ -99,7 +99,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
             this.challenge.prepareUnsolicitedChallenge(request);
             throw new AuthenticationException("Unsolicitated authentication request: " + request);
         }
-        
+
         UserData userData = this.login.login(request);
         if (userData == null) {
             throw new AuthenticationException("Unable to authenticate request " + request);
@@ -111,8 +111,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
                 try {
                     listener.onLogin(principal, userData);
                 } catch (Exception e) {
-                    throw new AuthenticationProcessingException(
-                            "Failed to invoke login listener: " + listener, e);
+                    throw new AuthenticationProcessingException("Failed to invoke login listener: " + listener, e);
                 }
             }
         }
@@ -130,7 +129,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
             setHeaders(response);
             return true;
         }
-        
+
         this.login.redirectAfterLogin(request, response);
         setHeaders(response);
         return true;
@@ -148,15 +147,16 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     }
 
     /**
-     * Handles incoming logout requests (originated from IDP) and responses 
-     * (from IDP based on request from us)
+     * Handles incoming logout requests (originated from IDP) and responses (from IDP based on request from us)
      */
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (request.getParameter("SAMLResponse") == null && request.getParameter("SAMLRequest") == null) {
-            throw new InvalidRequestException("Invalid SAML request: expected one of 'SAMLRequest' or 'SAMLResponse' parameters");
+            throw new InvalidRequestException(
+                    "Invalid SAML request: expected one of 'SAMLRequest' or 'SAMLResponse' parameters");
         }
         URL url = null;
+
         if (login.isLoginResponse(request)) {
             // User typically hit 'back' button after logging in and got sent here from IDP:
             String relayState = request.getParameter("RelayState");
@@ -164,6 +164,9 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
                 url = URL.parse(relayState);
             }
             if (url != null) {
+                if (url.getParameter("authTicket") != null) {
+                    url.removeParameter("authTicket");
+                }
                 response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                 response.setHeader("Location", url.toString());
                 setHeaders(response);
@@ -183,7 +186,6 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         // Request is neither logout request nor logout response nor login response.
         throw new InvalidRequestException("Invalid SAML request: ");
     }
-    
 
     @Override
     public AuthenticationChallenge getAuthenticationChallenge() {
@@ -214,17 +216,17 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     public void setLogout(Logout logout) {
         this.logout = logout;
     }
-    
+
     @Required
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
-    
+
     @Required
     public void setPostHandler(LostPostHandler postHandler) {
         this.postHandler = postHandler;
     }
-    
+
     public void setLoginListeners(Set<LoginListener> loginListeners) {
         this.loginListeners = loginListeners;
     }
@@ -236,7 +238,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     public String getIdentifier() {
         return this.identifier;
     }
-    
+
     public String toString() {
         return this.getClass().getName() + ":" + this.identifier;
     }
@@ -246,11 +248,11 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
             response.setHeader(header, this.staticHeaders.get(header));
         }
     }
-    
+
     public void setCategories(Set<?> categories) {
         this.categories = categories;
     }
-    
+
     @Override
     public Set<?> getCategories() {
         return this.categories;

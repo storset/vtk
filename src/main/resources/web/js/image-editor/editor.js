@@ -115,13 +115,13 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
     if (!w.isNaN && !h.isNaN) {
       if (w !== editor.rw) {
         if (editor.keepAspectRatio) {
-          h = editor.ratio <= 1 ? w * editor.ratio : w / editor.ratio;
+          h = w / editor.ratio;
           h = Math.round(h);
         }
         $("#resource-height").val(h)
       } else if (h !== editor.rh) {
         if (editor.keepAspectRatio) {
-          w = editor.ratio <= 1 ? h / editor.ratio : h * editor.ratio;
+          w = h * editor.ratio;
           w = Math.round(w);
         }
         $("#resource-width").val(w)
@@ -143,7 +143,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
           }
         }
         if (editor.keepAspectRatio) {
-          h = editor.ratio <= 1 ? w * editor.ratio : w / editor.ratio;
+          h = w / editor.ratio;
           h = Math.round(h);
         }
         $("#resource-width").val(w);
@@ -166,7 +166,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
           }
         }
         if (editor.keepAspectRatio) {
-          w = editor.ratio <= 1 ? h / editor.ratio : h * editor.ratio;
+          w = h * editor.ratio;
           w = Math.round(w);
         }
         $("#resource-width").val(w);

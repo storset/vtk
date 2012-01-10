@@ -108,7 +108,7 @@
     </div>
     <form action="" method="post" id="editor">
 
-      <div class="properties"<#if resource.contentType?starts_with("image")> id="image-properties"</#if>>
+      <div class="properties"<#if (resource.contentType?exists && resource.contentType?starts_with("image"))> id="image-properties"</#if>>
         <@propsForm resource.preContentProperties />
       </div>
 
@@ -124,7 +124,7 @@
         <@propsForm resource.postContentProperties />
       </div>
  
-     <#if resource.contentType?starts_with("image")>
+     <#if (resource.contentType?exists && resource.contentType?starts_with("image"))>
        <div id="vrtx-image-editor-wrapper">
          <h3 id="vrtx-image-editor-preview">Forhåndsvisning</h3>
          <canvas id="vrtx-image-editor"></canvas>

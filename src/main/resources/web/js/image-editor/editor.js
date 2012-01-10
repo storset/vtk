@@ -213,8 +213,6 @@ VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
     editor.rw = newWidth;
     editor.rh = newHeight;
     editor.updateDimensions(editor.rw, editor.rh);
-    $("#vrtx-image-editor-preview").addClass("loading");
-    $("#vrtx-image-crop").attr("disabled", "disabled");
     new thumbnailer(editor.canvas, editor.ctx, editor.img, editor.rw, 3);
   } else { // Upscaling (I think with nearest neighbour 
            //            TODO: should be bicubic or bilinear)
@@ -304,60 +302,60 @@ VrtxImageEditor.prototype.renderRestorePoint = function renderRestorePoint() {
  * sx: Scaled width
  * lobes: kernel radius (e.g 3)
  */
-function thumbnailer(elem, ctx, img, sx, thelobes) {
+function thumbnailer(elem, ctx, img, sx, lobes) {
   var canvas = elem;
   elem.width = img.width;
   elem.height = img.height;
   elem.style.display = "none";
+  $("#vrtx-image-editor-preview").addClass("loading");
+  $("#vrtx-image-crop").attr("disabled", "disabled");
   ctx.drawImage(img, 0, 0);
-  var image = img;
-  var thesrc = ctx.getImageData(0, 0, img.width, img.height);
+
   var w = sx;
   var h = Math.round(img.height * w / img.width);
-  var theratio = img.width / w;
-  var therange2 = Math.ceil(theratio * thelobes / 2);
-  
-  var thumbnailerObj = {
-    src: thesrc,
-    lobes: thelobes,
+  var ratio = img.width / w;
+  var initialData = {
+    src: ctx.getImageData(0, 0, img.width, img.height),
+    lobes: lobes,
     dest: {
       width: w,
       height: h,
       data: new Array(w * h * 3)
     },
-    ratio: theratio,
-    rcp_ratio: 2 / theratio,
-    range2: therange2,
+    ratio: ratio,
+    rcp_ratio: 2 / ratio,
+    range2: Math.ceil(ratio * lobes / 2),
     cacheLanc: {},
     center: {},
     icenter: {}
   };
 
-  var worker = new Worker('/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process1.js');
-  worker.postMessage(thumbnailerObj);
-  worker.addEventListener('message', function(e) {
-    var data = e.data;
-    if(data) {   
-      canvas.width = data.dest.width;
-      canvas.height = data.dest.height;
-      ctx.drawImage(image, 0, 0);
-      data.src = ctx.getImageData(0, 0, data.dest.width, data.dest.height);
-      var idx, idx2;
-      for (var i = 0; i < data.dest.width; i++) {
-        for (var j = 0; j < data.dest.height; j++) {
-          idx = (j * data.dest.width + i) * 3;
-          idx2 = (j * data.dest.width + i) * 4;
-          data.src.data[idx2] = data.dest.data[idx]; 
-          data.src.data[idx2 + 1] = data.dest.data[idx + 1];
-          data.src.data[idx2 + 2] = data.dest.data[idx + 2];
-        }
+  if('Worker' in window) {
+    var workerLanczosProcess1 = new Worker('/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process1.js');
+    var workerLanczosProcess2 = new Worker('/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process2.js'); 
+    workerLanczosProcess1.postMessage(initialData);
+    workerLanczosProcess1.addEventListener('message', function(e) {
+      var intermediateData = e.data;
+      if(intermediateData) {   
+        canvas.width = intermediateData.dest.width;
+        canvas.height = intermediateData.dest.height;
+        ctx.drawImage(img, 0, 0);
+        intermediateData.src = ctx.getImageData(0, 0, intermediateData.dest.width, intermediateData.dest.height);
+        workerLanczosProcess2.postMessage(intermediateData);
+      } 
+    }, false);
+    workerLanczosProcess2.addEventListener('message', function(e) { 
+      var finalData = e.data;
+      if(finalData) { 
+        ctx.putImageData(finalData.src, 0, 0); 
+        elem.style.display = "block";
+        $("#vrtx-image-editor-preview").removeClass("loading");
+        $("#vrtx-image-crop").removeAttr("disabled"); 
       }
-      ctx.putImageData(data.src, 0, 0); 
-      elem.style.display = "block";
-      $("#vrtx-image-editor-preview").removeClass("loading");
-      $("#vrtx-image-crop").removeAttr("disabled");   
-    } 
-  }, false);
+    }, false);
+  } else { // TODO: Gracefully degrade to setTimeout
+
+  }
 }
 
 /*

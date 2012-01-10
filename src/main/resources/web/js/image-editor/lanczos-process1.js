@@ -1,8 +1,8 @@
 self.addEventListener('message', function (e) {
   var data = e.data;
   if (data) {
+    lanczos = lanczosCreate(data.lobes);
     var u = 0;
-    data.lanczos = lanczosCreate(data.lobes);
     while(u < data.dest.width) {
       data.center.x = (u + 0.5) * data.ratio;
       data.icenter.x = Math.floor(data.center.x);
@@ -18,8 +18,9 @@ self.addEventListener('message', function (e) {
           for (var j = data.icenter.y - data.range2; j <= data.icenter.y + data.range2; j++) {
             if (j < 0 || j >= data.src.height) continue;
             var f_y = Math.floor(1000 * Math.abs(j - data.center.y));
-            if (data.cacheLanc[f_x][f_y] == undefined)
-              data.cacheLanc[f_x][f_y] = data.lanczos(Math.sqrt(Math.pow(f_x * data.rcp_ratio, 2) + Math.pow(f_y * data.rcp_ratio, 2)) / 1000);
+            if (data.cacheLanc[f_x][f_y] == undefined) {
+              data.cacheLanc[f_x][f_y] = lanczos(Math.sqrt(Math.pow(f_x * data.rcp_ratio, 2) + Math.pow(f_y * data.rcp_ratio, 2)) / 1000);
+            }
             weight = data.cacheLanc[f_x][f_y];
             if (weight > 0) {
               var idx = (j * data.src.width + i) * 4;

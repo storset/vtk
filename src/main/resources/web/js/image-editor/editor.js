@@ -337,7 +337,7 @@ function thumbnailer(elem, ctx, img, sx, lobes) {
   var process1Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process1.js';
   var process2Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process2.js';
 
-  if("Worker" in window) { // Use Web Workers if supported
+  if("Worker" in window && !$.browser.mozilla) { // Use Web Workers if supported
     var workerLanczosProcess1 = new Worker(process1Url);
     var workerLanczosProcess2 = new Worker(process2Url); 
     workerLanczosProcess1.postMessage(data);
@@ -373,8 +373,9 @@ function thumbnailer(elem, ctx, img, sx, lobes) {
 
     process1Script.onload = function() {
       var u = 0; 
+      var lanczos = lanczosCreate(data.lobes);
       var proc1 = setTimeout(function() {
-        data = process1(data, u);
+        data = process1(data, u, lanczos);
         if(++u < data.dest.width) {
           setTimeout(arguments.callee, 0);
         } else {
@@ -384,7 +385,7 @@ function thumbnailer(elem, ctx, img, sx, lobes) {
             ctx.drawImage(img, 0, 0);
             data.src = ctx.getImageData(0, 0, data.dest.width, data.dest.height);
             data = process2(data);
-            ctx.putImageData(data.src, 0, 0); 
+            ctx.putImageData(data.src, 0, 0);
             elem.style.display = "block";
             $("#vrtx-image-editor-preview").removeClass("loading");
             $("#vrtx-image-crop").removeAttr("disabled"); 

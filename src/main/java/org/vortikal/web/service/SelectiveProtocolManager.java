@@ -30,8 +30,6 @@
  */
 package org.vortikal.web.service;
 
-import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -59,8 +57,6 @@ import org.vortikal.web.RequestContext;
 public class SelectiveProtocolManager extends RequestProtocolAssertion 
     implements Assertion, HandlerInterceptor, URLPostProcessor {
 
-    private Set<Service> fileServices;
-    private Set<Service> collectionServices;
     private boolean selectiveAccessEnabled = false;
     
     
@@ -95,15 +91,9 @@ public class SelectiveProtocolManager extends RequestProtocolAssertion
         if (resource.isReadRestricted()) {
             return;
         }
-        Set<Service> services = resource.isCollection() ? 
-                this.collectionServices : this.fileServices;
-        if (services == null) {
-            return;
+        if (preferHttp(service)) {
+            url.setProtocol("http");
         }
-        if (!services.contains(service)) {
-            return;
-        }
-        url.setProtocol("http");
     }
 
     /**
@@ -144,14 +134,25 @@ public class SelectiveProtocolManager extends RequestProtocolAssertion
         }
 
         Service service = requestContext.getService();
-        Set<Service> services = resource.isCollection() ? 
-                this.collectionServices : this.fileServices;
-        for (Service s: services) {
-            if (service.equals(s) || service.isDescendantOf(s)) {
+        if (preferHttp(service)) {
+            return true;
+        }
+        
+        redirectSSL(request, response);
+        return false;
+    }
+    
+    private boolean preferHttp(Service service) {
+        while (service != null) {
+            Object attribute = service.getAttribute("manage.preferHttpProtocol");
+            if ("true".equals(attribute) || Boolean.TRUE.equals(attribute)) {
                 return true;
             }
+            if ("false".equals(attribute) || Boolean.FALSE.equals(attribute)) {
+                return false;
+            }
+            service = service.getParent();
         }
-        redirectSSL(request, response);
         return false;
     }
     
@@ -173,14 +174,6 @@ public class SelectiveProtocolManager extends RequestProtocolAssertion
                                 Object handler, Exception ex) {
     }
     
-    public void setFileServices(Set<Service> services) {
-        this.fileServices = services;
-    }
-
-    public void setCollectionServices(Set<Service> services) {
-        this.collectionServices = services;
-    }
-
     public void setSelectiveAccessEnabled(boolean selectiveAccessEnabled) {
         this.selectiveAccessEnabled = selectiveAccessEnabled;
     }

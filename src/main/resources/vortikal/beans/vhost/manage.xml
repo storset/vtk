@@ -141,18 +141,6 @@
   <bean id="manage.selectiveProtocolManager" class="org.vortikal.web.service.SelectiveProtocolManager">
     <property name="protocol" value="${manage.protocol}" />
     <property name="selectiveAccessEnabled" value="${manage.enableSelectiveProtocols}" />
-    <property name="fileServices">
-      <set>
-        <ref bean="manageService" />
-        <ref bean="previewService" />
-        <ref bean="previewCollectionListingService" />
-      </set>
-    </property>
-    <property name="collectionServices">
-      <set>
-        <ref bean="previewCollectionListingService" />
-      </set>
-    </property>
   </bean>
 
   <bean id="manage.notAuthorizedService" class="org.vortikal.web.service.ServiceImpl">
@@ -662,6 +650,7 @@
           <value type="java.lang.Integer">100</value>
         </entry>
         <entry key="ListMenu.titleResolver" value-ref="preview.workingCopyTabTitle" />
+        <entry key="manage.preferHttpProtocol" value="${manage.enableSelectiveProtocols}" />
       </map>
     </property>
     <property name="assertions">
@@ -771,6 +760,7 @@
         <entry key="tabOrder">
           <value type="java.lang.Integer">100</value>
         </entry>
+        <entry key="manage.preferHttpProtocol" value="${manage.enableSelectiveProtocols}" />
       </map>
     </property>
     <property name="assertions">

@@ -125,7 +125,6 @@
       </list>
     </property>
   </bean>
-  <!-- -->
 
   <bean id="manage.urlPostProcessors" class="org.springframework.beans.factory.config.ListFactoryBean">
     <property name="sourceList">
@@ -141,6 +140,24 @@
   <bean id="manage.selectiveProtocolManager" class="org.vortikal.web.service.SelectiveProtocolManager">
     <property name="protocol" value="${manage.protocol}" />
     <property name="selectiveAccessEnabled" value="${manage.enableSelectiveProtocols}" />
+    <property name="genURLFileServices">
+      <set>
+        <ref bean="manageService" />
+        <ref bean="previewService" />
+        <ref bean="previewCollectionListingService" />
+      </set>
+    </property>
+    <property name="genURLCollectionServices">
+      <set>
+        <ref bean="previewCollectionListingService" />
+      </set>
+    </property>
+    <property name="matchFileServices">
+      <ref bean="previewService" />
+    </property>
+    <property name="matchCollectionServices">
+      <ref bean="previewCollectionListingService" />
+    </property>
   </bean>
 
   <bean id="manage.notAuthorizedService" class="org.vortikal.web.service.ServiceImpl">
@@ -622,7 +639,6 @@
           <value type="java.lang.Integer">100</value>
         </entry>
         <entry key="ListMenu.titleResolver" value-ref="preview.workingCopyTabTitle" />
-        <entry key="manage.preferHttpProtocol" value="${manage.enableSelectiveProtocols}" />
       </map>
     </property>
     <property name="assertions">
@@ -732,7 +748,6 @@
         <entry key="tabOrder">
           <value type="java.lang.Integer">100</value>
         </entry>
-        <entry key="manage.preferHttpProtocol" value="${manage.enableSelectiveProtocols}" />
       </map>
     </property>
     <property name="assertions">

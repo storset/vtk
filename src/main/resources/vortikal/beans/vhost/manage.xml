@@ -622,7 +622,7 @@
           <value type="java.lang.Integer">100</value>
         </entry>
         <entry key="ListMenu.titleResolver" value-ref="preview.workingCopyTabTitle" />
-        <entry key="manage.preferHttpProtocol" value="true" />
+        <entry key="manage.preferHttpProtocol" value="${manage.enableSelectiveProtocols}" />
       </map>
     </property>
     <property name="assertions">
@@ -732,7 +732,7 @@
         <entry key="tabOrder">
           <value type="java.lang.Integer">100</value>
         </entry>
-        <entry key="manage.preferHttpProtocol" value="true" />
+        <entry key="manage.preferHttpProtocol" value="${manage.enableSelectiveProtocols}" />
       </map>
     </property>
     <property name="assertions">

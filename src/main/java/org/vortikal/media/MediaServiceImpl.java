@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.repository.media;
+package org.vortikal.media;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -39,7 +39,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.store.Metadata;
 
-public class MediaMetadataManagerImpl implements MediaMetadataManager {
+public class MediaServiceImpl implements MediaService {
 
     private String repositoryDataDirectory;
 

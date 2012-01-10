@@ -29,12 +29,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.repository.media;
+package org.vortikal.media;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.store.Metadata;
 
-public interface MediaMetadataManager {
+public interface MediaService {
 
     /*
      * Generates a thumbnail of a media file

@@ -29,29 +29,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.repository.media;
+package org.vortikal.media;
 
 import java.io.InputStream;
 
-public class MediaImageImpl implements MediaImage {
-
-    private String contentType;
-    private InputStream inputStream;
+public interface MediaImage {
+     
+    /* MIME type of the image */
+    public String getContentType();
     
-    public MediaImageImpl(String contentType, InputStream inputStream) {
-        super();
-        this.contentType = contentType;
-        this.inputStream = inputStream;
-    }
-
-    @Override
-    public String getContentType() {
-        return contentType;
-    }
-
-    @Override
-    public InputStream getInputStream() {
-        return inputStream;
-    }
+    /* Image as a stream of binary data */
+    public InputStream getInputStream();
 
 }

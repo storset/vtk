@@ -292,15 +292,18 @@ VrtxImageEditor.prototype.renderRestorePoint = function renderRestorePoint() {
 
 /* Thumbnailer / Lanczos algorithm for downscaling
  * Credits: http://stackoverflow.com/questions/2303690/resizing-an-image-in-an-html5-canvas
- * TODO: optimize
- * Modified by USIT to use Web Workers
+ *
+ * Modified by USIT to use Web Workers when available for process1 and process2
+ *
+ * TODO: optimize, multiple Web Workers pr. process (tasking)
+ *
  */
 
 /* elem: Canvas element
  * ctx: Canvas 2D context 
  * img: Image element
  * sx: Scaled width
- * lobes: kernel radius (e.g 3)
+ * lobes: kernel radius (e.g. 3)
  */
 function thumbnailer(elem, ctx, img, sx, lobes) {
   var canvas = elem;

@@ -1,3 +1,4 @@
+// Credits: http://stackoverflow.com/questions/2303690/resizing-an-image-in-an-html5-canvas
 self.addEventListener('message', function (e) {
   var data = e.data;
   if (data) {

@@ -295,7 +295,7 @@ VrtxImageEditor.prototype.renderRestorePoint = function renderRestorePoint() {
  *
  * Modified by USIT to use Web Workers if supported for process1 and process2 (otherwise degrade to setTimeout)
  *
- * TODO: Optimize, multiple Web Workers pr. process (tasking) and avoid duplication of code for workers and setTimeout
+ * TODO: Optimize and multiple Web Workers pr. process (tasking)
  *
  */
 
@@ -333,9 +333,13 @@ function thumbnailer(elem, ctx, img, sx, lobes) {
     icenter: {}
   };
 
+  // Used for Web Workers or setTimeout (inject scripts and use methods inside)
+  var process1Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process1.js';
+  var process2Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process2.js';
+
   if("Worker" in window) { // Use Web Workers if supported
-    var workerLanczosProcess1 = new Worker('/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process1.js');
-    var workerLanczosProcess2 = new Worker('/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process2.js'); 
+    var workerLanczosProcess1 = new Worker(process1Url);
+    var workerLanczosProcess2 = new Worker(process2Url); 
     workerLanczosProcess1.postMessage(data);
     workerLanczosProcess1.addEventListener('message', function(e) {
       var data = e.data;
@@ -357,76 +361,37 @@ function thumbnailer(elem, ctx, img, sx, lobes) {
       }
     }, false);
   } else { // Otherwise gracefully degrade to using setTimeout
-    var u = 0;
-    var lanczos = lanczosCreate(data.lobes);
-    var process1 = setTimeout(function() {
-      data.center.x = (u + 0.5) * data.ratio;
-      data.icenter.x = Math.floor(data.center.x);
-      for (var v = 0; v < data.dest.height; v++) {
-        data.center.y = (v + 0.5) * data.ratio;
-        data.icenter.y = Math.floor(data.center.y);
-        var a, r, g, b;
-        a = r = g = b = 0;
-        for (var i = data.icenter.x - data.range2; i <= data.icenter.x + data.range2; i++) {
-          if (i < 0 || i >= data.src.width) continue;
-          var f_x = Math.floor(1000 * Math.abs(i - data.center.x));
-          if (!data.cacheLanc[f_x]) data.cacheLanc[f_x] = {};
-          for (var j = data.icenter.y - data.range2; j <= data.icenter.y + data.range2; j++) {
-            if (j < 0 || j >= data.src.height) continue;
-            var f_y = Math.floor(1000 * Math.abs(j - data.center.y));
-            if (data.cacheLanc[f_x][f_y] == undefined) {
-              data.cacheLanc[f_x][f_y] = lanczos(Math.sqrt(Math.pow(f_x * data.rcp_ratio, 2) + Math.pow(f_y * data.rcp_ratio, 2)) / 1000);
-            }
-            weight = data.cacheLanc[f_x][f_y];
-            if (weight > 0) {
-              var idx = (j * data.src.width + i) * 4;
-              a += weight;
-              r += weight * data.src.data[idx];
-              g += weight * data.src.data[idx + 1];
-              b += weight * data.src.data[idx + 2];
-            }
-          }
-        }
-        var idx = (v * data.dest.width + u) * 3;
-        data.dest.data[idx] = r / a;
-        data.dest.data[idx + 1] = g / a;
-        data.dest.data[idx + 2] = b / a;
-      }
-      if(++u < data.dest.width) {
-        setTimeout(arguments.callee, 0);
-      } else {
-        var process2 = setTimeout(function() {
-          canvas.width = data.dest.width;
-          canvas.height = data.dest.height;
-          ctx.drawImage(img, 0, 0);
-          data.src = ctx.getImageData(0, 0, data.dest.width, data.dest.height);
-          var idx, idx2;
-          for (var i = 0; i < data.dest.width; i++) {
-            for (var j = 0; j < data.dest.height; j++) {
-              idx = (j * data.dest.width + i) * 3;
-              idx2 = (j * data.dest.width + i) * 4;
-              data.src.data[idx2] = data.dest.data[idx]; 
-              data.src.data[idx2 + 1] = data.dest.data[idx + 1];
-              data.src.data[idx2 + 2] = data.dest.data[idx + 2];
-            }
-          }
-          ctx.putImageData(data.src, 0, 0); 
-          elem.style.display = "block";
-          $("#vrtx-image-editor-preview").removeClass("loading");
-          $("#vrtx-image-crop").removeAttr("disabled"); 
-        }, 0);
-      }
-    }, 0);
-  }
-}
+    var headID = document.getElementsByTagName("head")[0];  
+    var process1Script = document.createElement('script');
+    var process2Script = document.createElement('script');
+    process1Script.type = 'text/javascript';
+    process2Script.type = 'text/javascript';
+    process1Script.src = process1Url;
+    process2Script.src = process2Url;
+    headID.appendChild(process1Script);
+    headID.appendChild(process2Script);
 
-function lanczosCreate(lobes) {
-  return function (x) {
-    if (x > lobes) return 0;
-    x *= Math.PI;
-    if (Math.abs(x) < 1e-16) return 1
-    var xx = x / lobes;
-    return Math.sin(x) * Math.sin(xx) / x / xx;
+    process1Script.onload = function() {
+      var u = 0; 
+      var proc1 = setTimeout(function() {
+        data = process1(data, u);
+        if(++u < data.dest.width) {
+          setTimeout(arguments.callee, 0);
+        } else {
+          var proc2 = setTimeout(function() {
+            canvas.width = data.dest.width;
+            canvas.height = data.dest.height;
+            ctx.drawImage(img, 0, 0);
+            data.src = ctx.getImageData(0, 0, data.dest.width, data.dest.height);
+            data = process2(data);
+            ctx.putImageData(data.src, 0, 0); 
+            elem.style.display = "block";
+            $("#vrtx-image-editor-preview").removeClass("loading");
+            $("#vrtx-image-crop").removeAttr("disabled"); 
+          }, 0);
+        }
+      }, 0);
+    }
   }
 }
 

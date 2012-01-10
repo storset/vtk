@@ -138,6 +138,12 @@
   margin-right: 20px;
 }
 
+.vrtx-image-filters-slider {
+  float: left;
+  width: 120px;
+  margin: 2px 0 0 0;
+}
+
 h3#vrtx-image-editor-preview {
   clear: left;
   float: left;

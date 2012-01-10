@@ -183,7 +183,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
     editor.filter(JSManipulate.grayscale.filter)
   });
   $("#app-content").delegate("#vrtx-image-filters-sepia", "click", function (e) {
-    editor.filter(JSManipulate.sepia.filter, {amount:$("#sepia-value").val()})
+    editor.filter(JSManipulate.sepia.filter, {amount:$("#vrtx-image-filters-sepia-slider").slider("option", "value")})
   });
 };
 
@@ -266,8 +266,9 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
                       + '<div class="vrtx-button-small vrtx-image-filters"><input type="button" id="vrtx-image-filters-sharpen" value="Skarpere" /></div>'
                       + '<div class="vrtx-button-small vrtx-image-filters"><input type="button" id="vrtx-image-filters-gray" value="Gråskala" /></div>'
                       + '<div class="vrtx-button-small vrtx-image-filters"><input type="button" id="vrtx-image-filters-sepia" value="Sepia" /></div>'
-                      + '<input id="sepia-value" type="range" step="1" min="1" max="25" value="10" />'
+                      + '<div class="vrtx-image-filters-slider" id="vrtx-image-filters-sepia-slider"></div>';
     $(dimensionHtml).insertBefore("#vrtx-image-editor-preview");
+    $("#vrtx-image-filters-sepia-slider").slider({min: 0, max: 25, value: 10});
   }
 };
 

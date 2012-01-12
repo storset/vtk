@@ -210,17 +210,12 @@ VrtxImageEditor.prototype.filter = function filter(filter, options) {
 VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
   var editor = this;
 
-  if(newWidth < editor.origw) { // Downscaling with Lanczos3
+  if(newWidth < editor.origw && $("#lanczos-downscaling:checked").length) { // Downscaling with Lanczos3
     editor.rw = newWidth;
     editor.rh = newHeight;
     editor.updateDimensions(editor.rw, editor.rh);
-    if($("#lanczos-downscaling:checked").length) {
-      new thumbnailer(editor.canvas, editor.ctx, editor.img, editor.rw, 3);
-    } else {
-      editor.ctx.drawImage(editor.img, 0, 0, editor.rw, editor.rh); 
-    }
-  } else { // Upscaling (I think with nearest neighbour 
-           //            TODO: should be bicubic or bilinear)
+    new thumbnailer(editor.canvas, editor.ctx, editor.img, editor.rw, 3);
+  } else { // Upscaling (I think with nearest neighbour. TODO: should be bicubic or bilinear)
     editor.rw = newWidth;
     editor.rh = newHeight;
     editor.updateDimensions(editor.rw, editor.rh);

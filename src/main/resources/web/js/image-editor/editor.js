@@ -309,7 +309,7 @@ function thumbnailer(elem, ctx, img, sx, lobes) {
   var process1Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process1.js';
   var process2Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process2.js';
 
-  if("Worker" in window && !$.browser.mozilla) { // Use Web Workers if supported);
+  if (false) { // "Worker" in window) { // Use Web Workers if supported); TODO: some problem with canvasPixelArray sent to worker and returned
     var workerLanczosProcess1 = new Worker(process1Url);
     var workerLanczosProcess2 = new Worker(process2Url); 
     workerLanczosProcess1.postMessage(data);

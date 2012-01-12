@@ -191,8 +191,8 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
 VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
   var editor = this;
 
-  editor.scaleRatio = newWidth / editor.rw;
-  editor.reversedScaleRatio = editor.rw / newWidth;
+  editor.scaleRatio = newWidth / editor.cropWidth;
+  editor.reversedScaleRatio = editor.cropWidth / newWidth;
   
   if(false) { // Downscaling with Lanczos3
     editor.rw = newWidth;

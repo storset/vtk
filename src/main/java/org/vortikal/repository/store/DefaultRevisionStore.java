@@ -385,12 +385,16 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
         StringBuilder result = new StringBuilder();
         for (int i = 7; i >= 0; i--) {
             long n = resourceID >> (i * 8) & 0xff;
-            String s = (n < 0xf) ? "0" + Long.toHexString(n) : Long.toHexString(n);
+            String s = Long.toHexString(n);
+            if (s.length() == 1) {
+                result.append("0");
+            }
             result.append(s);
             if (i > 0) result.append(File.separator);
         }
         return this.revisionDirectory + File.separator + result.toString();
     }
+    
 
     @Required
     public void setRevisionDirectory(String revisionDirectory) {

@@ -36,12 +36,11 @@
       </#if>
      </#if>
 
-    <script type="text/javascript" src="${jsBaseURL?html}/image-editor/editor.js"></script>    
-
     <script type="text/javascript">
     <!--
-       shortcut.add("Ctrl+S",function() {
-     $(".vrtx-focus-button:last input").click();
+    
+     shortcut.add("Ctrl+S",function() {
+       $(".vrtx-focus-button:last input").click();
      });
      
      $(window).load(function() {
@@ -124,7 +123,8 @@
         <@propsForm resource.postContentProperties />
       </div>
  
-     <#if (resource.contentType?exists && resource.contentType?starts_with("image"))>
+     <#if (resource.resourceType?exists && resource.resourceType?starts_with("image"))>
+       <script type="text/javascript" src="${jsBaseURL?html}/image-editor/editor.js"></script>    
        <div id="vrtx-image-editor-wrapper">
          <h3 id="vrtx-image-editor-preview">Forhåndsvisning</h3>
          <canvas id="vrtx-image-editor"></canvas>
@@ -138,10 +138,10 @@
 
       <div id="submit" class="submitButtons save-cancel">
         <div class="vrtx-button">
-          <input type="submit" id="saveAndViewButton" onclick="formatFeaturedArticlesData();performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
+          <input type="submit" id="saveAndViewButton" onclick="<#if (resource.resourceType?exists && resource.resourceType?starts_with("image"))>saveImage();</#if>formatFeaturedArticlesData();performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
         </div>
         <div class="vrtx-focus-button">
-          <input type="submit" id="saveButton" onclick="formatFeaturedArticlesData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
+          <input type="submit" id="saveButton" onclick="<#if (resource.resourceType?exists && resource.resourceType?starts_with("image"))>saveImage();</#if>formatFeaturedArticlesData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
         </div>
         <div class="vrtx-button">
           <input type="submit" id="cancel" onclick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">

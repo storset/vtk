@@ -262,6 +262,10 @@ VrtxImageEditor.prototype.renderRestorePoint = function renderRestorePoint() {
   }
 };
 
+function saveImage() {
+  // TODO: implement
+}
+
 /* Thumbnailer / Lanczos algorithm for downscaling
  * Credits: http://stackoverflow.com/questions/2303690/resizing-an-image-in-an-html5-canvas
  *

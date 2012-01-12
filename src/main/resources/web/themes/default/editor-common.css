@@ -112,6 +112,7 @@ h2 {
 
 div.navigationTitle input,
 div.aggregation input,
+div.manually-approve-from input,
 div.cssUrl input {
   width: 485px;
 }

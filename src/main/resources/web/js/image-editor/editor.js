@@ -187,6 +187,19 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
       }
     }
   });
+  
+  $("#app-content").delegate("#saveButton", "click", function(e) {
+    var url = location.pathname;
+    if(url.endsWith(".png")) {
+      var img = vrtxImageEditor.canvas.toDataURL("image/png");
+      img = img.replace("data:image/png;base64,", "");
+      // TODO: Use POST to get add more than 1300 chars but gets 403 there now
+      url = url + "?vrtx=admin&action=save-image&base=" + encodeURIComponent(img.substring(0,1300));
+      vrtxAdmin.serverFacade.getHtml(url, {
+        success: function (results, status, resp) {}
+      });
+    }
+  });
 };
 
 VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
@@ -263,7 +276,7 @@ function displayInfo(editor) {
 
 /*
  * Credits: http://hyankov.wordpress.com/2010/12/26/how-to-implement-html5-canvas-undo-function/
- * TODO: Undo/redo functionality
+ * TODO: Undo/redo functionality. Use another canvas instead to avoid exporting to base64 before saving
  */
 VrtxImageEditor.prototype.renderScaledImage = function saveRestorePoint() {
   var editor = this;
@@ -275,9 +288,8 @@ VrtxImageEditor.prototype.renderScaledImage = function saveRestorePoint() {
   }
 };
 
-function saveImage() {
-  // TODO: implement
-}
+String.prototype.endsWith = function(str) 
+{return (this.match(str+"$")==str)}
 
 /* Thumbnailer / Lanczos algorithm for downscaling
  * Credits: http://stackoverflow.com/questions/2303690/resizing-an-image-in-an-html5-canvas

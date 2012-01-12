@@ -58,7 +58,7 @@
 
       UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
       COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
-      window.onbeforeunload = unsavedChangesInEditorMessage;
+      // window.onbeforeunload = unsavedChangesInEditorMessage;
       
       function performSave() {
         NEED_TO_CONFIRM = false;
@@ -138,10 +138,10 @@
 
       <div id="submit" class="submitButtons save-cancel">
         <div class="vrtx-button">
-          <input type="submit" id="saveAndViewButton" onclick="<#if (resource.resourceType?exists && resource.resourceType?starts_with("image"))>saveImage();</#if>formatFeaturedArticlesData();performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
+          <input type="submit" id="saveAndViewButton" onclick="formatFeaturedArticlesData();performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
         </div>
         <div class="vrtx-focus-button">
-          <input type="submit" id="saveButton" onclick="<#if (resource.resourceType?exists && resource.resourceType?starts_with("image"))>saveImage();</#if>formatFeaturedArticlesData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
+          <input type="submit" id="saveButton" onclick="formatFeaturedArticlesData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
         </div>
         <div class="vrtx-button">
           <input type="submit" id="cancel" onclick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">

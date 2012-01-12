@@ -333,7 +333,21 @@
     </property>
     <property name="handler" ref="manage.unlockResourceHandler" />
   </bean>
-
+  
+  
+  <bean id="saveImageService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="save-image" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="manage.saveImageHandler" />
+  </bean>
+  
   <bean id="fileUploadService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageCollectionListingService" />
     <property name="order" value="-980" />
@@ -834,6 +848,10 @@
     <property name="valueFactory" ref="valueFactory" />
     <property name="principalManager" ref="principalManager" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
+  </bean>
+  
+  <bean id="manage.saveImageHandler" class="org.vortikal.web.actions.SaveImageController">
+    <property name="viewName" value="redirectToManage" />
   </bean>
 
   <bean id="fileUploadHandler" class="org.vortikal.web.actions.create.FileUploadController">

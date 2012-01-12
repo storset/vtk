@@ -99,7 +99,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
       editor.ratio = editor.rw / editor.rh;
       
       editor.updateDimensions(editor.rw, editor.rh);
-
+ 
       editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
                                                   0,            0, editor.rw, editor.rh);
                                                                                      
@@ -194,7 +194,7 @@ VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
   editor.scaleRatio = newWidth / editor.rw;
   editor.reversedScaleRatio = editor.rw / newWidth;
   
-  if(newWidth < editor.origw && $("#lanczos-downscaling:checked").length) { // Downscaling with Lanczos3
+  if(false) { // Downscaling with Lanczos3
     editor.rw = newWidth;
     editor.rh = newHeight;
     editor.updateDimensions(editor.rw, editor.rh);
@@ -238,6 +238,7 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
   if ($("#vrtx-image-dimensions-crop").length) {
     $("#resource-width").val(w);
     $("#resource-height").val(h);
+    displayInfo(this);
   } else {
     var dimensionHtml = '<div id="vrtx-image-dimensions-crop">'
                       + '<div class="property-label">Bredde</div>'
@@ -246,12 +247,18 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
                       + '<div class="vrtx-textfield" id="vrtx-textfield-height"><input id="resource-height" type="text" value="' + h + '" size="6" /></div>'
                       + '<div id="vrtx-image-crop-button"><div class="vrtx-button">'
                       + '<input type="button" id="vrtx-image-crop" value="Start beskjæring..." /></div></div>'
-                      + '<div id="vrtx-lanczos-downscaling-wrapper"><input type="checkbox" id="lanczos-downscaling" />&nbsp;'
-                      + '<label for="lanczos-downscaling" />Bruk Lanczos3 ved nedskalering</label></div>'
+                      + '<div id="vrtx-image-info" style="margin-top: 10px"></div>'
                       + '</div>';
     $(dimensionHtml).insertBefore("#vrtx-image-editor-preview");
   }
 };
+
+function displayInfo(editor) {
+  $("#vrtx-image-info").html("Width: " + editor.rw + " Height: " + editor.rh + " CropX: " + editor.cropX + " CropY: "
+                           + editor.cropY + " CropWidth: " + editor.cropWidth + " CropHeight: " + editor.cropHeight
+                           + " Scale: " + editor.scaleRatio + " ReverseScale: " + editor.reversedScaleRatio);
+
+}
 
 /*
  * Credits: http://hyankov.wordpress.com/2010/12/26/how-to-implement-html5-canvas-undo-function/
@@ -423,8 +430,7 @@ Selection.prototype.draw = function (editor) {
 function drawScene(editor) { // Main drawScene function
   editor.ctx.clearRect(0, 0, editor.canvas.width, editor.canvas.height); // clear canvas
   // draw source image
-  editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
-                                              0,            0, editor.rw, editor.rh);
+  editor.ctx.drawImage(editor.scaledImg, 0, 0);
   // and make it darker
   editor.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
   editor.ctx.fillRect(0, 0, editor.canvas.width, editor.canvas.height);

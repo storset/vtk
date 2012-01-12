@@ -89,12 +89,12 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
 
   $("#app-content").delegate("#vrtx-image-crop", "click", function (e) {
     if (editor.hasCropBeenInitialized) {
-      editor.cropX = Math.round(theSelection.x * editor.reversedScaleRatio);
-      editor.cropY = Math.round(theSelection.y * editor.reversedScaleRatio);
+      editor.cropX += Math.round(theSelection.x * editor.reversedScaleRatio);
+      editor.cropY += Math.round(theSelection.y * editor.reversedScaleRatio);
       editor.cropWidth = Math.round(theSelection.w * editor.reversedScaleRatio);
       editor.cropHeight = Math.round(theSelection.h * editor.reversedScaleRatio);
-      editor.rw = editor.cropWidth * editor.scaleRatio;
-      editor.rh = editor.cropHeight * editor.scaleRatio;
+      editor.rw = Math.round(editor.cropWidth * editor.scaleRatio);
+      editor.rh = Math.round(editor.cropHeight * editor.scaleRatio);
       
       editor.ratio = editor.rw / editor.rh;
       

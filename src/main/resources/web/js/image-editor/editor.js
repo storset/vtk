@@ -11,6 +11,8 @@ function VrtxImageEditor() {
   VrtxImageEditor.prototype = this;
   instance = new VrtxImageEditor();
   instance.constructor = VrtxImageEditor;
+  
+  this.url = null;
 
   this.img = null;
   this.scaledImg = null;
@@ -37,7 +39,10 @@ var vrtxImageEditor = new VrtxImageEditor();
 
 $(function () {
   var imageEditorElm = $("#vrtx-image-editor-wrapper");
-  if('getContext' in document.createElement('canvas') && imageEditorElm.length) {
+  var url = location.pathname;
+  vrtxImageEditor.url = url;
+  if('getContext' in document.createElement('canvas') && imageEditorElm.length
+     && (url.endsWith(".png") || url.endsWith(".jpg") || url.endsWith(".jpeg"))) {
     vrtxImageEditor.init(imageEditorElm);   
   }
 });
@@ -53,9 +58,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   editor.img = new Image();
   editor.scaledImg = new Image();
   
-  var path = location.pathname;
-  
-  editor.img.src = path;
+  editor.img.src = editor.url;
   editor.img.onload = function () {
     editor.rw = editor.origw = editor.cropWidth = editor.img.width;
     editor.rh = editor.origh = editor.cropHeight = editor.img.height;
@@ -189,16 +192,18 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   });
   
   $("#app-content").delegate("#saveButton", "click", function(e) {
-    var url = location.pathname;
-    if(url.endsWith(".png")) {
+    if(editor.url.endsWith(".png")) {
       var img = vrtxImageEditor.canvas.toDataURL("image/png");
       img = img.replace("data:image/png;base64,", "");
-      // TODO: Use POST to get add more than 1300 chars but gets 403 there now
-      url = url + "?vrtx=admin&action=save-image&base=" + encodeURIComponent(img.substring(0,1300));
-      vrtxAdmin.serverFacade.getHtml(url, {
-        success: function (results, status, resp) {}
-      });
+    } else {
+      var img = vrtxImageEditor.canvas.toDataURL("image/jpg");
+      img = img.replace("data:image/jpg;base64,", "");     
     }
+    // TODO: Use POST to get add more than 1300 chars but gets 403 there now
+    url = url + "?vrtx=admin&action=save-image&base=" + encodeURIComponent(img.substring(0,1300));
+    vrtxAdmin.serverFacade.getHtml(url, {
+      success: function (results, status, resp) {}
+    });
   });
 };
 

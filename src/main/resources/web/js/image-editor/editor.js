@@ -175,7 +175,8 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
       }
     }
   });
-  /*
+  
+  /* Filters
   $("#app-content").delegate("#vrtx-image-filters-sharpen", "click", function (e) {
     editor.filter(JSManipulate.sharpen.filter)
   });

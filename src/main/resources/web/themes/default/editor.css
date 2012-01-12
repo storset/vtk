@@ -135,7 +135,7 @@
 
 #vrtx-lanczos-downscaling-wrapper {
   clear: both;
-  margin: 10px 0 0 0;
+  margin: 20px 0 0 0;
 }
 
 .vrtx-image-filters {
@@ -152,7 +152,7 @@
 h3#vrtx-image-editor-preview {
   clear: left;
   float: left;
-  margin: 20px 0 15px 0;
+  margin: 25px 0 15px 0;
 }
 
 h3#vrtx-image-editor-preview.loading {

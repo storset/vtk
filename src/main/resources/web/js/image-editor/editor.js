@@ -175,7 +175,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
       }
     }
   });
-
+  /*
   $("#app-content").delegate("#vrtx-image-filters-sharpen", "click", function (e) {
     editor.filter(JSManipulate.sharpen.filter)
   });
@@ -185,6 +185,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   $("#app-content").delegate("#vrtx-image-filters-sepia", "click", function (e) {
     editor.filter(JSManipulate.sepia.filter, {amount:$("#vrtx-image-filters-sepia-slider").slider("option", "value")})
   });
+  */
 };
 
 VrtxImageEditor.prototype.filter = function filter(filter, options) {
@@ -213,7 +214,11 @@ VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
     editor.rw = newWidth;
     editor.rh = newHeight;
     editor.updateDimensions(editor.rw, editor.rh);
-    new thumbnailer(editor.canvas, editor.ctx, editor.img, editor.rw, 3);
+    if($("#lanczos-downscaling:checked").length) {
+      new thumbnailer(editor.canvas, editor.ctx, editor.img, editor.rw, 3);
+    } else {
+      editor.ctx.drawImage(editor.img, 0, 0, editor.rw, editor.rh); 
+    }
   } else { // Upscaling (I think with nearest neighbour 
            //            TODO: should be bicubic or bilinear)
     editor.rw = newWidth;
@@ -255,18 +260,20 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
   } else {
     var dimensionHtml = '<div id="vrtx-image-dimensions-crop">'
                       + '<div class="property-label">Bredde</div>'
-                      + '<div class="vrtx-textfield"><input id="resource-width" type="text" value="' + w + '" size="6" /></div>'
+                      + '<div class="vrtx-textfield" id="vrtx-textfield-width"><input id="resource-width" type="text" value="' + w + '" size="6" /></div>'
                       + '<div class="property-label">Høyde</div>'
-                      + '<div class="vrtx-textfield"><input id="resource-height" type="text" value="' + h + '" size="6" /></div>'
+                      + '<div class="vrtx-textfield" id="vrtx-textfield-height"><input id="resource-height" type="text" value="' + h + '" size="6" /></div>'
                       + '<div id="vrtx-image-crop-button"><div class="vrtx-button">'
                       + '<input type="button" id="vrtx-image-crop" value="Start beskjæring..." /></div></div>'
-                      + '</div>'
-                      + '<div class="vrtx-button-small vrtx-image-filters"><input type="button" id="vrtx-image-filters-sharpen" value="Skarpere" /></div>'
-                      + '<div class="vrtx-button-small vrtx-image-filters"><input type="button" id="vrtx-image-filters-gray" value="Gråskala" /></div>'
-                      + '<div class="vrtx-button-small vrtx-image-filters"><input type="button" id="vrtx-image-filters-sepia" value="Sepia" /></div>'
-                      + '<div class="vrtx-image-filters-slider" id="vrtx-image-filters-sepia-slider"></div>';
+                      + '<div id="vrtx-lanczos-downscaling-wrapper"><input type="checkbox" id="lanczos-downscaling" />&nbsp;'
+                      + '<label for="lanczos-downscaling" />Bruk Lanczos3 ved nedskalering</label></div>'
+                      + '</div>';
+                    //  + '<div class="vrtx-button-small vrtx-image-filters"><input type="button" id="vrtx-image-filters-sharpen" value="Skarpere" /></div>'
+                    //  + '<div class="vrtx-button-small vrtx-image-filters"><input type="button" id="vrtx-image-filters-gray" value="Gråskala" /></div>'
+                    //  + '<div class="vrtx-button-small vrtx-image-filters"><input type="button" id="vrtx-image-filters-sepia" value="Sepia" /></div>'
+                    //  + '<div class="vrtx-image-filters-slider" id="vrtx-image-filters-sepia-slider"></div>';
     $(dimensionHtml).insertBefore("#vrtx-image-editor-preview");
-    $("#vrtx-image-filters-sepia-slider").slider({min: 0, max: 25, value: 10});
+    // $("#vrtx-image-filters-sepia-slider").slider({min: 0, max: 25, value: 10});
   }
 };
 
@@ -337,7 +344,7 @@ function thumbnailer(elem, ctx, img, sx, lobes) {
   var process1Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process1.js';
   var process2Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process2.js';
 
-  if("Worker" in window && !$.browser.mozilla) { // Use Web Workers if supported
+  if("Worker" in window && !$.browser.mozilla) { // Use Web Workers if supported);
     var workerLanczosProcess1 = new Worker(process1Url);
     var workerLanczosProcess2 = new Worker(process2Url); 
     workerLanczosProcess1.postMessage(data);

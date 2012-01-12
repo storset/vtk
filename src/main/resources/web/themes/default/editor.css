@@ -133,6 +133,11 @@
   padding: 0 0 20px 0;
 }
 
+#vrtx-lanczos-downscaling-wrapper {
+  clear: both;
+  margin: 10px 0 0 0;
+}
+
 .vrtx-image-filters {
   float: left;
   margin-right: 20px;
@@ -166,6 +171,10 @@ h3#vrtx-image-editor-preview.loading {
 
 #vrtx-image-dimensions-crop .vrtx-textfield {
   margin-bottom: 20px;
+}
+
+#vrtx-image-dimensions-crop .vrtx-textfield#vrtx-textfield-height {
+  margin-bottom: 0px;
 }
 
 #vrtx-image-crop-button {

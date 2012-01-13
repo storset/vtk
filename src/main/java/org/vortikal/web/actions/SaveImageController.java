@@ -31,16 +31,28 @@
 package org.vortikal.web.actions;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.axiom.util.base64.Base64Utils;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.support.DefaultMultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
+import org.vortikal.security.web.CSRFPreventionHandler;
 import org.vortikal.web.RequestContext;
 
 /**
@@ -55,15 +67,26 @@ public class SaveImageController extends AbstractController {
         this.viewName = viewName;
     }
 
+    
+    @SuppressWarnings("unchecked")
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {     
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
         String token = requestContext.getSecurityToken();
-        String imageAsBase64 = request.getParameter("base");
-        if(imageAsBase64 != null) { // Decode base64 and store in image resource
-          repository.storeContent(token, uri, new ByteArrayInputStream(Base64Utils.decode(imageAsBase64)));
+
+        FileItemFactory factory = new DiskFileItemFactory(100000000, new File(System.getProperty("java.io.tmpdir")));
+        ServletFileUpload upload = new ServletFileUpload(factory);
+        List<FileItem> fileItems = upload.parseRequest(request);
+        FileItem imageAsBase64 = null;
+        for (FileItem item : fileItems) {
+           if (item.getFieldName().equals("base")) {
+               imageAsBase64 = item;
+           }
+        }
+        if(imageAsBase64 != null) { // Decode base64 and store as content on resource
+          repository.storeContent(token, uri, new ByteArrayInputStream(Base64Utils.decode(imageAsBase64.getString())));
         } 
         return new ModelAndView(this.viewName);
     }

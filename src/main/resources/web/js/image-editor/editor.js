@@ -37,18 +37,6 @@ function VrtxImageEditor() {
 
 var vrtxImageEditor = new VrtxImageEditor();
 
-$(function () {
-  var imageEditorElm = $("#vrtx-image-editor-wrapper");
-  var url = location.href;
-  url = url.replace("-adm", "");
-  url = url.substring(0, url.indexOf("?"));
-  vrtxImageEditor.url = url;
-  if('getContext' in document.createElement('canvas') && imageEditorElm.length
-     && (url.endsWith(".png") || url.endsWith(".jpg") || url.endsWith(".jpeg"))) {
-    vrtxImageEditor.init(imageEditorElm);   
-  }
-});
-
 VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   var editor = this;
 
@@ -195,32 +183,23 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   
   $("#app-content").delegate("#saveAndViewButton", "click", function(e) {
     if(editor.url.endsWith(".png")) {
-      var img = vrtxImageEditor.canvas.toDataURL("image/png");
-      img = img.replace("data:image/png;base64,", "");
+      var base64Image = vrtxImageEditor.canvas.toDataURL("image/png");
+      base64Image = base64Image.replace(/data:image\/(jpg|jpeg|png)\;base64\,/, "");
     } else {
-      var img = vrtxImageEditor.canvas.toDataURL("image/jpg");
-      img = img.replace("data:image/jpg;base64,", "");     
+      var base64Image = vrtxImageEditor.canvas.toDataURL("image/jpg");
+      base64Image = base64Image.replace(/data:image\/(jpg|jpeg|png)\;base64\,/, "");     
     }
-    
     var form = $("form#vrtx-image-editor-save-image-form");
-
-    var url = form.attr("action");
-    var dataString = form.serialize() + "&base=" + encodeURIComponent(img);
-
-     $.ajax({ 
-       type: "POST", 
-       url : url, 
-       cache: false, 
-       timeout: 3000, 
-       processData: false, 
-       data: dataString, 
-       success: function(data, textStatus, jqXHR) {
-         vrtxAdmin.displayInfoMsg(textStatus);
-       }, 
-       error: function (xhr, textStatus) {
-         vrtxAdmin.displayErrorMsg(textStatus);
-       }
-     });  
+    // Info: http://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/
+    //       http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#interface-formdata
+    var fd = new FormData();
+    fd.append("csrf-prevention-token", form.find("input[name=csrf-prevention-token]").val()); 
+    fd.append("base", base64Image);
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", form.attr("action"));
+    xhr.send(fd);
+    
+    return false;
   });
 };
 

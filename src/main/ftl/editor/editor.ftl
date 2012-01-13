@@ -123,8 +123,20 @@
         <@propsForm resource.postContentProperties />
       </div>
  
-     <#if (resource.resourceType?exists && resource.resourceType?starts_with("image"))>
+     <#if resource.contentType?exists && saveImageURL?exists
+          && (resource.contentType == "image/jpg" || resource.contentType == "image/jpeg" || resource.contentType == "image/png")>
        <script type="text/javascript" src="${jsBaseURL?html}/image-editor/editor.js"></script>    
+       <script type="text/javascript"><!--  
+         $(function () {
+           var imageEditorElm = $("#vrtx-image-editor-wrapper");
+           var url = "${resourceContext.currentURI}";
+           vrtxImageEditor.url = url;
+           if('getContext' in document.createElement('canvas') && imageEditorElm.length) {
+             vrtxImageEditor.init(imageEditorElm);   
+           }
+         });
+       // -->
+       </script>
        <div id="vrtx-image-editor-wrapper">
          <h3 id="vrtx-image-editor-preview">Forhåndsvisning</h3>
          <canvas id="vrtx-image-editor"></canvas>
@@ -150,8 +162,9 @@
 
      </form>
      
-     <#if (resource.resourceType?exists && resource.resourceType?starts_with("image"))>
-       <form id="vrtx-image-editor-save-image-form" action="${saveImageURL?html}" method="post" style="display: none;">
+     <#if resource.contentType?exists && saveImageURL?exists
+          && (resource.contentType == "image/jpg" || resource.contentType == "image/jpeg" || resource.contentType == "image/png")>
+       <form enctype="multipart/form-data" id="vrtx-image-editor-save-image-form" action="${saveImageURL?html}" method="post" style="display: none;">
          <@vrtx.csrfPreventionToken url=saveImageURL />
        </form>
      </#if>

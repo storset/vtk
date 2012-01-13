@@ -78,23 +78,26 @@ public class SimpleQueryAuthorizationFilterFactory extends
             return null; // No filter (root-level user)
         }
         
-        // Add member groups
-        Set<Principal> aclReadPrincipals = getPrincipalMemberGroups(principal);
-        // Add self (in case of indexed owner in ACL)
-        aclReadPrincipals.add(principal);
-        // Add pseudo-users: pseudo:authenticated (since we are) and pseudo:all
-        aclReadPrincipals.add(PrincipalFactory.ALL);
+        // Get member groups
+        Set<Principal> memberGroups = getPrincipalMemberGroups(principal);
         
-        return buildACLReadFilter(aclReadPrincipals);
+        // Build filter for principal and member groups
+        return buildACLReadFilter(principal, memberGroups);
     }
     
-    protected Filter buildACLReadFilter(Set<Principal> aclReadPrincipals) {
+    private Filter buildACLReadFilter(Principal principal, Set<Principal> memberGroups) {
     
         TermsFilter termsFilter = new TermsFilter();
-        for (Principal p: aclReadPrincipals) {
+        for (Principal group: memberGroups) {
             termsFilter.addTerm(new Term(FieldNameMapping.ACL_READ_PRINCIPALS_FIELD_NAME, 
-                                                    p.getQualifiedName()));
+                                                    group.getQualifiedName()));
         }
+
+        // Add ALL principal
+        termsFilter.addTerm(new Term(FieldNameMapping.ACL_READ_PRINCIPALS_FIELD_NAME, PrincipalFactory.ALL.getQualifiedName()));
+        
+        // Add principal executing the query
+        termsFilter.addTerm(new Term(FieldNameMapping.ACL_READ_PRINCIPALS_FIELD_NAME, principal.getQualifiedName()));
         
         return termsFilter;
     }

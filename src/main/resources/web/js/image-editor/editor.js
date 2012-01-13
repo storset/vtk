@@ -191,7 +191,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
     }
   });
   
-  $("#app-content").delegate("#saveButton", "click", function(e) {
+  $("#app-content").delegate("#saveButton, #saveAndViewButton", "click", function(e) {
     if(editor.url.endsWith(".png")) {
       var img = vrtxImageEditor.canvas.toDataURL("image/png");
       img = img.replace("data:image/png;base64,", "");
@@ -199,11 +199,14 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
       var img = vrtxImageEditor.canvas.toDataURL("image/jpg");
       img = img.replace("data:image/jpg;base64,", "");     
     }
+    
     // TODO: Use POST to get add more than 1300 chars but gets 403 there now
-    url = url + "?vrtx=admin&action=save-image&base=" + encodeURIComponent(img.substring(0,1300));
-    vrtxAdmin.serverFacade.getHtml(url, {
+    var saveUrl = editor.url + "?vrtx=admin&action=save-image&base=" + encodeURIComponent(img.substring(0,1300));
+    vrtxAdmin.serverFacade.getHtml(saveUrl, {
       success: function (results, status, resp) {}
     });
+    
+    return false;
   });
 };
 

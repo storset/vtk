@@ -80,7 +80,11 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
       }
     });
   }
-
+  
+  $("#app-content").delegate("#vrtx-image-editor", "dblclick", function (e) {
+    $("#vrtx-image-crop").click();
+  });
+  
   $("#app-content").delegate("#vrtx-image-crop", "click", function (e) {
     if (editor.hasCropBeenInitialized) {
       editor.cropX += Math.round(theSelection.x * editor.reversedScaleRatio);

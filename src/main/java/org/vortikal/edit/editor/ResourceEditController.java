@@ -134,8 +134,10 @@ public class ResourceEditController extends SimpleFormController {
         }
         model.put("tooltips", resolveTooltips(resource, principal));
 
-        URL saveImageURL = this.saveImageService.constructURL(resource, principal);
-        model.put("saveImageURL", saveImageURL);
+        if(this.saveImageService != null) {
+          URL saveImageURL = this.saveImageService.constructURL(resource, principal);
+          model.put("saveImageURL", saveImageURL);
+        }
         
         return model;
     }

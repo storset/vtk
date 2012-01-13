@@ -39,7 +39,9 @@ var vrtxImageEditor = new VrtxImageEditor();
 
 $(function () {
   var imageEditorElm = $("#vrtx-image-editor-wrapper");
-  var url = location.pathname;
+  var url = location.href;
+  url = url.replace("-adm", "");
+  url = url.substring(0, url.indexOf("?"));
   vrtxImageEditor.url = url;
   if('getContext' in document.createElement('canvas') && imageEditorElm.length
      && (url.endsWith(".png") || url.endsWith(".jpg") || url.endsWith(".jpeg"))) {
@@ -57,6 +59,8 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
 
   editor.img = new Image();
   editor.scaledImg = new Image();
+  
+  alert(editor.url);
   
   editor.img.src = editor.url;
   editor.img.onload = function () {

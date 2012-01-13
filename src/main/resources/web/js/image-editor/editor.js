@@ -226,20 +226,19 @@ VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
   editor.scaleRatio = newWidth / editor.cropWidth;
   editor.reversedScaleRatio = editor.cropWidth / newWidth;
   
-  if(false) { // Downscaling with Lanczos3. TODO: implement lossless functionality here also
+  if(editor.scaleRatio < 1) { // Downscaling with Lanczos3. TODO: implement lossless functionality here also
     editor.rw = newWidth;
     editor.rh = newHeight;
     editor.updateDimensions(editor.rw, editor.rh);
-    new thumbnailer(editor.canvas, editor.ctx, editor.img, editor.rw, 3);
+    new thumbnailer(editor, 3);
   } else { // Upscaling (I think with nearest neighbour. TODO: should be bicubic or bilinear)
     editor.rw = newWidth;
     editor.rh = newHeight;
     editor.updateDimensions(editor.rw, editor.rh);
     editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
                                                 0,            0, editor.rw, editor.rh);
-                                     
+    editor.renderScaledImage();      
   }
-  editor.renderScaledImage();  
 };
 
 VrtxImageEditor.prototype.resetCropPlugin = function resetCropPlugin() {
@@ -324,7 +323,18 @@ String.prototype.endsWith = function(str)
  * sx: Scaled width
  * lobes: kernel radius (e.g. 3)
  */
-function thumbnailer(elem, ctx, img, sx, lobes) {
+function thumbnailer(editor, lobes) {
+
+  var elem = editor.canvas;
+  var ctx = editor.ctx;
+  var img = editor.img;
+  var sx = editor.rw;
+  
+  var scaledCropWidth = Math.round(editor.cropWidth * editor.scaleRatio);
+  var scaledCropHeight =  Math.round(editor.cropHeight * editor.scaleRatio);
+  var scaledX = Math.round(editor.cropX * editor.scaleRatio);
+  var scaledY = Math.round(editor.cropY * editor.scaleRatio);
+
   var canvas = elem;
   elem.width = img.width;
   elem.height = img.height;
@@ -332,12 +342,12 @@ function thumbnailer(elem, ctx, img, sx, lobes) {
   $("#vrtx-image-editor-preview").addClass("loading");
   $("#vrtx-image-crop").attr("disabled", "disabled");
   ctx.drawImage(img, 0, 0);
-
+                                
   var w = sx;
-  var h = Math.round(img.height * w / img.width);
-  var ratio = img.width / w;
+  var h = editor.rh;
+  var ratio = editor.reversedScaleRatio;
   var data = {
-    src: ctx.getImageData(0, 0, img.width, img.height),
+    src: ctx.getImageData(editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight),
     lobes: lobes,
     dest: {
       width: w,
@@ -373,7 +383,8 @@ function thumbnailer(elem, ctx, img, sx, lobes) {
     workerLanczosProcess2.addEventListener('message', function(e) { 
       var data = e.data;
       if(data) { 
-        ctx.putImageData(data.src, 0, 0); 
+        ctx.putImageData(data.src, 0, 0);
+        editor.renderScaledImage();   
         elem.style.display = "block";
         $("#vrtx-image-editor-preview").removeClass("loading");
         $("#vrtx-image-crop").removeAttr("disabled"); 
@@ -405,6 +416,7 @@ function thumbnailer(elem, ctx, img, sx, lobes) {
             data.src = ctx.getImageData(0, 0, data.dest.width, data.dest.height);
             data = process2(data);
             ctx.putImageData(data.src, 0, 0);
+            editor.renderScaledImage();  
             elem.style.display = "block";
             $("#vrtx-image-editor-preview").removeClass("loading");
             $("#vrtx-image-crop").removeAttr("disabled"); 

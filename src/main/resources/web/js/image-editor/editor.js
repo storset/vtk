@@ -183,26 +183,34 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   
   var savedImage = false;
   $("#app-content").delegate("#saveAndViewButton", "click", function(e) {
+    var button = this;
     if(!savedImage) {
       if(editor.url.endsWith(".png")) {
-        var base64Image = vrtxImageEditor.canvas.toDataURL("image/png");
-        base64Image = base64Image.replace(/data:image\/(jpg|jpeg|png)\;base64\,/, "");
+        var imageAsBase64 = vrtxImageEditor.canvas.toDataURL("image/png");
+        imageAsBase64 = imageAsBase64.replace(/data:image\/(jpg|jpeg|png)\;base64\,/, "");
       } else {
-        var base64Image = vrtxImageEditor.canvas.toDataURL("image/jpg");
-        base64Image = base64Image.replace(/data:image\/(jpg|jpeg|png)\;base64\,/, "");     
+        var imageAsBase64 = vrtxImageEditor.canvas.toDataURL("image/jpg");
+        imageAsBase64 = imageAsBase64.replace(/data:image\/(jpg|jpeg|png)\;base64\,/, "");
       }
       var form = $("form#vrtx-image-editor-save-image-form");
-      // Info: http://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/, http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#interface-formdata
-      var fd = new FormData();
+      var fd = new FormData(); // Info: http://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/
+                               //       http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#interface-formdata
       fd.append("csrf-prevention-token", form.find("input[name=csrf-prevention-token]").val()); 
-      fd.append("base", base64Image);
+      fd.append("base", imageAsBase64);
       var xhr = new XMLHttpRequest();
       xhr.open("POST", form.attr("action"));
       xhr.send(fd);
       xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4)  { 
-          savedImage = true;
-          $("#saveAndViewButton").click();
+        if($.browser.mozilla) { // http://www.nczonline.net/blog/2009/07/09/firefox-35firebug-xmlhttprequest-and-readystatechange-bug/
+          xhr.onload = xhr.onerror = xhr.onabort = function() {
+            savedImage = true;
+            $(button).click();      
+          };
+        } else {
+          if (xhr.readyState == 4)  { 
+            savedImage = true;
+            $(button).click();
+          }
         }
       };
       return false; 

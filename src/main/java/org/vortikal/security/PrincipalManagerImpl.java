@@ -74,7 +74,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
         logger.info("Initialized with group stores: " + groupStores);
         
         if (groupStores != null) {
-            this.groupStore = new NewChainedGroupStore(groupStores); 
+            this.groupStore = new ChainedGroupStore(groupStores); 
         }
     }    
 
@@ -145,11 +145,11 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
 
     }
     
-    private static final class NewChainedGroupStore implements GroupStore {
+    private static final class ChainedGroupStore implements GroupStore {
         private List<GroupStore> stores;
         private SimpleCache<Principal, Set<Principal>> groupMembershipCache;
         
-        NewChainedGroupStore(List<GroupStore> stores) {
+        ChainedGroupStore(List<GroupStore> stores) {
             this.stores = stores;
             SimpleCacheImpl<Principal, Set<Principal>> cache = new SimpleCacheImpl<Principal, Set<Principal>>(60);
 
@@ -204,125 +204,6 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
             return 0;
         }
         
-    }
-
-    @Deprecated
-    private class ChainedGroupStore implements GroupStore {
-
-        private List<GroupStore> managers;
-
-        // Maintain cache: principal -> item(map(groups)) for
-        // fast group membership lookup
-        private SimpleCache<Principal, GroupItem> cache;
-
-        public ChainedGroupStore(List<GroupStore> managers, boolean cache) {
-            this.managers = managers;
-            if (cache) {
-                this.cache = new SimpleCacheImpl<Principal, GroupItem>(60);
-            }
-        }
-        
-        @Override
-        public boolean validateGroup(Principal group)
-            throws AuthenticationProcessingException {
-            for (GroupStore manager: this.managers) {
-                if (manager.validateGroup(group)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-
-        @Override
-        public boolean isMember(Principal principal, Principal group)
-            throws AuthenticationProcessingException {
-
-            if (this.cache == null) {
-                return isMemberUncached(principal, group);
-            }
-            return isMemberCached(principal, group);
-        }
-        
-        private boolean isMemberUncached(Principal principal, Principal group)
-            throws AuthenticationProcessingException {
-
-            for (GroupStore manager: this.managers) {
-                if (manager.validateGroup(group)) {
-                    boolean isMember = manager.isMember(principal, group);
-                    return isMember;
-                }
-            }
-            return false;
-        }
-
-
-        /**
-         * Method does membership lookup and caches the result.
-         */
-        private boolean isMemberCached(Principal principal, Principal group)
-            throws AuthenticationProcessingException {
-
-            String groupName = group.getQualifiedName();
-                
-            GroupItem item = this.cache.get(principal);
-            if (item == null) {
-                item = new GroupItem();
-                this.cache.put(principal, item);
-            }
-
-            Map<String, Object> groupsMap = item.getGroupsMap();
-
-            if (groupsMap.containsKey(groupName)) {
-                boolean isMember = (groupsMap.get(groupName) != null);
-                return isMember;
-            }
-
-            for (GroupStore manager: this.managers) {
-                // XXX: We currently have two group stores for the same domain,
-                // Should both member sets be checked? (currently only the first)
-                if (manager.validateGroup(group)) {
-                    boolean isMember = manager.isMember(principal, group);
-
-                    if (isMember) {
-                        item.getGroupsMap().put(groupName, new Object());
-                    } else {
-                        item.getGroupsMap().put(groupName, null);
-                    }
-                    return isMember;
-                }
-            }
-            return false;
-        }
-        
-        @Override
-        public Set<Principal> getMemberGroups(Principal principal) {
-            Set<Principal> groups = new HashSet<Principal>();
-            for (GroupStore manager: this.managers) {
-                Set<Principal> memberGroups = manager.getMemberGroups(principal);
-                if (memberGroups != null) {
-                    groups.addAll(memberGroups);
-                }
-            }
-            
-            // Cache here instead ? Should benefit all aggregated group stores, and cached
-            // result can be used by isMember method.
-            return groups;
-        }
-
-        private class GroupItem {
-            private Map<String, Object> groupsMap = new HashMap<String, Object>();
-
-            public Map<String, Object> getGroupsMap() {
-                return this.groupsMap;
-            }
-        }
-        
-        @Override
-        public int getOrder() {
-            // XXX: DUMMY - not used, but should be refactored
-            return 0;
-        }
     }
 
 }

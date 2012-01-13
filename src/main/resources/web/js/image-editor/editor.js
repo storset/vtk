@@ -181,25 +181,34 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
     }
   });
   
+  var savedImage = false;
   $("#app-content").delegate("#saveAndViewButton", "click", function(e) {
-    if(editor.url.endsWith(".png")) {
-      var base64Image = vrtxImageEditor.canvas.toDataURL("image/png");
-      base64Image = base64Image.replace(/data:image\/(jpg|jpeg|png)\;base64\,/, "");
+    if(!savedImage) {
+      if(editor.url.endsWith(".png")) {
+        var base64Image = vrtxImageEditor.canvas.toDataURL("image/png");
+        base64Image = base64Image.replace(/data:image\/(jpg|jpeg|png)\;base64\,/, "");
+      } else {
+        var base64Image = vrtxImageEditor.canvas.toDataURL("image/jpg");
+        base64Image = base64Image.replace(/data:image\/(jpg|jpeg|png)\;base64\,/, "");     
+      }
+      var form = $("form#vrtx-image-editor-save-image-form");
+      // Info: http://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/, http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#interface-formdata
+      var fd = new FormData();
+      fd.append("csrf-prevention-token", form.find("input[name=csrf-prevention-token]").val()); 
+      fd.append("base", base64Image);
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", form.attr("action"));
+      xhr.send(fd);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4)  { 
+          savedImage = true;
+          $("#saveAndViewButton").click();
+        }
+      };
+      return false; 
     } else {
-      var base64Image = vrtxImageEditor.canvas.toDataURL("image/jpg");
-      base64Image = base64Image.replace(/data:image\/(jpg|jpeg|png)\;base64\,/, "");     
+      savedImage = false;
     }
-    var form = $("form#vrtx-image-editor-save-image-form");
-    // Info: http://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/
-    //       http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#interface-formdata
-    var fd = new FormData();
-    fd.append("csrf-prevention-token", form.find("input[name=csrf-prevention-token]").val()); 
-    fd.append("base", base64Image);
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", form.attr("action"));
-    xhr.send(fd);
-    
-    return false;
   });
 };
 

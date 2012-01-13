@@ -32,7 +32,6 @@ package org.vortikal.web.actions;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,15 +43,10 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.support.DefaultMultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.security.web.CSRFPreventionHandler;
 import org.vortikal.web.RequestContext;
 
 /**

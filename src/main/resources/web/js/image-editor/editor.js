@@ -213,7 +213,7 @@ VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
   editor.scaleRatio = newWidth / editor.cropWidth;
   editor.reversedScaleRatio = editor.cropWidth / newWidth;
   
-  if(false) { // Downscaling with Lanczos3
+  if(false) { // Downscaling with Lanczos3. TODO: implement lossless functionality here also
     editor.rw = newWidth;
     editor.rh = newHeight;
     editor.updateDimensions(editor.rw, editor.rh);

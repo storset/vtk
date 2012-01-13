@@ -62,7 +62,7 @@ public class SaveImageController extends AbstractController {
         Path uri = requestContext.getResourceURI();
         String token = requestContext.getSecurityToken();
         String imageAsBase64 = request.getParameter("base");
-        if(imageAsBase64 != null) {
+        if(imageAsBase64 != null) { // Decode base64 and store in image resource
           // repository.storeContent(token, uri, new ByteArrayInputStream(Base64Utils.decode(imageAsBase64)));
         } 
         return new ModelAndView(this.viewName);

@@ -105,8 +105,6 @@ implements HandlerFilter {
      * @return a new CSRF prevention token
      */
     public String newToken(URL url) throws Exception {
-        System.out.println("_______________________________________________________" + url.toString());
-        
         RequestContext requestContext = RequestContext.getRequestContext();
         HttpServletRequest servletRequest = requestContext.getServletRequest();
         HttpSession session = servletRequest.getSession(false);

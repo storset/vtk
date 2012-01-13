@@ -56,15 +56,12 @@ public class SaveImageController extends AbstractController {
     }
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        System.out.println("_____________________________________________________________________ TEST");
-        
+            HttpServletResponse response) throws Exception {     
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
         String token = requestContext.getSecurityToken();
         String imageAsBase64 = request.getParameter("base");
-        System.out.println("_____________________________________________________________________ " + imageAsBase64);
         if(imageAsBase64 != null) { // Decode base64 and store in image resource
           repository.storeContent(token, uri, new ByteArrayInputStream(Base64Utils.decode(imageAsBase64)));
         } 

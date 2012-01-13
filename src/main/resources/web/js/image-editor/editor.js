@@ -60,8 +60,6 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   editor.img = new Image();
   editor.scaledImg = new Image();
   
-  alert(editor.url);
-  
   editor.img.src = editor.url;
   editor.img.onload = function () {
     editor.rw = editor.origw = editor.cropWidth = editor.img.width;

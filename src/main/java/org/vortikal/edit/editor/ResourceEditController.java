@@ -135,9 +135,6 @@ public class ResourceEditController extends SimpleFormController {
         model.put("tooltips", resolveTooltips(resource, principal));
 
         URL saveImageURL = this.saveImageService.constructURL(resource, principal);
-        
-        System.out.println("_________________________________ " + saveImageURL.getQueryString());
-        
         model.put("saveImageURL", saveImageURL);
         
         return model;

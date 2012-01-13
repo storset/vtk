@@ -155,8 +155,7 @@ public class SimpleCacheImpl<K, V> implements SimpleCache<K, V>, BeanNameAware,
     public void cleanupExpiredItems() {
 
         if (this.timeoutSeconds < 1) return;
-        
-
+    
         for (Iterator<K> i = this.cache.keySet().iterator(); i.hasNext();) {
             K key = i.next();
             Item item = this.cache.get(key);

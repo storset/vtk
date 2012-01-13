@@ -46,8 +46,6 @@ public interface GroupStore extends Ordered {
     public boolean validateGroup(Principal group)
         throws AuthenticationProcessingException;
 
-
-
     
     /**
      * Convenience method for determining whether a principal is a

@@ -30,12 +30,12 @@
  */
 package org.vortikal.security;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -46,6 +46,9 @@ import org.vortikal.util.cache.SimpleCacheImpl;
 
 /**
  * A simple principal manager implementation.
+ * 
+ * Delegates API calls to a set of underlying {@link GroupStore} and {@link PrincipalStore} instances.
+ * Caches aggregated group membership lookups.
  *
  */
 public class PrincipalManagerImpl implements PrincipalManager, InitializingBean {
@@ -71,7 +74,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
         logger.info("Initialized with group stores: " + groupStores);
         
         if (groupStores != null) {
-            this.groupStore = new ChainedGroupStore(groupStores, true); 
+            this.groupStore = new NewChainedGroupStore(groupStores); 
         }
     }    
 
@@ -113,23 +116,24 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
         return this.groupStore.getMemberGroups(principal);
     }
 
-    private class ChainedPrincipalStore implements PrincipalStore {
+    private static final class ChainedPrincipalStore implements PrincipalStore {
 
-        private List<PrincipalStore> managers = null;
+        private List<PrincipalStore> stores = null;
 
-        public ChainedPrincipalStore(List<PrincipalStore> managers) {
-            this.managers = managers;
+        ChainedPrincipalStore(List<PrincipalStore> stores) {
+            this.stores = stores;
         }
 
         @Override
         public boolean validatePrincipal(Principal principal)
             throws AuthenticationProcessingException {
             
-            for (PrincipalStore manager: this.managers) {
+            for (PrincipalStore manager: this.stores) {
                 if (manager.validatePrincipal(principal)) {
                     return true;
                 }
             }
+            
             return false;
         }
 
@@ -140,8 +144,69 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
         }
 
     }
+    
+    private static final class NewChainedGroupStore implements GroupStore {
+        private List<GroupStore> stores;
+        private SimpleCache<Principal, Set<Principal>> groupMembershipCache;
+        
+        NewChainedGroupStore(List<GroupStore> stores) {
+            this.stores = stores;
+            SimpleCacheImpl<Principal, Set<Principal>> cache = new SimpleCacheImpl<Principal, Set<Principal>>(60);
 
+            // Refresh cached groups periodically, regardless of user activity:
+            cache.setRefreshTimestampOnGet(false);
+            
+            this.groupMembershipCache = cache;
+        }
 
+        @Override
+        public boolean validateGroup(Principal group) throws AuthenticationProcessingException {
+            for (GroupStore store: this.stores) {
+                if (store.validateGroup(group)) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        @Override
+        public boolean isMember(Principal principal, Principal group) {
+            return getMemberGroups(principal).contains(group);
+        }
+
+        @Override
+        public Set<Principal> getMemberGroups(Principal principal) {
+            Set<Principal> memberGroups = this.groupMembershipCache.get(principal);
+            if (memberGroups == null) {
+                logger.debug("Groups for principal "+ principal + " not in cache.");
+                
+                memberGroups = new HashSet<Principal>();
+                for (GroupStore store : this.stores) {
+                    Set<Principal> groups = store.getMemberGroups(principal);
+                    if (groups != null) { // Extra precaution ..
+                        memberGroups.addAll(groups);
+                    }
+                }
+
+                // Make immutable
+                memberGroups = Collections.unmodifiableSet(memberGroups);
+
+                // Cache
+                this.groupMembershipCache.put(principal, memberGroups);
+            }
+
+            return memberGroups;
+        }
+
+        @Override
+        public int getOrder() {
+            return 0;
+        }
+        
+    }
+
+    @Deprecated
     private class ChainedGroupStore implements GroupStore {
 
         private List<GroupStore> managers;
@@ -157,6 +222,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
             }
         }
         
+        @Override
         public boolean validateGroup(Principal group)
             throws AuthenticationProcessingException {
             for (GroupStore manager: this.managers) {
@@ -168,6 +234,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
         }
         
 
+        @Override
         public boolean isMember(Principal principal, Principal group)
             throws AuthenticationProcessingException {
 
@@ -190,6 +257,9 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
         }
 
 
+        /**
+         * Method does membership lookup and caches the result.
+         */
         private boolean isMemberCached(Principal principal, Principal group)
             throws AuthenticationProcessingException {
 
@@ -208,7 +278,6 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
                 return isMember;
             }
 
-
             for (GroupStore manager: this.managers) {
                 // XXX: We currently have two group stores for the same domain,
                 // Should both member sets be checked? (currently only the first)
@@ -226,6 +295,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
             return false;
         }
         
+        @Override
         public Set<Principal> getMemberGroups(Principal principal) {
             Set<Principal> groups = new HashSet<Principal>();
             for (GroupStore manager: this.managers) {
@@ -234,6 +304,9 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
                     groups.addAll(memberGroups);
                 }
             }
+            
+            // Cache here instead ? Should benefit all aggregated group stores, and cached
+            // result can be used by isMember method.
             return groups;
         }
 
@@ -245,6 +318,7 @@ public class PrincipalManagerImpl implements PrincipalManager, InitializingBean 
             }
         }
         
+        @Override
         public int getOrder() {
             // XXX: DUMMY - not used, but should be refactored
             return 0;

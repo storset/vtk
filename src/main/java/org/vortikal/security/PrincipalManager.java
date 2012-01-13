@@ -32,7 +32,13 @@ package org.vortikal.security;
 
 import java.util.Set;
 
-
+/**
+ * Aggregated management of all group- and principal stores.
+ * 
+ * @see GroupStore
+ * @see PrincipalStore
+ * 
+ */
 public interface PrincipalManager {
     
     /**
@@ -57,16 +63,6 @@ public interface PrincipalManager {
         throws AuthenticationProcessingException;
 
     /**
-     * Lists the members of a group.
-     *
-     * @param groupName the group in question
-     * @return an array of the principals that are members of the group
-     */
-//    public String[] resolveGroup(Principal group)
-//        throws AuthenticationProcessingException;
-    
-    
-    /**
      * Convenience method for determining whether a principal is a
      * member of a group.
      *
@@ -80,8 +76,9 @@ public interface PrincipalManager {
     /**
      * Get the group memberships of a <code>Principal</code>.
      * 
-     * @param principal The <code>Principal</code>
+     * @param principal The <code>Principal</code>.
      * @return A set of group principals in which the given principal is a member. 
+     *         The <code>Set</code> is immutable.
      */
     public Set<Principal> getMemberGroups(Principal principal);
 

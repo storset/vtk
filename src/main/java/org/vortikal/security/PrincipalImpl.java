@@ -110,14 +110,12 @@ public class PrincipalImpl implements Principal {
     }
 
     @Override
-    public boolean equals(Object another) {
-        if (another instanceof Principal) {
-            String anotherName = ((Principal)another).getQualifiedName();
-            if (getQualifiedName().equals(anotherName)) {
-                return true;
-            }
+    public boolean equals(Object obj) {
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
         }
-        return false;
+        final PrincipalImpl other = (PrincipalImpl) obj;
+        return this.qualifiedName.equals(other.qualifiedName);
     }
 
     @Override
@@ -130,6 +128,7 @@ public class PrincipalImpl implements Principal {
      * @return If the domain equals the principalManager's defaultDomain
      * it returns the unqualified name, otherwise it returns the qualified name
      */
+    @Override
     public String getName() {
         return this.name;
     }
@@ -140,6 +139,7 @@ public class PrincipalImpl implements Principal {
      *
      * @return the fully qualified name of the principal
      */
+    @Override
     public String getQualifiedName() {
         return this.qualifiedName;
     }
@@ -150,12 +150,9 @@ public class PrincipalImpl implements Principal {
      * @return the domain of the principal, or <code>null</code> if it
      * has none
      */
+    @Override
     public String getDomain() {
         return this.domain;
-    }
-
-    public String getURL() {
-        return this.url;
     }
 
     @Override
@@ -168,16 +165,19 @@ public class PrincipalImpl implements Principal {
      *
      * @return the unqualified name of the principal
      */
+    @Override
     public String getUnqualifiedName() {
         if (this.domain == null) return this.name;
         //FIXME: principalmanager's delimiter shouldn't be here!
         return this.qualifiedName.substring(0, this.qualifiedName.indexOf("@"));
     }
 
+    @Override
     public boolean isUser() {
         return this.type == Principal.Type.USER;
     }
 
+    @Override
     public Type getType() {
         return this.type;
     }
@@ -186,6 +186,7 @@ public class PrincipalImpl implements Principal {
         this.type = type;
     }
 
+    @Override
     public int compareTo(Principal other) {
         if (other == null) {
             throw new IllegalArgumentException(
@@ -197,11 +198,29 @@ public class PrincipalImpl implements Principal {
         return this.qualifiedName.compareTo(other.getQualifiedName());
     }
 
+    @Override
     public String getDescription() {
         if (description != null) {
             return description;
         }
         return this.name;
+    }
+
+    @Override
+    public String getURL() {
+        return this.url;
+    }
+
+    /**
+     * @return the metadata
+     */
+    @Override
+    public PrincipalMetadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(PrincipalMetadata metadata) {
+        this.metadata = metadata;
     }
 
     public void setDescription(String description) {
@@ -211,19 +230,4 @@ public class PrincipalImpl implements Principal {
     public void setURL(String url) {
         this.url = url;
     }
-
-    /**
-     * @return the metadata
-     */
-    public PrincipalMetadata getMetadata() {
-        return metadata;
-    }
-
-    /**
-     * @param metadata the metadata to set
-     */
-    public void setMetadata(PrincipalMetadata metadata) {
-        this.metadata = metadata;
-    }
-
 }

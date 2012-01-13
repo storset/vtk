@@ -191,7 +191,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
     }
   });
   
-  $("#app-content").delegate("#saveButton, #saveAndViewButton", "click", function(e) {
+  $("#app-content").delegate("#saveAndViewButton", "click", function(e) {
     if(editor.url.endsWith(".png")) {
       var img = vrtxImageEditor.canvas.toDataURL("image/png");
       img = img.replace("data:image/png;base64,", "");
@@ -200,13 +200,25 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
       img = img.replace("data:image/jpg;base64,", "");     
     }
     
-    // TODO: Use POST to get add more than 1300 chars but gets 403 there now
-    var saveUrl = editor.url + "?vrtx=admin&action=save-image&base=" + encodeURIComponent(img.substring(0,1300));
-    vrtxAdmin.serverFacade.getHtml(saveUrl, {
-      success: function (results, status, resp) {}
-    });
-    
-    return false;
+    var form = $("form#vrtx-image-editor-save-image-form");
+
+    var url = form.attr("action");
+    var dataString = form.serialize() + "&base=" + encodeURIComponent(img);
+
+     $.ajax({ 
+       type: "POST", 
+       url : url, 
+       cache: false, 
+       timeout: 3000, 
+       processData: false, 
+       data: dataString, 
+       success: function(data, textStatus, jqXHR) {
+         vrtxAdmin.displayInfoMsg(textStatus);
+       }, 
+       error: function (xhr, textStatus) {
+         vrtxAdmin.displayErrorMsg(textStatus);
+       }
+     });  
   });
 };
 

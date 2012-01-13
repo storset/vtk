@@ -49,12 +49,19 @@ import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
+import org.vortikal.web.service.URL;
 
 public class ResourceEditController extends SimpleFormController {
 
     private List<Service> tooltipServices;
+    private Service saveImageService;
     private ResourceWrapperManager resourceManager;
     private Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyEditPreprocessors;
+
+
+    public void setSaveImageService(Service saveImageService) {
+        this.saveImageService = saveImageService;
+    }
 
 
     public ResourceEditController() {
@@ -119,13 +126,20 @@ public class ResourceEditController extends SimpleFormController {
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
         Resource resource = ((ResourceWrapper) command).getResource();
         Principal principal = RequestContext.getRequestContext().getPrincipal();
-
+        
         Map model = super.referenceData(request, command, errors);
 
         if (model == null) {
             model = new HashMap();
         }
         model.put("tooltips", resolveTooltips(resource, principal));
+
+        URL saveImageURL = this.saveImageService.constructURL(resource, principal);
+        
+        System.out.println("_________________________________ " + saveImageURL.getQueryString());
+        
+        model.put("saveImageURL", saveImageURL);
+        
         return model;
     }
 

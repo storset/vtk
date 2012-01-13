@@ -335,10 +335,12 @@
   </bean>
   
   
-  <bean id="saveImageService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="manage.saveImageService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
+    <property name="order" value="-99999" />
     <property name="assertions">
       <list>
+        <ref bean="manage.postRequestAssertion" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="save-image" />

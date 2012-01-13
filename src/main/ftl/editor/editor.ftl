@@ -149,6 +149,13 @@
       </div>
 
      </form>
+     
+     <#if (resource.resourceType?exists && resource.resourceType?starts_with("image"))>
+       <form id="vrtx-image-editor-save-image-form" action="${saveImageURL?html}" method="post" style="display: none;">
+         <@vrtx.csrfPreventionToken url=saveImageURL />
+       </form>
+     </#if>
+     
     </body>
 </html>
 

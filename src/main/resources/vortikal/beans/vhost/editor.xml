@@ -338,6 +338,7 @@
     <property name="resourceManager" ref="editor.imageResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
+    <property name="saveImageService" ref="manage.saveImageService" />
   </bean>
 
   <bean id="editor.videoEditHandler" class="org.vortikal.edit.editor.ResourceEditController">

@@ -189,13 +189,8 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   $("#app-content").delegate("#saveAndViewButton", "click", function(e) {
     var button = this;
     if(!savedImage) {
-      if(editor.url.endsWith(".png")) {
-        var imageAsBase64 = vrtxImageEditor.canvas.toDataURL("image/png");
-        imageAsBase64 = imageAsBase64.replace(/data:image\/(jpg|jpeg|png)\;base64\,/, "");
-      } else {
-        var imageAsBase64 = vrtxImageEditor.canvas.toDataURL("image/jpg");
-        imageAsBase64 = imageAsBase64.replace(/data:image\/(jpg|jpeg|png)\;base64\,/, "");
-      }
+      var imageAsBase64 = vrtxImageEditor.canvas.toDataURL("image/png");
+      imageAsBase64 = imageAsBase64.replace("data:image/png;base64,", "");
       var form = $("form#vrtx-image-editor-save-image-form");
       var fd = new FormData(); // Info: http://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/
                                //       http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#interface-formdata

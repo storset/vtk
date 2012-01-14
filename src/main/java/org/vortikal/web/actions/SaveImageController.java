@@ -30,10 +30,18 @@
  */
 package org.vortikal.web.actions;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -47,6 +55,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.resource.ResourcetreeParser.resourcedef_return;
 import org.vortikal.web.RequestContext;
 
 /**
@@ -69,6 +79,7 @@ public class SaveImageController extends AbstractController {
         Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
         String token = requestContext.getSecurityToken();
+        Resource resource = repository.retrieve(token, uri, true);
 
         FileItemFactory factory = new DiskFileItemFactory(100000000, new File(System.getProperty("java.io.tmpdir")));
         ServletFileUpload upload = new ServletFileUpload(factory);
@@ -80,7 +91,21 @@ public class SaveImageController extends AbstractController {
            }
         }
         if(imageAsBase64 != null) { // Decode base64 and store as content on resource
-          repository.storeContent(token, uri, new ByteArrayInputStream(Base64Utils.decode(imageAsBase64.getString())));
+          byte[] imageBytes = Base64Utils.decode(imageAsBase64.getString());
+          
+          if(resource.getContentType().endsWith("/jpg") || resource.getContentType().endsWith("/jpeg")) {
+            BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes));
+            // Credits: http://stackoverflow.com/questions/464825/converting-transparent-gif-png-to-jpeg-using-java/1545417#1545417
+            BufferedImage bufferedImage  = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);       
+            Graphics2D g = bufferedImage.createGraphics();
+            g.drawImage(image, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), Color.WHITE, null);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "jpg", out);
+            out.close();
+            imageBytes = out.toByteArray();
+          }
+          
+          repository.storeContent(token, uri, new ByteArrayInputStream(imageBytes));
         } 
         return new ModelAndView(this.viewName);
     }

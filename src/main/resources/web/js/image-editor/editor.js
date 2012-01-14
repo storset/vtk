@@ -230,11 +230,12 @@ VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
   editor.scaleRatio = newWidth / editor.cropWidth;
   editor.reversedScaleRatio = editor.cropWidth / newWidth;
   
-  if(editor.scaleRatio < 0.9) { // Downscaling with Lanczos3
+  if(editor.scaleRatio < 1) { // Downscaling with Lanczos3
     editor.rw = newWidth;
     editor.rh = newHeight;
-    editor.updateDimensions(editor.rw, editor.rh);
-    new thumbnailer(editor, 3);
+    editor.scaleBilinear();
+    // TODO: possible to switch it on under advanced settings:
+    // editor.scaleLanczos(3);
   } else { // Upscaling (I think with nearest neighbour. TODO: should be bicubic or bilinear)
     editor.rw = newWidth;
     editor.rh = newHeight;
@@ -299,7 +300,7 @@ function displayInfo(editor) {
  * Credits: http://hyankov.wordpress.com/2010/12/26/how-to-implement-html5-canvas-undo-function/
  * TODO: Undo/redo functionality. Use another canvas instead to avoid exporting to base64 before saving
  */
-VrtxImageEditor.prototype.renderScaledImage = function saveRestorePoint() {
+VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage() {
   var editor = this;
   
   var scaledImgSrc = editor.canvas.toDataURL("image/png");
@@ -311,6 +312,83 @@ VrtxImageEditor.prototype.renderScaledImage = function saveRestorePoint() {
 
 String.prototype.endsWith = function(str) 
 {return (this.match(str+"$")==str)}
+
+VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes) {
+  editor.updateDimensions(editor.rw, editor.rh);
+  new thumbnailer(this, lobes);
+}
+
+VrtxImageEditor.prototype.scaleBilinear = function scaleBilinear() {
+  var editor = this;
+  
+  var w = editor.cropWidth;
+  var h = editor.cropHeight;
+  var w2 = editor.rw;
+  var h2 = editor.rh;
+
+  editor.canvas.width = editor.img.width;
+  editor.canvas.height = editor.img.height;
+  editor.ctx.drawImage(editor.img, 0, 0);
+  
+  var canvasData = editor.ctx.getImageData(editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight);
+  var canvasDataOut = editor.ctx.createImageData(w2, h2);
+  var pixels = canvasData.data;
+  var pixelsOut = canvasDataOut.data;
+
+  // Ported from: http://tech-algorithm.com/articles/bilinear-image-scaling/
+  
+  var aR, aG, aB, bR, bB, bG, cR, cB, cG, dR, dG, dB, x, y, idx, gray;
+  var xRatio = (w-1)/w2;
+  var yRatio = (h-1)/h2;
+  var xDiff, yDiff, red, green, blue;
+  var offset = 0;
+
+  for (var i = 0; i < h2; i++)  {
+    for (var j = 0; j < w2; j++)  {
+
+      x = Math.floor(xRatio * j);
+      y = Math.floor(yRatio * i);
+      xDiff = (xRatio * j) - x;
+      yDiff = (yRatio * i) - y;
+
+      // Get the four neighbour pixels
+      idx = (y * w + x) * 4;
+      
+      aR = pixels[idx] & 0xff;
+      aG = pixels[idx+1] & 0xff;
+      aB = pixels[idx+2] & 0xff;
+      bR = pixels[idx+4] & 0xff;
+      bG = pixels[idx+5] & 0xff;
+      bB = pixels[idx+6] & 0xff;
+      cR = pixels[idx+(w*4)] & 0xff;
+      cG = pixels[idx+(w*4)+1] & 0xff;
+      cB = pixels[idx+(w*4)+2] & 0xff;
+      dR = pixels[idx+(w*4)+4] & 0xff;
+      dG = pixels[idx+(w*4)+5] & 0xff;
+      dB = pixels[idx+(w*4)+6] & 0xff;
+
+      // Set new colors
+      red = aR*(1-xDiff)*(1-yDiff)   + bR*(xDiff)*(1-yDiff) +
+            cR*(yDiff)*(1-xDiff)     + dR*(xDiff*yDiff);
+            
+      green = aG*(1-xDiff)*(1-yDiff) + bG*(xDiff)*(1-yDiff) +
+              cG*(yDiff)*(1-xDiff)   + dG*(xDiff*yDiff);
+              
+      blue = aB*(1-xDiff)*(1-yDiff)  + bB*(xDiff)*(1-yDiff) +
+             cB*(yDiff)  *(1-xDiff)  + dB*(xDiff*yDiff);
+
+      idx = (i * w2 + j) * 4;
+
+      pixelsOut[idx] = Math.floor(red);
+      pixelsOut[idx+1] = Math.floor(green);
+      pixelsOut[idx+2] = Math.floor(blue);
+      pixelsOut[idx+3] = 0xff;
+    } 
+  }  
+  editor.updateDimensions(editor.rw, editor.rh);
+  editor.ctx.putImageData(canvasDataOut, 0, 0);
+  editor.renderScaledImage();
+}
 
 /* Thumbnailer / Lanczos algorithm for downscaling
  * Credits: http://stackoverflow.com/questions/2303690/resizing-an-image-in-an-html5-canvas

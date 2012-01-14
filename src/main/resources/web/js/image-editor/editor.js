@@ -230,13 +230,13 @@ VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
   editor.scaleRatio = newWidth / editor.cropWidth;
   editor.reversedScaleRatio = editor.cropWidth / newWidth;
   
-  if(editor.scaleRatio < 1) { // Downscaling with Lanczos3
+  if(editor.scaleRatio < 1) { // Downscaling with Bilinear or Lanczos
     editor.rw = newWidth;
     editor.rh = newHeight;
     editor.scaleBilinear();
     // TODO: possible to switch it on under advanced settings:
     // editor.scaleLanczos(3);
-  } else { // Upscaling (I think with nearest neighbour. TODO: should be bicubic or bilinear)
+  } else { // Upscaling
     editor.rw = newWidth;
     editor.rh = newHeight;
     editor.updateDimensions(editor.rw, editor.rh);

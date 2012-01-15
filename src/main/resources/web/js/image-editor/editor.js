@@ -225,12 +225,12 @@ VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
   editor.scaleRatio = newWidth / editor.cropWidth;
   editor.reversedScaleRatio = editor.cropWidth / newWidth;
   
-  if(editor.scaleRatio < 1) { // Downscaling with Bilinear or Lanczos
+  if(editor.scaleRatio < 0.9) { // Downscaling with Bilinear or Lanczos
     editor.rw = newWidth;
     editor.rh = newHeight;
-    editor.scaleBilinear();
-    // TODO: possible to switch it on under advanced settings:
-    // editor.scaleLanczos(3);
+    // TODO: remove? this seems equal to drawImage bilinear (not as good as PS bilinear)
+    // editor.scaleBilinear();
+    editor.scaleLanczos(3);
   } else { // Upscaling
     editor.rw = newWidth;
     editor.rh = newHeight;
@@ -309,8 +309,10 @@ String.prototype.endsWith = function(str)
 {return (this.match(str+"$")==str)}
 
 VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes) {
+  var editor = this;
+
   editor.updateDimensions(editor.rw, editor.rh);
-  new thumbnailer(this, lobes);
+  new thumbnailer(editor, lobes);
 }
 
 VrtxImageEditor.prototype.scaleBilinear = function scaleBilinear() {

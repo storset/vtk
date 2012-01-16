@@ -33,6 +33,7 @@ package org.vortikal.util.codec;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.ssl.Base64InputStream;
 
 /**
  * A wrapper for commons codec's Base64 implementation.
@@ -44,9 +45,9 @@ public class Base64 {
         return new String(encoder.encode(str.getBytes()));
     }
 
-    public static String decode(String str) {
-        org.apache.commons.codec.binary.Base64 decoder = new org.apache.commons.codec.binary.Base64();
-        return new String(decoder.decode(str.getBytes()));
+    public static byte[] encode(byte[] buffer) {
+        org.apache.commons.codec.binary.Base64 encoder = new org.apache.commons.codec.binary.Base64();
+        return encoder.encode(buffer);
     }
 
     public static String encode(InputStream in) throws Exception {
@@ -55,4 +56,18 @@ public class Base64 {
         return new String(encoder.encode(bytes));
     }
 
+    public static String decode(String str) {
+        org.apache.commons.codec.binary.Base64 decoder = new org.apache.commons.codec.binary.Base64();
+        return new String(decoder.decode(str.getBytes()));
+    }
+    
+    public static byte[] decode(byte[] buffer) {
+        org.apache.commons.codec.binary.Base64 decoder = new org.apache.commons.codec.binary.Base64();
+        return decoder.decode(buffer);
+    }
+    
+    public static InputStream decoderStream(InputStream is) {
+        return new Base64InputStream(is, true);
+    }
+    
 }

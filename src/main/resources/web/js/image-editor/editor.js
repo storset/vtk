@@ -190,6 +190,13 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   
   $("#app-content").delegate("#saveAndViewButton", "click", function(e) {;
     if(!savedImage) {
+      if(editor.hasCropBeenInitialized) {
+        theSelection.x = 0;
+        theSelection.y = 0;
+        theSelection.w = editor.rw;
+        theSelection.h = editor.rh;
+        $("#vrtx-image-crop").click();
+      }
       if(editor.scaleRatio < 0.9) {
         editor.scaleLanczos(3);
       } else {

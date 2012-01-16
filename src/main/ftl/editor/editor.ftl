@@ -129,7 +129,10 @@
        <script type="text/javascript"><!--  
          $(function () {
            var imageEditorElm = $("#vrtx-image-editor-wrapper");
-           var url = "${resourceContext.currentURI}";
+           // var url = "${resourceContext.currentURI}";
+           var url = location.href;
+           url = url.substring(0, url.indexOf("?"));
+           url = url.replace("-adm", "");
            vrtxImageEditor.url = url;
            if('getContext' in document.createElement('canvas') && imageEditorElm.length) {
              vrtxImageEditor.init(imageEditorElm);   

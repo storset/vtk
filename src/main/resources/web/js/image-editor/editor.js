@@ -312,6 +312,8 @@ function loadScaledImg(insertImage) {
     var tmpCtx = tmpCanvas.getContext('2d');
     tmpCanvas.width = vrtxImageEditor.rw;
     tmpCanvas.height = vrtxImageEditor.rh;
+    $("#vrtx-image-editor-wrapper-loading-info")
+      .css({"width": vrtxImageEditor.rw + "px", "height": vrtxImageEditor.rh + "px"});
     tmpCtx.drawImage(vrtxImageEditor.scaledImg, 0, 0);
   } else {
     vrtxImageEditor.ctx.drawImage(vrtxImageEditor.scaledImg, 0, 0);
@@ -360,11 +362,12 @@ function thumbnailer(editor, lobes) {
   elem.width = img.width;
   elem.height = img.height;
   elem.style.display = "none";
-  $("<p id='vrtx-image-editor-wrapper-loading-info'>Behandler bilde...</p>").insertAfter("h3#vrtx-image-editor-preview");
+  $("#vrtx-image-editor-wrapper-loading-info").show(0);
+  $("#vrtx-image-editor-wrapper-loading-info-text").css("opacity", "0.8");
   $("#vrtx-image-editor-wrapper").addClass("loading");
   $("#vrtx-image-crop").attr("disabled", "disabled");
-  ctx.drawImage(img, 0, 0);                     
-                     
+  ctx.drawImage(img, 0, 0);    
+        
   var w = sx;
   var h = editor.rh;
   var ratio = editor.reversedScaleRatio;

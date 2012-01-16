@@ -13,6 +13,7 @@ function VrtxImageEditor() {
   instance.constructor = VrtxImageEditor;
   
   this.url = null;
+  this.imageInAsBase64 = null;
 
   this.img = null;
   this.scaledImg = null;
@@ -48,7 +49,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   editor.img = new Image();
   editor.scaledImg = new Image();
   
-  editor.img.src = editor.url;
+  editor.img.src = editor.imageInAsBase64;
   editor.img.onload = function () {
     editor.rw = editor.origw = editor.cropWidth = editor.img.width;
     editor.rh = editor.origh = editor.cropHeight = editor.img.height;

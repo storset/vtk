@@ -30,6 +30,9 @@
  */
 package org.vortikal.edit.editor;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,11 +40,14 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.axiom.util.base64.Base64Utils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -125,7 +131,12 @@ public class ResourceEditController extends SimpleFormController {
     @Override
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
         Resource resource = ((ResourceWrapper) command).getResource();
-        Principal principal = RequestContext.getRequestContext().getPrincipal();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Principal principal = requestContext.getPrincipal();
+        Repository repository = requestContext.getRepository();
+        Path uri = requestContext.getResourceURI();
+        String token = requestContext.getSecurityToken();
+        
         
         Map model = super.referenceData(request, command, errors);
 
@@ -137,6 +148,16 @@ public class ResourceEditController extends SimpleFormController {
         if(this.saveImageService != null) {
           URL saveImageURL = this.saveImageService.constructURL(resource, principal);
           model.put("saveImageURL", saveImageURL);
+          InputStream in = repository.getInputStream(token, uri, false);
+          ByteArrayOutputStream bos = new ByteArrayOutputStream();
+          int next = in.read();
+          while (next > -1) {
+              bos.write(next);
+              next = in.read();
+          }
+          bos.flush();
+          byte[] result = bos.toByteArray(); 
+          model.put("imageAsBase64", Base64Utils.encode(result));
         }
         
         return model;

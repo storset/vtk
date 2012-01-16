@@ -68,7 +68,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
     editor.displayDimensions(editor.rw, editor.rh);
     editor.ctx.drawImage(editor.img, 0, 0);
     
-    editor.renderScaledImage(); 
+    editor.renderScaledImage(false); 
     
     $canvas.resizable({
       aspectRatio: editor.keepAspectRatio,
@@ -104,7 +104,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
       editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
                                                   0,            0, editor.rw, editor.rh);
                                                                                      
-      editor.renderScaledImage(); 
+      editor.renderScaledImage(false); 
       editor.resetCropPlugin();
       $(this).val("Start beskjæring...");
       $("#vrtx-image-editor").resizable("enable");
@@ -240,7 +240,7 @@ VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
   editor.updateDimensions(editor.rw, editor.rh);
   editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
                                               0,            0, editor.rw, editor.rh);
-  editor.renderScaledImage();      
+  editor.renderScaledImage(false);      
 };
 
 VrtxImageEditor.prototype.resetCropPlugin = function resetCropPlugin() {
@@ -297,15 +297,26 @@ function displayInfo(editor) {
  * Credits: http://hyankov.wordpress.com/2010/12/26/how-to-implement-html5-canvas-undo-function/
  * TODO: Undo/redo functionality. Use another canvas instead to avoid exporting to base64 before saving
  */
-VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage() {
+VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage(insertImage) {
   var editor = this;
   
   var scaledImgSrc = editor.canvas.toDataURL("image/png");
   editor.scaledImg.src = scaledImgSrc;
-  editor.scaledImg.onload = function () {
-    editor.ctx.drawImage(this, 0, 0);
-  }
+  editor.scaledImg.onload = loadScaledImg(insertImage);
 };
+
+function loadScaledImg(insertImage) {
+  if(insertImage) {
+    var tmpCanvas = $("#vrtx-image-editor-preview-image")[0];
+    tmpCanvas.style.display = "block";
+    var tmpCtx = tmpCanvas.getContext('2d');
+    tmpCanvas.width = vrtxImageEditor.rw;
+    tmpCanvas.height = vrtxImageEditor.rh;
+    tmpCtx.drawImage(vrtxImageEditor.scaledImg, 0, 0);
+  } else {
+    vrtxImageEditor.ctx.drawImage(vrtxImageEditor.scaledImg, 0, 0);
+  }
+}
 
 String.prototype.endsWith = function(str) 
 {return (this.match(str+"$")==str)}
@@ -313,7 +324,8 @@ String.prototype.endsWith = function(str)
 VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes) {
   var editor = this;
 
-  editor.updateDimensions(editor.rw, editor.rh);
+  // editor.updateDimensions(editor.rw, editor.rh);
+  editor.renderScaledImage(true);
   new thumbnailer(editor, lobes);
 }
 
@@ -348,10 +360,11 @@ function thumbnailer(editor, lobes) {
   elem.width = img.width;
   elem.height = img.height;
   elem.style.display = "none";
+  $("<p id='vrtx-image-editor-wrapper-loading-info'>Behandler bilde...</p>").insertAfter("h3#vrtx-image-editor-preview");
   $("#vrtx-image-editor-wrapper").addClass("loading");
   $("#vrtx-image-crop").attr("disabled", "disabled");
-  ctx.drawImage(img, 0, 0);
-                                
+  ctx.drawImage(img, 0, 0);                     
+                     
   var w = sx;
   var h = editor.rh;
   var ratio = editor.reversedScaleRatio;
@@ -393,8 +406,9 @@ function thumbnailer(editor, lobes) {
       var data = e.data;
       if(data) { 
         ctx.putImageData(data.src, 0, 0);
-        editor.renderScaledImage();   
+        editor.renderScaledImage(false);   
         elem.style.display = "block";
+        $("#vrtx-image-editor-wrapper-loading-info").remove();
         $("#vrtx-image-editor-wrapper").removeClass("loading");
         $("#vrtx-image-crop").removeAttr("disabled"); 
       }
@@ -425,7 +439,7 @@ function thumbnailer(editor, lobes) {
             data.src = ctx.getImageData(0, 0, data.dest.width, data.dest.height);
             data = process2(data);
             ctx.putImageData(data.src, 0, 0);
-            editor.renderScaledImage();  
+            editor.renderScaledImage(false);  
             editor.save();
             elem.style.display = "block";
             $("#vrtx-image-editor-preview").removeClass("loading");

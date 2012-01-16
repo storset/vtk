@@ -160,9 +160,18 @@ h3#vrtx-image-editor-preview {
   min-width: 400px;
 }
 
+#vrtx-image-editor-preview-image {
+  display: none;
+}
+
+#vrtx-image-editor-wrapper-loading-info {
+  clear: left;
+}
+
 #vrtx-image-editor-wrapper.loading h3#vrtx-image-editor-preview {
-  padding-bottom: 25px;
-  background: url("../../js/plugins/thickbox-modified/loadingAnimation.gif") no-repeat bottom left;
+  padding-bottom: 20px;
+  margin-bottom: 10px;
+  background: transparent url("../../js/plugins/thickbox-modified/loadingAnimation.gif") no-repeat bottom left;
 }
 
 #vrtx-image-editor-wrapper.loading .ui-wrapper {

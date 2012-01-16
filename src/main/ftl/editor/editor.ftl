@@ -148,6 +148,7 @@
        <div id="vrtx-image-editor-wrapper">
          <h3 id="vrtx-image-editor-preview">Forhåndsvisning</h3>
          <canvas id="vrtx-image-editor"></canvas>
+         <canvas id='vrtx-image-editor-preview-image'></canvas>
        </div>
      </#if>
       

@@ -112,7 +112,6 @@
 
 #image-properties {
   position: relative;
-  padding: 0 0 20px 0;
 }
 
 #image-properties #resource\.userTitle,
@@ -124,6 +123,10 @@
   position: absolute;
   top: -20px;
   left: 370px;
+}
+
+#image-properties #vrtx-resource\.image-description .cke_contents {
+  height: 128px !important;
 }
 
 #vrtx-image-editor-wrapper {
@@ -142,21 +145,15 @@
   margin: 20px 0 0 0;
 }
 
-.vrtx-image-filters {
-  float: left;
-  margin-right: 20px;
-}
-
-.vrtx-image-filters-slider {
-  float: left;
-  width: 120px;
-  margin: 2px 0 0 0;
-}
-
 h3#vrtx-image-editor-preview {
   clear: left;
   float: left;
-  margin: 20px 0 15px 0;
+  margin: 0 0 15px 0;
+}
+
+.vrtx-label-and-text {
+  float: left;
+  margin: 10px 20px 0 0;
 }
 
 #vrtx-image-editor-wrapper-loading-info {
@@ -208,16 +205,14 @@ h3#vrtx-image-editor-preview {
 }
 
 #vrtx-image-crop-button {
-  position: absolute;
-  top: 35px;
-  left: 160px;
-  background: url("images/seperator-grey-gradient-big.png") no-repeat left top;
-  padding: 0 0 0 25px;
-  height: 86px;
+  float: left;
+  background: url("images/seperator-grey-gradient.png") no-repeat left top;
+  padding: 0 0 0 17px;
+  margin: 29px 0 0 0;
 }
 
 #vrtx-image-crop-button .vrtx-button {
-  margin-top: 26px;
+  margin-top: 10px;
 }
 
 /* ^ Image editor */

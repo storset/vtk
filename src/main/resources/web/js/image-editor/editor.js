@@ -348,7 +348,7 @@ function thumbnailer(editor, lobes) {
   elem.width = img.width;
   elem.height = img.height;
   elem.style.display = "none";
-  $("#vrtx-image-editor-preview").addClass("loading");
+  $("#vrtx-image-editor-wrapper").addClass("loading");
   $("#vrtx-image-crop").attr("disabled", "disabled");
   ctx.drawImage(img, 0, 0);
                                 
@@ -395,7 +395,7 @@ function thumbnailer(editor, lobes) {
         ctx.putImageData(data.src, 0, 0);
         editor.renderScaledImage();   
         elem.style.display = "block";
-        $("#vrtx-image-editor-preview").removeClass("loading");
+        $("#vrtx-image-editor-wrapper").removeClass("loading");
         $("#vrtx-image-crop").removeAttr("disabled"); 
       }
     }, false);

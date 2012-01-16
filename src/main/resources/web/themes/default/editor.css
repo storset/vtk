@@ -159,9 +159,13 @@ h3#vrtx-image-editor-preview {
   margin: 25px 0 15px 0;
 }
 
-h3#vrtx-image-editor-preview.loading {
-  padding-right: 25px;
-  background: url("icons/tabmenu-spinner.gif") no-repeat center right;
+#vrtx-image-editor-wrapper.loading {
+  padding-bottom: 25px;
+  background: url("../../js/plugins/thickbox-modified/loadingAnimation.gif") no-repeat bottom left;
+}
+
+#vrtx-image-editor-wrapper.loading .ui-wrapper {
+  display: none;
 }
 
 #vrtx-image-editor-wrapper .ui-wrapper { 

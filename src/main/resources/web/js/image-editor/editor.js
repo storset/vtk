@@ -306,23 +306,21 @@ VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage(insertI
   
   var scaledImgSrc = editor.canvas.toDataURL("image/png");
   editor.scaledImg.src = scaledImgSrc;
-  editor.scaledImg.onload = loadScaledImg(insertImage);
+  editor.scaledImg.onload = function(insertImage) {
+    if(insertImage) {
+      var tmpCanvas = $("#vrtx-image-editor-preview-image")[0];
+      tmpCanvas.style.display = "block";
+      var tmpCtx = tmpCanvas.getContext('2d');
+      tmpCanvas.width = editor.rw;
+      tmpCanvas.height = editor.rh;
+      $("#vrtx-image-editor-wrapper-loading-info")
+        .css({"width": editor.rw + "px", "height": editor.rh + "px"});
+      tmpCtx.drawImage(editor.scaledImg, 0, 0);
+    } else {
+      editor.ctx.drawImage(editor.scaledImg, 0, 0);
+    }
+  };
 };
-
-function loadScaledImg(insertImage) {
-  if(insertImage) {
-    var tmpCanvas = $("#vrtx-image-editor-preview-image")[0];
-    tmpCanvas.style.display = "block";
-    var tmpCtx = tmpCanvas.getContext('2d');
-    tmpCanvas.width = vrtxImageEditor.rw;
-    tmpCanvas.height = vrtxImageEditor.rh;
-    $("#vrtx-image-editor-wrapper-loading-info")
-      .css({"width": vrtxImageEditor.rw + "px", "height": vrtxImageEditor.rh + "px"});
-    tmpCtx.drawImage(vrtxImageEditor.scaledImg, 0, 0);
-  } else {
-    vrtxImageEditor.ctx.drawImage(vrtxImageEditor.scaledImg, 0, 0);
-  }
-}
 
 String.prototype.endsWith = function(str) 
 {return (this.match(str+"$")==str)}

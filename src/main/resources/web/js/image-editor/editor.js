@@ -96,11 +96,11 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
       editor.cropHeight = Math.round(theSelection.h * editor.reversedScaleRatio);
       editor.rw = Math.round(editor.cropWidth * editor.scaleRatio);
       editor.rh = Math.round(editor.cropHeight * editor.scaleRatio);
-      
+      // TODO: fix Firefox 9
       editor.ratio = editor.rw / editor.rh;
       
       editor.updateDimensions(editor.rw, editor.rh);
- 
+
       editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
                                                   0,            0, editor.rw, editor.rh);
                                                                                      

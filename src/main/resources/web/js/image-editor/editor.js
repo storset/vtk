@@ -278,7 +278,7 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
   if ($("#vrtx-image-dimensions-crop").length) {
     $("#resource-width").val(w);
     $("#resource-height").val(h);
-    displayInfo(this);
+    // displayDebugInfo(this);
   } else {
     var dimensionHtml = '<div id="vrtx-image-dimensions-crop">'
                         + '<div class="vrtx-label-and-text">'
@@ -297,7 +297,7 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
   }
 };
 
-function displayInfo(editor) {
+function displayDebugInfo(editor) {
   $("#vrtx-image-info").html("Width: " + editor.rw + " Height: " + editor.rh + " CropX: " + editor.cropX + " CropY: "
                            + editor.cropY + " CropWidth: " + editor.cropWidth + " CropHeight: " + editor.cropHeight
                            + " Scale: " + editor.scaleRatio + " ReverseScale: " + editor.reversedScaleRatio);

@@ -156,10 +156,11 @@
 h3#vrtx-image-editor-preview {
   clear: left;
   float: left;
-  margin: 25px 0 15px 0;
+  margin: 20px 0 15px 0;
+  min-width: 400px;
 }
 
-#vrtx-image-editor-wrapper.loading {
+#vrtx-image-editor-wrapper.loading h3#vrtx-image-editor-preview {
   padding-bottom: 25px;
   background: url("../../js/plugins/thickbox-modified/loadingAnimation.gif") no-repeat bottom left;
 }

@@ -14,6 +14,8 @@ function VrtxImageEditor() {
   
   this.url = null;
   this.imageInAsBase64 = null;
+  
+  this.scaledLanczosComplete = false;
 
   this.img = null;
   this.scaledImg = null;
@@ -186,38 +188,45 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
     }
   });
   
-  var savedImage = false;
-  $("#app-content").delegate("#saveAndViewButton", "click", function(e) {
-    var button = this;
+  $("#app-content").delegate("#saveAndViewButton", "click", function(e) {;
     if(!savedImage) {
-      var imageAsBase64 = vrtxImageEditor.canvas.toDataURL("image/png");
-      imageAsBase64 = imageAsBase64.replace("data:image/png;base64,", "");
-      var form = $("form#vrtx-image-editor-save-image-form");
-      var fd = new FormData(); // Info: http://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/
-                               //       http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#interface-formdata
-      fd.append("csrf-prevention-token", form.find("input[name=csrf-prevention-token]").val()); 
-      fd.append("base", imageAsBase64);
-      var xhr = new XMLHttpRequest();
-      xhr.open("POST", form.attr("action"));
-      xhr.send(fd);
-      xhr.onreadystatechange = function() {
-        if($.browser.mozilla) { // http://www.nczonline.net/blog/2009/07/09/firefox-35firebug-xmlhttprequest-and-readystatechange-bug/
-          xhr.onload = xhr.onerror = xhr.onabort = function() {
-            savedImage = true;
-            $(button).click();      
-          };
-        } else {
-          if (xhr.readyState == 4)  { 
-            savedImage = true;
-            $(button).click();
-          }
-        }
-      };
+      if(editor.scaleRatio < 0.9) {
+        editor.scaleLanczos(3);
+      } else {
+        editor.save();
+      }
       return false; 
     } else {
       savedImage = false;
     }
   });
+};
+
+var savedImage = false;
+VrtxImageEditor.prototype.save = function save() {
+  savedImage = true;
+
+  var imageAsBase64 = vrtxImageEditor.canvas.toDataURL("image/png");
+  imageAsBase64 = imageAsBase64.replace("data:image/png;base64,", "");
+  var form = $("form#vrtx-image-editor-save-image-form");
+  var fd = new FormData(); // Info: http://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/
+                               //       http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#interface-formdata
+  fd.append("csrf-prevention-token", form.find("input[name=csrf-prevention-token]").val()); 
+  fd.append("base", imageAsBase64);
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", form.attr("action"));
+  xhr.send(fd);
+  xhr.onreadystatechange = function() {
+    if($.browser.mozilla) { // http://www.nczonline.net/blog/2009/07/09/firefox-35firebug-xmlhttprequest-and-readystatechange-bug/
+      xhr.onload = xhr.onerror = xhr.onabort = function() {
+        $("#saveAndViewButton").click();      
+      };
+    } else {
+      if (xhr.readyState == 4)  { 
+        $("#saveAndViewButton").click();
+      }
+    }
+  };
 };
 
 VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
@@ -226,20 +235,12 @@ VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
   editor.scaleRatio = newWidth / editor.cropWidth;
   editor.reversedScaleRatio = editor.cropWidth / newWidth;
   
-  if(editor.scaleRatio < 0.9) { // Downscaling with Bilinear or Lanczos
-    editor.rw = newWidth;
-    editor.rh = newHeight;
-    // TODO: remove? this seems equal to drawImage bilinear (not as good as PS bilinear)
-    // editor.scaleBilinear();
-    editor.scaleLanczos(3);
-  } else { // Upscaling
-    editor.rw = newWidth;
-    editor.rh = newHeight;
-    editor.updateDimensions(editor.rw, editor.rh);
-    editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
-                                                0,            0, editor.rw, editor.rh);
-    editor.renderScaledImage();      
-  }
+  editor.rw = newWidth;
+  editor.rh = newHeight;
+  editor.updateDimensions(editor.rw, editor.rh);
+  editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
+                                              0,            0, editor.rw, editor.rh);
+  editor.renderScaledImage();      
 };
 
 VrtxImageEditor.prototype.resetCropPlugin = function resetCropPlugin() {
@@ -314,78 +315,6 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes) {
 
   editor.updateDimensions(editor.rw, editor.rh);
   new thumbnailer(editor, lobes);
-}
-
-VrtxImageEditor.prototype.scaleBilinear = function scaleBilinear() {
-  var editor = this;
-  
-  var w = editor.cropWidth;
-  var h = editor.cropHeight;
-  var w2 = editor.rw;
-  var h2 = editor.rh;
-
-  editor.canvas.width = editor.img.width;
-  editor.canvas.height = editor.img.height;
-  editor.ctx.drawImage(editor.img, 0, 0);
-  
-  var canvasData = editor.ctx.getImageData(editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight);
-  var canvasDataOut = editor.ctx.createImageData(w2, h2);
-  var pixels = canvasData.data;
-  var pixelsOut = canvasDataOut.data;
-
-  // Ported from: http://tech-algorithm.com/articles/bilinear-image-scaling/
-  
-  var aR, aG, aB, bR, bB, bG, cR, cB, cG, dR, dG, dB, x, y, idx, gray;
-  var xRatio = (w-1)/w2;
-  var yRatio = (h-1)/h2;
-  var xDiff, yDiff, red, green, blue;
-  var offset = 0;
-
-  for (var i = 0; i < h2; i++)  {
-    for (var j = 0; j < w2; j++)  {
-
-      x = Math.floor(xRatio * j);
-      y = Math.floor(yRatio * i);
-      xDiff = (xRatio * j) - x;
-      yDiff = (yRatio * i) - y;
-
-      // Get the four neighbour pixels
-      idx = (y * w + x) * 4;
-      
-      aR = pixels[idx] & 0xff;
-      aG = pixels[idx+1] & 0xff;
-      aB = pixels[idx+2] & 0xff;
-      bR = pixels[idx+4] & 0xff;
-      bG = pixels[idx+5] & 0xff;
-      bB = pixels[idx+6] & 0xff;
-      cR = pixels[idx+(w*4)] & 0xff;
-      cG = pixels[idx+(w*4)+1] & 0xff;
-      cB = pixels[idx+(w*4)+2] & 0xff;
-      dR = pixels[idx+(w*4)+4] & 0xff;
-      dG = pixels[idx+(w*4)+5] & 0xff;
-      dB = pixels[idx+(w*4)+6] & 0xff;
-
-      // Set new colors
-      red = aR*(1-xDiff)*(1-yDiff)   + bR*(xDiff)*(1-yDiff) +
-            cR*(yDiff)*(1-xDiff)     + dR*(xDiff*yDiff);
-            
-      green = aG*(1-xDiff)*(1-yDiff) + bG*(xDiff)*(1-yDiff) +
-              cG*(yDiff)*(1-xDiff)   + dG*(xDiff*yDiff);
-              
-      blue = aB*(1-xDiff)*(1-yDiff)  + bB*(xDiff)*(1-yDiff) +
-             cB*(yDiff)  *(1-xDiff)  + dB*(xDiff*yDiff);
-
-      idx = (i * w2 + j) * 4;
-
-      pixelsOut[idx] = Math.floor(red);
-      pixelsOut[idx+1] = Math.floor(green);
-      pixelsOut[idx+2] = Math.floor(blue);
-      pixelsOut[idx+3] = 0xff;
-    } 
-  }  
-  editor.updateDimensions(editor.rw, editor.rh);
-  editor.ctx.putImageData(canvasDataOut, 0, 0);
-  editor.renderScaledImage();
 }
 
 /* Thumbnailer / Lanczos algorithm for downscaling
@@ -497,6 +426,7 @@ function thumbnailer(editor, lobes) {
             data = process2(data);
             ctx.putImageData(data.src, 0, 0);
             editor.renderScaledImage();  
+            editor.save();
             elem.style.display = "block";
             $("#vrtx-image-editor-preview").removeClass("loading");
             $("#vrtx-image-crop").removeAttr("disabled"); 

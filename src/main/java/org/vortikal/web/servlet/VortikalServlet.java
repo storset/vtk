@@ -646,9 +646,9 @@ public class VortikalServlet extends DispatcherServlet {
             statusCode = handler.getHttpStatusCode(req, resp, t);
 
         } catch (Throwable errorHandlerException) {
-            errorHandlerException.initCause(t);
-            logError("Caught exception while performing error handling",
-                     req, errorHandlerException);
+            //errorHandlerException.initCause(t);
+            logError("Caught exception while performing error handling: " 
+                    + errorHandlerException, req, t);
             throw new ServletException(errorHandlerException);
         }
 

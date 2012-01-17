@@ -100,7 +100,14 @@
         <bean class="org.vortikal.web.FullDomainRedirectInterceptor">
           <property name="hostName" value="${manage.hostName}" />
         </bean>
-        <bean class="org.vortikal.web.FrameHeaderInterceptor" />
+        <bean class="org.vortikal.web.interceptors.ServiceBasedHeaderControl">
+          <property name="headers">
+            <map>
+              <entry key="X-FRAME-OPTIONS" value="SAMEORIGIN" />
+            </map>
+          </property>
+          <property name="exceptionAttribute" value="manage.preventXFrameOptionsHeader" />
+        </bean>
         <ref bean="manage.selectiveProtocolManager" />
       </list>
     </property>

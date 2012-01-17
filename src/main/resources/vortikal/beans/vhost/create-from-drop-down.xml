@@ -176,6 +176,11 @@
         <property name="parameterValue" value="create-drop-down" />
       </bean>
     </property>
+    <property name="attributes">
+      <map>
+        <entry key="manage.preventXFrameOptionsHeader" value="true" />
+      </map>
+    </property>
   </bean>
 
   <bean id="createDropDownHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">

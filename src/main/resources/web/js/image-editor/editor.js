@@ -320,6 +320,11 @@ VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage(insertI
       var tmpCtx = tmpCanvas.getContext('2d');
       tmpCanvas.width = editor.rw;
       tmpCanvas.height = editor.rh;
+      
+      if(editor.rw > 220) {
+        $("#vrtx-image-editor-wrapper-loading-info-text span").css("left", (Math.round((editor.rw - 220) / 2) + 5) + "px");
+      }
+      
       $("#vrtx-image-editor-wrapper-loading-info")
         .css({"width": editor.rw + "px", "height": editor.rh + "px"});
       tmpCtx.drawImage(editor.scaledImg, 0, 0);

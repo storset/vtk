@@ -188,7 +188,7 @@ h3#vrtx-image-editor-preview {
   top: 45%;
 }
 
-#vrtx-image-editor-wrapper.loading .ui-wrapper {
+#vrtx-image-editor-wrapper.loading #vrtx-image-editor-inner-wrapper {
   display: none;
 }
 

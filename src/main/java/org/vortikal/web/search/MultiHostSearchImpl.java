@@ -43,6 +43,12 @@ public class MultiHostSearchImpl implements MultiHostSearch {
     private String uri;
     private String resourceType;
 
+    public MultiHostSearchImpl(String token, Search originalSearch) {
+        this.token = token;
+        this.originalSearch = originalSearch;
+        this.type = Type.SIMPE_SEARCH;
+    }
+    
     public MultiHostSearchImpl(String token, String uri, String resourceType) {
         this.token = token;
         this.uri = uri;
@@ -60,7 +66,7 @@ public class MultiHostSearchImpl implements MultiHostSearch {
             throw new IllegalArgumentException("Original search cannot be null");
         }
         this.token = token;
-        this.type = Type.COMPLETE_SEARCH;
+        this.type = Type.RESOURCE_LISTING_SEARCH;
         this.originalSearch = originalSearch;
         this.originalResource = originalResource;
     }

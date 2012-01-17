@@ -38,9 +38,12 @@ public interface MultiHostSearch {
     public static final String SOLR_URL_PROP_NAME = "solr.url";
 
     public static enum Type {
-        // Complete search, map an original search to multi host search,
+        // The simplest of all searches. Just map a supplied original search to
+        // multi host search and execute
+        SIMPE_SEARCH,
+        // Resource listing search, map an original search to multi host search,
         // including aggregation and manually approved resources
-        COMPLETE_SEARCH,
+        RESOURCE_LISTING_SEARCH,
         // Search for resources on a host under a given prefix
         URI_PREFIX_SEARCH,
         // Search for specific resource types on a given host

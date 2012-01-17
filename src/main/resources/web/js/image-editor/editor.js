@@ -191,11 +191,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   $("#app-content").delegate("#saveAndViewButton", "click", function(e) {;
     if(!savedImage) {
       if(editor.hasCropBeenInitialized) {
-        theSelection.x = 0;
-        theSelection.y = 0;
-        theSelection.w = editor.rw;
-        theSelection.h = editor.rh;
-        $("#vrtx-image-crop").click();
+        cropNone(editor);
       }
       if(editor.scaleRatio < 0.9) {
         editor.scaleLanczos(3);
@@ -207,7 +203,21 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
       savedImage = false;
     }
   });
+  
+  $(document).click(function(e) {
+    if(editor.hasCropBeenInitialized && $(event.target).parents().index($('#vrtx-image-editor-inner-wrapper')) == -1) {
+      cropNone(editor);
+    }
+  });
 };
+
+function cropNone(editor) {
+  theSelection.x = 0;
+  theSelection.y = 0;
+  theSelection.w = editor.rw;
+  theSelection.h = editor.rh;
+  $("#vrtx-image-crop").click();
+}
 
 var savedImage = false;
 VrtxImageEditor.prototype.save = function save() {
@@ -319,14 +329,12 @@ VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage(insertI
       tmpCanvas.style.display = "block";
       var tmpCtx = tmpCanvas.getContext('2d');
       tmpCanvas.width = editor.rw;
-      tmpCanvas.height = editor.rh;
-      
+      tmpCanvas.height = editor.rh;    
+      $("#vrtx-image-editor-wrapper-loading-info")
+        .css({"width": editor.rw + "px", "height": editor.rh + "px"});
       if(editor.rw > 220) {
         $("#vrtx-image-editor-wrapper-loading-info-text span").css("left", (Math.round((editor.rw - 220) / 2) + 5) + "px");
       }
-      
-      $("#vrtx-image-editor-wrapper-loading-info")
-        .css({"width": editor.rw + "px", "height": editor.rh + "px"});
       tmpCtx.drawImage(editor.scaledImg, 0, 0);
     } else {
       editor.ctx.drawImage(editor.scaledImg, 0, 0);

@@ -40,9 +40,11 @@ import java.util.Map;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -128,7 +130,9 @@ public class StructuredResourceEditor extends SimpleFormController {
     }
 
     @Override
-    protected ModelAndView onSubmit(Object command) throws Exception {
+    protected ModelAndView onSubmit(HttpServletRequest request,
+            HttpServletResponse response, Object command, BindException errors)
+            throws Exception {
         FormSubmitCommand form = (FormSubmitCommand) command;
         if (form.getCancelAction() != null) {
             unlock();
@@ -160,7 +164,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         
         if (deleteWorkingCopy && workingCopy != null) {
             repository.deleteRevision(token, uri, workingCopy);
-            form.setWorkingCopy(false);
+            model.put("form", formBackingObject(request));
             return new ModelAndView(getFormView(), model);
         }
 
@@ -203,7 +207,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         }
         return new ModelAndView(getFormView(), model);
     }
-
+    
     @Override
     protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command) throws Exception {
         FormSubmitCommand form = (FormSubmitCommand) command;

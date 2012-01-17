@@ -205,7 +205,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   });
   
   $(document).click(function(e) {
-    if(editor.hasCropBeenInitialized && $(event.target).parents().index($('#vrtx-image-editor-inner-wrapper')) == -1) {
+    if(editor.hasCropBeenInitialized && $(e.target).parents().index($('#vrtx-image-editor-inner-wrapper')) == -1) {
       cropNone(editor);
     }
   });

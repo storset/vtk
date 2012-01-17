@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
@@ -217,7 +218,11 @@ public class CollectionListingProvider implements ReferenceDataProvider {
             childLinks[i] = linkMap;
 
             try {
-                browsingLinks[i] = this.browsingService.constructLink(child, principal);
+                String url = this.browsingService.constructLink(child, principal);
+                // XXX: until we straighten out the manage service assertion configuration:
+                if (repository.authorize(principal, child.getAcl(), Privilege.READ)) {
+                    browsingLinks[i] = url;
+                }
             } catch (ServiceUnlinkableException e) {
                 // do nothing
             }

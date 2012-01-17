@@ -72,7 +72,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
     
     $canvas.resizable({
       aspectRatio: editor.keepAspectRatio,
-      grid: [1, 1],
+      // grid: [1, 1],
       stop: function (event, ui) {
         var newWidth = Math.round(ui.size.width);
         var newHeight = Math.round(ui.size.height);

@@ -147,7 +147,9 @@
        </script>
        <div id="vrtx-image-editor-wrapper">
          <h3 id="vrtx-image-editor-preview">Forhåndsvisning</h3>
-         <canvas id="vrtx-image-editor"></canvas>
+         <div id='vrtx-image-editor-inner-wrapper'>
+           <canvas id="vrtx-image-editor"></canvas>
+         </div>
          <div id='vrtx-image-editor-wrapper-loading-info'>
            <div id='vrtx-image-editor-wrapper-loading-info-text'>
              <span>Behandler bilde...</span>

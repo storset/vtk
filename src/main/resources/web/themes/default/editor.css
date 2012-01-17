@@ -135,6 +135,11 @@
   display: none;
 }
 
+#vrtx-image-editor-inner-wrapper {
+  min-height: 150px;
+  clear: left;
+}
+
 #vrtx-image-editor-wrapper.canvas-supported {
   display: block;
   padding: 0 0 20px 0;

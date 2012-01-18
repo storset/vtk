@@ -59,7 +59,17 @@ public class ServiceAttributeComparator implements Comparator<Service> {
         
         Object attr1 = service1.getAttribute(this.attributeName);
         Object attr2 = service2.getAttribute(this.attributeName);
-
+        if (attr1 == null) {
+            throw new NullPointerException("Attribute '" + this.attributeName 
+                    + "' in service " + service1 + " is NULL");
+        }
+        if (attr2 == null) {
+            throw new NullPointerException("Attribute '" + this.attributeName 
+                    + "' in service " + service2 + " is NULL");
+        }
+        if (attr1 == attr2) {
+            return 0;
+        }
         if (attr1.equals(attr2)) {
             return 0;
         }

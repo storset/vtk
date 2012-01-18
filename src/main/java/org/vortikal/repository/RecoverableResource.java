@@ -30,8 +30,9 @@
  */
 package org.vortikal.repository;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.apache.commons.lang.time.FastDateFormat;
 
 public class RecoverableResource {
 
@@ -45,7 +46,7 @@ public class RecoverableResource {
     private String contentType;
     private boolean isCollection;
 
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     public String getName() {
         return this.trashUri.substring(this.trashUri.lastIndexOf("/") + 1, this.trashUri.length());
@@ -92,7 +93,7 @@ public class RecoverableResource {
     }
 
     public String getFormattedDeletedTime() {
-        return SDF.format(this.deletedTime);
+        return DATE_FORMAT.format(this.deletedTime);
     }
 
     public void setDeletedTime(Date deletedTime) {

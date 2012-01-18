@@ -44,7 +44,6 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.vortikal.repository.store.VideoMetadata;
 
 /**
  * A resource content representation registry.
@@ -91,12 +90,7 @@ public class ContentRepresentationRegistry implements ApplicationContextAware, I
         ContentFactory factory = this.contentFactories.get(clazz);
 
         if (factory != null) {
-            if (clazz.equals(VideoMetadata.class)) {
-                return factory.getContentRepresentation(clazz, content);
-            } else {
-                return factory.getContentRepresentation(clazz, content);
-
-            }
+            return factory.getContentRepresentation(clazz, content);
         }
 
         // The default representations:

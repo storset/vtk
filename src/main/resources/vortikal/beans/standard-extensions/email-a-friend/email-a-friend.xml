@@ -48,7 +48,7 @@
     <property name="defaultEncoding" value="utf-8" />
   </bean>
 
-  <bean id="emailafriendHandler" class="org.vortikal.web.actions.share.EmailAFriendController">
+  <bean id="emailafriendHandler" class="org.vortikal.web.actions.share.ShareViaEmailController">
     <property name="viewService" ref="viewService" />
     <property name="viewName" value="emailafriend.view" />
     <property name="siteName" value="${emailAFriend.siteName}" />

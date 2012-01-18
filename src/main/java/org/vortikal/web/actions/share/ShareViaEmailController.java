@@ -53,7 +53,7 @@ import org.vortikal.util.mail.MailTemplateProvider;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
-public class EmailAFriendController implements Controller {
+public class ShareViaEmailController implements Controller {
     private String viewName;
     private String siteName;
     private ResourceWrapperManager resourceManager;

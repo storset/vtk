@@ -3,7 +3,7 @@
 "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-	  <!-- Temporarily redirect ?vrtx=thumbnail on manage hostname to view hostname until editor is fixed to use thumbnail service 
+  <!-- Temporarily redirect ?vrtx=thumbnail on manage hostname to view hostname until editor is fixed to use thumbnail service 
     to generate image URLs -->
   <bean id="manage.redirectThumbnails" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-3" />
@@ -1823,12 +1823,6 @@
         <value>resource-type</value>
         <value>last-modified</value>
       </list>
-    </property>
-    <property name="linkedServices">
-      <map>
-        <!-- <entry key="delete" value-ref="delete.viewService" /> -->
-        <!-- entry key="duplicate" value-ref="duplicateResourceService" / -->
-      </map>
     </property>
     <property name="retrieveForProcessing" value="false" />
   </bean>

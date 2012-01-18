@@ -168,6 +168,7 @@ public class DecoratingViewWrapper implements ViewWrapper, ReferenceDataProvidin
         if (this.maxDocumentSize > 0 && o instanceof Resource) {
             Resource resource = (Resource) o;
             if (resource.getContentLength() > this.maxDocumentSize) {
+                logger.info("Document too large to be decorated: " + request.getRequestURI());
                 view.render(model, request, response);
                 return;
             }

@@ -30,10 +30,8 @@
  */
 package org.vortikal.web.actions.copymove;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -58,15 +56,14 @@ import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.referencedata.CategorizableReferenceDataProvider;
+import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-public class CopyMoveWarningProvider implements CategorizableReferenceDataProvider {
+public class CopyMoveWarningProvider implements ReferenceDataProvider {
 
     private Service confirmationService;
     private Searcher searcher;
-    private Set<?> categories;
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -197,16 +194,5 @@ public class CopyMoveWarningProvider implements CategorizableReferenceDataProvid
     @Required
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
-    }
-
-    public void setCategories(Set<?> categories) {
-        this.categories = categories;
-    }
-
-    public Set<?> getCategories() {
-        if (this.categories == null) {
-            return Collections.EMPTY_SET;
-        }
-        return Collections.unmodifiableSet(this.categories);
     }
 }

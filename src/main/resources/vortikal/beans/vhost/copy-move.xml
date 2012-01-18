@@ -109,15 +109,16 @@
   </bean>
 
   <bean id="copyMove.warningProvider"
-        class="org.vortikal.web.actions.copymove.CopyMoveWarningProvider">
-    <property name="searcher" ref="systemIndexSearcher" />
-    <property name="confirmationService" ref="copyMove.confirmationService" />
-    <property name="categories">
-      <set>
-        <value>resourceMenuRight.referenceDataProvider</value>
-      </set>
+        class="org.vortikal.web.referencedata.CategorizableReferenceDataProvider">
+    <property name="referenceDataProvider">
+      <bean class="org.vortikal.web.actions.copymove.CopyMoveWarningProvider">
+        <property name="searcher" ref="systemIndexSearcher" />
+        <property name="confirmationService" ref="copyMove.confirmationService" />
+      </bean>
     </property>
+    <property name="categories" value="resourceMenuRight.referenceDataProvider" />
   </bean>
+
 
   <bean id="copyMove.confirmationService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageCollectionListingService" />

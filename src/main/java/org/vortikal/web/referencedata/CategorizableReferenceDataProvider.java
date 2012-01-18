@@ -30,9 +30,43 @@
  */
 package org.vortikal.web.referencedata;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.context.Categorizable;
 
-public interface CategorizableReferenceDataProvider extends
+public final class CategorizableReferenceDataProvider implements
         ReferenceDataProvider, Categorizable {
 
+    private ReferenceDataProvider provider;
+    private Set<?> categories;
+
+    @Required
+    public void setCategories(Set<?> categories) {
+        this.categories = Collections.unmodifiableSet(categories);
+    }
+
+    @Override
+    public Set<?> getCategories() {
+        if (this.categories == null) {
+            return Collections.EMPTY_SET;
+        }
+        return this.categories;
+    }
+    
+    @Required
+    public void setReferenceDataProvider(ReferenceDataProvider provider) {
+        this.provider = provider;
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    public void referenceData(Map model, HttpServletRequest request)
+            throws Exception {
+        this.provider.referenceData(model, request);
+    }
 }

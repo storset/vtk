@@ -38,13 +38,13 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.copymove.CopyMoveSessionBean;
 
 /**
- * Assertion that matches when a named sessionVariable exists 
+ * Assertion that matches when a named session variable exists 
  * with the specified action
  *
  * <p>Configurable properties:
  * <ul>
- *   <li><code>variableName</code> - name of the sessionVariable
- *   <li><code>action</code> - name of action stored in sessionVariable
+ *   <li><code>variableName</code> - name of the session variable
+ *   <li><code>action</code> - name of action stored in session variable
  * </ul>
  *
  */
@@ -52,56 +52,52 @@ public class SessionVariableExistsAssertion implements Assertion {
 
     private String variableName = null;
     private String action = null;
-	
-    
+
     public String getAction() {
-		return this.action;
-	}
+        return this.action;
+    }
 
+    public void setAction(String action) {
+        this.action = action;
+    }
 
-	public void setAction(String action) {
-		this.action = action;
-	}
+    public String getVariableName() {
+        return this.variableName;
+    }
 
+    public void setVariableName(String variableName) {
+        this.variableName = variableName;
+    }
 
-	public String getVariableName() {
-		return this.variableName;
-	}
-
-
-	public void setVariableName(String variableName) {
-		this.variableName = variableName;
-	}
-
-
-	public boolean conflicts(Assertion assertion) {
-		if (assertion instanceof SessionVariableExistsAssertion) {
+    @Override
+    public boolean conflicts(Assertion assertion) {
+        if (assertion instanceof SessionVariableExistsAssertion) {
             return ! (this.variableName.equals(
-                          ((SessionVariableExistsAssertion)assertion).getVariableName()) && 
-                          this.action.equals(((SessionVariableExistsAssertion)assertion).getAction()));
+                    ((SessionVariableExistsAssertion)assertion).getVariableName()) && 
+                    this.action.equals(((SessionVariableExistsAssertion)assertion).getAction()));
         }
         return false;
     }
 
-	public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-		CopyMoveSessionBean sessionBean = (CopyMoveSessionBean) request.getSession(true).getAttribute(this.variableName);
-				
-		return sessionBean != null && this.action.equals(sessionBean.getAction());
+    @Override
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+        CopyMoveSessionBean sessionBean = (CopyMoveSessionBean) request.getSession(true).getAttribute(this.variableName);
+
+        return sessionBean != null && this.action.equals(sessionBean.getAction());
     }
 
-	public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-		RequestContext requestContext = RequestContext.getRequestContext();
+    @Override
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+        RequestContext requestContext = RequestContext.getRequestContext();
 
-		if (match) {
-			return matches(requestContext.getServletRequest(), resource, principal); 
-		}
-		return true;
+        if (match) {
+            return matches(requestContext.getServletRequest(), resource, principal); 
+        }
+        return true;
     }
 
-
+    @Override
     public void processURL(URL url) {
         // Empty
-        
     }
-
 }

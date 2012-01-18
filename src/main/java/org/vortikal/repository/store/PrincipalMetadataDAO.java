@@ -80,15 +80,6 @@ public interface PrincipalMetadataDAO {
     List<PrincipalMetadata> search(PrincipalSearch search, Locale preferredLocale);
 
     /**
-     * List all employees for a given unit and all its sub-units.
-     * 
-     * @param areacodeOrDn
-     * @param preferredLocale
-     * @return
-     */
-    List<PrincipalMetadata> listPrincipalsInUnit(String areacodeOrDn, Locale preferredLocale);
-
-    /**
      * List all employees for a given unit. Flag if search is do be done
      * considering subunits.
      * 

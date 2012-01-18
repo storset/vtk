@@ -30,35 +30,29 @@
  */
 package org.vortikal.web;
 
-import java.util.List;
-
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public class IndexFileResolver {
 
-    private String[] indexFileList = new String[0];
+    private PropertyTypeDefinition indexFilePropDef;
     
     public Path getIndexFile(Resource resource) {
         if (resource == null || !resource.isCollection()) {
             return null;
         }
 
-        List<Path> childURIs = resource.getChildURIs();
-        for (String indexFileName: this.indexFileList) {
-            for (Path child: childURIs){
-                if (indexFileName.equals(child.getName())){
-                    return child;
-                }
-            }
+        Property indexFileProp = resource.getProperty(this.indexFilePropDef);
+        if (indexFileProp == null) {
+            return null;
         }
-        
-        return null;
+        String value = indexFileProp.getStringValue();
+        return resource.getURI().extend(value);
     }
 
-
-    public void setIndexFileList(String[] indexFileList) {
-        if (indexFileList != null)
-            this.indexFileList = indexFileList;
+    public void setIndexFilePropDef(PropertyTypeDefinition indexFilePropDef) {
+        this.indexFilePropDef = indexFilePropDef;
     }
 }

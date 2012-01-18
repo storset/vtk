@@ -29,11 +29,7 @@
   </bean>
   
   <bean id="indexFileResolver" class="org.vortikal.web.IndexFileResolver">
-    <property name="indexFileList" ref="indexFileList" />
-  </bean>
-  
-  <bean id="indexFileList" class="org.vortikal.context.CSVListFactoryBean">
-    <property name="csvList" value="${indexFiles}" />
+    <property name="indexFilePropDef" ref="collection.indexFilePropDef" />
   </bean>
   
   <bean id="securityInitializer" class="org.vortikal.security.web.SecurityInitializer">

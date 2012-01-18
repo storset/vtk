@@ -45,6 +45,7 @@ public abstract class AbstractWrappingViewResolver implements ViewResolver, Orde
     private int order = Integer.MAX_VALUE;
 
 
+    @Override
     public View resolveViewName(String viewName, Locale locale) throws Exception {
         View view = resolveViewNameInternal(viewName, locale);
         

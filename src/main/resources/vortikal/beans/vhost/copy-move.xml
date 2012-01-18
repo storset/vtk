@@ -69,7 +69,7 @@
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="copy-resources-to-this-folder" />
         </bean>
-        <bean class="org.vortikal.web.service.CopyMoveSessionVariableExistsAssertion">
+        <bean class="org.vortikal.web.service.SessionVariableExistsAssertion">
           <property name="variableName" value="copymovesession" />
           <property name="action" value="copy-resources" />
         </bean>
@@ -99,7 +99,7 @@
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="move-resources-to-this-folder" />
         </bean>
-        <bean class="org.vortikal.web.service.CopyMoveSessionVariableExistsAssertion">
+        <bean class="org.vortikal.web.service.SessionVariableExistsAssertion">
           <property name="variableName" value="copymovesession" />
           <property name="action" value="move-resources" />
         </bean>

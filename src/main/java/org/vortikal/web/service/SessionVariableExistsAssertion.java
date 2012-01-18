@@ -48,8 +48,7 @@ import org.vortikal.web.actions.copymove.CopyMoveSessionBean;
  * </ul>
  *
  */
-
-public class CopyMoveSessionVariableExistsAssertion implements Assertion {
+public class SessionVariableExistsAssertion implements Assertion {
 
     private String variableName = null;
     private String action = null;
@@ -76,10 +75,10 @@ public class CopyMoveSessionVariableExistsAssertion implements Assertion {
 
 
 	public boolean conflicts(Assertion assertion) {
-		if (assertion instanceof CopyMoveSessionVariableExistsAssertion) {
+		if (assertion instanceof SessionVariableExistsAssertion) {
             return ! (this.variableName.equals(
-                          ((CopyMoveSessionVariableExistsAssertion)assertion).getVariableName()) && 
-                          this.action.equals(((CopyMoveSessionVariableExistsAssertion)assertion).getAction()));
+                          ((SessionVariableExistsAssertion)assertion).getVariableName()) && 
+                          this.action.equals(((SessionVariableExistsAssertion)assertion).getAction()));
         }
         return false;
     }

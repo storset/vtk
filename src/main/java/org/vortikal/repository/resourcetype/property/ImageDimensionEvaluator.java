@@ -31,19 +31,18 @@
 package org.vortikal.repository.resourcetype.property;
 
 import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertyEvaluationContext.Type;
+import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
-
 
 public class ImageDimensionEvaluator implements PropertyEvaluator {
 
-    private Log logger = LogFactory.getLog(this.getClass());
+    private static Log logger = LogFactory.getLog(ImageDimensionEvaluator.class);
     private boolean evaluateHeight = true; // Otherwise width
 
     public void setEvaluateHeight(boolean evaluateHeight) {
@@ -57,17 +56,30 @@ public class ImageDimensionEvaluator implements PropertyEvaluator {
                 && ctx.getEvaluationType() != Type.Create) {
             return true;
         }
-        
-        if (ctx.getContent() == null) return false;
-        
         try {
-
-            Dimension dim = (Dimension)ctx.getContent().getContentRepresentation(Dimension.class);
+            Content content = ctx.getContent();
+            if (content == null) {
+                logger.info("Unable to get Dimension representation of " 
+                        + ctx.getNewResource().getURI());
+                return false;
+            }
+            Dimension dim = (Dimension) content.getContentRepresentation(Dimension.class);
+            if (dim == null) {
+                logger.info("Unable to get Dimension representation of "
+                        + ctx.getNewResource().getURI());
+                return false;
+            }
             property.setIntValue(this.evaluateHeight ? dim.height : dim.width);
             return true;
 
         } catch (Exception e) {
-            this.logger.warn("Unable to get Dimension representation of content", e);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Unable to get Dimension representation of "
+                        + ctx.getNewResource().getURI(), e);
+            } else {
+                logger.info("Unable to get Dimension representation of "
+                        + ctx.getNewResource().getURI());
+            }
             return false;
         }
     }

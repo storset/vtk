@@ -420,7 +420,7 @@ function thumbnailer(editor, lobes) {
   var process1Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process1.js';
   var process2Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process2.js';
 
-  if ("Worker" in window) { // Use Web Workers if supported
+  if (false) { // Use Web Workers if supported. TODO: fix problem hangs on some dimensions
     var workerLanczosProcess1 = new Worker(process1Url);
     var workerLanczosProcess2 = new Worker(process2Url); 
     workerLanczosProcess1.postMessage(data);

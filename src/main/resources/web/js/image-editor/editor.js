@@ -72,7 +72,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
     
     $canvas.resizable({
       aspectRatio: editor.keepAspectRatio,
-      // grid: [1, 1], TODO: fix resize bug
+      grid: [1, 1],
       stop: function (event, ui) {
         var newWidth = Math.floor(ui.size.width);
         var newHeight = Math.floor(ui.size.height);
@@ -96,7 +96,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
       editor.cropHeight = Math.round(theSelection.h * editor.reversedScaleRatio);
       editor.rw = Math.round(editor.cropWidth * editor.scaleRatio);
       editor.rh = Math.round(editor.cropHeight * editor.scaleRatio);
-      // TODO: fix Firefox 9
+
       editor.ratio = editor.rw / editor.rh;
       
       editor.updateDimensions(editor.rw, editor.rh);

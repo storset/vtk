@@ -332,8 +332,13 @@ VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage(insertI
       tmpCanvas.height = editor.rh;    
       $("#vrtx-image-editor-wrapper-loading-info")
         .css({"width": editor.rw + "px", "height": editor.rh + "px"});
-      if(editor.rw > 220) {
-        $("#vrtx-image-editor-wrapper-loading-info-text span").css("left", (Math.round((editor.rw - 220) / 2) + 5) + "px");
+      if(editor.rw > 220 && editor.rh > 40) {
+        $("#vrtx-image-editor-wrapper-loading-info-text ").css("left", (Math.round((editor.rw - 220) / 2) + 5) + "px");
+        $("#vrtx-image-editor-wrapper-loading-info-text ").css("top", (Math.round((editor.rh - 40) / 2) + 5) + "px");
+      } else { // Just put it under..
+        $("#vrtx-image-editor-wrapper-loading-info").css("height", (Math.round(editor.rh) + 50) + "px");
+        $("#vrtx-image-editor-wrapper-loading-info-text").css("height", (Math.round(editor.rh) + 50) + "px");
+        $("#vrtx-image-editor-wrapper-loading-info-text span").css({"top": (Math.round(editor.rh) + 10) + "px", "color": "black", }); 
       }
       tmpCtx.drawImage(editor.scaledImg, 0, 0);
     } else {
@@ -388,8 +393,8 @@ function thumbnailer(editor, lobes) {
   $("#vrtx-image-editor-wrapper-loading-info-text").css("opacity", "0.8");
   $("#vrtx-image-editor-wrapper").addClass("loading");
   $("#vrtx-image-crop").attr("disabled", "disabled");
-  ctx.drawImage(img, 0, 0);    
-        
+  ctx.drawImage(img, 0, 0);
+  
   var w = sx;
   var h = editor.rh;
   var ratio = editor.reversedScaleRatio;

@@ -426,7 +426,8 @@ public class DefaultRevisionStore extends AbstractSqlMapDataAccessor implements 
     
     private int lastGCHour = -1;
     
-    public void gc() throws IOException {
+    @Override
+    public synchronized void gc() throws IOException {
         
         Calendar cal = Calendar.getInstance();
         int hour = cal.get(Calendar.HOUR_OF_DAY);

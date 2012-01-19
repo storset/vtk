@@ -8,7 +8,7 @@
 	<load-on-startup>1</load-on-startup>
     	<init-param>
           <param-name>contextConfigLocation</param-name>
-          <param-value>/WEB-INF/applicationContext.xml,classpath*:beans/vortexExtension.xml,file://${user.home}/*vortikal.xml,file://${user.home}/*vrtx-context.xml</param-value>
+          <param-value>/WEB-INF/applicationContext.xml,file://${user.home}/*vortikal.xml,file://${user.home}/*vrtx-context.xml</param-value>
         </init-param>
   </servlet>  
   

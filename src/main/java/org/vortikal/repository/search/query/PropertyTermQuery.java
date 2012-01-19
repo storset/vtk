@@ -30,8 +30,8 @@
  */
 package org.vortikal.repository.search.query;
 
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public class PropertyTermQuery extends AbstractPropertyQuery {
 
@@ -68,7 +68,7 @@ public class PropertyTermQuery extends AbstractPropertyQuery {
         StringBuilder sb = new StringBuilder(this.getClass().getSimpleName());
         sb.append(";propdef=").append(getPropertyDefinition());
         if (getPropertyDefinition().getType() == Type.JSON && getComplexValueAttributeSpecifier() != null) {
-            sb.append(getComplexValueAttributeSpecifier());
+            sb.append("@").append(getComplexValueAttributeSpecifier());
         }
         sb.append(";term=").append(this.term);
         sb.append(";operator=").append(this.operator);

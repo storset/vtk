@@ -421,7 +421,6 @@ function thumbnailer(editor, lobes) {
   var process2Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process2.js';
 
   if ("Worker" in window) { // Use Web Workers if supported
-    alert("worker");
     var workerLanczosProcess1 = new Worker(process1Url);
     var workerLanczosProcess2 = new Worker(process2Url); 
     workerLanczosProcess1.postMessage(data);

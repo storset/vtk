@@ -74,12 +74,12 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
       aspectRatio: editor.keepAspectRatio,
       // grid: [1, 1], TODO: fix resize bug
       stop: function (event, ui) {
-        var newWidth = Math.round(ui.size.width);
-        var newHeight = Math.round(ui.size.height);
+        var newWidth = Math.floor(ui.size.width);
+        var newHeight = Math.floor(ui.size.height);
         editor.scale(newWidth, newHeight);
       },
       resize: function (event, ui) {
-        editor.displayDimensions(Math.round(ui.size.width), Math.round(ui.size.height));
+        editor.displayDimensions(Math.floor(ui.size.width), Math.floor(ui.size.height));
       }
     });
   }

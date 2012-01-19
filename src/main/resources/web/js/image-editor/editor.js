@@ -14,8 +14,6 @@ function VrtxImageEditor() {
   
   this.url = null;
   this.imageInAsBase64 = null;
-  
-  this.scaledLanczosComplete = false;
 
   this.img = null;
   this.scaledImg = null;
@@ -205,8 +203,18 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   });
   
   $(document).click(function(e) {
-    if(editor.hasCropBeenInitialized && $(e.target).parents().index($('#vrtx-image-editor-inner-wrapper')) == -1) {
-      cropNone(editor);
+    if(editor.hasCropBeenInitialized) {
+      var posX = e.pageX; // http://docs.jquery.com/Tutorials:Mouse_Position
+      var posY = e.pageY;
+      var editorOffset = $("#vrtx-image-editor").offset();
+      var editorX = Math.round(editorOffset.left + theSelection.x) - 15;
+      var editorY = Math.round(editorOffset.top + theSelection.y) - 15;
+      var editorW = Math.round(editorX + theSelection.w) + 15;
+      var editorH = Math.round(editorY + theSelection.h) + 15;
+      if(posX > editorX && posX < editorW && posY > editorY && posY < editorH) {
+      } else {
+        cropNone(editor);
+      }
     }
   });
 };
@@ -330,15 +338,14 @@ VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage(insertI
       var tmpCtx = tmpCanvas.getContext('2d');
       tmpCanvas.width = editor.rw;
       tmpCanvas.height = editor.rh;    
-      $("#vrtx-image-editor-wrapper-loading-info")
-        .css({"width": editor.rw + "px", "height": editor.rh + "px"});
-      if(editor.rw > 220 && editor.rh > 40) {
-        $("#vrtx-image-editor-wrapper-loading-info-text ").css("left", (Math.round((editor.rw - 220) / 2) + 5) + "px");
-        $("#vrtx-image-editor-wrapper-loading-info-text ").css("top", (Math.round((editor.rh - 40) / 2) + 5) + "px");
+      $("#vrtx-image-editor-wrapper-loading-info").css({"width": editor.rw + "px", "height": editor.rh + "px"});
+      if(editor.rw >= 230 && editor.rh >= 50) {
+        $("#vrtx-image-editor-wrapper-loading-info-text span").css("left", (Math.round((editor.rw - 220) / 2) + 5) + "px");
+        $("#vrtx-image-editor-wrapper-loading-info-text span").css("top", (Math.round((editor.rh - 40) / 2) + 5) + "px");
       } else { // Just put it under..
-        $("#vrtx-image-editor-wrapper-loading-info").css("height", (Math.round(editor.rh) + 50) + "px");
-        $("#vrtx-image-editor-wrapper-loading-info-text").css("height", (Math.round(editor.rh) + 50) + "px");
-        $("#vrtx-image-editor-wrapper-loading-info-text span").css({"top": (Math.round(editor.rh) + 10) + "px", "color": "black", }); 
+        $("#vrtx-image-editor-wrapper-loading-info").css("height", editor.rh + 50 + "px");
+        $("#vrtx-image-editor-wrapper-loading-info-text").css("height", editor.rh + 50 + "px");
+        $("#vrtx-image-editor-wrapper-loading-info-text span").css({"top": editor.rh + "px", "color": "black", }); 
       }
       tmpCtx.drawImage(editor.scaledImg, 0, 0);
     } else {

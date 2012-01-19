@@ -267,13 +267,15 @@ public abstract class AtomFeedController implements Controller {
                 try {
                     Link mediaLink = abdera.getFactory().newLink();
                     Path propRef = getPropRef(result, mediaRef.getStringValue());
-                    mediaLink.setHref(viewService.constructLink(propRef));
-                    mediaLink.setRel("enclosure");
-                    Repository repository = requestContext.getRepository();
-                    String token = requestContext.getSecurityToken();
-                    Resource mediaResource = repository.retrieve(token, propRef, true);
-                    mediaLink.setMimeType(mediaResource.getContentType());
-                    entry.addLink(mediaLink);
+                    if (propRef != null) {
+                        mediaLink.setHref(viewService.constructLink(propRef));
+                        mediaLink.setRel("enclosure");
+                        Repository repository = requestContext.getRepository();
+                        String token = requestContext.getSecurityToken();
+                        Resource mediaResource = repository.retrieve(token, propRef, true);
+                        mediaLink.setMimeType(mediaResource.getContentType());
+                        entry.addLink(mediaLink);
+                    }
                 } catch (Throwable t) {
                     // Don't break the entire entry if media link breaks
                     logger.warn("An error occured while setting media link for feed entry, " + result.getURI() + ": "
@@ -394,6 +396,10 @@ public abstract class AtomFeedController implements Controller {
     protected Path getPropRef(PropertySet resource, String val) {
         if (val.startsWith("/")) {
             return Path.fromString(val);
+        }
+        if (val.startsWith("http://") || val.startsWith("https://")) {
+            // Only relative references are supported:
+            return null;
         }
         Property collectionProp = resource.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME);
         if (collectionProp != null && collectionProp.getBooleanValue() == true) {

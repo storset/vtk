@@ -193,7 +193,14 @@
 
     <#list propDefs as propDef>
       <#local name = propDef.name />
-      <#local localizedName = propDef.getLocalizedName(locale) />
+      
+      <#if name = "aggregation" || name = "manually-approve-from">
+        <#local localizedName>
+          <@vrtx.msg code="proptype.name.${resource.resourceType}.${name}" />
+        </#local>
+      <#else>
+        <#local localizedName = propDef.getLocalizedName(locale) />
+      </#if>
 
       <#local value = resource.getValue(propDef) />
 

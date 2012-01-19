@@ -398,7 +398,7 @@ public class PropertyEditController extends SimpleFormController implements Refe
 
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings( { "rawtypes", "unchecked" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
@@ -471,7 +471,7 @@ public class PropertyEditController extends SimpleFormController implements Refe
             }
         }
 
-        if (urchinService != null && hasUrchinStats(resource) && !resource.isReadRestricted()) {
+        if (urchinService != null && hasUrchinStats(resource) && !resource.isReadRestricted() && resource.isPublished()) {
             if (request.getParameter("recache") == null)
                 model.put("urchinStats", urchinService.constructURL(resource));
             else

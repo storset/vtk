@@ -185,13 +185,7 @@
   </table>
 
   <#if urchinStats?exists>
-    <h3 id="resourceVisitHeader">
-    <#if resource.resourceType = "collection">
-      <@vrtx.msg code="resource.metadata.about.visit.collection" default="Visit count (only for visits on the folder itself)"/>
-    <#else>
-      <@vrtx.msg code="resource.metadata.about.visit" default="Visit count"/>    
-    </#if>
-    </h3>
+    <h3 id="resourceVisitHeader"><@vrtx.msg code="resource.metadata.about.visit" default="Visit count"/></h3>
     <!--[if lt IE 9]>
       <style type="text/css">
         .vrtx-resource-visit-stat {

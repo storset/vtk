@@ -420,7 +420,8 @@ function thumbnailer(editor, lobes) {
   var process1Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process1.js';
   var process2Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process2.js';
 
-  if (false) { // "Worker" in window) { // Use Web Workers if supported); TODO: some problem with canvasPixelArray sent to worker and returned
+  if ("Worker" in window) { // Use Web Workers if supported
+    alert("worker");
     var workerLanczosProcess1 = new Worker(process1Url);
     var workerLanczosProcess2 = new Worker(process2Url); 
     workerLanczosProcess1.postMessage(data);
@@ -439,9 +440,9 @@ function thumbnailer(editor, lobes) {
       if(data) { 
         ctx.putImageData(data.src, 0, 0);
         editor.renderScaledImage(false);   
+        editor.save();
         elem.style.display = "block";
-        $("#vrtx-image-editor-wrapper-loading-info").remove();
-        $("#vrtx-image-editor-wrapper").removeClass("loading");
+        $("#vrtx-image-editor-preview").removeClass("loading");
         $("#vrtx-image-crop").removeAttr("disabled"); 
       }
     }, false);

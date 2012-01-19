@@ -117,6 +117,10 @@ div.cssUrl input {
   width: 485px;
 }
 
+div.manually-approve-from table input {
+  width: auto;
+}
+
 div.title input,
 div.name input,
 div.userTitle input {

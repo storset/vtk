@@ -186,6 +186,7 @@ h3#vrtx-image-editor-preview {
   position: absolute;
   left: 20px;
   top: 45%;
+  clear: left;
 }
 
 #vrtx-image-editor-wrapper.loading #vrtx-image-editor-inner-wrapper {

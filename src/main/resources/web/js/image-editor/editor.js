@@ -337,15 +337,16 @@ VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage(insertI
       tmpCanvas.style.display = "block";
       var tmpCtx = tmpCanvas.getContext('2d');
       tmpCanvas.width = editor.rw;
-      tmpCanvas.height = editor.rh;    
-      $("#vrtx-image-editor-wrapper-loading-info").css({"width": editor.rw + "px", "height": editor.rh + "px"});
+      tmpCanvas.height = editor.rh;   
       if(editor.rw >= 230 && editor.rh >= 50) {
-        $("#vrtx-image-editor-wrapper-loading-info-text span").css("left", (Math.round((editor.rw - 220) / 2) + 5) + "px");
-        $("#vrtx-image-editor-wrapper-loading-info-text span").css("top", (Math.round((editor.rh - 40) / 2) + 5) + "px");
+        $("#vrtx-image-editor-wrapper-loading-info").css({"width": editor.rw + "px", "height": editor.rh + "px"});
+        $("#vrtx-image-editor-wrapper-loading-info-text").css({"height": "100%", "background": "#555", "opacity": "0.8"});
+        $("#vrtx-image-editor-wrapper-loading-info-text span").css({"left": (Math.round((editor.rw - 220) / 2) + 5) + "px",
+                                                                    "top": (Math.round((editor.rh - 40) / 2) + 5) + "px", "color": "#fff"});
       } else { // Just put it under..
-        $("#vrtx-image-editor-wrapper-loading-info").css("height", editor.rh + 50 + "px");
-        $("#vrtx-image-editor-wrapper-loading-info-text").css("height", editor.rh + 50 + "px");
-        $("#vrtx-image-editor-wrapper-loading-info-text span").css({"top": editor.rh + "px", "color": "black", }); 
+        $("#vrtx-image-editor-wrapper-loading-info").css({"width": editor.rw + "px", "height": editor.rh + 50 + "px"});
+        $("#vrtx-image-editor-wrapper-loading-info-text").css({"height": editor.rh + 50 + "px", "background": "transparent"});
+        $("#vrtx-image-editor-wrapper-loading-info-text span").css({"left": "0px", "top": editor.rh + 30 + "px", "color": "#000"}); 
       }
       tmpCtx.drawImage(editor.scaledImg, 0, 0);
     } else {
@@ -381,23 +382,15 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes) {
  * lobes: kernel radius (e.g. 3)
  */
 function thumbnailer(editor, lobes) {
-
   var elem = editor.canvas;
   var ctx = editor.ctx;
   var img = editor.img;
   var sx = editor.rw;
-  
-  var scaledCropWidth = Math.round(editor.cropWidth * editor.scaleRatio);
-  var scaledCropHeight =  Math.round(editor.cropHeight * editor.scaleRatio);
-  var scaledX = Math.round(editor.cropX * editor.scaleRatio);
-  var scaledY = Math.round(editor.cropY * editor.scaleRatio);
 
   var canvas = elem;
   elem.width = img.width;
   elem.height = img.height;
-  elem.style.display = "none";
-  $("#vrtx-image-editor-wrapper-loading-info").show(0);
-  $("#vrtx-image-editor-wrapper-loading-info-text").css("opacity", "0.8");
+  elem.style.display = "none";    
   $("#vrtx-image-editor-wrapper").addClass("loading");
   $("#vrtx-image-crop").attr("disabled", "disabled");
   ctx.drawImage(img, 0, 0);
@@ -420,6 +413,8 @@ function thumbnailer(editor, lobes) {
     center: {},
     icenter: {}
   };
+  
+  $("#vrtx-image-editor-wrapper-loading-info").show(0);
 
   // Used for Web Workers or setTimeout (inject scripts and use methods inside)
   var process1Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process1.js';

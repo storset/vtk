@@ -29,8 +29,8 @@ function VrtxImageEditor() {
   this.cropHeight = null;
   this.scaleRatio = null;
   this.reversedScaleRatio = null;
-  this.aspectRatioDenominator = 1;
-  this.aspectRatioDivisor = 1;
+  this.aspectRatioOver = 1;
+  this.aspectRatioUnder = 1;
   this.keepAspectRatio = true;
   this.hasCropBeenInitialized = false;
 
@@ -55,8 +55,8 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
     editor.rw = editor.origw = editor.cropWidth = editor.img.width;
     editor.rh = editor.origh = editor.cropHeight = editor.img.height;
     var r = gcd (editor.rw, editor.rh);
-    editor.aspectRatioDenominator = editor.rw/r;
-    editor.aspectRatioDivisor = editor.rh/r;
+    editor.aspectRatioOver = editor.rw/r;
+    editor.aspectRatioUnder = editor.rh/r;
     editor.cropX = 0;
     editor.cropY = 0;
     editor.scaleRatio = 1;
@@ -78,7 +78,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
         var newWidth = Math.floor(ui.size.width);
         var newHeight = Math.floor(ui.size.height);
         
-        var correctH = Math.round(newWidth / (editor.aspectRatioDenominator / editor.aspectRatioDivisor));
+        var correctH = Math.round(newWidth / (editor.aspectRatioOver / editor.aspectRatioUnder));
         
         editor.scale(newWidth, correctH);
       },
@@ -101,9 +101,9 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
       editor.rw = Math.round(editor.cropWidth * editor.scaleRatio);
       editor.rh = Math.round(editor.cropHeight * editor.scaleRatio);
 
-      var r = cd (editor.rw, editor.rh);
-      editor.aspectRatioDenominator = editor.rw/r;
-      editor.aspectRatioDivisor = editor.rh/r;
+      var r = gcd (editor.rw, editor.rh);
+      editor.aspectRatioOver = editor.rw/r;
+      editor.aspectRatioUnder = editor.rh/r;
       
       editor.updateDimensions(editor.rw, editor.rh);
 
@@ -133,12 +133,12 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
     if (!w.isNaN && !h.isNaN) {
       if (w !== editor.rw) {
         if (editor.keepAspectRatio) {
-          h = Math.round(w / (editor.aspectRatioDenominator / editor.aspectRatioDivisor));
+          h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
         }
         $("#resource-height").val(h)
       } else if (h !== editor.rh) {
         if (editor.keepAspectRatio) {
-          w = Math.round(w * (editor.aspectRatioDenominator / editor.aspectRatioDivisor));
+          w = Math.round(h * (editor.aspectRatioOver / editor.aspectRatioUnder));
         }
         $("#resource-width").val(w)
       }
@@ -159,7 +159,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
           }
         }
         if (editor.keepAspectRatio) {
-          h = Math.round(w / (editor.aspectRatioDenominator / editor.aspectRatioDivisor));
+          h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
         }
         $("#resource-width").val(w);
         $("#resource-height").val(h);
@@ -181,7 +181,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
           }
         }
         if (editor.keepAspectRatio) {
-          w = Math.round(w * (editor.aspectRatioDenominator / editor.aspectRatioDivisor));
+          w = Math.round(h * (editor.aspectRatioOver / editor.aspectRatioUnder));
         }
         $("#resource-width").val(w);
         $("#resource-height").val(h);

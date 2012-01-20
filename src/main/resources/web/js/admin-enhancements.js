@@ -212,10 +212,10 @@ $(document).ready(function () {
   });
 
   // Urchin stats
-  $(".vrtx-resource-load-stats").click(function(e) {
+  $("#app-content").delegate(".vrtx-resource-load-stats", "click", function(e) {
     vrtxAdmin.serverFacade.getHtml(this.href, {
       success: function (results, status, resp) {
-        $("#vrtx-resource-visit-chart").html($(results).find("#vrtx-resource-visit-chart").html());
+        $("#vrtx-resource-visit").html($(results).html());
       }
     });
     e.stopPropagation();

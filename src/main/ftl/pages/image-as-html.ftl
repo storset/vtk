@@ -39,7 +39,7 @@
 <p id="vrtx-image-view-link">
   ${vrtx.getMsg('imageAsHtml.source')}: <a href="${src}">${resource.name?html}</a>
   <#if pixelHeight != "" && pixelWidth != "">
-    &nbsp;(${pixelHeight}px x ${pixelWidth}px)
+    &nbsp;(${pixelWidth}px x ${pixelHeight}px)
   </#if>
 </p>
 

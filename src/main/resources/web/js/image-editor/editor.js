@@ -14,9 +14,10 @@ function VrtxImageEditor() {
   
   this.url = null;
   this.imageInAsBase64 = null;
-
   this.img = null;
   this.scaledImg = null;
+  
+  this.canvasSupported = null;
   this.canvas = null;
   this.ctx = null;
   this.origw = null;
@@ -43,9 +44,14 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   var editor = this;
 
   imageEditorElm.addClass("canvas-supported");
+  
+  editor.canvasSupported = 'getContext' in document.createElement('canvas');
   var $canvas = imageEditorElm.find("#vrtx-image-editor");
-  editor.canvas = $canvas[0];
-  editor.ctx = editor.canvas.getContext('2d');
+  
+  if(editor.canvasSupported) {
+    editor.canvas = $canvas[0];
+    editor.ctx = editor.canvas.getContext('2d');
+  }
 
   editor.img = new Image();
   editor.scaledImg = new Image();
@@ -54,173 +60,183 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   editor.img.onload = function () {
     editor.rw = editor.origw = editor.cropWidth = editor.img.width;
     editor.rh = editor.origh = editor.cropHeight = editor.img.height;
-    var r = gcd (editor.rw, editor.rh);
-    editor.aspectRatioOver = editor.rw/r;
-    editor.aspectRatioUnder = editor.rh/r;
-    editor.cropX = 0;
-    editor.cropY = 0;
-    editor.scaleRatio = 1;
-    editor.reversedScaleRatio = 1;
     
-    editor.canvas.setAttribute('width', editor.rw);
-    editor.canvas.setAttribute('height', editor.rh);
-    editor.canvas.width = editor.rw;
-    editor.canvas.height = editor.rh;
-    editor.displayDimensions(editor.rw, editor.rh);
-    editor.ctx.drawImage(editor.img, 0, 0);
-    
-    editor.renderScaledImage(false); 
-    
-    $canvas.resizable({
-      aspectRatio: editor.keepAspectRatio,
-      grid: [1, 1],
-      stop: function (event, ui) {
-        var newWidth = Math.floor(ui.size.width);
-        var newHeight = Math.floor(ui.size.height);
-        
-        var correctH = Math.round(newWidth / (editor.aspectRatioOver / editor.aspectRatioUnder));
-        
-        editor.scale(newWidth, correctH);
-      },
-      resize: function (event, ui) {
-        editor.displayDimensions(Math.floor(ui.size.width), Math.floor(ui.size.height));
-      }
-    });
-  }
-  
-  $("#app-content").delegate("#vrtx-image-editor", "dblclick", function (e) {
-    $("#vrtx-image-crop").click();
-  });
-  
-  $("#app-content").delegate("#vrtx-image-crop", "click", function (e) {
-    if (editor.hasCropBeenInitialized) {
-      editor.cropX += Math.round(theSelection.x * editor.reversedScaleRatio);
-      editor.cropY += Math.round(theSelection.y * editor.reversedScaleRatio);
-      editor.cropWidth = Math.round(theSelection.w * editor.reversedScaleRatio);
-      editor.cropHeight = Math.round(theSelection.h * editor.reversedScaleRatio);
-      editor.rw = Math.round(editor.cropWidth * editor.scaleRatio);
-      editor.rh = Math.round(editor.cropHeight * editor.scaleRatio);
-
+    if(!editor.canvasSupported) {
+      $canvas.replaceWith("<img src='" + editor.url + "' alt='preview image' />");
+      editor.displayDimensions(editor.rw, editor.rh);
+      $("#resource-width").attr("disabled", "disabled");
+      $("#resource-height").attr("disabled", "disabled");
+    } else {
       var r = gcd (editor.rw, editor.rh);
       editor.aspectRatioOver = editor.rw/r;
       editor.aspectRatioUnder = editor.rh/r;
-      
-      editor.updateDimensions(editor.rw, editor.rh);
-
-      editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
-                                                  0,            0, editor.rw, editor.rh);
-                                                                                     
+      editor.cropX = 0;
+      editor.cropY = 0;
+      editor.scaleRatio = 1;
+      editor.reversedScaleRatio = 1;
+    
+      editor.canvas.setAttribute('width', editor.rw);
+      editor.canvas.setAttribute('height', editor.rh);
+      editor.canvas.width = editor.rw;
+      editor.canvas.height = editor.rh;
+      editor.displayDimensions(editor.rw, editor.rh);
+      editor.ctx.drawImage(editor.img, 0, 0);
+    
       editor.renderScaledImage(false); 
-      editor.resetCropPlugin();
-      $(this).val("Start beskjæring...");
-      $("#vrtx-image-editor").resizable("enable");
-      
-      editor.hasCropBeenInitialized = false;
-    } else {
-      initSelection(editor);
-      $(this).val("Beskjær bilde");
-      $("#vrtx-image-editor").resizable("disable");
-      
-      editor.hasCropBeenInitialized = true;
+    
+      $canvas.resizable({
+        aspectRatio: editor.keepAspectRatio,
+        grid: [1, 1],
+        stop: function (event, ui) {
+          var newWidth = Math.floor(ui.size.width);
+          var newHeight = Math.floor(ui.size.height);
+        
+          var correctH = Math.round(newWidth / (editor.aspectRatioOver / editor.aspectRatioUnder));
+        
+          editor.scale(newWidth, correctH);
+        },
+        resize: function (event, ui) {
+          editor.displayDimensions(Math.floor(ui.size.width), Math.floor(ui.size.height));
+        }
+      });
     }
-    e.stopPropagation();
-    e.preventDefault();
-  });
+  }
 
-  $("#app-content").delegate("#resource-width, #resource-height", "change", function (e) {
-    var w = parseInt($.trim($("#resource-width").val()));
-    var h = parseInt($.trim($("#resource-height").val()));
-    if (!w.isNaN && !h.isNaN) {
-      if (w !== editor.rw) {
-        if (editor.keepAspectRatio) {
-          h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
-        }
-        $("#resource-height").val(h)
-      } else if (h !== editor.rh) {
-        if (editor.keepAspectRatio) {
-          w = Math.round(h * (editor.aspectRatioOver / editor.aspectRatioUnder));
-        }
-        $("#resource-width").val(w)
+  if(editor.canvasSupported) {
+    $("#app-content").delegate("#vrtx-image-editor", "dblclick", function (e) {
+      $("#vrtx-image-crop").click();
+    });
+  
+    $("#app-content").delegate("#vrtx-image-crop", "click", function (e) {
+      if (editor.hasCropBeenInitialized) {
+        editor.cropX += Math.round(theSelection.x * editor.reversedScaleRatio);
+        editor.cropY += Math.round(theSelection.y * editor.reversedScaleRatio);
+        editor.cropWidth = Math.round(theSelection.w * editor.reversedScaleRatio);
+        editor.cropHeight = Math.round(theSelection.h * editor.reversedScaleRatio);
+        editor.rw = Math.round(editor.cropWidth * editor.scaleRatio);
+        editor.rh = Math.round(editor.cropHeight * editor.scaleRatio);
+
+        var r = gcd (editor.rw, editor.rh);
+        editor.aspectRatioOver = editor.rw/r;
+        editor.aspectRatioUnder = editor.rh/r;
+      
+        editor.updateDimensions(editor.rw, editor.rh);
+
+        editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
+                                                    0,            0, editor.rw, editor.rh);
+                                                                                     
+        editor.renderScaledImage(false); 
+        editor.resetCropPlugin();
+        $(this).val("Start beskjæring...");
+        $("#vrtx-image-editor").resizable("enable");
+      
+        editor.hasCropBeenInitialized = false;
+      } else {
+        initSelection(editor);
+        $(this).val("Beskjær bilde");
+        $("#vrtx-image-editor").resizable("disable");
+      
+        editor.hasCropBeenInitialized = true;
       }
-      editor.scale(w, h);
-    }
-  });
+      e.stopPropagation();
+      e.preventDefault();
+    });
 
-  $("#app-content").delegate("#resource-width", "keydown", function (e) {
-    if (e.which == 38 || e.which == 40) {
+    $("#app-content").delegate("#resource-width, #resource-height", "change", function (e) {
       var w = parseInt($.trim($("#resource-width").val()));
       var h = parseInt($.trim($("#resource-height").val()));
       if (!w.isNaN && !h.isNaN) {
-        if (e.which == 38) {
-          w++;
-        } else {
-          if (w > 2) {
-            w--;
+        if (w !== editor.rw) {
+          if (editor.keepAspectRatio) {
+            h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
           }
+          $("#resource-height").val(h)
+        } else if (h !== editor.rh) {
+          if (editor.keepAspectRatio) {
+            w = Math.round(h * (editor.aspectRatioOver / editor.aspectRatioUnder));
+          }
+          $("#resource-width").val(w)
         }
-        if (editor.keepAspectRatio) {
-          h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
-        }
-        $("#resource-width").val(w);
-        $("#resource-height").val(h);
         editor.scale(w, h);
       }
-    }
-  });
+    });
 
-  $("#app-content").delegate("#resource-height", "keydown", function (e) {
-    if (e.which == 38 || e.which == 40) {
-      var w = parseInt($.trim($("#resource-width").val()));
-      var h = parseInt($.trim($("#resource-height").val()));
-      if (!w.isNaN && !h.isNaN) {
-        if (e.which == 38) {
-          h++;
-        } else {
-          if (h > 2) {
-            h--;
+    $("#app-content").delegate("#resource-width", "keydown", function (e) {
+      if (e.which == 38 || e.which == 40) {
+        var w = parseInt($.trim($("#resource-width").val()));
+        var h = parseInt($.trim($("#resource-height").val()));
+        if (!w.isNaN && !h.isNaN) {
+          if (e.which == 38) {
+            w++;
+          } else {
+            if (w > 2) {
+              w--;
+            }
           }
+          if (editor.keepAspectRatio) {
+            h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
+          }
+          $("#resource-width").val(w);
+          $("#resource-height").val(h);
+          editor.scale(w, h);
         }
-        if (editor.keepAspectRatio) {
-          w = Math.round(h * (editor.aspectRatioOver / editor.aspectRatioUnder));
+      }
+    });
+
+    $("#app-content").delegate("#resource-height", "keydown", function (e) {
+      if (e.which == 38 || e.which == 40) {
+        var w = parseInt($.trim($("#resource-width").val()));
+        var h = parseInt($.trim($("#resource-height").val()));
+        if (!w.isNaN && !h.isNaN) {
+          if (e.which == 38) {
+            h++;
+          } else {
+            if (h > 2) {
+              h--;
+            }
+          }
+          if (editor.keepAspectRatio) {
+            w = Math.round(h * (editor.aspectRatioOver / editor.aspectRatioUnder));
+          }
+          $("#resource-width").val(w);
+          $("#resource-height").val(h);
+          editor.scale(w, h);
         }
-        $("#resource-width").val(w);
-        $("#resource-height").val(h);
-        editor.scale(w, h);
       }
-    }
-  });
+    });
   
-  $("#app-content").delegate("#saveAndViewButton", "click", function(e) {;
-    if(!savedImage) {
-      if(editor.hasCropBeenInitialized) {
-        cropNone(editor);
-      }
-      if(editor.scaleRatio < 0.9) {
-        editor.scaleLanczos(3);
+    $("#app-content").delegate("#saveAndViewButton", "click", function(e) {;
+      if(!savedImage) {
+        if(editor.hasCropBeenInitialized) {
+          cropNone(editor);
+        }
+        if(editor.scaleRatio < 0.9) {
+          editor.scaleLanczos(3);
+        } else {
+          editor.save();
+        }
+        return false; 
       } else {
-        editor.save();
+        savedImage = false;
       }
-      return false; 
-    } else {
-      savedImage = false;
-    }
-  });
+    });
   
-  $(document).click(function(e) {
-    if(editor.hasCropBeenInitialized) {
-      var posX = e.pageX; // http://docs.jquery.com/Tutorials:Mouse_Position
-      var posY = e.pageY;
-      var editorOffset = $("#vrtx-image-editor").offset();
-      var editorX = Math.round(editorOffset.left + theSelection.x) - 15;
-      var editorY = Math.round(editorOffset.top + theSelection.y) - 15;
-      var editorW = Math.round(editorX + theSelection.w) + 15;
-      var editorH = Math.round(editorY + theSelection.h) + 15;
-      if(posX > editorX && posX < editorW && posY > editorY && posY < editorH) {
-      } else {
-        cropNone(editor);
+    $(document).click(function(e) {
+      if(editor.hasCropBeenInitialized && $(e.target).parents().index($('#vrtx-image-editor-inner-wrapper')) == -1) {
+        /*var posX = e.pageX; // http://docs.jquery.com/Tutorials:Mouse_Position
+        var posY = e.pageY;
+        var editorOffset = $("#vrtx-image-editor").offset();
+        var editorX = Math.round(editorOffset.left + theSelection.x) - 15;
+        var editorY = Math.round(editorOffset.top + theSelection.y) - 15;
+        var editorW = Math.round(editorX + theSelection.w) + 15;
+        var editorH = Math.round(editorY + theSelection.h) + 15;
+        if(posX > editorX && posX < editorW && posY > editorY && posY < editorH) {
+        } else {*/
+          cropNone(editor);
+        /* }*/
       }
-    }
-  });
+    });
+  }
 };
 
 function gcd (a, b) {
@@ -318,11 +334,13 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
                         + '<div class="vrtx-label-and-text">'
                           + '<div class="property-label">Høyde</div>'
                           + '<div class="vrtx-textfield" id="vrtx-textfield-height"><input id="resource-height" type="text" value="' + h + '" size="4" /></div>'
-                        + '</div>'
-                        + '<div id="vrtx-image-crop-button"><div class="vrtx-button">'
-                        + '<input type="button" id="vrtx-image-crop" value="Start beskjæring..." /></div></div>'
-                        + '<div id="vrtx-image-info" style="margin-top: 10px"></div>'
-                      + '</div>';
+                        + '</div>';
+    if(this.canvasSupported) {                      
+      dimensionHtml += '<div id="vrtx-image-crop-button"><div class="vrtx-button">'
+                     + '<input type="button" id="vrtx-image-crop" value="Start beskjæring..." /></div></div>'
+                     + '<div id="vrtx-image-info" style="margin-top: 10px"></div>';
+    }
+    dimensionHtml  += '</div>';
     $(dimensionHtml).insertBefore("#vrtx-image-editor-preview");
   }
 };

@@ -139,7 +139,7 @@
            url = url.replace("-adm", "");
            vrtxImageEditor.url = url;
            vrtxImageEditor.imageInAsBase64 = "data:${theContentType};base64,${imageAsBase64}";
-           if('getContext' in document.createElement('canvas') && imageEditorElm.length) {
+           if(imageEditorElm.length) {
              vrtxImageEditor.init(imageEditorElm);   
            }
          });

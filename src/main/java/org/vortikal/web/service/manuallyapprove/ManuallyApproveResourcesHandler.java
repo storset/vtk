@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -172,7 +172,8 @@ public class ManuallyApproveResourcesHandler implements Controller {
 
         try {
 
-            // Make sure path is valid
+            // Make sure path is valid (be lenient on trailing slash)
+            folder = folder.endsWith("/") && !folder.equals("/") ? folder.substring(0, folder.length() - 1) : folder;
             Path folderPath = Path.fromString(folder);
 
             // Also remove from folders set any values which are children of

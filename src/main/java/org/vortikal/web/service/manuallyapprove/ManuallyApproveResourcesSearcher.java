@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -132,7 +132,7 @@ public class ManuallyApproveResourcesSearcher {
                         result.add(m);
                     }
                 }
-                PropertySet ps = this.multiHostSearchComponent.retrieve(token, uri);
+                PropertySet ps = this.multiHostSearchComponent.retrieve(token, searchUri);
                 if (ps != null) {
                     Set<String> rSet = this.getManuallyApprovedUris(ps, false);
                     if (rSet != null && rSet.size() > 0) {

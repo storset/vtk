@@ -83,4 +83,15 @@ public class ManuallyApproveResource {
         return this.uri;
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof ManuallyApproveResource)) {
+            return false;
+        }
+        ManuallyApproveResource otherManuallyApproveResource = (ManuallyApproveResource) other;
+        if (this.toString().equals(otherManuallyApproveResource.toString())) {
+            return true;
+        }
+        return false;
+    }
 }

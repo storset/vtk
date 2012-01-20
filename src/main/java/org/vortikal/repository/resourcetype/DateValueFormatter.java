@@ -62,6 +62,9 @@ public class DateValueFormatter implements ValueFormatter {
         this.namedDateFormats.put("long_en", FastDateFormat.getInstance("MMM d, yyyy hh:mm a", new Locale("en")));
         this.namedDateFormats.put("long_no", FastDateFormat.getInstance("d. MMM. yyyy HH:mm", new Locale("no")));
         this.namedDateFormats.put("long_nn", FastDateFormat.getInstance("d. MMM. yyyy HH:mm", new Locale("no")));
+        this.namedDateFormats.put("longlong_en", FastDateFormat.getInstance("MMM d, yyyy hh:mm:ss a", new Locale("en")));
+        this.namedDateFormats.put("longlong_no", FastDateFormat.getInstance("d. MMM. yyyy HH:mm:ss", new Locale("no")));
+        this.namedDateFormats.put("longlong_nn", FastDateFormat.getInstance("d. MMM. yyyy HH:mm:ss", new Locale("no")));
         this.namedDateFormats.put("hours-minutes_en", FastDateFormat.getInstance("hh:mm a", new Locale("en")));
         this.namedDateFormats.put("hours-minutes_no", FastDateFormat.getInstance("HH:mm", new Locale("no")));
         this.namedDateFormats.put("hours-minutes_nn", FastDateFormat.getInstance("HH:mm", new Locale("no")));

@@ -45,7 +45,7 @@
           <tr id="vrtx-revisions-working-copy">
             <td><@vrtx.msg code="versions.table.working-copy" /></td>
             <td>${workingCopy.principal.description?html}</td>
-            <td>${workingCopy.timestamp?datetime}</td>
+            <td><@vrtx.date value=workingCopy.timestamp format="longlong" /></td>
             <td>
               <#if (workingCopy.changeAmount)?exists>
                 <@changeAmount workingCopy.changeAmount />
@@ -75,7 +75,7 @@
         <tr>
           <td id="vrtx-revisions-current"><strong><@vrtx.msg code="versions.table.current-version" /></strong></td>
           <td>${resource.modifiedBy.description?html}</td>
-          <td>${resource.lastModified?datetime}</td>
+          <td><@vrtx.date value=resource.lastModified format="longlong" /></td>
           <td>
             <#if (resourceChangeAmount?exists)>
                 <@changeAmount resourceChangeAmount />
@@ -91,7 +91,7 @@
             <!-- ID: ${revision.id?c}, ACL:${revision.acl?html} -->
             <td><@vrtx.msg code="versions.table.entry.name" args=[revision.name] /></td>
             <td>${revision.principal.description?html}</td>
-            <td>${revision.timestamp?datetime}</td>
+            <td><@vrtx.date value=revision.timestamp format="longlong" /></td>
             <td>
               <#if (revision.changeAmount)?exists>
                 <@changeAmount revision.changeAmount />

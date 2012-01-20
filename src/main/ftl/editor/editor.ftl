@@ -129,7 +129,6 @@
        <#if theContentType == "image/jpeg">
          <#assign theContentType = "image/jpg" />
        </#if>    
-       <!--[if IE 8]><script type="text/javascript" src="${jsBaseURL?html}/image-editor/excanvas.compiled.js"></script><![endif]-->
        <script type="text/javascript" src="${jsBaseURL?html}/image-editor/editor.js"></script>    
        <script type="text/javascript"><!--  
          $(function () {
@@ -140,7 +139,9 @@
            url = url.replace("-adm", "");
            vrtxImageEditor.url = url;
            vrtxImageEditor.imageInAsBase64 = "data:${theContentType};base64,${imageAsBase64}";
-           vrtxImageEditor.init(imageEditorElm);   
+           if('getContext' in document.createElement('canvas') && imageEditorElm.length) {
+             vrtxImageEditor.init(imageEditorElm);   
+           }
          });
        // -->
        </script>

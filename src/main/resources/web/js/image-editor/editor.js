@@ -14,6 +14,7 @@ function VrtxImageEditor() {
   
   this.url = null;
   this.imageInAsBase64 = null;
+  this.msie8 = null;
 
   this.img = null;
   this.scaledImg = null;
@@ -49,8 +50,9 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
 
   editor.img = new Image();
   editor.scaledImg = new Image();
+  editor.msie8 = $.browser.msie && (parseInt($.browser.version) === 8);
   
-  editor.img.src = editor.imageInAsBase64;
+  editor.img.src = editor.url;
   editor.img.onload = function () {
     editor.rw = editor.origw = editor.cropWidth = editor.img.width;
     editor.rh = editor.origh = editor.cropHeight = editor.img.height;
@@ -69,23 +71,28 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
     editor.displayDimensions(editor.rw, editor.rh);
     editor.ctx.drawImage(editor.img, 0, 0);
     
-    editor.renderScaledImage(false); 
+    editor.renderScaledImage(false);
     
-    $canvas.resizable({
-      aspectRatio: editor.keepAspectRatio,
-      grid: [1, 1],
-      stop: function (event, ui) {
-        var newWidth = Math.floor(ui.size.width);
-        var newHeight = Math.floor(ui.size.height);
+    if(!editor.msie8) {
+      $canvas.resizable({
+        aspectRatio: editor.keepAspectRatio,
+        grid: [1, 1],
+        stop: function (event, ui) {
+          var newWidth = Math.floor(ui.size.width);
+          var newHeight = Math.floor(ui.size.height);
         
-        var correctH = Math.round(newWidth / (editor.aspectRatioOver / editor.aspectRatioUnder));
+          var correctH = Math.round(newWidth / (editor.aspectRatioOver / editor.aspectRatioUnder));
         
-        editor.scale(newWidth, correctH);
-      },
-      resize: function (event, ui) {
-        editor.displayDimensions(Math.floor(ui.size.width), Math.floor(ui.size.height));
-      }
-    });
+          editor.scale(newWidth, correctH);
+        },
+        resize: function (event, ui) {
+          editor.displayDimensions(Math.floor(ui.size.width), Math.floor(ui.size.height));
+        }
+      });
+    } else {
+      $("#resource-width").attr("disabled", "disabled");
+      $("#resource-height").attr("disabled", "disabled");
+    }
   }
   
   $("#app-content").delegate("#vrtx-image-editor", "dblclick", function (e) {
@@ -109,8 +116,9 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
 
       editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
                                                   0,            0, editor.rw, editor.rh);
-                                                                                     
-      editor.renderScaledImage(false); 
+      if(!editor.msie8) {                                                                               
+        editor.renderScaledImage(false);
+      } 
       editor.resetCropPlugin();
       $(this).val("Start beskjæring...");
       $("#vrtx-image-editor").resizable("enable");
@@ -126,6 +134,8 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
     e.stopPropagation();
     e.preventDefault();
   });
+
+if (!editor.msie8) {
 
   $("#app-content").delegate("#resource-width, #resource-height", "change", function (e) {
     var w = parseInt($.trim($("#resource-width").val()));
@@ -190,12 +200,14 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
     }
   });
   
+}
+  
   $("#app-content").delegate("#saveAndViewButton", "click", function(e) {;
     if(!savedImage) {
       if(editor.hasCropBeenInitialized) {
         cropNone(editor);
       }
-      if(editor.scaleRatio < 0.9) {
+      if(editor.scaleRatio < 0.9 && !editor.msie8) {
         editor.scaleLanczos(3);
       } else {
         editor.save();
@@ -207,7 +219,8 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   });
   
   $(document).click(function(e) {
-    if(editor.hasCropBeenInitialized) {
+    if(editor.hasCropBeenInitialized && $(e.target).parents().index($('#vrtx-image-editor-inner-wrapper')) == -1) {
+      /* TODO: Detect outside selection
       var posX = e.pageX; // http://docs.jquery.com/Tutorials:Mouse_Position
       var posY = e.pageY;
       var editorOffset = $("#vrtx-image-editor").offset();
@@ -217,8 +230,9 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
       var editorH = Math.round(editorY + theSelection.h) + 15;
       if(posX > editorX && posX < editorW && posY > editorY && posY < editorH) {
       } else {
-        cropNone(editor);
-      }
+      */
+      cropNone(editor);
+      /* } */
     }
   });
 };
@@ -341,7 +355,11 @@ function displayDebugInfo(editor) {
 VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage(insertImage) {
   var editor = this;
   
-  var scaledImgSrc = editor.canvas.toDataURL("image/png");
+  if($.browser.msie && $.browser.version < 9) {
+    var scaledImgSrc = editor.url;
+  } else {
+    var scaledImgSrc = editor.canvas.toDataURL("image/png");
+  }
   editor.scaledImg.src = scaledImgSrc;
   editor.scaledImg.onload = function(insertImage) {
     if(insertImage) {
@@ -528,7 +546,11 @@ Selection.prototype.draw = function (editor) {
   editor.ctx.strokeRect(this.x, this.y, this.w, this.h);
   // draw part of original image
   if (this.w > 0 && this.h > 0) {
-    editor.ctx.drawImage(editor.scaledImg, this.x, this.y, this.w, this.h, this.x, this.y, this.w, this.h);
+    if(!editor.msie8) { 
+      editor.ctx.drawImage(editor.scaledImg, this.x, this.y, this.w, this.h, this.x, this.y, this.w, this.h);
+    } else {
+      editor.ctx.drawImage(editor.img, this.x, this.y, this.w, this.h, this.x, this.y, this.w, this.h);
+    }
   }
   // draw resize cubes
   editor.ctx.fillStyle = '#fff';
@@ -541,7 +563,11 @@ Selection.prototype.draw = function (editor) {
 function drawScene(editor) { // Main drawScene function
   editor.ctx.clearRect(0, 0, editor.canvas.width, editor.canvas.height); // clear canvas
   // draw source image
-  editor.ctx.drawImage(editor.scaledImg, 0, 0);
+  if(!editor.msie8) {
+    editor.ctx.drawImage(editor.scaledImg, 0, 0);
+  } else {
+    editor.ctx.drawImage(editor.img, 0, 0); 
+  }
   // and make it darker
   editor.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
   editor.ctx.fillRect(0, 0, editor.canvas.width, editor.canvas.height);

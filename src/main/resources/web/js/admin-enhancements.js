@@ -212,12 +212,14 @@ $(document).ready(function () {
   });
 
   // Urchin stats
-  $(".vrtx-resource-load-stats").click(function() {
+  $(".vrtx-resource-load-stats").click(function(e) {
     vrtxAdmin.serverFacade.getHtml(this.href, {
       success: function (results, status, resp) {
         $("#vrtx-resource-visit-chart").html($(results).find("#vrtx-resource-visit-chart").html());
       }
     });
+    e.stopPropagation();
+    e.preventDefault();
   });
 
   // Remove active tab if it has no children

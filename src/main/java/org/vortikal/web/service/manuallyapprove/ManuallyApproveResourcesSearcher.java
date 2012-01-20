@@ -117,21 +117,35 @@ public class ManuallyApproveResourcesSearcher {
             }
 
             for (String uri : folders) {
+
                 String searchUri = uri;
                 if (!searchUri.startsWith("http")) {
                     searchUri = "http://".concat(repositoryId).concat(uri);
                 }
-                MultiHostSearchImpl multiHostSearch = new MultiHostSearchImpl(token, searchUri, resourceTypePointer);
-                ResultSet rs = this.multiHostSearchComponent.search(multiHostSearch);
-                for (PropertySet ps : rs.getAllResults()) {
-                    Property collectionProp = ps.getProperty(this.collectionPropDef);
-                    if (!collectionProp.getBooleanValue()) {
-                        boolean approved = alreadyApprovedResources.contains(ps);
-                        ManuallyApproveResource m = this.mapPropertySetToManuallyApprovedResource(repositoryId, ps,
-                                uri, approved);
-                        result.add(m);
+
+                // Don't perform search if uri is a child of another. Search is
+                // recursive, so results from parent will suffice
+                boolean search = true;
+                if (this.isChildUri(searchUri, folders)) {
+                    search = false;
+                }
+
+                if (search) {
+                    MultiHostSearchImpl multiHostSearch = new MultiHostSearchImpl(token, searchUri, resourceTypePointer);
+                    ResultSet rs = this.multiHostSearchComponent.search(multiHostSearch);
+                    for (PropertySet ps : rs.getAllResults()) {
+                        Property collectionProp = ps.getProperty(this.collectionPropDef);
+                        if (!collectionProp.getBooleanValue()) {
+                            boolean approved = alreadyApprovedResources.contains(ps);
+                            ManuallyApproveResource m = this.mapPropertySetToManuallyApprovedResource(repositoryId, ps,
+                                    uri, approved);
+                            result.add(m);
+                        }
                     }
                 }
+
+                // Fetch already approved resources from uri to manually approve
+                // from
                 PropertySet ps = this.multiHostSearchComponent.retrieve(token, searchUri);
                 if (ps != null) {
                     Set<String> rSet = this.getManuallyApprovedUris(ps, false);
@@ -237,6 +251,15 @@ public class ManuallyApproveResourcesSearcher {
             result = result.subList(0, RESOURCE_LIST_LIMIT);
         }
         return result;
+    }
+
+    private boolean isChildUri(String searchUri, Set<String> folders) {
+        for (String uri : folders) {
+            if (!searchUri.equals(uri) && searchUri.startsWith(uri)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean searchMultiHosts(Set<String> folders, Set<String> alreadyApproved, String repositoryId) {

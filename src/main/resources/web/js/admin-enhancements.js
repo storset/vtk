@@ -211,6 +211,15 @@ $(document).ready(function () {
     }
   });
 
+  // Urchin stats
+  $(".vrtx-resource-load-stats").click(function() {
+    vrtxAdmin.serverFacade.getHtml(this.href, {
+      success: function (results, status, resp) {
+        $("#vrtx-resource-visit-chart").html($(results).find("#vrtx-resource-visit-chart").html());
+      }
+    });
+  });
+
   // Remove active tab if it has no children
   var activeTab = $("#active-tab");
   if (!activeTab.find(" > *").length) {

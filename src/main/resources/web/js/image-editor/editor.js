@@ -242,24 +242,29 @@ VrtxImageEditor.prototype.save = function save() {
   var imageAsBase64 = vrtxImageEditor.canvas.toDataURL("image/png");
   imageAsBase64 = imageAsBase64.replace("data:image/png;base64,", "");
   var form = $("form#vrtx-image-editor-save-image-form");
-  var fd = new FormData(); // Info: http://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/
-                               //       http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#interface-formdata
-  fd.append("csrf-prevention-token", form.find("input[name=csrf-prevention-token]").val()); 
-  fd.append("base", imageAsBase64);
-  var xhr = new XMLHttpRequest();
-  xhr.open("POST", form.attr("action"));
-  xhr.send(fd);
-  xhr.onreadystatechange = function() {
-    if($.browser.mozilla) { // http://www.nczonline.net/blog/2009/07/09/firefox-35firebug-xmlhttprequest-and-readystatechange-bug/
-      xhr.onload = xhr.onerror = xhr.onabort = function() {
-        $("#saveAndViewButton").click();      
-      };
-    } else {
-      if (xhr.readyState == 4)  { 
-        $("#saveAndViewButton").click();
+  if("FormData" in window) { // If FormData is supported
+    var fd = new FormData(); // Info: http://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/
+                             //       http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#interface-formdata
+    fd.append("csrf-prevention-token", form.find("input[name=csrf-prevention-token]").val()); 
+    fd.append("base", imageAsBase64);
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", form.attr("action"));
+    xhr.send(fd);
+    xhr.onreadystatechange = function() {
+      if($.browser.mozilla) { // http://www.nczonline.net/blog/2009/07/09/firefox-35firebug-xmlhttprequest-and-readystatechange-bug/
+        xhr.onload = xhr.onerror = xhr.onabort = function() {
+          $("#saveAndViewButton").click();      
+        };
+      } else {
+        if (xhr.readyState == 4)  { 
+          $("#saveAndViewButton").click();
+        }
       }
-    }
-  };
+    };
+  } else { // Otherwise try to append imageAsBase64 to form instead
+    form.append("<input type='hidden' name='base' value='" + imageAsBase64 + "' />");
+    form.submit();
+  }
 };
 
 VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {

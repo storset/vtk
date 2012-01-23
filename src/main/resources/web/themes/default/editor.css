@@ -110,6 +110,12 @@
   display: none;
 }
 
+#vrtx-resource\.recursive-listing-subfolders,
+#vrtx-resource\.aggregation,
+#vrtx-resource\.manually-approve-from {
+  margin-left: 18px;
+}
+
 /* ^ Manual approval */
 
 /* Image editor */

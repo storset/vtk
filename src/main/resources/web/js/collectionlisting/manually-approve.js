@@ -36,6 +36,9 @@ $(document).ready(function() {
     $("#manually-approve-refresh").click(function(e) {
       if(manuallyApproveFoldersTxt.length) {
         var folders, aggregatedFolders;
+        
+        formatDocumentsDataSubFunc("aggregation", aggregatedFoldersTxt);
+        formatDocumentsDataSubFunc("manually-approve-from", manuallyApproveFoldersTxt);
       
         var value = manuallyApproveFoldersTxt.val();
         lastVal = $.trim(value);
@@ -70,17 +73,7 @@ $(document).ready(function() {
       }
       textfield.val(value);
     });
-
-    // Show refresh button only if textfield has changed
-    $("#resource\\.manually-approve-from").keyup( function(e) {
-      var val = $("#resource\\.manually-approve-from").val();
-      if (val != lastVal) {
-        $("#manually-approve-refresh").show();
-      } else {
-        $("#manually-approve-refresh:visible").hide();
-      }
-    });
-
+    
     // Paging - next
     $("#manually-approve-container").delegate(".next", "click", function(e) {
       var that = $(this).parent();

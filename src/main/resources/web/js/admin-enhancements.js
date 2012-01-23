@@ -22,7 +22,7 @@
  * 9.  Async functions
  * 10. Async helper functions and AJAX server façade
  * 11. Show and hide properties
- * 12. Featured articles
+ * 12. Featured articles, aggregation and manually approved
  * 13. CK browse server integration
  * 14. Utils
  * 15. Override JavaScript / jQuery
@@ -1578,28 +1578,33 @@ function showHideProperty(id, init, show) {
 
 
 /*-------------------------------------------------------------------*\
-	12. Featured articles
+	12. Featured articles, aggregation and manually approved
+	    TODO: cleanup, simplify
 \*-------------------------------------------------------------------*/
 
-function loadFeaturedArticles(addName, removeName, browseName, editorBase, baseFolder, editorBrowseUrl) {
-  var featuredArticles = $("#resource\\.featured-articles");
-  var featuredArticlesVal = featuredArticles.val();
-  if (featuredArticlesVal == null) return;
+function loadMultipleDocuments(textfieldId, browse, addName, removeName, browseName, editorBase, baseFolder, editorBrowseUrl) {
+  var documents = $("#" + textfieldId);
+  if(!documents.length) return;
   
-  featuredArticles.hide();
-  var featuredArticlesParent = featuredArticles.parent();
-  featuredArticlesParent.hide();
-  featuredArticlesParent.parent()
-                  .append("<div id='vrtx-featured-article-add'>"
-                        + "<div class=\"vrtx-button\"><button onclick=\"addFormField(null, '" 
+  var documentsVal = documents.val();
+  if (documentsVal == null) return;
+  
+  var simpleTextfieldId = textfieldId.substring(textfieldId.indexOf(".")+1);
+   
+  documents.hide();
+  var documentsParent = documents.parent();
+  documentsParent.hide();
+  documentsParent.parent()
+                  .append("<div id='vrtx-" + simpleTextfieldId + "-add'>"
+                        + "<div class=\"vrtx-button\"><button onclick=\"addFormField('" + simpleTextfieldId  + "'," + browse + ",null, '" 
                         + removeName + "', '" + browseName + "', '" + editorBase + "', '" + baseFolder 
                         + "', '" + editorBrowseUrl + "'); return false;\">" + addName + "</button></div>"
-                        + "<input type='hidden' id='id' name='id' value='1' /></div>");
+                        + "<input type='hidden' id='id-" + simpleTextfieldId  + "' name='id' value='1' /></div>");
 
-   var listOfFiles = featuredArticlesVal.split(",");
+   var listOfFiles = documentsVal.split(",");
    var addFormFieldFunc = addFormField;
    for (var i = 0, len = listOfFiles.length; i < len; i++) {
-     addFormFieldFunc($.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
+     addFormFieldFunc(simpleTextfieldId, browse, $.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
    }
 
   // TODO !spageti && !run twice
@@ -1616,8 +1621,8 @@ function requestFromEditor() {
 
 var countId = 1;
 
-function addFormField(value, removeName, browsName, editorBase, baseFolder, editorBrowseUrl) {
-  var idstr = "vrtx-featured-articles-";
+function addFormField(textfieldId, browse, value, removeName, browsName, editorBase, baseFolder, editorBrowseUrl) {
+  var idstr = textfieldId + "-";
   if (value == null) {
     value = "";
   }
@@ -1629,16 +1634,19 @@ function addFormField(value, removeName, browsName, editorBase, baseFolder, edit
                   + "remove' onclick='removeFormField(\"#" + idstr + "row-" + countId + "\"); return false;'>" 
                   + removeName + "</button></div>";
   }
-
-  var browseServer = "<div class=\"vrtx-button\"><button type=\"button\" id=\"" + idstr 
-                   + "browse\" onclick=\"browseServer('" + idstr + countId + "', '" + editorBase 
-                   + "', '" + baseFolder + "', '" + editorBrowseUrl + "', 'File');\">" + browsName + "</button></div>";
+  if(browse) {
+    var browseServer = "<div class=\"vrtx-button\"><button type=\"button\" id=\"" + idstr 
+                     + "browse\" onclick=\"browseServer('" + idstr + countId + "', '" + editorBase 
+                     + "', '" + baseFolder + "', '" + editorBrowseUrl + "', 'File');\">" + browsName + "</button></div>";
+  } else {
+    var browseServer = "";
+  }
 
   var html = "<div class='" + idstr + "row' id='" + idstr + "row-" + countId + "'><div class=\"vrtx-textfield\"><input value='" 
     + value + "' type='text' size='20′ name='txt[]' id='" + idstr + countId + "' /></div>" 
     + browseServer + deleteRow + "</div>";
 
-  $(html).insertBefore("#vrtx-featured-article-add");
+  $(html).insertBefore("#vrtx-" + textfieldId + "-add");
 
   countId++;
 }
@@ -1647,12 +1655,26 @@ function removeFormField(id) {
   $(id).remove();
 }
 
-function formatFeaturedArticlesData() {
-  var featuredArticles = $("#resource\\.featured-articles");
-  if (featuredArticles.val() == null) {
+function formatDocumentsData() {
+  var a = "featured-articles";
+  var b = "aggregation";
+  var c = "manually-approve-from";
+
+  var aa = $("#resource\\." + a);
+  var bb = $("#resource\\." + b);
+  var cc = $("#resource\\." + c);
+ 
+  if (aa.val() == null && bb.val() == null && cc.val() == null) {
     return;
   }
-  var data = $("input[id^='vrtx-featured-articles-']");
+  
+  formatDocumentsDataSubFunc(a, aa);
+  formatDocumentsDataSubFunc(b, bb);
+  formatDocumentsDataSubFunc(c, cc);
+}
+
+function formatDocumentsDataSubFunc(id, obj) {
+  var data = $("input[id^='" + id + "-']");
   var result = "";
   for (var i = 0, len = (data.length - 1); i <= len; i++) {
     result += data[i].value;
@@ -1660,7 +1682,7 @@ function formatFeaturedArticlesData() {
       result += ",";
     }
   }
-  featuredArticles.val(result);
+  obj.val(result);
 }
 
 

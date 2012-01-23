@@ -92,13 +92,19 @@ h2 {
   margin-left: 20px;
 }
 
-.vrtx-featured-articles-row,
+.featured-articles-row,
+.aggregation-row,
+.manually-approve-from-row,
 .vrtx-multipleinputfield {
   margin-bottom: 10px;
 }
 
-.vrtx-featured-articles-row .vrtx-textfield,
-.vrtx-featured-articles-row .vrtx-button,
+.featured-articles-row .vrtx-textfield,
+.featured-articles-row .vrtx-button,
+.aggregation-row .vrtx-textfield,
+.aggregation-row .vrtx-button,
+.manually-approve-from-row .vrtx-textfield,
+.manually-approve-from-row .vrtx-button,
 .vrtx-multipleinputfield .vrtx-textfield,
 .vrtx-multipleinputfield .vrtx-button {
   margin-right: 20px;

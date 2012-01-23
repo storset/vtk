@@ -1392,7 +1392,7 @@ body#vrtx-report-documents #directory-listing td.vrtx-report-name span.name-spli
 /* Icons */
 
 #directory-listing tr td.name a,
-#directory-listing tr td.name .authorizedListedResource-wrapper,
+#directory-listing tr td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr td.name span.vrtx-trash-can-name-text,
 #directory-listing tr td.vrtx-report-name a {
   padding: 2px 0 2px 31px;
@@ -1402,70 +1402,70 @@ body#vrtx-report-documents #directory-listing td.vrtx-report-name span.name-spli
 }
 
 #directory-listing tr.true td.name a,
-#directory-listing tr.true td.name .authorizedListedResource-wrapper,
+#directory-listing tr.true td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.true td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.true td.vrtx-report-name a {
   background: url(images/folder-small.gif) no-repeat center left;
 }
 
 #directory-listing tr.binary td.name a,
-#directory-listing tr.binary td.name .authorizedListedResource-wrapper,
+#directory-listing tr.binary td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.binary td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.binary td.vrtx-report-name a {
   background: url(images/file-binary-small.gif) no-repeat center left;
 }
 
 #directory-listing tr.doc td.name a,
-#directory-listing tr.doc td.name .authorizedListedResource-wrapper,
+#directory-listing tr.doc td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.doc td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.doc td.vrtx-report-name a {
   background: url(images/file-word-small.gif) no-repeat center left;
 }
 
 #directory-listing tr.pdf td.name a,
-#directory-listing tr.pdf td.name .authorizedListedResource-wrapper,
+#directory-listing tr.pdf td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.pdf td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.pdf td.vrtx-report-name a {
   background: url(images/file-pdf-small.gif) no-repeat center left;
 }
 
 #directory-listing tr.xls td.name a,
-#directory-listing tr.xls td.name .authorizedListedResource-wrapper,
+#directory-listing tr.xls td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.xls td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.xls td.vrtx-report-name a {
   background: url(images/file-xls-small.gif) no-repeat center left;
 }
 
 #directory-listing tr.text td.name a,
-#directory-listing tr.text td.name .authorizedListedResource-wrapper,
+#directory-listing tr.text td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.text td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.text td.vrtx-report-name a {
   background: url(images/file-txt-small.gif) no-repeat center left;
 }
 
 #directory-listing tr.ppt td.name a,
-#directory-listing tr.ppt td.name .authorizedListedResource-wrapper,
+#directory-listing tr.ppt td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.ppt td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.ppt td.vrtx-report-name a {
   background: url(images/file-ppt-small.gif) no-repeat center left;
 }
 
 #directory-listing tr.image td.name a,
-#directory-listing tr.image td.name .authorizedListedResource-wrapper,
+#directory-listing tr.image td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.image td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.image td.vrtx-report-name a {
   background: url(images/file-image-small.gif) no-repeat center left;
 }
 
 #directory-listing tr.audio td.name a,
-#directory-listing tr.audio td.name .authorizedListedResource-wrapper,
+#directory-listing tr.audio td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.audio td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.audio td.vrtx-report-name a {
   background: url(images/file-audio-small.gif) no-repeat center left;
 }
 
 #directory-listing tr.video td.name a,
-#directory-listing tr.video td.name .authorizedListedResource-wrapper,
+#directory-listing tr.video td.name .unauthorizedListedResource-wrapper,
 #directory-listing tr.video td.name span.vrtx-trash-can-name-text,
 #directory-listing tr.video td.vrtx-report-name a {
   background: url(images/file-video-small.gif) no-repeat center left;

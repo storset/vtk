@@ -30,7 +30,7 @@
         <ref bean="collection.recursiveListingPropDef" />
         <ref bean="displayAggregationPropDef" />
         <ref bean="aggregationPropDef" />
-        <ref bean="displayManuallyApproveFromPropDef" />
+        <ref bean="displayManuallyApprovedPropDef" />
         <ref bean="manuallyApproveFromPropDef" />
         <ref bean="manuallyApprovedResourcesPropDef" />
         <ref bean="pageLimitPropDef" />

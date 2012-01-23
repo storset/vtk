@@ -391,7 +391,6 @@ String.prototype.endsWith = function(str)
 VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes) {
   var editor = this;
 
-  // editor.updateDimensions(editor.rw, editor.rh);
   editor.renderScaledImage(true);
   new thumbnailer(editor, lobes);
 }
@@ -447,44 +446,29 @@ function thumbnailer(editor, lobes) {
   $("#vrtx-image-editor-wrapper-loading-info").show(0);
 
   // Used for Web Workers or setTimeout (inject scripts and use methods inside)
-  var process1Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process1.js';
-  var process2Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process2.js';
+  var process1Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process.js';
 
-  if (false) { // Use Web Workers if supported. TODO: fix problem hangs on some dimensions
-    var workerLanczosProcess1 = new Worker(process1Url);
-    var workerLanczosProcess2 = new Worker(process2Url); 
+  if (false) { // Use Web Worker if supported. TODO: fix problem hangs on some dimensions
+    var workerLanczosProcess1 = new Worker(process1Url); 
     workerLanczosProcess1.postMessage(data);
     workerLanczosProcess1.addEventListener('message', function(e) {
       var data = e.data;
       if(data) {   
         canvas.width = data.dest.width;
         canvas.height = data.dest.height;
-        ctx.drawImage(img, 0, 0);
-        data.src = ctx.getImageData(0, 0, data.dest.width, data.dest.height);
-        workerLanczosProcess2.postMessage(data);
-      } 
-    }, false);
-    workerLanczosProcess2.addEventListener('message', function(e) { 
-      var data = e.data;
-      if(data) { 
-        ctx.putImageData(data.src, 0, 0);
-        editor.renderScaledImage(false);   
-        editor.save();
+        ctx.putImageData(data.dest, 0, 0);
         elem.style.display = "block";
+        editor.save();
         $("#vrtx-image-editor-preview").removeClass("loading");
-        $("#vrtx-image-crop").removeAttr("disabled"); 
-      }
+        $("#vrtx-image-crop").removeAttr("disabled");
+      } 
     }, false);
   } else { // Otherwise gracefully degrade to using setTimeout
     var headID = document.getElementsByTagName("head")[0];  
     var process1Script = document.createElement('script');
-    var process2Script = document.createElement('script');
     process1Script.type = 'text/javascript';
-    process2Script.type = 'text/javascript';
     process1Script.src = process1Url;
-    process2Script.src = process2Url;
     headID.appendChild(process1Script);
-    headID.appendChild(process2Script);
 
     process1Script.onload = function() {
       var u = 0; 
@@ -497,13 +481,9 @@ function thumbnailer(editor, lobes) {
           var proc2 = setTimeout(function() {
             canvas.width = data.dest.width;
             canvas.height = data.dest.height;
-            ctx.drawImage(img, 0, 0);
-            data.src = ctx.getImageData(0, 0, data.dest.width, data.dest.height);
-            data = process2(data);
-            ctx.putImageData(data.src, 0, 0);
-            editor.renderScaledImage(false);  
-            editor.save();
+            ctx.putImageData(data.dest, 0, 0); 
             elem.style.display = "block";
+            editor.save();
             $("#vrtx-image-editor-preview").removeClass("loading");
             $("#vrtx-image-crop").removeAttr("disabled"); 
           }, 0);

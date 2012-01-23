@@ -23,7 +23,7 @@ function process1(data, u, lanczos) {
   for (var v = 0; v < data.dest.height; v++) {
     data.center.y = (v + 0.5) * data.ratio;
     data.icenter.y = Math.floor(data.center.y);
-    var a, r, g, b;
+    var a, r, g, b, c;
     a = r = g = b = 0;
     for (var i = data.icenter.x - data.range2; i <= data.icenter.x + data.range2; i++) {
       if (i < 0 || i >= data.src.width) continue;
@@ -42,13 +42,17 @@ function process1(data, u, lanczos) {
           r += weight * data.src.data[idx];
           g += weight * data.src.data[idx + 1];
           b += weight * data.src.data[idx + 2];
+          if(!c) {
+            c = data.src.data[idx + 3];
+          }
         }
       }
     }
-    idx = (v * data.dest.width + u) * 3;
+    idx = (v * data.dest.width + u) * 4;
     data.dest.data[idx] = r / a;
     data.dest.data[idx + 1] = g / a;
     data.dest.data[idx + 2] = b / a;
+    data.dest.data[idx + 3] = c;
   }
   return data;
 }

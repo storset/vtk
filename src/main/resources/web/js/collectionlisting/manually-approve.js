@@ -19,7 +19,6 @@ $(document).ready(function() {
     // Retrieve initial resources
     var manuallyApproveFoldersTxt = $("#resource\\.manually-approve-from");
     var aggregatedFoldersTxt = $("#resource\\.aggregation");
-    $("#manually-approve-refresh").hide(0);
     
     if(manuallyApproveFoldersTxt.length) {
       var folders, aggregatedFolders;
@@ -47,7 +46,6 @@ $(document).ready(function() {
         }
         retrieveResources(".", folders, aggregatedFolders);
       }
-      $(this).hide();
       e.stopPropagation();
       e.preventDefault();
     });

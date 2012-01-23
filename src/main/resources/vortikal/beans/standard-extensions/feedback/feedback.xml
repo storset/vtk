@@ -90,6 +90,11 @@
         <entry key="contact-url" value="Specify contact url. Default is http://www.uio.no/om/kontaktinformasjon/" />
       </map>
     </property>
+    <property name="examples">
+      <map>
+        <entry key="${resource:feedback mail-to=[nettredaktor@uio.no] contact-url=[http://www.uio.no/tjenester/it/web/vortex/kontakt/]}" value="Send feedback to webmaster" />
+      </map>
+    </property>
     <property name="view" ref="decorating.feedbackURLComponent.view" />
   </bean>
 

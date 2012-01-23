@@ -1582,7 +1582,7 @@ function showHideProperty(id, init, show) {
 	    TODO: cleanup, simplify
 \*-------------------------------------------------------------------*/
 
-function loadMultipleDocuments(textfieldId, browse, addName, removeName, browseName, editorBase, baseFolder, editorBrowseUrl) {
+function loadMultipleDocuments(appendParentLast, textfieldId, browse, addName, removeName, browseName, editorBase, baseFolder, editorBrowseUrl) {
   var documents = $("#" + textfieldId);
   if(!documents.length) return;
   
@@ -1592,14 +1592,20 @@ function loadMultipleDocuments(textfieldId, browse, addName, removeName, browseN
   var simpleTextfieldId = textfieldId.substring(textfieldId.indexOf(".")+1);
    
   documents.hide();
-  var documentsParent = documents.parent();
-  documentsParent.hide();
-  documentsParent.parent()
-                  .append("<div id='vrtx-" + simpleTextfieldId + "-add'>"
-                        + "<div class=\"vrtx-button\"><button onclick=\"addFormField('" + simpleTextfieldId  + "'," + browse + ",null, '" 
-                        + removeName + "', '" + browseName + "', '" + editorBase + "', '" + baseFolder 
-                        + "', '" + editorBrowseUrl + "'); return false;\">" + addName + "</button></div>"
-                        + "<input type='hidden' id='id-" + simpleTextfieldId  + "' name='id' value='1' /></div>");
+  
+  var appendHtml = "<div id='vrtx-" + simpleTextfieldId + "-add'>"
+                   + "<div class=\"vrtx-button\"><button onclick=\"addFormField('" + simpleTextfieldId  + "'," + browse + ",null, '" 
+                   + removeName + "', '" + browseName + "', '" + editorBase + "', '" + baseFolder 
+                   + "', '" + editorBrowseUrl + "'); return false;\">" + addName + "</button></div>"
+                   + "<input type='hidden' id='id-" + simpleTextfieldId  + "' name='id' value='1' /></div>";
+                   
+  var documentsParent = documents.parent();     
+  documentsParent.hide();           
+  if(appendParentLast) {
+    documentsParent.parent().append(appendHtml);
+  } else {
+    $(appendHtml).insertAfter(documentsParent.parent().find(".vrtx-textfield:first"));
+  }
 
    var listOfFiles = documentsVal.split(",");
    var addFormFieldFunc = addFormField;

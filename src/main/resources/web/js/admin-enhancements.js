@@ -190,6 +190,13 @@ $(document).ready(function () {
   dropdown({selector: "ul.manage-create"});
   dropdown({selector: "ul#editor-menu"});
   
+  if(!$("#resource\\.display-aggregation\\.true").is(":checked")) {
+    $("#vrtx-resource\\.aggregation").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
+  }
+  $("#app-content").delegate("#resource\\.display-aggregation\\.true", "click", function() {
+    $("#vrtx-resource\\.aggregation").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
+  });
+  
   // Slide up when choose something in dropdown
   $(".dropdown-shortcut-menu li a").click(function() {
     $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");

@@ -36,8 +36,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,7 +58,6 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resource.ResourcetreeParser.resourcedef_return;
 import org.vortikal.web.RequestContext;
 
 /**
@@ -110,9 +107,9 @@ public class SaveImageController extends AbstractController {
             if (iter.hasNext()) {
                 writer = (ImageWriter)iter.next();
             }
-            
+
             // Prepare output file
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(255);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ImageOutputStream ios = ImageIO.createImageOutputStream(bos);
             writer.setOutput(ios);
             

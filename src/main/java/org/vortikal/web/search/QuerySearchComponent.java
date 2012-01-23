@@ -76,6 +76,8 @@ public abstract class QuerySearchComponent implements SearchComponent {
     private boolean searchMultiHosts;
     private PropertyTypeDefinition aggregationPropDef;
     private PropertyTypeDefinition manuallyApprovedResourcesPropDef;
+    private PropertyTypeDefinition displayAggregationPropDef;
+    private PropertyTypeDefinition displayManuallyApprovedPropDef;
 
     protected abstract Query getQuery(Resource collection, HttpServletRequest request);
 
@@ -182,28 +184,39 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
     private boolean performMultiHostSearch(Resource collection) {
 
-        if (this.multiHostSearchComponent == null || !this.searchMultiHosts || this.aggregationPropDef == null
-                || this.manuallyApprovedResourcesPropDef == null) {
+        if (this.multiHostSearchComponent == null || !this.searchMultiHosts) {
             return false;
         }
 
-        Property aggregationProp = collection.getProperty(this.aggregationPropDef);
-        if (aggregationProp != null) {
-            for (Value value : aggregationProp.getValues()) {
-                if (isUrl(value.getStringValue())) {
-                    return true;
+        // Check for multi host aggregation
+        if (this.displayAggregationPropDef != null && this.aggregationPropDef != null) {
+            Property displayAggregationProp = collection.getProperty(this.displayAggregationPropDef);
+            if (displayAggregationProp != null && displayAggregationProp.getBooleanValue()) {
+                Property aggregationProp = collection.getProperty(this.aggregationPropDef);
+                if (aggregationProp != null) {
+                    for (Value value : aggregationProp.getValues()) {
+                        if (isUrl(value.getStringValue())) {
+                            return true;
+                        }
+                    }
                 }
             }
         }
 
-        Property manuallyApprovedProp = collection.getProperty(this.manuallyApprovedResourcesPropDef);
-        if (manuallyApprovedProp != null) {
-            String repositoryId = RequestContext.getRequestContext().getRepository().getId();
-            for (Value value : manuallyApprovedProp.getValues()) {
-                // We have at least one manually approved resource that is not
-                // on local host
-                if (!value.getStringValue().contains(repositoryId)) {
-                    return true;
+        // Check for multi host manual approval
+        if (this.displayManuallyApprovedPropDef != null && this.manuallyApprovedResourcesPropDef != null) {
+            Property displayManuallyApprovedProp = collection.getProperty(this.displayManuallyApprovedPropDef);
+            if (displayManuallyApprovedProp != null && displayManuallyApprovedProp.getBooleanValue()) {
+                Property manuallyApprovedProp = collection.getProperty(this.manuallyApprovedResourcesPropDef);
+                if (manuallyApprovedProp != null) {
+                    String repositoryId = RequestContext.getRequestContext().getRepository().getId();
+                    for (Value value : manuallyApprovedProp.getValues()) {
+                        // We have at least one manually approved resource that
+                        // is not on local host
+                        if (!value.getStringValue().contains(repositoryId)) {
+                            return true;
+                        }
+                    }
                 }
             }
         }
@@ -280,6 +293,14 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
     public void setManuallyApprovedResourcesPropDef(PropertyTypeDefinition manuallyApprovedResourcesPropDef) {
         this.manuallyApprovedResourcesPropDef = manuallyApprovedResourcesPropDef;
+    }
+
+    public void setDisplayAggregationPropDef(PropertyTypeDefinition displayAggregationPropDef) {
+        this.displayAggregationPropDef = displayAggregationPropDef;
+    }
+
+    public void setDisplayManuallyApprovedPropDef(PropertyTypeDefinition displayManuallyApprovedPropDef) {
+        this.displayManuallyApprovedPropDef = displayManuallyApprovedPropDef;
     }
 
 }

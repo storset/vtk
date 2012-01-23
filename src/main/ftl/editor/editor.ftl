@@ -194,7 +194,7 @@
     <#list propDefs as propDef>
       <#local name = propDef.name />
       
-      <#if name = "aggregation" || name = "manually-approve-from">
+      <#if name = "display-aggregation" || name = "display-manually-approved">
         <#local localizedName>
           <@vrtx.msg code="proptype.name.${resource.resourceType}.${name}" />
         </#local>

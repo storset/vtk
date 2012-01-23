@@ -659,9 +659,9 @@
             <ref bean="articleListing.featuredArticlesPropDef" />
             <ref bean="articleListing.recursiveListingPropDef" />
             <ref bean="articleListing.recursiveListingSubfoldersPropDef" />
-            <ref bean="articleListing.displayAggregationPropDef" />
+            <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
-            <ref bean="articleListing.displayManuallyApprovedPropDef" />
+            <ref bean="displayManuallyApprovedPropDef" />
             <ref bean="manuallyApproveFromPropDef" />
             <ref bean="manuallyApprovedResourcesPropDef" />
             <ref bean="articleListing.sortingPropDef" />
@@ -717,9 +717,9 @@
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
             <ref bean="eventListing.recursiveListingPropDef" />
-            <ref bean="eventListing.displayAggregationPropDef" />
+            <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
-            <ref bean="eventListing.displayManuallyApprovedPropDef" />
+            <ref bean="displayManuallyApprovedPropDef" />
             <ref bean="manuallyApproveFromPropDef" />
             <ref bean="manuallyApprovedResourcesPropDef" />
             <ref bean="eventListing.hideEndDatePropDef" />

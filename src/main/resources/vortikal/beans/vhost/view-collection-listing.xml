@@ -87,6 +87,8 @@
 
   <bean id="listingUriQueryBuilder" abstract="true" class="org.vortikal.web.search.ListingUriQueryBuilder">
     <property name="aggregationResolver" ref="aggregationResolver" />
+    <property name="displayAggregationPropDef" ref="displayAggregationPropDef" />
+    <property name="displayManuallyApprovedPropDef" ref="displayManuallyApprovedPropDef" />
     <property name="manuallyApproveResourcesSearcher" ref="editor.collection.manuallyApproveResourcesSearcher" />
   </bean>
 

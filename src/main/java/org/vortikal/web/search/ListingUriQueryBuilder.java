@@ -57,6 +57,8 @@ public class ListingUriQueryBuilder implements QueryBuilder {
     private AggregationResolver aggregationResolver;
     private boolean defaultRecursive;
     private PropertyTypeDefinition subfolderPropDef;
+    private PropertyTypeDefinition displayAggregationPropDef;
+    private PropertyTypeDefinition displayManuallyApprovedPropDef;
     private ManuallyApproveResourcesSearcher manuallyApproveResourcesSearcher;
 
     @Override
@@ -120,27 +122,33 @@ public class ListingUriQueryBuilder implements QueryBuilder {
             baseQuery = uriPrefixQuery;
         }
 
-        // Now check for aggregation and extend the query if aggregation exists
-        List<Path> aggregationPaths = this.aggregationResolver.getAggregationPaths(collectionUri);
-        if (aggregationPaths != null && aggregationPaths.size() > 0) {
-            OrQuery aggregateUriPrefixQuery = new OrQuery();
-            for (Path aggregationPath : aggregationPaths) {
-                aggregateUriPrefixQuery.add(new UriPrefixQuery(aggregationPath.toString()));
+        Property displayAggregationProp = collection.getProperty(this.displayAggregationPropDef);
+        if (displayAggregationProp != null && displayAggregationProp.getBooleanValue()) {
+            // Check for aggregation and extend the query if aggregation exists
+            List<Path> aggregationPaths = this.aggregationResolver.getAggregationPaths(collectionUri);
+            if (aggregationPaths != null && aggregationPaths.size() > 0) {
+                OrQuery aggregateUriPrefixQuery = new OrQuery();
+                for (Path aggregationPath : aggregationPaths) {
+                    aggregateUriPrefixQuery.add(new UriPrefixQuery(aggregationPath.toString()));
+                }
+                OrQuery or = new OrQuery();
+                or.add(baseQuery);
+                or.add(aggregateUriPrefixQuery);
+                baseQuery = or;
             }
-            OrQuery or = new OrQuery();
-            or.add(baseQuery);
-            or.add(aggregateUriPrefixQuery);
-            baseQuery = or;
         }
 
-        // Any manually approved resources? Well then add those as well
-        Set<String> uriSet = this.manuallyApproveResourcesSearcher.getManuallyApprovedUris(collection, true);
-        if (uriSet != null && uriSet.size() > 0) {
-            UriSetQuery uriSetQuery = new UriSetQuery(uriSet);
-            OrQuery or = new OrQuery();
-            or.add(baseQuery);
-            or.add(uriSetQuery);
-            baseQuery = or;
+        Property displayManuallyApprovedProp = collection.getProperty(this.displayManuallyApprovedPropDef);
+        if (displayManuallyApprovedProp != null && displayManuallyApprovedProp.getBooleanValue()) {
+            // Any manually approved resources? Well then add those as well
+            Set<String> uriSet = this.manuallyApproveResourcesSearcher.getManuallyApprovedUris(collection, true);
+            if (uriSet != null && uriSet.size() > 0) {
+                UriSetQuery uriSetQuery = new UriSetQuery(uriSet);
+                OrQuery or = new OrQuery();
+                or.add(baseQuery);
+                or.add(uriSetQuery);
+                baseQuery = or;
+            }
         }
 
         return baseQuery;
@@ -154,6 +162,16 @@ public class ListingUriQueryBuilder implements QueryBuilder {
     @Required
     public void setAggregationResolver(AggregationResolver aggregationResolver) {
         this.aggregationResolver = aggregationResolver;
+    }
+
+    @Required
+    public void setDisplayAggregationPropDef(PropertyTypeDefinition displayAggregationPropDef) {
+        this.displayAggregationPropDef = displayAggregationPropDef;
+    }
+
+    @Required
+    public void setDisplayManuallyApprovedPropDef(PropertyTypeDefinition displayManuallyApprovedPropDef) {
+        this.displayManuallyApprovedPropDef = displayManuallyApprovedPropDef;
     }
 
     @Required

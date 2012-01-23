@@ -25,8 +25,6 @@
         <ref bean="articleListing.hidePublishedDatePropDef" />
         <ref bean="articleListing.hideIntroductionPropDef" />
         <ref bean="articleListing.hideIntroductionImagePropDef" />
-        <ref bean="articleListing.displayAggregationPropDef" />
-        <ref bean="articleListing.displayManuallyApprovedPropDef" />
       </list>
     </property>
   </bean>
@@ -195,12 +193,6 @@
       </map>
     </property>
   </bean>
-
-  <bean id="articleListing.displayAggregationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
-    parent="displayAggregationPropDef" />
-
-  <bean id="articleListing.displayManuallyApprovedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
-    parent="displayManuallyApprovedPropDef" />
   
   <bean id="resourceIsArticleListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="articleListingResourceTypeDefinition" />

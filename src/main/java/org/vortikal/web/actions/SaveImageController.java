@@ -99,23 +99,37 @@ public class SaveImageController extends AbstractController {
           
           if(resource.getContentType().endsWith("/jpg") || resource.getContentType().endsWith("/jpeg")) {
             BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes));
-           // Credits: http://stackoverflow.com/questions/464825/converting-transparent-gif-png-to-jpeg-using-java/1545417#1545417
+            // Credits: http://stackoverflow.com/questions/464825/converting-transparent-gif-png-to-jpeg-using-java/1545417#1545417
             BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);       
             Graphics2D g = bufferedImage.createGraphics();
             g.drawImage(image, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), Color.WHITE, null);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            Iterator iter = ImageIO.getImageWritersByFormatName("jpeg");
-            ImageWriter writer = (ImageWriter)iter.next();
+            
+            // Find a jpeg writer
+            ImageWriter writer = null;
+            Iterator iter = ImageIO.getImageWritersByFormatName("jpg");
+            if (iter.hasNext()) {
+                writer = (ImageWriter)iter.next();
+            }
+            
+            // Prepare output file
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(255);
+            ImageOutputStream ios = ImageIO.createImageOutputStream(bos);
+            writer.setOutput(ios);
+            
+            // Set the compression quality
             ImageWriteParam iwp = writer.getDefaultWriteParam();
             iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
             iwp.setCompressionQuality(1);   // an integer between 0 and 1
-            writer.setOutput(out);
-            IIOImage imageFinal = new IIOImage(bufferedImage, null, null);
-            writer.write(null, imageFinal, iwp);
+            
+            // Write the image
+            writer.write(null, new IIOImage(bufferedImage, null, null), iwp);
+
+            // Cleanup
+            ios.flush();
             writer.dispose();
-            ImageIO.write(bufferedImage, "jpg", out);
-            out.close();
-            imageBytes = out.toByteArray();
+            ios.close();
+            
+            imageBytes = bos.toByteArray();
           }
           
           repository.storeContent(token, uri, new ByteArrayInputStream(imageBytes));

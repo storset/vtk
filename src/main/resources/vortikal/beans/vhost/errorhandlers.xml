@@ -52,6 +52,7 @@
         <constructor-arg value="org.vortikal.repository.AuthorizationException" />
       </bean>
     </property>
+    <property name="logExceptions" value="${errorHandler.notAuthorized.logErrors}" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider"/>

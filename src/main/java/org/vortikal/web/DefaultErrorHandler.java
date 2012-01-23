@@ -36,6 +36,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
@@ -79,13 +81,15 @@ import org.vortikal.web.service.Service;
 public class DefaultErrorHandler
   implements ErrorHandler, BeanNameAware, InitializingBean {
     
+    private static Log logger = LogFactory.getLog(DefaultErrorHandler.class);
+    
     public static final String DEFAULT_ERROR_CODE = "error.default";
     public static final String DEFAULT_ERROR_DESCRIPTION = "Internal server error";
 
     public static final String ERROR_MODEL_KEY = "error";
     public static final String ERROR_MODEL_EXCEPTION_KEY = "exception";
     public static final String ERROR_MODEL_ERROR_DESCRIPTION_KEY = "errorDescription";
-    
+
     private String beanName = null;
     private View errorView = null;
     private String errorViewName = null;
@@ -93,7 +97,7 @@ public class DefaultErrorHandler
     private Service service = null;
     private ReferenceDataProvider[] providers = new ReferenceDataProvider[0];
     private Map<String, Integer> statusCodeMappings = new HashMap<String, Integer>();
-    
+    private boolean logExceptions = false;
 
     public void setBeanName(String beanName) {
         this.beanName = beanName;
@@ -111,6 +115,7 @@ public class DefaultErrorHandler
         this.errorType = errorType;
     }
 
+    @Override
     public Class<Throwable> getErrorType() {
         return this.errorType;
     }
@@ -119,6 +124,7 @@ public class DefaultErrorHandler
         this.service = service;
     }
 
+    @Override
     public Service getService() {
         return this.service;
     }
@@ -131,6 +137,10 @@ public class DefaultErrorHandler
         this.statusCodeMappings = statusCodeMappings;
     }
     
+    public void setLogExceptions(boolean logExceptions) {
+        this.logExceptions = logExceptions;
+    }
+
     public void afterPropertiesSet() {
         if (this.errorView == null && this.errorViewName == null) {
             throw new BeanInitializationException(
@@ -147,9 +157,13 @@ public class DefaultErrorHandler
     }
     
     
+    @Override
     public Map<Object, Object> getErrorModel(HttpServletRequest request,
                              HttpServletResponse response,
                              Throwable error) throws Exception {
+        if (this.logExceptions) {
+            logger.warn("Error in request " + request, error);
+        }
         Map<Object, Object> model = new HashMap<Object, Object>();
         if (this.providers != null) {
             try {
@@ -187,6 +201,7 @@ public class DefaultErrorHandler
     
 
 
+    @Override
     public Object getErrorView(HttpServletRequest request,
                              HttpServletResponse response,
                              Throwable error) throws Exception {
@@ -197,6 +212,7 @@ public class DefaultErrorHandler
     }
     
 
+    @Override
     public int getHttpStatusCode(HttpServletRequest request,
                                  HttpServletResponse response,
                                  Throwable error) throws Exception {

@@ -85,9 +85,9 @@
     </property>
   </bean>
 
-  <bean id="displayManuallyApproveFromPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+  <bean id="displayManuallyApprovedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
-    <property name="name" value="display-manually-approve-from" />
+    <property name="name" value="display-manually-approved" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />

@@ -90,7 +90,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
         // content and update service before storing resource
         if (foldersParam != null) {
             for (String folder : foldersParam) {
-                if (this.isValid(folder, currentCollectionPath, recursiveProp)) {
+                if (this.isValid(folder, currentCollectionPath, recursiveProp, repository, token)) {
                     folders.add(folder);
                 }
             }
@@ -98,7 +98,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
             Value[] manuallyApproveFromValues = manuallyApproveFromProp.getValues();
             for (Value manuallyApproveFromValue : manuallyApproveFromValues) {
                 String folder = manuallyApproveFromValue.getStringValue();
-                if (this.isValid(folder, currentCollectionPath, recursiveProp)) {
+                if (this.isValid(folder, currentCollectionPath, recursiveProp, repository, token)) {
                     folders.add(folder);
                 }
             }
@@ -161,7 +161,8 @@ public class ManuallyApproveResourcesHandler implements Controller {
         return null;
     }
 
-    private boolean isValid(String folder, Path currentCollectionPath, Property recursiveProp) {
+    private boolean isValid(String folder, Path currentCollectionPath, Property recursiveProp, Repository repository,
+            String token) {
 
         try {
             URL.parse(folder);
@@ -175,6 +176,11 @@ public class ManuallyApproveResourcesHandler implements Controller {
             // Make sure path is valid (be lenient on trailing slash)
             folder = folder.endsWith("/") && !folder.equals("/") ? folder.substring(0, folder.length() - 1) : folder;
             Path folderPath = Path.fromString(folder);
+
+            // Make sure resource exists
+            if (!repository.exists(token, folderPath)) {
+                return false;
+            }
 
             // Also remove from folders set any values which are children of
             // current collection

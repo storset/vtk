@@ -193,8 +193,14 @@ $(document).ready(function () {
   if(!$("#resource\\.display-aggregation\\.true").is(":checked")) {
     $("#vrtx-resource\\.aggregation").slideUp(0, "linear");
   }
+  if(!$("#resource\\.display-manually-approved\\.true").is(":checked")) {
+    $("#vrtx-resource\\.manually-approve-from").slideUp(0, "linear");
+  }
   $("#app-content").delegate("#resource\\.display-aggregation\\.true", "click", function() {
     $("#vrtx-resource\\.aggregation").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
+  });
+   $("#app-content").delegate("#resource\\.display-manually-approved\\.true", "click", function() {
+    $("#vrtx-resource\\.manually-approve-from").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
   });
   
   // Slide up when choose something in dropdown

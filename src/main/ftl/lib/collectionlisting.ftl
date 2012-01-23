@@ -173,8 +173,10 @@
                     </td><td class="checkbox"><input name="${child.URI?html}" type="checkbox"/>
                   </#if>
                 <#else>
-                  <span class="unauthorizedListedResource">
-                    ${child.name}
+                  <span class="unauthorizedListedResource-wrapper">
+                    <span class="unauthorizedListedResource">
+                      ${child.name}
+                    </span>
                   </span>
                   <#if withForm>
                     </td><td class="checkbox">&nbsp;

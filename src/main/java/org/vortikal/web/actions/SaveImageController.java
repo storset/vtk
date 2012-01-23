@@ -38,9 +38,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -95,11 +99,20 @@ public class SaveImageController extends AbstractController {
           
           if(resource.getContentType().endsWith("/jpg") || resource.getContentType().endsWith("/jpeg")) {
             BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes));
-            // Credits: http://stackoverflow.com/questions/464825/converting-transparent-gif-png-to-jpeg-using-java/1545417#1545417
-            BufferedImage bufferedImage  = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);       
+           // Credits: http://stackoverflow.com/questions/464825/converting-transparent-gif-png-to-jpeg-using-java/1545417#1545417
+            BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);       
             Graphics2D g = bufferedImage.createGraphics();
             g.drawImage(image, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), Color.WHITE, null);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
+            Iterator iter = ImageIO.getImageWritersByFormatName("jpeg");
+            ImageWriter writer = (ImageWriter)iter.next();
+            ImageWriteParam iwp = writer.getDefaultWriteParam();
+            iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            iwp.setCompressionQuality(1);   // an integer between 0 and 1
+            writer.setOutput(out);
+            IIOImage imageFinal = new IIOImage(bufferedImage, null, null);
+            writer.write(null, imageFinal, iwp);
+            writer.dispose();
             ImageIO.write(bufferedImage, "jpg", out);
             out.close();
             imageBytes = out.toByteArray();

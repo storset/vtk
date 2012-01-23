@@ -48,6 +48,10 @@
 
 /* Manual approval */
 
+#approve-spinner {
+  padding-left: 20px;
+}
+
 #manually-approve-container-title {
   display: inline-block;
   margin-left: 20px;

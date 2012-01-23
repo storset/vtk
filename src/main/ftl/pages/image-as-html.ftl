@@ -33,36 +33,36 @@
   </div>
 </#if>
 
+<#if description?exists >
+  <div id="vrtx-meta-description" class="vrtx-introduction">
+    ${description}
+  </div>
+</#if>
+
 <#assign pixelHeight = vrtx.propValue(resource, "pixelHeight") />
 <#assign pixelWidth = vrtx.propValue(resource, "pixelWidth") />
 
+<h2>${vrtx.getMsg('imageAsHtml.source')}</h2>
 <p id="vrtx-image-view-link">
-  ${vrtx.getMsg('imageAsHtml.source')}: <a href="${src}">${resource.name?html}</a>
+  <a href="${src}">${resource.name?html}</a>
   <#if pixelHeight != "" && pixelWidth != "">
-    &nbsp;(${pixelWidth}px x ${pixelHeight}px)
+    &nbsp;(${pixelWidth} x ${pixelHeight} px)
   </#if>
 </p>
 
 <#assign photographer = vrtx.propValue(resource, "photographer") />
 <#if photographer?exists && photographer != "">
-  <p>
-    ${vrtx.getMsg('imageAsHtml.byline')}: ${photographer}
-  </p> 
+  <h2>${vrtx.getMsg('imageAsHtml.byline')}</h2>
+  <p>${photographer}</p> 
 </#if>
 
 
-<#if description?exists >
-  <div id="vrtx-meta-description">
-    ${description}
-  </div>
+<#if .vars["copyrightHelpURL." + lang]?exists && .vars["copyrightHelpURL." + lang]?trim != "">
+  <h2>${vrtx.getMsg('imageAsHtml.copyright-info')}</h2>
+  <#assign url = .vars["copyrightHelpURL." + lang] />
+  <p><#if url?exists>${url}</#if></p>
 </#if>
 
-<p>
-  <#if .vars["copyrightHelpURL." + lang]?exists && .vars["copyrightHelpURL." + lang]?trim != "">
-    <#assign url = .vars["copyrightHelpURL." + lang] />
-    <#if url?exists>${url}</#if>
-  </#if>
-</p>
 
 </body>
 </html>

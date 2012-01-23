@@ -200,11 +200,11 @@ function insertOrModifyComponent(editor, iframeId, init) {
       content = content + " height=[" + height + "]";
     }
     var autoplay = contents.find("#chkAutoplay");
-    if (autoplay.attr("checked") == true) {
+    if (autoplay.is(':checked')) {
       content = content + " autoplay=[true]";
     }
     var streamLive = contents.find("#chkLiveStream");
-    if (streamLive.attr("checked") == true) {
+    if (streamLive.is(':checked')) {
       content = content + " stream-type=[live]";
     }
     var align = contents.find("#txtAlign").val();

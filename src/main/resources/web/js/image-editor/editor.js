@@ -211,7 +211,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm) {
           cropNone(editor);
         }
         if(editor.scaleRatio < 0.9) {
-          editor.scaleLanczos(2); // http://int64.org/2011/07
+          editor.scaleLanczos(2); // http://int64.org/2011/07/24/choosing-the-right-kernel
         } else {
           editor.save();
         }

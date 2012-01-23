@@ -190,6 +190,7 @@ $(document).ready(function () {
   dropdown({selector: "ul.manage-create"});
   dropdown({selector: "ul#editor-menu"});
   
+  // Aggregation and manually approved
   if(!$("#resource\\.display-aggregation\\.true").is(":checked")) {
     $("#vrtx-resource\\.aggregation").slideUp(0, "linear");
   }

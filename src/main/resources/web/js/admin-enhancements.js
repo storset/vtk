@@ -191,7 +191,7 @@ $(document).ready(function () {
   dropdown({selector: "ul#editor-menu"});
   
   if(!$("#resource\\.display-aggregation\\.true").is(":checked")) {
-    $("#vrtx-resource\\.aggregation").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
+    $("#vrtx-resource\\.aggregation").slideUp(0, "linear");
   }
   $("#app-content").delegate("#resource\\.display-aggregation\\.true", "click", function() {
     $("#vrtx-resource\\.aggregation").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");

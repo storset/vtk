@@ -499,7 +499,9 @@
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
             <ref bean="collection.sortingPropDef" />
+            <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
+            <ref bean="displayManuallyApproveFromPropDef" />
             <ref bean="manuallyApproveFromPropDef" />
             <ref bean="manuallyApprovedResourcesPropDef" />
             <ref bean="collection.hideLastModifiedPropDef" />
@@ -529,6 +531,7 @@
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
+            <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
           </list>
         </property>
@@ -552,6 +555,7 @@
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
+            <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
             <ref bean="projectListing.displayTypePropDef" />
             <ref bean="additionalContentPropDef" />
@@ -577,6 +581,7 @@
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
+            <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
             <ref bean="researchGroupListing.displayTypePropDef" />
             <ref bean="additionalContentPropDef" />
@@ -600,6 +605,7 @@
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
+            <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
             <ref bean="collection.sortingPropDef" />
             <ref bean="imageListing.displayTypePropDef" />
@@ -625,6 +631,7 @@
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
+            <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
             <ref bean="collection.sortingPropDef" />
           </list>
@@ -652,7 +659,9 @@
             <ref bean="articleListing.featuredArticlesPropDef" />
             <ref bean="articleListing.recursiveListingPropDef" />
             <ref bean="articleListing.recursiveListingSubfoldersPropDef" />
+            <ref bean="articleListing.displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
+            <ref bean="articleListing.displayManuallyApproveFromPropDef" />
             <ref bean="manuallyApproveFromPropDef" />
             <ref bean="manuallyApprovedResourcesPropDef" />
             <ref bean="articleListing.sortingPropDef" />
@@ -708,7 +717,9 @@
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
             <ref bean="eventListing.recursiveListingPropDef" />
+            <ref bean="eventListing.displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
+            <ref bean="eventListing.displayManuallyApproveFromPropDef" />
             <ref bean="manuallyApproveFromPropDef" />
             <ref bean="manuallyApprovedResourcesPropDef" />
             <ref bean="eventListing.hideEndDatePropDef" />

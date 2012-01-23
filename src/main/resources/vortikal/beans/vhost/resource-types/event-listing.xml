@@ -23,6 +23,8 @@
         <ref bean="eventListing.hideLocationPropDef" />
         <ref bean="eventListing.displayTypePropDef" />
         <ref bean="eventListing.eventTypeTitlePropDef" />
+        <ref bean="eventListing.displayAggregationPropDef" />
+        <ref bean="eventListing.displayManuallyApproveFromPropDef" />
       </list>
     </property>
   </bean>
@@ -125,6 +127,12 @@
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
+
+  <bean id="eventListing.displayAggregationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="displayAggregationPropDef" />
+
+  <bean id="eventListing.displayManuallyApproveFromPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="displayManuallyApproveFromPropDef" />
 
   <bean id="resourceIsEventListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="eventListingResourceTypeDefinition" />

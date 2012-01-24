@@ -149,6 +149,7 @@
   
   <bean id="aggregationResolver" class="org.vortikal.web.display.collection.aggregation.CollectionListingAggregationResolver">
     <property name="aggregationPropDef" ref="aggregationPropDef" />
+    <property name="displayAggregationPropDef" ref="displayAggregationPropDef" />
     <property name="limit" value="${aggregation.limit}"/>
     <property name="maxRecursiveDepth" value="${aggregation.maxRecursiveDepth}" />
   </bean>

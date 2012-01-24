@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -49,6 +50,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
     private static Log logger = LogFactory.getLog(CollectionListingAggregationResolver.class);
 
     private PropertyTypeDefinition aggregationPropDef;
+    private PropertyTypeDefinition displayAggregationPropDef;
 
     public final static int DEFAULT_LIMIT = 5;
     public final static int DEFAULT_RECURSIVE_DEPTH = 2;
@@ -122,15 +124,18 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             paths.add(collection.getURI());
         }
         List<Path> addedPaths = new ArrayList<Path>();
-        Property aggregationProp = collection.getProperty(this.aggregationPropDef);
-        if (aggregationProp != null) {
-            Value[] values = aggregationProp.getValues();
-            int aggregationLimit = values.length > this.limit ? this.limit : values.length;
-            for (int i = 0; i < aggregationLimit; i++) {
-                Path path = getValidPath(values[i].getStringValue());
-                if (path != null && !paths.contains(path) && !path.equals(startingPath)) {
-                    paths.add(path);
-                    addedPaths.add(path);
+        Property displayAggregationProp = collection.getProperty(this.displayAggregationPropDef);
+        if (displayAggregationProp != null && displayAggregationProp.getBooleanValue()) {
+            Property aggregationProp = collection.getProperty(this.aggregationPropDef);
+            if (aggregationProp != null) {
+                Value[] values = aggregationProp.getValues();
+                int aggregationLimit = values.length > this.limit ? this.limit : values.length;
+                for (int i = 0; i < aggregationLimit; i++) {
+                    Path path = getValidPath(values[i].getStringValue());
+                    if (path != null && !paths.contains(path) && !path.equals(startingPath)) {
+                        paths.add(path);
+                        addedPaths.add(path);
+                    }
                 }
             }
         }
@@ -149,8 +154,14 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         return null;
     }
 
+    @Required
     public void setAggregationPropDef(PropertyTypeDefinition aggregationPropDef) {
         this.aggregationPropDef = aggregationPropDef;
+    }
+
+    @Required
+    public void setDisplayAggregationPropDef(PropertyTypeDefinition displayAggregationPropDef) {
+        this.displayAggregationPropDef = displayAggregationPropDef;
     }
 
     public void setLimit(int limit) {

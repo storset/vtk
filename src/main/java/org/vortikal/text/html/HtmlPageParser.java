@@ -258,7 +258,9 @@ public class HtmlPageParser {
                 // Some node names have a trailing slash, remove it:
                 name = name.substring(0, name.length() - 1);
             }
-
+            if (name == null) {
+                return null;
+            }
             boolean empty = tag.isEmptyXmlTag() || (tag instanceof EmptyTag);
             HtmlElementImpl element = new HtmlElementImpl(name, xhtml, empty);
 

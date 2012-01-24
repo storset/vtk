@@ -170,10 +170,10 @@
 
       <div id="submit" class="submitButtons save-cancel">
         <div class="vrtx-button">
-          <input type="submit" id="saveAndViewButton" onclick="formatFeaturedArticlesData();performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
+          <input type="submit" id="saveAndViewButton" onclick="formatDocumentsData();performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
         </div>
         <div class="vrtx-focus-button">
-          <input type="submit" id="saveButton" onclick="formatFeaturedArticlesData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
+          <input type="submit" id="saveButton" onclick="formatDocumentsData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
         </div>
         <div class="vrtx-button">
           <input type="submit" id="cancel" onclick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">

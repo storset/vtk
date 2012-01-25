@@ -1676,7 +1676,7 @@ function formatDocumentsDataSubFunc(id) {
   var data = $("input[id^='" + id + "-']");
   var result = "";
   for (var i = 0, len = data.length; i < len; i++) {
-    var value = "";
+    var value = $.trim(data[i].value);
     if(value.indexOf("/") === (value.length-1)) { // Remove last forward slash if not root
       if(value.length > 1) {
         value.substring(value, (value.length-1))

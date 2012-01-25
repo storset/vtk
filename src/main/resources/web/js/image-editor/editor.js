@@ -489,13 +489,16 @@ function thumbnailer(editor, lobes) {
     process1Script.onload = function() {
       var u = 0; 
       var lanczos = lanczosCreate(data.lobes);
+      var percent10 = Math.round(data.dest.width * 0.1);
+      var percent10count = 10;
       var proc1 = setTimeout(function() {
         data = process1(data, u, lanczos);
         if(++u < data.dest.width) {
           setTimeout(arguments.callee, 0);
-          //if(u % 10 == 0) {
-            //$("#vrtx-image-editor-interpolation-complete").val(u);
-          //}
+          if(u % percent10 == 0) {
+            $("#vrtx-image-editor-interpolation-complete").val(percent10count);
+            percent10count += 10;
+          }
         } else {
           var proc2 = setTimeout(function() {
             canvas.width = data.dest.width;
@@ -507,6 +510,7 @@ function thumbnailer(editor, lobes) {
             editor.renderScaledImage(false);  
             editor.save();
             elem.style.display = "block";
+            $("#vrtx-image-editor-wrapper-loading-info").hide(0);
             $("#vrtx-image-editor-preview").removeClass("loading");
             $("#vrtx-image-crop").removeAttr("disabled"); 
           }, 0);

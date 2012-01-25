@@ -176,6 +176,8 @@ h3#vrtx-image-editor-preview {
 
 #vrtx-image-editor-interpolation-complete {
   display: none;
+  float: left; 
+  margin-left: 20px;
 }
 
 .vrtx-label-and-text {

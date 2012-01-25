@@ -211,7 +211,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
           cropNone(editor);
         }
         if(editor.scaleRatio < 0.9) {
-          editor.scaleLanczos(2); // http://int64.org/2011/07/24/choosing-the-right-kernel
+          editor.scaleLanczos(3); // http://int64.org/2011/07/24/choosing-the-right-kernel
         } else {
           editor.save();
         }
@@ -379,7 +379,6 @@ VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage(insertI
         $("#vrtx-image-editor-wrapper-loading-info-text span").css({"left": "0px", "top": editor.rh + 30 + "px", "color": "#000"}); 
       }
       tmpCtx.drawImage(editor.scaledImg, 0, 0);
-      $("#vrtx-image-editor-interpolation-complete").show(0);
     } else {
       editor.ctx.drawImage(editor.scaledImg, 0, 0);
     }
@@ -392,6 +391,7 @@ String.prototype.endsWith = function(str)
 VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes) {
   var editor = this;
 
+  // editor.updateDimensions(editor.rw, editor.rh);
   editor.renderScaledImage(true);
   new thumbnailer(editor, lobes);
 }
@@ -450,7 +450,7 @@ function thumbnailer(editor, lobes) {
   var process1Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process1.js';
   var process2Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process2.js';
 
-  if (false) { // Use Web Worker if supported. TODO: fix problem hangs on some dimensions
+  if (false) { // Use Web Workers if supported. TODO: fix problem hangs on some dimensions
     var workerLanczosProcess1 = new Worker(process1Url);
     var workerLanczosProcess2 = new Worker(process2Url); 
     workerLanczosProcess1.postMessage(data);
@@ -465,16 +465,16 @@ function thumbnailer(editor, lobes) {
       } 
     }, false);
     workerLanczosProcess2.addEventListener('message', function(e) { 
-       var data = e.data;
-       if(data) { 
-         ctx.putImageData(data.src, 0, 0);
-         editor.renderScaledImage(false);   
-         editor.save();
-         elem.style.display = "block";
-         $("#vrtx-image-editor-preview").removeClass("loading");
-         $("#vrtx-image-crop").removeAttr("disabled"); 
-       }
-     }, false);
+      var data = e.data;
+      if(data) { 
+        ctx.putImageData(data.src, 0, 0);
+        editor.renderScaledImage(false);   
+        editor.save();
+        elem.style.display = "block";
+        $("#vrtx-image-editor-preview").removeClass("loading");
+        $("#vrtx-image-crop").removeAttr("disabled"); 
+      }
+    }, false);
   } else { // Otherwise gracefully degrade to using setTimeout
     var headID = document.getElementsByTagName("head")[0];  
     var process1Script = document.createElement('script');
@@ -494,11 +494,11 @@ function thumbnailer(editor, lobes) {
       var proc1 = setTimeout(function() {
         data = process1(data, u, lanczos);
         if(++u < data.dest.width) {
-          setTimeout(arguments.callee, 0);
           if(u % percent10 == 0) {
-            $("#vrtx-image-editor-interpolation-complete").val(percent10count);
+            $("#vrtx-image-editor-interpolation-complete").val(percent10count + "%");
             percent10count += 10;
           }
+          setTimeout(arguments.callee, 0);
         } else {
           var proc2 = setTimeout(function() {
             canvas.width = data.dest.width;
@@ -510,7 +510,6 @@ function thumbnailer(editor, lobes) {
             editor.renderScaledImage(false);  
             editor.save();
             elem.style.display = "block";
-            $("#vrtx-image-editor-wrapper-loading-info").hide(0);
             $("#vrtx-image-editor-preview").removeClass("loading");
             $("#vrtx-image-crop").removeAttr("disabled"); 
           }, 0);

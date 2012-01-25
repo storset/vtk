@@ -151,14 +151,13 @@
        </script>
        <div id="vrtx-image-editor-wrapper">
          <h3 id="vrtx-image-editor-preview">Forhåndsvisning</h3>
-         <output id="vrtx-image-editor-interpolation-complete"></output>
          <div id='vrtx-image-editor-inner-wrapper'>
            <canvas id="vrtx-image-editor"></canvas>
          </div>
          <div id='vrtx-image-editor-wrapper-loading-info'>
            <canvas id='vrtx-image-editor-preview-image'></canvas>
            <div id='vrtx-image-editor-wrapper-loading-info-text'>
-             <span>Behandler bilde...</span>
+             <span>Behandler bilde...&nbsp;<output id="vrtx-image-editor-interpolation-complete"></output></span>
            </div>
          </div>
        </div>

@@ -1582,14 +1582,18 @@ function showHideProperty(id, init, show) {
 	    TODO: cleanup, simplify
 \*-------------------------------------------------------------------*/
 
+var definedMultipleFields = [];
+
 function loadMultipleDocuments(appendParentLast, textfieldId, browse, addName, removeName, browseName, editorBase, baseFolder, editorBrowseUrl) {
   var documents = $("#" + textfieldId);
   if(!documents.length) return;
-  
+
   var documentsVal = documents.val();
   if (documentsVal == null) return;
   
   var simpleTextfieldId = textfieldId.substring(textfieldId.indexOf(".")+1);
+  
+  definedMultipleFields.push(simpleTextfieldId); // Register
    
   documents.hide();
   
@@ -1633,7 +1637,7 @@ function addFormField(textfieldId, browse, value, removeName, browsName, editorB
     value = "";
   }
 
-  if (removeName == null) {
+  if (!removeName == null) {
     var deleteRow = "";
   } else {
     var deleteRow = "<div class=\"vrtx-button\"><button type='button' id='" + idstr
@@ -1662,24 +1666,13 @@ function removeFormField(id) {
 }
 
 function formatDocumentsData() {
-  var a = "featured-articles";
-  var b = "aggregation";
-  var c = "manually-approve-from";
-
-  var aa = $("#resource\\." + a);
-  var bb = $("#resource\\." + b);
-  var cc = $("#resource\\." + c);
- 
-  if (aa.val() == null && bb.val() == null && cc.val() == null) {
-    return;
+  var i = definedMultipleFields.length; 
+  while(i--) {
+    formatDocumentsDataSubFunc(definedMultipleFields[i]);
   }
-  
-  formatDocumentsDataSubFunc(a, aa);
-  formatDocumentsDataSubFunc(b, bb);
-  formatDocumentsDataSubFunc(c, cc);
 }
 
-function formatDocumentsDataSubFunc(id, obj) {
+function formatDocumentsDataSubFunc(id) {
   var data = $("input[id^='" + id + "-']");
   var result = "";
   for (var i = 0, len = (data.length - 1); i <= len; i++) {
@@ -1688,7 +1681,7 @@ function formatDocumentsDataSubFunc(id, obj) {
       result += ",";
     }
   }
-  obj.val(result);
+  $("#resource\\." + id).val(result);
 }
 
 

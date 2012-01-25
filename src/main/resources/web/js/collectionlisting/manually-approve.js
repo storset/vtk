@@ -37,8 +37,7 @@ $(document).ready(function() {
       if(manuallyApproveFoldersTxt.length) {
         var folders, aggregatedFolders;
         
-        formatDocumentsDataSubFunc("aggregation", aggregatedFoldersTxt);
-        formatDocumentsDataSubFunc("manually-approve-from", manuallyApproveFoldersTxt);
+        formatDocumentsData();
       
         var value = manuallyApproveFoldersTxt.val();
         lastVal = $.trim(value);

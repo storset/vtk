@@ -226,7 +226,7 @@ $(document).ready(function () {
   });
 
   // Urchin stats
-  $("#app-content").delegate("a.vrtx-resource-visit-tab", "click", function(e) {
+  $("#app-content").delegate("#vrtx-resource-visit-tab-menu a", "click", function(e) {
     vrtxAdmin.serverFacade.getHtml(this.href, {
       success: function (results, status, resp) {
         $("#vrtx-resource-visit").html($(results).html());

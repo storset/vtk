@@ -1708,7 +1708,7 @@ body#vrtx-edit-plaintext .contextual-help {
   margin-top: -1px !important;
 }
 
-/* Urchin */
+/* Urchin reports */
 
 #vrtx-resource-visit {
   clear: left;
@@ -1732,6 +1732,48 @@ h3.resourceInfoHeader {
   background: url(/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif) no-repeat center center;
 }
 
+/* Tab menu */
+
+#vrtx-resource-visit-tab-menu li,
+#vrtx-resource-visit-tab-menu li a,
+#vrtx-resource-visit-tab-menu li span {
+  display: inline-block;
+}
+
+#vrtx-resource-visit-tab-menu li span {
+  padding: 5px 15px 5px 10px;
+  margin: 0 0 0 5px;
+}
+
+#vrtx-resource-visit-tab-menu li a {
+  padding: 5px 15px;
+}
+
+#vrtx-resource-visit-tab-menu li.first {
+  background: url(images/report-tab-fade-to-left.png) no-repeat bottom left;
+  margin-right: -5px;
+}
+
+#vrtx-resource-visit-tab-menu li.last {
+  background: url(images/report-tab-fade-to-right.png) no-repeat bottom right;
+  margin-left: -5px;
+}
+
+#vrtx-resource-visit-tab-menu li a {
+  background: url(images/report-tab-middle.png) repeat-x 0px 25px;
+  white-space: nowrap;
+}
+
+#vrtx-resource-visit-tab-menu li.active {
+  background: url(images/report-active-tab-left.png) no-repeat top left;
+}
+
+#vrtx-resource-visit-tab-menu li.active span {
+  background: url(images/report-active-tab-right.png) no-repeat top right;
+}
+
+/* ^ Tab menu */
+
 #vrtx-resource-visit,
 #vrtx-resource-visit-no-stat {
   margin-bottom: 25px;
@@ -1739,9 +1781,11 @@ h3.resourceInfoHeader {
 
 #vrtx-resource-visit-info {
   position: absolute;
-  top: 0;
-  right: 0;
-  color: #5e5e5e;
+  top: 35px;
+  left: 650px;
+  background: #f9f9f9 url(images/info-icon-grey-grey-bg.png) no-repeat 8px 7px;
+  border: 1px solid #d9d9d9;
+  padding: 8px 13px 8px 30px;
   font-size: 0.85em;
 }
 
@@ -1798,11 +1842,14 @@ h3.resourceInfoHeader {
     margin: 10px 0 0 0;
     top: 0px;
   } 
+  #vrtx-resource-visit-info {
+    top: 215px; 
+  }
 }
 
 /* ^ Responsive design */
 
-/* ^ Urchin */
+/* ^ Urchin reports */
 
 /* ^ 3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile  */
 

@@ -21,6 +21,8 @@ function VrtxImageEditor() {
   this.ctx = null;
   this.origw = null;
   this.origh = null;
+  this.lastWidth = null;
+  this.lastHeight = null;
   this.rw = null;
   this.rh = null;
   this.cropX = null;
@@ -58,8 +60,8 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
   editor.url = imageURL;
   editor.img.src = editor.url;
   editor.img.onload = function () {
-    editor.rw = editor.origw = editor.cropWidth = editor.img.width;
-    editor.rh = editor.origh = editor.cropHeight = editor.img.height;
+    editor.rw = editor.origw = editor.lastWidth = editor.cropWidth = editor.img.width;
+    editor.rh = editor.origh = editor.lastHeight = editor.cropHeight = editor.img.height;
     
     if(!editor.canvasSupported) {
       $canvas.replaceWith("<img src='" + editor.url + "' alt='preview image' />");
@@ -83,7 +85,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
       editor.ctx.drawImage(editor.img, 0, 0);
     
       editor.renderScaledImage(false); 
-    
+      
       $canvas.resizable({
         aspectRatio: editor.keepAspectRatio,
         grid: [1, 1],
@@ -92,7 +94,10 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
           var newHeight = Math.floor(ui.size.height);
         
           var correctH = Math.round(newWidth / (editor.aspectRatioOver / editor.aspectRatioUnder));
-        
+          
+          editor.lastWidth = newWidth;
+          editor.lastHeight = correctH;
+          
           editor.scale(newWidth, correctH);
         },
         resize: function (event, ui) {
@@ -113,8 +118,8 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
         editor.cropY += Math.round(theSelection.y * editor.reversedScaleRatio);
         editor.cropWidth = Math.round(theSelection.w * editor.reversedScaleRatio);
         editor.cropHeight = Math.round(theSelection.h * editor.reversedScaleRatio);
-        editor.rw = Math.round(editor.cropWidth * editor.scaleRatio);
-        editor.rh = Math.round(editor.cropHeight * editor.scaleRatio);
+        editor.rw = editor.lastWidth = Math.round(editor.cropWidth * editor.scaleRatio);
+        editor.rh = editor.lastHeight = Math.round(editor.cropHeight * editor.scaleRatio);
 
         var r = gcd (editor.rw, editor.rh);
         editor.aspectRatioOver = editor.rw/r;
@@ -145,7 +150,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
     $("#app-content").delegate("#resource-width, #resource-height", "change", function (e) {
       var w = parseInt($.trim($("#resource-width").val()));
       var h = parseInt($.trim($("#resource-height").val()));
-      if (!w.isNaN && !h.isNaN) {
+      if (!isNaN(w) && !isNaN(h)) {
         if (w !== editor.rw) {
           if (editor.keepAspectRatio) {
             h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
@@ -157,7 +162,12 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
           }
           $("#resource-width").val(w)
         }
+        editor.lastWidth = w;
+        editor.lastHeight = h;
         editor.scale(w, h);
+      } else {
+        $("#resource-width").val(editor.lastWidth);
+        $("#resource-height").val(editor.lastHeight);
       }
     });
 
@@ -165,7 +175,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
       if (e.which == 38 || e.which == 40) {
         var w = parseInt($.trim($("#resource-width").val()));
         var h = parseInt($.trim($("#resource-height").val()));
-        if (!w.isNaN && !h.isNaN) {
+        if (!isNaN(w) && !isNaN(h)) {
           if (e.which == 38) {
             w++;
           } else {
@@ -176,9 +186,14 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
           if (editor.keepAspectRatio) {
             h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
           }
+          editor.lastWidth = w;
+          editor.lastHeight = h;
           $("#resource-width").val(w);
           $("#resource-height").val(h);
           editor.scale(w, h);
+        } else {
+          $("#resource-width").val(editor.lastWidth);
+          $("#resource-height").val(editor.lastHeight);
         }
       }
     });
@@ -187,7 +202,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
       if (e.which == 38 || e.which == 40) {
         var w = parseInt($.trim($("#resource-width").val()));
         var h = parseInt($.trim($("#resource-height").val()));
-        if (!w.isNaN && !h.isNaN) {
+        if (!isNaN(w) && !isNaN(h)) {
           if (e.which == 38) {
             h++;
           } else {
@@ -198,9 +213,14 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
           if (editor.keepAspectRatio) {
             w = Math.round(h * (editor.aspectRatioOver / editor.aspectRatioUnder));
           }
+          editor.lastWidth = w;
+          editor.lastHeight = h;
           $("#resource-width").val(w);
           $("#resource-height").val(h);
           editor.scale(w, h);
+        } else {
+          $("#resource-width").val(editor.lastWidth);
+          $("#resource-height").val(editor.lastHeight);
         }
       }
     });

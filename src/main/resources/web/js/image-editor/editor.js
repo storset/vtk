@@ -39,7 +39,7 @@ function VrtxImageEditor() {
 
 var vrtxImageEditor = new VrtxImageEditor();
 
-VrtxImageEditor.prototype.init = function init(imageEditorElm, imgURL) {
+VrtxImageEditor.prototype.init = function init(imageEditorElm) {
   var editor = this;
 
   imageEditorElm.addClass("canvas-supported");
@@ -55,8 +55,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imgURL) {
   editor.img = new Image();
   editor.scaledImg = new Image();
   
-    editor.img.src = imgURL;
-  
+  editor.img.src = editor.url;
   editor.img.onload = function () {
     editor.rw = editor.origw = editor.cropWidth = editor.img.width;
     editor.rh = editor.origh = editor.cropHeight = editor.img.height;

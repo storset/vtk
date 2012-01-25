@@ -150,17 +150,12 @@
 #vrtx-image-editor-wrapper {
   overflow-x: hidden;
   overflow-y: visible;
-  display: none;
+  padding: 0 0 20px 0;
 }
 
 #vrtx-image-editor-inner-wrapper {
   min-height: 300px;
   clear: left;
-}
-
-#vrtx-image-editor-wrapper.canvas-supported {
-  display: block;
-  padding: 0 0 20px 0;
 }
 
 #vrtx-lanczos-downscaling-wrapper {

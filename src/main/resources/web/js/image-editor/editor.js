@@ -1,6 +1,18 @@
 /* 
  * Vortex HTML5 Canvas image editor
  *
+ * Features
+ *
+ * o Crop
+ * o Scale
+ *  + Methods
+ *    - Change textfields
+ *    - Use up / down arrow keys in textfields
+ *    - With jQuery UI resizable
+ *  + Keeps aspect ratio (GCD)
+ *  + Lanczos3 downscaling
+ * o Save by uploading base64 PNG to server
+ *
  */
 
 function VrtxImageEditor() {
@@ -19,86 +31,70 @@ function VrtxImageEditor() {
   this.canvasSupported = null;
   this.canvas = null;
   this.ctx = null;
-  this.origw = null;
-  this.origh = null;
   this.lastWidth = null;
   this.lastHeight = null;
   this.rw = null;
   this.rh = null;
-  this.cropX = null;
-  this.cropY = null;
+  this.cropX = 0;
+  this.cropY = 0;
   this.cropWidth = null;
   this.cropHeight = null;
-  this.scaleRatio = null;
-  this.reversedScaleRatio = null;
+  this.scaleRatio = 1;
+  this.reversedScaleRatio = 1;
   this.aspectRatioOver = 1;
   this.aspectRatioUnder = 1;
   this.keepAspectRatio = true;
   this.hasCropBeenInitialized = false;
+  this.savedImage = false;
+  
+  this.selection = null;
+  this.iMouseX = 1;
+  this.iMouseY = 1;
 
   return instance;
 };
 
 var vrtxImageEditor = new VrtxImageEditor();
 
+
 VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
   var editor = this;
 
-  imageEditorElm.addClass("canvas-supported");
-  
   editor.canvasSupported = 'getContext' in document.createElement('canvas');
-  var $canvas = imageEditorElm.find("#vrtx-image-editor");
-  
+  editor.canvas = document.getElementById("vrtx-image-editor");
   if(editor.canvasSupported) {
-    editor.canvas = $canvas[0];
     editor.ctx = editor.canvas.getContext('2d');
   }
-
   editor.img = new Image();
   editor.scaledImg = new Image();
-  
   editor.url = imageURL;
   editor.img.src = editor.url;
   editor.img.onload = function () {
-    editor.rw = editor.origw = editor.lastWidth = editor.cropWidth = editor.img.width;
-    editor.rh = editor.origh = editor.lastHeight = editor.cropHeight = editor.img.height;
-    
+    editor.rw = editor.lastWidth = editor.cropWidth = editor.img.width;
+    editor.rh = editor.lastHeight = editor.cropHeight = editor.img.height;
     if(!editor.canvasSupported) {
-      $canvas.replaceWith("<img src='" + editor.url + "' alt='preview image' />");
+      $(editor.canvas).replaceWith("<img src='" + editor.url + "' alt='preview image' />");
       editor.displayDimensions(editor.rw, editor.rh);
       $("#resource-width").attr("disabled", "disabled");
       $("#resource-height").attr("disabled", "disabled");
     } else {
-      var r = gcd (editor.rw, editor.rh);
-      editor.aspectRatioOver = editor.rw/r;
-      editor.aspectRatioUnder = editor.rh/r;
-      editor.cropX = 0;
-      editor.cropY = 0;
-      editor.scaleRatio = 1;
-      editor.reversedScaleRatio = 1;
+      var gcd = editor.gcd(editor.rw, editor.rh);
+      editor.aspectRatioOver = editor.rw/gcd;
+      editor.aspectRatioUnder = editor.rh/gcd;    
     
-      editor.canvas.setAttribute('width', editor.rw);
-      editor.canvas.setAttribute('height', editor.rh);
-      editor.canvas.width = editor.rw;
-      editor.canvas.height = editor.rh;
-      editor.displayDimensions(editor.rw, editor.rh);
+      editor.updateDimensions(editor.rw, editor.rh);
+  
       editor.ctx.drawImage(editor.img, 0, 0);
-    
       editor.renderScaledImage(false); 
-      
-      $canvas.resizable({
+      $(editor.canvas).resizable({
         aspectRatio: editor.keepAspectRatio,
         grid: [1, 1],
         stop: function (event, ui) {
           var newWidth = Math.floor(ui.size.width);
-          var newHeight = Math.floor(ui.size.height);
-        
-          var correctH = Math.round(newWidth / (editor.aspectRatioOver / editor.aspectRatioUnder));
-          
+          var newHeight = Math.round(newWidth / (editor.aspectRatioOver / editor.aspectRatioUnder));
           editor.lastWidth = newWidth;
-          editor.lastHeight = correctH;
-          
-          editor.scale(newWidth, correctH);
+          editor.lastHeight = newHeight;
+          editor.scale(newWidth, newHeight);
         },
         resize: function (event, ui) {
           editor.displayDimensions(Math.floor(ui.size.width), Math.floor(ui.size.height));
@@ -114,33 +110,31 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
   
     $("#app-content").delegate("#vrtx-image-crop", "click", function (e) {
       if (editor.hasCropBeenInitialized) {
-        editor.cropX += Math.round(theSelection.x * editor.reversedScaleRatio);
-        editor.cropY += Math.round(theSelection.y * editor.reversedScaleRatio);
-        editor.cropWidth = Math.round(theSelection.w * editor.reversedScaleRatio);
-        editor.cropHeight = Math.round(theSelection.h * editor.reversedScaleRatio);
+        editor.cropX += Math.round(editor.selection.x * editor.reversedScaleRatio);
+        editor.cropY += Math.round(editor.selection.y * editor.reversedScaleRatio);
+        editor.cropWidth = Math.round(editor.selection.w * editor.reversedScaleRatio);
+        editor.cropHeight = Math.round(editor.selection.h * editor.reversedScaleRatio);
         editor.rw = editor.lastWidth = Math.round(editor.cropWidth * editor.scaleRatio);
         editor.rh = editor.lastHeight = Math.round(editor.cropHeight * editor.scaleRatio);
-
-        var r = gcd (editor.rw, editor.rh);
-        editor.aspectRatioOver = editor.rw/r;
-        editor.aspectRatioUnder = editor.rh/r;
-      
+        
+        var gcd = editor.gcd(editor.rw, editor.rh);
+        editor.aspectRatioOver = editor.rw/gcd;
+        editor.aspectRatioUnder = editor.rh/gcd;
+        
         editor.updateDimensions(editor.rw, editor.rh);
-
         editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
-                                                    0,            0, editor.rw, editor.rh);
-                                                                                     
-        editor.renderScaledImage(false); 
+                                                    0,            0,        editor.rw,         editor.rh);                                             
+        editor.renderScaledImage(false);
         editor.resetCropPlugin();
         $(this).val(startCropText + "...");
-        $("#vrtx-image-editor").resizable("enable");
-      
+        $("#vrtx-image-editor").resizable("enable");  
+        
         editor.hasCropBeenInitialized = false;
       } else {
-        initSelection(editor);
+        editor.initSelection(40, 40, 40, 40);
         $(this).val(cropText);
         $("#vrtx-image-editor").resizable("disable");
-      
+        
         editor.hasCropBeenInitialized = true;
       }
       e.stopPropagation();
@@ -171,116 +165,152 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
       }
     });
 
+    // TODO: combine with keydown for resource-height
     $("#app-content").delegate("#resource-width", "keydown", function (e) {
       if (e.which == 38 || e.which == 40) {
         var w = parseInt($.trim($("#resource-width").val()));
-        var h = parseInt($.trim($("#resource-height").val()));
-        if (!isNaN(w) && !isNaN(h)) {
-          if (e.which == 38) {
-            w++;
-          } else {
-            if (w > 2) {
-              w--;
-            }
-          }
-          if (editor.keepAspectRatio) {
-            h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
-          }
-          editor.lastWidth = w;
-          editor.lastHeight = h;
-          $("#resource-width").val(w);
-          $("#resource-height").val(h);
-          editor.scale(w, h);
+        if (e.which == 38) {
+          w++;
         } else {
-          $("#resource-width").val(editor.lastWidth);
-          $("#resource-height").val(editor.lastHeight);
+          if (w > 2) {
+            w--;
+          }
         }
+        if (editor.keepAspectRatio) {
+          h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
+        }
+        editor.lastWidth = w;
+        editor.lastHeight = h;
+        $("#resource-width").val(w);
+        $("#resource-height").val(h);
+        editor.scale(w, h);
       }
     });
 
     $("#app-content").delegate("#resource-height", "keydown", function (e) {
       if (e.which == 38 || e.which == 40) {
-        var w = parseInt($.trim($("#resource-width").val()));
-        var h = parseInt($.trim($("#resource-height").val()));
-        if (!isNaN(w) && !isNaN(h)) {
-          if (e.which == 38) {
-            h++;
-          } else {
-            if (h > 2) {
-              h--;
-            }
-          }
-          if (editor.keepAspectRatio) {
-            w = Math.round(h * (editor.aspectRatioOver / editor.aspectRatioUnder));
-          }
-          editor.lastWidth = w;
-          editor.lastHeight = h;
-          $("#resource-width").val(w);
-          $("#resource-height").val(h);
-          editor.scale(w, h);
+        var h = parseInt($.trim($(this).val()));
+        if (e.which == 38) {
+          h++;
         } else {
-          $("#resource-width").val(editor.lastWidth);
-          $("#resource-height").val(editor.lastHeight);
+          if (h > 2) {
+            h--;
+          }
         }
+        if (editor.keepAspectRatio) {
+          w = Math.round(h * (editor.aspectRatioOver / editor.aspectRatioUnder));
+        }
+        editor.lastWidth = w;
+        editor.lastHeight = h;
+        $("#resource-width").val(w);
+        $("#resource-height").val(h);
+        editor.scale(w, h);
       }
     });
   
     $("#app-content").delegate("#saveAndViewButton", "click", function(e) {;
-      if(!savedImage) {
+      if(!editor.savedImage) {
         if(editor.hasCropBeenInitialized) {
-          cropNone(editor);
+          editor.cropNone(editor); // Remove selection
         }
-        if(editor.scaleRatio < 0.9) {
+        if(editor.scaleRatio < 0.9) { // No artifacts below 0.9
           editor.scaleLanczos(3); // http://int64.org/2011/07/24/choosing-the-right-kernel
         } else {
           editor.save();
         }
         return false; 
       } else {
-        savedImage = false;
+        editor.savedImage = false;
       }
     });
   
     $(document).click(function(e) {
       if(editor.hasCropBeenInitialized && $(e.target).parents().index($('#vrtx-image-editor-inner-wrapper')) == -1) {
-        /*var posX = e.pageX; // http://docs.jquery.com/Tutorials:Mouse_Position
-        var posY = e.pageY;
-        var editorOffset = $("#vrtx-image-editor").offset();
-        var editorX = Math.round(editorOffset.left + theSelection.x) - 15;
-        var editorY = Math.round(editorOffset.top + theSelection.y) - 15;
-        var editorW = Math.round(editorX + theSelection.w) + 15;
-        var editorH = Math.round(editorY + theSelection.h) + 15;
-        if(posX > editorX && posX < editorW && posY > editorY && posY < editorH) {
-        } else {*/
-          cropNone(editor);
-        /* }*/
+        editor.cropNone(editor);
       }
     });
   }
 };
 
-function gcd (a, b) {
-  return (b == 0) ? a : gcd (b, a%b);
+VrtxImageEditor.prototype.gcd = function gcd(a, b) {
+  return (b == 0) ? a : this.gcd (b, a%b);
 }
 
-function cropNone(editor) {
-  theSelection.x = 0;
-  theSelection.y = 0;
-  theSelection.w = editor.rw;
-  theSelection.h = editor.rh;
-  $("#vrtx-image-crop").click();
-}
+VrtxImageEditor.prototype.updateDimensions = function updateDimensions(w, h) {
+  var editor = this;
+  editor.canvas.setAttribute('width', w);
+  editor.canvas.setAttribute('height', h);
+  editor.canvas.width = w;
+  editor.canvas.height = h;
+  $(".ui-wrapper").css({"width": w, "height": h});
+  $("#vrtx-image-editor").css({"width": w, "height": h});
+  editor.displayDimensions(w, h);
+};
 
-var savedImage = false;
+VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
+  if ($("#vrtx-image-dimensions-crop").length) {
+    $("#resource-width").val(w);
+    $("#resource-height").val(h);
+  } else {
+    var dimensionHtml = '<div id="vrtx-image-dimensions-crop">'
+                        + '<div class="vrtx-label-and-text">'
+                          + '<div class="property-label">' + widthText + '</div>'
+                          + '<div class="vrtx-textfield" id="vrtx-textfield-width"><input id="resource-width" type="text" value="' + w + '" size="4" /></div>'
+                        + '</div>'
+                        + '<div class="vrtx-label-and-text">'
+                          + '<div class="property-label">' + heightText + '</div>'
+                          + '<div class="vrtx-textfield" id="vrtx-textfield-height"><input id="resource-height" type="text" value="' + h + '" size="4" /></div>'
+                        + '</div>';
+    if(this.canvasSupported) {                      
+      dimensionHtml += '<div id="vrtx-image-crop-button"><div class="vrtx-button">'
+                     + '<input type="button" id="vrtx-image-crop" value="' + startCropText + '..." /></div></div>'
+                     + '<div id="vrtx-image-info" style="margin-top: 10px"></div>';
+    }
+    dimensionHtml  += '</div>';
+    $(dimensionHtml).insertBefore("#vrtx-image-editor-preview");
+  }
+};
+
+VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage(insertImage) {
+  var editor = this;
+  
+  var scaledImgSrc = editor.canvas.toDataURL("image/png");
+  editor.scaledImg.src = scaledImgSrc;
+  editor.scaledImg.onload = function(insertImage) { // TODO: function ref.
+    if(insertImage) {
+      var tmpCanvas = $("#vrtx-image-editor-preview-image")[0];
+      tmpCanvas.style.display = "block";
+      var tmpCtx = tmpCanvas.getContext('2d');
+      tmpCanvas.width = editor.rw;
+      tmpCanvas.height = editor.rh;
+      var loadingInfo = $("#vrtx-image-editor-wrapper-loading-info");
+      var loadingInfoText = loadingInfo.find("#vrtx-image-editor-wrapper-loading-info-text");
+      var loadingInfoTextSpan = loadingInfoText.find("span");
+      if(editor.rw >= 230 && editor.rh >= 50) {
+        loadingInfo.css({"width": editor.rw + "px", "height": editor.rh + "px"});
+        loadingInfoText.css({"height": "100%", "background": "#555", "opacity": "0.8"});
+        loadingInfoTextSpan.css({"left": (Math.round((editor.rw - 220) / 2) + 5) + "px",
+                                 "top": (Math.round((editor.rh - 40) / 2) + 5) + "px", "color": "#fff"});
+      } else { // Just put it under..
+        loadingInfo.css({"width": editor.rw + "px", "height": editor.rh + 50 + "px"});
+        loadingInfoText.css({"height": editor.rh + 50 + "px", "background": "transparent"});
+        loadingInfoTextSpan.css({"left": "0px", "top": editor.rh + 30 + "px", "color": "#000"}); 
+      }
+      tmpCtx.drawImage(editor.scaledImg, 0, 0);
+    } else {
+      editor.ctx.drawImage(editor.scaledImg, 0, 0);
+    }
+  };
+};
+
 VrtxImageEditor.prototype.save = function save() {
-  savedImage = true;
-
+  this.savedImage = true;
+  
   var imageAsBase64 = vrtxImageEditor.canvas.toDataURL("image/png");
   imageAsBase64 = imageAsBase64.replace("data:image/png;base64,", "");
   var form = $("form#vrtx-image-editor-save-image-form");
-  if("FormData" in window) { // If FormData is supported
-    var fd = new FormData(); // Info: http://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/
-                             //       http://dvcs.w3.org/hg/xhr/raw-file/tip/Overview.html#interface-formdata
+  if("FormData" in window) {
+    var fd = new FormData();
     fd.append("csrf-prevention-token", form.find("input[name=csrf-prevention-token]").val()); 
     fd.append("base", imageAsBase64);
     var xhr = new XMLHttpRequest();
@@ -305,133 +335,33 @@ VrtxImageEditor.prototype.save = function save() {
 
 VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
   var editor = this;
-
   editor.scaleRatio = newWidth / editor.cropWidth;
   editor.reversedScaleRatio = editor.cropWidth / newWidth;
   editor.rw = newWidth;
   editor.rh = newHeight;
   editor.updateDimensions(editor.rw, editor.rh);
   editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
-                                              0,            0, editor.rw, editor.rh);
+                                              0,            0,        editor.rw,        editor.rh);
   editor.renderScaledImage(false);      
 };
 
-VrtxImageEditor.prototype.resetCropPlugin = function resetCropPlugin() {
-  $("#vrtx-image-editor").unbind("mousemove").unbind("mousedown").unbind("mouseup");
-  iMouseX, iMouseY = 1;
-  theSelection;
-};
 
-VrtxImageEditor.prototype.updateDimensions = function updateDimensions(w, h) {
-  var editor = this;
-
-  editor.canvas.setAttribute('width', w);
-  editor.canvas.setAttribute('height', h);
-  editor.canvas.width = w;
-  editor.canvas.height = h;
-  $(".ui-wrapper").css({
-    "width": w,
-    "height": h
-  });
-  $("#vrtx-image-editor").css({
-    "width": w,
-    "height": h
-  });
-  editor.displayDimensions(w, h);
-};
-
-VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
-  if ($("#vrtx-image-dimensions-crop").length) {
-    $("#resource-width").val(w);
-    $("#resource-height").val(h);
-    // displayDebugInfo(this);
-  } else {
-    var dimensionHtml = '<div id="vrtx-image-dimensions-crop">'
-                        + '<div class="vrtx-label-and-text">'
-                          + '<div class="property-label">' + widthText + '</div>'
-                          + '<div class="vrtx-textfield" id="vrtx-textfield-width"><input id="resource-width" type="text" value="' + w + '" size="4" /></div>'
-                        + '</div>'
-                        + '<div class="vrtx-label-and-text">'
-                          + '<div class="property-label">' + heightText + '</div>'
-                          + '<div class="vrtx-textfield" id="vrtx-textfield-height"><input id="resource-height" type="text" value="' + h + '" size="4" /></div>'
-                        + '</div>';
-    if(this.canvasSupported) {                      
-      dimensionHtml += '<div id="vrtx-image-crop-button"><div class="vrtx-button">'
-                     + '<input type="button" id="vrtx-image-crop" value="' + startCropText + '..." /></div></div>'
-                     + '<div id="vrtx-image-info" style="margin-top: 10px"></div>';
-    }
-    dimensionHtml  += '</div>';
-    $(dimensionHtml).insertBefore("#vrtx-image-editor-preview");
-  }
-};
-
-function displayDebugInfo(editor) {
-  $("#vrtx-image-info").html("Width: " + editor.rw + " Height: " + editor.rh + " CropX: " + editor.cropX + " CropY: "
-                           + editor.cropY + " CropWidth: " + editor.cropWidth + " CropHeight: " + editor.cropHeight
-                           + " Scale: " + editor.scaleRatio + " ReverseScale: " + editor.reversedScaleRatio);
-
-}
-
-/*
- * Credits: http://hyankov.wordpress.com/2010/12/26/how-to-implement-html5-canvas-undo-function/
- * TODO: Undo/redo functionality. Use another canvas instead to avoid exporting to base64 before saving
- */
-VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage(insertImage) {
-  var editor = this;
-  
-  var scaledImgSrc = editor.canvas.toDataURL("image/png");
-  editor.scaledImg.src = scaledImgSrc;
-  editor.scaledImg.onload = function(insertImage) {
-    if(insertImage) {
-      var tmpCanvas = $("#vrtx-image-editor-preview-image")[0];
-      tmpCanvas.style.display = "block";
-      var tmpCtx = tmpCanvas.getContext('2d');
-      tmpCanvas.width = editor.rw;
-      tmpCanvas.height = editor.rh;   
-      if(editor.rw >= 230 && editor.rh >= 50) {
-        $("#vrtx-image-editor-wrapper-loading-info").css({"width": editor.rw + "px", "height": editor.rh + "px"});
-        $("#vrtx-image-editor-wrapper-loading-info-text").css({"height": "100%", "background": "#555", "opacity": "0.8"});
-        $("#vrtx-image-editor-wrapper-loading-info-text span").css({"left": (Math.round((editor.rw - 220) / 2) + 5) + "px",
-                                                                    "top": (Math.round((editor.rh - 40) / 2) + 5) + "px", "color": "#fff"});
-      } else { // Just put it under..
-        $("#vrtx-image-editor-wrapper-loading-info").css({"width": editor.rw + "px", "height": editor.rh + 50 + "px"});
-        $("#vrtx-image-editor-wrapper-loading-info-text").css({"height": editor.rh + 50 + "px", "background": "transparent"});
-        $("#vrtx-image-editor-wrapper-loading-info-text span").css({"left": "0px", "top": editor.rh + 30 + "px", "color": "#000"}); 
-      }
-      tmpCtx.drawImage(editor.scaledImg, 0, 0);
-    } else {
-      editor.ctx.drawImage(editor.scaledImg, 0, 0);
-    }
-  };
-};
-
-String.prototype.endsWith = function(str) 
-{return (this.match(str+"$")==str)}
-
-VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes) {
-  var editor = this;
-
-  // editor.updateDimensions(editor.rw, editor.rh);
-  editor.renderScaledImage(true);
-  new thumbnailer(editor, lobes);
-}
-
-/* Thumbnailer / Lanczos algorithm for downscaling
+/* Lanczos algorithm for downscaling
+ *
  * Credits: http://stackoverflow.com/questions/2303690/resizing-an-image-in-an-html5-canvas
  *
- * Modified by USIT to use Web Workers if supported for process1 and process2 (otherwise degrade to setTimeout)
+ * Modified by USIT
  *
+ * TODO: Not as good as the one in GIMP (a little work converting that one and figure out PixelSurround+Tile)
+ * TODO: Fix using Web Workers if supported for process1 and process2 (otherwise degrade to setTimeout)
  * TODO: Optimize and multiple Web Workers pr. process (tasking)
  *
  */
 
-/* elem: Canvas element
- * ctx: Canvas 2D context 
- * img: Image element
- * sx: Scaled width
- * lobes: kernel radius (e.g. 3)
- */
-function thumbnailer(editor, lobes) {
+VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes) {
+  var editor = this;
+  editor.renderScaledImage(true);
+  
   var elem = editor.canvas;
   var ctx = editor.ctx;
   var img = editor.img;
@@ -442,6 +372,7 @@ function thumbnailer(editor, lobes) {
   elem.height = img.height;
   elem.style.display = "none";    
   $("#vrtx-image-editor-wrapper").addClass("loading");
+  $("#vrtx-image-editor-wrapper-loading-info").show(0);
   $("#vrtx-image-crop").attr("disabled", "disabled");
   ctx.drawImage(img, 0, 0);
   
@@ -463,14 +394,12 @@ function thumbnailer(editor, lobes) {
     center: {},
     icenter: {}
   };
-  
-  $("#vrtx-image-editor-wrapper-loading-info").show(0);
-
+ 
   // Used for Web Workers or setTimeout (inject scripts and use methods inside)
   var process1Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process1.js';
   var process2Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process2.js';
 
-  if (false) { // Use Web Workers if supported. TODO: fix problem hangs on some dimensions
+  if (false) { // Use Web Workers if supported
     var workerLanczosProcess1 = new Worker(process1Url);
     var workerLanczosProcess2 = new Worker(process2Url); 
     workerLanczosProcess1.postMessage(data);
@@ -537,19 +466,19 @@ function thumbnailer(editor, lobes) {
       }, 0);
     }
   }
-}
+};
 
 /*
  * Crop plugin
+ *
  * Credits: http://www.script-tutorials.com/demos/197/index.html
- * TODO: optimize
+ *
  * Modified slightly by USIT
+ *
+ * TODO: Optimize
+ *
  */
 
-var iMouseX, iMouseY = 1;
-var theSelection;
-
-// Define Selection constructor
 function Selection(x, y, w, h) {
   this.x = x; // initial positions
   this.y = y;
@@ -565,24 +494,28 @@ function Selection(x, y, w, h) {
   this.bDragAll = false; // drag whole selection
 }
 
-// Define Selection draw method
-Selection.prototype.draw = function (editor) {
+VrtxImageEditor.prototype.draw = function draw() {
+  var editor = this;
+  var selection = editor.selection;
+  
   editor.ctx.strokeStyle = '#000';
   editor.ctx.lineWidth = 2;
-  editor.ctx.strokeRect(this.x, this.y, this.w, this.h);
+  editor.ctx.strokeRect(selection.x, selection.y, selection.w, selection.h);
   // draw part of original image
-  if (this.w > 0 && this.h > 0) {
-    editor.ctx.drawImage(editor.scaledImg, this.x, this.y, this.w, this.h, this.x, this.y, this.w, this.h);
+  if (selection.w > 0 && selection.h > 0) {
+    editor.ctx.drawImage(editor.scaledImg, selection.x, selection.y, selection.w, selection.h, selection.x, selection.y, selection.w, selection.h);
   }
   // draw resize cubes
   editor.ctx.fillStyle = '#fff';
-  editor.ctx.fillRect(this.x - this.iCSize[0], this.y - this.iCSize[0], this.iCSize[0] * 2, this.iCSize[0] * 2);
-  editor.ctx.fillRect(this.x + this.w - this.iCSize[1], this.y - this.iCSize[1], this.iCSize[1] * 2, this.iCSize[1] * 2);
-  editor.ctx.fillRect(this.x + this.w - this.iCSize[2], this.y + this.h - this.iCSize[2], this.iCSize[2] * 2, this.iCSize[2] * 2);
-  editor.ctx.fillRect(this.x - this.iCSize[3], this.y + this.h - this.iCSize[3], this.iCSize[3] * 2, this.iCSize[3] * 2);
-}
+  editor.ctx.fillRect(selection.x - selection.iCSize[0], selection.y - selection.iCSize[0], selection.iCSize[0] * 2, selection.iCSize[0] * 2);
+  editor.ctx.fillRect(selection.x + selection.w - selection.iCSize[1], selection.y - selection.iCSize[1], selection.iCSize[1] * 2, selection.iCSize[1] * 2);
+  editor.ctx.fillRect(selection.x + selection.w - selection.iCSize[2], selection.y + selection.h - selection.iCSize[2], selection.iCSize[2] * 2, selection.iCSize[2] * 2);
+  editor.ctx.fillRect(selection.x - selection.iCSize[3], selection.y + selection.h - selection.iCSize[3], selection.iCSize[3] * 2, selection.iCSize[3] * 2);
+};
 
-function drawScene(editor) { // Main drawScene function
+VrtxImageEditor.prototype.drawScene = function drawScene() { // Main drawScene function
+  var editor = this;
+
   editor.ctx.clearRect(0, 0, editor.canvas.width, editor.canvas.height); // clear canvas
   // draw source image
   editor.ctx.drawImage(editor.scaledImg, 0, 0);
@@ -590,131 +523,149 @@ function drawScene(editor) { // Main drawScene function
   editor.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
   editor.ctx.fillRect(0, 0, editor.canvas.width, editor.canvas.height);
   // draw selection
-  theSelection.draw(editor);
-}
+  editor.draw();
+};
 
-function initSelection(editor) {
-  // create initial selection
-  theSelection = new Selection(40, 40, editor.rw - 40, editor.rh - 40);
+VrtxImageEditor.prototype.initSelection = function initSelection(x, y, w, h) {
+  var editor = this;
+
+  editor.selection = new Selection(x, y, w, h);
+  var selection = editor.selection;
+
   $('#vrtx-image-editor').bind("mousemove", function (e) { // binding mouse move event
     var canvasOffset = $(editor.canvas).offset();
-    iMouseX = Math.floor(e.pageX - canvasOffset.left);
-    iMouseY = Math.floor(e.pageY - canvasOffset.top);
+    selection.iMouseX = Math.floor(e.pageX - canvasOffset.left);
+    selection.iMouseY = Math.floor(e.pageY - canvasOffset.top);
     // in case of drag of whole selector
-    if (theSelection.bDragAll) {
-      theSelection.x = iMouseX - theSelection.px;
-      theSelection.y = iMouseY - theSelection.py;
+    if (selection.bDragAll) {
+      selection.x = selection.iMouseX - selection.px;
+      selection.y = selection.iMouseY - selection.py;
     }
     for (i = 0; i < 4; i++) {
-      theSelection.bHow[i] = false;
-      theSelection.iCSize[i] = theSelection.csize;
+      selection.bHow[i] = false;
+      selection.iCSize[i] = selection.csize;
     }
     // hovering over resize cubes
-    if (iMouseX > theSelection.x - theSelection.csizeh 
-     && iMouseX < theSelection.x + theSelection.csizeh
-     && iMouseY > theSelection.y - theSelection.csizeh
-     && iMouseY < theSelection.y + theSelection.csizeh) {
-      theSelection.bHow[0] = true;
-      theSelection.iCSize[0] = theSelection.csizeh;
+    if (selection.iMouseX > selection.x - selection.csizeh 
+     && selection.iMouseX < selection.x + selection.csizeh
+     && selection.iMouseY > selection.y - selection.csizeh
+     && selection.iMouseY < selection.y + selection.csizeh) {
+      selection.bHow[0] = true;
+      selection.iCSize[0] = selection.csizeh;
     }
-    if (iMouseX > theSelection.x + theSelection.w - theSelection.csizeh 
-     && iMouseX < theSelection.x + theSelection.w + theSelection.csizeh
-     && iMouseY > theSelection.y - theSelection.csizeh
-     && iMouseY < theSelection.y + theSelection.csizeh) {
-      theSelection.bHow[1] = true;
-      theSelection.iCSize[1] = theSelection.csizeh;
+    if (selection.iMouseX > selection.x + selection.w - selection.csizeh 
+     && selection.iMouseX < selection.x + selection.w + selection.csizeh
+     && selection.iMouseY > selection.y - selection.csizeh
+     && selection.iMouseY < selection.y + selection.csizeh) {
+      selection.bHow[1] = true;
+      selection.iCSize[1] = selection.csizeh;
     }
-    if (iMouseX > theSelection.x + theSelection.w - theSelection.csizeh
-     && iMouseX < theSelection.x + theSelection.w + theSelection.csizeh
-     && iMouseY > theSelection.y + theSelection.h - theSelection.csizeh
-     && iMouseY < theSelection.y + theSelection.h + theSelection.csizeh) {
-      theSelection.bHow[2] = true;
-      theSelection.iCSize[2] = theSelection.csizeh;
+    if (selection.iMouseX > selection.x + selection.w - selection.csizeh
+     && selection.iMouseX < selection.x + selection.w + selection.csizeh
+     && selection.iMouseY > selection.y + selection.h - selection.csizeh
+     && selection.iMouseY < selection.y + selection.h + selection.csizeh) {
+      selection.bHow[2] = true;
+      selection.iCSize[2] = selection.csizeh;
     }
-    if (iMouseX > theSelection.x - theSelection.csizeh
-     && iMouseX < theSelection.x + theSelection.csizeh
-     && iMouseY > theSelection.y + theSelection.h - theSelection.csizeh
-     && iMouseY < theSelection.y + theSelection.h + theSelection.csizeh) {
-      theSelection.bHow[3] = true;
-      theSelection.iCSize[3] = theSelection.csizeh;
+    if (selection.iMouseX > selection.x - selection.csizeh
+     && selection.iMouseX < selection.x + selection.csizeh
+     && selection.iMouseY > selection.y + selection.h - selection.csizeh
+     && selection.iMouseY < selection.y + selection.h + selection.csizeh) {
+      selection.bHow[3] = true;
+      selection.iCSize[3] = selection.csizeh;
     }
     // in case of dragging of resize cubes
     var iFW, iFH;
-    if (theSelection.bDrag[0]) {
-      var iFX = iMouseX - theSelection.px;
-      var iFY = iMouseY - theSelection.py;
-      iFW = theSelection.w + theSelection.x - iFX;
-      iFH = theSelection.h + theSelection.y - iFY;
+    if (selection.bDrag[0]) {
+      var iFX = selection.iMouseX - selection.px;
+      var iFY = selection.iMouseY - selection.py;
+      iFW = selection.w + selection.x - iFX;
+      iFH = selection.h + selection.y - iFY;
     }
-    if (theSelection.bDrag[1]) {
-      var iFX = theSelection.x;
-      var iFY = iMouseY - theSelection.py;
-      iFW = iMouseX - theSelection.px - iFX;
-      iFH = theSelection.h + theSelection.y - iFY;
+    if (selection.bDrag[1]) {
+      var iFX = selection.x;
+      var iFY = selection.iMouseY - selection.py;
+      iFW = selection.iMouseX - selection.px - iFX;
+      iFH = selection.h + selection.y - iFY;
     }
-    if (theSelection.bDrag[2]) {
-      var iFX = theSelection.x;
-      var iFY = theSelection.y;
-      iFW = iMouseX - theSelection.px - iFX;
-      iFH = iMouseY - theSelection.py - iFY;
+    if (selection.bDrag[2]) {
+      var iFX = selection.x;
+      var iFY = selection.y;
+      iFW = selection.iMouseX - selection.px - iFX;
+      iFH = selection.iMouseY - selection.py - iFY;
     }
-    if (theSelection.bDrag[3]) {
-      var iFX = iMouseX - theSelection.px;
-      var iFY = theSelection.y;
-      iFW = theSelection.w + theSelection.x - iFX;
-      iFH = iMouseY - theSelection.py - iFY;
+    if (selection.bDrag[3]) {
+      var iFX = selection.iMouseX - selection.px;
+      var iFY = selection.y;
+      iFW = selection.w + selection.x - iFX;
+      iFH = selection.iMouseY - selection.py - iFY;
     }
-    if (iFW > theSelection.csizeh * 2 && iFH > theSelection.csizeh * 2) {
-      theSelection.w = iFW;
-      theSelection.h = iFH;
-      theSelection.x = iFX;
-      theSelection.y = iFY;
+    if (iFW > selection.csizeh * 2 && iFH > selection.csizeh * 2) {
+      selection.w = iFW;
+      selection.h = iFH;
+      selection.x = iFX;
+      selection.y = iFY;
     }
-    drawScene(editor);
+    editor.drawScene();
   });
   $('#vrtx-image-editor').bind("mousedown", function (e) { // binding mousedown event
     var canvasOffset = $(editor.canvas).offset();
-    iMouseX = Math.floor(e.pageX - canvasOffset.left);
-    iMouseY = Math.floor(e.pageY - canvasOffset.top);
-    theSelection.px = iMouseX - theSelection.x;
-    theSelection.py = iMouseY - theSelection.y;
-    if (theSelection.bHow[0]) {
-      theSelection.px = iMouseX - theSelection.x;
-      theSelection.py = iMouseY - theSelection.y;
+    selection.iMouseX = Math.floor(e.pageX - canvasOffset.left);
+    selection.iMouseY = Math.floor(e.pageY - canvasOffset.top);
+    selection.px = selection.iMouseX - selection.x;
+    selection.py = selection.iMouseY - selection.y;
+    if (selection.bHow[0]) {
+      selection.px = selection.iMouseX - selection.x;
+      selection.py = selection.iMouseY - selection.y;
     }
-    if (theSelection.bHow[1]) {
-      theSelection.px = iMouseX - theSelection.x - theSelection.w;
-      theSelection.py = iMouseY - theSelection.y;
+    if (selection.bHow[1]) {
+      selection.px = selection.iMouseX - selection.x - selection.w;
+      selection.py = selection.iMouseY - selection.y;
     }
-    if (theSelection.bHow[2]) {
-      theSelection.px = iMouseX - theSelection.x - theSelection.w;
-      theSelection.py = iMouseY - theSelection.y - theSelection.h;
+    if (selection.bHow[2]) {
+      selection.px = selection.iMouseX - selection.x - selection.w;
+      selection.py = selection.iMouseY - selection.y - selection.h;
     }
-    if (theSelection.bHow[3]) {
-      theSelection.px = iMouseX - theSelection.x;
-      theSelection.py = iMouseY - theSelection.y - theSelection.h;
+    if (selection.bHow[3]) {
+      selection.px = selection.iMouseX - selection.x;
+      selection.py = selection.iMouseY - selection.y - selection.h;
     }
-    if (iMouseX > theSelection.x + theSelection.csizeh
-     && iMouseX < theSelection.x + theSelection.w - theSelection.csizeh
-     && iMouseY > theSelection.y + theSelection.csizeh
-     && iMouseY < theSelection.y + theSelection.h - theSelection.csizeh) {
-      theSelection.bDragAll = true;
+    if (selection.iMouseX > selection.x + selection.csizeh
+     && selection.iMouseX < selection.x + selection.w - selection.csizeh
+     && selection.iMouseY > selection.y + selection.csizeh
+     && selection.iMouseY < selection.y + selection.h - selection.csizeh) {
+      selection.bDragAll = true;
     }
     for (i = 0; i < 4; i++) {
-      if (theSelection.bHow[i]) {
-        theSelection.bDrag[i] = true;
+      if (selection.bHow[i]) {
+        selection.bDrag[i] = true;
       }
     }
   });
   $('#vrtx-image-editor').bind("mouseup", function (e) { // binding mouseup event
-    theSelection.bDragAll = false;
+    selection.bDragAll = false;
     for (i = 0; i < 4; i++) {
-      theSelection.bDrag[i] = false;
+      selection.bDrag[i] = false;
     }
-    theSelection.px = 0;
-    theSelection.py = 0;
+    selection.px = 0;
+    selection.py = 0;
   });
-  drawScene(editor);
-}
+  editor.drawScene();
+};
+
+VrtxImageEditor.prototype.cropNone = function cropNone() {
+  var editor = this;
+  editor.selection.x = 0;
+  editor.selection.y = 0;
+  editor.selection.w = editor.rw;
+  editor.selection.h = editor.rh;
+  $("#vrtx-image-crop").click();
+};
+
+VrtxImageEditor.prototype.resetCropPlugin = function resetCropPlugin() {
+  var editor = this;
+  editor.selection = null;
+  $("#vrtx-image-editor").unbind("mousemove").unbind("mousedown").unbind("mouseup");
+};
 
 /* ^ Vortex HTML5 Canvas image editor */

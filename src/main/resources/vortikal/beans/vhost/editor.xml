@@ -99,6 +99,45 @@
     <property name="handler" ref="editor.imageEditHandler" />
   </bean>
 
+  <bean id="editor.saveImageService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="editor.imageEditService" />
+    <property name="order" value="-99999" />
+    <property name="assertions">
+      <list>
+        <ref bean="manage.postRequestAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="edit-action" />
+          <property name="parameterValue" value="save-image" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="editor.saveImageHandler" />
+  </bean>
+  
+  <bean id="editor.saveImageHandler" class="org.vortikal.web.actions.SaveImageController">
+    <property name="viewName" value="redirectToManage" />
+  </bean>
+
+
+  <bean id="editor.loadImageService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="editor.imageEditService" />
+    <property name="order" value="-99999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="edit-action" />
+          <property name="parameterValue" value="load-image" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="editor.loadImageHandler" />
+  </bean>
+  
+  <bean id="editor.loadImageHandler" class="org.vortikal.web.display.file.DisplayResourceController">
+    <property name="displayProcessed" value="false" />
+    <property name="ignoreLastModified" value="true" />
+  </bean>
+
   <bean id="editor.videoEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
@@ -338,7 +377,8 @@
     <property name="resourceManager" ref="editor.imageResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
-    <property name="saveImageService" ref="manage.saveImageService" />
+    <property name="loadImageService" ref="editor.loadImageService" />
+    <property name="saveImageService" ref="editor.saveImageService" />
   </bean>
 
   <bean id="editor.videoEditHandler" class="org.vortikal.edit.editor.ResourceEditController">

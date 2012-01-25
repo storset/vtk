@@ -30,9 +30,6 @@
  */
 package org.vortikal.edit.editor;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +37,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.axiom.util.base64.Base64Utils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -60,10 +56,15 @@ import org.vortikal.web.service.URL;
 public class ResourceEditController extends SimpleFormController {
 
     private List<Service> tooltipServices;
+    private Service loadImageService;
     private Service saveImageService;
     private ResourceWrapperManager resourceManager;
     private Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyEditPreprocessors;
 
+
+    public void setLoadImageService(Service loadImageService) {
+        this.loadImageService = loadImageService;
+    }
 
     public void setSaveImageService(Service saveImageService) {
         this.saveImageService = saveImageService;
@@ -145,9 +146,16 @@ public class ResourceEditController extends SimpleFormController {
         }
         model.put("tooltips", resolveTooltips(resource, principal));
 
-        if(this.saveImageService != null) {
+        // XXX:
+        if (this.saveImageService != null) {
           URL saveImageURL = this.saveImageService.constructURL(resource, principal);
           model.put("saveImageURL", saveImageURL);
+        }
+        if (this.loadImageService != null) {
+          URL imageSourceURL = this.loadImageService.constructURL(resource, principal);
+          model.put("imageURL", imageSourceURL);
+        }
+        /*
           InputStream in = repository.getInputStream(token, uri, false);
           ByteArrayOutputStream bos = new ByteArrayOutputStream();
           int next = in.read();
@@ -158,8 +166,7 @@ public class ResourceEditController extends SimpleFormController {
           bos.flush();
           byte[] result = bos.toByteArray(); 
           model.put("imageAsBase64", Base64Utils.encode(result));
-        }
-        
+          */
         return model;
     }
 

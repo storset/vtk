@@ -148,9 +148,8 @@
            url = url.substring(0, url.indexOf("?"));
            url = url.replace("-adm", "");
            vrtxImageEditor.url = url;
-           vrtxImageEditor.imageInAsBase64 = "data:${theContentType};base64,${imageAsBase64}";
            if(imageEditorElm.length) {
-             vrtxImageEditor.init(imageEditorElm);   
+             vrtxImageEditor.init(imageEditorElm, "${imageURL}");
            }
          });
        // -->

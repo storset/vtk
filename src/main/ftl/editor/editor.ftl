@@ -147,9 +147,9 @@
            var url = location.href;
            url = url.substring(0, url.indexOf("?"));
            url = url.replace("-adm", "");
-           vrtxImageEditor.url = url;
+           vrtxImageEditor.url = "${imageURL}";
            if(imageEditorElm.length) {
-             vrtxImageEditor.init(imageEditorElm, "${imageURL}");
+             vrtxImageEditor.init(imageEditorElm);
            }
          });
        // -->

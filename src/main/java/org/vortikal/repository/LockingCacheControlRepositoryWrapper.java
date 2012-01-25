@@ -612,11 +612,6 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         return this.wrappedRepository.getTypeInfo(resource);
     }
 
-    @Override
-    public void purgeTrash() {
-        this.wrappedRepository.purgeTrash();
-    }
-    
     @Required
     public void setCache(Cache cache) {
         this.cache = cache;

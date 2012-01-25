@@ -54,6 +54,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 import org.vortikal.repository.Revision.Type;
 import org.vortikal.repository.content.ContentImpl;
 import org.vortikal.repository.content.ContentRepresentationRegistry;
@@ -93,9 +95,10 @@ import org.vortikal.util.io.StreamUtil;
  * 
  * XXX: implement locking of depth 'infinity' XXX: namespace locking/concurrency
  * XXX: Evaluate exception practice, handling and propagation
- * XXX: transaction demarcation
+ * XXX: make content store participate in transactions
  * XXX: externalize caching
  * XXX: duplication of owner and inherited between resource and acl.
+ * XXX: too big.
  */
 public class RepositoryImpl implements Repository, ApplicationContextAware {
 
@@ -113,7 +116,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private Searcher searcher;
     private String id;
     private int maxComments = 1000;
-    private PeriodicThread periodicThread;
     private int maxResourceChildren = 3000;
     private File tempDir;
 
@@ -148,6 +150,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return this.id;
     }
 
+    @Transactional
     @Override
     public boolean exists(String token, Path uri) throws IOException {
 
@@ -155,6 +158,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     }
 
+    @Transactional
     @Override
     public Resource retrieve(String token, Path uri, boolean forProcessing) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, IOException {
@@ -184,6 +188,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
     
     
+    @Transactional
     @Override
     public Resource retrieve(String token, Path uri, boolean forProcessing,
             Revision revision) throws ResourceNotFoundException,
@@ -255,6 +260,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return new TypeInfo(this.resourceTypeTree, resource.getResourceType());
     }
 
+    @Transactional
     @Override
     public InputStream getInputStream(String token, Path uri, boolean forProcessing) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, ResourceLockedException, IOException {
@@ -277,6 +283,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return this.contentStore.getInputStream(uri).getInputStream();
     }
 
+    @Transactional
     @Override
     public InputStream getInputStream(String token, Path uri, boolean forProcessing, Revision revision) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, ResourceLockedException, IOException {
@@ -314,6 +321,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return this.revisionStore.getContent(r, revision);
     }
 
+    @Transactional
     @Override
     public Resource[] listChildren(String token, Path uri, boolean forProcessing) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, IOException {
@@ -347,6 +355,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return children;
     }
 
+    @Transactional
     @Override
     public Resource createCollection(String token, Path uri) throws IllegalOperationException, AuthorizationException,
             AuthenticationException, ResourceLockedException, ReadOnlyException, IOException {
@@ -396,6 +405,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     }
 
+    @Transactional
     @Override
     public void copy(String token, Path srcUri, Path destUri, Repository.Depth depth, boolean overwrite,
             boolean preserveACL) throws IllegalOperationException, AuthorizationException, AuthenticationException,
@@ -465,6 +475,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    @Transactional
     @Override
     public void move(String token, Path srcUri, Path destUri, boolean overwrite) throws IllegalOperationException,
             AuthorizationException, AuthenticationException, FailedDependencyException, ResourceOverwriteException,
@@ -549,6 +560,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    @Transactional
     @Override
     public void delete(String token, Path uri, boolean restorable) throws IllegalOperationException,
             AuthorizationException, AuthenticationException, ResourceNotFoundException, ResourceLockedException,
@@ -603,6 +615,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.context.publishEvent(event);
     }
 
+    @Transactional
     @Override
     public List<RecoverableResource> getRecoverableResources(String token, Path uri) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, IOException {
@@ -617,6 +630,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return this.dao.getRecoverableResources(resource.getID());
     }
 
+    @Transactional
     @Override
     public void recover(String token, Path parentUri, RecoverableResource recoverableResource)
             throws ResourceNotFoundException, AuthorizationException, AuthenticationException, IOException {
@@ -649,6 +663,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    @Transactional
     @Override
     public void deleteRecoverable(String token, Path parentUri, RecoverableResource recoverableResource)
             throws Exception {
@@ -663,6 +678,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.contentStore.deleteRecoverable(recoverableResource);
     }
 
+    @Transactional
     @Override
     public Resource lock(String token, Path uri, String ownerInfo, Repository.Depth depth, int requestedTimeoutSeconds,
             String lockToken) throws ResourceNotFoundException, AuthorizationException, AuthenticationException,
@@ -721,7 +737,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return r;
     }
 
-    public void checkLock(Resource resource, Principal principal) throws ResourceLockedException, IOException,
+    private void checkLock(Resource resource, Principal principal) throws ResourceLockedException, IOException,
             AuthenticationException {
         Lock lock = resource.getLock();
         if (lock == null) {
@@ -736,6 +752,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         throw new ResourceLockedException();
     }
 
+    @Transactional
     public String lockResource(ResourceImpl resource, Principal principal, String ownerInfo, Repository.Depth depth,
             int desiredTimeoutSeconds, boolean refresh) throws AuthenticationException, AuthorizationException,
             ResourceLockedException, IOException {
@@ -763,6 +780,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return resource.getLock().getLockToken();
     }
 
+    @Transactional
     @Override
     public void unlock(String token, Path uri, String lockToken) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, ResourceLockedException, ReadOnlyException, IOException {
@@ -780,6 +798,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    @Transactional
     @Override
     public Resource store(String token, Resource resource) throws ResourceNotFoundException, AuthorizationException,
             ResourceLockedException, AuthenticationException, IllegalOperationException, ReadOnlyException, IOException {
@@ -826,6 +845,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    @Transactional
     @Override
     public Resource createDocument(String token, Path uri, InputStream inStream) throws IllegalOperationException,
             AuthorizationException, AuthenticationException, ResourceLockedException, ReadOnlyException, IOException {
@@ -876,6 +896,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     /**
      * Requests that an InputStream be written to a resource.
      */
+    @Transactional
     @Override
     public Resource storeContent(String token, Path uri, InputStream byteStream) throws AuthorizationException,
             AuthenticationException, ResourceNotFoundException, ResourceLockedException, IllegalOperationException,
@@ -914,6 +935,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     /**
      * Requests that an InputStream be written to a resource.
      */
+    @Transactional
     @Override
     public Resource storeContent(String token, Path uri, InputStream stream, Revision revision) throws AuthorizationException,
             AuthenticationException, ResourceNotFoundException, ResourceLockedException, IllegalOperationException,
@@ -962,7 +984,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.authorizationManager.authorizeReadWrite(uri, principal);
         //this.authorizationManager.authorizeWriteRevision(principal, revision); 
                 
-        long id = existing.getID();
+        long revisionId = existing.getID();
         Acl acl = null; //r.getAcl();
         String name = existing.getName();
         String uid = principal.getQualifiedName();
@@ -986,7 +1008,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             Revision.Builder builder = Revision.newBuilder();
             
             Revision rev = 
-                    builder.id(id)
+                    builder.id(revisionId)
                     .acl(acl)
                     .changeAmount(changeAmount)
                     .checksum(checksum)
@@ -1006,7 +1028,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     throw new DataAccessException("Failed to delete temporary file " + tempFile);
                 }
             }
-            
         }
     }
 
@@ -1015,6 +1036,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return this.authorizationManager.authorize(principal, acl, privilege);
     }
     
+    @Transactional
     @Override
     public boolean isAuthorized(Resource resource, RepositoryAction action, Principal principal, boolean considerLocks)
             throws Exception {
@@ -1060,12 +1082,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    @Transactional
     @Override
     public Resource storeACL(String token, Path uri, Acl acl) throws ResourceNotFoundException, AuthorizationException,
             AuthenticationException, IllegalOperationException, ReadOnlyException, IOException {
         return this.storeACL(token, uri, acl, true);
     }
 
+    @Transactional
     @Override
     public Resource storeACL(String token, Path uri, Acl acl, boolean validateACL) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, IllegalOperationException, ReadOnlyException, IOException {
@@ -1111,6 +1135,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    @Transactional
     @Override
     public Resource deleteACL(String token, Path uri) throws ResourceNotFoundException, AuthorizationException,
             AuthenticationException, IllegalOperationException, ReadOnlyException, Exception {
@@ -1166,6 +1191,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return blacklisted(principal, privilege);
     }
     
+    @Transactional
     @Override
     public List<Revision> getRevisions(String token, Path uri) throws AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException {
         if (uri == null) {
@@ -1180,6 +1206,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return Collections.unmodifiableList(this.revisionStore.list(resource));
     }
 
+    @Transactional
     @Override
     public Revision createRevision(String token, Path uri, Revision.Type type) throws ReadOnlyException, AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException {
         if (uri == null) {
@@ -1239,7 +1266,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
         }
         
-        long id = this.revisionStore.newRevisionID();
+        long revisionId = this.revisionStore.newRevisionID();
         Integer changeAmount = null;
         String uid = resource.getModifiedBy().getQualifiedName();
         String checksum = null;
@@ -1263,7 +1290,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             Revision.Builder builder = Revision.newBuilder();
             
             Revision revision = 
-                    builder.id(id)
+                    builder.id(revisionId)
                     .acl(acl)
                     .changeAmount(changeAmount)
                     .checksum(checksum)
@@ -1281,6 +1308,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
     
+    @Transactional
     @Override
     public void deleteRevision(String token, Path uri, Revision revision)
             throws ResourceNotFoundException, AuthorizationException,
@@ -1348,11 +1376,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
     
 
+    @Transactional
     @Override
     public List<Comment> getComments(String token, Resource resource) {
         return getComments(token, resource, false, 500);
     }
 
+    @Transactional
     @Override
     public List<Comment> getComments(String token, Resource resource, boolean deep, int max) {
         Principal principal = this.tokenManager.getPrincipal(token);
@@ -1387,6 +1417,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    @Transactional
     @Override
     public Comment addComment(String token, Resource resource, String title, String text) {
         Principal principal = this.tokenManager.getPrincipal(token);
@@ -1440,6 +1471,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    @Transactional
     @Override
     public Comment addComment(String token, Comment comment) {
 
@@ -1451,6 +1483,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return this.commentDAO.createComment(comment);
     }
 
+    @Transactional
     @Override
     public void deleteComment(String token, Resource resource, Comment comment) {
         Principal principal = this.tokenManager.getPrincipal(token);
@@ -1487,6 +1520,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    @Transactional
     @Override
     public void deleteAllComments(String token, Resource resource) {
         Principal principal = this.tokenManager.getPrincipal(token);
@@ -1523,6 +1557,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
+    @Transactional
     @Override
     public Comment updateComment(String token, Resource resource, Comment comment) {
         Principal principal = this.tokenManager.getPrincipal(token);
@@ -1647,39 +1682,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.authorizationManager.setReadOnly(readOnly);
     }
     
-
-    private void periodicJob() throws Exception {
-        if (!this.isReadOnly()) {
-            this.dao.deleteExpiredLocks(new Date());
-        }
-        if (!this.isReadOnly()) {
-            this.revisionStore.gc();
-        }
-    }
-
-    @Override
-    public synchronized void purgeTrash() {
-        List<RecoverableResource> overdue = this.dao.getTrashCanOverdue(this.permanentDeleteOverdueLimitInDays);
-        if (overdue != null && overdue.size() > 0) {
-            trashLogger.info("Found " + overdue.size()
-                    + " recoverable resources that are overdue for permanent deletion.");
-            for (RecoverableResource rr : overdue) {
-                trashLogger.info("Permanently deleting recoverable resource: " + rr);
-                this.dao.deleteRecoverable(rr);
-                this.contentStore.deleteRecoverable(rr);
-            }
-        }
-        List<RecoverableResource> orphans = this.dao.getTrashCanOrphans();
-        if (orphans != null && orphans.size() > 0) {
-            trashLogger.info("Found " + orphans.size() + " recoverable resources that are orphans.");
-            for (RecoverableResource rr : orphans) {
-                trashLogger.info("Permanently deleting orphan: " + rr);
-                this.dao.deleteRecoverable(rr);
-                this.contentStore.deleteRecoverable(rr);
-            }
-        }
-    }
-
     @Required
     public void setTokenManager(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
@@ -1801,46 +1803,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
-    public void init() {
-        this.periodicThread = new PeriodicThread(600);
-        this.periodicThread.start();
-    }
-
-    public void destroy() {
-        this.periodicThread.kill();
-    }
-
-    private static Log periodicLogger = LogFactory.getLog(PeriodicThread.class);
-
-    private class PeriodicThread extends Thread {
-
-        private long sleepSeconds;
-        private boolean alive = true;
-
-        public PeriodicThread(long sleepSeconds) {
-            this.sleepSeconds = sleepSeconds;
-        }
-
-        public void kill() {
-            this.alive = false;
-            this.interrupt();
-        }
-
-        @Override
-        public void run() {
-            while (this.alive) {
-                try {
-                    sleep(1000 * this.sleepSeconds);
-                    periodicJob();
-                } catch (InterruptedException e) {
-                    this.alive = false;
-                } catch (Throwable t) {
-                    periodicLogger.warn("Caught exception in cleanup thread", t);
-                }
-            }
-            periodicLogger.info("Terminating refresh thread");
-        }
-    }
 
     @Override
     public ResultSet search(String token, Search search) throws QueryException {
@@ -1954,4 +1916,53 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         ContentImpl content = new ContentImpl(resource.getURI(), cs, this.contentRepresentationRegistry);
         return content;
     }
+    
+    // Methods exposed only for internal repository jobs.
+    
+    /**
+     * Removes WebDAV locks from database that have expired.
+     */
+    @Transactional
+    void deleteExpiredLocks() {
+        dao.deleteExpiredLocks(new Date());
+    }
+    
+    /**
+     * Initiates garbage collection of revision store.
+     * @throws IOException 
+     */
+    @Transactional
+    void revisionStoreGc() throws IOException {
+        revisionStore.gc();
+    }
+
+    /**
+     * Permanently removes overdue and orphan resources from trash can. A
+     * resource is overdue if it has been deleted (put in trash can) for given
+     * configurable period of time. An orphan resource is a resource that no
+     * longer has a parent (parent has been permanently deleted).
+     */
+    @Transactional
+    synchronized void purgeTrash() {
+        List<RecoverableResource> overdue = dao.getTrashCanOverdue(permanentDeleteOverdueLimitInDays);
+        if (overdue != null && overdue.size() > 0) {
+            trashLogger.info("Found " + overdue.size()
+                    + " recoverable resources that are overdue for permanent deletion.");
+            for (RecoverableResource rr : overdue) {
+                trashLogger.info("Permanently deleting recoverable resource: " + rr);
+                dao.deleteRecoverable(rr);
+                contentStore.deleteRecoverable(rr);
+            }
+        }
+        List<RecoverableResource> orphans = dao.getTrashCanOrphans();
+        if (orphans != null && orphans.size() > 0) {
+            trashLogger.info("Found " + orphans.size() + " recoverable resources that are orphans.");
+            for (RecoverableResource rr : orphans) {
+                trashLogger.info("Permanently deleting orphan: " + rr);
+                dao.deleteRecoverable(rr);
+                contentStore.deleteRecoverable(rr);
+            }
+        }
+    }
 }
+

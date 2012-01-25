@@ -41,8 +41,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 
 /**
- * This interface defines the content repository's externally available
- * webDAV-like functionality.
+ * Resource repository.
  */
 public interface Repository {
     
@@ -285,6 +284,7 @@ public interface Repository {
             this.val = val;
         }
 
+        @Override
         public String toString() {
             return this.val;
         }
@@ -801,13 +801,5 @@ public interface Repository {
      * @throws QueryException
      */
     public ResultSet search(String token, Search search) throws QueryException;
-
-    /**
-     * Permanently removes overdue and orphan resources from trash can. A
-     * resource is overdue if it has been deleted (put in trash can) for given
-     * configurable period of time. An orphan resource is a resource that no
-     * longer has a parent (parent has been permanently deleted).
-     */
-    public void purgeTrash();
 
 }

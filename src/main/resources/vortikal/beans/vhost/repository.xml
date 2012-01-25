@@ -24,36 +24,18 @@
     </tx:attributes>
   </tx:advice>
 
-  <aop:config>
-    <!-- Main pointcut for repository opertions -->
+  <aop:config proxy-target-class="true">
+    <!-- Pointcut that applies to all methods with @Transactional annotation -->
+    <aop:pointcut id="transactionalAnnotationPointcut"
+                  expression="@annotation(org.springframework.transaction.annotation.Transactional)"/>
 
-    <!-- TODO Consider using @Transactional-annotations in Repository-interface and limiting point-cut based on these: "bean(repository.internal) 
-      and @annotation(org.springframework.transaction.annotation.Transactional)" -->
-    <aop:pointcut id="repository.repositoryOperationPointcut"
-      expression="bean(repository.internal)
-                              and execution(* org.vortikal.repository.Repository.*(..))
-                              and not execution(* org.vortikal.repository.Repository.search(..))
-                              and not execution(* org.vortikal.repository.Repository.getTypeInfo(org.vortikal.repository.Resource))
-                              and not execution(* org.vortikal.repository.Repository.isValidAclEntry(..))
-                              and not execution(* org.vortikal.repository.Repository.isReadOnly())
-                              and not execution(* org.vortikal.repository.Repository.getId())" />
-
-    <!-- Point cut for ResourceChangeNotifier.pollChanges() -->
-    <aop:pointcut id="repository.resourceChangeNotifierPointcut"
-      expression="execution(* org.vortikal.repository.index.observation.ResourceChangeNotifier.pollChanges(..))" />
-
-    <!-- Repository tx advice should be run *last* (or "closest") in repository.repositoryOperationPointcut -->
-    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.repositoryOperationPointcut"
-      order="1000" />
-
-    <!-- Tx advice for point cut 'repository.resourceChangeNotifierPointcut' -->
-    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="repository.resourceChangeNotifierPointcut"
-      order="1000" />
+    <!-- Apply transactions to all @Transactional methods -->
+    <aop:advisor advice-ref="repository.txAdvice" pointcut-ref="transactionalAnnotationPointcut"
+                 order="1000" />
   </aop:config>
 
-  <!-- Main repository instance. Note that this instance (and only this) is proxied by various interceptors at point cut 
-    'repository.repositoryOperationPointcut -->
-  <bean id="repository.internal" class="org.vortikal.repository.RepositoryImpl" init-method="init" destroy-method="destroy">
+  <!-- Main repository instance. -->
+  <bean id="repository.internal" class="org.vortikal.repository.RepositoryImpl">
     <property name="id" value="${repositoryID}" />
     <property name="tokenManager" ref="tokenManager" />
     <property name="authorizationManager" ref="authorizationManager" />
@@ -70,6 +52,11 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="permissionBlacklist" ref="repository.acl.blacklist" />
     <property name="tempDir" value="${repository.tempDir}" />
+  </bean>
+  <bean id="repository.internal.jobManager" class="org.vortikal.repository.RepositoryImplJobManager"
+        init-method="start" destroy-method="stop">
+    <property name="repository" ref="repository.internal"/>
+    <property name="periodInterval" value="600"/>
   </bean>
 
   <!-- Repository lock and cache control wrapper -->

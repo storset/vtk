@@ -475,14 +475,6 @@ public class RequestLocalRepository implements Repository {
         throw new RuntimeException(t);
     }
 
-    public void init() throws Exception {
-    }
-
-    @Override
-    public void purgeTrash() {
-        this.repository.purgeTrash();
-    }
-
     @Override
     public List<Revision> getRevisions(String token, Path uri) throws AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException {
         return this.repository.getRevisions(token, uri);

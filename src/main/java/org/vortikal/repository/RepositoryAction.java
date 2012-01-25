@@ -55,6 +55,7 @@ public enum RepositoryAction {
     public String value() {
         return this.name;
     }
+    @Override
     public String toString() {
         return this.name;
     }

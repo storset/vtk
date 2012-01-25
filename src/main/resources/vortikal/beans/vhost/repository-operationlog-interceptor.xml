@@ -11,7 +11,7 @@
   <!--  Setup point-cut for operation log interceptor (only for bean 'repository.internal') -->
   <aop:config>
     <aop:advisor advice-ref="repository.repositoryOperationLogInterceptor"
-                 pointcut-ref="repository.repositoryOperationPointcut"
+                 pointcut-ref="transactionalAnnotationPointcut"
                  order="-1000"/> <!-- Run as early as possible, before all other interceptors -->
   </aop:config>
 

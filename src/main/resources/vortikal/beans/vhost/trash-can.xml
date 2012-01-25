@@ -72,16 +72,4 @@
     </property>
   </bean>
 
-  <!-- ## Periodically call Repository.purgeTrash() for overdue and orphan cleanup ## -->
-  <bean id="repository.purgeTrashTrigger" class="org.vortikal.scheduling.SimpleMethodInvokingTriggerBean">
-    <property name="targetMethodName" value="purgeTrash" />
-    <property name="targetObject" ref="repository" />
-    <property name="triggerThreadName" value="${repositoryID}.purgeTrash" />
-    <property name="startDelay" value="20000" />
-    <!-- Run every morning at 4AM -->
-    <property name="fixedDelay" value="${repository.trash.can.purger.fixed.delay}" />
-    <property name="startTriggerAfterInitialization" value="true" />
-    <property name="abortTriggerOnTargetMethodException" value="false" />
-  </bean>
-
 </beans>

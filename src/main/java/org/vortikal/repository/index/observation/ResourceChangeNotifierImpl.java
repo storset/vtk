@@ -37,6 +37,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 import org.vortikal.repository.ChangeLogEntry;
 import org.vortikal.repository.ChangeLogEntry.Operation;
 import org.vortikal.repository.store.ChangeLogDAO;
@@ -60,6 +61,7 @@ public class ResourceChangeNotifierImpl implements ResourceChangeNotifier {
      * This method should be periodically called to poll for resource changes.
      */
     @Override
+    @Transactional
     public synchronized void pollChanges() {
         
         try {

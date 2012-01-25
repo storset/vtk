@@ -135,9 +135,9 @@ public class RecoverableResource {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getTrashID());
-        sb.append(": " + this.getName());
-        sb.append(", deleted by " + this.getDeletedBy());
-        sb.append(", deleted " + this.getFormattedDeletedTime());
+        sb.append(": ").append(this.getName());
+        sb.append(", deleted by ").append(this.getDeletedBy());
+        sb.append(", deleted ").append(this.getFormattedDeletedTime());
         return sb.toString();
     }
 

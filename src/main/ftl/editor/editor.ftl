@@ -143,10 +143,8 @@
        <script type="text/javascript"><!--  
          $(function () {
            var imageEditorElm = $("#vrtx-image-editor-wrapper");
-           vrtxImageEditor.url = "${imageURL}";
-           alert(vrtxImageEditor.url);
            if(imageEditorElm.length) {
-             vrtxImageEditor.init(imageEditorElm);
+             vrtxImageEditor.init(imageEditorElm, "${imageURL}");
            }
          });
        // -->

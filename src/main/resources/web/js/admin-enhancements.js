@@ -1682,9 +1682,11 @@ function formatDocumentsDataSubFunc(id) {
         value.substring(value, (value.length-1))
       }
     }
-    result += value;
-    if (i < len) {
-      result += ",";
+    if(value != "") {
+      result += value;
+      if (i < len) {
+        result += ",";
+      }
     }
   }
   $("#resource\\." + id).val(result);

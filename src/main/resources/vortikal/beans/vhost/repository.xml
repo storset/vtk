@@ -56,7 +56,6 @@
   <bean id="repository.internal.jobManager" class="org.vortikal.repository.RepositoryImplJobManager"
         init-method="start" destroy-method="stop">
     <property name="repository" ref="repository.internal"/>
-    <property name="periodInterval" value="600"/>
   </bean>
 
   <!-- Repository lock and cache control wrapper -->

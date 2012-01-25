@@ -1611,11 +1611,11 @@ function loadMultipleDocuments(appendParentLast, textfieldId, browse, addName, r
     $(appendHtml).insertAfter(documentsParent.parent().find(".vrtx-textfield:first"));
   }
 
-   var listOfFiles = documentsVal.split(",");
-   var addFormFieldFunc = addFormField;
-   for (var i = 0, len = listOfFiles.length; i < len; i++) {
-     addFormFieldFunc(simpleTextfieldId, browse, $.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
-   }
+  var listOfFiles = documentsVal.split(",");
+  var addFormFieldFunc = addFormField;
+  for (var i = 0, len = listOfFiles.length; i < len; i++) {
+    addFormFieldFunc(simpleTextfieldId, browse, $.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
+  }
 
   // TODO !spageti && !run twice
   if (requestFromEditor()) {
@@ -1675,8 +1675,14 @@ function formatDocumentsData() {
 function formatDocumentsDataSubFunc(id) {
   var data = $("input[id^='" + id + "-']");
   var result = "";
-  for (var i = 0, len = (data.length - 1); i <= len; i++) {
-    result += data[i].value;
+  for (var i = 0, len = data.length; i < len; i++) {
+    var value = "";
+    if(value.indexOf("/") === (value.length-1)) { // Remove last forward slash if not root
+      if(value.length > 1) {
+        value.substring(value, (value.length-1))
+      }
+    }
+    result += value;
     if (i < len) {
       result += ",";
     }

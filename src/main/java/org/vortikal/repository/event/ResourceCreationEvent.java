@@ -50,10 +50,12 @@ public class ResourceCreationEvent extends RepositoryEvent {
         return this.resource;
     }
 
+    @Override
     public Path getURI() {
         return this.resource.getURI();
     }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getClass().getName());
         sb.append("[");
@@ -62,6 +64,5 @@ public class ResourceCreationEvent extends RepositoryEvent {
         sb.append("]");
         return sb.toString();
     }
-
 
 }

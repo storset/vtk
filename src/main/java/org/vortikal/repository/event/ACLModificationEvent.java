@@ -59,6 +59,7 @@ public class ACLModificationEvent extends RepositoryEvent {
         return this.resource;
     }
 
+    @Override
     public Path getURI() {
         return this.resource.getURI();
     }

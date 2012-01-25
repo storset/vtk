@@ -53,6 +53,7 @@ public class ContentModificationEvent extends RepositoryEvent {
         return this.resource;
     }
 
+    @Override
     public Path getURI() {
         return this.resource.getURI();
     }
@@ -61,6 +62,7 @@ public class ContentModificationEvent extends RepositoryEvent {
         return this.original;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getClass().getName());
         sb.append("[");

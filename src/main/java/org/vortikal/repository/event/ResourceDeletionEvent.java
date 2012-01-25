@@ -49,6 +49,7 @@ public class ResourceDeletionEvent extends RepositoryEvent {
         this.collection = collection;
     }
 
+    @Override
     public Path getURI() {
         return this.uri;
     }
@@ -61,6 +62,7 @@ public class ResourceDeletionEvent extends RepositoryEvent {
         return this.collection;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getClass().getName());
         sb.append("[");

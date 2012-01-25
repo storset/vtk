@@ -141,6 +141,10 @@
        </#if>    
        <script type="text/javascript" src="${jsBaseURL?html}/image-editor/editor.js"></script>    
        <script type="text/javascript"><!--  
+         var startCropText = '<@vrtx.msg code="editor.image.start-crop" default="Start cropping" />';
+         var cropText = '<@vrtx.msg code="editor.image.crop" default="Crop" />';
+         var widthText = '<@vrtx.msg code="imageListing.width" default="Width" />';
+         var heightText = '<@vrtx.msg code="imageListing.height" default="Height" />';
          $(function () {
            var imageEditorElm = $("#vrtx-image-editor-wrapper");
            if(imageEditorElm.length) {
@@ -150,14 +154,14 @@
        // -->
        </script>
        <div id="vrtx-image-editor-wrapper">
-         <h3 id="vrtx-image-editor-preview">Forhåndsvisning</h3>
+         <h3 id="vrtx-image-editor-preview"><@vrtx.msg code="editor.image.preview-title" default="Preview" /></h3>
          <div id='vrtx-image-editor-inner-wrapper'>
            <canvas id="vrtx-image-editor"></canvas>
          </div>
          <div id='vrtx-image-editor-wrapper-loading-info'>
            <canvas id='vrtx-image-editor-preview-image'></canvas>
            <div id='vrtx-image-editor-wrapper-loading-info-text'>
-             <span>Behandler bilde...&nbsp;<output id="vrtx-image-editor-interpolation-complete"></output></span>
+             <span><@vrtx.msg code="editor.image.processing-image" default="Processing image" />...&nbsp;<output id="vrtx-image-editor-interpolation-complete"></output></span>
            </div>
          </div>
        </div>

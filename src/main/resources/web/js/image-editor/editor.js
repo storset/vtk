@@ -127,13 +127,13 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
                                                                                      
         editor.renderScaledImage(false); 
         editor.resetCropPlugin();
-        $(this).val("Start beskjæring...");
+        $(this).val(startCropText + "...");
         $("#vrtx-image-editor").resizable("enable");
       
         editor.hasCropBeenInitialized = false;
       } else {
         initSelection(editor);
-        $(this).val("Beskjær bilde");
+        $(this).val(cropText);
         $("#vrtx-image-editor").resizable("disable");
       
         editor.hasCropBeenInitialized = true;
@@ -328,16 +328,16 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
   } else {
     var dimensionHtml = '<div id="vrtx-image-dimensions-crop">'
                         + '<div class="vrtx-label-and-text">'
-                          + '<div class="property-label">Bredde</div>'
+                          + '<div class="property-label">' + widthText + '</div>'
                           + '<div class="vrtx-textfield" id="vrtx-textfield-width"><input id="resource-width" type="text" value="' + w + '" size="4" /></div>'
                         + '</div>'
                         + '<div class="vrtx-label-and-text">'
-                          + '<div class="property-label">Høyde</div>'
+                          + '<div class="property-label">' + heightText + '</div>'
                           + '<div class="vrtx-textfield" id="vrtx-textfield-height"><input id="resource-height" type="text" value="' + h + '" size="4" /></div>'
                         + '</div>';
     if(this.canvasSupported) {                      
       dimensionHtml += '<div id="vrtx-image-crop-button"><div class="vrtx-button">'
-                     + '<input type="button" id="vrtx-image-crop" value="Start beskjæring..." /></div></div>'
+                     + '<input type="button" id="vrtx-image-crop" value="' + startCropText + '..." /></div></div>'
                      + '<div id="vrtx-image-info" style="margin-top: 10px"></div>';
     }
     dimensionHtml  += '</div>';

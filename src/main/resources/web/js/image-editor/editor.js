@@ -131,13 +131,15 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
         
         editor.hasCropBeenInitialized = false;
       } else {
-        if(editor.rw > 400) {
+        var longestSide = (editor.rw > editor.rh) ? editor.rh : editor.rw;
+      
+        if(longestSide > 400) {
           var distEdge = 40;
-        } else if(editor.rw < 400 && editor.rw > 200) {
+        } else if(longestSide < 400 && longestSide > 200) {
           var distEdge = 30;
-        } else if (editor.rw < 200 && editor.rw > 120) {
+        } else if (longestSide < 200 && longestSide > 120) {
           var distEdge = 20;
-        } else if (editor.rw < 120 && editor.rw > 40) {
+        } else if (longestSide < 120 && longestSide > 40) {
           var distEdge = 10;
         } else {
           var distEdge = 1;

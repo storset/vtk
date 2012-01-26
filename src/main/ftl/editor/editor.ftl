@@ -134,7 +134,7 @@
       </div>
  
      <#if resource.contentType?exists && saveImageURL?exists
-          && (resource.contentType == "image/jpg" || resource.contentType == "image/jpeg" || resource.contentType == "image/png")>
+          && (resource.contentType == "image/jpeg" || resource.contentType == "image/png")>
        <#assign theContentType = resource.contentType />
        <#if theContentType == "image/jpeg">
          <#assign theContentType = "image/jpg" />
@@ -187,7 +187,7 @@
      </form>
      
      <#if resource.contentType?exists && saveImageURL?exists
-          && (resource.contentType == "image/jpg" || resource.contentType == "image/jpeg" || resource.contentType == "image/png")>
+          && (resource.contentType == "image/jpeg" || resource.contentType == "image/png")>
        <form enctype="multipart/form-data" id="vrtx-image-editor-save-image-form" action="${saveImageURL?html}" method="post" style="display: none;">
          <@vrtx.csrfPreventionToken url=saveImageURL />
        </form>

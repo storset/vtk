@@ -94,7 +94,7 @@ public class SaveImageController extends AbstractController {
         if(imageAsBase64 != null) { // Decode base64 and store as content on resource
           byte[] imageBytes = Base64Utils.decode(imageAsBase64.getString());
           
-          if(resource.getContentType().endsWith("/jpg") || resource.getContentType().endsWith("/jpeg")) {
+          if("image/jpeg".equals(resource.getContentType())) {
             BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes));
             // Credits: http://stackoverflow.com/questions/464825/converting-transparent-gif-png-to-jpeg-using-java/1545417#1545417
             BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);       

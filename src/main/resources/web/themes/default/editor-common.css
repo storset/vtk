@@ -118,6 +118,7 @@ h2 {
   display: inline-block;
   margin: 0 0 -2px 3px;
   cursor: pointer;
+  border: none;
 }
 
 

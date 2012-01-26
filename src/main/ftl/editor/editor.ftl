@@ -385,7 +385,7 @@
                 </script>
               </#if>
               <#if name = "display-aggregation" || name = "display-manually-approved">
-                <abbr class="resource-prop-info" title="<span id='title-wrapper'>Hjelp til å legge inn webområder</span><ul><li>Legg inn fullstendig webadresse f.eks.:<br/><a href='http://www.odont.uio.no/om/aktuelt/arrangementer/'>http://www.odont.uio.no/om/aktuelt/arrangementer/</a></li><li>eller rot-relativ filbane hvis område ligger på samme<br />server, f.eks.: <a href='/om/aktuelt/arrangementer/'>/om/aktuelt/arrangementer/</a></li></ul>"></abbr>
+                <abbr class="resource-prop-info" title="${vrtx.getMsg('editor.manually-approve-aggregation.info')}"></abbr>
               </#if>
               
             <#else>

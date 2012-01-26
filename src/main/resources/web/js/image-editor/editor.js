@@ -132,7 +132,6 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
         editor.hasCropBeenInitialized = false;
       } else {
         var longestSide = (editor.rw > editor.rh) ? editor.rh : editor.rw;
-      
         if(longestSide > 400) {
           var distEdge = 40;
         } else if(longestSide < 400 && longestSide > 200) {

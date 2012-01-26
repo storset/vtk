@@ -198,6 +198,9 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
         $("#resource-width").val(w);
         $("#resource-height").val(h);
         editor.scale(w, h);
+      } else if (e.which == 13) {
+        $(this).trigger("change");
+        return false;
       }
     });
 
@@ -219,6 +222,9 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
         $("#resource-width").val(w);
         $("#resource-height").val(h);
         editor.scale(w, h);
+      } else if (e.which == 13) {
+        $(this).trigger("change");
+        return false;
       }
     });
   

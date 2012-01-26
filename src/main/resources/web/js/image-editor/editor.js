@@ -143,7 +143,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
           var distEdge = 1;
         }
         
-        editor.initSelection(distEdge, distEdge, editor.rw - (distEdge*2), editor.rh - (distEdge*2));
+        editor.initSelection(distEdge, distEdge, editor.rw - (distEdge * 2), editor.rh - (distEdge * 2));
         
         $(this).val(cropText);
         $("#vrtx-image-editor").resizable("disable");

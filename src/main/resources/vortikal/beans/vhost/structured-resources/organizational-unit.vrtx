@@ -342,7 +342,7 @@ resourcetype organizational-unit {
     getExternalUnitInfo : (
       en : "Use information registrated in UiO's payroll- and personalsystem",
       no : "Bruk opplysninger registrert i UiOs lønns- og personalsystem",
-      nn : "Bruk opplysingar registrerte i lønns- og personalsystemet til UiO"),
+      nn : "Bruk opplysningar registrerte i lønns- og personalsystemet til UiO"),
     displayAcronym : (
       en : "Display acronym in title",
       no : "Vis enhetens forkortelse i parentes bak tittel",
@@ -364,7 +364,7 @@ resourcetype organizational-unit {
     displayEmployees : (
       en : "Show employees registrated in UiO's payroll- and personnel system (requires valid area code)",
       no : "Vis ansatte registrert i UiOs lønns- og personalsystem (krever gyldig stedkode)",
-      nn : "Vis ansatte registrerte i lønns- og personalsystemet til UiO (krev gyldig stedkode)"),
+      nn : "Vis tilsette registrerte i lønns- og personalsystemet til UiO (krev gyldig stedkode)"),
     selectedEmployees : (
       en : "Employees to display at the top of the list",
       no : "Ansatte som skal vises øverst i listen",

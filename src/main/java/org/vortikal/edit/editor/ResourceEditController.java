@@ -85,9 +85,14 @@ public class ResourceEditController extends SimpleFormController {
     @Override
     protected ModelAndView onSubmit(Object command) throws Exception {
         ResourceEditWrapper wrapper = (ResourceEditWrapper) command;
+        Resource resource = wrapper.getResource();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Principal principal = requestContext.getPrincipal();
+        
         if (wrapper.hasErrors()) {
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(getCommandName(), command);
+            model = addImageEditorServices(model, resource, principal);
             return new ModelAndView(getFormView(), model);
         }
 
@@ -102,6 +107,7 @@ public class ResourceEditController extends SimpleFormController {
             Map<String, Object> model = new HashMap<String, Object>();
             model.put(getCommandName(), command);
             wrapper.setSave(false);
+            model = addImageEditorServices(model, resource, principal);
             return new ModelAndView(getFormView(), model);
         }
 
@@ -134,10 +140,6 @@ public class ResourceEditController extends SimpleFormController {
         Resource resource = ((ResourceWrapper) command).getResource();
         RequestContext requestContext = RequestContext.getRequestContext();
         Principal principal = requestContext.getPrincipal();
-        Repository repository = requestContext.getRepository();
-        Path uri = requestContext.getResourceURI();
-        String token = requestContext.getSecurityToken();
-        
         
         Map model = super.referenceData(request, command, errors);
 
@@ -145,17 +147,8 @@ public class ResourceEditController extends SimpleFormController {
             model = new HashMap();
         }
         model.put("tooltips", resolveTooltips(resource, principal));
-
-        // XXX:
-        if (this.saveImageService != null) {
-          URL saveImageURL = this.saveImageService.constructURL(resource, principal);
-          model.put("saveImageURL", saveImageURL);
-        }
-        if (this.loadImageService != null) {
-          URL imageSourceURL = this.loadImageService.constructURL(resource, principal);
-          model.put("imageURL", imageSourceURL);
-        }
-
+        model = addImageEditorServices(model, resource, principal);
+        
         return model;
     }
 
@@ -183,6 +176,19 @@ public class ResourceEditController extends SimpleFormController {
             }
         }
         return tooltips;
+    }
+    
+    private Map<String, Object>  addImageEditorServices(Map<String, Object>  model, Resource resource, Principal principal) {
+      // XXX:
+      if (this.saveImageService != null) {
+        URL saveImageURL = this.saveImageService.constructURL(resource, principal);
+        model.put("saveImageURL", saveImageURL);
+      }
+      if (this.loadImageService != null) {
+        URL imageSourceURL = this.loadImageService.constructURL(resource, principal);
+        model.put("imageURL", imageSourceURL);
+      }  
+      return model;
     }
 
 

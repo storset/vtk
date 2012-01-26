@@ -222,7 +222,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
       }
     });
   
-    $("#app-content").delegate("#saveAndViewButton", "click", function(e) {;
+    $("#app-content").delegate("#saveAndViewButton, #saveButton", "click", function(e) {;
       if(!editor.savedImage) {
         if(editor.hasCropBeenInitialized) {
           editor.cropNone(editor); // Remove selection
@@ -230,7 +230,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
         if(editor.scaleRatio < 0.9) { // No artifacts below 0.9
           editor.scaleLanczos(3); // http://int64.org/2011/07/24/choosing-the-right-kernel
         } else {
-          editor.save();
+          editor.save($(this).attr("id"));
         }
         return false; 
       } else {
@@ -317,9 +317,9 @@ VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage(insertI
   };
 };
 
-VrtxImageEditor.prototype.save = function save() {
+VrtxImageEditor.prototype.save = function save(buttonId) {
   this.savedImage = true;
-  
+
   var imageAsBase64 = vrtxImageEditor.canvas.toDataURL("image/png");
   imageAsBase64 = imageAsBase64.replace("data:image/png;base64,", "");
   var form = $("form#vrtx-image-editor-save-image-form");
@@ -333,11 +333,11 @@ VrtxImageEditor.prototype.save = function save() {
     xhr.onreadystatechange = function() {
       if($.browser.mozilla) { // http://www.nczonline.net/blog/2009/07/09/firefox-35firebug-xmlhttprequest-and-readystatechange-bug/
         xhr.onload = xhr.onerror = xhr.onabort = function() {
-          $("#saveAndViewButton").click();      
+          $("#" + buttonId).click();      
         };
       } else {
         if (xhr.readyState == 4)  { 
-          $("#saveAndViewButton").click();
+          $("#" + buttonId).click();
         }
       }
     };

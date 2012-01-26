@@ -116,7 +116,7 @@ public class SaveImageController extends AbstractController {
             // Set the compression quality
             ImageWriteParam iwp = writer.getDefaultWriteParam();
             iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-            iwp.setCompressionQuality(1);   // an integer between 0 and 1
+            iwp.setCompressionQuality(0.8f);
             
             // Write the image
             writer.write(null, new IIOImage(bufferedImage, null, null), iwp);

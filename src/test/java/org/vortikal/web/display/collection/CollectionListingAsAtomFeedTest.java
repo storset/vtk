@@ -174,6 +174,11 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
                 new DateValueFormatter());
         Property creationTimeProp = propDef.createProperty(Calendar.getInstance().getTime());
         collection.addProperty(creationTimeProp);
+        
+        propDef = getPropDef(Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME, Type.DATE,
+                new DateValueFormatter());
+        Property lastModifiedProp = propDef.createProperty(Calendar.getInstance().getTime());
+        collection.addProperty(lastModifiedProp);
 
         return collection;
     }

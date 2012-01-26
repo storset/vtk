@@ -234,7 +234,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
           editor.cropNone(editor); // Remove selection
         }
         if(editor.scaleRatio < 0.9) { // No artifacts below 0.9
-          editor.scaleLanczos(3); // http://int64.org/2011/07/24/choosing-the-right-kernel
+          editor.scaleLanczos(3, $(this).attr("id")); // http://int64.org/2011/07/24/choosing-the-right-kernel
         } else {
           editor.save($(this).attr("id"));
         }
@@ -378,7 +378,7 @@ VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
  *
  */
 
-VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes) {
+VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) {
   var editor = this;
   editor.renderScaledImage(true);
   
@@ -438,7 +438,7 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes) {
       if(data) { 
         ctx.putImageData(data.src, 0, 0);
         editor.renderScaledImage(false);   
-        editor.save();
+        editor.save(buttonId);
         elem.style.display = "block";
         $("#vrtx-image-editor-preview").removeClass("loading");
         $("#vrtx-image-crop").removeAttr("disabled"); 
@@ -477,7 +477,7 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes) {
             data = process2(data);
             ctx.putImageData(data.src, 0, 0);
             editor.renderScaledImage(false);  
-            editor.save();
+            editor.save(buttonId);
             elem.style.display = "block";
             $("#vrtx-image-editor-preview").removeClass("loading");
             $("#vrtx-image-crop").removeAttr("disabled"); 

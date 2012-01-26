@@ -210,7 +210,7 @@
       <#else>
         <#local localizedName = propDef.getLocalizedName(locale) />
       </#if>
-
+      
       <#local value = resource.getValue(propDef) />
 
       <#local description = propDef.getDescription(locale)?default("") />
@@ -374,6 +374,20 @@
                 <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" />
               </#if>
               <label class="resource.${name}" for="resource.${name}.${allowedValues[0]?html}">${localizedName}</label>
+              
+              <#if name = "display-aggregation"><#-- only add once -->
+                <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js"></script>
+                <script type="text/javascript"><!--
+                  $(function() {
+                    $("#editor").vortexTips("abbr", "#editor", 320, 300, 250, 300, 20, -30, false, false);
+                  });
+                // -->
+                </script>
+              </#if>
+              <#if name = "display-aggregation" || name = "display-manually-approved">
+                <abbr class="resource-prop-info" title="<span id='title-wrapper'>Hjelp til å legge inn webområder</span><ul><li>Legg inn fullstendig webadresse f.eks.:<br/><a href='http://www.odont.uio.no/om/aktuelt/arrangementer/'>http://www.odont.uio.no/om/aktuelt/arrangementer/</a></li><li>eller rot-relativ filbane hvis område ligger på samme<br />server, f.eks.: <a href='/om/aktuelt/arrangementer/'>/om/aktuelt/arrangementer/</a></li></ul>"></abbr>
+              </#if>
+              
             <#else>
               <label class="resource.${name}">${allowedValues[0]?html}</label>
               <#if value == allowedValues[0]>

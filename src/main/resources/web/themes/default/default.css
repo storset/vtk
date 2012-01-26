@@ -950,10 +950,19 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
   border-bottom: 1px dotted #a9a9a9;
 }
 
+form#editor .tip ul,
 #title-container .tip ul {
   margin-top: 0px;
   margin-bottom: 0px;
   padding-left: 10px;
+}
+
+form#editor .tip #title-wrapper {
+  font-weight: bold;
+}
+
+form#editor .tip ul a {
+  color: #549401;
 }
 
 /* Create dialog */

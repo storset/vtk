@@ -300,7 +300,7 @@ public class ExpiresCacheResponseFilter extends AbstractResponseFilter {
             if (contentType == null) {
                 return false;
             }
-            return contentType.startsWith("text/html");
+            return contentType.startsWith("text/html") || contentType.startsWith("image/");
         }
     }
 

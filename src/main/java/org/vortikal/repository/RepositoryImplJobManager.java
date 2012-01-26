@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
@@ -51,7 +52,7 @@ public final class RepositoryImplJobManager implements Runnable {
 
     private RepositoryImpl repository;
     private int periodInterval = 600;
-    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledExecutorService executor;
     private Date purgeTrashLastRun;
     private Date revisionGCLastRun;
     private Set<Integer> revisionGCHours = new HashSet<Integer>(Arrays.asList(new Integer[]{3}));
@@ -60,13 +61,28 @@ public final class RepositoryImplJobManager implements Runnable {
     private final Log periodicLogger = LogFactory.getLog(getClass());
     
     // Start background jobs
-    public void start() {
-        periodicLogger.info("Start repository job manager.");
+    public void init() {
+        if (this.executor != null) {
+            throw new IllegalStateException("init() should only be called once at start of bean life cycle");
+        }
+
+        this.executor = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread(r, repository.getId() + ".repository.jobmanager");
+            }
+        });
+        
+        periodicLogger.info("Init repository job manager.");
         this.executor.scheduleAtFixedRate(this, 10, this.periodInterval, TimeUnit.SECONDS);
     }
 
     // Shutdown background jobs
-    public void stop() {
+    public void destroy() {
+        if (this.executor == null) {
+            throw new IllegalStateException("destroy() was called, but init() was never called before.");
+        }
+        
         periodicLogger.info("Shutdown repository job manager.");
         this.executor.shutdownNow();
     }
@@ -77,6 +93,7 @@ public final class RepositoryImplJobManager implements Runnable {
         
         // Delete expired locks at every period
         try {
+            periodicLogger.debug("Deleting expired locks");
             repository.deleteExpiredLocks();
         } catch (Throwable t) {
             periodicLogger.error("Error while deleting expired locks", t);

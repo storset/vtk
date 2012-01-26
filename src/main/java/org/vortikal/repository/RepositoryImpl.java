@@ -119,11 +119,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private int maxResourceChildren = 3000;
     private File tempDir;
 
-    private Map<Privilege, List<Pattern>> usersBlacklist = 
-            new EnumMap<Privilege, List<Pattern>>(Privilege.class);
-    private Map<Privilege, List<Pattern>> groupsBlacklist =
-            new EnumMap<Privilege, List<Pattern>>(Privilege.class);
-
     // Default value of 60 days before recoverable resources are purged from
     // trash can
     private int permanentDeleteOverdueLimitInDays = 60;
@@ -1183,12 +1178,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     @Override
     public boolean isValidAclEntry(Privilege privilege, Principal principal) {
-        return validateAclEntry(privilege, principal);
+        return this.authorizationManager.isValidAclEntry(privilege, principal);
     }
 
     @Override
     public boolean isBlacklisted(Privilege privilege, Principal principal) {
-        return blacklisted(principal, privilege);
+        return this.authorizationManager.isBlackListed(principal, privilege);
     }
     
     @Transactional
@@ -1629,7 +1624,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         for (Privilege action : actions) {
             Set<Principal> principals = acl.getPrincipalSet(action);
             for (Principal principal : principals) {
-                boolean valid = validateAclEntry(action, principal);
+                boolean valid = this.authorizationManager.isValidAclEntry(action, principal);
                 if (!valid) {
                     // Preserve invalid principals already in ACL
                     if (!originalAcl.containsEntry(action, principal)) {
@@ -1640,43 +1635,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
     }
 
-    private boolean validateAclEntry(Privilege action, Principal principal) {
-        boolean valid = false;
-        if (principal.getType() == Principal.Type.USER) {
-            valid = this.principalManager.validatePrincipal(principal);
-        } else if (principal.getType() == Principal.Type.GROUP) {
-            valid = this.principalManager.validateGroup(principal);
-        } else {
-            valid = true;
-        }
-        if (blacklisted(principal, action)) {
-            valid = false;
-        }
-        return valid;
-    }
-
-    private boolean blacklisted(Principal principal, Privilege action) {
-        Map<Privilege, List<Pattern>> map = principal.isUser() ? this.usersBlacklist : this.groupsBlacklist;
-        if (map == null) {
-            return false;
-        }
-        List<Pattern> list = map.get(action);
-        if (list == null) {
-            return false;
-        }
-        for (Pattern pattern : list) {
-            Matcher m = pattern.matcher(principal.getQualifiedName());
-            if (m.find()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
     @Override
     public void setReadOnly(String token, boolean readOnly) throws AuthorizationException {
-
         Principal principal = this.tokenManager.getPrincipal(token);
         this.authorizationManager.authorizeRootRoleAction(principal);
         this.authorizationManager.setReadOnly(readOnly);
@@ -1775,34 +1735,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         this.maxResourceChildren = maxResourceChildren;
     }
-
-    public void setPermissionBlacklist(Map<Privilege, List<String>> blacklist) {
-        for (Privilege privilege : blacklist.keySet()) {
-            List<String> principals = blacklist.get(privilege);
-            for (String spec : principals) {
-                String principal;
-                boolean user;
-                if (spec.startsWith("user:")) {
-                    principal = spec.substring("user:".length());
-                    user = true;
-                } else if (spec.startsWith("group:")) {
-                    principal = spec.substring("group:".length());
-                    user = false;
-                } else {
-                    throw new IllegalArgumentException("Illegal principal specification: " + spec);
-                }
-                principal = principal.replaceAll("\\.", "\\\\.");
-                principal = principal.replaceAll("\\*", ".*");
-                Pattern pattern = Pattern.compile(principal);
-                Map<Privilege, List<Pattern>> map = user ? this.usersBlacklist : this.groupsBlacklist;
-                if (!map.containsKey(privilege)) {
-                    map.put(privilege, new ArrayList<Pattern>());
-                }
-                map.get(privilege).add(pattern);
-            }
-        }
-    }
-
 
     @Override
     public ResultSet search(String token, Search search) throws QueryException {

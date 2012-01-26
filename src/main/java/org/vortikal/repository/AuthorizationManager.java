@@ -31,10 +31,15 @@
 package org.vortikal.repository;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.AuthenticationException;
@@ -53,6 +58,11 @@ public final class AuthorizationManager {
     private DataAccessor dao;
     
     private boolean readOnly = false;
+
+    private Map<Privilege, List<Pattern>> usersBlacklist = 
+            new EnumMap<Privilege, List<Pattern>>(Privilege.class);
+    private Map<Privilege, List<Pattern>> groupsBlacklist =
+            new EnumMap<Privilege, List<Pattern>>(Privilege.class);
 
     public boolean isReadOnly() {
         return this.readOnly;
@@ -743,6 +753,66 @@ public final class AuthorizationManager {
         return false;
     }
 
+    public boolean isBlackListed(Principal principal, Privilege action) {
+        Map<Privilege, List<Pattern>> map = principal.isUser() ? this.usersBlacklist : this.groupsBlacklist;
+        if (map == null) {
+            return false;
+        }
+        List<Pattern> list = map.get(action);
+        if (list == null) {
+            return false;
+        }
+        for (Pattern pattern : list) {
+            Matcher m = pattern.matcher(principal.getQualifiedName());
+            if (m.find()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isValidAclEntry(Privilege action, Principal principal) {
+        boolean valid = false;
+        if (principal.getType() == Principal.Type.USER) {
+            valid = this.principalManager.validatePrincipal(principal);
+        } else if (principal.getType() == Principal.Type.GROUP) {
+            valid = this.principalManager.validateGroup(principal);
+        } else {
+            valid = true;
+        }
+        if (isBlackListed(principal, action)) {
+            valid = false;
+        }
+        return valid;
+    }
+
+
+    public void setPermissionBlacklist(Map<Privilege, List<String>> blacklist) {
+        for (Privilege privilege : blacklist.keySet()) {
+            List<String> principals = blacklist.get(privilege);
+            for (String spec : principals) {
+                String principal;
+                boolean user;
+                if (spec.startsWith("user:")) {
+                    principal = spec.substring("user:".length());
+                    user = true;
+                } else if (spec.startsWith("group:")) {
+                    principal = spec.substring("group:".length());
+                    user = false;
+                } else {
+                    throw new IllegalArgumentException("Illegal principal specification: " + spec);
+                }
+                principal = principal.replaceAll("\\.", "\\\\.");
+                principal = principal.replaceAll("\\*", ".*");
+                Pattern pattern = Pattern.compile(principal);
+                Map<Privilege, List<Pattern>> map = user ? this.usersBlacklist : this.groupsBlacklist;
+                if (!map.containsKey(privilege)) {
+                    map.put(privilege, new ArrayList<Pattern>());
+                }
+                map.get(privilege).add(pattern);
+            }
+        }
+    }
 
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;

@@ -50,11 +50,10 @@
     <property name="permanentDeleteOverdueLimitInDays" value="${repository.permanentDeleteOverdueLimitInDays}" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="permissionBlacklist" ref="repository.acl.blacklist" />
     <property name="tempDir" value="${repository.tempDir}" />
   </bean>
   <bean id="repository.internal.jobManager" class="org.vortikal.repository.RepositoryImplJobManager"
-        init-method="start" destroy-method="stop">
+        init-method="init" destroy-method="destroy">
     <property name="repository" ref="repository.internal"/>
   </bean>
 
@@ -197,6 +196,7 @@
     <property name="readOnly" value="${repositoryReadOnly}" />
     <property name="principalManager" ref="principalManager" />
     <property name="roleManager" ref="roleManager" />
+    <property name="permissionBlacklist" ref="repository.acl.blacklist" />
     <property name="dao" ref="${repositoryBackend}" />
   </bean>
 

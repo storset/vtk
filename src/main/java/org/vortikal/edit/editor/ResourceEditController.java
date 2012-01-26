@@ -155,18 +155,7 @@ public class ResourceEditController extends SimpleFormController {
           URL imageSourceURL = this.loadImageService.constructURL(resource, principal);
           model.put("imageURL", imageSourceURL);
         }
-        /*
-          InputStream in = repository.getInputStream(token, uri, false);
-          ByteArrayOutputStream bos = new ByteArrayOutputStream();
-          int next = in.read();
-          while (next > -1) {
-              bos.write(next);
-              next = in.read();
-          }
-          bos.flush();
-          byte[] result = bos.toByteArray(); 
-          model.put("imageAsBase64", Base64Utils.encode(result));
-          */
+
         return model;
     }
 

@@ -131,7 +131,20 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
         
         editor.hasCropBeenInitialized = false;
       } else {
-        editor.initSelection(40, 40, 40, 40);
+        if(editor.rw > 400) {
+          var distEdge = 40;
+        } else if(editor.rw < 400 && editor.rw > 200) {
+          var distEdge = 30;
+        } else if (editor.rw < 200 && editor.rw > 120) {
+          var distEdge = 20;
+        } else if (editor.rw < 120 && editor.rw > 40) {
+          var distEdge = 10;
+        } else {
+          var distEdge = 1;
+        }
+        
+        editor.initSelection(distEdge, distEdge, editor.rw - (distEdge*2), editor.rh - (distEdge*2));
+        
         $(this).val(cropText);
         $("#vrtx-image-editor").resizable("disable");
         

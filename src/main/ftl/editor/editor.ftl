@@ -187,8 +187,8 @@
      
      <#if resource.contentType?exists && saveImageURL?exists
           && (resource.contentType == "image/jpeg" 
-          || resource.contentType == "image/pjpeg"
-          || resource.contentType == "image/png")>
+           || resource.contentType == "image/pjpeg"
+           || resource.contentType == "image/png")>
        <form enctype="multipart/form-data" id="vrtx-image-editor-save-image-form" action="${saveImageURL?html}" method="post" style="display: none;">
          <@vrtx.csrfPreventionToken url=saveImageURL />
        </form>

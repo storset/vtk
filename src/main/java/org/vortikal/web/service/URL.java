@@ -1161,7 +1161,7 @@ public class URL {
 
         for (int i = 0; i < length; i++) {
             if (cur == null) {
-                return Path.ROOT;
+                cur = Path.ROOT;
             }
             char c = expansion.charAt(i);
             if (c == '/' || i == length - 1) {
@@ -1180,6 +1180,9 @@ public class URL {
             } else {
                 segment.append(c);
             }
+        }
+        if (cur == null) {
+            return Path.ROOT;
         }
         return cur;
     }

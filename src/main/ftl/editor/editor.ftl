@@ -375,7 +375,7 @@
               </#if>
               <label class="resource.${name}" for="resource.${name}.${allowedValues[0]?html}">${localizedName}</label>
               
-              <#if name = "display-aggregation"><#-- only add once -->
+              <#if name = "display-aggregation"><#-- only add once. TODO: generalize editor tooltip concept -->
                 <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js"></script>
                 <script type="text/javascript"><!--
                   $(function() {

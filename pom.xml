@@ -8,10 +8,12 @@
   <name>The Vortikal Web Framework</name>
   <url>http://www.usit.uio.no/it/vortex/</url>
   <modelVersion>4.0.0</modelVersion>
-  <description> The Vortikal Web Framework is an open source web publishing solution. It consists of two
+  <description>
+    The Vortikal Web Framework is an open source web publishing solution. It consists of two
     principal parts, a file repository for storing files and folders and a web framework allowing
     functionality to be added in a resource centric way. On top of this framework it provides both web based
-    and webdav content management solutions. </description>
+    and webdav content management solutions.
+  </description>
   <organization>
     <name>Vortex Project</name>
     <url>http://www.usit.uio.no/it/vortex</url>
@@ -442,7 +444,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.5</version>
+      <version>4.10</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -475,21 +477,7 @@
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
-      <version>1.2.15</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.jms</groupId>
-          <artifactId>jms</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.jdmk</groupId>
-          <artifactId>jmxtools</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.jmx</groupId>
-          <artifactId>jmxri</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>1.2.16</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -532,11 +520,6 @@
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
       <version>2.3.15</version>
-    </dependency>
-    <dependency>
-      <groupId>org.python</groupId>
-      <artifactId>jython</artifactId>
-      <version>2.2.1</version>
     </dependency>
     <dependency>
       <groupId>org.beanshell</groupId>
@@ -647,11 +630,13 @@
       <groupId>org.aspectj</groupId>
       <artifactId>aspectjweaver</artifactId>
       <version>1.5.4</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>cglib</groupId>
       <artifactId>cglib-nodep</artifactId>
       <version>2.2.2</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>jaxen</groupId>
@@ -674,11 +659,13 @@
       <version>8.2-507.jdbc3</version>
       <scope>runtime</scope>
     </dependency>
-    
+
+    <!-- Provide slf4j code with log4j-output: -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
-      <version>1.6.1</version>
+      <version>1.6.4</version>
+      <scope>runtime</scope>
     </dependency>
 
     <dependency>
@@ -686,7 +673,6 @@
       <artifactId>antlr-runtime</artifactId>
       <version>3.2</version>
     </dependency>
-
   </dependencies>
   
   <reporting>

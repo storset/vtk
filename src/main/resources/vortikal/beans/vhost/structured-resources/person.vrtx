@@ -100,12 +100,14 @@ resourcetype person {
              [endlist]
             </div>
           [endif]
-          [if mobile != null && mobile != ""]
+          [if (mobile != null && mobile != "") || (alternativeCellPhone != null && alternativeCellPhone != "")]
             <div class="vrtx-person-contact-info-line vrtx-mobile">
               <span class="vrtx-label">[localized "mobile"]</span>
-                [list mobile mobileLine]
-                  <span class="vrtx-value">[val mobileLine]</span>
-                [endlist]
+                [if mobile != null && mobile != ""]
+                	[list mobile mobileLine]
+                  	<span class="vrtx-value">[val mobileLine]</span>
+                	[endlist]
+              	[endif]
                 [if alternativeCellPhone != null && alternativeCellPhone != ""]
                 	<span class="vrtx-value">[val alternativeCellPhone]</span>
                 [endif]

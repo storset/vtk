@@ -52,8 +52,13 @@
 
 #vrtx-resource\.manually-approve-from,
 #vrtx-resource\.aggregation {
+  margin-top: 10px;
   margin-bottom: 20px;
   float: left;
+}
+
+#vrtx-resource\.recursive-listing-subfolders {
+  margin-top: 5px;
 }
 
 input[type=radio] {

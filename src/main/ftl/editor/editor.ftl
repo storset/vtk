@@ -46,7 +46,7 @@
        var approveOf = "<@vrtx.msg code='person-listing.of' />";
        var approveTableTitle = "<@vrtx.msg code='proptype.name.title' />";
        var approveTableSrc = "<@vrtx.msg code='resource.sourceURL' />";
-       var approveTablePublished = "<@vrtx.msg code='publish.premission.published' />";
+       var approveTablePublished = "<@vrtx.msg code='publish.permission.published' />";
      }
     
      shortcut.add("Ctrl+S",function() {

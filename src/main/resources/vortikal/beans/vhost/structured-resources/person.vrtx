@@ -14,6 +14,7 @@ resourcetype person {
     visitingAddress : string multiple external:userMetadataLdapService,
     externalUserMetaData : derived external:userMetadataLdapService,
     alternativeVisitingAddress : string multiple,
+ 	alternativeCellPhone : string,
     title : derived (firstName, surname) eval (firstName + " " + surname)
       overrides title default username,
     room : string,
@@ -35,7 +36,7 @@ resourcetype person {
 
   edit-rules {
     group contactInformation (getExternalPersonInfo, firstName, surname, position, phone, mobile, fax, email, postalAddress, visitingAddress) (after username),
-    group additionalContactInformation (alternativeVisitingAddress, building, room, availableHours) (after contactInformation),
+    group additionalContactInformation (alternativeVisitingAddress, building, room, availableHours, alternativeCellPhone) (after contactInformation),
     group images (picture, pressPhoto) (after additionalContactInformation) horizontal,
     group combinedPublications (getExternalScientificInformation, selectedPublications) (after tags),
     group combinedProjects (getRelatedProjects, projects) (after combinedPublications),
@@ -105,6 +106,9 @@ resourcetype person {
                 [list mobile mobileLine]
                   <span class="vrtx-value">[val mobileLine]</span>
                 [endlist]
+                [if alternativeCellPhone != null && alternativeCellPhone != ""]
+                	<span class="vrtx-value">[val alternativeCellPhone]</span>
+                [endif]
             </div>
           [endif]
           [if fax != null && fax != ""]
@@ -394,6 +398,7 @@ resourcetype person {
        en : "Visiting address (is displayed in place of visiting address registrated in UiO's saluary- and personalsystem)", 
        no : "Besøksadresse (vises istedenfor besøksadresse registert i UiOs lønns- og personalsystem)", 
        nn : "Besøksadresse (vert vist i staden for besøksadressa registrert i lønns- og personalsystemet til UiO)"),
+    alternativeCellPhone : (en : "Cell Phone (personal)", no : "Mobiltelefon (privat)", nn : "Mobiltelefon (privat)"),
     email : (en : "Email", no : "E-post", nn : "E-post"),
     position : (en : "Position", no : "Stillingstittel", nn : "Stillingstittel"),
     webPage : (en : "Web page", no : "Webside", nn : "Webside"),

@@ -66,6 +66,10 @@
   margin-top: 10px;
 }
 
+.no-recursive-listing-prop {
+  margin-bottom: -10px;
+}
+
 input[type=radio] {
   margin: 0 3px 6px 0;
 }

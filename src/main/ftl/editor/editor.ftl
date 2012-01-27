@@ -222,7 +222,7 @@
       <#if name == "recursive-listing"><#assign recursivePresent = "true" /></#if>
       <#if name == "display-aggregation" && !recursivePresent?exists>
         <div id="vrtx-resource.recursive-listing" class="recursive-listing property-item">
-          <div class="resource.recursive-listing property-label"><@vrtx.msg code="proptype.name.${resource.resourceType}.recursive-listing" /></div>
+          <div class="resource.recursive-listing property-label no-recursive-listing-prop"><@vrtx.msg code="proptype.name.${resource.resourceType}.recursive-listing" /></div>
         </div>
       </#if>
       <#-- HACKS 2012 end -->

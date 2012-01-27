@@ -39,7 +39,7 @@
     <script type="text/javascript"><!--
     
      if($("#vrtx-resource\\.display-manually-approved").length) {
-       var approveGeneratingPage = "Generating page";
+       var approveGeneratingPage = "<@vrtx.msg code='editor.manually-approve.generating-page' />";
        var approvePrev = "<@vrtx.msg code='imageListing.previous' />";
        var approveNext = "<@vrtx.msg code='imageListing.next' />";
        var approveShowing = "<@vrtx.msg code='editor.manually-approve.table-showing' />";

@@ -454,7 +454,7 @@
           </div>
 
           <#if name = 'recursive-listing-subfolders'>
-            <label>${vrtx.getMsg("editor.recursive-listing.featured-articles.hint")}</label>
+            <label class="tooltip">${vrtx.getMsg("editor.recursive-listing.featured-articles.hint")}</label>
           </#if>
           <#if description != "">
             <span class="input-description">(${description})</span>

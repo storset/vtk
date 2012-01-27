@@ -209,11 +209,20 @@
     <#list propDefs as propDef>
       <#local name = propDef.name />
       
+      <#-- Wrap hide properties -->
       <#if !name?starts_with("hide") && startWrapHideProps?exists></div></#if>
       <#if name?starts_with("hide") && !startWrapHideProps?exists>
         <#assign startWrapHideProps = "true" />
         <div id="vrtx-resource.hide-props" class="hide property-item">
           <div class="resource.hide-props property-label"><@vrtx.msg code='editor.hide-props-title' /></div> 
+      </#if>
+      
+      <#-- Title for aggregation and manually approve when recursive isn't present -->
+      <#if name == "recursive-listing"><#assign recursivePresent = "true" /></#if>
+      <#if name == "display-aggregation" && !recursivePresent?exists>
+        <div id="vrtx-resource.recursive-listing" class="recursive-listing property-item">
+          <div class="resource.recursive-listing property-label"><@vrtx.msg code="proptype.name.${resource.resourceType}.recursive-listing" /></div>
+        </div>
       </#if>
       
       <#if name = "display-aggregation" || name = "display-manually-approved">

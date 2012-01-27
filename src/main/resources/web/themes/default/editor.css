@@ -46,8 +46,12 @@
   margin: 20px 0 0 0;
 }
 
-#vrtx-resource\.hide-props .property-item {
-  margin-top: 10px;
+#vrtx-resource\.recursive-listing-subfolders {
+  margin-top: 5px;
+}
+
+#vrtx-resource\.recursive-listing-subfolders .vrtx-textfield {
+  margin-left: 5px;
 }
 
 #vrtx-resource\.manually-approve-from,
@@ -57,8 +61,8 @@
   float: left;
 }
 
-#vrtx-resource\.recursive-listing-subfolders {
-  margin-top: 5px;
+#vrtx-resource\.hide-props .property-item {
+  margin-top: 10px;
 }
 
 input[type=radio] {

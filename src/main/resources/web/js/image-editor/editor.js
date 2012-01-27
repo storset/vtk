@@ -334,8 +334,19 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
     fd.append("csrf-prevention-token", form.find("input[name=csrf-prevention-token]").val()); 
     fd.append("base", imageAsBase64);
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", form.attr("action"));
-    xhr.send(fd);
+    xhr.open("POST", form.attr("action"), true); // this is not working so good
+    xhr.setRequestHeader("Cache-Control", "no-cache");
+    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+    if (fd.fake) {
+      xhr.setRequestHeader("Content-Type", "multipart/form-data; boundary=" + fd.boundary);
+      if(!xhr.sendAsBinary) {
+        xhr.send(fd.toString());
+      } else {
+        xhr.sendAsBinary(fd.toString());
+      }
+    } else {
+      xhr.send(fd);
+    }
     xhr.onreadystatechange = function() {
       if($.browser.mozilla) { // http://www.nczonline.net/blog/2009/07/09/firefox-35firebug-xmlhttprequest-and-readystatechange-bug/
         xhr.onload = xhr.onerror = xhr.onabort = function() {
@@ -347,9 +358,6 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
         }
       }
     };
-  } else { // Otherwise try to append imageAsBase64 to form instead
-    form.append("<input type='hidden' name='base' value='" + imageAsBase64 + "' />");
-    form.submit();
   }
 };
 
@@ -687,5 +695,43 @@ VrtxImageEditor.prototype.resetCropPlugin = function resetCropPlugin() {
   editor.selection = null;
   $("#vrtx-image-editor").unbind("mousemove").unbind("mousedown").unbind("mouseup");
 };
+
+/**
+ * Emulate FormData for some browsers
+ * MIT License
+ * (c) 2010 François de Metz
+ */
+(function(w) {
+    if (w.FormData)
+        return;
+    function FormData() {
+        this.fake = true;
+        this.boundary = "--------FormData" + Math.random();
+        this._fields = [];
+    }
+    FormData.prototype.append = function(key, value) {
+        this._fields.push([key, value]);
+    }
+    FormData.prototype.toString = function() {
+        var boundary = this.boundary;
+        var body = "";
+        this._fields.forEach(function(field) {
+            body += "--" + boundary + "\r\n";
+            // file upload
+            if (field[1].name) {
+                var file = field[1];
+                body += "Content-Disposition: form-data; name=\""+ field[0] +"\"; filename=\""+ file.name +"\"\r\n";
+                body += "Content-Type: "+ file.type +"\r\n\r\n";
+                body += file.getAsBinary() + "\r\n";
+            } else {
+                body += "Content-Disposition: form-data; name=\""+ field[0] +"\";\r\n\r\n";
+                body += field[1] + "\r\n";
+            }
+        });
+        body += "--" + boundary +"--";
+        return body;
+    }
+    w.FormData = FormData;
+})(window);
 
 /* ^ Vortex HTML5 Canvas image editor */

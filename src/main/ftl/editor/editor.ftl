@@ -209,6 +209,7 @@
     <#list propDefs as propDef>
       <#local name = propDef.name />
       
+      <#-- HACKS 2012 start -->
       <#-- Wrap hide properties -->
       <#if !name?starts_with("hide") && startWrapHideProps?exists></div></#if>
       <#if name?starts_with("hide") && !startWrapHideProps?exists>
@@ -224,6 +225,7 @@
           <div class="resource.recursive-listing property-label"><@vrtx.msg code="proptype.name.${resource.resourceType}.recursive-listing" /></div>
         </div>
       </#if>
+      <#-- HACKS 2012 end -->
       
       <#if name = "display-aggregation" || name = "display-manually-approved">
         <#local localizedName>
@@ -398,6 +400,8 @@
               </#if>
               <label class="resource.${name}" for="resource.${name}.${allowedValues[0]?html}">${localizedName}</label>
               
+              <#-- HACKS 2012 start -->
+              <#-- Tooltip for aggregation and manually approve -->
               <#if name = "display-aggregation"><#-- only add once. TODO: generalize editor tooltip concept -->
                 <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js"></script>
                 <script type="text/javascript"><!--
@@ -410,6 +414,7 @@
               <#if name = "display-aggregation" || name = "display-manually-approved">
                 <abbr class="resource-prop-info" title="${vrtx.getMsg('editor.manually-approve-aggregation.info')}"></abbr>
               </#if>
+              <#-- HACKS 2012 end -->
               
             <#else>
               <label class="resource.${name}">${allowedValues[0]?html}</label>

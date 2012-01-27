@@ -10,7 +10,7 @@ var inlineToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
 var withoutSubSuperToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                                'Italic', 'Strike', 'SpecialChar']];
 
-var completeToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+var completeToolbar = [['Source', '-', 'Ajaxsave', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                         'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
                         'Image', 'CreateDiv', 'MediaEmbed', 'Table',
                         'HorizontalRule', 'SpecialChar'
@@ -18,9 +18,9 @@ var completeToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Re
                         'Subscript', 'Superscript', 'NumberedList',
                         'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
                         'JustifyCenter', 'JustifyRight', 'TextColor',
-                        'Maximize','Ajaxsave']];
+                        'Maximize']];
 
-var completeToolbarOld = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+var completeToolbarOld = [['Source', '-', 'Ajaxsave', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                            'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
                            'Image', 'CreateDiv', 'MediaEmbed', 'Table',
                            'HorizontalRule', 'SpecialChar'
@@ -28,7 +28,7 @@ var completeToolbarOld = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 
                              'Subscript', 'Superscript', 'NumberedList',
                              'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
                              'JustifyCenter', 'JustifyRight', 'TextColor',
-                             'Maximize','Ajaxsave']];
+                             'Maximize']];
 
 var commentsToolbar = [['Source', 'PasteText', 'Bold',
                         'Italic', 'Strike', 'NumberedList',

@@ -227,9 +227,13 @@ $(document).ready(function () {
 
   // Urchin stats
   $("#app-content").delegate("#vrtx-resource-visit-tab-menu a", "click", function(e) {
+    $("#vrtx-resource-visit-wrapper").append("<span id='urchin-loading'></span>");
+    $("#vrtx-resource-visit-chart").remove();
+    $("#vrtx-resource-visit-stats").remove();
+    $("#vrtx-resource-visit-info").remove();
     vrtxAdmin.serverFacade.getHtml(this.href, {
       success: function (results, status, resp) {
-        $("#vrtx-resource-visit").html($(results).html());
+        $("#vrtx-resource-visit-wrapper").html("<div id='vrtx-resource-visit'>" + $(results).html() + "</div>");
       }
     });
     e.stopPropagation();

@@ -10,8 +10,14 @@ self.addEventListener('message', function (e) {
   if (data) {
     var u = 0;
     var lanczos = lanczosCreate(data.lobes);
+    var percent10 = Math.round(data.dest.width * 0.1);
+    var percent10count = 10;
     do {
       data = process1(data, u, lanczos);
+      if(u % percent10 == 0) {
+        self.postMessage(percent10count);    
+        percent10count += 10;
+      }
     } while (++u < data.dest.width);
     self.postMessage(data);
   }
@@ -28,14 +34,10 @@ function process1(data, u, lanczos) {
     for (var i = data.icenter.x - data.range2; i <= data.icenter.x + data.range2; i++) {
       if (i < 0 || i >= data.src.width) continue;
       var f_x = Math.floor(1000 * Math.abs(i - data.center.x));
-      if (!data.cacheLanc[f_x]) data.cacheLanc[f_x] = {};
       for (var j = data.icenter.y - data.range2; j <= data.icenter.y + data.range2; j++) {
         if (j < 0 || j >= data.src.height) continue;
         var f_y = Math.floor(1000 * Math.abs(j - data.center.y));
-        if (data.cacheLanc[f_x][f_y] == undefined) {
-          data.cacheLanc[f_x][f_y] = lanczos(Math.sqrt(Math.pow(f_x * data.rcp_ratio, 2) + Math.pow(f_y * data.rcp_ratio, 2)) / 1000);
-        }
-        weight = data.cacheLanc[f_x][f_y];
+        weight = lanczos(Math.sqrt(Math.pow(f_x * data.rcp_ratio, 2) + Math.pow(f_y * data.rcp_ratio, 2)) / 1000);
         if (weight > 0) {
           var idx = (j * data.src.width + i) * 4;
           a += weight;
@@ -50,6 +52,7 @@ function process1(data, u, lanczos) {
     data.dest.data[idx + 1] = g / a;
     data.dest.data[idx + 2] = b / a;
   }
+  
   return data;
 }
 

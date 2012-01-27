@@ -334,7 +334,7 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
     fd.append("csrf-prevention-token", form.find("input[name=csrf-prevention-token]").val()); 
     fd.append("base", imageAsBase64);
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", form.attr("action"), true); // this is not working so good
+    xhr.open("POST", form.attr("action"), true);
     xhr.setRequestHeader("Cache-Control", "no-cache");
     xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     if (fd.fake) {
@@ -408,7 +408,7 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
   var h = editor.rh;
   var ratio = editor.reversedScaleRatio;
   var data = {
-    src: ctx.getImageData(editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight),
+    src: editor.imageData2Object(ctx, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight),
     lobes: lobes,
     dest: {
       width: w,
@@ -418,7 +418,6 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
     ratio: ratio,
     rcp_ratio: 2 / ratio,
     range2: Math.ceil(ratio * lobes / 2),
-    cacheLanc: {},
     center: {},
     icenter: {}
   };
@@ -427,24 +426,29 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
   var process1Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process1.js';
   var process2Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process2.js';
 
-  if (false) { // Use Web Workers if supported
+  if ("Worker" in window) { // Use Web Workers if supported
     var workerLanczosProcess1 = new Worker(process1Url);
     var workerLanczosProcess2 = new Worker(process2Url); 
     workerLanczosProcess1.postMessage(data);
     workerLanczosProcess1.addEventListener('message', function(e) {
       var data = e.data;
       if(data) {   
-        canvas.width = data.dest.width;
-        canvas.height = data.dest.height;
-        ctx.drawImage(img, 0, 0);
-        data.src = ctx.getImageData(0, 0, data.dest.width, data.dest.height);
-        workerLanczosProcess2.postMessage(data);
+        if (typeof data === "number") {
+         $("#vrtx-image-editor-interpolation-complete").val(data + "%");
+        } else {
+          canvas.width = data.dest.width;
+          canvas.height = data.dest.height;
+          ctx.drawImage(img, 0, 0);
+          data.src = editor.imageData2Object(ctx, 0, 0, data.dest.width, data.dest.height);
+          workerLanczosProcess2.postMessage(data);
+        }
       } 
     }, false);
     workerLanczosProcess2.addEventListener('message', function(e) { 
       var data = e.data;
       if(data) { 
-        ctx.putImageData(data.src, 0, 0);
+        var destImageData = editor.object2ImageData(ctx, data.src, data.dest.width, data.dest.height);
+        ctx.putImageData(destImageData, 0, 0);  
         editor.renderScaledImage(false);   
         editor.save(buttonId);
         elem.style.display = "block";
@@ -481,9 +485,10 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
             canvas.width = data.dest.width;
             canvas.height = data.dest.height;
             ctx.drawImage(img, 0, 0);
-            data.src = ctx.getImageData(0, 0, data.dest.width, data.dest.height);
+            data.src = editor.imageData2Object(ctx, 0, 0, data.dest.width, data.dest.height);
             data = process2(data);
-            ctx.putImageData(data.src, 0, 0);
+            var destImageData = editor.object2ImageData(ctx, data.src, data.dest.width, data.dest.height);
+            ctx.putImageData(destImageData, 0, 0);  
             editor.renderScaledImage(false);  
             editor.save(buttonId);
             elem.style.display = "block";
@@ -494,6 +499,27 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
       }, 0);
     }
   }
+};
+
+VrtxImageEditor.prototype.imageData2Object = function imageDataToObject(ctx, x, y, w, h) {
+  var srcImageData = ctx.getImageData(x, y, w, h);
+  var destImageObject = {
+    width: w,
+    height: h,
+    data: new Array(w * h * 4)
+  };
+  for (var i = 0; i < srcImageData.data.length; i++) {
+    destImageObject.data[i] = srcImageData.data[i];
+  }
+  return destImageObject;
+};
+
+VrtxImageEditor.prototype.object2ImageData = function imageDataToObject(ctx, srcImageObject, w, h) {
+  var destImageData = ctx.createImageData(w, h);
+  for (var i = 0; i < srcImageObject.data.length; i++) {
+    destImageData.data[i] = srcImageObject.data[i];
+  }
+  return destImageData;      
 };
 
 /*

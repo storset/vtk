@@ -7,13 +7,6 @@
 
 var lastVal = "";
 
-$(window).load(function() {
-  var manuallyApproveFolders = $("#resource\\.manually-approve-from");
-  if(manuallyApproveFolders.length) {
-    lastVal = manuallyApproveFolders.val()
-  }
-});
-
 $(document).ready(function() {
 
     // Retrieve initial resources
@@ -150,8 +143,6 @@ function retrieveResources(serviceUri, folders, aggregatedFolders) {
  * adding each to DOM when complete
  * 
  * @param resources as JSON array
- *
- * TODO: i18n
  * 
  */
 
@@ -187,8 +178,8 @@ function generateManuallyApprovedContainer(resources) {
 
   // Add spinner
   $("#manually-approve-container-title").append(
-      "<span id='approve-spinner'>Genererer side <span id='approve-spinner-generated-pages'>" + pages + "</span> av "
-          + totalPages + "...</span>");
+      "<span id='approve-spinner'>" + approveGeneratingPage + " <span id='approve-spinner-generated-pages'>"
+      + pages + "</span> " + approveOf + " " + totalPages + "...</span>");
 
   // Generate rest of pages asynchronous
   setTimeout( function() {
@@ -216,8 +207,8 @@ function generateManuallyApprovedContainer(resources) {
         pages--;
       }
       if (len > prPage) {
-        html += "<a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>Forrige " + prPage
-            + "</a>";
+        html += "<a href='#page-" + (pages - 1) + "' class='prev' id='page-" + (pages - 1) + "'>" 
+              + approvePrev + " " + prPage + "</a>";
       }
       html += "</div>";
       $("#manually-approve-container").append(html);
@@ -251,16 +242,18 @@ function generateTableRow(resource, i) {
 
 function generateTableEndAndPageInfo(pages, prPage, len, lastRow) {
   var last = lastRow ? len : pages * prPage;
-  return "</tbody></table><span class='approve-info'>Viser " + (((pages - 1) * prPage) + 1) + "-" + last + " av " + len
-      + "</span>";
+  return "</tbody></table><span class='approve-info'>" + approveShowing + " " + (((pages - 1) * prPage) + 1)
+         + "-" + last + " " + approveOf + " " + len + "</span>";
 }
 
 function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
   var nextPrPage = pages < totalPages || remainder == 0 ? prPage : remainder;
-  var html = "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>Neste " + nextPrPage + "</a>";
+  var html = "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>" 
+             + approveNext + " " + nextPrPage + "</a>";
   if (i > prPage) {
     var prevPage = pages - 2;
-    html += "<a href='#page-" + prevPage + "' class='prev' id='page-" + prevPage + "'>Forrige " + prPage + "</a>";
+    html += "<a href='#page-" + prevPage + "' class='prev' id='page-" + prevPage + "'>"
+          + approvePrev + " " + prPage + "</a>";
   }
   html += "</div>";
   return html;
@@ -269,7 +262,7 @@ function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
 function generateStartPageAndTableHead(pages) {
   return "<div id='approve-page-"
       + pages
-      + "'><table><thead><tr><th>Tittel</th><th>Kilde</th><th id='approve-published'>Publisert</th></tr></thead><tbody>";
+      + "'><table><thead><tr><th id='approve-title'>" + approveTableTitle + "</th><th id='approve-src'>" + approveTableSrc + "</th><th id='approve-published'>" + approveTablePublished + "</th></tr></thead><tbody>";
 }
 
 /* ^ HTML generation functions */

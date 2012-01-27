@@ -54,6 +54,12 @@
   margin-left: 5px;
 }
 
+#vrtx-resource\.recursive-listing-subfolders,
+#vrtx-resource\.aggregation,
+#vrtx-resource\.manually-approve-from {
+  margin-left: 18px;
+}
+
 #vrtx-resource\.manually-approve-from,
 #vrtx-resource\.aggregation {
   margin-top: 10px;
@@ -80,12 +86,11 @@ input[type=checkbox] {
 
 /* Manual approval */
 
-#approve-spinner {
-  padding-left: 20px;
-}
-
-#vrtx-manually-approve-from-add {
+#manually-approve-container {
+  margin: 20px 0 50px 0;
   float: left;
+  clear: both;
+  width: 100%;
 }
 
 #manually-approve-container-title {
@@ -94,11 +99,12 @@ input[type=checkbox] {
   margin-left: 20px;
 }
 
-#manually-approve-container {
-  margin: 20px 0 50px 0;
+#approve-spinner {
+  padding-left: 20px;
+}
+
+#vrtx-manually-approve-from-add {
   float: left;
-  clear: both;
-  width: 100%;
 }
 
 #manually-approve-container.hidden {
@@ -106,7 +112,8 @@ input[type=checkbox] {
 }
 
 #manually-approve-container table {
-  width: 98%;
+  width: 100%;
+  table-layout: fixed;
 }
 
 #manually-approve-container table tr.even td {
@@ -117,6 +124,8 @@ input[type=checkbox] {
   font-size: 1.15em;
   border-top: 1px solid #f0f0f0;
   padding: 5px 15px 4px 0;
+  word-wrap: break-word;
+  overflow: hidden;
 }
 
 #manually-approve-container table th {
@@ -124,6 +133,18 @@ input[type=checkbox] {
   padding: 0 15px 8px 0;
   text-align: left;
   white-space: nowrap;  
+}
+
+#manually-approve-container th#approve-title {
+  width: 40%;
+}
+
+#manually-approve-container th#approve-src {
+  width: 40%;
+}
+
+#manually-approve-container th#approve-published {
+  width: 20%;
 }
 
 #manually-approve-container td .approve-link {
@@ -152,12 +173,6 @@ input[type=checkbox] {
 
 #vrtx-resource\.manually-approved-resources {
   display: none;
-}
-
-#vrtx-resource\.recursive-listing-subfolders,
-#vrtx-resource\.aggregation,
-#vrtx-resource\.manually-approve-from {
-  margin-left: 18px;
 }
 
 /* ^ Manual approval */

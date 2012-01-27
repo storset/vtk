@@ -36,8 +36,18 @@
       </#if>
      </#if>
 
-    <script type="text/javascript">
-    <!--
+    <script type="text/javascript"><!--
+    
+     if($("#vrtx-resource\\.display-manually-approved").length) {
+       var approveGeneratingPage = "Generating page";
+       var approvePrev = "<@vrtx.msg code='imageListing.previous' />";
+       var approveNext = "<@vrtx.msg code='imageListing.next' />";
+       var approveShowing = "<@vrtx.msg code='editor.manually-approve.table-showing' />";
+       var approveOf = "<@vrtx.msg code='person-listing.of' />";
+       var approveTableTitle = "<@vrtx.msg code='proptype.name.title' />";
+       var approveTableSrc = "<@vrtx.msg code='resource.sourceURL' />";
+       var approveTablePublished = "<@vrtx.msg code='publish.premission.published' />";
+     }
     
      shortcut.add("Ctrl+S",function() {
        $(".vrtx-focus-button:last input").click();

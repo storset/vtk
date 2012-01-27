@@ -123,7 +123,10 @@ function retrieveResources(serviceUri, folders, aggregatedFolders) {
     dataType :"json",
     success : function(data) {
       if (data != null && data.length > 0) {
+        $("#manually-approve-container:hidden").removeClass("hidden");
         generateManuallyApprovedContainer(data);
+      } else {
+        $("#manually-approve-container").addClass("hidden");
       }
     },
     error : function(xhr, textStatus) {

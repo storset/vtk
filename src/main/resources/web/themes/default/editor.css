@@ -46,6 +46,30 @@
   margin: 20px 0 0 0;
 }
 
+#vrtx-resource\.display-aggregation,
+#vrtx-resource\.display-manually-approved,
+#vrtx-resource\.hide-last-modified,
+#vrtx-resource\.hide-introduction,
+#vrtx-resource\.hide-introduction-image,
+#vrtx-resource\.hide-number-of-comments,
+#vrtx-resource\.hide-location {
+  margin-top: 10px;
+}
+
+#vrtx-resource\.manually-approve-from,
+#vrtx-resource\.aggregation {
+  margin-bottom: 20px;
+  float: left;
+}
+
+input[type=radio] {
+  margin: 0 3px 6px 0;
+}
+
+input[type=checkbox] {
+  margin: 0 3px 0 0;
+}
+
 /* Manual approval */
 
 #approve-spinner {
@@ -69,8 +93,12 @@
   width: 100%;
 }
 
+#manually-approve-container.hidden {
+  display: none;
+}
+
 #manually-approve-container table {
-  width: 100%;
+  width: 98%;
 }
 
 #manually-approve-container table tr.even td {

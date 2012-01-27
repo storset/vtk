@@ -61,7 +61,8 @@
   float: left;
 }
 
-#vrtx-resource\.hide-props .property-item {
+#vrtx-resource\.hide-props .property-item,
+#vrtx-resource\.display-manually-approved {
   margin-top: 10px;
 }
 

@@ -18,7 +18,7 @@ var completeToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Re
                         'Subscript', 'Superscript', 'NumberedList',
                         'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
                         'JustifyCenter', 'JustifyRight', 'TextColor',
-                        'Maximize']];
+                        'Maximize','Ajaxsave']];
 
 var completeToolbarOld = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                            'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
@@ -28,7 +28,7 @@ var completeToolbarOld = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 
                              'Subscript', 'Superscript', 'NumberedList',
                              'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
                              'JustifyCenter', 'JustifyRight', 'TextColor',
-                             'Maximize']];
+                             'Maximize','Ajaxsave']];
 
 var commentsToolbar = [['Source', 'PasteText', 'Bold',
                         'Italic', 'Strike', 'NumberedList',
@@ -111,7 +111,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
   if (complete) {
     config.filebrowserImageBrowseUrl = imageBrowseUrl;
     config.filebrowserFlashBrowseUrl = flashBrowseUrl;
-    config.extraPlugins = 'mediaembed';
+    config.extraPlugins = 'mediaembed,ajaxsave';
     config.stylesSet = divContainerStylesSet;
     // XHTML
     if (name == "resource.content" && simple) {

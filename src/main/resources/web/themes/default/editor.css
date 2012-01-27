@@ -46,13 +46,7 @@
   margin: 20px 0 0 0;
 }
 
-#vrtx-resource\.display-aggregation,
-#vrtx-resource\.display-manually-approved,
-#vrtx-resource\.hide-last-modified,
-#vrtx-resource\.hide-introduction,
-#vrtx-resource\.hide-introduction-image,
-#vrtx-resource\.hide-number-of-comments,
-#vrtx-resource\.hide-location {
+#vrtx-resource\.hide-props .property-item {
   margin-top: 10px;
 }
 

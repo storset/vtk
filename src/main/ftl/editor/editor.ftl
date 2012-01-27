@@ -210,6 +210,11 @@
       <#local name = propDef.name />
       
       <#if !name?starts_with("hide") && startWrapHideProps?exists></div></#if>
+      <#if name?starts_with("hide") && !startWrapHideProps?exists>
+        <#assign startWrapHideProps = "true" />
+        <div id="vrtx-resource.hide-props" class="hide property-item">
+          <div class="resource.hide-props property-label"><@vrtx.msg code='editor.hide-props-title' /></div> 
+      </#if>
       
       <#if name = "display-aggregation" || name = "display-manually-approved">
         <#local localizedName>
@@ -376,13 +381,7 @@
           <#if allowedValues?size = 1 && !useRadioButtons>
 
             <#if type = 'BOOLEAN' && !displayLabel>
-            
-              <#if name?starts_with("hide") && !startWrapHideProps?exists>
-                <#assign startWrapHideProps = "true" />
-                <div id="vrtx-resource.hide-props" class="hide property-item">
-                  <div class="resource.hide-props property-label"><@vrtx.msg code='editor.hide-props-title' /></div> 
-              </#if>
-            
+
               <#if value == allowedValues[0]>
                 <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" checked="checked" />
               <#else>

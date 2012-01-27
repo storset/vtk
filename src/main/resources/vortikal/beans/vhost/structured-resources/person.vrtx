@@ -45,7 +45,7 @@ resourcetype person {
     content (after images),
     tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
     postalAddress tooltip (en : "(postbox / streetaddress, postnumber place)", no : "(postboks / gateadresse, postnummer sted)", nn : "(postboks / gateadresse, postnummer sted)"),
-    alternativeVisitingAddress tooltip (en : "(building, streetaddress, postnumber place)", no : "(bygning, gateadresse, postnummer sted)", nn : "(bygning, gateadresse, postnummer sted)"),
+    alternativeVisitingAddress tooltip (en : "(streetaddress, building, postnumber place)", no : "(gateadresse, bygning, postnummer sted)", nn : "(gateadresse, bygning, postnummer sted)"),
     rssFeeds (after combinedGroups),
     getExternalPersonInfo tooltip (en : "(report <a class='contact-info' href='http://www.uio.no/om/kontaktinformasjon/endre-personppl.html'>changes in information</a>.)",
                                    no : "(meld fra om <a class='contact-info' href='http://www.uio.no/om/kontaktinformasjon/endre-personppl.html'>feil eller mangler i opplysningene</a>.)",

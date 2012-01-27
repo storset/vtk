@@ -147,6 +147,10 @@
   height: 117px !important;
 }
 
+#vrtx-image-editor-beta-msg {
+  font-size: 40%;
+}
+
 #vrtx-image-editor-wrapper {
   overflow-x: hidden;
   overflow-y: visible;

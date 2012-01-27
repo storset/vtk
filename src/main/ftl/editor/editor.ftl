@@ -102,7 +102,13 @@
     <#assign header>
       <@vrtx.msg code="editor.edit" args=[vrtx.resourceTypeName(resource)?lower_case] />
     </#assign>
-    <h2>${header}</h2>
+    
+    <h2>${header}
+      <#if resource.contentType?exists && saveImageURL?exists
+          && (resource.contentType == "image/jpeg" 
+           || resource.contentType == "image/pjpeg"
+           || resource.contentType == "image/png")><sup id="vrtx-image-editor-beta-msg">BETA</sup></#if>
+    </h2>
     <div class="submitButtons submit-extra-buttons">
       <div class="vrtx-button">
         <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />

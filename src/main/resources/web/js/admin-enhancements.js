@@ -204,11 +204,6 @@ $(document).ready(function () {
     $("#vrtx-resource\\.manually-approve-from").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
   });
   
-  // Group editor hide properties
-  var firstHide = $("#editor div[id*=vrtx-resource\\.hide]:first");
-  $("<div class='property-item'><div class='property-label'>Test</div>").insertBefore(firstHide);
-  firstHide.css("marginTop", "0px");
-  
   // Slide up when choose something in dropdown
   $(".dropdown-shortcut-menu li a").click(function() {
     $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");

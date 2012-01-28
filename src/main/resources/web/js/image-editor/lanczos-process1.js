@@ -29,15 +29,18 @@ function process1(data, u, lanczos) {
   for (var v = 0; v < data.dest.height; v++) {
     data.center.y = (v + 0.5) * data.ratio;
     data.icenter.y = Math.floor(data.center.y);
-    var a, r, g, b;
-    a = r = g = b = 0;
+    var a, r, g, b; a = r = g = b = 0;
     for (var i = data.icenter.x - data.range2; i <= data.icenter.x + data.range2; i++) {
       if (i < 0 || i >= data.src.width) continue;
-      var f_x = Math.floor(1000 * Math.abs(i - data.center.x));
+      var fX = Math.floor(1000 * Math.abs(i - data.center.x));
+      if (!data.cacheLanc[fX]) data.cacheLanc[fX] = {};
       for (var j = data.icenter.y - data.range2; j <= data.icenter.y + data.range2; j++) {
         if (j < 0 || j >= data.src.height) continue;
-        var f_y = Math.floor(1000 * Math.abs(j - data.center.y));
-        weight = lanczos(Math.sqrt(Math.pow(f_x * data.rcp_ratio, 2) + Math.pow(f_y * data.rcp_ratio, 2)) / 1000);
+        var fY = Math.floor(1000 * Math.abs(j - data.center.y));
+        if (data.cacheLanc[fX][fY] == undefined) {
+          data.cacheLanc[fX][fY] = lanczos(Math.sqrt(Math.pow(fX * data.rcp_ratio, 2) + Math.pow(fY * data.rcp_ratio, 2)) / 1000);
+        }
+        weight = data.cacheLanc[fX][fY];
         if (weight > 0) {
           var idx = (j * data.src.width + i) * 4;
           a += weight;

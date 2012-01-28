@@ -404,11 +404,13 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
   $("#vrtx-image-crop").attr("disabled", "disabled");
   ctx.drawImage(img, 0, 0);
   
+  // var startTime = new Date();
+  
   var w = sx;
   var h = editor.rh;
   var ratio = editor.reversedScaleRatio;
   var data = {
-    src: editor.imageData2Object(ctx, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight),
+    src: ctx.getImageData(editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight),
     lobes: lobes,
     dest: {
       width: w,
@@ -418,6 +420,7 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
     ratio: ratio,
     rcp_ratio: 2 / ratio,
     range2: Math.ceil(ratio * lobes / 2),
+    cacheLanc: {},
     center: {},
     icenter: {}
   };
@@ -426,7 +429,7 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
   var process1Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process1.js';
   var process2Url = '/vrtx/__vrtx/static-resources/js/image-editor/lanczos-process2.js';
 
-  if ("Worker" in window) { // Use Web Workers if supported
+  if (false) { // Use Web Workers if supported. TODO: fix (not problem with I/O it seems)
     var workerLanczosProcess1 = new Worker(process1Url);
     var workerLanczosProcess2 = new Worker(process2Url); 
     workerLanczosProcess1.postMessage(data);
@@ -439,7 +442,7 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
           canvas.width = data.dest.width;
           canvas.height = data.dest.height;
           ctx.drawImage(img, 0, 0);
-          data.src = editor.imageData2Object(ctx, 0, 0, data.dest.width, data.dest.height);
+          data.src = ctx.getImageData(0, 0, data.dest.width, data.dest.height);
           workerLanczosProcess2.postMessage(data);
         }
       } 
@@ -447,9 +450,9 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
     workerLanczosProcess2.addEventListener('message', function(e) { 
       var data = e.data;
       if(data) { 
-        var destImageData = editor.object2ImageData(ctx, data.src, data.dest.width, data.dest.height);
-        ctx.putImageData(destImageData, 0, 0);  
+        ctx.putImageData(data.src, 0 ,0);
         editor.renderScaledImage(false);   
+        // console.log("Total time " + (new Date() - startTime) + "ms");
         editor.save(buttonId);
         elem.style.display = "block";
         $("#vrtx-image-editor-preview").removeClass("loading");
@@ -485,12 +488,12 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
             canvas.width = data.dest.width;
             canvas.height = data.dest.height;
             ctx.drawImage(img, 0, 0);
-            data.src = editor.imageData2Object(ctx, 0, 0, data.dest.width, data.dest.height);
+            data.src = ctx.getImageData(0, 0, data.dest.width, data.dest.height);
             data = process2(data);
-            var destImageData = editor.object2ImageData(ctx, data.src, data.dest.width, data.dest.height);
-            ctx.putImageData(destImageData, 0, 0);  
+            ctx.putImageData(data.src, 0 ,0);
             editor.renderScaledImage(false);  
-            editor.save(buttonId);
+            // console.log("Total time " + (new Date() - startTime) + "ms");
+            // editor.save(buttonId);
             elem.style.display = "block";
             $("#vrtx-image-editor-preview").removeClass("loading");
             $("#vrtx-image-crop").removeAttr("disabled"); 
@@ -499,27 +502,6 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
       }, 0);
     }
   }
-};
-
-VrtxImageEditor.prototype.imageData2Object = function imageDataToObject(ctx, x, y, w, h) {
-  var srcImageData = ctx.getImageData(x, y, w, h);
-  var destImageObject = {
-    width: w,
-    height: h,
-    data: new Array(w * h * 4)
-  };
-  for (var i = 0; i < srcImageData.data.length; i++) {
-    destImageObject.data[i] = srcImageData.data[i];
-  }
-  return destImageObject;
-};
-
-VrtxImageEditor.prototype.object2ImageData = function imageDataToObject(ctx, srcImageObject, w, h) {
-  var destImageData = ctx.createImageData(w, h);
-  for (var i = 0; i < srcImageObject.data.length; i++) {
-    destImageData.data[i] = srcImageObject.data[i];
-  }
-  return destImageData;      
 };
 
 /*

@@ -493,7 +493,7 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
             ctx.putImageData(data.src, 0 ,0);
             editor.renderScaledImage(false);  
             // console.log("Total time " + (new Date() - startTime) + "ms");
-            // editor.save(buttonId);
+            editor.save(buttonId);
             elem.style.display = "block";
             $("#vrtx-image-editor-preview").removeClass("loading");
             $("#vrtx-image-crop").removeAttr("disabled"); 

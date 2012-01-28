@@ -14,11 +14,11 @@ CKEDITOR.plugins.add('ajaxsave', {
                    "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
                    false);
             
+            performSave();
             $("#editor").ajaxSubmit({
-              success: function () {
-                performSave();
-              },
+              success: function () {},
               complete: function() {
+                initDatePicker("${language}");
                 tb_remove();
               }
             });

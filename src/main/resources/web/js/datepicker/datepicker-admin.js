@@ -129,9 +129,9 @@ function saveDateAndTimeFields() {
 
     // Hack fix for editor.. .must be removed!!!
     if (requestFromEditor()) {
-      $("#" + fieldName + "-hours").remove();
-      $("#" + fieldName + "-minutes").remove();
-      $("#" + fieldName + "-date").remove();
+      $("#" + fieldName + "-hours").parent().remove();
+      $("#" + fieldName + "-minutes").parent().remove();
+      $("#" + fieldName + "-date").parent().remove();
     }
   }
 }

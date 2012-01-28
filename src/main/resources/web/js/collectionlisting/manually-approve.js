@@ -87,7 +87,7 @@ $(document).ready(function() {
       }
       return false;
     });
-  });
+});
 
 /**
  * Retrieves resources as JSON array for folders to manually approve from

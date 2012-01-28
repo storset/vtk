@@ -64,6 +64,7 @@
          loadMultipleDocuments(false, "resource\\.manually-approve-from", false, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
                              '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
        }
+       initDatePicker(datePickerLang);
      });
     
       $(document).ready(function() {
@@ -71,7 +72,6 @@
           interceptEnterKey('#resource\\.tags');
           setAutoComplete('resource\\.tags', 'tags', {minChars:1});
           </#if>
-          initDatePicker("${language}");
        }); 
 
       UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";

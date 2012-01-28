@@ -18,7 +18,7 @@ CKEDITOR.plugins.add('ajaxsave', {
             $("#editor").ajaxSubmit({
               success: function () {},
               complete: function() {
-                initDatePicker("${language}");
+                initDatePicker(datePickerLang);
                 tb_remove();
               }
             });

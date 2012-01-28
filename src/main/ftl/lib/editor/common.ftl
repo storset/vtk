@@ -12,13 +12,15 @@
   <script type="text/javascript" src="${fckeditorBase.url?html}/ckeditor.js"></script>
   <script type="text/javascript" src="${jsBaseURL?html}/editor-ck-setup-helper.js"></script>
   <script type="text/javascript" src="${fckeditorBase.url?html}/adapters/jquery.js"></script>
-  <script type="text/javascript"><!--
-    var saveDocAjaxText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
-  // -->
-  </script>
 </#macro>
 
 <#macro addDatePickerScripts language oldEditor=false>
+
+  <script type="text/javascript"><!--
+    var saveDocAjaxText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
+    var datePickerLang = "${language}";
+  // -->
+  </script>
 
   <!-- JQuery UI (used for datepicker) -->
   <link type="text/css" href="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.8.custom/css/smoothness/jquery-ui-1.8.8.custom.css" rel="stylesheet" />

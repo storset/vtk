@@ -22,8 +22,8 @@
         $(".vrtx-focus-button:last input").click();
     });
 
-    $(document).ready(function() {
-        initDatePicker("${language}");
+    $(window).load(function() {
+        initDatePicker(datePickerLang);
     });
   
     UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";

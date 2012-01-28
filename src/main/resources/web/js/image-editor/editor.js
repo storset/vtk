@@ -288,6 +288,8 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
     }
     dimensionHtml  += '</div>';
     $(dimensionHtml).insertBefore("#vrtx-image-editor-preview");
+    $("#resource-width").attr("autocomplete", "off");
+    $("#resource-height").attr("autocomplete", "off");
   }
 };
 

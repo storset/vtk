@@ -12,6 +12,10 @@
   <script type="text/javascript" src="${fckeditorBase.url?html}/ckeditor.js"></script>
   <script type="text/javascript" src="${jsBaseURL?html}/editor-ck-setup-helper.js"></script>
   <script type="text/javascript" src="${fckeditorBase.url?html}/adapters/jquery.js"></script>
+  <script type="text/javascript"><!--
+    var saveDocAjaxText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
+  // -->
+  </script>
 </#macro>
 
 <#macro addDatePickerScripts language oldEditor=false>

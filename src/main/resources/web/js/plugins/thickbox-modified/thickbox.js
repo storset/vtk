@@ -134,10 +134,22 @@ function tb_show(caption, url, imageGroup) { //function called when the user cli
             imageWidth = x;
           }
         }
-        // End Resizing
-        TB_WIDTH = imageWidth + 30;
-        TB_HEIGHT = imageHeight + 60;
-        $("#TB_window").append("<a href='' id='TB_ImageOff' title='Close'><img id='TB_Image' src='" + url + "' width='" + imageWidth + "' height='" + imageHeight + "' alt='" + caption + "'/></a>" + "<div id='TB_caption'>" + caption + "<div id='TB_secondLine'>" + TB_imageCount + TB_PrevHTML + TB_NextHTML + "</div></div><div id='TB_closeWindow'><a href='#' id='TB_closeWindowButton' title='Close'>close</a> or Esc Key</div>");
+
+        // Added by USIT (TMP until loading service is implemented)
+        if(url.indexOf(tb_pathToImage) !== -1) {
+          var queryString = url.replace(/^[^\?]+\??/, '');
+          var params = tb_parseQuery(queryString);
+          TB_WIDTH = (params['width'] * 1) + 30 || 630; //defaults to 630 if no paramaters were added to URL
+          TB_HEIGHT = (params['height'] * 1) + 40 || 440; //defaults to 440 if no paramaters were added to URL
+          ajaxContentW = TB_WIDTH - 30;
+          ajaxContentH = TB_HEIGHT - 45;
+          $("#TB_window").append("<div id='TB_title' class='TB_title_no_border'><div id='TB_ajaxWindowTitle'>" + caption + "</div><div id='TB_closeAjaxWindow'><a href='#' id='TB_closeWindowButton'>close</a> or Esc Key</div></div><div id='TB_ajaxContent' style='width:" + ajaxContentW + "px;height:" + ajaxContentH + "px'><img src='" + url + "' alt='" + caption + "'/></a></div>");
+        } else {
+          // End Resizing
+          TB_WIDTH = imageWidth + 30;
+          TB_HEIGHT = imageHeight + 60;
+          $("#TB_window").append("<a href='' id='TB_ImageOff' title='Close'><img id='TB_Image' src='" + url + "' width='" + imageWidth + "' height='" + imageHeight + "' alt='" + caption + "'/></a>" + "<div id='TB_caption'>" + caption + "<div id='TB_secondLine'>" + TB_imageCount + TB_PrevHTML + TB_NextHTML + "</div></div><div id='TB_closeWindow'><a href='#' id='TB_closeWindowButton' title='Close'>close</a> or Esc Key</div>");    
+        }
 
         $("#TB_closeWindowButton").click(tb_remove);
 

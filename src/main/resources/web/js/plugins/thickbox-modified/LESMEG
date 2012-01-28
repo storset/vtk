@@ -38,5 +38,6 @@ Benytt "thickbox-check-unsaved-changes" i stede for "thickbox" for at det skal s
 endringer i editoren før lasting av thickbox. Se "check-unsaved-changes.js". 
 
 1.5 Ny metode for å notifisere en forelder av en iframe om at thickbox lukker
-   
-... TODO: beskriv
+
+1.6 Hvis bildeurl er loadingAnimation.gif så legges den inn som om den var en tjeneste med tittel over
+   (med mulighet for å sette bredde og høyde)

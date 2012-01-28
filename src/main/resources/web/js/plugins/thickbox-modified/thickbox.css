@@ -120,6 +120,10 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
   position: relative;
 }
 
+#TB_title.TB_title_no_border {
+  background: none;
+}
+
 #TB_ajaxContent{
 	clear:both;
 	padding:2px 15px 15px 15px;

@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.index.observation;
+package org.vortikal.repository.index.update;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,101 +38,106 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 import org.vortikal.repository.ChangeLogEntry;
+import org.vortikal.repository.ChangeLogEntry.Operation;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.ChangeLogEntry.Operation;
 import org.vortikal.repository.index.PropertySetIndex;
+import org.vortikal.repository.store.ChangeLogDAO;
 import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
 import org.vortikal.security.Principal;
 
 /**
- * Incremental index updates from resource changes.
- * Hooking up to the old resource change event system, for now.
- *  
- * TODO: Should consider batch processing of a set of changes and indexing
- *       to a volatile (memory) index, then merge back each finished batch.
- * 
- * @author oyviste
- *
+ * Incremental index updates from database resource change log.
  */
-public class PropertySetIndexUpdater implements BeanNameAware, 
-                                        ResourceChangeObserver, InitializingBean {
+public class IncrementalUpdater {
 
-    private final Log logger = LogFactory.getLog(PropertySetIndexUpdater.class);
-    
+    private final Log logger = LogFactory.getLog(IncrementalUpdater.class);
+
     private PropertySetIndex index;
-    private String beanName;
-    private ResourceChangeNotifier notifier;
     private IndexDao indexDao;
-    private boolean enabled;
+    private boolean enabled = true;
     
-    @Override
-    public void afterPropertiesSet() throws BeanInitializationException {
-        // If a notifier is configured, we register ourselves.
-        enable();
-    }
-    
-    /**
-     * @see org.vortikal.repository.index.observation.ResourceChangeObserver#disable()
-     */
-    @Override
-    public synchronized void disable() {
-        if (this.notifier != null) {
-            if (this.notifier.unregisterObserver(this)) {
-                logger.info("Un-registered from resource change notifier.");
-            }
-        }
-        this.enabled = false;
-        logger.info("Disabled.");
-    }
+    private ChangeLogDAO changeLogDAO;
+    private int loggerType;
+    private int loggerId;
+    private int maxChangesPerUpdate = 40000;
     
     /**
-     * @see org.vortikal.repository.index.observation.ResourceChangeObserver#enable()
-     */
-    @Override
-    public synchronized void enable() {
-        if (this.notifier != null) {
-            if (this.notifier.registerObserver(this)) {
-                logger.info("Registered with resource change notifier.");
-            }
-        }
-        this.enabled = true;
-        logger.info("Enabled.");
-    }
-    
-    /**
-     * @see org.vortikal.repository.index.observation.ResourceChangeObserver#isEnabled()
-     */
-    @Override
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-    
-    /**
+     * This method should be called periodically to poll database for resource
+     * change events and apply the updates to the index.
      * 
+     * Handles any exceptions and takes care of all the necessary logging during
+     * the course of an update round.
      */
-    @Override
-    public void setBeanName(String beanName) {
-        this.beanName = beanName;
+    @Transactional
+    public synchronized void update() {
         
+        try {
+            List<ChangeLogEntry> changes = 
+            	this.changeLogDAO.getChangeLogEntries(this.loggerType, 
+                                                      this.loggerId,
+                                                      this.maxChangesPerUpdate);
+            
+            if (logger.isDebugEnabled() && changes.size() > 0) {
+                logger.debug("");
+                logger.debug("--- update(): Start of window");
+                logger.debug("--- update(): Got the following changelog events from DAO");
+                for (ChangeLogEntry change: changes) {
+                    StringBuilder log = new StringBuilder();
+                    if (change.getOperation() == Operation.DELETED) {
+                        log.append("DEL    ");                        
+                    } else {
+                        log.append("UPDATE ");
+                    }
+
+                    if (change.isCollection()) {
+                        log.append("COL ");
+                    }
+                    log.append(change.getUri());
+                    
+                    log.append(", RESOURCE ID=").append(change.getResourceId());
+                    log.append(", EVENT ID=").append(change.getChangeLogEntryId());
+                    logger.debug(log.toString());
+                }
+                logger.debug("--- update(): End of list, going to dispatch to observers");
+                logger.debug("");
+            }
+            
+            if (changes.size() > 0) {
+                if (isEnabled()) {
+                    // Index changes
+                    try {
+                        logger.debug("--- update(): applying changes to index");
+                        applyChanges(changes);
+                        logger.debug("--- update(): finished applying changes to index.");
+                    } catch (Throwable t) {
+                        logger.error("Unexpected error while updating index, changelog will not be flushed.", t);
+                        return;
+                    }
+                } else {
+                    logger.info("Index updates disabled, discarding resource change events.");
+                }
+                
+                // Remove changelog entries from DAO
+                this.changeLogDAO.removeChangeLogEntries(changes);
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("--- update(): End of window");
+                    logger.debug("");
+                    logger.debug("");
+                }
+            }
+        } catch (Throwable t) {
+            logger.error("Unexpected exception during update", t);
+        }
     }
     
-    @Override
-    public void notifyResourceChanges(final List<ChangeLogEntry> changes) {
+    private void applyChanges(final List<ChangeLogEntry> changes) {
 
-        synchronized (this) {
-            if (! this.enabled) {
-                logger.info("Ignoring resource changes, disabled.");
-                return;
-            }
-        }
-        
         try {
             // Take lock immediately, we'll be doing some writing.
             if (! this.index.lock()) {
@@ -141,7 +146,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 return;
             }
             
-            logger.debug("--- indexUpdate(): Going to process change log window ---");
+            logger.debug("--- applyChanges(): Going to process change log window ---");
             
             // Map maintaining last change *per URI*
             Map<Path, ChangeLogEntry> lastChanges = new HashMap<Path, ChangeLogEntry>();
@@ -167,7 +172,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 // Remove updated property sets from index in one batch, first, 
                 // before re-adding them. This is very necessary to keep things
                 // efficient.
-                logger.debug("--- indexUpdate(): Update list:");
+                logger.debug("--- applyChanges(): Update list:");
                 for (Map.Entry<Path, ChangeLogEntry> entry: lastChanges.entrySet()) {
                     // If not last operation on resource was delete, we add to updates
                     if (! (entry.getValue().getOperation() == Operation.DELETED)) {
@@ -179,7 +184,7 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                     }
                 }
 
-                logger.debug("--- indexUpdate(): End of update list, going to fetch from DAO and add to index:");
+                logger.debug("--- applyChanges(): End of update list, going to fetch from DAO and add to index:");
                 
                 // Immediately make lastChanges available for GC, since the next operation
                 // can take a while, and lastChanges can be huge (tens of thousands of entries).
@@ -194,16 +199,15 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                             Set<Principal> aclReadPrincipals) {
   
                         if (logger.isDebugEnabled()) {
-                            PropertySetIndexUpdater.this.logger.debug("ADD " + propertySet.getURI());
+                            logger.debug("ADD " + propertySet.getURI());
                         }
 
                         // Add updated resource to index
-                        PropertySetIndexUpdater.this.index.addPropertySet(propertySet, 
-                                                            aclReadPrincipals);
+                        index.addPropertySet(propertySet, aclReadPrincipals);
+                        
                         if (++count % 10000 == 0) {
                             // Log some progress to update
-                            PropertySetIndexUpdater.this.logger.info(
-                                    "Incremental index update progress: "  + count + " resources indexed of "
+                            logger.info("Incremental index update progress: "  + count + " resources indexed of "
                                     + updateUris.size() + " total in current update batch.");
                         }
                     }
@@ -213,9 +217,9 @@ public class PropertySetIndexUpdater implements BeanNameAware,
 
                 this.indexDao.orderedPropertySetIterationForUris(updateUris, handler);
 
-                if (this.logger.isInfoEnabled()) {
+                if (logger.isInfoEnabled()) {
                     if (updateUris.size() >= 10000) {
-                        this.logger.info("Incremental index update for current batch finished"
+                        logger.info("Incremental index update for current batch finished"
                                + ", final resource update count was " + handler.count);
                     }
                 }
@@ -223,12 +227,12 @@ public class PropertySetIndexUpdater implements BeanNameAware,
                 // Note that it is OK to get less resources than requested from DAO, because
                 // they can be deleted in the mean time. 
                 if (logger.isDebugEnabled() && updateUris.size() > 0) {
-                    logger.debug("--- indexUpdate(): Requested " + updateUris.size() 
+                    logger.debug("--- applyChanges(): Requested " + updateUris.size() 
                             + " resources for updating, got " + handler.count + " from DAO.");
                 }
             }
 
-            logger.debug("--- indexUpdate(): Committing changes to index.");
+            logger.debug("--- applyChanges(): Committing changes to index.");
             this.index.commit();
             
         } catch (Exception e) {
@@ -238,13 +242,12 @@ public class PropertySetIndexUpdater implements BeanNameAware,
         }
     }
 
-    @Override
-    public String getObserverId() {
-        return this.beanName;
+    public boolean isEnabled() {
+        return this.enabled;
     }
 
-    public void setNotifier(ResourceChangeNotifier notifier) {
-        this.notifier = notifier;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Required
@@ -256,4 +259,27 @@ public class PropertySetIndexUpdater implements BeanNameAware,
     public void setIndexDao(IndexDao indexDao) {
         this.indexDao = indexDao;
     }
+    
+    @Required
+    public void setChangeLogDAO(ChangeLogDAO changeLogDAO) {
+        this.changeLogDAO = changeLogDAO;
+    }
+
+    @Required
+    public void setLoggerType(int loggerType) {
+        this.loggerType = loggerType;
+    }
+
+    @Required
+    public void setLoggerId(int loggerId) {
+        this.loggerId = loggerId;
+    }
+
+	public void setMaxChangesPerUpdate(int maxChanges) {
+		if (maxChanges <= 0) {
+			throw new IllegalArgumentException("Number must be greater than zero");
+		}
+		this.maxChangesPerUpdate = maxChanges;
+	}
+    
 }

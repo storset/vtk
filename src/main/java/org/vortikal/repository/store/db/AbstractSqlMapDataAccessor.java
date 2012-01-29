@@ -31,6 +31,7 @@
 package org.vortikal.repository.store.db;
 
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 

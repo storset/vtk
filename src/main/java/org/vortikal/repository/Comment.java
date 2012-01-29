@@ -103,8 +103,9 @@ public final class Comment {
         this.approved = approved;
     }
     
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName()).append("[");
         sb.append("uri=").append(this.uri);
         sb.append(", title=").append(this.title);
@@ -112,6 +113,5 @@ public final class Comment {
         sb.append(", time=").append(this.time).append("]");
         return sb.toString();
     }
-    
 
 }

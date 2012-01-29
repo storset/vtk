@@ -99,18 +99,27 @@ public class ProcessedContentEventDumperAll extends AbstractRepositoryEventDumpe
             return;
         }
                 
-        ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, 
+        final ChangeLogEntry entry = changeLogEntry(super.loggerId, super.loggerType, 
                 resource.getURI(), 
                 ChangeLogEntry.Operation.MODIFIED_ACL, ((ResourceImpl) resource).getID(),
                 resource.isCollection(), 
                 new Date());
 
         if (resource.isInheritedAcl()) {
-            this.changeLogDAO.addChangeLogEntryInheritedToInheritance(entry); 
+            // Resource ACL inheritance has been turned ON.
+            // Apply ACL modification event to:
+            // 1. The resource itself.
+            // 2. All descendants of the resource which used to inherit their ACL
+            //    from it. 
+            this.changeLogDAO.addChangeLogEntryInheritedToInheritance(entry);
         } else {
-            this.changeLogDAO.addChangeLogEntryInherited(entry);             
+            // Resource ACL inheritance turned OFF or ACL has been modified.
+            // Apply ACL modification event to:
+            // 1. The resource itself.
+            // 2. All descendants of the resource which inherit their ACLa
+            //    from it.
+            this.changeLogDAO.addChangeLogEntryInherited(entry);
         }
-        
     }
 
     @Required

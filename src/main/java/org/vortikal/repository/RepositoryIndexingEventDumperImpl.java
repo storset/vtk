@@ -62,7 +62,9 @@ import org.vortikal.security.PrincipalFactory;
  * </ul> 
  * 
  * @author oyviste
+ * @deprecated Replace usage of this class with {@link ProcessedContentEventDumperAll}.
  */
+@Deprecated
 public class RepositoryIndexingEventDumperImpl extends AbstractRepositoryEventDumper {
 
     private ChangeLogDAO changeLogDAO;

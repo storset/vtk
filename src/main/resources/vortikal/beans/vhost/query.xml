@@ -134,12 +134,35 @@
     <property name="roleManager" ref="roleManager"/>
   </bean>
 
+  <!-- Set up incremental index updates from repository changes -->
+  <!-- Event database dumper for new system index (logger id = 1 and logger type = 3)  -->
+  <bean id="repository.index.eventDumper" 
+    class="org.vortikal.repository.ProcessedContentEventDumperAll">
+    <property name="changeLogDAO" ref="repository.changeLogDAO"/>
+    <property name="repository" ref="repository"/>
+    <property name="loggerId" value="1" />
+    <property name="loggerType" value="3" />
+  </bean>
+
   <!-- Perform incremental updates on property set index from resource changes. -->
-  <bean id="systemIndexUpdater" 
-       class="org.vortikal.repository.index.observation.PropertySetIndexUpdater">
+  <bean id="repository.index.incrementalUpdater" 
+       class="org.vortikal.repository.index.update.IncrementalUpdater">
     <property name="index" ref="systemIndex"/>
-    <property name="notifier" ref="repository.resourceChangeNotifier"/>
     <property name="indexDao" ref="repository.indexDao"/>
+    <property name="changeLogDAO" ref="repository.changeLogDAO"/>
+    <property name="loggerId" value="1"/>
+    <property name="loggerType" value="3" />
+  </bean>
+  <!-- Background thread for triggering incremental updates -->
+  <bean id="repository.index.updateTrigger"
+        class="org.vortikal.scheduling.SimpleMethodInvokingTriggerBean">
+    <property name="targetMethodName" value="update"/>
+    <property name="targetObject" ref="repository.index.incrementalUpdater"/>
+    <property name="triggerThreadName" value="${repositoryID}.indexupdater"/>
+    <property name="startDelay" value="20000"/>
+    <property name="repeatInterval" value="${repository.indexUpdater.interval}"/>
+    <property name="startTriggerAfterInitialization" value="true"/>
+    <property name="abortTriggerOnTargetMethodException" value="false"/>
   </bean>
 
 </beans>

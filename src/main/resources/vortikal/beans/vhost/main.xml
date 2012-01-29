@@ -3,7 +3,8 @@
   "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-  <description> This is the main bean configuration file. This file does not
+  <description>
+    This is the main bean configuration file. This file does not
     contain any bean definitions, its purpose is to import the other
     configuration files in a given order. When a new bean configuration file is
     added to the system, it must be included in the list below.
@@ -20,12 +21,11 @@
   <!-- Generalized service on the backend, available to the web layer -->
   <import resource="service/service.xml" />
 
-  <import resource="query.xml" />
-  <import resource="reporting.xml" />
   <import resource="resource-types/main.xml" />
   <import resource="actions.xml" />
   <import resource="repository.xml" />
-  <import resource="changelog.xml" />
+  <import resource="query.xml" />
+  <import resource="reporting.xml" />
   <import resource="schema-registry.xml" />
   <import resource="template-lang.xml" />
   <import resource="view.xml" />

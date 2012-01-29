@@ -32,8 +32,6 @@ package org.vortikal.repository;
 
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -47,10 +45,7 @@ import org.vortikal.repository.event.ResourceModificationEvent;
 
 
 
-public abstract class AbstractRepositoryEventDumper
-  implements ApplicationListener {
-
-    protected Log logger = LogFactory.getLog(this.getClass());
+public abstract class AbstractRepositoryEventDumper implements ApplicationListener {
 
     protected int loggerId = -1;
     protected int loggerType = -1;

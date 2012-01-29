@@ -48,9 +48,20 @@ public interface ChangeLogDAO {
     public void addChangeLogEntry(ChangeLogEntry entry, boolean recurse)
         throws DataAccessException;
 
+    /**
+     * Apply change log entry to resource and all resources which inherit ACL from the resource.
+     * @param entry
+     * @throws DataAccessException 
+     */
     public void addChangeLogEntryInherited(ChangeLogEntry entry)
         throws DataAccessException;
     
+    /**
+     * Apply change log entry to resource and all descendants which used to
+     * inherit their ACL from the resource.
+     * @param entry
+     * @throws DataAccessException 
+     */
     public void addChangeLogEntryInheritedToInheritance(ChangeLogEntry entry)
     throws DataAccessException;
 

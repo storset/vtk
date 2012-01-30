@@ -63,6 +63,7 @@ public class DisplayImageWithInfoController implements Controller {
 
         HashMap<String, Object> model = new HashMap<String, Object>();
         model.put("src", uri);
+        model.put("nanoTime", System.nanoTime());
         
         model.put("resource", resource);   
         if (titleProp != null)

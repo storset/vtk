@@ -5,26 +5,27 @@
  *
  */
 
-var lastVal = "";
+var lastVal = "", manuallyApproveFoldersTxt, aggregatedFoldersTxt;
+
+$(window).load(function() {
+  // Retrieve initial resources
+  manuallyApproveFoldersTxt = $("#resource\\.manually-approve-from");
+  aggregatedFoldersTxt = $("#resource\\.aggregation");
+    
+  if(manuallyApproveFoldersTxt.length) {
+    var folders, aggregatedFolders;
+    var value = manuallyApproveFoldersTxt.val();
+    lastVal = $.trim(value);
+    folders = lastVal.split(",");
+    if(aggregatedFoldersTxt.length) {
+      aggregatedFolders = $.trim(aggregatedFoldersTxt.val());
+      aggregatedFolders = aggregatedFolders.split(",");
+    }
+    retrieveResources(".", folders, aggregatedFolders);
+  }
+});
 
 $(document).ready(function() {
-
-    // Retrieve initial resources
-    var manuallyApproveFoldersTxt = $("#resource\\.manually-approve-from");
-    var aggregatedFoldersTxt = $("#resource\\.aggregation");
-    
-    if(manuallyApproveFoldersTxt.length) {
-      var folders, aggregatedFolders;
-      var value = manuallyApproveFoldersTxt.val();
-      lastVal = $.trim(value);
-      folders = lastVal.split(",");
-      if(aggregatedFoldersTxt.length) {
-        aggregatedFolders = $.trim(aggregatedFoldersTxt.val());
-        aggregatedFolders = aggregatedFolders.split(",");
-      }
-      retrieveResources(".", folders, aggregatedFolders);
-    }
-
     // Refresh when folders to approve from are changed
     $("#manually-approve-refresh").click(function(e) {
       if(manuallyApproveFoldersTxt.length) {

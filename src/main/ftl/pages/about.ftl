@@ -196,7 +196,10 @@
           width: 100%;
           margin: 10px 0 0 0;
           top: 0px;
-        } 
+        }
+        #vrtx-resource-visit-info {
+          bottom: 90px;
+        }
       </style>
     <![endif]-->
     <script type="text/javascript"><!--

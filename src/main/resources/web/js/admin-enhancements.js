@@ -1273,7 +1273,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
         return;
       }
     } else {
-      if(!funcProceedCondition || funcProceedCondition(form)) {
+      if(isCancelAction || !funcProceedCondition || funcProceedCondition(form)) {
         var url = form.attr("action");
 
         // TODO: test with form.serialize()

@@ -1678,24 +1678,22 @@ function formatDocumentsData() {
 
 function formatDocumentsDataSubFunc(id) {
   var data = $("input[id^='" + id + "-']");
-  if(data.length) {
-    var result = "";
-    for (var i = 0, len = data.length; i < len; i++) {
-      var value = $.trim(data[i].value);
-      if(value != "") {
-        if(value.lastIndexOf("/") === (value.length-1)) { // Remove last forward slash if not root
-          if(value.length > 1) {
-            value = value.substring(value, (value.length-1))
-          }
-        }
-        result += value;
-        if (i < (len-1)) {
-          result += ",";
+  var result = "";
+  for (var i = 0, len = data.length; i < len; i++) {
+    var value = $.trim(data[i].value);
+    if(value != "") {
+      if(value.lastIndexOf("/") === (value.length-1)) { // Remove last forward slash if not root
+        if(value.length > 1) {
+          value = value.substring(value, (value.length-1))
         }
       }
+      result += value;
+      if (i < (len-1)) {
+        result += ",";
+      }
     }
-    $("#resource\\." + id).val(result);
   }
+  $("#resource\\." + id).val(result);
 }
 
 

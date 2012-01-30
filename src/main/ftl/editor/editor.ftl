@@ -112,10 +112,9 @@
     </#assign>
     
     <h2>${header}
-      <#if resource.contentType?exists && saveImageURL?exists
-          && (resource.contentType == "image/jpeg" 
-           || resource.contentType == "image/pjpeg"
-           || resource.contentType == "image/png")><sup id="vrtx-image-editor-beta-msg">BETA</sup></#if>
+      <#if resource.contentType?exists && saveImageURL?exists && resource.contentType?starts_with("image/")>
+        <sup id="vrtx-image-editor-beta-msg">BETA</sup>
+      </#if>
     </h2>
     <div class="submitButtons submit-extra-buttons">
       <div class="vrtx-button">
@@ -131,7 +130,7 @@
     </div>
     <form action="" method="post" id="editor">
 
-      <div class="properties"<#if (resource.contentType?exists && resource.contentType?starts_with("image"))> id="image-properties"</#if>>
+      <div class="properties"<#if resource.contentType?exists && resource.contentType?starts_with("image/")> id="image-properties"</#if>>
         <@propsForm resource.preContentProperties />
       </div>
 
@@ -147,10 +146,11 @@
         <@propsForm resource.postContentProperties />
       </div>
  
-     <#if resource.contentType?exists && saveImageURL?exists
-          && (resource.contentType == "image/jpeg" 
-           || resource.contentType == "image/pjpeg" 
-           || resource.contentType == "image/png")>
+     <#if resource.contentType?exists && saveImageURL?exists && resource.contentType?starts_with("image/")>
+       <#assign imageSupported = "false" />
+       <#if resource.contentType == "image/jpeg" || resource.contentType == "image/pjpeg" || resource.contentType == "image/png">
+         <#assign imageSupported = "true" />
+       </#if> 
        <#assign theContentType = resource.contentType />
        <script type="text/javascript" src="${jsBaseURL?html}/image-editor/editor.js"></script>    
        <script type="text/javascript"><!--  
@@ -161,7 +161,7 @@
          $(function () {
            var imageEditorElm = $("#vrtx-image-editor-wrapper");
            if(imageEditorElm.length) {
-             vrtxImageEditor.init(imageEditorElm, "${imageURL}");
+             vrtxImageEditor.init(imageEditorElm, "${imageURL}", "${imageSupported}");
            }
          });
        // -->

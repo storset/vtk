@@ -57,10 +57,10 @@ function VrtxImageEditor() {
 var vrtxImageEditor = new VrtxImageEditor();
 
 
-VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
+VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSupported) {
   var editor = this;
 
-  editor.canvasSupported = 'getContext' in document.createElement('canvas');
+  editor.canvasSupported = 'getContext' in document.createElement('canvas') && imageSupported === "true";
   editor.canvas = document.getElementById("vrtx-image-editor");
   if(editor.canvasSupported) {
     editor.ctx = editor.canvas.getContext('2d');
@@ -131,17 +131,17 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL) {
         
         editor.hasCropBeenInitialized = false;
       } else {
-        var longestSide = (editor.rw > editor.rh) ? editor.rh : editor.rw;
-        if(longestSide > 400) {
+        var shortestSide = (editor.rw > editor.rh) ? editor.rh : editor.rw;
+        if(shortestSide >= 400) {
           var distEdge = 40;
-        } else if(longestSide < 400 && longestSide > 200) {
+        } else if(shortestSide < 400 && shortestSide >= 200) {
           var distEdge = 30;
-        } else if (longestSide < 200 && longestSide > 120) {
+        } else if (shortestSide < 200 && shortestSide >= 120) {
           var distEdge = 20;
-        } else if (longestSide < 120 && longestSide > 40) {
+        } else if (shortestSide < 120 && shortestSide > 40) {
           var distEdge = 10;
         } else {
-          var distEdge = 1;
+          var distEdge = 2;
         }
         
         editor.initSelection(distEdge, distEdge, editor.rw - (distEdge * 2), editor.rh - (distEdge * 2));

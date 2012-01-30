@@ -1614,13 +1614,16 @@ function loadMultipleDocuments(appendParentLast, textfieldId, browse, addName, r
   } else {
     $(appendHtml).insertAfter(documentsParent.parent().find(".vrtx-textfield:first"));
   }
-
-  var listOfFiles = documentsVal.split(",");
-  var addFormFieldFunc = addFormField;
-  for (var i = 0, len = listOfFiles.length; i < len; i++) {
-    addFormFieldFunc(simpleTextfieldId, browse, $.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
+  
+  if($.trim(documentsVal) !== "") {
+    var listOfFiles = documentsVal.split(",");
+    var addFormFieldFunc = addFormField;
+    for (var i = 0, len = listOfFiles.length; i < len; i++) {
+      addFormFieldFunc(simpleTextfieldId, browse, $.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
+    }
+  
   }
-
+  
   // TODO !spageti && !run twice
   if (requestFromEditor()) {
     storeInitPropValues();

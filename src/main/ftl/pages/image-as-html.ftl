@@ -30,7 +30,7 @@
 <#if src?exists>
   <#assign dateStr = nanoTime?c />
   <div class="vrtx-introduction-image">
-     <a href="${src}"><img src="${src}?dateStr" alt="image" /></a>
+     <a href="${src}"><img src="${src}?${dateStr?html}" alt="image" /></a>
   </div>
 </#if>
 

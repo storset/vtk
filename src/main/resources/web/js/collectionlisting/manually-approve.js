@@ -113,9 +113,10 @@ function retrieveResources(serviceUri, folders, aggregatedFolders) {
   }
 
   $.ajax( {
-    url :getUri,
-    dataType :"json",
-    success : function(data) {
+    url: getUri + "&no-cache=" + (+new Date()),
+    dataType: "json",
+    cache: false,
+    success: function(data) {
       if (data != null && data.length > 0) {
         $("#manually-approve-container:hidden").removeClass("hidden");
         generateManuallyApprovedContainer(data);
@@ -123,7 +124,7 @@ function retrieveResources(serviceUri, folders, aggregatedFolders) {
         $("#manually-approve-container").addClass("hidden");
       }
     },
-    error : function(xhr, textStatus) {
+    error: function(xhr, textStatus) {
       var errMsg = "<span class='manually-approve-from-ajax-error'>";
       if (xhr.readyState == 4 && xhr.status == 200) {
         errMsg += "The service is not active.";

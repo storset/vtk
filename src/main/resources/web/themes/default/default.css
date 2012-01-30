@@ -1743,7 +1743,10 @@ h3.resourceInfoHeader {
 
 /* Tab menu */
 
-#vrtx-resource-visit-tab-menu li,
+#vrtx-resource-visit-tab-menu li {
+  float: left;
+}
+
 #vrtx-resource-visit-tab-menu li a,
 #vrtx-resource-visit-tab-menu li span {
   display: inline-block;
@@ -1798,7 +1801,7 @@ h3.resourceInfoHeader {
 
 #vrtx-resource-visit-info {
   position: absolute;
-  top: 207px;
+  bottom: 22px;
   left: 650px;
   background: #f9f9f9 url(images/info-icon-grey-grey-bg.png) no-repeat 8px 7px;
   border: 1px solid #d9d9d9;

@@ -484,7 +484,7 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
             $("#vrtx-image-editor-interpolation-complete").val(percent10count + "%");
             percent10count += 10;
           }
-          setTimeout(arguments.callee, 0);
+          setZeroTimeout(arguments.callee);
         } else {
           var proc2 = setTimeout(function() {
             canvas.width = data.dest.width;
@@ -743,5 +743,31 @@ VrtxImageEditor.prototype.resetCropPlugin = function resetCropPlugin() {
     }
     w.FormData = FormData;
 })(window);
+
+
+// Faster than setTimeout()
+// Credits: http://ajaxian.com/archives/settimeout-delay
+
+// Only add setZeroTimeout to the window object, and hide everything else in a closure.
+(function() {
+  var timeouts = [];
+  var messageName = "zero-timeout-message";
+  function setZeroTimeout(fn) {
+    timeouts.push(fn);
+    window.postMessage(messageName, "*");
+  }
+
+  function handleMessage(event) {
+    if (event.source == window && event.data == messageName) {
+      event.stopPropagation();
+      if (timeouts.length > 0) {
+        var fn = timeouts.shift();
+        fn();
+      }
+    }
+  }
+  window.addEventListener("message", handleMessage, true);
+  window.setZeroTimeout = setZeroTimeout;
+})();
 
 /* ^ Vortex HTML5 Canvas image editor */

@@ -198,7 +198,7 @@
           top: 0px;
         }
         #vrtx-resource-visit-info {
-          bottom: 90px;
+          bottom: 111px;
         }
       </style>
     <![endif]-->

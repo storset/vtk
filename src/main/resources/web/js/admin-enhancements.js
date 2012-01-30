@@ -1621,7 +1621,6 @@ function loadMultipleDocuments(appendParentLast, textfieldId, browse, addName, r
     for (var i = 0, len = listOfFiles.length; i < len; i++) {
       addFormFieldFunc(simpleTextfieldId, browse, $.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
     }
-  
   }
   
   // TODO !spageti && !run twice

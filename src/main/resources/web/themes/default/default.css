@@ -1768,7 +1768,7 @@ h3.resourceInfoHeader {
 
 #vrtx-resource-visit-tab-menu li.last {
   background: url(images/report-tab-fade-to-right.png) no-repeat bottom right;
-  margin-left: -5px;
+  margin-left: 0;
 }
 
 #vrtx-resource-visit-tab-menu li a {

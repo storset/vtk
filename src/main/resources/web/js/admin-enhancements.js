@@ -510,8 +510,7 @@ $(document).ready(function () {
   });
  
   if($("body#vrtx-revisions").length) {
-    // Delete revisions
-    $("#contents").delegate(".vrtx-revisions-delete-form input[type=submit]", "click", function(e) {
+    $("#contents").delegate(".vrtx-revisions-delete-form input[type=submit]", "click", function(e) { // Delete revisions
       var form = $(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
@@ -519,7 +518,6 @@ $(document).ready(function () {
         success: function (results, status, resp) {
           var tr = form.closest("tr");
           tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
-
           // Check when multiple animations are complete; credits: http://tinyurl.com/83oodnp
           var animA = tr.find("td").animate({paddingTop: '0px', paddingBottom: '0px'}, 
                                              vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideUp, $.noop);
@@ -532,8 +530,7 @@ $(document).ready(function () {
       e.stopPropagation();
       e.preventDefault();
     });
-    // Restore revisions
-    $("#contents").delegate(".vrtx-revisions-restore-form input[type=submit]", "click", function(e) {
+    $("#contents").delegate(".vrtx-revisions-restore-form input[type=submit]", "click", function(e) { // Restore revisions
       var form = $(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
@@ -555,8 +552,7 @@ $(document).ready(function () {
       e.stopPropagation();
       e.preventDefault();
     });
-    // Make working copy into current version
-    $("#contents").delegate("#vrtx-revisions-make-current-form input[type=submit]", "click", function(e) {
+    $("#contents").delegate("#vrtx-revisions-make-current-form input[type=submit]", "click", function(e) { // Make working copy into current version
       var form = $(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();

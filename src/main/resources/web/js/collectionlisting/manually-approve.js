@@ -120,6 +120,10 @@ function retrieveResources(serviceUri, folders, aggregatedFolders) {
       if (data != null && data.length > 0) {
         $("#manually-approve-container:hidden").removeClass("hidden");
         generateManuallyApprovedContainer(data);
+        // TODO !spageti && !run twice
+        if (requestFromEditor()) {
+          storeInitPropValues();
+        }
       } else {
         $("#manually-approve-container").addClass("hidden");
       }
@@ -218,6 +222,10 @@ function generateManuallyApprovedContainer(resources) {
       if (len > prPage) {
         $("#manually-approve-container #approve-page-" + pages).hide();
       }
+      // TODO !spageti && !run twice
+     if (requestFromEditor()) {
+       storeInitPropValues();
+     }
     }
   }, 1);
 

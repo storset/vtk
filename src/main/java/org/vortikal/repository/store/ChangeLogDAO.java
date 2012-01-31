@@ -36,20 +36,50 @@ import org.vortikal.repository.ChangeLogEntry;
 
 public interface ChangeLogDAO {
 
+    /**
+     * Get changelog entries with the given logger type and id.
+     * 
+     * @param loggerType
+     * @param loggerId
+     * @return
+     * @throws DataAccessException 
+     */
     public List<ChangeLogEntry> getChangeLogEntries(int loggerType, int loggerId)
         throws DataAccessException;
 
+    /**
+     * Get changelog entries with the given logger type and id.
+     * 
+     * @param loggerType
+     * @param loggerId
+     * @param limit Limit the number of entries returned.
+     * @return
+     * @throws DataAccessException 
+     */
     public List<ChangeLogEntry> getChangeLogEntries(int loggerType, int loggerId, int limit)
     	throws DataAccessException;
 
+    /**
+     * Remove changelog entries.
+     * @param entries
+     * @throws DataAccessException 
+     */
     public void removeChangeLogEntries(List<ChangeLogEntry> entries)
         throws DataAccessException;
     
+    /**
+     * Add changelog entry, optionally add entries for entire subtree.
+     * @param entry
+     * @param recurse
+     * @throws DataAccessException 
+     */
     public void addChangeLogEntry(ChangeLogEntry entry, boolean recurse)
         throws DataAccessException;
 
     /**
-     * Apply change log entry to resource and all resources which inherit ACL from the resource.
+     * Add change log entry for resource and all resources which inherit
+     * ACL from the resource.
+     * 
      * @param entry
      * @throws DataAccessException 
      */
@@ -57,8 +87,9 @@ public interface ChangeLogDAO {
         throws DataAccessException;
     
     /**
-     * Apply change log entry to resource and all descendants which used to
-     * inherit their ACL from the resource.
+     * Add change log entry for resource and all descendants which inherit
+     * their ACL from the same ancestor that resource itself inherits from.
+     * 
      * @param entry
      * @throws DataAccessException 
      */

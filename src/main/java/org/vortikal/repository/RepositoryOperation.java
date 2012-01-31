@@ -59,7 +59,7 @@ public enum RepositoryOperation {
     STORE_ACL("storeACL", true),
     DELETE_ACL("deleteACL", true),
     IS_VALID_ACL_ENTRY("isValidAclEntry", false),
-    GET_COMMENTS("getComment", true),
+    GET_COMMENTS("getComments", false),
     ADD_COMMENT("addComment", true),
     DELETE_COMMENT("deleteComment", true),
     DELETE_ALL_COMMENTS("deleteAllComments", true),
@@ -82,6 +82,7 @@ public enum RepositoryOperation {
         return this.write;
     }
     
+    @Override
     public String toString() {
         return this.name;
     }

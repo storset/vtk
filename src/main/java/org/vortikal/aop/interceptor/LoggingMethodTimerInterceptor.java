@@ -69,6 +69,7 @@ public class LoggingMethodTimerInterceptor implements MethodInterceptor, Initial
     }
     
 
+    @Override
     public void afterPropertiesSet() {
         if (this.timeLimitMilliseconds <= 0) {
             throw new BeanInitializationException(
@@ -77,6 +78,7 @@ public class LoggingMethodTimerInterceptor implements MethodInterceptor, Initial
     }
     
 
+    @Override
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
         long startTime = System.currentTimeMillis();
         try {
@@ -92,7 +94,7 @@ public class LoggingMethodTimerInterceptor implements MethodInterceptor, Initial
     
     private void log(MethodInvocation methodInvocation, long duration) {
         Object[] args = methodInvocation.getArguments();
-        StringBuffer msg = new StringBuffer();
+        StringBuilder msg = new StringBuilder();
         msg.append("Method invocation took ").append(duration).append(" ms: ");
         msg.append(methodInvocation.getMethod().getDeclaringClass().getName()).append(".");
         msg.append(methodInvocation.getMethod().getName());
@@ -100,6 +102,7 @@ public class LoggingMethodTimerInterceptor implements MethodInterceptor, Initial
         if (args != null) {
             msg.append(", args: ").append(java.util.Arrays.asList(args));
         }
+
         StackTraceElement[] stackTrace = new Throwable().getStackTrace();
 
         if (this.logStackTraces) {

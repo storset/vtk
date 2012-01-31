@@ -519,8 +519,9 @@ $(document).ready(function () {
         success: function (results, status, resp) {
           var tr = form.closest("tr");
           tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
-           
+          // 
           // Check when multiple animations are complete; credits: http://tinyurl.com/83oodnp
+          //
           var animA = tr.find("td").animate({paddingTop: '0px', paddingBottom: '0px'}, 
                                              vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideUp, $.noop);
           var animB = tr.slideUp(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideUp, $.noop);

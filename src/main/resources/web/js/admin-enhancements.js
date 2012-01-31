@@ -314,7 +314,7 @@ $(document).ready(function () {
   var resourceMenuRightServices = ["vrtx-unpublish-document",
                                    "vrtx-publish-document"];
 
-  for (var i = resourceMenuRightServices.length; i--;) {
+  for (i = resourceMenuRightServices.length; i--;) {
     vrtxAdmin.getFormAsync({
         selector: "#title-container a#" + resourceMenuRightServices[i],
         selectorClass: "globalmenu",
@@ -401,8 +401,6 @@ $(document).ready(function () {
                                   
     for (i = privilegiesPermissions.length; i--;) {
       initPermissionForm("expandedForm-" + privilegiesPermissions[i]);
-    }
-    for (i = privilegiesPermissions.length; i--;) {
       vrtxAdmin.getFormAsync({
         selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax",
         selectorClass: "expandedForm-" + privilegiesPermissions[i],

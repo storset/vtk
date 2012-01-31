@@ -746,7 +746,7 @@ VrtxImageEditor.prototype.resetCropPlugin = function resetCropPlugin() {
 
 
 // Faster than setTimeout()
-// Credits: http://ajaxian.com/archives/settimeout-delay
+// Credits: http://dbaron.org/log/20100309-faster-timeouts
 
 // Only add setZeroTimeout to the window object, and hide everything else in a closure.
 (function() {

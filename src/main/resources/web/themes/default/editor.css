@@ -71,11 +71,6 @@
   margin-top: 10px;
 }
 
-/*
-.no-recursive-listing-prop {
-  margin-bottom: -10px;
-}*/
-
 input[type=radio] {
   margin: 0 3px 6px 0;
 }
@@ -92,23 +87,18 @@ input[type=checkbox] {
 
 #manually-approve-container {
   margin: 20px 0;
-  float: left;
   clear: both;
   width: 100%;
 }
 
-#manually-approve-container-title {
-  float: left;
-  display: inline-block;
-  margin-left: 20px;
-}
-
+#manually-approve-container-title,
 #approve-spinner {
   padding-left: 20px;
 }
 
-#vrtx-manually-approve-from-add {
-  float: left;
+#vrtx-manually-approve-from-add,
+#manually-approve-container-title {
+  display: inline-block;
 }
 
 #manually-approve-container.hidden {

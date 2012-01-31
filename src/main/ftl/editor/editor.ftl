@@ -52,18 +52,6 @@
      });
      
      $(window).load(function() {
-       if($("#resource\\.featured-articles").length) {
-         loadMultipleDocuments(true, "resource\\.featured-articles", true, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
-                             '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
-       }   
-       if($("#resource\\.aggregation").length) {                  
-         loadMultipleDocuments(true, "resource\\.aggregation", false, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
-                             '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
-       } 
-       if($("#resource\\.manually-approve-from").length) {                
-         loadMultipleDocuments(false, "resource\\.manually-approve-from", false, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
-                             '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
-       }
        initDatePicker(datePickerLang);
      });
     
@@ -72,6 +60,18 @@
           interceptEnterKey('#resource\\.tags');
           setAutoComplete('resource\\.tags', 'tags', {minChars:1});
           </#if>
+          if($("#resource\\.featured-articles").length) {
+            loadMultipleDocuments(true, "resource\\.featured-articles", true, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
+                                  '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
+          }   
+          if($("#resource\\.aggregation").length) {                  
+            loadMultipleDocuments(true, "resource\\.aggregation", false, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
+                                  '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
+          } 
+          if($("#resource\\.manually-approve-from").length) {                
+            loadMultipleDocuments(false, "resource\\.manually-approve-from", false, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
+                                  '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
+          }
        }); 
 
       UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";

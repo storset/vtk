@@ -400,7 +400,6 @@ $(document).ready(function () {
                                   "all"];
                                   
     for (i = privilegiesPermissions.length; i--;) {
-      initPermissionForm("expandedForm-" + privilegiesPermissions[i]);
       vrtxAdmin.getFormAsync({
         selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax",
         selectorClass: "expandedForm-" + privilegiesPermissions[i],
@@ -906,6 +905,12 @@ function initPermissionForm(selectorClass) {
   permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams);
 }
 
+function initSimplifiedPermissionForm() {
+  permissionsAutocomplete('userNames', 'userNames', vrtxAdmin.permissionsAutocompleteParams);
+  splitAutocompleteSuggestion('userNames');
+  permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams);  
+}
+
 function toggleConfigCustomPermissions(selectorClass) {
   var customInput = $("." + selectorClass + " ul.shortcuts label[for=custom] input");
   if (!customInput.is(":checked") && customInput.length) {
@@ -1341,6 +1346,7 @@ VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selec
     vrtxAdmin.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {
         form.find(updateSelector).html($(results).find(updateSelector).html());
+        initSimplifiedPermissionForm();
       }
     });
 
@@ -1382,6 +1388,7 @@ VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, u
           upSelector.parent().find("div." + errorContainer).remove();
           upSelector.html($(results).find(updateSelector).html());
           textfield.val("");
+          initSimplifiedPermissionForm();
         }
       }
     });

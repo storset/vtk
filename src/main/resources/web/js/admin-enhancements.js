@@ -1837,8 +1837,7 @@ VrtxAdmin.prototype.error = function(options) {
 
 VrtxAdmin.prototype.zebraTables = function(selector) {
   if(!$("table" + selector).length || $("table" + selector).hasClass("revisions")) return;
-  // http://www.quirksmode.org/css/contents.html
-  if((vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) || vrtxAdmin.isOpera) {
+  if((vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) || vrtxAdmin.isOpera) { // http://www.quirksmode.org/css/contents.html
     $("table" + selector + " tbody tr:odd").addClass("even"); // hmm.. somehow even is odd and odd is even
     $("table" + selector + " tbody tr:first-child").addClass("first");
   }

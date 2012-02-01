@@ -28,7 +28,7 @@ $(window).load(function() {
 $(document).ready(function() {
     // Refresh when folders to approve from are changed
     $("#manually-approve-refresh").click(function(e) {
-      if(manuallyApproveFoldersTxt.length) {
+      if(manuallyApproveFoldersTxt && manuallyApproveFoldersTxt.length) {
         var folders, aggregatedFolders;
         
         formatDocumentsData();

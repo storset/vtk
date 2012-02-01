@@ -380,9 +380,10 @@ VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
  *
  * Credits: http://stackoverflow.com/questions/2303690/resizing-an-image-in-an-html5-canvas
  *
- * Modified by USIT
+ * Modified and optimized by USIT
  *
  * TODO: Not as good as the one in GIMP (a little work converting that one and figure out PixelSurround+Tile)
+ * TODO: Faster in Firefox with Uint8ClampedArray: http://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
  *
  */
 
@@ -390,15 +391,14 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
   var editor = this;
   editor.renderScaledImage(true);
   
-  var elem = editor.canvas;
+  var canvas = editor.canvas;
   var ctx = editor.ctx;
   var img = editor.img;
   var sx = editor.rw;
 
-  var canvas = elem;
-  elem.width = img.width;
-  elem.height = img.height;
-  elem.style.display = "none";    
+  canvas.width = img.width;
+  canvas.height = img.height;
+  canvas.style.display = "none";    
   $("#vrtx-image-editor-wrapper").addClass("loading");
   $("#vrtx-image-editor-wrapper-loading-info").show(0);
   $("#vrtx-image-crop").attr("disabled", "disabled");
@@ -429,71 +429,89 @@ VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) 
   var lanczos = lanczosCreate(data.lobes);
   var percent10 = Math.round(data.dest.width * 0.1);
   var percent10count = 10;
-  var weight = 0;
-  setZeroTimeout(function() {
-    data.center.x = (u + 0.5) * data.ratio;
-    data.icenter.x = Math.floor(data.center.x);
-    for (var v = 0; v < data.dest.height; v++) {
-      data.center.y = (v + 0.5) * data.ratio;
-      data.icenter.y = Math.floor(data.center.y);
-      var a, r, g, b; a = r = g = b = 0;
-      for (var i = data.icenter.x - data.range2; i <= data.icenter.x + data.range2; i++) {
-        if (i < 0 || i >= data.src.width) continue;
-        var fX = Math.floor(1000 * Math.abs(i - data.center.x));
-        if (!data.cacheLanc[fX]) data.cacheLanc[fX] = {};
-          for (var j = data.icenter.y - data.range2; j <= data.icenter.y + data.range2; j++) {
-            if (j < 0 || j >= data.src.height) continue;
-            var fY = Math.floor(1000 * Math.abs(j - data.center.y));
-            if (data.cacheLanc[fX][fY] == undefined) {
-              data.cacheLanc[fX][fY] = lanczos(Math.sqrt(Math.pow(fX * data.rcp_ratio, 2) + Math.pow(fY * data.rcp_ratio, 2)) / 1000);
-            }
-            weight = data.cacheLanc[fX][fY];
-            if (weight > 0) {
-              var idx = (j * data.src.width + i) * 4;
-              a += weight;
-              r += weight * data.src.data[idx];
-              g += weight * data.src.data[idx + 1];
-              b += weight * data.src.data[idx + 2];
-            }
-         }
-       }
-       idx = (v * data.dest.width + u) * 3;
-       data.dest.data[idx] = r / a;
-       data.dest.data[idx + 1] = g / a;
-       data.dest.data[idx + 2] = b / a;
-     }
-    if(++u < data.dest.width) {
+  var proc1 = setTimeout(function() { // Ref. to data-obj inside function scope
+    var a, r, g, b, v, i, j, fX, fY, weight, idx, startI, endI, startJ, endJ,
+        dstDT = data.dest.data, dstW = data.dest.width, dstH = data.dest.height,
+        srcDT = data.src.data, srcW = data.src.width, srcH = data.src.height,
+        ratio = data.ratio, rcpRatio = data.rcp_ratio,
+        range2 = data.range2, cacheLanc = data.cacheLanc,
+        center = data.center, icenter = data.icenter,
+        lanc = lanczos;
+
+    center.x = (u + 0.5) * ratio;
+    icenter.x = Math.floor(center.x);
+    startI = Math.max(icenter.x - range2, 0);
+    endI = Math.min(icenter.x + range2, srcW-1);
+    for (v = 0; v < dstH; v++) {
+      center.y = (v + 0.5) * ratio;
+      icenter.y = Math.floor(center.y);
+      startJ = Math.max(icenter.y - range2, 0);
+      endJ = Math.min(icenter.y + range2, srcH-1);
+      a = r = g = b = 0;
+      for (i = startI; i <= endI; i++) {
+        fX = Math.floor(1000 * Math.abs(i - center.x));
+        if (!cacheLanc[fX]) cacheLanc[fX] = {};
+        for (j = startJ; j <= endJ; j++) { 
+          fY = Math.floor(1000 * Math.abs(j - center.y));
+          if (cacheLanc[fX][fY] == undefined) {
+            cacheLanc[fX][fY] = lanc(Math.sqrt(Math.pow(fX * rcpRatio, 2) + Math.pow(fY * rcpRatio, 2)) / 1000);
+          }
+          weight = cacheLanc[fX][fY];
+          if (weight > 0) {
+            idx = (j * srcW + i) << 2;
+            a += weight;
+            r += weight * srcDT[idx];
+            g += weight * srcDT[++idx];
+            b += weight * srcDT[++idx];
+          }
+        }
+      }
+      idx = (v * dstW + u) * 3;
+      dstDT[idx] = r / a;
+      dstDT[++idx] = g / a;
+      dstDT[++idx] = b / a;
+    }
+    if(++u < dstW) {
       if(u % percent10 == 0) {
         $("#vrtx-image-editor-interpolation-complete").val(percent10count + "%");
         percent10count += 10;
       }
-      setZeroTimeout(arguments.callee);
+      setTimeout(arguments.callee, 0);
     } else {
-      setZeroTimeout(function() {
+      var proc2 = setTimeout(function() {
         canvas.width = data.dest.width;
         canvas.height = data.dest.height;
         ctx.drawImage(img, 0, 0);
+
         data.src = ctx.getImageData(0, 0, data.dest.width, data.dest.height);
-        var idx, idx2;
-        for (var i = 0; i < data.dest.width; i++) {
-          for (var j = 0; j < data.dest.height; j++) {
-            idx = (j * data.dest.width + i) * 3;
-            idx2 = (j * data.dest.width + i) * 4;
-            data.src.data[idx2] = data.dest.data[idx]; 
-            data.src.data[idx2 + 1] = data.dest.data[idx + 1];
-            data.src.data[idx2 + 2] = data.dest.data[idx + 2];
+
+        var i, j, idxO, idxDst, idSrc, 
+            dstDT = data.dest.data, dstW = data.dest.width, dstH = data.dest.height,
+            srcDT = data.src.data;
+        for (i = 0; i < dstW; i++) {
+          for (j = 0; j < dstH; j++) {
+            idxO = (j * dstW + i);
+            idxDst = idxO * 3;
+            idxSrc = idxO << 2;
+            srcDT[idxSrc] = dstDT[idxDst]; 
+            srcDT[++idxSrc] = dstDT[++idxDst];
+            srcDT[++idxSrc] = dstDT[++idxDst];
           }
         }
+
         ctx.putImageData(data.src, 0 ,0);
+
         editor.renderScaledImage(false);  
+
         // console.log("Total time " + (new Date() - startTime) + "ms");
         editor.save(buttonId);
-        elem.style.display = "block";
+
+        canvas.style.display = "block";
         $("#vrtx-image-editor-preview").removeClass("loading");
         $("#vrtx-image-crop").removeAttr("disabled"); 
-      });
+      }, 0);
     }
-  });
+  }, 0);
 };
 
 // Returns a function that calculates lanczos weight
@@ -744,31 +762,5 @@ VrtxImageEditor.prototype.resetCropPlugin = function resetCropPlugin() {
     }
     w.FormData = FormData;
 })(window);
-
-
-// Faster than setTimeout()
-// Credits: http://dbaron.org/log/20100309-faster-timeouts
-
-// Only add setZeroTimeout to the window object, and hide everything else in a closure.
-(function() {
-  var timeouts = [];
-  var messageName = "zero-timeout-message";
-  function setZeroTimeout(fn) {
-    timeouts.push(fn);
-    window.postMessage(messageName, "*");
-  }
-
-  function handleMessage(event) {
-    if (event.source == window && event.data == messageName) {
-      event.stopPropagation();
-      if (timeouts.length > 0) {
-        var fn = timeouts.shift();
-        fn();
-      }
-    }
-  }
-  window.addEventListener("message", handleMessage, true);
-  window.setZeroTimeout = setZeroTimeout;
-})();
 
 /* ^ Vortex HTML5 Canvas image editor */

@@ -86,7 +86,7 @@ input[type=checkbox] {
 }
 
 #manually-approve-container {
-  margin: 20px 0;
+  padding: 20px 0 30px 0;
   clear: both;
   width: 100%;
 }

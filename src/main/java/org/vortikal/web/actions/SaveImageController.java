@@ -88,17 +88,12 @@ public class SaveImageController extends AbstractController {
         
         System.out.println("______________________ " + cropX + " " + cropY + " " + cropWidth + " " + cropHeight + " " + newWidth + " " + newHeight + " " + scale);
 
-        byte[] imageBytes = IOUtils.toByteArray(repository.getInputStream(token, uri, true));
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes)).getSubimage(cropX, cropY, cropWidth, cropHeight);
-        BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);       
-        Graphics2D g = bufferedImage.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC); 
-        
-        g.drawImage(image, 0, 0, Color.WHITE, null);
-        AffineTransform scaleTransform = new AffineTransform();
-        scaleTransform.scale(scale, scale);
-        g.transform(scaleTransform);
-        g.drawRenderedImage(image, scaleTransform);
+        BufferedImage image = ImageIO.read(repository.getInputStream(token, uri, true)).getSubimage(cropX, cropY, cropWidth, cropHeight);     
+        BufferedImage dest2 = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = dest2.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC); 
+        AffineTransform at = AffineTransform.getScaleInstance((double)newWidth/cropWidth,(double)newHeight/cropHeight);
+        g2.drawRenderedImage(image, at);
         
         // Find a writer
         ImageWriter writer = null;
@@ -122,17 +117,16 @@ public class SaveImageController extends AbstractController {
           ImageWriteParam iwp = writer.getDefaultWriteParam();
           iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
           iwp.setCompressionQuality(0.8f);
-          writer.write(null, new IIOImage(bufferedImage, null, null), iwp);
+          writer.write(null, new IIOImage(dest2, null, null), iwp);
         } else {
-          writer.write(new IIOImage(bufferedImage, null, null));  
+          writer.write(new IIOImage(dest2, null, null));  
         }
         // Cleanup
         ios.flush();
         writer.dispose();
         ios.close();
-            
-        imageBytes = bos.toByteArray();
-        repository.storeContent(token, uri, new ByteArrayInputStream(imageBytes));
+
+        repository.storeContent(token, uri, new ByteArrayInputStream(bos.toByteArray()));
 
         return new ModelAndView(this.viewName);
     }

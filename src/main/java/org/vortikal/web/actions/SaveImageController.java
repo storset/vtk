@@ -83,6 +83,9 @@ public class SaveImageController extends AbstractController {
         int cropHeight = Integer.parseInt(request.getParameter("crop-height"));
         float scale = Float.parseFloat(request.getParameter("scale-ratio"));  
         
+        System.out.println("______________________ " + cropX + " " + cropY + " " + cropWidth + " " + cropHeight + " " + scale);
+        
+        
         byte[] imageBytes = IOUtils.toByteArray(repository.getInputStream(token, uri, true));
         BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes));
         BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB).getSubimage(cropX, cropY, cropWidth, cropHeight);       

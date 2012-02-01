@@ -1,17 +1,7 @@
-/* 
+/*
  * Vortex HTML5 Canvas image editor
  *
- * Features
- *
- * o Crop
- * o Scale
- *  + Methods
- *    - Change textfields
- *    - Use up / down arrow keys in textfields
- *    - With jQuery UI resizable
- *  + Keeps aspect ratio (GCD)
- *  + Lanczos3 downscaling
- * o Save by uploading base64 PNG to server
+ * Features: scale and crop on client
  *
  */
 
@@ -27,7 +17,7 @@ function VrtxImageEditor() {
   this.url = null;
   this.img = null;
   this.scaledImg = null;
-  
+
   this.canvasSupported = null;
   this.canvas = null;
   this.ctx = null;
@@ -118,7 +108,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
         editor.cropY += Math.round(editor.selection.y * editor.reversedScaleRatio);
         editor.cropWidth = Math.round(editor.selection.w * editor.reversedScaleRatio);
         editor.cropHeight = Math.round(editor.selection.h * editor.reversedScaleRatio);
-        editor.rw = editor.lastWidth = Math.round(editor.cropWidth * editor.Ratio);
+        editor.rw = editor.lastWidth = Math.round(editor.cropWidth * editor.scaleRatio);
         editor.rh = editor.lastHeight = Math.round(editor.cropHeight * editor.scaleRatio);
         
         var gcd = editor.gcd(editor.rw, editor.rh);
@@ -132,10 +122,10 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
         editor.resetCropPlugin();
         $(this).val(startCropText + "...");
         $("#vrtx-image-editor").resizable("enable");  
-        
+
         editor.hasCropBeenInitialized = false;
       } else {
-        var shortestSide = (editor.rw > editor.rh) ? editor.rh : editor.rw;
+        var shortestSide = Math.min(editor.rw, editor.rh);
         if(shortestSide >= 400) {
           var distEdge = 40;
         } else if(shortestSide < 400 && shortestSide >= 200) {

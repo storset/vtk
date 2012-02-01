@@ -57,6 +57,7 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
     
     private TokenManager tokenManager;
     
+    @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         RepositoryOperation operation = RepositoryOperation.byName(invocation.getMethod().getName());
         if (operation == null) {
@@ -100,7 +101,6 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
                 operation == RepositoryOperation.STORE_CONTENT       ||
                 operation == RepositoryOperation.STORE_ACL           ||
                 operation == RepositoryOperation.DELETE_ACL          ||
-                operation == RepositoryOperation.GET_COMMENTS        ||
                 operation == RepositoryOperation.GET_REVISIONS       ||
                 operation == RepositoryOperation.DELETE_REVISION) {            
 
@@ -122,10 +122,11 @@ public class RepositoryOperationLogInterceptor implements MethodInterceptor {
             Path dstUri = (Path)args[2];
             params = "(" + srcUri + ", " + dstUri + ")";
             
-        } else if (RepositoryOperation.STORE == operation            ||
-                RepositoryOperation.DELETE_COMMENT == operation      ||
-                RepositoryOperation.DELETE_ALL_COMMENTS == operation ||
-                RepositoryOperation.UPDATE_COMMENT == operation) {
+        } else if (RepositoryOperation.STORE == operation               ||
+                   RepositoryOperation.DELETE_COMMENT == operation      ||
+                   RepositoryOperation.DELETE_ALL_COMMENTS == operation ||
+                   RepositoryOperation.UPDATE_COMMENT == operation      ||
+                   RepositoryOperation.GET_COMMENTS == operation) {
 
             Resource resource = (Resource)args[1];
             Path uri = resource.getURI();

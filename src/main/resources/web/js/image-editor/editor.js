@@ -90,11 +90,15 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
         aspectRatio: editor.keepAspectRatio,
         grid: [1, 1],
         stop: function (event, ui) {
-          var newWidth = Math.floor(ui.size.width);
-          var newHeight = Math.round(newWidth / (editor.aspectRatioOver / editor.aspectRatioUnder));
-          editor.lastWidth = newWidth;
-          editor.lastHeight = newHeight;
-          editor.scale(newWidth, newHeight);
+          if ((ui.size.width / editor.cropWidth) <= 1) {
+            var newWidth = Math.floor(ui.size.width);
+            var newHeight = Math.round(newWidth / (editor.aspectRatioOver / editor.aspectRatioUnder));
+            editor.lastWidth = newWidth;
+            editor.lastHeight = newHeight;
+            editor.scale(newWidth, newHeight);
+          } else {
+            editor.scale(editor.lastWidth, editor.lastHeight);
+          }
         },
         resize: function (event, ui) {
           editor.displayDimensions(Math.floor(ui.size.width), Math.floor(ui.size.height));
@@ -114,7 +118,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
         editor.cropY += Math.round(editor.selection.y * editor.reversedScaleRatio);
         editor.cropWidth = Math.round(editor.selection.w * editor.reversedScaleRatio);
         editor.cropHeight = Math.round(editor.selection.h * editor.reversedScaleRatio);
-        editor.rw = editor.lastWidth = Math.round(editor.cropWidth * editor.scaleRatio);
+        editor.rw = editor.lastWidth = Math.round(editor.cropWidth * editor.Ratio);
         editor.rh = editor.lastHeight = Math.round(editor.cropHeight * editor.scaleRatio);
         
         var gcd = editor.gcd(editor.rw, editor.rh);
@@ -158,7 +162,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
     $("#app-content").delegate("#resource-width, #resource-height", "change", function (e) {
       var w = parseInt($.trim($("#resource-width").val()));
       var h = parseInt($.trim($("#resource-height").val()));
-      if (!isNaN(w) && !isNaN(h)) {
+      if (!isNaN(w) && !isNaN(h) && ((w / editor.cropWidth) <= 1)) {
         if (w !== editor.rw) {
           if (editor.keepAspectRatio) {
             h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
@@ -193,11 +197,13 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
         if (editor.keepAspectRatio) {
           h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
         }
-        editor.lastWidth = w;
-        editor.lastHeight = h;
-        $("#resource-width").val(w);
-        $("#resource-height").val(h);
-        editor.scale(w, h);
+        if ((w / editor.cropWidth) <= 1) {
+          editor.lastWidth = w;
+          editor.lastHeight = h;
+          $("#resource-width").val(w);
+          $("#resource-height").val(h);
+          editor.scale(w, h);
+        }
       } else if (e.which == 13) {
         $(this).trigger("change");
         return false;
@@ -217,11 +223,13 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
         if (editor.keepAspectRatio) {
           w = Math.round(h * (editor.aspectRatioOver / editor.aspectRatioUnder));
         }
-        editor.lastWidth = w;
-        editor.lastHeight = h;
-        $("#resource-width").val(w);
-        $("#resource-height").val(h);
-        editor.scale(w, h);
+        if ((w / editor.cropWidth) <= 1) {
+          editor.lastWidth = w;
+          editor.lastHeight = h;
+          $("#resource-width").val(w);
+          $("#resource-height").val(h);
+          editor.scale(w, h);
+        }
       } else if (e.which == 13) {
         $(this).trigger("change");
         return false;
@@ -332,7 +340,7 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
                  + "&crop-width=" + editor.cropWidth
                  + "&crop-height=" + editor.cropHeight
                  + "&new-width=" + editor.rw
-                 + "&new-height=" + editor.rh
+                 + "&new-height=" + editor.rh;
     
   vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
     success: function (results, status, resp) {

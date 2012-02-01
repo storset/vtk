@@ -116,6 +116,7 @@
   
   <bean id="editor.saveImageHandler" class="org.vortikal.web.actions.SaveImageController">
     <property name="viewName" value="redirectToManage" />
+    <property name="imageService"><bean class="org.vortikal.graphics.ImageServiceImpl" /></property>
   </bean>
 
 

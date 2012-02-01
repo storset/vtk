@@ -30,9 +30,6 @@
  */
 package org.vortikal.web.actions;
 
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -49,6 +46,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+import org.vortikal.graphics.ImageServiceImpl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -60,12 +58,17 @@ import org.vortikal.web.RequestContext;
 public class SaveImageController extends AbstractController {
 
     private String viewName;
+    private ImageServiceImpl imageService;
 
     @Required
     public void setViewName(String viewName) {
         this.viewName = viewName;
     }
-
+    
+    @Required
+    public void setImageService(ImageServiceImpl imageService) {
+        this.imageService = imageService;
+    }
     
     @SuppressWarnings("unchecked")
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
@@ -76,21 +79,29 @@ public class SaveImageController extends AbstractController {
         String token = requestContext.getSecurityToken();
         Resource resource = repository.retrieve(token, uri, true);
 
-        int cropX = Integer.parseInt(request.getParameter("crop-x"));
-        int cropY = Integer.parseInt(request.getParameter("crop-y"));
-        int cropWidth = Integer.parseInt(request.getParameter("crop-width"));
-        int cropHeight = Integer.parseInt(request.getParameter("crop-height"));
-        int newWidth = Integer.parseInt(request.getParameter("new-width"));
-        int newHeight = Integer.parseInt(request.getParameter("new-height"));
-        
+        String cropXStr = request.getParameter("crop-x");
+        String cropYStr = request.getParameter("crop-y");
+        String cropWidthStr = request.getParameter("crop-width");
+        String cropHeightStr = request.getParameter("crop-height");
+        String newWidthStr = request.getParameter("new-width");
+        String newHeightStr = request.getParameter("new-height");
+                
+        if(cropXStr == null || cropYStr == null || cropWidthStr == null 
+           ||  cropHeightStr == null ||  newWidthStr == null || newHeightStr == null) {
+            return new ModelAndView(this.viewName);        
+        }
 
-        BufferedImage image = ImageIO.read(repository.getInputStream(token, uri, true)).getSubimage(cropX, cropY, cropWidth, cropHeight);     
-        BufferedImage dest2 = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2 = dest2.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC); 
-        AffineTransform at = AffineTransform.getScaleInstance((double)newWidth/cropWidth,(double)newHeight/cropHeight);
-        g2.drawRenderedImage(image, at);
-        
+        int cropX = Integer.parseInt(cropXStr);
+        int cropY = Integer.parseInt(cropYStr);
+        int cropWidth = Integer.parseInt(cropWidthStr);
+        int cropHeight = Integer.parseInt(cropHeightStr);
+        int newWidth = Integer.parseInt(newWidthStr);
+        int newHeight = Integer.parseInt(newHeightStr);
+
+        // Crop and scale (downscale bilinear and upscale bicubic)
+        BufferedImage image = ImageIO.read(repository.getInputStream(token, uri, true)).getSubimage(cropX, cropY, cropWidth, cropHeight);
+        BufferedImage scaledImage = imageService.getScaledInstance(image, newWidth, newHeight); // Bilinear
+
         // Find a writer
         ImageWriter writer = null;
         Iterator iter = null;
@@ -113,9 +124,9 @@ public class SaveImageController extends AbstractController {
           ImageWriteParam iwp = writer.getDefaultWriteParam();
           iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
           iwp.setCompressionQuality(0.8f);
-          writer.write(null, new IIOImage(dest2, null, null), iwp);
+          writer.write(null, new IIOImage(scaledImage, null, null), iwp);
         } else {
-          writer.write(new IIOImage(dest2, null, null));  
+          writer.write(new IIOImage(scaledImage, null, null));  
         }
         // Cleanup
         ios.flush();

@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.actions;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
@@ -47,7 +46,6 @@ import javax.imageio.stream.ImageOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -84,9 +82,7 @@ public class SaveImageController extends AbstractController {
         int cropHeight = Integer.parseInt(request.getParameter("crop-height"));
         int newWidth = Integer.parseInt(request.getParameter("new-width"));
         int newHeight = Integer.parseInt(request.getParameter("new-height"));
-        float scale = Float.parseFloat(request.getParameter("scale-ratio"));  
         
-        System.out.println("______________________ " + cropX + " " + cropY + " " + cropWidth + " " + cropHeight + " " + newWidth + " " + newHeight + " " + scale);
 
         BufferedImage image = ImageIO.read(repository.getInputStream(token, uri, true)).getSubimage(cropX, cropY, cropWidth, cropHeight);     
         BufferedImage dest2 = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);

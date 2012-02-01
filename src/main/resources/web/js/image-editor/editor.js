@@ -325,48 +325,20 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
   var editor = this;
   editor.savedImage = true;
 
-  var imageAsBase64 = vrtxImageEditor.canvas.toDataURL("image/png");
-  imageAsBase64 = imageAsBase64.replace("data:image/png;base64,", "");
   var form = $("form#vrtx-image-editor-save-image-form");
-  if("FormData" in window) {
-    var fd = new FormData();
-    fd.append("csrf-prevention-token", form.find("input[name=csrf-prevention-token]").val()); 
-    // fd.append("base", imageAsBase64);
+  var dataString = "?csrf-prevention-token=" + form.find("input[name=csrf-prevention-token]").val()
+                += "&crop-x=" + editor.cropX
+                += "&crop-y=" + editor.cropY
+                += "&crop-width=" + editor.cropWidth
+                += "&crop-height=" + editor.cropHeight
+                += "&new-width=" + editor.rw
+                += "&new-height=" + editor.rh
     
-    fd.append("crop-x", editor.cropX);
-    fd.append("crop-y", editor.cropY);
-    fd.append("crop-width", editor.cropWidth);
-    fd.append("crop-height", editor.cropHeight);
-    fd.append("new-width", editor.rw);
-    fd.append("new-height", editor.rh);
-    fd.append("scale-ratio", editor.scaleRatio);
-    
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", form.attr("action"), true);
-    xhr.setRequestHeader("Cache-Control", "no-cache");
-    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-    if (fd.fake) {
-      xhr.setRequestHeader("Content-Type", "multipart/form-data; boundary=" + fd.boundary);
-      if(!xhr.sendAsBinary) {
-        xhr.send(fd.toString());
-      } else {
-        xhr.sendAsBinary(fd.toString());
-      }
-    } else {
-      xhr.send(fd);
+  vrtxAdmin.serverFacade.postHtml(url, dataString, {
+    success: function (results, status, resp) {
+      $("#" + buttonId).click();
     }
-    xhr.onreadystatechange = function() {
-      if($.browser.mozilla) { // http://www.nczonline.net/blog/2009/07/09/firefox-35firebug-xmlhttprequest-and-readystatechange-bug/
-        xhr.onload = xhr.onerror = xhr.onabort = function() {
-          $("#" + buttonId).click();      
-        };
-      } else {
-        if (xhr.readyState == 4)  { 
-          $("#" + buttonId).click();
-        }
-      }
-    };
-  }
+  });
 };
 
 VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {

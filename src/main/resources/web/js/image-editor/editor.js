@@ -326,7 +326,7 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
   editor.savedImage = true;
 
   var form = $("form#vrtx-image-editor-save-image-form");
-  var dataString = "?csrf-prevention-token=" + form.find("input[name=csrf-prevention-token]").val()
+  var dataString = "&csrf-prevention-token=" + form.find("input[name=csrf-prevention-token]").val()
                  + "&crop-x=" + editor.cropX
                  + "&crop-y=" + editor.cropY
                  + "&crop-width=" + editor.cropWidth
@@ -334,7 +334,7 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
                  + "&new-width=" + editor.rw
                  + "&new-height=" + editor.rh
     
-  vrtxAdmin.serverFacade.postHtml(url, dataString, {
+  vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
     success: function (results, status, resp) {
       $("#" + buttonId).click();
     }

@@ -233,11 +233,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
         if(editor.hasCropBeenInitialized) {
           editor.cropNone(editor); // Remove selection
         }
-        if(editor.scaleRatio < 0.9) { // No artifacts below 0.9
-          editor.scaleLanczos(3, $(this).attr("id")); // http://int64.org/2011/07/24/choosing-the-right-kernel
-        } else {
-          editor.save($(this).attr("id"));
-        }
+        editor.save($(this).attr("id"));
         return false; 
       } else {
         editor.savedImage = false;
@@ -326,7 +322,8 @@ VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage(insertI
 };
 
 VrtxImageEditor.prototype.save = function save(buttonId) {
-  this.savedImage = true;
+  var editor = this;
+  editor.savedImage = true;
 
   var imageAsBase64 = vrtxImageEditor.canvas.toDataURL("image/png");
   imageAsBase64 = imageAsBase64.replace("data:image/png;base64,", "");
@@ -334,7 +331,14 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
   if("FormData" in window) {
     var fd = new FormData();
     fd.append("csrf-prevention-token", form.find("input[name=csrf-prevention-token]").val()); 
-    fd.append("base", imageAsBase64);
+    // fd.append("base", imageAsBase64);
+    
+    fd.append("crop-x", editor.cropX);
+    fd.append("crop-y", editor.cropY);
+    fd.append("crop-width", editor.cropWidth);
+    fd.append("crop-height", editor.cropHeight);
+    fd.append("scale-ratio", editor.scaleRatio);
+    
     var xhr = new XMLHttpRequest();
     xhr.open("POST", form.attr("action"), true);
     xhr.setRequestHeader("Cache-Control", "no-cache");
@@ -374,156 +378,6 @@ VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
                                               0,            0,        editor.rw,        editor.rh);
   editor.renderScaledImage(false);      
 };
-
-
-/* Lanczos algorithm for downscaling
- *
- * Credits: http://stackoverflow.com/questions/2303690/resizing-an-image-in-an-html5-canvas
- *
- * Modified and optimized by USIT
- *
- * TODO: Not as good as the one in GIMP (a little work converting that one and figure out PixelSurround+Tile)
- * TODO: Faster in Firefox with Uint8ClampedArray: http://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
- *
- */
-
-VrtxImageEditor.prototype.scaleLanczos = function scaleLanczos(lobes, buttonId) {
-  var editor = this;
-  editor.renderScaledImage(true);
-  
-  var canvas = editor.canvas;
-  var ctx = editor.ctx;
-  var img = editor.img;
-  var sx = editor.rw;
-
-  canvas.width = img.width;
-  canvas.height = img.height;
-  canvas.style.display = "none";    
-  $("#vrtx-image-editor-wrapper").addClass("loading");
-  $("#vrtx-image-editor-wrapper-loading-info").show(0);
-  $("#vrtx-image-crop").attr("disabled", "disabled");
-  ctx.drawImage(img, 0, 0);
-  
-  // var startTime = new Date();
-  
-  var w = sx;
-  var h = editor.rh;
-  var ratio = editor.reversedScaleRatio;
-  var data = {
-    src: ctx.getImageData(editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight),
-    lobes: lobes,
-    dest: {
-      width: w,
-      height: h,
-      data: new Array(w * h * 3)
-    },
-    ratio: ratio,
-    rcp_ratio: 2 / ratio,
-    range2: Math.ceil(ratio * lobes / 2),
-    cacheLanc: {},
-    center: {},
-    icenter: {}
-  };
-
-  var u = 0; 
-  var lanczos = lanczosCreate(data.lobes);
-  var percent10 = Math.round(data.dest.width * 0.1);
-  var percent10count = 10;
-  var proc1 = setTimeout(function() { // Ref. to data-obj inside function scope
-    var a, r, g, b, v, i, j, fX, fY, weight, idx, startI, endI, startJ, endJ,
-        dstDT = data.dest.data, dstW = data.dest.width, dstH = data.dest.height,
-        srcDT = data.src.data, srcW = data.src.width, srcH = data.src.height,
-        ratio = data.ratio, rcpRatio = data.rcp_ratio,
-        range2 = data.range2, cacheLanc = data.cacheLanc,
-        center = data.center, icenter = data.icenter,
-        lanc = lanczos;
-
-    center.x = (u + 0.5) * ratio;
-    icenter.x = Math.floor(center.x);
-    startI = Math.max(icenter.x - range2, 0);
-    endI = Math.min(icenter.x + range2, srcW-1);
-    for (v = 0; v < dstH; v++) {
-      center.y = (v + 0.5) * ratio;
-      icenter.y = Math.floor(center.y);
-      startJ = Math.max(icenter.y - range2, 0);
-      endJ = Math.min(icenter.y + range2, srcH-1);
-      a = r = g = b = 0;
-      for (i = startI; i <= endI; i++) {
-        fX = Math.floor(1000 * Math.abs(i - center.x));
-        if (!cacheLanc[fX]) cacheLanc[fX] = {};
-        for (j = startJ; j <= endJ; j++) { 
-          fY = Math.floor(1000 * Math.abs(j - center.y));
-          if (cacheLanc[fX][fY] == undefined) {
-            cacheLanc[fX][fY] = lanc(Math.sqrt(Math.pow(fX * rcpRatio, 2) + Math.pow(fY * rcpRatio, 2)) / 1000);
-          }
-          weight = cacheLanc[fX][fY];
-          if (weight > 0) {
-            idx = (j * srcW + i) << 2;
-            a += weight;
-            r += weight * srcDT[idx];
-            g += weight * srcDT[++idx];
-            b += weight * srcDT[++idx];
-          }
-        }
-      }
-      idx = (v * dstW + u) * 3;
-      dstDT[idx] = r / a;
-      dstDT[++idx] = g / a;
-      dstDT[++idx] = b / a;
-    }
-    if(++u < dstW) {
-      if(u % percent10 == 0) {
-        $("#vrtx-image-editor-interpolation-complete").val(percent10count + "%");
-        percent10count += 10;
-      }
-      setTimeout(arguments.callee, 0);
-    } else {
-      var proc2 = setTimeout(function() {
-        canvas.width = data.dest.width;
-        canvas.height = data.dest.height;
-        ctx.drawImage(img, 0, 0);
-
-        data.src = ctx.getImageData(0, 0, data.dest.width, data.dest.height);
-
-        var i, j, idxO, idxDst, idSrc, 
-            dstDT = data.dest.data, dstW = data.dest.width, dstH = data.dest.height,
-            srcDT = data.src.data;
-        for (i = 0; i < dstW; i++) {
-          for (j = 0; j < dstH; j++) {
-            idxO = (j * dstW + i);
-            idxDst = idxO * 3;
-            idxSrc = idxO << 2;
-            srcDT[idxSrc] = dstDT[idxDst]; 
-            srcDT[++idxSrc] = dstDT[++idxDst];
-            srcDT[++idxSrc] = dstDT[++idxDst];
-          }
-        }
-
-        ctx.putImageData(data.src, 0 ,0);
-
-        editor.renderScaledImage(false);  
-
-        // console.log("Total time " + (new Date() - startTime) + "ms");
-        editor.save(buttonId);
-
-        canvas.style.display = "block";
-        $("#vrtx-image-editor-preview").removeClass("loading");
-        $("#vrtx-image-crop").removeAttr("disabled"); 
-      }, 0);
-    }
-  }, 0);
-};
-
-// Returns a function that calculates lanczos weight
-function lanczosCreate(lobes) {
-  return function (x) {
-    if (x > lobes) return 0;
-    x *= Math.PI;
-    if (Math.abs(x) < 1e-16) return 1
-    var xx = x / lobes;
-    return Math.sin(x) * Math.sin(xx) / x / xx;
-  }
-}
 
 /*
  * Crop plugin

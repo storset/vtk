@@ -30,14 +30,13 @@
  */
 package org.vortikal.web.actions;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -47,11 +46,7 @@ import javax.imageio.stream.ImageOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.axiom.util.base64.Base64Utils;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -82,55 +77,56 @@ public class SaveImageController extends AbstractController {
         String token = requestContext.getSecurityToken();
         Resource resource = repository.retrieve(token, uri, true);
 
-        FileItemFactory factory = new DiskFileItemFactory(100000000, new File(System.getProperty("java.io.tmpdir")));
-        ServletFileUpload upload = new ServletFileUpload(factory);
-        List<FileItem> fileItems = upload.parseRequest(request);
-        FileItem imageAsBase64 = null;
-        for (FileItem item : fileItems) {
-           if (item.getFieldName().equals("base")) {
-               imageAsBase64 = item;
-           }
+        int cropX = Integer.parseInt(request.getParameter("crop-x"));
+        int cropY = Integer.parseInt(request.getParameter("crop-y"));
+        int cropWidth = Integer.parseInt(request.getParameter("crop-width"));
+        int cropHeight = Integer.parseInt(request.getParameter("crop-height"));
+        int scale = Integer.parseInt(request.getParameter("scale-ratio"));  
+        
+        byte[] imageBytes = IOUtils.toByteArray(repository.getInputStream(token, uri, true));
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes));
+        BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB).getSubimage(cropX, cropY, cropWidth, cropHeight);       
+        Graphics2D g = bufferedImage.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        AffineTransform crop = new AffineTransform();
+        crop.translate(scale, scale);
+        g.transform(crop);
+        g.drawImage(bufferedImage, crop, null);
+
+        // Find a jpeg writer
+        ImageWriter writer = null;
+        Iterator iter = null;
+        if("image/jpeg".equals(resource.getContentType()) || "image/pjpeg".equals(resource.getContentType())) {
+          iter = ImageIO.getImageWritersByFormatName("jpg");
+        } else if("image/png".equals(resource.getContentType())) {
+          iter = ImageIO.getImageWritersByFormatName("png");  
         }
-        if(imageAsBase64 != null) { // Decode base64 and store as content on resource
-          byte[] imageBytes = Base64Utils.decode(imageAsBase64.getString());
-          
-          if("image/jpeg".equals(resource.getContentType()) || "image/pjpeg".equals(resource.getContentType())) {
-            BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes));
-            // Credits: http://stackoverflow.com/questions/464825/converting-transparent-gif-png-to-jpeg-using-java/1545417#1545417
-            BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);       
-            Graphics2D g = bufferedImage.createGraphics();
-            g.drawImage(image, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), Color.WHITE, null);
-            
-            // Find a jpeg writer
-            ImageWriter writer = null;
-            Iterator iter = ImageIO.getImageWritersByFormatName("jpg");
-            if (iter.hasNext()) {
-                writer = (ImageWriter)iter.next();
-            }
+        if (iter.hasNext()) {
+          writer = (ImageWriter)iter.next();
+        }
 
-            // Prepare output file
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ImageOutputStream ios = ImageIO.createImageOutputStream(bos);
-            writer.setOutput(ios);
+        // Prepare output file
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ImageOutputStream ios = ImageIO.createImageOutputStream(bos);
+        writer.setOutput(ios);
             
-            // Set the compression quality
-            ImageWriteParam iwp = writer.getDefaultWriteParam();
-            iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-            iwp.setCompressionQuality(0.8f);
+        // Set the compression quality
+        if("image/jpeg".equals(resource.getContentType()) || "image/pjpeg".equals(resource.getContentType())) {
+          ImageWriteParam iwp = writer.getDefaultWriteParam();
+          iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+          iwp.setCompressionQuality(0.8f);
+          writer.write(null, new IIOImage(bufferedImage, null, null), iwp);
+        } else {
+          writer.write(new IIOImage(bufferedImage, null, null));  
+        }
+        // Cleanup
+        ios.flush();
+        writer.dispose();
+        ios.close();
             
-            // Write the image
-            writer.write(null, new IIOImage(bufferedImage, null, null), iwp);
+        imageBytes = bos.toByteArray();
+        repository.storeContent(token, uri, new ByteArrayInputStream(imageBytes));
 
-            // Cleanup
-            ios.flush();
-            writer.dispose();
-            ios.close();
-            
-            imageBytes = bos.toByteArray();
-          }
-          
-          repository.storeContent(token, uri, new ByteArrayInputStream(imageBytes));
-        } 
         return new ModelAndView(this.viewName);
     }
 

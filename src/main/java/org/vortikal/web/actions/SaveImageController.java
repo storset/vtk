@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.actions;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
@@ -81,22 +82,25 @@ public class SaveImageController extends AbstractController {
         int cropY = Integer.parseInt(request.getParameter("crop-y"));
         int cropWidth = Integer.parseInt(request.getParameter("crop-width"));
         int cropHeight = Integer.parseInt(request.getParameter("crop-height"));
+        int newWidth = Integer.parseInt(request.getParameter("new-width"));
+        int newHeight = Integer.parseInt(request.getParameter("new-height"));
         float scale = Float.parseFloat(request.getParameter("scale-ratio"));  
         
-        System.out.println("______________________ " + cropX + " " + cropY + " " + cropWidth + " " + cropHeight + " " + scale);
-        
-        
-        byte[] imageBytes = IOUtils.toByteArray(repository.getInputStream(token, uri, true));
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes));
-        BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB).getSubimage(cropX, cropY, cropWidth, cropHeight);       
-        Graphics2D g = bufferedImage.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-        AffineTransform crop = new AffineTransform();
-        crop.translate(scale, scale);
-        g.transform(crop);
-        g.drawImage(bufferedImage, crop, null);
+        System.out.println("______________________ " + cropX + " " + cropY + " " + cropWidth + " " + cropHeight + " " + newWidth + " " + newHeight + " " + scale);
 
-        // Find a jpeg writer
+        byte[] imageBytes = IOUtils.toByteArray(repository.getInputStream(token, uri, true));
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes)).getSubimage(cropX, cropY, cropWidth, cropHeight);
+        BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);       
+        Graphics2D g = bufferedImage.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC); 
+        
+        g.drawImage(image, 0, 0, Color.WHITE, null);
+        AffineTransform scaleTransform = new AffineTransform();
+        scaleTransform.scale(scale, scale);
+        g.transform(scaleTransform);
+        g.drawRenderedImage(image, scaleTransform);
+        
+        // Find a writer
         ImageWriter writer = null;
         Iterator iter = null;
         if("image/jpeg".equals(resource.getContentType()) || "image/pjpeg".equals(resource.getContentType())) {

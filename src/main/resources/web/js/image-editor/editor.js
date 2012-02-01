@@ -337,6 +337,8 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
     fd.append("crop-y", editor.cropY);
     fd.append("crop-width", editor.cropWidth);
     fd.append("crop-height", editor.cropHeight);
+    fd.append("new-width", editor.rw);
+    fd.append("new-height", editor.rh);
     fd.append("scale-ratio", editor.scaleRatio);
     
     var xhr = new XMLHttpRequest();
@@ -346,12 +348,12 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
     if (fd.fake) {
       xhr.setRequestHeader("Content-Type", "multipart/form-data; boundary=" + fd.boundary);
       if(!xhr.sendAsBinary) {
-        //xhr.send(fd.toString());
+        xhr.send(fd.toString());
       } else {
-        //xhr.sendAsBinary(fd.toString());
+        xhr.sendAsBinary(fd.toString());
       }
     } else {
-      //xhr.send(fd);
+      xhr.send(fd);
     }
     xhr.onreadystatechange = function() {
       if($.browser.mozilla) { // http://www.nczonline.net/blog/2009/07/09/firefox-35firebug-xmlhttprequest-and-readystatechange-bug/

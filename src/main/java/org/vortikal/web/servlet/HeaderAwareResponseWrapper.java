@@ -107,11 +107,8 @@ public class HeaderAwareResponseWrapper extends StatusAwareResponseWrapper {
     
     public Object getHeaderValue(String name) {
         List<Object> list = this.headers.get(name);
-        if (list == null) {
+        if (list == null || list.size() == 0) {
             return null;
-        }
-        if (list.size() != 1) {
-            throw new IllegalArgumentException("Not a single-valued header: '" + name + "': values: " + list);
         }
         return list.get(0);
     }

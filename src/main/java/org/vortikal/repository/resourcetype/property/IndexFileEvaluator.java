@@ -57,17 +57,16 @@ public class IndexFileEvaluator implements PropertyEvaluator {
             if (childUris == null) {
                 return false;
             }
-
-            for (Path p : childUris) {
-                String name = p.getName();
-                for (String indexFile : this.indexFiles) {
+            
+            for (String indexFile : this.indexFiles) {
+                for (Path p: childUris) {
+                    String name = p.getName();
                     if (indexFile.equals(name)) {
                         property.setStringValue(name);
                         return true;
                     }
                 }
             }
-            
             // No index file match
             return false;
         }

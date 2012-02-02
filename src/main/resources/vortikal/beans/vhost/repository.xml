@@ -24,7 +24,7 @@
     </tx:attributes>
   </tx:advice>
 
-  <aop:config proxy-target-class="true">
+  <aop:config>
     <!-- Pointcut that applies to all methods with @Transactional annotation -->
     <aop:pointcut id="transactionalAnnotationPointcut"
                   expression="@annotation(org.springframework.transaction.annotation.Transactional)"/>
@@ -35,7 +35,8 @@
   </aop:config>
 
   <!-- Main repository instance. -->
-  <bean id="repository.internal" class="org.vortikal.repository.RepositoryImpl">
+  <bean id="repository.internal" class="org.vortikal.repository.RepositoryImpl"
+        init-method="init" destroy-method="destroy">
     <property name="id" value="${repositoryID}" />
     <property name="tokenManager" ref="tokenManager" />
     <property name="authorizationManager" ref="authorizationManager" />
@@ -51,10 +52,7 @@
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="tempDir" value="${repository.tempDir}" />
-  </bean>
-  <bean id="repository.internal.jobManager" class="org.vortikal.repository.RepositoryImplJobManager"
-        init-method="init" destroy-method="destroy">
-    <property name="repository" ref="repository.internal"/>
+    <property name="transactionManager" ref="repository.transactionManager"/>
   </bean>
 
   <!-- Repository lock and cache control wrapper -->

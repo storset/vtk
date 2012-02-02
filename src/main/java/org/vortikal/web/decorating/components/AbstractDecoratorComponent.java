@@ -88,7 +88,7 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
     }
 
     @Override
-    public String getDescription() {
+    public final String getDescription() {
         if (this.description == null) {
             return getDescriptionInternal();
         }
@@ -101,7 +101,7 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
     }
 
     @Override 
-    public Map<String, String> getParameterDescriptions() {
+    public final Map<String, String> getParameterDescriptions() {
         return this.parameterDescriptions;
     }
     

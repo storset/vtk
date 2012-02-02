@@ -37,25 +37,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.vortikal.repository.Revision.Type;
 import org.vortikal.repository.content.ContentImpl;
 import org.vortikal.repository.content.ContentRepresentationRegistry;
@@ -134,7 +139,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     
     private static Log searchLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Search");
     private static Log trashLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Trash");
-
+ 
     @Override
     public boolean isReadOnly() {
         return this.authorizationManager.isReadOnly();
@@ -1474,7 +1479,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         // XXX Only allow for users with root privilege?
         this.authorizationManager.authorizeRootRoleAction(principal);
-
+        
         return this.commentDAO.createComment(comment);
     }
 
@@ -1642,6 +1647,29 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.authorizationManager.setReadOnly(readOnly);
     }
     
+    @Override
+    public ResultSet search(String token, Search search) throws QueryException {
+        if (this.searcher != null) {
+            // Enforce searching in published resources only when going through
+            // Repository.search(String, Search)
+            search.setOnlyPublishedResources(true);
+            long before = System.currentTimeMillis();
+            try {
+                return this.searcher.execute(token, search);
+            } finally {
+                long duration = System.currentTimeMillis() - before;
+                if (searchLogger.isTraceEnabled()) {
+                    searchLogger.trace("search: " + search.toString() + ": " + duration + " ms");
+                } else if (searchLogger.isDebugEnabled()) {
+                    searchLogger.debug("search: " + duration + " ms");
+                }
+            }
+
+        } else {
+            throw new IllegalStateException("No repository searcher has been configured.");
+        }
+    }
+    
     @Required
     public void setTokenManager(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
@@ -1736,29 +1764,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.maxResourceChildren = maxResourceChildren;
     }
 
-    @Override
-    public ResultSet search(String token, Search search) throws QueryException {
-        if (this.searcher != null) {
-            // Enforce searching in published resources only when going through
-            // Repository.search(String, Search)
-            search.setOnlyPublishedResources(true);
-            long before = System.currentTimeMillis();
-            try {
-                return this.searcher.execute(token, search);
-            } finally {
-                long duration = System.currentTimeMillis() - before;
-                if (searchLogger.isTraceEnabled()) {
-                    searchLogger.trace("search: " + search.toString() + ": " + duration + " ms");
-                } else if (searchLogger.isDebugEnabled()) {
-                    searchLogger.debug("search: " + duration + " ms");
-                }
-            }
-
-        } else {
-            throw new IllegalStateException("No repository searcher has been configured.");
-        }
-    }
-
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }
@@ -1798,50 +1803,50 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             @Override
             public void deleteResource(Path uri) throws DataAccessException {
-                throw new IllegalStateException("Don't call me");
+                throw new IllegalStateException("Don't call me, I'll call you");
             }
             @Override
             public void createResource(Path uri, boolean isCollection)
                     throws DataAccessException {
-                throw new IllegalStateException("Don't call me");
+                throw new IllegalStateException("Don't call me, I'll call you");
             }
 
             @Override
             public void storeContent(Path uri, InputStream inputStream)
                     throws DataAccessException {
-                throw new IllegalStateException("Don't call me");
+                throw new IllegalStateException("Don't call me, I'll call you");
             }
 
             @Override
             public void copy(Path srcURI, Path destURI)
                     throws DataAccessException {
-                throw new IllegalStateException("Don't call me");
+                throw new IllegalStateException("Don't call me, I'll call you");
             }
 
             @Override
             public void move(Path srcURI, Path destURI)
                     throws DataAccessException {
-                throw new IllegalStateException("Don't call me");
+                throw new IllegalStateException("Don't call me, I'll call you");
             }
 
             @Override
             public void moveToTrash(Path srcURI, String trashIdDir)
                     throws DataAccessException {
-                throw new IllegalStateException("Don't call me");
+                throw new IllegalStateException("Don't call me, I'll call you");
             }
 
             @Override
             public void recover(Path destURI,
                     RecoverableResource recoverableResource)
                     throws DataAccessException {
-                throw new IllegalStateException("Don't call me");
+                throw new IllegalStateException("Don't call me, I'll call you");
             }
 
             @Override
             public void deleteRecoverable(
                     RecoverableResource recoverableResource)
                     throws DataAccessException {
-                throw new IllegalStateException("Don't call me");
+                throw new IllegalStateException("Don't call me, I'll call you");
             }
 
         };
@@ -1849,52 +1854,227 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         return content;
     }
     
-    // Methods exposed only for internal repository jobs.
-    
-    /**
-     * Removes WebDAV locks from database that have expired.
-     */
-    @Transactional
-    void deleteExpiredLocks() {
-        dao.deleteExpiredLocks(new Date());
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
     }
     
-    /**
-     * Initiates garbage collection of revision store.
-     * @throws IOException 
-     */
-    @Transactional
-    void revisionStoreGc() throws IOException {
-        revisionStore.gc();
+    public void setRevisionGCHours(Set<Integer> revisionGCHours) {
+        this.revisionGCHours = revisionGCHours;
     }
 
-    /**
-     * Permanently removes overdue and orphan resources from trash can. A
-     * resource is overdue if it has been deleted (put in trash can) for given
-     * configurable period of time. An orphan resource is a resource that no
-     * longer has a parent (parent has been permanently deleted).
-     */
-    @Transactional
-    synchronized void purgeTrash() {
-        List<RecoverableResource> overdue = dao.getTrashCanOverdue(permanentDeleteOverdueLimitInDays);
-        if (overdue != null && overdue.size() > 0) {
-            trashLogger.info("Found " + overdue.size()
-                    + " recoverable resources that are overdue for permanent deletion.");
-            for (RecoverableResource rr : overdue) {
-                trashLogger.info("Permanently deleting recoverable resource: " + rr);
-                dao.deleteRecoverable(rr);
-                contentStore.deleteRecoverable(rr);
+    public void setTrashCanPurgeHours(Set<Integer> trashCanPurgeHours) {
+        this.trashCanPurgeHours = trashCanPurgeHours;
+    }
+
+    public void setMaintenancePeriodInterval(int periodInterval) {
+        this.periodInterval = periodInterval;
+    }
+    
+    private static Log periodicLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Maintenance");
+    private Set<Integer> revisionGCHours = new HashSet<Integer>(Arrays.asList(new Integer[]{3}));
+    private Set<Integer> trashCanPurgeHours = new HashSet<Integer>(Arrays.asList(new Integer[]{4}));
+    private int periodInterval = 600;
+    private PlatformTransactionManager transactionManager;
+    private final MaintenanceManager mm = new MaintenanceManager();
+    
+    public void init() {
+        mm.init();
+    }
+    
+    public void destroy() {
+        mm.destroy();
+    }
+
+    private final class MaintenanceManager implements Runnable {
+
+        private ScheduledExecutorService executor;
+        private TransactionTemplate transactionTemplate;
+        private final DeleteExpiredLocksJob deleteExpiredLocksJob = new DeleteExpiredLocksJob();
+        private final PurgeTrashJob purgeTrashJob = new PurgeTrashJob();
+        private final RevisionStoreGcJob revisionStoreGcJob = new RevisionStoreGcJob();
+
+        // Start background maintenance jobs
+        public void init() {
+            if (this.executor != null) {
+                throw new IllegalStateException("init() should only be called once at start of bean life cycle");
+            }
+            
+            if (transactionManager != null) {
+                this.transactionTemplate = new TransactionTemplate(transactionManager);
+            }
+
+            this.executor = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+                @Override
+                public Thread newThread(Runnable r) {
+                    return new Thread(r, getId() + ".repository.maintenance");
+                }
+            });
+
+            periodicLogger.info("Init repository maintenance manager.");
+            this.executor.scheduleAtFixedRate(this, 10, periodInterval, TimeUnit.SECONDS);
+        }
+
+        // Shutdown background jobs
+        public void destroy() {
+            if (this.executor == null) {
+                throw new IllegalStateException("destroy() was called, but init() was never called before.");
+            }
+
+            periodicLogger.info("Shutdown repository maintenance manager.");
+            this.executor.shutdownNow();
+        }
+
+        @Override
+        public void run() {
+            if (isReadOnly()) {
+                return;
+            }
+
+            // Delete expired locks at every period
+            try {
+                periodicLogger.debug("Deleting expired locks");
+                if (this.transactionTemplate != null) {
+                    this.transactionTemplate.execute(deleteExpiredLocksJob);
+                } else {
+                    deleteExpiredLocksJob.execute();
+                }
+            } catch (Throwable t) {
+                periodicLogger.error("Error while deleting expired locks", t);
+            }
+
+            // Trash purging at certain hours of the day
+            try {
+                if (shouldRun(purgeTrashJob.lastRun(), trashCanPurgeHours)) {
+                    periodicLogger.info("Executing trash purge");
+                    if (this.transactionTemplate != null) {
+                        this.transactionTemplate.execute(purgeTrashJob);
+                    } else {
+                        purgeTrashJob.execute();
+                    }
+                }
+            } catch (Throwable t) {
+                periodicLogger.error("Error while purging trash", t);
+            }
+
+            // Content revision GC at certain hours of the day
+            try {
+                if (shouldRun(revisionStoreGcJob.lastRun(), revisionGCHours)) {
+                    periodicLogger.info("Executing revision store garbage collection.");
+                    if (this.transactionTemplate != null) {
+                        this.transactionTemplate.execute(revisionStoreGcJob);
+                    } else {
+                        revisionStoreGcJob.execute();
+                    }
+                }
+            } catch (Throwable t) {
+                periodicLogger.error("Error while running content revision garbage collection", t);
             }
         }
-        List<RecoverableResource> orphans = dao.getTrashCanOrphans();
-        if (orphans != null && orphans.size() > 0) {
-            trashLogger.info("Found " + orphans.size() + " recoverable resources that are orphans.");
-            for (RecoverableResource rr : orphans) {
-                trashLogger.info("Permanently deleting orphan: " + rr);
-                dao.deleteRecoverable(rr);
-                contentStore.deleteRecoverable(rr);
+
+        // Determine if periodic job should be executed, when it is supposed to be run
+        // once within certain hours of the day.
+        private boolean shouldRun(Date lastRun, Set<Integer> runAtHours) {
+            Calendar nowCal = Calendar.getInstance();
+
+            if (runAtHours.contains(nowCal.get(Calendar.HOUR_OF_DAY))) {
+                if (lastRun == null) {
+                    return true;
+                }
+
+                Calendar lastRunCal = Calendar.getInstance();
+                lastRunCal.setTime(lastRun);
+                if (lastRunCal.get(Calendar.HOUR_OF_DAY) != nowCal.get(Calendar.HOUR_OF_DAY)) {
+                    return true;
+                }
+                // Same hour of day, but maybe different day ..
+                if (lastRunCal.get(Calendar.DAY_OF_MONTH) != nowCal.get(Calendar.DAY_OF_MONTH)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        
+        private final class DeleteExpiredLocksJob extends TransactionCallbackWithoutResult {
+            Date lastRun;
+            
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                execute();
+            }
+            
+            void execute() {
+                dao.deleteExpiredLocks(new Date());
+                lastRun = new Date();
+            }
+            
+            Date lastRun() {
+               return this.lastRun;
+            }
+        }
+        
+        private final class RevisionStoreGcJob extends TransactionCallbackWithoutResult {
+            private Date lastRun;
+            
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                execute();
+                } catch (IOException io) {
+                    throw new RuntimeException(io);
+                }
+            }
+            
+            void execute() throws IOException {
+                revisionStore.gc();
+                lastRun = new Date();
+            }
+            
+            Date lastRun() {
+                return this.lastRun;
+            }
+        }
+        
+        /**
+         * Permanently removes overdue and orphan resources from trash can. A
+         * resource is overdue if it has been deleted (put in trash can) for
+         * given configurable period of time. An orphan resource is a resource
+         * that no longer has a parent (parent has been permanently deleted).
+         */
+        private final class PurgeTrashJob extends TransactionCallbackWithoutResult {
+            private Date lastRun;
+            
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                execute();
+            }
+
+            void execute() {
+                List<RecoverableResource> overdue = dao.getTrashCanOverdue(permanentDeleteOverdueLimitInDays);
+                if (overdue != null && overdue.size() > 0) {
+                    trashLogger.info("Found " + overdue.size()
+                            + " recoverable resources that are overdue for permanent deletion.");
+                    for (RecoverableResource rr : overdue) {
+                        trashLogger.info("Permanently deleting recoverable resource: " + rr);
+                        dao.deleteRecoverable(rr);
+                        contentStore.deleteRecoverable(rr);
+                    }
+                }
+                List<RecoverableResource> orphans = dao.getTrashCanOrphans();
+                if (orphans != null && orphans.size() > 0) {
+                    trashLogger.info("Found " + orphans.size() + " recoverable resources that are orphans.");
+                    for (RecoverableResource rr : orphans) {
+                        trashLogger.info("Permanently deleting orphan: " + rr);
+                        dao.deleteRecoverable(rr);
+                        contentStore.deleteRecoverable(rr);
+                    }
+                }
+                lastRun = new Date();
+            }
+            
+            Date lastRun() {
+                return this.lastRun;
             }
         }
     }
 }
-

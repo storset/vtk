@@ -48,7 +48,7 @@ public class PersonPressPhotoLinkComponent extends ViewRenderingDecoratorCompone
 
     private Service viewAsWebpage;
 
-    protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+    protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();

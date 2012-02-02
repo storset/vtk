@@ -62,7 +62,7 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
     protected static final String PARAMETER_DISPLAY_FROM_LEVEL_DESC = "Defines the starting URI level for the menu";
 
     @Override
-    public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+    public void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
         int displayFromLevel = getIntegerGreaterThanZero(PARAMETER_DISPLAY_FROM_LEVEL, request, -1);

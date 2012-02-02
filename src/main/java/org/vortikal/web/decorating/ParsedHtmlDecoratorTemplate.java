@@ -98,8 +98,9 @@ public class ParsedHtmlDecoratorTemplate implements Template {
     }
 
 
+    @Override
     public TemplateExecution newTemplateExecution(HtmlPageContent html,
-            HttpServletRequest request, Map<Object, Object> model,
+            HttpServletRequest request, Map<String, Object> model,
             Map<String, Object> templateParameters) throws Exception {
         if (this.templateSource.getLastModified() > this.lastModified) {
             compile();
@@ -113,11 +114,11 @@ public class ParsedHtmlDecoratorTemplate implements Template {
         private ComponentResolver componentResolver;
         private HtmlPageContent html;
         private HttpServletRequest request;
-        private Map<Object, Object> model;
+        private Map<String, Object> model;
 
         public Execution(CompiledTemplate compiledTemplate, 
                 ComponentResolver componentResolver, HtmlPageContent html, 
-                HttpServletRequest request, Map<Object, Object> model) {
+                HttpServletRequest request, Map<String, Object> model) {
             this.compiledTemplate = compiledTemplate;
             this.componentResolver = componentResolver;
             this.html = html;
@@ -190,7 +191,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
         }
 
         public HtmlPage generate(HtmlPage userPage, ComponentResolver componentResolver, 
-                HttpServletRequest request, Map<Object, Object> model) throws Exception {
+                HttpServletRequest request, Map<String, Object> model) throws Exception {
             List<HtmlContent> transformedContent = 
                 this.root.generate(userPage, componentResolver, request, model);
             if (transformedContent.size() != 1) {
@@ -237,7 +238,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
 
         public abstract List<HtmlContent> generate(HtmlPage userPage, 
                 ComponentResolver componentResolver,
-                HttpServletRequest req, Map<Object, Object> model) 
+                HttpServletRequest req, Map<String, Object> model) 
                 throws Exception;
 
         protected List<HtmlContent> renderComponentAsHtml(DecoratorComponent c, DecoratorRequest request) {
@@ -319,8 +320,9 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             this.elementComponent = new ComponentInvocationImpl(namespace, name, parameters);
         }
 
+        @Override
         public List<HtmlContent> generate(HtmlPage userPage, ComponentResolver componentResolver, HttpServletRequest req, 
-                Map<Object, Object> model) throws Exception {
+                Map<String, Object> model) throws Exception {
             List<HtmlContent> result = new ArrayList<HtmlContent>();
             if (this.error != null) {
                 result.add(userPage.createTextNode(this.error.getMessage()));
@@ -406,8 +408,9 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             }
         }
 
+        @Override
         public List<HtmlContent> generate(HtmlPage userPage, ComponentResolver componentResolver, HttpServletRequest req, 
-                Map<Object, Object> model) throws Exception {
+                Map<String, Object> model) throws Exception {
             List<HtmlContent> result = new ArrayList<HtmlContent>();
             if (this.error != null) {
                 result.add(userPage.createTextNode(this.error.getMessage()));
@@ -496,9 +499,9 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                 this.error = t;
             }
         }
-
+        @Override
         public List<HtmlContent> generate(HtmlPage userPage, ComponentResolver componentResolver, HttpServletRequest req, 
-                Map<Object, Object> model) throws Exception {
+                Map<String, Object> model) throws Exception {
             List<HtmlContent> result = new ArrayList<HtmlContent>();
             if (this.error != null) {
                 result.add(userPage.createTextNode(this.error.getMessage()));
@@ -543,8 +546,9 @@ public class ParsedHtmlDecoratorTemplate implements Template {
             this.comment = comment.getContent();
         }
 
+        @Override
         public List<HtmlContent> generate(HtmlPage userPage, ComponentResolver componentResolver, HttpServletRequest req, 
-                Map<Object, Object> model) throws Exception {
+                Map<String, Object> model) throws Exception {
             List<HtmlContent> result = new ArrayList<HtmlContent>();
             result.add(userPage.createComment(this.comment));
             return result;
@@ -562,7 +566,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
         }
 
         public List<HtmlContent> generate(HtmlPage userPage, ComponentResolver componentResolver, HttpServletRequest req, 
-                Map<Object, Object> model) throws Exception {
+                Map<String, Object> model) throws Exception {
             List<HtmlContent> result = new ArrayList<HtmlContent>();
             result.add(userPage.createTextNode(this.content));
             return result;

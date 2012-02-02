@@ -265,7 +265,7 @@ public class ComponentInvokingNodeFilter implements HtmlNodeFilter, HtmlPageFilt
             }
             Map<String, Object> parameters = invocation.getParameters();
             DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-                    null, servletRequest, new HashMap<Object, Object>(), 
+                    null, servletRequest, new HashMap<String, Object>(), 
                     parameters, doctype, locale);
             DecoratorResponseImpl response = new DecoratorResponseImpl(
                     doctype, locale, "utf-8");

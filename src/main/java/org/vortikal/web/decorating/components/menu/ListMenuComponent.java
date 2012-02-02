@@ -143,7 +143,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
     protected String modelName = "menu";
     protected int searchLimit = DEFAULT_SEARCH_LIMIT;
 
-    public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+    public void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
         ListMenuRequest menuRequest = new ListMenuRequest(request);
 

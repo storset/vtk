@@ -47,7 +47,6 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.context.NearestContextResolver;
-
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -66,7 +65,7 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
 
     private boolean forProcessing = true;
 
-    protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+    protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();

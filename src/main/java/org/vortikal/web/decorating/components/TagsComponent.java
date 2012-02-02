@@ -109,7 +109,7 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
         return map;
     }
 
-    protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+    protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
         super.processModel(model, request, response);

@@ -84,11 +84,11 @@ public class TextualDecoratorTemplate implements Template {
         private ComponentInvocation[] fragments;
         private ComponentResolver componentResolver;
         private HttpServletRequest request;
-        private Map<Object, Object> model;
+        private Map<String, Object> model;
 
         Execution(HtmlPageContent content, ComponentInvocation[] fragments, 
                 ComponentResolver componentResolver, HttpServletRequest request,
-                Map<Object, Object> model) {
+                Map<String, Object> model) {
             this.content = content;
             this.componentResolver = componentResolver;
             this.fragments = fragments;
@@ -100,10 +100,12 @@ public class TextualDecoratorTemplate implements Template {
             this.componentResolver = componentResolver;
         }
         
+        @Override
         public ComponentResolver getComponentResolver() {
             return this.componentResolver;
         }
 
+        @Override
         public PageContent render() throws Exception {
             HtmlPage html = this.content.getHtmlContent();
 
@@ -153,8 +155,9 @@ public class TextualDecoratorTemplate implements Template {
         
     }
     
+    @Override
     public TemplateExecution newTemplateExecution(HtmlPageContent html,
-            HttpServletRequest request, Map<Object, Object> model,
+            HttpServletRequest request, Map<String, Object> model,
             Map<String, Object> templateParameters) throws Exception {
         if (html == null) {
             throw new IllegalArgumentException("Argument 'html' cannot be NULL");

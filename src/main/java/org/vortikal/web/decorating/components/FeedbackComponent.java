@@ -37,7 +37,7 @@ import org.vortikal.web.decorating.DecoratorResponse;
 
 public class FeedbackComponent extends ViewRenderingDecoratorComponent {
     
-    protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+    protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
         String emailTo = request.getStringParameter("mail-to");

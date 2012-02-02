@@ -97,7 +97,7 @@ public class DisplayComponentController implements Controller {
             HttpServletRequest request, HttpServletResponse response) throws Exception {
         Locale locale = new RequestContext(request).getLocale();
         DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
-                null, request, new HashMap<Object, Object>(), 
+                null, request, new HashMap<String, Object>(), 
                 inv.getParameters(), DOCTYPE, locale);
         DecoratorResponseImpl decoratorResponse = new DecoratorResponseImpl(
                 DOCTYPE, locale, "utf-8");

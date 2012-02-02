@@ -138,10 +138,12 @@ public class DynamicDecoratorTemplate implements Template {
             this.componentResolver = componentResolver;
         }
         
+        @Override
         public ComponentResolver getComponentResolver() {
             return this.componentResolver;
         }
 
+        @Override
         public PageContent render() throws Exception {
             HtmlPage html = this.content.getHtmlContent();
 
@@ -168,9 +170,10 @@ public class DynamicDecoratorTemplate implements Template {
         }
     }
     
+    @Override
     public TemplateExecution newTemplateExecution(
             HtmlPageContent html, HttpServletRequest request,
-            Map<Object, Object> model, Map<String, Object> templateParameters) throws Exception {
+            Map<String, Object> model, Map<String, Object> templateParameters) throws Exception {
 
         if (this.templateSource.getLastModified() > this.lastModified) {
             compile();

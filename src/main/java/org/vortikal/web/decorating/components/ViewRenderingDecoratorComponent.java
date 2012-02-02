@@ -68,7 +68,7 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
 
     @Override
     public final void render(DecoratorRequest request, DecoratorResponse response) throws Exception {
-        Map<Object, Object> model = new HashMap<Object, Object>();
+        Map<String, Object> model = new HashMap<String, Object>();
         if (this.exposeMvcModel) {
             model.putAll(request.getMvcModel());
         }
@@ -94,7 +94,7 @@ public class ViewRenderingDecoratorComponent extends AbstractDecoratorComponent 
      * @param response the decorator response
      * @exception Exception if an error occurs
      */
-    protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+    protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
         if (this.exposedParameters != null) {

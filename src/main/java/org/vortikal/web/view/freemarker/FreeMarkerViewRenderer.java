@@ -33,7 +33,6 @@ package org.vortikal.web.view.freemarker;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -43,6 +42,7 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
 
 import freemarker.ext.beans.BeansWrapper;
+import freemarker.template.SimpleHash;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
@@ -74,8 +74,7 @@ public class FreeMarkerViewRenderer extends FreeMarkerView implements ReferenceD
     }
 
     @Override
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected void processTemplate(Template template, Map model, HttpServletResponse response)
+    protected void processTemplate(Template template, SimpleHash model, HttpServletResponse response)
             throws IOException, TemplateException {
 
         if (this.debug) {

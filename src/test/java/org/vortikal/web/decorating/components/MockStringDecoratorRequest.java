@@ -85,8 +85,8 @@ public class MockStringDecoratorRequest implements DecoratorRequest {
     }
     
     @Override
-    public Map<Object, Object> getMvcModel() {
-        return new HashMap<Object, Object>();
+    public Map<String, Object> getMvcModel() {
+        return new HashMap<String, Object>();
     }
         
     @Override

@@ -45,7 +45,7 @@ public class SearchFormComponent extends ViewRenderingDecoratorComponent {
     private Service service;
 
     @Override
-    protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+    protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
         Path resourceURI = RequestContext.getRequestContext().getCurrentCollection();

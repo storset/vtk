@@ -52,7 +52,8 @@ public class CommentsFeedUrlProvider extends ViewRenderingDecoratorComponent {
         this.trustedToken = trustedToken;
     }
 
-    protected void processModel(final Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+    @Override
+    protected void processModel(final Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
         super.processModel(model, request, response);
         RequestContext requestContext = RequestContext.getRequestContext();

@@ -53,7 +53,7 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
     private final static String PARAMETER_POSTER = "poster";
     private final static String PARAMETER_POSTER_DESC = "Poster image for video";
 
-    protected void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+    protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
         String url = request.getStringParameter(PARAMETER_URL);

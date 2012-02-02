@@ -51,7 +51,7 @@ public class MediaPlayer {
     private PropertyTypeDefinition posterImagePropDef;
     private PropertyTypeDefinition generatedPosterImagePropDef;
 
-    public void addMediaPlayer(Map<Object, Object> model, String resourceReferance, String height, String width,
+    public void addMediaPlayer(Map<String, Object> model, String resourceReferance, String height, String width,
             String autoplay, String contentType, String streamType, String poster) throws AuthorizationException {
 
         if (URL.isEncoded(resourceReferance)) {
@@ -98,7 +98,7 @@ public class MediaPlayer {
         createLocalUrlToMediaFile(resourceReferance, model);
     }
 
-    public void addMediaPlayer(Map<Object, Object> model, String resourceReferance) throws AuthorizationException {
+    public void addMediaPlayer(Map<String, Object> model, String resourceReferance) throws AuthorizationException {
 
         if (URL.isEncoded(resourceReferance)) {
             resourceReferance = URL.decode(resourceReferance);
@@ -151,14 +151,14 @@ public class MediaPlayer {
         return "";
     }
 
-    public void createLocalUrlToMediaFile(String resourceReferance, Map<Object, Object> model) {
+    public void createLocalUrlToMediaFile(String resourceReferance, Map<String, Object> model) {
         URL url = createUrl(resourceReferance);
         if (url != null) {
             model.put("media", url);
         }
     }
 
-    public void addPoster(Resource mediaFile, Map<Object, Object> model) {
+    public void addPoster(Resource mediaFile, Map<String, Object> model) {
         if (mediaFile == null)
             return;
         URL poster = null;

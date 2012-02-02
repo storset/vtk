@@ -62,7 +62,7 @@ public interface DecoratorRequest {
      * (Should generally not be needed.)
      * @return the MVC model
      */
-    public Map<Object, Object> getMvcModel();
+    public Map<String, Object> getMvcModel();
 
     /**
      * Gets the request locale

@@ -50,7 +50,7 @@ public class DecoratorRequestImpl implements DecoratorRequest {
 
     private HtmlPage html;
     private HttpServletRequest servletRequest;
-    private Map<Object, Object> mvcModel;
+    private Map<String, Object> mvcModel;
     private Map<String, Object> decoratorParameters;
     private String doctype;
     private Locale locale;
@@ -59,7 +59,7 @@ public class DecoratorRequestImpl implements DecoratorRequest {
     
     public DecoratorRequestImpl(HtmlPage html,
                                 HttpServletRequest servletRequest,
-                                Map<Object, Object> mvcModel,
+                                Map<String, Object> mvcModel,
                                 Map<String, Object> decoratorParameters,
                                 String doctype, Locale locale) {
         this.html = html;
@@ -81,7 +81,7 @@ public class DecoratorRequestImpl implements DecoratorRequest {
     }
 
     @Override
-    public Map<Object, Object> getMvcModel() {
+    public Map<String, Object> getMvcModel() {
         return Collections.unmodifiableMap(this.mvcModel);
     }
    

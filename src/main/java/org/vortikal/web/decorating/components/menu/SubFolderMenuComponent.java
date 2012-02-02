@@ -119,7 +119,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
     private static Log logger = LogFactory.getLog(SubFolderMenuComponent.class);
 
     @Override
-    public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+    public void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
         MenuRequest menuRequest = this.menuGenerator.getMenuRequest(request);

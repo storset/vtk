@@ -78,7 +78,7 @@ public class StructuredResourceFieldComponent extends
                     + PARAMETER_SELECT + "' not specified");
         }
         
-        Map<Object, Object> mvcModel = request.getMvcModel();
+        Map<String, Object> mvcModel = request.getMvcModel();
         Object o = mvcModel.get(this.resourceModelKey);
         if (o == null) {
             return null;

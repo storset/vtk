@@ -96,5 +96,10 @@ public class MatchingGroupStore implements GroupStore {
             this.groupsMap.put(group, Pattern.compile(map.get(id)));
         }
     }
+    
+    @Override
+    public String toString() {
+        return this.groupsMap.toString();
+    }
 
 }

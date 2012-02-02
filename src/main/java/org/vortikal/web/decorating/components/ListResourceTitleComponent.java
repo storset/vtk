@@ -49,7 +49,7 @@ public class ListResourceTitleComponent extends ViewRenderingDecoratorComponent 
     private String multipleResourceRefField;
 
     @Override
-    public void processModel(Map<Object, Object> model, DecoratorRequest request, DecoratorResponse response)
+    public void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();

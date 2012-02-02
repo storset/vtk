@@ -165,7 +165,7 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                     Locale locale = ctx.getLocale();
                     final String doctype = "";
                     
-                    Map<Object, Object> mvcModel = (Map<Object, Object>) servletRequest.getAttribute(StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
+                    Map<String, Object> mvcModel = (Map<String, Object>) servletRequest.getAttribute(StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
                     DecoratorRequest decoratorRequest = new DecoratorRequestImpl(
                             getHtmlPage(ctx), servletRequest, mvcModel, 
                             (Map<String, Object>) parameterMap, doctype, locale);

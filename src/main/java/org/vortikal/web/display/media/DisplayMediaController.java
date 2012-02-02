@@ -55,7 +55,7 @@ public class DisplayMediaController implements Controller {
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        Map<Object, Object> model = new HashMap<Object, Object>();
+        Map<String, Object> model = new HashMap<String, Object>();
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();

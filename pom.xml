@@ -492,19 +492,34 @@
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <version>2.5.6.SEC02</version>
-      <scope>test</scope>
+      <artifactId>spring-core</artifactId>
+      <version>3.1.0.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
-      <version>2.5.6.SEC02</version>
+      <artifactId>spring-beans</artifactId>
+      <version>3.1.0.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>2.5.6.SEC02</version>
+      <version>3.1.0.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>3.1.0.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+      <version>3.1.0.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <version>3.1.0.RELEASE</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>

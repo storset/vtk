@@ -1866,14 +1866,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.trashCanPurgeHours = trashCanPurgeHours;
     }
 
-    public void setMaintenancePeriodInterval(int periodInterval) {
-        this.periodInterval = periodInterval;
+    public void setMaintenanceIntervalSeconds(int interval) {
+        this.maintenanceIntervalSeconds = interval;
     }
     
     private static Log periodicLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Maintenance");
     private Set<Integer> revisionGCHours = new HashSet<Integer>(Arrays.asList(new Integer[]{3}));
     private Set<Integer> trashCanPurgeHours = new HashSet<Integer>(Arrays.asList(new Integer[]{4}));
-    private int periodInterval = 600;
+    private int maintenanceIntervalSeconds = 600;
     private PlatformTransactionManager transactionManager;
     private final MaintenanceManager mm = new MaintenanceManager();
     
@@ -1911,7 +1911,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             });
 
             periodicLogger.info("Init repository maintenance manager.");
-            this.executor.scheduleAtFixedRate(this, 10, periodInterval, TimeUnit.SECONDS);
+            this.executor.scheduleAtFixedRate(this, 10, maintenanceIntervalSeconds, TimeUnit.SECONDS);
         }
 
         // Shutdown background jobs

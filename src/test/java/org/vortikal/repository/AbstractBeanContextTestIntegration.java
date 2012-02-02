@@ -50,7 +50,6 @@ public abstract class AbstractBeanContextTestIntegration extends TestCase {
     protected ApplicationContext getApplicationContext(String... configFiles) {
 
         List<String> configLocations = new ArrayList<String>();
-        configLocations.add(configBasePath + "config/property-configurer.xml");
 
         configLocations.add(configBasePath + "common/html-util.xml");
         configLocations.add(configBasePath + "common/common.xml");

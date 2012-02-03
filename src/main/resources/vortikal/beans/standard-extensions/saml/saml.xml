@@ -79,7 +79,7 @@
     <property name="keystore" value="${saml.keystorePath}"/>
     <property name="keystorePassword" value="${saml.keystorePassword}"/>
     <property name="privateKeyPassword" value="${saml.privateKeyPassword}"/>
-    <property name="idpCertificates">
+    <property name="idpCertificatesMap">
       <map>
         <entry key="${saml.idpCertKey}" value="${saml.idpCertificate}"/>        
       </map>

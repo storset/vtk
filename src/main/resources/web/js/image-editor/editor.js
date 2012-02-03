@@ -80,16 +80,14 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
       $(editor.canvas).resizable({
         aspectRatio: editor.keepAspectRatio,
         grid: [1, 1],
+        maxHeight: editor.rh,
+        maxWidth: editor.rw,
         stop: function (event, ui) {
-          if ((ui.size.width / editor.cropWidth) <= 1) {
             var newWidth = Math.floor(ui.size.width);
             var newHeight = Math.round(newWidth / (editor.aspectRatioOver / editor.aspectRatioUnder));
             editor.lastWidth = newWidth;
             editor.lastHeight = newHeight;
             editor.scale(newWidth, newHeight);
-          } else {
-            editor.scale(editor.lastWidth, editor.lastHeight);
-          }
         },
         resize: function (event, ui) {
           editor.displayDimensions(Math.floor(ui.size.width), Math.floor(ui.size.height));
@@ -122,6 +120,8 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
         editor.renderScaledImage(false);
         editor.resetCropPlugin();
         $(this).val(startCropText + "...");
+        $("#vrtx-image-editor").resizable("option", "maxWidth", editor.cropWidth);  
+        $("#vrtx-image-editor").resizable("option", "maxHeight", editor.cropHeight);  
         $("#vrtx-image-editor").resizable("enable");  
 
         editor.hasCropBeenInitialized = false;

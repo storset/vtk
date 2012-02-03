@@ -71,7 +71,7 @@ public class CertificateManager implements InitializingBean {
     public void setIdpCertificates(Map<String, String> idpCertificateMap) throws CertificateException {
         Map<String, X509Certificate> map = new HashMap<String, X509Certificate>();
         for (Map.Entry<String, String> entry : idpCertificateMap.entrySet()) {
-            map.put(entry.getKey().toString(), setIdpCertificate(entry.getValue().toString()));
+            map.put(entry.getKey().toString(), createIdpCertificate(entry.getValue().toString()));
         }
         this.idpCertificates = Collections.unmodifiableMap(map);
     }
@@ -87,15 +87,7 @@ public class CertificateManager implements InitializingBean {
     }
 
 
-    /**
-     * Sets the IDP certificate
-     * 
-     * @param a
-     *            Base64 encoded X.509 certificate string
-     * @throws CertificateException
-     */
-    @Required
-    public X509Certificate setIdpCertificate(String idpCertificate) throws CertificateException {
+    private X509Certificate createIdpCertificate(String idpCertificate) throws CertificateException {
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         ByteArrayInputStream input = new ByteArrayInputStream(Base64.decode(idpCertificate));
         return (X509Certificate) cf.generateCertificate(input);

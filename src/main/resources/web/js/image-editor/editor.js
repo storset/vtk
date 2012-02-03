@@ -332,7 +332,7 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
                  + "&crop-height=" + editor.cropHeight
                  + "&new-width=" + editor.rw
                  + "&new-height=" + editor.rh;
-    
+                 
   vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
     success: function (results, status, resp) {
       $("#" + buttonId).click();

@@ -31,7 +31,7 @@ $(document).ready(function () {
           } else { // recieved with postMessage
             var dataHeight = parseInt(recievedData, 10);
           }
-          if (!$.isNumeric(dataHeight) && (dataHeight > previewIframeMinHeight)) {
+          if (!isNaN(dataHeight) && (dataHeight > previewIframeMinHeight)) {
             if (dataHeight <= previewIframeMaxHeight) {
               newHeight = dataHeight;
             } else {
@@ -67,7 +67,7 @@ $(document).ready(function () {
             $("#global-menu-create").css({"zIndex": "999999", "width": originalWidth + "px"});
           
             // Post back to iframe the original iframe offset position
-            var isPreviewCreateIframePosValid = !$.isNumeric(previewCreateIframePosTop) && !$.isNumeric(previewCreateIframePosLeft);
+            var isPreviewCreateIframePosValid = !isNaN(previewCreateIframePosTop) && !isNaN(previewCreateIframePosLeft);
             if(isPreviewCreateIframePosValid) {
               var hasPostMessage = previewCreateIframe[0].contentWindow['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
               var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm

@@ -88,7 +88,7 @@ public class SaveImageController extends AbstractController {
                 
         if(cropXStr == null || cropYStr == null || cropWidthStr == null 
            ||  cropHeightStr == null ||  newWidthStr == null || newHeightStr == null) {
-            return new ModelAndView(this.viewName);        
+            return new ModelAndView(this.viewName); // TODO: error message     
         }
 
         int cropX = Integer.parseInt(cropXStr);
@@ -97,8 +97,12 @@ public class SaveImageController extends AbstractController {
         int cropHeight = Integer.parseInt(cropHeightStr);
         int newWidth = Integer.parseInt(newWidthStr);
         int newHeight = Integer.parseInt(newHeightStr);
+        
+        if((cropWidth * cropHeight) > 100000000) { // Limit to max 400MB
+            return new ModelAndView(this.viewName); // TODO: error message       
+        }
 
-        // Crop and scale (downscale bilinear and upscale bicubic)
+        // Crop and scale (downscale bilinear)
         BufferedImage image = ImageIO.read(repository.getInputStream(token, uri, true)).getSubimage(cropX, cropY, cropWidth, cropHeight);
         BufferedImage scaledImage = imageService.getScaledInstance(image, newWidth, newHeight); // Bilinear
 

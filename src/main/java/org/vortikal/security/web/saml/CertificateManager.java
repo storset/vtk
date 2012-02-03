@@ -67,8 +67,8 @@ public class CertificateManager implements InitializingBean {
         return idpCertificates;
     }
 
-
-    public void setIdpCertificatesMap(Map<String, String> idpCertificateMap) throws CertificateException {
+    @Required
+    public void setEncodedIdpCertificatesMap(Map<String, String> idpCertificateMap) throws CertificateException {
         Map<String, X509Certificate> map = new HashMap<String, X509Certificate>();
         for (Map.Entry<String, String> entry : idpCertificateMap.entrySet()) {
             map.put(entry.getKey().toString(), createIdpCertificate(entry.getValue().toString()));

@@ -62,6 +62,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
   editor.img.onload = function () {
     editor.rw = editor.lastWidth = editor.cropWidth = editor.img.width;
     editor.rh = editor.lastHeight = editor.cropHeight = editor.img.height;
+    editor.canvasSupported = editor.canvasSupported && ((editor.rw * editor.rh) < 100000000); // Limit to 400MB(32bpp)
     if(!editor.canvasSupported) {
       $(editor.canvas).replaceWith("<img src='" + editor.url + "' alt='preview image' />");
       editor.displayDimensions(editor.rw, editor.rh);

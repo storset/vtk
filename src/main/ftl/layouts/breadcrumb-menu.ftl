@@ -33,7 +33,7 @@
 			<#else>
 				<ul>
 				<#if elem.URL?exists>
-					<li class="vrtx-child" ><a class="vrtx-marked" href="${elem.URL}"><span>${elem.title?html}</span></li>
+					<li class="vrtx-child" ><a class="vrtx-marked" href="${elem.URL}"><span>${elem.title?html}</span></a></li>
 				<#else>
 					<li class="vrtx-child" ><span class="vrtx-marked">${elem.title?html}</span></li>
 				</#if>
@@ -42,7 +42,7 @@
 		</#if>
 	</#if>
 	</#list>
-	<#if children?exists >
+	<#if (children?exists && children?size > 0) >
     	<ul>
      	<#list children as c>
 			<li class="vrtx-child"><a <#if (c.url.path = markedurl.path) >class="vrtx-marked"</#if> href="${c.url?html}"><span>${c.title?html}</span></a></li>

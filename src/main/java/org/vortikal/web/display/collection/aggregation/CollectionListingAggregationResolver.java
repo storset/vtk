@@ -66,6 +66,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
      */
     private int maxRecursiveDepth = DEFAULT_RECURSIVE_DEPTH;
 
+    @Override
     public List<Path> getAggregationPaths(Path pathToResource) {
         RequestContext requestContext = RequestContext.getRequestContext();
         Resource resource = getResource(requestContext, pathToResource);

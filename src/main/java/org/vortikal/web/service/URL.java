@@ -651,7 +651,7 @@ public class URL {
     private static enum ParseState {
         PROTOCOL, HOST, PORT, PATH, QUERY, REF
     }
-
+    
     /**
      * Parses a URL from a string representation. Also attempts to decode the
      * URL.
@@ -665,8 +665,8 @@ public class URL {
             throw new IllegalArgumentException("Argument is NULL");
         }
         url = url.trim();
-        if ("".equals(url)) {
-            throw new IllegalArgumentException("Malformed URL: '" + url + "'");
+        if (url.isEmpty()) {
+            throw new IllegalArgumentException("Malformed (empty) URL");
         }
 
         StringBuilder protocol = new StringBuilder();
@@ -811,21 +811,20 @@ public class URL {
                 resultURL.setPort(PORT_443);
             }
         }
-
-        Map<String, String[]> queryParams = new LinkedHashMap<String, String[]>();
         if (query.length() > 0) {
-            queryParams = splitQueryString(query.toString());
-        }
-        for (String param : queryParams.keySet()) {
-            String[] values = queryParams.get(param);
-            for (String value : values) {
-                resultURL.addParameter(param, decode(value));
+            for (Map.Entry<String,String[]> entry: splitQueryString(query.toString()).entrySet()) {
+                for (String value: entry.getValue()) {
+                    // FIXME strictly speaking, keys need decoding as well..
+                    resultURL.addParameter(entry.getKey(), decode(value));
+                }
             }
         }
         if (ref.length() > 0) {
             resultURL.setRef(ref.toString());
         }
+        
         resultURL.setCollection(collection);
+        
         return resultURL;
     }
     
@@ -948,9 +947,11 @@ public class URL {
     }
 
 
+    private static final Pattern AMP_PATTERN = Pattern.compile("&");
+    
     /**
-     * Splits a query string into a map of (String, String[]). Note: the values
-     * are not URL decoded.
+     * Splits a query string into a map of (String, String[]). 
+     * NOTE: neither keys nor values are URL-decoded.
      */
     public static Map<String, String[]> splitQueryString(String queryString) {
         Map<String, String[]> queryMap = new LinkedHashMap<String, String[]>();
@@ -958,7 +959,7 @@ public class URL {
             if (queryString.startsWith("?")) {
                 queryString = queryString.substring(1);
             }
-            String[] pairs = queryString.split("&");
+            String[] pairs = AMP_PATTERN.split(queryString);
             for (int i = 0; i < pairs.length; i++) {
                 if (pairs[i].length() == 0) {
                     continue;
@@ -991,7 +992,7 @@ public class URL {
         }
         return queryMap;
     }
-
+    
     /**
      * URL encodes the elements of a path using encoding UTF-8.
      * 

@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -257,23 +258,23 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
         return propertyTypeDefinition;
     }
 
+    private static final Pattern PROPDEF_POINTER_DELIMITER = Pattern.compile(":");
     @Override
     public PropertyTypeDefinition getPropertyDefinitionByPointer(String pointer) {
         
-        if (!pointer.contains(":")) {
+        String[] pointerParts = PROPDEF_POINTER_DELIMITER.split(pointer);
+        if (pointerParts.length == 1) {
             return this.getPropertyDefinitionByPrefix(null, pointer);
         }
-
-        String[] pointers = pointer.split(":");
-        if (pointers.length == 2) {
-            return this.getPropertyDefinitionByPrefix(pointers[0], pointers[1]);
+        if (pointerParts.length == 2) {
+            return this.getPropertyDefinitionByPrefix(pointerParts[0], pointerParts[1]);
         }
-        if (pointers.length == 3) {
-            return this.getPropertyDefinitionForResource(pointers[0], pointers[1], pointers[2]);
+        if (pointerParts.length == 3) {
+            return this.getPropertyDefinitionForResource(pointerParts[0], pointerParts[1], pointerParts[2]);
         }
 
+        // XXX really, throw new IllegalArgumentException instead..
         return null;
-
     }
 
     // XXX What about ancestor+mixin resource type prop defs ? Looks like they are not handled here.

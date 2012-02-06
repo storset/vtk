@@ -38,15 +38,6 @@ public class ManuallyApproveResourceComparator implements Comparator<ManuallyApp
     @Override
     public int compare(ManuallyApproveResource m1, ManuallyApproveResource m2) {
 
-        Boolean approved1 = m1.isApproved();
-        Boolean approved2 = m2.isApproved();
-
-        // Keep already approved resources on top of list
-        int approved = approved2.compareTo(approved1);
-        if (approved != 0) {
-            return approved;
-        }
-
         if (m1.getPublishDateAsString().equals(m2.getPublishDateAsString())) {
             return m1.getTitle().compareTo(m2.getTitle());
         }

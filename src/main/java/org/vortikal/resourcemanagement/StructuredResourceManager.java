@@ -67,6 +67,12 @@ import org.vortikal.web.service.RepositoryAssertion;
 
 public class StructuredResourceManager {
 
+    private PropertyTypeDefinition linksDef;
+    
+    public void setLinksDef(PropertyTypeDefinition linksDef) {
+        this.linksDef = linksDef;
+    }
+    
     private static final Map<String, PropertyType.Type> PROPTYPE_MAP = new HashMap<String, PropertyType.Type>();
     static {
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_STRING, PropertyType.Type.STRING);
@@ -118,8 +124,14 @@ public class StructuredResourceManager {
 
         ResourceTypeDefinition parentDefinition = this.baseType;
 
-        PropertyTypeDefinition[] propertyTypeDefinitions = createPropDefs(description);
-        def.setPropertyTypeDefinitions(propertyTypeDefinitions);
+        PropertyTypeDefinition[] descPropDefs = createPropDefs(description);
+
+        List<PropertyTypeDefinition> allPropDefs = new ArrayList<PropertyTypeDefinition>();
+        for (PropertyTypeDefinition d: descPropDefs) {
+            allPropDefs.add(d);
+        }
+        allPropDefs.add(this.linksDef);
+        def.setPropertyTypeDefinitions(allPropDefs.toArray(new PropertyTypeDefinition[allPropDefs.size()]));
 
         List<RepositoryAssertion> assertions = createAssertions(description);
         def.setAssertions(assertions.toArray(new RepositoryAssertion[assertions.size()]));

@@ -44,6 +44,7 @@
         <ref bean="unpublishDatePropDef" />
         <ref bean="publishedPropDef" />
         <ref bean="resourceAspectsPropDef" />
+        <ref bean="linksPropDef" />
       </list>
     </property>
   </bean>
@@ -287,13 +288,25 @@
     <property name="creationTimePropDef" ref="creationTimePropDef" />
   </bean>
 
-
   <bean id="resourceAspectsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="aspects" />
     <property name="type" value="JSON" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_ADMIN" />
     <property name="mandatory" value="false" />
+  </bean>
+
+  <bean id="linksPropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="links" />
+    <property name="type" value="BINARY" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="resourceLinksEvaluator" />
+  </bean>
+
+  <bean id="resourceLinksEvaluator" class="org.vortikal.repository.resourcetype.property.LinksPropertyEvaluator">
+    <property name="resourceManager" ref="structuredResources.resourceManager" />
   </bean>
 
 </beans>

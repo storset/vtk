@@ -59,7 +59,6 @@ import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DirectiveNodeFactory;
-import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.ComponentResolver;
 import org.vortikal.web.decorating.HtmlPageContent;
@@ -121,9 +120,6 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         } else {
             stream = repository.getInputStream(token, uri, true);
         }
-        byte[] buff = StreamUtil.readInputStream(stream);
-        String encoding = "utf-8";
-        String source = new String(buff, encoding);
 
         StructuredResourceDescription desc = this.resourceManager.get(r.getResourceType());
         if (desc == null) {
@@ -135,8 +131,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         }
 
         Map<String, Object> model = new HashMap<String, Object>();
-        StructuredResource res = new StructuredResource(desc);
-        res.parse(source);
+        StructuredResource res = desc.buildResource(stream);
         model.put("structured-resource", res);
         model.put("resource", r);
         model.put(this.resourceModelKey, res);

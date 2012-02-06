@@ -30,6 +30,7 @@
  */
 package org.vortikal.resourcemanagement;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,37 +42,42 @@ import java.util.Map;
 
 import net.sf.json.JSONObject;
 
+import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.text.JSON;
 
 public class StructuredResource {
 
     private StructuredResourceDescription desc;
-    private Map<String, Object> properties = new HashMap<String, Object>();
+    private Map<String, Object> properties;
 
-    public StructuredResource(StructuredResourceDescription desc) {
+    private StructuredResource(StructuredResourceDescription desc, Map<String, Object> properties) {
         if (desc == null) {
             throw new IllegalArgumentException("Description cannot be null");
         }
         this.desc = desc;
+        this.properties = properties;
     }
-
+    
     @SuppressWarnings("unchecked")
-    public void parse(String source) {
-        JSONObject json = JSONObject.fromObject(source);
-        ValidationResult validation = validateInternal(json);
+    static StructuredResource create(StructuredResourceDescription desc, InputStream source) throws Exception {
+        String str = StreamUtil.streamToString(source, "utf-8");
+        JSONObject json = JSONObject.fromObject(str);
+        ValidationResult validation = validateInternal(desc, json);
         if (!validation.isValid()) {
             throw new RuntimeException("Invalid document: " + validation.getErrors());
         }
         JSONObject object = json.getJSONObject("properties");
+        Map<String, Object> properties = new HashMap<String, Object>();
         for (Iterator<String> iter = object.keys(); iter.hasNext();) {
             String name = iter.next();
-            this.properties.put(name, object.get(name));
+            properties.put(name, object.get(name));
         }
+        return new StructuredResource(desc, properties);
     }
 
     public boolean isValidDocument(JSONObject document) {
         try {
-            ValidationResult validation = validateInternal(document);
+            ValidationResult validation = validateInternal(this.desc, document);
             return validation.isValid();
         } catch (Exception e){
             return false;
@@ -100,7 +106,7 @@ public class StructuredResource {
         return json;
     }
 
-    private ValidationResult validateInternal(JSONObject json) {
+    private static ValidationResult validateInternal(StructuredResourceDescription desc, JSONObject json) {
         if (json == null) {
             throw new IllegalStateException("Input is NULL");
         }
@@ -115,7 +121,7 @@ public class StructuredResource {
             "Unable to validate: missing 'properties' element");
         }
         List<ValidationError> errors = new ArrayList<ValidationError>();
-        for (PropertyDescription propDesc : this.desc.getPropertyDescriptions()) {
+        for (PropertyDescription propDesc : desc.getPropertyDescriptions()) {
             if (propDesc instanceof SimplePropertyDescription) {
                 if (((SimplePropertyDescription) propDesc).isRequired()) {
 

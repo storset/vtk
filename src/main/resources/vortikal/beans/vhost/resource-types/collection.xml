@@ -38,6 +38,7 @@
         <ref bean="collection.hideLastModifiedPropDef" />
         <ref bean="collection.hideIntroductionPropDef" />
         <ref bean="hideNumberOfCommentsPropDef" />
+        <ref bean="collectionLinksPropDef" />
       </list>
     </property>
   </bean>
@@ -497,4 +498,10 @@
     <property name="exactMatch" value="true" />
   </bean>
   
+  <bean id="collectionLinksPropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="linksPropDef" />
+    <property name="propertyEvaluator" ref="resourceLinksEvaluator" />
+  </bean>
+
 </beans>

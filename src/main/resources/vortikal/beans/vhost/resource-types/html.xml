@@ -27,6 +27,7 @@
         <ref bean="htmlTitlePropDef" />
         <ref bean="htmlOverriddenTitlePropDef" />
         <ref bean="htmlHasBodyContentPropDef" />
+        <ref bean="htmlLinksPropDef" />
       </list>
     </property>
   </bean>
@@ -117,4 +118,10 @@
   </bean>
 
 
+  <bean id="htmlLinksPropDef"
+        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
+    <property name="overriddenPropDef" ref="linksPropDef" />
+    <property name="propertyEvaluator" ref="resourceLinksEvaluator" />
+  </bean>
+  
 </beans>

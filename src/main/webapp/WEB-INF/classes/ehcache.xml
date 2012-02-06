@@ -3,7 +3,7 @@
 
   <!-- See http://ehcache.org/documentation/configuration.html -->
 
-  <diskStore path="user.home/vortikal/cache" />
+  <diskStore path="java.io.tmpdir/vortikal/ehcache" />
 
   <defaultCache
     maxElementsInMemory="100"

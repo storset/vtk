@@ -1761,6 +1761,7 @@ h3.resourceInfoHeader {
   padding: 5px 15px;
 }
 
+/*
 #vrtx-resource-visit-tab-menu li.first {
   background: url(images/report-tab-fade-to-left.png) no-repeat bottom left;
   margin-right: 0;
@@ -1770,6 +1771,7 @@ h3.resourceInfoHeader {
   background: url(images/report-tab-fade-to-right.png) no-repeat bottom right;
   margin-left: 0;
 }
+*/
 
 #vrtx-resource-visit-tab-menu li a {
   background: url(images/report-tab-middle.png) repeat-x 0px 25px;

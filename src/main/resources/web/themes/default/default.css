@@ -2347,6 +2347,23 @@ div.vrtx-admin-form {
   position: fixed;
   top: 0px;
   z-index: 999999;
+  /* Progressive enhancements - fade out */
+  background: -webkit-linear-gradient(
+    rgba(255, 255, 255, 1) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background: -moz-linear-gradient(
+    rgba(255, 255, 255, 1) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background: linear-gradient(
+    rgba(255, 255, 255, 1) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.vrtx-sticky-editor-title-submit-buttons h2 {
+  margin-bottom: 35px;
 }
 
 /* ^ Buttons */

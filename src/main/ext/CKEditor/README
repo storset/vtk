@@ -24,8 +24,8 @@ then copied to ckeditor-build (or the other way around :)
 No modifications should be made in ckeditor-org.
 
 If you do modifications to files in the _source folder, or if upgrading to a new
-version of ckeditor, run the ckpackager.jar application afterwards:
-java -jar ckpackager.jar ckeditor.pack
+version of ckeditor, run the ckpackager.jar application afterwards in ckeditor-build folder:
+java -jar ckpackager.jar ../ckeditor.pack
 
 Check that /plugins/table/dialogs/table.js is not updated or you have to delete it from modifications,
 and add the modifications to the new version after, or it will be out-of-sync.

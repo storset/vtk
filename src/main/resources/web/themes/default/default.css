@@ -2343,31 +2343,27 @@ div.vrtx-admin-form {
 }
 
 .vrtx-sticky-editor-title-submit-buttons {
-  background-color: #fff;
   position: fixed;
   top: 0px;
   z-index: 999999;
-  /* Progressive enhancements - fade out */
-  background: -webkit-linear-gradient(
-    rgba(255, 255, 255, 1) 60%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  background: -moz-linear-gradient(
-    rgba(255, 255, 255, 1) 60%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  background: linear-gradient(
-    rgba(255, 255, 255, 1) 60%,
-    rgba(255, 255, 255, 0) 100%
-  );
-}
-
-.vrtx-sticky-editor-title-submit-buttons h2 {
-  margin-bottom: 35px;
 }
 
 .vrtx-sticky-editor-title-submit-buttons .submit-extra-buttons {
-  margin-top: -76px;
+  margin-top: -42px;
+}
+
+.vrtx-sticky-editor-title-submit-buttons h2 {
+  margin-bottom: 0px;
+}
+
+.vrtx-sticky-editor-title-submit-buttons #vrtx-editor-title-submit-buttons-inner-wrapper {
+  background: #fff;
+}
+
+.vrtx-sticky-editor-title-submit-buttons #vrtx-sticky-editor-bottom-bg {
+  background: transparent url(images/sticky-title-buttons-bg.png) repeat-x bottom left; 
+  height: 20px;
+  display: block;
 }
 
 /* ^ Buttons */

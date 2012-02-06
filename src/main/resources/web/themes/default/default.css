@@ -2366,6 +2366,10 @@ div.vrtx-admin-form {
   margin-bottom: 35px;
 }
 
+.vrtx-sticky-editor-title-submit-buttons .submit-extra-buttons {
+  margin-top: -76px;
+}
+
 /* ^ Buttons */
 
 /* Textfields */

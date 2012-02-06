@@ -539,6 +539,7 @@ $(document).ready(function () {
           var animB = tr.slideUp(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideUp, $.noop);
           $.when(animA, animB).done(function() {
             $("#contents").html($(results).find("#contents").html());
+            $("#app-tabs").html($(results).find("#app-tabs").html());
           });
         }
       });
@@ -574,6 +575,7 @@ $(document).ready(function () {
       vrtxAdmin.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
           $("#contents").html($(results).find("#contents").html());
+          $("#app-tabs").html($(results).find("#app-tabs").html());
           if(typeof versionsMadeCurrentInfoMsg !== "undefined") {
             vrtxAdmin.displayInfoMsg(versionsMadeCurrentInfoMsg);
           }

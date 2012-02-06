@@ -5,7 +5,7 @@
   <artifactId>vortikal</artifactId>
   <version>0.8.9-linkprop-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>The Vortikal Web Framework</name>
+  <name>The Vortikal Web Framework [linkprop-branch]</name>
   <url>http://www.usit.uio.no/it/vortex/</url>
   <modelVersion>4.0.0</modelVersion>
   <description>

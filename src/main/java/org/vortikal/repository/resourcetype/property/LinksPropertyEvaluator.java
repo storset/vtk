@@ -68,25 +68,31 @@ public class LinksPropertyEvaluator implements PropertyEvaluator {
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
             throws PropertyEvaluationException {
 
-        LinkListener listener = new LinkListener();
+        
+        LinkCollector collector = new LinkCollector();
         try {
             Resource r = ctx.getNewResource();
             for (Property p: r.getProperties()) {
                 if (p.getType() == PropertyType.Type.IMAGE_REF) {
-                    listener.link(p.getValue().getStringValue());
+                    collector.add(p.getValue().getStringValue());
                 } else if (p.getType() == PropertyType.Type.HTML) {
                     InputStream is = new ByteArrayInputStream(p.getStringValue().getBytes());
-                    extractLinks(is, listener);
+                    extractLinks(is, collector);
                 }
             }
             
             if (ctx.getEvaluationType() != Type.ContentChange && ctx.getEvaluationType() != Type.Create) {
-                boolean exists = ctx.getOriginalResource().getProperty(property.getDefinition()) != null;
-                return exists; 
+                if (collector.isEmpty()) {
+                    return false;
+                }
+                property.setBinaryValue(collector.serialize(), "application/json");
+                return true;
             }
+            
             if (ctx.getContent() == null) {
                 return false;
             }
+
             if ("application/json".equals(r.getContentType())) {
                 StructuredResourceDescription desc = this.resourceManager.get(r.getResourceType());
                 if (desc != null) {
@@ -98,19 +104,19 @@ public class LinksPropertyEvaluator implements PropertyEvaluator {
                             Object p = res.getProperty(pdesc.getName());
                             if (p != null) {
                                 InputStream is = new ByteArrayInputStream(p.toString().getBytes());
-                                extractLinks(is, listener);
+                                extractLinks(is, collector);
                             }
                         }
                     }
                 }
             } else if ("text/html".equals(r.getContentType())) {
-                extractLinks(ctx.getContent().getContentInputStream(), listener);
+                extractLinks(ctx.getContent().getContentInputStream(), collector);
             }
 
-            if (listener.isEmpty()) {
+            if (collector.isEmpty()) {
                 return false;
             }
-            property.setBinaryValue(listener.serialize(), "application/json");
+            property.setBinaryValue(collector.serialize(), "application/json");
             return true;
         } catch (Throwable t) {
             return false;
@@ -118,9 +124,9 @@ public class LinksPropertyEvaluator implements PropertyEvaluator {
     }
     
     
-    private class LinkListener {
+    private class LinkCollector {
         private Set<String> links = new HashSet<String>();
-        public void link(String link) {
+        public void add(String link) {
             links.add(link);
         }
         public boolean isEmpty() {
@@ -136,7 +142,7 @@ public class LinksPropertyEvaluator implements PropertyEvaluator {
     }
 
     
-    private void extractLinks(InputStream is, LinkListener listener) throws Exception {
+    private void extractLinks(InputStream is, LinkCollector listener) throws Exception {
         org.ccil.cowan.tagsoup.Parser parser
         = new org.ccil.cowan.tagsoup.Parser();
         Handler handler = new Handler(listener);
@@ -156,9 +162,9 @@ public class LinksPropertyEvaluator implements PropertyEvaluator {
     private static class StopException extends RuntimeException { }
 
     private static class Handler implements ContentHandler {
-        private LinkListener listener;
+        private LinkCollector listener;
 
-        public Handler(LinkListener listener) {
+        public Handler(LinkCollector listener) {
             this.listener = listener;
         }
         
@@ -185,7 +191,7 @@ public class LinksPropertyEvaluator implements PropertyEvaluator {
                             || "frame".equals(localName) && "src".equals(attrName)
                             || "iframe".equals(localName) && "src".equals(attrName)) {
                         if (attrValue != null) {
-                            this.listener.link(attrValue);
+                            this.listener.add(attrValue);
                         }
                     }
                 }                

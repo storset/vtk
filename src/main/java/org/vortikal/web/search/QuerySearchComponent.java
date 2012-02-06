@@ -119,7 +119,7 @@ public abstract class QuerySearchComponent implements SearchComponent {
         boolean multiHostResults = false;
         if (this.performMultiHostSearch(collection)) {
             try {
-                MultiHostSearchImpl multiHostSearch = new MultiHostSearchImpl(token, search, collection);
+                MultiHostSearchImpl multiHostSearch = new MultiHostSearchImpl(this.name, token, search, collection);
                 result = this.multiHostSearchComponent.search(multiHostSearch);
                 multiHostResults = true;
             } catch (Throwable t) {

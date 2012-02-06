@@ -2342,6 +2342,13 @@ div.vrtx-admin-form {
   margin: 0 10px 0 0;
 }
 
+.vrtx-sticky-editor-title-submit-buttons {
+  background-color: #fff;
+  position: fixed;
+  top: 0px;
+  z-index: 999999;
+}
+
 /* ^ Buttons */
 
 /* Textfields */

@@ -110,30 +110,30 @@
     <#assign header>
       <@vrtx.msg code="editor.edit" args=[vrtx.resourceTypeName(resource)?lower_case] />
     </#assign>
-    
-    <h2>${header}
-      <#if resource.contentType?exists && saveImageURL?exists && resource.contentType?starts_with("image/")>
-        <sup id="vrtx-image-editor-beta-msg">BETA</sup>
-      </#if>
-    </h2>
-    <div class="submitButtons submit-extra-buttons">
-      <div class="vrtx-button">
-        <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
+    <div id="vrtx-editor-title-submit-buttons">
+      <h2>${header}
+        <#if resource.contentType?exists && saveImageURL?exists && resource.contentType?starts_with("image/")>
+          <sup id="vrtx-image-editor-beta-msg">BETA</sup>
+        </#if>
+      </h2>
+      <div class="submitButtons submit-extra-buttons">
+        <div class="vrtx-button">
+          <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
+        </div>
+        <div class="vrtx-focus-button">
+          <input type="button" onclick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
+        </div>
+        <div class="vrtx-button">
+          <input type="button" onclick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
+        </div>
+        <@genEditorHelpMenu />
       </div>
-      <div class="vrtx-focus-button">
-        <input type="button" onclick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
-      </div>
-      <div class="vrtx-button">
-        <input type="button" onclick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
-      </div>
-      <@genEditorHelpMenu />
     </div>
     <form action="" method="post" id="editor">
-
       <div class="properties"<#if resource.contentType?exists && resource.contentType?starts_with("image/")> id="image-properties"</#if>>
         <@propsForm resource.preContentProperties />
       </div>
-
+ 
       <#if (resource.content)?exists>
         <div class="html-content">
           <label class="resource.content" for="resource.content"><@vrtx.msg code="editor.content" /></label> 

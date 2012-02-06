@@ -81,42 +81,42 @@
       <@vrtx.rawMsg code="editor.workingCopyMsg" args=[versioning.currentVersionURL?html] />
     </div>
   </#if>
-
-  <h2>${header}</h2>
-
-  <div class="submitButtons submit-extra-buttons" id="editor-shortcuts">  
-    <#if !form.published && !form.workingCopy>
-      <a class="vrtx-button" href="javascript:void(0)" onclick="$('#saveAndViewButton').click()"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
-      <a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('#updateAction').click()"><span>${vrtx.getMsg("editor.save")}</span></a>
-      <a class="vrtx-button" href="javascript:void(0)" onclick="$('#cancelAction').click()"><span>${vrtx.getMsg("editor.cancel")}</span></a>
-      <@genEditorHelpMenu />
-    <#elseif form.workingCopy>
-      <ul id="editor-button-row">
-        <li class="first"><a href="javascript:void(0)" onclick="$('#saveAndViewButton').click()">${vrtx.getMsg("editor.saveAndView")}</a></li>
-        <li><a href="javascript:void(0)" onclick="$('#saveWorkingCopyAction').click()">${vrtx.getMsg("editor.save")}</a></li>
-        <li class="last"><a href="javascript:void(0)" onclick="$('#cancelAction').click()">${vrtx.getMsg("editor.cancel")}</a></li>
-      </ul>
-      <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
-      &nbsp;
-      <div id="editor-menu-wrapper">
-        <ul id="editor-menu">
-          <li class="first"><a href="javascript:void(0)" onclick="$('#makePublicVersionAction').click()">${vrtx.getMsg("editor.makePublicVersion")}</a></li>
-          <li class="last"><a href="javascript:void(0)" onclick="$('#deleteWorkingCopyAction').click()">${vrtx.getMsg("editor.deleteWorkingCopy")}</a></li>
+  <div id="vrtx-editor-title-submit-buttons">
+    <h2>${header}</h2>
+    <div class="submitButtons submit-extra-buttons" id="editor-shortcuts">  
+      <#if !form.published && !form.workingCopy>
+        <a class="vrtx-button" href="javascript:void(0)" onclick="$('#saveAndViewButton').click()"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
+        <a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('#updateAction').click()"><span>${vrtx.getMsg("editor.save")}</span></a>
+        <a class="vrtx-button" href="javascript:void(0)" onclick="$('#cancelAction').click()"><span>${vrtx.getMsg("editor.cancel")}</span></a>
+        <@genEditorHelpMenu />
+      <#elseif form.workingCopy>
+        <ul id="editor-button-row">
+          <li class="first"><a href="javascript:void(0)" onclick="$('#saveAndViewButton').click()">${vrtx.getMsg("editor.saveAndView")}</a></li>
+          <li><a href="javascript:void(0)" onclick="$('#saveWorkingCopyAction').click()">${vrtx.getMsg("editor.save")}</a></li>
+          <li class="last"><a href="javascript:void(0)" onclick="$('#cancelAction').click()">${vrtx.getMsg("editor.cancel")}</a></li>
         </ul>
-      </div>
-      <@genEditorHelpMenu />
-    <#else>
-      <ul id="editor-button-row">
-        <li class="first"><a href="javascript:void(0)" onclick="$('#saveAndViewButton').click()">${vrtx.getMsg("editor.saveAndView")}</a></li>
-        <li><a href="javascript:void(0)" onclick="$('#updateAction').click()">${vrtx.getMsg("editor.save")}</a></li>
-        <li class="last"><a href="javascript:void(0)" onclick="$('#cancelAction').click()">${vrtx.getMsg("editor.cancel")}</a></li>
-      </ul>
-      <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
-      &nbsp;
-      <a class="vrtx-button" href="javascript:void(0)" onclick="$('#saveWorkingCopyAction').click()"><span>${vrtx.getMsg("editor.saveAsWorkingCopy")}</span></a>
-      <@genEditorHelpMenu />
-   </#if>
-  </div>  
+        <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
+        &nbsp;
+        <div id="editor-menu-wrapper">
+          <ul id="editor-menu">
+            <li class="first"><a href="javascript:void(0)" onclick="$('#makePublicVersionAction').click()">${vrtx.getMsg("editor.makePublicVersion")}</a></li>
+            <li class="last"><a href="javascript:void(0)" onclick="$('#deleteWorkingCopyAction').click()">${vrtx.getMsg("editor.deleteWorkingCopy")}</a></li>
+          </ul>
+        </div>
+        <@genEditorHelpMenu />
+      <#else>
+        <ul id="editor-button-row">
+          <li class="first"><a href="javascript:void(0)" onclick="$('#saveAndViewButton').click()">${vrtx.getMsg("editor.saveAndView")}</a></li>
+          <li><a href="javascript:void(0)" onclick="$('#updateAction').click()">${vrtx.getMsg("editor.save")}</a></li>
+          <li class="last"><a href="javascript:void(0)" onclick="$('#cancelAction').click()">${vrtx.getMsg("editor.cancel")}</a></li>
+        </ul>
+        <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
+        &nbsp;
+        <a class="vrtx-button" href="javascript:void(0)" onclick="$('#saveWorkingCopyAction').click()"><span>${vrtx.getMsg("editor.saveAsWorkingCopy")}</span></a>
+        <@genEditorHelpMenu />
+     </#if>
+    </div>
+  </div> 
 
   <form action="${form.submitURL?html}" method="post" id="editor">
     <#list form.elements as elementBox>

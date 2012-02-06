@@ -271,7 +271,24 @@ $(document).ready(function () {
       resourceMenuLeft.css("marginTop", "0px"); 
     }
   }
-
+  
+  // Sticky editor title and save buttons  
+  if($("form#editor").length) {
+    var titleSubmitButtons = $("#vrtx-editor-title-submit-buttons");
+    if(titleSubmitButtons.length) {
+      var titleSubmitButtonsPos = titleSubmitButtons.offset();
+      $(window).bind("scroll", function() {
+        if($(window).scrollTop() >= titleSubmitButtonsPos.top) {
+          titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons");
+          titleSubmitButtons.css("width", $("#contents").width() + "px");
+        } else {
+          titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
+          titleSubmitButtons.css("width", "auto");
+        }
+      });
+    }
+  }
+  
   // Preview image
   adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
   adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");

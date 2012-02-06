@@ -35,6 +35,8 @@ import org.vortikal.repository.search.Search;
 
 public class MultiHostSearchImpl implements MultiHostSearch {
 
+    // Name of original search component
+    private String name;
     private String token;
     // The original search, i.e the search we want to run on multiple hosts
     private Search originalSearch;
@@ -48,7 +50,7 @@ public class MultiHostSearchImpl implements MultiHostSearch {
         this.originalSearch = originalSearch;
         this.type = Type.SIMPE_SEARCH;
     }
-    
+
     public MultiHostSearchImpl(String token, String uri, String resourceType) {
         this.token = token;
         this.uri = uri;
@@ -61,14 +63,20 @@ public class MultiHostSearchImpl implements MultiHostSearch {
         }
     }
 
-    public MultiHostSearchImpl(String token, Search originalSearch, Resource originalResource) {
+    public MultiHostSearchImpl(String name, String token, Search originalSearch, Resource originalResource) {
         if (originalSearch == null) {
             throw new IllegalArgumentException("Original search cannot be null");
         }
+        this.name = name;
         this.token = token;
         this.type = Type.RESOURCE_LISTING_SEARCH;
         this.originalSearch = originalSearch;
         this.originalResource = originalResource;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
     }
 
     @Override

@@ -50,6 +50,8 @@ public interface MultiHostSearch {
         RESOURCE_TYPE_SEARCH
     }
 
+    public String getName();
+
     public String getToken();
 
     public Search getOriginalSearch();

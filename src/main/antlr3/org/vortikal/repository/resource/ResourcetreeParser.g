@@ -160,14 +160,14 @@ overrides
 
 
 editruledef
-	:	NAME (position)? (edithint)?
-		-> ^(NAME ^(position)? ^(edithint)?)
+	:	NAME (position)? ( LP EDITHINT (COMMA EDITHINT)* RP)?
+		-> ^(NAME ^(position)? ^(EDITHINT)*)
 	|	GROUP NAME namelist (position)? (ORIENTATION)?
 		-> ^(GROUP ^(NAME namelist) ^(position)? ^(ORIENTATION)?)
 	|	NAME TOOLTIP LP (namevaluepair (COMMA namevaluepair)*) RP
 		-> ^(NAME ^(TOOLTIP (namevaluepair)*))
-	|	NAME COLON NAME edithint
-		-> ^(NAME ^(NAME edithint))
+	|	NAME COLON NAME LP EDITHINT RP
+		-> ^(NAME ^(NAME EDITHINT))
 	;
 
 editrules
@@ -182,8 +182,6 @@ position
 	:	LP pos NAME RP -> ^(pos NAME);
 
 pos	:	(BEFORE | AFTER);
-
-edithint:	LP EDITHINT RP -> ^(EDITHINT);
 
 viewcomponents
 	:	VIEWCOMPONENTS LCB

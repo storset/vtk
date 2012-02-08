@@ -225,7 +225,7 @@ public class ManuallyApproveResourcesSearcher {
             String resourceUri = "http://".concat(repositoryId).concat(ps.getURI().toString());
             String source = ps.getURI().getParent().toString();
             if (searchMultiHosts) {
-                Property urlProp = ps.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearch.SOLR_URL_PROP_NAME);
+                Property urlProp = ps.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearch.URL_PROP_NAME);
                 if (urlProp != null) {
                     String uri = URL.parse(urlProp.getStringValue()).toString();
                     // Resource is from another host. Set complete source
@@ -325,7 +325,7 @@ public class ManuallyApproveResourcesSearcher {
             title = titleProp.getStringValue();
         }
         String uri = "http://".concat(reposirotyId).concat(ps.getURI().toString());
-        Property urlProp = ps.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearch.SOLR_URL_PROP_NAME);
+        Property urlProp = ps.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearch.URL_PROP_NAME);
         if (urlProp != null) {
             uri = URL.parse(urlProp.getStringValue()).toString();
         }

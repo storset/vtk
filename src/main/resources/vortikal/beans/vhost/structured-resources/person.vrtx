@@ -41,7 +41,7 @@ resourcetype person {
     group combinedPublications (getExternalScientificInformation, selectedPublications) (after tags),
     group combinedProjects (getRelatedProjects, projects) (after combinedPublications),
     group combinedGroups (getRelatedGroups, groups) (after combinedProjects),
-    username (size[8]),
+    username (size[8], class[vrtx-autocomplete-username]),
     content (after images),
     tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
     postalAddress tooltip (en : "(postbox / streetaddress, postnumber place)", no : "(postboks / gateadresse, postnummer sted)", nn : "(postboks / gateadresse, postnummer sted)"),

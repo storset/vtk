@@ -19,6 +19,7 @@ resourcetype research-group {
   }
   
   edit-rules {
+    participantsUsernames (class[vrtx-autocomplete-username]),
     caption (size[small]),
     numberOfParticipantsToDisplay (dropdown),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
@@ -26,8 +27,7 @@ resourcetype research-group {
   }
 
   scripts {
-    participantsUsernames multipleinputfields,
-    tags autocomplete (minChars : "1")
+    participantsUsernames multipleinputfields
   }
     
   services {

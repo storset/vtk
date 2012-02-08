@@ -30,7 +30,7 @@ resourcetype organizational-unit {
   edit-rules {
     areacode (size[8]),
     displayEmployees (before selectedEmployees),
-    selectedEmployees (size[8]),
+    selectedEmployees (size[8], class[vrtx-autocomplete-username]),
     group employees (displayEmployees, selectedEmployees, numberOfEmployeesToDisplay, urlToEmployeesList) (after responsibilities),
     numberOfEmployeesToDisplay (dropdown),
     postalAddress tooltip (en : "(postbox / streetaddress, postnumber place)", no : "(postboks / gateadresse, postnummer sted)", nn : "(postboks / gateadresse, postnummer sted)"),

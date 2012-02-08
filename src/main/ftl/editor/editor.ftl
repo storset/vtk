@@ -12,7 +12,6 @@
   -->
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
-<#import "/lib/autocomplete.ftl" as autocomplete />
 <#import "/lib/editor/common.ftl" as editor />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -58,7 +57,6 @@
       $(document).ready(function() {
           <#if !isCollection>
           interceptEnterKey('#resource\\.tags');
-          setAutoComplete('resource\\.tags', 'tags', {minChars:1});
           </#if>
           if($("#resource\\.featured-articles").length) {
             loadMultipleDocuments(true, "resource\\.featured-articles", true, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
@@ -99,11 +97,7 @@
 
     <@editor.addDatePickerScripts language true />
     
-    <#if !isCollection>
-      <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
-    <#else>
-      <script type="text/javascript" src="${jsBaseURL?html}/collectionlisting/manually-approve.js"></script>
-    </#if>
+    <script type="text/javascript" src="${jsBaseURL?html}/collectionlisting/manually-approve.js"></script>
 
   </head>
   <body>

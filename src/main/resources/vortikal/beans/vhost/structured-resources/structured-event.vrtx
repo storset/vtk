@@ -21,10 +21,6 @@ resourcetype structured-event : structured-document {
     tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
     group relatedContent (showAdditionalContent, related-content) (after tags)
   }
-
-  scripts {
-    tags autocomplete (minChars : "1")
-  }
   
   view-components {
     organizer {

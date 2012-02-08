@@ -15,6 +15,7 @@ resourcetype structured-master{
   }
   
   edit-rules {
+    supervisorsUsernames (class[vrtx-autocomplete-username]),
     caption (size[small]),
     credits (dropdown),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
@@ -22,8 +23,7 @@ resourcetype structured-master{
   }
 
   scripts {
-    supervisorsUsernames multipleinputfields,
-    tags autocomplete (minChars : "1")
+    supervisorsUsernames multipleinputfields
   }
     
   view-components {

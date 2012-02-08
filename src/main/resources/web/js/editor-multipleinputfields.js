@@ -46,6 +46,8 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
     for (var i = 0; i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]; i++) {
        addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isResourceRef, true);
     }
+    
+    autocompleteUsernames(".vrtx-autocomplete-username");
 }
 
 function registerClicks(name) {

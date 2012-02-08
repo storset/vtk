@@ -2,13 +2,17 @@
  * Specific behavior of autocomplete for permissions
  */
 
-function permissionsAutocomplete(id, service, params) {
+function permissionsAutocomplete(id, service, params, returnUsername) {
   var p = {
     formatItem : function(data, i, n, value) {
       return value.split(';')[0] + ' (' + value.split(';')[1] + ')';
     },
     formatResult : function(data, value) {
-      return value.split(';')[0];
+      if(returnUsername) {
+        return value.split(';')[1];
+      } else {
+        return value.split(';')[0];
+      }
     },
     highlight : function(value, term) {
       var splitValue = value.split("(");
@@ -22,7 +26,7 @@ function permissionsAutocomplete(id, service, params) {
           var regex = new RegExp("^(?![^&;]+;)(?!<[^<>]*)("
               + termArray[t].replace(/([\^\$\(\)\[\]\{\}\*\.\+\?\|\\])/gi, "\\$1") + ")(?![^<>]*>)(?![^&;]+;)", "gi");
           val = val.replace(regex, "<strong>$1</strong>");
-          if (id.indexOf("userNames") != -1) {
+          if (service.indexOf("userNames") != -1) {
             desc = desc.replace(regex, "<strong>$1</strong>");
           }
         }

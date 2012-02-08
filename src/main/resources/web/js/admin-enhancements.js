@@ -113,12 +113,21 @@ if(vrtxAdmin.isMobileWebkitDevice) { // turn off animation in iPhone, iPad and A
   vrtxAdmin.transitionDropdownSpeed = 0;
 }
 
-// Permission Autocomplete parameters
+// Autocomplete parameters
 vrtxAdmin.permissionsAutocompleteParams = { minChars: 4, 
                                             selectFirst: false, 
                                             width: 300, 
                                             max: 30,
                                             delay: 800 };
+                                            
+vrtxAdmin.usernameAutocompleteParams = { multiple: false,
+                                         minChars: 2, 
+                                         selectFirst: false, 
+                                         width: 300, 
+                                         max: 30,
+                                         delay: 500 };
+                                         
+vrtxAdmin.tagAutocompleteParams = { minChars: 1 };
          
 // When to timeout AJAX GET/POST                                   
 $.ajaxSetup({
@@ -239,7 +248,13 @@ $(document).ready(function () {
     e.stopPropagation();
     e.preventDefault();
   });
-
+  
+  // Add autocomplete
+  if($("form#editor").length) {  
+    autocompleteUsernames(".vrtx-autocomplete-username");
+    autocompleteTags(".vrtx-autocomplete-tag");
+  }
+  
   // Remove active tab if it has no children
   var activeTab = $("#active-tab");
   if (!activeTab.find(" > *").length) {
@@ -920,15 +935,13 @@ function initPermissionForm(selectorClass) {
   toggleConfigCustomPermissions(selectorClass);
   interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]", "." + selectorClass + " input.addUserButton");
   interceptEnterKeyAndReroute("." + selectorClass + " .addGroup input[type=text]", "." + selectorClass + " input.addGroupButton");
-  permissionsAutocomplete('userNames', 'userNames', vrtxAdmin.permissionsAutocompleteParams);
-  splitAutocompleteSuggestion('userNames');
-  permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams);
+  initSimplifiedPermissionForm();
 }
 
 function initSimplifiedPermissionForm() {
-  permissionsAutocomplete('userNames', 'userNames', vrtxAdmin.permissionsAutocompleteParams);
+  permissionsAutocomplete('userNames', 'userNames', vrtxAdmin.permissionsAutocompleteParams, false);
   splitAutocompleteSuggestion('userNames');
-  permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams);  
+  permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams, false);  
 }
 
 function toggleConfigCustomPermissions(selectorClass) {
@@ -964,6 +977,21 @@ function checkStillAdmin(selector) {
   return true; 
 }
 
+function autocompleteUsernames(selector) {
+  var autocompleteTextfields = $(selector).find('.vrtx-textfield input');
+  var i = autocompleteTextfields.length;
+  while(i--) {
+    permissionsAutocomplete($(autocompleteTextfields[i]).attr("id"), 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
+  }
+}
+
+function autocompleteTags(selector) {
+  var autocompleteTextfields = $(selector).find('.vrtx-textfield input');
+  var i = autocompleteTextfields.length;
+  while(i--) {
+    setAutoComplete($(autocompleteTextfields[i]).attr("id"), 'tags', vrtxAdmin.tagAutocompleteParams);
+  }
+}
 
 
 /*-------------------------------------------------------------------*\

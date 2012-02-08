@@ -13,16 +13,16 @@
   -->
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/permissions.ftl" as permissions />
-<#import "/lib/autocomplete.ftl" as autocomplete />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Permissions on resource</title>
-      
-    <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
+    <link rel="stylesheet" type="text/css" href="${webResources?html}/jquery/plugins/jquery.autocomplete.css" />
+    <link rel="stylesheet" type="text/css" href="${webResources?html}/js/autocomplete/autocomplete.override.css" />
+    <script type='text/javascript' src='${webResources?html}/jquery/plugins/jquery.autocomplete.js'></script>
+    <script type='text/javascript' src='${webResources?html}/js/autocomplete/autocomplete.js'></script>
     <script type='text/javascript' src='${webResources?html}/js/autocomplete/autocomplete-permissions.js'></script>
-    
   </head>
   <body id="vrtx-permissions">
 

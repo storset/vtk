@@ -89,28 +89,30 @@ public class LinksPropertyEvaluator implements LatePropertyEvaluator {
 //                return true;
 //            }
             
-            if (ctx.getContent() == null) {
-                return false;
-            }
+//            if (ctx.getContent() == null) {
+//                return false;
+//            }
 
-            if ("application/json".equals(r.getContentType())) {
-                StructuredResourceDescription desc = this.resourceManager.get(r.getResourceType());
-                if (desc != null) {
-                    
-                    StructuredResource res = desc.buildResource(ctx.getContent().getContentInputStream());
-                    
-                    for (PropertyDescription pdesc: desc.getAllPropertyDescriptions()) {
-                        if (pdesc.isNoExtract()) {
-                            Object p = res.getProperty(pdesc.getName());
-                            if (p != null) {
-                                InputStream is = new ByteArrayInputStream(p.toString().getBytes());
-                                extractLinks(is, collector);
+            if (ctx.getContent() != null) {
+                if ("application/json".equals(r.getContentType())) {
+                    StructuredResourceDescription desc = this.resourceManager.get(r.getResourceType());
+                    if (desc != null) {
+
+                        StructuredResource res = desc.buildResource(ctx.getContent().getContentInputStream());
+
+                        for (PropertyDescription pdesc : desc.getAllPropertyDescriptions()) {
+                            if (pdesc.isNoExtract()) {
+                                Object p = res.getProperty(pdesc.getName());
+                                if (p != null) {
+                                    InputStream is = new ByteArrayInputStream(p.toString().getBytes());
+                                    extractLinks(is, collector);
+                                }
                             }
                         }
                     }
+                } else if ("text/html".equals(r.getContentType())) {
+                    extractLinks(ctx.getContent().getContentInputStream(), collector);
                 }
-            } else if ("text/html".equals(r.getContentType())) {
-                extractLinks(ctx.getContent().getContentInputStream(), collector);
             }
 
             if (collector.isEmpty()) {

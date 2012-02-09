@@ -774,9 +774,12 @@ function collectionListingInteraction() {
   placeDeleteButtonInActiveTab();
   placeRecoverButtonInActiveTab();
   placeDeletePermanentButtonInActiveTab();
-  
-  // Checking rows in collectionlisting
+  initializeCheckUncheckAll();
+}
+
+function initializeCheckUncheckAll() { // Checking rows in collectionlisting
   if($("td.checkbox").length) {
+    alert("hei");
     $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />")
     $("th.checkbox input").click(function() {
       if(this.checked) {
@@ -785,12 +788,11 @@ function collectionListingInteraction() {
         uncheckAll();
       }
     });
+    $("td.checkbox input").click(toggleChecked);
+    $("td.checkbox").click(function () {
+      $(this).find("input").each(toggleChecked);
+    });
   }
-
-  $("td.checkbox input").click(toggleChecked);
-  $("td.checkbox").click(function () {
-    $(this).find("input").each(toggleChecked);
-  });
 }
 
 // options: formName, btnId, service, msg

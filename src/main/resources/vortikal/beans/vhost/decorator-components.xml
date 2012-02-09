@@ -459,7 +459,7 @@
     <property name="description" value="Inserts an aggregated feed (RSS, Atom) component on the page" />
     <property name="examples">
       <map>
-        <entry key="url=[/news/?vrtx=feed,/events/?vrtx=feed]" value="Merge two feeds" />
+        <entry key="urls=[/news/?vrtx=feed,/events/?vrtx=feed]" value="Merge two feeds" />
       </map>
     </property>
   </bean>

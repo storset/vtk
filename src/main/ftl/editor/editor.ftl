@@ -215,7 +215,9 @@
       
       <#-- HACKS 2012 start -->
       <#-- Wrap hide properties -->
-      <#if !name?starts_with("hide") && startWrapHideProps?exists></div></#if>
+      <#if !name?starts_with("hide") && startWrapHideProps?exists && startWrapHideProps = "true">
+        </div><#assign startWrapHideProps = "false" />
+      </#if>
       <#if name?starts_with("hide") && !startWrapHideProps?exists>
         <#assign startWrapHideProps = "true" />
         <div id="vrtx-resource.hide-props" class="hide property-item">

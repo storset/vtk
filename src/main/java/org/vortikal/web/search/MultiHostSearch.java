@@ -35,7 +35,10 @@ import org.vortikal.repository.search.Search;
 
 public interface MultiHostSearch {
 
-    public static final String SOLR_URL_PROP_NAME = "solr.url";
+    public static final String URL_PROP_NAME = "solr.url";
+    public static final String LANG_PROP_NAME = "solr.lang";
+    public static final String MULTIHOST_RESOURCE_PROP_NAME = "solr.isSolrResource";
+    public static final String NAME_PROP_NAME = "solr.name";
 
     public static enum Type {
         // The simplest of all searches. Just map a supplied original search to

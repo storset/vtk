@@ -65,6 +65,8 @@ public class DisplayMediaController implements Controller {
 
         mediaPlayer.addMediaPlayer(model, uri.toString());
 
+        model.put("hideDL", "false");
+
         Property descriptionProp = resource.getProperty(descriptionPropDef);
 
         if (descriptionProp != null)

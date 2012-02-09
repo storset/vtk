@@ -77,7 +77,9 @@
 	    swfobject.embedSWF("${audioFlashPlayerFlashURL?html}", "mediaspiller-${dateStr}", "290", "24", "${strobeVersion}",false,flashvars,params);
 	  // -->
 	  </script>
-      <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.audio-file" /></a>
+	  <#if hideDL?exists && hideDL != "true">
+        <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.audio-file" /></a>
+      </#if>
       
     <#elseif contentType == "video/quicktime" >
     
@@ -94,7 +96,9 @@
                controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
         </embed>
       </object> 
-      <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.media-file" /></a>
+      <#if hideDL?exists && hideDL != "true">
+        <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.media-file" /></a>
+      </#if>
 	
     <#elseif contentType == "application/x-shockwave-flash" && extension == "swf">
     
@@ -145,10 +149,14 @@
 	  // -->
 	  </script>
 	  <#if contentType == "video/mp4" && !media?starts_with("rtmp")>
-	    <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.video-file" /></a>
+        <#if hideDL?exists && hideDL != "true">
+          <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.video-file" /></a>
+        </#if>
 	  </#if>
     <#else>
-      <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.media-file" /></a>
+      <#if hideDL?exists && hideDL != "true">
+        <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.media-file" /></a>
+      </#if>
     </#if>
   
   </#if>

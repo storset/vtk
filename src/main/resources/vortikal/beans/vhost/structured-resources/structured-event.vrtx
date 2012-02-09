@@ -19,6 +19,7 @@ resourcetype structured-event : structured-document {
     location (size[small]),
     mapurl (size[small]),
     tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
+    tags (class[vrtx-autocomplete-tag]),
     group relatedContent (showAdditionalContent, related-content) (after tags)
   }
   

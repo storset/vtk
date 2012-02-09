@@ -37,7 +37,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.AbstractCollectionListingController;
 import org.vortikal.web.display.listing.ListingPager;
@@ -49,6 +51,8 @@ import org.vortikal.web.service.URL;
 public class ArticleListingController extends AbstractCollectionListingController {
 
     private ArticleListingSearcher searcher;
+    private int defaultNumberOfColumns = 2;
+    private PropertyTypeDefinition numberOfColumnsPropDef;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -128,11 +132,26 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         model.put(MODEL_KEY_PAGE, userDisplayPage);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
         model.put("hideNumberOfComments", getHideNumberOfComments(collection));
+        model.put("numberOfColumns", getNumberOfColumns(collection));
+    }
+    
+    private int getNumberOfColumns(Resource collection) {
+        int numberOfColumns = this.defaultNumberOfColumns;
+        Property numberOfColumnsProp = collection.getProperty(this.numberOfColumnsPropDef);
+        if (numberOfColumnsProp != null) {
+            numberOfColumns = numberOfColumnsProp.getIntValue();
+        }
+        return numberOfColumns;
     }
 
     @Required
     public void setSearcher(ArticleListingSearcher searcher) {
         this.searcher = searcher;
+    }
+
+    @Required
+    public void setNumberOfColumnsPropDef(PropertyTypeDefinition numberOfColumnsPropDef) {
+        this.numberOfColumnsPropDef = numberOfColumnsPropDef;
     }
 
 }

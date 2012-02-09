@@ -29,6 +29,7 @@
     <property name="resourceManager" ref="resourceManager" />
     <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
     <property name="pageLimitPropDef" ref="pageLimitPropDef" />
+    <property name="numberOfColumnsPropDef" ref="numberOfColumnsPropDef" />
     <property name="hideNumberOfComments" ref="hideNumberOfCommentsPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="viewName" value="${override.listing.prefix}articleListing.view" />

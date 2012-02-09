@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <!-- Resource type 'collection' -->
   <bean id="collectionResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
@@ -34,6 +34,7 @@
         <ref bean="manuallyApproveFromPropDef" />
         <ref bean="manuallyApprovedResourcesPropDef" />
         <ref bean="pageLimitPropDef" />
+        <ref bean="numberOfColumnsPropDef" />
         <ref bean="collection.sortingPropDef" />
         <ref bean="collection.hideLastModifiedPropDef" />
         <ref bean="collection.hideIntroductionPropDef" />
@@ -68,8 +69,7 @@
     </property>
   </bean>
 
-  <bean id="aggregationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
-    parent="abstractPropDef">
+  <bean id="aggregationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="aggregation" />
     <property name="type" value="STRING" />
     <property name="multiple" value="true" />
@@ -146,24 +146,22 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="aggregationResolver" class="org.vortikal.web.display.collection.aggregation.CollectionListingAggregationResolver">
     <property name="aggregationPropDef" ref="aggregationPropDef" />
     <property name="displayAggregationPropDef" ref="displayAggregationPropDef" />
-    <property name="limit" value="${aggregation.limit}"/>
+    <property name="limit" value="${aggregation.limit}" />
     <property name="maxRecursiveDepth" value="${aggregation.maxRecursiveDepth}" />
   </bean>
-  
-  <bean id="navigationTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
-    parent="abstractPropDef">
+
+  <bean id="navigationTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="contentRelation" value="PRE_CONTENT" />
     <property name="name" value="navigationTitle" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
   </bean>
-  
-  <bean id="collection.typePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
-    parent="abstractPropDef">
+
+  <bean id="collection.typePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="collection-type" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -237,17 +235,16 @@
       </bean>
     </property>
   </bean>
-  
 
-  <bean id="collection.indexFilePropDef"
-        class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+
+  <bean id="collection.indexFilePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="indexFile" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="propertyEvaluator" ref="collection.indexFilePropertyEvaluator" />
   </bean>
-  
+
   <bean id="collectionTitlePropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="collectionTitle" />
@@ -255,7 +252,7 @@
     <property name="mandatory" value="false" />
     <property name="propertyEvaluator" ref="collectionTitlePropertyEvaluator" />
   </bean>
-  
+
   <bean id="collection.indexFilePropertyEvaluator" class="org.vortikal.repository.resourcetype.property.IndexFileEvaluator">
     <property name="indexFiles" ref="collection.indexFiles" />
   </bean>
@@ -268,16 +265,16 @@
   <bean id="collectionTitlePropertyEvaluator" parent="titleEvaluator">
     <property name="capitalizeResourceNames" value="true" />
   </bean>
-  
+
   <bean id="collectionOverriddenTitlePropDef" class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
     <property name="overriddenPropDef" ref="titlePropDef" />
     <property name="propertyEvaluator" ref="collectionOverriddenTitlePropertyEvaluator" />
   </bean>
-  
+
   <bean id="collectionOverriddenTitlePropertyEvaluator" parent="titleEvaluator">
     <property name="fallbackTitlePropDef" ref="collectionTitlePropDef" />
   </bean>
-  
+
   <bean id="collection.recursiveListingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="recursive-listing" />
@@ -303,9 +300,8 @@
       </map>
     </property>
   </bean>
-  
-  <bean id="pageLimitPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
-    parent="abstractPropDef">
+
+  <bean id="pageLimitPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="page-limit" />
     <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
@@ -365,7 +361,7 @@
       </bean>
     </property>
   </bean>
-  
+
   <bean id="collection.sortingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="sorting" />
@@ -382,7 +378,7 @@
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
         <property name="values">
           <list>
-           <bean class="org.vortikal.repository.resourcetype.Value">
+            <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>lastModified</value>
               </constructor-arg>
@@ -408,7 +404,7 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="collection.hideLastModifiedPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="hide-last-modified" />
@@ -434,7 +430,7 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="collection.hideIntroductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="hide-introduction" />
@@ -460,7 +456,7 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="hideNumberOfCommentsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="hide-number-of-comments" />
@@ -487,14 +483,44 @@
     </property>
   </bean>
 
-  <bean id="resourceInCollection" class="org.vortikal.web.service.ResourceTypeAssertion"
-        parent="repositoryAware">
+  <bean id="numberOfColumnsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="number-of-columns" />
+    <property name="type" value="INT" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="valueFormatter">
+      <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
+        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.number-of-columns" />
+        <constructor-arg value="INT" />
+      </bean>
+    </property>
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="int">
+                <value>1</value>
+              </constructor-arg>
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="int">
+                <value>2</value>
+              </constructor-arg>
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="resourceInCollection" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />
   </bean>
-  
+
   <bean id="resourceIsCollection" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="collectionResourceTypeDefinition" />
     <property name="exactMatch" value="true" />
   </bean>
-  
+
 </beans>

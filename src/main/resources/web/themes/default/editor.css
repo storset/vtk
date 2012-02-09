@@ -128,13 +128,19 @@ input[type=checkbox] {
   padding: 5px 15px 4px 0;
   word-wrap: break-word;
   overflow: hidden;
+  vertical-align: top;
 }
 
 #manually-approve-container table th {
   background: url(images/line-dotted.gif) repeat-x bottom left;
   padding: 0 15px 8px 0;
   text-align: left;
-  white-space: nowrap;  
+  white-space: nowrap;
+  vertical-align: top; 
+}
+
+#manually-approve-container th#approve-checkbox {
+  width: 2%;
 }
 
 #manually-approve-container th#approve-title {

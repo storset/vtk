@@ -10,8 +10,6 @@
     <property name="assertion" ref="json.objectHasResourceTypeAssertion" />
     <property name="serviceInvoker" ref="externalServiceInvoker" />
 
-    <property name="linksDef" ref="structuredResources.linksPropDef" />
-
   </bean>
 
   <bean id="structuredResource.parser" class="org.vortikal.resourcemanagement.parser.StructuredResourceParser">
@@ -20,12 +18,5 @@
   </bean>
 
   <bean id="externalServiceInvoker" class="org.vortikal.resourcemanagement.service.ExternalServiceInvoker" />
-  
-
-  <bean id="structuredResources.linksPropDef"
-        class="org.vortikal.repository.resourcetype.OverridingPropertyTypeDefinitionImpl">
-    <property name="overriddenPropDef" ref="linksPropDef" />
-    <property name="propertyEvaluator" ref="resourceLinksEvaluator" />
-  </bean>
 
 </beans>

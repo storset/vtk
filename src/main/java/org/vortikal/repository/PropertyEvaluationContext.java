@@ -33,8 +33,10 @@ package org.vortikal.repository;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -61,6 +63,8 @@ public class PropertyEvaluationContext {
     private final Date time = new Date();
     private Principal principal;
     private Map<String, Object> propertyValueMap;
+    
+    private Set<PropertyTypeDefinition> lateEvaluationPropDefs = new HashSet<PropertyTypeDefinition>();
 
     private Map<String, Object> contextAttributes = new HashMap<String, Object>();
 
@@ -240,6 +244,14 @@ public class PropertyEvaluationContext {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(systemJobContext.getJobName(), systemJobContext.getTime());
         return new Value(jsonObject.toString(), PropertyType.Type.JSON);
+    }
+    
+    public void addPropertyTypeDefinitionForLateEvaluation(PropertyTypeDefinition def) {
+        this.lateEvaluationPropDefs.add(def);
+    }
+    
+    public Set<PropertyTypeDefinition> getLateEvalutionPropertyTypeDefinitions() {
+        return this.lateEvaluationPropDefs;
     }
 
 }

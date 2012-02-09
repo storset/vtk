@@ -296,7 +296,7 @@
     <property name="mandatory" value="false" />
   </bean>
 
-  <bean id="linksPropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
+  <bean id="linksPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="links" />
     <property name="type" value="BINARY" />

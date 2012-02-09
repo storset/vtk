@@ -38,6 +38,8 @@ import java.util.Map;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
@@ -67,12 +69,6 @@ import org.vortikal.web.service.RepositoryAssertion;
 
 public class StructuredResourceManager {
 
-    private PropertyTypeDefinition linksDef;
-    
-    public void setLinksDef(PropertyTypeDefinition linksDef) {
-        this.linksDef = linksDef;
-    }
-    
     private static final Map<String, PropertyType.Type> PROPTYPE_MAP = new HashMap<String, PropertyType.Type>();
     static {
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_STRING, PropertyType.Type.STRING);
@@ -114,7 +110,13 @@ public class StructuredResourceManager {
 
         this.types.put(name, description);
     }
-
+    
+    public void registrationComplete() {
+        Log logger = LogFactory.getLog(getClass());
+        logger.info("Resource type tree:");
+        logger.info(this.resourceTypeTree.getResourceTypeTreeAsString());
+    }
+    
     private PrimaryResourceTypeDefinition createResourceType(StructuredResourceDescription description)
             throws Exception {
         PrimaryResourceTypeDefinitionImpl def = new PrimaryResourceTypeDefinitionImpl();
@@ -130,7 +132,7 @@ public class StructuredResourceManager {
         for (PropertyTypeDefinition d: descPropDefs) {
             allPropDefs.add(d);
         }
-        allPropDefs.add(this.linksDef);
+//        allPropDefs.add(this.linksDef);
         def.setPropertyTypeDefinitions(allPropDefs.toArray(new PropertyTypeDefinition[allPropDefs.size()]));
 
         List<RepositoryAssertion> assertions = createAssertions(description);

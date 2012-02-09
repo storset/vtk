@@ -36,14 +36,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.sf.json.JSONArray;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.PropertyEvaluator;
+import org.vortikal.repository.resourcetype.LatePropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResource;
@@ -55,7 +53,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
-public class LinksPropertyEvaluator implements PropertyEvaluator {
+import net.sf.json.JSONArray;
+
+public class LinksPropertyEvaluator implements LatePropertyEvaluator {
     
     private StructuredResourceManager resourceManager;
     
@@ -68,7 +68,6 @@ public class LinksPropertyEvaluator implements PropertyEvaluator {
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
             throws PropertyEvaluationException {
 
-        
         LinkCollector collector = new LinkCollector();
         try {
             Resource r = ctx.getNewResource();
@@ -80,14 +79,15 @@ public class LinksPropertyEvaluator implements PropertyEvaluator {
                     extractLinks(is, collector);
                 }
             }
-            
-            if (ctx.getEvaluationType() != Type.ContentChange && ctx.getEvaluationType() != Type.Create) {
-                if (collector.isEmpty()) {
-                    return false;
-                }
-                property.setBinaryValue(collector.serialize(), "application/json");
-                return true;
-            }
+
+            // XXX just for testing late evaluation, need to do complete eval regardless of eval type.
+//            if (ctx.getEvaluationType() != Type.ContentChange && ctx.getEvaluationType() != Type.Create) {
+//                if (collector.isEmpty()) {
+//                    return false;
+//                }
+//                property.setBinaryValue(collector.serialize(), "application/json");
+//                return true;
+//            }
             
             if (ctx.getContent() == null) {
                 return false;

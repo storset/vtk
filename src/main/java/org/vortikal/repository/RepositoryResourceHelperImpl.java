@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.Content;
+import org.vortikal.repository.resourcetype.LatePropertyEvaluator;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
@@ -57,7 +58,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
 
     private AuthorizationManager authorizationManager;
     private ResourceTypeTree resourceTypeTree;
-
+    
     @Override
     public ResourceImpl create(Principal principal, ResourceImpl resource, boolean collection, Content content) throws IOException {
         if (logger.isDebugEnabled()) {
@@ -66,6 +67,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         PropertyEvaluationContext ctx = PropertyEvaluationContext
                 .createResourceContext(resource, collection, principal, content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
+        lateEvaluation(ctx);
         return ctx.getNewResource();
     }
 
@@ -80,6 +82,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         PropertyEvaluationContext ctx = PropertyEvaluationContext.propertiesChangeContext(originalResource,
                 suppliedResource, principal, content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
+        lateEvaluation(ctx);
         checkForDeadAndZombieProperties(ctx);
         return ctx.getNewResource();
     }
@@ -95,6 +98,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         PropertyEvaluationContext ctx = PropertyEvaluationContext.commentsChangeContext(originalResource,
                 suppliedResource, principal, content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
+        lateEvaluation(ctx);
         checkForDeadAndZombieProperties(ctx);
         return ctx.getNewResource();
     }
@@ -106,6 +110,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         }
         PropertyEvaluationContext ctx = PropertyEvaluationContext.contentChangeContext(resource, principal, content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
+        lateEvaluation(ctx);
         checkForDeadAndZombieProperties(ctx);
         return ctx.getNewResource();
     }
@@ -119,6 +124,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         PropertyEvaluationContext ctx = PropertyEvaluationContext.nameChangeContext(original, resource, principal,
                 content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
+        lateEvaluation(ctx);
         checkForDeadAndZombieProperties(ctx);
         return ctx.getNewResource();
     }
@@ -134,6 +140,7 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         PropertyEvaluationContext ctx = PropertyEvaluationContext.systemChangeContext(originalResource,
                 suppliedResource, principal, content);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
+        lateEvaluation(ctx);
         checkForDeadAndZombieProperties(ctx);
         ctx.updateSystemJobStatusProp();
         return ctx.getNewResource();
@@ -246,6 +253,11 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         // For all prop defs, do evaluation
         PropertyTypeDefinition[] propertyDefinitions = rt.getPropertyTypeDefinitions();
         for (PropertyTypeDefinition def : propertyDefinitions) {
+            if (def.getPropertyEvaluator() instanceof LatePropertyEvaluator) {
+                ctx.addPropertyTypeDefinitionForLateEvaluation(def);
+                continue;
+            }
+            
             evaluateManagedProperty(ctx, def);
         }
 
@@ -254,6 +266,11 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
         for (MixinResourceTypeDefinition mixinDef : mixinTypes) {
             PropertyTypeDefinition[] mixinPropDefs = mixinDef.getPropertyTypeDefinitions();
             for (PropertyTypeDefinition def : mixinPropDefs) {
+                if (def.getPropertyEvaluator() instanceof LatePropertyEvaluator) {
+                    ctx.addPropertyTypeDefinitionForLateEvaluation(def);
+                    continue;
+                }
+                
                 evaluateManagedProperty(ctx, def);
             }
         }
@@ -267,6 +284,12 @@ public class RepositoryResourceHelperImpl implements RepositoryResourceHelper {
             }
         }
         return true;
+    }
+    
+    private void lateEvaluation(PropertyEvaluationContext ctx) throws IOException {
+        for (PropertyTypeDefinition def: ctx.getLateEvalutionPropertyTypeDefinitions()) {
+            evaluateManagedProperty(ctx, def);
+        }
     }
 
     private void evaluateManagedProperty(PropertyEvaluationContext ctx, PropertyTypeDefinition propDef)

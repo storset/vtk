@@ -94,6 +94,7 @@ public class StructuredResourceParser implements InitializingBean {
         }
         this.parsedResourceDescriptions.removeAll(tmp);
         registerParsedResourceDescriptions(this.parsedResourceDescriptions);
+        this.structuredResourceManager.registrationComplete();
     }
 
     private void registerParsedResourceDescriptions(List<ParsedResourceDescription> l) throws Exception {

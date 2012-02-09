@@ -51,6 +51,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.vortikal.repository.resourcetype.AbstractResourceTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.HierarchicalNode;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
@@ -503,7 +506,6 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
         mapPropertyDefinitionsToPrimaryTypes();
 
         this.resourceTypeDescendantNames = buildResourceTypeDescendantsMap();
-        //logger.info("Resource type tree: \n" + getResourceTypeTreeAsString());
     }
     
     @SuppressWarnings("unchecked")
@@ -578,11 +580,8 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
         }
 
         mapPropertyDefinitionsToPrimaryTypes();
-        logger.info("Resource type tree: \n" + getResourceTypeTreeAsString());
-
     
         this.resourceTypeDescendantNames = buildResourceTypeDescendantsMap();
-
     }
 
     private void addMixins(PrimaryResourceTypeDefinition def) {
@@ -846,6 +845,5 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
     @Required public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
     }
-
 
 }

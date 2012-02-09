@@ -186,7 +186,6 @@ function generateManuallyApprovedContainer(resources) {
   $("#manually-approve-container-title").append(
       "<span id='approve-spinner'>" + approveGeneratingPage + " <span id='approve-spinner-generated-pages'>"
       + pages + "</span> " + approveOf + " " + totalPages + "...</span>");
-
   // Generate rest of pages asynchronous
   setTimeout( function() {
     html += generateTableRowFunc(resources[i], i);
@@ -218,6 +217,7 @@ function generateManuallyApprovedContainer(resources) {
       }
       html += "</div>";
       $("#manually-approve-container").append(html);
+      initializeCheckUncheckAll();
       $("#approve-spinner").remove();
       if (len > prPage) {
         $("#manually-approve-container #approve-page-" + pages).hide();
@@ -240,9 +240,9 @@ function generateTableRow(resource, i) {
     var html = "<tr>";
   }
   if (resource.approved) {
-    html += "<td><input type='checkbox' checked='checked' value='" + resource.uri + "'/></td>";
+    html += "<td class='checkbox'><input type='checkbox' checked='checked' value='" + resource.uri + "'/></td>";
   } else {
-    html += "<td><input type='checkbox' value='" + resource.uri + "'/></td>";
+    html += "<td class='checkbox'><input type='checkbox' value='" + resource.uri + "'/></td>";
   }
   html += "<td><a class='approve-link' target='_blank' href='" + resource.uri + "' title='" + resource.title + "'>" + resource.title
       + "</a></td>" + "<td>" + resource.source + "</td><td class='approve-published'>" + resource.published
@@ -272,7 +272,7 @@ function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
 function generateStartPageAndTableHead(pages) {
   return "<div id='approve-page-"
       + pages
-      + "'><table><thead><tr><th id='approve-checkbox'></th><th id='approve-title'>" + approveTableTitle + "</th><th id='approve-src'>" + approveTableSrc + "</th><th id='approve-published'>" + approveTablePublished + "</th></tr></thead><tbody>";
+      + "'><table><thead><tr><th id='approve-checkbox' class='checkbox'></th><th id='approve-title'>" + approveTableTitle + "</th><th id='approve-src'>" + approveTableSrc + "</th><th id='approve-published'>" + approveTablePublished + "</th></tr></thead><tbody>";
 }
 
 /* ^ HTML generation functions */

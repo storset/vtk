@@ -739,11 +739,14 @@ function collectionListingInteraction() {
   placeDeleteButtonInActiveTab();
   placeRecoverButtonInActiveTab();
   placeDeletePermanentButtonInActiveTab();
-  
-  // Checking rows in collectionlisting
+
+  initializeCheckUncheckAll();
+}
+
+function initializeCheckUncheckAll() { // Checking rows in collectionlisting
   if($("td.checkbox").length) {
     $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />")
-    $("th.checkbox input").click(function() {
+    $("#app-content").delegate("th.checkbox input", "click", function() {
       if(this.checked) {
         checkAll();
       } else {
@@ -751,11 +754,6 @@ function collectionListingInteraction() {
       }
     });
   }
-
-  $("td.checkbox input").click(toggleChecked);
-  $("td.checkbox").click(function () {
-    $(this).find("input").each(toggleChecked);
-  });
 }
 
 // options: formName, btnId, service, msg

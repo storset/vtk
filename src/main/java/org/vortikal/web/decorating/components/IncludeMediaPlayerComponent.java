@@ -52,8 +52,8 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
     private final static String PARAMETER_STREAM_TYPE_DESC = "Set to live for live stream";
     private final static String PARAMETER_POSTER = "poster";
     private final static String PARAMETER_POSTER_DESC = "Poster image for video";
-    private final static String PARAMETER_HIDE_DOWNLOAD_LINK = "hide-download-link";
-    private final static String PARAMETER_HIDE_DOWNLOAD_LINK_DESC = "Hide download link if se to 'true'. Default is 'false'";
+    private final static String PARAMETER_SHOW_DOWNLOAD_LINK = "show-download-link";
+    private final static String PARAMETER_SHOW_DOWNLOAD_LINK_DESC = "Shows download link if set to 'true'. Default is 'false'";
 
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -65,9 +65,9 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
         String contentType = request.getStringParameter(PARAMETER_CONTENT_TYPE);
         String streamType = request.getStringParameter(PARAMETER_STREAM_TYPE);
         String poster = request.getStringParameter(PARAMETER_POSTER);
-        String hideDL = request.getStringParameter(PARAMETER_HIDE_DOWNLOAD_LINK);
+        String showDL = request.getStringParameter(PARAMETER_SHOW_DOWNLOAD_LINK);
 
-        mediaPlayer.addMediaPlayer(model, url, height, width, autoplay, contentType, streamType, poster, hideDL);
+        mediaPlayer.addMediaPlayer(model, url, height, width, autoplay, contentType, streamType, poster, showDL);
     }
 
     protected Map<String, String> getParameterDescriptionsInternal() {
@@ -79,7 +79,7 @@ public class IncludeMediaPlayerComponent extends ResourceMediaPlayerComponent {
         map.put(PARAMETER_CONTENT_TYPE, PARAMETER_CONTENT_TYPE_DESCRIPTION);
         map.put(PARAMETER_STREAM_TYPE, PARAMETER_STREAM_TYPE_DESC);
         map.put(PARAMETER_POSTER, PARAMETER_POSTER_DESC);
-        map.put(PARAMETER_HIDE_DOWNLOAD_LINK, PARAMETER_HIDE_DOWNLOAD_LINK_DESC);
+        map.put(PARAMETER_SHOW_DOWNLOAD_LINK, PARAMETER_SHOW_DOWNLOAD_LINK_DESC);
         return map;
     }
 }

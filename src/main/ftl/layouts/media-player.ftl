@@ -6,7 +6,7 @@
   - Description: Article media player
   - 	
   -->
-  
+
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#macro mediaPlayer >
@@ -15,7 +15,7 @@
 
     <#assign dateStr = nanoTime?c />
     <#assign strobeVersion = "10.1.0" />
-  
+
     <script type="text/javascript"><!--
       if (typeof swfobject == 'undefined') {
         document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.5.1-patched/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
@@ -42,19 +42,19 @@
 	  swfobject.embedSWF("${strobe?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, params);
 	// -->
     </script>
-  
+
   <#elseif media?exists && contentType?exists>
-  
+
     <#assign dateStr = nanoTime?c />
     <#assign strobeVersion = "10.1.0" />
-  
+
     <script type="text/javascript"><!--
       if (typeof swfobject == 'undefined') {
         document.write("<scr" + "ipt src='/vrtx/__vrtx/static-resources/flash/StrobeMediaPlayback_1.5.1-patched/10.1/scripts/swfobject.js' type='text/javascript'><\/script>");
       }
     // -->
     </script> 
-   
+
     <#if contentType == "audio" || contentType == "audio/mpeg" || contentType == "audio/mp3" || contentType == "audio/x-mpeg">
       <#-- <script type="text/javascript" src="${audioFlashPlayerJsURL?html}/"></script> -->
    	  <div id="mediaspiller-${dateStr}">
@@ -77,12 +77,13 @@
 	    swfobject.embedSWF("${audioFlashPlayerFlashURL?html}", "mediaspiller-${dateStr}", "290", "24", "${strobeVersion}",false,flashvars,params);
 	  // -->
 	  </script>
-	  <#if hideDL?exists && hideDL != "true">
+
+	  <#if showDL?exists && showDL == "true">
         <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.audio-file" /></a>
       </#if>
-      
+
     <#elseif contentType == "video/quicktime" >
-    
+
       <object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" id="testid" width="${width}" height="${height}" codebase="http://www.apple.com/qtactivex/qtplugin.cab">
         <param name="src" value="${media?html}"/>
         <param name="autoplay" value="<#if autoplay?exists && autoplay = "true">true<#else>false</#if>"/>
@@ -95,13 +96,14 @@
                autoplay="<#if autoplay?exists && autoplay = "true">true<#else>false</#if>"
                controller="true" loop="false" scale="aspect" pluginspage="http://www.apple.com/quicktime/download/">
         </embed>
-      </object> 
-      <#if hideDL?exists && hideDL != "true">
+      </object>
+
+      <#if showDL?exists && showDL == "true">
         <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.media-file" /></a>
       </#if>
-	
+
     <#elseif contentType == "application/x-shockwave-flash" && extension == "swf">
-    
+
 	  <div id="mediaspiller-${dateStr}">
 	    <a class="vrtx-media" href="${media?html}">
 	      <img src="/vrtx/__vrtx/static-resources/themes/default/icons/video-noflash.png" width="500" height="279" alt="<@vrtx.msg code="article.media-file" />"/>
@@ -116,7 +118,7 @@
 		swfobject.embedSWF("${media?html}", "mediaspiller-${dateStr}", "${width}", "${height}", "${strobeVersion}", false, flashvars, flashparams, flashattr);
 	  // -->
 	  </script>
-	  
+
     <#elseif (!streamType?exists) && contentType == "video/x-flv" || contentType == "video/mp4">
       <style type="text/css">
         .vrtx-media-player-no-flash, .vrtx-media-player-no-flash img { width: 507px; height: 282px; float: left; }
@@ -149,16 +151,16 @@
 	  // -->
 	  </script>
 	  <#if contentType == "video/mp4" && !media?starts_with("rtmp")>
-        <#if hideDL?exists && hideDL != "true">
+        <#if showDL?exists && showDL == "true">
           <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.video-file" /></a>
         </#if>
 	  </#if>
     <#else>
-      <#if hideDL?exists && hideDL != "true">
+      <#if showDL?exists && showDL == "true">
         <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.media-file" /></a>
       </#if>
     </#if>
-  
+
   </#if>
 </#macro>
 

@@ -65,6 +65,9 @@ public class ResourceMediaPlayerComponent extends ViewRenderingDecoratorComponen
             return;
         }
 
+        /* Video in the media field of articles always shows download link. */
+        model.put("showDL", "true");
+
         String resourceReferance = mediaProperty.getStringValue();
         mediaPlayer.addMediaPlayer(model, resourceReferance);
     }

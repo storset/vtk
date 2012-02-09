@@ -213,6 +213,7 @@ function insertOrModifyComponent(editor, iframeId, init) {
     if (hideDL.is(':checked')) {
       content = content + " hide-download-link=[true]";
     }
+    alert(content);
     var align = contents.find("#txtAlign").val();
 
     if (content.length > 0) {

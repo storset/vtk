@@ -461,11 +461,6 @@ a:hover {
   background-color: #fff;
 }
 
-/*
-#app-content #main #contents {
-  min-height: 280px;
-}*/
-
 #app-content #main {
   padding: 19px;
   border: 1px solid #d9d9d9;
@@ -2360,6 +2355,7 @@ div.vrtx-admin-form {
 
 .vrtx-sticky-editor-title-submit-buttons #vrtx-editor-title-submit-buttons-inner-wrapper {
   background: #fff;
+  padding-top: 10px;
 }
 
 .vrtx-sticky-editor-title-submit-buttons #vrtx-sticky-editor-bottom-bg {

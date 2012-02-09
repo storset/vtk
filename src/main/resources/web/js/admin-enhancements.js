@@ -294,7 +294,7 @@ $(document).ready(function () {
       var titleSubmitButtonsPos = titleSubmitButtons.offset();
       titleSubmitButtons.append("<span id='vrtx-sticky-editor-bottom-bg'></span>");
       $(window).bind("scroll", function() {
-        if($(window).scrollTop() >= titleSubmitButtonsPos.top) {
+        if($(window).scrollTop() >= (titleSubmitButtonsPos.top - 20)) {
           titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons"); 
           titleSubmitButtons.css("width", $("#contents").width() + "px");
         } else {

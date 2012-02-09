@@ -155,10 +155,6 @@ input[type=checkbox] {
   width: 100px;
 }
 
-#manually-approve-container td .approve-link {
-  padding: 0 0 0 10px;
-}
-
 #manually-approve-container .next,
 #manually-approve-container .prev,
 #manually-approve-container .approve-info {

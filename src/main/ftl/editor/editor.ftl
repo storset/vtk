@@ -485,7 +485,9 @@
 
           <#if name = 'manually-approve-from'>
             <div id="manually-approve-container-title">
-              <a class="vrtx-button" id="manually-approve-refresh" href="."><span>${vrtx.getMsg("editor.manually-approve-refresh")}</span></a>
+              <a class="vrtx-button" id="manually-approve-refresh" href="."><span>
+                <div id="manually-approve-refresh-icon"></div>${vrtx.getMsg("editor.manually-approve-refresh")}</span>
+              </a>
             </div>
             <div id="manually-approve-container">
             </div>

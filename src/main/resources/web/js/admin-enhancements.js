@@ -779,18 +779,13 @@ function collectionListingInteraction() {
 
 function initializeCheckUncheckAll() { // Checking rows in collectionlisting
   if($("td.checkbox").length) {
-    alert("hei");
     $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />")
-    $("th.checkbox input").click(function() {
+    $("#app-content").delegate("th.checkbox input", "click", function() {
       if(this.checked) {
         checkAll();
       } else {
         uncheckAll();
       }
-    });
-    $("td.checkbox input").click(toggleChecked);
-    $("td.checkbox").click(function () {
-      $(this).find("input").each(toggleChecked);
     });
   }
 }

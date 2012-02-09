@@ -64,7 +64,7 @@ public class PropertyEvaluationContext {
     private Principal principal;
     private Map<String, Object> propertyValueMap;
     
-    private Set<PropertyTypeDefinition> lateEvaluationPropDefs = new HashSet<PropertyTypeDefinition>();
+    private List<PropertyTypeDefinition> lateEvaluationPropDefs = new ArrayList<PropertyTypeDefinition>();
 
     private Map<String, Object> contextAttributes = new HashMap<String, Object>();
 
@@ -250,7 +250,7 @@ public class PropertyEvaluationContext {
         this.lateEvaluationPropDefs.add(def);
     }
     
-    public Set<PropertyTypeDefinition> getLateEvalutionPropertyTypeDefinitions() {
+    public List<PropertyTypeDefinition> getLateEvalutionPropertyTypeDefinitions() {
         return this.lateEvaluationPropDefs;
     }
 

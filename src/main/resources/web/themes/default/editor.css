@@ -128,13 +128,19 @@ input[type=checkbox] {
   padding: 5px 15px 4px 0;
   word-wrap: break-word;
   overflow: hidden;
+  vertical-align: top;
 }
 
 #manually-approve-container table th {
   background: url(images/line-dotted.gif) repeat-x bottom left;
   padding: 0 15px 8px 0;
   text-align: left;
-  white-space: nowrap;  
+  white-space: nowrap;
+  vertical-align: top; 
+}
+
+#manually-approve-container th#approve-checkbox {
+  width: 2%;
 }
 
 #manually-approve-container th#approve-title {
@@ -147,10 +153,6 @@ input[type=checkbox] {
 
 #manually-approve-container th#approve-published {
   width: 100px;
-}
-
-#manually-approve-container td .approve-link {
-  padding: 0 0 0 10px;
 }
 
 #manually-approve-container .next,

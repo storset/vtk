@@ -91,6 +91,14 @@ input[type=checkbox] {
   width: 100%;
 }
 
+#manually-approve-refresh-icon {
+  height: 16px;
+  width: 16px;
+  background: url(images/reload.png) no-repeat center center;
+  display: inline-block;
+  margin: 0 5px -5px -7px;
+}
+
 #manually-approve-container-title,
 #approve-spinner {
   padding-left: 20px;

@@ -51,7 +51,7 @@ import org.vortikal.web.service.URL;
 public class ArticleListingController extends AbstractCollectionListingController {
 
     private ArticleListingSearcher searcher;
-    private int defaultNumberOfColumns = 2;
+    private final int defaultNumberOfColumns = 1;
     private PropertyTypeDefinition numberOfColumnsPropDef;
 
     @Override

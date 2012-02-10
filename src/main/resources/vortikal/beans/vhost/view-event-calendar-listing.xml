@@ -126,9 +126,11 @@
               <entry key="[1]" value="${event.listing.days.ahead}" />
             </map>
           </property>
-          <property name="queryString" value="(start-date &gt;= {$currentDate} AND start-date &lt; {$currentDate+[1]d})
-            OR (end-date &gt;= {$currentDate} AND end-date &lt; {$currentDate+[1]d})
-            OR (start-date &lt;= {$currentDate} AND end-date &gt;= {$currentDate+[1]d})" />
+          <property name="queryString"
+            value="(start-date &gt;= {$currentTime} AND start-date &lt; {$currentTime+[1]d})
+            OR (end-date &gt;= {$currentTime} AND end-date &lt; {$currentTime+[1]d})
+            OR (start-date &lt;= {$currentTime} AND end-date &gt;= {$currentTime+[1]d})
+            OR (start-date &gt;= {$currentDate} AND end-date not exists)" />
         </bean>
       </list>
     </property>

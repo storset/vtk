@@ -31,6 +31,7 @@
 package org.vortikal.repository;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -261,7 +262,10 @@ public class ResourceWrapper implements Resource {
 
     public void addProperty(Property property) {
         this.resource.addProperty(property);
-
+    }
+    
+    public Iterator<Property> iterator() {
+        return this.resource.iterator();
     }
 
 }

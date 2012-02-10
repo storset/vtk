@@ -32,9 +32,11 @@ package org.vortikal.repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -54,7 +56,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     
     protected Path uri;
     protected String resourceType;
-    protected Map<Namespace, Map<String, Property>> propertyMap =
+    protected final Map<Namespace, Map<String, Property>> propertyMap =
         new HashMap<Namespace, Map<String, Property>>();
     
     // Numeric ID used by database 
@@ -178,7 +180,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     @Override
     public List<Property> getProperties(Namespace namespace) {
         Map<String, Property> map = this.propertyMap.get(namespace);
-        if (map == null) return new ArrayList<Property>();
+        if (map == null) return new ArrayList<Property>(1);
         return new ArrayList<Property>(map.values());
     }
 
@@ -252,6 +254,73 @@ public class PropertySetImpl implements PropertySet, Cloneable {
 
     public void setUri(Path uri) {
         this.uri = uri;
+    }
+    
+    protected static class PropertyIterator implements Iterator<Property> {
+        protected Iterator<Map<String,Property>> nsIterator;
+        protected Iterator<Property> propIterator;
+
+        protected PropertyIterator(Map<Namespace, Map<String, Property>> propertyMap) {
+            this.nsIterator = propertyMap.values().iterator();
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (propIterator == null || !propIterator.hasNext()) {
+                Iterator<Property> nextPropIterator = nextPropIterator();
+                if (nextPropIterator != null) {
+                    propIterator = nextPropIterator;
+                } else {
+                    return false;
+                }
+            }
+            return propIterator.hasNext();
+        }
+
+        @Override
+        public Property next() {
+            if (propIterator == null || !propIterator.hasNext()) {
+                Iterator<Property> nextPropIterator = nextPropIterator();
+                if (nextPropIterator != null) {
+                    propIterator = nextPropIterator;
+                } else {
+                    throw new NoSuchElementException();
+                }
+            }
+            return propIterator.next();
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Removal from PropertySet not allowed.");
+        }
+
+        private Iterator<Property> nextPropIterator() {
+            while (nsIterator.hasNext()) {
+                Iterator<Property> it = nsIterator.next().values().iterator();
+                if (it.hasNext()) {
+                    return it;
+                }
+            }
+            return null;
+        }
+    }
+    
+    protected static final class PropertyIteratorWithRemoval extends PropertyIterator {
+        protected PropertyIteratorWithRemoval(Map<Namespace, Map<String, Property>> propertyMap) {
+            super(propertyMap);
+        }
+        
+        @Override
+        public void remove() {
+            if (propIterator == null) throw new IllegalStateException("Nothing to remove");
+            propIterator.remove();
+        }
+    }
+
+    @Override
+    public Iterator<Property> iterator() {
+        return new PropertyIterator(propertyMap);
     }
     
 }

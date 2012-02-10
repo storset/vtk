@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -432,4 +433,11 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         }
         return props.get(name);
     }
+
+    @Override
+    public Iterator<Property> iterator() {
+        // Resource interface API allows property removal, so iterator should as well.
+        return new PropertyIteratorWithRemoval(super.propertyMap);
+    }
+    
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <bean id="eventListing.viewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
@@ -50,8 +50,7 @@
     <property name="daysAhead" value="${event.listing.days.ahead}" />
   </bean>
 
-  <bean id="eventListing.atomHandler" class="org.vortikal.web.display.collection.event.EventListingAsFeedController"
-    parent="viewAsFeedHandler">
+  <bean id="eventListing.atomHandler" class="org.vortikal.web.display.collection.event.EventListingAsFeedController" parent="viewAsFeedHandler">
     <property name="helper" ref="eventListingHelper" />
     <property name="searcher" ref="eventListing.eventListingSearcher" />
     <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />
@@ -81,15 +80,26 @@
     <property name="queryBuilders">
       <list>
         <ref bean="eventListing.listingUriQueryBuilder" />
+        <ref bean="eventListing.upcomingEventsQueryBuilder" />
         <bean parent="queryStringParser">
-          <property name="queryString" value="(type IN event) AND (start-date &gt;= {$currentDate} OR (end-date exists AND end-date &gt;= {$currentTime}))" />
+          <property name="queryString" value="type IN event" />
         </bean>
       </list>
     </property>
     <property name="searchSorting" ref="eventListing.upcoming.searchSorting" />
-    <property name="resourceTypeTree" ref="resourceTypeTree"/>
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
-  
+
+  <bean id="eventListing.upcomingEventsQueryBuilder" class="org.vortikal.web.search.eventlisting.EventsDateAndTimeQueryBuilder">
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="startPropDefPointer" value="start-date" />
+    <property name="endPropDefPointer" value="end-date" />
+  </bean>
+
+  <bean id="eventListing.previousEventsQueryBuilder" parent="eventListing.upcomingEventsQueryBuilder">
+    <property name="inverted" value="true" />
+  </bean>
+
   <bean id="eventListing.processedQuerySearchComponent" parent="${override.listing.prefix}eventListing.upcomingEventsSearchComponent">
     <property name="name" value="eventListing.calendarEventSearch" />
     <property name="titleLocalizationKey">
@@ -118,8 +128,9 @@
     <property name="queryBuilders">
       <list>
         <ref bean="eventListing.listingUriQueryBuilder" />
+        <ref bean="eventListing.previousEventsQueryBuilder" />
         <bean parent="queryStringParser">
-          <property name="queryString" value="(type IN event) AND ((end-date exists AND end-date &lt; {$currentTime}) OR start-date &lt; {$currentDate})" />
+          <property name="queryString" value="type IN event" />
         </bean>
       </list>
     </property>

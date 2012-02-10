@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <!-- ### Default service, grouped view ###-->
 
@@ -126,9 +126,11 @@
               <entry key="[1]" value="${event.listing.days.ahead}" />
             </map>
           </property>
-          <property name="queryString" value="(start-date &gt;= {$currentDate} AND start-date &lt; {$currentDate+[1]d})
-            OR (end-date &gt;= {$currentDate} AND end-date &lt; {$currentDate+[1]d})
-            OR (start-date &lt;= {$currentDate} AND end-date &gt;= {$currentDate+[1]d})" />
+          <property name="queryString"
+            value="(start-date &gt;= {$currentTime} AND start-date &lt; {$currentTime+[1]d})
+            OR (end-date &gt;= {$currentTime} AND end-date &lt; {$currentTime+[1]d})
+            OR (start-date &lt;= {$currentTime} AND end-date &gt;= {$currentTime+[1]d})
+            OR (start-date &gt;= {$currentDate} AND end-date not exists)" />
         </bean>
       </list>
     </property>

@@ -305,7 +305,7 @@
     <property name="propertyEvaluator" ref="resourceLinksEvaluator" />
   </bean>
 
-  <bean id="resourceLinksEvaluator" class="org.vortikal.repository.resourcetype.property.LinksPropertyEvaluator">
+  <bean id="resourceLinksEvaluator" class="org.vortikal.repository.resourcetype.property.LinksEvaluator">
     <property name="resourceManager" ref="structuredResources.resourceManager" />
   </bean>
 

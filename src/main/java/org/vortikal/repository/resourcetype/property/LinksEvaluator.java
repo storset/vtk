@@ -33,9 +33,12 @@ package org.vortikal.repository.resourcetype.property;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
@@ -47,6 +50,8 @@ import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
+import org.vortikal.util.io.StreamUtil;
+import org.vortikal.util.text.JSON;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -55,47 +60,50 @@ import org.xml.sax.SAXException;
 
 import net.sf.json.JSONArray;
 
-public class LinksPropertyEvaluator implements LatePropertyEvaluator {
+public class LinksEvaluator implements LatePropertyEvaluator {
     
     private StructuredResourceManager resourceManager;
-    
-    @Required
-    public void setResourceManager(StructuredResourceManager resourceManager) {
-        this.resourceManager = resourceManager;
-    }
     
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
             throws PropertyEvaluationException {
 
-        LinkCollector collector = new LinkCollector();
+        final LinkCollector collector = new LinkCollector();
+        boolean evaluateContent = true;
         try {
-            Resource r = ctx.getNewResource();
-            for (Property p: r.getProperties()) {
+            if (property.isValueInitialized()
+                    && ctx.getEvaluationType() != Type.ContentChange && ctx.getEvaluationType() != Type.Create) {
+                // Preserve existing content links, since this is not content change.
+                InputStream stream = property.getBinaryStream().getStream();
+                String jsonString = StreamUtil.streamToString(stream, "utf-8");
+                JSONObject json = JSONObject.fromObject(jsonString);
+                if (json.has("contentLinks")) {
+                    for (Object link: json.getJSONArray("contentLinks")) {
+                        collector.add((String)link, LinkSource.CONTENT);
+                    }
+                    
+                    evaluateContent = false;
+                }
+            }
+        } catch (Throwable t) {
+            // Some error in old property value, ignore and start fresh
+            collector.clear();
+        }
+        
+        try {
+            Resource resource = ctx.getNewResource();
+            for (Property p: resource) {
                 if (p.getType() == PropertyType.Type.IMAGE_REF) {
-                    collector.add(p.getValue().getStringValue());
+                    collector.add(p.getValue().getStringValue(), LinkSource.PROPERTIES);
                 } else if (p.getType() == PropertyType.Type.HTML) {
                     InputStream is = new ByteArrayInputStream(p.getStringValue().getBytes());
-                    extractLinks(is, collector);
+                    extractLinks(is, collector, LinkSource.PROPERTIES);
                 }
             }
 
-            // XXX just for testing late evaluation, need to do complete eval regardless of eval type.
-//            if (ctx.getEvaluationType() != Type.ContentChange && ctx.getEvaluationType() != Type.Create) {
-//                if (collector.isEmpty()) {
-//                    return false;
-//                }
-//                property.setBinaryValue(collector.serialize(), "application/json");
-//                return true;
-//            }
-            
-//            if (ctx.getContent() == null) {
-//                return false;
-//            }
-
-            if (ctx.getContent() != null) {
-                if ("application/json".equals(r.getContentType())) {
-                    StructuredResourceDescription desc = this.resourceManager.get(r.getResourceType());
+            if (evaluateContent && ctx.getContent() != null) {
+                if ("application/json".equals(resource.getContentType())) {
+                    StructuredResourceDescription desc = this.resourceManager.get(resource.getResourceType());
                     if (desc != null) {
 
                         StructuredResource res = desc.buildResource(ctx.getContent().getContentInputStream());
@@ -105,13 +113,13 @@ public class LinksPropertyEvaluator implements LatePropertyEvaluator {
                                 Object p = res.getProperty(pdesc.getName());
                                 if (p != null) {
                                     InputStream is = new ByteArrayInputStream(p.toString().getBytes());
-                                    extractLinks(is, collector);
+                                    extractLinks(is, collector, LinkSource.CONTENT);
                                 }
                             }
                         }
                     }
-                } else if ("text/html".equals(r.getContentType())) {
-                    extractLinks(ctx.getContent().getContentInputStream(), collector);
+                } else if ("text/html".equals(resource.getContentType())) {
+                    extractLinks(ctx.getContent().getContentInputStream(), collector, LinkSource.CONTENT);
                 }
             }
 
@@ -125,29 +133,48 @@ public class LinksPropertyEvaluator implements LatePropertyEvaluator {
         }
     }
     
+    private enum LinkSource {
+        PROPERTIES,
+        CONTENT
+    }
     
     private class LinkCollector {
-        private Set<String> links = new HashSet<String>();
-        public void add(String link) {
-            links.add(link);
+        private Set<String> propertyLinks = new HashSet<String>();
+        private Set<String> contentLinks = new HashSet<String>();
+
+        public void add(String link, LinkSource source) {
+            if (source == LinkSource.PROPERTIES) {
+                propertyLinks.add(link);
+            } else {
+                contentLinks.add(link);
+            }
+        }
+        public void clear() {
+            this.propertyLinks.clear();
+            this.contentLinks.clear();
         }
         public boolean isEmpty() {
-            return this.links.isEmpty();
+            return this.propertyLinks.isEmpty() && this.contentLinks.isEmpty();
         }
         public byte[] serialize() throws Exception {
+            JSONObject obj = new JSONObject();
             JSONArray arr = new JSONArray();
-            for (String link: this.links) {
-                arr.add(link);
-            }
-            return arr.toString().getBytes("utf-8");
+            arr.addAll(this.propertyLinks);
+            obj.put("propertyLinks", arr);
+
+            arr = new JSONArray();
+            arr.addAll(this.contentLinks);
+            obj.put("contentLinks", arr);
+            
+            return obj.toString().getBytes("utf-8");
         }
     }
 
     
-    private void extractLinks(InputStream is, LinkCollector listener) throws Exception {
+    private void extractLinks(InputStream is, LinkCollector listener, LinkSource source) throws Exception {
         org.ccil.cowan.tagsoup.Parser parser
         = new org.ccil.cowan.tagsoup.Parser();
-        Handler handler = new Handler(listener);
+        Handler handler = new Handler(listener, source);
         parser.setContentHandler(handler);
 
         InputSource input = new InputSource(is);
@@ -165,9 +192,11 @@ public class LinksPropertyEvaluator implements LatePropertyEvaluator {
 
     private static class Handler implements ContentHandler {
         private LinkCollector listener;
+        private LinkSource linkSource;
 
-        public Handler(LinkCollector listener) {
+        public Handler(LinkCollector listener, LinkSource source) {
             this.listener = listener;
+            this.linkSource = source;
         }
         
         private static final Set<String> ELEMS = new HashSet<String>(Arrays.asList(new String[]{
@@ -193,7 +222,7 @@ public class LinksPropertyEvaluator implements LatePropertyEvaluator {
                             || "frame".equals(localName) && "src".equals(attrName)
                             || "iframe".equals(localName) && "src".equals(attrName)) {
                         if (attrValue != null) {
-                            this.listener.add(attrValue);
+                            this.listener.add(attrValue, this.linkSource);
                         }
                     }
                 }                
@@ -244,5 +273,10 @@ public class LinksPropertyEvaluator implements LatePropertyEvaluator {
                 throws SAXException {
         }
 
+    }
+    
+    @Required
+    public void setResourceManager(StructuredResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
     }
 }

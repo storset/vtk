@@ -72,10 +72,9 @@
             </map>
           </property>
           <property name="queryString"
-            value="(resource:start-date &gt;= {$currentTime} AND resource:start-date &lt; {$currentTime+[1]d})
-            OR (resource:end-date &gt;= {$currentTime} AND resource:end-date &lt; {$currentTime+[1]d})
-            OR (resource:start-date &lt;= {$currentTime} AND resource:end-date &gt;= {$currentTime+[1]d})
-            OR (resource:start-date &gt;= {$currentDate} AND resource:end-date not exists)" />
+            value="(resource:start-date &gt;= {$currentDate} AND resource:start-date &lt; {$currentDate+[1]d})
+            OR (resource:end-date &gt;= {$currentDate} AND resource:end-date &lt; {$currentDate+[1]d})
+            OR (resource:start-date &lt;= {$currentDate} AND resource:end-date &gt;= {$currentDate+[1]d})" />
         </bean>
       </list>
     </property>

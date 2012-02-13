@@ -38,7 +38,7 @@
           <#if articles.name == "articleListing.featuredArticles">
             <#local articleType = "vrtx-featured-article" />
           </#if>
-          <div id="vrtx-result-${i}" class="vrtx-resource ${articleType}">
+          <div id="vrtx-result-${i}" class="vrtx-resource ${articleType}<#if numberOfColumns == 2> ${articleType}-<#if i % 2 == 0>right<#else>left</#if></#if>">
           <#local introImgURI = vrtx.propValue(r, 'picture') />
           <#if introImgURI?exists>
     			<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />

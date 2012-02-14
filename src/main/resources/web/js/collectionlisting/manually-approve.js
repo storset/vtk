@@ -51,22 +51,20 @@ $(document).ready(function() {
       var textfield = $("#resource\\.manually-approved-resources");
       var value = textfield.val();
       var uri = $(this).val();
-      if(uri.indexOf("on") === -1) { // Ignore 'on' - dont where it comes from..
-        if (this.checked) {
-          if (value.length) {
-            value += ", " + uri;
-          } else {
-            value = uri;
-          }
+      if (this.checked) {
+        if (value.length) {
+          value += ", " + uri;
         } else {
-          if (value.indexOf(uri) == 0) {
-            value = value.replace(uri, "");
-          } else {
-            value = value.replace(", " + uri, "");
-          }
+          value = uri;
         }
-        textfield.val(value);
+      } else {
+        if (value.indexOf(uri) == 0) {
+          value = value.replace(uri, "");
+        } else {
+          value = value.replace(", " + uri, "");
+        }
       }
+      textfield.val(value);
     });
     
     // Paging - next

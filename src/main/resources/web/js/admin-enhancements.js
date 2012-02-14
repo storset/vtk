@@ -778,7 +778,7 @@ function collectionListingInteraction() {
   initializeCheckUncheckAll();
 }
 
-function initializeCheckUncheckAll() { // Checking rows in collectionlisting
+function initializeCheckUncheckAll() {
   if($("td.checkbox").length) {
     $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />")
     if($("form#editor").length) {

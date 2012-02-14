@@ -46,6 +46,8 @@
      var approveTableTitle = "<@vrtx.msg code='proptype.name.title' />";
      var approveTableSrc = "<@vrtx.msg code='resource.sourceURL' />";
      var approveTablePublished = "<@vrtx.msg code='publish.permission.published' />";
+     var approveShowAll = "<@vrtx.msg code='editor.manually-approve.show-all' />";
+     var approveShowApprovedOnly = "<@vrtx.msg code='editor.manually-approve.show-approved-only' />";
     
      shortcut.add("Ctrl+S",function() {
        $(".vrtx-focus-button:last input").click();

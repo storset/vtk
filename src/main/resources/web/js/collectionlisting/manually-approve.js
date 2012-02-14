@@ -5,7 +5,7 @@
  *
  */
 
-var lastVal = "", manuallyApproveFoldersTxt, aggregatedFoldersTxt, onlyApproved = false;
+var lastVal = "", manuallyApproveFoldersTxt, aggregatedFoldersTxt, approvedOnly = false;
 
 $(window).load(function() {
   // Retrieve initial resources
@@ -25,8 +25,8 @@ $(window).load(function() {
     
     
     var html = '<ul id="vrtx-manually-approve-tab-menu">'
-               + '<li class="active active-first"><span>Show all articles</span></li>'
-               + '<li class="last"><a href="javascript:void(0);">Show only approved articles</a></li>'
+               + '<li class="active active-first"><span>' + approveShowAll + '</span></li>'
+               + '<li class="last"><a href="javascript:void(0);">' + approveShowApprovedOnly + '</a></li>'
              + '</ul>';
     $(html).insertAfter("#manually-approve-container-title");
   }
@@ -38,14 +38,14 @@ $(document).ready(function() {
       var parent = $(this).parent();
       $(this).replaceWith("<span>" + $(this).html() + "</span>");
       if(parent.hasClass("last")) {
-        onlyApproved = true;
+        approvedOnly = true;
         parent.attr("class", "active active-last");
         var parentPrev = parent.prev();
         parentPrev.attr("class", "first");
         parentPrevSpan = parentPrev.find("span");
         parentPrevSpan.replaceWith('<a href="javascript:void(0);">' + parentPrevSpan.html() + "</a>");
       } else {
-        onlyApproved = false;
+        approvedOnly = false;
         parent.attr("class", "active active-first");
         parentNext = parent.next();
         parentNext.attr("class", "last");
@@ -131,7 +131,7 @@ $(document).ready(function() {
 
 function retrieveResources(serviceUri, folders, aggregatedFolders) {
 
-  if(onlyApproved) {
+  if(approvedOnly) {
     var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources&approved-only";
   } else {
     var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources";

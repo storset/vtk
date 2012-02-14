@@ -184,7 +184,9 @@ input[type=checkbox] {
   margin-left: 20px
 }
 
-
+#vrtx-resource\.manually-approved-resources {
+  display: none;
+}
 
 /* ^ Manual approval */
 

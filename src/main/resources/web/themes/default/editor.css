@@ -118,7 +118,8 @@ input[type=checkbox] {
   display: inline-block;
 }
 
-#manually-approve-container.hidden {
+#manually-approve-container.hidden,
+#vrtx-manually-approve-tab-menu.hidden {
   display: none;
 }
 

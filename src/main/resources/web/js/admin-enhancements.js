@@ -748,6 +748,7 @@ function initializeCheckUncheckAll() {
   if($("td.checkbox").length) {
     $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />")
     if($("form#editor").length) {
+      $("td.checkbox input").removeAttr("disabled");
       $("th.checkbox input").click(function() {
         var checkAll = this.checked;
         $("td.checkbox input:visible").each(function () {

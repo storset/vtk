@@ -5,7 +5,7 @@
  *
  */
 
-var lastVal = "", manuallyApproveFoldersTxt, aggregatedFoldersTxt, approvedOnly = false;
+var lastVal = "", manuallyApproveFoldersTxt, aggregatedFoldersTxt, approvedOnly = false, asyncGenPagesTimer;
 
 $(window).load(function() {
   // Retrieve initial resources
@@ -23,12 +23,11 @@ $(window).load(function() {
     }
     retrieveResources(".", folders, aggregatedFolders);
     
-    
     var html = '<ul id="vrtx-manually-approve-tab-menu">'
                + '<li class="active active-first"><span>' + approveShowAll + '</span></li>'
                + '<li class="last"><a href="javascript:void(0);">' + approveShowApprovedOnly + '</a></li>'
              + '</ul>';
-    $(html).insertAfter("#manually-approve-container-title");
+    $(html).insertAfter("#manually-approve-container-title"); 
   }
 });
 
@@ -42,14 +41,14 @@ $(document).ready(function() {
         parent.attr("class", "active active-last");
         var parentPrev = parent.prev();
         parentPrev.attr("class", "first");
-        parentPrevSpan = parentPrev.find("span");
+        var parentPrevSpan = parentPrev.find("span");
         parentPrevSpan.replaceWith('<a href="javascript:void(0);">' + parentPrevSpan.html() + "</a>");
       } else {
         approvedOnly = false;
         parent.attr("class", "active active-first");
-        parentNext = parent.next();
+        var parentNext = parent.next();
         parentNext.attr("class", "last");
-        parentNextSpan = parentNext.find("span");
+        var parentNextSpan = parentNext.find("span");
         parentNextSpan.replaceWith('<a href="javascript:void(0);">' + parentNextSpan.html() + "</a>");     
       }
       $("#manually-approve-refresh").trigger("click");
@@ -58,6 +57,9 @@ $(document).ready(function() {
     });
 
     $("#manually-approve-refresh").click(function(e) {
+      clearTimeout(asyncGenPagesTimer);
+      $("#approve-spinner").remove();
+      
       if(manuallyApproveFoldersTxt && manuallyApproveFoldersTxt.length) {
         var folders, aggregatedFolders;
         
@@ -147,6 +149,12 @@ function retrieveResources(serviceUri, folders, aggregatedFolders) {
       getUri += "&aggregate=" + $.trim(aggregatedFolders[i]);
     }
   }
+  
+  if(!folders.length) {
+    $("#vrtx-manually-approve-tab-menu:visible").addClass("hidden");
+    $("#manually-approve-container:visible").addClass("hidden");
+    return;
+  }
 
   $.ajax( {
     url: getUri + "&no-cache=" + (+new Date()),
@@ -154,14 +162,19 @@ function retrieveResources(serviceUri, folders, aggregatedFolders) {
     cache: false,
     success: function(data) {
       if (data != null && data.length > 0) {
+        $("#vrtx-manually-approve-tab-menu:hidden").removeClass("hidden");
         $("#manually-approve-container:hidden").removeClass("hidden");
+        
         generateManuallyApprovedContainer(data);
         // TODO !spageti && !run twice
         if (requestFromEditor()) {
           storeInitPropValues();
         }
       } else {
-        $("#manually-approve-container").addClass("hidden");
+        if(!approvedOnly) {
+          $("#vrtx-manually-approve-tab-menu:visible").addClass("hidden");
+        }
+        $("#manually-approve-container:visible").addClass("hidden");
       }
     },
     error: function(xhr, textStatus) {
@@ -223,7 +236,7 @@ function generateManuallyApprovedContainer(resources) {
       "<span id='approve-spinner'>" + approveGeneratingPage + " <span id='approve-spinner-generated-pages'>"
       + pages + "</span> " + approveOf + " " + totalPages + "...</span>");
   // Generate rest of pages asynchronous
-  setTimeout( function() {
+  asyncGenPagesTimer = setTimeout(function() {
     html += generateTableRowFunc(resources[i], i);
     if ((i + 1) % prPage == 0) {
       html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
@@ -240,7 +253,7 @@ function generateManuallyApprovedContainer(resources) {
     }
     i++;
     if (i < len) {
-      setTimeout(arguments.callee, 1);
+      asyncGenPagesTimer = setTimeout(arguments.callee, 1);
     } else {
       if (remainder != 0) {
         html += generateTableEndAndPageInfoFunc(pages, prPage, len, true);
@@ -283,9 +296,9 @@ function generateTableRow(resource, i) {
     var html = "<tr>";
   }
   if (resource.approved) {
-    html += "<td class='checkbox'><input type='checkbox' checked='checked' value='" + resource.uri + "'/></td>";
+    html += "<td class='checkbox'><input type='checkbox' disabled='disabled' checked='checked' value='" + resource.uri + "'/></td>";
   } else {
-    html += "<td class='checkbox'><input type='checkbox' value='" + resource.uri + "'/></td>";
+    html += "<td class='checkbox'><input type='checkbox' disabled='disabled' value='" + resource.uri + "'/></td>";
   }
   html += "<td><a class='approve-link' target='_blank' href='" + resource.uri + "' title='" + resource.title + "'>" + resource.title
       + "</a></td>" + "<td>" + resource.source + "</td><td class='approve-published'>" + resource.published

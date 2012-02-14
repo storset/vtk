@@ -743,47 +743,55 @@ function collectionListingInteraction() {
   initializeCheckUncheckAll();
 }
 
-function initializeCheckUncheckAll() { // Checking rows in collectionlisting
+function initializeCheckUncheckAll() {
   if($("td.checkbox").length) {
     $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />")
     if($("form#editor").length) {
-      $("#app-content").delegate("th.checkbox input", "click", function() {
-        var checkAll = this.checked
+      $("th.checkbox input").click(function() {
+        var checkAll = this.checked;
         $("td.checkbox input").each(function () {
           var isChecked = this.checked;
           if (!isChecked && checkAll) { 
-            $(this).attr('checked', true).change();
+            $(this).attr('checked', true).trigger("change");
           }
           if (isChecked && !checkAll) {
-            $(this).attr('checked', false).change();
+            $(this).attr('checked', false).trigger("change");
           }
         });
       }); 
     } else {
-      $("#app-content").delegate("th.checkbox input", "click", function() {
+      $("th.checkbox input").click(function() {
         var checkAll = this.checked;
         $("td.checkbox input").each(function () {
           var isChecked = this.checked;
           var parentParent = $(this).parent().parent();
           if(!isChecked && checkAll) {
             $(this).attr('checked', true).change();
-            parentParent.addClass("checked");
+            if(!parentParent.hasClass("checked")) {
+              parentParent.addClass("checked");
+            }
           }
           if(isChecked && !checkAll) {
             $(this).attr('checked', false).change();
-            parentParent.removeClass("checked");
-          }
-        }); 
-        $("#app-content").delegate("td.checkbox input", "click", function() {
-          var isChecked = this.checked;
-          var parentParent = $(this).parent().parent();
-          if(isChecked) {
-            parentParent.addClass("checked");
-          } else {
-            parentParent.removeClass("checked");
+            if(parentParent.hasClass("checked")) {
+              parentParent.removeClass("checked");
+            }
           }
         });
-      }); 
+      });
+      $("td.checkbox input").click(function() {
+        var isChecked = this.checked;
+        var parentParent = $(this).parent().parent();
+        if(isChecked) {
+          if(!parentParent.hasClass("checked")) {
+            parentParent.addClass("checked");
+          }
+        } else {
+          if(parentParent.hasClass("checked")) {
+            parentParent.removeClass("checked");
+          }
+        }
+      });
     }
   }
 }

@@ -47,7 +47,7 @@ $(document).ready(function() {
     });
 
     // Add / remove manually approved uri's
-    $("#manually-approve-container").delegate("input", "change", function(e) {
+    $("#manually-approve-container").delegate("td.checkbox input", "change", function(e) {
       var textfield = $("#resource\\.manually-approved-resources");
       var value = textfield.val();
       var uri = $(this).val();
@@ -67,8 +67,6 @@ $(document).ready(function() {
         }
         textfield.val(value);
       }
-      e.stopPropagation();
-      e.preventDefault();
     });
     
     // Paging - next

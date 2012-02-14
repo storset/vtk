@@ -780,13 +780,45 @@ function collectionListingInteraction() {
 function initializeCheckUncheckAll() { // Checking rows in collectionlisting
   if($("td.checkbox").length) {
     $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />")
-    $("#app-content").delegate("th.checkbox input", "click", function() {
-      if(this.checked) {
-        checkAll();
-      } else {
-        uncheckAll();
-      }
-    });
+    if($("form#editor").length) {
+      $("#app-content").delegate("th.checkbox input", "click", function() {
+        var checkAll = this.checked
+        $("td.checkbox input").each(function () {
+          var isChecked = this.checked;
+          if (!isChecked && checkAll) { 
+            $(this).attr('checked', true).change();
+          }
+          if (isChecked && !checkAll) {
+            $(this).attr('checked', false).change();
+          }
+        });
+      }); 
+    } else {
+      $("#app-content").delegate("th.checkbox input", "click", function() {
+        var checkAll = this.checked;
+        $("td.checkbox input").each(function () {
+          var isChecked = this.checked;
+          var parentParent = $(this).parent().parent();
+          if(!isChecked && checkAll) {
+            $(this).attr('checked', true).change();
+            parentParent.addClass("checked");
+          }
+          if(isChecked && !checkAll) {
+            $(this).attr('checked', false).change();
+            parentParent.removeClass("checked");
+          }
+        }); 
+        $("#app-content").delegate("td.checkbox input", "click", function() {
+          var isChecked = this.checked;
+          var parentParent = $(this).parent().parent();
+          if(isChecked) {
+            parentParent.addClass("checked");
+          } else {
+            parentParent.removeClass("checked");
+          }
+        });
+      }); 
+    }
   }
 }
 
@@ -888,37 +920,6 @@ function placeDeletePermanentButtonInActiveTab() {
     e.stopPropagation(); 
     e.preventDefault();
   });
-}
-
-function checkAll() {
-  $("td.checkbox input").each(function () {
-    this.checked = true;
-    switchCheckedRow(this);
-  });
-}
-
-function uncheckAll() {
-  $("td.checkbox input").each(function () {
-    this.checked = false;
-    switchCheckedRow(this);
-  });
-}
-
-function toggleChecked() {
-  if (this.checked) {
-    this.checked = false;
-  } else {
-    this.checked = true;
-  }
-  switchCheckedRow(this);
-}
-
-function switchCheckedRow(checkbox) {
-  if (checkbox.checked) {
-    $(checkbox).parent().parent().addClass("checked");
-  } else {
-    $(checkbox).parent().parent().removeClass("checked");
-  }
 }
 
 

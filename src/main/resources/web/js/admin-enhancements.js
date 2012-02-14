@@ -785,7 +785,7 @@ function initializeCheckUncheckAll() {
     if($("form#editor").length) {
       $("th.checkbox input").click(function() {
         var checkAll = this.checked;
-        $("td.checkbox input").each(function () {
+        $("td.checkbox input:visible").each(function () {
           var isChecked = this.checked;
           if (!isChecked && checkAll) { 
             $(this).attr('checked', true).trigger("change");

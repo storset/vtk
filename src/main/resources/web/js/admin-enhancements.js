@@ -774,6 +774,7 @@ function collectionListingInteraction() {
   placeDeleteButtonInActiveTab();
   placeRecoverButtonInActiveTab();
   placeDeletePermanentButtonInActiveTab();
+  
   initializeCheckUncheckAll();
 }
 

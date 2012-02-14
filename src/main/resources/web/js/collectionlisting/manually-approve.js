@@ -48,21 +48,17 @@ $(document).ready(function() {
 
     // Add / remove manually approved uri's
     $("#manually-approve-container").delegate("input", "change", function(e) {
-      console.log(e.type);
       var textfield = $("#resource\\.manually-approved-resources");
       var value = textfield.val();
       var uri = $(this).val();
-      console.log(uri);
       if(uri.indexOf("on") === -1) { // Ignore 'on' - dont where it comes from..
         if (this.checked) {
-          console.log(this.checked);
           if (value.length) {
             value += ", " + uri;
           } else {
             value = uri;
           }
         } else {
-          console.log(this.checked);
           if (value.indexOf(uri) == 0) {
             value = value.replace(uri, "");
           } else {

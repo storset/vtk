@@ -778,6 +778,7 @@ function collectionListingInteraction() {
   initializeCheckUncheckAll();
 }
 
+// TODO: refactor/simplify
 function initializeCheckUncheckAll() {
   if($("td.checkbox").length) {
     $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />")

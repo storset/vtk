@@ -1738,21 +1738,30 @@ h3.resourceInfoHeader {
 
 /* Tab menu */
 
-#vrtx-resource-visit-tab-menu li {
+#vrtx-manually-approve-tab-menu {
+  padding: 15px 0 0 0;
+}
+
+#vrtx-resource-visit-tab-menu li,
+#vrtx-manually-approve-tab-menu li {
   float: left;
 }
 
 #vrtx-resource-visit-tab-menu li a,
-#vrtx-resource-visit-tab-menu li span {
+#vrtx-resource-visit-tab-menu li span,
+#vrtx-manually-approve-tab-menu li a,
+#vrtx-manually-approve-tab-menu li span {
   display: inline-block;
 }
 
-#vrtx-resource-visit-tab-menu li span {
+#vrtx-resource-visit-tab-menu li span,
+#vrtx-manually-approve-tab-menu li span {
   padding: 5px 15px 5px 10px;
   margin: 0 0 0 5px;
 }
 
-#vrtx-resource-visit-tab-menu li a {
+#vrtx-resource-visit-tab-menu li a,
+#vrtx-manually-approve-tab-menu li a {
   padding: 5px 15px;
 }
 
@@ -1768,24 +1777,29 @@ h3.resourceInfoHeader {
 }
 */
 
-#vrtx-resource-visit-tab-menu li a {
+#vrtx-resource-visit-tab-menu li a,
+#vrtx-manually-approve-tab-menu li a {
   background: url(images/report-tab-middle.png) repeat-x 0px 25px;
   white-space: nowrap;
 }
 
-#vrtx-resource-visit-tab-menu li.active {
+#vrtx-resource-visit-tab-menu li.active,
+#vrtx-manually-approve-tab-menu li.active {
   background: url(images/report-tab-active-left.png) no-repeat top left;
 }
 
-#vrtx-resource-visit-tab-menu li.active span {
+#vrtx-resource-visit-tab-menu li.active span,
+#vrtx-manually-approve-tab-menu li.active span {
   background: url(images/report-tab-active-right.png) no-repeat top right;
 }
 
-#vrtx-resource-visit-tab-menu li.active.active-first {
+#vrtx-resource-visit-tab-menu li.active.active-first,
+#vrtx-manually-approve-tab-menu li.active.active-first {
   background: url(images/report-tab-active-left-first.png) no-repeat top left;
 }
 
-#vrtx-resource-visit-tab-menu li.active.active-first span {
+#vrtx-resource-visit-tab-menu li.active.active-first span,
+#vrtx-manually-approve-tab-menu li.active.active-first span {
   background: url(images/report-tab-active-right-first.png) no-repeat top right;
 }
 
@@ -2146,7 +2160,9 @@ ul.radio-buttons li,
 .expandedForm form ul,
 .expandedForm form ul li,
 form.vrtx-admin-form ul,
-form.vrtx-admin-form ul li {
+form.vrtx-admin-form ul li,
+ul#vrtx-manually-approve-tab-menu,
+ul#vrtx-manually-approve-tab-menu li {
   margin-left: 0px;
   padding-left: 0px;
   list-style: none;

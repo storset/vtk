@@ -5,13 +5,13 @@
  *
  */
 
-var lastVal = "", manuallyApproveFoldersTxt, aggregatedFoldersTxt;
+var lastVal = "", manuallyApproveFoldersTxt, aggregatedFoldersTxt, onlyApproved = false;
 
 $(window).load(function() {
   // Retrieve initial resources
   manuallyApproveFoldersTxt = $("#resource\\.manually-approve-from");
   aggregatedFoldersTxt = $("#resource\\.aggregation");
-    
+  
   if(manuallyApproveFoldersTxt.length) {
     var folders, aggregatedFolders;
     var value = manuallyApproveFoldersTxt.val();
@@ -22,11 +22,41 @@ $(window).load(function() {
       aggregatedFolders = aggregatedFolders.split(",");
     }
     retrieveResources(".", folders, aggregatedFolders);
+    
+    
+    var html = '<ul id="vrtx-manually-approve-tab-menu">'
+               + '<li class="active active-first"><span>Show all articles</span></li>'
+               + '<li class="last"><a href="javascript:void(0);">Show only approved articles</a></li>'
+             + '</ul>';
+    $(html).insertAfter("#manually-approve-container-title");
   }
 });
 
 $(document).ready(function() {
-    // Refresh when folders to approve from are changed
+
+    $("#app-content").delegate("#vrtx-manually-approve-tab-menu a", "click", function(e) {
+      var parent = $(this).parent();
+      $(this).replaceWith("<span>" + $(this).html() + "</span>");
+      if(parent.hasClass("last")) {
+        onlyApproved = true;
+        parent.attr("class", "active active-last");
+        var parentPrev = parent.prev();
+        parentPrev.attr("class", "first");
+        parentPrevSpan = parentPrev.find("span");
+        parentPrevSpan.replaceWith('<a href="javascript:void(0);">' + parentPrevSpan.html() + "</a>");
+      } else {
+        onlyApproved = false;
+        parent.attr("class", "active active-first");
+        parentNext = parent.next();
+        parentNext.attr("class", "last");
+        parentNextSpan = parentNext.find("span");
+        parentNextSpan.replaceWith('<a href="javascript:void(0);">' + parentNextSpan.html() + "</a>");     
+      }
+      $("#manually-approve-refresh").trigger("click");
+      e.stopPropagation();
+      e.preventDefault();
+    });
+
     $("#manually-approve-refresh").click(function(e) {
       if(manuallyApproveFoldersTxt && manuallyApproveFoldersTxt.length) {
         var folders, aggregatedFolders;
@@ -40,7 +70,8 @@ $(document).ready(function() {
           aggregatedFolders = $.trim(aggregatedFoldersTxt.val());
           aggregatedFolders = aggregatedFolders.split(",");
         }
-        retrieveResources(".", folders, aggregatedFolders);
+
+        retrieveResources(".", folders, aggregatedFolders);  
       }
       e.stopPropagation();
       e.preventDefault();
@@ -100,7 +131,12 @@ $(document).ready(function() {
 
 function retrieveResources(serviceUri, folders, aggregatedFolders) {
 
-  var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources";
+  if(onlyApproved) {
+    var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources&approved-only";
+  } else {
+    var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources";
+  }
+  
   if (folders) {
     for (var i = 0, len = folders.length; i < len; i++) {
       getUri += "&folders=" + $.trim(folders[i]);

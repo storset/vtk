@@ -270,8 +270,15 @@ function generateManuallyApprovedContainer(resources) {
 /* HTML generation functions */
 
 function generateTableRow(resource, i) {
+  var classes = "";
   if (i & 1) { // faster than i % 2
-    var html = "<tr class='even'>";
+    classes = "even"
+  } 
+  if(i % 15 == 0) {
+    classes = classes == "" ? "first" : classes + " first";
+  }
+  if(classes != "") {
+    var html = "<tr class='" + classes + "'>";
   } else {
     var html = "<tr>";
   }

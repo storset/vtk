@@ -71,6 +71,15 @@
   margin-top: 10px;
 }
 
+#vrtx-resource\.featured-articles.property-item,
+#vrtx-resource\.recursive-listing.property-item,
+#vrtx-resource\.display-aggregation.property-item,
+#vrtx-resource\.aggregation.property-item,
+#vrtx-resource\.display-manually-approved.property-item,
+#vrtx-resource\.manually-approve-from.property-item {
+  overflow: hidden;
+}
+
 input[type=radio] {
   margin: 0 3px 6px 0;
 }

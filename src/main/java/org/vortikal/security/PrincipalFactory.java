@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.store.PrincipalMetadata;
 import org.vortikal.repository.store.PrincipalMetadataDAO;
 import org.vortikal.repository.store.PrincipalSearch;
+import org.vortikal.repository.store.PrincipalSearch.SearchType;
 import org.vortikal.repository.store.PrincipalSearchImpl;
 import org.vortikal.repository.store.UnsupportedPrincipalDomainException;
 import org.vortikal.security.Principal.Type;
@@ -104,10 +105,20 @@ public class PrincipalFactory {
     }
 
     public List<Principal> search(final String filter, final Type type) {
+        return this.search(filter, type, null);
+    }
+
+    public List<Principal> search(final String filter, final Type type, final SearchType searchType) {
         List<Principal> retval = null;
 
         if (this.principalMetadataDao != null) {
-            PrincipalSearch search = new PrincipalSearchImpl(type, filter);
+
+            PrincipalSearch search = null;
+            if (searchType == null) {
+                search = new PrincipalSearchImpl(type, filter);
+            } else {
+                search = new PrincipalSearchImpl(type, filter, null, searchType);
+            }
 
             try {
                 List<PrincipalMetadata> results = this.principalMetadataDao.search(search, null);
@@ -124,9 +135,9 @@ public class PrincipalFactory {
                 }
             } catch (Exception e) {
             } // Just keep old behaviour of not propagating
-            // any size limit exceeded exceptions from this method ...
-            // XXX remove/refactor this method or fixup client code to handle
-            // it.
+              // any size limit exceeded exceptions from this method ...
+              // XXX remove/refactor this method or fixup client code to handle
+              // it.
         }
 
         return retval;

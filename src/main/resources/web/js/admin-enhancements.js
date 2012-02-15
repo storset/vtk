@@ -801,31 +801,31 @@ function initializeCheckUncheckAll() {
         var checkAll = this.checked;
         $("td.checkbox input").each(function () {
           var isChecked = this.checked;
-          var parentParent = $(this).parent().parent();
+          var tr = $(this).closest("tr");
           if(!isChecked && checkAll) {
             $(this).attr('checked', true).change();
-            if(!parentParent.hasClass("checked")) {
-              parentParent.addClass("checked");
+            if(!tr.hasClass("checked")) {
+              tr.addClass("checked");
             }
           }
           if(isChecked && !checkAll) {
             $(this).attr('checked', false).change();
-            if(parentParent.hasClass("checked")) {
-              parentParent.removeClass("checked");
+            if(tr.hasClass("checked")) {
+              tr.removeClass("checked");
             }
           }
         });
       });
       $("td.checkbox input").click(function() {
         var isChecked = this.checked;
-        var parentParent = $(this).parent().parent();
+        var tr = $(this).closest("tr");
         if(isChecked) {
-          if(!parentParent.hasClass("checked")) {
-            parentParent.addClass("checked");
+          if(!tr.hasClass("checked")) {
+            tr.addClass("checked");
           }
         } else {
-          if(parentParent.hasClass("checked")) {
-            parentParent.removeClass("checked");
+          if(tr.hasClass("checked")) {
+            tr.removeClass("checked");
           }
         }
       });

@@ -17,6 +17,7 @@
          .articleListing\.searchComponent .vrtx-default-article-right,
          .articleListing\.searchComponent .vrtx-featured-article-right {
            float: right;
+           clear: none;
          }
       </style>
       <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.masonry.min.js"></script>

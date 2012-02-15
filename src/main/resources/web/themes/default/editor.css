@@ -145,6 +145,11 @@ input[type=checkbox] {
   border-top: none;
 }
 
+#manually-approve-container table th,
+#manually-approve-container table tr.last td {
+  background: url(images/line-dotted.gif) repeat-x bottom left;
+}
+
 #manually-approve-container table th {
   background: url(images/line-dotted.gif) repeat-x bottom left;
   padding: 0 15px 8px 0;

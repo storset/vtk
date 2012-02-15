@@ -783,7 +783,7 @@ function initializeCheckUncheckAll() {
   var tdCheckbox = $("td.checkbox");
   if(tdCheckbox.length && !$("form#editor").length) {
     $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
-    $("th.checkbox input").click(function() {
+    $("#directory-listing").delegate("th.checkbox input", "click", function() {
       var checkAll = this.checked;
       var checkboxes = $("td.checkbox input");
       var funcClassAddRemover = classAddRemover; 
@@ -801,7 +801,7 @@ function initializeCheckUncheckAll() {
         }
       }
     });
-    tdCheckbox.find("input").click(function() {
+    $("#directory-listing").delegate("td.checkbox input", "click", function() {
       var checkbox = this;
       var isChecked = checkbox.checked;
       var tr = $(checkbox).closest("tr");

@@ -220,7 +220,7 @@ function generateManuallyApprovedContainer(resources) {
   // If more than one page
   if (moreThanOnePage) {
     for (; i < prPage; i++) { // Generate first page synchronous
-      html += generateTableRowFunc(resources[i], i);
+      html += generateTableRowFunc(resources[i], i, len);
     }
     html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
     pages++;
@@ -237,7 +237,7 @@ function generateManuallyApprovedContainer(resources) {
       + pages + "</span> " + approveOf + " " + totalPages + "...</span>");
   // Generate rest of pages asynchronous
   asyncGenPagesTimer = setTimeout(function() {
-    html += generateTableRowFunc(resources[i], i);
+    html += generateTableRowFunc(resources[i], i, len);
     if ((i + 1) % prPage == 0) {
       html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
       pages++;
@@ -267,7 +267,7 @@ function generateManuallyApprovedContainer(resources) {
       html += "</div>";
       $("#manually-approve-container").append(html);
       $("td.checkbox input").removeAttr("disabled");
-      $("th.checkbox input").click(function() {
+      $("#manually-approve-container").delegate("th.checkbox input", "click", function() {
         var checkAll = this.checked; 
         var checkboxes = $("td.checkbox input:visible");
         for(var i = 0, len = checkboxes.length; i < len; i++) {
@@ -296,13 +296,16 @@ function generateManuallyApprovedContainer(resources) {
 
 /* HTML generation functions */
 
-function generateTableRow(resource, i) {
+function generateTableRow(resource, i, len) {
   var classes = "";
-  if (i & 1) { // faster than i % 2
+  if (i & 1) {
     classes = "even"
   } 
-  if(i % 15 == 0) {
-    classes = classes == "" ? "first" : classes + " first";
+  if((i+1) % 15 == 1) {
+    classes = (classes == "") ? "first" : classes + " first";
+  }
+  if(((i+1) % 15 == 0) || (i == (len-1))) {
+    classes = (classes == "") ? "last" : classes + " last";
   }
   if(classes != "") {
     var html = "<tr class='" + classes + "'>";
@@ -340,9 +343,8 @@ function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
 }
 
 function generateStartPageAndTableHead(pages) {
-  return "<div id='approve-page-"
-      + pages
-      + "'><table><thead><tr><th id='approve-checkbox' class='checkbox'><input type='checkbox' name='checkUncheckAll' /></th><th id='approve-title'>" + approveTableTitle + "</th><th id='approve-src'>" + approveTableSrc + "</th><th id='approve-published'>" + approveTablePublished + "</th></tr></thead><tbody>";
+  return "<div id='approve-page-" + pages + "'><table><thead><tr><th id='approve-checkbox' class='checkbox'><input type='checkbox' name='checkUncheckAll' /></th><th id='approve-title'>" 
+        + approveTableTitle + "</th><th id='approve-src'>" + approveTableSrc + "</th><th id='approve-published'>" + approveTablePublished + "</th></tr></thead><tbody>";
 }
 
 /* ^ HTML generation functions */

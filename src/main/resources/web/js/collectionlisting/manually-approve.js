@@ -274,10 +274,10 @@ function generateManuallyApprovedContainer(resources) {
           var checkbox = checkboxes[i];
           var isChecked = checkbox.checked;
           if (!isChecked && checkAll) { 
-            checkbox.attr('checked', true).trigger("change");
+            $(checkbox).attr('checked', true).trigger("change");
           }
           if (isChecked && !checkAll) {
-            checkbox.attr('checked', false).trigger("change");
+            $(checkbox).attr('checked', false).trigger("change");
           }
         }
       }); 

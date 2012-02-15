@@ -786,17 +786,18 @@ function initializeCheckUncheckAll() {
     $("th.checkbox input").click(function() {
       var checkAll = this.checked;
       var checkboxes = $("td.checkbox input");
+      var funcClassAddRemover = classAddRemover; 
       for(var i = 0, len = checkboxes.length; i < len; i++) {
         var isChecked = checkboxes[i].checked;
         var checkbox = $(checkboxes[i]);
         var tr = checkbox.closest("tr");
         if(!isChecked && checkAll) {
           checkbox.attr('checked', true).change();
-          classAddRemover(tr, "checked", true);
+          funcClassAddRemover(tr, "checked", true);
         }
         if(isChecked && !checkAll) {
           checkbox.attr('checked', false).change();
-          classAddRemover(tr, "checked", false);
+          funcClassAddRemover(tr, "checked", false);
         }
       }
     });

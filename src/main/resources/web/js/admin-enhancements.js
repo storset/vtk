@@ -780,55 +780,47 @@ function collectionListingInteraction() {
 
 // TODO: refactor/simplify
 function initializeCheckUncheckAll() {
-  if($("td.checkbox").length) {
-    $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />")
-    if($("form#editor").length) {
-      $("td.checkbox input").removeAttr("disabled");
-      $("th.checkbox input").click(function() {
-        var checkAll = this.checked;
-        $("td.checkbox input:visible").each(function () {
-          var isChecked = this.checked;
-          if (!isChecked && checkAll) { 
-            $(this).attr('checked', true).trigger("change");
-          }
-          if (isChecked && !checkAll) {
-            $(this).attr('checked', false).trigger("change");
-          }
-        });
-      }); 
-    } else {
-      $("th.checkbox input").click(function() {
-        var checkAll = this.checked;
-        $("td.checkbox input").each(function () {
-          var isChecked = this.checked;
-          var tr = $(this).closest("tr");
-          if(!isChecked && checkAll) {
-            $(this).attr('checked', true).change();
-            if(!tr.hasClass("checked")) {
-              tr.addClass("checked");
-            }
-          }
-          if(isChecked && !checkAll) {
-            $(this).attr('checked', false).change();
-            if(tr.hasClass("checked")) {
-              tr.removeClass("checked");
-            }
-          }
-        });
-      });
-      $("td.checkbox input").click(function() {
-        var isChecked = this.checked;
-        var tr = $(this).closest("tr");
-        if(isChecked) {
-          if(!tr.hasClass("checked")) {
-            tr.addClass("checked");
-          }
-        } else {
-          if(tr.hasClass("checked")) {
-            tr.removeClass("checked");
-          }
+  var tdCheckbox = $("td.checkbox");
+  if(tdCheckbox.length && !$("form#editor").length) {
+    $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
+    $("th.checkbox input").click(function() {
+      var checkAll = this.checked;
+      var checkboxes = $("td.checkbox input");
+      for(var i = 0, len = checkboxes.length; i < len; i++) {
+        var isChecked = checkboxes[i].checked;
+        var checkbox = $(checkboxes[i]);
+        var tr = checkbox.closest("tr");
+        if(!isChecked && checkAll) {
+          checkbox.attr('checked', true).change();
+          classAddRemover(tr, "checked", true);
         }
-      });
+        if(isChecked && !checkAll) {
+          checkbox.attr('checked', false).change();
+          classAddRemover(tr, "checked", false);
+        }
+      }
+    });
+    tdCheckbox.find("input").click(function() {
+      var checkbox = this;
+      var isChecked = checkbox.checked;
+      var tr = $(checkbox).closest("tr");
+      if(isChecked) {
+        classAddRemover(tr, "checked", true);
+      } else {
+        classAddRemover(tr, "checked", false);
+      }
+    });
+  }
+}
+
+function classAddRemover(elem, name, isAdding) {
+  if(isAdding) { // Add
+    if(!elem.hasClass(name)) {
+      elem.addClass(name);
+    }
+  } else { // Remove
+    if(elem.hasClass(name)) {
+      elem.removeClass(name);
     }
   }
 }

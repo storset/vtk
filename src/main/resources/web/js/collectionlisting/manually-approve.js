@@ -266,7 +266,21 @@ function generateManuallyApprovedContainer(resources) {
       }
       html += "</div>";
       $("#manually-approve-container").append(html);
-      initializeCheckUncheckAll();
+      $("td.checkbox input").removeAttr("disabled");
+      $("th.checkbox input").click(function() {
+        var checkAll = this.checked; 
+        var checkboxes = $("td.checkbox input:visible");
+        for(var i = 0, len = checkboxes.length; i < len; i++) {
+          var checkbox = checkboxes[i];
+          var isChecked = checkbox.checked;
+          if (!isChecked && checkAll) { 
+            checkbox.attr('checked', true).trigger("change");
+          }
+          if (isChecked && !checkAll) {
+            checkbox.attr('checked', false).trigger("change");
+          }
+        }
+      }); 
       $("#approve-spinner").remove();
       if (len > prPage) {
         $("#manually-approve-container #approve-page-" + pages).hide();
@@ -328,7 +342,7 @@ function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
 function generateStartPageAndTableHead(pages) {
   return "<div id='approve-page-"
       + pages
-      + "'><table><thead><tr><th id='approve-checkbox' class='checkbox'></th><th id='approve-title'>" + approveTableTitle + "</th><th id='approve-src'>" + approveTableSrc + "</th><th id='approve-published'>" + approveTablePublished + "</th></tr></thead><tbody>";
+      + "'><table><thead><tr><th id='approve-checkbox' class='checkbox'><input type='checkbox' name='checkUncheckAll' /></th><th id='approve-title'>" + approveTableTitle + "</th><th id='approve-src'>" + approveTableSrc + "</th><th id='approve-published'>" + approveTablePublished + "</th></tr></thead><tbody>";
 }
 
 /* ^ HTML generation functions */

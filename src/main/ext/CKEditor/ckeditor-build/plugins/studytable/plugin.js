@@ -88,8 +88,15 @@ CKEDITOR.plugins.add('studytable', {
       },
       canUndo: true
     });
+
+    var lang = editor.config.language;
+    if(lang == "en") 
+	var pluginLabel = "Insert studytable";
+    else
+	var pluginLabel = "Sett inn studieløpstabell";
+
     editor.ui.addButton('Studytable', {
-      label: 'Insert study table',
+      label: pluginLabel,
       command: pluginName,
       icon: this.path + 'images/studytable.png'
     });

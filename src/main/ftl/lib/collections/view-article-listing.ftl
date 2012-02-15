@@ -3,7 +3,38 @@
 
 <#macro displayArticles page collectionListings numberOfColumns hideNumberOfComments=false displayMoreURLs=false >
 
-  <#if collectionListings?size &gt; 0>
+  <#if (collectionListings?size > 0)>
+    
+     <#if numberOfColumns == 2>
+       <#-- TMP inline CSS/JS - move to UiO-dist after v3.5 is released -->
+       <style type="text/css">
+         .articleListing\.searchComponent .vrtx-default-article-left,
+         .articleListing\.searchComponent .vrtx-featured-article-left,
+         .articleListing\.searchComponent .vrtx-default-article-right,
+         .articleListing\.searchComponent .vrtx-featured-article-right {
+           width: 355px;
+         }
+         .articleListing\.searchComponent .vrtx-default-article-right,
+         .articleListing\.searchComponent .vrtx-featured-article-right {
+           float: right;
+         }
+      </style>
+      <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.masonry.min.js"></script>
+      <script type="text/javascript"><!--
+         $(window).load(function() {
+           var container = $('#articleListing\\.searchComponent');
+           container.imagesLoaded(function(){
+             container.masonry({
+               columnWidth: 355,
+               gutterWidth: 20
+             });
+           });
+         });
+      // -->
+      </script>
+    </#if>
+    
+    
     <#assign i = 1 />
 
     <#local frontpageClass = "" />
@@ -14,7 +45,7 @@
     <div id="articleListing.searchComponent" class="vrtx-resources articleListing.searchComponent ${frontpageClass}">
     <#list collectionListings as articles>
       <#local resources=articles.files />
-      <#if resources?size &gt; 0>
+      <#if (resources?size > 0)>
         <#list resources as r>
 
           <#local locale = springMacroRequestContext.getLocale() />

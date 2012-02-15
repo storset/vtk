@@ -220,12 +220,19 @@ function generateManuallyApprovedContainer(resources) {
   // If more than one page
   if (moreThanOnePage) {
     for (; i < prPage; i++) { // Generate first page synchronous
-      html += generateTableRowFunc(resources[i], i, len);
+      html += generateTableRowFunc(resources[i]);
     }
     html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
     pages++;
     html += generateNavAndEndPageFunc(i, html, prPage, remainder, pages, totalPages);
-    $("#manually-approve-container").html(html);
+    
+    var manuallyApproveContainer = $("#manually-approve-container");
+    manuallyApproveContainer.html(html);
+    var manuallyApproveContainerTable = manuallyApproveContainer.find("table");
+    manuallyApproveContainerTable.find("tr:first-child").addClass("first");
+    manuallyApproveContainerTable.find("tr:last-child").addClass("last");
+    manuallyApproveContainerTable.find("tr:nth-child(even)").addClass("even");
+    
     html = generateStartPageAndTableHeadFunc(pages);
   } else {
     $("#manually-approve-container").html(""); // clear if only one page
@@ -237,13 +244,18 @@ function generateManuallyApprovedContainer(resources) {
       + pages + "</span> " + approveOf + " " + totalPages + "...</span>");
   // Generate rest of pages asynchronous
   asyncGenPagesTimer = setTimeout(function() {
-    html += generateTableRowFunc(resources[i], i, len);
+    html += generateTableRowFunc(resources[i]);
     if ((i + 1) % prPage == 0) {
       html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
       pages++;
       if (i < len - 1) {
         html += generateNavAndEndPageFunc(i, html, prPage, remainder, pages, totalPages);
         $("#manually-approve-container").append(html);
+        var table = $("#approve-page-" + (pages - 1) + " table");
+        table.find("tr:first-child").addClass("first");
+        table.find("tr:last-child").addClass("last");
+        table.find("tr:nth-child(even)").addClass("even");
+        var manuallyApproveContainer = $("#manually-approve-container");
         if (moreThanOnePage) {
           $("#manually-approve-container #approve-page-" + (pages - 1)).hide();
         }
@@ -266,6 +278,10 @@ function generateManuallyApprovedContainer(resources) {
       }
       html += "</div>";
       $("#manually-approve-container").append(html);
+      var table = $("#approve-page-" + pages + " table");
+      table.find("tr:first-child").addClass("first");
+      table.find("tr:last-child").addClass("last");
+      table.find("tr:nth-child(even)").addClass("even");
       $("td.checkbox input").removeAttr("disabled");
       $("#manually-approve-container").delegate("th.checkbox input", "click", function() {
         var checkAll = this.checked; 
@@ -296,22 +312,8 @@ function generateManuallyApprovedContainer(resources) {
 
 /* HTML generation functions */
 
-function generateTableRow(resource, i, len) {
-  var classes = "";
-  if (i & 1) {
-    classes = "even"
-  } 
-  if((i+1) % 15 == 1) {
-    classes = (classes == "") ? "first" : classes + " first";
-  }
-  if(((i+1) % 15 == 0) || (i == (len-1))) {
-    classes = (classes == "") ? "last" : classes + " last";
-  }
-  if(classes != "") {
-    var html = "<tr class='" + classes + "'>";
-  } else {
-    var html = "<tr>";
-  }
+function generateTableRow(resource) {
+  var html = "<tr>";
   if (resource.approved) {
     html += "<td class='checkbox'><input type='checkbox' disabled='disabled' checked='checked' value='" + resource.uri + "'/></td>";
   } else {

@@ -315,7 +315,7 @@ h3#vrtx-image-editor-preview {
 /* Study table */
 
 table.vrtx-courseplan-table { 
-  width: 1000px!important;
+  width: 100%;
 }
 
 table.vrtx-courseplan-table td.small {

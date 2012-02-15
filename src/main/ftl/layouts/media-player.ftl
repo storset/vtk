@@ -156,9 +156,7 @@
         </#if>
 	  </#if>
     <#else>
-      <#if showDL?exists && showDL == "true">
-        <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.media-file" /></a>
-      </#if>
+      <a class="vrtx-media" href="${media?html}"><@vrtx.msg code="article.media-file" /></a>
     </#if>
 
   </#if>

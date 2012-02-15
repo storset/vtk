@@ -307,6 +307,22 @@ h3#vrtx-image-editor-preview {
   margin-top: 10px;
 }
 
+/* Study table */
+
+table.vrtx-courseplan-table { 
+  width: 1000px!important;
+}
+
+table.vrtx-courseplan-table td.small {
+  white-space: nowrap;
+  width: 10%;
+}
+
+table.vrtx-courseplan-table td.large {  
+  width: 30%;
+}
+
+
 /* ^ Image editor */
 
 /* ^ Vortex - Editor - Old documenttypes and folders */

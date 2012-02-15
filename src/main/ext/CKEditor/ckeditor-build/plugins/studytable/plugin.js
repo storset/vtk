@@ -5,76 +5,76 @@ CKEDITOR.plugins.add('studytable', {
 
       exec: function (editor) {
       var htmlBody = (<r><![CDATA[     
-	<table class="vrtx-courseplan-table" style="width:100%">
+	<table class="vrtx-courseplan-table">
 	<tbody>
 		<tr>
-			<td style="white-space: nowrap; width: 10%;">
+			<td class="small">
 				6. semester</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
 		</tr>
 		<tr>
-			<td style="white-space: nowrap; width: 10%;">
+			<td class="small">
 				5. semester</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
 		</tr>
 		<tr>
-			<td style="white-space: nowrap; width: 10%;">
+			<td class="small">
 				4. semester</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
 		</tr>
 		<tr>
-			<td style="white-space: nowrap; width: 10%;">
+			<td class="small">
 				3. semester</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
 		</tr>
 		<tr>
-			<td style="white-space: nowrap; width: 10%;">
+			<td class="small">
 				2. semester</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
 		</tr>
 		<tr>
-			<td style="white-space: nowrap; width: 10%;">
+			<td class="small">
 				1. semester</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
-			<td style="width: 30%">
+			<td class="large">
 				&nbsp;</td>
 		</tr>
 		<tr>
-			<td style="white-space: nowrap; width: 10%;">
+			<td class="small">
 				&nbsp;</td>
-			<td style="width: 30%">
+			<td class="large">
 				10 studiepoeng</td>
-			<td style="width: 30%">
+			<td class="large">
 				10 studiepoeng</td>
-			<td style="width: 30%">
+			<td class="large">
 				10 studiepoeng</td>
 		</tr>
 	</tbody>

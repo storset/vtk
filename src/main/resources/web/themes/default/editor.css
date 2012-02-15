@@ -158,6 +158,14 @@ input[type=checkbox] {
   vertical-align: top; 
 }
 
+div.manually-approve-from table td input {
+  margin-top: 3px;
+}
+
+div.manually-approve-from table th input {
+  margin-top: 2px;
+}
+
 #manually-approve-container th#approve-checkbox {
   width: 2%;
 }

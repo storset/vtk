@@ -232,7 +232,7 @@ function generateManuallyApprovedContainer(resources) {
     manuallyApproveContainerTable.find("tr:first-child").addClass("first");
     manuallyApproveContainerTable.find("tr:last-child").addClass("last");
     manuallyApproveContainerTable.find("tr:nth-child(even)").addClass("even");
-    
+    manuallyApproveContainerTable.find("input").removeAttr("disabled");
     html = generateStartPageAndTableHeadFunc(pages);
   } else {
     $("#manually-approve-container").html(""); // clear if only one page
@@ -255,6 +255,7 @@ function generateManuallyApprovedContainer(resources) {
         table.find("tr:first-child").addClass("first");
         table.find("tr:last-child").addClass("last");
         table.find("tr:nth-child(even)").addClass("even");
+        table.find("input").removeAttr("disabled");
         var manuallyApproveContainer = $("#manually-approve-container");
         if (moreThanOnePage) {
           $("#manually-approve-container #approve-page-" + (pages - 1)).hide();
@@ -282,7 +283,7 @@ function generateManuallyApprovedContainer(resources) {
       table.find("tr:first-child").addClass("first");
       table.find("tr:last-child").addClass("last");
       table.find("tr:nth-child(even)").addClass("even");
-      $("td.checkbox input").removeAttr("disabled");
+      table.find("input").removeAttr("disabled");
       $("#manually-approve-container").delegate("th.checkbox input", "click", function() {
         var checkAll = this.checked; 
         var checkboxes = $("td.checkbox input:visible");
@@ -345,7 +346,7 @@ function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
 }
 
 function generateStartPageAndTableHead(pages) {
-  return "<div id='approve-page-" + pages + "'><table><thead><tr><th id='approve-checkbox' class='checkbox'><input type='checkbox' name='checkUncheckAll' /></th><th id='approve-title'>" 
+  return "<div id='approve-page-" + pages + "'><table><thead><tr><th id='approve-checkbox' class='checkbox'><input type='checkbox' disabled='disabled' name='checkUncheckAll' /></th><th id='approve-title'>" 
         + approveTableTitle + "</th><th id='approve-src'>" + approveTableSrc + "</th><th id='approve-published'>" + approveTablePublished + "</th></tr></thead><tbody>";
 }
 

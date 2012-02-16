@@ -31,6 +31,7 @@
 package org.vortikal.web.display.linkcheck;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 
@@ -38,7 +39,8 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
-import org.springframework.beans.factory.InitializingBean;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
@@ -48,16 +50,18 @@ import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.service.URL;
 
-public class LinkChecker implements InitializingBean {
+public class LinkChecker {
+    
+    private static Log logger = LogFactory.getLog(LinkChecker.class); 
     
     private Searcher searcher;
-    private CacheManager cacheManager;
     private Cache cache;
     private int connectTimeout = 5000;
     private int readTimeout = 5000;
     private String userAgent = "Link checker";
     
-    public static class LinkCheckResult {
+    public static final class LinkCheckResult implements Serializable {
+        private static final long serialVersionUID = -7574234857037932804L;
         private String link;
         private Status status;
         private String reason;
@@ -78,9 +82,14 @@ public class LinkChecker implements InitializingBean {
         public String getReason() {
             return this.reason;
         }
+        @Override
+        public String toString() {
+            return "{link: " + link + ", status: " + status 
+                    + ", reason: " + reason + "}";
+        }
     }
     
-    private enum Status {
+    public enum Status {
         OK,
         NOT_FOUND,
         TIMEOUT,
@@ -88,8 +97,13 @@ public class LinkChecker implements InitializingBean {
         ERROR;
     }
     
-    
     public LinkCheckResult validate(String href, URL base) {
+        LinkCheckResult result = validateInternal(href, base);
+        logger.info("Validate: " + href + ", " + base + ": " + result);
+        return result;
+    }
+    
+    private LinkCheckResult validateInternal(String href, URL base) {
         if (href == null) {
             throw new IllegalArgumentException("Link argument cannot be NULL");
         }
@@ -100,7 +114,7 @@ public class LinkChecker implements InitializingBean {
         } catch (Throwable t) {
             return new LinkCheckResult(href, Status.MALFORMED_URL, t.getMessage());
         }
-        if (internal) {
+        if (internal && this.searcher != null) {
             Status status = indexLookup(url);
             if (status == Status.OK) {
                 return new LinkCheckResult(href, status);
@@ -109,7 +123,7 @@ public class LinkChecker implements InitializingBean {
         String cacheKey = href;
         Element cached = this.cache.get(cacheKey);
         if (cached != null) {
-            return (LinkCheckResult) cached.getObjectValue();
+            return (LinkCheckResult) cached.getValue();
         }
         Status status = null;
         String reason = null;
@@ -199,14 +213,15 @@ public class LinkChecker implements InitializingBean {
         return link.startsWith("http://") || link.startsWith("https://");
     }
 
-    @Required
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }
 
     @Required
     public void setCacheManager(CacheManager cacheManager) {
-        this.cacheManager = cacheManager;
+        Cache c = cacheManager.getCache("org.vortikal.LINK_CHECK_CACHE");
+        if (c == null) throw new IllegalArgumentException("Provided cache manager has no cache named 'org.vortikal.LINK_CHECK_CACHE'");
+        this.cache = c;
     }
     
     public void setConnectTimeout(int connectTimeout) {
@@ -227,9 +242,4 @@ public class LinkChecker implements InitializingBean {
         this.userAgent = userAgent;
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        this.cache = this.cacheManager.getCache("org.vortikal.LINK_CHECK_CACHE");
-    }
-    
 }

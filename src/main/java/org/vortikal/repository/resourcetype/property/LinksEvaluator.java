@@ -223,7 +223,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
             JSONArray arr = new JSONArray();
             for (Link l: this.links) {
                 JSONObject entry = new JSONObject();
-                entry.put("url", l.getURL()); // technically, a relative href is not a complete URL..
+                entry.put("url", l.getURL());
                 entry.put("type", l.getType());
                 entry.put("source", l.getSource());
                 arr.add(entry);

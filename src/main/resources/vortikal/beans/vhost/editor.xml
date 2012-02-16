@@ -696,7 +696,7 @@
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
-            <ref bean="numberOfColumnsPropDef" />
+            <ref bean="articleListing.listingViewPropDef" />
             <ref bean="articleListing.featuredArticlesPropDef" />
             <ref bean="articleListing.recursiveListingPropDef" />
             <ref bean="articleListing.recursiveListingSubfoldersPropDef" />

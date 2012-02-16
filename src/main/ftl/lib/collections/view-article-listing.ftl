@@ -1,11 +1,11 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
 
-<#macro displayArticles page collectionListings numberOfColumns hideNumberOfComments=false displayMoreURLs=false >
+<#macro displayArticles page collectionListings listingView hideNumberOfComments=false displayMoreURLs=false >
 
   <#if (collectionListings?size > 0)>
-    
-     <#if numberOfColumns == 2>
+
+     <#if listingView == "2columns">
        <#-- TMP inline CSS/JS - move to UiO-dist after v3.5 is released -->
        <style type="text/css">
          .articleListing\.searchComponent .vrtx-default-article-left,
@@ -70,7 +70,7 @@
           <#if articles.name == "articleListing.featuredArticles">
             <#local articleType = "vrtx-featured-article" />
           </#if>
-          <div id="vrtx-result-${i}" class="vrtx-resource ${articleType}<#if numberOfColumns == 2> ${articleType}-<#if i % 2 == 0>right<#else>left</#if></#if>">
+          <div id="vrtx-result-${i}" class="vrtx-resource ${articleType}<#if listingView == "2columns"> ${articleType}-<#if i % 2 == 0>right<#else>left</#if></#if>">
           <#local introImgURI = vrtx.propValue(r, 'picture') />
           <#if introImgURI?exists>
     			<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />

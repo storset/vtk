@@ -51,8 +51,8 @@ import org.vortikal.web.service.URL;
 public class ArticleListingController extends AbstractCollectionListingController {
 
     private ArticleListingSearcher searcher;
-    private final int defaultNumberOfColumns = 1;
-    private PropertyTypeDefinition numberOfColumnsPropDef;
+    private final String defaultListingView = "regular";
+    private PropertyTypeDefinition listingViewPropDef;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -132,16 +132,16 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         model.put(MODEL_KEY_PAGE, userDisplayPage);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
         model.put("hideNumberOfComments", getHideNumberOfComments(collection));
-        model.put("numberOfColumns", getNumberOfColumns(collection));
+        model.put("listingView", getListingView(collection));
     }
     
-    private int getNumberOfColumns(Resource collection) {
-        int numberOfColumns = this.defaultNumberOfColumns;
-        Property numberOfColumnsProp = collection.getProperty(this.numberOfColumnsPropDef);
-        if (numberOfColumnsProp != null) {
-            numberOfColumns = numberOfColumnsProp.getIntValue();
+    private String getListingView(Resource collection) {
+        String listingView = this.defaultListingView;
+        Property listingViewProp = collection.getProperty(this.listingViewPropDef);
+        if (listingViewProp != null) {
+            listingView = listingViewProp.getFormattedValue();
         }
-        return numberOfColumns;
+        return listingView;
     }
 
     @Required
@@ -150,8 +150,8 @@ public class ArticleListingController extends AbstractCollectionListingControlle
     }
 
     @Required
-    public void setNumberOfColumnsPropDef(PropertyTypeDefinition numberOfColumnsPropDef) {
-        this.numberOfColumnsPropDef = numberOfColumnsPropDef;
+    public void setListingViewPropDef(PropertyTypeDefinition listingViewPropDef) {
+        this.listingViewPropDef = listingViewPropDef;
     }
 
 }

@@ -34,7 +34,7 @@
         <ref bean="manuallyApproveFromPropDef" />
         <ref bean="manuallyApprovedResourcesPropDef" />
         <ref bean="pageLimitPropDef" />
-        <ref bean="numberOfColumnsPropDef" />
+        <ref bean="articleListing.listingViewPropDef" />
         <ref bean="collection.sortingPropDef" />
         <ref bean="collection.hideLastModifiedPropDef" />
         <ref bean="collection.hideIntroductionPropDef" />
@@ -480,37 +480,6 @@
           </map>
         </entry>
       </map>
-    </property>
-  </bean>
-
-  <bean id="numberOfColumnsPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="number-of-columns" />
-    <property name="type" value="INT" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-    <property name="valueFormatter">
-      <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
-        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.number-of-columns" />
-        <constructor-arg value="INT" />
-      </bean>
-    </property>
-    <property name="vocabulary">
-      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
-        <property name="values">
-          <list>
-            <bean class="org.vortikal.repository.resourcetype.Value">
-              <constructor-arg type="int">
-                <value>1</value>
-              </constructor-arg>
-            </bean>
-            <bean class="org.vortikal.repository.resourcetype.Value">
-              <constructor-arg type="int">
-                <value>2</value>
-              </constructor-arg>
-            </bean>
-          </list>
-        </property>
-      </bean>
     </property>
   </bean>
 

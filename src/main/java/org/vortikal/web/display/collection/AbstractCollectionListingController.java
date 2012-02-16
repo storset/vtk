@@ -70,6 +70,7 @@ public abstract class AbstractCollectionListingController implements ListingCont
     protected int collectionDisplayLimit = 1000;
     protected PropertyTypeDefinition pageLimitPropDef;
     protected PropertyTypeDefinition hideNumberOfComments;
+    protected PropertyTypeDefinition hideIcon;
     protected String viewName;
     protected Map<String, Service> alternativeRepresentations;
     private boolean includeRequestParametersInAlternativeRepresentation;
@@ -104,6 +105,10 @@ public abstract class AbstractCollectionListingController implements ListingCont
         if (pageLimit > 0) {
             /* Run the actual search (done in subclasses) */
             runSearch(request, collection, model, pageLimit);
+        }
+        
+        if(getHideIcon(collection)){
+            model.put("hideIcon", true);    
         }
 
         if (this.alternativeRepresentations != null) {
@@ -190,6 +195,14 @@ public abstract class AbstractCollectionListingController implements ListingCont
         }
         return p.getBooleanValue();
     }
+    
+    protected boolean getHideIcon(Resource collection) {
+        Property p = collection.getProperty(this.hideIcon);
+        if (p == null) {
+            return false;
+        }
+        return p.getBooleanValue();
+    }
 
     protected int getIntParameter(HttpServletRequest request, String name, int defaultValue) {
         String param = request.getParameter(name);
@@ -235,6 +248,10 @@ public abstract class AbstractCollectionListingController implements ListingCont
 
     public void setHideNumberOfComments(PropertyTypeDefinition hideNumberOfComments) {
         this.hideNumberOfComments = hideNumberOfComments;
+    }
+    
+    public void setHideIcon(PropertyTypeDefinition hideIcon) {
+        this.hideIcon = hideIcon;
     }
 
     public void setCollectionDisplayLimit(int collectionDisplayLimit) {

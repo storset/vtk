@@ -12,7 +12,11 @@
     
     <#list resources as r>
       <#assign uri = vrtx.getUri(r) />
-      <div class="vrtx-resource <@vrtx.iconResolver r.resourceType r.contentType />">  
+    <#if hideIcon?exists && hideIcon>
+      <div class="vrtx-resource vrtx-hide-icon">
+    <#else>
+      <div class="vrtx-resource <@vrtx.iconResolver r.resourceType r.contentType />">
+    </#if>  
 		<div class="vrtx-title">
 		  <#assign title = vrtx.propValue(r, "title", "", "") />
 		  <#if !title?has_content && solrUrl?exists && solrUrl?has_content>

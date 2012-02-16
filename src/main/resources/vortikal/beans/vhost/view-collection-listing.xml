@@ -36,6 +36,7 @@
     <property name="pageLimitPropDef" ref="pageLimitPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
+    <property name="hideIcon" ref="collection.hideIconPropDef" />
     <property name="searchComponents">
       <list>
         <ref bean="collectionListing.searchComponent" />

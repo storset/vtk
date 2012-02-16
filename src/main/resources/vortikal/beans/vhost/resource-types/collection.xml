@@ -38,6 +38,7 @@
         <ref bean="collection.sortingPropDef" />
         <ref bean="collection.hideLastModifiedPropDef" />
         <ref bean="collection.hideIntroductionPropDef" />
+        <ref bean="collection.hideIconPropDef" />
         <ref bean="hideNumberOfCommentsPropDef" />
       </list>
     </property>
@@ -434,6 +435,32 @@
   <bean id="collection.hideIntroductionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="hide-introduction" />
+    <property name="type" value="BOOLEAN" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <ref bean="VALUE_TRUE" />
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="editingHints">
+          <map>
+            <entry key="hideLabel" value="true" />
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="collection.hideIconPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="hide-icon" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />

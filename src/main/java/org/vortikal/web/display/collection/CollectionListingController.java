@@ -88,7 +88,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
 
         }
         Service service = RequestContext.getRequestContext().getService();
-        URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
+        URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI()); 
 
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL, page);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);

@@ -4,7 +4,23 @@
 <#macro displayCollection collectionListing>
 
   <#local resources=collectionListing.files />
-  <#if resources?size &gt; 0>
+  <#if (resources?size > 0)>
+     <#-- TODO: move -->
+     <style type="text/css">
+       .vrtx-resource-open-webdav {
+         display: none;
+       }
+     </style>
+     <script type="text/javascript"><!--
+       $(function() {
+         var agent = navigator.userAgent.toLowerCase();         
+         var isWin = ((agent.indexOf("win") != -1) || (agent.indexOf("16bit") != -1));
+         if ($.browser.msie && $.browser.version >= 5 && isWin) {  
+           $(".vrtx-resource-open-webdav").show(0);
+         }
+       });
+     // -->
+     </script>
     <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
     <#if collectionListing.title?exists && collectionListing.offset == 0>
       <h2>${collectionListing.title?html}</h2>
@@ -45,6 +61,13 @@
             </div>
           </#if>
         </#list>
+        <#-- TODO: WebDav link constructing, how to open Office via ActiveX and only show when authorized to write --> 
+        <#if r.resourceType == "doc" || r.resourceType == "xls" || r.resourceType == "ppt">
+          &nbsp;
+          <a class="vrtx-resource-open-webdav" href="javascript:void(0);" onclick="new ActiveXObject('SharePoint.OpenDocuments.1').EditDocument('${uri?html}')">
+            <@vrtx.msg code="tabs.editService" />
+          </a>
+        </#if>
         <span class="vrtx-resource-seperator"></span>
       </div>
     </#list>

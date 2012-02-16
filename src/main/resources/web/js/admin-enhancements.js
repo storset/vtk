@@ -113,21 +113,12 @@ if(vrtxAdmin.isMobileWebkitDevice) { // turn off animation in iPhone, iPad and A
   vrtxAdmin.transitionDropdownSpeed = 0;
 }
 
-// Autocomplete parameters
+// Permission Autocomplete parameters
 vrtxAdmin.permissionsAutocompleteParams = { minChars: 4, 
                                             selectFirst: false, 
                                             width: 300, 
                                             max: 30,
                                             delay: 800 };
-                                            
-vrtxAdmin.usernameAutocompleteParams = { multiple: false,
-                                         minChars: 2, 
-                                         selectFirst: false, 
-                                         width: 300, 
-                                         max: 30,
-                                         delay: 500 };
-                                         
-vrtxAdmin.tagAutocompleteParams = { minChars: 1 };
          
 // When to timeout AJAX GET/POST                                   
 $.ajaxSetup({
@@ -248,13 +239,7 @@ $(document).ready(function () {
     e.stopPropagation();
     e.preventDefault();
   });
-  
-  // Add autocomplete
-  if($("form#editor").length) {  
-    autocompleteUsernames(".vrtx-autocomplete-username");
-    autocompleteTags(".vrtx-autocomplete-tag");
-  }
-  
+
   // Remove active tab if it has no children
   var activeTab = $("#active-tab");
   if (!activeTab.find(" > *").length) {
@@ -286,25 +271,7 @@ $(document).ready(function () {
       resourceMenuLeft.css("marginTop", "0px"); 
     }
   }
-  
-  // Sticky editor title and save buttons  
-  if($("form#editor").length) {
-    var titleSubmitButtons = $("#vrtx-editor-title-submit-buttons");
-    if(titleSubmitButtons.length) {
-      var titleSubmitButtonsPos = titleSubmitButtons.offset();
-      titleSubmitButtons.append("<span id='vrtx-sticky-editor-bottom-bg'></span>");
-      $(window).bind("scroll", function() {
-        if($(window).scrollTop() >= (titleSubmitButtonsPos.top - 20)) {
-          titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons"); 
-          titleSubmitButtons.css("width", $("#contents").width() + "px");
-        } else {
-          titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
-          titleSubmitButtons.css("width", "auto");
-        }
-      });
-    }
-  }
-  
+
   // Preview image
   adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
   adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");
@@ -774,11 +741,10 @@ function collectionListingInteraction() {
   placeDeleteButtonInActiveTab();
   placeRecoverButtonInActiveTab();
   placeDeletePermanentButtonInActiveTab();
-  
+
   initializeCheckUncheckAll();
 }
 
-// TODO: refactor/simplify
 function initializeCheckUncheckAll() {
   var tdCheckbox = $("td.checkbox");
   if(tdCheckbox.length && !$("form#editor").length) {
@@ -937,13 +903,15 @@ function initPermissionForm(selectorClass) {
   toggleConfigCustomPermissions(selectorClass);
   interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]", "." + selectorClass + " input.addUserButton");
   interceptEnterKeyAndReroute("." + selectorClass + " .addGroup input[type=text]", "." + selectorClass + " input.addGroupButton");
-  initSimplifiedPermissionForm();
+  permissionsAutocomplete('userNames', 'userNames', vrtxAdmin.permissionsAutocompleteParams);
+  splitAutocompleteSuggestion('userNames');
+  permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams);
 }
 
 function initSimplifiedPermissionForm() {
-  permissionsAutocomplete('userNames', 'userNames', vrtxAdmin.permissionsAutocompleteParams, false);
+  permissionsAutocomplete('userNames', 'userNames', vrtxAdmin.permissionsAutocompleteParams);
   splitAutocompleteSuggestion('userNames');
-  permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams, false);  
+  permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams);  
 }
 
 function toggleConfigCustomPermissions(selectorClass) {
@@ -979,21 +947,6 @@ function checkStillAdmin(selector) {
   return true; 
 }
 
-function autocompleteUsernames(selector) {
-  var autocompleteTextfields = $(selector).find('.vrtx-textfield input');
-  var i = autocompleteTextfields.length;
-  while(i--) {
-    permissionsAutocomplete($(autocompleteTextfields[i]).attr("id"), 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
-  }
-}
-
-function autocompleteTags(selector) {
-  var autocompleteTextfields = $(selector).find('.vrtx-textfield input');
-  var i = autocompleteTextfields.length;
-  while(i--) {
-    setAutoComplete($(autocompleteTextfields[i]).attr("id"), 'tags', vrtxAdmin.tagAutocompleteParams);
-  }
-}
 
 
 /*-------------------------------------------------------------------*\
@@ -1674,6 +1627,8 @@ function loadMultipleDocuments(appendParentLast, textfieldId, browse, addName, r
     for (var i = 0, len = listOfFiles.length; i < len; i++) {
       addFormFieldFunc(simpleTextfieldId, browse, $.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
     }
+  } else {
+    addFormField(simpleTextfieldId, browse, "", removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
   }
   
   // TODO !spageti && !run twice

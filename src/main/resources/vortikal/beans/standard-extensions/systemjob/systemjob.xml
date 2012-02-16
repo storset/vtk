@@ -42,7 +42,7 @@
         a while, or that are in the middle of being
         link checked
     -->
-    <property name="query" value="uri=/nilshtml.html" />
+    <property name="query" value="type IN resource" />
 
     <property name="affectedPropDefPointers">
       <list>

@@ -20,8 +20,8 @@
 		  </#if>
           <a class="vrtx-title" href="${uri?html}">${title?html}</a>
 		</div>
+		
         <#list collectionListing.displayPropDefs as displayPropDef>
-
           <#if displayPropDef.name = 'introduction'>
             <#assign val = vrtx.getIntroduction(r) />
           <#elseif displayPropDef.type = 'IMAGE_REF'>
@@ -29,7 +29,7 @@
           <#elseif displayPropDef.name = 'lastModified'>
             <#assign val>
               <@vrtx.msg code="viewCollectionListing.lastModified"
-                         args=[vrtx.propValue(r, displayPropDef.name, "long")] />
+                         args=[vrtx.propValue(r, displayPropDef.name, "long"), vrtx.propValue(r, 'modifiedBy', 'name-link')] />
             </#assign>
           <#else>
             <#assign val = vrtx.propValue(r, displayPropDef.name, "long") /> <#-- Default to 'long' format -->

@@ -197,6 +197,7 @@ public abstract class AbstractCollectionListingController implements ListingCont
     }
     
     protected boolean getHideIcon(Resource collection) {
+        if(this.hideIcon == null) return false;
         Property p = collection.getProperty(this.hideIcon);
         if (p == null) {
             return false;

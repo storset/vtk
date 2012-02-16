@@ -5,7 +5,7 @@
 
   <#if (collectionListings?size > 0)>
 
-     <#if listingView == "2columns">
+     <#if listingView == "2columns" || listingView == "2columns+prio">
        <#-- TMP inline CSS/JS - move to UiO-dist after v3.5 is released -->
        <style type="text/css">
          .articleListing\.searchComponent .vrtx-default-article-left,
@@ -19,11 +19,23 @@
            float: right;
            clear: none;
          }
+         <#if listingView == "2columns+prio">
+           .articleListing\.searchComponent #vrtx-result-1 {
+             width: 100%;
+           } 
+           #vrtx-resources-unprioritized {
+             clear: left;
+           }
+         </#if>
       </style>
       <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.masonry.min.js"></script>
       <script type="text/javascript"><!--
          $(window).load(function() {
-           var container = $('#articleListing\\.searchComponent');
+           <#if listingView == "2columns">
+             var container = $('#articleListing\\.searchComponent');
+           <#else>
+             var container = $('#vrtx-resources-unprioritized');
+           </#if>
            container.imagesLoaded(function(){
              container.masonry({
                columnWidth: 355,
@@ -42,13 +54,12 @@
     <#if page = 1>
       <#local frontpageClass = "vrtx-resources-frontpage" />
     </#if>
-
+    
     <div id="articleListing.searchComponent" class="vrtx-resources articleListing.searchComponent ${frontpageClass}">
     <#list collectionListings as articles>
       <#local resources=articles.files />
       <#if (resources?size > 0)>
         <#list resources as r>
-
           <#local locale = springMacroRequestContext.getLocale() />
           <#if r.contentLocale?has_content>
             <#local locale = r.contentLocale />
@@ -70,7 +81,7 @@
           <#if articles.name == "articleListing.featuredArticles">
             <#local articleType = "vrtx-featured-article" />
           </#if>
-          <div id="vrtx-result-${i}" class="vrtx-resource ${articleType}<#if listingView == "2columns"> ${articleType}-<#if i % 2 == 0>right<#else>left</#if></#if>">
+          <div id="vrtx-result-${i}" class="vrtx-resource ${articleType}<#if listingView == "2columns" || listingView == "2columns+prio"> ${articleType}-<#if i % 2 == 0>right<#else>left</#if></#if>">
           <#local introImgURI = vrtx.propValue(r, 'picture') />
           <#if introImgURI?exists>
     			<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
@@ -124,10 +135,18 @@
             </#if>
 
           </div>
+          
+          <#if i == 1 && listingView == "2columns+prio">
+            <div id="vrtx-resources-unprioritized">
+          </#if>
+          
           <#assign i = i + 1 />
         </#list>
       </#if>
     </#list>
+    <#if listingView == "2columns+prio">
+      </div>
+    </#if>
     </div>
   </#if>
 

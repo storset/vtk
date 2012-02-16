@@ -13,6 +13,7 @@
   <@vrtxJSONJavascript.script />
   
   <script type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>
+  <script type="text/javascript" src="${jsBaseURL?html}/shared-text-extension.js"></script>
   
   <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
   
@@ -81,6 +82,7 @@
       <@vrtx.rawMsg code="editor.workingCopyMsg" args=[versioning.currentVersionURL?html] />
     </div>
   </#if>
+  
   <div id="vrtx-editor-title-submit-buttons">
     <div id="vrtx-editor-title-submit-buttons-inner-wrapper">
       <h2>${header}</h2>

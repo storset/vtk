@@ -6,7 +6,7 @@
 			<#if elem.URL?exists>
 				<li class="vrtx-ancestor"> <a href="${elem.URL}"><span>${elem.title?html}</span></a> </li>
 			<#else>
-				<li class="vrtx-ancestor"> <span>${elem.title?html}</span></li>
+				<li class="vrtx-ancestor"> <span class="vrtx-no-url"><span>${elem.title?html}</span></span></li>
 			</#if>
 		<#else>
 			<#if (elem.URL.path = markedurl.path)  >
@@ -21,14 +21,14 @@
 			<#if elem.URL?exists>
 				<li class="vrtx-ancestor"> <a href="${elem.URL}"><span>${elem.title?html}</span></a> </li>
 			<#else>
-				<li class="vrtx-ancestor"><span>${elem.title?html}</span></li>
+				<li class="vrtx-ancestor"><span class="vrtx-no-url"><span>${elem.title?html}</span></span></li>
 			</#if>
 		<#else>
 			<#if (breadcrumb?size > elem_index + 1) > 
 				<#if elem.URL?exists>
 					<li class="vrtx-parent" ><a href="${elem.URL}"><span>${elem.title?html}</span></a>
 				<#else>
-					<li class="vrtx-parent" ><span>${elem.title?html}</span>
+					<li class="vrtx-parent" ><span class="vrtx-no-url"><span>${elem.title?html}</span></span>
 				</#if>
 			<#else>
 				<ul>

@@ -129,9 +129,28 @@ vrtxAdmin.usernameAutocompleteParams = { multiple: false,
                                          
 vrtxAdmin.tagAutocompleteParams = { minChars: 1 };
          
-// When to timeout AJAX GET/POST                                   
+// When to timeout and possible to abort AJAX GET/POST   
+// Credits: http://stackoverflow.com/questions/1802936/stop-all-active-ajax-requests-in-jquery
+                      
+var ajaxReqsPool = [];      
+function abortAllAjaxReqs() {
+  for(var i = ajaxReqsPool.length; i--;) {
+    ajaxReqsPool[i].abort();
+  }
+  ajaxReqsPool = [];
+}  
+                    
 $.ajaxSetup({
-  timeout: 60000 // 1min
+  timeout: 60000, // 1min
+  beforeSend: function(xhr) {
+    ajaxReqsPool.push(xhr);
+  },
+  complete: function(xhr) {
+    var index = ajaxReqsPool.indexOf(xhr);
+    if (index > -1) {
+      ajaxReqsPool.splice(index, 1);
+    }
+  }
 });
                            
 // funcComplete for postAjaxForm()
@@ -247,6 +266,11 @@ $(document).ready(function () {
     });
     e.stopPropagation();
     e.preventDefault();
+  });
+  
+  // Abort all AJAX reqs. on tab change
+  $("#app-tabs").delegate("li a", "click", function(e) {
+    abortAllAjaxReqs();
   });
   
   // Add autocomplete

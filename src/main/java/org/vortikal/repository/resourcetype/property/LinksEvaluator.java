@@ -80,8 +80,8 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                         continue;
                     }
                     JSONObject obj = (JSONObject) o;
-                    String type = obj.getString("type");
                     String url = obj.getString("url");
+                    String type = obj.getString("type");
                     LinkSource source = LinkSource.valueOf(obj.getString("source"));
                     if (source == LinkSource.CONTENT) {
                         Link link = new Link(url, LinkType.valueOf(type), source);
@@ -99,7 +99,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
             Resource resource = ctx.getNewResource();
             for (Property p: resource) {
                 if (p.getType() == PropertyType.Type.IMAGE_REF) {
-                    Link link = new Link(p.getValue().getStringValue(), LinkType.PROPERTY, LinkSource.PROPERTIES);
+                    Link link = new Link(p.getStringValue(), LinkType.PROPERTY, LinkSource.PROPERTIES);
                     collector.add(link);
                 } else if (p.getType() == PropertyType.Type.HTML) {
                     InputStream is = new ByteArrayInputStream(p.getStringValue().getBytes());
@@ -157,6 +157,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
     }
     
     private static class Link {
+
         private String url;
         private LinkType type;
         private LinkSource source;
@@ -173,6 +174,36 @@ public class LinksEvaluator implements LatePropertyEvaluator {
         }
         public LinkSource getSource() {
             return this.source;
+        }
+        
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final Link other = (Link) obj;
+            if ((this.url == null) ? (other.url != null) : !this.url.equals(other.url)) {
+                return false;
+            }
+            if (this.type != other.type) {
+                return false;
+            }
+            if (this.source != other.source) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 5;
+            hash = 37 * hash + (this.url != null ? this.url.hashCode() : 0);
+            hash = 37 * hash + (this.type != null ? this.type.hashCode() : 0);
+            hash = 37 * hash + (this.source != null ? this.source.hashCode() : 0);
+            return hash;
         }
     }
     
@@ -192,8 +223,8 @@ public class LinksEvaluator implements LatePropertyEvaluator {
             JSONArray arr = new JSONArray();
             for (Link l: this.links) {
                 JSONObject entry = new JSONObject();
+                entry.put("url", l.getURL()); // technically, a relative href is not a complete URL..
                 entry.put("type", l.getType());
-                entry.put("url", l.getURL());
                 entry.put("source", l.getSource());
                 arr.add(entry);
             }

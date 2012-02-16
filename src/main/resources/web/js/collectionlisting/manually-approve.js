@@ -220,12 +220,19 @@ function generateManuallyApprovedContainer(resources) {
   // If more than one page
   if (moreThanOnePage) {
     for (; i < prPage; i++) { // Generate first page synchronous
-      html += generateTableRowFunc(resources[i], i);
+      html += generateTableRowFunc(resources[i]);
     }
     html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
     pages++;
     html += generateNavAndEndPageFunc(i, html, prPage, remainder, pages, totalPages);
-    $("#manually-approve-container").html(html);
+    
+    var manuallyApproveContainer = $("#manually-approve-container");
+    manuallyApproveContainer.html(html);
+    var manuallyApproveContainerTable = manuallyApproveContainer.find("table");
+    manuallyApproveContainerTable.find("tr:first-child").addClass("first");
+    manuallyApproveContainerTable.find("tr:last-child").addClass("last");
+    manuallyApproveContainerTable.find("tr:nth-child(even)").addClass("even");
+    manuallyApproveContainerTable.find("input").removeAttr("disabled");
     html = generateStartPageAndTableHeadFunc(pages);
   } else {
     $("#manually-approve-container").html(""); // clear if only one page
@@ -237,13 +244,19 @@ function generateManuallyApprovedContainer(resources) {
       + pages + "</span> " + approveOf + " " + totalPages + "...</span>");
   // Generate rest of pages asynchronous
   asyncGenPagesTimer = setTimeout(function() {
-    html += generateTableRowFunc(resources[i], i);
+    html += generateTableRowFunc(resources[i]);
     if ((i + 1) % prPage == 0) {
       html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
       pages++;
       if (i < len - 1) {
         html += generateNavAndEndPageFunc(i, html, prPage, remainder, pages, totalPages);
         $("#manually-approve-container").append(html);
+        var table = $("#approve-page-" + (pages - 1) + " table");
+        table.find("tr:first-child").addClass("first");
+        table.find("tr:last-child").addClass("last");
+        table.find("tr:nth-child(even)").addClass("even");
+        table.find("input").removeAttr("disabled");
+        var manuallyApproveContainer = $("#manually-approve-container");
         if (moreThanOnePage) {
           $("#manually-approve-container #approve-page-" + (pages - 1)).hide();
         }
@@ -266,7 +279,25 @@ function generateManuallyApprovedContainer(resources) {
       }
       html += "</div>";
       $("#manually-approve-container").append(html);
-      initializeCheckUncheckAll();
+      var table = $("#approve-page-" + pages + " table");
+      table.find("tr:first-child").addClass("first");
+      table.find("tr:last-child").addClass("last");
+      table.find("tr:nth-child(even)").addClass("even");
+      table.find("input").removeAttr("disabled");
+      $("#manually-approve-container").delegate("th.checkbox input", "click", function() {
+        var checkAll = this.checked; 
+        var checkboxes = $("td.checkbox input:visible");
+        for(var i = 0, len = checkboxes.length; i < len; i++) {
+          var checkbox = checkboxes[i];
+          var isChecked = checkbox.checked;
+          if (!isChecked && checkAll) { 
+            $(checkbox).attr('checked', true).trigger("change");
+          }
+          if (isChecked && !checkAll) {
+            $(checkbox).attr('checked', false).trigger("change");
+          }
+        }
+      }); 
       $("#approve-spinner").remove();
       if (len > prPage) {
         $("#manually-approve-container #approve-page-" + pages).hide();
@@ -282,19 +313,8 @@ function generateManuallyApprovedContainer(resources) {
 
 /* HTML generation functions */
 
-function generateTableRow(resource, i) {
-  var classes = "";
-  if (i & 1) { // faster than i % 2
-    classes = "even"
-  } 
-  if(i % 15 == 0) {
-    classes = classes == "" ? "first" : classes + " first";
-  }
-  if(classes != "") {
-    var html = "<tr class='" + classes + "'>";
-  } else {
-    var html = "<tr>";
-  }
+function generateTableRow(resource) {
+  var html = "<tr>";
   if (resource.approved) {
     html += "<td class='checkbox'><input type='checkbox' disabled='disabled' checked='checked' value='" + resource.uri + "'/></td>";
   } else {
@@ -326,9 +346,8 @@ function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
 }
 
 function generateStartPageAndTableHead(pages) {
-  return "<div id='approve-page-"
-      + pages
-      + "'><table><thead><tr><th id='approve-checkbox' class='checkbox'></th><th id='approve-title'>" + approveTableTitle + "</th><th id='approve-src'>" + approveTableSrc + "</th><th id='approve-published'>" + approveTablePublished + "</th></tr></thead><tbody>";
+  return "<div id='approve-page-" + pages + "'><table><thead><tr><th id='approve-checkbox' class='checkbox'><input type='checkbox' disabled='disabled' name='checkUncheckAll' /></th><th id='approve-title'>" 
+        + approveTableTitle + "</th><th id='approve-src'>" + approveTableSrc + "</th><th id='approve-published'>" + approveTablePublished + "</th></tr></thead><tbody>";
 }
 
 /* ^ HTML generation functions */

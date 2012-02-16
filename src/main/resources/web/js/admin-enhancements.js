@@ -113,12 +113,21 @@ if(vrtxAdmin.isMobileWebkitDevice) { // turn off animation in iPhone, iPad and A
   vrtxAdmin.transitionDropdownSpeed = 0;
 }
 
-// Permission Autocomplete parameters
+// Autocomplete parameters
 vrtxAdmin.permissionsAutocompleteParams = { minChars: 4, 
                                             selectFirst: false, 
                                             width: 300, 
                                             max: 30,
                                             delay: 800 };
+                                            
+vrtxAdmin.usernameAutocompleteParams = { multiple: false,
+                                         minChars: 2, 
+                                         selectFirst: false, 
+                                         width: 300, 
+                                         max: 30,
+                                         delay: 500 };
+                                         
+vrtxAdmin.tagAutocompleteParams = { minChars: 1 };
          
 // When to timeout AJAX GET/POST                                   
 $.ajaxSetup({
@@ -239,7 +248,13 @@ $(document).ready(function () {
     e.stopPropagation();
     e.preventDefault();
   });
-
+  
+  // Add autocomplete
+  if($("form#editor").length) {  
+    autocompleteUsernames(".vrtx-autocomplete-username");
+    autocompleteTags(".vrtx-autocomplete-tag");
+  }
+  
   // Remove active tab if it has no children
   var activeTab = $("#active-tab");
   if (!activeTab.find(" > *").length) {
@@ -271,7 +286,25 @@ $(document).ready(function () {
       resourceMenuLeft.css("marginTop", "0px"); 
     }
   }
-
+  
+  // Sticky editor title and save buttons  
+  if($("form#editor").length) {
+    var titleSubmitButtons = $("#vrtx-editor-title-submit-buttons");
+    if(titleSubmitButtons.length) {
+      var titleSubmitButtonsPos = titleSubmitButtons.offset();
+      titleSubmitButtons.append("<span id='vrtx-sticky-editor-bottom-bg'></span>");
+      $(window).bind("scroll", function() {
+        if($(window).scrollTop() >= (titleSubmitButtonsPos.top - 20)) {
+          titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons"); 
+          titleSubmitButtons.css("width", $("#contents").width() + "px");
+        } else {
+          titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
+          titleSubmitButtons.css("width", "auto");
+        }
+      });
+    }
+  }
+  
   // Preview image
   adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
   adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");
@@ -521,6 +554,7 @@ $(document).ready(function () {
           var animB = tr.slideUp(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideUp, $.noop);
           $.when(animA, animB).done(function() {
             $("#contents").html($(results).find("#contents").html());
+            $("#app-tabs").html($(results).find("#app-tabs").html());
           });
         }
       });
@@ -556,6 +590,7 @@ $(document).ready(function () {
       vrtxAdmin.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
           $("#contents").html($(results).find("#contents").html());
+          $("#app-tabs").html($(results).find("#app-tabs").html());
           if(typeof versionsMadeCurrentInfoMsg !== "undefined") {
             vrtxAdmin.displayInfoMsg(versionsMadeCurrentInfoMsg);
           }
@@ -739,61 +774,54 @@ function collectionListingInteraction() {
   placeDeleteButtonInActiveTab();
   placeRecoverButtonInActiveTab();
   placeDeletePermanentButtonInActiveTab();
-
+  
   initializeCheckUncheckAll();
 }
 
 // TODO: refactor/simplify
 function initializeCheckUncheckAll() {
-  if($("td.checkbox").length) {
-    $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />")
-    if($("form#editor").length) {
-      $("td.checkbox input").removeAttr("disabled");
-      $("th.checkbox input").click(function() {
-        var checkAll = this.checked;
-        $("td.checkbox input:visible").each(function () {
-          var isChecked = this.checked;
-          if (!isChecked && checkAll) { 
-            $(this).attr('checked', true).trigger("change");
-          }
-          if (isChecked && !checkAll) {
-            $(this).attr('checked', false).trigger("change");
-          }
-        });
-      }); 
-    } else {
-      $("th.checkbox input").click(function() {
-        var checkAll = this.checked;
-        $("td.checkbox input").each(function () {
-          var isChecked = this.checked;
-          var parentParent = $(this).parent().parent();
-          if(!isChecked && checkAll) {
-            $(this).attr('checked', true).change();
-            if(!parentParent.hasClass("checked")) {
-              parentParent.addClass("checked");
-            }
-          }
-          if(isChecked && !checkAll) {
-            $(this).attr('checked', false).change();
-            if(parentParent.hasClass("checked")) {
-              parentParent.removeClass("checked");
-            }
-          }
-        });
-      });
-      $("td.checkbox input").click(function() {
-        var isChecked = this.checked;
-        var parentParent = $(this).parent().parent();
-        if(isChecked) {
-          if(!parentParent.hasClass("checked")) {
-            parentParent.addClass("checked");
-          }
-        } else {
-          if(parentParent.hasClass("checked")) {
-            parentParent.removeClass("checked");
-          }
+  var tdCheckbox = $("td.checkbox");
+  if(tdCheckbox.length && !$("form#editor").length) {
+    $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
+    $("#directory-listing").delegate("th.checkbox input", "click", function() {
+      var checkAll = this.checked;
+      var checkboxes = $("td.checkbox input");
+      var funcClassAddRemover = classAddRemover; 
+      for(var i = 0, len = checkboxes.length; i < len; i++) {
+        var isChecked = checkboxes[i].checked;
+        var checkbox = $(checkboxes[i]);
+        var tr = checkbox.closest("tr");
+        if(!isChecked && checkAll) {
+          checkbox.attr('checked', true).change();
+          funcClassAddRemover(tr, "checked", true);
         }
-      });
+        if(isChecked && !checkAll) {
+          checkbox.attr('checked', false).change();
+          funcClassAddRemover(tr, "checked", false);
+        }
+      }
+    });
+    $("#directory-listing").delegate("td.checkbox input", "click", function() {
+      var checkbox = this;
+      var isChecked = checkbox.checked;
+      var tr = $(checkbox).closest("tr");
+      if(isChecked) {
+        classAddRemover(tr, "checked", true);
+      } else {
+        classAddRemover(tr, "checked", false);
+      }
+    });
+  }
+}
+
+function classAddRemover(elem, name, isAdding) {
+  if(isAdding) { // Add
+    if(!elem.hasClass(name)) {
+      elem.addClass(name);
+    }
+  } else { // Remove
+    if(elem.hasClass(name)) {
+      elem.removeClass(name);
     }
   }
 }
@@ -909,15 +937,13 @@ function initPermissionForm(selectorClass) {
   toggleConfigCustomPermissions(selectorClass);
   interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]", "." + selectorClass + " input.addUserButton");
   interceptEnterKeyAndReroute("." + selectorClass + " .addGroup input[type=text]", "." + selectorClass + " input.addGroupButton");
-  permissionsAutocomplete('userNames', 'userNames', vrtxAdmin.permissionsAutocompleteParams);
-  splitAutocompleteSuggestion('userNames');
-  permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams);
+  initSimplifiedPermissionForm();
 }
 
 function initSimplifiedPermissionForm() {
-  permissionsAutocomplete('userNames', 'userNames', vrtxAdmin.permissionsAutocompleteParams);
+  permissionsAutocomplete('userNames', 'userNames', vrtxAdmin.permissionsAutocompleteParams, false);
   splitAutocompleteSuggestion('userNames');
-  permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams);  
+  permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams, false);  
 }
 
 function toggleConfigCustomPermissions(selectorClass) {
@@ -953,6 +979,21 @@ function checkStillAdmin(selector) {
   return true; 
 }
 
+function autocompleteUsernames(selector) {
+  var autocompleteTextfields = $(selector).find('.vrtx-textfield input');
+  var i = autocompleteTextfields.length;
+  while(i--) {
+    permissionsAutocomplete($(autocompleteTextfields[i]).attr("id"), 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
+  }
+}
+
+function autocompleteTags(selector) {
+  var autocompleteTextfields = $(selector).find('.vrtx-textfield input');
+  var i = autocompleteTextfields.length;
+  while(i--) {
+    setAutoComplete($(autocompleteTextfields[i]).attr("id"), 'tags', vrtxAdmin.tagAutocompleteParams);
+  }
+}
 
 
 /*-------------------------------------------------------------------*\

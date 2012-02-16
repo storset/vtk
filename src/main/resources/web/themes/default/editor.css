@@ -145,12 +145,25 @@ input[type=checkbox] {
   border-top: none;
 }
 
+#manually-approve-container table th,
+#manually-approve-container table tr.last td {
+  background: url(images/line-dotted.gif) repeat-x bottom left;
+}
+
 #manually-approve-container table th {
   background: url(images/line-dotted.gif) repeat-x bottom left;
   padding: 0 15px 8px 0;
   text-align: left;
   white-space: nowrap;
   vertical-align: top; 
+}
+
+div.manually-approve-from table td input {
+  margin-top: 3px;
+}
+
+div.manually-approve-from table th input {
+  margin-top: 2px;
 }
 
 #manually-approve-container th#approve-checkbox {
@@ -186,7 +199,14 @@ input[type=checkbox] {
 }
 
 #manually-approve-container .next {
-  margin-left: 20px
+  margin-left: 20px;
+  background: url(images/arrow-grey-next.gif) no-repeat center right;
+  padding: 0 12px 0 0;
+}
+
+#manually-approve-container .prev {
+  background: url(images/arrow-grey-prev.gif) no-repeat center left;
+  padding: 0 0 0 12px;
 }
 
 #vrtx-resource\.manually-approved-resources {
@@ -306,6 +326,22 @@ h3#vrtx-image-editor-preview {
 #vrtx-image-crop-button .vrtx-button {
   margin-top: 10px;
 }
+
+/* Study table */
+
+table.vrtx-courseplan-table { 
+  width: 100%;
+}
+
+table.vrtx-courseplan-table td.small {
+  white-space: nowrap;
+  width: 10%;
+}
+
+table.vrtx-courseplan-table td.large {  
+  width: 30%;
+}
+
 
 /* ^ Image editor */
 

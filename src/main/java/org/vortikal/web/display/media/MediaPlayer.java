@@ -81,7 +81,7 @@ public class MediaPlayer {
         if (streamType != null && !"".equals(streamType))
             model.put("streamType", streamType);
 
-        model.put("showDL", showDL != null && showDL.equals("true") ? "true" : "false");
+        model.put("showDL", showDL != null && showDL.equalsIgnoreCase("true") ? "true" : "false");
 
         if (poster != null && !"".equals(poster))
             model.put("poster", poster);

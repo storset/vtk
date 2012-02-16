@@ -121,6 +121,36 @@ h2 {
   border: none;
 }
 
+/* Sticky title and editor save/cancel buttons */
+
+#vrtx-editor-title-submit-buttons {
+  padding-bottom: 12px;
+}
+
+#app-content #main {
+  padding-top: 9px;
+}
+
+.property-item.userTitle,
+.vrtx-string.title,
+.vrtx-string.name,
+.vrtx-string.areacode,
+.vrtx-string.username {
+  margin-top: 0px;
+}
+
+.vrtx-sticky-editor-title-submit-buttons {
+  position: fixed;
+  top: 0px;
+  z-index: 999999;
+  background: transparent url(images/sticky-title-buttons-bg.png) repeat-x bottom left; 
+}
+
+#vrtx-editor-title-submit-buttons-inner-wrapper {
+  padding-top: 10px;
+  background: #fff;
+}
+
 
 
 /*-----------------------------------------*\

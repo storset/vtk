@@ -2355,31 +2355,6 @@ div.vrtx-admin-form {
   margin: 0 10px 0 0;
 }
 
-.vrtx-sticky-editor-title-submit-buttons {
-  position: fixed;
-  top: 0px;
-  z-index: 999999;
-}
-
-.vrtx-sticky-editor-title-submit-buttons .submit-extra-buttons {
-  margin-top: -42px;
-}
-
-.vrtx-sticky-editor-title-submit-buttons h2 {
-  margin-bottom: 0px;
-}
-
-.vrtx-sticky-editor-title-submit-buttons #vrtx-editor-title-submit-buttons-inner-wrapper {
-  background: #fff;
-  padding-top: 10px;
-}
-
-.vrtx-sticky-editor-title-submit-buttons #vrtx-sticky-editor-bottom-bg {
-  background: transparent url(images/sticky-title-buttons-bg.png) repeat-x bottom left; 
-  height: 20px;
-  display: block;
-}
-
 /* ^ Buttons */
 
 /* Textfields */

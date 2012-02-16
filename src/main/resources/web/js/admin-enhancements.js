@@ -292,14 +292,15 @@ $(document).ready(function () {
     var titleSubmitButtons = $("#vrtx-editor-title-submit-buttons");
     if(titleSubmitButtons.length) {
       var titleSubmitButtonsPos = titleSubmitButtons.offset();
-      titleSubmitButtons.append("<span id='vrtx-sticky-editor-bottom-bg'></span>");
       $(window).bind("scroll", function() {
-        if($(window).scrollTop() >= (titleSubmitButtonsPos.top - 20)) {
+        if($(window).scrollTop() >= titleSubmitButtonsPos.top) {
           titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons"); 
           titleSubmitButtons.css("width", $("#contents").width() + "px");
+          $("#contents").css("paddingTop", titleSubmitButtons.height() + "px");
         } else {
           titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
           titleSubmitButtons.css("width", "auto");
+          $("#contents").css("paddingTop", "0px");
         }
       });
     }
@@ -778,7 +779,6 @@ function collectionListingInteraction() {
   initializeCheckUncheckAll();
 }
 
-// TODO: refactor/simplify
 function initializeCheckUncheckAll() {
   var tdCheckbox = $("td.checkbox");
   if(tdCheckbox.length && !$("form#editor").length) {

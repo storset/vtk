@@ -296,7 +296,7 @@ $(document).ready(function () {
         if($(window).scrollTop() >= titleSubmitButtonsPos.top) {
           titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons"); 
           titleSubmitButtons.css("width", $("#contents").width() + "px");
-          $("#contents").css("paddingTop", titleSubmitButtons.height() + "px");
+          $("#contents").css("paddingTop", titleSubmitButtons.outerHeight(true) + "px");
         } else {
           titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
           titleSubmitButtons.css("width", "auto");

@@ -146,9 +146,9 @@ $.ajaxSetup({
     ajaxReqsPool.push(xhr);
   },
   complete: function(xhr) {
-    var index = ajaxReqsPool.indexOf(xhr);
-    if (index > -1) {
-      ajaxReqsPool.splice(index, 1);
+    var idx = $.inArray(xhr, ajaxReqsPool);
+    if (idx > -1) {
+      ajaxReqsPool.splice(idx, 1);
     }
   }
 });

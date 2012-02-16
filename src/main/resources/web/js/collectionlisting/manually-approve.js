@@ -150,6 +150,8 @@ function retrieveResources(serviceUri, folders, aggregatedFolders) {
     }
   }
   
+  $("#vrtx-manually-approve-no-approved-msg").remove();
+  
   if(!folders.length) {
     $("#vrtx-manually-approve-tab-menu:visible").addClass("hidden");
     $("#manually-approve-container:visible").addClass("hidden");
@@ -173,6 +175,9 @@ function retrieveResources(serviceUri, folders, aggregatedFolders) {
       } else {
         if(!approvedOnly) {
           $("#vrtx-manually-approve-tab-menu:visible").addClass("hidden");
+        } else {
+          $("<p id='vrtx-manually-approve-no-approved-msg'>" + approveNoApprovedMsg + "</p>")
+          .insertAfter("#vrtx-manually-approve-tab-menu");
         }
         $("#manually-approve-container:visible").addClass("hidden");
       }

@@ -128,10 +128,6 @@ input[type=checkbox] {
   table-layout: fixed;
 }
 
-#manually-approve-container table tr.even td {
-  background-color: #F9F9F9;
-}
-
 #manually-approve-container table td {
   font-size: 1.15em;
   border-top: 1px solid #f0f0f0;
@@ -141,6 +137,10 @@ input[type=checkbox] {
   vertical-align: top;
 }
 
+#manually-approve-container table tr.even td {
+  background-color: #F9F9F9;
+}
+
 #manually-approve-container table tr.first td {
   border-top: none;
 }
@@ -148,6 +148,10 @@ input[type=checkbox] {
 #manually-approve-container table th,
 #manually-approve-container table tr.last td {
   background: url(images/line-dotted.gif) repeat-x bottom left;
+}
+
+#manually-approve-container table tr.last.even td {
+  background: #F9F9F9 url(images/line-dotted.gif) repeat-x bottom left;
 }
 
 #manually-approve-container table th {
@@ -167,7 +171,7 @@ div.manually-approve-from table th input {
 }
 
 #manually-approve-container th#approve-checkbox {
-  width: 2%;
+  width: 20px;
 }
 
 #manually-approve-container th#approve-title {
@@ -180,6 +184,11 @@ div.manually-approve-from table th input {
 
 #manually-approve-container th#approve-published {
   width: 100px;
+}
+
+#vrtx-manually-approve-no-approved-msg {
+  clear: left;
+  padding: 15px 0 0 0;
 }
 
 #manually-approve-container .next,

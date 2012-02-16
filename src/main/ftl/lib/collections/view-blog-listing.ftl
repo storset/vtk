@@ -18,7 +18,8 @@
             </div>
           </#if>
       </#if>
-      <@articles.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
+      <#local listingView = "regular">
+      <@articles.displayArticles page=page collectionListings=searchComponents listingView=listingView hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
       </div>
       <div class="additional-information">
          <@tagCloud.createTagCloud true />

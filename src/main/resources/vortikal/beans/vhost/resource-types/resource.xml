@@ -45,6 +45,7 @@
         <ref bean="publishedPropDef" />
         <ref bean="resourceAspectsPropDef" />
         <ref bean="linksPropDef" />
+        <ref bean="linkStatusPropDef" />
       </list>
     </property>
   </bean>
@@ -307,6 +308,30 @@
 
   <bean id="resourceLinksEvaluator" class="org.vortikal.repository.resourcetype.property.LinksEvaluator">
     <property name="resourceManager" ref="structuredResources.resourceManager" />
+  </bean>
+
+  <bean id="linkStatusPropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
+        parent="abstractPropDef">
+    <property name="name" value="link-status" />
+    <property name="type" value="BINARY" />
+    <property name="multiple" value="false" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="resourceLinkStatusEvaluator" />
+  </bean>
+
+  <bean id="resourceLinkStatusEvaluator" class="org.vortikal.repository.resourcetype.property.LinkStatusEvaluator">
+    <property name="linksPropDef" ref="linksPropDef" />
+    <property name="linkChecker" ref="repository.linkChecker" />
+    <property name="baseURL" value="${linkChecker.baseURL}" />
+  </bean>
+
+  <bean id="repository.linkChecker" 
+        class="org.vortikal.web.display.linkcheck.LinkChecker">
+    <property name="cacheManager" ref="ehCacheManager" />
+    <property name="connectTimeout" value="5000" />
+    <property name="readTimeout" value="10000" />
+    <property name="userAgent" value="Link checker for ${repositoryID}" />
   </bean>
 
 </beans>

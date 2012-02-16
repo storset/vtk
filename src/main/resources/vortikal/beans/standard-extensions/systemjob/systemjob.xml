@@ -22,4 +22,34 @@
     </property>
   </bean>
 
+  <!-- Broken links (system job is disabled for now) -->
+  <!--
+  <bean id="repository.brokenLinksEvaluateTrigger" parent="repository.systemJobMethodInvokingTrigger">
+    <property name="targetObject" ref="repository.linkCheckSystemJob" />
+    <property name="triggerThreadName" value="${repositoryID}.linkCheck" />
+    <property name="repeatInterval" value="${repository.publisher.interval}" />
+  </bean>
+  -->
+  
+  <bean id="repository.linkCheckSystemJob" class="org.vortikal.repository.systemjob.LinkCheckSystemJob"
+        parent="repository.systemJob">
+
+    <property name="systemJobName" value="linkcheck" />
+    <property name="parser" ref="searchParser" />
+
+    <!-- XXX: ideally, this query would select resources
+        that contain links that have not been checked for
+        a while, or that are in the middle of being
+        link checked
+    -->
+    <property name="query" value="uri=/nilshtml.html" />
+
+    <property name="affectedPropDefPointers">
+      <list>
+        <value>resource::link-status</value>
+      </list>
+    </property>
+  </bean>
+
+
 </beans>

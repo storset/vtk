@@ -33,12 +33,12 @@ package org.vortikal.repository.resourcetype.property;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
@@ -51,14 +51,11 @@ import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
 import org.vortikal.util.io.StreamUtil;
-import org.vortikal.util.text.JSON;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-
-import net.sf.json.JSONArray;
 
 public class LinksEvaluator implements LatePropertyEvaluator {
     
@@ -76,14 +73,22 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                 // Preserve existing content links, since this is not content change.
                 InputStream stream = property.getBinaryStream().getStream();
                 String jsonString = StreamUtil.streamToString(stream, "utf-8");
-                JSONObject json = JSONObject.fromObject(jsonString);
-                if (json.has("contentLinks")) {
-                    for (Object link: json.getJSONArray("contentLinks")) {
-                        collector.add((String)link, LinkSource.CONTENT);
+                JSONArray arr = JSONArray.fromObject(jsonString);
+
+                for (Object o: arr) {
+                    if (! (o instanceof JSONObject)) {
+                        continue;
                     }
-                    
-                    evaluateContent = false;
+                    JSONObject obj = (JSONObject) o;
+                    String type = obj.getString("type");
+                    String url = obj.getString("url");
+                    LinkSource source = LinkSource.valueOf(obj.getString("source"));
+                    if (source == LinkSource.CONTENT) {
+                        Link link = new Link(url, LinkType.valueOf(type), source);
+                        collector.add(link);
+                    }
                 }
+                evaluateContent = false;
             }
         } catch (Throwable t) {
             // Some error in old property value, ignore and start fresh
@@ -94,7 +99,8 @@ public class LinksEvaluator implements LatePropertyEvaluator {
             Resource resource = ctx.getNewResource();
             for (Property p: resource) {
                 if (p.getType() == PropertyType.Type.IMAGE_REF) {
-                    collector.add(p.getValue().getStringValue(), LinkSource.PROPERTIES);
+                    Link link = new Link(p.getValue().getStringValue(), LinkType.PROPERTY, LinkSource.PROPERTIES);
+                    collector.add(link);
                 } else if (p.getType() == PropertyType.Type.HTML) {
                     InputStream is = new ByteArrayInputStream(p.getStringValue().getBytes());
                     extractLinks(is, collector, LinkSource.PROPERTIES);
@@ -138,35 +144,60 @@ public class LinksEvaluator implements LatePropertyEvaluator {
         CONTENT
     }
     
-    private class LinkCollector {
-        private Set<String> propertyLinks = new HashSet<String>();
-        private Set<String> contentLinks = new HashSet<String>();
+    private enum LinkType {
+        ANCHOR,
+//        CSS,
+        LINK,
+        IMG,
+        SCRIPT,
+        FRAME,
+        IFRAME,
+        PROPERTY,
+        OBJ
+    }
+    
+    private static class Link {
+        private String url;
+        private LinkType type;
+        private LinkSource source;
+        public Link(String url, LinkType type, LinkSource source) {
+            this.url = url;
+            this.type = type;
+            this.source = source;
+        }
+        public String getURL() {
+            return this.url;
+        }
+        public LinkType getType() {
+            return this.type;
+        }
+        public LinkSource getSource() {
+            return this.source;
+        }
+    }
+    
+    private static class LinkCollector {
+        private Set<Link> links = new HashSet<Link>();
 
-        public void add(String link, LinkSource source) {
-            if (source == LinkSource.PROPERTIES) {
-                propertyLinks.add(link);
-            } else {
-                contentLinks.add(link);
-            }
+        public void add(Link link) {
+            this.links.add(link);
         }
         public void clear() {
-            this.propertyLinks.clear();
-            this.contentLinks.clear();
+            this.links.clear();
         }
         public boolean isEmpty() {
-            return this.propertyLinks.isEmpty() && this.contentLinks.isEmpty();
+            return this.links.isEmpty();
         }
         public byte[] serialize() throws Exception {
-            JSONObject obj = new JSONObject();
             JSONArray arr = new JSONArray();
-            arr.addAll(this.propertyLinks);
-            obj.put("propertyLinks", arr);
-
-            arr = new JSONArray();
-            arr.addAll(this.contentLinks);
-            obj.put("contentLinks", arr);
-            
-            return obj.toString().getBytes("utf-8");
+            for (Link l: this.links) {
+                JSONObject entry = new JSONObject();
+                entry.put("type", l.getType());
+                entry.put("url", l.getURL());
+                entry.put("source", l.getSource());
+                arr.add(entry);
+            }
+            return arr.toString().getBytes("utf-8");
         }
     }
 
@@ -215,15 +246,30 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                     String attrName = attrs.getQName(i);
                     String attrValue = attrs.getValue(i);
                     
-                    if ("a".equals(localName) && "href".equals(attrName) 
-                            || "img".equals(localName) && "src".equals(attrName)
-                            || "script".equals(localName) && "src".equals(attrName)
-                            || "link".equals(localName) && "href".equals(attrName)
-                            || "frame".equals(localName) && "src".equals(attrName)
-                            || "iframe".equals(localName) && "src".equals(attrName)) {
-                        if (attrValue != null) {
-                            this.listener.add(attrValue, this.linkSource);
-                        }
+                    LinkType type = null;
+                    
+                    if ("a".equals(localName) && "href".equals(attrName)) {
+                        type = LinkType.ANCHOR;
+                        
+                    } else if ("img".equals(localName) && "src".equals(attrName)) {
+                        type = LinkType.IMG;
+                        
+                    } else if ("script".equals(localName) && "src".equals(attrName)) {
+                        type = LinkType.SCRIPT;
+                        
+                    } else if ("link".equals(localName) && "href".equals(attrName)) {
+                        type = LinkType.LINK;
+                        
+                    } else if ("frame".equals(localName) && "src".equals(attrName)) {
+                        type = LinkType.FRAME;
+                        
+                    } else if ("iframe".equals(localName) && "src".equals(attrName)) {
+                        type = LinkType.IFRAME;
+                    }
+                    
+                    if (type != null && attrValue != null) {
+                        this.listener.add(new Link(attrValue, type, this.linkSource));
+                        //this.listener.add(attrValue, this.linkSource);
                     }
                 }                
             }

@@ -23,28 +23,8 @@
            .articleListing\.searchComponent #vrtx-result-1 {
              width: 100%;
            } 
-           #vrtx-resources-unprioritized {
-             clear: left;
-           }
          </#if>
       </style>
-      <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.masonry.min.js"></script>
-      <script type="text/javascript"><!--
-         $(window).load(function() {
-           <#if listingView == "2columns">
-             var container = $('#articleListing\\.searchComponent');
-           <#else>
-             var container = $('#vrtx-resources-unprioritized');
-           </#if>
-           container.imagesLoaded(function(){
-             container.masonry({
-               columnWidth: 355,
-               gutterWidth: 20
-             });
-           });
-         });
-      // -->
-      </script>
     </#if>
     
     
@@ -54,8 +34,11 @@
     <#if page = 1>
       <#local frontpageClass = "vrtx-resources-frontpage" />
     </#if>
-    
-    <div id="articleListing.searchComponent" class="vrtx-resources articleListing.searchComponent ${frontpageClass}">
+    <#if listingView == "2columns+prio">
+      <div id="articleListing.searchComponent" class="vrtx-resources vrtx-resource-prioritize-first articleListing.searchComponent ${frontpageClass}">
+    <#else>
+      <div id="articleListing.searchComponent" class="vrtx-resources articleListing.searchComponent ${frontpageClass}">
+    </#if>
     <#list collectionListings as articles>
       <#local resources=articles.files />
       <#if (resources?size > 0)>
@@ -144,9 +127,6 @@
         </#list>
       </#if>
     </#list>
-    <#if listingView == "2columns+prio">
-      </div>
-    </#if>
     </div>
   </#if>
 

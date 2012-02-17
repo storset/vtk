@@ -336,6 +336,13 @@ h3#vrtx-image-editor-preview {
   margin-top: 10px;
 }
 
+#vrtx-image-crop-coordinates {
+  float: left;
+  display: block;
+  margin: 44px 0px -10px 20px;
+  font-size: 0.923em;
+}
+
 /* Study table */
 
 table.vrtx-courseplan-table { 

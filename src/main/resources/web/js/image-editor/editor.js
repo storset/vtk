@@ -144,6 +144,12 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
         $(this).val(cropText);
         $("#vrtx-image-editor").resizable("disable");
         
+        var cropInfoHtml = "<p id='vrtx-image-crop-coordinates'>" 
+                             + widthText.substring(0,1) + ": " + editor.cropWidth + "&nbsp;&nbsp;"
+                             + heightText.substring(0,1) + ": " + editor.cropHeight
+                           + "</p>";    
+        $(cropInfoHtml).insertAfter("#vrtx-image-crop-button");
+        
         editor.hasCropBeenInitialized = true;
       }
       e.stopPropagation();

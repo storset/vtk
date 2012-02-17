@@ -15,9 +15,9 @@ $(document).ready(function () {
 				return;
 			}
 			  
-			$(containerElement).html("<select id='" + id +"' name='" + name + "'><option value=''>Ingen fellestekst<option></select>");
+			$(containerElement).html("<select id='" + id +"' name='" + name + "'></select>");
 			var selectElement =  $("#" + id);
-		  
+			$(selectElement).append("<option value=''>Ingen fellestekst</option>")
 			var properties = data.properties; 
 			for(x in properties){
 			  if(x == "shared-text-box"){

@@ -82,6 +82,7 @@ import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.repository.store.RevisionStore;
 import org.vortikal.repository.store.Revisions;
 import org.vortikal.repository.store.Revisions.ChecksumWrapper;
+import org.vortikal.repository.systemjob.SystemChangeContext;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
@@ -802,7 +803,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Override
     public Resource store(String token, Resource resource) throws ResourceNotFoundException, AuthorizationException,
             ResourceLockedException, AuthenticationException, IllegalOperationException, ReadOnlyException, IOException {
-
+        return store(token, resource, null);
+    }
+    
+    @Transactional
+    @Override
+    public Resource store(String token, Resource resource, SystemChangeContext systemChangeContext) throws ResourceNotFoundException, AuthorizationException,
+            ResourceLockedException, AuthenticationException, IllegalOperationException, ReadOnlyException, IOException {
+        
         Principal principal = this.tokenManager.getPrincipal(token);
 
         if (resource == null) {
@@ -820,7 +828,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         checkLock(original, principal);
-        this.authorizationManager.authorizeReadWrite(uri, principal);
+        
+        if (systemChangeContext != null) {
+            // System change store requires root role
+            this.authorizationManager.authorizeRootRoleAction(principal);
+        } else {
+            this.authorizationManager.authorizeReadWrite(uri, principal);
+        }
 
         try {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
@@ -828,10 +842,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             ResourceImpl suppliedResource = (ResourceImpl) resource;
             ResourceImpl newResource;
             Content content = getContent(original);
-            if (suppliedResource.getSystemJobContext() == null) {
+            
+            if (systemChangeContext == null) {
                 newResource = this.resourceHelper.propertiesChange(original, principal, suppliedResource, content);
             } else {
-                newResource = this.resourceHelper.systemChange(original, principal, suppliedResource, content);
+                newResource = this.resourceHelper.systemChange(original, principal, suppliedResource, content, systemChangeContext);
             }
 
             newResource = this.dao.store(newResource);

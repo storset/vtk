@@ -42,7 +42,6 @@ import java.util.Map;
 
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.systemjob.SystemJobContext;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.util.codec.MD5;
@@ -368,21 +367,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         sb.append(": [").append(this.uri).append("]");
         return sb.toString();
     }
-
-    // START HACK
-    // Mark the resource as being altered by a system job
-
-    private SystemJobContext systemJobContext;
-
-    public void setSystemJobContext(SystemJobContext systemJobContext) {
-        this.systemJobContext = systemJobContext;
-    }
-
-    public SystemJobContext getSystemJobContext() {
-        return this.systemJobContext;
-    }
-
-    // END HACK
 
     private String getPropValue(String name) {
         Property prop = this.getProp(name);

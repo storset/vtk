@@ -36,14 +36,14 @@ import java.util.List;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
-public class SystemJobContext {
+public class SystemChangeContext {
 
     private String jobName;
     private String time;
     private List<PropertyTypeDefinition> affectedProperties;
     private PropertyTypeDefinition systemJobStatusPropDef;
 
-    public SystemJobContext(String jobName, String time, List<PropertyTypeDefinition> affectedProperties,
+    public SystemChangeContext(String jobName, String time, List<PropertyTypeDefinition> affectedProperties,
             PropertyTypeDefinition systemJobStatusPropDef) {
         this.jobName = jobName;
         this.time = time;

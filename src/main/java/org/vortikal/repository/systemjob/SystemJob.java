@@ -116,28 +116,23 @@ public abstract class SystemJob implements InitializingBean {
             search.setQuery(query);
             search.setSorting(null);
             search.setLimit(this.limit);
-            search.setOnlyPublishedResources(this.handlePublishedOnly());
+            search.setOnlyPublishedResources(handlePublishedOnly());
             ResultSet results = this.searcher.execute(token, search);
 
             logger.info("Running job '" + this.systemJobName + "', " + results.getSize()
                     + " resource(s) to be affected");
 
-            for (PropertySet propSet : results.getAllResults()) {
+            for (PropertySet propSet : results) {
 
                 try {
-                    Resource resource = this.repository.retrieve(token, propSet.getURI(), true);
+                    Resource resource = this.repository.retrieve(token, propSet.getURI(), false);
                     if (resource.getLock() == null) {
 
-                        // XXX
-                        // Explicit cast to ResourceImpl because we don't want
-                        // to expose this further up the chain. This whole thing
-                        // can suck monkey ballsack
-                        String time = SystemJobContext.dateAsTimeString(Calendar.getInstance().getTime());
-                        SystemJobContext systemJobContext = new SystemJobContext(this.systemJobName, time,
+                        String time = SystemChangeContext.dateAsTimeString(Calendar.getInstance().getTime());
+                        SystemChangeContext systemChangeContext = new SystemChangeContext(this.systemJobName, time,
                                 this.affectedProperties, this.systemJobStatusPropDef);
-                        ((ResourceImpl) resource).setSystemJobContext(systemJobContext);
 
-                        this.repository.store(token, resource);
+                        this.repository.store(token, resource, systemChangeContext);
                     }
                 } catch (ResourceNotFoundException rnfe) {
                     // Resource is no longer there after search (deleted, moved
@@ -163,7 +158,7 @@ public abstract class SystemJob implements InitializingBean {
         systemJobPropertyExistsQuery.setComplexValueAttributeSpecifier(this.systemJobName);
         orQuery.add(systemJobPropertyExistsQuery);
 
-        String now = SystemJobContext.dateAsTimeString(Calendar.getInstance().getTime());
+        String now = SystemChangeContext.dateAsTimeString(Calendar.getInstance().getTime());
         PropertyTermQuery systemJobPropertyQuery = new PropertyTermQuery(this.systemJobStatusPropDef, now,
                 TermOperator.LT);
         systemJobPropertyQuery.setComplexValueAttributeSpecifier(this.systemJobName);

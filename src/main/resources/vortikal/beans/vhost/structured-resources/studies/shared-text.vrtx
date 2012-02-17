@@ -5,6 +5,9 @@ resourcetype shared-text {
   }
 
   edit-rules {
+    description-en (size[small]),
+    description-nn (size[small]),
+    description-no (size[small]),
     group descriptions (description-en, description-no, description-nn) (after id) horizontal
    }
 

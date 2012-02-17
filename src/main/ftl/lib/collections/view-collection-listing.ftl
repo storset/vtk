@@ -49,8 +49,9 @@
           <#elseif displayPropDef.name = 'lastModified'>
             <#assign val>
               <@vrtx.msg code="viewCollectionListing.lastModified"
-                         args=[vrtx.propValue(r, displayPropDef.name, "long"), vrtx.propValue(r, 'modifiedBy', 'name-link')] />
+                         args=[vrtx.propValue(r, displayPropDef.name, "long")] />
             </#assign>
+            <#assign val = val + " " + vrtx.propValue(r, 'modifiedBy', 'name-link') />
           <#else>
             <#assign val = vrtx.propValue(r, displayPropDef.name, "long") /> <#-- Default to 'long' format -->
           </#if>
@@ -75,5 +76,3 @@
   </#if>
   
 </#macro>
-
-

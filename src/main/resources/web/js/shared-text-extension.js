@@ -19,7 +19,7 @@ $(document).ready(function () {
 			$(inputfieldContainer).html("<select id='" + id +"' name='" + name + "'></select>");
 			var selectElement =  $("#" + id);
 			$(selectElement).append("<option value=''>Ingen fellestekst</option>")
-			$(containerElement).append("<div class='description'>test</div>");
+			$(containerElement).append("<div class='description' />");
 			var properties = data.properties; 
 			for(x in properties){
 			  if(x == "shared-text-box"){
@@ -33,7 +33,7 @@ $(document).ready(function () {
 					$(selectElement).append("<option value=" + properties[x][y].id + " " + s + ">" + properties[x][y].title + "</option>");		 
 				  }
 				}
-			  }
+			 }
 	
 			/* Change selected text event */
 			$(selectElement).change(function(){

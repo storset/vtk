@@ -35,6 +35,7 @@ $(document).ready(function () {
 				}
 			  }
 	
+			/* Change selected text event */
 			$(selectElement).change(function(){
 				
 				if($(selectElement).val().trim() == ""){

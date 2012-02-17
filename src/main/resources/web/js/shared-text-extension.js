@@ -15,10 +15,10 @@ $(document).ready(function () {
 				return;
 			}
 			  
-			$(containerElement).html("<select id='" + id +"' name='" + name + "'><option value='' /></select>");
+			$(containerElement).html("<select id='" + id +"' name='" + name + "'><option value=''>Ingen fellestekst<option></select>");
 			var selectElement =  $("#" + id);
 		  
-			var properties = data.properties;
+			var properties = data.properties; 
 			for(x in properties){
 			  if(x == "shared-text-box"){
 				  for (y in properties[x]){
@@ -27,9 +27,9 @@ $(document).ready(function () {
 					  s = "selected";
 					}
 					$(selectElement).append("<option value=" + properties[x][y].id + " " + s + ">" + properties[x][y].title + "</option>");
-						// $(selectElement).after("<div class='description-en'>" + properties[x][y]['description-en'] + "</div>");
-						// $(selectElement).after("<div class='description-no'>" + properties[x][y]['description-no'] + "</div>");
-						// $(selectElement).after("<div class='description-nn'>" + properties[x][y]['description-nn'] + "</div>");		 
+					// $(selectElement).after("<div class='description-en'>" + properties[x][y]['description-en'] + "</div>");
+					// $(selectElement).after("<div class='description-no'>" + properties[x][y]['description-no'] + "</div>");
+					// $(selectElement).after("<div class='description-nn'>" + properties[x][y]['description-nn'] + "</div>");		 
 					}
 				}
 			  }

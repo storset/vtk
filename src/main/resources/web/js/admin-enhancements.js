@@ -170,11 +170,12 @@ var reloadFromServer = function() {
 \*-------------------------------------------------------------------*/
                                             
 $(window).load(function() {
-  // More compact when no left resource menu and only 'Read permission' in right resource menu
+  // More compact when no left resource menu and no buttons in right resource menu
   // Should never occur in IE because of "Show in file explorer" in root-folder 
   var resourceMenuRight = $("#resourceMenuRight"); 
   var resourceMenuRightListElements = resourceMenuRight.find("li");
-  if(!$("ul#resourceMenuLeft li").length && resourceMenuRightListElements.length == 1) {
+  var buttonsInResourceMenuRightListElements = resourceMenuRightListElements.find(".vrtx-button-small");
+  if(!$("ul#resourceMenuLeft li").length && !buttonsInResourceMenuRightListElements.length) {
     resourceMenuRight.addClass("smaller-seperator");
   }
   

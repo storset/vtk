@@ -119,6 +119,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
                                                     0,            0,        editor.rw,         editor.rh);                                             
         editor.renderScaledImage(false);
         editor.resetCropPlugin();
+        $("#vrtx-image-crop-coordinates").remove();
         $(this).val(startCropText + "...");
         $("#vrtx-image-editor").resizable("option", "maxWidth", editor.cropWidth);  
         $("#vrtx-image-editor").resizable("option", "maxHeight", editor.cropHeight);  

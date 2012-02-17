@@ -16,7 +16,11 @@
          var agent = navigator.userAgent.toLowerCase();         
          var isWin = ((agent.indexOf("win") != -1) || (agent.indexOf("16bit") != -1));
          if ($.browser.msie && $.browser.version >= 5 && isWin) {  
-           $(".vrtx-resource-open-webdav").show(0);
+           $(".vrtx-resource-open-webdav").show(0).click(function(e) {
+             var openOffice = new ActiveXObject("Sharepoint.OpenDocuments.1").EditDocument(this.href);
+             e.stopPropagation();
+             e.preventDefault();
+           });
          }
        });
      // -->
@@ -28,6 +32,8 @@
     
     <#list resources as r>
       <#assign uri = vrtx.getUri(r) />
+      <#assign webdavUri = webdavUrls[r_index] />
+      
     <#if hideIcon?exists && hideIcon>
       <div class="vrtx-resource vrtx-hide-icon">
     <#else>
@@ -62,12 +68,10 @@
             </div>
           </#if>
         </#list>
-        <#-- TODO: WebDav link constructing and only show when authorized to write --> 
+        <#-- TODO: Only show when authorized to write --> 
         <#if r.resourceType == "doc" || r.resourceType == "xls" || r.resourceType == "ppt">
           &nbsp;
-          <a class="vrtx-resource-open-webdav" href="javascript:void(0);" onclick="new ActiveXObject('SharePoint.OpenDocuments.1').EditDocument('${uri?html}')">
-            <@vrtx.msg code="tabs.editService" />
-          </a>
+          <a class="vrtx-resource-open-webdav" href="${webdavUri?html}"><@vrtx.msg code="tabs.editService" /></a>
         </#if>
         <span class="vrtx-resource-seperator"></span>
       </div>

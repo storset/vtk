@@ -38,6 +38,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.listing.ListingPager;
@@ -50,6 +51,7 @@ import org.vortikal.web.service.URL;
 public class CollectionListingController extends AbstractCollectionListingController {
 
     protected List<SearchComponent> searchComponents;
+    protected Service webdavService;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -89,7 +91,16 @@ public class CollectionListingController extends AbstractCollectionListingContro
         }
         Service service = RequestContext.getRequestContext().getService();
         URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI()); 
-
+        
+        List<String> webdavUrls = new ArrayList<String>();
+        for(Listing listing : results) {
+            List<PropertySet> files = listing.getFiles();
+            for(PropertySet ps : files) {
+                webdavUrls.add(webdavService.constructURL(ps.getURI()).toString());
+            }
+        }
+        model.put("webdavUrls", webdavUrls);
+        
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL, page);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
         model.put(MODEL_KEY_SEARCH_COMPONENTS, results);
@@ -111,6 +122,11 @@ public class CollectionListingController extends AbstractCollectionListingContro
     @Required
     public void setSearchComponents(List<SearchComponent> searchComponents) {
         this.searchComponents = searchComponents;
+    }
+    
+    @Required
+    public void setWebdavService(Service webdavService) {
+        this.webdavService = webdavService;
     }
 
 }

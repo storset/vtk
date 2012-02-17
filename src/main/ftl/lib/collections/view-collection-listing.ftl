@@ -5,12 +5,6 @@
 
   <#local resources=collectionListing.files />
   <#if (resources?size > 0)>
-     <#-- TODO: move -->
-     <style type="text/css">
-       .vrtx-resource-open-webdav {
-         display: none;
-       }
-     </style>
      <script type="text/javascript"><!--
        $(function() {
          var agent = navigator.userAgent.toLowerCase();         

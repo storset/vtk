@@ -38,8 +38,6 @@ import org.vortikal.repository.PropertySet;
 /**
  * Contains the result set of a repository query.
  * 
- * FIXME: Not final, comitted for peer review.
- *
  */
 public interface ResultSet extends Iterable<PropertySet> {
 

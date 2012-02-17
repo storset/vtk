@@ -45,7 +45,6 @@ $(document).ready(function () {
 				
 				for(x in properties){
 					  for (y in properties[x]){
-						  	var obj;
 							if(properties[x][y].id  == $(selectElement).val()){
 								  var d = $(containerElement).find(".description")
 								  $(d).html(properties[x][y]['description-' + lang]);

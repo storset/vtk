@@ -9,6 +9,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Edit structured resource</title>
+  
+  
+  
   <@editor.addCkScripts />
   <@vrtxJSONJavascript.script />
   
@@ -18,6 +21,8 @@
   <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
   
   <script type="text/javascript"><!--
+    
+    var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";
     
     shortcut.add("Ctrl+S",function() {
         $(".vrtx-focus-button:last input").click();

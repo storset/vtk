@@ -1,12 +1,20 @@
 $(document).ready(function () {
 	$(".vrtx-shared-text input").each(function(){
 		var doctype = $("#resource-title").attr("class").split(" ")[0];
-		var lang = "no"; 
 		var id = $(this).attr("id");
 		var name = $(this).attr("name");
 		var selected = $(this).val();	
 		var path = "/vrtx/fellestekst/" + doctype + "/" + name + ".html?vrtx=source";
 
+		var lang;
+		if(CURRENT_RESOURCE_LANGAGE.indexOf("NY") > -1){
+			lang = "nn";
+		}else if(CURRENT_RESOURCE_LANGAGE.indexOf("no") > -1){
+			lang = "no";
+		}else{
+			lang = "en";
+		}
+		
 		var containerElement = $(this).parents(".vrtx-shared-text");
 		var inputfieldContainer = $(this).parents(".inputfield");
 		 

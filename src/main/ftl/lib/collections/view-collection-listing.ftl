@@ -33,12 +33,12 @@
     <#list resources as r>
       <#assign uri = vrtx.getUri(r) />
       <#assign webdavUri = webdavUrls[r_index] />
+
+      <div class="vrtx-resource">
+        <#if !hideIcon?exists>
+		  <a class="vrtx-icon <@vrtx.iconResolver r.resourceType r.contentType />" href="${uri?html}"></a>
+		</#if> 
       
-    <#if hideIcon?exists && hideIcon>
-      <div class="vrtx-resource vrtx-hide-icon">
-    <#else>
-      <div class="vrtx-resource <@vrtx.iconResolver r.resourceType r.contentType />">
-    </#if>  
 		<div class="vrtx-title">
 		  <#assign title = vrtx.propValue(r, "title", "", "") />
 		  <#if !title?has_content && solrUrl?exists && solrUrl?has_content>
@@ -46,7 +46,7 @@
 		  </#if>
           <a class="vrtx-title" href="${uri?html}">${title?html}</a>
 		</div>
-		
+
         <#list collectionListing.displayPropDefs as displayPropDef>
           <#if displayPropDef.name = 'introduction'>
             <#assign val = vrtx.getIntroduction(r) />

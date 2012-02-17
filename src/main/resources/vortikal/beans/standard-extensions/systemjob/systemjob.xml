@@ -46,6 +46,7 @@
 
     <property name="affectedPropDefPointers">
       <list>
+        <value>resource::link-check</value>
         <value>resource::link-status</value>
       </list>
     </property>

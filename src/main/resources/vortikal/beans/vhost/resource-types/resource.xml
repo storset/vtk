@@ -45,6 +45,7 @@
         <ref bean="publishedPropDef" />
         <ref bean="resourceAspectsPropDef" />
         <ref bean="linksPropDef" />
+        <ref bean="linkCheckPropDef" />
         <ref bean="linkStatusPropDef" />
       </list>
     </property>
@@ -310,17 +311,17 @@
     <property name="resourceManager" ref="structuredResources.resourceManager" />
   </bean>
 
-  <bean id="linkStatusPropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
+  <bean id="linkCheckPropDef" class="org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl"
         parent="abstractPropDef">
-    <property name="name" value="link-status" />
+    <property name="name" value="link-check" />
     <property name="type" value="BINARY" />
     <property name="multiple" value="false" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
-    <property name="propertyEvaluator" ref="resourceLinkStatusEvaluator" />
+    <property name="propertyEvaluator" ref="resourceLinkCheckEvaluator" />
   </bean>
 
-  <bean id="resourceLinkStatusEvaluator" class="org.vortikal.repository.resourcetype.property.LinkStatusEvaluator">
+  <bean id="resourceLinkCheckEvaluator" class="org.vortikal.repository.resourcetype.property.LinkCheckEvaluator">
     <property name="linksPropDef" ref="linksPropDef" />
     <property name="linkChecker" ref="repository.linkChecker" />
     <property name="baseURL" value="${linkChecker.baseURL}" />
@@ -334,4 +335,18 @@
     <property name="userAgent" value="Link checker for ${repositoryID}" />
   </bean>
 
+  <bean id="linkStatusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+        parent="abstractPropDef">
+    <property name="name" value="link-status" />
+    <property name="type" value="STRING" />
+    <property name="multiple" value="false" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="linkStatusEvaluator" />
+  </bean>
+
+  <bean id="linkStatusEvaluator" class="org.vortikal.repository.resourcetype.property.LinkStatusEvaluator">
+    <property name="linkCheckPropDef" ref="linkCheckPropDef" />
+  </bean>
+  
 </beans>

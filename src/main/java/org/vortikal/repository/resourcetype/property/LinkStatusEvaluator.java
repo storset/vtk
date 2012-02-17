@@ -30,231 +30,54 @@
  */
 package org.vortikal.repository.resourcetype.property;
 
-import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.json.simple.parser.ContentHandler;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.resourcetype.LatePropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.web.display.linkcheck.LinkChecker;
-import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
-import org.vortikal.web.service.URL;
 
 public class LinkStatusEvaluator implements LatePropertyEvaluator {
 
-    private PropertyTypeDefinition linksPropDef;
-    private LinkChecker linkChecker;
-    //private Service urlConstructor;
-    private URL baseURL;
+    private PropertyTypeDefinition linkCheckPropDef;
     
-    private static final int MAX_BROKEN_LINKS = 100;
-
-    
-    private static class Status {
-        private List<String> brokenLinks = new ArrayList<String>();
-        private int index = 0;
-        private Date timestamp = new Date();
-        private boolean complete = false;
-        
-        private Status() {}
-        
-        @SuppressWarnings("unchecked")
-        private static Status create(Property statusProp) {
-            Status s = new Status();
-            if (statusProp != null) {
-                try {
-                    Object o = JSONValue.parse(new InputStreamReader(statusProp.getBinaryStream().getStream()));
-                    JSONObject status = (JSONObject) o;
-                    if (status != null) {
-                        Object obj = status.get("status");
-                        if (obj != null) {
-                            s.complete = "COMPLETE".equals(obj.toString());
-                        }
-                        obj = status.get("brokenLinks");
-                        if (obj != null) {
-                            List<String> list = (List<String>) obj;
-                            for (String str: list) {
-                                s.brokenLinks.add(str);
-                            }
-                        }
-                        obj = status.get("index");
-                        if (obj != null) {
-                            s.index = Integer.parseInt(obj.toString());
-                        }
-                        obj = status.get("timestamp");
-                        if (obj != null) {
-                            long millis = Long.parseLong(obj.toString());
-                            s.timestamp = new Date(millis);
-                        }
-                    }
-                } catch (Throwable t) { }
-            }
-            return s;
-        }
-        
-        public void write(Property statusProp) throws Exception {
-            JSONObject obj = toJSONObject();
-            statusProp.setBinaryValue(obj.toJSONString().getBytes("utf-8"), "application/json");
-        }
-        
-        @SuppressWarnings("unchecked")
-        private JSONObject toJSONObject() {
-            JSONObject obj = new JSONObject();
-            obj.put("brokenLinks", this.brokenLinks);
-            obj.put("status", this.complete ? "COMPLETE" : "INCOMPLETE");
-            obj.put("timestamp", String.valueOf(this.timestamp.getTime()));
-            obj.put("index", String.valueOf(this.index));
-            return obj;
-        }
-        
-        @Override
-        public String toString() {
-            return toJSONObject().toJSONString();
-        }
+    public void setLinkCheckPropDef(PropertyTypeDefinition linkCheckPropDef) {
+        this.linkCheckPropDef = linkCheckPropDef;
     }
 
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
             throws PropertyEvaluationException {
-
-        if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.SystemPropertiesChange) {
-            return ctx.getOriginalResource().getProperty(property.getDefinition()) != null;
+        Property linkCheckProp = ctx.getNewResource().getProperty(this.linkCheckPropDef);
+        if (linkCheckProp == null) {
+            
+            return false ;
         }
-        
-        Property linksProp = ctx.getNewResource().getPropertyByPrefix(null, "links");
-        if (linksProp == null) {
-            return false;
-        }
-        
-        Property statusProp = ctx.getOriginalResource().getProperty(property.getDefinition());
-        final Status status = Status.create(statusProp);
-        
-        ContentStream stream = linksProp.getBinaryStream();
-        JSONParser parser = new JSONParser();
-        
-        final LinkChecker linkChecker = this.linkChecker;
-        final URL base = this.baseURL;
-        final AtomicInteger number = new AtomicInteger(0);
-        
         try {
-            parser.parse(new InputStreamReader(stream.getStream()), new ContentHandler() {
-
-                boolean url = false;
-
-                @Override
-                public void startJSON() throws ParseException, IOException {
+            JSONObject linkCheck = propValue(linkCheckProp);
+            Object brokenLinks = linkCheck.get("brokenLinks");
+            String value = "OK";
+            if (brokenLinks != null) {
+                JSONArray arr = (JSONArray) brokenLinks;
+                if (!arr.isEmpty()) {
+                    value = "BROKEN_LINKS";
                 }
-                
-                @Override
-                public void endJSON() throws ParseException, IOException {
-                    status.complete = true;
-                }
-
-                @Override
-                public boolean startObject() throws ParseException, IOException {
-                    return true;
-                }
-
-                @Override
-                public boolean endObject() throws ParseException, IOException {
-                    return true;
-                }
-
-                @Override
-                public boolean startObjectEntry(String key) throws ParseException,
-                IOException {
-                    if ("url".equals(key)) {
-                        url = true;
-                        return true;
-                    }
-                    url = false;
-                    return true;
-                }
-
-                @Override
-                public boolean endObjectEntry() throws ParseException, IOException {
-                    url = false;
-                    return true;
-                }
-
-                @Override
-                public boolean startArray() throws ParseException, IOException {
-                    return true;
-                }
-
-                @Override
-                public boolean endArray() throws ParseException, IOException {
-                    return true;
-                }
-
-                @Override
-                public boolean primitive(Object value) throws ParseException,
-                IOException {
-                    if (value == null || !url) {
-                        return true;
-                    }
-                    int i = number.incrementAndGet();
-                    if (i < status.index) {
-                        return true;
-                    }
-                    
-                    
-                    String val = value.toString();
-                    LinkCheckResult result = linkChecker.validate(val, base);
-                    status.index++;
-                    if (!"OK".equals(result.getStatus())) {
-                        status.brokenLinks.add(val);
-                    }
-                    if (status.brokenLinks.size() == MAX_BROKEN_LINKS) {
-                        return false;
-                    }
-                    return true;
-                }
-
-            });
-            if (status.brokenLinks.isEmpty()) {
-                return false;
             }
-            status.timestamp = ctx.getTime();
-            status.write(property);
+            property.setStringValue(value);
             return true;
         } catch (Throwable t) {
-            t.printStackTrace();
             return false;
         }
     }
 
-    @Required
-    public void setLinksPropDef(PropertyTypeDefinition linksPropDef) {
-        this.linksPropDef = linksPropDef;
-    }
-
-    @Required
-    public void setLinkChecker(LinkChecker linkChecker) {
-        this.linkChecker = linkChecker;
-    }
     
-    @Required
-    public void setBaseURL(String baseURL) {
-        this.baseURL = URL.parse(baseURL).setImmutable();
+    private JSONObject propValue(Property linkStatus) throws Exception {
+        InputStream stream = linkStatus.getBinaryStream().getStream();
+        Object o = JSONValue.parse(new InputStreamReader(stream));
+        return (JSONObject) o;
     }
-
-//    @Required
-//    public void setUrlConstructor(Service urlConstructor) {
-//        this.urlConstructor = urlConstructor;
-//    }
-//
-
 }

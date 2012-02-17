@@ -62,7 +62,7 @@
             </div>
           </#if>
         </#list>
-        <#-- TODO: WebDav link constructing, how to open Office via ActiveX and only show when authorized to write --> 
+        <#-- TODO: WebDav link constructing and only show when authorized to write --> 
         <#if r.resourceType == "doc" || r.resourceType == "xls" || r.resourceType == "ppt">
           &nbsp;
           <a class="vrtx-resource-open-webdav" href="javascript:void(0);" onclick="new ActiveXObject('SharePoint.OpenDocuments.1').EditDocument('${uri?html}')">

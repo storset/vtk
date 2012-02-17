@@ -7,7 +7,7 @@ $(document).ready(function () {
 		var selected = $(this).val();	
 		var path = "/vrtx/fellestekst/" + doctype + "/" + name + ".html?vrtx=source";
 
-		var containerElement = $(this).parents(".vrtx-shared-text")
+		var containerElement = $(this).parents(".inputfield")
 		 
 		$.getJSON(path, function(data) {  
 			  
@@ -15,7 +15,7 @@ $(document).ready(function () {
 				return;
 			}
 			  
-			$(containerElement).html("<select id='" + id +"' name='" + name + "' />");
+			$(containerElement).html("<select id='" + id +"' name='" + name + "'><option value='' /></select>");
 			var selectElement =  $("#" + id);
 		  
 			var properties = data.properties;

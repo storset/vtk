@@ -146,8 +146,8 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
         $("#vrtx-image-editor").resizable("disable");
         
         var cropInfoHtml = "<p id='vrtx-image-crop-coordinates'>" 
-                             + widthText.substring(0,1) + ": " + editor.cropWidth + "&nbsp;&nbsp;"
-                             + heightText.substring(0,1) + ": " + editor.cropHeight
+                             + widthText.substring(0,1) + ": <span id='vrtx-image-crop-coordinates-width'>" + editor.cropWidth + "</span>&nbsp;&nbsp;"
+                             + heightText.substring(0,1) + ": <span id='vrtx-image-crop-coordinates-height'>" + editor.cropHeight+ "</span>"
                            + "</p>";    
         $(cropInfoHtml).insertAfter("#vrtx-image-crop-button");
         
@@ -402,6 +402,9 @@ VrtxImageEditor.prototype.draw = function draw() {
   editor.ctx.fillRect(selection.x + selection.w - selection.iCSize[1], selection.y - selection.iCSize[1], selection.iCSize[1] * 2, selection.iCSize[1] * 2);
   editor.ctx.fillRect(selection.x + selection.w - selection.iCSize[2], selection.y + selection.h - selection.iCSize[2], selection.iCSize[2] * 2, selection.iCSize[2] * 2);
   editor.ctx.fillRect(selection.x - selection.iCSize[3], selection.y + selection.h - selection.iCSize[3], selection.iCSize[3] * 2, selection.iCSize[3] * 2);
+  
+  $("#vrtx-image-crop-coordinates-width").text(selection.w);
+  $("#vrtx-image-crop-coordinates-height").text(selection.h);
 };
 
 VrtxImageEditor.prototype.drawScene = function drawScene() { // Main drawScene function

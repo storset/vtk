@@ -194,56 +194,12 @@ public class PropertyEvaluationContext {
             return false;
         }
         
+        if (propDef == this.systemChangeContext.getSystemJobStatusPropDef()) {
+            return true;
+        }
+        
         List<PropertyTypeDefinition> affectedProperties = this.systemChangeContext.getAffectedProperties();
-        return affectedProperties == null || affectedProperties.contains(propDef);
-    }
-
-    public void updateSystemJobStatusProp() {
-        if (this.systemChangeContext == null) {
-            return;
-        }
-        
-        PropertyTypeDefinition systemJobStatusPropDef = this.systemChangeContext.getSystemJobStatusPropDef();
-        Property systemJobStatusProp = this.suppliedResource.getProperty(systemJobStatusPropDef);
-        
-        if (systemJobStatusProp == null) {
-            
-            // first time a system job runs on this resource, add property
-            systemJobStatusProp = systemJobStatusPropDef.createProperty();
-            Value jsonValue = getJsonValue(this.systemChangeContext);
-            Value[] values = { jsonValue };
-            systemJobStatusProp.setValues(values);
-
-        } else {
-
-            // check previously run system jobs and update if this particular
-            // job has been run before, if not, add it
-            List<Value> systemJobList = new ArrayList<Value>();
-            boolean existingJob = false;
-            Value[] values = systemJobStatusProp.getValues();
-            for (Value propValue : values) {
-                JSONObject systemJobStatus = (JSONObject) JSONSerializer.toJSON(propValue.getStringValue());
-                if (systemJobStatus.get(this.systemChangeContext.getJobName()) != null) {
-                    propValue = getJsonValue(this.systemChangeContext);
-                    existingJob = true;
-                }
-                systemJobList.add(propValue);
-            }
-            if (!existingJob) {
-                systemJobList.add(getJsonValue(this.systemChangeContext));
-            }
-
-            values = (Value[]) systemJobList.toArray(new Value[systemJobList.size()]);
-            systemJobStatusProp.setValues(values);
-        }
-        
-        this.newResource.addProperty(systemJobStatusProp);
-    }
-
-    private Value getJsonValue(SystemChangeContext systemChangeContext) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put(systemChangeContext.getJobName(), systemChangeContext.getTime());
-        return new Value(jsonObject.toString(), PropertyType.Type.JSON);
+        return affectedProperties != null && affectedProperties.contains(propDef);
     }
     
     public void addPropertyTypeDefinitionForLateEvaluation(PropertyTypeDefinition def) {
@@ -256,6 +212,10 @@ public class PropertyEvaluationContext {
     
     public void setSystemChangeContext(SystemChangeContext systemChangeContext) {
         this.systemChangeContext = systemChangeContext;
+    }
+    
+    public SystemChangeContext getSystemChangeContext() {
+        return this.systemChangeContext;
     }
 
 }

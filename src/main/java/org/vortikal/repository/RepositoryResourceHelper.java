@@ -142,7 +142,6 @@ public class RepositoryResourceHelper {
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
         lateEvaluation(ctx);
         checkForDeadAndZombieProperties(ctx);
-        ctx.updateSystemJobStatusProp();
         return ctx.getNewResource();
     }
 
@@ -369,7 +368,7 @@ public class RepositoryResourceHelper {
                     }
                 }
             } catch (Throwable t) {
-                logger.error("An error occured while evaluating a property during an automatic job", t);
+                logger.error("An error occured while evaluating a property with system change context", t);
             }
             return property;
         }

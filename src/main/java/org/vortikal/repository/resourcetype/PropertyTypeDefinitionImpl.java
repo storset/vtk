@@ -81,17 +81,19 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private ContentRelation contentRelation;
     private TypeLocalizationProvider typeLocalizationProvider = null;
 
-    private List<JSONPropertyAttributeDescription> indexableAttributes;
-    
     public void setContentRelation(ContentRelation contentRelation) {
             this.contentRelation = contentRelation;
     }
     
+    @Override
     public ContentRelation getContentRelation() {
         return this.contentRelation;
     }
     
     public void setMetadata(Map<String, Object> metadata) {
+        if (metadata == null) {
+            throw new IllegalArgumentException("metadata map cannot be null");
+        }
         this.metadata = metadata;
     }
     
@@ -99,10 +101,12 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.metadata.put(key, value);
     }
     
+    @Override
     public Map<String, Object> getMetadata() {
-    	return Collections.unmodifiableMap(this.metadata);
+        return this.metadata;
     }
     
+    @Override
     public Property createProperty() {
         PropertyImpl prop = new PropertyImpl();
         prop.setDefinition(this);
@@ -115,6 +119,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     }
 
 
+    @Override
     public Property createProperty(Object value) 
         throws ValueFormatException {
 
@@ -149,10 +154,12 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return prop;
     }
     
+    @Override
     public Property createProperty(String stringValue) throws ValueFormatException {
         return createProperty(new String[] {stringValue});
     }
     
+    @Override
     public Property createProperty(String[] stringValues) 
         throws ValueFormatException {
 
@@ -181,6 +188,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     }
 
     
+    @Override
     public void afterPropertiesSet() {
         if (this.valueFormatter == null) {
             if (this.vocabulary != null && this.vocabulary.getValueFormatter() != null) {
@@ -189,8 +197,11 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
                 this.valueFormatter = this.valueFormatterRegistry.getValueFormatter(this.type);
             }
         }
+
+        this.metadata = Collections.unmodifiableMap(this.metadata);
     }
 
+    @Override
     public PropertyEvaluator getPropertyEvaluator() {
         return this.propertyEvaluator;
     }
@@ -199,6 +210,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.propertyEvaluator = propertyEvaluator;
     }
     
+    @Override
     public boolean isMandatory() {
         return this.mandatory;
     }
@@ -207,6 +219,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.mandatory = mandatory;
     }
     
+    @Override
     public boolean isMultiple() {
         return this.multiple;
     }
@@ -215,6 +228,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.defaultValue = defaultValue;
     }
 
+    @Override
     public Value getDefaultValue() {
         return this.defaultValue;
     }
@@ -223,6 +237,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.multiple = multiple;
     }
 
+    @Override
     public String getName() {
         return this.name;
     }
@@ -231,6 +246,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.name = name;
     }
 
+    @Override
     public RepositoryAction getProtectionLevel() {
         return this.protectionLevel;
     }
@@ -239,6 +255,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.protectionLevel = protectionLevel;
     }
 
+    @Override
     public Type getType() {
         return this.type;
     }
@@ -247,6 +264,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.type = type;
     }
 
+    @Override
     public PropertyValidator getValidator() {
         return this.validator;
     }
@@ -259,6 +277,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return this.allowedValues;
     }
     
+    @Override
     public Namespace getNamespace() {
         return this.namespace;
     }
@@ -274,6 +293,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return sb.toString();
     }
 
+    @Override
     public Vocabulary<Value> getVocabulary() {
         return this.vocabulary;
     }
@@ -282,6 +302,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.vocabulary = vocabulary;
     }
 
+    @Override
     public ValueFormatter getValueFormatter() {
         return this.valueFormatter;
     }
@@ -295,6 +316,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.typeLocalizationProvider = typeLocalizationProvider;
     }
     
+    @Override
     public String getLocalizedName(Locale locale) {
         if (this.typeLocalizationProvider != null) {
             return this.typeLocalizationProvider.getLocalizedPropertyName(this, locale);
@@ -302,6 +324,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return getName();
     }
 
+    @Override
     public String getDescription(Locale locale) {
         if (this.typeLocalizationProvider != null) {
             return this.typeLocalizationProvider.getPropertyDescription(this, locale);
@@ -309,6 +332,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return null;
     }
 
+    @Override
     public ValueSeparator getValueSeparator(String format) {
         ValueSeparator separator = this.valueSeparators.get(format);
         if (separator != null) {
@@ -333,21 +357,6 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     @Required 
     public void setValueFormatterRegistry(ValueFormatterRegistry valueFormatterRegistry) {
         this.valueFormatterRegistry = valueFormatterRegistry;
-    }
-
-    public List<JSONPropertyAttributeDescription> getIndexableAttributes() throws IllegalOperationException {
-        if (this.type != Type.JSON) {
-            throw new IllegalOperationException("Only applicable on properties of type JSON");
-        }
-        return this.indexableAttributes;
-    }
-    
-    /**
-     * Set a list of names for attributes that are to be indexed
-     * Only valid for json properties
-     */
-    public void setIndexableAttributes(final List<JSONPropertyAttributeDescription> indexableAttributes) {
-        this.indexableAttributes = indexableAttributes;
     }
 
 }

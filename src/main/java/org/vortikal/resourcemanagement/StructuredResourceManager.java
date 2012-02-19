@@ -32,6 +32,7 @@ package org.vortikal.resourcemanagement;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ import org.vortikal.util.text.JSON;
 import org.vortikal.web.service.RepositoryAssertion;
 
 public class StructuredResourceManager {
-
+    
     private static final Map<String, PropertyType.Type> PROPTYPE_MAP = new HashMap<String, PropertyType.Type>();
     static {
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_STRING, PropertyType.Type.STRING);
@@ -274,8 +275,11 @@ public class StructuredResourceManager {
             def.setType(Type.STRING);
         } else if (propertyDescription instanceof JSONPropertyDescription) {
             def.setType(Type.JSON);
-            def.setIndexableAttributes(((JSONPropertyDescription) propertyDescription).getIndexableAttributes());
-        } else {
+            if (((JSONPropertyDescription)propertyDescription).getIndexableAttributes().size() >= 1) {
+                def.addMetadata(PropertyTypeDefinition.METADATA_INDEXABLE_JSON, true);
+            }
+        } else {            
+
             def.setType(mapType(propertyDescription));
         }
         def.setProtectionLevel(RepositoryAction.UNEDITABLE_ACTION);
@@ -293,7 +297,7 @@ public class StructuredResourceManager {
             SimplePropertyDescription spd = ((SimplePropertyDescription) propertyDescription);
             Map<String, Object> edithints = spd.getEdithints();
             if (edithints != null) {
-                def.addMetadata("editingHints", edithints);
+                def.addMetadata(PropertyTypeDefinition.METADATA_EDITING_HINTS, edithints);
             }
             String defaultValue = spd.getDefaultValue();
             if (defaultValue != null) {

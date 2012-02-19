@@ -32,7 +32,6 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -43,7 +42,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
 
 public class OverridingPropertyTypeDefinitionImpl implements OverridablePropertyTypeDefinition, InitializingBean {
 
@@ -53,6 +51,7 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
     private PropertyEvaluator propertyEvaluator;
     private Value defaultValue;
 
+    @Override
     public PropertyEvaluator getPropertyEvaluator() {
         if (this.propertyEvaluator != null) {
             return this.propertyEvaluator;
@@ -60,6 +59,7 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         return this.overriddenPropDef.getPropertyEvaluator();
     }
 
+    @Override
     public Value getDefaultValue() {
         
         if (this.defaultValue != null) {
@@ -68,34 +68,42 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         return this.overriddenPropDef.getDefaultValue();
     }
 
+    @Override
     public String getName() {
         return this.overriddenPropDef.getName();
     }
     
+    @Override
     public String getLocalizedName(Locale locale) {
         return this.overriddenPropDef.getLocalizedName(locale);
     }
 
+    @Override
     public Namespace getNamespace() {
         return this.overriddenPropDef.getNamespace();
     }
 
+    @Override
     public RepositoryAction getProtectionLevel() {
         return this.overriddenPropDef.getProtectionLevel();
     }
 
+    @Override
     public Type getType() {
         return this.overriddenPropDef.getType();
     }
 
+    @Override
     public PropertyValidator getValidator() {
         return this.overriddenPropDef.getValidator();
     }
 
+    @Override
     public boolean isMandatory() {
         return this.overriddenPropDef.isMandatory();
     }
 
+    @Override
     public boolean isMultiple() {
         return this.overriddenPropDef.isMultiple();
     }
@@ -104,10 +112,13 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         this.overriddenPropDef = overriddenPropDef;
     }
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (this.overriddenPropDef == null) {
             throw new BeanInitializationException("Java bean property 'overriddenPropDef' must be set");
         }
+    
+        this.metadata = Collections.unmodifiableMap(this.metadata);
     }
 
     public void setPropertyEvaluator(
@@ -119,60 +130,74 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
         this.defaultValue = defaultValue;
     }
 
+    @Override
     public Vocabulary<Value> getVocabulary() {
         return this.overriddenPropDef.getVocabulary();
     }
 
+    @Override
     public ValueFormatter getValueFormatter() {
         return this.overriddenPropDef.getValueFormatter();
     }
 
+    @Override
     public Property createProperty(Object value) throws ValueFormatException {
         return this.overriddenPropDef.createProperty(value);
     }
 
+    @Override
     public Property createProperty(String stringValue)
             throws ValueFormatException {
         return this.overriddenPropDef.createProperty(stringValue);
     }
 
+    @Override
     public Property createProperty(String[] stringValues)
             throws ValueFormatException {
         return this.overriddenPropDef.createProperty(stringValues);
     }
 
+    @Override
     public Property createProperty() {
         return this.overriddenPropDef.createProperty();
     }
 
+    @Override
     public ContentRelation getContentRelation() {
         return this.overriddenPropDef.getContentRelation();
     }
-
+    
     public void setMetadata(Map<String, Object> metadata) {
-    	this.metadata = metadata;
+        if (metadata == null) {
+            throw new IllegalArgumentException("metadata map cannot be null");
+        }
+        this.metadata = metadata;
     }
     
+    public void addMetadata(String key, Object value) {
+        this.metadata.put(key, value);
+    }
+
+    @Override
     public Map<String, Object> getMetadata() {
-    	return Collections.unmodifiableMap(this.metadata);
+    	return this.metadata;
     }
     
+    @Override
     public String getDescription(Locale locale) {
         return this.overriddenPropDef.getDescription(locale);
     }
 
+    @Override
     public ValueSeparator getValueSeparator(String format) {
         return this.overriddenPropDef.getValueSeparator(format);
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(": [name=").append(getName()).append("]");
         return sb.toString();
-    }
-
-    public List<JSONPropertyAttributeDescription> getIndexableAttributes() {
-        return this.overriddenPropDef.getIndexableAttributes();
     }
 
 }

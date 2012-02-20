@@ -58,7 +58,9 @@
     </div>
     <h3>Steg for steg: Hvordan redigere dokumentet</h3>
     <ol>
-      <li>Marker og kopier WebDAV-adressen til dokumentet:</li>
+      <li>Marker og kopier WebDAV-adressen til dokumentet:<br />
+          ${webdavUrl?html}
+      </li>
       <li>Start ${resourceTypeName?html}</li>
       <li id="vrtx-edit-win-mac">
           <span id="vrtx-edit-win">På Windows: Velg "Fil" &rarr; "Åpne" (Du kan bruke "Ctrl-O" som snarvei)</span><br />
@@ -66,6 +68,5 @@
       </li>
       <li>Lim inn den kopierte adressen i feltet "Filnavn" og trykk "Åpne" </li>
     </ol>
-    
   </body>
 </html>

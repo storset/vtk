@@ -10,7 +10,7 @@
          var agent = navigator.userAgent.toLowerCase();         
          var isWin = ((agent.indexOf("win") != -1) || (agent.indexOf("16bit") != -1));
          if ($.browser.msie && $.browser.version >= 5 && isWin) {  
-           $(".vrtx-resource-open-webdav").show(0).click(function(e) {
+           $(".vrtx-resource-open-webdav").click(function(e) {
              var openOffice = new ActiveXObject("Sharepoint.OpenDocuments.1").EditDocument(this.href);
              e.stopPropagation();
              e.preventDefault();
@@ -54,7 +54,8 @@
 		  </#if>
           <a class="vrtx-title" href="${uri?html}">${title?html}</a>
           <#if r.resourceType == "doc" || r.resourceType == "xls" || r.resourceType == "ppt">
-            <a class="vrtx-resource-open-webdav" href="${webdavUri?html}"><@vrtx.msg code="tabs.editService" /></a>
+            <#assign 
+            <a class="vrtx-resource-open-webdav" href="${webdavUri?html}"><@vrtx.msg code="report.collection-structure.edit" /></a>
           </#if>
 		</div>
 

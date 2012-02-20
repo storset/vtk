@@ -56,6 +56,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.vortikal.repository.resourcetype.AbstractResourceTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.HierarchicalNode;
+import org.vortikal.repository.resourcetype.LatePropertyEvaluator;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl;
@@ -808,7 +809,9 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
                 if (definition.getProtectionLevel() == RepositoryAction.UNEDITABLE_ACTION) {
                     sb.append("(readonly) ");
                 }
-                if (definition.getPropertyEvaluator() != null) {
+                if (definition.getPropertyEvaluator() instanceof LatePropertyEvaluator) {
+                    sb.append("(evaluated late) ");
+                } else if (definition.getPropertyEvaluator() != null) {
                     sb.append("(evaluated) ");
                 }
                 if (definition instanceof OverridablePropertyTypeDefinition) {

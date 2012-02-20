@@ -32,7 +32,6 @@ package org.vortikal.resourcemanagement;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -275,9 +274,7 @@ public class StructuredResourceManager {
             def.setType(Type.STRING);
         } else if (propertyDescription instanceof JSONPropertyDescription) {
             def.setType(Type.JSON);
-            if (((JSONPropertyDescription)propertyDescription).getIndexableAttributes().size() >= 1) {
-                def.addMetadata(PropertyTypeDefinition.METADATA_INDEXABLE_JSON, true);
-            }
+            def.addMetadata(PropertyTypeDefinition.METADATA_INDEXABLE_JSON, true);
         } else {            
 
             def.setType(mapType(propertyDescription));

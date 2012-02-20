@@ -45,15 +45,4 @@ public class JSONPropertyDescription extends EditablePropertyDescription {
     public List<JSONPropertyAttributeDescription> getAttributes() {
         return Collections.unmodifiableList(this.attributes);
     }
-
-    public List<JSONPropertyAttributeDescription> getIndexableAttributes() {
-        List<JSONPropertyAttributeDescription> indexableAttributes = new ArrayList<JSONPropertyAttributeDescription>();
-        for (JSONPropertyAttributeDescription attribute : this.attributes) {
-            if (attribute.isIndexable()) {
-                indexableAttributes.add(attribute);
-            }
-        }
-        return Collections.unmodifiableList(indexableAttributes);
-    }
-
 }

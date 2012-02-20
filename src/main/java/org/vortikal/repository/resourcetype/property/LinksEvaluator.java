@@ -53,9 +53,11 @@ import org.vortikal.resourcemanagement.StructuredResourceManager;
 import org.vortikal.util.io.StreamUtil;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.HandlerBase;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 public class LinksEvaluator implements LatePropertyEvaluator {
     
@@ -103,7 +105,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                     collector.add(link);
                 } else if (p.getType() == PropertyType.Type.HTML) {
                     InputStream is = new ByteArrayInputStream(p.getStringValue().getBytes());
-                    extractLinks(is, collector, LinkSource.PROPERTIES);
+                    extractLinks(is, new HtmlHandler(collector, LinkSource.PROPERTIES));
                 }
             }
 
@@ -119,13 +121,15 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                                 Object p = res.getProperty(pdesc.getName());
                                 if (p != null) {
                                     InputStream is = new ByteArrayInputStream(p.toString().getBytes());
-                                    extractLinks(is, collector, LinkSource.CONTENT);
+                                    extractLinks(is, new HtmlHandler(collector, LinkSource.CONTENT));
                                 }
                             }
                         }
                     }
                 } else if ("text/html".equals(resource.getContentType())) {
-                    extractLinks(ctx.getContent().getContentInputStream(), collector, LinkSource.CONTENT);
+                    extractLinks(ctx.getContent().getContentInputStream(), new HtmlHandler(collector, LinkSource.CONTENT));
+                } else if ("text/xml".equals(resource.getContentType())) {
+                    extractLinks(ctx.getContent().getContentInputStream(), new XmlHandler(collector, LinkSource.CONTENT));
                 }
             }
 
@@ -232,11 +236,12 @@ public class LinksEvaluator implements LatePropertyEvaluator {
         }
     }
 
-    
-    private void extractLinks(InputStream is, LinkCollector listener, LinkSource source) throws Exception {
-        org.ccil.cowan.tagsoup.Parser parser
-        = new org.ccil.cowan.tagsoup.Parser();
-        Handler handler = new Handler(listener, source);
+    // TODO:
+    // Handlers/link parsing strategies should be pluggable, keyed on content type.
+        
+    private void extractLinks(InputStream is, ContentHandler handler) throws Exception {
+
+        org.ccil.cowan.tagsoup.Parser parser = new org.ccil.cowan.tagsoup.Parser();
         parser.setContentHandler(handler);
 
         InputSource input = new InputSource(is);
@@ -252,11 +257,57 @@ public class LinksEvaluator implements LatePropertyEvaluator {
     @SuppressWarnings("serial")
     private static class StopException extends RuntimeException { }
 
-    private static class Handler implements ContentHandler {
+    // TODO perhaps switch to pull-parser for XML content, instead of classic SAX.
+    private static class XmlHandler extends DefaultHandler {
+
+        private LinkCollector collector;
+        private LinkSource source;
+        private StringBuilder buffer = new StringBuilder();
+        private boolean linkData = false;
+        
+        XmlHandler(LinkCollector collector, LinkSource source) {
+            this.collector = collector;
+            this.source = source;
+        }
+        
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+            if (localName == null) {
+                return;
+            }
+
+            // TODO figure out all elements that can contain links in our XML doc types ..
+            // TODO do we have dynamically created XSL-generated links ? If so, this won't help us much..
+            if ("webadresse".equals(localName)) {
+                linkData = true;
+                buffer.delete(0, buffer.length());
+            }
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            if (linkData) {
+                String href = buffer.toString().trim();
+                if (!href.isEmpty()) {
+                    collector.add(new Link(href, LinkType.ANCHOR, source));
+                }
+                linkData = false;
+            }
+        }
+
+        @Override
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            if (linkData) {
+                buffer.append(ch, start, length);
+            }
+        }
+    }
+    
+    private static class HtmlHandler extends DefaultHandler {
         private LinkCollector listener;
         private LinkSource linkSource;
 
-        public Handler(LinkCollector listener, LinkSource source) {
+        public HtmlHandler(LinkCollector listener, LinkSource source) {
             this.listener = listener;
             this.linkSource = source;
         }
@@ -305,51 +356,6 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                 }                
             }
         }
-
-        @Override
-        public void startPrefixMapping(String prefix, String uri)
-                throws SAXException {
-        }
-
-        @Override
-        public void endPrefixMapping(String prefix) throws SAXException {
-        }
-
-        @Override
-        public void ignorableWhitespace(char[] chars, int start, int length)
-                throws SAXException {
-        }
-
-        @Override
-        public void processingInstruction(String target, String data)
-                throws SAXException {
-        }
-
-        @Override
-        public void setDocumentLocator(Locator locator) {
-        }
-
-        @Override
-        public void skippedEntity(String name) throws SAXException {
-        }
-
-        @Override
-        public void startDocument() throws SAXException {
-        }
-
-        @Override
-        public void endDocument() throws SAXException {
-        }
-
-        @Override
-        public void characters(char[] arg0, int arg1, int arg2)
-                throws SAXException {
-        }
-        @Override
-        public void endElement(String arg0, String arg1, String arg2)
-                throws SAXException {
-        }
-
     }
     
     @Required

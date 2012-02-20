@@ -3,36 +3,35 @@ package org.vortikal.web.actions.copymove;
 import junit.framework.TestCase;
 
 import org.vortikal.repository.Path;
-import org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController;
 
-public class CopyMoveToSelectedFolderControllerTest extends TestCase {
+public class CopyHelperTest extends TestCase {
     
-    private CopyMoveToSelectedFolderController controller;
+    private CopyHelper copyHelper;
     
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        controller = new CopyMoveToSelectedFolderController();
+        copyHelper = new CopyHelper();
     }
 
     public void testAppendCopySuffix() {
         Path original = Path.fromString("/lala.html");
         
-        Path firstCopy = controller.appendCopySuffix(original, 1);
+        Path firstCopy = copyHelper.appendCopySuffix(original, 1);
         assertEquals(firstCopy, Path.fromString("/lala(1).html"));
         
-        Path secondCopy = controller.appendCopySuffix(firstCopy, 1);
+        Path secondCopy = copyHelper.appendCopySuffix(firstCopy, 1);
         assertEquals(secondCopy, Path.fromString("/lala(2).html"));
         
-        Path thirdCopy = controller.appendCopySuffix(secondCopy, 1);
+        Path thirdCopy = copyHelper.appendCopySuffix(secondCopy, 1);
         assertEquals(thirdCopy, Path.fromString("/lala(3).html"));
         
         Path parenthesisName = Path.fromString("/test/te(3)st.xml");
-        Path copiedParenthesis = controller.appendCopySuffix(parenthesisName, 3);
+        Path copiedParenthesis = copyHelper.appendCopySuffix(parenthesisName, 3);
         assertEquals(copiedParenthesis, Path.fromString("/test/te(3)st(3).xml"));
         
         Path copyToDoubleDigit = Path.fromString("/foo(9).html");
-        Path firstToDoubleDigitCopy = controller.appendCopySuffix(copyToDoubleDigit, 1);
+        Path firstToDoubleDigitCopy = copyHelper.appendCopySuffix(copyToDoubleDigit, 1);
         assertEquals(firstToDoubleDigitCopy, Path.fromString("/foo(10).html"));
     }
     

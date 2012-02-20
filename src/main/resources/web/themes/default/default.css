@@ -1205,6 +1205,11 @@ ol.vrtx-help-step-by-step li {
   margin-bottom: 15px;
 }
 
+span.vrtx-text-grey-bold {
+  color: #777;
+  font-weight: bold;
+}
+
 p#vrtx-file-upload-info-text {
   margin-top: 10px;
 }

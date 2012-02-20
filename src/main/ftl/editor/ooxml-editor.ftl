@@ -59,7 +59,7 @@
     <h3>Steg for steg: Hvordan redigere dokumentet</h3>
     <ol class="vrtx-help-step-by-step">
       <li>Marker og kopier WebDAV-adressen til dokumentet:<br />
-          ${webdavUrl?html}
+         <span class="vrtx-text-grey-bold">${webdavUrl?html}</span>
       </li>
       <li>Start ${resourceTypeName?html}</li>
       <li id="vrtx-edit-win-mac">

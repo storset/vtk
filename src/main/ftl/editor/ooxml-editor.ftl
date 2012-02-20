@@ -59,8 +59,8 @@
     </#assign>
     <h2>${header?html}</h2>
     <div id="vrtx-open-webdav-wrapper">
-      <h3>${vrtx.getMsg('editor.ooxml.ie-edit')} /></h3>
-      <a id="vrtx-open-webdav" class="vrtx-button" href="${webdavUrl?html}"><span><@vrtx.msg code="editor.editorService" /> <@vrtx.msg code="editor.ooxml.ie-edit-in" /> ${resourceTypeName}</span></a>
+      <h3>${vrtx.getMsg('editor.ooxml.ie-edit')}</h3>
+      <a id="vrtx-open-webdav" class="vrtx-button" href="${webdavUrl?html}"><span><@vrtx.msg code="tabs.editorService" /> <@vrtx.msg code="editor.ooxml.ie-edit-in" /> ${resourceTypeName}</span></a>
     </div>
     <h3>${vrtx.getMsg('editor.ooxml.step-by-step')}</h3>
     <ol class="vrtx-help-step-by-step">

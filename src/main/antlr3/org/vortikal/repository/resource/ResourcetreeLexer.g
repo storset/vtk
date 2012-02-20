@@ -58,8 +58,6 @@ DEFAULTPROP
 	:	'default';
 MULTIPLE:	'multiple';
 EXISTS	:	'exists';
-INDEXABLE
-	:	'indexable';
 SHOWHIDE:	'show-hide';
 MULTIPLEINPUTFIELDS
 	:	'multipleinputfields';

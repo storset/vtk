@@ -191,10 +191,6 @@ public class PropertyDescriptionParser {
                 Tree typeTree = jsonSpec.getChild(0);
                 attribute.setName(name);
                 attribute.setType(typeTree.getText());
-                Tree indexableTree = typeTree.getChild(0);
-                if (indexableTree != null && ResourcetreeLexer.INDEXABLE == indexableTree.getType()) {
-                    attribute.setIndexable(true);
-                }
                 p.addAttribute(attribute);
             }
         }

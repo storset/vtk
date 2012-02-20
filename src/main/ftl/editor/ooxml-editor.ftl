@@ -61,8 +61,8 @@
       <li>Marker og kopier WebDAV-adressen til dokumentet:</li>
       <li>Start ${resourceTypeName?html}</li>
       <li id="vrtx-edit-win-mac">
-          <span id="vrtx-edit-win">På Windows: Velg "Fil" -> "Åpne" (Du kan bruke "Ctrl-O" som snarvei)</span><br />
-          <span id="vrtx-edit-mac">På Mac:     Velg "Fil" -> "Åpne URL" (Du kan bruke "Shift-Command-O" som snarvei)</span>
+          <span id="vrtx-edit-win">På Windows: Velg "Fil" &rarr; "Åpne" (Du kan bruke "Ctrl-O" som snarvei)</span><br />
+          <span id="vrtx-edit-mac">På Mac:     Velg "Fil" &rarr; "Åpne URL" (Du kan bruke "Shift-Command-O" som snarvei)</span>
       </li>
       <li>Lim inn den kopierte adressen i feltet "Filnavn" og trykk "Åpne" </li>
     </ol>

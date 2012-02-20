@@ -38,8 +38,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Acl;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceWrapper;
+import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.display.listing.ListingPagingLink;
@@ -92,11 +96,20 @@ public class CollectionListingController extends AbstractCollectionListingContro
         Service service = RequestContext.getRequestContext().getService();
         URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI()); 
         
-        List<String> webdavUrls = new ArrayList<String>();
+        // TODO: cleanup, optimize, move? etc.
+        List<String[]> webdavUrls = new ArrayList<String[]>();
         for(Listing listing : results) {
             List<PropertySet> files = listing.getFiles();
             for(PropertySet ps : files) {
-                webdavUrls.add(webdavService.constructURL(ps.getURI()).toString());
+                ResourceWrapper r = this.resourceManager.createResourceWrapper(ps.getURI());
+                Principal principal = RequestContext.getRequestContext().getPrincipal();
+                Acl resourceAcl = r.getResource().getAcl();
+                boolean resourceReadWrite = resourceAcl.hasPrivilege(Privilege.READ_WRITE, principal);
+                boolean resourceAll = resourceAcl.hasPrivilege(Privilege.ALL, principal);
+                String[] webdavUrlAndWritable = new String[2]; 
+                webdavUrlAndWritable[0] = webdavService.constructURL(ps.getURI()).toString();
+                webdavUrlAndWritable[1] = new Boolean(resourceReadWrite || resourceAll).toString();
+                webdavUrls.add(webdavUrlAndWritable);
             }
         }
         model.put("webdavUrls", webdavUrls);

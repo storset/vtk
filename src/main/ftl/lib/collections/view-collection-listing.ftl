@@ -40,9 +40,15 @@
     
     <#list resources as r>
       <#assign uri = vrtx.getUri(r) />
-      <#assign webdavUri = webdavUrls[r_index] />
+      <#assign webdavUriAndWritable = webdavUrls[r_index] />
+      <#assign webdavUri = webdavUriAndWritable[0] />
+      <#assign webdavWritable = webdavUriAndWritable[1] />
 
-      <div class="vrtx-resource">
+      <#if !hideIcon?exists>
+        <div class="vrtx-resource vrtx-resource-icon">
+      <#else>
+        <div class="vrtx-resource">
+      </#if>
         <#if !hideIcon?exists>
 		  <a class="vrtx-icon <@vrtx.iconResolver r.resourceType r.contentType />" href="${uri?html}"></a>
 		</#if> 
@@ -53,7 +59,7 @@
 		    <#assign title = vrtx.propValue(r, "solr.name", "", "") />
 		  </#if>
           <a class="vrtx-title" href="${uri?html}">${title?html}</a>
-          <#if r.resourceType == "doc" || r.resourceType == "xls" || r.resourceType == "ppt">
+          <#if (r.resourceType == "doc" || r.resourceType == "xls" || r.resourceType == "ppt") && webdavWritable = "true">
             <a class="vrtx-resource-open-webdav" href="${webdavUri?html}"><@vrtx.msg code="report.collection-structure.edit" /></a>
           </#if>
 		</div>

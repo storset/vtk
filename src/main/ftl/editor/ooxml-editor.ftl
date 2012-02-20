@@ -13,8 +13,7 @@
     <script type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
     <style type="text/css">
-      #vrtx-open-webdav-wrapper,
-      #vrtx-edit-win-mac {
+      #vrtx-open-webdav-wrapper {
         display: none;
       }
     </style>
@@ -25,11 +24,12 @@
          var isLinux = (agent.indexOf("linux") != -1);
          var isMac = (agent.indexOf("mac") != -1) && !isWin && !isLinux;
          if(isWin) {
-           $("#vrtx-edit-win-mac").show(0);
            $("#vrtx-edit-mac").hide(0); 
          } else if(isMac) {
-           $("#vrtx-edit-win-mac").show(0);
            $("#vrtx-edit-win").hide(0); 
+         }
+         if(!(isWin || isMac)) {
+           $("#vrtx-edit-win-mac").hide(0);
          }
          if ($.browser.msie && $.browser.version >= 5 && isWin) {  
            $("#vrtx-open-webdav-wrapper").show(0);

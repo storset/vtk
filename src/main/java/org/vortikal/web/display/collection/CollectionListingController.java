@@ -44,6 +44,7 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalManager;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.display.listing.ListingPagingLink;
@@ -56,6 +57,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
 
     protected List<SearchComponent> searchComponents;
     protected Service webdavService;
+    protected PrincipalManager principalManager;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -104,11 +106,32 @@ public class CollectionListingController extends AbstractCollectionListingContro
                 ResourceWrapper r = this.resourceManager.createResourceWrapper(ps.getURI());
                 Principal principal = RequestContext.getRequestContext().getPrincipal();
                 Acl resourceAcl = r.getResource().getAcl();
+                
+                // Check Read Write
                 boolean resourceReadWrite = resourceAcl.hasPrivilege(Privilege.READ_WRITE, principal);
+                Principal[] resourceAclReadWriteGroups = resourceAcl.listPrivilegedGroups(Privilege.READ_WRITE);
+                boolean hasGroupReadWriteAllPrivilege = false;
+                for(Principal p : resourceAclReadWriteGroups) {
+                  if(this.principalManager.isMember(principal, p)) {
+                    hasGroupReadWriteAllPrivilege = true;    
+                    break; 
+                  }
+                }
+                // Check All
                 boolean resourceAll = resourceAcl.hasPrivilege(Privilege.ALL, principal);
+                Principal[] resourceAclAllGroups = resourceAcl.listPrivilegedGroups(Privilege.ALL);
+                if(!hasGroupReadWriteAllPrivilege) {
+                  for(Principal p : resourceAclAllGroups) {
+                    if(this.principalManager.isMember(principal, p)) {
+                      hasGroupReadWriteAllPrivilege = true;    
+                      break; 
+                    }
+                  }
+                }
+
                 String[] webdavUrlAndWritable = new String[2]; 
                 webdavUrlAndWritable[0] = webdavService.constructURL(ps.getURI()).toString();
-                webdavUrlAndWritable[1] = new Boolean(resourceReadWrite || resourceAll).toString();
+                webdavUrlAndWritable[1] = "" + (resourceReadWrite || resourceAll || hasGroupReadWriteAllPrivilege);
                 webdavUrls.add(webdavUrlAndWritable);
             }
         }
@@ -142,4 +165,8 @@ public class CollectionListingController extends AbstractCollectionListingContro
         this.webdavService = webdavService;
     }
 
+    @Required
+    public void setPrincipalManager(PrincipalManager principalManager) {
+        this.principalManager = principalManager;
+    }    
 }

@@ -1205,7 +1205,8 @@ ol.vrtx-help-step-by-step li {
   margin-bottom: 15px;
 }
 
-span.vrtx-text-grey-bold {
+span.vrtx-help-step-by-step-url,
+span.vrtx-help-step-by-step-cmd {
   color: #777;
   font-weight: bold;
 }

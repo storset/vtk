@@ -16,6 +16,9 @@
       #vrtx-open-webdav-wrapper {
         display: none;
       }
+      #app-content h2 {
+        margin-top: 10px;
+      }
     </style>
     <script type="text/javascript"><!--
       $(function() {
@@ -31,7 +34,7 @@
          if(!(isWin || isMac)) {
            $("#vrtx-edit-win-mac").hide(0);
          }
-         if ($.browser.msie && $.browser.version >= 5 && isWin) {  
+         if ($.browser.msie && $.browser.version >= 7 && isWin) {  
            $("#vrtx-open-webdav-wrapper").show(0);
            $("#vrtx-open-webdav").click(function(e) {
              var openOffice = new ActiveXObject("Sharepoint.OpenDocuments.1").EditDocument(this.href);
@@ -52,24 +55,24 @@
       <@vrtx.msg code="resourcetype.name.structured-document" />
     </#assign>
     <#assign header>
-      <@vrtx.msg code="editor.edit" args=[resourceTypeName?lower_case] /> ${document?lower_case}
+      <@vrtx.msg code="tabs.editorService" /> ${document?lower_case}
     </#assign>
     <h2>${header?html}</h2>
     <div id="vrtx-open-webdav-wrapper">
-      <h3>Med Internet Explorer kan du redigere dokumentet direkte</h3>
-      <a id="vrtx-open-webdav" class="vrtx-button" href="${webdavUrl?html}"><span>Rediger i ${resourceTypeName}</span></a>
+      <h3>${vrtx.getMsg('editor.ooxml.ie-edit')} /></h3>
+      <a id="vrtx-open-webdav" class="vrtx-button" href="${webdavUrl?html}"><span><@vrtx.msg code="editor.editorService" /> <@vrtx.msg code="editor.ooxml.ie-edit-in" /> ${resourceTypeName}</span></a>
     </div>
-    <h3>Steg for steg: Hvordan redigere dokumentet</h3>
+    <h3>${vrtx.getMsg('editor.ooxml.step-by-step')}</h3>
     <ol class="vrtx-help-step-by-step">
-      <li>Marker og kopier WebDAV-adressen til dokumentet:<br />
-         <span class="vrtx-text-grey-bold">${webdavUrl?html}</span>
+      <li>${vrtx.getMsg('editor.ooxml.step-by-step.mark-webdav')}<br />
+         <span class="vrtx-help-step-by-step-url">${webdavUrl?html}</span>
       </li>
-      <li>Start ${resourceTypeName?html}</li>
+      <li>Start <span class='vrtx-help-step-by-step-cmd'>${resourceTypeName?html}</span></li>
       <li id="vrtx-edit-win-mac">
-          <span id="vrtx-edit-win">På Windows: Velg "Fil" &rarr; "Åpne" (Du kan bruke "Ctrl-O" som snarvei)</span><br />
-          <span id="vrtx-edit-mac">På Mac:     Velg "Fil" &rarr; "Åpne URL" (Du kan bruke "Shift-Command-O" som snarvei)</span>
+          <span id="vrtx-edit-win">${vrtx.getMsg('editor.ooxml.step-by-step.win')}</span>
+          <span id="vrtx-edit-mac">${vrtx.getMsg('editor.ooxml.step-by-step.mac')}</span>
       </li>
-      <li>Lim inn den kopierte adressen i feltet "Filnavn" og trykk "Åpne" </li>
+      <li>${vrtx.getMsg('editor.ooxml.step-by-step.paste-webdav')}</li>
     </ol>
   </body>
 </html>

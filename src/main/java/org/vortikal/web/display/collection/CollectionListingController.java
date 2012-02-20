@@ -110,6 +110,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
         for(Listing listing : results) {
             List<PropertySet> files = listing.getFiles();
             for(PropertySet ps : files) {
+                /* TODO: fix other hosts
                 ResourceWrapper r = this.resourceManager.createResourceWrapper(ps.getURI());
                 Principal principal = RequestContext.getRequestContext().getPrincipal();
                 Acl resourceAcl = r.getResource().getAcl();
@@ -135,10 +136,11 @@ public class CollectionListingController extends AbstractCollectionListingContro
                     }
                   }
                 }
+                */
 
                 String[] webdavUrlAndWritable = new String[2]; 
                 webdavUrlAndWritable[0] = webdavService.constructURL(ps.getURI()).toString();
-                webdavUrlAndWritable[1] = "" + (resourceReadWrite || resourceAll || hasGroupReadWriteAllPrivilege);
+                webdavUrlAndWritable[1] = "true"; // "" + (resourceReadWrite || resourceAll || hasGroupReadWriteAllPrivilege);
                 webdavUrls.add(webdavUrlAndWritable);
             }
         }

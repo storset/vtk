@@ -8,18 +8,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>Editor</title>
-
+    <title>OoXml Editor</title>
     <script type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>
-    <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
-    <style type="text/css">
-      #vrtx-open-webdav-wrapper {
-        display: none;
-      }
-      #app-content h2 {
-        margin-top: 10px;
-      }
-    </style>
     <script type="text/javascript"><!--
       $(function() {
          var agent = navigator.userAgent.toLowerCase();         
@@ -50,19 +40,20 @@
     </script>
   </head>
   <body id="vrtx-ooxml-editor">
-    <#assign resourceTypeName = vrtx.resourceTypeName(resourceContext.currentResource) />
-    <#assign document>
-      <@vrtx.msg code="resourcetype.name.structured-document" />
-    </#assign>
-    <#assign header>
-      <@vrtx.msg code="tabs.editorService" /> ${document?lower_case}
-    </#assign>
-    <h2>${header?html}</h2>
+    <#assign resource = resourceContext.currentResource />
+    <#assign resourceTypeName = vrtx.resourceTypeName(resource) />
+    <#assign document = vrtx.getMsg("resourcetype.name.structured-document") />
+    <#assign webdavUrl = vrtx.linkConstructor(resource.URI, 'webdavService') />
+    
+    <h2><@vrtx.msg code="tabs.editorService" /> ${document?lower_case}</h2>
+    
     <div id="vrtx-open-webdav-wrapper">
       <h3>${vrtx.getMsg('editor.ooxml.ie-edit')}</h3>
       <a id="vrtx-open-webdav" class="vrtx-button" href="${webdavUrl?html}"><span><@vrtx.msg code="tabs.editorService" /> <@vrtx.msg code="editor.ooxml.ie-edit-in" /> ${resourceTypeName}</span></a>
     </div>
+    
     <h3>${vrtx.getMsg('editor.ooxml.step-by-step')}</h3>
+    
     <ol class="vrtx-help-step-by-step">
       <li>${vrtx.getMsg('editor.ooxml.step-by-step.mark-webdav')}<br />
          <span class="vrtx-help-step-by-step-url">${webdavUrl?html}</span>
@@ -74,5 +65,6 @@
       </li>
       <li>${vrtx.getMsg('editor.ooxml.step-by-step.paste-webdav')}</li>
     </ol>
+    
   </body>
 </html>

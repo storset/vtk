@@ -1970,6 +1970,16 @@ table.resourceInfo.revisions tr:nth-child(even) td {
   background: url(images/report-revision-change-amount-grey.png) no-repeat center center;
 }
 
+/* OoXML editor */
+
+#vrtx-ooxml-editor #vrtx-open-webdav-wrapper {
+  display: none;
+}
+
+#vrtx-ooxml-editor #app-content h2 {
+  margin-top: 10px;
+}
+
 /* ^ 3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile / Versioning */
 
 /* 3.7 Messages */

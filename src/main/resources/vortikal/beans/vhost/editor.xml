@@ -337,10 +337,7 @@
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
           <property name="modelDataMap">
             <map>
-              <entry key="cssURLs" value-ref="editor.editCSSURLs" />
-              <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
               <entry key="jsBaseURL" value="${jsBaseURL}" />
-              <entry key="webResources" value="${webResources.baseURL}" />
             </map>
           </property>
         </bean>
@@ -394,9 +391,8 @@
     <property name="successView" value="redirectToManage" />
   </bean>
   
-  <bean id="editor.ooXmlEditHandler" class="org.vortikal.edit.editor.OoXmlEditController">
+  <bean id="editor.ooXmlEditHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName" value="editor.ooXmlEditView" />
-    <property name="webdavService" ref="webdavService" />
   </bean>
 
   <bean id="editor.collectionEditHandler" class="org.vortikal.edit.editor.ResourceEditController">

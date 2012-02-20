@@ -40,9 +40,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Privilege;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceWrapper;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.web.RequestContext;
@@ -58,6 +60,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
     protected List<SearchComponent> searchComponents;
     protected Service webdavService;
     protected PrincipalManager principalManager;
+    protected PropertyTypeDefinition hideIcon;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -97,6 +100,10 @@ public class CollectionListingController extends AbstractCollectionListingContro
         }
         Service service = RequestContext.getRequestContext().getService();
         URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI()); 
+        
+        if(getHideIcon(collection)){
+            model.put("hideIcon", true);    
+        }
         
         // TODO: cleanup, optimize, move? etc.
         List<String[]> webdavUrls = new ArrayList<String[]>();
@@ -154,6 +161,15 @@ public class CollectionListingController extends AbstractCollectionListingContro
         numbers.put("elementsIncludingThisPage", includingThisPage);
         return numbers;
     }
+    
+    protected boolean getHideIcon(Resource collection) {
+        if(this.hideIcon == null) return false;
+        Property p = collection.getProperty(this.hideIcon);
+        if (p == null) {
+            return false;
+        }
+        return p.getBooleanValue();
+    }
 
     @Required
     public void setSearchComponents(List<SearchComponent> searchComponents) {
@@ -168,5 +184,11 @@ public class CollectionListingController extends AbstractCollectionListingContro
     @Required
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
-    }    
+    }   
+    
+    @Required
+    public void setHideIcon(PropertyTypeDefinition hideIcon) {
+        this.hideIcon = hideIcon;
+    }
+
 }

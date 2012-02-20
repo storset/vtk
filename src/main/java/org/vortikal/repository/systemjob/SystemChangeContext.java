@@ -74,8 +74,8 @@ public class SystemChangeContext {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.jobName);
-        sb.append(", running at " + this.time);
-        sb.append(", affecting " + this.affectedProperties);
+        sb.append(", running at ").append(this.time);
+        sb.append(", affecting ").append(this.affectedProperties);
         return sb.toString();
     }
 

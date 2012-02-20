@@ -13,6 +13,15 @@
       </list>
     </property>
   </bean>
+  
+  <bean id="resourceTypeIsOoXml" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="ooXmlResourceTypeDefinition" />
+  </bean>
+  
+  <bean id="resourceTypeIsNotOoXml" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="ooXmlResourceTypeDefinition" />
+  	<property name="invert" value="true" />
+  </bean>
 
   <bean id="docResourceTypeDefinition"
         class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">

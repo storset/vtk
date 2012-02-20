@@ -15,15 +15,16 @@ resourcetype structured-master{
   }
   
   edit-rules {
+    supervisorsUsernames (class[vrtx-autocomplete-username]),
     caption (size[small]),
     credits (dropdown),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
-    tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)")
+    tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
+    tags (class[vrtx-autocomplete-tag])
   }
 
   scripts {
-    supervisorsUsernames multipleinputfields,
-    tags autocomplete (minChars : "1")
+    supervisorsUsernames multipleinputfields
   }
     
   view-components {

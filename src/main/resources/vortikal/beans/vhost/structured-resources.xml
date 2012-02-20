@@ -229,6 +229,8 @@
         <ref bean="templateLanguage.getFunction" />
         <ref bean="structuredResources.requestContextFunction" />
         <ref bean="structuredResources.resourceFunction" />
+        <ref bean="structuredResources.jsonResourceFunction" />
+        <ref bean="structuredResources.ResourceLocaleFunction" />
         <ref bean="structuredResources.resourcePropFunction" />
         <ref bean="structuredResources.resourcePropObjValFunction" />
         <ref bean="structuredResources.structuredDocumentFunction" />
@@ -252,6 +254,23 @@
     <constructor-arg>
       <bean class="org.vortikal.text.tl.Symbol">
         <constructor-arg value="resource" />
+      </bean>
+    </constructor-arg>
+  </bean>
+  
+    <bean id="structuredResources.jsonResourceFunction" class="org.vortikal.resourcemanagement.view.tl.RetrieveJsonHandler">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg value="json-resource" />
+      </bean>
+    </constructor-arg>
+  </bean>
+  
+      
+  <bean id="structuredResources.ResourceLocaleFunction" class="org.vortikal.resourcemanagement.view.tl.ResourceLocaleFunction">
+    <constructor-arg>
+      <bean class="org.vortikal.text.tl.Symbol">
+        <constructor-arg value="resource-locale" />
       </bean>
     </constructor-arg>
   </bean>

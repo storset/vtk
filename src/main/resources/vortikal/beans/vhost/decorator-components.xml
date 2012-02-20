@@ -409,6 +409,24 @@
     <property name="url" value="layouts/event-listing.ftl" />
   </bean>
 
+  <bean id="decorating.collectionListingComponent" class="org.vortikal.web.decorating.components.CollectionListingComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="folder" />
+    <property name="view" ref="decorating.collectionListingComponent.view" />
+    <property name="description" value="Inserts a folder item list component on the page" />
+    <property name="examples">
+      <map>
+        <entry
+          key="uri=[/path/to/folder/] max-items=[5] go-to-folder-link=[true] folder-title=[true]"
+          value="" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="decorating.collectionListingComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/collection-listing.ftl" />
+  </bean>
+
   <bean id="decorating.feedComponent" class="org.vortikal.web.decorating.components.FeedComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="feed" />
@@ -459,7 +477,7 @@
     <property name="description" value="Inserts an aggregated feed (RSS, Atom) component on the page" />
     <property name="examples">
       <map>
-        <entry key="url=[/news/?vrtx=feed,/events/?vrtx=feed]" value="Merge two feeds" />
+        <entry key="urls=[/news/?vrtx=feed,/events/?vrtx=feed]" value="Merge two feeds" />
       </map>
     </property>
   </bean>

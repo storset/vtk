@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.store.PrincipalSearch.SearchType;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
@@ -46,19 +47,17 @@ public class ACLEditCommandValidator implements Validator {
     private PrincipalManager principalManager;
     private PrincipalFactory principalFactory;
     private Repository repository;
-    
+
     private String notFound;
     private String illegalBlacklisted;
     private String illegal;
     private String tooManyMatchedUsers;
-
 
     @SuppressWarnings("rawtypes")
     @Override
     public boolean supports(Class clazz) {
         return (clazz == ACLEditCommand.class);
     }
-
 
     @Override
     public void validate(Object command, Errors errors) {
@@ -78,25 +77,22 @@ public class ACLEditCommandValidator implements Validator {
             String[] groupNames = editCommand.getGroupNames();
 
             if (groupNames.length == 0) {
-                errors.rejectValue("groupNames", "permissions.group.missing.value",
-                        "You must type a group name");
+                errors.rejectValue("groupNames", "permissions.group.missing.value", "You must type a group name");
             }
-            
+
             validateGroupNames(editCommand, errors);
-            
+
         } else if (editCommand.getAddUserAction() != null) {
             String[] userNames = editCommand.getUserNames();
 
             if (userNames.length == 0) {
-                errors.rejectValue("userNames", "permissions.user.missing.value",
-                        "You must type a username");
+                errors.rejectValue("userNames", "permissions.user.missing.value", "You must type a username");
             }
-            
+
             validateUserNames(editCommand, errors);
-            
+
         }
     }
-
 
     private void validateGroupNames(ACLEditCommand editCommand, Errors errors) {
         String[] groupNames = editCommand.getGroupNames();
@@ -105,23 +101,25 @@ public class ACLEditCommandValidator implements Validator {
             this.illegalBlacklisted = new String();
             this.illegal = new String();
             this.tooManyMatchedUsers = new String();
-            
+
             for (String groupName : groupNames) {
                 if (!validateGroupOrUserName(Type.GROUP, groupName, editCommand)) {
                     continue;
                 }
             }
-            
-            // Make sure we get back to custom permissions when exact match for a shortcut,
-            // but encounter validation error on new group
+
+            // Make sure we get back to custom permissions when exact match for
+            // a shortcut, but encounter validation error on new group
             uncheckAllShortcuts(editCommand);
- 
-            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_GROUP_PREFIX, ACLEditValidationHelper.VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
-            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_GROUP_PREFIX, ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
-            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_GROUP_PREFIX, ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
+
+            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_GROUP_PREFIX,
+                    ACLEditValidationHelper.VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
+            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_GROUP_PREFIX,
+                    ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
+            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_GROUP_PREFIX,
+                    ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
         }
     }
-
 
     private void validateUserNames(ACLEditCommand editCommand, Errors errors) {
         String[] userNames = editCommand.getUserNames();
@@ -131,26 +129,26 @@ public class ACLEditCommandValidator implements Validator {
             this.illegalBlacklisted = new String();
             this.illegal = new String();
             this.tooManyMatchedUsers = new String();
-            
+
             for (String userName : userNames) {
 
                 userName = userName.trim();
                 String uid = userName;
 
                 // Assume a username and validate it as such
-                if (!userName.contains(" ")) { 
+                if (!userName.contains(" ")) {
                     if (!validateGroupOrUserName(Type.USER, userName, editCommand)) {
                         continue; // next userName
                     }
                 } else {
                     // Assume a full name and look for a match in ac_userNames
-                    // If match found: validate corresponding username
-                    // If no match found: assume full name entered without
-                    // selecting from autocomplete suggestions
-                    // i.e. no username provided -> validate as full name
+                    // If match found: validate corresponding username If no
+                    // match found: assume full name entered without selecting
+                    // from autocomplete suggestions i.e. no username provided
+                    // -> validate as full name
                     try {
-                        String ac_userName = getAc_userName(userName, editCommand.getAc_userNames(), editCommand
-                                .getUserNameEntries());
+                        String ac_userName = getAc_userName(userName, editCommand.getAc_userNames(),
+                                editCommand.getUserNameEntries());
 
                         // Entered name is selected from autocomplete
                         // suggestions and we have username
@@ -160,7 +158,8 @@ public class ACLEditCommandValidator implements Validator {
                             }
                             uid = ac_userName;
                         } else {
-                            List<Principal> matches = this.principalFactory.search(userName, Type.USER);
+                            List<Principal> matches = this.principalFactory.search(userName, Type.USER,
+                                    SearchType.FULL_USER_SEARCH);
                             if (matches == null || matches.isEmpty()) {
                                 this.notFound += toCSV(this.notFound, userName);
                                 continue; // next userName
@@ -177,38 +176,41 @@ public class ACLEditCommandValidator implements Validator {
                 }
                 editCommand.addUserNameEntry(uid);
             }
-            
-            // Make sure we get back to custom permissions when exact match for a shortcut,
-            // but encounter validation error on new user
+
+            // Make sure we get back to custom permissions when exact match for
+            // a shortcut, but encounter validation error on new user
             uncheckAllShortcuts(editCommand);
-  
-            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_USER_PREFIX, ACLEditValidationHelper.VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
-            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_USER_PREFIX, ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
-            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_USER_PREFIX, ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
-            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_USER_PREFIX, ACLEditValidationHelper.VALIDATION_ERROR_TOO_MANY_MATCHES, this.tooManyMatchedUsers, errors);
+
+            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_USER_PREFIX,
+                    ACLEditValidationHelper.VALIDATION_ERROR_NOT_FOUND, this.notFound, errors);
+            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_USER_PREFIX,
+                    ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL_BLACKLISTED, this.illegalBlacklisted, errors);
+            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_USER_PREFIX,
+                    ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL, this.illegal, errors);
+            rejectValues(ACLEditValidationHelper.VALIDATION_ERROR_USER_PREFIX,
+                    ACLEditValidationHelper.VALIDATION_ERROR_TOO_MANY_MATCHES, this.tooManyMatchedUsers, errors);
         }
     }
 
-
-    private boolean validateGroupOrUserName(Type type, String name, ACLEditCommand editCommand)  {
-        String validationResult = ACLEditValidationHelper.validateGroupOrUserName(type, name, editCommand.getPrivilege(),
-                this.principalFactory, this.principalManager, this.repository, editCommand.getAcl());
+    private boolean validateGroupOrUserName(Type type, String name, ACLEditCommand editCommand) {
+        String validationResult = ACLEditValidationHelper.validateGroupOrUserName(type, name,
+                editCommand.getPrivilege(), this.principalFactory, this.principalManager, this.repository,
+                editCommand.getAcl());
 
         if (!ACLEditValidationHelper.VALIDATION_ERROR_NONE.equals(validationResult)) {
-            if(ACLEditValidationHelper.VALIDATION_ERROR_NOT_FOUND.equals(validationResult)) {
-              this.notFound += toCSV(this.notFound, name);
-            } else if(ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL_BLACKLISTED.equals(validationResult)) {
-              this.illegalBlacklisted += toCSV(this.illegalBlacklisted, name);
-            } else if(ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL.equals(validationResult)) {
-              this.illegal += toCSV(this.illegal, name);
+            if (ACLEditValidationHelper.VALIDATION_ERROR_NOT_FOUND.equals(validationResult)) {
+                this.notFound += toCSV(this.notFound, name);
+            } else if (ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL_BLACKLISTED.equals(validationResult)) {
+                this.illegalBlacklisted += toCSV(this.illegalBlacklisted, name);
+            } else if (ACLEditValidationHelper.VALIDATION_ERROR_ILLEGAL.equals(validationResult)) {
+                this.illegal += toCSV(this.illegal, name);
             }
             return false;
         }
-          
+
         return true;
     }
-    
-    
+
     private void uncheckAllShortcuts(ACLEditCommand editCommand) {
         String[][] shortcuts = editCommand.getShortcuts();
         for (int i = 0; i < shortcuts.length; i++) {
@@ -216,7 +218,6 @@ public class ACLEditCommandValidator implements Validator {
         }
         editCommand.setShortcuts(shortcuts);
     }
-
 
     private void rejectValues(String type, String errorType, String groupsOrUsers, Errors errors) {
         if (!groupsOrUsers.isEmpty()) {
@@ -232,7 +233,6 @@ public class ACLEditCommandValidator implements Validator {
         }
     }
 
-
     protected String getAc_userName(String userName, String[] ac_userNames, List<String> userNameEntries) {
         for (String ac_userName : ac_userNames) {
             String[] s = ac_userName.split(";");
@@ -245,7 +245,6 @@ public class ACLEditCommandValidator implements Validator {
         return null;
     }
 
-
     protected String toCSV(String csv, String name) {
         String trimmedName = name.trim();
         if (csv.isEmpty()) {
@@ -255,18 +254,15 @@ public class ACLEditCommandValidator implements Validator {
         }
     }
 
-
     @Required
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
     }
 
-
     @Required
     public void setPrincipalFactory(PrincipalFactory principalFactory) {
         this.principalFactory = principalFactory;
     }
-
 
     @Required
     public void setRepository(Repository repository) {

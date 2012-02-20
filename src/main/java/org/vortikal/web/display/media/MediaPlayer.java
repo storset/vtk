@@ -52,7 +52,8 @@ public class MediaPlayer {
     private PropertyTypeDefinition generatedPosterImagePropDef;
 
     public void addMediaPlayer(Map<String, Object> model, String resourceReferance, String height, String width,
-            String autoplay, String contentType, String streamType, String poster) throws AuthorizationException {
+            String autoplay, String contentType, String streamType, String poster, String showDL)
+            throws AuthorizationException {
 
         if (URL.isEncoded(resourceReferance)) {
             resourceReferance = URL.decode(resourceReferance);
@@ -76,13 +77,16 @@ public class MediaPlayer {
 
         if (autoplay != null && !"".equals(autoplay))
             model.put("autoplay", autoplay);
+
         if (streamType != null && !"".equals(streamType))
             model.put("streamType", streamType);
-        if (poster != null && !"".equals(poster)) {
+
+        model.put("showDL", showDL != null && showDL.equalsIgnoreCase("true") ? "true" : "false");
+
+        if (poster != null && !"".equals(poster))
             model.put("poster", poster);
-        } else {
+        else
             addPoster(mediaResource, model);
-        }
 
         String extension = getExtension(resourceReferance);
         if (contentType != null && !"".equals(contentType)) {
@@ -167,7 +171,7 @@ public class MediaPlayer {
         if (posterImageProp != null) {
             poster = createUrl(posterImageProp.getStringValue());
         } else if (thumbnail != null) {
-          poster = thumbnailService.constructURL(mediaFile.getURI());
+            poster = thumbnailService.constructURL(mediaFile.getURI());
         }
 
         if (poster != null) {

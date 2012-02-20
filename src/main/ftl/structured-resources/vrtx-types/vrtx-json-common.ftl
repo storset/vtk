@@ -13,6 +13,8 @@
 
   <#assign localizedTitle = form.resource.getLocalizedMsg(elem.name, locale, null) />
 
+   
+
   <#switch elem.description.type>
 
     <#case "string">
@@ -30,11 +32,16 @@
       <#if elem.description.edithints?exists && elem.description.edithints['dropdown']?exists >
         <#assign dropdown = true />
       </#if>
+      <#if elem.description.edithints?exists && elem.description.edithints['class']?exists >
+            <#assign classes= elem.description.edithints['class'] + ' ' + elem.name />
+      <#else>
+            <#assign classes = elem.name />
+      </#if>
       <@vrtxString.printPropertyEditView
         title=localizedTitle
         inputFieldName=elem.name
         value=elem.getFormatedValue()
-        classes=elem.name
+        classes=classes
         inputFieldSize=fieldSize
         tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
         valuemap=elem.description.getValuemap(locale)

@@ -9,7 +9,8 @@ var paramsStandard = {
   "height": 322,
   "autoplay": "false",
   "contentType": "",
-  "streamType": ""
+  "streamType": "",
+  "showdl": ""
 };
 
 var params = {
@@ -19,7 +20,8 @@ var params = {
   "height": 322,
   "autoplay": "false",
   "contentType": "",
-  "streamType": ""
+  "streamType": "",
+  "showdl": ""
 };
 
 var divAlign = "";
@@ -207,6 +209,10 @@ function insertOrModifyComponent(editor, iframeId, init) {
     if (streamLive.is(':checked')) {
       content = content + " stream-type=[live]";
     }
+    var showDL = contents.find("#chkShowDL");
+    if (showDL.is(':checked')) {
+      content = content + " show-download-link=[true]";
+    }
     var align = contents.find("#txtAlign").val();
 
     if (content.length > 0) {
@@ -280,6 +286,12 @@ function putDialogValues(iframeId, init) {
         } else {
           contents.find("#chkLiveStream").attr("checked", false);
         }
+        var showDL = init ? paramsStandard.showdl : params.showdl;
+        if (showDL == "true") {
+          contents.find("#chkShowDL").attr("checked", true);
+        } else {
+          contents.find("#chkShowDL").attr("checked", false);
+        }
         if (divAlign != "" && divAlign != " " && !init) {
           contents.find("#txtAlign").val(divAlign);
         } else {
@@ -295,6 +307,7 @@ function putDialogValues(iframeId, init) {
           params.autoplay = paramsStandard.autoplay;
           params.streamType = paramsStandard.streamType;
           params.contentType = paramsStandard.contentType;
+          params.showdl = paramsStandard.showdl;
           divAlign = "";
         }
 
@@ -329,6 +342,8 @@ function extractMediaPlayerProps(HTML, element) {
       regexp = new RegExp('(?:content\\-type[\\s]*?=[\\s]*?\\[[\\s]*?)(.*?)(?=[\\s]*?\\])');
     } else if (name == "streamType") {
       regexp = new RegExp('(?:stream\\-type[\\s]*?=[\\s]*?\\[[\\s]*?)(.*?)(?=[\\s]*?\\])');
+    } else if (name == "showdl") {
+      regexp = new RegExp('(?:show\\-download\\-link[\\s]*?=[\\s]*?\\[[\\s]*?)(.*?)(?=[\\s]*?\\])');
     } else {
       // non-capturing group for prop=. TODO: positive lookbehind (non-capturing)
       regexp = new RegExp('(?:' + name + '[\\s]*?=[\\s]*?\\[[\\s]*?)(.*?)(?=[\\s]*?\\])');

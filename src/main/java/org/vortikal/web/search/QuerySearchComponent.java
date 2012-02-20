@@ -119,7 +119,7 @@ public abstract class QuerySearchComponent implements SearchComponent {
         boolean multiHostResults = false;
         if (this.performMultiHostSearch(collection)) {
             try {
-                MultiHostSearchImpl multiHostSearch = new MultiHostSearchImpl(token, search, collection);
+                MultiHostSearchImpl multiHostSearch = new MultiHostSearchImpl(this.name, token, search, collection);
                 result = this.multiHostSearchComponent.search(multiHostSearch);
                 multiHostResults = true;
             } catch (Throwable t) {
@@ -144,7 +144,7 @@ public abstract class QuerySearchComponent implements SearchComponent {
             files.add(res);
             URL url = this.viewService.constructURL(res.getURI());
             if (multiHostResults) {
-                Property urlProp = res.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearch.SOLR_URL_PROP_NAME);
+                Property urlProp = res.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearch.URL_PROP_NAME);
                 if (urlProp != null) {
                     url = URL.parse(urlProp.getStringValue());
                 }

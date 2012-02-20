@@ -48,7 +48,7 @@ public interface PrincipalSearch {
     public Principal.Type getPrincipalType();
 
     /**
-     * Search type of the search (USERID or NAME_OR_USERID)
+     * Search type of the search
      */
     public SearchType getSearchType();
 

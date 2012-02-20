@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <!-- ### Default service, grouped view ###-->
 
@@ -22,8 +22,7 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="eventListing.calendarHandler" class="org.vortikal.web.display.collection.event.EventCalendarListingController"
-    parent="eventListing.handler">
+  <bean id="eventListing.calendarHandler" class="org.vortikal.web.display.collection.event.EventCalendarListingController" parent="eventListing.handler">
     <property name="viewName" value="eventListingCalendar.view" />
     <property name="helper" ref="eventListingHelper" />
     <property name="daysAhead" value="${event.listing.days.ahead}" />
@@ -126,13 +125,16 @@
               <entry key="[1]" value="${event.listing.days.ahead}" />
             </map>
           </property>
-          <property name="queryString" value="(start-date &gt;= {$currentDate} AND start-date &lt; {$currentDate+[1]d})
+          <property name="queryString"
+            value="(start-date &gt;= {$currentDate} AND start-date &lt; {$currentDate+[1]d})
             OR (end-date &gt;= {$currentDate} AND end-date &lt; {$currentDate+[1]d})
             OR (start-date &lt;= {$currentDate} AND end-date &gt;= {$currentDate+[1]d})" />
         </bean>
       </list>
     </property>
-    <property name="titleLocalizationKey"><null/></property>
+    <property name="titleLocalizationKey">
+      <null />
+    </property>
   </bean>
 
   <bean id="eventListing.furtherUpcomingSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
@@ -153,7 +155,9 @@
         </bean>
       </list>
     </property>
-    <property name="titleLocalizationKey"><null/></property>
+    <property name="titleLocalizationKey">
+      <null />
+    </property>
   </bean>
 
   <bean id="eventListing.specificDateEventSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
@@ -166,13 +170,16 @@
         </bean>
         <bean class="org.vortikal.web.search.eventlisting.DateAndSearchTypeQueryStringProcessor" parent="queryStringParser">
           <property name="helper" ref="eventListingHelper" />
-          <property name="queryString" value="(start-date &gt;= [1] AND start-date &lt; [2])
+          <property name="queryString"
+            value="(start-date &gt;= [1] AND start-date &lt; [2])
             OR (end-date &gt;= [1] AND end-date &lt; [2])
             OR (start-date &lt;= [1] AND end-date &gt;= [2])" />
         </bean>
       </list>
     </property>
-    <property name="titleLocalizationKey"><null/></property>
+    <property name="titleLocalizationKey">
+      <null />
+    </property>
   </bean>
 
   <bean id="eventListing.currentMonthSearchComponent" parent="eventListing.specificDateEventSearchComponent">
@@ -185,7 +192,8 @@
         </bean>
         <bean class="org.vortikal.web.search.eventlisting.CurrentMonthQueryStringProcessor" parent="queryStringParser">
           <property name="helper" ref="eventListingHelper" />
-          <property name="queryString" value="(start-date &gt;= [1] AND start-date &lt; [2])
+          <property name="queryString"
+            value="(start-date &gt;= [1] AND start-date &lt; [2])
             OR (end-date &gt;= [1] AND end-date &lt; [2])
             OR (start-date &lt;= [1] AND end-date &gt;= [2])" />
         </bean>

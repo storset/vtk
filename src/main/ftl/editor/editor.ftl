@@ -12,7 +12,6 @@
   -->
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
-<#import "/lib/autocomplete.ftl" as autocomplete />
 <#import "/lib/editor/common.ftl" as editor />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -46,6 +45,9 @@
      var approveTableTitle = "<@vrtx.msg code='proptype.name.title' />";
      var approveTableSrc = "<@vrtx.msg code='resource.sourceURL' />";
      var approveTablePublished = "<@vrtx.msg code='publish.permission.published' />";
+     var approveShowAll = "<@vrtx.msg code='editor.manually-approve.show-all' />";
+     var approveShowApprovedOnly = "<@vrtx.msg code='editor.manually-approve.show-approved-only' />";
+     var approveNoApprovedMsg = "<@vrtx.msg code='editor.manually-approve.no-approved-msg' />";
     
      shortcut.add("Ctrl+S",function() {
        $(".vrtx-focus-button:last input").click();
@@ -58,7 +60,6 @@
       $(document).ready(function() {
           <#if !isCollection>
           interceptEnterKey('#resource\\.tags');
-          setAutoComplete('resource\\.tags', 'tags', {minChars:1});
           </#if>
           if($("#resource\\.featured-articles").length) {
             loadMultipleDocuments(true, "resource\\.featured-articles", true, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
@@ -99,41 +100,39 @@
 
     <@editor.addDatePickerScripts language true />
     
-    <#if !isCollection>
-      <@autocomplete.addAutoCompleteScripts srcBase="${webResources?html}"/>
-    <#else>
-      <script type="text/javascript" src="${jsBaseURL?html}/collectionlisting/manually-approve.js"></script>
-    </#if>
+    <script type="text/javascript" src="${jsBaseURL?html}/collectionlisting/manually-approve.js"></script>
 
   </head>
   <body>
     <#assign header>
       <@vrtx.msg code="editor.edit" args=[vrtx.resourceTypeName(resource)?lower_case] />
     </#assign>
-    
-    <h2>${header}
-      <#if resource.contentType?exists && saveImageURL?exists && resource.contentType?starts_with("image/")>
-        <sup id="vrtx-image-editor-beta-msg">BETA</sup>
-      </#if>
-    </h2>
-    <div class="submitButtons submit-extra-buttons">
-      <div class="vrtx-button">
-        <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
+    <div id="vrtx-editor-title-submit-buttons">
+      <div id="vrtx-editor-title-submit-buttons-inner-wrapper">
+        <h2>${header}
+          <#if resource.contentType?exists && saveImageURL?exists && resource.contentType?starts_with("image/")>
+            <sup id="vrtx-image-editor-beta-msg">BETA</sup>
+          </#if>
+        </h2>
+        <div class="submitButtons submit-extra-buttons">
+          <div class="vrtx-button">
+            <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
+          </div>
+          <div class="vrtx-focus-button">
+            <input type="button" onclick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
+          </div>
+          <div class="vrtx-button">
+            <input type="button" onclick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
+          </div>
+          <@genEditorHelpMenu />
+        </div>
       </div>
-      <div class="vrtx-focus-button">
-        <input type="button" onclick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
-      </div>
-      <div class="vrtx-button">
-        <input type="button" onclick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
-      </div>
-      <@genEditorHelpMenu />
     </div>
     <form action="" method="post" id="editor">
-
       <div class="properties"<#if resource.contentType?exists && resource.contentType?starts_with("image/")> id="image-properties"</#if>>
         <@propsForm resource.preContentProperties />
       </div>
-
+ 
       <#if (resource.content)?exists>
         <div class="html-content">
           <label class="resource.content" for="resource.content"><@vrtx.msg code="editor.content" /></label> 
@@ -219,7 +218,9 @@
       
       <#-- HACKS 2012 start -->
       <#-- Wrap hide properties -->
-      <#if !name?starts_with("hide") && startWrapHideProps?exists></div></#if>
+      <#if !name?starts_with("hide") && startWrapHideProps?exists && startWrapHideProps = "true">
+        </div><#assign startWrapHideProps = "false" />
+      </#if>
       <#if name?starts_with("hide") && !startWrapHideProps?exists>
         <#assign startWrapHideProps = "true" />
         <div id="vrtx-resource.hide-props" class="hide property-item">
@@ -483,7 +484,9 @@
 
           <#if name = 'manually-approve-from'>
             <div id="manually-approve-container-title">
-              <a class="vrtx-button" id="manually-approve-refresh" href="."><span>${vrtx.getMsg("editor.manually-approve-refresh")}</span></a>
+              <a class="vrtx-button" id="manually-approve-refresh" href="."><span>
+                <div id="manually-approve-refresh-icon"></div>${vrtx.getMsg("editor.manually-approve-refresh")}</span>
+              </a>
             </div>
             <div id="manually-approve-container">
             </div>

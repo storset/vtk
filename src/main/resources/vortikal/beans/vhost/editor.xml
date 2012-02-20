@@ -38,9 +38,19 @@
       <list>
         <ref bean="resourceTypeInHtml" />
         <ref bean="resourceTypeIsNotDocument" />
+        <ref bean="resourceTypeIsNotOoXml" />
       </list>
     </property>
     <property name="handler" ref="editor.unstructuredXhtmlEditHandler" />
+  </bean>
+  
+  <bean id="editor.ooXmlEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceTypeIsOoXml" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.ooXmlEditHandler" />
   </bean>
 
   <bean id="editor.collectionEditService" parent="editor.abstractEditService">
@@ -182,10 +192,7 @@
     </property>
     <property name="handler" ref="editor.audioVideoListingEditHandler" />
   </bean>
-
-
-
-
+  
   <bean id="editor.eventListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
@@ -250,6 +257,7 @@
       <map>
         <entry key="editor.editView" value-ref="editor.editView" />
         <entry key="editor.collectionEditView" value-ref="editor.collectionEditView" />
+        <entry key="editor.ooXmlEditView" value-ref="editor.ooXmlEditView" />
       </map>
     </property>
   </bean>
@@ -320,6 +328,25 @@
       </list>
     </property>
   </bean>
+  
+  <bean id="editor.ooXmlEditView" parent="freemarkerView">
+    <property name="url" value="editor/ooxml-editor.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="cssURLs" value-ref="editor.editCSSURLs" />
+              <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
+              <entry key="jsBaseURL" value="${jsBaseURL}" />
+              <entry key="webResources" value="${webResources.baseURL}" />
+            </map>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
 
   <bean id="editor.collectionEditView" parent="editor.editView" />
 
@@ -365,6 +392,11 @@
     <property name="resourceManager" ref="editor.unstructuredXhtmlResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
+  </bean>
+  
+  <bean id="editor.ooXmlEditHandler" class="org.vortikal.edit.editor.OoXmlEditController">
+    <property name="viewName" value="editor.ooXmlEditView" />
+    <property name="webdavService" ref="webdavService" />
   </bean>
 
   <bean id="editor.collectionEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
@@ -546,6 +578,7 @@
             <ref bean="manuallyApprovedResourcesPropDef" />
             <ref bean="collection.hideLastModifiedPropDef" />
             <ref bean="collection.hideIntroductionPropDef" />
+            <ref bean="collection.hideIconPropDef" />
             <ref bean="additionalContentPropDef" />
           </list>
         </property>
@@ -696,6 +729,7 @@
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
+            <ref bean="articleListing.listingViewPropDef" />
             <ref bean="articleListing.featuredArticlesPropDef" />
             <ref bean="articleListing.recursiveListingPropDef" />
             <ref bean="articleListing.recursiveListingSubfoldersPropDef" />

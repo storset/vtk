@@ -69,7 +69,7 @@ public abstract class AbstractCollectionListingController implements ListingCont
     protected int defaultPageLimit = 20;
     protected int collectionDisplayLimit = 1000;
     protected PropertyTypeDefinition pageLimitPropDef;
-    protected PropertyTypeDefinition hideNumberOfComments;
+    protected PropertyTypeDefinition hideNumberOfComments; 
     protected String viewName;
     protected Map<String, Service> alternativeRepresentations;
     private boolean includeRequestParametersInAlternativeRepresentation;
@@ -236,7 +236,7 @@ public abstract class AbstractCollectionListingController implements ListingCont
     public void setHideNumberOfComments(PropertyTypeDefinition hideNumberOfComments) {
         this.hideNumberOfComments = hideNumberOfComments;
     }
-
+    
     public void setCollectionDisplayLimit(int collectionDisplayLimit) {
         this.collectionDisplayLimit = collectionDisplayLimit;
     }

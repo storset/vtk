@@ -5,13 +5,13 @@
  *
  */
 
-var lastVal = "", manuallyApproveFoldersTxt, aggregatedFoldersTxt;
+var lastVal = "", manuallyApproveFoldersTxt, aggregatedFoldersTxt, approvedOnly = false, asyncGenPagesTimer;
 
 $(window).load(function() {
   // Retrieve initial resources
   manuallyApproveFoldersTxt = $("#resource\\.manually-approve-from");
   aggregatedFoldersTxt = $("#resource\\.aggregation");
-    
+  
   if(manuallyApproveFoldersTxt.length) {
     var folders, aggregatedFolders;
     var value = manuallyApproveFoldersTxt.val();
@@ -22,12 +22,44 @@ $(window).load(function() {
       aggregatedFolders = aggregatedFolders.split(",");
     }
     retrieveResources(".", folders, aggregatedFolders);
+    
+    var html = '<ul id="vrtx-manually-approve-tab-menu">'
+               + '<li class="active active-first"><span>' + approveShowAll + '</span></li>'
+               + '<li class="last"><a href="javascript:void(0);">' + approveShowApprovedOnly + '</a></li>'
+             + '</ul>';
+    $(html).insertAfter("#manually-approve-container-title"); 
   }
 });
 
 $(document).ready(function() {
-    // Refresh when folders to approve from are changed
+
+    $("#app-content").delegate("#vrtx-manually-approve-tab-menu a", "click", function(e) {
+      var parent = $(this).parent();
+      $(this).replaceWith("<span>" + $(this).html() + "</span>");
+      if(parent.hasClass("last")) {
+        approvedOnly = true;
+        parent.attr("class", "active active-last");
+        var parentPrev = parent.prev();
+        parentPrev.attr("class", "first");
+        var parentPrevSpan = parentPrev.find("span");
+        parentPrevSpan.replaceWith('<a href="javascript:void(0);">' + parentPrevSpan.html() + "</a>");
+      } else {
+        approvedOnly = false;
+        parent.attr("class", "active active-first");
+        var parentNext = parent.next();
+        parentNext.attr("class", "last");
+        var parentNextSpan = parentNext.find("span");
+        parentNextSpan.replaceWith('<a href="javascript:void(0);">' + parentNextSpan.html() + "</a>");     
+      }
+      $("#manually-approve-refresh").trigger("click");
+      e.stopPropagation();
+      e.preventDefault();
+    });
+
     $("#manually-approve-refresh").click(function(e) {
+      clearTimeout(asyncGenPagesTimer);
+      $("#approve-spinner").remove();
+      
       if(manuallyApproveFoldersTxt && manuallyApproveFoldersTxt.length) {
         var folders, aggregatedFolders;
         
@@ -40,25 +72,26 @@ $(document).ready(function() {
           aggregatedFolders = $.trim(aggregatedFoldersTxt.val());
           aggregatedFolders = aggregatedFolders.split(",");
         }
-        retrieveResources(".", folders, aggregatedFolders);
+
+        retrieveResources(".", folders, aggregatedFolders);  
       }
       e.stopPropagation();
       e.preventDefault();
     });
 
     // Add / remove manually approved uri's
-    $("#manually-approve-container").delegate("input", "click", function(e) {
+    $("#manually-approve-container").delegate("td.checkbox input", "change", function(e) {
       var textfield = $("#resource\\.manually-approved-resources");
       var value = textfield.val();
       var uri = $(this).val();
-      if ($(this).is(":checked")) {
+      if (this.checked) {
         if (value.length) {
           value += ", " + uri;
         } else {
           value = uri;
         }
       } else {
-        if (value.indexOf(uri) == 0) { // not first
+        if (value.indexOf(uri) == 0) {
           value = value.replace(uri, "");
         } else {
           value = value.replace(", " + uri, "");
@@ -100,7 +133,12 @@ $(document).ready(function() {
 
 function retrieveResources(serviceUri, folders, aggregatedFolders) {
 
-  var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources";
+  if(approvedOnly) {
+    var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources&approved-only";
+  } else {
+    var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources";
+  }
+  
   if (folders) {
     for (var i = 0, len = folders.length; i < len; i++) {
       getUri += "&folders=" + $.trim(folders[i]);
@@ -111,6 +149,14 @@ function retrieveResources(serviceUri, folders, aggregatedFolders) {
       getUri += "&aggregate=" + $.trim(aggregatedFolders[i]);
     }
   }
+  
+  $("#vrtx-manually-approve-no-approved-msg").remove();
+  
+  if(!folders.length) {
+    $("#vrtx-manually-approve-tab-menu:visible").addClass("hidden");
+    $("#manually-approve-container:visible").addClass("hidden");
+    return;
+  }
 
   $.ajax( {
     url: getUri + "&no-cache=" + (+new Date()),
@@ -118,14 +164,22 @@ function retrieveResources(serviceUri, folders, aggregatedFolders) {
     cache: false,
     success: function(data) {
       if (data != null && data.length > 0) {
+        $("#vrtx-manually-approve-tab-menu:hidden").removeClass("hidden");
         $("#manually-approve-container:hidden").removeClass("hidden");
+        
         generateManuallyApprovedContainer(data);
         // TODO !spageti && !run twice
         if (requestFromEditor()) {
           storeInitPropValues();
         }
       } else {
-        $("#manually-approve-container").addClass("hidden");
+        if(!approvedOnly) {
+          $("#vrtx-manually-approve-tab-menu:visible").addClass("hidden");
+        } else {
+          $("<p id='vrtx-manually-approve-no-approved-msg'>" + approveNoApprovedMsg + "</p>")
+          .insertAfter("#vrtx-manually-approve-tab-menu");
+        }
+        $("#manually-approve-container:visible").addClass("hidden");
       }
     },
     error: function(xhr, textStatus) {
@@ -171,12 +225,19 @@ function generateManuallyApprovedContainer(resources) {
   // If more than one page
   if (moreThanOnePage) {
     for (; i < prPage; i++) { // Generate first page synchronous
-      html += generateTableRowFunc(resources[i], i);
+      html += generateTableRowFunc(resources[i]);
     }
     html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
     pages++;
     html += generateNavAndEndPageFunc(i, html, prPage, remainder, pages, totalPages);
-    $("#manually-approve-container").html(html);
+    
+    var manuallyApproveContainer = $("#manually-approve-container");
+    manuallyApproveContainer.html(html);
+    var manuallyApproveContainerTable = manuallyApproveContainer.find("table");
+    manuallyApproveContainerTable.find("tr:first-child").addClass("first");
+    manuallyApproveContainerTable.find("tr:last-child").addClass("last");
+    manuallyApproveContainerTable.find("tr:nth-child(even)").addClass("even");
+    manuallyApproveContainerTable.find("input").removeAttr("disabled");
     html = generateStartPageAndTableHeadFunc(pages);
   } else {
     $("#manually-approve-container").html(""); // clear if only one page
@@ -186,16 +247,21 @@ function generateManuallyApprovedContainer(resources) {
   $("#manually-approve-container-title").append(
       "<span id='approve-spinner'>" + approveGeneratingPage + " <span id='approve-spinner-generated-pages'>"
       + pages + "</span> " + approveOf + " " + totalPages + "...</span>");
-
   // Generate rest of pages asynchronous
-  setTimeout( function() {
-    html += generateTableRowFunc(resources[i], i);
+  asyncGenPagesTimer = setTimeout(function() {
+    html += generateTableRowFunc(resources[i]);
     if ((i + 1) % prPage == 0) {
       html += generateTableEndAndPageInfoFunc(pages, prPage, len, false);
       pages++;
       if (i < len - 1) {
         html += generateNavAndEndPageFunc(i, html, prPage, remainder, pages, totalPages);
         $("#manually-approve-container").append(html);
+        var table = $("#approve-page-" + (pages - 1) + " table");
+        table.find("tr:first-child").addClass("first");
+        table.find("tr:last-child").addClass("last");
+        table.find("tr:nth-child(even)").addClass("even");
+        table.find("input").removeAttr("disabled");
+        var manuallyApproveContainer = $("#manually-approve-container");
         if (moreThanOnePage) {
           $("#manually-approve-container #approve-page-" + (pages - 1)).hide();
         }
@@ -205,7 +271,7 @@ function generateManuallyApprovedContainer(resources) {
     }
     i++;
     if (i < len) {
-      setTimeout(arguments.callee, 1);
+      asyncGenPagesTimer = setTimeout(arguments.callee, 1);
     } else {
       if (remainder != 0) {
         html += generateTableEndAndPageInfoFunc(pages, prPage, len, true);
@@ -218,6 +284,25 @@ function generateManuallyApprovedContainer(resources) {
       }
       html += "</div>";
       $("#manually-approve-container").append(html);
+      var table = $("#approve-page-" + pages + " table");
+      table.find("tr:first-child").addClass("first");
+      table.find("tr:last-child").addClass("last");
+      table.find("tr:nth-child(even)").addClass("even");
+      table.find("input").removeAttr("disabled");
+      $("#manually-approve-container").delegate("th.checkbox input", "click", function() {
+        var checkAll = this.checked; 
+        var checkboxes = $("td.checkbox input:visible");
+        for(var i = 0, len = checkboxes.length; i < len; i++) {
+          var checkbox = checkboxes[i];
+          var isChecked = checkbox.checked;
+          if (!isChecked && checkAll) { 
+            $(checkbox).attr('checked', true).trigger("change");
+          }
+          if (isChecked && !checkAll) {
+            $(checkbox).attr('checked', false).trigger("change");
+          }
+        }
+      }); 
       $("#approve-spinner").remove();
       if (len > prPage) {
         $("#manually-approve-container #approve-page-" + pages).hide();
@@ -233,18 +318,14 @@ function generateManuallyApprovedContainer(resources) {
 
 /* HTML generation functions */
 
-function generateTableRow(resource, i) {
-  if (i & 1) { // faster than i % 2
-    var html = "<tr class='even'>";
-  } else {
-    var html = "<tr>";
-  }
+function generateTableRow(resource) {
+  var html = "<tr>";
   if (resource.approved) {
-    html += "<td><input type='checkbox' checked='checked' value='" + resource.uri + "'/>";
+    html += "<td class='checkbox'><input type='checkbox' disabled='disabled' checked='checked' value='" + resource.uri + "'/></td>";
   } else {
-    html += "<td><input type='checkbox' value='" + resource.uri + "'/>";
+    html += "<td class='checkbox'><input type='checkbox' disabled='disabled' value='" + resource.uri + "'/></td>";
   }
-  html += "<a class='approve-link' target='_blank' href='" + resource.uri + "' title='" + resource.title + "'>" + resource.title
+  html += "<td><a class='approve-link' target='_blank' href='" + resource.uri + "' title='" + resource.title + "'>" + resource.title
       + "</a></td>" + "<td>" + resource.source + "</td><td class='approve-published'>" + resource.published
       + "</td></tr>";
   return html;
@@ -270,9 +351,8 @@ function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
 }
 
 function generateStartPageAndTableHead(pages) {
-  return "<div id='approve-page-"
-      + pages
-      + "'><table><thead><tr><th id='approve-title'>" + approveTableTitle + "</th><th id='approve-src'>" + approveTableSrc + "</th><th id='approve-published'>" + approveTablePublished + "</th></tr></thead><tbody>";
+  return "<div id='approve-page-" + pages + "'><table><thead><tr><th id='approve-checkbox' class='checkbox'><input type='checkbox' disabled='disabled' name='checkUncheckAll' /></th><th id='approve-title'>" 
+        + approveTableTitle + "</th><th id='approve-src'>" + approveTableSrc + "</th><th id='approve-published'>" + approveTablePublished + "</th></tr></thead><tbody>";
 }
 
 /* ^ HTML generation functions */

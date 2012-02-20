@@ -254,7 +254,7 @@ public abstract class AtomFeedController implements Controller {
 
             Link link = abdera.getFactory().newLink();
             String urlString = viewService.constructLink(result.getURI());
-            Property urlProp = result.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearch.SOLR_URL_PROP_NAME);
+            Property urlProp = result.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearch.URL_PROP_NAME);
             if (urlProp != null) {
                 urlString = URL.parse(urlProp.getStringValue()).toString();
             }

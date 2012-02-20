@@ -14,7 +14,6 @@
 <#import "/spring.ftl" as spring />
 <#import "dump.ftl" as dumper />
 <#import "/lib/vortikal.ftl" as vrtx />
-<#import "/lib/autocomplete.ftl" as autocomplete />
 
 <#if !resourceContext?exists>
   <#stop "Unable to render model: required submodel

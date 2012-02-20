@@ -142,14 +142,19 @@ public class ManuallyApproveResourcesHandler implements Controller {
             return null;
         }
 
+        boolean approvedOnly = request.getParameter("approved-only") != null;
         JSONArray arr = new JSONArray();
         for (ManuallyApproveResource m : result) {
+            boolean approved = m.isApproved();
+            if (approvedOnly && !approved) {
+                continue;
+            }
             JSONObject obj = new JSONObject();
             obj.put("title", m.getTitle());
             obj.put("uri", m.getUri());
             obj.put("source", m.getSource());
             obj.put("published", m.getPublishDateAsString());
-            obj.put("approved", m.isApproved());
+            obj.put("approved", approved);
             arr.add(obj);
         }
         response.setContentType("text/plain;charset=utf-8");

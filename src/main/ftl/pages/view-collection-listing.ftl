@@ -153,7 +153,7 @@
        <@events.displayEvents collection=collection hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
      <#elseif searchComponents?has_content>
        <#if collection.resourceType = 'article-listing'>
-         <@articles.displayArticles page=page collectionListings=searchComponents hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
+         <@articles.displayArticles page=page collectionListings=searchComponents listingView=listingView hideNumberOfComments=hideNumberOfComments displayMoreURLs=true />
        <#else>
          <#list searchComponents as searchComponent>
            <#if collection.resourceType = 'person-listing'>

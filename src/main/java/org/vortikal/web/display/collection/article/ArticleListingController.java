@@ -37,7 +37,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.AbstractCollectionListingController;
 import org.vortikal.web.display.listing.ListingPager;
@@ -49,6 +51,8 @@ import org.vortikal.web.service.URL;
 public class ArticleListingController extends AbstractCollectionListingController {
 
     private ArticleListingSearcher searcher;
+    private final String defaultListingView = "regular";
+    private PropertyTypeDefinition listingViewPropDef;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -128,11 +132,26 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         model.put(MODEL_KEY_PAGE, userDisplayPage);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
         model.put("hideNumberOfComments", getHideNumberOfComments(collection));
+        model.put("listingView", getListingView(collection));
+    }
+    
+    private String getListingView(Resource collection) {
+        String listingView = this.defaultListingView;
+        Property listingViewProp = collection.getProperty(this.listingViewPropDef);
+        if (listingViewProp != null) {
+            listingView = listingViewProp.getFormattedValue();
+        }
+        return listingView;
     }
 
     @Required
     public void setSearcher(ArticleListingSearcher searcher) {
         this.searcher = searcher;
+    }
+
+    @Required
+    public void setListingViewPropDef(PropertyTypeDefinition listingViewPropDef) {
+        this.listingViewPropDef = listingViewPropDef;
     }
 
 }

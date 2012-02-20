@@ -22,13 +22,6 @@ h2 {
   padding-bottom: 15px;
 }
 
-.submit-extra-buttons {
-  clear: none;
-  float: right;
-  margin-top: -50px;
-  padding-top: 0px;
-}
-
 #buttons-or-text {
   padding: 0 10px;
   color: #666;
@@ -119,6 +112,47 @@ h2 {
   margin: 0 0 -2px 3px;
   cursor: pointer;
   border: none;
+}
+
+/* Sticky title and editor save/cancel buttons */
+
+#vrtx-editor-title-submit-buttons {
+  padding-bottom: 20px;
+}
+
+.property-item.userTitle,
+.vrtx-string.title,
+.vrtx-string.name,
+.vrtx-string.areacode,
+.vrtx-string.username {
+  margin-top: 0px;
+}
+
+#vrtx-editor-title-submit-buttons-inner-wrapper {
+  padding-top: 10px;
+  background: #fff;
+}
+
+#app-content #main {
+  padding-top: 9px;
+}
+
+#vrtx-editor-title-submit-buttons h2 {
+  margin: 0;
+}
+
+.submit-extra-buttons {
+  clear: none;
+  float: right;
+  margin-top: -42px;
+  padding-top: 0px;
+}
+
+.vrtx-sticky-editor-title-submit-buttons {
+  position: fixed;
+  top: 0px;
+  z-index: 999999;
+  background: transparent url(images/sticky-title-buttons-bg.png) repeat-x bottom left; 
 }
 
 

@@ -65,6 +65,9 @@ public class DisplayMediaController implements Controller {
 
         mediaPlayer.addMediaPlayer(model, uri.toString());
 
+        /* vrtx=view-as-webpage will always show download link. */
+        model.put("showDL", "true");
+
         Property descriptionProp = resource.getProperty(descriptionPropDef);
 
         if (descriptionProp != null)

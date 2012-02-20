@@ -30,7 +30,7 @@
     <property name="resourceTypeDefinition" ref="documentResourceTypeDefinition" />
 	<property name="invert" value="true" />
   </bean>
-  
+
   <bean id="resourceTypeIsEvent" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="eventResourceTypeDefinition" />
   </bean>

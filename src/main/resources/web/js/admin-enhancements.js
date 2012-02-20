@@ -113,16 +113,44 @@ if(vrtxAdmin.isMobileWebkitDevice) { // turn off animation in iPhone, iPad and A
   vrtxAdmin.transitionDropdownSpeed = 0;
 }
 
-// Permission Autocomplete parameters
+// Autocomplete parameters
 vrtxAdmin.permissionsAutocompleteParams = { minChars: 4, 
                                             selectFirst: false, 
                                             width: 300, 
                                             max: 30,
                                             delay: 800 };
+                                            
+vrtxAdmin.usernameAutocompleteParams = { multiple: false,
+                                         minChars: 2, 
+                                         selectFirst: false, 
+                                         width: 300, 
+                                         max: 30,
+                                         delay: 500 };
+                                         
+vrtxAdmin.tagAutocompleteParams = { minChars: 1 };
          
-// When to timeout AJAX GET/POST                                   
+// When to timeout and possible to abort AJAX GET/POST   
+// Credits: http://stackoverflow.com/questions/1802936/stop-all-active-ajax-requests-in-jquery
+                      
+var ajaxReqsPool = [];      
+function abortAllAjaxReqs() {
+  for(var i = ajaxReqsPool.length; i--;) {
+    ajaxReqsPool[i].abort();
+  }
+  ajaxReqsPool = [];
+}  
+                    
 $.ajaxSetup({
-  timeout: 60000 // 1min
+  timeout: 60000, // 1min
+  beforeSend: function(xhr) {
+    ajaxReqsPool.push(xhr);
+  },
+  complete: function(xhr) {
+    var idx = $.inArray(xhr, ajaxReqsPool);
+    if (idx > -1) {
+      ajaxReqsPool.splice(idx, 1);
+    }
+  }
 });
                            
 // funcComplete for postAjaxForm()
@@ -142,11 +170,12 @@ var reloadFromServer = function() {
 \*-------------------------------------------------------------------*/
                                             
 $(window).load(function() {
-  // More compact when no left resource menu and only 'Read permission' in right resource menu
+  // More compact when no left resource menu and no buttons in right resource menu
   // Should never occur in IE because of "Show in file explorer" in root-folder 
   var resourceMenuRight = $("#resourceMenuRight"); 
   var resourceMenuRightListElements = resourceMenuRight.find("li");
-  if(!$("ul#resourceMenuLeft li").length && resourceMenuRightListElements.length == 1) {
+  var buttonsInResourceMenuRightListElements = resourceMenuRightListElements.find(".vrtx-button-small");
+  if(!$("ul#resourceMenuLeft li").length && !buttonsInResourceMenuRightListElements.length) {
     resourceMenuRight.addClass("smaller-seperator");
   }
   
@@ -239,7 +268,18 @@ $(document).ready(function () {
     e.stopPropagation();
     e.preventDefault();
   });
-
+  
+  // Abort all AJAX reqs. on tab change
+  $("#app-tabs").delegate("li a", "click", function(e) {
+    abortAllAjaxReqs();
+  });
+  
+  // Add autocomplete
+  if($("form#editor").length) {  
+    autocompleteUsernames(".vrtx-autocomplete-username");
+    autocompleteTags(".vrtx-autocomplete-tag");
+  }
+  
   // Remove active tab if it has no children
   var activeTab = $("#active-tab");
   if (!activeTab.find(" > *").length) {
@@ -271,7 +311,26 @@ $(document).ready(function () {
       resourceMenuLeft.css("marginTop", "0px"); 
     }
   }
-
+  
+  // Sticky editor title and save buttons  
+  if($("form#editor").length) {
+    var titleSubmitButtons = $("#vrtx-editor-title-submit-buttons");
+    if(titleSubmitButtons.length) {
+      var titleSubmitButtonsPos = titleSubmitButtons.offset();
+      $(window).bind("scroll", function() {
+        if($(window).scrollTop() >= titleSubmitButtonsPos.top) {
+          titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons"); 
+          titleSubmitButtons.css("width", $("#contents").width() + "px");
+          $("#contents").css("paddingTop", titleSubmitButtons.outerHeight(true) + "px");
+        } else {
+          titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
+          titleSubmitButtons.css("width", "auto");
+          $("#contents").css("paddingTop", "0px");
+        }
+      });
+    }
+  }
+  
   // Preview image
   adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
   adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");
@@ -521,6 +580,7 @@ $(document).ready(function () {
           var animB = tr.slideUp(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideUp, $.noop);
           $.when(animA, animB).done(function() {
             $("#contents").html($(results).find("#contents").html());
+            $("#app-tabs").html($(results).find("#app-tabs").html());
           });
         }
       });
@@ -556,6 +616,7 @@ $(document).ready(function () {
       vrtxAdmin.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
           $("#contents").html($(results).find("#contents").html());
+          $("#app-tabs").html($(results).find("#app-tabs").html());
           if(typeof versionsMadeCurrentInfoMsg !== "undefined") {
             vrtxAdmin.displayInfoMsg(versionsMadeCurrentInfoMsg);
           }
@@ -740,22 +801,54 @@ function collectionListingInteraction() {
   placeRecoverButtonInActiveTab();
   placeDeletePermanentButtonInActiveTab();
   
-  // Checking rows in collectionlisting
-  if($("td.checkbox").length) {
-    $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />")
-    $("th.checkbox input").click(function() {
-      if(this.checked) {
-        checkAll();
+  initializeCheckUncheckAll();
+}
+
+function initializeCheckUncheckAll() {
+  var tdCheckbox = $("td.checkbox");
+  if(tdCheckbox.length && !$("form#editor").length) {
+    $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
+    $("#directory-listing").delegate("th.checkbox input", "click", function() {
+      var checkAll = this.checked;
+      var checkboxes = $("td.checkbox input");
+      var funcClassAddRemover = classAddRemover; 
+      for(var i = 0, len = checkboxes.length; i < len; i++) {
+        var isChecked = checkboxes[i].checked;
+        var checkbox = $(checkboxes[i]);
+        var tr = checkbox.closest("tr");
+        if(!isChecked && checkAll) {
+          checkbox.attr('checked', true).change();
+          funcClassAddRemover(tr, "checked", true);
+        }
+        if(isChecked && !checkAll) {
+          checkbox.attr('checked', false).change();
+          funcClassAddRemover(tr, "checked", false);
+        }
+      }
+    });
+    $("#directory-listing").delegate("td.checkbox input", "click", function() {
+      var checkbox = this;
+      var isChecked = checkbox.checked;
+      var tr = $(checkbox).closest("tr");
+      if(isChecked) {
+        classAddRemover(tr, "checked", true);
       } else {
-        uncheckAll();
+        classAddRemover(tr, "checked", false);
       }
     });
   }
+}
 
-  $("td.checkbox input").click(toggleChecked);
-  $("td.checkbox").click(function () {
-    $(this).find("input").each(toggleChecked);
-  });
+function classAddRemover(elem, name, isAdding) {
+  if(isAdding) { // Add
+    if(!elem.hasClass(name)) {
+      elem.addClass(name);
+    }
+  } else { // Remove
+    if(elem.hasClass(name)) {
+      elem.removeClass(name);
+    }
+  }
 }
 
 // options: formName, btnId, service, msg
@@ -858,37 +951,6 @@ function placeDeletePermanentButtonInActiveTab() {
   });
 }
 
-function checkAll() {
-  $("td.checkbox input").each(function () {
-    this.checked = true;
-    switchCheckedRow(this);
-  });
-}
-
-function uncheckAll() {
-  $("td.checkbox input").each(function () {
-    this.checked = false;
-    switchCheckedRow(this);
-  });
-}
-
-function toggleChecked() {
-  if (this.checked) {
-    this.checked = false;
-  } else {
-    this.checked = true;
-  }
-  switchCheckedRow(this);
-}
-
-function switchCheckedRow(checkbox) {
-  if (checkbox.checked) {
-    $(checkbox).parent().parent().addClass("checked");
-  } else {
-    $(checkbox).parent().parent().removeClass("checked");
-  }
-}
-
 
 
 /*-------------------------------------------------------------------*\
@@ -900,15 +962,13 @@ function initPermissionForm(selectorClass) {
   toggleConfigCustomPermissions(selectorClass);
   interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]", "." + selectorClass + " input.addUserButton");
   interceptEnterKeyAndReroute("." + selectorClass + " .addGroup input[type=text]", "." + selectorClass + " input.addGroupButton");
-  permissionsAutocomplete('userNames', 'userNames', vrtxAdmin.permissionsAutocompleteParams);
-  splitAutocompleteSuggestion('userNames');
-  permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams);
+  initSimplifiedPermissionForm();
 }
 
 function initSimplifiedPermissionForm() {
-  permissionsAutocomplete('userNames', 'userNames', vrtxAdmin.permissionsAutocompleteParams);
+  permissionsAutocomplete('userNames', 'userNames', vrtxAdmin.permissionsAutocompleteParams, false);
   splitAutocompleteSuggestion('userNames');
-  permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams);  
+  permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams, false);  
 }
 
 function toggleConfigCustomPermissions(selectorClass) {
@@ -944,6 +1004,21 @@ function checkStillAdmin(selector) {
   return true; 
 }
 
+function autocompleteUsernames(selector) {
+  var autocompleteTextfields = $(selector).find('.vrtx-textfield input');
+  var i = autocompleteTextfields.length;
+  while(i--) {
+    permissionsAutocomplete($(autocompleteTextfields[i]).attr("id"), 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
+  }
+}
+
+function autocompleteTags(selector) {
+  var autocompleteTextfields = $(selector).find('.vrtx-textfield input');
+  var i = autocompleteTextfields.length;
+  while(i--) {
+    setAutoComplete($(autocompleteTextfields[i]).attr("id"), 'tags', vrtxAdmin.tagAutocompleteParams);
+  }
+}
 
 
 /*-------------------------------------------------------------------*\
@@ -1624,6 +1699,8 @@ function loadMultipleDocuments(appendParentLast, textfieldId, browse, addName, r
     for (var i = 0, len = listOfFiles.length; i < len; i++) {
       addFormFieldFunc(simpleTextfieldId, browse, $.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
     }
+  } else {
+    addFormField(simpleTextfieldId, browse, "", removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
   }
   
   // TODO !spageti && !run twice

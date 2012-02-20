@@ -54,7 +54,7 @@
     <h2>${header?html}</h2>
     <div id="vrtx-open-webdav-wrapper">
       <h3>Med Internet Explorer kan du redigere dokumentet direkte</h3>
-      <a id="vrtx-open-webdav" class="vrtx-button" href="${webdavUrl?html}"><span>Rediger i MSOffice</span></a>
+      <a id="vrtx-open-webdav" class="vrtx-button" href="${webdavUrl?html}"><span>Rediger i ${resourceTypeName}</span></a>
     </div>
     <h3>Steg for steg: Hvordan redigere dokumentet</h3>
     <ol class="vrtx-help-step-by-step">

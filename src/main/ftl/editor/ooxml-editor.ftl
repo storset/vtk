@@ -48,8 +48,11 @@
   </head>
   <body id="vrtx-ooxml-editor">
     <#assign resourceTypeName = vrtx.resourceTypeName(resourceContext.currentResource) />
+    <#assign document>
+      <@vrtx.msg code="resourcetype.name.structured-document" />
+    </#assign>
     <#assign header>
-      <@vrtx.msg code="editor.edit" args=[resourceTypeName?lower_case] />
+      <@vrtx.msg code="editor.edit" args=[resourceTypeName?lower_case] /> ${document?lower_case}
     </#assign>
     <h2>${header?html}</h2>
     <div id="vrtx-open-webdav-wrapper">

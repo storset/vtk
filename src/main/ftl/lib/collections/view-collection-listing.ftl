@@ -15,6 +15,20 @@
              e.stopPropagation();
              e.preventDefault();
            });
+           $(".vrtx-resource").hover(
+             function (e) { 
+               var css = {
+                 "left": ($(this).find(".vrtx-title a").width() + 63) + "px"
+               };
+               $(this).find(".vrtx-resource-open-webdav").css(css).show(0);
+             },
+             function (e) {
+               var css = {
+                 "left": "0px"
+               };
+               $(this).find(".vrtx-resource-open-webdav").hide(0).css(css);
+             }
+           );
          }
        });
      // -->
@@ -39,6 +53,9 @@
 		    <#assign title = vrtx.propValue(r, "solr.name", "", "") />
 		  </#if>
           <a class="vrtx-title" href="${uri?html}">${title?html}</a>
+          <#if r.resourceType == "doc" || r.resourceType == "xls" || r.resourceType == "ppt">
+            <a class="vrtx-resource-open-webdav" href="${webdavUri?html}"><@vrtx.msg code="tabs.editService" /></a>
+          </#if>
 		</div>
 
         <#list collectionListing.displayPropDefs as displayPropDef>
@@ -62,12 +79,6 @@
             </div>
           </#if>
         </#list>
-        <#-- TODO: Only show when authorized to write --> 
-        <#if r.resourceType == "doc" || r.resourceType == "xls" || r.resourceType == "ppt">
-          &nbsp;
-          <a class="vrtx-resource-open-webdav" href="${webdavUri?html}"><@vrtx.msg code="tabs.editService" /></a>
-        </#if>
-        <span class="vrtx-resource-seperator"></span>
       </div>
     </#list>
    </div>

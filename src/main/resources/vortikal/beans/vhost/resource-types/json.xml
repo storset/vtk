@@ -19,7 +19,6 @@
         <ref bean="jsonOverriddenCharacterEncodingPropDef" />
         <ref bean="overridingPublishDatePropDef" />
         <ref bean="overridingPublishedPropDef" />
-        <ref bean="systemJobStatusPropDef" />
       </list>
     </property>
   </bean>

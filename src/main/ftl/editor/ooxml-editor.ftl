@@ -57,7 +57,7 @@
       <a id="vrtx-open-webdav" class="vrtx-button" href="${webdavUrl?html}"><span>Rediger i MSOffice</span></a>
     </div>
     <h3>Steg for steg: Hvordan redigere dokumentet</h3>
-    <ol>
+    <ol class="vrtx-help-step-by-step">
       <li>Marker og kopier WebDAV-adressen til dokumentet:<br />
           ${webdavUrl?html}
       </li>

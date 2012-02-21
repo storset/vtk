@@ -40,6 +40,10 @@ public interface Task extends Runnable {
     
     public void setId(String id);
     
+    public boolean isEnabled();
+    
+    public void setEnabled(boolean enabled);
+    
     public TriggerSpecification getTriggerSpecification();
     
 }

@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.QueryParser;
@@ -59,6 +60,7 @@ public class IndexQueryPathSelector implements PathSelector {
 
     private Searcher searcher;
     private QueryParser parser;
+    private ResourceTypeTree resourceTypeTree;
     
     private String queryString;
     
@@ -143,6 +145,10 @@ public class IndexQueryPathSelector implements PathSelector {
         return this.searcher;
     }
     
+    public ResourceTypeTree getResourceTypeTree() {
+        return this.resourceTypeTree;
+    }
+
     public void setLimit(int limit) {
         if (limit < 1) {
             throw new IllegalArgumentException("Limit must be >= 1");
@@ -155,7 +161,13 @@ public class IndexQueryPathSelector implements PathSelector {
         this.searcher = searcher;
     }
     
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+    
     public void setOnlyPublishedResources(boolean onlyPublished) {
         this.onlyPublishedResources = onlyPublished;
     }
+
 }

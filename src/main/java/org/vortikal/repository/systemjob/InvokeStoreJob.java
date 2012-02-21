@@ -31,7 +31,6 @@
 
 package org.vortikal.repository.systemjob;
 
-import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -75,6 +74,8 @@ public class InvokeStoreJob extends RepositoryJob {
                 Resource resource = repository.retrieve(token, path, false);
                 if (resource.getLock() == null) {
                     repository.store(token, resource, context);
+                } else {
+                    logger.warn("Resource " + resource + " currently locked, will not invoke store for periodic job.");
                 }
             } catch (ResourceNotFoundException rnfe) {
                 // Resource is no longer there after search (deleted, moved
@@ -91,5 +92,4 @@ public class InvokeStoreJob extends RepositoryJob {
     public void setPathSelector(PathSelector pathSelector) {
         this.pathSelector = pathSelector;
     }
-
 }

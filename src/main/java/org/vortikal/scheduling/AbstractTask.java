@@ -40,6 +40,8 @@ public abstract class AbstractTask implements Task {
     
     private String id;
     
+    private boolean enabled = true;
+    
     @Override
     public abstract void run();
     
@@ -104,4 +106,14 @@ public abstract class AbstractTask implements Task {
         setTriggerSpecification(new SimplePeriodicTriggerSpecification(seconds, delay, fixedRate));
     }
     
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
 }

@@ -32,7 +32,19 @@
 package org.vortikal.scheduling;
 
 /**
+ * Trigger specification based on cron scheduler expression.
+ * 
+ * Note that there are six fields for the period specification, contrary
+ * to standard cron, which only uses 5 fields (and the sixth for command).
+ * This is due to support for seconds in specification (which unix cron does
+ * not support).
+ * 
+ * Expression components:
+ * <seconds> <minutes> <hours> <day-of-month> <month> <day of week>
+ * 
+ * Expression example: "* 10 12 * * mon-tue"
  *
+ * (run every monday and tuesday at 10 minutes past 12)
  */
 public class CronTriggerSpecification implements TriggerSpecification {
     

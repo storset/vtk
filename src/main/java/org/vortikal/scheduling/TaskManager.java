@@ -86,7 +86,9 @@ public class TaskManager implements ApplicationContextAware, InitializingBean {
             final TriggerSpecification triggerSpec = task.getTriggerSpecification();
             if (triggerSpec == null) {
                 // Fail early, we don't accept tasks without a valid trigger specification
-                throw new BeanInitializationException("Task with id " + task.getId() + " returned null for trigger specification");
+                throw new BeanInitializationException("Task with id '" 
+                        + task.getId() 
+                        + "' returned null for trigger specification");
             }
             
             tasks.add(new TaskHolder(task, getTriggerImpl(task.getTriggerSpecification())));
@@ -97,8 +99,15 @@ public class TaskManager implements ApplicationContextAware, InitializingBean {
     
     private void scheduleTasks() {
         for (TaskHolder th: this.tasks) {
-            logger.info("Scheduling task " + th.task.getId() + " with trigger " + th.task.getTriggerSpecification());
-            th.future = this.scheduler.schedule(th.task, th.trigger);
+            if (th.task.isEnabled()) {
+                logger.info("Scheduling task '" 
+                        + th.task.getId() 
+                        + "' with trigger " 
+                        + th.task.getTriggerSpecification());
+                th.future = this.scheduler.schedule(th.task, th.trigger);
+            } else {
+                logger.warn("Task '" + th.task.getId() + "' disabled, will not schedule.");
+            }
         }
     }
     

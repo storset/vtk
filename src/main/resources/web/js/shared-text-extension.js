@@ -28,40 +28,31 @@ $(document).ready(function () {
 			var selectElement =  $("#" + id);
 			$(selectElement).append("<option value=''>Ingen fellestekst</option>")
 			$(containerElement).append("<div class='description' />");
-			var properties = data.properties; 
-			for(x in properties){
-			  if(x == "shared-text-box"){
-				  for (y in properties[x]){
-					var s  = "";
-					if(properties[x][y].id  == selected){
-					  s = "selected";
-					  var d = $(containerElement).find(".description")
-					  $(d).html(properties[x][y]['description-' + lang]);
-					}
-					$(selectElement).append("<option value=" + properties[x][y].id + " " + s + ">" + properties[x][y].title + "</option>");		 
-				  }
+			var valueList = data.properties["shared-text-box"];
+			for(y in valueList){
+				var s  = "";
+				if(valueList[y].id  == selected){
+					s = "selected";
+					var d = $(containerElement).find(".description")
+					$(d).html(valueList[y]['description-' + lang]);
 				}
-			 }
-	
+				$(selectElement).append("<option value=" + valueList[y].id + " " + s + ">" + valueList[y].title + "</option>");		 
+			}
+		
 			/* Change selected text event */
 			$(selectElement).change(function(){
-				
 				if($(selectElement).val().trim() == ""){
 					 var d = $(containerElement).find(".description");
 					 $(d).html("");
 					 return;
 				}
-				
-				for(x in properties){
-					  for (y in properties[x]){
-							if(properties[x][y].id  == $(selectElement).val()){
-								  var d = $(containerElement).find(".description")
-								  $(d).html(properties[x][y]['description-' + lang]);
-								  return;
-							}
-					   }
+				for(y in valueList){
+					if(valueList[y].id  == $(selectElement).val()){
+						var d = $(containerElement).find(".description")
+						$(d).html(valueList[y]['description-' + lang]);
+						return;
+					}
 				}
-
 			});	
 
 		});  

@@ -275,6 +275,14 @@
     <property name="url" value="editor/editor.ftl" />
     <property name="attributesMap">
       <map>
+        <entry key="helpURL.editor.collection.no" value="${helpURL.editor.collection.no}" />
+        <entry key="helpURL.editor.collection.nn" value="${helpURL.editor.collection.nn}" />
+        <entry key="helpURL.editor.image.no" value="${helpURL.editor.image.no}" />
+        <entry key="helpURL.editor.audio.no" value="${helpURL.editor.audio.no}" />
+        <entry key="helpURL.editor.video.no" value="${helpURL.editor.video.no}" />
+        <entry key="helpURL.editor.image.nn" value="${helpURL.editor.image.nn}" />
+        <entry key="helpURL.editor.audio.nn" value="${helpURL.editor.audio.nn}" />
+        <entry key="helpURL.editor.video.nn" value="${helpURL.editor.video.nn}" />
         <entry key="helpURL" value="${helpURL}" />
         <entry key="helpURL.no" value="${helpURL.no}" />
         <entry key="helpURL.nn" value="${helpURL.nn}" />

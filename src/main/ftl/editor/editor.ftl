@@ -124,7 +124,7 @@
           <div class="vrtx-button">
             <input type="button" onclick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
           </div>
-          <@genEditorHelpMenu />
+            <@genEditorHelpMenu resource.resourceType isCollection />
         </div>
       </div>
     </div>
@@ -532,15 +532,25 @@
   </#list>
 </#macro>
 
-<#macro genEditorHelpMenu>
+<#macro genEditorHelpMenu type isCollection>
+   
   <div id="editor-help-menu">
     <span id="editor-help-menu-header"><@vrtx.msg code="manage.help" default="Help" />:</span>
     <ul>
       <li> 
         <#assign lang><@vrtx.requestLanguage/></#assign>
+        <#assign propKey = "helpURL.editor." + lang />
+        <#if isCollection >
+            <#assign propKey = "helpURL.editor.collection." + lang />            
+        </#if>
+        <#if type == "image" || type == "video" || type == "audio" >
+            <#assign propKey = "helpURL.editor." + type + "." + lang />  
+                    
+        </#if>
+        
         <#assign url = helpURL />
-        <#if .vars["helpURL.editor." + lang]?exists>
-          <#assign url = .vars["helpURL.editor." + lang] />
+        <#if .vars[propKey]?exists>
+          <#assign url = .vars[propKey] />
         </#if>
         <a href="${url?html}" target="_blank" class="help-link"><@vrtx.msg code="manage.help.editing" default="Help in editing" /></a>
       </li>

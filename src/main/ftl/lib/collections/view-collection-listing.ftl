@@ -9,24 +9,16 @@
        $(function() {
          var agent = navigator.userAgent.toLowerCase();         
          var isWin = ((agent.indexOf("win") != -1) || (agent.indexOf("16bit") != -1));
-         if ($.browser.msie && $.browser.version >= 5 && isWin) {  
+         if ($.browser.msie && $.browser.version >= 7 && isWin) {  
            $(".vrtx-resource-open-webdav").click(function(e) {
              var openOffice = new ActiveXObject("Sharepoint.OpenDocuments.1").EditDocument(this.href);
              e.stopPropagation();
              e.preventDefault();
            });
-           $(".vrtx-resource").hover(
-             function (e) { 
-               var css = {
-                 "left": ($(this).find(".vrtx-title a").width() + 63) + "px"
-               };
-               $(this).find(".vrtx-resource-open-webdav").css(css).show(0);
-             },
-             function (e) {
-               var css = {
-                 "left": "0px"
-               };
-               $(this).find(".vrtx-resource-open-webdav").hide(0).css(css);
+           $(".vrtx-resource").hover(function (e) { 
+               $(this).find(".vrtx-resource-open-webdav").css("left", ($(this).find(".vrtx-title a").width() + 63) + "px").show(0);
+             }, function (e) {
+               $(this).find(".vrtx-resource-open-webdav").hide(0).css("left", "0px");
              }
            );
          }
@@ -40,10 +32,7 @@
     
     <#list resources as r>
       <#assign uri = vrtx.getUri(r) />
-      <#assign webdavUriAndWritable = webdavUrls[r_index] />
-      <#assign webdavUri = webdavUriAndWritable[0] />
-      <#assign webdavWritable = webdavUriAndWritable[1] />
-
+      
       <#if !hideIcon?exists>
         <div class="vrtx-resource vrtx-resource-icon">
       <#else>
@@ -59,8 +48,8 @@
 		    <#assign title = vrtx.propValue(r, "solr.name", "", "") />
 		  </#if>
           <a class="vrtx-title" href="${uri?html}">${title?html}</a>
-          <#if (r.resourceType == "doc" || r.resourceType == "xls" || r.resourceType == "ppt") && webdavWritable = "true">
-            <a class="vrtx-resource-open-webdav" href="${webdavUri?html}"><@vrtx.msg code="report.collection-structure.edit" /></a>
+          <#if (r.resourceType == "doc" || r.resourceType == "xls" || r.resourceType == "ppt")>
+            <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="report.collection-structure.edit" /></a>
           </#if>
 		</div>
 

@@ -32,8 +32,6 @@ package org.vortikal.web.actions.copymove;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,7 +43,6 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Repository.Depth;
 import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.convert.CopyAction;
@@ -76,8 +73,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
     private static Log logger = LogFactory.getLog(CopyMoveToSelectedFolderController.class);
     static final String COPYMOVE_SESSION_ATTRIBUTE = "copymovesession";
     private String viewName = "DEFAULT_VIEW_NAME";
-    private static final Pattern COPY_SUFFIX_PATTERN = Pattern.compile("\\(\\d+\\)$");
-    private CopyAction copyAction;
+    private CopyHelper copyHelper;
 
     public void setViewName(String viewName) {
         this.viewName = viewName;
@@ -124,16 +120,8 @@ public class CopyMoveToSelectedFolderController implements Controller {
 
                 } else {
                     Path destUri = newResourceUri;
-                    int number = 1;
-                    while (repository.exists(token, destUri)) {
-                        destUri = appendCopySuffix(destUri, number);
-                        number++;
-                    }
-                    if (this.copyAction != null) {
-                        this.copyAction.process(uri, destUri, null);
-                    } else {
-                        repository.copy(token, uri, destUri, Depth.INF, false, false);
-                    }
+                    this.copyHelper.copyResource(uri, destUri, repository, token);
+                    
                 }
             } catch (AuthorizationException e) {
                 filesFailed.add(uri);
@@ -178,37 +166,8 @@ public class CopyMoveToSelectedFolderController implements Controller {
         return new ModelAndView(this.viewName);
     }
 
-    protected Path appendCopySuffix(Path newUri, int number) {
-        String extension = "";
-        String dot = "";
-        String name = newUri.getName();
-
-        if (name.endsWith(".")) {
-            name = name.substring(0, name.lastIndexOf("."));
-
-        } else if (name.contains(".")) {
-            extension = name.substring(name.lastIndexOf(".") + 1, name.length());
-            dot = ".";
-            name = name.substring(0, name.lastIndexOf("."));
-        }
-
-        Matcher matcher = COPY_SUFFIX_PATTERN.matcher(name);
-        if (matcher.find()) {
-            String count = matcher.group();
-            count = count.substring(1, count.length() - 1);
-            try {
-                number = Integer.parseInt(count) + 1;
-                name = COPY_SUFFIX_PATTERN.split(name)[0];
-            } catch (Exception e) {
-            }
-        }
-
-        name = name + "(" + number + ")" + dot + extension;
-        return newUri.getParent().extend(name);
-    }
-    
-    public void setCopyAction(CopyAction copyAction) {
-        this.copyAction = copyAction;
+    public void setCopyHelper(CopyHelper copyHelper) {
+        this.copyHelper = copyHelper;
     }
 
 }

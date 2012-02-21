@@ -12,6 +12,8 @@ resourcetype shared-text {
    }
 
  view-components {    
+
+ 
       shared-text-box {
         ##
         [resource-props "."]

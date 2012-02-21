@@ -153,16 +153,18 @@
     <property name="viewName" value="manageCollectionListing" />
   </bean>
 
-  <bean id="copyToSelectedFolderHandler" 
-    class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController">
+  <bean id="copyToSelectedFolderHandler" class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController">
     <property name="viewName" value="manageCollectionListing" />
+    <property name="copyHelper" ref="copyHelper" />
+  </bean>
+  
+  <bean id="copyHelper" class="org.vortikal.web.actions.copymove.CopyHelper">
     <property name="copyAction" ref="copy.unpublishAfterCopyAction" />
   </bean>
   
   <bean id="copy.unpublishAfterCopyAction" class="org.vortikal.web.actions.copymove.UnpublishAfterCopyAction" />
 
-  <bean id="moveToSelectedFolderHandler" 
-    class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController">
+  <bean id="moveToSelectedFolderHandler" class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController">
     <property name="viewName" value="manageCollectionListing" />
   </bean>
 

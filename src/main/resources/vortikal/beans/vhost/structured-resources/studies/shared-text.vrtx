@@ -12,28 +12,7 @@ resourcetype shared-text {
    }
 
  view-components {    
- 
-     vis-fellestekst (uri){
-        ##
-        [def f json-resource(uri)]
-        [def key resource-prop-obj-val(".", "fellestekst")]
-        <div>
-        [def liste f.properties.shared-text-box]
-        [def locale resource-locale()]       
-        [list liste item]
-            [if (key = item.id)]
-                [if locale = "no_NO"]
-                    [val item.description-no  # unescaped]
-                [elif locale = "nn"]
-                    [val item.description-nn  # unescaped]
-                [else]
-                    [val item.description-en  # unescaped]
-                [endif]
-            [endif]
-        [endlist]
-        </div>
-        ##
-    }   
+
  
       shared-text-box {
         ##

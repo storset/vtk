@@ -243,6 +243,9 @@ public class LinksEvaluator implements LatePropertyEvaluator {
 
         org.ccil.cowan.tagsoup.Parser parser = new org.ccil.cowan.tagsoup.Parser();
         parser.setContentHandler(handler);
+        if (handler.getClass() == XmlHandler.class) {
+            parser.setFeature("http://www.ccil.org/~cowan/tagsoup/features/root-bogons", true);
+        }
 
         InputSource input = new InputSource(is);
 
@@ -260,9 +263,9 @@ public class LinksEvaluator implements LatePropertyEvaluator {
     // TODO perhaps switch to pull-parser for XML content, instead of classic SAX.
     private static class XmlHandler extends DefaultHandler {
 
-        private LinkCollector collector;
-        private LinkSource source;
-        private StringBuilder buffer = new StringBuilder();
+        private final LinkCollector collector;
+        private final LinkSource source;
+        private final StringBuilder buffer = new StringBuilder();
         private boolean linkData = false;
         
         XmlHandler(LinkCollector collector, LinkSource source) {
@@ -304,8 +307,8 @@ public class LinksEvaluator implements LatePropertyEvaluator {
     }
     
     private static class HtmlHandler extends DefaultHandler {
-        private LinkCollector listener;
-        private LinkSource linkSource;
+        private final LinkCollector listener;
+        private final LinkSource linkSource;
 
         public HtmlHandler(LinkCollector listener, LinkSource source) {
             this.listener = listener;

@@ -86,6 +86,9 @@
 
   <!-- OperationLog interceptor for Repository -->
   <import resource="repository-operationlog-interceptor.xml" />
+
+  <!-- System task manager -->
+  <import resource="scheduling/scheduling.xml"/>
   
   <!--
     Generalized abstract systemjob bean, used to 

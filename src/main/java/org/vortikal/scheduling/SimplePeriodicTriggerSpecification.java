@@ -1,21 +1,21 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -28,55 +28,55 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.systemjob;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+package org.vortikal.scheduling;
 
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+/**
+ * Thin abstraction for 
+ */
+public class SimplePeriodicTriggerSpecification implements TriggerSpecification {
 
-public class SystemChangeContext {
-
-    private String jobName;
-    private String time;
-    private List<PropertyTypeDefinition> affectedProperties;
-    private PropertyTypeDefinition systemJobStatusPropDef;
-
-    public SystemChangeContext(String jobName, String time, List<PropertyTypeDefinition> affectedProperties,
-            PropertyTypeDefinition systemJobStatusPropDef) {
-        this.jobName = jobName;
-        this.time = time;
-        this.affectedProperties = affectedProperties;
-        this.systemJobStatusPropDef = systemJobStatusPropDef;
-    }
-
-    public String getJobName() {
-        return jobName;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public List<PropertyTypeDefinition> getAffectedProperties() {
-        return affectedProperties;
+    private int seconds;
+    private int initialDelaySeconds;
+    private boolean fixedRate = false;
+    
+    /**
+     * 
+     * @param seconds The seconds between each period
+     * @param fixedRate if seconds should be interpreted as fixed rate insteead of
+     *                  fixed delay between each invocation.
+     */
+    public SimplePeriodicTriggerSpecification(int seconds, int initialDelaySeconds, boolean fixedRate) {
+        if (seconds <= 0) {
+            throw new IllegalArgumentException("seconds must be >= 1");
+        }
+        if (initialDelaySeconds < 0) {
+            initialDelaySeconds = 0;
+        }
+        this.seconds = seconds;
+        this.initialDelaySeconds = initialDelaySeconds;
+        this.fixedRate = fixedRate;
     }
     
-    public PropertyTypeDefinition getSystemJobStatusPropDef() {
-        return this.systemJobStatusPropDef;
+    public int getSeconds() {
+        return this.seconds;
     }
-
-    public static String dateAsTimeString(Date date) {
-        return new SimpleDateFormat("yyyyMMdd HH:mm:ss").format(date);
+    
+    public int getInitialDelaySeconds() {
+        return this.initialDelaySeconds;
     }
- 
+    
+    public boolean isFixedRate() {
+        return this.fixedRate;
+    }
+    
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(this.jobName);
-        sb.append(", running at ").append(this.time);
-        sb.append(", affecting ").append(this.affectedProperties);
-        return sb.toString();
+        StringBuilder b = new StringBuilder(getClass().getSimpleName());
+        b.append("[").append("period = ").append(this.seconds).append(" sec");
+        b.append(", delay = ").append(this.initialDelaySeconds).append(" sec");
+        b.append(this.fixedRate ? ", fixed rate" : ", fixed delay");
+        b.append("]");
+        return b.toString();
     }
-
 }

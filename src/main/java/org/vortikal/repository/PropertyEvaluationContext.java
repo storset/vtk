@@ -199,7 +199,7 @@ public class PropertyEvaluationContext {
         }
         
         List<PropertyTypeDefinition> affectedProperties = this.systemChangeContext.getAffectedProperties();
-        return affectedProperties != null && affectedProperties.contains(propDef);
+        return affectedProperties == null || affectedProperties.contains(propDef);
     }
     
     public void addPropertyTypeDefinitionForLateEvaluation(PropertyTypeDefinition def) {

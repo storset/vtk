@@ -1,20 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
-
-  <!-- Automatic publishing -->
-  <bean id="repository.publisher" parent="repository.systemJobMethodInvokingTrigger">
-    <property name="targetObject" ref="repository.resourcePublisher" />
-    <property name="triggerThreadName" value="${repositoryID}.publisher" />
-    <property name="repeatInterval" value="${repository.publisher.interval}" />
+  
+  <!-- Abstract base bean for repository jobs -->
+  <bean id="repository.systemjob" abstract="true" parent="repositoryAware">
+    <property name="securityContext">
+      <bean class="org.vortikal.security.SecurityContext">
+        <constructor-arg ref="writeAllToken" />
+        <constructor-arg ref="rootPrincipal" />
+      </bean>
+    </property>
+    <property name="systemJobStatusPropDef" ref="systemJobStatusPropDef" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
-  <bean id="repository.resourcePublisher" class="org.vortikal.repository.systemjob.publishing.ResourcePublisher"
-    parent="repository.systemJob">
-    <property name="systemJobName" value="published-status" />
-    <property name="publishedPropDef" ref="publishedPropDef" />
-    <property name="publishDatePropDef" ref="publishDatePropDef" />
-    <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
+  <!-- Abstract base bean for index-based repository job path selectors -->
+  <bean id="repository.systemjob.indexPathSelector" abstract="true">
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="parser" ref="searchParser" />
+  </bean>
+
+  <!-- Resource publisher periodic job -->
+  <bean id="repository.systemjob.publisher" class="org.vortikal.repository.systemjob.InvokeStoreJob"
+        parent="repository.systemjob">
+    <property name="simplePeriodicTriggerExpression" value="60,60" />
+    <property name="id" value="published-status" />
+    <property name="pathSelector">
+      <bean class="org.vortikal.repository.systemjob.ResourcePublishingPathSelector" 
+            parent="repository.systemjob.indexPathSelector">
+        <property name="publishedPropDef" ref="publishedPropDef" />
+        <property name="publishDatePropDef" ref="publishDatePropDef" />
+        <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
+      </bean>
+    </property>
     <property name="affectedPropDefPointers">
       <list>
         <value>json-resource::published</value>
@@ -22,35 +40,23 @@
     </property>
   </bean>
 
-  <!-- Broken links (system job is disabled for now) -->
-  <!--
-  <bean id="repository.brokenLinksEvaluateTrigger" parent="repository.systemJobMethodInvokingTrigger">
-    <property name="targetObject" ref="repository.linkCheckSystemJob" />
-    <property name="triggerThreadName" value="${repositoryID}.linkCheck" />
-    <property name="repeatInterval" value="${repository.publisher.interval}" />
-  </bean>
-  -->
-  
-  <bean id="repository.linkCheckSystemJob" class="org.vortikal.repository.systemjob.LinkCheckSystemJob"
-        parent="repository.systemJob">
-
-    <property name="systemJobName" value="linkcheck" />
-    <property name="parser" ref="searchParser" />
-
-    <!-- XXX: ideally, this query would select resources
-        that contain links that have not been checked for
-        a while, or that are in the middle of being
-        link checked
-    -->
-    <property name="query" value="type IN resource" />
-
+  <!-- Broken link check job -->
+  <bean id="repository.systemjob.linkcheck" class="org.vortikal.repository.systemjob.InvokeStoreJob"
+        parent="repository.systemjob">
+    <property name="simplePeriodicTriggerExpression" value="60,0" />
+    <property name="id" value="linkcheck" />
     <property name="affectedPropDefPointers">
       <list>
         <value>resource::link-check</value>
         <value>resource::link-status</value>
       </list>
     </property>
+    <property name="pathSelector">
+      <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" 
+            parent="repository.systemjob.indexPathSelector">
+        <property name="queryString" value="type IN json-resource AND link-status !exists" />
+      </bean>
+    </property>
   </bean>
-
-
+  
 </beans>

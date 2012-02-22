@@ -37,7 +37,6 @@ import java.util.regex.Pattern;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.web.actions.convert.CopyAction;
 

@@ -33,6 +33,7 @@ package org.vortikal.web.actions.copymove;
 import java.io.InputStream;
 
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
@@ -46,10 +47,14 @@ public class CopyThenStoreAction {
     public void process(Path copyUri, Resource src, InputStream stream) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
-        String token = requestContext.getSecurityToken();
+        String token = requestContext.getSecurityToken(); 
         repository.copy(token, src.getURI(), copyUri, Depth.INF, false, true);
-        // repository.store(token, src); TODO: move wrapper props into dest
+        // TODO: to many ops.. 
+        Resource newRsrc = repository.retrieve(token, copyUri, true);
+        for (Property prop : src.getProperties()) {
+          newRsrc.addProperty(prop);
+        }
+        repository.store(token, newRsrc);
         repository.storeContent(token, copyUri, stream);
     }
-
 }

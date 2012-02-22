@@ -51,9 +51,9 @@ public class CopyThenStoreAction {
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken(); 
         repository.copy(token, src.getURI(), copyUri, Depth.INF, false, true);
-        // TODO: to many ops..
+        // TODO: a "little" hacky
         Resource newRsrc = repository.retrieve(token, copyUri, true);
-        for (Property prop : src.getProperties()) {
+        for (Property prop : src.getProperties()) { 
           if(prop.getType().equals(Type.STRING) 
           || prop.getType().equals(Type.HTML)) {
             newRsrc.addProperty(prop);

@@ -20,7 +20,7 @@
     <title>Editor</title>
     <@editor.addCkScripts />
 
-    <script type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>
+    <script type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script> 
     
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
     <#assign isCollection = resource.resource.collection />
@@ -107,6 +107,10 @@
     <#assign header>
       <@vrtx.msg code="editor.edit" args=[vrtx.resourceTypeName(resource)?lower_case] />
     </#assign>
+    <#assign isImage = resource.contentType?exists && resource.contentType?starts_with("image/") />
+    <#assign supportedImageEditor = isImage && (resource.contentType == "image/jpeg" 
+                                             || resource.contentType == "image/pjpeg"
+                                             || resource.contentType == "image/png") />
     <div id="vrtx-editor-title-submit-buttons">
       <div id="vrtx-editor-title-submit-buttons-inner-wrapper">
         <h2>${header}
@@ -118,10 +122,7 @@
           <div class="vrtx-button">
             <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
           </div>
-          <#if resource.contentType?exists
-            && (resource.contentType == "image/jpeg" 
-             || resource.contentType == "image/pjpeg"
-             || resource.contentType == "image/png")>
+          <#if supportedImageEditor>
              <div class="vrtx-button">
                <input type="button" onclick="$('#"saveCopyButton"').click()" value="${vrtx.getMsg("editor.saveCopy")}" />
              </div>  
@@ -137,7 +138,7 @@
       </div>
     </div>
     <form action="" method="post" id="editor">
-      <div class="properties"<#if resource.contentType?exists && resource.contentType?starts_with("image/")> id="image-properties"</#if>>
+      <div class="properties"<#if isImage> id="image-properties"</#if>>
         <@propsForm resource.preContentProperties />
       </div>
  
@@ -153,12 +154,8 @@
         <@propsForm resource.postContentProperties />
       </div>
  
-     <#if resource.contentType?exists && resource.contentType?starts_with("image/")>
-       <#assign imageSupported = "false" />
-       <#if resource.contentType == "image/jpeg" || resource.contentType == "image/pjpeg" || resource.contentType == "image/png">
-         <#assign imageSupported = "true" />
-       </#if> 
-       <#assign theContentType = resource.contentType />
+     <#if isImage>
+        <!--[if IE 8]><script type="text/javascript" src="${jsBaseURL?html}/image-editor/excanvas.compiled.js"></script><![endif]-->
        <script type="text/javascript" src="${jsBaseURL?html}/image-editor/editor.js"></script>    
        <script type="text/javascript"><!--  
          var startCropText = '<@vrtx.msg code="editor.image.start-crop" default="Start cropping" />';
@@ -168,7 +165,7 @@
          $(function () {
            var imageEditorElm = $("#vrtx-image-editor-wrapper");
            if(imageEditorElm.length) {
-             vrtxImageEditor.init(imageEditorElm, "${imageURL}", "${imageSupported}");
+             vrtxImageEditor.init(imageEditorElm, "${imageURL}", "${supportedImageEditor?string}");
            }
          });
        // -->
@@ -177,12 +174,6 @@
          <h3 id="vrtx-image-editor-preview"><@vrtx.msg code="editor.image.preview-title" default="Preview" /></h3>
          <div id='vrtx-image-editor-inner-wrapper'>
            <canvas id="vrtx-image-editor"></canvas>
-         </div>
-         <div id='vrtx-image-editor-wrapper-loading-info'>
-           <canvas id='vrtx-image-editor-preview-image'></canvas>
-           <div id='vrtx-image-editor-wrapper-loading-info-text'>
-             <span><@vrtx.msg code="editor.image.processing-image" default="Processing image" />...&nbsp;<output id="vrtx-image-editor-interpolation-complete"></output></span>
-           </div>
          </div>
        </div>
      </#if>
@@ -196,10 +187,7 @@
         <div class="vrtx-button">
           <input type="submit" id="saveAndViewButton" onclick="formatDocumentsData();performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
         </div>
-        <#if resource.contentType?exists
-          && (resource.contentType == "image/jpeg" 
-           || resource.contentType == "image/pjpeg"
-           || resource.contentType == "image/png")>
+        <#if supportedImageEditor>
            <div class="vrtx-button">
              <input type="submit" id="saveCopyButton" onclick="formatDocumentsData();performSave();" name="savecopy" value="${vrtx.getMsg("editor.saveCopy")}">
            </div>  

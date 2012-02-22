@@ -19,6 +19,7 @@ function VrtxImageEditor() {
   this.scaledImg = null;
 
   this.canvasSupported = null;
+  this.isIE8 = null;
   this.canvas = null;
   this.ctx = null;
   this.lastWidth = null;
@@ -49,9 +50,10 @@ var vrtxImageEditor = new VrtxImageEditor();
 
 VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSupported) {
   var editor = this;
-
-  editor.canvasSupported = 'getContext' in document.createElement('canvas') && imageSupported === "true";
+  
   editor.canvas = document.getElementById("vrtx-image-editor");
+  editor.isIE8 = vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9;
+  editor.canvasSupported = (editor.isIE8 || ('getContext' in document.createElement('canvas'))) && imageSupported === "true";
   if(editor.canvasSupported) {
     editor.ctx = editor.canvas.getContext('2d');
   }
@@ -76,7 +78,6 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
       editor.updateDimensions(editor.rw, editor.rh);
   
       editor.ctx.drawImage(editor.img, 0, 0);
-      editor.renderScaledImage(false); 
       $(editor.canvas).resizable({
         aspectRatio: editor.keepAspectRatio,
         grid: [1, 1],
@@ -117,7 +118,6 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
         editor.updateDimensions(editor.rw, editor.rh);
         editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
                                                     0,            0,        editor.rw,         editor.rh);                                             
-        editor.renderScaledImage(false);
         editor.resetCropPlugin();
         $("#vrtx-image-crop-coordinates").remove();
         $(this).val(startCropText + "...");
@@ -295,38 +295,6 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
   }
 };
 
-VrtxImageEditor.prototype.renderScaledImage = function renderScaledImage(insertImage) {
-  var editor = this;
-  
-  var scaledImgSrc = editor.canvas.toDataURL("image/png");
-  editor.scaledImg.src = scaledImgSrc;
-  editor.scaledImg.onload = function(insertImage) { // TODO: function ref.
-    if(insertImage) {
-      var tmpCanvas = $("#vrtx-image-editor-preview-image")[0];
-      tmpCanvas.style.display = "block";
-      var tmpCtx = tmpCanvas.getContext('2d');
-      tmpCanvas.width = editor.rw;
-      tmpCanvas.height = editor.rh;
-      var loadingInfo = $("#vrtx-image-editor-wrapper-loading-info");
-      var loadingInfoText = loadingInfo.find("#vrtx-image-editor-wrapper-loading-info-text");
-      var loadingInfoTextSpan = loadingInfoText.find("span");
-      if(editor.rw >= 230 && editor.rh >= 50) {
-        loadingInfo.css({"width": editor.rw + "px", "height": editor.rh + "px"});
-        loadingInfoText.css({"height": "100%", "background": "#555", "opacity": "0.8"});
-        loadingInfoTextSpan.css({"left": (Math.round((editor.rw - 220) / 2) + 5) + "px",
-                                 "top": (Math.round((editor.rh - 40) / 2) + 5) + "px", "color": "#fff"});
-      } else { // Just put it under..
-        loadingInfo.css({"width": editor.rw + "px", "height": editor.rh + 50 + "px"});
-        loadingInfoText.css({"height": editor.rh + 50 + "px", "background": "transparent"});
-        loadingInfoTextSpan.css({"left": "0px", "top": editor.rh + 30 + "px", "color": "#000"}); 
-      }
-      tmpCtx.drawImage(editor.scaledImg, 0, 0);
-    } else {
-      editor.ctx.drawImage(editor.scaledImg, 0, 0);
-    }
-  };
-};
-
 VrtxImageEditor.prototype.save = function save(buttonId) {
   var editor = this;
   editor.savedImage = true;
@@ -351,8 +319,7 @@ VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {
   editor.rh = newHeight;
   editor.updateDimensions(editor.rw, editor.rh);
   editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
-                                              0,            0,        editor.rw,        editor.rh);
-  editor.renderScaledImage(false);      
+                                              0,            0,        editor.rw,        editor.rh);      
 };
 
 /*
@@ -390,7 +357,13 @@ VrtxImageEditor.prototype.draw = function draw() {
   editor.ctx.strokeRect(selection.x, selection.y, selection.w, selection.h);
   // draw part of original image
   if (selection.w > 0 && selection.h > 0) {
-    editor.ctx.drawImage(editor.scaledImg, selection.x, selection.y, selection.w, selection.h, selection.x, selection.y, selection.w, selection.h);
+    editor.ctx.drawImage(editor.img,
+                         editor.cropX + Math.round(editor.selection.x * editor.reversedScaleRatio),
+                         editor.cropY + Math.round(editor.selection.y * editor.reversedScaleRatio),
+                         Math.round(selection.w * editor.reversedScaleRatio), 
+                         Math.round(selection.h * editor.reversedScaleRatio), 
+                         selection.x, selection.y,
+                         selection.w, selection.h);
   }
   // draw resize cubes
   editor.ctx.fillStyle = '#fff';
@@ -408,7 +381,8 @@ VrtxImageEditor.prototype.drawScene = function drawScene() { // Main drawScene f
 
   editor.ctx.clearRect(0, 0, editor.canvas.width, editor.canvas.height); // clear canvas
   // draw source image
-  editor.ctx.drawImage(editor.scaledImg, 0, 0);
+  editor.ctx.drawImage(editor.img, editor.cropX, editor.cropY, editor.cropWidth, editor.cropHeight, 
+                                              0,            0,        editor.rw,        editor.rh);  
   // and make it darker
   editor.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
   editor.ctx.fillRect(0, 0, editor.canvas.width, editor.canvas.height);

@@ -258,11 +258,7 @@ div.manually-approve-from table th input {
 #vrtx-image-editor-inner-wrapper {
   min-height: 300px;
   clear: left;
-}
-
-#vrtx-lanczos-downscaling-wrapper {
-  clear: both;
-  margin: 20px 0 0 0;
+  float: left;
 }
 
 h3#vrtx-image-editor-preview {
@@ -274,34 +270,6 @@ h3#vrtx-image-editor-preview {
 .vrtx-label-and-text {
   float: left;
   margin: 10px 20px 0 0;
-}
-
-#vrtx-image-editor-wrapper-loading-info {
-  position: relative;
-  display: none;
-  clear: left;
-}
-
-#vrtx-image-editor-wrapper-loading-info-text {
-  background: #555;
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-}
-
-#vrtx-image-editor-wrapper-loading-info-text span {
-  color: #fff;
-  background: transparent url("../../js/plugins/thickbox-modified/loadingAnimation.gif") no-repeat top left;
-  height: 14px;
-  width: 220px;
-  display: block;
-  padding: 16px 0 0 0;
-  position: absolute;
-  left: 20px;
-  top: 45%;
-  clear: left;
 }
 
 #vrtx-image-editor-wrapper.loading #vrtx-image-editor-inner-wrapper {

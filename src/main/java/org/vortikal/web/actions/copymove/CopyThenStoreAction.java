@@ -56,7 +56,7 @@ public class CopyThenStoreAction {
           newRsrc.addProperty(prop);
         }
         repository.store(token, newRsrc);
-        repository.storeContent(token, copyUri, stream);
         */
+        repository.storeContent(token, copyUri, stream);
     }
 }

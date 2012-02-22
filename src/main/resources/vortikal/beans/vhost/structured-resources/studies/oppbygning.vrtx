@@ -24,7 +24,7 @@ resourcetype oppbygning{
         ##
         [def uri "/vrtx/fellestekst/" + docType + "/" + propName + ".html"]
         [def f json-resource(uri)]
-        [def key resource-prop-obj-val(".", "fellestekst")]
+        [def key resource-prop-obj-val(".", propName)]
         <div>
         [def liste f.properties.shared-text-box]
         [def locale resource-locale()]       
@@ -187,6 +187,7 @@ resourcetype oppbygning{
             <h1>[call "json:field" {"select":"title"}]</h1>
             [call "comp:introduction"]
             [call "comp:introduction-image"]
+            [call "comp:vis-fellestekst" {"uri":"/vrtx/fellestekst/oppbygning/gradsnavn.html"}]
             [call "json:field" {"select":"content"}]
             [call "comp:vrtx-date-info"]
           </div>
@@ -200,7 +201,11 @@ resourcetype oppbygning{
   }
   
   vocabulary {
-
+	showAdditionalContent {
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    }
   }
   
   localization {

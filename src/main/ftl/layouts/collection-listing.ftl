@@ -2,8 +2,8 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
 
-<div class="vrtx-collection-listing-component-wrapper">
-  <#if (list?exists && list?size > 0)>
+<#if (list?exists && list?size > 0)>
+  <div class="vrtx-collection-listing-component-wrapper">
     <div class="vrtx-collection-listing-component">
     <#if (conf.folderTitle?string = "true") && folderTitle?exists>
       <h2>${folderTitle?string}</h2>
@@ -63,7 +63,5 @@
         <a href="${goToFolderLink?html}"><@vrtx.msg code="collectionListing.goToFolder" default="Go to folder" /></a>
       </#if>
     </div>
-  <#else>
-    Remove div!
-  </#if>
-</div>
+  </div>
+</#if>

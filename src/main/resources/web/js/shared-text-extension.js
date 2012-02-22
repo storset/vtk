@@ -55,7 +55,7 @@ $(document).ready(function () {
 				}
 			});	
 
-		});  
+		}).error(function() { $(inputfieldContainer).html("<div class='shared-text-error'><span class='shared-text-error-message'>Kunne ikke laste fellestekst!</span><span class='shared-text-error-uri'>" + path + "</span></div>") });  
 	});
 		
 });

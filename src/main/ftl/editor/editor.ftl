@@ -136,7 +136,7 @@
         </div>
       </div>
     </div>
-    <form action="" method="post" id="editor" enctype="multipart/form-data">
+    <form action="" method="post" id="editor">
       <div class="properties"<#if resource.contentType?exists && resource.contentType?starts_with("image/")> id="image-properties"</#if>>
         <@propsForm resource.preContentProperties />
       </div>

@@ -52,9 +52,11 @@ public class CopyThenStoreAction {
     public void process(Path copyUri, Resource src, InputStream stream) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
-        String token = requestContext.getSecurityToken();  
-        // Copy original resource
+        String token = requestContext.getSecurityToken();
+        
+        // Copy resource
         repository.copy(token, src.getURI(), copyUri, Depth.INF, false, true);
+        
         // Store updated preserved properties
         Resource newRsrc = repository.retrieve(token, copyUri, true);
         for (Property prop : src.getProperties()) { 
@@ -63,6 +65,7 @@ public class CopyThenStoreAction {
           }
         }
         repository.store(token, newRsrc);
+        
         // Store updated content
         repository.storeContent(token, copyUri, stream);
     }

@@ -31,34 +31,44 @@
 package org.vortikal.web.actions.copymove;
 
 import java.io.InputStream;
+import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 
 /**
  * Copy and store new resource action
  */
 public class CopyThenStoreAction {
+    
+    private Set<PropertyTypeDefinition> preservedProperties;
 
     public void process(Path copyUri, Resource src, InputStream stream) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
-        String token = requestContext.getSecurityToken(); 
+        String token = requestContext.getSecurityToken();  
+        // Copy original resource
         repository.copy(token, src.getURI(), copyUri, Depth.INF, false, true);
-        // TODO: a "little" hacky
+        // Store updated preserved properties
         Resource newRsrc = repository.retrieve(token, copyUri, true);
         for (Property prop : src.getProperties()) { 
-          if(prop.getType().equals(Type.STRING) 
-          || prop.getType().equals(Type.HTML)) { // Only copy new/updated text fields
+          if (preservedProperties.contains(prop.getDefinition())) {
             newRsrc.addProperty(prop);
           }
         }
         repository.store(token, newRsrc);
+        // Store updated content
         repository.storeContent(token, copyUri, stream);
+    }
+
+    @Required
+    public void setPreservedProperties(Set<PropertyTypeDefinition> preservedProperties) {
+        this.preservedProperties = preservedProperties;
     }
 }

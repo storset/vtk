@@ -399,7 +399,7 @@
   </bean>
   
   <bean id="copyHelperImageEdit" class="org.vortikal.web.actions.copymove.CopyHelper">
-    <property name="copyThenStoreAction" ref="copy.copyThenStoreAction" />
+    <property name="copyThenStoreAction" ref="copy.imageCopyThenStoreAction" />
   </bean>
   
   <bean id="saveImageHelper" class="org.vortikal.web.actions.SaveImageHelper">

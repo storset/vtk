@@ -110,7 +110,7 @@
     <div id="vrtx-editor-title-submit-buttons">
       <div id="vrtx-editor-title-submit-buttons-inner-wrapper">
         <h2>${header}
-          <#if resource.contentType?exists && saveImageURL?exists && resource.contentType?starts_with("image/")>
+          <#if resource.contentType?exists && resource.contentType?starts_with("image/")>
             <sup id="vrtx-image-editor-beta-msg">BETA</sup>
           </#if>
         </h2>
@@ -118,6 +118,14 @@
           <div class="vrtx-button">
             <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
           </div>
+          <#if resource.contentType?exists
+            && (resource.contentType == "image/jpeg" 
+             || resource.contentType == "image/pjpeg"
+             || resource.contentType == "image/png")>
+             <div class="vrtx-button">
+               <input type="button" onclick="$('#"saveCopyButton"').click()" value="${vrtx.getMsg("editor.saveCopy")}" />
+             </div>  
+          </#if>
           <div class="vrtx-focus-button">
             <input type="button" onclick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
           </div>
@@ -128,7 +136,7 @@
         </div>
       </div>
     </div>
-    <form action="" method="post" id="editor">
+    <form action="" method="post" id="editor" enctype="multipart/form-data">
       <div class="properties"<#if resource.contentType?exists && resource.contentType?starts_with("image/")> id="image-properties"</#if>>
         <@propsForm resource.preContentProperties />
       </div>
@@ -145,7 +153,7 @@
         <@propsForm resource.postContentProperties />
       </div>
  
-     <#if resource.contentType?exists && saveImageURL?exists && resource.contentType?starts_with("image/")>
+     <#if resource.contentType?exists && resource.contentType?starts_with("image/")>
        <#assign imageSupported = "false" />
        <#if resource.contentType == "image/jpeg" || resource.contentType == "image/pjpeg" || resource.contentType == "image/png">
          <#assign imageSupported = "true" />
@@ -188,24 +196,23 @@
         <div class="vrtx-button">
           <input type="submit" id="saveAndViewButton" onclick="formatDocumentsData();performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
         </div>
+        <#if resource.contentType?exists
+          && (resource.contentType == "image/jpeg" 
+           || resource.contentType == "image/pjpeg"
+           || resource.contentType == "image/png")>
+           <div class="vrtx-button">
+             <input type="submit" id="saveCopyButton" onclick="formatDocumentsData();performSave();" name="savecopy" value="${vrtx.getMsg("editor.saveCopy")}">
+           </div>  
+        </#if>
         <div class="vrtx-focus-button">
           <input type="submit" id="saveButton" onclick="formatDocumentsData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
-        </div>
+        </div>  
         <div class="vrtx-button">
           <input type="submit" id="cancel" onclick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
         </div>
       </div>
 
      </form>
-     
-     <#if resource.contentType?exists && saveImageURL?exists
-          && (resource.contentType == "image/jpeg" 
-           || resource.contentType == "image/pjpeg"
-           || resource.contentType == "image/png")>
-       <form enctype="multipart/form-data" id="vrtx-image-editor-save-image-form" action="${saveImageURL?html}" method="post" style="display: none;">
-         <@vrtx.csrfPreventionToken url=saveImageURL />
-       </form>
-     </#if>
      
     </body>
 </html>

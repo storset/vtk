@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,24 +28,28 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.convert;
+package org.vortikal.web.actions.copymove;
 
-import java.util.Map;
+import java.io.InputStream;
 
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Repository.Depth;
+import org.vortikal.web.RequestContext;
 
-public interface CopyAction {
+/**
+ * Copy and store new resource action
+ */
+public class CopyThenStoreAction {
 
-    /**
-     * @param originalUri
-     *            Path to resource to copy from
-     * @param copyUri
-     *            Path to location to copy to
-     * @param properties
-     *            Special properties to consider/process during copy
-     * @throws Exception
-     */
-    public void process(Path originalUri, Path copyUri, Map<String, Object> properties) throws Exception;
+    public void process(Path copyUri, Resource src, InputStream stream) throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        repository.copy(token, src.getURI(), copyUri, Depth.INF, false, true);
+        // repository.store(token, src); TODO: move wrapper props into dest
+        repository.storeContent(token, copyUri, stream);
+    }
 
 }

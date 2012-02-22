@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, 2008 University of Oslo, Norway
+/* Copyright (c) 2012 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,51 +30,37 @@
  */
 package org.vortikal.web.actions.copymove;
 
+import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.web.actions.convert.CopyAction;
 
-/**
- * A controller that copies (or moves) resources from one folder to another
- * based on a set of resources stored in a session variable
- * <p>
- * Configurable properties:
- * <ul>
- * <li>{@link String viewName} - the view to which to return to
- * <li>{@link CopyAction copyAction} - if specified, invoke this 
- *     {@link CopyAction} instead of {@link Repository#copy} to 
- *     copy resources
- * </ul>
- * </p>
- * <p>
- * Model data published:
- * <ul>
- * <li>{@code createErrorMessage}: error message
- * <li>{@code errorItems}: an array of repository items which the
- *      error message relates to
- * </ul>
- * </p>
- */
 public class CopyHelper {
 
     private static final Pattern COPY_SUFFIX_PATTERN = Pattern.compile("\\(\\d+\\)$");
     private CopyAction copyAction;
+    private CopyThenStoreAction copyThenStoreAction;
 
-    public void copyResource (Path uri, Path destUri, Repository repository, String token) throws Exception {
+    public Path copyResource (Path uri, Path destUri, Repository repository, String token, Resource src, InputStream is) throws Exception {
         int number = 1;
         while (repository.exists(token, destUri)) {
             destUri = appendCopySuffix(destUri, number);
             number++;
         }
-        if (this.copyAction != null) {
+        if (this.copyThenStoreAction != null && src != null && is != null) {
+            this.copyThenStoreAction.process(destUri, src, is);
+        } else if (this.copyAction != null) {
             this.copyAction.process(uri, destUri, null);
         } else {
             repository.copy(token, uri, destUri, Depth.INF, false, false);
         }
+        return destUri;
     }
 
     protected Path appendCopySuffix(Path newUri, int number) {
@@ -108,6 +94,10 @@ public class CopyHelper {
     
     public void setCopyAction(CopyAction copyAction) {
         this.copyAction = copyAction;
+    }
+    
+    public void setCopyThenStoreAction(CopyThenStoreAction copyThenStoreAction) {
+        this.copyThenStoreAction = copyThenStoreAction;
     }
 
 }

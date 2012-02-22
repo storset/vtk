@@ -33,6 +33,7 @@ package org.vortikal.web.actions;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.Iterator;
 
 import javax.imageio.IIOImage;
@@ -40,67 +41,28 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
 import org.vortikal.graphics.ImageServiceImpl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.web.RequestContext;
 
 /**
- * Controller that saves image content on resource from base64
+ * Controller that saves image content on resource
  */
-public class SaveImageController extends AbstractController {
+public class SaveImageHelper {
 
-    private String viewName;
     private ImageServiceImpl imageService;
 
-    @Required
-    public void setViewName(String viewName) {
-        this.viewName = viewName;
-    }
-    
     @Required
     public void setImageService(ImageServiceImpl imageService) {
         this.imageService = imageService;
     }
     
     @SuppressWarnings("unchecked")
-    protected ModelAndView handleRequestInternal(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {     
-        RequestContext requestContext = RequestContext.getRequestContext();
-        Repository repository = requestContext.getRepository();
-        Path uri = requestContext.getResourceURI();
-        String token = requestContext.getSecurityToken();
-        Resource resource = repository.retrieve(token, uri, true);
-
-        String cropXStr = request.getParameter("crop-x");
-        String cropYStr = request.getParameter("crop-y");
-        String cropWidthStr = request.getParameter("crop-width");
-        String cropHeightStr = request.getParameter("crop-height");
-        String newWidthStr = request.getParameter("new-width");
-        String newHeightStr = request.getParameter("new-height");
-                
-        if(cropXStr == null || cropYStr == null || cropWidthStr == null 
-           ||  cropHeightStr == null ||  newWidthStr == null || newHeightStr == null) {
-            return new ModelAndView(this.viewName); // TODO: error message     
-        }
-
-        int cropX = Integer.parseInt(cropXStr);
-        int cropY = Integer.parseInt(cropYStr);
-        int cropWidth = Integer.parseInt(cropWidthStr);
-        int cropHeight = Integer.parseInt(cropHeightStr);
-        int newWidth = Integer.parseInt(newWidthStr);
-        int newHeight = Integer.parseInt(newHeightStr);
-        
-        if((cropWidth * cropHeight) > 100000000) { // Limit to max 400MB
-            return new ModelAndView(this.viewName); // TODO: error message       
-        }
+    public InputStream saveImage(Resource resource, Repository repository, String token, Path uri,
+            int cropX, int cropY, int cropWidth, int cropHeight, int newWidth, int newHeight) throws Exception {     
 
         // Crop and scale (downscale bilinear)
         BufferedImage image = ImageIO.read(repository.getInputStream(token, uri, true)).getSubimage(cropX, cropY, cropWidth, cropHeight);
@@ -137,9 +99,7 @@ public class SaveImageController extends AbstractController {
         writer.dispose();
         ios.close();
 
-        repository.storeContent(token, uri, new ByteArrayInputStream(bos.toByteArray()));
-
-        return new ModelAndView(this.viewName);
+        return new ByteArrayInputStream(bos.toByteArray());
     }
 
 }

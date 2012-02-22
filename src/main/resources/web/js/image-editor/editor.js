@@ -234,7 +234,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
       }
     });
   
-    $("#app-content").delegate("#saveAndViewButton, #saveButton", "click", function(e) {;
+    $("#app-content").delegate("#saveAndViewButton, #saveButton, #saveCopyButton", "click", function(e) {;
       if(!editor.savedImage) {
         if(editor.hasCropBeenInitialized) {
           editor.cropNone(editor); // Remove selection
@@ -331,20 +331,16 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
   var editor = this;
   editor.savedImage = true;
 
-  var form = $("form#vrtx-image-editor-save-image-form");
-  var dataString = "&csrf-prevention-token=" + form.find("input[name=csrf-prevention-token]").val()
-                 + "&crop-x=" + editor.cropX
-                 + "&crop-y=" + editor.cropY
-                 + "&crop-width=" + editor.cropWidth
-                 + "&crop-height=" + editor.cropHeight
-                 + "&new-width=" + editor.rw
-                 + "&new-height=" + editor.rh;
-                 
-  vrtxAdmin.serverFacade.postHtml(form.attr("action"), dataString, {
-    success: function (results, status, resp) {
-      $("#" + buttonId).click();
-    }
-  });
+  var form = $("form#editor");
+  
+  var dataString = "<input style='display: none' name='crop-x' value='" + editor.cropX + "' />"
+                 + "<input style='display: none' name='crop-y' value='" + editor.cropY + "' />"
+                 + "<input style='display: none' name='crop-width' value='" + editor.cropWidth + "' />"
+                 + "<input style='display: none' name='crop-height' value='" + editor.cropHeight + "' />"
+                 + "<input style='display: none' name='new-width' value='" + editor.rw + "' />"
+                 + "<input style='display: none' name='new-height' value='" + editor.rh + "' />";
+   form.append(dataString);
+   $("#" + buttonId).click();
 };
 
 VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {

@@ -122,6 +122,7 @@ public class ResourceEditWrapper extends ResourceWrapper {
 
 
     private boolean save = false;
+    private boolean saveCopy = false;
     private boolean view = false;
 
     public boolean isSave() {
@@ -130,6 +131,14 @@ public class ResourceEditWrapper extends ResourceWrapper {
     
     public void setSave(boolean save) {
         this.save = save;
+    }
+    
+    public boolean isSaveCopy() {
+        return this.saveCopy;
+    }
+    
+    public void setSaveCopy(boolean saveCopy) {
+        this.saveCopy = saveCopy;
     }
 
     public void setView(boolean view) {
@@ -140,4 +149,58 @@ public class ResourceEditWrapper extends ResourceWrapper {
         return view;
     }
 
+    private int cropX = 0;
+    private int cropY = 0;
+    private int cropWidth = 0;
+    private int cropHeight = 0;
+    private int newWidth = 0;
+    private int newHeight = 0;
+    
+    public int getCropX() {
+        return cropX;
+    }
+
+    public void setCropX(int cropX) {
+        this.cropX = cropX;
+    }
+
+    public int getCropY() {
+        return cropY;
+    }
+
+    public void setCropY(int cropY) {
+        this.cropY = cropY;
+    }
+
+    public int getCropWidth() {
+        return cropWidth;
+    }
+
+    public void setCropWidth(int cropWidth) {
+        this.cropWidth = cropWidth;
+    }
+
+    public int getCropHeight() {
+        return cropHeight;
+    }
+
+    public void setCropHeight(int cropHeight) {
+        this.cropHeight = cropHeight;
+    }
+
+    public int getNewWidth() {
+        return newWidth;
+    }
+
+    public void setNewWidth(int newWidth) {
+        this.newWidth = newWidth;
+    }
+
+    public int getNewHeight() {
+        return newHeight;
+    }
+
+    public void setNewHeight(int newHeight) {
+        this.newHeight = newHeight;
+    }
 }

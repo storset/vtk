@@ -78,8 +78,33 @@ public class ResourceEditDataBinder extends ServletRequestDataBinder {
             } else if (request.getParameter("saveview") != null) {
                 command.setSave(true);
                 command.setView(true);
+            } else if (request.getParameter("savecopy") != null) {
+                command.setSaveCopy(true);
             } else {
                 return;
+            }
+            
+            String cropXStr = request.getParameter("crop-x");
+            String cropYStr = request.getParameter("crop-y");
+            String cropWidthStr = request.getParameter("crop-width");
+            String cropHeightStr = request.getParameter("crop-height");
+            String newWidthStr = request.getParameter("new-width");
+            String newHeightStr = request.getParameter("new-height");
+                    
+            if(cropXStr != null || cropYStr != null || cropWidthStr != null 
+               ||  cropHeightStr != null ||  newWidthStr != null || newHeightStr != null) {
+               int cropX = Integer.parseInt(cropXStr);
+               int cropY = Integer.parseInt(cropYStr);
+               int cropWidth = Integer.parseInt(cropWidthStr);
+               int cropHeight = Integer.parseInt(cropHeightStr);
+               int newWidth = Integer.parseInt(newWidthStr);
+               int newHeight = Integer.parseInt(newHeightStr); 
+               command.setCropX(cropX);
+               command.setCropY(cropY);
+               command.setCropWidth(cropWidth );
+               command.setCropHeight(cropHeight);
+               command.setNewWidth(newWidth);
+               command.setNewHeight(newHeight);
             }
 
             Resource resource = command.getResource();

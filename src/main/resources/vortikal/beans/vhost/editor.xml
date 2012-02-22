@@ -108,27 +108,6 @@
     <property name="handler" ref="editor.imageEditHandler" />
   </bean>
 
-  <bean id="editor.saveImageService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="editor.imageEditService" />
-    <property name="order" value="-99999" />
-    <property name="assertions">
-      <list>
-        <ref bean="manage.postRequestAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="edit-action" />
-          <property name="parameterValue" value="save-image" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="editor.saveImageHandler" />
-  </bean>
-  
-  <bean id="editor.saveImageHandler" class="org.vortikal.web.actions.SaveImageController">
-    <property name="viewName" value="redirectToManage" />
-    <property name="imageService"><bean class="org.vortikal.graphics.ImageServiceImpl" /></property>
-  </bean>
-
-
   <bean id="editor.loadImageService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="editor.imageEditService" />
     <property name="order" value="-99999" />
@@ -414,7 +393,17 @@
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
     <property name="loadImageService" ref="editor.loadImageService" />
-    <property name="saveImageService" ref="editor.saveImageService" />
+    <property name="editImageService" ref="editor.imageEditService" />
+    <property name="saveImageHelper" ref="saveImageHelper" />
+    <property name="copyHelper" ref="copyHelperImageEdit" />
+  </bean>
+  
+  <bean id="copyHelperImageEdit" class="org.vortikal.web.actions.copymove.CopyHelper">
+    <property name="copyThenStoreAction" ref="copy.copyThenStoreAction" />
+  </bean>
+  
+  <bean id="saveImageHelper" class="org.vortikal.web.actions.SaveImageHelper">
+    <property name="imageService"><bean class="org.vortikal.graphics.ImageServiceImpl" /></property>
   </bean>
 
   <bean id="editor.videoEditHandler" class="org.vortikal.edit.editor.ResourceEditController">

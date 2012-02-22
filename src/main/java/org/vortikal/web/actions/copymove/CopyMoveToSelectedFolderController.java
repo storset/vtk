@@ -120,7 +120,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
 
                 } else {
                     Path destUri = newResourceUri;
-                    this.copyHelper.copyResource(uri, destUri, repository, token);
+                    this.copyHelper.copyResource(uri, destUri, repository, token, null, null);
                     
                 }
             } catch (AuthorizationException e) {

@@ -30,6 +30,7 @@
  */
 package org.vortikal.edit.editor;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,13 +43,17 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.view.RedirectView;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.actions.SaveImageHelper;
+import org.vortikal.web.actions.copymove.CopyHelper;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 import org.vortikal.web.service.URL;
@@ -57,19 +62,11 @@ public class ResourceEditController extends SimpleFormController {
 
     private List<Service> tooltipServices;
     private Service loadImageService;
-    private Service saveImageService;
+    private Service editImageService;
+    private SaveImageHelper saveImageHelper;
     private ResourceWrapperManager resourceManager;
     private Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyEditPreprocessors;
-
-
-    public void setLoadImageService(Service loadImageService) {
-        this.loadImageService = loadImageService;
-    }
-
-    public void setSaveImageService(Service saveImageService) {
-        this.saveImageService = saveImageService;
-    }
-
+    private CopyHelper copyHelper;
 
     public ResourceEditController() {
         super();
@@ -95,13 +92,34 @@ public class ResourceEditController extends SimpleFormController {
             model = addImageEditorServices(model, resource, principal);
             return new ModelAndView(getFormView(), model);
         }
+ 
+        if(wrapper.isSaveCopy() && this.editImageService != null && this.copyHelper != null && this.saveImageHelper != null) {
+            this.resourceManager.unlock();
+            Repository repository = requestContext.getRepository();
+            String token = requestContext.getSecurityToken();               
+            InputStream is = saveImageHelper.saveImage(resource, repository, token, resource.getURI(),
+                                                       wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(),
+                                                       wrapper.getCropHeight(), wrapper.getNewWidth(), wrapper.getNewHeight());
+            Path destUri = this.copyHelper.copyResource(resource.getURI(), resource.getURI(), repository, token, wrapper.getResource(), is);
+            URL editServiceUrl = editImageService.constructURL(destUri);
+            return new ModelAndView(new RedirectView(editServiceUrl.toString()));
+        }
 
         if (!wrapper.isSave()) {
-            resourceManager.unlock();
+            this.resourceManager.unlock();
             return new ModelAndView(getSuccessView(), new HashMap<String, Object>());
         }
 
-        resourceManager.store(wrapper);
+        this.resourceManager.store(wrapper);
+        
+        if(this.copyHelper != null && this.saveImageHelper != null) {
+            Repository repository = requestContext.getRepository();
+            String token = requestContext.getSecurityToken(); 
+            InputStream is = saveImageHelper.saveImage(resource, repository, token, resource.getURI(),
+                    wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(),
+                    wrapper.getCropHeight(), wrapper.getNewWidth(), wrapper.getNewHeight());
+            repository.storeContent(token, wrapper.getURI(), is);  
+        }
 
         if (!wrapper.isView()) {
             Map<String, Object> model = new HashMap<String, Object>();
@@ -111,7 +129,7 @@ public class ResourceEditController extends SimpleFormController {
             return new ModelAndView(getFormView(), model);
         }
 
-        resourceManager.unlock();
+        this.resourceManager.unlock();
         return super.onSubmit(command);
     }
 
@@ -180,10 +198,6 @@ public class ResourceEditController extends SimpleFormController {
     
     private Map<String, Object>  addImageEditorServices(Map<String, Object>  model, Resource resource, Principal principal) {
       // XXX:
-      if (this.saveImageService != null) {
-        URL saveImageURL = this.saveImageService.constructURL(resource, principal);
-        model.put("saveImageURL", saveImageURL);
-      }
       if (this.loadImageService != null) {
         URL imageSourceURL = this.loadImageService.constructURL(resource, principal);
         model.put("imageURL", imageSourceURL);
@@ -191,12 +205,26 @@ public class ResourceEditController extends SimpleFormController {
       return model;
     }
 
+    public void setLoadImageService(Service loadImageService) {
+        this.loadImageService = loadImageService;
+    }
+    
+    public void setEditImageService(Service editImageService) {
+        this.editImageService = editImageService;
+    }
+    
+    public void setSaveImageHelper(SaveImageHelper saveImageHelper) {
+        this.saveImageHelper = saveImageHelper;
+    }
+
+    public void setCopyHelper(CopyHelper copyHelper) {
+        this.copyHelper = copyHelper;
+    }
 
     @Required
     public void setResourceManager(ResourceWrapperManager resourceManager) {
         this.resourceManager = resourceManager;
     }
-
 
     public void setPropertyEditPreprocessors(
             Map<PropertyTypeDefinition, PropertyEditPreprocessor> propertyEditPreprocessors) {

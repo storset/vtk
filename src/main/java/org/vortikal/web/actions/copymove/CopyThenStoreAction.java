@@ -37,6 +37,8 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
+import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.web.RequestContext;
 
 /**
@@ -50,13 +52,14 @@ public class CopyThenStoreAction {
         String token = requestContext.getSecurityToken(); 
         repository.copy(token, src.getURI(), copyUri, Depth.INF, false, true);
         // TODO: to many ops..
-        /*
         Resource newRsrc = repository.retrieve(token, copyUri, true);
         for (Property prop : src.getProperties()) {
-          newRsrc.addProperty(prop);
+          if(prop.getType().equals(Type.STRING) 
+          || prop.getType().equals(Type.HTML)) {
+            newRsrc.addProperty(prop);
+          }
         }
         repository.store(token, newRsrc);
-        */
         repository.storeContent(token, copyUri, stream);
     }
 }

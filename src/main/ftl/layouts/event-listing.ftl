@@ -11,12 +11,12 @@
     <div class="vrtx-event-component">
   </#if>
       <#if conf.eventsTitle><h2><a href="${conf.uri?html}">${eventsTitle?html}</a></h2></#if>
-      <#if psd?has_content>
+      <#if (conf.type = "psd") && psd?has_content>
         <#assign psdSize = psd?size />
         <#list psd as event>
           <@displayPsd event.ps event.date event.showTime event_index+1 psdSize />
         </#list>
-      <#elseif res?has_content>
+      <#elseif (conf.type = "res") && res?has_content>
         <#assign resSize = res.files?size />
         <#list res.files as event>
           <@displayRes event event_index+1 resSize />

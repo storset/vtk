@@ -37,7 +37,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.web.RequestContext;
 
@@ -55,7 +54,7 @@ public class CopyThenStoreAction {
         Resource newRsrc = repository.retrieve(token, copyUri, true);
         for (Property prop : src.getProperties()) { 
           if(prop.getType().equals(Type.STRING) 
-          || prop.getType().equals(Type.HTML)) {
+          || prop.getType().equals(Type.HTML)) { // Only copy new/updated text fields
             newRsrc.addProperty(prop);
           }
         }

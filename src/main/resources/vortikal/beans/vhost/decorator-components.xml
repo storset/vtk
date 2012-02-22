@@ -413,6 +413,7 @@
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="folder" />
     <property name="view" ref="decorating.collectionListingComponent.view" />
+    <property name="search" ref="decorating.collectionListingComponent.searchComponent" />
     <property name="description" value="Inserts a folder item list component on the page" />
     <property name="examples">
       <map>
@@ -425,6 +426,52 @@
 
   <bean id="decorating.collectionListingComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/collection-listing.ftl" />
+  </bean>
+
+  <bean id="decorating.collectionListingComponent.searchComponent" parent="collectionListing.baseSearchComponent">
+    <property name="name" value="decorating.collectionListingComponent.searchComponent" />
+    <property name="viewService" ref="webService" />
+    <property name="resourceManager" ref="resourceManager" />
+    <property name="listableProperties">
+      <list>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="lastModifiedPropDef" />
+          <property name="preventDisplayProperty" ref="collection.hideLastModifiedPropDef" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionPropDef" />
+          <property name="preventDisplayProperty" ref="collection.hideIntroductionPropDef" />
+        </bean>
+      </list>
+    </property>
+    <property name="queryBuilders">
+      <list>
+        <ref bean="collection.listingUriQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN file" />
+        </bean>
+      </list>
+    </property>
+    <property name="searchSorting" ref="decorating.collectionListingComponent.searchSorting" />
+    <property name="resourceTypeTree" ref="resourceTypeTree"/>
+  </bean>
+
+  <bean id="decorating.collectionListingComponent.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
+    <property name="sortPropDef" ref="collection.sortingPropDef" />
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>lastModified</value>
+      </list>
+    </property>
+    <property name="resourceTypeTree"  ref ="resourceTypeTree" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
+    <property name="sortOrderMapping">
+      <map>
+        <entry key="lastModified" value-ref="SORT_ORDER.DESC" />
+        <entry key="title" value-ref="SORT_ORDER.ASC" />
+        <entry key="name" value-ref="SORT_ORDER.ASC" />
+      </map>
+    </property>
   </bean>
 
   <bean id="decorating.feedComponent" class="org.vortikal.web.decorating.components.FeedComponent">

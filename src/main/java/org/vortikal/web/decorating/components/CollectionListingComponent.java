@@ -34,10 +34,20 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.SearchComponent;
 
 public class CollectionListingComponent extends ViewRenderingDecoratorComponent {
+
+    private SearchComponent search;
 
     private final static String PARAMETER_URI = "uri";
     private final static String PARAMETER_URI_DESCRIPTION = "Uri to the folder. This is a required parameter";
@@ -56,20 +66,41 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         String uri = request.getStringParameter(PARAMETER_URI);
         if (uri == null)
             throw new DecoratorComponentException("Component parameter 'uri' is required");
-        conf.put("uri", uri);
+
+        Repository r = RequestContext.getRequestContext().getRepository();
+        String token = SecurityContext.getSecurityContext().getToken();
+
+        Resource collection;
+        try {
+            collection = r.retrieve(token, Path.fromString(uri), false);
+        } catch (Exception e) {
+            collection = null;
+        }
+
+        if (collection == null || !collection.isCollection())
+            throw new DecoratorComponentException(uri + " is not a folder");
 
         int maxItems = 10;
         try {
             if ((maxItems = Integer.parseInt(request.getStringParameter(PARAMETER_MAX_ITEMS))) <= 0)
                 maxItems = 10;
-        } catch (Exception e) {
+        } catch (Exception ignore) {
         }
-        conf.put("maxItems", maxItems);
 
-        conf.put("goToFolderLink", parameterHasValue(PARAMETER_GO_TO_FOLDER_LINK, "true", request));
+        boolean goToFolderLink;
+        if (goToFolderLink = parameterHasValue(PARAMETER_GO_TO_FOLDER_LINK, "true", request))
+            model.put("goToFolderLink", uri);
+        conf.put("goToFolderLink", goToFolderLink);
 
-        conf.put("folderTitle", parameterHasValue(PARAMETER_FOLDER_TITLE, "true", request));
+        boolean folderTitle;
+        if (folderTitle = parameterHasValue(PARAMETER_FOLDER_TITLE, "true", request))
+            model.put("folderTitle", collection.getTitle());
+        conf.put("folderTitle", folderTitle);
 
+        Listing l = search.execute(request.getServletRequest(), collection, 1, maxItems, 0);
+
+        model.put("list", l.getFiles());
+        model.put("link", l.getUrls());
         model.put("conf", conf);
     }
 
@@ -82,12 +113,17 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         return map;
     }
 
-    boolean parameterHasValue(String param, String includeParamValue, DecoratorRequest request) {
+    private boolean parameterHasValue(String param, String includeParamValue, DecoratorRequest request) {
         String itemDescriptionString = request.getStringParameter(param);
         if (itemDescriptionString != null && includeParamValue.equalsIgnoreCase(itemDescriptionString)) {
             return true;
         }
         return false;
+    }
+
+    @Required
+    public void setSearch(SearchComponent search) {
+        this.search = search;
     }
 
     protected String getDescriptionInternal() {

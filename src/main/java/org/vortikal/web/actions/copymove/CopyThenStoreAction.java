@@ -49,12 +49,14 @@ public class CopyThenStoreAction {
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken(); 
         repository.copy(token, src.getURI(), copyUri, Depth.INF, false, true);
-        // TODO: to many ops.. 
+        // TODO: to many ops..
+        /*
         Resource newRsrc = repository.retrieve(token, copyUri, true);
         for (Property prop : src.getProperties()) {
           newRsrc.addProperty(prop);
         }
         repository.store(token, newRsrc);
         repository.storeContent(token, copyUri, stream);
+        */
     }
 }

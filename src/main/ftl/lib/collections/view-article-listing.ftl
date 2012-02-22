@@ -107,7 +107,7 @@
       </#if>
     </#list>
     <#if listingView == "2columns+prio">
-      </div>>
+      </div>
     </#if>
     </div>
   </#if>

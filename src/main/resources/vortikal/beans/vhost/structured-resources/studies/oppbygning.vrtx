@@ -17,10 +17,12 @@ resourcetype oppbygning{
     group introImageAndCaption (picture, caption) (after introduction) vertical
   }
     
+
   view-components {
   
-       vis-fellestekst (uri){
+       vis-fellestekst (docType, propName){
         ##
+        [def uri "/vrtx/fellestekst/" + docType + "/" + propName + ".html"]
         [def f json-resource(uri)]
         [def key resource-prop-obj-val(".", "fellestekst")]
         <div>

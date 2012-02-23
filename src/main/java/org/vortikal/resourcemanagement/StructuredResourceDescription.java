@@ -239,6 +239,9 @@ public final class StructuredResourceDescription {
     }
 
     void validate() {
+        if(propertyDescriptions == null){
+            return;
+        }
         for (int i = 0; i < propertyDescriptions.size(); i++) {
             PropertyDescription d = propertyDescriptions.get(i);
 

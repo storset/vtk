@@ -167,16 +167,17 @@ public class StructuredResourceManager {
 
     private List<RepositoryAssertion> createAssertions(StructuredResourceDescription description) {
         List<RepositoryAssertion> assertions = new ArrayList<RepositoryAssertion>();
-        JSONObjectSelectAssertion typeElementAssertion = this.assertion.createAssertion("resourcetype", description
-                .getName());
+        JSONObjectSelectAssertion typeElementAssertion = this.assertion.createAssertion("resourcetype",
+                description.getName());
         assertions.add(typeElementAssertion);
-
-        for (PropertyDescription propDesc : description.getPropertyDescriptions()) {
-            if (propDesc instanceof SimplePropertyDescription) {
-                if (((SimplePropertyDescription) propDesc).isRequired()) {
-                    JSONObjectSelectAssertion propAssertion = this.assertion.createAssertion("properties."
-                            + propDesc.getName());
-                    assertions.add(propAssertion);
+        if (description.getPropertyDescriptions() != null) {
+            for (PropertyDescription propDesc : description.getPropertyDescriptions()) {
+                if (propDesc instanceof SimplePropertyDescription) {
+                    if (((SimplePropertyDescription) propDesc).isRequired()) {
+                        JSONObjectSelectAssertion propAssertion = this.assertion.createAssertion("properties."
+                                + propDesc.getName());
+                        assertions.add(propAssertion);
+                    }
                 }
             }
         }
@@ -186,11 +187,12 @@ public class StructuredResourceManager {
     private PropertyTypeDefinition[] createPropDefs(StructuredResourceDescription description) throws Exception {
         List<PropertyDescription> propertyDescriptions = description.getPropertyDescriptions();
         List<PropertyTypeDefinition> result = new ArrayList<PropertyTypeDefinition>();
-
-        for (PropertyDescription d : propertyDescriptions) {
-            PropertyTypeDefinition def = createPropDef(d, description);
-            if (def != null) {
-                result.add(def);
+        if (propertyDescriptions != null) {
+            for (PropertyDescription d : propertyDescriptions) {
+                PropertyTypeDefinition def = createPropDef(d, description);
+                if (def != null) {
+                    result.add(def);
+                }
             }
         }
         return result.toArray(new PropertyTypeDefinition[result.size()]);

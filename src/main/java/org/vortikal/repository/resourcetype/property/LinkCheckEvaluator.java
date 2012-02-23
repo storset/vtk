@@ -62,68 +62,6 @@ public class LinkCheckEvaluator implements LatePropertyEvaluator {
     private static final int MAX_BROKEN_LINKS = 100;
 
     
-    private static class Status {
-        private List<String> brokenLinks = new ArrayList<String>();
-        private int index = 0;
-        private Date timestamp = new Date();
-        private boolean complete = false;
-        
-        private Status() {}
-        
-        @SuppressWarnings("unchecked")
-        private static Status create(Property statusProp) {
-            Status s = new Status();
-            if (statusProp != null) {
-                try {
-                    Object o = JSONValue.parse(new InputStreamReader(statusProp.getBinaryStream().getStream()));
-                    JSONObject status = (JSONObject) o;
-                    if (status != null) {
-                        Object obj = status.get("status");
-                        if (obj != null) {
-                            s.complete = "COMPLETE".equals(obj.toString());
-                        }
-                        obj = status.get("brokenLinks");
-                        if (obj != null) {
-                            List<String> list = (List<String>) obj;
-                            for (String str: list) {
-                                s.brokenLinks.add(str);
-                            }
-                        }
-                        obj = status.get("index");
-                        if (obj != null) {
-                            s.index = Integer.parseInt(obj.toString());
-                        }
-                        obj = status.get("timestamp");
-                        if (obj != null) {
-                            long millis = Long.parseLong(obj.toString());
-                            s.timestamp = new Date(millis);
-                        }
-                    }
-                } catch (Throwable t) { }
-            }
-            return s;
-        }
-        
-        public void write(Property statusProp) throws Exception {
-            JSONObject obj = toJSONObject();
-            statusProp.setBinaryValue(obj.toJSONString().getBytes("utf-8"), "application/json");
-        }
-        
-        @SuppressWarnings("unchecked")
-        private JSONObject toJSONObject() {
-            JSONObject obj = new JSONObject();
-            obj.put("brokenLinks", this.brokenLinks);
-            obj.put("status", this.complete ? "COMPLETE" : "INCOMPLETE");
-            obj.put("timestamp", String.valueOf(this.timestamp.getTime()));
-            obj.put("index", String.valueOf(this.index));
-            return obj;
-        }
-        
-        @Override
-        public String toString() {
-            return toJSONObject().toJSONString();
-        }
-    }
 
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
@@ -132,7 +70,6 @@ public class LinkCheckEvaluator implements LatePropertyEvaluator {
         if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.SystemPropertiesChange) {
             return ctx.getOriginalResource().getProperty(property.getDefinition()) != null;
         }
-        
         Property linksProp = ctx.getNewResource().getPropertyByPrefix(null, "links");
         if (linksProp == null) {
             return false;
@@ -223,9 +160,6 @@ public class LinkCheckEvaluator implements LatePropertyEvaluator {
                 }
 
             });
-            if (status.brokenLinks.isEmpty()) {
-                return false;
-            }
             status.timestamp = ctx.getTime();
             status.write(property);
             return true;
@@ -256,4 +190,68 @@ public class LinkCheckEvaluator implements LatePropertyEvaluator {
 //    }
 //
 
+    private static class Status {
+        private List<String> brokenLinks = new ArrayList<String>();
+        private int index = 0;
+        private Date timestamp = new Date();
+        private boolean complete = false;
+        
+        private Status() {}
+        
+        @SuppressWarnings("unchecked")
+        private static Status create(Property statusProp) {
+            Status s = new Status();
+            if (statusProp != null) {
+                try {
+                    Object o = JSONValue.parse(new InputStreamReader(statusProp.getBinaryStream().getStream()));
+                    JSONObject status = (JSONObject) o;
+                    if (status != null) {
+                        Object obj = status.get("status");
+                        if (obj != null) {
+                            s.complete = "COMPLETE".equals(obj.toString());
+                        }
+                        obj = status.get("brokenLinks");
+                        if (obj != null) {
+                            List<String> list = (List<String>) obj;
+                            for (String str: list) {
+                                s.brokenLinks.add(str);
+                            }
+                        }
+                        obj = status.get("index");
+                        if (obj != null) {
+                            s.index = Integer.parseInt(obj.toString());
+                        }
+                        obj = status.get("timestamp");
+                        if (obj != null) {
+                            long millis = Long.parseLong(obj.toString());
+                            s.timestamp = new Date(millis);
+                        }
+                    }
+                } catch (Throwable t) { }
+            }
+            return s;
+        }
+        
+        public void write(Property statusProp) throws Exception {
+            JSONObject obj = toJSONObject();
+            statusProp.setBinaryValue(obj.toJSONString().getBytes("utf-8"), "application/json");
+        }
+        
+        @SuppressWarnings("unchecked")
+        private JSONObject toJSONObject() {
+            JSONObject obj = new JSONObject();
+            if (this.brokenLinks != null) {
+                obj.put("brokenLinks", this.brokenLinks);
+            }
+            obj.put("status", this.complete ? "COMPLETE" : "INCOMPLETE");
+            obj.put("timestamp", String.valueOf(this.timestamp.getTime()));
+            obj.put("index", String.valueOf(this.index));
+            return obj;
+        }
+        
+        @Override
+        public String toString() {
+            return toJSONObject().toJSONString();
+        }
+    }
 }

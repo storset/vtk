@@ -38,10 +38,16 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Acl;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.display.listing.ListingPagingLink;
@@ -57,6 +63,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
     protected PrincipalManager principalManager;
     protected PropertyTypeDefinition hideIcon;
 
+
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
             throws Exception {
@@ -66,11 +73,59 @@ public class CollectionListingController extends AbstractCollectionListingContro
         int totalHits = 0;
 
         List<Listing> results = new ArrayList<Listing>();
+
+        String[] msofficeDocsWritable = new String[1000];
+        
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = RequestContext.getRequestContext().getRepository();
+        String token = SecurityContext.getSecurityContext().getToken();
+        Principal principal = requestContext.getPrincipal();
+
+        int i = 0;
         for (SearchComponent component : this.searchComponents) {
             Listing listing = component.execute(request, collection, page, limit, 0);
             totalHits += listing.getTotalHits();
             // Add the listing to the results
             if (listing.getFiles().size() > 0) {
+                for (PropertySet ps : listing.getFiles()) {
+                    if (("doc").equals(ps.getResourceType()) 
+                     || ("xls").equals(ps.getResourceType())
+                     || ("ppt").equals(ps.getResourceType())) {
+                        String canWrite = "false";
+
+                        Resource resource = repository.retrieve(token, ps.getURI(), true);
+                        if(resource == null) { // Can't edit remote hosts
+                            msofficeDocsWritable[i] = canWrite;
+                            i++;
+                            continue;
+                        }
+                        Acl acl = resource.getAcl();
+                        Principal[] allPrincipalGroups = acl.listPrivilegedGroups(Privilege.ALL);
+                        Principal[] readWritePrincipalGroups = acl.listPrivilegedGroups(Privilege.READ_WRITE);
+                        for (Principal allPrincipalGroup : allPrincipalGroups) {
+                            if (this.principalManager.isMember(principal, allPrincipalGroup)) {
+                                canWrite = "true";
+                                break;
+                            }
+                        }
+                        if (canWrite.equals("false")) {
+                            for (Principal readWritePrincipalGroup : readWritePrincipalGroups) {
+                                if (this.principalManager.isMember(principal, readWritePrincipalGroup)) {
+                                    canWrite = "true";
+                                    break;
+                                }
+                            }
+                        }
+                        if (acl.hasPrivilege(Privilege.ALL, principal)
+                         || acl.hasPrivilege(Privilege.READ_WRITE, principal)) {
+                            canWrite = "true";
+                        }
+                        msofficeDocsWritable[i] = canWrite;
+                    } else {
+                        msofficeDocsWritable[i] = "false";
+                    }
+                    i++;
+                }
                 results.add(listing);
             }
             // Check previous result (by redoing the previous search),
@@ -94,10 +149,12 @@ public class CollectionListingController extends AbstractCollectionListingContro
 
         }
         Service service = RequestContext.getRequestContext().getService();
-        URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI()); 
+        URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
+
+        model.put("msofficeDocsWritable", msofficeDocsWritable);
         
-        if(getHideIcon(collection)){
-            model.put("hideIcon", true);    
+        if (getHideIcon(collection)) {
+            model.put("hideIcon", true);
         }
 
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL, page);
@@ -109,6 +166,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
         }
     }
 
+
     protected Map<String, Integer> getNumberOfRecords(int page, int pageLimit, int resultSize) {
         Map<String, Integer> numbers = new HashMap<String, Integer>();
         int numberShownElements = ((page - 1) * pageLimit) + 1;
@@ -117,9 +175,11 @@ public class CollectionListingController extends AbstractCollectionListingContro
         numbers.put("elementsIncludingThisPage", includingThisPage);
         return numbers;
     }
-    
+
+
     protected boolean getHideIcon(Resource collection) {
-        if(this.hideIcon == null) return false;
+        if (this.hideIcon == null)
+            return false;
         Property p = collection.getProperty(this.hideIcon);
         if (p == null) {
             return false;
@@ -127,21 +187,25 @@ public class CollectionListingController extends AbstractCollectionListingContro
         return p.getBooleanValue();
     }
 
+
     @Required
     public void setSearchComponents(List<SearchComponent> searchComponents) {
         this.searchComponents = searchComponents;
     }
-    
+
+
     @Required
     public void setWebdavService(Service webdavService) {
         this.webdavService = webdavService;
     }
 
+
     @Required
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
-    }   
-    
+    }
+
+
     @Required
     public void setHideIcon(PropertyTypeDefinition hideIcon) {
         this.hideIcon = hideIcon;

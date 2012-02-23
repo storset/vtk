@@ -49,7 +49,9 @@
 		  </#if>
           <a class="vrtx-title" href="${uri?html}">${title?html}</a>
           <#if (r.resourceType == "doc" || r.resourceType == "xls" || r.resourceType == "ppt")>
-            <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="report.collection-structure.edit" /></a>
+            <#if msofficeDocsWritable[r_index] = "true">
+              <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="report.collection-structure.edit" /></a>
+            </#if>
           </#if>
 		</div>
 

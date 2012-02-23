@@ -215,8 +215,12 @@ public class HtmlUtil {
             }
             if (URL.isRelativeURL(val)) {
                 if (base.getHost().equals(requestURL.getHost())) {
-                    URL url = this.base.relativeURL(val);
-                    attr.setValue(escapeHtmlString(url.getPathRepresentation()));
+                    try {
+                        URL url = this.base.relativeURL(val);
+                        attr.setValue(escapeHtmlString(url.getPathRepresentation()));
+                    } catch (Exception e) {
+                        return;
+                    }
                 } else {
                     try {
                         Path path = Path.fromString(val);

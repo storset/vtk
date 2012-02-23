@@ -42,7 +42,6 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
-import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 
 public class CollectionListingComponent extends ViewRenderingDecoratorComponent {
@@ -57,6 +56,8 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
     private final static String PARAMETER_GO_TO_FOLDER_LINK_DESCRIPTION = "Set to 'true' to show 'Go to folder' link. Default is false";
     private final static String PARAMETER_FOLDER_TITLE = "folder-title";
     private final static String PARAMETER_FOLDER_TITLE_DESCRIPTION = "Set to 'true' to show folder title. Default is false";
+    private final static String PARAMETER_COMPACT_VIEW = "compact-view";
+    private final static String PARAMETER_COMPACT_VIEW_DESCRIPTION = "Set to 'true' to show compact view. Default is false";
 
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -87,20 +88,19 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         } catch (Exception ignore) {
         }
 
-        boolean goToFolderLink;
-        if (goToFolderLink = parameterHasValue(PARAMETER_GO_TO_FOLDER_LINK, "true", request))
+        boolean goToFolderLink, folderTitle = parameterHasValue(PARAMETER_FOLDER_TITLE, "true", request);
+        if (goToFolderLink = parameterHasValue(PARAMETER_GO_TO_FOLDER_LINK, "true", request)) {
             model.put("goToFolderLink", uri);
-        conf.put("goToFolderLink", goToFolderLink);
-
-        boolean folderTitle;
-        if (folderTitle = parameterHasValue(PARAMETER_FOLDER_TITLE, "true", request))
             model.put("folderTitle", collection.getTitle());
+        } else if (folderTitle)
+            model.put("folderTitle", collection.getTitle());
+
+        conf.put("goToFolderLink", goToFolderLink);
         conf.put("folderTitle", folderTitle);
 
-        Listing l = search.execute(request.getServletRequest(), collection, 1, maxItems, 0);
+        conf.put("compactView", parameterHasValue(PARAMETER_COMPACT_VIEW, "true", request));
 
-        model.put("list", l.getFiles());
-        model.put("link", l.getUrls());
+        model.put("list", search.execute(request.getServletRequest(), collection, 1, maxItems, 0).getFiles());
         model.put("conf", conf);
     }
 
@@ -110,6 +110,7 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         map.put(PARAMETER_MAX_ITEMS, PARAMETER_MAX_ITEMS_DESCRIPTION);
         map.put(PARAMETER_GO_TO_FOLDER_LINK, PARAMETER_GO_TO_FOLDER_LINK_DESCRIPTION);
         map.put(PARAMETER_FOLDER_TITLE, PARAMETER_FOLDER_TITLE_DESCRIPTION);
+        map.put(PARAMETER_COMPACT_VIEW, PARAMETER_COMPACT_VIEW_DESCRIPTION);
         return map;
     }
 

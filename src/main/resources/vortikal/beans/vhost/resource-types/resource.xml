@@ -347,6 +347,7 @@
   </bean>
 
   <bean id="linkStatusEvaluator" class="org.vortikal.repository.resourcetype.property.LinkStatusEvaluator">
+    <property name="linksPropDef" ref="linksPropDef" />
     <property name="linkCheckPropDef" ref="linkCheckPropDef" />
   </bean>
   

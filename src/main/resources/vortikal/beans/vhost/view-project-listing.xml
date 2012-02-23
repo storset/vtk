@@ -56,9 +56,9 @@
 
   <bean id="projectListing.searchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="projectListing.defaultListing" />
+    <property name="listingUriQueryBuilder" ref="collection.defaultRecursiveListingUriQueryBuilder" />
     <property name="queryBuilders">
       <list>
-        <ref bean="projectListing.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="(type IN structured-project) AND (resource:status-ongoing = true)" />
         </bean>
@@ -68,18 +68,14 @@
 
   <bean id="projectListing.viewCompletedProjectsSearchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="projectListing.defaultListing" />
+    <property name="listingUriQueryBuilder" ref="collection.defaultRecursiveListingUriQueryBuilder" />
     <property name="queryBuilders">
       <list>
-        <ref bean="projectListing.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="(type IN structured-project) AND (resource:status-ongoing = false)" />
         </bean>
       </list>
     </property>
-  </bean>
-
-  <bean id="projectListing.listingUriQueryBuilder" parent="collection.listingUriQueryBuilder">
-    <property name="defaultRecursive" value="true" />
   </bean>
 
   <bean id="projectListing.viewResolver" parent="decoratorViewResolver">

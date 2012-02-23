@@ -254,4 +254,7 @@
     <property name="trim" value="true" />
   </bean>
 
+  <!-- ## Will search across multiple hosts when configured to do so ## -->
+  <bean id="multiHostSearcher" class="org.vortikal.repository.MultiHostSearcher" />
+
 </beans>

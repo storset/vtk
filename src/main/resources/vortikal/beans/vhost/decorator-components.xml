@@ -428,32 +428,9 @@
     <property name="url" value="layouts/collection-listing.ftl" />
   </bean>
 
-  <bean id="decorating.collectionListingComponent.searchComponent" parent="collectionListing.baseSearchComponent">
+  <bean id="decorating.collectionListingComponent.searchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="decorating.collectionListingComponent.searchComponent" />
-    <property name="viewService" ref="webService" />
-    <property name="resourceManager" ref="resourceManager" />
-    <property name="listableProperties">
-      <list>
-        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
-          <property name="displayProperty" ref="lastModifiedPropDef" />
-          <property name="preventDisplayProperty" ref="collection.hideLastModifiedPropDef" />
-        </bean>
-        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
-          <property name="displayProperty" ref="introductionPropDef" />
-          <property name="preventDisplayProperty" ref="collection.hideIntroductionPropDef" />
-        </bean>
-      </list>
-    </property>
-    <property name="queryBuilders">
-      <list>
-        <ref bean="collection.listingUriQueryBuilder" />
-        <bean parent="queryStringParser">
-          <property name="queryString" value="type IN file" />
-        </bean>
-      </list>
-    </property>
     <property name="searchSorting" ref="decorating.collectionListingComponent.searchSorting" />
-    <property name="resourceTypeTree" ref="resourceTypeTree"/>
   </bean>
 
   <bean id="decorating.collectionListingComponent.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">

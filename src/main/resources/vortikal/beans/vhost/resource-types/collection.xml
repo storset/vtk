@@ -148,11 +148,15 @@
     </property>
   </bean>
 
-  <bean id="aggregationResolver" class="org.vortikal.web.display.collection.aggregation.CollectionListingAggregationResolver">
-    <property name="aggregationPropDef" ref="aggregationPropDef" />
-    <property name="displayAggregationPropDef" ref="displayAggregationPropDef" />
+  <bean id="aggregationResolver" class="org.vortikal.web.display.collection.aggregation.CollectionListingAggregationResolver"
+    parent="repositoryAware">
+    <property name="multiHostSearcher" ref="multiHostSearcher" />
     <property name="limit" value="${aggregation.limit}" />
     <property name="maxRecursiveDepth" value="${aggregation.maxRecursiveDepth}" />
+    <property name="displayAggregationPropDef" ref="displayAggregationPropDef" />
+    <property name="aggregationPropDef" ref="aggregationPropDef" />
+    <property name="displayManuallyApprovedPropDef" ref="displayManuallyApprovedPropDef" />
+    <property name="manuallyApprovedPropDef" ref="manuallyApprovedResourcesPropDef" />
   </bean>
 
   <bean id="navigationTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">

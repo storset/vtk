@@ -30,30 +30,41 @@
  */
 package org.vortikal.web.display.collection.aggregation;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.MultiHostSearcher;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.URL;
 
 public class CollectionListingAggregationResolver implements AggregationResolver {
 
     private static Log logger = LogFactory.getLog(CollectionListingAggregationResolver.class);
 
-    private PropertyTypeDefinition aggregationPropDef;
-    private PropertyTypeDefinition displayAggregationPropDef;
-
     public final static int DEFAULT_LIMIT = 5;
     public final static int DEFAULT_RECURSIVE_DEPTH = 2;
+
+    private Repository repository;
+    private MultiHostSearcher multiHostSearcher;
+    private PropertyTypeDefinition displayAggregationPropDef;
+    private PropertyTypeDefinition aggregationPropDef;
+    private PropertyTypeDefinition displayManuallyApprovedPropDef;
+    private PropertyTypeDefinition manuallyApprovedPropDef;
 
     /**
      * Limit the number of folders to aggregate from
@@ -67,92 +78,207 @@ public class CollectionListingAggregationResolver implements AggregationResolver
     private int maxRecursiveDepth = DEFAULT_RECURSIVE_DEPTH;
 
     @Override
-    public List<Path> getAggregationPaths(Path pathToResource) {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        Resource resource = getResource(requestContext, pathToResource);
-        if (resource == null) {
-            return null;
-        }
-        List<Path> paths = new ArrayList<Path>();
-        getAggregationPaths(paths, pathToResource, resource, requestContext, 0);
-        return paths;
-    }
+    public CollectionListingAggregatedResources getAggregatedResources(URL url) {
 
-    private void getAggregationPaths(List<Path> paths, Path startingPath, Resource collection,
-            RequestContext requestContext, int depth) {
-        List<Path> addedPaths = addToPaths(collection, paths, startingPath);
-        if (depth < this.maxRecursiveDepth) {
-            depth += 1;
-            for (Path path : addedPaths) {
-                Resource resource = getResource(requestContext, path);
-                if (resource == null) {
-                    paths.remove(path);
-                    continue;
-                }
-                getAggregationPaths(paths, startingPath, resource, requestContext, depth);
+        PropertySet collection = null;
+        URL currentURL = this.getLocalHostUrl();
+        String token = SecurityContext.getSecurityContext().getToken();
+        if (url.getHost().equals(currentURL.getHost())) {
+            Path path = url.getPath();
+            try {
+                collection = this.repository.retrieve(token, path, false);
+            } catch (Exception e) {
+                // Ignore
             }
         } else {
-            for (Path path : addedPaths) {
-                Resource resource = getResource(requestContext, path);
-                if (resource == null) {
-                    paths.remove(path);
-                    continue;
+            collection = this.multiHostSearcher.retrieve(token, url);
+        }
+
+        if (collection == null) {
+            return null;
+        }
+
+        return this.getAggregatedResources(collection);
+    }
+
+    @Override
+    public CollectionListingAggregatedResources getAggregatedResources(PropertySet collection) {
+
+        Map<URL, Set<Path>> aggregationSet = new HashMap<URL, Set<Path>>();
+        Set<URL> manuallyApprovedSet = new HashSet<URL>();
+
+        URL currentURL = this.resolveCurrentURL(collection);
+        this.resolveAggregatedResources(aggregationSet, manuallyApprovedSet, collection, currentURL, 0);
+        CollectionListingAggregatedResources clar = new CollectionListingAggregatedResources(aggregationSet,
+                manuallyApprovedSet);
+
+        return clar;
+    }
+
+    private void resolveAggregatedResources(Map<URL, Set<Path>> aggregationSet, Set<URL> manuallyApprovedSet,
+            PropertySet resource, URL currentURL, int depth) {
+        if (this.isDisplayManuallyApproved(resource)) {
+            Property manuallyApprovedProp = resource.getProperty(this.manuallyApprovedPropDef);
+            if (manuallyApprovedProp != null) {
+                Value[] values = manuallyApprovedProp.getValues();
+                for (Value manApp : values) {
+                    manuallyApprovedSet.add(URL.parse(manApp.getStringValue()));
                 }
+            }
+        }
+        Set<PropertySet> set = this.resolveAggregation(resource, aggregationSet, manuallyApprovedSet, currentURL);
+        if (depth < this.maxRecursiveDepth) {
+            depth += 1;
+            for (PropertySet ps : set) {
+                currentURL = this.resolveCurrentURL(ps);
+                this.resolveAggregatedResources(aggregationSet, manuallyApprovedSet, ps, currentURL, depth);
             }
         }
     }
 
-    private Resource getResource(RequestContext requestContext, Path path) {
-        Repository repository = requestContext.getRepository();
-        String token = requestContext.getSecurityToken();
+    private Set<PropertySet> resolveAggregation(PropertySet resource, Map<URL, Set<Path>> aggregationSet,
+            Set<URL> manuallyApprovedSet, URL currentURL) {
+        Set<PropertySet> set = new HashSet<PropertySet>();
+        if (this.isDisplayAggregation(resource)) {
+            Property aggregationProp = resource.getProperty(this.aggregationPropDef);
+            if (aggregationProp != null) {
+                Value[] values = aggregationProp.getValues();
+                int aggregationLimit = values.length > this.limit ? this.limit : values.length;
+                for (int i = 0; i < aggregationLimit; i++) {
+                    String aggStr = values[i].getStringValue();
+                    if (!currentURL.equals(this.getLocalHostUrl()) && this.isSimplePath(aggStr)) {
+                        aggStr = currentURL.toString().concat(aggStr);
+                    }
+                    URL hostURL = currentURL;
+                    PropertySet res = this.getResource(aggStr);
+                    if (res != null) {
+                        set.add(res);
+                        URL url = this.resolveAsUrl(aggStr);
+                        if (url != null) {
+                            hostURL = url.relativeURL("/");
+                        }
+                        Path path = null;
+                        if (url != null) {
+                            path = url.getPath();
+                        } else {
+                            path = Path.fromString(aggStr);
+                        }
+                        Set<Path> paths = aggregationSet.get(hostURL);
+                        if (paths != null) {
+                            paths.add(path);
+                        } else {
+                            Set<Path> pathSet = new HashSet<Path>();
+                            pathSet.add(path);
+                            aggregationSet.put(hostURL, pathSet);
+                        }
+                    }
+                }
+            }
+        }
+        return set;
+    }
+
+    private boolean isSimplePath(String aggStr) {
         try {
-            Resource resource = repository.retrieve(token, path, false);
-            if (!resource.isCollection()) {
+            Path.fromString(aggStr);
+            return true;
+        } catch (IllegalArgumentException iae) {
+            return false;
+        }
+    }
+
+    private boolean isDisplayAggregation(PropertySet resource) {
+        Property displayAggregationProp = resource.getProperty(this.displayAggregationPropDef);
+        return displayAggregationProp != null && displayAggregationProp.getBooleanValue();
+    }
+
+    private boolean isDisplayManuallyApproved(PropertySet resource) {
+        Property displayManuallyApprovedProp = resource.getProperty(this.displayManuallyApprovedPropDef);
+        return displayManuallyApprovedProp != null && displayManuallyApprovedProp.getBooleanValue();
+    }
+
+    private PropertySet getResource(String pathOrUrl) {
+        String token = RequestContext.getRequestContext().getSecurityToken();
+        try {
+
+            PropertySet resource = null;
+            if (this.isLocalPath(pathOrUrl)) {
+                resource = this.repository.retrieve(token, Path.fromString(pathOrUrl), false);
+            } else if (this.multiHostSearcher.isMultiHosSearchEnabled()) {
+                URL url = this.resolveAsUrl(pathOrUrl);
+                if (url != null) {
+                    resource = multiHostSearcher.retrieve(token, url);
+                }
+            }
+
+            if (resource == null) {
                 return null;
             }
             return resource;
         } catch (ResourceNotFoundException rnfe) {
             // resource doesn'n exist, ignore
         } catch (Exception e) {
-            logger.warn("An error occured while resolving recursive aggregation for path '" + path + "': "
-                    + e.getMessage());
+            // Ignore
         }
         return null;
     }
 
-    private List<Path> addToPaths(Resource collection, List<Path> paths, Path startingPath) {
-        if (!paths.contains(collection.getURI()) && !collection.getURI().equals(startingPath)) {
-            paths.add(collection.getURI());
-        }
-        List<Path> addedPaths = new ArrayList<Path>();
-        Property displayAggregationProp = collection.getProperty(this.displayAggregationPropDef);
-        if (displayAggregationProp != null && displayAggregationProp.getBooleanValue()) {
-            Property aggregationProp = collection.getProperty(this.aggregationPropDef);
-            if (aggregationProp != null) {
-                Value[] values = aggregationProp.getValues();
-                int aggregationLimit = values.length > this.limit ? this.limit : values.length;
-                for (int i = 0; i < aggregationLimit; i++) {
-                    Path path = getValidPath(values[i].getStringValue());
-                    if (path != null && !paths.contains(path) && !path.equals(startingPath)) {
-                        paths.add(path);
-                        addedPaths.add(path);
-                    }
-                }
-            }
-        }
-        return addedPaths;
-    }
-
-    private Path getValidPath(String pathValue) {
+    private URL resolveAsUrl(String pathOrUrl) {
         try {
-            if (!"/".equals(pathValue) && pathValue.endsWith("/")) {
-                pathValue = pathValue.substring(0, pathValue.length() - 1);
-            }
-            return Path.fromString(pathValue);
-        } catch (IllegalArgumentException e) {
-            // Don't do anything, the path is invalid, just ignore it
+            return URL.parse(pathOrUrl);
+        } catch (Exception e) {
+            return null;
         }
-        return null;
+    }
+
+    private boolean isLocalPath(String pathOrUrl) {
+        try {
+            Path.fromString(pathOrUrl);
+        } catch (IllegalArgumentException iae) {
+            return false;
+        }
+        return true;
+    }
+
+    private URL resolveCurrentURL(PropertySet collection) {
+        URL currentURL = null;
+        Property solrUrlProp = collection.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearcher.URL_PROP_NAME);
+        if (solrUrlProp != null) {
+            currentURL = URL.parse(solrUrlProp.getStringValue()).relativeURL("/");
+        } else {
+            currentURL = this.getLocalHostUrl();
+        }
+        return currentURL;
+    }
+
+    private URL getLocalHostUrl() {
+        return RequestContext.getRequestContext().getRequestURL().relativeURL("/");
+    }
+
+    @Override
+    public Set<Path> getAggregationPaths(Path pathToResource) {
+        String token = RequestContext.getRequestContext().getSecurityToken();
+        try {
+            Resource collection = this.repository.retrieve(token, pathToResource, false);
+            CollectionListingAggregatedResources clar = this.getAggregatedResources(collection);
+            Map<URL, Set<Path>> aggregatedSet = clar.getAggregationSet();
+            if (aggregatedSet != null) {
+                return aggregatedSet.get(this.getLocalHostUrl());
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    @Required
+    public void setMultiHostSearcher(MultiHostSearcher multiHostSearcher) {
+        this.multiHostSearcher = multiHostSearcher;
     }
 
     @Required
@@ -163,6 +289,16 @@ public class CollectionListingAggregationResolver implements AggregationResolver
     @Required
     public void setDisplayAggregationPropDef(PropertyTypeDefinition displayAggregationPropDef) {
         this.displayAggregationPropDef = displayAggregationPropDef;
+    }
+
+    @Required
+    public void setDisplayManuallyApprovedPropDef(PropertyTypeDefinition displayManuallyApprovedPropDef) {
+        this.displayManuallyApprovedPropDef = displayManuallyApprovedPropDef;
+    }
+
+    @Required
+    public void setManuallyApprovedPropDef(PropertyTypeDefinition manuallyApprovedPropDef) {
+        this.manuallyApprovedPropDef = manuallyApprovedPropDef;
     }
 
     public void setLimit(int limit) {

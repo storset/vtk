@@ -33,17 +33,19 @@ package org.vortikal.web.service.manuallyapprove;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.vortikal.web.service.URL;
+
 public class ManuallyApproveResource {
 
     private String title;
-    private String uri;
+    private URL url;
     private String source;
     private Date publishDate;
     private boolean approved;
 
-    public ManuallyApproveResource(String title, String uri, String source, Date publishDate, boolean approved) {
+    public ManuallyApproveResource(String title, URL url, String source, Date publishDate, boolean approved) {
         this.title = title;
-        this.uri = uri;
+        this.url = url;
         this.source = source;
         this.publishDate = publishDate;
         this.approved = approved;
@@ -53,8 +55,8 @@ public class ManuallyApproveResource {
         return title;
     }
 
-    public String getUri() {
-        return uri;
+    public URL getUrl() {
+        return url;
     }
 
     public String getSource() {
@@ -80,7 +82,7 @@ public class ManuallyApproveResource {
 
     @Override
     public String toString() {
-        return this.uri;
+        return this.url.toString();
     }
 
     @Override
@@ -89,7 +91,7 @@ public class ManuallyApproveResource {
             return false;
         }
         ManuallyApproveResource otherManuallyApproveResource = (ManuallyApproveResource) other;
-        if (this.toString().equals(otherManuallyApproveResource.toString())) {
+        if (this.url.equals(otherManuallyApproveResource.getUrl())) {
             return true;
         }
         return false;

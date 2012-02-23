@@ -28,43 +28,49 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.search;
+package org.vortikal.repository;
 
-import org.vortikal.repository.Resource;
+import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
+import org.vortikal.web.search.CollectionListingConditions;
+import org.vortikal.web.service.URL;
 
-public interface MultiHostSearch {
+public class MultiHostSearcher {
 
     public static final String URL_PROP_NAME = "solr.url";
     public static final String LANG_PROP_NAME = "solr.lang";
     public static final String MULTIHOST_RESOURCE_PROP_NAME = "solr.isSolrResource";
     public static final String NAME_PROP_NAME = "solr.name";
 
-    public static enum Type {
-        // The simplest of all searches. Just map a supplied original search to
-        // multi host search and execute
-        SIMPE_SEARCH,
-        // Resource listing search, map an original search to multi host search,
-        // including aggregation and manually approved resources
-        RESOURCE_LISTING_SEARCH,
-        // Search for resources on a host under a given prefix
-        URI_PREFIX_SEARCH,
-        // Search for specific resource types on a given host
-        RESOURCE_TYPE_SEARCH
+    private MultiHostSearchComponent multiHostSearchComponent;
+
+    public ResultSet search(String token, Search search) {
+        if (this.multiHostSearchComponent != null) {
+            return this.multiHostSearchComponent.search(token, search);
+        }
+        return null;
     }
 
-    public String getName();
+    public PropertySet retrieve(String token, URL url) {
+        if (this.multiHostSearchComponent != null) {
+            return this.multiHostSearchComponent.retrieve(token, url);
+        }
+        return null;
+    }
 
-    public String getToken();
+    public ResultSet collectionListing(CollectionListingConditions clc) {
+        if (this.multiHostSearchComponent != null) {
+            return this.multiHostSearchComponent.collectionListing(clc);
+        }
+        return null;
+    }
 
-    public Search getOriginalSearch();
+    public boolean isMultiHosSearchEnabled() {
+        return this.multiHostSearchComponent != null;
+    }
 
-    public Type getType();
-
-    public Resource getOriginalResource();
-
-    public String getUri();
-
-    public String getResourceType();
+    public void setMultiHostSearchComponent(MultiHostSearchComponent multiHostSearchComponent) {
+        this.multiHostSearchComponent = multiHostSearchComponent;
+    }
 
 }

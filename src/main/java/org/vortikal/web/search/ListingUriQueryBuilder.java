@@ -31,10 +31,7 @@
 package org.vortikal.web.search;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
@@ -47,25 +44,17 @@ import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.repository.search.query.UriSetQuery;
-import org.vortikal.web.display.collection.aggregation.AggregationResolver;
-import org.vortikal.web.service.manuallyapprove.ManuallyApproveResourcesSearcher;
 
-public class ListingUriQueryBuilder implements QueryBuilder {
+public class ListingUriQueryBuilder {
 
     private PropertyTypeDefinition recursivePropDef;
-    private AggregationResolver aggregationResolver;
     private boolean defaultRecursive;
     private PropertyTypeDefinition subfolderPropDef;
-    private PropertyTypeDefinition displayAggregationPropDef;
-    private PropertyTypeDefinition displayManuallyApprovedPropDef;
-    private ManuallyApproveResourcesSearcher manuallyApproveResourcesSearcher;
 
-    @Override
-    public Query build(Resource collection, HttpServletRequest request) {
+    public Query build(Resource collection) {
 
         Path collectionUri = collection.getURI();
-        Query baseQuery = null;
+        Query query = null;
 
         // The default query, simple uri match on the current resource
         UriPrefixQuery uriPrefixQuery = new UriPrefixQuery(collectionUri.toString());
@@ -97,13 +86,13 @@ public class ListingUriQueryBuilder implements QueryBuilder {
             }
             if (set.size() > 0) {
                 if (set.size() == 1) {
-                    baseQuery = new UriPrefixQuery(set.iterator().next());
+                    query = new UriPrefixQuery(set.iterator().next());
                 } else {
                     OrQuery or = new OrQuery();
                     for (String s : set) {
                         or.add(new UriPrefixQuery(s));
                     }
-                    baseQuery = or;
+                    query = or;
                 }
             }
         } else {
@@ -114,69 +103,20 @@ public class ListingUriQueryBuilder implements QueryBuilder {
                 UriDepthQuery uriDepthQuery = new UriDepthQuery(collectionUri.getDepth() + 1);
                 and.add(uriPrefixQuery);
                 and.add(uriDepthQuery);
-                baseQuery = and;
+                query = and;
             }
         }
 
-        if (baseQuery == null) {
-            baseQuery = uriPrefixQuery;
+        if (query == null) {
+            query = uriPrefixQuery;
         }
 
-        Property displayAggregationProp = collection.getProperty(this.displayAggregationPropDef);
-        if (displayAggregationProp != null && displayAggregationProp.getBooleanValue()) {
-            // Check for aggregation and extend the query if aggregation exists
-            List<Path> aggregationPaths = this.aggregationResolver.getAggregationPaths(collectionUri);
-            if (aggregationPaths != null && aggregationPaths.size() > 0) {
-                OrQuery aggregateUriPrefixQuery = new OrQuery();
-                for (Path aggregationPath : aggregationPaths) {
-                    aggregateUriPrefixQuery.add(new UriPrefixQuery(aggregationPath.toString()));
-                }
-                OrQuery or = new OrQuery();
-                or.add(baseQuery);
-                or.add(aggregateUriPrefixQuery);
-                baseQuery = or;
-            }
-        }
-
-        Property displayManuallyApprovedProp = collection.getProperty(this.displayManuallyApprovedPropDef);
-        if (displayManuallyApprovedProp != null && displayManuallyApprovedProp.getBooleanValue()) {
-            // Any manually approved resources? Well then add those as well
-            Set<String> uriSet = this.manuallyApproveResourcesSearcher.getManuallyApprovedUris(collection, true);
-            if (uriSet != null && uriSet.size() > 0) {
-                UriSetQuery uriSetQuery = new UriSetQuery(uriSet);
-                OrQuery or = new OrQuery();
-                or.add(baseQuery);
-                or.add(uriSetQuery);
-                baseQuery = or;
-            }
-        }
-
-        return baseQuery;
+        return query;
     }
 
     @Required
     public void setRecursivePropDef(PropertyTypeDefinition recursivePropDef) {
         this.recursivePropDef = recursivePropDef;
-    }
-
-    @Required
-    public void setAggregationResolver(AggregationResolver aggregationResolver) {
-        this.aggregationResolver = aggregationResolver;
-    }
-
-    @Required
-    public void setDisplayAggregationPropDef(PropertyTypeDefinition displayAggregationPropDef) {
-        this.displayAggregationPropDef = displayAggregationPropDef;
-    }
-
-    @Required
-    public void setDisplayManuallyApprovedPropDef(PropertyTypeDefinition displayManuallyApprovedPropDef) {
-        this.displayManuallyApprovedPropDef = displayManuallyApprovedPropDef;
-    }
-
-    @Required
-    public void setManuallyApproveResourcesSearcher(ManuallyApproveResourcesSearcher manuallyApproveResourcesSearcher) {
-        this.manuallyApproveResourcesSearcher = manuallyApproveResourcesSearcher;
     }
 
     public void setDefaultRecursive(boolean defaultRecursive) {

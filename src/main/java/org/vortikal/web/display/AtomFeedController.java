@@ -50,6 +50,7 @@ import org.openxri.IRIUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.MultiHostSearcher;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -65,7 +66,6 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.search.MultiHostSearch;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -254,7 +254,7 @@ public abstract class AtomFeedController implements Controller {
 
             Link link = abdera.getFactory().newLink();
             String urlString = viewService.constructLink(result.getURI());
-            Property urlProp = result.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearch.URL_PROP_NAME);
+            Property urlProp = result.getProperty(Namespace.DEFAULT_NAMESPACE, MultiHostSearcher.URL_PROP_NAME);
             if (urlProp != null) {
                 urlString = URL.parse(urlProp.getStringValue()).toString();
             }

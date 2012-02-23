@@ -30,7 +30,7 @@
  */
 package org.vortikal.web.search;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -55,7 +55,7 @@ public class ScopeQueryBuilder implements QueryBuilder {
         }
         UriPrefixQuery baseQuery = new UriPrefixQuery(base + "/");
 
-        List<Path> aggregationPaths = this.aggregationResolver.getAggregationPaths(base);
+        Set<Path> aggregationPaths = this.aggregationResolver.getAggregationPaths(base);
         OrQuery aggregateUriPrefixQuery = null;
         if (aggregationPaths != null && aggregationPaths.size() > 0) {
             aggregateUriPrefixQuery = new OrQuery();

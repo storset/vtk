@@ -30,22 +30,40 @@
  */
 package org.vortikal.web.display.collection.aggregation;
 
-import java.util.List;
+import java.util.Set;
 
 import org.vortikal.repository.Path;
+import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Resource;
+import org.vortikal.web.service.URL;
 
 public interface AggregationResolver {
 
     /**
-     * Returns a list containing all paths a given resource is set to aggregate
-     * from. The list does not contain invalid path references such as paths to
-     * non-existing resources or syntactically invalid paths (as defined by the
-     * Path object). Also, the list will not contain a path similar to the path
-     * of resource in question.
+     * Returns locations from where a given resource is to aggregate from.
+     * Contains two separate sets, one for automatic and one for manually
+     * approved aggregated resources. The sets may contain references to
+     * locations/resources on local or other hosts.
      * 
-     * @return List of aggregation-paths for the given resource, or
+     * @return Collection of locations to aggregate from for a given resource,
+     *         or <code>null</code> if resource not found or conditions for
+     *         aggregation are not met.
+     */
+    public CollectionListingAggregatedResources getAggregatedResources(PropertySet collection);
+
+    /**
+     * @see #getAggregatedResources(Resource)
+     */
+    public CollectionListingAggregatedResources getAggregatedResources(URL url);
+
+    /**
+     * Returns a list containing all local paths a given resource is set to
+     * aggregate from.
+     * 
+     * @return List of local aggregation-paths for the given resource, or
      *         <code>null</code> if resource not found.
      */
-    public List<Path> getAggregationPaths(Path pathToResource);
+    @Deprecated
+    public Set<Path> getAggregationPaths(Path pathToResource);
 
 }

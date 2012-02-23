@@ -71,15 +71,15 @@
     <property name="eventTypeTitlePropDef" ref="eventListing.eventTypeTitlePropDef" />
   </bean>
 
-  <bean id="eventListing.upcomingEventsSearchComponent" parent="collectionListing.baseSearchComponent">
+  <bean id="eventListing.upcomingEventsSearchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="eventListing.upcomingEventsSearchComponent" />
     <property name="titleLocalizationKey" value="eventListing.upcomingEvents" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
     <property name="listableProperties" ref="eventListing.listableProperties" />
+    <property name="listingUriQueryBuilder" ref="eventListing.listingUriQueryBuilder" />
     <property name="queryBuilders">
       <list>
-        <ref bean="eventListing.listingUriQueryBuilder" />
         <ref bean="eventListing.upcomingEventsQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="type IN event" />
@@ -87,7 +87,6 @@
       </list>
     </property>
     <property name="searchSorting" ref="eventListing.upcoming.searchSorting" />
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
   <bean id="eventListing.upcomingEventsQueryBuilder" class="org.vortikal.web.search.eventlisting.EventsDateAndTimeQueryBuilder">
@@ -107,9 +106,8 @@
     </property>
   </bean>
 
-  <bean id="eventListing.listingUriQueryBuilder" parent="listingUriQueryBuilder">
+  <bean id="eventListing.listingUriQueryBuilder" parent="collection.defaultRecursiveListingUriQueryBuilder">
     <property name="recursivePropDef" ref="eventListing.recursiveListingPropDef" />
-    <property name="defaultRecursive" value="true" />
   </bean>
 
   <bean id="eventListing.upcoming.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
@@ -127,7 +125,6 @@
     <property name="titleLocalizationKey" value="eventListing.previousEvents" />
     <property name="queryBuilders">
       <list>
-        <ref bean="eventListing.listingUriQueryBuilder" />
         <ref bean="eventListing.previousEventsQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="type IN event" />

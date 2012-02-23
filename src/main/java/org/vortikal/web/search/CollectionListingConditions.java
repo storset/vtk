@@ -1,4 +1,4 @@
-/* Copyright (c) 2008, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,57 +32,65 @@ package org.vortikal.web.search;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
-import org.vortikal.repository.search.ResultSet;
-import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Sorting;
-import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.Query;
-import org.vortikal.web.RequestContext;
+import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
+import org.vortikal.web.service.URL;
 
-public class QueryPartsSearchComponent extends QuerySearchComponent {
+public class CollectionListingConditions {
 
-    protected List<QueryBuilder> queryBuilders;
+    private String token;
+    private Query uriQuery;
+    private List<Query> additionalQueries;
+    private CollectionListingAggregatedResources collectionListingAggregatedResources;
+    private int limit;
+    private int offset;
+    private Sorting sorting;
+    private URL url;
 
-    @Override
-    protected ResultSet getResultSet(HttpServletRequest request, Resource collection, String token, Sorting sorting,
-            int searchLimit, int offset) {
-
-        Query query = this.getQuery(collection, request);
-
-        Search search = new Search();
-        search.setQuery(query);
-        search.setLimit(searchLimit);
-        search.setCursor(offset);
-        search.setSorting(sorting);
-
-        Repository repository = RequestContext.getRequestContext().getRepository();
-        return repository.search(token, search);
+    public CollectionListingConditions(String token, Query uriQuery, List<Query> additionalQueries,
+            CollectionListingAggregatedResources collectionListingAggregatedResources, int limit, int offset,
+            Sorting sorting, URL url) {
+        this.token = token;
+        this.uriQuery = uriQuery;
+        this.additionalQueries = additionalQueries;
+        this.collectionListingAggregatedResources = collectionListingAggregatedResources;
+        this.limit = limit;
+        this.offset = offset;
+        this.sorting = sorting;
+        this.url = url;
     }
 
-    private Query getQuery(Resource collection, HttpServletRequest request) {
-
-        if (this.queryBuilders == null) {
-            throw new IllegalArgumentException("Component need at least one query builder");
-        }
-
-        AndQuery query = new AndQuery();
-
-        for (QueryBuilder builder : this.queryBuilders) {
-            Query q = builder.build(collection, request);
-            if (q != null) {
-                query.add(q);
-            }
-        }
-
-        return query;
+    public String getToken() {
+        return this.token;
     }
 
-    public void setQueryBuilders(List<QueryBuilder> queryBuilders) {
-        this.queryBuilders = queryBuilders;
+    public Query getUriQuery() {
+        return this.uriQuery;
+    }
+
+    public List<Query> getAdditionalQueries() {
+        return this.additionalQueries;
+    }
+
+    public CollectionListingAggregatedResources getCollectionListingAggregatedResources() {
+        return this.collectionListingAggregatedResources;
+    }
+
+    public int getLimit() {
+        return this.limit;
+    }
+
+    public int getOffset() {
+        return this.offset;
+    }
+
+    public Sorting getSorting() {
+        return this.sorting;
+    }
+
+    public URL getUrl() {
+        return this.url;
     }
 
 }

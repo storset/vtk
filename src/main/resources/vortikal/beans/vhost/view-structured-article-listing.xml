@@ -6,7 +6,6 @@
     <property name="name" value="structured.articleListing.defaultArticles" />
     <property name="queryBuilders">
       <list>
-        <ref bean="articleListing.listingUriQueryBuilder" />
         <ref bean="articleListing.excludeFeaturedArticlesQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="type IN structured-article" />
@@ -15,7 +14,6 @@
 
     </property>
     <property name="searchSorting" ref="structured.articleListing.searchSorting" />
-    <property name="configurablePropertySelectPointers" ref="article.configurablePropertySelectPointersList" />
   </bean>
 
   <bean id="structured.articleListing.searchSorting" parent="articleListing.searchSorting">
@@ -38,7 +36,6 @@
       </list>
     </property>
     <property name="searchSorting" ref="structured.articleListing.searchSorting" />
-    <property name="configurablePropertySelectPointers" ref="article.configurablePropertySelectPointersList" />
   </bean>
 
   <bean id="structured.articleListing.view" parent="freemarkerView">
@@ -48,22 +45,6 @@
         <ref bean="resourceContextProvider" />
       </list>
     </property>
-  </bean>
-
-  <bean id="article.configurablePropertySelectPointersList" class="java.util.ArrayList">
-    <constructor-arg>
-        <list>
-          <value>title</value>
-          <value>publish-date</value>
-          <value>resource:picture</value>
-          <value>resource:caption</value>
-          <value>resource:introduction</value>
-          <value>resource:hasBodyContent</value>
-          <value>numberOfComments</value>
-          <value>lastModified</value>
-          <value>resource:media</value>
-        </list>
-    </constructor-arg>
   </bean>
 
 </beans>

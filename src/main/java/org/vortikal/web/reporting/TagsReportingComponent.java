@@ -32,6 +32,7 @@ package org.vortikal.web.reporting;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
@@ -74,9 +75,9 @@ public class TagsReportingComponent {
             // If we have an aggregation resolver available, then include whatever URIs
             // the scope URI might aggregate from.
             if (this.aggregationResolver != null) {
-                List<Path> aggregationPaths = this.aggregationResolver.getAggregationPaths(scopeUri);
+                Set<Path> aggregationPaths = this.aggregationResolver.getAggregationPaths(scopeUri);
                 if (aggregationPaths != null) {
-                    for (Path p : this.aggregationResolver.getAggregationPaths(scopeUri)) {
+                    for (Path p : aggregationPaths) {
                         scope.addUriPrefix(p);
                     }
                 }

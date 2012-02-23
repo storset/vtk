@@ -44,7 +44,12 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 public class LinkStatusEvaluator implements LatePropertyEvaluator {
 
     private PropertyTypeDefinition linkCheckPropDef;
+    private PropertyTypeDefinition linksPropDef;
     
+    public void setLinksPropDef(PropertyTypeDefinition linksPropDef) {
+        this.linksPropDef = linksPropDef;
+    }
+
     public void setLinkCheckPropDef(PropertyTypeDefinition linkCheckPropDef) {
         this.linkCheckPropDef = linkCheckPropDef;
     }
@@ -52,10 +57,17 @@ public class LinkStatusEvaluator implements LatePropertyEvaluator {
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
             throws PropertyEvaluationException {
+        Property linksProp = ctx.getNewResource().getProperty(this.linksPropDef);
+
+        if (linksProp == null) {
+            property.setStringValue("NO_LINKS");
+            return true;
+        }
+        
         Property linkCheckProp = ctx.getNewResource().getProperty(this.linkCheckPropDef);
         if (linkCheckProp == null) {
-            
-            return false ;
+            property.setStringValue("AWAITING_LINKCHECK");
+            return true;
         }
         try {
             JSONObject linkCheck = propValue(linkCheckProp);
@@ -70,7 +82,8 @@ public class LinkStatusEvaluator implements LatePropertyEvaluator {
             property.setStringValue(value);
             return true;
         } catch (Throwable t) {
-            return false;
+            property.setStringValue("LINKCHECK_ERROR");
+            return true;
         }
     }
 

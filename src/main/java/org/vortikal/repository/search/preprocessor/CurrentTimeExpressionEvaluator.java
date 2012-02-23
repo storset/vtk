@@ -34,6 +34,7 @@ import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.time.FastDateFormat;
 import org.vortikal.repository.search.QueryException;
 
 public class CurrentTimeExpressionEvaluator implements ExpressionEvaluator {
@@ -42,7 +43,7 @@ public class CurrentTimeExpressionEvaluator implements ExpressionEvaluator {
     private Pattern pattern = compilePattern();
 
     private Pattern compilePattern() {
-        return Pattern.compile("(" + this.variableName + ")" + "(([+-])(\\d+[ymwdhMs](\\d+[ymwdhMs])*))?");
+        return Pattern.compile("(" + this.variableName + ")" + "(([+-])(\\d+[ymwdhMs](\\d+[ymwdhMs])*))?(\\\\|.+)?");
     }
 
     public void setVariableName(String variableName) {
@@ -64,7 +65,6 @@ public class CurrentTimeExpressionEvaluator implements ExpressionEvaluator {
         if (!m.matches()) {
             throw new QueryException("Query token: '" + token + "' does not match pattern");
         }
-
         Calendar calendar = getCalendar();
 
         String params = m.group(2);
@@ -73,9 +73,13 @@ public class CurrentTimeExpressionEvaluator implements ExpressionEvaluator {
             String qtyString = m.group(4);
             processQuantityString(calendar, "+".equals(operator), qtyString);
         }
-        // return currentDate.getTime().toString();
-        // XXX: temporary format, just for getting stuff up and running:
-        return String.valueOf(calendar.getTimeInMillis());
+        String format = m.group(6);
+        if (format == null) {
+            return String.valueOf(calendar.getTimeInMillis());
+        }
+        format = format.substring(1);
+        FastDateFormat f = FastDateFormat.getInstance(format);
+        return f.format(calendar.getTime());
     }
 
     private void processQuantityString(Calendar currentDate, boolean add, String params) {

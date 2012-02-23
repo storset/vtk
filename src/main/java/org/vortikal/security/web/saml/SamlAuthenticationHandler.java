@@ -32,14 +32,19 @@ package org.vortikal.security.web.saml;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -50,6 +55,7 @@ import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.security.web.AuthenticationHandler;
 import org.vortikal.security.web.InvalidAuthenticationRequestException;
+import org.vortikal.security.web.SecurityInitializer;
 import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.service.URL;
 
@@ -64,6 +70,16 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     private Logout logout;
     private LostPostHandler postHandler;
 
+    private String serviceProviderURI;
+
+    private String[] wordWhitelist;
+
+    private Long ssoTimeout;
+
+    private String spCookieDomain = null;
+
+    private static final String UIO_AUTH_SSO = "UIO_AUTH_SSO";
+
     private Map<String, String> staticHeaders = new HashMap<String, String>();
 
     private Set<LoginListener> loginListeners;
@@ -71,6 +87,8 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     private PrincipalFactory principalFactory;
 
     private Set<?> categories = Collections.EMPTY_SET;
+
+    private static Log logger = LogFactory.getLog(SamlAuthenticationHandler.class);
 
     @Override
     public void challenge(HttpServletRequest request, HttpServletResponse response)
@@ -86,6 +104,47 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     public boolean isRecognizedAuthenticationRequest(HttpServletRequest req) throws AuthenticationProcessingException,
             InvalidAuthenticationRequestException {
         return this.login.isLoginResponse(req);
+    }
+
+    public void checkSSOCookie(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        if (getCookie(req, UIO_AUTH_SSO) != null && getCookie(req, SecurityInitializer.VRTXLINK_COOKIE) == null
+                && req.getParameter("authTarget") == null && !req.getRequestURI().contains(serviceProviderURI)) {
+
+            StringBuffer url = req.getRequestURL();
+            Boolean doRedirect = false;
+
+            for (String word : wordWhitelist) {
+                if (url.toString().endsWith(word.trim())) {
+                    doRedirect = true;
+                }
+            }
+
+            Long cookieTimestamp = new Long(0);
+            try {
+                cookieTimestamp = Long.valueOf(getCookie(req, UIO_AUTH_SSO).getValue());
+            } catch (NumberFormatException e) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Cannot parse, old SSO cookie format");
+                }
+            }
+            Long currentTime = new Date().getTime();
+
+            if (currentTime - cookieTimestamp > ssoTimeout) {
+                doRedirect = false;
+            }
+
+            if (doRedirect) {
+                String queryString = req.getQueryString();
+                if (queryString != null) {
+                    url = url.append("?");
+                    url = url.append(queryString);
+                }
+                URL currentURL = URL.parse(url.toString());
+                currentURL.addParameter("authTarget", req.getScheme());
+                resp.sendRedirect(currentURL.toString());
+            }
+        }
+
     }
 
     /**
@@ -124,6 +183,22 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     @Override
     public boolean postAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException, InvalidAuthenticationRequestException {
+
+        Random generator = new Random();
+        String currentTime = String.valueOf(new Date().getTime() + generator.nextInt(120000));
+
+        Cookie ssoCookie = new Cookie(UIO_AUTH_SSO, currentTime);
+        ssoCookie.setPath("/");
+
+        if (this.spCookieDomain != null) {
+            ssoCookie.setDomain(this.spCookieDomain);
+        }
+
+        response.addCookie(ssoCookie);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Setting cookie: " + ssoCookie + ": " + this.getIdentifier());
+        }
+
         if (this.postHandler.hasSavedState(request)) {
             this.postHandler.redirect(request, response);
             setHeaders(response);
@@ -141,9 +216,28 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     @Override
     public boolean logout(Principal principal, HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException, ServletException, IOException {
+        removeSSOCookie(request, response);
+
         this.logout.initiateLogout(request, response);
         setHeaders(response);
         return true;
+    }
+
+    private void removeSSOCookie(HttpServletRequest request, HttpServletResponse response) {
+        Cookie c = getCookie(request, UIO_AUTH_SSO);
+        if (c != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Deleting cookie " + UIO_AUTH_SSO);
+            }
+            c = new Cookie(UIO_AUTH_SSO, c.getValue());
+
+            c.setPath("/");
+            if (this.spCookieDomain != null) {
+                c.setDomain(this.spCookieDomain);
+            }
+            c.setMaxAge(0);
+            response.addCookie(c);
+        }
     }
 
     /**
@@ -223,6 +317,25 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     }
 
     @Required
+    public void setServiceProviderURI(String serviceProviderURI) {
+        this.serviceProviderURI = serviceProviderURI;
+    }
+
+    public void setSsoTimeout(Long ssoTimeout) {
+        this.ssoTimeout = ssoTimeout;
+    }
+
+    public void setSpCookieDomain(String spCookieDomain) {
+        if (spCookieDomain != null && !"".equals(spCookieDomain.trim())) {
+            this.spCookieDomain = spCookieDomain;
+        }
+    }
+
+    public void setWordWhitelist(String[] wordWhitelist) {
+        this.wordWhitelist = wordWhitelist;
+    }
+
+    @Required
     public void setPostHandler(LostPostHandler postHandler) {
         this.postHandler = postHandler;
     }
@@ -256,5 +369,18 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     @Override
     public Set<?> getCategories() {
         return this.categories;
+    }
+
+    private static Cookie getCookie(HttpServletRequest request, String name) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
+        for (Cookie cookie : cookies) {
+            if (name.equals(cookie.getName())) {
+                return cookie;
+            }
+        }
+        return null;
     }
 }

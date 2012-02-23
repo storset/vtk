@@ -81,6 +81,7 @@ public class SetLocaleController implements Controller, InitializingBean {
         this.localeResolver.setLocale(request, response, this.locale);
         URL url = URL.create(request);
         url.removeParameter("locale");
+        url.setProtocol("http");
         response.sendRedirect(url.toString());
         return null;
     }

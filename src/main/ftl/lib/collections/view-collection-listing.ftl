@@ -5,6 +5,7 @@
 
   <#local resources=collectionListing.files />
   <#if (resources?size > 0)>
+     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
      <script type="text/javascript"><!--
        $(function() {
          var agent = navigator.userAgent.toLowerCase();         

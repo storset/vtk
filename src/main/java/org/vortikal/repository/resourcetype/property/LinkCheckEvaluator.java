@@ -68,8 +68,9 @@ public class LinkCheckEvaluator implements LatePropertyEvaluator {
             throws PropertyEvaluationException {
 
         if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.SystemPropertiesChange) {
-            return ctx.getOriginalResource().getProperty(property.getDefinition()) != null;
+            return false;
         }
+        
         Property linksProp = ctx.getNewResource().getPropertyByPrefix(null, "links");
         if (linksProp == null) {
             return false;

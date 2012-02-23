@@ -1,50 +1,37 @@
 resourcetype fellestekst-document {
 
-  properties {
-    title : string
-  }
-
   view-components {
   
     vis-fellestekst (docType, propName){
         ##
         [def uri "/vrtx/fellestekst/" + docType + "/" + propName + ".html"]
         [def f json-resource(uri)]
-        [def published resource-prop(uri, "published") ]
-        [if f != null && published]
+        [if f != null]
+          [def published resource-prop(uri, "published") ]
+          [if published]
             [def key resource-prop-obj-val(".", propName)]
-            <div>
-            [def liste f.properties.shared-text-box]
-            [def locale resource-locale()]       
-            [list liste item]
-                [if (key = item.id)]
-                    [if locale = "no_NO"]
-                        [val item.description-no  # unescaped]
-                    [elseif locale = "nn"]
-                        [val item.description-nn  # unescaped]
-                    [else]
-                        [val item.description-en  # unescaped]
-                    [endif]
-                [endif]
-            [endlist]
-            </div>
+            [if key != null && key != ""]
+              <div>
+              [def liste f.properties.shared-text-box]
+              [def locale resource-locale()]       
+              [list liste item]
+                  [if (key = item.id)]
+                      [if locale = "no_NO"]
+                          [val item.description-no  # unescaped]
+                      [elseif locale = "nn"]
+                          [val item.description-nn  # unescaped]
+                      [else]
+                          [val item.description-en  # unescaped]
+                      [endif]
+                  [endif]
+              [endlist]
+              </div>
+            [endif]
+          [endif]
         [endif]
         ##
     }   
   }
   
-  view {
-    ##
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <title></title>
-      </head>
-      <body id="vrtx-structured-article">
-
-      </body>
-    </html>
-    ##
-  }
   
 }

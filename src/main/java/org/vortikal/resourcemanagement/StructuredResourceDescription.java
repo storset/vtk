@@ -87,6 +87,9 @@ public final class StructuredResourceDescription {
 
     public List<PropertyDescription> getAllPropertyDescriptions() {
         List<PropertyDescription> result = new ArrayList<PropertyDescription>();
+        if(propertyDescriptions == null){
+            return result;
+        }
         if (this.inheritsFrom != null) {
             StructuredResourceDescription ancestor = this.manager.get(this.inheritsFrom);
             result.addAll(ancestor.getAllPropertyDescriptions());

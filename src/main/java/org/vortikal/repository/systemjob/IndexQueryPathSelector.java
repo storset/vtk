@@ -32,7 +32,6 @@
 package org.vortikal.repository.systemjob;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -46,6 +45,7 @@ import org.vortikal.repository.search.QueryParser;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
+import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
@@ -63,6 +63,7 @@ public class IndexQueryPathSelector implements PathSelector {
     private ResourceTypeTree resourceTypeTree;
     
     private String queryString;
+    private Sorting sorting;
     
     private boolean onlyPublishedResources = false;
     private static final int MAX_LIMIT = 2000;
@@ -85,12 +86,12 @@ public class IndexQueryPathSelector implements PathSelector {
         Query query = getQuery(context);
         Search search = new Search();
         search.setQuery(query);
-        search.setSorting(null);
+        search.setSorting(getSorting(context));
         search.setLimit(this.limit);
         search.setOnlyPublishedResources(isOnlyPublishedResources());
         search.setPropertySelect(NO_PROPERTIES);
         ResultSet results = this.getSearcher().execute(token, search);
-            
+        
         List<Path> paths = new ArrayList<Path>(results.getSize());
         for (PropertySet result: results) {
             paths.add(result.getURI());
@@ -103,6 +104,10 @@ public class IndexQueryPathSelector implements PathSelector {
             throw new IllegalStateException("No query string configured");
         }
         return this.parser.parse(this.queryString);
+    }
+    
+    protected Sorting getSorting(SystemChangeContext context) {
+        return this.sorting;
     }
     
     protected Query getSystemJobQuery(SystemChangeContext context) {
@@ -127,6 +132,10 @@ public class IndexQueryPathSelector implements PathSelector {
 
     public void setQueryString(String queryString) {
         this.queryString = queryString;
+    }
+    
+    public void setSorting(Sorting sorting) {
+        this.sorting = sorting;
     }
     
     public void setParser(QueryParser parser) {

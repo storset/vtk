@@ -25,6 +25,7 @@
         <ref bean="articleListing.hidePublishedDatePropDef" />
         <ref bean="articleListing.hideIntroductionPropDef" />
         <ref bean="articleListing.hideIntroductionImagePropDef" />
+        <ref bean="articleListing.listingViewPropDef" />
       </list>
     </property>
   </bean>

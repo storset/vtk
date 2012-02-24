@@ -21,8 +21,6 @@
   
   <script type="text/javascript"><!--
     
-    var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";
-    
     shortcut.add("Ctrl+S",function() {
         $(".vrtx-focus-button:last input").click();
     });

@@ -14,8 +14,12 @@
 	  </select>
 	  <div id="${inputFieldName}Descriptions">
 	       <#list sharedTextProps[inputFieldName]?keys as y >
-    	       <div class="${sharedTextProps[inputFieldName][y]['id']} description">
-    	              ${sharedTextProps[inputFieldName][y]['description-no']}
+    	       <div class="${sharedTextProps[inputFieldName][y]['id']} descriptionxxx">
+    	              <#assign language >${resourceLocaleResolver.resolveLocale(null)}</#assign>
+    	              <#if language == "no_NO">
+    	               <#assign language = "no" />
+    	              </#if>
+    	              ${sharedTextProps[inputFieldName][y]['description-' + language]}
     	       </div>
 	       </#list>
 	  </div>
@@ -25,13 +29,21 @@
   <script type="text/javascript"> 
   <!--
             $(document).ready(function () {
-                $("#${inputFieldName}Descriptions .description").hide();
-                $("#${inputFieldName}Descriptions ." + $("#${inputFieldName}").val()).show();
+                var h = $("#${inputFieldName}Descriptions").find(".descriptionxxx");
+                $(h).hide();
+                if($("#${inputFieldName}").val() != ""){
+                    var d =  $("#${inputFieldName}Descriptions").find("." + $("#${inputFieldName}").val());
+                    $(d).show();
+                }
             }); 
   
             $("#${inputFieldName}").change(function(){
-                $("#${inputFieldName}Descriptions .description").hide();
-                $("#${inputFieldName}Descriptions ." + $("#${inputFieldName}").val()).show();
+                var h = $("#${inputFieldName}Descriptions").find(".descriptionxxx");
+                $(h).hide();
+                if($("#${inputFieldName}").val() != ""){
+                    var d =  $("#${inputFieldName}Descriptions").find("." + $("#${inputFieldName}").val());
+                    $(d).show();
+                }
             }); 
   -->
   </script>

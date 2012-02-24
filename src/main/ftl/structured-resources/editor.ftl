@@ -36,6 +36,25 @@
     COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
     window.onbeforeunload = unsavedChangesInEditorMessage;
 
+	function documentSave () {
+		for (instance in CKEDITOR.instances) {
+              CKEDITOR.instances[instance].updateElement();
+        }    
+        
+        tb_show(saveDocAjaxText + "...", 
+                   "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
+                   false);
+        
+	 	performSave();
+	 	$("#editor").ajaxSubmit({
+              success: function () {},
+              complete: function() {
+                initDatePicker(datePickerLang);
+                tb_remove();
+              }
+         });
+	}
+
     function performSave() {
       saveDateAndTimeFields(); // js/datepicker/datepicker-admin.js
       if (typeof(MULTIPLE_INPUT_FIELD_NAMES) !== "undefined") {
@@ -48,6 +67,7 @@
         boxUrlTextField.val($.trim(boxUrlTextField.val()));
       }
       NEED_TO_CONFIRM = false;
+	  
     }
 
     var cssFileList = [
@@ -170,10 +190,10 @@
 
     <#elseif form.workingCopy>
       <div class="vrtx-button">
-        <input type="submit" id="saveAndViewButton" onclick="performSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
+        <input type="submit" id="saveAndViewButton" onclick="documentSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
       <div class="vrtx-focus-button">
-        <input type="submit" id="saveWorkingCopyAction" onclick="performSave();" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.save")}" />
+        <input type="submit" id="saveWorkingCopyAction" onclick="documentSave(); return false;" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">
         <input type="submit" onclick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
@@ -190,10 +210,10 @@
       
     <#else>
       <div class="vrtx-button">
-        <input type="submit" id="saveAndViewButton" onclick="performSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
+        <input type="submit" id="saveAndViewButton" onclick="documentSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
       <div class="vrtx-focus-button">
-        <input type="submit" id="updateAction" onclick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
+        <input type="submit" id="updateAction" onclick="documentSave(); return false;" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">
         <input type="submit" onclick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />

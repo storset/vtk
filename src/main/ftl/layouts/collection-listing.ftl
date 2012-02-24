@@ -11,7 +11,7 @@
       <table id="vrtx-collection-listing-component" class="vrtx-collection-listing">
         <thead>
           <tr>
-            <th id="vrtx-collection-listing-title"><@vrtx.msg code="collectionListing.resourceTitle" default="Title" /></th>
+            <th id="vrtx-collection-listing-title" colspan="2"><@vrtx.msg code="collectionListing.resourceTitle" default="Title" /></th>
           <#if conf.compactView?string = "false">
             <th id="vrtx-collection-listing-modified-by"><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
             <th id="vrtx-collection-listing-last-modified"><@vrtx.msg code="collectionListing.lastModified" default="Last modified" /></th>
@@ -45,8 +45,10 @@
           </#if>
 
           <tr class="${rowType} ${firstLast}">
-            <td class="vrtx-collection-listing-title">
+            <td>
               <a class="vrtx-icon <@vrtx.iconResolver resourceType contentType />" href="${uri?html}"></a>
+            </td>
+            <td class="vrtx-collection-listing-title">
               <a href="${uri?html}">${title?html}</a>
             <#if (resourceType == "doc" || resourceType == "xls" || resourceType == "ppt")>
               <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="report.collection-structure.edit" /></a>

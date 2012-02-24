@@ -79,21 +79,21 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
         boolean isMultiHostSearch = this.isMultiHostSearch(aggregationSet.keySet(), manuallyApprovedSet);
 
         ResultSet result = null;
-        boolean successFullMultiHostSearch = false;
+        boolean successfulMultiHostSearch = false;
         if (isMultiHostSearch) {
             CollectionListingConditions clc = new CollectionListingConditions(token, uriQuery, additionalQueries, clar,
                     searchLimit, 0, sorting, null);
             try {
                 result = this.multiHostSearcher.collectionListing(clc);
                 if (result != null) {
-                    successFullMultiHostSearch = true;
+                    successfulMultiHostSearch = true;
                 }
             } catch (Exception e) {
                 logger.error("An error occured while searching multiple hosts: " + e.getMessage());
             }
         }
 
-        if (!successFullMultiHostSearch) {
+        if (!successfulMultiHostSearch) {
 
             Query query = generateLocalQuery(uriQuery, additionalQueries, clar);
 

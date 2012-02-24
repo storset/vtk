@@ -60,6 +60,7 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
 import org.vortikal.repository.resourcetype.property.PropertyEvaluationException;
 import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.EvaluationElement;
+import org.vortikal.resourcemanagement.EditRule.EditRuleType;
 import org.vortikal.resourcemanagement.parser.ParserConstants;
 import org.vortikal.resourcemanagement.service.ExternalServiceInvoker;
 import org.vortikal.util.text.JSON;
@@ -115,7 +116,7 @@ public class StructuredResourceManager {
 
         def.setName(description.getName());
         def.setNamespace(this.namespace);
-
+        
         ResourceTypeDefinition parentDefinition = this.baseType;
 
         PropertyTypeDefinition[] propertyTypeDefinitions = createPropDefs(description);
@@ -195,6 +196,7 @@ public class StructuredResourceManager {
                 }
             }
         }
+        
         return result.toArray(new PropertyTypeDefinition[result.size()]);
     }
 
@@ -278,11 +280,22 @@ public class StructuredResourceManager {
         def.setPropertyEvaluator(createPropertyEvaluator(propertyDescription, resourceDescription));
 
         if (propertyDescription instanceof SimplePropertyDescription) {
+            
             SimplePropertyDescription spd = ((SimplePropertyDescription) propertyDescription);
-            Map<String, Object> edithints = spd.getEdithints();
-            if (edithints != null) {
-                def.addMetadata("editingHints", edithints);
+            
+            List<EditRule> editRules = resourceDescription.getEditRules();
+            if (editRules != null && editRules.size() > 0) {
+                Map<String,String> editHints = new HashMap<String,String>();
+                for (EditRule editRule : editRules) {
+                    if (EditRuleType.EDITHINT.equals(editRule.getType())) {
+                        if(editRule.getName().equals(propertyDescription.getName())){  
+                            editHints.put(editRule.getEditHintKey(), editRule.getEditHintValue());
+                        }
+                    }
+                }
+                def.addMetadata("editingHints", editHints);
             }
+            
             String defaultValue = spd.getDefaultValue();
             if (defaultValue != null) {
                 this.setDefaultValue(def, defaultValue);

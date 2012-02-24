@@ -281,6 +281,7 @@
           <property name="path" value="${editor.fck.resourcesURL}" />
           <property name="modelName" value="fckeditorBase" />
         </bean>
+
         <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
           <property name="service" ref="viewService" />
           <property name="modelName" value="fckeditorBase" />

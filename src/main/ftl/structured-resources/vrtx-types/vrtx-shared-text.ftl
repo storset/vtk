@@ -1,0 +1,38 @@
+<#ftl strip_whitespace=true>
+<#macro printPropertyEditView title inputFieldName value="" tooltip="" classes="" inputFieldSize=20 valuemap="" dropdown=false defaultValue="">
+<div class="vrtx-string ${classes}">
+  <label for="${inputFieldName}">${title}</label>
+  <div class="inputfield">
+      <#if value=="" >
+        <#local value=defaultValue />
+      </#if> 
+      <select name="${inputFieldName}" id="${inputFieldName}">
+          <option value="" <#if value=="">selected="selected"</#if>>Ingen fellesteskt</option>
+          <#list sharedTextProps[inputFieldName]?keys as y >
+            <option value="${sharedTextProps[inputFieldName][y]['id']?html}" <#if value==sharedTextProps[inputFieldName][y]['id']>selected="selected"</#if>>${sharedTextProps[inputFieldName][y]['title']?html}</option>
+          </#list>     
+	  </select>
+	  <div id="${inputFieldName}Descriptions">
+	       <#list sharedTextProps[inputFieldName]?keys as y >
+    	       <div class="${sharedTextProps[inputFieldName][y]['id']} description">
+    	              ${sharedTextProps[inputFieldName][y]['description-no']}
+    	       </div>
+	       </#list>
+	  </div>
+    <#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>
+  </div>
+</div>
+  <script type="text/javascript"> 
+  <!--
+            $(document).ready(function () {
+                $("#${inputFieldName}Descriptions .description").hide();
+                $("#${inputFieldName}Descriptions ." + $("#${inputFieldName}").val()).show();
+            }); 
+  
+            $("#${inputFieldName}").change(function(){
+                $("#${inputFieldName}Descriptions .description").hide();
+                $("#${inputFieldName}Descriptions ." + $("#${inputFieldName}").val()).show();
+            }); 
+  -->
+  </script>
+</#macro>

@@ -394,7 +394,7 @@
     </property>
     <property name="referenceDataProviders">
       <list>
-              <bean class="org.vortikal.web.view.GetSharedTextDropdown" >
+              <bean class="org.vortikal.resourcemanagement.edit.GetSharedTextDropdown" >
                 <property name="resourceTypeTree" ref="resourceTypeTree" />
               </bean>
         <ref bean="resourceContextProvider" />

@@ -1,4 +1,4 @@
-package org.vortikal.web.view;
+package org.vortikal.resourcemanagement.edit;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

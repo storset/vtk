@@ -52,7 +52,7 @@
             <#else>
               <td class="vrtx-collection-listing-title first-col last-col">
             </#if>
-              <a class="vrtx-title-link  <@vrtx.iconResolver resourceType contentType />" href="${uri?html}">${title?html}</a>
+              <a class="vrtx-title-link <@vrtx.iconResolver resourceType contentType />" href="${uri?html}">${title?html}</a>
             <#if (resourceType == "doc" || resourceType == "xls" || resourceType == "ppt")>
               <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="report.collection-structure.edit" /></a>
             </#if>

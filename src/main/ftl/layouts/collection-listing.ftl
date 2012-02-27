@@ -50,7 +50,7 @@
             <td class="first-col">
               <a class="vrtx-icon <@vrtx.iconResolver resourceType contentType />" href="${uri?html}"></a>
             </td>
-            <#if conf.compactView?string = "true">
+            <#if conf.compactView?string = "false">
               <td class="vrtx-collection-listing-title">
             <#else>
               <td class="vrtx-collection-listing-title last-col">

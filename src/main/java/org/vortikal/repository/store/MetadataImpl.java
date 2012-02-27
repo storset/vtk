@@ -42,6 +42,8 @@ import java.util.Set;
  */
 public class MetadataImpl implements Metadata {
 
+    private static final long serialVersionUID = 6195471662242713297L;
+
     private Map<String, List<Object>> attributes = new HashMap<String, List<Object>>();
 
     public void addAttributeValue(String attribute, Object value) {

@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -52,61 +53,61 @@ import org.vortikal.security.Principal;
 
 /**
  * Implementation of {@link PropertyTypeDefinition}
- * @see PropertyTypeDefinition 
- *
+ * 
+ * @see PropertyTypeDefinition
+ * 
  */
-public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, InitializingBean {
+public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, InitializingBean, Serializable {
+
+    private static final long serialVersionUID = 3343489440040263038L;
 
     private Map<String, Object> metadata = new HashMap<String, Object>();
-	
+
     private Namespace namespace;
-    
     private String name;
     private Type type = PropertyType.Type.STRING;
-    private ValueFormatter valueFormatter;
-    private ValueSeparator defaultValueSeparator = new ConfigurableValueSeparator();
-    private Map<String, ValueSeparator> valueSeparators = new HashMap<String, ValueSeparator>();
-    
     private boolean multiple = false;
-    private RepositoryAction protectionLevel = PropertyType.PROTECTION_LEVEL_ACL_WRITE;
     private boolean mandatory = false;
-    private Value defaultValue;
-    private PropertyEvaluator propertyEvaluator;
-    private PropertyValidator validator;
-    private Value[] allowedValues;
-
-    private Vocabulary<Value> vocabulary;
-    private ValueFactory valueFactory;
-    private ValueFormatterRegistry valueFormatterRegistry;
-    private ContentRelation contentRelation;
-    private TypeLocalizationProvider typeLocalizationProvider = null;
-
-    private List<JSONPropertyAttributeDescription> indexableAttributes;
     
+    private transient RepositoryAction protectionLevel = PropertyType.PROTECTION_LEVEL_ACL_WRITE;
+    private transient Value defaultValue;
+    private transient Value[] allowedValues;
+    private transient PropertyEvaluator propertyEvaluator;
+    private transient PropertyValidator validator;
+    private transient ValueFormatter valueFormatter;
+    private transient ValueSeparator defaultValueSeparator = new ConfigurableValueSeparator();
+    private transient Map<String, ValueSeparator> valueSeparators = new HashMap<String, ValueSeparator>();
+    private transient Vocabulary<Value> vocabulary;
+    private transient ValueFactory valueFactory;
+    private transient ValueFormatterRegistry valueFormatterRegistry;
+    private transient ContentRelation contentRelation;
+    private transient TypeLocalizationProvider typeLocalizationProvider = null;
+    private transient List<JSONPropertyAttributeDescription> indexableAttributes;
+
     public void setContentRelation(ContentRelation contentRelation) {
-            this.contentRelation = contentRelation;
+        this.contentRelation = contentRelation;
     }
-    
+
     public ContentRelation getContentRelation() {
         return this.contentRelation;
     }
-    
+
     public void setMetadata(Map<String, Object> metadata) {
         this.metadata = metadata;
     }
-    
+
     public void addMetadata(String key, Object value) {
         this.metadata.put(key, value);
     }
-    
+
     public Map<String, Object> getMetadata() {
-    	return Collections.unmodifiableMap(this.metadata);
+        return Collections.unmodifiableMap(this.metadata);
     }
-    
+
     public Property createProperty() {
         PropertyImpl prop = new PropertyImpl();
         prop.setDefinition(this);
-        
+
         if (this.getDefaultValue() != null) {
             prop.setValue(this.getDefaultValue());
         }
@@ -114,13 +115,11 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return prop;
     }
 
-
-    public Property createProperty(Object value) 
-        throws ValueFormatException {
+    public Property createProperty(Object value) throws ValueFormatException {
 
         PropertyImpl prop = new PropertyImpl();
         prop.setDefinition(this);
-        
+
         if (value instanceof Date) {
             Date date = (Date) value;
             prop.setDateValue(date);
@@ -131,56 +130,50 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
             Long l = (Long) value;
             prop.setLongValue(l.longValue());
         } else if (value instanceof Integer) {
-            Integer i = (Integer)value;
+            Integer i = (Integer) value;
             prop.setIntValue(i.intValue());
         } else if (value instanceof Principal) {
             Principal p = (Principal) value;
             prop.setPrincipalValue(p);
-        } else if (! (value instanceof String)) {
-            throw new ValueFormatException(
-                    "Supplied value of property [namespaces: "
-                    + namespace + ", name: " + name
-                    + "] not of any supported type " 
-                    + "(type was: " + value.getClass() + ")");
+        } else if (!(value instanceof String)) {
+            throw new ValueFormatException("Supplied value of property [namespaces: " + namespace + ", name: " + name
+                    + "] not of any supported type " + "(type was: " + value.getClass() + ")");
         } else {
             prop.setStringValue((String) value);
-        } 
-        
+        }
+
         return prop;
     }
-    
+
     public Property createProperty(String stringValue) throws ValueFormatException {
-        return createProperty(new String[] {stringValue});
+        return createProperty(new String[] { stringValue });
     }
-    
-    public Property createProperty(String[] stringValues) 
-        throws ValueFormatException {
+
+    public Property createProperty(String[] stringValues) throws ValueFormatException {
 
         PropertyImpl prop = new PropertyImpl();
         prop.setDefinition(this);
-        
+
         if (this.isMultiple()) {
             Value[] values = this.valueFactory.createValues(stringValues, this.getType());
             prop.setValues(values);
         } else {
-            // Not multi-value, stringValues must be of length 1, otherwise there are
+            // Not multi-value, stringValues must be of length 1, otherwise
+            // there are
             // inconsistency problems between data store and config.
             if (stringValues.length > 1) {
-                throw new ValueFormatException(
-                    "Cannot convert multiple values: " + Arrays.asList(stringValues)
-                    + " to a single-value property"
-                    + " for property " + prop);
+                throw new ValueFormatException("Cannot convert multiple values: " + Arrays.asList(stringValues)
+                        + " to a single-value property" + " for property " + prop);
             }
-            
+
             Value value = this.valueFactory.createValue(stringValues[0], this.getType());
             prop.setValue(value);
         }
-        
+
         return prop;
-        
+
     }
 
-    
     public void afterPropertiesSet() {
         if (this.valueFormatter == null) {
             if (this.vocabulary != null && this.vocabulary.getValueFormatter() != null) {
@@ -198,7 +191,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     public void setPropertyEvaluator(PropertyEvaluator propertyEvaluator) {
         this.propertyEvaluator = propertyEvaluator;
     }
-    
+
     public boolean isMandatory() {
         return this.mandatory;
     }
@@ -206,7 +199,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
     }
-    
+
     public boolean isMultiple() {
         return this.multiple;
     }
@@ -254,11 +247,11 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     public void setValidator(PropertyValidator validator) {
         this.validator = validator;
     }
-    
+
     public Value[] getAllowedValues() {
         return this.allowedValues;
     }
-    
+
     public Namespace getNamespace() {
         return this.namespace;
     }
@@ -266,7 +259,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     public void setNamespace(Namespace namespace) {
         this.namespace = namespace;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
@@ -289,23 +282,22 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     public void setValueFormatter(ValueFormatter valueFormatter) {
         this.valueFormatter = valueFormatter;
     }
-    
-    public void setTypeLocalizationProvider(
-                                TypeLocalizationProvider typeLocalizationProvider) {
+
+    public void setTypeLocalizationProvider(TypeLocalizationProvider typeLocalizationProvider) {
         this.typeLocalizationProvider = typeLocalizationProvider;
     }
-    
+
     public String getLocalizedName(Locale locale) {
         if (this.typeLocalizationProvider != null) {
             return this.typeLocalizationProvider.getLocalizedPropertyName(this, locale);
-        }         
+        }
         return getName();
     }
 
     public String getDescription(Locale locale) {
         if (this.typeLocalizationProvider != null) {
             return this.typeLocalizationProvider.getPropertyDescription(this, locale);
-        } 
+        }
         return null;
     }
 
@@ -316,7 +308,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         }
         return this.defaultValueSeparator;
     }
-    
+
     public void setDefaultValueSeparator(ValueSeparator defaultValueSeparator) {
         this.defaultValueSeparator = defaultValueSeparator;
     }
@@ -330,7 +322,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.valueFactory = valueFactory;
     }
 
-    @Required 
+    @Required
     public void setValueFormatterRegistry(ValueFormatterRegistry valueFormatterRegistry) {
         this.valueFormatterRegistry = valueFormatterRegistry;
     }
@@ -341,10 +333,10 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         }
         return this.indexableAttributes;
     }
-    
+
     /**
-     * Set a list of names for attributes that are to be indexed
-     * Only valid for json properties
+     * Set a list of names for attributes that are to be indexed Only valid for
+     * json properties
      */
     public void setIndexableAttributes(final List<JSONPropertyAttributeDescription> indexableAttributes) {
         this.indexableAttributes = indexableAttributes;

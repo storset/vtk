@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +45,9 @@ import org.apache.commons.lang.StringUtils;
  * elements <code>/</code>, <code>a</code> and <code>b</code>.
  * 
  */
-public final class Path implements Comparable<Path> {
+public final class Path implements Comparable<Path>, Serializable {
+
+    private static final long serialVersionUID = -7752433857207156353L;
 
     public static final int MAX_LENGTH = 1500;
 

@@ -13,7 +13,8 @@
       <table class="vrtx-collection-listing-table">
         <thead>
           <tr>
-            <th class="vrtx-collection-listing-title" colspan="2"><@vrtx.msg code="collectionListing.resourceTitle" default="Title" /></th>
+            <th class="vrtx-collection-listing-icon"></th>
+            <th class="vrtx-collection-listing-title"><@vrtx.msg code="collectionListing.resourceTitle" default="Title" /></th>
           <#if conf.compactView?string = "false">
             <th class="vrtx-collection-listing-modified-by"><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
             <th class="vrtx-collection-listing-last-modified"><@vrtx.msg code="collectionListing.lastModified" default="Last modified" /></th>

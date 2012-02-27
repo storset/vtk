@@ -20,16 +20,16 @@
       <#else>
         <div class="vrtx-resource">
       </#if>
+        <#if !hideIcon?exists>
+		  <a class="vrtx-icon <@vrtx.iconResolver r.resourceType r.contentType />" href="${uri?html}"></a>
+		</#if> 
+      
 		<div class="vrtx-title">
 		  <#assign title = vrtx.propValue(r, "title", "", "") />
 		  <#if !title?has_content && solrUrl?exists && solrUrl?has_content>
 		    <#assign title = vrtx.propValue(r, "solr.name", "", "") />
 		  </#if>
-		  <#if !hideIcon?exists>
-		    <a class="vrtx-title vrtx-title-link vrtx-icon <@vrtx.iconResolver r.resourceType r.contentType />" href="${uri?html}">${title?html}</a>
-		  <#else> 
-            <a class="vrtx-title vrtx-title-link" href="${uri?html}">${title?html}</a>
-          </#if>
+          <a class="vrtx-title vrtx-title-link" href="${uri?html}">${title?html}</a>
           <#if (r.resourceType == "doc" || r.resourceType == "xls" || r.resourceType == "ppt")>
             <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="report.collection-structure.edit" /></a>
           </#if>

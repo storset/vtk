@@ -3,6 +3,8 @@
 <#import "/lib/view-utils.ftl" as viewutils />
 
 <#if (list?exists && list?size > 0)>
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
+  <script type="text/javascript src="/vrtx/__vrtx/static-resources/js/open-webdav.js"></script>
   <div class="vrtx-collection-listing-component-wrapper">
     <div class="vrtx-collection-listing-component">
     <#if (conf.folderTitle?string = "true") && folderTitle?exists>

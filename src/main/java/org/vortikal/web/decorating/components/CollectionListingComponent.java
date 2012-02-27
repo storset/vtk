@@ -47,7 +47,6 @@ import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
-import org.vortikal.web.service.Service;
 
 public class CollectionListingComponent extends ViewRenderingDecoratorComponent {
 
@@ -115,12 +114,8 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
             ps = l.getFiles().get(i);
             rt = ps.getResourceType();
             if (rt.equals("doc") || rt.equals("ppt") || rt.equals("xls")) {
-                try {
-                    res = r.retrieve(token, ps.getURI(), false);
-                    edit[i] = r.isAuthorized(res, RepositoryAction.READ_WRITE, principal, true);
-                } catch (Exception e) {
-                    edit[i] = false;
-                }
+                res = r.retrieve(token, ps.getURI(), false);
+                edit[i] = r.isAuthorized(res, RepositoryAction.READ_WRITE, principal, true);
             } else
                 edit[i] = false;
         }

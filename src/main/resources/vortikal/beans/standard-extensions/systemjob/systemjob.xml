@@ -39,7 +39,7 @@
     <property name="pathSelector">
       <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" 
             parent="repository.systemjob.indexPathSelector">
-        <property name="queryString" value="system-job-status@linkcheck &lt; {$currentTime-1m|yyyymmdd\ HH:mm:ss} OR link-status=AWAITING_LINKCHECK" />
+        <property name="queryString" value="link-status !exists OR link-status=AWAITING_LINKCHECK OR system-job-status@linkcheck &lt; {$currentTime-1h|yyyyMMdd\ HH:mm:ss}" />
         <property name="limit" value="${systemjob.linkcheck.limit}" />
         <property name="sorting">
           <bean class="org.vortikal.repository.search.SortingImpl">

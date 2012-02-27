@@ -63,8 +63,8 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
-import org.vortikal.web.search.CollectionListingConditions;
-import org.vortikal.web.search.CollectionListingSearchComponent;
+import org.vortikal.web.search.collectionlisting.CollectionListingConditions;
+import org.vortikal.web.search.collectionlisting.CollectionListingSearchComponent;
 import org.vortikal.web.service.URL;
 
 public class ManuallyApproveResourcesSearcher {

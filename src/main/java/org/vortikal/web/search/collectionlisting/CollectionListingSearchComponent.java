@@ -1,22 +1,21 @@
-/* Copyright (c) 2008, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ *      * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
@@ -28,7 +27,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.search;
+package org.vortikal.web.search.collectionlisting;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,6 +36,10 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,6 +59,9 @@ import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
+import org.vortikal.web.search.ListingUriQueryBuilder;
+import org.vortikal.web.search.QueryBuilder;
+import org.vortikal.web.search.QueryPartsSearchComponent;
 import org.vortikal.web.service.URL;
 
 public class CollectionListingSearchComponent extends QueryPartsSearchComponent {
@@ -65,6 +71,8 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
     private AggregationResolver aggregationResolver;
     private MultiHostSearcher multiHostSearcher;
     private ListingUriQueryBuilder listingUriQueryBuilder;
+    private CacheManager cacheManager;
+    private Cache cache;
 
     @Override
     protected ResultSet getResultSet(HttpServletRequest request, Resource collection, String token, Sorting sorting,
@@ -73,39 +81,59 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
         Query uriQuery = this.listingUriQueryBuilder.build(collection);
         List<Query> additionalQueries = this.getAdditionalQueries(collection, request);
 
-        CollectionListingAggregatedResources clar = this.aggregationResolver.getAggregatedResources(collection);
-        Map<URL, Set<Path>> aggregationSet = clar.getAggregationSet();
-        Set<URL> manuallyApprovedSet = clar.getManuallyApproved();
-        boolean isMultiHostSearch = this.isMultiHostSearch(aggregationSet.keySet(), manuallyApprovedSet);
-
+        // Check cache
+        CollectionListingCacheKey cacheKey = new CollectionListingCacheKey(token, this.getName(), request
+                .getRequestURL().toString());
+        Element cached = this.cache.get(cacheKey);
+        Object cachedObj = cached != null ? cached.getObjectValue() : null;
         ResultSet result = null;
-        boolean successfulMultiHostSearch = false;
-        if (isMultiHostSearch) {
-            CollectionListingConditions clc = new CollectionListingConditions(token, uriQuery, additionalQueries, clar,
-                    searchLimit, 0, sorting, null);
-            try {
-                result = this.multiHostSearcher.collectionListing(clc);
-                if (result != null) {
-                    successfulMultiHostSearch = true;
+
+        if (cachedObj != null && cachedObj instanceof ResultSet) {
+
+            // Found in cache
+            logger.info("Fetching search results from cache, key: " + cacheKey);
+            result = (ResultSet) cachedObj;
+
+        } else {
+
+            // Nothing found in cache, perform search
+            CollectionListingAggregatedResources clar = this.aggregationResolver.getAggregatedResources(collection);
+            Map<URL, Set<Path>> aggregationSet = clar.getAggregationSet();
+            Set<URL> manuallyApprovedSet = clar.getManuallyApproved();
+            boolean isMultiHostSearch = this.isMultiHostSearch(aggregationSet.keySet(), manuallyApprovedSet);
+
+            boolean successfulMultiHostSearch = false;
+            if (isMultiHostSearch) {
+                CollectionListingConditions clc = new CollectionListingConditions(token, uriQuery, additionalQueries,
+                        clar, searchLimit, 0, sorting, null);
+                try {
+                    result = this.multiHostSearcher.collectionListing(clc);
+                    if (result != null) {
+                        successfulMultiHostSearch = true;
+                        cache.put(new Element(cacheKey, result));
+                    }
+                } catch (Exception e) {
+                    logger.error("An error occured while searching multiple hosts: " + e.getMessage());
                 }
-            } catch (Exception e) {
-                logger.error("An error occured while searching multiple hosts: " + e.getMessage());
             }
+
+            if (!successfulMultiHostSearch) {
+
+                Query query = generateLocalQuery(uriQuery, additionalQueries, clar);
+
+                Search search = new Search();
+                search.setQuery(query);
+                search.setLimit(searchLimit);
+                search.setCursor(offset);
+                search.setSorting(sorting);
+
+                Repository repository = RequestContext.getRequestContext().getRepository();
+                result = repository.search(token, search);
+
+            }
+
         }
 
-        if (!successfulMultiHostSearch) {
-
-            Query query = generateLocalQuery(uriQuery, additionalQueries, clar);
-
-            Search search = new Search();
-            search.setQuery(query);
-            search.setLimit(searchLimit);
-            search.setCursor(offset);
-            search.setSorting(sorting);
-
-            Repository repository = RequestContext.getRequestContext().getRepository();
-            result = repository.search(token, search);
-        }
         return result;
     }
 
@@ -199,6 +227,17 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
     @Required
     public void setListingUriQueryBuilder(ListingUriQueryBuilder listingUriQueryBuilder) {
         this.listingUriQueryBuilder = listingUriQueryBuilder;
+    }
+
+    @Required
+    public void setCacheManager(CacheManager cacheManager) {
+        this.cacheManager = cacheManager;
+        String cacheName = "org.vortikal.MULTI_HOST_INDEX_SEARCH_CACHE";
+        Cache cache = this.cacheManager.getCache(cacheName);
+        if (cache == null) {
+            throw new IllegalArgumentException("Could not find cache with name " + cacheName);
+        }
+        this.cache = cache;
     }
 
 }

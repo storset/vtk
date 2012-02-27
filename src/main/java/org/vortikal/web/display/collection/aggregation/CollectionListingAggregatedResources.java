@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.display.collection.aggregation;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -38,7 +39,9 @@ import java.util.Set;
 import org.vortikal.repository.Path;
 import org.vortikal.web.service.URL;
 
-public class CollectionListingAggregatedResources {
+public class CollectionListingAggregatedResources implements Serializable {
+
+    private static final long serialVersionUID = 1480429223516084662L;
 
     private Map<URL, Set<Path>> aggregationSet;
     private Set<URL> manuallyApprovedSet;

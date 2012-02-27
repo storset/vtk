@@ -32,7 +32,7 @@ package org.vortikal.repository;
 
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.web.search.CollectionListingConditions;
+import org.vortikal.web.search.collectionlisting.CollectionListingConditions;
 import org.vortikal.web.service.URL;
 
 public class MultiHostSearcher {

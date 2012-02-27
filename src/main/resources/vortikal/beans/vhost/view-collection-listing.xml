@@ -48,7 +48,7 @@
     </property>
   </bean>
 
-  <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.CollectionListingSearchComponent">
+  <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.collectionlisting.CollectionListingSearchComponent">
     <property name="name" value="collectionListing.searchComponent" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
@@ -75,6 +75,7 @@
         </bean>
       </list>
     </property>
+    <property name="cacheManager" ref="ehCacheManager" />
   </bean>
 
   <bean id="collection.listingUriQueryBuilder" class="org.vortikal.web.search.ListingUriQueryBuilder">

@@ -13,6 +13,7 @@
       <table class="vrtx-collection-listing-table">
         <thead>
           <tr>
+            <th class="vrtx-collection-listing-icon"></th>
             <th class="vrtx-collection-listing-title"><@vrtx.msg code="collectionListing.resourceTitle" default="Title" /></th>
           <#if conf.compactView?string = "false">
             <th class="vrtx-collection-listing-modified-by"><@vrtx.msg code="collectionListing.lastModifiedBy" default="Modified by" /></th>
@@ -47,12 +48,15 @@
           </#if>
 
           <tr class="${rowType} ${firstLast}">
+            <td class="vrtx-collection-listing-icon first-col">
+              <a class="vrtx-icon <@vrtx.iconResolver resourceType contentType />" href="${uri?html}"></a>
+            </td>
             <#if conf.compactView?string = "false">
-              <td class="vrtx-collection-listing-title first-col">
+              <td class="vrtx-collection-listing-title">
             <#else>
-              <td class="vrtx-collection-listing-title first-col last-col">
+              <td class="vrtx-collection-listing-title last-col">
             </#if>
-              <a class="vrtx-title-link <@vrtx.iconResolver resourceType contentType />" href="${uri?html}">${title?html}</a>
+              <a class="vrtx-title-link" href="${uri?html}">${title?html}</a>
             <#if edit?exists && (edit[res_index]?string = "true")>
               <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="collectionListing.edit" /></a>
             </#if>

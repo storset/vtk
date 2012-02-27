@@ -29,7 +29,7 @@
 		  <#if !title?has_content && solrUrl?exists && solrUrl?has_content>
 		    <#assign title = vrtx.propValue(r, "solr.name", "", "") />
 		  </#if>
-          <a class="vrtx-title" href="${uri?html}">${title?html}</a>
+          <a class="vrtx-title vrtx-title-link" href="${uri?html}">${title?html}</a>
           <#if (r.resourceType == "doc" || r.resourceType == "xls" || r.resourceType == "ppt")>
             <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavServiceIsWritable')}"><@vrtx.msg code="report.collection-structure.edit" /></a>
           </#if>

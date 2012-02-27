@@ -23,7 +23,7 @@ import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
-public class GetSharedTextDropdown implements ReferenceDataProvider {
+public class SharedTextProvider implements ReferenceDataProvider {
 
     private ResourceTypeTree resourceTypeTree;
 

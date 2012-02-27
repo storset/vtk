@@ -6,7 +6,7 @@
   <#local resources=collectionListing.files />
   <#if (resources?size > 0)>
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
-    <script type="text/javascript src="/vrtx/__vrtx/static-resources/js/open-webdav.js"></script>
+    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/open-webdav.js"></script>
     <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
     <#if collectionListing.title?exists && collectionListing.offset == 0>
       <h2>${collectionListing.title?html}</h2>

@@ -113,11 +113,7 @@
                                              || resource.contentType == "image/png") />
     <div id="vrtx-editor-title-submit-buttons">
       <div id="vrtx-editor-title-submit-buttons-inner-wrapper">
-        <h2>${header}
-          <#if resource.contentType?exists && resource.contentType?starts_with("image/")>
-            <sup id="vrtx-image-editor-beta-msg">BETA</sup>
-          </#if>
-        </h2>
+        <h2>${header}</h2>
         <div class="submitButtons submit-extra-buttons">
           <div class="vrtx-button">
             <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />

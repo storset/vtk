@@ -27,7 +27,7 @@
 		  </#if>
 		  <#if !hideIcon?exists>
 		    <a class="vrtx-title vrtx-title-link vrtx-icon <@vrtx.iconResolver r.resourceType r.contentType />" href="${uri?html}">${title?html}</a>
-		  </#if> 
+		  <#else> 
             <a class="vrtx-title vrtx-title-link" href="${uri?html}">${title?html}</a>
           </#if>
           <#if (r.resourceType == "doc" || r.resourceType == "xls" || r.resourceType == "ppt")>

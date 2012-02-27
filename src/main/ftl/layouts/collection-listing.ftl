@@ -15,7 +15,7 @@
           <tr>
             <th class="vrtx-collection-listing-title"><@vrtx.msg code="collectionListing.resourceTitle" default="Title" /></th>
           <#if conf.compactView?string = "false">
-            <th class="vrtx-collection-listing-modified-by"><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
+            <th class="vrtx-collection-listing-modified-by"><@vrtx.msg code="collectionListing.lastModifiedBy" default="Modified by" /></th>
             <th class="vrtx-collection-listing-last-modified"><@vrtx.msg code="collectionListing.lastModified" default="Last modified" /></th>
           </#if>
           </tr>
@@ -53,8 +53,8 @@
               <td class="vrtx-collection-listing-title first-col last-col">
             </#if>
               <a class="vrtx-title-link <@vrtx.iconResolver resourceType contentType />" href="${uri?html}">${title?html}</a>
-            <#if (resourceType == "doc" || resourceType == "xls" || resourceType == "ppt")>
-              <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="report.collection-structure.edit" /></a>
+            <#if edit?exists && (edit[res_index]?string = "true")>
+              <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="collectionListing.edit" /></a>
             </#if>
             <#if conf.compactView?string = "true">
               ${lastModifiedTime?html}

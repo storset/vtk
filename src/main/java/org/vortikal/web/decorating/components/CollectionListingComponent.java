@@ -36,17 +36,22 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
+import org.vortikal.web.service.Service;
 
 public class CollectionListingComponent extends ViewRenderingDecoratorComponent {
 
     private SearchComponent search;
+    private Service manage;
 
     private final static String PARAMETER_URI = "uri";
     private final static String PARAMETER_URI_DESCRIPTION = "Uri to the folder. This is a required parameter";
@@ -70,15 +75,16 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
 
         Repository r = RequestContext.getRequestContext().getRepository();
         String token = SecurityContext.getSecurityContext().getToken();
+        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
 
-        Resource collection;
+        Resource res;
         try {
-            collection = r.retrieve(token, Path.fromString(uri), false);
+            res = r.retrieve(token, Path.fromString(uri), false);
         } catch (Exception e) {
-            collection = null;
+            res = null;
         }
 
-        if (collection == null || !collection.isCollection())
+        if (res == null || !res.isCollection())
             throw new DecoratorComponentException(uri + " is not a folder");
 
         int maxItems = 10;
@@ -91,16 +97,37 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         boolean goToFolderLink, folderTitle = parameterHasValue(PARAMETER_FOLDER_TITLE, "true", request);
         if (goToFolderLink = parameterHasValue(PARAMETER_GO_TO_FOLDER_LINK, "true", request)) {
             model.put("goToFolderLink", uri);
-            model.put("folderTitle", collection.getTitle());
+            model.put("folderTitle", res.getTitle());
         } else if (folderTitle)
-            model.put("folderTitle", collection.getTitle());
+            model.put("folderTitle", res.getTitle());
 
         conf.put("goToFolderLink", goToFolderLink);
         conf.put("folderTitle", folderTitle);
 
         conf.put("compactView", parameterHasValue(PARAMETER_COMPACT_VIEW, "true", request));
 
-        model.put("list", search.execute(request.getServletRequest(), collection, 1, maxItems, 0).getFiles());
+        Listing l = search.execute(request.getServletRequest(), res, 1, maxItems, 0);
+
+        String rt;
+        PropertySet ps;
+        boolean[] edit = new boolean[maxItems];
+        for (int i = 0; i < l.getFiles().size(); i++) {
+            ps = l.getFiles().get(i);
+            rt = ps.getResourceType();
+            if (rt.equals("doc") || rt.equals("ppt") || rt.equals("xls")) {
+                try {
+                    res = r.retrieve(token, ps.getURI(), false);
+                    manage.constructLink(res, principal);
+                    edit[i] = true;
+                } catch (Exception e) {
+                    edit[i] = false;
+                }
+            } else
+                edit[i] = false;
+        }
+
+        model.put("edit", edit);
+        model.put("list", l.getFiles());
         model.put("conf", conf);
     }
 
@@ -125,6 +152,11 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
     @Required
     public void setSearch(SearchComponent search) {
         this.search = search;
+    }
+
+    @Required
+    public void setService(Service manage) {
+        this.manage = manage;
     }
 
     protected String getDescriptionInternal() {

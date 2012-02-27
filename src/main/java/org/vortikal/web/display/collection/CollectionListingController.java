@@ -38,16 +38,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Acl;
-import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.display.listing.ListingPagingLink;
@@ -74,58 +68,11 @@ public class CollectionListingController extends AbstractCollectionListingContro
 
         List<Listing> results = new ArrayList<Listing>();
 
-        String[] msofficeDocsWritable = new String[1000];
-        
-        RequestContext requestContext = RequestContext.getRequestContext();
-        Repository repository = RequestContext.getRequestContext().getRepository();
-        String token = SecurityContext.getSecurityContext().getToken();
-        Principal principal = requestContext.getPrincipal();
-
-        int i = 0;
         for (SearchComponent component : this.searchComponents) {
             Listing listing = component.execute(request, collection, page, limit, 0);
             totalHits += listing.getTotalHits();
             // Add the listing to the results
             if (listing.getFiles().size() > 0) {
-                for (PropertySet ps : listing.getFiles()) {
-                    if (("doc").equals(ps.getResourceType()) 
-                     || ("xls").equals(ps.getResourceType())
-                     || ("ppt").equals(ps.getResourceType())) {
-                        String canWrite = "false";
-
-                        Resource resource = repository.retrieve(token, ps.getURI(), true);
-                        if(resource == null) { // Can't edit remote hosts
-                            msofficeDocsWritable[i] = canWrite;
-                            i++;
-                            continue;
-                        }
-                        Acl acl = resource.getAcl();
-                        Principal[] allPrincipalGroups = acl.listPrivilegedGroups(Privilege.ALL);
-                        Principal[] readWritePrincipalGroups = acl.listPrivilegedGroups(Privilege.READ_WRITE);
-                        for (Principal allPrincipalGroup : allPrincipalGroups) {
-                            if (this.principalManager.isMember(principal, allPrincipalGroup)) {
-                                canWrite = "true";
-                                break;
-                            }
-                        }
-                        if (canWrite.equals("false")) {
-                            for (Principal readWritePrincipalGroup : readWritePrincipalGroups) {
-                                if (this.principalManager.isMember(principal, readWritePrincipalGroup)) {
-                                    canWrite = "true";
-                                    break;
-                                }
-                            }
-                        }
-                        if (acl.hasPrivilege(Privilege.ALL, principal)
-                         || acl.hasPrivilege(Privilege.READ_WRITE, principal)) {
-                            canWrite = "true";
-                        }
-                        msofficeDocsWritable[i] = canWrite;
-                    } else {
-                        msofficeDocsWritable[i] = "false";
-                    }
-                    i++;
-                }
                 results.add(listing);
             }
             // Check previous result (by redoing the previous search),
@@ -151,8 +98,6 @@ public class CollectionListingController extends AbstractCollectionListingContro
         Service service = RequestContext.getRequestContext().getService();
         URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
 
-        model.put("msofficeDocsWritable", msofficeDocsWritable);
-        
         if (getHideIcon(collection)) {
             model.put("hideIcon", true);
         }

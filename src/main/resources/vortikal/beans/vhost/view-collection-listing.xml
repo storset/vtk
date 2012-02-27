@@ -36,8 +36,6 @@
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
     <property name="hideIcon" ref="collection.hideIconPropDef" />
-    <property name="webdavService" ref="webdavServiceIsWritable" />
-    <property name="principalManager" ref="principalManager" />
     <property name="searchComponents">
       <list>
         <ref bean="collectionListing.searchComponent" />

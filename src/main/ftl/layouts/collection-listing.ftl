@@ -53,7 +53,7 @@
             <td class="vrtx-collection-listing-title">
               <a href="${uri?html}">${title?html}</a>
             <#if (resourceType == "doc" || resourceType == "xls" || resourceType == "ppt")>
-              <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="report.collection-structure.edit" /></a>
+              <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavServiceIsWritable')}"><@vrtx.msg code="report.collection-structure.edit" /></a>
             </#if>
             <#if conf.compactView?string = "true">
               ${lastModifiedTime?html}

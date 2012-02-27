@@ -53,8 +53,6 @@ import org.vortikal.web.service.URL;
 public class CollectionListingController extends AbstractCollectionListingController {
 
     protected List<SearchComponent> searchComponents;
-    protected Service webdavService;
-    protected PrincipalManager principalManager;
     protected PropertyTypeDefinition hideIcon;
 
 
@@ -137,19 +135,6 @@ public class CollectionListingController extends AbstractCollectionListingContro
     public void setSearchComponents(List<SearchComponent> searchComponents) {
         this.searchComponents = searchComponents;
     }
-
-
-    @Required
-    public void setWebdavService(Service webdavService) {
-        this.webdavService = webdavService;
-    }
-
-
-    @Required
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
-    }
-
 
     @Required
     public void setHideIcon(PropertyTypeDefinition hideIcon) {

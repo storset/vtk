@@ -40,23 +40,6 @@
     </property>
   </bean>
   
-   <bean id="webdavServiceIsWritable" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order" value="-100" />
-    <property name="assertions">
-      <list>
-        <ref bean="writePermissionAssertion" />
-        <ref bean="webdavServiceAssertion" />
-      </list>
-    </property>
-    <property name="urlPostProcessors" ref="webdavServiceUrlPostProcessors" />
-    <property name="authenticationChallenge" ref="${webdavAuthenticationChallenge}" />
-    <property name="attributes">
-      <map>
-        <entry key="inhibit-caching" value="true" />
-      </map>
-    </property>
-  </bean>
-  
   <bean id="webdav.davMountService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-100" />
     <property name="assertions">

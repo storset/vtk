@@ -51,9 +51,9 @@
               <a class="vrtx-icon <@vrtx.iconResolver resourceType contentType />" href="${uri?html}"></a>
             </td>
             <#if conf.compactView?string = "true">
-              <td class="vrtx-collection-listing-title last-col">
-            <#else>
               <td class="vrtx-collection-listing-title">
+            <#else>
+              <td class="vrtx-collection-listing-title last-col">
             </#if>
               <a class="vrtx-title-link" href="${uri?html}">${title?html}</a>
             <#if (resourceType == "doc" || resourceType == "xls" || resourceType == "ppt")>

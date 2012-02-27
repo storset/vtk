@@ -414,7 +414,6 @@
     <property name="name" value="folder" />
     <property name="view" ref="decorating.collectionListingComponent.view" />
     <property name="search" ref="decorating.collectionListingComponent.searchComponent" />
-    <property name="service" ref="manageService" />
     <property name="description" value="Inserts a folder item list component on the page" />
     <property name="examples">
       <map>

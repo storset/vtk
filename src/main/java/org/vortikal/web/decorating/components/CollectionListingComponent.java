@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
@@ -51,7 +52,6 @@ import org.vortikal.web.service.Service;
 public class CollectionListingComponent extends ViewRenderingDecoratorComponent {
 
     private SearchComponent search;
-    private Service manage;
 
     private final static String PARAMETER_URI = "uri";
     private final static String PARAMETER_URI_DESCRIPTION = "Uri to the folder. This is a required parameter";
@@ -117,8 +117,7 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
             if (rt.equals("doc") || rt.equals("ppt") || rt.equals("xls")) {
                 try {
                     res = r.retrieve(token, ps.getURI(), false);
-                    manage.constructLink(res, principal);
-                    edit[i] = true;
+                    edit[i] = r.isAuthorized(res, RepositoryAction.READ_WRITE, principal, true);
                 } catch (Exception e) {
                     edit[i] = false;
                 }
@@ -152,11 +151,6 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
     @Required
     public void setSearch(SearchComponent search) {
         this.search = search;
-    }
-
-    @Required
-    public void setService(Service manage) {
-        this.manage = manage;
     }
 
     protected String getDescriptionInternal() {

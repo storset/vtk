@@ -1,5 +1,5 @@
 $(function() {
-  if(typeof agentWebDav !== "undefined") {
+  if(typeof agentWebDav === "undefined") {
     var agentWebDav = navigator.userAgent.toLowerCase();         
     var isWinWebDav = ((agentWebDav.indexOf("win") != -1) || (agentWebDav.indexOf("16bit") != -1));
     if ($.browser.msie && $.browser.version >= 7 && isWinWebDav) {  

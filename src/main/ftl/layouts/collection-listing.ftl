@@ -57,7 +57,7 @@
               <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="collectionListing.edit" /></a>
             </#if>
             <#if conf.compactView?string = "true">
-              ${lastModifiedTime?html}
+              <span>${lastModifiedTime?html}</span>
             </#if>
             </td>
           <#if conf.compactView?string = "false">

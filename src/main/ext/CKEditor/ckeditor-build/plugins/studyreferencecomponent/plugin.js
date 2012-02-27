@@ -7,7 +7,7 @@ CKEDITOR.plugins.add( 'studyreferencecomponent',
  
 		editor.ui.addButton( 'studyreferencecomponent',
 		{
-			label: 'Sett inn referansekomponent for studieløp',
+			label: editor.lang.studyreferencecomponent.title,
 			command: pluginName,
 			icon: this.path + 'images/icon.png'
 		} );
@@ -15,7 +15,7 @@ CKEDITOR.plugins.add( 'studyreferencecomponent',
 		CKEDITOR.dialog.add( pluginName, function( editor )
 		{
 			return {
-				title : 'Sett inn referansekomponent for studieløp',
+				title : editor.lang.studyreferencecomponent.title,
 				minWidth : 400,
 				minHeight : 100,
 				contents :
@@ -45,8 +45,8 @@ CKEDITOR.plugins.add( 'studyreferencecomponent',
 							{
 								type : 'text',
 								id : 'value',
-								label : 'Value',
-								validate : CKEDITOR.dialog.validate.notEmpty( 'Du må skrive inn en verdi.' ),
+								label : editor.lang.studyreferencecomponent.valuefield,
+								validate : CKEDITOR.dialog.validate.notEmpty( editor.lang.studyreferencecomponent.errormessage ),
 								required : true,
 								commit : function( data )
 								{

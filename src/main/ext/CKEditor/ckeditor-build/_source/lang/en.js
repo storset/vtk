@@ -748,5 +748,12 @@ CKEDITOR.lang['en'] =
 	{
 		ltr : 'Text direction from left to right',
 		rtl : 'Text direction from right to left'
+	},
+
+	studyreferencecomponent :
+	{
+		title		: 'Insert reference component for studies',
+		errormessage	: 'You have to enter a value',
+		valuefield	: 'Value'
 	}
 };

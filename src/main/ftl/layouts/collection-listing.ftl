@@ -10,13 +10,13 @@
     <#if (conf.folderTitle?string = "true") && folderTitle?exists>
       <h3>${folderTitle?string}</h3>
     </#if>
-      <table id="vrtx-collection-listing-component" class="vrtx-collection-listing">
+      <table class="vrtx-collection-listing-table">
         <thead>
           <tr>
-            <th id="vrtx-collection-listing-title" colspan="2"><@vrtx.msg code="collectionListing.resourceTitle" default="Title" /></th>
+            <th class="vrtx-collection-listing-title" colspan="2"><@vrtx.msg code="collectionListing.resourceTitle" default="Title" /></th>
           <#if conf.compactView?string = "false">
-            <th id="vrtx-collection-listing-modified-by"><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
-            <th id="vrtx-collection-listing-last-modified"><@vrtx.msg code="collectionListing.lastModified" default="Last modified" /></th>
+            <th class="vrtx-collection-listing-modified-by"><@vrtx.msg code="report.modified-by" default="Modified by" /></th>
+            <th class="vrtx-collection-listing-last-modified"><@vrtx.msg code="collectionListing.lastModified" default="Last modified" /></th>
           </#if>
           </tr>
         </thead>

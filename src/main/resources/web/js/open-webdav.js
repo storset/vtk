@@ -9,14 +9,14 @@ $(function() {
         e.preventDefault();
       });
       $(".vrtx-resource").hover(function (e) { 
-        $(this).find(".vrtx-resource-open-webdav").css("paddingLeft", $(this).find(".vrtx-title-link").width() + "px").show(0);
+        $(this).find(".vrtx-resource-open-webdav").css("left", ($(this).find(".vrtx-title-link").width() + 63) + "px").show(0);
       }, function (e) {
         $(this).find(".vrtx-resource-open-webdav").hide(0).css("left", "0px");
       });
      $(".vrtx-collection-listing-table tr").hover(function (e) { 
-        $(this).find(".vrtx-resource-open-webdav").css("paddingLeft", $(this).find(".vrtx-title-link").width() + "px").show(0);
+        $(this).find(".vrtx-resource-open-webdav").show(0);
       }, function (e) {
-        $(this).find(".vrtx-resource-open-webdav").hide(0).css("left", "0px");
+        $(this).find(".vrtx-resource-open-webdav").hide(0);
       });
     }
   }

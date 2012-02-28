@@ -755,5 +755,14 @@ CKEDITOR.lang['no'] =
 		title		: 'Sett inn referansekomponent for studieløp',
 		errormessage	: 'Du må skrive inn en verdi',
 		valuefield	: 'Verdi'
+	},
+
+	studytable :
+	{
+		title		: 'Studieløptype',
+		common	 	: 'Felles',
+		specialization	: 'Fordypning',
+		optional	: 'Valgfri',
+		master		: 'Masteroppgave'
 	}
 };

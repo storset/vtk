@@ -82,8 +82,12 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
         List<Query> additionalQueries = this.getAdditionalQueries(collection, request);
 
         // Check cache
-        CollectionListingCacheKey cacheKey = new CollectionListingCacheKey(token, this.getName(), request
-                .getRequestURL().toString());
+        StringBuilder sb = new StringBuilder(request.getRequestURI());
+        String qs = request.getQueryString();
+        if (qs != null) {
+            sb.append(qs);
+        }
+        CollectionListingCacheKey cacheKey = new CollectionListingCacheKey(token, this.getName(), sb.toString());
         Element cached = this.cache.get(cacheKey);
         Object cachedObj = cached != null ? cached.getObjectValue() : null;
         ResultSet result = null;

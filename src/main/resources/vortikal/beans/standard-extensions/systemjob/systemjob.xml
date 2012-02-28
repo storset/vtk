@@ -24,12 +24,16 @@
     </property>
   </bean>
 
-  <!-- Broken link check job -->
-  <bean id="repository.systemjob.linkcheck" class="org.vortikal.repository.systemjob.InvokeStoreJob"
+
+
+
+  <!-- Broken link check job for recently modified resources -->
+
+  <bean id="repository.systemjob.linkcheck.recent" class="org.vortikal.repository.systemjob.InvokeStoreJob"
         parent="repository.systemjob">
-    <property name="simplePeriodicTriggerExpression" value="${systemjob.linkcheck.trigger}" />
+    <property name="simplePeriodicTriggerExpression" value="${systemjob.linkcheck.recent.trigger}" />
     <property name="enabled" value="${systemjob.linkcheck.enabled}"/>
-    <property name="id" value="linkcheck" />
+    <property name="id" value="linkcheck-recent" />
     <property name="affectedPropDefPointers">
       <list>
         <value>resource::link-check</value>
@@ -55,6 +59,25 @@
             </bean>
           </property>
         </bean>
+      </list>
+    </property>
+  </bean>
+
+  <!-- Broken link check job (regular intervals) -->
+
+  <bean id="repository.systemjob.linkcheck" class="org.vortikal.repository.systemjob.InvokeStoreJob"
+        parent="repository.systemjob">
+    <property name="simplePeriodicTriggerExpression" value="${systemjob.linkcheck.trigger}" />
+    <property name="enabled" value="${systemjob.linkcheck.enabled}"/>
+    <property name="id" value="linkcheck" />
+    <property name="affectedPropDefPointers">
+      <list>
+        <value>resource::link-check</value>
+        <value>resource::link-status</value>
+      </list>
+    </property>
+    <property name="pathSelectors">
+      <list>
         <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" 
               parent="repository.systemjob.indexPathSelector">
           <property name="queryString" value="link-status !exists OR system-job-status@linkcheck &lt; {$currentTime-${systemjob.linkcheck.interval}|yyyyMMdd\ HH:mm:ss}" />
@@ -72,7 +95,6 @@
               </constructor-arg>
             </bean>
           </property>
-
         </bean>
       </list>
     </property>

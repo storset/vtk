@@ -311,21 +311,6 @@ h3#vrtx-image-editor-preview {
   font-size: 0.846em;
 }
 
-/* Study table */
-
-.vrtx-courseplan-table { 
-  width: 100%;
-}
-
-.vrtx-courseplan-table td.small {
-  white-space: nowrap;
-  width: 10%;
-}
-
-.vrtx-courseplan-table td.large {  
-  width: 30%;
-}
-
 
 /* ^ Image editor */
 

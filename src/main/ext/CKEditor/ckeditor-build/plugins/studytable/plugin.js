@@ -83,7 +83,7 @@ CKEDITOR.plugins.add('studytable', {
 
        	       var lang = editor.config.language;
 	       if(lang == "en") 
-		  htmlBody = htmlBody.replace(/studiepoeng/g, "ECTS credits");       
+		  htmlBody = htmlBody.replace(/studiepoeng/g, "Credits");       
      	       editor.insertHtml(htmlBody);  
       },
       canUndo: true

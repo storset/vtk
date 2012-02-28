@@ -755,5 +755,14 @@ CKEDITOR.lang['en'] =
 		title		: 'Insert reference component for studies',
 		errormessage	: 'You have to enter a value',
 		valuefield	: 'Value'
+	},
+
+	studytable :
+	{
+		title		: 'Course combination',
+		common 		: 'Common',
+		specialization	: 'Specialization',
+		optional	: 'Optional',
+		master		: 'Masters thesis'
 	}
 };

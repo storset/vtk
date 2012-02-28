@@ -25,7 +25,7 @@
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
   </bean>
 
-  <bean id="abstractManuallyApproveResourcesSearcher" abstract="true" class="org.vortikal.web.service.manuallyapprove.ManuallyApproveResourcesSearcher">
+  <bean id="editor.collection.manuallyApproveResourcesSearcher" class="org.vortikal.web.service.manuallyapprove.ManuallyApproveResourcesSearcher">
     <property name="listingResourceTypeMappingPointers">
       <map>
         <entry key="article-listing" value="${override.listing.prefix}article" />
@@ -33,13 +33,10 @@
       </map>
     </property>
     <property name="aggregationResolver" ref="aggregationResolver" />
-    <property name="collectionPropDef" ref="collectionPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="publishDatePropDef" ref="publishDatePropDef" />
     <property name="creationTimePropDef" ref="creationTimePropDef" />
-    <property name="manuallyApprovedResourcesPropDef" ref="manuallyApprovedResourcesPropDef" />
+    <property name="multiHostSearcher" ref="multiHostSearcher" />
   </bean>
-
-  <bean id="editor.collection.manuallyApproveResourcesSearcher" parent="abstractManuallyApproveResourcesSearcher" />
 
 </beans>

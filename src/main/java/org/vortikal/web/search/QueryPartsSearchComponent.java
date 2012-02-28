@@ -34,17 +34,40 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.Query;
+import org.vortikal.web.RequestContext;
 
 public class QueryPartsSearchComponent extends QuerySearchComponent {
 
-    private List<QueryBuilder> queryBuilders;
+    protected List<QueryBuilder> queryBuilders;
 
     @Override
-    protected Query getQuery(Resource collection, HttpServletRequest request) {
+    protected ResultSet getResultSet(HttpServletRequest request, Resource collection, String token, Sorting sorting,
+            int searchLimit, int offset) {
+
+        Query query = this.getQuery(collection, request);
+
+        Search search = new Search();
+        search.setQuery(query);
+        search.setLimit(searchLimit);
+        search.setCursor(offset);
+        search.setSorting(sorting);
+
+        Repository repository = RequestContext.getRequestContext().getRepository();
+        return repository.search(token, search);
+    }
+
+    private Query getQuery(Resource collection, HttpServletRequest request) {
+
+        if (this.queryBuilders == null) {
+            throw new IllegalArgumentException("Component need at least one query builder");
+        }
 
         AndQuery query = new AndQuery();
 
@@ -58,7 +81,6 @@ public class QueryPartsSearchComponent extends QuerySearchComponent {
         return query;
     }
 
-    @Required
     public void setQueryBuilders(List<QueryBuilder> queryBuilders) {
         this.queryBuilders = queryBuilders;
     }

@@ -1,0 +1,37 @@
+resourcetype fellestekst-document {
+
+  view-components {
+  
+    vis-fellestekst (docType, propName){
+        ##
+        [def uri "/vrtx/fellestekst/" + docType + "/" + propName + ".html"]
+        [def f json-resource(uri)]
+        [if f != null]
+          [def published resource-prop(uri, "published") ]
+          [if published]
+            [def key resource-prop-obj-val(".", propName)]
+            [if key != null && key != ""]
+              <div>
+              [def liste f.properties.shared-text-box]
+              [def locale resource-locale()]       
+              [list liste item]
+                  [if (key = item.id)]
+                      [if locale = "no_NO"]
+                          [val item.description-no  # unescaped]
+                      [elseif locale = "nn"]
+                          [val item.description-nn  # unescaped]
+                      [else]
+                          [val item.description-en  # unescaped]
+                      [endif]
+                  [endif]
+              [endlist]
+              </div>
+            [endif]
+          [endif]
+        [endif]
+        ##
+    }   
+  }
+  
+  
+}

@@ -30,47 +30,48 @@
  */
 package org.vortikal.repository.search;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.vortikal.repository.PropertySet;
 
-
-
 /**
- * Simple cached result set.  
+ * Simple cached result set.
  * 
  * @author oyviste
  */
-public class ResultSetImpl implements ResultSet {
+public class ResultSetImpl implements ResultSet, Serializable {
+
+    private static final long serialVersionUID = -6971684549261941757L;
 
     private List<PropertySet> results;
     private int totalHits;
-    
+
     public ResultSetImpl() {
         this.results = new ArrayList<PropertySet>();
         this.totalHits = 0;
     }
-    
+
     public ResultSetImpl(int initialCapacity) {
         this.results = new ArrayList<PropertySet>(initialCapacity);
     }
-    
+
     public PropertySet getResult(int index) {
         return this.results.get(index);
     }
-    
+
     public boolean hasResult(int index) {
         return (this.results.size() >= index + 1);
     }
 
     public List<PropertySet> getResults(int maxIndex) {
         int max = Math.min(maxIndex, this.results.size());
-        
+
         return this.results.subList(0, max);
     }
-   
+
     public List<PropertySet> getResults(int fromIndex, int toIndex) {
         return this.results.subList(fromIndex, toIndex);
     }
@@ -82,19 +83,19 @@ public class ResultSetImpl implements ResultSet {
     public int getSize() {
         return this.results.size();
     }
-    
+
     public void addResult(PropertySet propSet) {
         this.results.add(propSet);
     }
-    
+
     public Iterator<PropertySet> iterator() {
         return this.results.iterator();
     }
-    
+
     public int getTotalHits() {
         return this.totalHits;
     }
-    
+
     public void setTotalHits(int totalHits) {
         this.totalHits = totalHits;
     }

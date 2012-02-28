@@ -39,10 +39,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.PrincipalManager;
+import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.decorating.components.CollectionListingComponentHelper;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.display.listing.ListingPagingLink;
 import org.vortikal.web.search.Listing;
@@ -53,9 +55,8 @@ import org.vortikal.web.service.URL;
 public class CollectionListingController extends AbstractCollectionListingController {
 
     protected List<SearchComponent> searchComponents;
-    protected Service webdavService;
-    protected PrincipalManager principalManager;
-    protected PropertyTypeDefinition hideIcon;
+    protected PropertyTypeDefinition hideIcon; 
+    protected CollectionListingComponentHelper helper;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -66,6 +67,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
         int totalHits = 0;
 
         List<Listing> results = new ArrayList<Listing>();
+
         for (SearchComponent component : this.searchComponents) {
             Listing listing = component.execute(request, collection, page, limit, 0);
             totalHits += listing.getTotalHits();
@@ -93,13 +95,20 @@ public class CollectionListingController extends AbstractCollectionListingContro
             }
 
         }
-        Service service = RequestContext.getRequestContext().getService();
-        URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI()); 
+        RequestContext requestContext =  RequestContext.getRequestContext();
+        Service service =  requestContext.getService();
+        Repository repository =  requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Principal principal = requestContext.getPrincipal();
         
-        if(getHideIcon(collection)){
-            model.put("hideIcon", true);    
-        }
+        URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
 
+        if (getHideIcon(collection)) {
+            model.put("hideIcon", true);
+        }
+        
+        model.put("edit", helper.isAuthorized(repository, token, principal, totalHits, results));
+        
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL, page);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
         model.put(MODEL_KEY_SEARCH_COMPONENTS, results);
@@ -109,6 +118,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
         }
     }
 
+
     protected Map<String, Integer> getNumberOfRecords(int page, int pageLimit, int resultSize) {
         Map<String, Integer> numbers = new HashMap<String, Integer>();
         int numberShownElements = ((page - 1) * pageLimit) + 1;
@@ -117,31 +127,28 @@ public class CollectionListingController extends AbstractCollectionListingContro
         numbers.put("elementsIncludingThisPage", includingThisPage);
         return numbers;
     }
-    
+
+
     protected boolean getHideIcon(Resource collection) {
-        if(this.hideIcon == null) return false;
+        if (this.hideIcon == null)
+            return false;
         Property p = collection.getProperty(this.hideIcon);
         if (p == null) {
             return false;
         }
         return p.getBooleanValue();
     }
+    
+    @Required
+    public void setHelper(CollectionListingComponentHelper helper) {
+        this.helper = helper;
+    }   
 
     @Required
     public void setSearchComponents(List<SearchComponent> searchComponents) {
         this.searchComponents = searchComponents;
     }
-    
-    @Required
-    public void setWebdavService(Service webdavService) {
-        this.webdavService = webdavService;
-    }
 
-    @Required
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
-    }   
-    
     @Required
     public void setHideIcon(PropertyTypeDefinition hideIcon) {
         this.hideIcon = hideIcon;

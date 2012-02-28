@@ -184,3 +184,18 @@
 }
 
 /* ^ Vortex - Editor - New documenttypes */
+
+/* Study table */
+
+.vrtx-courseplan-table { 
+  width: 100%;
+}
+
+.vrtx-courseplan-table td.small {
+  white-space: nowrap;
+  width: 10%;
+}
+
+.vrtx-courseplan-table td.large {  
+  width: 30%;
+}

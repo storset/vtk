@@ -33,11 +33,9 @@ package org.vortikal.security.web;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -63,10 +61,10 @@ import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.token.TokenManager;
 import org.vortikal.security.web.AuthenticationHandler.AuthResult;
+import org.vortikal.security.web.saml.SamlAuthenticationHandler;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Assertion;
 import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
 
 /**
  * Initializer for the {@link SecurityContext security context}. A security context is created for every request. Also
@@ -86,11 +84,9 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
     private static final String SECURITY_TOKEN_SESSION_ATTR = SecurityInitializer.class.getName() + ".SECURITY_TOKEN";
 
-    private static final String VRTXLINK_COOKIE = "VRTXLINK";
+    public static final String VRTXLINK_COOKIE = "VRTXLINK";
 
     private static final String VRTX_AUTH_SP_COOKIE = "VRTX_AUTH_SP";
-
-    private static final String UIO_AUTH_SSO = "UIO_AUTH_SSO";
 
     private static final String UIO_AUTH_IDP = "UIO_AUTH_IDP";
 
@@ -118,12 +114,6 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     private CookieLinkStore cookieLinkStore;
 
     private String spCookieDomain = null;
-
-    private String serviceProviderURI;
-
-    private Long ssoTimeout;
-
-    private String[] wordWhitelist;
 
     // Only relevant when using both https AND http and
     // different session cookie name for each protocol:
@@ -208,45 +198,13 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                 logger.debug("Invalid token '" + token + "' in request session, "
                         + "will proceed to check authentication");
             }
-        } else if (getCookie(req, UIO_AUTH_SSO) != null && getCookie(req, VRTXLINK_COOKIE) == null
-                && req.getParameter("authTarget") == null && !req.getRequestURI().contains(serviceProviderURI)) {
-
-            StringBuffer url = req.getRequestURL();
-            Boolean doRedirect = false;
-
-            for (String word : wordWhitelist) {
-                if (url.toString().endsWith(word.trim())) {
-                    doRedirect = true;
-                }
-            }
-
-            Long cookieTimestamp = new Long(0);
-            try {
-                cookieTimestamp = Long.valueOf(getCookie(req, UIO_AUTH_SSO).getValue());
-            } catch (NumberFormatException e) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Cannot parse, old SSO cookie format");
-                }
-            }
-            Long currentTime = new Date().getTime();
-
-            if (currentTime - cookieTimestamp > ssoTimeout) {
-                doRedirect = false;
-            }
-
-            if (doRedirect) {
-                String queryString = req.getQueryString();
-                if (queryString != null) {
-                    url = url.append("?");
-                    url = url.append(queryString);
-                }
-                URL currentURL = URL.parse(url.toString());
-                currentURL.addParameter("authTarget", req.getScheme());
-                resp.sendRedirect(currentURL.toString());
-            }
         }
 
         for (AuthenticationHandler handler : this.authenticationHandlers) {
+
+            if (handler instanceof SamlAuthenticationHandler) {
+                ((SamlAuthenticationHandler) handler).checkSSOCookie(req, resp);
+            }
 
             if (handler.isRecognizedAuthenticationRequest(req)) {
                 if (logger.isDebugEnabled()) {
@@ -434,7 +392,6 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         if (this.rememberAuthMethod) {
             List<String> spCookies = new ArrayList<String>();
             spCookies.add(VRTX_AUTH_SP_COOKIE);
-            spCookies.add(UIO_AUTH_SSO);
             spCookies.add(UIO_AUTH_IDP);
 
             for (String cookie : spCookies) {
@@ -444,7 +401,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                         logger.debug("Deleting cookie " + cookie);
                     }
                     c = new Cookie(cookie, c.getValue());
-                    if (!cookie.equals(UIO_AUTH_SSO) || !cookie.equals(VRTXID) || !cookie.equals(VRTXLINK_COOKIE)) {
+                    if (!cookie.equals(VRTXID) || !cookie.equals(VRTXLINK_COOKIE)) {
                         c.setSecure(true);
                     }
                     c.setPath("/");
@@ -520,18 +477,6 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         if (spCookieDomain != null && !"".equals(spCookieDomain.trim())) {
             this.spCookieDomain = spCookieDomain;
         }
-    }
-
-    public void setServiceProviderURI(String serviceProviderURI) {
-        this.serviceProviderURI = serviceProviderURI;
-    }
-
-    public void setSsoTimeout(Long ssoTimeout) {
-        this.ssoTimeout = ssoTimeout;
-    }
-
-    public void setWordWhitelist(String[] wordWhitelist) {
-        this.wordWhitelist = wordWhitelist;
     }
 
     public void setSpCookieAssertion(Assertion spCookieAssertion) {
@@ -619,22 +564,6 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                     logger.debug("Setting cookie: " + cookie + ": " + handler.getIdentifier());
                 }
             }
-
-            Random generator = new Random();
-            String currentTime = String.valueOf(new Date().getTime() + generator.nextInt(120000));
-
-            Cookie ssoCookie = new Cookie(UIO_AUTH_SSO, currentTime);
-            ssoCookie.setPath("/");
-
-            if (this.spCookieDomain != null) {
-                ssoCookie.setDomain(this.spCookieDomain);
-            }
-
-            resp.addCookie(ssoCookie);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Setting cookie: " + ssoCookie + ": " + handler.getIdentifier());
-            }
-
         }
         if (this.cookieLinksEnabled) {
             UUID cookieLinkID = this.cookieLinkStore.addToken(req, token);

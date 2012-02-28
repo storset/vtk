@@ -13,6 +13,15 @@
     timeToIdleSeconds="120"
     timeToLiveSeconds="120" />
 
+  <!-- MULTI HOST INDEX SEARCH CACHE -->
+  <cache name="org.vortikal.MULTI_HOST_INDEX_SEARCH_CACHE"
+         maxElementsInMemory="100"
+         maxElementsOnDisk="10000"
+         eternal="false"
+         overflowToDisk="true"
+         timeToIdleSeconds="0"
+         timeToLiveSeconds="600" />
+
   <!-- LINK CHECK CACHE -->
   <cache name="org.vortikal.LINK_CHECK_CACHE"
          maxElementsInMemory="500"

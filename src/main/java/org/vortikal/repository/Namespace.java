@@ -30,8 +30,12 @@
  */
 package org.vortikal.repository;
 
+import java.io.Serializable;
 
-public class Namespace {
+
+public class Namespace implements Serializable {
+
+    private static final long serialVersionUID = 2843338379249275679L;
 
     public static final Namespace DEFAULT_NAMESPACE = new Namespace(null, null);
     

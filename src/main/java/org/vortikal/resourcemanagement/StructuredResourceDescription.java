@@ -88,6 +88,9 @@ public final class StructuredResourceDescription {
 
     public List<PropertyDescription> getAllPropertyDescriptions() {
         List<PropertyDescription> result = new ArrayList<PropertyDescription>();
+        if(propertyDescriptions == null){
+            return result;
+        }
         if (this.inheritsFrom != null) {
             StructuredResourceDescription ancestor = this.manager.get(this.inheritsFrom);
             result.addAll(ancestor.getAllPropertyDescriptions());
@@ -245,6 +248,9 @@ public final class StructuredResourceDescription {
     }
 
     void validate() {
+        if(propertyDescriptions == null){
+            return;
+        }
         for (int i = 0; i < propertyDescriptions.size(); i++) {
             PropertyDescription d = propertyDescriptions.get(i);
 

@@ -30,14 +30,28 @@
  */
 package org.vortikal.web.decorating.components;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.Principal;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.search.Listing;
+import org.vortikal.web.search.SearchComponent;
 
 public class CollectionListingComponent extends ViewRenderingDecoratorComponent {
+
+    private SearchComponent search;
+    private CollectionListingComponentHelper helper;
 
     private final static String PARAMETER_URI = "uri";
     private final static String PARAMETER_URI_DESCRIPTION = "Uri to the folder. This is a required parameter";
@@ -47,6 +61,8 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
     private final static String PARAMETER_GO_TO_FOLDER_LINK_DESCRIPTION = "Set to 'true' to show 'Go to folder' link. Default is false";
     private final static String PARAMETER_FOLDER_TITLE = "folder-title";
     private final static String PARAMETER_FOLDER_TITLE_DESCRIPTION = "Set to 'true' to show folder title. Default is false";
+    private final static String PARAMETER_COMPACT_VIEW = "compact-view";
+    private final static String PARAMETER_COMPACT_VIEW_DESCRIPTION = "Set to 'true' to show compact view. Default is false";
 
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
@@ -56,20 +72,46 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         String uri = request.getStringParameter(PARAMETER_URI);
         if (uri == null)
             throw new DecoratorComponentException("Component parameter 'uri' is required");
-        conf.put("uri", uri);
+
+        Repository r = RequestContext.getRequestContext().getRepository();
+        String token = SecurityContext.getSecurityContext().getToken();
+        Principal principal = SecurityContext.getSecurityContext().getPrincipal();
+
+        Resource res;
+        try {
+            res = r.retrieve(token, Path.fromString(uri), false);
+        } catch (Exception e) {
+            res = null;
+        }
+
+        if (res == null || !res.isCollection())
+            throw new DecoratorComponentException(uri + " is not a folder");
 
         int maxItems = 10;
         try {
             if ((maxItems = Integer.parseInt(request.getStringParameter(PARAMETER_MAX_ITEMS))) <= 0)
                 maxItems = 10;
-        } catch (Exception e) {
+        } catch (Exception ignore) {
         }
-        conf.put("maxItems", maxItems);
 
-        conf.put("goToFolderLink", parameterHasValue(PARAMETER_GO_TO_FOLDER_LINK, "true", request));
+        boolean goToFolderLink, folderTitle = parameterHasValue(PARAMETER_FOLDER_TITLE, "true", request);
+        if (goToFolderLink = parameterHasValue(PARAMETER_GO_TO_FOLDER_LINK, "true", request)) {
+            model.put("goToFolderLink", uri);
+            model.put("folderTitle", res.getTitle());
+        } else if (folderTitle)
+            model.put("folderTitle", res.getTitle());
 
-        conf.put("folderTitle", parameterHasValue(PARAMETER_FOLDER_TITLE, "true", request));
+        conf.put("goToFolderLink", goToFolderLink);
+        conf.put("folderTitle", folderTitle);
 
+        conf.put("compactView", parameterHasValue(PARAMETER_COMPACT_VIEW, "true", request));
+
+        Listing l = search.execute(request.getServletRequest(), res, 1, maxItems, 0);
+        List<Listing> ll = new ArrayList<Listing>();
+        ll.add(l);
+        
+        model.put("edit", helper.isAuthorized(r, token, principal, maxItems, ll));
+        model.put("list", l.getFiles());
         model.put("conf", conf);
     }
 
@@ -79,15 +121,26 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         map.put(PARAMETER_MAX_ITEMS, PARAMETER_MAX_ITEMS_DESCRIPTION);
         map.put(PARAMETER_GO_TO_FOLDER_LINK, PARAMETER_GO_TO_FOLDER_LINK_DESCRIPTION);
         map.put(PARAMETER_FOLDER_TITLE, PARAMETER_FOLDER_TITLE_DESCRIPTION);
+        map.put(PARAMETER_COMPACT_VIEW, PARAMETER_COMPACT_VIEW_DESCRIPTION);
         return map;
     }
 
-    boolean parameterHasValue(String param, String includeParamValue, DecoratorRequest request) {
+    private boolean parameterHasValue(String param, String includeParamValue, DecoratorRequest request) {
         String itemDescriptionString = request.getStringParameter(param);
         if (itemDescriptionString != null && includeParamValue.equalsIgnoreCase(itemDescriptionString)) {
             return true;
         }
         return false;
+    }
+
+    @Required
+    public void setSearch(SearchComponent search) {
+        this.search = search;
+    }
+    
+    @Required
+    public void setHelper(CollectionListingComponentHelper helper) {
+        this.helper = helper;
     }
 
     protected String getDescriptionInternal() {

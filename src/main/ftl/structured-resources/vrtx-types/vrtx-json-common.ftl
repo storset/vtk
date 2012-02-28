@@ -7,6 +7,7 @@
 <#import "vrtx-media-ref.ftl" as vrtxMediaRef />
 <#import "vrtx-radio.ftl" as vrtxRadio />
 <#import "vrtx-string.ftl" as vrtxString />
+<#import "vrtx-shared-text.ftl" as vrtxSharedText />
 <#import "vrtx-resource-ref.ftl" as vrtxResourceRef />
 
 <#macro printPropertyEditView form elem locale>
@@ -37,7 +38,10 @@
       <#else>
             <#assign classes = elem.name />
       </#if>
-      <@vrtxString.printPropertyEditView
+      
+     <#if sharedTextProps[elem.name]?exists>  
+     
+      <@vrtxSharedText.printPropertyEditView
         title=localizedTitle
         inputFieldName=elem.name
         value=elem.getFormatedValue()
@@ -46,8 +50,22 @@
         tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
         valuemap=elem.description.getValuemap(locale)
         dropdown=dropdown
-        defaultValue=	elem.getDefaultValue()
+        defaultValue=   elem.getDefaultValue()
+      />    
+
+      <#else>
+            <@vrtxString.printPropertyEditView
+        title=localizedTitle
+        inputFieldName=elem.name
+        value=elem.getFormatedValue()
+        classes=classes
+        inputFieldSize=fieldSize
+        tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
+        valuemap=elem.description.getValuemap(locale)
+        dropdown=dropdown
+        defaultValue=   elem.getDefaultValue()
       />
+      </#if>
       <#break>
 
     <#case "simple_html">

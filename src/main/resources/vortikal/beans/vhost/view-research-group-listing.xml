@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <bean id="researchGroupListing.viewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
@@ -27,18 +27,14 @@
 
   <bean id="researchGroupListing.searchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="researchGroupListing.defaultListing" />
+    <property name="listingUriQueryBuilder" ref="collection.defaultRecursiveListingUriQueryBuilder" />
     <property name="queryBuilders">
       <list>
-        <ref bean="researchGroupListing.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="type IN research-group" />
         </bean>
       </list>
     </property>
-  </bean>
-
-  <bean id="researchGroupListing.listingUriQueryBuilder" parent="collection.listingUriQueryBuilder">
-    <property name="defaultRecursive" value="true" />
   </bean>
 
   <bean id="researchGroupListing.viewResolver" parent="decoratorViewResolver">

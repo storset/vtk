@@ -32,12 +32,14 @@ package org.vortikal.repository.store;
 
 /**
  * Basic impl of <code>PrincipalMetadata</code>.
- *
+ * 
  */
 public class PrincipalMetadataImpl extends MetadataImpl implements PrincipalMetadata {
-    
+
+    private static final long serialVersionUID = 3115695954782646707L;
+
     private String qualifiedName;
-    
+
     public PrincipalMetadataImpl(String qualifiedName) {
         if (qualifiedName == null) {
             throw new IllegalArgumentException("Qualified name cannot be null");
@@ -48,7 +50,7 @@ public class PrincipalMetadataImpl extends MetadataImpl implements PrincipalMeta
     public String getQualifiedName() {
         return this.qualifiedName;
     }
-    
+
     public String getUid() {
         String uid = (String) this.getValue(PrincipalMetadata.UID_ATTRIBUTE);
         if (uid == null) {
@@ -56,28 +58,29 @@ public class PrincipalMetadataImpl extends MetadataImpl implements PrincipalMeta
         }
         return uid;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder(getClass().getName());
         buffer.append("[qualifiedName=").append(qualifiedName).append(']');
         return buffer.toString();
     }
-    
+
     @Override
     public boolean equals(Object other) {
-        if (this == other) return true;
+        if (this == other)
+            return true;
 
         if (other == null || this.getClass() != other.getClass()) {
             return false;
         }
 
-        return this.qualifiedName.equals(((PrincipalMetadataImpl)other).qualifiedName);
+        return this.qualifiedName.equals(((PrincipalMetadataImpl) other).qualifiedName);
     }
-    
+
     @Override
     public int hashCode() {
         return this.qualifiedName.hashCode();
     }
-    
+
 }

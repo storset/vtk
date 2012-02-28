@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumMap;
@@ -62,7 +63,7 @@ import org.vortikal.security.Principal;
  * 
  * XXX: Fail in all getters if value not initialized ?
  */
-public class PropertyImpl implements java.io.Serializable, Cloneable, Property {
+public class PropertyImpl implements Serializable, Cloneable, Property {
 
     private static final long serialVersionUID = 3762531209208410417L;
 

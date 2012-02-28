@@ -6,7 +6,6 @@
     <property name="name" value="structured.eventListing.upcomingEventsSearchComponent" />
     <property name="queryBuilders">
       <list>
-        <ref bean="eventListing.listingUriQueryBuilder" />
         <ref bean="structured.eventListing.upcomingEventsQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="type IN structured-event" />
@@ -14,7 +13,6 @@
       </list>
     </property>
     <property name="searchSorting" ref="structured.eventListing.upcoming.searchSorting" />
-    <property name="configurablePropertySelectPointers" ref="event.configurablePropertySelectPointersList" />
   </bean>
 
   <bean id="structured.eventListing.upcomingEventsQueryBuilder" parent="eventListing.upcomingEventsQueryBuilder">
@@ -38,7 +36,6 @@
     <property name="name" value="structured.eventListing.previousEventsSearchComponent" />
     <property name="queryBuilders">
       <list>
-        <ref bean="eventListing.listingUriQueryBuilder" />
         <ref bean="structured.eventListing.prevoiusEventsQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="type IN structured-event" />
@@ -46,7 +43,6 @@
       </list>
     </property>
     <property name="searchSorting" ref="structured.eventListing.previous.searchSorting" />
-    <property name="configurablePropertySelectPointers" ref="event.configurablePropertySelectPointersList" />
   </bean>
 
   <bean id="structured.eventListing.previous.searchSorting" parent="eventListing.previous.searchSorting">
@@ -61,7 +57,6 @@
     <property name="name" value="structured.eventListing.groupedByDayEventSearchComponent" />
     <property name="queryBuilders">
       <list>
-        <ref bean="eventListing.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="type IN structured-event" />
         </bean>
@@ -87,7 +82,6 @@
     <property name="name" value="structured.eventListing.furtherUpcomingSearchComponent" />
     <property name="queryBuilders">
       <list>
-        <ref bean="eventListing.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="type IN structured-event" />
         </bean>
@@ -110,7 +104,6 @@
     <property name="name" value="structured.eventListing.furtherUpcomingSearchComponent" />
     <property name="queryBuilders">
       <list>
-        <ref bean="eventListing.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="type IN structured-event" />
         </bean>
@@ -132,7 +125,6 @@
     <property name="name" value="structured.eventListing.currentMonthSearchComponent" />
     <property name="queryBuilders">
       <list>
-        <ref bean="eventListing.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="type IN structured-event" />
         </bean>
@@ -166,24 +158,6 @@
         <ref bean="resourceContextProvider" />
       </list>
     </property>
-  </bean>
-
-  <bean id="event.configurablePropertySelectPointersList" class="java.util.ArrayList">
-    <constructor-arg>
-      <list>
-        <value>title</value>
-        <value>resource:introduction</value>
-        <value>resource:picture</value>
-        <value>resource:caption</value>
-        <value>resource:location</value>
-        <value>resource:end-date</value>
-        <value>resource:start-date</value>
-        <value>resource:mapurl</value>
-        <value>resource:hasBodyContent</value>
-        <value>numberOfComments</value>
-        <value>lastModified</value>
-      </list>
-    </constructor-arg>
   </bean>
 
 </beans>

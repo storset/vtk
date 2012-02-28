@@ -33,6 +33,11 @@
     <property name="login" ref="saml.login"/>
     <property name="logout" ref="saml.logout"/>
     <property name="postHandler" ref="saml.lostPostHandler"/>
+
+    <property name="serviceProviderURI" value="${saml.serviceProviderURI}" />
+    <property name="wordWhitelist" value="${security.ssoWordWhitelist}"/>
+    <property name="ssoTimeout" value="${security.ssoTimeoutMilliseconds}" />
+    <property name="spCookieDomain" value="${security.spCookieDomain}" />
     
     <property name="staticHeaders">
       <map>

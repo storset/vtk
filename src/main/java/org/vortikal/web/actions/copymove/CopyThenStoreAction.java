@@ -28,43 +28,50 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.search;
+package org.vortikal.web.actions.copymove;
 
+import java.io.InputStream;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.search.Search;
+import org.vortikal.repository.Repository.Depth;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.web.RequestContext;
 
-public interface MultiHostSearch {
+/**
+ * Copy and store new resource action
+ */
+public class CopyThenStoreAction {
+    
+    private Set<PropertyTypeDefinition> preservedProperties;
 
-    public static final String URL_PROP_NAME = "solr.url";
-    public static final String LANG_PROP_NAME = "solr.lang";
-    public static final String MULTIHOST_RESOURCE_PROP_NAME = "solr.isSolrResource";
-    public static final String NAME_PROP_NAME = "solr.name";
-
-    public static enum Type {
-        // The simplest of all searches. Just map a supplied original search to
-        // multi host search and execute
-        SIMPE_SEARCH,
-        // Resource listing search, map an original search to multi host search,
-        // including aggregation and manually approved resources
-        RESOURCE_LISTING_SEARCH,
-        // Search for resources on a host under a given prefix
-        URI_PREFIX_SEARCH,
-        // Search for specific resource types on a given host
-        RESOURCE_TYPE_SEARCH
+    public void process(Path copyUri, Resource src, InputStream stream) throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        
+        // Copy resource
+        repository.copy(token, src.getURI(), copyUri, Depth.INF, false, true);
+        
+        // Store updated preserved properties
+        Resource newRsrc = repository.retrieve(token, copyUri, true);
+        for (Property prop : src.getProperties()) { 
+          if (preservedProperties.contains(prop.getDefinition())) {
+            newRsrc.addProperty(prop);
+          }
+        }
+        repository.store(token, newRsrc);
+        
+        // Store updated content
+        repository.storeContent(token, copyUri, stream);
     }
 
-    public String getName();
-
-    public String getToken();
-
-    public Search getOriginalSearch();
-
-    public Type getType();
-
-    public Resource getOriginalResource();
-
-    public String getUri();
-
-    public String getResourceType();
-
+    @Required
+    public void setPreservedProperties(Set<PropertyTypeDefinition> preservedProperties) {
+        this.preservedProperties = preservedProperties;
+    }
 }

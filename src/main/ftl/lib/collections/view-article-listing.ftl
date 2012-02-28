@@ -5,37 +5,16 @@
 
   <#if (collectionListings?size > 0)>
 
-     <#if listingView == "2columns" || listingView == "2columns+prio">
-       <#-- TMP inline CSS/JS - move to UiO-dist after v3.5 is released -->
-       <style type="text/css">
-         .articleListing\.searchComponent .vrtx-default-article-left,
-         .articleListing\.searchComponent .vrtx-featured-article-left,
-         .articleListing\.searchComponent .vrtx-default-article-right,
-         .articleListing\.searchComponent .vrtx-featured-article-right {
-           width: 355px;
-         }
-         .articleListing\.searchComponent .vrtx-default-article-right,
-         .articleListing\.searchComponent .vrtx-featured-article-right {
-           float: right;
-           clear: none;
-         }
-         <#if listingView == "2columns+prio">
-           .articleListing\.searchComponent #vrtx-result-1 {
-             width: 100%;
-           } 
-         </#if>
-      </style>
-    </#if>
-    
-    
     <#assign i = 1 />
 
     <#local frontpageClass = "" />
     <#if page = 1>
       <#local frontpageClass = "vrtx-resources-frontpage" />
     </#if>
-    <#if listingView == "2columns+prio">
-      <div id="articleListing.searchComponent" class="vrtx-resources vrtx-resource-prioritize-first articleListing.searchComponent ${frontpageClass}">
+    <#if listingView == "2columns">
+      <div id="articleListing.searchComponent" class="vrtx-resources vrtx-two-columns articleListing.searchComponent ${frontpageClass}">
+    <#elseif listingView == "2columns+prio">
+      <div id="articleListing.searchComponent" class="vrtx-resources vrtx-two-columns vrtx-resource-prioritize-first articleListing.searchComponent ${frontpageClass}">
     <#else>
       <div id="articleListing.searchComponent" class="vrtx-resources articleListing.searchComponent ${frontpageClass}">
     </#if>
@@ -127,6 +106,9 @@
         </#list>
       </#if>
     </#list>
+    <#if listingView == "2columns+prio">
+      </div>
+    </#if>
     </div>
   </#if>
 

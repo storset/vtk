@@ -58,7 +58,9 @@ public class ManuallyApproveResourcesHandler implements Controller {
 
     private ManuallyApproveResourcesSearcher searcher;
 
-    private static final String FOLDERS_PARAM = "folders";
+    // XXX RENAME! -> May also be complete urls to other hosts
+    @Deprecated
+    private static final String locationS_PARAM = "locations";
     private static final String AGGREGATE_PARAM = "aggregate";
 
     private PropertyTypeDefinition manuallyApproveFromPropDef;
@@ -77,50 +79,51 @@ public class ManuallyApproveResourcesHandler implements Controller {
         Property manuallyApprovedResourcesProp = currentCollection.getProperty(this.manuallyApprovedResourcesPropDef);
         Property aggregationProp = currentCollection.getProperty(this.aggregationPropDef);
         Property recursiveProp = currentCollection.getProperty(this.recursivePropDef);
-        String[] foldersParam = request.getParameterValues(FOLDERS_PARAM);
+        String[] manuallyApproveFromParam = request.getParameterValues(locationS_PARAM);
         String[] aggregateParam = request.getParameterValues(AGGREGATE_PARAM);
 
         // Nothing to work with, need at least one of these
-        if (manuallyApproveFromProp == null && manuallyApprovedResourcesProp == null && foldersParam == null) {
+        if (manuallyApproveFromProp == null && manuallyApprovedResourcesProp == null
+                && manuallyApproveFromParam == null) {
             return null;
         }
 
-        Set<String> folders = new HashSet<String>();
-        // Parameter "folders" overrides property, because user might change
+        Set<String> locations = new HashSet<String>();
+        // Parameter "locations" overrides property, because user might change
         // content and update service before storing resource
-        if (foldersParam != null) {
-            for (String folder : foldersParam) {
-                if (this.isValid(folder, currentCollectionPath, recursiveProp, repository, token)) {
-                    folders.add(folder);
+        if (manuallyApproveFromParam != null) {
+            for (String location : manuallyApproveFromParam) {
+                if (this.isValid(location, currentCollectionPath, recursiveProp, repository, token)) {
+                    locations.add(location);
                 }
             }
         } else if (manuallyApproveFromProp != null) {
             Value[] manuallyApproveFromValues = manuallyApproveFromProp.getValues();
             for (Value manuallyApproveFromValue : manuallyApproveFromValues) {
-                String folder = manuallyApproveFromValue.getStringValue();
-                if (this.isValid(folder, currentCollectionPath, recursiveProp, repository, token)) {
-                    folders.add(folder);
+                String location = manuallyApproveFromValue.getStringValue();
+                if (this.isValid(location, currentCollectionPath, recursiveProp, repository, token)) {
+                    locations.add(location);
                 }
             }
         }
 
-        // Make sure current collection path is not among set of folders to
+        // Make sure current collection path is not among set of locations to
         // manually approve from
-        folders.remove(currentCollectionPath.toString());
+        locations.remove(currentCollectionPath.toString());
 
-        // Aggregation must also be considered. Any folder to aggregate from
-        // will be discarded from folder set to manually approve from, because
+        // Aggregation must also be considered. Any location to aggregate from
+        // will be discarded from location set to manually approve from, because
         // aggregation overrides manual approval. Parameter "aggregate"
         // overrides property, again because user might change content and
         // update service before storing resource
         if (aggregateParam != null) {
             for (String agg : aggregateParam) {
-                folders.remove(agg);
+                locations.remove(agg);
             }
         } else if (aggregationProp != null) {
             Value[] aggregationValues = aggregationProp.getValues();
             for (Value aggregationValue : aggregationValues) {
-                folders.remove(aggregationValue.toString());
+                locations.remove(aggregationValue.toString());
             }
         }
 
@@ -135,7 +138,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
         // That's it... we now have a set of resources to manually approve from,
         // along with a set of resources that are already manually approved...
         // Let's search!
-        List<ManuallyApproveResource> result = this.searcher.getManuallyApproveResources(currentCollection, folders,
+        List<ManuallyApproveResource> result = this.searcher.getManuallyApproveResources(currentCollection, locations,
                 alreadyApproved);
 
         if (result == null || result.size() == 0) {
@@ -151,7 +154,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
             }
             JSONObject obj = new JSONObject();
             obj.put("title", m.getTitle());
-            obj.put("uri", m.getUri());
+            obj.put("uri", m.getUrl().toString());
             obj.put("source", m.getSource());
             obj.put("published", m.getPublishDateAsString());
             obj.put("approved", approved);
@@ -166,11 +169,11 @@ public class ManuallyApproveResourcesHandler implements Controller {
         return null;
     }
 
-    private boolean isValid(String folder, Path currentCollectionPath, Property recursiveProp, Repository repository,
+    private boolean isValid(String location, Path currentCollectionPath, Property recursiveProp, Repository repository,
             String token) {
 
         try {
-            URL.parse(folder);
+            URL.parse(location);
             return true;
         } catch (Exception e) {
             // Not a url, but might be a local path. Ignore and continue.
@@ -179,18 +182,18 @@ public class ManuallyApproveResourcesHandler implements Controller {
         try {
 
             // Make sure path is valid (be lenient on trailing slash)
-            folder = folder.endsWith("/") && !folder.equals("/") ? folder.substring(0, folder.length() - 1) : folder;
-            Path folderPath = Path.fromString(folder);
+            location = location.endsWith("/") && !location.equals("/") ? location.substring(0, location.length() - 1) : location;
+            Path locationPath = Path.fromString(location);
 
             // Make sure resource exists
-            if (!repository.exists(token, folderPath)) {
+            if (!repository.exists(token, locationPath)) {
                 return false;
             }
 
-            // Also remove from folders set any values which are children of
+            // Also remove from locations set any values which are children of
             // current collection
             if (recursiveProp != null && recursiveProp.getBooleanValue()) {
-                if (currentCollectionPath.isAncestorOf(folderPath)) {
+                if (currentCollectionPath.isAncestorOf(locationPath)) {
                     return false;
                 }
             }

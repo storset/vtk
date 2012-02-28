@@ -30,22 +30,9 @@
     <property name="name" value="audioVideoListing.defaultListing" />
     <property name="queryBuilders">
       <list>
-        <ref bean="collection.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="(type IN audio OR type IN video)" />
         </bean>
-      </list>
-    </property>
-    <property name="configurablePropertySelectPointers">
-      <list>
-        <value>title</value>
-        <value>lastModified</value>
-        <value>video-description</value>
-        <value>audio-description</value>
-        <value>contentType</value>
-        <value>duration</value>
-        <value>publish-date</value>
-        <value>poster-image</value>
       </list>
     </property>
     <property name="listableProperties">

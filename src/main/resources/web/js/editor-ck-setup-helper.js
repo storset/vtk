@@ -19,6 +19,17 @@ var completeToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Re
                         'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
                         'JustifyCenter', 'JustifyRight', 'TextColor',
                         'Maximize']];
+                        
+var studyToolbar = [['Studytable', 'Studyreferencecomponent', '-', 'Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+                        'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
+                        'Image', 'CreateDiv', 'MediaEmbed', 'Table',
+                        'HorizontalRule', 'SpecialChar'
+                    ], ['Format', 'Bold', 'Italic', 
+                        'Subscript', 'Superscript', 'NumberedList',
+                        'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
+                        'JustifyCenter', 'JustifyRight', 
+                        'Maximize']];
+
 
 var completeToolbarOld = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                            'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
@@ -56,6 +67,25 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   } else if (name.indexOf("caption") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, inlineToolbar, 
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
+  //Studier                      
+  } else if (name.indexOf("frist-frekvens-fri") != -1
+    || name.indexOf("metode-fri") != -1
+    || name.indexOf("internasjonale-sokere-fri") != -1
+    || name.indexOf("nordiske-sokere-fri") != -1
+    || name.indexOf("opptakskrav-fri") != -1
+    || name.indexOf("generelle-fri") != -1
+    || name.indexOf("spesielle-fri")  != -1
+    || name.indexOf("politiattest-fri") != -1
+    || name.indexOf("rangering-sokere-fri") != -1
+    || name.indexOf("forstevitnemal-kvote-fri") != -1
+    || name.indexOf("ordinar-kvote-alle-kvalifiserte-fri")  != -1   
+    || name.indexOf("innpassing-tidl-utdanning-fri") != -1
+    || name.indexOf("regelverk-fri") != -1
+    || name.indexOf("description-en") != -1
+    || name.indexOf("description-nn") != -1
+    || name.indexOf("description-no") != -1) {
+    setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 300, 40, inlineToolbar, 
+                      true, false, baseDocumentUrl, false);
   } else if (name.indexOf("additional-content") != -1
           || name.indexOf("additionalContents") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 150, 400, 40, 
@@ -63,7 +93,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   } else if (isCompleteEditor) {
     var height = 220;
     var maxHeight = 400;
-    var completeTB = completeToolbar;
+    var completeTB = completeToolbar;   
     if (name.indexOf("supervisor-box") != -1) {
       height = 130;
       maxHeight = 300;
@@ -96,8 +126,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 
   config.baseHref = baseDocumentUrl;
   config.contentsCss = cssFileList;
-  // config.skin = 'chris';
-
+  
   // Don't use HTML-entities for structured-documents
   if (name.indexOf("resource.") != 0) {
     config.entities = false;
@@ -111,7 +140,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
   if (complete) {
     config.filebrowserImageBrowseUrl = imageBrowseUrl;
     config.filebrowserFlashBrowseUrl = flashBrowseUrl;
-    config.extraPlugins = 'mediaembed,ajaxsave';
+    config.extraPlugins = 'mediaembed,studytable,studyreferencecomponent';
     config.stylesSet = divContainerStylesSet;
     // XHTML
     if (name == "resource.content" && simple) {

@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.resourcetype;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import net.sf.json.JSONObject;
@@ -37,7 +38,9 @@ import net.sf.json.JSONObject;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 
-public class Value implements Cloneable, Comparable<Value> {
+public class Value implements Cloneable, Comparable<Value>, Serializable {
+
+    private static final long serialVersionUID = 3436743294757202084L;
 
     protected Value() {
         // REMOVE ONCE REFACTORING DONE

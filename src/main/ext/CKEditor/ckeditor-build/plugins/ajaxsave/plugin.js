@@ -6,22 +6,11 @@ CKEDITOR.plugins.add('ajaxsave', {
         var $form = editor.element.$.form;
         if ($form) {
           try {
-            for (instance in CKEDITOR.instances) {
-              CKEDITOR.instances[instance].updateElement();
+          	if($form.workingCopy) {       
             }
-           
-            tb_show(saveDocAjaxText + "...", 
-                   "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
-                   false);
-            
-            performSave();
-            $("#editor").ajaxSubmit({
-              success: function () {},
-              complete: function() {
-                initDatePicker(datePickerLang);
-                tb_remove();
-              }
-            });
+            else {
+            	documentSave();
+            }
           }
           catch (e) {
             alert(e);

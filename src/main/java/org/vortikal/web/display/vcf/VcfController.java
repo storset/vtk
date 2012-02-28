@@ -59,9 +59,11 @@ public class VcfController implements Controller {
     private String usernamePropDefPointer;
     private String positionPropDefPointer;
     private String phonePropDefPointer;
+    private String alternativeCellPhonePropDefPointer;
     private String mobilePropDefPointer;
     private String faxPropDefPointer;
     private String postalAddressPropDefPointer;
+    private String alternativeVisitingAddressPropDefPointer;
     private String visitingAddressPropDefPointer;
     private String emailPropDefPointer;
     private String picturePropDefPointer;
@@ -80,9 +82,8 @@ public class VcfController implements Controller {
         Resource person = repository.retrieve(token, uri, true);
 
         String vcard = createVcard(person, repository, token, uri.getParent(), requestURL);
-        if (vcard == null) {
+        if (vcard == null)
             return null;
-        }
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("text/x-vcard;charset=utf-8");
@@ -102,9 +103,8 @@ public class VcfController implements Controller {
             name = name.replace(' ', '_');
         else {
             name = person.getName();
-            if (name.contains(".")) {
+            if (name.contains("."))
                 name = name.substring(0, name.indexOf("."));
-            }
         }
 
         return name;
@@ -122,47 +122,41 @@ public class VcfController implements Controller {
         Property usernameProp = getProperty(person, usernamePropDefPointer);
         if (surnameProp != null) {
             sb.append("N:" + surnameProp.getFormattedValue());
-            if (firstNameProp != null) {
+            if (firstNameProp != null)
                 sb.append(";" + firstNameProp.getFormattedValue());
-            }
             sb.append("\n");
-        } else if (firstNameProp != null) {
+        } else if (firstNameProp != null)
             sb.append("N:" + firstNameProp.getFormattedValue() + "\n");
-        } else if (usernameProp != null) {
+        else if (usernameProp != null)
             sb.append("N:" + usernameProp.getFormattedValue() + "\n");
-        }
 
         if (firstNameProp != null) {
             sb.append("FN:" + firstNameProp.getFormattedValue());
-            if (surnameProp != null) {
+            if (surnameProp != null)
                 sb.append(" " + surnameProp.getFormattedValue());
-            }
             sb.append("\n");
-        } else if (surnameProp != null) {
+        } else if (surnameProp != null)
             sb.append("FN:" + surnameProp.getFormattedValue() + "\n");
-        } else if (usernameProp != null) {
+        else if (usernameProp != null)
             sb.append("FN:" + usernameProp.getFormattedValue() + "\n");
-        }
 
         Property positionProp = getProperty(person, positionPropDefPointer);
-        if (positionProp != null) {
+        if (positionProp != null)
             sb.append("TITLE:" + positionProp.getFormattedValue() + "\n");
-        }
 
         Property phoneProp = getProperty(person, phonePropDefPointer);
-        if (phoneProp != null) {
+        if (phoneProp != null)
             sb.append("TEL;TYPE=WORK,VOICE:" + phoneProp.getFormattedValue() + "\n");
-        }
 
         Property mobileProp = getProperty(person, mobilePropDefPointer);
-        if (mobileProp != null) {
+        if (mobileProp == null || mobileProp.getFormattedValue().equals(""))
+                mobileProp = getProperty(person, alternativeCellPhonePropDefPointer);
+        if (mobileProp != null)
             sb.append("TEL;TYPE=CELL:" + mobileProp.getFormattedValue() + "\n");
-        }
 
         Property faxProp = getProperty(person, faxPropDefPointer);
-        if (faxProp != null) {
+        if (faxProp != null)
             sb.append("TEL;TYPE=FAX:" + faxProp.getFormattedValue() + "\n");
-        }
 
         /*
          * For data input reasons addresses has to be put in one (the street
@@ -174,34 +168,34 @@ public class VcfController implements Controller {
         if (postalAddressProp != null)
             sb.append("ADR;TYPE=WORK,POSTAL:;;" + postalAddressProp.getFormattedValue() + ";;;;\n");
 
-        Property visitingAddressProp = getProperty(person, visitingAddressPropDefPointer);
-        if (visitingAddressProp != null) {
+        Property visitingAddressProp = getProperty(person, alternativeVisitingAddressPropDefPointer);
+        if (visitingAddressProp == null || visitingAddressProp.getFormattedValue().equals(""))
+            visitingAddressProp = getProperty(person, visitingAddressPropDefPointer);
+        if (visitingAddressProp != null)
             sb.append("ADR;TYPE=WORK:;;" + visitingAddressProp.getFormattedValue() + ";;;;\n");
-        }
 
         Property emailProp = getProperty(person, emailPropDefPointer);
-        if (emailProp != null) {
+        if (emailProp != null)
             sb.append("EMAIL;TYPE=INTERNET:" + emailProp.getFormattedValue() + "\n");
-        }
 
         Property pictureProp = getProperty(person, picturePropDefPointer);
         if (pictureProp != null) {
             String pic = b64Thumbnail(repository, token, currenturi, requestURL, pictureProp);
-            if (pic != null) {
+            if (pic != null)
                 sb.append(pic);
-            }
         }
 
         sb.append("REV:" + getDtstamp() + "\n");
         sb.append("END:VCARD");
+
         return sb.toString();
     }
 
     private Property getProperty(Resource person, String propDefPointer) {
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyDefinitionByPointer(propDefPointer);
-        if (propDef != null) {
+        if (propDef != null)
             return person.getProperty(propDef);
-        }
+
         return null;
     }
 
@@ -318,6 +312,11 @@ public class VcfController implements Controller {
     }
 
     @Required
+    public void setAlternativeCellPhonePropDefPointer(String alternativeCellPhonePropDefPointer) {
+        this.alternativeCellPhonePropDefPointer = alternativeCellPhonePropDefPointer;
+    }
+
+    @Required
     public void setMobilePropDefPointer(String mobilePropDefPointer) {
         this.mobilePropDefPointer = mobilePropDefPointer;
     }
@@ -330,6 +329,11 @@ public class VcfController implements Controller {
     @Required
     public void setPostalAddressPropDefPointer(String postalAddressPropDefPointer) {
         this.postalAddressPropDefPointer = postalAddressPropDefPointer;
+    }
+
+    @Required
+    public void setAlternativeVisitingAddressPropDefPointer(String alternativeVisitingAddressPropDefPointer) {
+        this.alternativeVisitingAddressPropDefPointer = alternativeVisitingAddressPropDefPointer;
     }
 
     @Required

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <bean id="collectionListing.viewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
@@ -14,9 +14,8 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="collectionListing.viewService.serviceNameProvider" 
-    class="org.vortikal.web.service.provider.CollectionListingViewServiceNameProvider" />
-  
+  <bean id="collectionListing.viewService.serviceNameProvider" class="org.vortikal.web.service.provider.CollectionListingViewServiceNameProvider" />
+
   <bean id="collectionListing.atomService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
     <property name="order" value="-1" />
@@ -28,17 +27,16 @@
     </property>
     <property name="handler" ref="collectionListing.atomHandler" />
   </bean>
-  
+
   <bean id="collectionListing.handler" class="org.vortikal.web.display.collection.CollectionListingController">
     <property name="resourceManager" ref="resourceManager" />
-     <property name="searchSorting" ref="collectionListing.searchSorting" />
+    <property name="searchSorting" ref="collectionListing.searchSorting" />
     <property name="viewName" value="collectionListing.view" />
     <property name="pageLimitPropDef" ref="pageLimitPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
     <property name="hideIcon" ref="collection.hideIconPropDef" />
-    <property name="webdavService" ref="webdavService" />
-    <property name="principalManager" ref="principalManager" />
+    <property name="helper" ref="decorating.collectionListingComponentHelper" />
     <property name="searchComponents">
       <list>
         <ref bean="collectionListing.searchComponent" />
@@ -50,16 +48,8 @@
       </map>
     </property>
   </bean>
-  
-  <bean id="collectionListing.atomHandler" class="org.vortikal.web.display.collection.CollectionListingAsAtomFeed"
-    parent="viewAsFeedHandler">
-    <property name="searchComponent" ref="collectionListing.searchComponent" />
-  </bean>
 
-  <!-- Will be overridden with required properties where available (e.g. multihostsearcher) -->
-  <bean id="collectionListing.baseSearchComponent" abstract="true" class="org.vortikal.web.search.QueryPartsSearchComponent" />
-
-  <bean id="collectionListing.searchComponent" parent="collectionListing.baseSearchComponent">
+  <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.collectionlisting.CollectionListingSearchComponent">
     <property name="name" value="collectionListing.searchComponent" />
     <property name="viewService" ref="webService" />
     <property name="resourceManager" ref="resourceManager" />
@@ -75,27 +65,30 @@
         </bean>
       </list>
     </property>
+    <property name="searchSorting" ref="collectionListing.searchSorting" />
+    <property name="aggregationResolver" ref="aggregationResolver" />
+    <property name="multiHostSearcher" ref="multiHostSearcher" />
+    <property name="listingUriQueryBuilder" ref="collection.listingUriQueryBuilder" />
     <property name="queryBuilders">
       <list>
-        <ref bean="collection.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="type IN file" />
         </bean>
       </list>
     </property>
-    <property name="searchSorting" ref="collectionListing.searchSorting" />
-    <property name="resourceTypeTree" ref="resourceTypeTree"/>
+    <property name="cacheManager" ref="ehCacheManager" />
   </bean>
 
-  <bean id="listingUriQueryBuilder" abstract="true" class="org.vortikal.web.search.ListingUriQueryBuilder">
-    <property name="aggregationResolver" ref="aggregationResolver" />
-    <property name="displayAggregationPropDef" ref="displayAggregationPropDef" />
-    <property name="displayManuallyApprovedPropDef" ref="displayManuallyApprovedPropDef" />
-    <property name="manuallyApproveResourcesSearcher" ref="editor.collection.manuallyApproveResourcesSearcher" />
-  </bean>
-
-  <bean id="collection.listingUriQueryBuilder" parent="listingUriQueryBuilder">
+  <bean id="collection.listingUriQueryBuilder" class="org.vortikal.web.search.ListingUriQueryBuilder">
     <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
+  </bean>
+
+  <bean id="collection.defaultRecursiveListingUriQueryBuilder" parent="collection.listingUriQueryBuilder">
+    <property name="defaultRecursive" value="true" />
+  </bean>
+
+  <bean id="collectionListing.atomHandler" class="org.vortikal.web.display.collection.CollectionListingAsAtomFeed" parent="viewAsFeedHandler">
+    <property name="searchComponent" ref="collectionListing.searchComponent" />
   </bean>
 
   <bean id="collectionListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
@@ -105,7 +98,7 @@
         <value>title</value>
       </list>
     </property>
-    <property name="resourceTypeTree"  ref ="resourceTypeTree" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.ASC" />
     <property name="sortOrderMapping">
       <map>
@@ -123,7 +116,7 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="collectionListing.view" parent="freemarkerView">
     <property name="url" value="pages/view-collection-listing.ftl" />
     <property name="referenceDataProviders">
@@ -146,5 +139,5 @@
       </map>
     </property>
   </bean>
-  
+
 </beans>

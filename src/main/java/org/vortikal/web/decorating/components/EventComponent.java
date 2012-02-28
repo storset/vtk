@@ -167,9 +167,10 @@ public class EventComponent extends AbstractEventComponent {
          * otherwise we have to process the search result to list out each day
          * for itself.
          */
-        if (listOnlyOnce)
+        if (listOnlyOnce) {
             model.put("res", res);
-        else {
+            conf.put("type", "res");
+        } else {
             model.put("today", new Date());
             Calendar tomorrow = Calendar.getInstance();
             tomorrow.add(Calendar.DATE, 1);
@@ -240,6 +241,7 @@ public class EventComponent extends AbstractEventComponent {
             }
 
             model.put("psd", psd);
+            conf.put("type", "psd");
         }
 
         model.put("conf", conf);

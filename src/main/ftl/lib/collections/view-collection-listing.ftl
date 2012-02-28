@@ -5,26 +5,8 @@
 
   <#local resources=collectionListing.files />
   <#if (resources?size > 0)>
-     <script type="text/javascript"><!--
-       $(function() {
-         var agent = navigator.userAgent.toLowerCase();         
-         var isWin = ((agent.indexOf("win") != -1) || (agent.indexOf("16bit") != -1));
-         if ($.browser.msie && $.browser.version >= 7 && isWin) {  
-           $(".vrtx-resource-open-webdav").click(function(e) {
-             var openOffice = new ActiveXObject("Sharepoint.OpenDocuments.1").EditDocument(this.href);
-             e.stopPropagation();
-             e.preventDefault();
-           });
-           $(".vrtx-resource").hover(function (e) { 
-               $(this).find(".vrtx-resource-open-webdav").css("left", ($(this).find(".vrtx-title a").width() + 63) + "px").show(0);
-             }, function (e) {
-               $(this).find(".vrtx-resource-open-webdav").hide(0).css("left", "0px");
-             }
-           );
-         }
-       });
-     // -->
-     </script>
+    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
+    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/open-webdav.js"></script>
     <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
     <#if collectionListing.title?exists && collectionListing.offset == 0>
       <h2>${collectionListing.title?html}</h2>
@@ -47,8 +29,8 @@
 		  <#if !title?has_content && solrUrl?exists && solrUrl?has_content>
 		    <#assign title = vrtx.propValue(r, "solr.name", "", "") />
 		  </#if>
-          <a class="vrtx-title" href="${uri?html}">${title?html}</a>
-          <#if (r.resourceType == "doc" || r.resourceType == "xls" || r.resourceType == "ppt")>
+          <a class="vrtx-title vrtx-title-link" href="${uri?html}">${title?html}</a>
+          <#if edit?exists && edit[r_index]?string = "true">
             <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="report.collection-structure.edit" /></a>
           </#if>
 		</div>

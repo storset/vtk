@@ -31,9 +31,11 @@
     <property name="usernamePropDefPointer" value="resource:username" />
     <property name="positionPropDefPointer" value="resource:position" />
     <property name="phonePropDefPointer" value="resource:phone" />
+    <property name="alternativeCellPhonePropDefPointer" value="resource:alternativeCellPhone" />
     <property name="mobilePropDefPointer" value="resource:mobile" />
     <property name="faxPropDefPointer" value="resource:fax" />
     <property name="postalAddressPropDefPointer" value="resource:postalAddress" />
+    <property name="alternativeVisitingAddressPropDefPointer" value="resource:alternativeVisitingAddress" />
     <property name="visitingAddressPropDefPointer" value="resource:visitingAddress" />
     <property name="emailPropDefPointer" value="resource:email" />
     <property name="picturePropDefPointer" value="resource:picture" />

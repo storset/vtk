@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,7 +48,9 @@ import org.vortikal.util.repository.LocaleHelper;
  * 
  *
  */
-public class PropertySetImpl implements PropertySet, Cloneable {
+public class PropertySetImpl implements PropertySet, Cloneable, Serializable {
+
+    private static final long serialVersionUID = 6482843397243107314L;
 
     /**
      * Numeric ID used to represent the NULL resource ("no resource").

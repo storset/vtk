@@ -62,6 +62,7 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueFormatterRegistry;
 import org.vortikal.repository.resourcetype.property.PropertyEvaluationException;
 import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.EvaluationElement;
+import org.vortikal.resourcemanagement.EditRule.EditRuleType;
 import org.vortikal.resourcemanagement.parser.ParserConstants;
 import org.vortikal.resourcemanagement.service.ExternalServiceInvoker;
 import org.vortikal.util.text.JSON;
@@ -123,7 +124,7 @@ public class StructuredResourceManager {
 
         def.setName(description.getName());
         def.setNamespace(this.namespace);
-
+        
         ResourceTypeDefinition parentDefinition = this.baseType;
 
         PropertyTypeDefinition[] descPropDefs = createPropDefs(description);
@@ -181,16 +182,17 @@ public class StructuredResourceManager {
 
     private List<RepositoryAssertion> createAssertions(StructuredResourceDescription description) {
         List<RepositoryAssertion> assertions = new ArrayList<RepositoryAssertion>();
-        JSONObjectSelectAssertion typeElementAssertion = this.assertion.createAssertion("resourcetype", description
-                .getName());
+        JSONObjectSelectAssertion typeElementAssertion = this.assertion.createAssertion("resourcetype",
+                description.getName());
         assertions.add(typeElementAssertion);
-
-        for (PropertyDescription propDesc : description.getPropertyDescriptions()) {
-            if (propDesc instanceof SimplePropertyDescription) {
-                if (((SimplePropertyDescription) propDesc).isRequired()) {
-                    JSONObjectSelectAssertion propAssertion = this.assertion.createAssertion("properties."
-                            + propDesc.getName());
-                    assertions.add(propAssertion);
+        if (description.getPropertyDescriptions() != null) {
+            for (PropertyDescription propDesc : description.getPropertyDescriptions()) {
+                if (propDesc instanceof SimplePropertyDescription) {
+                    if (((SimplePropertyDescription) propDesc).isRequired()) {
+                        JSONObjectSelectAssertion propAssertion = this.assertion.createAssertion("properties."
+                                + propDesc.getName());
+                        assertions.add(propAssertion);
+                    }
                 }
             }
         }
@@ -200,13 +202,15 @@ public class StructuredResourceManager {
     private PropertyTypeDefinition[] createPropDefs(StructuredResourceDescription description) throws Exception {
         List<PropertyDescription> propertyDescriptions = description.getPropertyDescriptions();
         List<PropertyTypeDefinition> result = new ArrayList<PropertyTypeDefinition>();
-
-        for (PropertyDescription d : propertyDescriptions) {
-            PropertyTypeDefinition def = createPropDef(d, description);
-            if (def != null) {
-                result.add(def);
+        if (propertyDescriptions != null) {
+            for (PropertyDescription d : propertyDescriptions) {
+                PropertyTypeDefinition def = createPropDef(d, description);
+                if (def != null) {
+                    result.add(def);
+                }
             }
         }
+        
         return result.toArray(new PropertyTypeDefinition[result.size()]);
     }
 
@@ -291,11 +295,13 @@ public class StructuredResourceManager {
         def.setPropertyEvaluator(createPropertyEvaluator(propertyDescription, resourceDescription));
 
         if (propertyDescription instanceof SimplePropertyDescription) {
+            
             SimplePropertyDescription spd = ((SimplePropertyDescription) propertyDescription);
             Map<String, Object> edithints = spd.getEdithints();
             if (edithints != null) {
                 def.addMetadata(PropertyTypeDefinition.METADATA_EDITING_HINTS, edithints);
             }
+            
             String defaultValue = spd.getDefaultValue();
             if (defaultValue != null) {
                 this.setDefaultValue(def, defaultValue);

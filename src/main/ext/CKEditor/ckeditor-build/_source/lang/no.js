@@ -748,5 +748,12 @@ CKEDITOR.lang['no'] =
 	{
 		ltr : 'Text direction from left to right', // MISSING
 		rtl : 'Text direction from right to left' // MISSING
+	},
+
+	studyreferencecomponent :
+	{
+		title		: 'Sett inn referansekomponent for studieløp',
+		errormessage	: 'Du må skrive inn en verdi',
+		valuefield	: 'Verdi'
 	}
 };

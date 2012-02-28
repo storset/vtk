@@ -28,15 +28,19 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.search;
+package org.vortikal.repository;
 
-import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.search.ResultSet;
+import org.vortikal.repository.search.Search;
+import org.vortikal.web.search.collectionlisting.CollectionListingConditions;
+import org.vortikal.web.service.URL;
 
 public interface MultiHostSearchComponent {
 
-    public ResultSet search(MultiHostSearch multiHostSearch);
+    public ResultSet search(String token, Search search);
 
-    public PropertySet retrieve(String token, String uri);
+    public PropertySet retrieve(String token, URL url);
+
+    public ResultSet collectionListing(CollectionListingConditions clc);
 
 }

@@ -163,6 +163,15 @@
   </bean>
   
   <bean id="copy.unpublishAfterCopyAction" class="org.vortikal.web.actions.copymove.UnpublishAfterCopyAction" />
+  <bean id="copy.imageCopyThenStoreAction" class="org.vortikal.web.actions.copymove.CopyThenStoreAction"> 
+    <property name="preservedProperties">
+      <list>
+        <ref bean="userTitlePropDef" />
+        <ref bean="imageHtmlDescriptionPropDef" />
+        <ref bean="photographerPropDef" />
+      </list>
+    </property>
+  </bean> 
 
   <bean id="moveToSelectedFolderHandler" class="org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController">
     <property name="viewName" value="manageCollectionListing" />

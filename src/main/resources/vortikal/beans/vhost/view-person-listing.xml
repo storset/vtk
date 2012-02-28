@@ -26,33 +26,15 @@
 
   <bean id="personListing.searchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="personListing.defaultPerson" />
+    <property name="listingUriQueryBuilder" ref="collection.defaultRecursiveListingUriQueryBuilder" />
     <property name="queryBuilders">
       <list>
-        <ref bean="personListing.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="(type IN person) AND (resource:surname exists AND resource:firstName exists)" />
         </bean>
       </list>
     </property>
     <property name="searchSorting" ref="personListing.searchSorting" />
-    <property name="configurablePropertySelectPointers">
-      <list>
-        <value>resource:firstName</value>
-        <value>resource:surname</value>
-        <value>resource:position</value>
-        <value>resource:phone</value>
-        <value>resource:mobile</value>
-        <value>resource:email</value>
-        <value>title</value>
-        <value>resource:picture</value>
-        <value>tags</value>
-        <value>lastModified</value>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="personListing.listingUriQueryBuilder" parent="collection.listingUriQueryBuilder">
-    <property name="defaultRecursive" value="true" />
   </bean>
 
   <bean id="personListing.searchSorting" parent="collectionListing.searchSorting">

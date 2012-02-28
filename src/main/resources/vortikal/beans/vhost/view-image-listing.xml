@@ -34,30 +34,14 @@
   <bean id="imageListing.searchComponent" parent="collectionListing.searchComponent">
     <property name="viewService" ref="viewImageInfoService" />
     <property name="name" value="imageListing.defaultListing" />
+    <property name="listingUriQueryBuilder" ref="collection.defaultRecursiveListingUriQueryBuilder" />
     <property name="queryBuilders">
       <list>
-        <ref bean="imageListing.listingUriQueryBuilder" />
         <bean parent="queryStringParser">
           <property name="queryString" value="type IN image" />
         </bean>
       </list>
     </property>
-    <property name="configurablePropertySelectPointers">
-      <list>
-        <value>title</value>
-        <value>lastModified</value>
-        <value>image-description</value>
-        <value>pixelHeight</value>
-        <value>pixelWidth</value>
-        <value>creationTime</value>
-        <value>contentLength</value>
-        <value>photographer</value>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="imageListing.listingUriQueryBuilder" parent="collection.listingUriQueryBuilder">
-    <property name="defaultRecursive" value="true" />
   </bean>
 
   <bean id="imageListing.viewResolver" parent="decoratorViewResolver">

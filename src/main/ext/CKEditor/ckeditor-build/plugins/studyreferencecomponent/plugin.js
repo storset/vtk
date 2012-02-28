@@ -5,7 +5,7 @@ CKEDITOR.plugins.add( 'studyreferencecomponent',
 		var pluginName = 'studyreferencecomponent';
 		editor.addCommand( pluginName, new CKEDITOR.dialogCommand( pluginName ) );
  
-		editor.ui.addButton( 'studyreferencecomponent',
+		editor.ui.addButton( 'Studyreferencecomponent',
 		{
 			label: editor.lang.studyreferencecomponent.title,
 			command: pluginName,

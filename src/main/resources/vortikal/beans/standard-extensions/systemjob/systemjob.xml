@@ -56,8 +56,8 @@
         </bean>
         <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" 
               parent="repository.systemjob.indexPathSelector">
-          <property name="queryString" value="link-status !exists OR system-job-status@linkcheck &lt; {$currentTime-1d|yyyyMMdd\ HH:mm:ss}" />
-          <!--property name="queryString" value="link-status !exists OR link-status=AWAITING_LINKCHECK OR system-job-status@linkcheck &lt; {$currentTime-1h|yyyyMMdd\ HH:mm:ss}" /-->
+          <property name="queryString" value="link-status !exists OR system-job-status@linkcheck &lt; {$currentTime-${systemjob.linkcheck.interval}|yyyyMMdd\ HH:mm:ss}" />
+          <!--property name="queryString" value="link-status !exists OR link-status=AWAITING_LINKCHECK OR system-job-status@linkcheck &lt; {$currentTime-${systemjob.linkcheck.interval}|yyyyMMdd\ HH:mm:ss}" /-->
           <property name="limit" value="${systemjob.linkcheck.limit}" />
         </bean>
       </list>

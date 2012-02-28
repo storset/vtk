@@ -10,7 +10,11 @@
     <#if (conf.folderTitle?string = "true") && folderTitle?exists>
       <h3>${folderTitle?string}</h3>
     </#if>
-      <table class="vrtx-collection-listing-table">
+      <#if conf.compactView?string = "true">
+        <table class="vrtx-collection-listing-table vrtx-collection-listing-table-compact">
+      <#else>
+        <table class="vrtx-collection-listing-table">
+      </#if>
         <thead>
           <tr>
             <th class="vrtx-collection-listing-icon"></th>

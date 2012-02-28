@@ -30,15 +30,15 @@
  */
 package org.vortikal.web.decorating.components;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
@@ -51,6 +51,7 @@ import org.vortikal.web.search.SearchComponent;
 public class CollectionListingComponent extends ViewRenderingDecoratorComponent {
 
     private SearchComponent search;
+    private CollectionListingComponentHelper helper;
 
     private final static String PARAMETER_URI = "uri";
     private final static String PARAMETER_URI_DESCRIPTION = "Uri to the folder. This is a required parameter";
@@ -106,21 +107,10 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         conf.put("compactView", parameterHasValue(PARAMETER_COMPACT_VIEW, "true", request));
 
         Listing l = search.execute(request.getServletRequest(), res, 1, maxItems, 0);
-
-        String rt;
-        PropertySet ps;
-        boolean[] edit = new boolean[maxItems];
-        for (int i = 0; i < l.getFiles().size(); i++) {
-            ps = l.getFiles().get(i);
-            rt = ps.getResourceType();
-            if (rt.equals("doc") || rt.equals("ppt") || rt.equals("xls")) {
-                res = r.retrieve(token, ps.getURI(), false);
-                edit[i] = r.isAuthorized(res, RepositoryAction.READ_WRITE, principal, true);
-            } else
-                edit[i] = false;
-        }
-
-        model.put("edit", edit);
+        List<Listing> ll = new ArrayList<Listing>();
+        ll.add(l);
+        
+        model.put("edit", helper.isAuthorized(r, token, principal, maxItems, ll));
         model.put("list", l.getFiles());
         model.put("conf", conf);
     }
@@ -146,6 +136,11 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
     @Required
     public void setSearch(SearchComponent search) {
         this.search = search;
+    }
+    
+    @Required
+    public void setHelper(CollectionListingComponentHelper helper) {
+        this.helper = helper;
     }
 
     protected String getDescriptionInternal() {

@@ -39,9 +39,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.decorating.components.CollectionListingComponentHelper;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.display.listing.ListingPagingLink;
 import org.vortikal.web.search.Listing;
@@ -52,8 +55,8 @@ import org.vortikal.web.service.URL;
 public class CollectionListingController extends AbstractCollectionListingController {
 
     protected List<SearchComponent> searchComponents;
-    protected PropertyTypeDefinition hideIcon;
-
+    protected PropertyTypeDefinition hideIcon; 
+    protected CollectionListingComponentHelper helper;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -92,13 +95,20 @@ public class CollectionListingController extends AbstractCollectionListingContro
             }
 
         }
-        Service service = RequestContext.getRequestContext().getService();
+        RequestContext requestContext =  RequestContext.getRequestContext();
+        Service service =  requestContext.getService();
+        Repository repository =  requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Principal principal = requestContext.getPrincipal();
+        
         URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
 
         if (getHideIcon(collection)) {
             model.put("hideIcon", true);
         }
-
+        
+        model.put("edit", helper.isAuthorized(repository, token, principal, totalHits, results));
+        
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL, page);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
         model.put(MODEL_KEY_SEARCH_COMPONENTS, results);
@@ -128,7 +138,11 @@ public class CollectionListingController extends AbstractCollectionListingContro
         }
         return p.getBooleanValue();
     }
-
+    
+    @Required
+    public void setHelper(CollectionListingComponentHelper helper) {
+        this.helper = helper;
+    }   
 
     @Required
     public void setSearchComponents(List<SearchComponent> searchComponents) {

@@ -10,7 +10,7 @@ var inlineToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
 var withoutSubSuperToolbar = [['Source', 'PasteText', 'Link', 'Unlink', 'Bold',
                                'Italic', 'Strike', 'SpecialChar']];
 
-var completeToolbar = [['Studytable', 'Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+var completeToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                         'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
                         'Image', 'CreateDiv', 'MediaEmbed', 'Table',
                         'HorizontalRule', 'SpecialChar'

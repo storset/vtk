@@ -51,13 +51,11 @@
           </#if>
 
           <tr class="${rowType} ${firstLast}">
-            <td class="vrtx-collection-listing-icon first-col">
-              <a class="vrtx-icon <@vrtx.iconResolver resourceType contentType />" href="${uri?html}"></a>
-            </td>
             <#if conf.compactView?string = "false">
-              <td class="vrtx-collection-listing-title">
+              <td class="vrtx-collection-listing-title first-col">
+                <a class="vrtx-icon <@vrtx.iconResolver resourceType contentType />" href="${uri?html}"></a>
             <#else>
-              <td class="vrtx-collection-listing-title last-col">
+              <td class="vrtx-collection-listing-title first-col last-col">
             </#if>
               <a class="vrtx-title-link" href="${uri?html}">${title?html}</a>
             <#if edit?exists && (edit[res_index]?string = "true")>

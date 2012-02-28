@@ -18,7 +18,7 @@
   <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
   
   <script type="text/javascript"><!--
-    var saveAjaxText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
+    var ajaxSaveText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
      
     var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";
     

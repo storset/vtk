@@ -694,7 +694,7 @@ function ajaxSave() {
     CKEDITOR.instances[instance].updateElement();
   } 
   var startTime = new Date();   
-  tb_show(saveAjaxText + "...", 
+  tb_show(ajaxSaveText + "...", 
           "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
           false);
         

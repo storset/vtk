@@ -18,7 +18,8 @@
   <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
   
   <script type="text/javascript"><!--
-    
+ 
+     
     var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";
     
     shortcut.add("Ctrl+S",function() {
@@ -32,6 +33,28 @@
     UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
     COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
     window.onbeforeunload = unsavedChangesInEditorMessage;
+ 	
+	$(document).ready(function() {
+  	$("#app-content").delegate(".cke_button_maximize", "click", function(e) {
+    	
+		var stickyBar = $(".vrtx-sticky-editor-title-submit-buttons");
+						
+    	stickyBar.toggle();
+
+    	var ckInject = $(this).closest(".cke_toolbar")
+                          .find(".cke_toolbar_end");
+
+    	if(!ckInject.find(".vrtx-focus-button").length) {
+      	var shortcuts = stickyBar.find("#editor-shortcuts").html();
+      		ckInject.append(shortcuts);
+      		ckInject.children().not(".vrtx-focus-button")
+                         .not("#editor-help-menu").remove();
+    	} else {
+      		ckInject.find(".vrtx-focus-button").toggle();
+      		ckInject.find("#editor-help-menu").toggle();
+    	}
+  		});
+	}); 
 
 	function documentSave () {
 		for (instance in CKEDITOR.instances) {
@@ -176,10 +199,10 @@
     <div class="submit submitButtons">
     <#if !form.published && !form.workingCopy>
       <div class="vrtx-button">
-        <input type="submit" id="saveAndViewButton" onclick="performSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
+        <input type="button" id="saveAndViewButton" onclick="documentSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
       <div class="vrtx-focus-button">
-        <input type="submit" id="updateAction" onclick="performSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
+        <input type="button" id="updateAction" onclick="documentSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">
         <input type="submit" onclick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
@@ -187,10 +210,10 @@
 
     <#elseif form.workingCopy>
       <div class="vrtx-button">
-        <input type="submit" id="saveAndViewButton" onclick="documentSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
+        <input type="button" id="saveAndViewButton" onclick="documentSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
       <div class="vrtx-focus-button">
-        <input type="submit" id="saveWorkingCopyAction" onclick="documentSave(); return false;" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.save")}" />
+        <input type="button" id="saveWorkingCopyAction" onclick="documentSave();" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">
         <input type="submit" onclick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
@@ -210,7 +233,7 @@
         <input type="submit" id="saveAndViewButton" onclick="documentSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
       <div class="vrtx-focus-button">
-        <input type="submit" id="updateAction" onclick="documentSave(); return false;" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
+        <input type="button" id="updateAction" onclick="documentSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">
         <input type="submit" onclick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
@@ -219,7 +242,7 @@
       <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
       &nbsp;
       <div class="vrtx-button">
-        <input type="submit" id="saveWorkingCopyAction" onclick="performSave();" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.saveAsWorkingCopy")}" />
+        <input type="submit" id="saveWorkingCopyAction" onclick="performSave();"  name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.saveAsWorkingCopy")}" />
       </div>
     </#if>
     </div>

@@ -36,6 +36,7 @@
      </#if>
 
     <script type="text/javascript"><!--
+     var saveAjaxText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
      
      var approveGeneratingPage = "<@vrtx.msg code='editor.manually-approve.generating-page' />";
      var approvePrev = "<@vrtx.msg code='imageListing.previous' />";

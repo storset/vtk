@@ -22,7 +22,6 @@
 <#macro addDatePickerScripts language oldEditor=false>
 
   <script type="text/javascript"><!--
-    var saveDocAjaxText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
     var datePickerLang = "${language}";
   // -->
   </script>

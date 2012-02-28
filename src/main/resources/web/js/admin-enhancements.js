@@ -689,12 +689,12 @@ function changeTemplateName(n) {
   $("form[name=createDocumentService] input[type=text]").val(n);
 }
 	
-function documentSave() {
+function ajaxSave() {
   for (instance in CKEDITOR.instances) {
     CKEDITOR.instances[instance].updateElement();
   } 
   var startTime = new Date();   
-  tb_show(saveDocAjaxText + "...", 
+  tb_show(saveAjaxText + "...", 
           "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
           false);
         

@@ -18,7 +18,7 @@
   <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
   
   <script type="text/javascript"><!--
- 
+    var saveAjaxText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
      
     var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";
     
@@ -163,7 +163,7 @@
         <input type="button" id="saveAndViewButton" onclick="performSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
       <div class="vrtx-focus-button">
-        <input type="button" id="updateAction" onclick="documentSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
+        <input type="button" id="updateAction" onclick="ajaxSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">
         <input type="submit" onclick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
@@ -174,7 +174,7 @@
         <input type="button" id="saveAndViewButton" onclick="performSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
       <div class="vrtx-focus-button">
-        <input type="button" id="saveWorkingCopyAction" onclick="documentSave();" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.save")}" />
+        <input type="button" id="saveWorkingCopyAction" onclick="ajaxSave();" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">
         <input type="submit" onclick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
@@ -194,7 +194,7 @@
         <input type="submit" id="saveAndViewButton" onclick="performSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
       <div class="vrtx-focus-button">
-        <input type="button" id="updateAction" onclick="documentSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
+        <input type="button" id="updateAction" onclick="ajaxSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">
         <input type="submit" onclick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />

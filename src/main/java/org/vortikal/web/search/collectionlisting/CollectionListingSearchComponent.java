@@ -82,12 +82,8 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
         List<Query> additionalQueries = this.getAdditionalQueries(collection, request);
 
         // Check cache
-        StringBuilder sb = new StringBuilder(request.getRequestURI());
-        String qs = request.getQueryString();
-        if (qs != null) {
-            sb.append(qs);
-        }
-        CollectionListingCacheKey cacheKey = new CollectionListingCacheKey(token, this.getName(), sb.toString());
+        URL url = RequestContext.getRequestContext().getRequestURL();
+        CollectionListingCacheKey cacheKey = new CollectionListingCacheKey(token, this.getName(), url.toString());
         Element cached = this.cache.get(cacheKey);
         Object cachedObj = cached != null ? cached.getObjectValue() : null;
         ResultSet result = null;
@@ -109,7 +105,7 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             boolean successfulMultiHostSearch = false;
             if (isMultiHostSearch) {
                 CollectionListingConditions clc = new CollectionListingConditions(token, uriQuery, additionalQueries,
-                        clar, searchLimit, 0, sorting, null);
+                        clar, searchLimit, offset, sorting, null);
                 try {
                     result = this.multiHostSearcher.collectionListing(clc);
                     if (result != null) {

@@ -347,6 +347,25 @@ div#vrtx-resource\.picture img {
 
 /* ^ Study table */
 
+/* Course combination table expansion */
+
+.vrtx-courseplan-common {
+    background-color: #F9F9F9;
+}
+
+.vrtx-courseplan-specialization {
+    background-color: #F5F2DF;
+}
+
+.vrtx-courseplan-optional {
+    background-color: #C8DEB1;
+}
+
+.vrtx-courseplan-thesis {
+    background-color: #D0EAFC;
+}
+
+/* ^ Course combination table expansion */
 
 
 /*------------------------------------*\

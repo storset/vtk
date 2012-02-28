@@ -167,7 +167,7 @@ resourcetype person {
             </div>
           [endif]
           [def username resource-prop-obj-val(".", "username")]
-          [call "resource:affiliated-units" {"username":username, "primaryunit":false}]
+          [call "person:affiliated-units" {"username":username, "primaryunit":false}]
         [endif]
       </div>
       ##
@@ -243,12 +243,12 @@ resourcetype person {
         [def publications document.properties.selectedPublications]
         [if (publications != null && publications != "") || (externalPublications != null && externalPublications != "")]
           [if (publications != null && publications != "") && (externalPublications != null && externalPublications != "")]
-            [call "resource:publications"]
+            [call "person:publications"]
           [else]
             [if (publications != null && publications != "")]
               [val publications # unescaped]
             [else]
-              [call "resource:publications"]
+              [call "person:publications"]
             [endif]
           [endif]
         [endif]
@@ -265,7 +265,7 @@ resourcetype person {
               [val position]
             [endif]
             [def username resource-prop-obj-val(".", "username")]
-            [call "resource:affiliated-units" {"username":username, "subunits":false}]
+            [call "person:affiliated-units" {"username":username, "subunits":false}]
           </div>
         [endif]
       ##

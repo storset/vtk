@@ -412,4 +412,35 @@ span.cke_skin_kama .cke_wrapper {
   padding: 1px !important;
 }
 
+/* Override CK for injected save/help */
+
+.cke_skin_kama .vrtx-button {
+  background: url(images/dropdown-left.gif) no-repeat 0 0 !important;
+  display: inline-block;
+  height: 27px !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  margin-left: 20px !important;
+}
+
+.cke_skin_kama .vrtx-button:hover,
+.cke_skin_kama .vrtx-button.hover {
+  background-image: url(images/dropdown-left-rollover.gif) !important;
+}
+
+.cke_skin_kama #editor-help-menu {
+  padding-left: 10px;
+}
+
+.cke_skin_kama #editor-help-menu a {
+  color: #005AAB;
+}
+
+.cke_skin_kama #editor-help-menu ul.dropdown-shortcut-menu-container li a {
+  border-bottom: 1px solid #CBCBCB;
+}
+
 /* ^ Vortex - Editor - Common */

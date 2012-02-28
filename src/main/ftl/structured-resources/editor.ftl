@@ -34,54 +34,6 @@
     COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
     window.onbeforeunload = unsavedChangesInEditorMessage;
  	
-	$(document).ready(function() {
-  	   $("#app-content").delegate(".cke_button_maximize", "click", function(e) {	
-		 var stickyBar = $(".vrtx-sticky-editor-title-submit-buttons");			
-    	 stickyBar.toggle();
-
-    	 var ckInject = $(this).closest(".cke_toolbar")
-                               .find(".cke_toolbar_end");
-
-    	 if(!ckInject.find(".vrtx-focus-button").length) {
-      	 var shortcuts = stickyBar.find("#editor-shortcuts").html();
-      		 ckInject.append(shortcuts);
-      		 ckInject.children().not(".vrtx-focus-button")
-                                .not("#editor-help-menu").remove();
-    	 } else {
-      		 ckInject.find(".vrtx-focus-button").toggle();
-      		 ckInject.find("#editor-help-menu").toggle();
-    	 }
-  	  });
-	}); 
-	
-	function documentSave () {
-		for (instance in CKEDITOR.instances) {
-              CKEDITOR.instances[instance].updateElement();
-        } 
-        var startTime = new Date();   
-        tb_show(saveDocAjaxText + "...", 
-                   "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
-                   false);
-        
-	 	performSave();
-	 	$("#editor").ajaxSubmit({
-              success: function () {},
-              complete: function() {
-                var endTime = new Date() - startTime;
-                var waitMinMs = 800;
-                if(endTime >= waitMinMs) { // Wait minimum 0.8s
-                  initDatePicker(datePickerLang);
-                  tb_remove();
-                } else {
-                  setTimeout(function() {
-                    initDatePicker(datePickerLang);
-                    tb_remove();
-                  }, Math.round(waitMinMs - endTime));
-                }
-              }
-         });
-	}
-
     function performSave() {
       saveDateAndTimeFields(); // js/datepicker/datepicker-admin.js
       if (typeof(MULTIPLE_INPUT_FIELD_NAMES) !== "undefined") {
@@ -141,13 +93,15 @@
       <div class="submitButtons submit-extra-buttons" id="editor-shortcuts">  
         <#if !form.published && !form.workingCopy>
           <a class="vrtx-button" href="javascript:void(0)" onclick="$('#saveAndViewButton').click()"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
-          <a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('#updateAction').click()"><span>${vrtx.getMsg("editor.save")}</span></a>
+          <span id="vrtx-save">
+            <a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('#updateAction').click()"><span>${vrtx.getMsg("editor.save")}</span></a>
+          </span>
           <a class="vrtx-button" href="javascript:void(0)" onclick="$('#cancelAction').click()"><span>${vrtx.getMsg("editor.cancel")}</span></a>
           <@genEditorHelpMenu />
         <#elseif form.workingCopy>
           <ul id="editor-button-row">
             <li class="first"><a href="javascript:void(0)" onclick="$('#saveAndViewButton').click()">${vrtx.getMsg("editor.saveAndView")}</a></li>
-            <li><a href="javascript:void(0)" onclick="$('#saveWorkingCopyAction').click()">${vrtx.getMsg("editor.save")}</a></li>
+            <li><span id="vrtx-save"><a href="javascript:void(0)" onclick="$('#saveWorkingCopyAction').click()">${vrtx.getMsg("editor.save")}</a></span></li>
             <li class="last"><a href="javascript:void(0)" onclick="$('#cancelAction').click()">${vrtx.getMsg("editor.cancel")}</a></li>
           </ul>
           <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
@@ -162,7 +116,7 @@
         <#else>
           <ul id="editor-button-row">
             <li class="first"><a href="javascript:void(0)" onclick="$('#saveAndViewButton').click()">${vrtx.getMsg("editor.saveAndView")}</a></li>
-            <li><a href="javascript:void(0)" onclick="$('#updateAction').click()">${vrtx.getMsg("editor.save")}</a></li>
+            <li><span id="vrtx-save"><a href="javascript:void(0)" onclick="$('#updateAction').click()">${vrtx.getMsg("editor.save")}</span></a></li>
             <li class="last"><a href="javascript:void(0)" onclick="$('#cancelAction').click()">${vrtx.getMsg("editor.cancel")}</a></li>
           </ul>
           <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
@@ -206,7 +160,7 @@
     <div class="submit submitButtons">
     <#if !form.published && !form.workingCopy>
       <div class="vrtx-button">
-        <input type="button" id="saveAndViewButton" onclick="documentSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
+        <input type="button" id="saveAndViewButton" onclick="performSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
       <div class="vrtx-focus-button">
         <input type="button" id="updateAction" onclick="documentSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
@@ -217,7 +171,7 @@
 
     <#elseif form.workingCopy>
       <div class="vrtx-button">
-        <input type="button" id="saveAndViewButton" onclick="documentSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
+        <input type="button" id="saveAndViewButton" onclick="performSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
       <div class="vrtx-focus-button">
         <input type="button" id="saveWorkingCopyAction" onclick="documentSave();" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.save")}" />
@@ -237,7 +191,7 @@
       
     <#else>
       <div class="vrtx-button">
-        <input type="submit" id="saveAndViewButton" onclick="documentSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
+        <input type="submit" id="saveAndViewButton" onclick="performSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
       <div class="vrtx-focus-button">
         <input type="button" id="updateAction" onclick="documentSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />

@@ -292,10 +292,10 @@ $(document).ready(function () {
     } else if(titleSplitsLength >= 3) {
       resourceMenuLeft.css("marginTop", "0px"); 
     }
-  }
+  } 
   
-  // Sticky editor title and save buttons  
   if($("form#editor").length) {
+    // Sticky editor title and save buttons  
     var titleSubmitButtons = $("#vrtx-editor-title-submit-buttons");
     if(titleSubmitButtons.length) {
       var titleSubmitButtonsPos = titleSubmitButtons.offset();
@@ -311,6 +311,42 @@ $(document).ready(function () {
         }
       });
     }
+    
+    // Add save/help when CK is maximized
+    $("#app-content").delegate(".cke_button_maximize.cke_on", "click", function(e) {	
+      var stickyBar = $("#vrtx-editor-title-submit-buttons");			
+      stickyBar.hide();
+    	 
+      var ckInject = $(this).closest(".cke_skin_kama")
+                            .find(".cke_toolbar_end:last");
+                               
+      if(!ckInject.find("#editor-help-menu").length) {  
+      	var shortcuts = stickyBar.find(".submit-extra-buttons");
+      	var save = shortcuts.find("#vrtx-save").html();
+      	var helpMenu = "<div id='editor-help-menu' class='js-on'>" + shortcuts.find("#editor-help-menu").html() + "</div>";
+      	ckInject.append("<div class='ck-injected-save-help'>" + save + helpMenu + "</div>");
+      	
+      	// Fix markup
+      	var saveInjected = ckInject.find(".ck-injected-save-help > a");
+      	if(!saveInjected.hasClass("vrtx-button")) {
+      	  saveInjected.addClass("vrtx-button");
+      	  if(!saveInjected.find("> span").length) {
+      	    saveInjected.wrapInner("<span />");
+      	  }
+        }
+        if(saveInjected.hasClass("vrtx-button")) {
+          saveInjected.removeClass("vrtx-focus-button");
+      	}
+      	
+      } else {
+        ckInject.find(".ck-injected-save-help").show();
+      }
+    }); 
+  	$("#app-content").delegate(".cke_button_maximize.cke_off", "click", function(e) {	
+	   var stickyBar = $("#vrtx-editor-title-submit-buttons");			
+       stickyBar.show();
+       var ckInject = $(this).closest(".cke_skin_kama").find(".ck-injected-save-help").hide();
+  	}); 
   }
   
   // Preview image
@@ -651,6 +687,34 @@ $(document).ready(function () {
 /* Used by "createDocumentService" available from "manageCollectionListingService" */
 function changeTemplateName(n) {
   $("form[name=createDocumentService] input[type=text]").val(n);
+}
+	
+function documentSave() {
+  for (instance in CKEDITOR.instances) {
+    CKEDITOR.instances[instance].updateElement();
+  } 
+  var startTime = new Date();   
+  tb_show(saveDocAjaxText + "...", 
+          "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
+          false);
+        
+  performSave();
+  $("#editor").ajaxSubmit({
+    success: function () {},
+    complete: function() {
+      var endTime = new Date() - startTime;
+      var waitMinMs = 800;
+      if(endTime >= waitMinMs) { // Wait minimum 0.8s
+        initDatePicker(datePickerLang);
+        tb_remove();
+      } else {
+        setTimeout(function() {
+          initDatePicker(datePickerLang);
+          tb_remove();
+        }, Math.round(waitMinMs - endTime));
+      }
+    }
+  });
 }
 
 
@@ -1010,7 +1074,7 @@ function autocompleteTags(selector) {
 function dropdownLanguageMenu(selector) {
   var languageMenu = $(selector + " ul");
   if (!languageMenu.length) return;
-  
+
   var parent = languageMenu.parent();
   parent.addClass("js-on");
 
@@ -1019,11 +1083,11 @@ function dropdownLanguageMenu(selector) {
   var headerText = header.text();
   // outerHtml
   header.replaceWith("<a href='javascript:void(0);' id='" + selector.substring(1) + "-header'>"
-                   + headerText.substring(0, headerText.length - 1) + "</a>");
+                     + headerText.substring(0, headerText.length - 1) + "</a>");
 
   languageMenu.addClass("dropdown-shortcut-menu-container");
 
-  $(selector).delegate(selector + "-header", "click", function (e) {
+  $("#app-content").delegate(selector + "-header", "click", function (e) {
     $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
     $(this).next(".dropdown-shortcut-menu-container").not(":visible").slideDown(vrtxAdmin.transitionDropdownSpeed, "swing");
     e.stopPropagation();

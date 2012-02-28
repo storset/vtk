@@ -123,9 +123,7 @@
                <input type="button" onclick="$('#"saveCopyButton"').click()" value="${vrtx.getMsg("editor.saveCopy")}" />
              </div>  
           </#if>
-          <div class="vrtx-focus-button">
-            <input type="button" onclick="$('#saveButton').click()"  value="${vrtx.getMsg("editor.save")}" />
-          </div>
+          <span id="vrtx-save"><a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('#saveButton').click()"><span>${vrtx.getMsg("editor.save")}</span></a></span>
           <div class="vrtx-button">
             <input type="button" onclick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
           </div>

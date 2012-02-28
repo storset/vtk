@@ -31,11 +31,11 @@
 
 package org.vortikal.repository.systemjob;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -48,7 +48,7 @@ import org.vortikal.security.SecurityContext;
  */
 public class InvokeStoreJob extends RepositoryJob {
 
-    private PathSelector pathSelector;
+    private List<PathSelector> pathSelectors;
     
     private final Log logger = LogFactory.getLog(getClass());
     
@@ -64,32 +64,39 @@ public class InvokeStoreJob extends RepositoryJob {
             token = SecurityContext.getSecurityContext().getToken();
         }
 
-        List<Path> selectedPaths = this.pathSelector.selectPaths(repository, context);
-        
-        logger.info("Running job '" + getId() + "', " + selectedPaths.size() + " resource(s) to be affected");
-        
-        for (Path path : selectedPaths) {
-            try {
+        for (PathSelector pathSelector: this.pathSelectors) {
+            List<Path> selectedPaths = pathSelector.selectPaths(repository, context);
 
-                Resource resource = repository.retrieve(token, path, false);
-                if (resource.getLock() == null) {
-                    repository.store(token, resource, context);
-                } else {
-                    logger.warn("Resource " + resource + " currently locked, will not invoke store for periodic job.");
+            logger.info("Running job '" + getId() + "', " + selectedPaths.size() + " resource(s) to be affected");
+
+            for (Path path : selectedPaths) {
+                try {
+                    logger.debug("Invoke job " + getId() + " on " + path);
+                    Resource resource = repository.retrieve(token, path, false);
+                    if (resource.getLock() == null) {
+                        repository.store(token, resource, context);
+                    } else {
+                        logger.warn("Resource " + resource + " currently locked, will not invoke store for periodic job.");
+                    }
+                } catch (ResourceNotFoundException rnfe) {
+                    // Resource is no longer there after search (deleted, moved
+                    // or renamed)
+                    logger.warn("A resource ("
+                            + path
+                            + ") that was to be affected by a systemjob was no longer available: "
+                            + rnfe.getMessage());
                 }
-            } catch (ResourceNotFoundException rnfe) {
-                // Resource is no longer there after search (deleted, moved
-                // or renamed)
-                logger.warn("A resource ("
-                        + path
-                        + ") that was to be affected by a systemjob was no longer available: "
-                        + rnfe.getMessage());
             }
         }
     }
     
-    @Required
+    public void setPathSelectors(List<PathSelector> pathSelectors) {
+        this.pathSelectors = new ArrayList<PathSelector>(pathSelectors);
+    }
+    
     public void setPathSelector(PathSelector pathSelector) {
-        this.pathSelector = pathSelector;
+        List<PathSelector> list = new ArrayList<PathSelector>();
+        list.add(pathSelector);
+        this.pathSelectors = list;
     }
 }

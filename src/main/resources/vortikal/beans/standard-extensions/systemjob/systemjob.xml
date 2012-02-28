@@ -36,24 +36,31 @@
         <value>resource::link-status</value>
       </list>
     </property>
-    <property name="pathSelector">
-      <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" 
-            parent="repository.systemjob.indexPathSelector">
-        <property name="queryString" value="link-status !exists OR link-status=AWAITING_LINKCHECK OR system-job-status@linkcheck &lt; {$currentTime-1h|yyyyMMdd\ HH:mm:ss}" />
-        <property name="limit" value="${systemjob.linkcheck.limit}" />
-        <property name="sorting">
-          <bean class="org.vortikal.repository.search.SortingImpl">
-            <constructor-arg>
-              <list>
-                <bean class="org.vortikal.repository.search.PropertySortField">
-                  <constructor-arg ref="lastModifiedPropDef" />
-                  <constructor-arg value="DESC" />
-                </bean>
-              </list>
-            </constructor-arg>
-          </bean>
-        </property>
-      </bean>
+    <property name="pathSelectors">
+      <list>
+        <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector"
+              parent="repository.systemjob.indexPathSelector">
+          <property name="queryString" value="link-status = AWAITING_LINKCHECK" />
+          <property name="sorting">
+            <bean class="org.vortikal.repository.search.SortingImpl">
+              <constructor-arg>
+                <list>
+                  <bean class="org.vortikal.repository.search.PropertySortField">
+                    <constructor-arg ref="lastModifiedPropDef" />
+                    <constructor-arg value="DESC" />
+                  </bean>
+                </list>
+              </constructor-arg>
+            </bean>
+          </property>
+        </bean>
+        <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" 
+              parent="repository.systemjob.indexPathSelector">
+          <property name="queryString" value="link-status !exists OR system-job-status@linkcheck &lt; {$currentTime-1d|yyyyMMdd\ HH:mm:ss}" />
+          <!--property name="queryString" value="link-status !exists OR link-status=AWAITING_LINKCHECK OR system-job-status@linkcheck &lt; {$currentTime-1h|yyyyMMdd\ HH:mm:ss}" /-->
+          <property name="limit" value="${systemjob.linkcheck.limit}" />
+        </bean>
+      </list>
     </property>
   </bean>
   

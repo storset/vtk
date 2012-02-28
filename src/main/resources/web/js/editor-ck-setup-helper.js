@@ -20,7 +20,7 @@ var completeToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Re
                         'JustifyCenter', 'JustifyRight', 'TextColor',
                         'Maximize']];
                         
-var studyToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+var studyToolbar = [['Studytable', 'Studyreferencecomponent', '-', 'Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
                         'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
                         'Image', 'CreateDiv', 'MediaEmbed', 'Table',
                         'HorizontalRule', 'SpecialChar'
@@ -93,7 +93,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   } else if (isCompleteEditor) {
     var height = 220;
     var maxHeight = 400;
-    var completeTB = completeToolbar;
+    var completeTB = completeToolbar;   
     if (name.indexOf("supervisor-box") != -1) {
       height = 130;
       maxHeight = 300;
@@ -126,8 +126,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 
   config.baseHref = baseDocumentUrl;
   config.contentsCss = cssFileList;
-  // config.skin = 'chris';
-
+  
   // Don't use HTML-entities for structured-documents
   if (name.indexOf("resource.") != 0) {
     config.entities = false;
@@ -141,7 +140,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
   if (complete) {
     config.filebrowserImageBrowseUrl = imageBrowseUrl;
     config.filebrowserFlashBrowseUrl = flashBrowseUrl;
-    config.extraPlugins = 'mediaembed,ajaxsave';
+    config.extraPlugins = 'mediaembed,studytable,studyreferencecomponent';
     config.stylesSet = divContainerStylesSet;
     // XHTML
     if (name == "resource.content" && simple) {

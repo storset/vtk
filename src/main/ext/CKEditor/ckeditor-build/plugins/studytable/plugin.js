@@ -4,82 +4,81 @@ CKEDITOR.plugins.add('studytable', {
     editor.addCommand(pluginName, {
 
       exec: function (editor) {
-      var htmlBody = (<r><![CDATA[     
-	<table class="vrtx-courseplan-table">
-	<tbody>
-		<tr>
-			<td class="small">
-				6. semester</td>
-			<td class="large">
-				&nbsp;</td>
-			<td class="large">
-				&nbsp;</td>
-			<td class="large">
-				&nbsp;</td>
-		</tr>
-		<tr>
-			<td class="small">
-				5. semester</td>
-			<td class="large">
-				&nbsp;</td>
-			<td class="large">
-				&nbsp;</td>
-			<td class="large">
-				&nbsp;</td>
-		</tr>
-		<tr>
-			<td class="small">
-				4. semester</td>
-			<td class="large">
-				&nbsp;</td>
-			<td class="large">
-				&nbsp;</td>
-			<td class="large">
-				&nbsp;</td>
-		</tr>
-		<tr>
-			<td class="small">
-				3. semester</td>
-			<td class="large">
-				&nbsp;</td>
-			<td class="large">
-				&nbsp;</td>
-			<td class="large">
-				&nbsp;</td>
-		</tr>
-		<tr>
-			<td class="small">
-				2. semester</td>
-			<td class="large">
-				&nbsp;</td>
-			<td class="large">
-				&nbsp;</td>
-			<td class="large">
-				&nbsp;</td>
-		</tr>
-		<tr>
-			<td class="small">
-				1. semester</td>
-			<td class="large">
-				&nbsp;</td>
-			<td class="large">
-				&nbsp;</td>
-			<td class="large">
-				&nbsp;</td>
-		</tr>
-		<tr>
-			<td class="small">
-				&nbsp;</td>
-			<td class="large">
-				10 studiepoeng</td>
-			<td class="large">
-				10 studiepoeng</td>
-			<td class="large">
-				10 studiepoeng</td>
-		</tr>
-	</tbody>
-</table>
-       ]]></r>).toString();  
+      var htmlBody = "\
+  <table class='vrtx-courseplan-table'>\n\
+	<tbody>\n\
+		<tr>\n\
+			<td class='small'>\n\
+				6. semester</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+		</tr>\n\
+		<tr>\n\
+			<td class='small'>\n\
+				5. semester</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+		</tr>\n\
+		<tr>\n\
+			<td class='small'>\n\
+				4. semester</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+		</tr>\n\
+		<tr>\n\
+			<td class='small'>\n\
+				3. semester</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+		</tr>\n\
+		<tr>\n\
+			<td class='small'>\n\
+				2. semester</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+		</tr>\n\
+		<tr>\n\
+			<td class='small'>\n\
+				1. semester</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+			<td class='large'>\n\
+				&nbsp;</td>\n\
+		</tr>\n\
+		<tr>\n\
+			<td class='small'>\n\
+				&nbsp;</td>\n\
+			<td class='large'>\n\
+				10 studiepoeng</td>\n\
+			<td class='large'>\n\
+				10 studiepoeng</td>\n\
+			<td class='large'>\n\
+				10 studiepoeng</td>\n\
+		</tr>\n\
+	</tbody>\n\
+</table>";
 
        	       var lang = editor.config.language;
 	       if(lang == "en") 

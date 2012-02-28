@@ -60,9 +60,7 @@ CKEDITOR.plugins.add( 'studyreferencecomponent',
 				{
 					var dialog = this,
 						data = {},
-						output = (<r><![CDATA[
-						${resource:ref referencetype=[TYPE] value=[VALUE]}
-						]]></r>).toString();  
+						output = "${resource:ref referencetype=[TYPE] value=[VALUE]}";  
 
 					this.commitContent( data );
 					output = output.replace("TYPE", data.studietype);

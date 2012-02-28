@@ -167,7 +167,7 @@ resourcetype person {
             </div>
           [endif]
           [def username resource-prop-obj-val(".", "username")]
-          [call "person:affiliated-units" {"username":username, "primaryunit":false}]
+          [call "person:affiliation" {"primaryunit":false}]
         [endif]
       </div>
       ##
@@ -260,13 +260,8 @@ resourcetype person {
         [resource-props "."]
         [def getExternal resource-prop-obj-val(".", "getExternalPersonInfo")]
         [if getExternal != true || (getExternal = true && externalUserMetaData != null)]
-          <div id="vrtx-person-position">
-            [if position != null]
-              [val position]
-            [endif]
-            [def username resource-prop-obj-val(".", "username")]
-            [call "person:affiliated-units" {"username":username, "subunits":false}]
-          </div>
+          [def username resource-prop-obj-val(".", "username")]
+          [call "person:affiliation" {"position":true, "subunits":false}]
         [endif]
       ##
     }

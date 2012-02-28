@@ -35,27 +35,25 @@
     window.onbeforeunload = unsavedChangesInEditorMessage;
  	
 	$(document).ready(function() {
-  	$("#app-content").delegate(".cke_button_maximize", "click", function(e) {
-    	
-		var stickyBar = $(".vrtx-sticky-editor-title-submit-buttons");
-						
-    	stickyBar.toggle();
+  	   $("#app-content").delegate(".cke_button_maximize", "click", function(e) {	
+		 var stickyBar = $(".vrtx-sticky-editor-title-submit-buttons");			
+    	 stickyBar.toggle();
 
-    	var ckInject = $(this).closest(".cke_toolbar")
-                          .find(".cke_toolbar_end");
+    	 var ckInject = $(this).closest(".cke_toolbar")
+                               .find(".cke_toolbar_end");
 
-    	if(!ckInject.find(".vrtx-focus-button").length) {
-      	var shortcuts = stickyBar.find("#editor-shortcuts").html();
-      		ckInject.append(shortcuts);
-      		ckInject.children().not(".vrtx-focus-button")
-                         .not("#editor-help-menu").remove();
-    	} else {
-      		ckInject.find(".vrtx-focus-button").toggle();
-      		ckInject.find("#editor-help-menu").toggle();
-    	}
-  		});
+    	 if(!ckInject.find(".vrtx-focus-button").length) {
+      	 var shortcuts = stickyBar.find("#editor-shortcuts").html();
+      		 ckInject.append(shortcuts);
+      		 ckInject.children().not(".vrtx-focus-button")
+                                .not("#editor-help-menu").remove();
+    	 } else {
+      		 ckInject.find(".vrtx-focus-button").toggle();
+      		 ckInject.find("#editor-help-menu").toggle();
+    	 }
+  	  });
 	}); 
-
+	
 	function documentSave () {
 		for (instance in CKEDITOR.instances) {
               CKEDITOR.instances[instance].updateElement();

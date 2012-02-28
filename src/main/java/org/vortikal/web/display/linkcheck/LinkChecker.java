@@ -42,19 +42,12 @@ import net.sf.ehcache.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.search.ResultSet;
-import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.Searcher;
-import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.UriTermQuery;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.service.URL;
 
 public class LinkChecker {
     
     private static Log logger = LogFactory.getLog(LinkChecker.class); 
     
-    private Searcher searcher;
     private Cache cache;
     private int connectTimeout = 5000;
     private int readTimeout = 5000;
@@ -102,23 +95,16 @@ public class LinkChecker {
         logger.info("Validate: " + href + ", " + base + ": " + result);
         return result;
     }
-    
+        
     private LinkCheckResult validateInternal(String href, URL base) {
         if (href == null) {
             throw new IllegalArgumentException("Link argument cannot be NULL");
         }
-        boolean internal = !isExternalLink(href);
         URL url;
         try {
             url = base.relativeURL(href);
         } catch (Throwable t) {
             return new LinkCheckResult(href, Status.MALFORMED_URL, t.getMessage());
-        }
-        if (internal && this.searcher != null) {
-            Status status = indexLookup(url);
-            if (status == Status.OK) {
-                return new LinkCheckResult(href, status);
-            }
         }
         String cacheKey = href;
         Element cached = this.cache.get(cacheKey);
@@ -138,23 +124,7 @@ public class LinkChecker {
         return result;
     }
     
-    private Status indexLookup(URL url) {
-        SecurityContext securityContext = SecurityContext.getSecurityContext();
-        String token = securityContext.getToken();
-        String link = url.getPath().toString();
-        UriTermQuery uriQuery = new UriTermQuery(link, TermOperator.EQ);
-        Search search = new Search();
-        search.setQuery(uriQuery);
-        search.setLimit(1);
-        ResultSet rs = this.searcher.execute(token, search);
-        if (rs.getSize() > 0) {
-            return Status.OK;
-        }
-        return Status.NOT_FOUND;
-    }
-
     private Status validateURL(URL url) {
-        // go out on the worldwide web
         HttpURLConnection urlConnection = null;
         try {
             urlConnection = createHeadRequest(url);
@@ -162,7 +132,6 @@ public class LinkChecker {
             int responseCode = urlConnection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_MOVED_PERM 
                     || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
-                // check if moved location is valid
                 responseCode = checkMoved(urlConnection, responseCode);
             }
             if (responseCode == HttpURLConnection.HTTP_NOT_FOUND 
@@ -209,14 +178,6 @@ public class LinkChecker {
         return urlConnection;
     }
 
-    private boolean isExternalLink(String link) {
-        return link.startsWith("http://") || link.startsWith("https://");
-    }
-
-    public void setSearcher(Searcher searcher) {
-        this.searcher = searcher;
-    }
-
     @Required
     public void setCacheManager(CacheManager cacheManager) {
         Cache c = cacheManager.getCache("org.vortikal.LINK_CHECK_CACHE");
@@ -241,5 +202,4 @@ public class LinkChecker {
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
     }
-
 }

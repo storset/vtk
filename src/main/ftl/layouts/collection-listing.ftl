@@ -53,10 +53,10 @@
           <tr class="${rowType} ${firstLast}">
             <#if conf.compactView?string = "false">
               <td class="vrtx-collection-listing-title first-col">
-                <a class="vrtx-icon <@vrtx.iconResolver resourceType contentType />" href="${uri?html}"></a>
             <#else>
               <td class="vrtx-collection-listing-title first-col last-col">
             </#if>
+              <a class="vrtx-icon <@vrtx.iconResolver resourceType contentType />" href="${uri?html}"></a>
               <a class="vrtx-title-link" href="${uri?html}">${title?html}</a>
             <#if edit?exists && (edit[res_index]?string = "true")>
               <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="collectionListing.edit" /></a>

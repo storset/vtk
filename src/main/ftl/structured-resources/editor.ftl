@@ -59,8 +59,8 @@
 	function documentSave () {
 		for (instance in CKEDITOR.instances) {
               CKEDITOR.instances[instance].updateElement();
-        }    
-        
+        } 
+        var startTime = new Date();   
         tb_show(saveDocAjaxText + "...", 
                    "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
                    false);
@@ -69,8 +69,17 @@
 	 	$("#editor").ajaxSubmit({
               success: function () {},
               complete: function() {
-                initDatePicker(datePickerLang);
-                tb_remove();
+                var endTime = new Date() - startTime;
+                var waitMinMs = 800;
+                if(endTime >= waitMinMs) { // Wait minimum 0.8s
+                  initDatePicker(datePickerLang);
+                  tb_remove();
+                } else {
+                  setTimeout(function() {
+                    initDatePicker(datePickerLang);
+                    tb_remove();
+                  }, Math.round(waitMinMs - endTime));
+                }
               }
          });
 	}

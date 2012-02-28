@@ -75,6 +75,8 @@ function VrtxAdmin() {
   this.transitionEasingSlideUp = "linear";
   // this.infoMessageRemoveAfter = 5000; // 5 seconds
   
+  this.ignoreAjaxErrors = false;
+  
   return instance;
 };
 
@@ -128,29 +130,9 @@ vrtxAdmin.usernameAutocompleteParams = { multiple: false,
                                          delay: 500 };
                                          
 vrtxAdmin.tagAutocompleteParams = { minChars: 1 };
-         
-// When to timeout and possible to abort AJAX GET/POST   
-// Credits: http://stackoverflow.com/questions/1802936/stop-all-active-ajax-requests-in-jquery
-                      
-var ajaxReqsPool = [];      
-function abortAllAjaxReqs() {
-  for(var i = ajaxReqsPool.length; i--;) {
-    ajaxReqsPool[i].abort();
-  }
-  ajaxReqsPool = [];
-}  
                     
 $.ajaxSetup({
-  timeout: 60000, // 1min
-  beforeSend: function(xhr) {
-    ajaxReqsPool.push(xhr);
-  },
-  complete: function(xhr) {
-    var idx = $.inArray(xhr, ajaxReqsPool);
-    if (idx > -1) {
-      ajaxReqsPool.splice(idx, 1);
-    }
-  }
+  timeout: 60000 // 1min
 });
                            
 // funcComplete for postAjaxForm()
@@ -271,7 +253,7 @@ $(document).ready(function () {
   
   // Abort all AJAX reqs. on tab change
   $("#app-tabs").delegate("li a", "click", function(e) {
-    abortAllAjaxReqs();
+    vrtxAdmin.ignoreAjaxErrors = true;
   });
   
   // Add autocomplete
@@ -1543,13 +1525,15 @@ VrtxAdmin.prototype.displayErrorContainers = function(results, form, errorContai
 
 VrtxAdmin.prototype.displayErrorMsg = function(msg) {
   var vrtxAdm = this;
-  if ($("#app-content > .errormessage").length) {
-    $("#app-content > .errormessage").html(msg);
-  } else {
-    $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
-    $("#app-content > .infomessage").slideUp(0, "linear", function() {
-      $(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
-    });
+  if(!vrtxAdm.ignoreAjaxErrors) {
+    if ($("#app-content > .errormessage").length) {
+      $("#app-content > .errormessage").html(msg);
+    } else {
+      $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
+      $("#app-content > .infomessage").slideUp(0, "linear", function() {
+        $(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
+      });
+    }
   }
 };
 

@@ -133,7 +133,7 @@ jsonpropspeclist
 	:	jsonpropspec (COMMA jsonpropspec)* -> jsonpropspec+;
 
 jsonpropspec
-	:	NAME COLON PROPTYPE (SEMICOLON INDEXABLE)? -> ^(NAME ^(PROPTYPE (INDEXABLE)?));
+	:	NAME COLON PROPTYPE -> ^(NAME ^(PROPTYPE));
 
 plainpropertytypedef
 	:	NAME COLON PROPTYPE (TRIM)? (MULTIPLE)? (REQUIRED)? (NOEXTRACT)? (overrides)?

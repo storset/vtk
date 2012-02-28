@@ -49,6 +49,7 @@ import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.store.Cache;
+import org.vortikal.repository.systemjob.SystemChangeContext;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 
@@ -452,9 +453,22 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     }
 
     @Override
+    public Resource store(String token, Resource resource, SystemChangeContext systemChangeContext) throws ResourceNotFoundException, AuthorizationException, AuthenticationException, ResourceLockedException, IllegalOperationException, ReadOnlyException, Exception {
+        // Synchronize on:
+        // - URI
+        
+        final List<Path> locked = this.lockManager.lock(resource.getURI(), true);
+        
+        try {
+            return this.wrappedRepository.store(token, resource, systemChangeContext); // Tx
+        } finally {
+            this.lockManager.unlock(locked, true);
+        }
+    }
+    
+    @Override
     public Resource store(String token, Resource resource) throws ResourceNotFoundException, AuthorizationException,
             AuthenticationException, ResourceLockedException, IllegalOperationException, ReadOnlyException, Exception {
-        
         // Synchronize on:
         // - URI
         
@@ -706,4 +720,5 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
             this.lockManager.unlock(locked, true);
         }
     }
+
 }

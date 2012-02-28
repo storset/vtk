@@ -33,8 +33,10 @@ package org.vortikal.repository;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -43,7 +45,7 @@ import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.systemjob.SystemJobContext;
+import org.vortikal.repository.systemjob.SystemChangeContext;
 import org.vortikal.security.Principal;
 
 public class PropertyEvaluationContext {
@@ -61,6 +63,9 @@ public class PropertyEvaluationContext {
     private final Date time = new Date();
     private Principal principal;
     private Map<String, Object> propertyValueMap;
+    private SystemChangeContext systemChangeContext;
+    
+    private List<PropertyTypeDefinition> lateEvaluationPropDefs = new ArrayList<PropertyTypeDefinition>();
 
     private Map<String, Object> contextAttributes = new HashMap<String, Object>();
 
@@ -184,62 +189,33 @@ public class PropertyEvaluationContext {
         if (this.evaluationType != Type.SystemPropertiesChange) {
             return false;
         }
-        SystemJobContext systemJobContext = this.suppliedResource.getSystemJobContext();
-        if (systemJobContext == null) {
+
+        if (this.systemChangeContext == null) {
             return false;
         }
-        List<PropertyTypeDefinition> affectedProperties = systemJobContext.getAffectedProperties();
+        
+        if (propDef == this.systemChangeContext.getSystemJobStatusPropDef()) {
+            return true;
+        }
+        
+        List<PropertyTypeDefinition> affectedProperties = this.systemChangeContext.getAffectedProperties();
         return affectedProperties == null || affectedProperties.contains(propDef);
     }
-
-    public void updateSystemJobStatusProp() {
-        
-        SystemJobContext systemJobContext = this.suppliedResource.getSystemJobContext();
-        if (systemJobContext == null) {
-            return;
-        }
-        
-        PropertyTypeDefinition systemJobStatusPropDef = systemJobContext.getSystemJobStatusPropDef();
-        Property systemJobStatusProp = this.suppliedResource.getProperty(systemJobStatusPropDef);
-        
-        if (systemJobStatusProp == null) {
-            
-            // first time a system job runs on this resource, add property
-            systemJobStatusProp = systemJobStatusPropDef.createProperty();
-            Value jsonValue = getJsonValue(systemJobContext);
-            Value[] values = { jsonValue };
-            systemJobStatusProp.setValues(values);
-            
-        } else {
-            
-            // check previously run system jobs and update if this particular
-            // job has been run before, if not, add it
-            List<Value> systemJobList = new ArrayList<Value>();
-            boolean existingJob = false;
-            Value[] values = systemJobStatusProp.getValues();
-            for (Value propValue : values) {
-                JSONObject systemJobStatus = (JSONObject) JSONSerializer.toJSON(propValue.getStringValue());
-                if (systemJobStatus.get(systemJobContext.getJobName()) != null) {
-                    propValue = getJsonValue(systemJobContext);
-                    existingJob = true;
-                }
-                systemJobList.add(propValue);
-            }
-            if (!existingJob) {
-                systemJobList.add(getJsonValue(systemJobContext));
-            }
-            
-            values = (Value[]) systemJobList.toArray(new Value[systemJobList.size()]);
-            systemJobStatusProp.setValues(values);
-        }
-        
-        this.newResource.addProperty(systemJobStatusProp);
+    
+    public void addPropertyTypeDefinitionForLateEvaluation(PropertyTypeDefinition def) {
+        this.lateEvaluationPropDefs.add(def);
     }
-
-    private Value getJsonValue(SystemJobContext systemJobContext) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put(systemJobContext.getJobName(), systemJobContext.getTime());
-        return new Value(jsonObject.toString(), PropertyType.Type.JSON);
+    
+    public List<PropertyTypeDefinition> getLateEvalutionPropertyTypeDefinitions() {
+        return this.lateEvaluationPropDefs;
+    }
+    
+    public void setSystemChangeContext(SystemChangeContext systemChangeContext) {
+        this.systemChangeContext = systemChangeContext;
+    }
+    
+    public SystemChangeContext getSystemChangeContext() {
+        return this.systemChangeContext;
     }
 
 }

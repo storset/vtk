@@ -34,7 +34,7 @@ import java.util.List;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
-public interface PropertySet {
+public interface PropertySet extends Iterable<Property> {
 
     public static final String NAME_IDENTIFIER = "name";
     public static final String TYPE_IDENTIFIER = "type";

@@ -66,7 +66,6 @@ import org.vortikal.security.Principal;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
-import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -118,9 +117,7 @@ public class StructuredResourceEditor extends SimpleFormController {
         if (encoding == null) {
             encoding = "utf-8";
         }
-        String source = StreamUtil.streamToString(stream, encoding);
-        StructuredResource structuredResource = new StructuredResource(description);
-        structuredResource.parse(source);
+        StructuredResource structuredResource = description.buildResource(stream);
 
         URL url = RequestContext.getRequestContext().getService().constructURL(uri);
         URL listComponentServiceURL = listComponentsService.constructURL(uri);

@@ -30,6 +30,7 @@
  */
 package org.vortikal.resourcemanagement;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -170,7 +171,7 @@ public final class StructuredResourceDescription {
     public void addTooltips(String name, Map<Locale, String> m) {
         tooltips.put(name, m);
     }
-
+    
     public Map<String, Map<Locale, String>> getAllLocalizedTooltips() {
         Map<String, Map<Locale, String>> locales = new HashMap<String, Map<Locale, String>>();
         if (this.inheritsFrom != null) {
@@ -204,6 +205,11 @@ public final class StructuredResourceDescription {
         return locales;
     }
 
+    public StructuredResource buildResource(InputStream source) throws Exception {
+        return StructuredResource.create(this, source);
+    }
+    
+    
     // XXX: handle parameters
     public String getLocalizedMsg(String key, Locale locale, Object[] param) {
         Map<Locale, String> localizationMap = this.getAllLocalization().get(key);

@@ -19,7 +19,6 @@
         <ref bean="jsonOverriddenCharacterEncodingPropDef" />
         <ref bean="overridingPublishDatePropDef" />
         <ref bean="overridingPublishedPropDef" />
-        <ref bean="systemJobStatusPropDef" />
       </list>
     </property>
   </bean>
@@ -99,37 +98,6 @@
   <bean id="publishEvaluator" class="org.vortikal.repository.resourcetype.property.PublishEvaluator">
     <property name="publishDatePropDef" ref="publishDatePropDef" />
     <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
-  </bean>
-
-  <bean id="systemJobStatusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
-    parent="abstractPropDef">
-    <property name="name" value="system-job-status" />
-    <property name="type" value="JSON" />
-    <property name="multiple" value="true" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
-    <property name="indexableAttributes">
-      <list>
-        <ref bean="indexablePublishedStatusJSONAttribute"/>
-        <ref bean="indexablePersonExternalDataJSONAttribute"/>
-        <ref bean="indexableOrganizationlUnitExternalDataJSONAttribute"/>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="abstractIndexableJSONAttribute" class="org.vortikal.resourcemanagement.JSONPropertyAttributeDescription">
-    <property name="indexable" value="true" />
-  </bean>
-
-  <bean id="indexablePublishedStatusJSONAttribute" parent="abstractIndexableJSONAttribute">
-    <property name="name" value="published-status" />
-  </bean>
-
-  <bean id="indexablePersonExternalDataJSONAttribute" parent="abstractIndexableJSONAttribute">
-    <property name="name" value="person-external-data" />
-  </bean>
-
-  <bean id="indexableOrganizationlUnitExternalDataJSONAttribute" parent="abstractIndexableJSONAttribute">
-    <property name="name" value="organizational-unit-external-data" />
   </bean>
 
 </beans>

@@ -9,6 +9,7 @@
     <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
     <property name="assertion" ref="json.objectHasResourceTypeAssertion" />
     <property name="serviceInvoker" ref="externalServiceInvoker" />
+
   </bean>
 
   <bean id="structuredResource.parser" class="org.vortikal.resourcemanagement.parser.StructuredResourceParser">
@@ -17,5 +18,5 @@
   </bean>
 
   <bean id="externalServiceInvoker" class="org.vortikal.resourcemanagement.service.ExternalServiceInvoker" />
-  
+
 </beans>

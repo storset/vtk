@@ -67,7 +67,6 @@ import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.WildcardPropertySelect;
-import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
@@ -448,12 +447,12 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                     "Cannot create indexed JSON fields for property with no definition or non-JSON type");
         }
 
-        List<JSONPropertyAttributeDescription> indexableJsonAttributes = def.getIndexableAttributes();
-        if (indexableJsonAttributes == null || indexableJsonAttributes.isEmpty()) {
-            return new Field[0]; // Nothing to index for this JSON prop
+        if (! def.getMetadata().containsKey(PropertyTypeDefinition.METADATA_INDEXABLE_JSON)) {
+            // No indexing hint for this JSON property.
+            return new Field[0];
         }
-
-        List<Field> fields = new ArrayList<Field>();
+        
+        final List<Field> fields = new ArrayList<Field>();
         Value[] jsonPropValues = null;
         if (def.isMultiple()) {
             jsonPropValues = prop.getValues();
@@ -461,42 +460,36 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             jsonPropValues = new Value[1];
             jsonPropValues[0] = prop.getValue();
         }
-
+        
         try {
-            for (JSONPropertyAttributeDescription jsonAttribute : indexableJsonAttributes) {
-                
-                String jsonAttributeName = jsonAttribute.getName();
-                
-                List<Object> fieldValues = new ArrayList<Object>();
-
-                // Gather up values for current field
-                for (Value jsonValue : jsonPropValues) {
-                    JSONObject json = JSONObject.fromObject(jsonValue.getObjectValue());
-                    Object selection = org.vortikal.util.text.JSON.select(json, jsonAttributeName);
-                    // Selection can be of type JSONArray, in which case we
-                    // index it as multi-value
-                    if (selection instanceof JSONArray) {
-                        for (Iterator iter = ((JSONArray) selection).iterator(); iter.hasNext();) {
+            final List<Object> indexFieldValues = new ArrayList<Object>();
+            for (Value jsonValue : jsonPropValues) {
+                JSONObject json = JSONObject.fromObject(jsonValue.getObjectValue());
+                for (Iterator it = json.entrySet().iterator(); it.hasNext();) {
+                    indexFieldValues.clear();
+                    Map.Entry entry = (Map.Entry) it.next();
+                    String attribute = (String)entry.getKey();
+                    Object value = entry.getValue();
+                    if (value instanceof JSONArray) {
+                        for (Iterator iter = ((JSONArray) value).iterator(); iter.hasNext();) {
                             Object nextVal = iter.next();
                             if (nextVal != null) {
-                                fieldValues.add(nextVal);
+                                indexFieldValues.add(nextVal);
                             }
                         }
-                    } else if (selection != null) {
-                        fieldValues.add(selection);
+                    } else if (value != null) {
+                        indexFieldValues.add(value);
                     }
+                    
+                    String fieldName = FieldNameMapping.getJSONSearchFieldName(def, attribute, lowercase);
+                    Field field = this.fieldValueMapper.getUnencodedMultiValueFieldfFromObjects(fieldName,
+                            indexFieldValues.toArray(), lowercase);
+                    fields.add(field);
                 }
-
-                String fieldName = FieldNameMapping.getJSONSearchFieldName(def, jsonAttributeName, lowercase);
-                Field field = this.fieldValueMapper.getUnencodedMultiValueFieldfFromObjects(fieldName, fieldValues
-                        .toArray(), lowercase);
-                fields.add(field);
             }
         } catch (JSONException je) {
-            logger.warn("JSON property " + prop + " has a value containing invalid JSON data: " + je.getMessage()
-                    + ", will not index any of this property's JSON values.");
-            // Don't index any JSON attributes of this prop, since some data
-            // apparently is broken.
+            logger.warn("JSON property " + prop + " has a value containing invalid or non-indexable JSON data: " + je.getMessage()
+                    + ", will not index any JSON values.");
             return new Field[0];
         }
 

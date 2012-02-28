@@ -62,6 +62,10 @@ public interface PropertyTypeDefinition {
      */
     public ContentRelation getContentRelation();
 
+    public static final String METADATA_EDITING_HINTS = "editingHints";
+    
+    public static final String METADATA_INDEXABLE_JSON = "indexableJsonHint";
+    
     public Map<String, Object> getMetadata();
     
     public Namespace getNamespace();
@@ -125,12 +129,5 @@ public interface PropertyTypeDefinition {
      * Create a {@link Property} instance.
      */
     public Property createProperty();
-    
-    /**
-     * 
-     * @return a list of names for attributes of a json-property that are to be indexed
-     */
-    public List<JSONPropertyAttributeDescription> getIndexableAttributes();
-    
     
 }

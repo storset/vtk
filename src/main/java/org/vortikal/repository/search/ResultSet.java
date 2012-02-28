@@ -38,10 +38,8 @@ import org.vortikal.repository.PropertySet;
 /**
  * Contains the result set of a repository query.
  * 
- * FIXME: Not final, comitted for peer review.
- *
  */
-public interface ResultSet {
+public interface ResultSet extends Iterable<PropertySet> {
 
     /**
      * Get the result at a given index position in the
@@ -112,6 +110,7 @@ public interface ResultSet {
      * Iterate over results.
      * @return
      */
+    @Override
     public Iterator<PropertySet> iterator();
     
     /**

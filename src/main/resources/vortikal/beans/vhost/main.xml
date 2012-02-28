@@ -86,11 +86,11 @@
 
   <!-- OperationLog interceptor for Repository -->
   <import resource="repository-operationlog-interceptor.xml" />
+
+  <!-- System task manager -->
+  <import resource="scheduling/scheduling.xml"/>
   
-  <!--
-    Generalized abstract systemjob bean, used to 
-    define & configure periodic jobs run by the system
-  -->
-  <import resource="system/systemjob.xml" />
+  <!-- Abstract bean defs for system jobs -->
+  <import resource="systemjob.xml" />
   
 </beans>

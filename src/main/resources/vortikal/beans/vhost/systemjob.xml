@@ -2,9 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-  <bean id="repository.systemJob" abstract="true" class="org.vortikal.repository.systemjob.SystemJob"
-    parent="repositoryAware">
-    <property name="searcher" ref="systemIndexSearcher" />
+  <!-- Abstract base bean for repository jobs -->
+  <bean id="repository.systemjob" abstract="true" parent="repositoryAware">
     <property name="securityContext">
       <bean class="org.vortikal.security.SecurityContext">
         <constructor-arg ref="writeAllToken" />
@@ -15,12 +14,12 @@
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
 
-  <bean id="repository.systemJobMethodInvokingTrigger" abstract="true"
-    class="org.vortikal.scheduling.SimpleMethodInvokingTriggerBean">
-    <property name="targetMethodName" value="execute" />
-    <property name="startDelay" value="20000" />
-    <property name="startTriggerAfterInitialization" value="true" />
-    <property name="abortTriggerOnTargetMethodException" value="false" />
+  <!-- Abstract base bean for index-based repository job path selectors -->
+  <bean id="repository.systemjob.indexPathSelector" abstract="true">
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="parser" ref="searchParser" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
+
 
 </beans>

@@ -45,8 +45,13 @@ public class PropertyExistsQuery extends AbstractPropertyQuery {
         return this.inverted;
     }
 
+    @Override
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
     
+    @Override
+    public String toString() {
+        return getPropertyDefinition() + (inverted ? " !exists" : " exists");
+    }
 }

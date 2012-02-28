@@ -22,6 +22,8 @@
      
     var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";
     
+    var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";
+    
     shortcut.add("Ctrl+S",function() {
         $(".vrtx-focus-button:last input").click();
     });
@@ -34,6 +36,25 @@
     COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
     window.onbeforeunload = unsavedChangesInEditorMessage;
  	
+	function documentSave () {
+		for (instance in CKEDITOR.instances) {
+              CKEDITOR.instances[instance].updateElement();
+        }    
+        
+        tb_show(saveDocAjaxText + "...", 
+                   "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
+                   false);
+        
+	 	performSave();
+	 	$("#editor").ajaxSubmit({
+              success: function () {},
+              complete: function() {
+                initDatePicker(datePickerLang);
+                tb_remove();
+              }
+         });
+	}
+
     function performSave() {
       saveDateAndTimeFields(); // js/datepicker/datepicker-admin.js
       if (typeof(MULTIPLE_INPUT_FIELD_NAMES) !== "undefined") {
@@ -191,7 +212,7 @@
       
     <#else>
       <div class="vrtx-button">
-        <input type="submit" id="saveAndViewButton" onclick="performSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
+        <input type="submit" id="saveAndViewButton" onclick="documentSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
       <div class="vrtx-focus-button">
         <input type="button" id="updateAction" onclick="ajaxSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />

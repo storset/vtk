@@ -58,6 +58,7 @@ import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
+import org.vortikal.repository.systemjob.SystemChangeContext;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 
@@ -179,13 +180,25 @@ public class RequestLocalRepository implements Repository {
     }
 
     @Override
+    public Resource store(String token, Resource resource, SystemChangeContext systemChangeContext) 
+            throws Exception {
+        
+        RepositoryContext ctx = RepositoryContext.getRepositoryContext();
+        if (ctx != null) {
+            ctx.clear();
+        }
+        
+        return this.repository.store(token, resource, systemChangeContext);
+    }
+
+    @Override
     public Resource store(String token, Resource resource) throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null) {
             ctx.clear();
         }
-        // XXX: Fix this
+
         return this.repository.store(token, resource);
     }
 

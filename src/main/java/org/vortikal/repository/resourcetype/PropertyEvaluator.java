@@ -37,4 +37,5 @@ import org.vortikal.repository.resourcetype.property.PropertyEvaluationException
 public interface PropertyEvaluator {
 
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException;
+
 }

@@ -29,7 +29,6 @@
   </bean>
 
   <bean id="linkCheck.validator" class="org.vortikal.web.display.linkcheck.LinkChecker">
-    <property name="searcher" ref="systemIndexSearcher" />
     <property name="cacheManager" ref="ehCacheManager" />
     <property name="connectTimeout" value="5000" />
     <property name="readTimeout" value="10000" />

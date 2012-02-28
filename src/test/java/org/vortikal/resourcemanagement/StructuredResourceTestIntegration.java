@@ -66,9 +66,6 @@ public class StructuredResourceTestIntegration extends StructuredResourceTestSet
                     System.out.println("\t\t" + jd.getName() + ": " + jd.getType() + " " + jd.isMultiple() + " "
                             + jd.isNoExtract() + " " + jd.getOverrides()
                             + (jd.hasExternalService() ? "(external:" + jd.getExternalService() + ")" : ""));
-                    if (jd.getIndexableAttributes() != null) {
-                        System.out.println("\t\t\t Indexable attributes: " + jd.getIndexableAttributes());
-                    }
                 } else {
                     SimplePropertyDescription sd = (SimplePropertyDescription) d;
                     System.out.println("\t\t" + sd.getName() + ": " + sd.getType() + " " + sd.isMultiple() + " "

@@ -32,14 +32,4 @@ package org.vortikal.resourcemanagement;
 
 public class JSONPropertyAttributeDescription extends EditablePropertyDescription {
 
-    private boolean indexable;
-
-    public boolean isIndexable() {
-        return indexable;
-    }
-
-    public void setIndexable(boolean indexable) {
-        this.indexable = indexable;
-    }
-
 }

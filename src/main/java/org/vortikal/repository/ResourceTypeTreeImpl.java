@@ -51,8 +51,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.vortikal.repository.resourcetype.AbstractResourceTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.HierarchicalNode;
+import org.vortikal.repository.resourcetype.LatePropertyEvaluator;
 import org.vortikal.repository.resourcetype.MixinResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.OverridablePropertyTypeDefinitionImpl;
@@ -503,7 +507,6 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
         mapPropertyDefinitionsToPrimaryTypes();
 
         this.resourceTypeDescendantNames = buildResourceTypeDescendantsMap();
-        //logger.info("Resource type tree: \n" + getResourceTypeTreeAsString());
     }
     
     @SuppressWarnings("unchecked")
@@ -578,11 +581,8 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
         }
 
         mapPropertyDefinitionsToPrimaryTypes();
-        logger.info("Resource type tree: \n" + getResourceTypeTreeAsString());
-
     
         this.resourceTypeDescendantNames = buildResourceTypeDescendantsMap();
-
     }
 
     private void addMixins(PrimaryResourceTypeDefinition def) {
@@ -809,7 +809,9 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
                 if (definition.getProtectionLevel() == RepositoryAction.UNEDITABLE_ACTION) {
                     sb.append("(readonly) ");
                 }
-                if (definition.getPropertyEvaluator() != null) {
+                if (definition.getPropertyEvaluator() instanceof LatePropertyEvaluator) {
+                    sb.append("(evaluated late) ");
+                } else if (definition.getPropertyEvaluator() != null) {
                     sb.append("(evaluated) ");
                 }
                 if (definition instanceof OverridablePropertyTypeDefinition) {
@@ -846,6 +848,5 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
     @Required public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
     }
-
 
 }

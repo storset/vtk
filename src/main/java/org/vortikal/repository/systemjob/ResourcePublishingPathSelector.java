@@ -1,21 +1,21 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
- * 
+ *
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- * 
+ *
  *  * Neither the name of the University of Oslo nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- *      
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
  * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -28,7 +28,8 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.systemjob.publishing;
+
+package org.vortikal.repository.systemjob;
 
 import java.util.Calendar;
 
@@ -41,16 +42,18 @@ import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
-import org.vortikal.repository.systemjob.SystemJob;
 
-public class ResourcePublisher extends SystemJob {
+/**
+ *
+ */
+public class ResourcePublishingPathSelector extends IndexQueryPathSelector {
 
     private PropertyTypeDefinition publishedPropDef;
     private PropertyTypeDefinition publishDatePropDef;
     private PropertyTypeDefinition unpublishDatePropDef;
 
     @Override
-    protected Query getSearchQuery() {
+    protected Query getQuery(SystemChangeContext context) {
         OrQuery or = new OrQuery();
 
         long now = Calendar.getInstance().getTimeInMillis();
@@ -79,6 +82,11 @@ public class ResourcePublisher extends SystemJob {
         return and;
     }
 
+    @Override
+    public boolean isOnlyPublishedResources() {
+        return false;
+    }
+    
     @Required
     public void setPublishedPropDef(PropertyTypeDefinition publishedPropDef) {
         this.publishedPropDef = publishedPropDef;
@@ -93,10 +101,5 @@ public class ResourcePublisher extends SystemJob {
     public void setUnpublishDatePropDef(PropertyTypeDefinition unpublishDatePropDef) {
         this.unpublishDatePropDef = unpublishDatePropDef;
     }
-
-    @Override
-    protected boolean handlePublishedOnly() {
-        return false;
-    }
-
+    
 }

@@ -38,6 +38,8 @@ import java.util.Map;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
@@ -67,7 +69,7 @@ import org.vortikal.util.text.JSON;
 import org.vortikal.web.service.RepositoryAssertion;
 
 public class StructuredResourceManager {
-
+    
     private static final Map<String, PropertyType.Type> PROPTYPE_MAP = new HashMap<String, PropertyType.Type>();
     static {
         PROPTYPE_MAP.put(ParserConstants.PROPTYPE_STRING, PropertyType.Type.STRING);
@@ -109,7 +111,13 @@ public class StructuredResourceManager {
 
         this.types.put(name, description);
     }
-
+    
+    public void registrationComplete() {
+        Log logger = LogFactory.getLog(getClass());
+        logger.info("Resource type tree:");
+        logger.info(this.resourceTypeTree.getResourceTypeTreeAsString());
+    }
+    
     private PrimaryResourceTypeDefinition createResourceType(StructuredResourceDescription description)
             throws Exception {
         PrimaryResourceTypeDefinitionImpl def = new PrimaryResourceTypeDefinitionImpl();
@@ -119,8 +127,14 @@ public class StructuredResourceManager {
         
         ResourceTypeDefinition parentDefinition = this.baseType;
 
-        PropertyTypeDefinition[] propertyTypeDefinitions = createPropDefs(description);
-        def.setPropertyTypeDefinitions(propertyTypeDefinitions);
+        PropertyTypeDefinition[] descPropDefs = createPropDefs(description);
+
+        List<PropertyTypeDefinition> allPropDefs = new ArrayList<PropertyTypeDefinition>();
+        for (PropertyTypeDefinition d: descPropDefs) {
+            allPropDefs.add(d);
+        }
+//        allPropDefs.add(this.linksDef);
+        def.setPropertyTypeDefinitions(allPropDefs.toArray(new PropertyTypeDefinition[allPropDefs.size()]));
 
         List<RepositoryAssertion> assertions = createAssertions(description);
         def.setAssertions(assertions.toArray(new RepositoryAssertion[assertions.size()]));
@@ -264,8 +278,9 @@ public class StructuredResourceManager {
             def.setType(Type.STRING);
         } else if (propertyDescription instanceof JSONPropertyDescription) {
             def.setType(Type.JSON);
-            def.setIndexableAttributes(((JSONPropertyDescription) propertyDescription).getIndexableAttributes());
-        } else {
+            def.addMetadata(PropertyTypeDefinition.METADATA_INDEXABLE_JSON, true);
+        } else {            
+
             def.setType(mapType(propertyDescription));
         }
         def.setProtectionLevel(RepositoryAction.UNEDITABLE_ACTION);

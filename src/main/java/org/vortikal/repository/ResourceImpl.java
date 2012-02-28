@@ -35,13 +35,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.systemjob.SystemJobContext;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.util.codec.MD5;
@@ -368,21 +368,6 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         return sb.toString();
     }
 
-    // START HACK
-    // Mark the resource as being altered by a system job
-
-    private SystemJobContext systemJobContext;
-
-    public void setSystemJobContext(SystemJobContext systemJobContext) {
-        this.systemJobContext = systemJobContext;
-    }
-
-    public SystemJobContext getSystemJobContext() {
-        return this.systemJobContext;
-    }
-
-    // END HACK
-
     private String getPropValue(String name) {
         Property prop = this.getProp(name);
         if (prop == null)
@@ -432,4 +417,11 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         }
         return props.get(name);
     }
+
+    @Override
+    public Iterator<Property> iterator() {
+        // Resource interface API allows property removal, so iterator should as well.
+        return new PropertyIteratorWithRemoval(super.propertyMap);
+    }
+    
 }

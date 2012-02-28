@@ -30,6 +30,7 @@
  */
 package org.vortikal.resourcemanagement.edit;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import org.vortikal.repository.Path;
@@ -44,10 +45,11 @@ public class FormSubmitCommandTestIntegration extends StructuredResourceTestSetu
         super.setUp();
     }
 
-    public void testCreateForm() {
+    public void testCreateForm() throws Exception {
         StructuredResourceDescription srd = srdp.getResourceDescription("person");
         URL url = new URL("http", "localhost:9321", Path.ROOT);
-        FormSubmitCommand fsc = new FormSubmitCommand(new StructuredResource(srd), url,url, false, true);
+        StructuredResource r = srd.buildResource(new ByteArrayInputStream("{}".getBytes()));
+        FormSubmitCommand fsc = new FormSubmitCommand(r, url,url, false, true);
         printForm(fsc);
     }
 

@@ -93,6 +93,9 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     }
 
     public void setMetadata(Map<String, Object> metadata) {
+        if (metadata == null) {
+            throw new IllegalArgumentException("metadata map cannot be null");
+        }
         this.metadata = metadata;
     }
 
@@ -182,8 +185,11 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
                 this.valueFormatter = this.valueFormatterRegistry.getValueFormatter(this.type);
             }
         }
+
+        this.metadata = Collections.unmodifiableMap(this.metadata);
     }
 
+    @Override
     public PropertyEvaluator getPropertyEvaluator() {
         return this.propertyEvaluator;
     }
@@ -208,6 +214,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.defaultValue = defaultValue;
     }
 
+    @Override
     public Value getDefaultValue() {
         return this.defaultValue;
     }
@@ -216,6 +223,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.multiple = multiple;
     }
 
+    @Override
     public String getName() {
         return this.name;
     }
@@ -224,6 +232,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.name = name;
     }
 
+    @Override
     public RepositoryAction getProtectionLevel() {
         return this.protectionLevel;
     }
@@ -232,6 +241,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.protectionLevel = protectionLevel;
     }
 
+    @Override
     public Type getType() {
         return this.type;
     }
@@ -240,6 +250,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.type = type;
     }
 
+    @Override
     public PropertyValidator getValidator() {
         return this.validator;
     }
@@ -267,6 +278,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return sb.toString();
     }
 
+    @Override
     public Vocabulary<Value> getVocabulary() {
         return this.vocabulary;
     }
@@ -275,6 +287,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         this.vocabulary = vocabulary;
     }
 
+    @Override
     public ValueFormatter getValueFormatter() {
         return this.valueFormatter;
     }
@@ -294,6 +307,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return getName();
     }
 
+    @Override
     public String getDescription(Locale locale) {
         if (this.typeLocalizationProvider != null) {
             return this.typeLocalizationProvider.getPropertyDescription(this, locale);
@@ -301,6 +315,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return null;
     }
 
+    @Override
     public ValueSeparator getValueSeparator(String format) {
         ValueSeparator separator = this.valueSeparators.get(format);
         if (separator != null) {

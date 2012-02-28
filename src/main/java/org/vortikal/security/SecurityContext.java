@@ -41,7 +41,6 @@ public class SecurityContext {
         this.token = token;
         this.principal = principal;
     }
-    
 
     public static void setSecurityContext(SecurityContext securityContext) {
         BaseContext ctx = BaseContext.getContext();
@@ -78,7 +77,7 @@ public class SecurityContext {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer(getClass().getName());
+        StringBuilder sb = new StringBuilder(getClass().getName());
         sb.append(": ");
         sb.append("token = ").append(this.token).append("; ");
         sb.append("principal = ").append(this.principal);

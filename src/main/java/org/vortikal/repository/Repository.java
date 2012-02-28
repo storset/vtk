@@ -37,6 +37,7 @@ import java.util.List;
 import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
+import org.vortikal.repository.systemjob.SystemChangeContext;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 
@@ -151,6 +152,34 @@ public interface Repository {
      */
     public Resource store(String token, Resource resource) throws ResourceNotFoundException, AuthorizationException,
             AuthenticationException, ResourceLockedException, IllegalOperationException, ReadOnlyException, Exception;
+    
+    /**
+     * Store resource properties (metadata) with system context at a specified URI
+     * authenticated with the session identified by token. 
+     * 
+     * @param token
+     *            identifies the client's authenticated session
+     * @param resource
+     *            modified resource to store
+     * @param systemChangeContext
+     *            system change context used when executing property evaluation
+     * @exception ResourceNotFoundException
+     *                if the URI does not identify an existing resource
+     * @exception AuthorizationException
+     *                if an authenticated user is not authorized to access the
+     *                resource
+     * @exception AuthenticationException
+     *                if the resource demands authorization and the client does
+     *                not supply a token identifying a valid client session
+     * @exception ReadOnlyException
+     *                if the resource is read-only or the repository is in
+     *                read-only mode
+     * @exception Exception
+     *                if an I/O error occurs
+     */
+    public Resource store(String token, Resource resource, SystemChangeContext systemChangeContext) throws ResourceNotFoundException, AuthorizationException,
+            AuthenticationException, ResourceLockedException, IllegalOperationException, ReadOnlyException, Exception;
+    
 
     /**
      * Requests that a a byte stream be written to the content of a resource in

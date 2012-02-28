@@ -30,6 +30,9 @@
  */
 package org.vortikal.resourcemanagement;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -71,7 +74,8 @@ public class ValidDocumentAssertion implements RepositoryContentEvaluationAssert
             if (description == null) {
                 return false;
             }
-            StructuredResource r = new StructuredResource(description);
+            InputStream stream = new ByteArrayInputStream(object.toString().getBytes("utf-8"));
+            StructuredResource r = description.buildResource(stream);
             return r.isValidDocument(object);
         } catch (Throwable t) {
             return false;

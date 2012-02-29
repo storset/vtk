@@ -168,10 +168,10 @@
 
     <#elseif form.workingCopy>
       <div class="vrtx-button">
-        <input type="button" id="saveAndViewButton" onclick="performSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
+        <input type="submit" id="saveAndViewButton" onclick="performSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
       <div class="vrtx-focus-button">
-        <input type="button" id="saveWorkingCopyAction" onclick="ajaxSave();" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.save")}" />
+        <input type="submit" id="saveWorkingCopyAction" onclick="performSave();" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.save")}" />
       </div>
       <div class="vrtx-button">
         <input type="submit" onclick="performSave();" name="cancelAction" id="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />

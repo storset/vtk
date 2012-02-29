@@ -79,6 +79,7 @@ public class CategoryResolvingFactoryBean extends AbstractFactoryBean implements
      * @return a list of objects belonging to the category in
      * question. If no such objects exist, an empty list is returned.
      */
+    @Override
     protected Object createInstance() {
         Map<String, Categorizable> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
             (ListableBeanFactory) getBeanFactory(), this.clazz, true, false);
@@ -109,10 +110,14 @@ public class CategoryResolvingFactoryBean extends AbstractFactoryBean implements
     }
     
 
+    @Override
     public Class getObjectType() {
+        if (this.clazz == null) return null;
+        
         return Array.newInstance(this.clazz, 0).getClass();
     }
 
+    @Override
     public boolean isSingleton() {
         return true;
     }
@@ -132,6 +137,7 @@ public class CategoryResolvingFactoryBean extends AbstractFactoryBean implements
     }
     
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (! Categorizable.class.isAssignableFrom(this.clazz))
             throw new BeanInitializationException(

@@ -21,8 +21,12 @@ public class CollectionListingComponentHelper {
             for (PropertySet ps : l.getFiles()) {
                 rt = ps.getResourceType();
                 if (rt.equals("doc") || rt.equals("ppt") || rt.equals("xls")) {
-                    res = r.retrieve(token, ps.getURI(), false);
-                    edit[i++] = r.isAuthorized(res, RepositoryAction.READ_WRITE, principal, true);
+                    try {
+                        res = r.retrieve(token, ps.getURI(), false);
+                        edit[i++] = r.isAuthorized(res, RepositoryAction.READ_WRITE, principal, true);
+                    } catch (Exception e) {
+                        edit[i++] = false;
+                    }
                 } else
                     edit[i++] = false;
             }

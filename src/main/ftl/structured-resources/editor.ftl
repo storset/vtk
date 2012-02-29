@@ -39,7 +39,7 @@
 
       // Save with AJAX
       $("#editor").delegate("#updateAction", "click", function(e) {
-        ajaxSave("form#editor");
+        ajaxSave();
         e.preventDefault();
       });
 
@@ -96,7 +96,7 @@
   </#if>
 
 </head>
-<body>
+<body id="vrtx-editor">
 
   <#assign locale = springMacroRequestContext.getLocale() />
   <#assign header = form.resource.getLocalizedMsg("header", locale, null) />

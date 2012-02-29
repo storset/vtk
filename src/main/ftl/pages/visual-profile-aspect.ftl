@@ -17,8 +17,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/plugins/shortcut.js"></script> 
   <script type="text/javascript"><!--
+      shortcut.add("Ctrl+S", function() {
+      $(".vrtx-focus-button:last input").click();
+    });
+
     var ajaxSaveText = "<@vrtx.msg code='editor.save-visual-profile-ajax-loading-title' />"; 
+    
+    $(document).ready(function() {
+      $("#app-content").delegate("#saveAction", "click", function(e) {
+        ajaxSave();
+        e.preventDefault();
+      });
+    });
   // --> 
   </script>
   <title><@vrtx.msg code="visualProfileAspect.edit" default="Edit visual profile"/></title>
@@ -29,7 +41,7 @@
   <#else>
   <div class="resourceInfo visualProfile">
   <h2><@vrtx.msg code="visualProfileAspect.edit" default="Edit visual profile"/></h2>
-  <form action="${form.submitURL?html}" method="post">
+  <form id="editor" action="${form.submitURL?html}" method="post">
     <#assign formElementsSize = form.elements?size />
     <#list form.elements as element>
       <#if (element_index == (formElementsSize-1))>
@@ -70,7 +82,7 @@
     </#list>
     <div class="submitButtons">
       <div class="vrtx-focus-button">
-        <input type="submit" id="saveAction" name="saveAction" onclick="checkSubmit()" value="<@vrtx.msg code="editor.save" default="Save"/>" />
+        <input type="submit" id="saveAction" name="saveAction" value="<@vrtx.msg code="editor.save" default="Save"/>" />
       </div>
       <div class="vrtx-button">
         <input type="submit" id="cancelAction" name="cancelAction" value="<@vrtx.msg code="editor.cancel" default="Cancel"/>">

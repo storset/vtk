@@ -54,7 +54,7 @@
         
         // Save editor with AJAX
         $("#editor").delegate("#saveButton", "click", function(e) {
-          ajaxSave("form#editor");
+          ajaxSave();
           e.preventDefault();
         });
 
@@ -123,7 +123,7 @@
     <script type="text/javascript" src="${jsBaseURL?html}/collectionlisting/manually-approve.js"></script>
 
   </head>
-  <body>
+  <body id="vrtx-editor">
     <#assign header>
       <@vrtx.msg code="editor.edit" args=[vrtx.resourceTypeName(resource)?lower_case] />
     </#assign>

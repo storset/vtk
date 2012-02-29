@@ -288,7 +288,7 @@ $(document).ready(function () {
     }
   } 
   
-  if($("form#editor").length) {
+  if($("body#vrtx-editor").length) {
     // Add autocomplete
     autocompleteUsernames(".vrtx-autocomplete-username");
     autocompleteTags(".vrtx-autocomplete-tag");
@@ -355,22 +355,6 @@ $(document).ready(function () {
   
   // Zebra-tables
   vrtxAdmin.zebraTables(".resourceInfo");
-
-  // Save visual profile with AJAX
-  if($("body#vrtx-visual-profile").length) {
-    $("#app-content").delegate("#saveAction", "click", function(e) {
-      ajaxSave(".visualProfile > form");
-      e.preventDefault();
-    });
-  }
-
-  // Save plaintext edit with AJAX
-  if($("body#vrtx-edit-plaintext").length) {
-    $("#app-content").delegate("#saveAction", "click", function(e) {
-      ajaxSave("#contents form");
-      e.preventDefault();
-    });
-  }
   
   // Async initialization
 
@@ -661,7 +645,7 @@ $(document).ready(function () {
   // Show/hide multiple properties (initalization / config)
   // TODO: better / easier to understand interface (and remove old "." in CSS-ids / classes)
   
-  if ($("form#editor").length) {
+  if ($("body#vrtx-editor").length) {
     showHide(["#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"], //radioIds
               "#resource\\.recursive-listing\\.false:checked",                                         //conditionHide
               'false',                                                                                 //conditionHideEqual
@@ -702,7 +686,7 @@ function changeTemplateName(n) {
   $("form[name=createDocumentService] input[type=text]").val(n);
 }
 	
-function ajaxSave(formSelector) {
+function ajaxSave() {
   if(typeof CKEDITOR !== "undefined") { 
     for (instance in CKEDITOR.instances) {
       CKEDITOR.instances[instance].updateElement();
@@ -715,7 +699,7 @@ function ajaxSave(formSelector) {
   if(typeof performSave !== "undefined") {      
     performSave();
   }
-  $(formSelector).ajaxSubmit({
+  $("#editor").ajaxSubmit({
     success: function () {},
     complete: function() {
       var endTime = new Date() - startTime;

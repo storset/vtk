@@ -22,13 +22,28 @@
 <head>
   <title>Plain text edit</title>
   <script type="text/javascript" src="${md5jsURL?html}"></script>
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/plugins/shortcut.js"></script> 
   <script type="text/javascript"><!--
     var ajaxSaveText = "<@vrtx.msg code='editor.save-plaintext-edit-ajax-loading-title' />";
+
+    shortcut.add("Ctrl+S", function() {
+      $(".vrtx-focus-button:last input").click();
+    });
+
+    $(document).ready(function() {
+      $("#app-content").delegate("#saveAction", "click", function(e) {
+        ajaxSave();
+        e.preventDefault();
+      });
+      $("#app-content").delegate("#saveViewAction", "click", function(e) {
+        performSave();
+      });
+    });
 
     var before = null;
     var saveButton = false;
 
-    function checkSubmit() {
+    function performSave() {
        saveButton = true;
        return true;
     }
@@ -53,14 +68,14 @@
 </head>
 <body id="vrtx-edit-plaintext">
   <div>
-    <form action="${plaintextEditForm.submitURL}" method="POST">
+    <form id="editor" action="${plaintextEditForm.submitURL}" method="POST">
       <textarea id="foo" name="content" rows="30" cols="80">${plaintextEditForm.content?html}</textarea>
       <div class="vrtx-edit-plaintext-submit-buttons submitButtons">
         <div class="vrtx-button">
-          <input type="submit" id="saveViewAction" name="saveViewAction" onclick="checkSubmit()" value="<@vrtx.msg code="plaintextEditForm.saveAndView" default="Save and view"/>" />
+          <input type="submit" id="saveViewAction" name="saveViewAction" value="<@vrtx.msg code="plaintextEditForm.saveAndView" default="Save and view"/>" />
         </div>
         <div class="vrtx-focus-button">
-          <input type="submit" id="saveAction" name="saveAction" onclick="checkSubmit()" value="<@vrtx.msg code="plaintextEditForm.save" default="Save"/>" />
+          <input type="submit" id="saveAction" name="saveAction" value="<@vrtx.msg code="plaintextEditForm.save" default="Save"/>" />
         </div>
         <div class="vrtx-button">
           <input type="submit" id="cancelAction" name="cancelAction" value="<@vrtx.msg code="plaintextEditForm.cancel" default="Cancel"/>" />

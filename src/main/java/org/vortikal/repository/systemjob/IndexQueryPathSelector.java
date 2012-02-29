@@ -34,6 +34,8 @@ package org.vortikal.repository.systemjob;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
@@ -58,6 +60,8 @@ import org.vortikal.security.SecurityContext;
  */
 public class IndexQueryPathSelector implements PathSelector {
 
+    private static Log logger = LogFactory.getLog(IndexQueryPathSelector.class);
+    
     private Searcher searcher;
     private QueryParser parser;
     private ResourceTypeTree resourceTypeTree;
@@ -92,6 +96,8 @@ public class IndexQueryPathSelector implements PathSelector {
         search.setPropertySelect(NO_PROPERTIES);
         ResultSet results = this.getSearcher().execute(token, search);
         
+        logger.info("Ran query " + query + " with " + results.getSize() 
+                + " results of total " + results.getTotalHits());
         List<Path> paths = new ArrayList<Path>(results.getSize());
         for (PropertySet result: results) {
             paths.add(result.getURI());

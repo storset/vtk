@@ -17,9 +17,7 @@
   
   <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
   
-  <script type="text/javascript"><!--
-    var ajaxSaveText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
- 
+  <script type="text/javascript"><!-- 
     shortcut.add("Ctrl+S",function() {
       $(".vrtx-focus-button:last input").click();
     });
@@ -67,6 +65,9 @@
       }
       NEED_TO_CONFIRM = false;  
     }
+
+    // i18n
+    var ajaxSaveText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
 
     // Div container display in IE
     var cssFileList = [<#if fckEditorAreaCSSURL?exists>

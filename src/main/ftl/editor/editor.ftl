@@ -36,20 +36,6 @@
      </#if>
 
     <script type="text/javascript"><!--
-      var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
-   
-      var approveGeneratingPage = "<@vrtx.msg code='editor.manually-approve.generating-page' />";
-      var approvePrev = "<@vrtx.msg code='imageListing.previous' />";
-      var approveNext = "<@vrtx.msg code='imageListing.next' />";
-      var approveShowing = "<@vrtx.msg code='editor.manually-approve.table-showing' />";
-      var approveOf = "<@vrtx.msg code='person-listing.of' />";
-      var approveTableTitle = "<@vrtx.msg code='proptype.name.title' />";
-      var approveTableSrc = "<@vrtx.msg code='resource.sourceURL' />";
-      var approveTablePublished = "<@vrtx.msg code='publish.permission.published' />";
-      var approveShowAll = "<@vrtx.msg code='editor.manually-approve.show-all' />";
-      var approveShowApprovedOnly = "<@vrtx.msg code='editor.manually-approve.show-approved-only' />";
-      var approveNoApprovedMsg = "<@vrtx.msg code='editor.manually-approve.no-approved-msg' />";
-    
       shortcut.add("Ctrl+S", function() {
         $(".vrtx-focus-button:last input").click();
       });
@@ -101,6 +87,20 @@
       function performSave() {
         NEED_TO_CONFIRM = false;
       } 
+
+      // i18n
+      var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
+      var approveGeneratingPage = "<@vrtx.msg code='editor.manually-approve.generating-page' />";
+      var approvePrev = "<@vrtx.msg code='imageListing.previous' />";
+      var approveNext = "<@vrtx.msg code='imageListing.next' />";
+      var approveShowing = "<@vrtx.msg code='editor.manually-approve.table-showing' />";
+      var approveOf = "<@vrtx.msg code='person-listing.of' />";
+      var approveTableTitle = "<@vrtx.msg code='proptype.name.title' />";
+      var approveTableSrc = "<@vrtx.msg code='resource.sourceURL' />";
+      var approveTablePublished = "<@vrtx.msg code='publish.permission.published' />";
+      var approveShowAll = "<@vrtx.msg code='editor.manually-approve.show-all' />";
+      var approveShowApprovedOnly = "<@vrtx.msg code='editor.manually-approve.show-approved-only' />";
+      var approveNoApprovedMsg = "<@vrtx.msg code='editor.manually-approve.no-approved-msg' />";
       
       // Div container display in IE
       var cssFileList = [<#if fckEditorAreaCSSURL?exists>

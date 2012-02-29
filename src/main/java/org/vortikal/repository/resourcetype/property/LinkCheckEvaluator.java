@@ -48,6 +48,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.resourcetype.LatePropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.util.text.JSONDefaultHandler;
 import org.vortikal.web.display.linkcheck.LinkChecker;
 import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
 import org.vortikal.web.service.CanonicalUrlConstructor;
@@ -85,27 +86,13 @@ public class LinkCheckEvaluator implements LatePropertyEvaluator {
         final AtomicInteger number = new AtomicInteger(0);
         
         try {
-            parser.parse(new InputStreamReader(stream.getStream()), new ContentHandler() {
+            parser.parse(new InputStreamReader(stream.getStream()), new JSONDefaultHandler() {
 
                 boolean url = false;
 
                 @Override
-                public void startJSON() throws ParseException, IOException {
-                }
-                
-                @Override
                 public void endJSON() throws ParseException, IOException {
                     status.complete = true;
-                }
-
-                @Override
-                public boolean startObject() throws ParseException, IOException {
-                    return true;
-                }
-
-                @Override
-                public boolean endObject() throws ParseException, IOException {
-                    return true;
                 }
 
                 @Override
@@ -122,16 +109,6 @@ public class LinkCheckEvaluator implements LatePropertyEvaluator {
                 @Override
                 public boolean endObjectEntry() throws ParseException, IOException {
                     url = false;
-                    return true;
-                }
-
-                @Override
-                public boolean startArray() throws ParseException, IOException {
-                    return true;
-                }
-
-                @Override
-                public boolean endArray() throws ParseException, IOException {
                     return true;
                 }
 
@@ -157,7 +134,6 @@ public class LinkCheckEvaluator implements LatePropertyEvaluator {
                     }
                     return true;
                 }
-
             });
             status.timestamp = ctx.getTime();
             status.write(property);

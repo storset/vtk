@@ -96,7 +96,7 @@ public class IndexQueryPathSelector implements PathSelector {
         search.setPropertySelect(NO_PROPERTIES);
         ResultSet results = this.getSearcher().execute(token, search);
         
-        logger.info("Ran query " + query + " with " + results.getSize() 
+        logger.debug("Ran query " + query + " with " + results.getSize() 
                 + " results of total " + results.getTotalHits());
         List<Path> paths = new ArrayList<Path>(results.getSize());
         for (PropertySet result: results) {

@@ -527,8 +527,7 @@
     <property name="method" value="load" />
   </bean>
   
-  <!-- Canonical URL constructor instance. -->
-  <!-- It is @Autowired into all ServiceImpl beans. -->
+  <!-- Canonical URL constructor -->
   <bean id="canonicalUrlConstructor" class="org.vortikal.web.service.CanonicalUrlConstructorImpl">
     <property name="webHostName" value="${webHostName}" />
     <property name="webProtocol" value="${webProtocol}" />

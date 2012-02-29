@@ -188,7 +188,7 @@
       
     <#else>
       <div class="vrtx-button">
-        <input type="submit" id="saveAndViewButton" onclick="performSSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
+        <input type="submit" id="saveAndViewButton" onclick="performSave();" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
       </div>
       <div class="vrtx-focus-button">
         <input type="button" id="updateAction" onclick="ajaxSave();" name="updateAction" value="${vrtx.getMsg("editor.save")}" />

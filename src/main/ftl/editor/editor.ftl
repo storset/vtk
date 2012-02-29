@@ -121,7 +121,7 @@
           </div>
           <#if supportedImageEditor>
              <div class="vrtx-button">
-               <input type="button" onclick="$('#"saveCopyButton"').click()" value="${vrtx.getMsg("editor.saveCopy")}" />
+               <input type="button" onclick="$('#saveCopyButton').click()" value="${vrtx.getMsg("editor.saveCopy")}" />
              </div>  
           </#if>
           <span id="vrtx-save"><a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('#saveButton').click()"><span>${vrtx.getMsg("editor.save")}</span></a></span>

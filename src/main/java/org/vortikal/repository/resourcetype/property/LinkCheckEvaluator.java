@@ -39,7 +39,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.json.simple.parser.ContentHandler;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Required;
@@ -98,24 +97,20 @@ public class LinkCheckEvaluator implements LatePropertyEvaluator {
                 @Override
                 public boolean startObjectEntry(String key) throws ParseException,
                 IOException {
-                    if ("url".equals(key)) {
-                        url = true;
-                        return true;
-                    }
-                    url = false;
+                    this.url = "url".equals(key);
                     return true;
                 }
 
                 @Override
                 public boolean endObjectEntry() throws ParseException, IOException {
-                    url = false;
+                    this.url = false;
                     return true;
                 }
 
                 @Override
                 public boolean primitive(Object value) throws ParseException,
                 IOException {
-                    if (value == null || !url) {
+                    if (value == null || !this.url) {
                         return true;
                     }
                     int i = number.incrementAndGet();

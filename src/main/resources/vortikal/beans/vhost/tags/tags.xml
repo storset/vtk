@@ -63,6 +63,13 @@
     <property name="servesRoot" value="${servesWebRoot}" />
   </bean>
 
+  <bean id="tagsReporter" class="org.vortikal.web.reporting.TagsReportingComponent">
+    <description>Reporting usage of tags</description>
+    <property name="dataReportManager" ref="dataReportManager"/>
+    <property name="tagsPropDef" ref="tagsPropDef"/>
+    <property name="aggregationResolver" ref="aggregationResolver" />
+  </bean>
+
   <bean id="tags.atomHandler" class="org.vortikal.web.display.tags.TagsAsFeedController" parent="viewAsFeedHandler">
     <property name="overridePublishDatePropDef" ref="publishedDatePropDef" />
     <property name="searchComponent" ref="tags.searchComponent" />

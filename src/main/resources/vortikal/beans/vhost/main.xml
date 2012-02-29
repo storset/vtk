@@ -17,9 +17,6 @@
   <import resource="common/security.xml" />
   <import resource="common/vortikal.xml" />
 
-  <!-- Generalized service on the backend, available to the web layer -->
-  <import resource="service/service.xml" />
-
   <import resource="resource-types/main.xml" />
   <import resource="actions.xml" />
   <import resource="repository.xml" />

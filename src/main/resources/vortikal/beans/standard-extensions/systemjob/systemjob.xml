@@ -3,6 +3,25 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <!-- Periodic system jobs -->
+
+  <!-- Abstract base bean for repository jobs -->
+  <bean id="repository.systemjob" abstract="true" parent="repositoryAware">
+    <property name="securityContext">
+      <bean class="org.vortikal.security.SecurityContext">
+        <constructor-arg ref="writeAllToken" />
+        <constructor-arg ref="rootPrincipal" />
+      </bean>
+    </property>
+    <property name="systemJobStatusPropDef" ref="systemJobStatusPropDef" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+  </bean>
+
+  <!-- Abstract base bean for index-based repository job path selectors -->
+  <bean id="repository.systemjob.indexPathSelector" abstract="true">
+    <property name="searcher" ref="systemIndexSearcher" />
+    <property name="parser" ref="searchParser" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+  </bean>
   
   <!-- Resource publisher periodic job -->
   <bean id="repository.systemjob.publisher" class="org.vortikal.repository.systemjob.InvokeStoreJob"

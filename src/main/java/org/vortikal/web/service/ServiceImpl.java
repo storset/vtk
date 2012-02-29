@@ -94,7 +94,6 @@ public class ServiceImpl implements Service, BeanNameAware {
     private List<URLPostProcessor> urlPostProcessors = new ArrayList<URLPostProcessor>();
     private List<URLPostProcessor> accumulatedUrlPostProcessors = null;
     private ServiceNameProvider serviceNameProvider;
-    private CanonicalUrlConstructor canonicalUrlConstructor;
     
     @Override
     public List<Assertion> getAllAssertions() {
@@ -123,7 +122,6 @@ public class ServiceImpl implements Service, BeanNameAware {
         this.assertions = assertions;
     }
 	
-
     @Override
     public Object getHandler() {
         return this.handler;
@@ -291,21 +289,6 @@ public class ServiceImpl implements Service, BeanNameAware {
     @Override
     public String constructLink(Path uri) {
         return constructURL(uri).toString();
-    }
-
-    @Override
-    public URL constructCanonicalURL(Resource resource) {
-        return this.canonicalUrlConstructor.canonicalUrl(resource);
-    }
-
-    @Override
-    public URL constructCanonicalURL(Path uri) {
-        return this.canonicalUrlConstructor.canonicalUrl(uri);
-    }
-
-    @Override
-    public URL constructCanonicalURL(Path path, boolean collection, boolean readRestricted) {
-        return this.canonicalUrlConstructor.canonicalUrl(path, collection, readRestricted);
     }
 
     @Override
@@ -493,12 +476,6 @@ public class ServiceImpl implements Service, BeanNameAware {
     public void setServiceNameProvider(ServiceNameProvider serviceNameProvider) {
     	this.serviceNameProvider = serviceNameProvider;
     }
-    
-    @Autowired
-    public void setCanonicalUrlConstructor(CanonicalUrlConstructor constructor) {
-        this.canonicalUrlConstructor = constructor;
-    }
-    
     
     @Override
     public String getLocalizedName(Resource resource, HttpServletRequest request) {

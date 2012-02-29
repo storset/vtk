@@ -50,18 +50,16 @@ import org.vortikal.repository.resourcetype.LatePropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.display.linkcheck.LinkChecker;
 import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
+import org.vortikal.web.service.CanonicalUrlConstructor;
 import org.vortikal.web.service.URL;
 
 public class LinkCheckEvaluator implements LatePropertyEvaluator {
 
     private PropertyTypeDefinition linksPropDef;
     private LinkChecker linkChecker;
-    //private Service urlConstructor;
-    private URL baseURL;
+    private CanonicalUrlConstructor urlConstructor;
     
     private static final int MAX_BROKEN_LINKS = 100;
-
-    
 
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
@@ -83,7 +81,7 @@ public class LinkCheckEvaluator implements LatePropertyEvaluator {
         JSONParser parser = new JSONParser();
         
         final LinkChecker linkChecker = this.linkChecker;
-        final URL base = this.baseURL;
+        final URL base = this.urlConstructor.canonicalUrl(ctx.getNewResource()).setImmutable();
         final AtomicInteger number = new AtomicInteger(0);
         
         try {
@@ -181,15 +179,9 @@ public class LinkCheckEvaluator implements LatePropertyEvaluator {
     }
     
     @Required
-    public void setBaseURL(String baseURL) {
-        this.baseURL = URL.parse(baseURL).setImmutable();
+    public void setCanonicalUrlConstructor(CanonicalUrlConstructor urlConstructor) {
+        this.urlConstructor = urlConstructor;
     }
-
-//    @Required
-//    public void setUrlConstructor(Service urlConstructor) {
-//        this.urlConstructor = urlConstructor;
-//    }
-//
 
     private static class Status {
         private List<String> brokenLinks = new ArrayList<String>();

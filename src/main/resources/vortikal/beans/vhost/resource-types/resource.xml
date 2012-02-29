@@ -325,7 +325,7 @@
   <bean id="resourceLinkCheckEvaluator" class="org.vortikal.repository.resourcetype.property.LinkCheckEvaluator">
     <property name="linksPropDef" ref="linksPropDef" />
     <property name="linkChecker" ref="repository.linkChecker" />
-    <property name="baseURL" value="${linkChecker.baseURL}" />
+    <property name="canonicalUrlConstructor" ref="canonicalUrlConstructor" />
   </bean>
 
   <bean id="repository.linkChecker" 

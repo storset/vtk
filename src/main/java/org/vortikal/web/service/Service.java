@@ -227,39 +227,6 @@ public interface Service extends Ordered, Categorizable {
     public URL constructURL(Path uri, Map<String, String> parameters);
 
     /**
-     * Construct canonical URL for a resource.
-     * 
-     * The canonical URL is independent of service, and thus the same for all
-     * services.
-     * 
-     * @param resource The resource
-     * @return 
-     */
-    public URL constructCanonicalURL(Resource resource);
-
-    /**
-     * Get canonical URL for a resource path.
-     * 
-     * The canonical URL is independent of service and thus the same for all
-     * services.
-     * 
-     * @param uri The path
-     * @return 
-     */
-    public URL constructCanonicalURL(Path uri);
-    
-    /**
-     * Get canonical URL for a resource path.
-     * 
-     * The canonical URL is independent of service and thus the same for all
-     * services.
-     * 
-     * @param uri The path
-     * @return 
-     */
-    public URL constructCanonicalURL(Path uri, boolean collection, boolean readRestricted);
-    
-    /**
      * Gets the list of handler interceptors for this service, if any.
      *
      * @return a <code>List</code> of {@link

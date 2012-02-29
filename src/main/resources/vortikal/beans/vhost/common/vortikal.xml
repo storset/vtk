@@ -5,9 +5,6 @@
   <!-- @Reqired annotations -->
   <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor" />
   
-  <!-- @Autowired annotations -->
-  <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
-  
   <!-- Context Initializers -->
   <bean id="requestContextInitializer" class="org.vortikal.web.RequestContextInitializer"
     lazy-init="true">

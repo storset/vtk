@@ -30,10 +30,9 @@
  */
 package org.vortikal.web.decorating.components;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -107,10 +106,8 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         conf.put("compactView", parameterHasValue(PARAMETER_COMPACT_VIEW, "true", request));
 
         Listing l = search.execute(request.getServletRequest(), res, 1, maxItems, 0);
-        List<Listing> ll = new ArrayList<Listing>();
-        ll.add(l);
-        
-        model.put("edit", helper.isAuthorized(r, token, principal, maxItems, ll));
+
+        model.put("edit", helper.isAuthorized(r, token, principal, l.getFiles().size(), Arrays.asList(l)));
         model.put("list", l.getFiles());
         model.put("conf", conf);
     }
@@ -137,7 +134,7 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
     public void setSearch(SearchComponent search) {
         this.search = search;
     }
-    
+
     @Required
     public void setHelper(CollectionListingComponentHelper helper) {
         this.helper = helper;

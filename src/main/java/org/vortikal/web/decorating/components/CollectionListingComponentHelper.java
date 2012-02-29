@@ -10,22 +10,21 @@ import org.vortikal.security.Principal;
 import org.vortikal.web.search.Listing;
 
 public class CollectionListingComponentHelper {
-    
-    public boolean[] isAuthorized(Repository r, String token, Principal principal, int maxItems, List<Listing> ll) throws Exception {
+
+    public boolean[] isAuthorized(Repository r, String token, Principal principal, int maxItems, List<Listing> ll)
+            throws Exception {
         Resource res;
         String rt;
-        PropertySet ps;
-        boolean[] edit = new boolean[maxItems];
         int i = 0;
+        boolean[] edit = new boolean[maxItems];
         for (Listing l : ll) {
-            for (; i < l.getFiles().size(); i++) {
-                ps = l.getFiles().get(i);
+            for (PropertySet ps : l.getFiles()) {
                 rt = ps.getResourceType();
                 if (rt.equals("doc") || rt.equals("ppt") || rt.equals("xls")) {
                     res = r.retrieve(token, ps.getURI(), false);
-                    edit[i] = r.isAuthorized(res, RepositoryAction.READ_WRITE, principal, true);
+                    edit[i++] = r.isAuthorized(res, RepositoryAction.READ_WRITE, principal, true);
                 } else
-                    edit[i] = false;
+                    edit[i++] = false;
             }
 
         }

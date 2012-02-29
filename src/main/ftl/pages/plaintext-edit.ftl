@@ -23,6 +23,7 @@
   <title>Plain text edit</title>
   <script type="text/javascript" src="${md5jsURL?html}"></script>
   <script type="text/javascript"><!--
+    var ajaxSaveText = "<@vrtx.msg code='editor.save-plaintext-edit-ajax-loading-title' />";
 
     var before = null;
     var saveButton = false;
@@ -31,20 +32,21 @@
        saveButton = true;
        return true;
     }
+    
+    window.onload = function() {
+       before = hex_md5(document.getElementById("foo").value);
+    }
 
-     window.onload = function() {
-        before = hex_md5(document.getElementById("foo").value);
-     }
+    window.onbeforeunload = function() {
+       if (saveButton) return;
 
-     window.onbeforeunload = function() {
-        if (saveButton) return;
+       var now = hex_md5(document.getElementById("foo").value);
+       if (before == now) {
+          return;
+       }
+       return '<@vrtx.msg code='manage.unsavedChangesConfirmation' />';
+    }
 
-        var now = hex_md5(document.getElementById("foo").value);
-        if (before == now) {
-           return;
-        }
-        return '<@vrtx.msg code='manage.unsavedChangesConfirmation' />';
-     }
     // -->
   </script>
 

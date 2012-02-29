@@ -251,16 +251,10 @@ $(document).ready(function () {
     e.preventDefault();
   });
   
-  // Abort all AJAX reqs. on tab change
+  // Ignore all AJAX errors on tab change
   $("#app-tabs").delegate("li a", "click", function(e) {
     vrtxAdmin.ignoreAjaxErrors = true;
   });
-  
-  // Add autocomplete
-  if($("form#editor").length) {  
-    autocompleteUsernames(".vrtx-autocomplete-username");
-    autocompleteTags(".vrtx-autocomplete-tag");
-  }
   
   // Remove active tab if it has no children
   var activeTab = $("#active-tab");
@@ -295,6 +289,10 @@ $(document).ready(function () {
   } 
   
   if($("form#editor").length) {
+    // Add autocomplete
+    autocompleteUsernames(".vrtx-autocomplete-username");
+    autocompleteTags(".vrtx-autocomplete-tag");
+
     // Sticky editor title and save buttons  
     var titleSubmitButtons = $("#vrtx-editor-title-submit-buttons");
     if(titleSubmitButtons.length) {
@@ -311,7 +309,6 @@ $(document).ready(function () {
         }
       });
     }
-    
     // Add save/help when CK is maximized
     $("#app-content").delegate(".cke_button_maximize.cke_on", "click", function(e) {	
       var stickyBar = $("#vrtx-editor-title-submit-buttons");			
@@ -342,11 +339,11 @@ $(document).ready(function () {
         ckInject.find(".ck-injected-save-help").show();
       }
     }); 
-  	$("#app-content").delegate(".cke_button_maximize.cke_off", "click", function(e) {	
-	   var stickyBar = $("#vrtx-editor-title-submit-buttons");			
-       stickyBar.show();
-       var ckInject = $(this).closest(".cke_skin_kama").find(".ck-injected-save-help").hide();
-  	}); 
+    $("#app-content").delegate(".cke_button_maximize.cke_off", "click", function(e) {	
+      var stickyBar = $("#vrtx-editor-title-submit-buttons");			
+      stickyBar.show();
+      var ckInject = $(this).closest(".cke_skin_kama").find(".ck-injected-save-help").hide();
+    }); 
   }
   
   // Preview image
@@ -358,6 +355,22 @@ $(document).ready(function () {
   
   // Zebra-tables
   vrtxAdmin.zebraTables(".resourceInfo");
+
+  // Save visual profile with AJAX
+  if($("body#vrtx-visual-profile").length) {
+    $("#app-content").delegate("#saveAction", "click", function(e) {
+      ajaxSave(".visualProfile > form");
+      e.preventDefault();
+    });
+  }
+
+  // Save plaintext edit with AJAX
+  if($("body#vrtx-edit-plaintext").length) {
+    $("#app-content").delegate("#saveAction", "click", function(e) {
+      ajaxSave("#contents form");
+      e.preventDefault();
+    });
+  }
   
   // Async initialization
 
@@ -689,27 +702,34 @@ function changeTemplateName(n) {
   $("form[name=createDocumentService] input[type=text]").val(n);
 }
 	
-function ajaxSave() {
-  for (instance in CKEDITOR.instances) {
-    CKEDITOR.instances[instance].updateElement();
-  } 
+function ajaxSave(formSelector) {
+  if(typeof CKEDITOR !== "undefined") { 
+    for (instance in CKEDITOR.instances) {
+      CKEDITOR.instances[instance].updateElement();
+    } 
+  }
   var startTime = new Date();   
   tb_show(ajaxSaveText + "...", 
           "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
           false);
-        
-  performSave();
-  $("#editor").ajaxSubmit({
+  if(typeof performSave !== "undefined") {      
+    performSave();
+  }
+  $(formSelector).ajaxSubmit({
     success: function () {},
     complete: function() {
       var endTime = new Date() - startTime;
       var waitMinMs = 800;
       if(endTime >= waitMinMs) { // Wait minimum 0.8s
-        initDatePicker(datePickerLang);
+        if(typeof initDatePicker !== "undefined") {
+          initDatePicker(datePickerLang);
+        }
         tb_remove();
       } else {
         setTimeout(function() {
-          initDatePicker(datePickerLang);
+          if(typeof initDatePicker !== "undefined") {
+            initDatePicker(datePickerLang);
+          }
           tb_remove();
         }, Math.round(waitMinMs - endTime));
       }

@@ -52,12 +52,13 @@
         $("#app-content").delegate("#vrtx-save-shortcut",      "click", function(e) { $("#saveButton").click();        e.preventDefault(); });
         $("#app-content").delegate("#vrtx-cancel-shortcut",    "click", function(e) { $("#cancel").click();            e.preventDefault(); });
         
-        $("#editor").delegate("#saveAndViewButton, #saveCopyButton, #saveButton", "click", function(e) {
-          formatDocumentsData();
-          performSave();
+        // Save editor with AJAX
+        $("#editor").delegate("#saveButton", "click", function(e) {
+          ajaxSave("form#editor");
+          e.preventDefault();
         });
-        
-        $("#editor").delegate("#cancel", "click", function(e) {
+
+        $("#editor").delegate("#saveAndViewButton, #saveCopyButton, #saveButton, #cancel", "click", function(e) {
           performSave();
         });
 
@@ -85,6 +86,7 @@
       window.onbeforeunload = unsavedChangesInEditorMessage;
       
       function performSave() {
+        formatDocumentsData();
         NEED_TO_CONFIRM = false;
       } 
 

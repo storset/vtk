@@ -37,8 +37,9 @@
       $("#app-content").delegate("#vrtx-delete-working-copy-shortcut",  "click", function(e) { $("#deleteWorkingCopyAction").click(); e.preventDefault(); });   
       $("#app-content").delegate("#vrtx-save-as-working-copy-shortcut", "click", function(e) { $("#saveWorkingCopyAction").click();   e.preventDefault(); });    
 
+      // Save with AJAX
       $("#editor").delegate("#updateAction", "click", function(e) {
-        ajaxSave();
+        ajaxSave("form#editor");
         e.preventDefault();
       });
 

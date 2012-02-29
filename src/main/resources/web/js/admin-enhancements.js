@@ -1087,7 +1087,7 @@ function dropdownLanguageMenu(selector) {
 
   languageMenu.addClass("dropdown-shortcut-menu-container");
 
-  $("#app-content").delegate(selector + "-header", "click", function (e) {
+  $("body").delegate(selector + "-header", "click", function (e) {
     $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
     $(this).next(".dropdown-shortcut-menu-container").not(":visible").slideDown(vrtxAdmin.transitionDropdownSpeed, "swing");
     e.stopPropagation();

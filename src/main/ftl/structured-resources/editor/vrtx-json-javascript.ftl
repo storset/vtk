@@ -359,7 +359,15 @@
       element1.closest(".vrtx-json-element").focusout();
       element2.closest(".vrtx-json-element").focusout();
       
-      $('body').scrollTo(movedId, 250, {
+      var absPos = $(movedId).offset();
+      var absPosTop = absPos.top;
+      var stickyBar = $("#vrtx-editor-title-submit-buttons");
+      if(stickyBar.css("position") == "fixed") {
+        var stickyBarHeight = stickyBar.height();
+        absPosTop -= (stickyBarHeight <= absPosTop) ? stickyBarHeight : 0;
+      }
+
+      $('body').scrollTo(absPosTop, 250, {
         easing: 'swing',
         queue: true,
         axis: 'y'

@@ -57,6 +57,7 @@ import org.vortikal.security.Principal;
  * @see PropertyTypeDefinition
  * 
  */
+@SuppressWarnings("deprecation")
 public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, InitializingBean, Serializable {
 
     private static final long serialVersionUID = 3343489440040263038L;
@@ -68,7 +69,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private Type type = PropertyType.Type.STRING;
     private boolean multiple = false;
     private boolean mandatory = false;
-    
+
     private transient RepositoryAction protectionLevel = PropertyType.PROTECTION_LEVEL_ACL_WRITE;
     private transient Value defaultValue;
     private transient Value[] allowedValues;

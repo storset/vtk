@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -39,7 +38,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
 
 
 /**

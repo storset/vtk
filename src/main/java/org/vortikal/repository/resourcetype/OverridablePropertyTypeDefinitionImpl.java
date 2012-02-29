@@ -38,4 +38,6 @@ package org.vortikal.repository.resourcetype;
 public class OverridablePropertyTypeDefinitionImpl extends PropertyTypeDefinitionImpl implements
         OverridablePropertyTypeDefinition {
 
+    private static final long serialVersionUID = 126608072927528820L;
+
 }

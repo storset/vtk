@@ -59,6 +59,22 @@
       });
     
       $(document).ready(function() {
+
+        // Sticky bar shortcuts
+        $("#app-content").delegate("#vrtx-save-view-shortcut", "click", function(e) { $("#saveAndViewButton").click(); e.preventDefault(); });
+        $("#app-content").delegate("#vrtx-save-copy-shortcut", "click", function(e) { $("#saveCopyButton").click();    e.preventDefault(); });
+        $("#app-content").delegate("#vrtx-save-shortcut",      "click", function(e) { $("#saveButton").click();        e.preventDefault(); });
+        $("#app-content").delegate("#vrtx-cancel-shortcut",    "click", function(e) { $("#cancel").click();            e.preventDefault(); });
+        
+        $("#editor").delegate("#saveAndViewButton, #saveCopyButton, #saveButton", "click", function(e) {
+          formatDocumentsData();
+          performSave();
+        });
+        
+        $("#editor").delegate("#cancel", "click", function(e) {
+          performSave();
+        });
+
         <#if !isCollection>
           interceptEnterKey('#resource\\.tags');
         </#if>
@@ -76,37 +92,6 @@
           loadMultipleDocuments(false, "resource\\.manually-approve-from", false, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
                                 '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
         }
-
-        // Sticky bar shortcuts
-        $("#app-content").delegate("#vrtx-save-view-shortcut", "click", function(e) {
-          $("#saveAndViewButton").click();
-          e.preventDefault();
-        });
-
-        $("#app-content").delegate("#vrtx-save-copy-shortcut", "click", function(e) {
-          $("#saveCopyButton").click();
-          e.preventDefault();
-        });
-
-        $("#app-content").delegate("#vrtx-save-shortcut", "click", function(e) {
-          $("#saveButton").click();
-          e.preventDefault();
-        });
-
-        $("#app-content").delegate("#vrtx-cancel-shortcut", "click", function(e) {
-          $("#cancel").click();
-          e.preventDefault();
-        });
-        
-        $("#editor").delegate("#saveAndViewButton, #saveCopyButton, #saveButton", "click", function(e) {
-          formatDocumentsData();
-          performSave();
-        });
-        
-        $("#editor").delegate("#cancel", "click", function(e) {
-          performSave();
-        });
-
       }); 
 
       UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
@@ -122,7 +107,8 @@
                            <#list fckEditorAreaCSSURL as cssURL>
                              "${cssURL?html}" <#if cssURL_has_next>,</#if>
                            </#list>
-                         </#if>];      
+                         </#if>]; 
+     
       if (vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7) {
        cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
       }
@@ -529,6 +515,7 @@
     <#else>
       <input name="resource.${name}" id="resource.${name}.unspecified" type="radio" value="" />
       <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label><br />
+
     </#if>
   </#if>
 </#macro>

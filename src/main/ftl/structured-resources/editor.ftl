@@ -21,9 +21,7 @@
     var ajaxSaveText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
      
     var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";
-    
-    var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";
-    
+ 
     shortcut.add("Ctrl+S",function() {
         $(".vrtx-focus-button:last input").click();
     });
@@ -47,8 +45,7 @@
         var boxUrlTextField = $(boxUrlTextFields[i]);
         boxUrlTextField.val($.trim(boxUrlTextField.val()));
       }
-      NEED_TO_CONFIRM = false;
-	  
+      NEED_TO_CONFIRM = false;  
     }
 
     var cssFileList = [

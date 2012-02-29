@@ -37,7 +37,7 @@
 
     <script type="text/javascript"><!--
       var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
-     
+   
       var approveGeneratingPage = "<@vrtx.msg code='editor.manually-approve.generating-page' />";
       var approvePrev = "<@vrtx.msg code='imageListing.previous' />";
       var approveNext = "<@vrtx.msg code='imageListing.next' />";
@@ -50,7 +50,7 @@
       var approveShowApprovedOnly = "<@vrtx.msg code='editor.manually-approve.show-approved-only' />";
       var approveNoApprovedMsg = "<@vrtx.msg code='editor.manually-approve.no-approved-msg' />";
     
-      shortcut.add("Ctrl+S",function() {
+      shortcut.add("Ctrl+S", function() {
         $(".vrtx-focus-button:last input").click();
       });
      
@@ -63,6 +63,7 @@
           interceptEnterKey('#resource\\.tags');
         </#if>
         
+        // Multiple fields
         if($("#resource\\.featured-articles").length) {
           loadMultipleDocuments(true, "resource\\.featured-articles", true, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
                                 '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
@@ -75,6 +76,37 @@
           loadMultipleDocuments(false, "resource\\.manually-approve-from", false, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
                                 '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
         }
+
+        // Sticky bar shortcuts
+        $("#app-content").delegate("#vrtx-save-view-shortcut", "click", function(e) {
+          $("#saveAndViewButton").click();
+          e.preventDefault();
+        });
+
+        $("#app-content").delegate("#vrtx-save-copy-shortcut", "click", function(e) {
+          $("#saveCopyButton").click();
+          e.preventDefault();
+        });
+
+        $("#app-content").delegate("#vrtx-save-shortcut", "click", function(e) {
+          $("#saveButton").click();
+          e.preventDefault();
+        });
+
+        $("#app-content").delegate("#vrtx-cancel-shortcut", "click", function(e) {
+          $("#cancel").click();
+          e.preventDefault();
+        });
+        
+        $("#editor").delegate("#saveAndViewButton, #saveCopyButton, #saveButton", "click", function(e) {
+          formatDocumentsData();
+          performSave();
+        });
+        
+        $("#editor").delegate("#cancel", "click", function(e) {
+          performSave();
+        });
+
       }); 
 
       UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
@@ -85,13 +117,12 @@
         NEED_TO_CONFIRM = false;
       } 
       
+      // Div container display in IE
       var cssFileList = [<#if fckEditorAreaCSSURL?exists>
                            <#list fckEditorAreaCSSURL as cssURL>
                              "${cssURL?html}" <#if cssURL_has_next>,</#if>
                            </#list>
-                         </#if>];
-      
-      // Div container display in IE
+                         </#if>];      
       if (vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7) {
        cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
       }
@@ -116,18 +147,14 @@
       <div id="vrtx-editor-title-submit-buttons-inner-wrapper">
         <h2>${header}</h2>
         <div class="submitButtons submit-extra-buttons">
-          <div class="vrtx-button">
-            <input type="button" onclick="$('#saveAndViewButton').click()" value="${vrtx.getMsg("editor.saveAndView")}" />
-          </div>
+            <a class="vrtx-button" id="vrtx-save-view-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
           <#if supportedImageEditor>
-             <div class="vrtx-button">
-               <input type="button" onclick="$('#saveCopyButton').click()" value="${vrtx.getMsg("editor.saveCopy")}" />
-             </div>  
+            <a class="vrtx-button" id="vrtx-save-copy-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.saveCopy")}</span></a>
           </#if>
-          <span id="vrtx-save"><a class="vrtx-focus-button" href="javascript:void(0)" onclick="$('#saveButton').click()"><span>${vrtx.getMsg("editor.save")}</span></a></span>
-          <div class="vrtx-button">
-            <input type="button" onclick="$('#cancel').click()"  value="${vrtx.getMsg("editor.cancel")}" />
-          </div>
+          <span id="vrtx-save">
+            <a class="vrtx-focus-button" id="vrtx-save-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.save")}</span></a>
+          </span>
+            <a class="vrtx-button" id="vrtx-cancel-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.cancel")}</span></a>
             <@genEditorHelpMenu resource.resourceType isCollection />
         </div>
       </div>
@@ -180,18 +207,18 @@
 
       <div id="submit" class="submitButtons save-cancel">
         <div class="vrtx-button">
-          <input type="submit" id="saveAndViewButton" onclick="formatDocumentsData();performSave();" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
+          <input type="submit" id="saveAndViewButton" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
         </div>
         <#if supportedImageEditor>
            <div class="vrtx-button">
-             <input type="submit" id="saveCopyButton" onclick="formatDocumentsData();performSave();" name="savecopy" value="${vrtx.getMsg("editor.saveCopy")}">
+             <input type="submit" id="saveCopyButton" name="savecopy" value="${vrtx.getMsg("editor.saveCopy")}">
            </div>  
         </#if>
         <div class="vrtx-focus-button">
-          <input type="submit" id="saveButton" onclick="formatDocumentsData();performSave();" name="save" value="${vrtx.getMsg("editor.save")}">
+          <input type="submit" id="saveButton" name="save" value="${vrtx.getMsg("editor.save")}">
         </div>  
         <div class="vrtx-button">
-          <input type="submit" id="cancel" onclick="performSave();" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
+          <input type="submit" id="cancel" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
         </div>
       </div>
 

@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
-import java.util.Random;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -48,13 +47,14 @@ import org.vortikal.web.service.URL;
 public class LinkChecker {
     
     private static Log logger = LogFactory.getLog(LinkChecker.class); 
-
+    
     private Cache cache;
     private int connectTimeout = 5000;
     private int readTimeout = 5000;
     private String userAgent = "Link checker";
     
     public static final class LinkCheckResult implements Serializable {
+        private static final long serialVersionUID = -7574234857037932804L;
         private String link;
         private Status status;
         private String reason;
@@ -77,8 +77,14 @@ public class LinkChecker {
         }
         @Override
         public String toString() {
-            return "{link: " + link + ", status: " + status 
-                    + ", reason: " + reason + "}";
+            StringBuilder sb = new StringBuilder("{");
+            sb.append("link: ").append(link)
+            .append(", status: ").append(status);
+            if (reason != null) {
+                sb.append(", reason: ").append(reason);
+            }
+            sb.append("}");
+            return sb.toString();
         }
     }
     
@@ -202,5 +208,4 @@ public class LinkChecker {
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
     }
-
 }

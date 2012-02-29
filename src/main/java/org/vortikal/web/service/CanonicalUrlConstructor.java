@@ -29,23 +29,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.util.net;
+package org.vortikal.web.service;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
+import org.vortikal.util.net.NetUtils;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.service.URL;
 
 /**
+ * Canonical resource URL construction.
+ * 
  * Best-effort, based on available information. If wild-card values
  * are configured for host, port, etc. then request context is used if available.
  * Otherwise a fallback values are used.
  * 
- * We cannot reliably use view service for this purpose when not accessing Vortex
- * through the regular http interface, or even not through servlet API at all.
+ * Constructed URLs are service-agnostic.
  * 
  */
-public class ResourceUrlServiceImpl implements ResourceUrlService {
+public class CanonicalUrlConstructor {
     
     // Used for constructing canonical resource URL.
     private static final String WILDCARD_VALUE = "*";
@@ -59,18 +60,15 @@ public class ResourceUrlServiceImpl implements ResourceUrlService {
     private int webPort = PORT_ANY;
     private int webPortRestricted = PORT_ANY;
     
-    @Override
-    public URL canonicalUrl(Resource resource) {
+    URL canonicalUrl(Resource resource) {
         return canonicalUrl(resource.getURI(), resource.isCollection(), resource.isReadRestricted());
     }
     
-    @Override
-    public URL canonicalUrl(Path path) {
+    URL canonicalUrl(Path path) {
         return canonicalUrl(path, false, false);
     }
     
-    @Override
-    public URL canonicalUrl(Path path, boolean collection, boolean readRestricted) {
+    URL canonicalUrl(Path path, boolean collection, boolean readRestricted) {
         String protocol;
         String host;
         int port;

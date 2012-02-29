@@ -5,6 +5,9 @@
   <!-- @Reqired annotations -->
   <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor" />
   
+  <!-- @Autowired annotations -->
+  <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+  
   <!-- Context Initializers -->
   <bean id="requestContextInitializer" class="org.vortikal.web.RequestContextInitializer"
     lazy-init="true">
@@ -126,11 +129,5 @@
   <!-- Spring HandlerAdapter for all HttpRequestHandler instances: -->
   <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter" />
   
-  <bean id="canonicalUrlService" class="org.vortikal.util.net.ResourceUrlServiceImpl">
-    <property name="webHostName" value="${webHostName}" />
-    <property name="webProtocol" value="${webProtocol}" />
-    <property name="webProtocolRestricted" value="${webProtocolRestricted}" />
-    <property name="webPort" value="${canonicalUrlService.webPort}" />
-  </bean>
   
 </beans>

@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
@@ -93,7 +94,9 @@ public class ServiceImpl implements Service, BeanNameAware {
     private List<URLPostProcessor> urlPostProcessors = new ArrayList<URLPostProcessor>();
     private List<URLPostProcessor> accumulatedUrlPostProcessors = null;
     private ServiceNameProvider serviceNameProvider;
+    private CanonicalUrlConstructor canonicalUrlConstructor;
     
+    @Override
     public List<Assertion> getAllAssertions() {
         if (this.allAssertions == null) {
             synchronized (this) {
@@ -121,6 +124,7 @@ public class ServiceImpl implements Service, BeanNameAware {
     }
 	
 
+    @Override
     public Object getHandler() {
         return this.handler;
     }
@@ -131,6 +135,7 @@ public class ServiceImpl implements Service, BeanNameAware {
     }
     
 
+    @Override
     public Object getAttribute(String name) {
         if (this.attributes == null) {
             return null;
@@ -144,6 +149,7 @@ public class ServiceImpl implements Service, BeanNameAware {
     }
     
 
+    @Override
     public void setParent(Service parent) {
         // Looking for infinite loops
         Service service = parent;
@@ -160,6 +166,7 @@ public class ServiceImpl implements Service, BeanNameAware {
     }
 	
 
+    @Override
     public List<Assertion> getAssertions() {
         return this.assertions;
     }
@@ -184,22 +191,26 @@ public class ServiceImpl implements Service, BeanNameAware {
     }
     
 
+    @Override
     public String getName() {
         return this.name;
     }
 
 	
+    @Override
     public void setBeanName(String name) {
         this.name = name;
     }
 
 
 
+    @Override
     public Service getParent() {
         return this.parent;
     }
 	
 
+    @Override
     public boolean isDescendantOf(Service service) {
         if (service == null) {
             throw new IllegalArgumentException("Services cannot be null");
@@ -217,46 +228,55 @@ public class ServiceImpl implements Service, BeanNameAware {
     }
 
 
+    @Override
     public String constructLink(Resource resource, Principal principal) {
         return constructLink(resource, principal, null, true);
     }
 
+    @Override
     public URL constructURL(Resource resource) {
         return constructURL(resource, null, null, false);
     }
     
+    @Override
     public URL constructURL(Resource resource, Principal principal) {
         return constructURL(resource, principal, null, true);
     }
 
 
+    @Override
     public String constructLink(Resource resource, Principal principal,
                                 boolean matchAssertions) {
         return constructLink(resource, principal, null, matchAssertions);
     }
 
 
+    @Override
     public URL constructURL(Resource resource, Principal principal,
                                 boolean matchAssertions) {
         return constructURL(resource, principal, null, matchAssertions);
     }
 
 	
+    @Override
     public String constructLink(Resource resource, Principal principal,
                                 Map<String, String> parameters) {
         return constructLink(resource, principal, parameters, true);
     }
 
+    @Override
     public URL constructURL(Resource resource, Principal principal,
                                Map<String, String> parameters) {
         return constructURL(resource, principal, parameters, true);
     }
 
+    @Override
     public String constructLink(Resource resource, Principal principal,
                                 Map<String, String> parameters, boolean matchAssertions) {
         return constructURL(resource, principal, parameters, matchAssertions).toString();
     }
 	
+    @Override
     public URL constructURL(Resource resource, Principal principal,
                                 Map<String, String> parameters, boolean matchAssertions) {
         URL urlObject = 
@@ -268,10 +288,27 @@ public class ServiceImpl implements Service, BeanNameAware {
         return urlObject;
     }
 
+    @Override
     public String constructLink(Path uri) {
         return constructURL(uri).toString();
     }
 
+    @Override
+    public URL constructCanonicalURL(Resource resource) {
+        return this.canonicalUrlConstructor.canonicalUrl(resource);
+    }
+
+    @Override
+    public URL constructCanonicalURL(Path uri) {
+        return this.canonicalUrlConstructor.canonicalUrl(uri);
+    }
+
+    @Override
+    public URL constructCanonicalURL(Path path, boolean collection, boolean readRestricted) {
+        return this.canonicalUrlConstructor.canonicalUrl(path, collection, readRestricted);
+    }
+
+    @Override
     public URL constructURL(Path uri) {
         String protocol = "http";
         String host = DEFAULT_HOST;
@@ -292,10 +329,12 @@ public class ServiceImpl implements Service, BeanNameAware {
         return urlObject;
     }
 
+    @Override
     public String constructLink(Path uri, Map<String, String> parameters) {
         return constructURL(uri, parameters).toString();
     }
 
+    @Override
     public URL constructURL(Path uri, Map<String, String> parameters) {
         String protocol = "http";
         String host = DEFAULT_HOST;
@@ -327,6 +366,7 @@ public class ServiceImpl implements Service, BeanNameAware {
     }
     
 
+    @Override
     public List<HandlerInterceptor> getHandlerInterceptors() {
         if (this.handlerInterceptors == null) {
             return null;
@@ -345,17 +385,17 @@ public class ServiceImpl implements Service, BeanNameAware {
         }
         return Collections.unmodifiableList(this.handlerFilters);
     }
-
     
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-		
         sb.append(getClass().getName()).append(": ").append(this.name);;
         return sb.toString();
     }
 
 
+    @Override
     public AuthenticationChallenge getAuthenticationChallenge() {
         return this.authenticationChallenge;
     }
@@ -367,6 +407,7 @@ public class ServiceImpl implements Service, BeanNameAware {
     }
     
 
+    @Override
     public int getOrder() {
         return this.order;
     }
@@ -377,6 +418,7 @@ public class ServiceImpl implements Service, BeanNameAware {
     }
 
 
+    @Override
     public Set<String> getCategories() {
         return this.categories;
     }
@@ -452,7 +494,13 @@ public class ServiceImpl implements Service, BeanNameAware {
     	this.serviceNameProvider = serviceNameProvider;
     }
     
+    @Autowired
+    public void setCanonicalUrlConstructor(CanonicalUrlConstructor constructor) {
+        this.canonicalUrlConstructor = constructor;
+    }
     
+    
+    @Override
     public String getLocalizedName(Resource resource, HttpServletRequest request) {
     	if (this.serviceNameProvider != null) {
     		return this.serviceNameProvider.getLocalizedName(resource, request);

@@ -162,7 +162,7 @@ $.fn.ajaxSubmit = function(options) {
 
         // USIT added name of clicked button
         if(typeof EDITOR_SAVE_BUTTON_NAME !== "undefined" && EDITOR_SAVE_BUTTON_NAME != "") {
-          options.data += "&name=" + EDITOR_SAVE_BUTTON_NAME;
+          options.data += "&" + EDITOR_SAVE_BUTTON_NAME;
         }
 
 	// options.iframe allows user to force iframe mode

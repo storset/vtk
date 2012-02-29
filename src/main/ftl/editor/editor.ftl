@@ -36,45 +36,46 @@
      </#if>
 
     <script type="text/javascript"><!--
-     var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
+      var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
      
-     var approveGeneratingPage = "<@vrtx.msg code='editor.manually-approve.generating-page' />";
-     var approvePrev = "<@vrtx.msg code='imageListing.previous' />";
-     var approveNext = "<@vrtx.msg code='imageListing.next' />";
-     var approveShowing = "<@vrtx.msg code='editor.manually-approve.table-showing' />";
-     var approveOf = "<@vrtx.msg code='person-listing.of' />";
-     var approveTableTitle = "<@vrtx.msg code='proptype.name.title' />";
-     var approveTableSrc = "<@vrtx.msg code='resource.sourceURL' />";
-     var approveTablePublished = "<@vrtx.msg code='publish.permission.published' />";
-     var approveShowAll = "<@vrtx.msg code='editor.manually-approve.show-all' />";
-     var approveShowApprovedOnly = "<@vrtx.msg code='editor.manually-approve.show-approved-only' />";
-     var approveNoApprovedMsg = "<@vrtx.msg code='editor.manually-approve.no-approved-msg' />";
+      var approveGeneratingPage = "<@vrtx.msg code='editor.manually-approve.generating-page' />";
+      var approvePrev = "<@vrtx.msg code='imageListing.previous' />";
+      var approveNext = "<@vrtx.msg code='imageListing.next' />";
+      var approveShowing = "<@vrtx.msg code='editor.manually-approve.table-showing' />";
+      var approveOf = "<@vrtx.msg code='person-listing.of' />";
+      var approveTableTitle = "<@vrtx.msg code='proptype.name.title' />";
+      var approveTableSrc = "<@vrtx.msg code='resource.sourceURL' />";
+      var approveTablePublished = "<@vrtx.msg code='publish.permission.published' />";
+      var approveShowAll = "<@vrtx.msg code='editor.manually-approve.show-all' />";
+      var approveShowApprovedOnly = "<@vrtx.msg code='editor.manually-approve.show-approved-only' />";
+      var approveNoApprovedMsg = "<@vrtx.msg code='editor.manually-approve.no-approved-msg' />";
     
-     shortcut.add("Ctrl+S",function() {
-       $(".vrtx-focus-button:last input").click();
-     });
+      shortcut.add("Ctrl+S",function() {
+        $(".vrtx-focus-button:last input").click();
+      });
      
-     $(window).load(function() {
-       initDatePicker(datePickerLang);
-     });
+      $(window).load(function() {
+        initDatePicker(datePickerLang);
+      });
     
       $(document).ready(function() {
-          <#if !isCollection>
+        <#if !isCollection>
           interceptEnterKey('#resource\\.tags');
-          </#if>
-          if($("#resource\\.featured-articles").length) {
-            loadMultipleDocuments(true, "resource\\.featured-articles", true, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
-                                  '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
-          }   
-          if($("#resource\\.aggregation").length) {                  
-            loadMultipleDocuments(true, "resource\\.aggregation", false, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
-                                  '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
-          } 
-          if($("#resource\\.manually-approve-from").length) {                
-            loadMultipleDocuments(false, "resource\\.manually-approve-from", false, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
-                                  '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
-          }
-       }); 
+        </#if>
+        
+        if($("#resource\\.featured-articles").length) {
+          loadMultipleDocuments(true, "resource\\.featured-articles", true, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
+                                '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
+        }   
+        if($("#resource\\.aggregation").length) {                  
+          loadMultipleDocuments(true, "resource\\.aggregation", false, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
+                                '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
+        } 
+        if($("#resource\\.manually-approve-from").length) {                
+          loadMultipleDocuments(false, "resource\\.manually-approve-from", false, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
+                                '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
+        }
+      }); 
 
       UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
       COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
@@ -84,14 +85,13 @@
         NEED_TO_CONFIRM = false;
       } 
       
-      var cssFileList = [
-      <#if fckEditorAreaCSSURL?exists>
-        <#list fckEditorAreaCSSURL as cssURL>
-          "${cssURL?html}" <#if cssURL_has_next>,</#if>
-        </#list>
-      </#if>];
+      var cssFileList = [<#if fckEditorAreaCSSURL?exists>
+                           <#list fckEditorAreaCSSURL as cssURL>
+                             "${cssURL?html}" <#if cssURL_has_next>,</#if>
+                           </#list>
+                         </#if>];
       
-      // Fix for div container display in IE
+      // Div container display in IE
       if (vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7) {
        cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
       }

@@ -19,17 +19,16 @@
   
   <script type="text/javascript"><!--
     var ajaxSaveText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
-     
-    var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";
  
     shortcut.add("Ctrl+S",function() {
-        $(".vrtx-focus-button:last input").click();
+      $(".vrtx-focus-button:last input").click();
     });
 
     $(window).load(function() {
-        initDatePicker(datePickerLang);
+      initDatePicker(datePickerLang);
     });
-  
+    
+    var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";
     UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
     COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
     window.onbeforeunload = unsavedChangesInEditorMessage;
@@ -48,14 +47,13 @@
       NEED_TO_CONFIRM = false;  
     }
 
-    var cssFileList = [
-      <#if fckEditorAreaCSSURL?exists>
-        <#list fckEditorAreaCSSURL as cssURL>
-          "${cssURL?html}" <#if cssURL_has_next>,</#if>
-        </#list>
-      </#if>];
+    var cssFileList = [<#if fckEditorAreaCSSURL?exists>
+                         <#list fckEditorAreaCSSURL as cssURL>
+                           "${cssURL?html}" <#if cssURL_has_next>,</#if>
+                         </#list>
+                       </#if>];
       
-    // Fix for div container display in IE
+    // Div container display in IE
     if (vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7) {
      cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
     }

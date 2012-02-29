@@ -160,6 +160,11 @@ $.fn.ajaxSubmit = function(options) {
 	log("fileAPI :" + fileAPI);
 	var shouldUseFrame = (hasFileInputs || multipart) && !fileAPI;
 
+        // USIT added name of clicked button
+        if(typeof EDITOR_SAVE_BUTTON_NAME !== "undefined" && EDITOR_SAVE_BUTTON_NAME != "") {
+          options.data += "&name=" + EDITOR_SAVE_BUTTON_NAME;
+        }
+
 	// options.iframe allows user to force iframe mode
 	// 06-NOV-09: now defaulting to iframe mode if file input is detected
 	if (options.iframe !== false && (options.iframe || shouldUseFrame)) {
@@ -179,6 +184,7 @@ $.fn.ajaxSubmit = function(options) {
 		fileUploadXhr(a);
 	}
 	else {
+                if(typeof console !== "undefined") console.log(options);
 		$.ajax(options);
 	}
 
@@ -962,7 +968,7 @@ $.fn.selected = function(select) {
 };
 
 // expose debug var
-$.fn.ajaxSubmit.debug = false;
+$.fn.ajaxSubmit.debug = true;
 
 // helper fn for console logging
 function log() {

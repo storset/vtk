@@ -686,7 +686,9 @@ function changeTemplateName(n) {
   $("form[name=createDocumentService] input[type=text]").val(n);
 }
 	
-function ajaxSave() {
+var EDITOR_SAVE_BUTTON_NAME = "";
+function ajaxSave(saveButtonName) {
+  EDITOR_SAVE_BUTTON_NAME = saveButtonName;
   if(typeof CKEDITOR !== "undefined") { 
     for (instance in CKEDITOR.instances) {
       CKEDITOR.instances[instance].updateElement();
@@ -700,7 +702,6 @@ function ajaxSave() {
     performSave();
   }
   $("#editor").ajaxSubmit({
-    success: function () {},
     complete: function() {
       var endTime = new Date() - startTime;
       var waitMinMs = 800;

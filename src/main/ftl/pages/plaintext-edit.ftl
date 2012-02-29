@@ -31,8 +31,8 @@
     });
 
     $(document).ready(function() {
-      $("#app-content").delegate("#saveAction", "click", function(e) {
-        ajaxSave();
+      $("#app-content").delegate(".vrtx-focus-button:last input", "click", function(e) {
+        ajaxSave($(this).attr("name"));
         e.preventDefault();
       });
       $("#app-content").delegate("#saveViewAction", "click", function(e) {
@@ -68,7 +68,7 @@
 </head>
 <body id="vrtx-edit-plaintext">
   <div>
-    <form id="editor" action="${plaintextEditForm.submitURL}" method="POST">
+    <form id="editor" action="${plaintextEditForm.submitURL}" method="post">
       <textarea id="foo" name="content" rows="30" cols="80">${plaintextEditForm.content?html}</textarea>
       <div class="vrtx-edit-plaintext-submit-buttons submitButtons">
         <div class="vrtx-button">

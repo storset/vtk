@@ -38,8 +38,8 @@
       $("#app-content").delegate("#vrtx-save-as-working-copy-shortcut", "click", function(e) { $("#saveWorkingCopyAction").click();   e.preventDefault(); });    
 
       // Save with AJAX
-      $("#editor").delegate("#updateAction", "click", function(e) {
-        ajaxSave();
+      $("#editor").delegate(".vrtx-focus-button:last input", "click", function(e) {
+        ajaxSave($(this).attr("name"));
         e.preventDefault();
       });
 

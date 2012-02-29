@@ -53,8 +53,8 @@
         $("#app-content").delegate("#vrtx-cancel-shortcut",    "click", function(e) { $("#cancel").click();            e.preventDefault(); });
         
         // Save editor with AJAX
-        $("#editor").delegate("#saveButton", "click", function(e) {
-          ajaxSave();
+        $("#editor").delegate(".vrtx-focus-button:last input", "click", function(e) {
+          ajaxSave($(this).attr("name"));
           e.preventDefault();
         });
 
@@ -346,6 +346,7 @@
               <div class="vrtx-button">
                 <button type="button" onclick="browseServer('resource.${name}', '${fckeditorBase.url?html}', '${baseFolder}',
                   '${fckBrowse.url.pathRepresentation}');"><@vrtx.msg code="editor.browseImages"/></button>
+
               </div>
             </div>
             <div id="resource.${name}.preview">

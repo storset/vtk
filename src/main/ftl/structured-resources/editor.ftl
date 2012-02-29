@@ -35,25 +35,6 @@
     UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";
     COMPLETE_UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.completeUnsavedChangesConfirmation' />";
     window.onbeforeunload = unsavedChangesInEditorMessage;
- 	
-	function documentSave () {
-		for (instance in CKEDITOR.instances) {
-              CKEDITOR.instances[instance].updateElement();
-        }    
-        
-        tb_show(saveDocAjaxText + "...", 
-                   "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
-                   false);
-        
-	 	performSave();
-	 	$("#editor").ajaxSubmit({
-              success: function () {},
-              complete: function() {
-                initDatePicker(datePickerLang);
-                tb_remove();
-              }
-         });
-	}
 
     function performSave() {
       saveDateAndTimeFields(); // js/datepicker/datepicker-admin.js

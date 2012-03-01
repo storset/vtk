@@ -57,6 +57,8 @@ import org.springframework.scheduling.support.PeriodicTrigger;
  * TODO add some way for tasks to signal abort/cancel or option for aborting
  *      task on error (or delaying it with grace period before retry).
  * 
+ * TODO consider not being lenient on duplicate task IDs.
+ * 
  */
 public class TaskManager implements ApplicationContextAware, InitializingBean {
 
@@ -85,9 +87,9 @@ public class TaskManager implements ApplicationContextAware, InitializingBean {
             final TriggerSpecification triggerSpec = task.getTriggerSpecification();
             if (triggerSpec == null) {
                 // Fail early, we don't accept tasks without a valid trigger specification
-                throw new BeanInitializationException("Task with id '" 
+                throw new BeanInitializationException("Task with id " 
                         + task.getId() 
-                        + "' returned null for trigger specification");
+                        + " returned null for trigger specification");
             }
             
             tasks.add(new TaskHolder(task, getTriggerImpl(task.getTriggerSpecification())));
@@ -100,49 +102,49 @@ public class TaskManager implements ApplicationContextAware, InitializingBean {
         for (TaskHolder th: this.tasks) {
             if (taskId.equals(th.task.getId())) {
                 if (th.future == null) {
-                    logger.warn("Task already disabled");
+                    logger.warn("Task " + taskId + " already disabled.");
                     return;
                 }
-                logger.info("Cancelling task with id '" + taskId + "' (thread will be interrupted)");
+                logger.info("Cancelling task with id " + taskId + " (thread will be interrupted)");
                 th.future.cancel(true);
                 th.task.setEnabled(false);
                 th.future = null;
                 return;
             }
         }
-        throw new IllegalArgumentException("Unknown task id '" + taskId + "'");
+        throw new IllegalArgumentException("Unknown task " + taskId);
     }
     
     public synchronized void enableTask(String taskId) {
         for (TaskHolder th: this.tasks) {
             if (taskId.equals(th.task.getId())) {
                 if (th.future != null) {
-                    logger.warn("Task already enabled");
+                    logger.warn("Task " + taskId + " already enabled.");
                     return;
                 }
 
-                logger.info("Scheduling task '"
+                logger.info("Scheduling task "
                         + th.task.getId() 
-                        + "' with trigger " 
+                        + " with trigger " 
                         + th.task.getTriggerSpecification());
                 th.task.setEnabled(true);
                 th.future = this.scheduler.schedule(th.task, th.trigger);
                 return;
             }
         }
-        throw new IllegalArgumentException("Unknown task id '" + taskId + "'");
+        throw new IllegalArgumentException("Unknown task id " + taskId);
     }
     
     private void scheduleEnabledTasksInitially() {
         for (TaskHolder th: this.tasks) {
             if (th.task.isEnabled()) {
-                logger.info("Scheduling task '" 
+                logger.info("Scheduling task " 
                         + th.task.getId() 
-                        + "' with trigger " 
+                        + " with trigger " 
                         + th.task.getTriggerSpecification());
                 th.future = this.scheduler.schedule(th.task, th.trigger);
             } else {
-                logger.warn("Task '" + th.task.getId() + "' disabled, will not schedule.");
+                logger.warn("Task " + th.task.getId() + " disabled, will not schedule.");
             }
         }
     }

@@ -220,7 +220,7 @@ view {
         [def regelverk-fri document.properties.regelverk-fri]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">      
              
-            <h2>[localized 'opptak']</h2>
+            <h1>[localized 'opptak']</h1>
             [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"frist-frekvens-felles"}]
             [call "comp:frist-frekvens"]
             [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"metode-felles"}]

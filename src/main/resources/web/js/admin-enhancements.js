@@ -720,7 +720,8 @@ function ajaxSave(saveButtonName) {
       }
     },
     error: function(xhr, statusText, errMsg) {
-      alert(statusText + " " + errMsg);
+      tb_remove();
+      vrtxAdmin.displayErrorMsg(statusText + " " + errMsg);
     }
   });
 }

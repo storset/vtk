@@ -108,4 +108,21 @@ public class CollectionListingAggregatedResources implements Serializable {
         return false;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (this.aggregationSet != null) {
+            sb.append("Aggregation set: ");
+            sb.append(this.aggregationSet);
+        }
+        if (this.manuallyApprovedSet != null) {
+            if (sb.toString().length() > 0) {
+                sb.append("\n");
+            }
+            sb.append("Manually approved set: ");
+            sb.append(this.manuallyApprovedSet);
+        }
+        return sb.toString();
+    }
+
 }

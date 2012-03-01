@@ -103,9 +103,10 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     private ResourceTypeTree resourceTypeTree;
     private FieldValueMapper fieldValueMapper;
     private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
-    private Filter onlyPublishedFilter;
     private PropertyTypeDefinition publishedPropDef;
     private PropertyTypeDefinition hiddenPropDef;
+
+    private Filter onlyPublishedFilter;
     private Filter cachedHiddenPropDefNotExistsFilter;
     private Filter cachedDeletedDocsFilter;
 
@@ -120,7 +121,8 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         this.onlyPublishedFilter = new CachingWrapperFilter(tf);
 
         // Setup cached deleted docs filter
-        this.cachedDeletedDocsFilter = new CachingWrapperFilter(new DeletedDocsFilter());
+        this.cachedDeletedDocsFilter = new CachingWrapperFilter(new DeletedDocsFilter(), 
+                                           CachingWrapperFilter.DeletesMode.RECACHE);
 
         if (this.hiddenPropDef != null) {
             // Special case caching for common "navigation:hidden !exists" query clause

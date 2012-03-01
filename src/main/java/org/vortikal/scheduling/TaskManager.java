@@ -57,7 +57,6 @@ import org.springframework.scheduling.support.PeriodicTrigger;
  * TODO add some way for tasks to signal abort/cancel or option for aborting
  *      task on error (or delaying it with grace period before retry).
  * 
- * TODO add some methods for stopping/starting/controlling tasks by id.
  */
 public class TaskManager implements ApplicationContextAware, InitializingBean {
 
@@ -94,10 +93,47 @@ public class TaskManager implements ApplicationContextAware, InitializingBean {
             tasks.add(new TaskHolder(task, getTriggerImpl(task.getTriggerSpecification())));
         }
         
-        scheduleTasks();
+        scheduleEnabledTasksInitially();
     }
     
-    private void scheduleTasks() {
+    public synchronized void disableTask(String taskId) {
+        for (TaskHolder th: this.tasks) {
+            if (taskId.equals(th.task.getId())) {
+                if (th.future == null) {
+                    logger.warn("Task already disabled");
+                    return;
+                }
+                logger.info("Cancelling task with id '" + taskId + "' (thread will be interrupted)");
+                th.future.cancel(true);
+                th.task.setEnabled(false);
+                th.future = null;
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Unknown task id '" + taskId + "'");
+    }
+    
+    public synchronized void enableTask(String taskId) {
+        for (TaskHolder th: this.tasks) {
+            if (taskId.equals(th.task.getId())) {
+                if (th.future != null) {
+                    logger.warn("Task already enabled");
+                    return;
+                }
+
+                logger.info("Scheduling task '"
+                        + th.task.getId() 
+                        + "' with trigger " 
+                        + th.task.getTriggerSpecification());
+                th.task.setEnabled(true);
+                th.future = this.scheduler.schedule(th.task, th.trigger);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Unknown task id '" + taskId + "'");
+    }
+    
+    private void scheduleEnabledTasksInitially() {
         for (TaskHolder th: this.tasks) {
             if (th.task.isEnabled()) {
                 logger.info("Scheduling task '" 

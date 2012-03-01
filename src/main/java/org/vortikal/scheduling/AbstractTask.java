@@ -116,4 +116,17 @@ public abstract class AbstractTask implements Task {
         this.enabled = enabled;
     }
 
+    /**
+     * Checks interrupt status.
+     * Can be called regularly by tasks which need safe places to abort
+     * during execution. Does not clear interrupt status flag.
+     * 
+     * @throws InterruptedException if interrupt flag for current thread is raised.
+     */
+    public void checkForInterrupt() throws InterruptedException {
+        if (Thread.currentThread().isInterrupted()) {
+            throw new InterruptedException("Interrupted during task execution");
+        }
+    }
+
 }

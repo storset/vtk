@@ -1,6 +1,7 @@
 resourcetype hvordan-soke : fellestekst-document {
 
   properties {
+  	typeToDisplay : string defaultvalue("all"),
     frist-frekvens-felles : string, 
     frist-frekvens-fri : html,
     metode-felles : string, 
@@ -34,6 +35,7 @@ resourcetype hvordan-soke : fellestekst-document {
  }
 
   edit-rules {
+  	typeToDisplay (dropdown),
     group frist-frekvens (frist-frekvens-felles, frist-frekvens-fri),
     frist-frekvens-felles (class[vrtx-shared-text]),
     group metode (metode-felles, metode-fri), 
@@ -260,14 +262,22 @@ view {
               </div> 
           </div>
           [endif]
-        </div> 
+        </div>
       </body>
     </html>
     ##
   }
 
-
+  vocabulary{
+	typeToDisplay{
+		en: ("all" = "All", "so" = "SO program", "nm" = "Norwegian master", "em" = "English master"),
+		no: ("all" = "Alle", "so" = "SO-program", "nm" = "Norsk master", "em" = "Engelsk master"),
+		nn: ("all" = "Alle", "so" = "SO-program", "nm" = "Norsk master", "em" = "Engelsk master")
+	}
+  }
   localization {
+  
+  	typeToDisplay : (en : "Program type", no : "Programtype", nn : "Programtype"),
     header : (en : "Edit document", no : "Rediger dokument", nn : "Rediger dokument"),
     opptak: (en : "Admission", no : "Opptak", nn : "Opptak"),
 
@@ -324,11 +334,11 @@ view {
     ordinar-kvote-alle-kvalifiserte-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     ordinar-kvote-alle-kvalifiserte-felles : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),     
 
-    poenggrenser : (en : "Credit limits", no : "Poenggrenser", nn : "Poenggrenser"),					    	   
+    poenggrenser-poengberegning-felles : (en : "Credit limits", no : "Poenggrenser", nn : "Poenggrenser"),					    	   
 
     poenggrenser-poengberegning : (en : "Credit limits: credit calculation (All)", no : "Poenggrenser: poengberegning (Alle)", nn : "Poenggrenser poengberegning (Alle)"),					    	   
     poenggrenser-poengberegning-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    poenggrenser-poengberegning-felles : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),     
+    poenggrenser : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),     
 
     innpassing-tidl-utdanning : (en : "Recognition of prior education (All)", no : "Innpassing av tidligere utdanning (Alle)", nn : "Innpassing av tidlegare utdanning (Alle)"),					    	   
     innpassing-tidl-utdanning-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"), 

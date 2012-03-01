@@ -84,8 +84,8 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     || name.indexOf("description-en") != -1
     || name.indexOf("description-nn") != -1
     || name.indexOf("description-no") != -1) {
-    setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 300, 40, inlineToolbar, 
-                      true, false, baseDocumentUrl, false);
+    setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, studyToolbar, 
+                      isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (name.indexOf("additional-content") != -1
           || name.indexOf("additionalContents") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 150, 400, 40, 

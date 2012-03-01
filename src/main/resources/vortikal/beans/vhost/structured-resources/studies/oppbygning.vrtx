@@ -1,52 +1,23 @@
-resourcetype oppbygning{
+resourcetype oppbygning : fellestekst-document{
 
   properties {
     introduction : simple_html,
     picture : image_ref,
     caption : simple_html,
-    gradsnavn : string,
     content : html noextract,
-    showAdditionalContent : boolean defaultvalue("false"),
+    gradsnavn : string,
+    showAdditionalContent : boolean defaultvalue("true"),
 	related-content : html noextract
   }
   
   edit-rules {
     caption (size[small]),
+    group introImageAndCaption (picture, caption) (after introduction) vertical,
     gradsnavn (class[vrtx-shared-text]),
-    gradsnavn (before content),
-    group introImageAndCaption (picture, caption) (after introduction) vertical
+    group relatedContent (showAdditionalContent, related-content) (after content)
   }
-    
 
-  view-components {
-  
-    vis-fellestekst (docType, propName){
-        ##
-        [def uri "/vrtx/fellestekst/" + docType + "/" + propName + ".html"]
-        [def f json-resource(uri)]
-        [def published resource-prop(uri, "published") ]
-        [if f != null && published]
-            [def key resource-prop-obj-val(".", propName)]
-            <div>
-            [def liste f.properties.shared-text-box]
-            [def locale resource-locale()]       
-            [list liste item]
-                [if (key = item.id)]
-                    [if locale = "no_NO"]
-                        [val item.description-no  # unescaped]
-                    [elseif locale = "nn"]
-                        [val item.description-nn  # unescaped]
-                    [else]
-                        [val item.description-en  # unescaped]
-                    [endif]
-                [endif]
-            [endlist]
-            </div>
-        [endif]
-        ##
-    }   
- 
-  
+view-components {
   	title {
       ##
       [def v resource-prop(".", "title")]
@@ -188,7 +159,7 @@ resourcetype oppbygning{
         [else]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
         [endif] 
-            <h1>[call "json:field" {"select":"title"}]</h1>
+            <h1>[localized 'oppbygning']</h1>
             [call "comp:introduction"]
             [call "comp:introduction-image"]
             [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"gradsnavn"}]
@@ -213,6 +184,7 @@ resourcetype oppbygning{
   }
   
   localization {
+  	oppbygning : (en : "Structure and accomplishment", no : "Oppbygging og gjennomføring", nn : "Oppbygging og gjennomføring"),
     introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),
@@ -224,6 +196,7 @@ resourcetype oppbygning{
     content : (en : "Content", no :"Innhold",nn : "Innhold"),
     header : (en : "Edit Structure and accomplishment", no : "Rediger oppbygning og gjennomføring", nn : "Rediger oppbygning og gjennomføring"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
+    relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
     lastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra")
     }
 }

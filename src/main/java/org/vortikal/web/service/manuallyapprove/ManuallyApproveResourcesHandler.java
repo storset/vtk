@@ -66,7 +66,6 @@ public class ManuallyApproveResourcesHandler implements Controller {
     private PropertyTypeDefinition manuallyApproveFromPropDef;
     private PropertyTypeDefinition manuallyApprovedResourcesPropDef;
     private PropertyTypeDefinition aggregationPropDef;
-    private PropertyTypeDefinition recursivePropDef;
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -78,7 +77,6 @@ public class ManuallyApproveResourcesHandler implements Controller {
         Property manuallyApproveFromProp = currentCollection.getProperty(this.manuallyApproveFromPropDef);
         Property manuallyApprovedResourcesProp = currentCollection.getProperty(this.manuallyApprovedResourcesPropDef);
         Property aggregationProp = currentCollection.getProperty(this.aggregationPropDef);
-        Property recursiveProp = currentCollection.getProperty(this.recursivePropDef);
         String[] manuallyApproveFromParam = request.getParameterValues(locationS_PARAM);
         String[] aggregateParam = request.getParameterValues(AGGREGATE_PARAM);
 
@@ -93,7 +91,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
         // content and update service before storing resource
         if (manuallyApproveFromParam != null) {
             for (String location : manuallyApproveFromParam) {
-                if (this.isValid(location, currentCollectionPath, recursiveProp, repository, token)) {
+                if (this.isValid(location, currentCollectionPath, repository, token)) {
                     locations.add(location);
                 }
             }
@@ -101,7 +99,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
             Value[] manuallyApproveFromValues = manuallyApproveFromProp.getValues();
             for (Value manuallyApproveFromValue : manuallyApproveFromValues) {
                 String location = manuallyApproveFromValue.getStringValue();
-                if (this.isValid(location, currentCollectionPath, recursiveProp, repository, token)) {
+                if (this.isValid(location, currentCollectionPath, repository, token)) {
                     locations.add(location);
                 }
             }
@@ -169,8 +167,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
         return null;
     }
 
-    private boolean isValid(String location, Path currentCollectionPath, Property recursiveProp, Repository repository,
-            String token) {
+    private boolean isValid(String location, Path currentCollectionPath, Repository repository, String token) {
 
         try {
             URL.parse(location);
@@ -182,21 +179,20 @@ public class ManuallyApproveResourcesHandler implements Controller {
         try {
 
             // Make sure path is valid (be lenient on trailing slash)
-            location = location.endsWith("/") && !location.equals("/") ? location.substring(0, location.length() - 1) : location;
+            location = location.endsWith("/") && !location.equals("/") ? location.substring(0, location.length() - 1)
+                    : location;
             Path locationPath = Path.fromString(location);
+
+            // Do not allow manual approval from self
+            if (currentCollectionPath.equals(locationPath)) {
+                return false;
+            }
 
             // Make sure resource exists
             if (!repository.exists(token, locationPath)) {
                 return false;
             }
 
-            // Also remove from locations set any values which are children of
-            // current collection
-            if (recursiveProp != null && recursiveProp.getBooleanValue()) {
-                if (currentCollectionPath.isAncestorOf(locationPath)) {
-                    return false;
-                }
-            }
             return true;
         } catch (Exception e) {
             return false;
@@ -221,11 +217,6 @@ public class ManuallyApproveResourcesHandler implements Controller {
     @Required
     public void setAggregationPropDef(PropertyTypeDefinition aggregationPropDef) {
         this.aggregationPropDef = aggregationPropDef;
-    }
-
-    @Required
-    public void setRecursivePropDef(PropertyTypeDefinition recursivePropDef) {
-        this.recursivePropDef = recursivePropDef;
     }
 
 }

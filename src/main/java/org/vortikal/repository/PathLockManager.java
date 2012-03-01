@@ -142,13 +142,13 @@ public class PathLockManager {
                 try {
                     if (this.logger.isDebugEnabled()) {
                         this.logger.debug("failed: locking " + uri + (exclusive ? " in exclusive mode" : " in shared mode")
-                                + " after waiting " + this.lockTimeoutSeconds + " seconds");
+                                + " due to interrupt or timeout (" + this.lockTimeoutSeconds + " seconds)");
                     }
 
                     throw new RuntimeException(
                             "Thread " + Thread.currentThread().getName()
                             + " giving up locking " + uri + (exclusive ? " in exclusive mode " : " in shared mode")
-                            + " after " + this.lockTimeoutSeconds + " seconds");
+                            + " due to interrupt or timeout (" + this.lockTimeoutSeconds + " seconds)");
                 } finally {
                     // Clean up, we failed.
                     // Return current lock, so it may be disposed of.

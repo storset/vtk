@@ -119,6 +119,11 @@ public class LinkCheckEvaluator implements LatePropertyEvaluator {
                     }
                     
                     String val = value.toString();
+                    
+                    if (!shouldCheck(val)) {
+                        status.index++;
+                        return true;
+                    }
                     LinkCheckResult result = linkChecker.validate(val, base);
                     status.index++;
                     if (!"OK".equals(result.getStatus())) {
@@ -137,6 +142,14 @@ public class LinkCheckEvaluator implements LatePropertyEvaluator {
             t.printStackTrace();
             return false;
         }
+    }
+
+    private boolean shouldCheck(String href) {
+        if (href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("ftp:")) {
+            // XXX: need better heuristic
+            return false;
+        }
+        return true;
     }
 
     @Required

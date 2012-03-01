@@ -718,6 +718,9 @@ function ajaxSave(saveButtonName) {
           tb_remove();
         }, Math.round(waitMinMs - endTime));
       }
+    },
+    error: function(xhr, statusText, errMsg) {
+      alert(statusText + " " + errMsg);
     }
   });
 }

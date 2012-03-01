@@ -104,6 +104,7 @@ public abstract class DocumentReporter extends AbstractReporter {
             try {
                 Resource r = this.repository.retrieve(token, p.getURI(), true);
                 isReadRestricted[i] = r.isReadRestricted();
+                handleResult(r, result);
                 viewURLs[i] = this.manageService.constructURL(p.getURI()).setProtocol("http");
             } catch (Exception e) {
             }
@@ -111,6 +112,9 @@ public abstract class DocumentReporter extends AbstractReporter {
         result.put("isReadRestricted", isReadRestricted);
         result.put("viewURLs", viewURLs);
         return result;
+    }
+    
+    protected void handleResult(Resource resource, Map<String, Object> model) {
     }
 
     public void setManageService(Service manageService) {
@@ -123,6 +127,10 @@ public abstract class DocumentReporter extends AbstractReporter {
 
     public void setBackURL(int backURL) {
         this.backURL = backURL;
+    }
+    
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
     }
 
     private static class Position {

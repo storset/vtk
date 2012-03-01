@@ -47,6 +47,7 @@
     <property name="reporters">
       <list>
         <ref bean="lastModifiedReporter" />
+        <ref bean="brokenLinksReport" />
       </list>
     </property>
     <property name="hiddenReporters">
@@ -95,6 +96,14 @@
   <bean id="diagramReport" class="org.vortikal.web.actions.report.DiagramReport" parent="reporter">
     <property name="name" value="diagram" />
     <property name="viewName" value="diagramReport" />
+  </bean>
+
+  <bean id="brokenLinksReport" class="org.vortikal.web.actions.report.BrokenLinksReport" parent="reporter">
+    <property name="name" value="broken-links" />
+    <property name="viewName" value="brokenLinksReport" />
+    <property name="pageSize" value="25" />
+    <property name="linkStatusPropDef" ref="linkStatusPropDef" />
+    <property name="linkCheckPropDef" ref="linkCheckPropDef" />
   </bean>
 
   <bean id="myDocumentsReporter" class="org.vortikal.web.actions.report.MyDocumentsReporter" parent="documentReporter">
@@ -341,6 +350,7 @@
         <entry key="collectionStructure" value-ref="collectionStructureView" />
         <entry key="documentReport" value-ref="documentReportView" />
         <entry key="diagramReport" value-ref="diagramReportView" />
+        <entry key="brokenLinksReport" value-ref="brokenLinksReportView" />
       </map>
     </property>
     <property name="referenceDataProviders">
@@ -408,6 +418,10 @@
         </entry>
       </map>
     </property>
+  </bean>
+
+  <bean id="brokenLinksReportView" parent="freemarkerView">
+    <property name="url" value="pages/report/broken-links.ftl" />
   </bean>
 
   <bean class="org.springframework.context.support.ResourceBundleMessageSource">

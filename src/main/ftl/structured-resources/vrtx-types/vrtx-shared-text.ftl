@@ -7,7 +7,7 @@
         <#local value=defaultValue />
       </#if> 
       <select name="${inputFieldName}" id="${inputFieldName}">
-          <option value="" <#if value=="">selected="selected"</#if>>Ingen fellesteskt</option>
+          <option value="" <#if value=="">selected="selected"</#if>>Ingen fellestekst</option>
           <#list sharedTextProps[inputFieldName]?keys as y >
             <option value="${sharedTextProps[inputFieldName][y]['id']?html}" <#if value==sharedTextProps[inputFieldName][y]['id']>selected="selected"</#if>>${sharedTextProps[inputFieldName][y]['title']?html}</option>
           </#list>     

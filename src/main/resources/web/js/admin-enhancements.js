@@ -702,7 +702,7 @@ function ajaxSave(saveButtonName) {
     performSave();
   }
   $("#editor").ajaxSubmit({
-    complete: function() {
+    success: function() {
       var endTime = new Date() - startTime;
       var waitMinMs = 800;
       if(endTime >= waitMinMs) { // Wait minimum 0.8s

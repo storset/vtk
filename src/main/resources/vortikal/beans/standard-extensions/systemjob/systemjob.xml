@@ -29,11 +29,14 @@
     <property name="simplePeriodicTriggerExpression" value="${repository.publisher.interval}" />
     <property name="id" value="published-status" />
     <property name="pathSelector">
-      <bean class="org.vortikal.repository.systemjob.ResourcePublishingPathSelector" 
+      <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector"
             parent="repository.systemjob.indexPathSelector">
-        <property name="publishedPropDef" ref="publishedPropDef" />
-        <property name="publishDatePropDef" ref="publishDatePropDef" />
-        <property name="unpublishDatePropDef" ref="unpublishDatePropDef" />
+        <property name="queryString"
+                  value="type IN json-resource
+                         AND ((published = false AND publish-date &lt; {$currentTime} 
+                                AND (unpublish-date !exists OR unpublish-date &gt; {$currentTime}))
+                              OR
+                                (published = true AND unpublish-date &lt; {$currentTime}))" />
       </bean>
     </property>
     <property name="affectedPropDefPointers">

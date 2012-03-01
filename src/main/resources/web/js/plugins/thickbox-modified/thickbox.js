@@ -330,7 +330,7 @@ function tb_position() {
   });
   if (!(jQuery.browser.msie && jQuery.browser.version < 7)) { // take away IE6
     $("#TB_window").css({
-      marginTop: '-' + parseInt((TB_HEIGHT / 2), 10) + 'px'
+      marginTop: '-' + parseInt((TB_HEIGHT / 2) + 30, 10) + 'px'
     });
   }
 }

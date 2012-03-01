@@ -87,7 +87,4 @@
   <!-- System task manager -->
   <import resource="scheduling/scheduling.xml"/>
   
-  <!-- Abstract bean defs for system jobs -->
-  <import resource="systemjob.xml" />
-  
 </beans>

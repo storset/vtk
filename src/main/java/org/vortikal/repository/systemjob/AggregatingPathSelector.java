@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,15 +31,32 @@
 
 package org.vortikal.repository.systemjob;
 
+import java.util.List;
+
 import org.vortikal.repository.Repository;
 
 /**
- *
+ * Path selector which aggregates selected paths of a configured list of
+ * sub-selectors.
  */
-public interface PathSelector {
+public class AggregatingPathSelector implements PathSelector {
 
+    private List<PathSelector> pathSelectors;
+    
+    public AggregatingPathSelector(List<PathSelector> selectors) {
+        if (selectors == null) {
+            throw new IllegalArgumentException("Selectors cannot be null");
+        }
+        this.pathSelectors = selectors;
+    }
+    
+    @Override
     public void selectWithCallback(Repository repository,
                                    SystemChangeContext context,
-                                   PathSelectCallback callback) throws Exception;
-    
+                                   PathSelectCallback callback) throws Exception {
+        
+        for (PathSelector selector: this.pathSelectors) {
+            selector.selectWithCallback(repository, context, callback);
+        }
+    }
 }

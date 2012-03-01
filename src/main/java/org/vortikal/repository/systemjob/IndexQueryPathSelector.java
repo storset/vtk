@@ -32,6 +32,7 @@
 package org.vortikal.repository.systemjob;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -81,12 +82,12 @@ public class IndexQueryPathSelector implements PathSelector {
     };
     
     @Override
-    public List<Path> selectPaths(Repository repository, SystemChangeContext context) {
-        String token = null;
-        if (SecurityContext.exists()) {
-            token = SecurityContext.getSecurityContext().getToken();
-        }
+    public void selectWithCallback(Repository repository,
+                                   SystemChangeContext context,
+                                   PathSelectCallback callback) throws Exception{
 
+        final String token = SecurityContext.exists() ? SecurityContext.getSecurityContext().getToken() : null;
+                
         Query query = getQuery(context);
         Search search = new Search();
         search.setQuery(query);
@@ -98,11 +99,11 @@ public class IndexQueryPathSelector implements PathSelector {
         
         logger.debug("Ran query " + query + " with " + results.getSize() 
                 + " results of total " + results.getTotalHits());
-        List<Path> paths = new ArrayList<Path>(results.getSize());
+
+        callback.beginBatch(results.getSize());
         for (PropertySet result: results) {
-            paths.add(result.getURI());
+            callback.select(result.getURI());
         }
-        return paths;
     }
     
     protected Query getQuery(SystemChangeContext context) {

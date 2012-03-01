@@ -31,11 +31,10 @@
 
 package org.vortikal.repository.systemjob;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -48,35 +47,46 @@ import org.vortikal.security.SecurityContext;
  */
 public class InvokeStoreJob extends RepositoryJob {
 
-    private List<PathSelector> pathSelectors;
+    private PathSelector pathSelector;
     
     private final Log logger = LogFactory.getLog(getClass());
     
     @Override
-    public void executeWithRepository(Repository repository, SystemChangeContext context) throws Exception {
+    public void executeWithRepository(final Repository repository, 
+                                      final SystemChangeContext context) throws Exception {
         
         if (repository.isReadOnly()) {
             return;
         }
 
-        String token = null;
-        if (SecurityContext.exists()) {
-            token = SecurityContext.getSecurityContext().getToken();
-        }
+        final String token = SecurityContext.exists() ? SecurityContext.getSecurityContext().getToken() : null;
 
-        for (PathSelector pathSelector: this.pathSelectors) {
-            List<Path> selectedPaths = pathSelector.selectPaths(repository, context);
+        this.pathSelector.selectWithCallback(repository, context, new PathSelectCallback() {
 
-            logger.info("Running job '" + getId() + "', " + selectedPaths.size() + " resource(s) to be affected");
+            int count = 0;
+            int total = -1;
 
-            for (Path path : selectedPaths) {
+            @Override
+            public void beginBatch(int total) {
+                this.total = total;
+                this.count = 0;
+                logger.info("Running job " + getId()
+                        + ", " + (this.total >= 0 ? this.total : "?") + " resource(s) selected in batch.");
+            }
+
+            @Override
+            public void select(Path path) throws Exception {
+                ++this.count;
                 try {
-                    logger.debug("Invoke job " + getId() + " on " + path);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Invoke job " + getId() + " on " + path
+                                + " [" + this.count + "/" + (this.total > 0 ? this.total : "?") + "]");
+                    }
                     Resource resource = repository.retrieve(token, path, false);
                     if (resource.getLock() == null) {
                         repository.store(token, resource, context);
                     } else {
-                        logger.warn("Resource " + resource + " currently locked, will not invoke store for periodic job.");
+                        logger.warn("Resource " + resource + " currently locked, will not invoke store.");
                     }
                 } catch (ResourceNotFoundException rnfe) {
                     // Resource is no longer there after search (deleted, moved
@@ -87,16 +97,11 @@ public class InvokeStoreJob extends RepositoryJob {
                             + rnfe.getMessage());
                 }
             }
-        }
+        });
     }
     
-    public void setPathSelectors(List<PathSelector> pathSelectors) {
-        this.pathSelectors = new ArrayList<PathSelector>(pathSelectors);
-    }
-    
+    @Required
     public void setPathSelector(PathSelector pathSelector) {
-        List<PathSelector> list = new ArrayList<PathSelector>();
-        list.add(pathSelector);
-        this.pathSelectors = list;
+        this.pathSelector = pathSelector;
     }
 }

@@ -45,7 +45,6 @@
 
 
 
-
   <!-- Broken link check job for recently modified resources -->
 
   <bean id="repository.systemjob.linkcheck.recent" class="org.vortikal.repository.systemjob.InvokeStoreJob"
@@ -59,26 +58,24 @@
         <value>resource::link-status</value>
       </list>
     </property>
-    <property name="pathSelectors">
-      <list>
-        <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector"
+    <property name="pathSelector">
+      <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector"
               parent="repository.systemjob.indexPathSelector">
-          <property name="queryString" value="link-status = AWAITING_LINKCHECK" />
-          <property name="limit" value="${systemjob.linkcheck.batch}" />
-          <property name="sorting">
-            <bean class="org.vortikal.repository.search.SortingImpl">
-              <constructor-arg>
-                <list>
-                  <bean class="org.vortikal.repository.search.PropertySortField">
-                    <constructor-arg ref="lastModifiedPropDef" />
-                    <constructor-arg value="ASC" />
-                  </bean>
-                </list>
-              </constructor-arg>
-            </bean>
-          </property>
-        </bean>
-      </list>
+        <property name="queryString" value="link-status = AWAITING_LINKCHECK" />
+        <property name="limit" value="${systemjob.linkcheck.batch}" />
+        <property name="sorting">
+          <bean class="org.vortikal.repository.search.SortingImpl">
+            <constructor-arg>
+              <list>
+                <bean class="org.vortikal.repository.search.PropertySortField">
+                  <constructor-arg ref="lastModifiedPropDef" />
+                  <constructor-arg value="ASC" />
+                </bean>
+              </list>
+            </constructor-arg>
+          </bean>
+        </property>
+      </bean>
     </property>
   </bean>
 
@@ -95,27 +92,39 @@
         <value>resource::link-status</value>
       </list>
     </property>
-    <property name="pathSelectors">
-      <list>
-        <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" 
-              parent="repository.systemjob.indexPathSelector">
-          <property name="queryString" value="link-status !exists OR system-job-status !exists OR system-job-status@linkcheck &lt; {$currentTime-${systemjob.linkcheck.interval}|yyyyMMdd\ HH:mm:ss}" />
-          <property name="limit" value="${systemjob.linkcheck.batch}" />
-          <property name="sorting">
-            <bean class="org.vortikal.repository.search.SortingImpl">
-              <constructor-arg>
-                <list>
-                  <bean class="org.vortikal.repository.search.PropertySortField">
-                    <constructor-arg ref="systemJobStatusPropDef" />
-                    <constructor-arg value="ASC" />
-                    <property name="complexValueAttributeSpecifier" value="linkcheck" />
-                  </bean>
-                </list>
-              </constructor-arg>
+    <property name="pathSelector">
+      <bean class="org.vortikal.repository.systemjob.AggregatingPathSelector">
+        <constructor-arg>
+          <list>
+            <!-- Select first those that have never had system job run before -->
+            <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" 
+                  parent="repository.systemjob.indexPathSelector">
+              <property name="queryString" value="system-job-status@linkcheck !exists" />
+              <property name="limit" value="${systemjob.linkcheck.batch}" />
             </bean>
-          </property>
-        </bean>
-      </list>
+            
+            <!-- Then select those with missing link-status OR haven't been checked in some time. -->
+            <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" 
+                  parent="repository.systemjob.indexPathSelector">
+              <property name="queryString" value="link-status !exists OR system-job-status@linkcheck &lt; {$currentTime-${systemjob.linkcheck.interval}|yyyyMMdd\ HH:mm:ss}" />
+              <property name="limit" value="${systemjob.linkcheck.batch}" />
+              <property name="sorting">
+                <bean class="org.vortikal.repository.search.SortingImpl">
+                  <constructor-arg>
+                    <list>
+                      <bean class="org.vortikal.repository.search.PropertySortField">
+                        <constructor-arg ref="systemJobStatusPropDef" />
+                        <constructor-arg value="ASC" />
+                        <property name="complexValueAttributeSpecifier" value="linkcheck" />
+                      </bean>
+                    </list>
+                  </constructor-arg>
+                </bean>
+              </property>
+            </bean>
+          </list>
+        </constructor-arg>
+      </bean>
     </property>
   </bean>
   

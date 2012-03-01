@@ -31,15 +31,27 @@
 
 package org.vortikal.repository.systemjob;
 
-import org.vortikal.repository.Repository;
+import org.vortikal.repository.Path;
 
 /**
  *
  */
-public interface PathSelector {
+public interface PathSelectCallback {
 
-    public void selectWithCallback(Repository repository,
-                                   SystemChangeContext context,
-                                   PathSelectCallback callback) throws Exception;
+    /**
+     * Called every time a new batch starts, with total number of selected
+     * paths in batch. 
+     * 
+     * @param total total number of paths in batch, or -1 if unknown in advance.
+     */
+    public void beginBatch(int total);
     
+    /**
+     * Called once for every path in selection.
+     * 
+     * @param path a selected path in current batch
+     * @throws Exception 
+     */
+    public void select(Path path) throws Exception;
+
 }

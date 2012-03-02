@@ -43,9 +43,7 @@ import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 
-/**
- *
- */
+@Deprecated
 public class ResourcePublishingPathSelector extends IndexQueryPathSelector {
 
     private PropertyTypeDefinition publishedPropDef;

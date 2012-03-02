@@ -63,6 +63,7 @@ public class LinkCheckJob extends RepositoryJob {
     private PathSelector pathSelector;
     private PropertyTypeDefinition linkCheckPropDef;
     private PropertyTypeDefinition linksPropDef;
+    
     private LinkChecker linkChecker;
     private CanonicalUrlConstructor urlConstructor;
     private static final int MAX_BROKEN_LINKS = 100;
@@ -207,7 +208,6 @@ public class LinkCheckJob extends RepositoryJob {
             });
             status.timestamp = context.getTime();
             Property result = this.linkCheckPropDef.createProperty();
-            System.out.println("__created_property: " + result);
             status.write(result);
             return result;
         } catch (Throwable t) {

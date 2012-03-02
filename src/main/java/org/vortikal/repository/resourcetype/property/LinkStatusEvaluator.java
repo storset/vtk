@@ -65,10 +65,12 @@ public class LinkStatusEvaluator implements LatePropertyEvaluator {
         }
         
         Property linkCheckProp = ctx.getNewResource().getProperty(this.linkCheckPropDef);
-        if (linkCheckProp == null) {
+        
+        if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.SystemPropertiesChange) {
             property.setStringValue("AWAITING_LINKCHECK");
             return true;
         }
+        
         try {
             JSONObject linkCheck = propValue(linkCheckProp);
             Object brokenLinks = linkCheck.get("brokenLinks");

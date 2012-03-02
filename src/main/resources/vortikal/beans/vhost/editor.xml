@@ -565,6 +565,7 @@
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
             <ref bean="collection.sortingPropDef" />
+            <ref bean="collectionListing.recursiveListingPropDef" />
             <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
             <ref bean="displayManuallyApprovedPropDef" />

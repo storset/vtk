@@ -27,7 +27,7 @@
         <ref bean="navigationTitlePropDef" />
         <ref bean="collection.typePropDef" />
         <ref bean="collection.indexFilePropDef" />
-        <ref bean="collection.recursiveListingPropDef" />
+        <ref bean="collectionListing.recursiveListingPropDef" />
         <ref bean="displayAggregationPropDef" />
         <ref bean="aggregationPropDef" />
         <ref bean="displayManuallyApprovedPropDef" />

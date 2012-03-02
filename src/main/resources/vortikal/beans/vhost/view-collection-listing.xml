@@ -68,7 +68,7 @@
     <property name="searchSorting" ref="collectionListing.searchSorting" />
     <property name="aggregationResolver" ref="aggregationResolver" />
     <property name="multiHostSearcher" ref="multiHostSearcher" />
-    <property name="listingUriQueryBuilder" ref="collection.listingUriQueryBuilder" />
+    <property name="listingUriQueryBuilder" ref="collection.defaultRecursiveListingUriQueryBuilder" />
     <property name="queryBuilders">
       <list>
         <bean parent="queryStringParser">
@@ -80,11 +80,30 @@
   </bean>
 
   <bean id="collection.listingUriQueryBuilder" class="org.vortikal.web.search.ListingUriQueryBuilder">
-    <property name="recursivePropDef" ref="collection.recursiveListingPropDef" />
+    <property name="recursivePropDef" ref="collectionListing.recursiveListingPropDef" />
   </bean>
 
   <bean id="collection.defaultRecursiveListingUriQueryBuilder" parent="collection.listingUriQueryBuilder">
     <property name="defaultRecursive" value="true" />
+  </bean>
+
+  <bean id="collectionListing.recursiveListingPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="collection.recursiveListingPropDef">
+    <property name="valueFormatter">
+      <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
+        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.collection-listing-recursive-listing" />
+        <constructor-arg value="BOOLEAN" />
+      </bean>
+    </property>
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="values">
+          <list>
+            <ref bean="VALUE_FALSE" />
+          </list>
+        </property>
+      </bean>
+    </property>
   </bean>
 
   <bean id="collectionListing.atomHandler" class="org.vortikal.web.display.collection.CollectionListingAsAtomFeed" parent="viewAsFeedHandler">

@@ -117,28 +117,6 @@ public class IndexQueryPathSelector implements PathSelector {
         return this.parser.parseSortString(this.sortString);
     }
     
-    protected Query getSystemJobQuery(SystemChangeContext context) {
-        OrQuery orQuery = new OrQuery();
-
-        // XXX Logic as query string:
-        //     system-job-status@JOBID !exists OR  system-job-status@JOBID < {$currentTime}
-        //
-        // .. which matches everything ..
-        // What's the intention here ? Looks like it can be removed entirely.
-        
-        PropertyExistsQuery systemJobPropertyExistsQuery = new PropertyExistsQuery(context.getSystemJobStatusPropDef(), true);
-        systemJobPropertyExistsQuery.setComplexValueAttributeSpecifier(context.getJobName());
-        orQuery.add(systemJobPropertyExistsQuery);
-
-        PropertyTermQuery systemJobPropertyQuery = new PropertyTermQuery(context.getSystemJobStatusPropDef(), 
-                context.getTime(),
-                TermOperator.LT);
-        systemJobPropertyQuery.setComplexValueAttributeSpecifier(context.getJobName());
-        orQuery.add(systemJobPropertyQuery);
-
-        return orQuery;
-    }
-
     public void setQueryString(String queryString) {
         this.queryString = queryString;
     }

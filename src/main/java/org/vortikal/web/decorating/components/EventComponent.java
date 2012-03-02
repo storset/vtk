@@ -39,17 +39,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
+import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
 
 public class EventComponent extends AbstractEventComponent {
 
@@ -106,6 +110,11 @@ public class EventComponent extends AbstractEventComponent {
         if (uri == null)
             throw new DecoratorComponentException("Component parameter 'uri' is required");
 
+        Path resourcePath = this.getResourcePath(uri);
+        if (resourcePath == null) {
+            throw new DecoratorComponentException("Provided uri is not a valid folder reference: " + uri);
+        }
+        
         conf.put("includeIfEmpty", !parameterHasValue(PARAMETER_INCLUDE_IF_EMPTY, "false", request));
 
         conf.put("eventDescription", parameterHasValue(PARAMETER_EVENT_DESCRIPTION, "true", request));
@@ -148,14 +157,32 @@ public class EventComponent extends AbstractEventComponent {
 
         model.put("elementOrder", getElementOrder(PARAMETER_EVENT_ELEMENT_ORDER, request));
 
+        RequestContext rc = RequestContext.getRequestContext();
+        Repository repo = rc.getRepository();
+        String token = rc.getSecurityToken();
         Resource resource;
         try {
-            URL eventURL = RequestContext.getRequestContext().getRequestURL().relativeURL(uri);
-            conf.put("uri", viewService.constructURL(eventURL.getPath()));
-            resource = retrieveLocalResource(eventURL);
+            resource = repo.retrieve(token, resourcePath, true);
+            conf.put("uri", viewService.constructURL(resource));
+        } catch (AuthenticationException e) {
+            resource = null;
+        } catch (AuthorizationException e) {
+            resource = null;
+        } catch (ResourceNotFoundException e) {
+            throw new DecoratorComponentException(uri + " does not exist");
         } catch (Exception e) {
-            throw new RuntimeException("Could not read uri " + uri + ": " + e.getMessage(), e);
+            throw new DecoratorComponentException(e.getMessage());
         }
+        
+        conf.put("auth", resource != null);
+        if (resource == null) {
+            conf.put("type", "noAuth");
+            model.put("conf", conf);
+            return;
+        }
+
+        if (!resource.isCollection())
+            throw new DecoratorComponentException(uri + " is not a folder");
 
         if (eventsTitle)
             model.put("eventsTitle", resource.getTitle());
@@ -273,6 +300,16 @@ public class EventComponent extends AbstractEventComponent {
 
         public boolean getShowTime() {
             return showTime;
+        }
+    }
+
+    private Path getResourcePath(String uri) {
+        // Be lenient on trailing slash
+        uri = uri.endsWith("/") && !uri.equals("/") ? uri.substring(0, uri.lastIndexOf("/")) : uri;
+        try {
+            return Path.fromString(uri);
+        } catch (IllegalArgumentException iae) {
+            return null;
         }
     }
 

@@ -2,38 +2,48 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
 
-<#if conf.includeIfEmpty>
-  <#if psd?has_content>
+<#if conf.auth>
+  <#assign include = "false">
+  <#if (conf.type = "psd" && psd?has_content)>
     <div class="vrtx-event-component vrtx-event-component-psd">
-  <#elseif res?has_content>
+    <#assign include = "true">
+  <#elseif (conf.type = "res" && res?has_content)>
     <div class="vrtx-event-component vrtx-event-component-res">
-  <#else>  
+    <#assign include = "true">
+  <#elseif conf.includeIfEmpty>
     <div class="vrtx-event-component">
+    <#assign include = "true">
   </#if>
-      <#if conf.eventsTitle><h2><a href="${conf.uri?html}">${eventsTitle?html}</a></h2></#if>
-      <#if (conf.type = "psd") && psd?has_content>
-        <#assign psdSize = psd?size />
-        <#list psd as event>
-          <@displayPsd event.ps event.date event.showTime event_index+1 psdSize />
-        </#list>
-      <#elseif (conf.type = "res") && res?has_content>
-        <#assign resSize = res.files?size />
-        <#list res.files as event>
-          <@displayRes event event_index+1 resSize />
-        </#list>
+
+    <#if (conf.eventsTitle && include = "true")>
+      <h2><a href="${conf.uri?html}">${eventsTitle?html}</a></h2>
+    </#if>
+    <#if (conf.type = "psd" && psd?has_content)>
+      <#assign psdSize = psd?size />
+      <#list psd as event>
+        <@displayPsd event.ps event.date event.showTime event_index+1 psdSize />
+      </#list>
+    <#elseif (conf.type = "res" && res?has_content)>
+      <#assign resSize = res.files?size />
+      <#list res.files as event>
+        <@displayRes event event_index+1 resSize />
+      </#list>
+    <#elseif (include = "true")>
+      <#if conf.emptyMsg?exists>
+        ${conf.emptyMsg}
       <#else>
-        <#if conf.emptyMsg?exists>
-          ${conf.emptyMsg}
-        <#else>
-          <@vrtx.msg code="eventListing.noPlanned.allupcoming" />
-        </#if>
+        <@vrtx.msg code="eventListing.noPlanned.allupcoming" />
       </#if>
-      <#if conf.allEventsLink>
-        <div class="vrtx-more">
-          <span><a href="${conf.uri?html}"><@vrtx.msg code="event.go-to-events" default="Go to events" /></a></span>
-        </div>
-      </#if>
+    </#if>
+    <#if (conf.allEventsLink && include = "true")>
+      <div class="vrtx-more">
+        <span><a href="${conf.uri?html}"><@vrtx.msg code="event.go-to-events" default="Go to events" /></a></span>
+      </div>
+    </#if>
+
+  <#if (include = "true")>
     </div>
+  </#if>
 </#if>
 
 <#macro displayPsd event startdate showTime nr last>

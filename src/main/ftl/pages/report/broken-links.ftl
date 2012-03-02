@@ -59,7 +59,7 @@
               <#list brokenLinks as link>
                 <li>${link?html}</li>
                 <#if link_index &gt; 10>
-                  <li>More...</li>
+                  <li>...</li>
                   <#break />
                 </#if>
               </#list>

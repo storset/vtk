@@ -40,7 +40,10 @@ import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.SortFieldDirection;
+import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
@@ -51,6 +54,8 @@ public class BrokenLinksReport extends DocumentReporter {
     
     private PropertyTypeDefinition linkStatusPropDef;
     private PropertyTypeDefinition linkCheckPropDef;
+    private PropertyTypeDefinition sortPropDef;
+    private SortFieldDirection sortOrder;
 
     @Override
     protected Search getSearch(String token, Resource currentResource) {
@@ -59,8 +64,12 @@ public class BrokenLinksReport extends DocumentReporter {
         .add(new PropertyTermQuery(this.linkStatusPropDef, "AWAITING_LINKCHECK", TermOperator.EQ));
         AndQuery and = new AndQuery();
         and.add(new UriPrefixQuery(currentResource.getURI().toString())).add(or);
+        SortingImpl sorting = new SortingImpl();
+        sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
+        
         Search search = new Search();
         search.setQuery(and);
+        search.setSorting(sorting);
         search.setOnlyPublishedResources(false);
         return search;
     }
@@ -90,6 +99,16 @@ public class BrokenLinksReport extends DocumentReporter {
     @Required
     public void setLinkCheckPropDef(PropertyTypeDefinition linkCheckPropDef) {
         this.linkCheckPropDef = linkCheckPropDef;
+    }
+
+    @Required
+    public void setSortPropDef(PropertyTypeDefinition sortPropDef) {
+        this.sortPropDef = sortPropDef;
+    }
+
+    @Required
+    public void setSortOrder(SortFieldDirection sortOrder) {
+        this.sortOrder = sortOrder;
     }
 
 }

@@ -49,9 +49,13 @@
             <#assign brokenLinks = linkCheck['brokenLinks'] />
           </#if>
         </#if>
+        <#assign linkStatus = vrtx.propValue(item, 'link-status') />
         <tr>
           <td>
             <a href="${url?html}">${title?html}</a>
+            <#if linkStatus = 'AWAITING_LINKCHECK'>
+              [ * ] <#-- currently being checked, be patient -->
+            </#if>
           </td>
           <td>
             <#if brokenLinks?exists>

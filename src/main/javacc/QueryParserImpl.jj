@@ -65,12 +65,12 @@ public class QueryParserImpl implements QueryParser {
     }
     
     private static final class PropSpec {
-        String prefix = null; // Property namespace prefix
-        String name = null;   // Property name
-        String cva = null;    // Property "Complex Value Attribute" specifier
-        
-        PropSpec(String prefix, String name, String cva) {
-            this.prefix = prefix;
+        String qualifier = null; // Property qualifier (currently ns-prefix, will be resource-type-name in the future)
+        String name = null;      // Property name
+        String cva = null;       // Property "Complex Value Attribute" specifier (for JSON props)
+
+        PropSpec(String qualifier, String name, String cva) {
+            this.qualifier = qualifier;
             this.name = name;
             this.cva = cva;
         }
@@ -78,9 +78,9 @@ public class QueryParserImpl implements QueryParser {
     
     private Query getPropExistsQuery(PropSpec spec, boolean inverted) {
         PropertyTypeDefinition def = 
-            resourceTypeTree.getPropertyDefinitionByPrefix(spec.prefix, spec.name);
+            resourceTypeTree.getPropertyDefinitionByPrefix(spec.qualifier, spec.name);
         if (def == null)
-            throw new RuntimeException("Unknown property " + spec.prefix + ":" + spec.name);
+            throw new RuntimeException("Unknown property " + spec.qualifier + ":" + spec.name);
 
         PropertyExistsQuery peq = new PropertyExistsQuery(def, inverted);
         peq.setComplexValueAttributeSpecifier(spec.cva);
@@ -90,9 +90,9 @@ public class QueryParserImpl implements QueryParser {
     private Query getPropTermQuery(PropSpec spec, String value,
                                    TermOperator operator) {
         PropertyTypeDefinition def = 
-            resourceTypeTree.getPropertyDefinitionByPrefix(spec.prefix, spec.name);
+            resourceTypeTree.getPropertyDefinitionByPrefix(spec.qualifier, spec.name);
         if (def == null)
-            throw new RuntimeException("Unknown property " + spec.prefix + ":" + spec.name);
+            throw new RuntimeException("Unknown property " + spec.qualifier + ":" + spec.name);
 
         PropertyTermQuery ptq = new PropertyTermQuery(def, value, operator);
         ptq.setComplexValueAttributeSpecifier(spec.cva);
@@ -101,9 +101,9 @@ public class QueryParserImpl implements QueryParser {
     
     private Query getPropPrefixQuery(PropSpec spec, String value, TermOperator op) {
         PropertyTypeDefinition def = 
-            resourceTypeTree.getPropertyDefinitionByPrefix(spec.prefix, spec.name);
+            resourceTypeTree.getPropertyDefinitionByPrefix(spec.qualifier, spec.name);
         if (def == null)
-            throw new RuntimeException("Unknown property " + spec.prefix + ":" + spec.name);
+            throw new RuntimeException("Unknown property " + spec.qualifier + ":" + spec.name);
 
         PropertyPrefixQuery ppq = new PropertyPrefixQuery(def, value, op);
         ppq.setComplexValueAttributeSpecifier(spec.cva);
@@ -112,9 +112,9 @@ public class QueryParserImpl implements QueryParser {
 
     private Query getPropWildcardQuery(PropSpec spec, String value, TermOperator op) {
         PropertyTypeDefinition def = 
-            resourceTypeTree.getPropertyDefinitionByPrefix(spec.prefix, spec.name);
+            resourceTypeTree.getPropertyDefinitionByPrefix(spec.qualifier, spec.name);
         if (def == null)
-            throw new RuntimeException("Unknown property " + spec.prefix + ":" + spec.name);
+            throw new RuntimeException("Unknown property " + spec.qualifier + ":" + spec.name);
 
         PropertyWildcardQuery pwq = new PropertyWildcardQuery(def, value, op);
         pwq.setComplexValueAttributeSpecifier(spec.cva);
@@ -172,8 +172,8 @@ TOKEN : {
 
         // XXX: This isn't consistent ! Some reserved words are all uppercase, other all lowercase ...WHY ?
         //      Cannot change now, since that would probably break a lot of things in the wild.
-        | <EXISTS: "exists">                          // Should be "EXISTS"
-        | <NOTEXISTS: "not exists" | "!exists">       // Should be "NOT EXISTS" | "!EXISTS"
+        | <EXISTS: "exists" | "EXISTS">                                    // Should have been only "EXISTS"
+        | <NOTEXISTS: "not exists" | "!exists" | "!EXISTS" | "NOT EXISTS"> // Should have been only "NOT EXISTS" | "!EXISTS"
 
         | <ASTERISK: "*">
 
@@ -188,6 +188,8 @@ TOKEN : {
 }
 
 TOKEN : { < COLON: ":"> }
+
+// Regexp named as #ID_CHAR = private regular expression (can only be referenced from other regexps).
 
 TOKEN : { < #ID_CHAR: ~[" ", "\t", "\n", "\r", "\\", "\"", "=", "<", ">", "!", "(", ")", ":", "*", "?", "@"] > }
 
@@ -227,7 +229,6 @@ void Closed() : {}
 {
     <LP> (<ESCAPED_CHAR> | <COLON> | <NLP>)* [Closed() (<ESCAPED_CHAR> | <COLON> | <NRP>)*] <RP>
 }
-
 
 Query AndQuery() : 
 {
@@ -477,6 +478,19 @@ Query NameTermQuery() :
 // Query NameRangeQuery() :
 // {}{}
 
+PropSpec PropSpec() :
+{
+   Token q=null, c=null, n;
+}
+{
+   ( [LOOKAHEAD(2) q=<NAMEVALUE> <COLON>] n=<NAMEVALUE> [<COMPLEX_VALUE_ATTR_CHAR> c=<NAMEVALUE>] )
+   {
+       String qualifier = q != null ? q.image : null;
+       String name = n.image;
+       String cvaspec = c != null ? c.image : null;
+       return new PropSpec(qualifier, name, cvaspec);
+   }
+}
 
 Query PropertyQuery() : 
 {
@@ -491,45 +505,31 @@ Query PropertyQuery() :
 }    
 
 // Property exists:
-Query PropertyExistsQuery() : {
-    Token p=null, cvaspec=null, name, ex=null;
+Query PropertyExistsQuery() :
+{
+    PropSpec p;
+    Token ex=null;
 }
 {
-    ([LOOKAHEAD(2) p=<NAMEVALUE> <COLON>] name=<NAMEVALUE> [<COMPLEX_VALUE_ATTR_CHAR> cvaspec=<NAMEVALUE>]
-     (ex=<EXISTS> | <NOTEXISTS>))
+    (p=PropSpec() (ex=<EXISTS> | <NOTEXISTS>))
         {
-            String prefix = null;
-            if (p != null) prefix = p.image;
-
-            String cva = null;
-            if (cvaspec != null) cva = cvaspec.image;
-
             boolean inverted = (ex == null);
-
-            PropSpec spec = new PropSpec(prefix, name.image, cva);
-
-            return getPropExistsQuery(spec, inverted);
+            return getPropExistsQuery(p, inverted);
         }
 
 }
 
 Query PropertyPrefixQuery() : 
 {
-    Token p=null, n, cvaspec=null, v, eq=null, ne=null, eqi=null, nei=null;
+    PropSpec p;
+    Token v, eq=null, ne=null, eqi=null, nei=null;
 }
 {
-    [LOOKAHEAD(2) p=<NAMEVALUE> <COLON>] n=<NAMEVALUE> [<COMPLEX_VALUE_ATTR_CHAR> cvaspec=<NAMEVALUE>]
+    p=PropSpec()
         (eq=<EQ> | ne=<NE> | eqi=<EQ_IGNORECASE> | nei=<NE_IGNORECASE>)
         //        ("\"" v=<VALUE> "\"" | v=<VALUE>)    
         v=<VALUE> <ASTERISK>
         { 
-            String prefix = null;
-            if (p != null) prefix = p.image;
-            String name = n.image;
-
-            String cva = null;
-            if (cvaspec != null) cva = cvaspec.image;
-
             String value = unescape(v.image);
 
             TermOperator op = null;
@@ -542,28 +542,20 @@ Query PropertyPrefixQuery() :
             else if (nei != null)
                 op = TermOperator.NE_IGNORECASE;
 
-            PropSpec spec = new PropSpec(prefix, name, cva);
-
-            return getPropPrefixQuery(spec, value, op);
+            return getPropPrefixQuery(p, value, op);
         }
 }
 
 Query PropertyWildcardQuery() : 
 {
-    Token p=null, n, cvaspec=null, v, eq=null, ne=null, eqi=null, nei=null;
+    PropSpec p;
+    Token v, eq=null, ne=null, eqi=null, nei=null;
 }
 {
-    [LOOKAHEAD(2) p=<NAMEVALUE> <COLON>] n=<NAMEVALUE> [<COMPLEX_VALUE_ATTR_CHAR> cvaspec=<NAMEVALUE>]
+    p=PropSpec()
         (eq=<EQ> | ne=<NE> | eqi=<EQ_IGNORECASE> | nei=<NE_IGNORECASE>)
         v=<WILDVALUE>
         { 
-            String prefix = null;
-            if (p != null) prefix = p.image;
-            String name = n.image;
-            
-            String cva = null;
-            if (cvaspec != null) cva = cvaspec.image;
-
             String value = unescape(v.image);
 
             TermOperator op = null;
@@ -576,31 +568,22 @@ Query PropertyWildcardQuery() :
             else if (nei != null)
                 op = TermOperator.NE_IGNORECASE;
 
-            PropSpec propSpec = new PropSpec(prefix, name, cva);
-            
-            return getPropWildcardQuery(propSpec, value, op);
+            return getPropWildcardQuery(p, value, op);
         }
 }
 
 
 // Property value query:
 Query PropertyTermQuery() : {
-    Token p=null, n, cvaspec=null, v;
-    Token ne=null, nei=null, ge=null, le=null, eq=null, eqi=null, gt=null, lt=null, in=null, ni=null;
+    PropSpec p;
+    Token v, ne=null, nei=null, ge=null, le=null, eq=null, eqi=null, gt=null, lt=null, in=null, ni=null;
 }
 {
-    [LOOKAHEAD(2) p=<NAMEVALUE> <COLON>] n=<NAMEVALUE> [<COMPLEX_VALUE_ATTR_CHAR> cvaspec=<NAMEVALUE>]
+    p=PropSpec()
         (ne=<NE> | nei=<NE_IGNORECASE> | ge =<GE> | le=<LE> | eq=<EQ> | eqi=<EQ_IGNORECASE> | gt=<GT> | lt=<LT> | in=<IN> | ni=<NI>)
-        //        ("\"" v=<VALUE> "\"" | v=<VALUE>)    
+        //        ("\"" v=<VALUE> "\"" | v=<VALUE>)
         v=<VALUE>
         {
-            String prefix = null;
-            if (p != null) prefix = p.image;
-            String name = n.image;
-            
-            String cva = null;
-            if (cvaspec != null) cva = cvaspec.image; 
-            
             String value = unescape(v.image);
 
             TermOperator operator = null;
@@ -625,9 +608,7 @@ Query PropertyTermQuery() : {
             else 
                 operator = TermOperator.NI;
 
-            PropSpec propSpec = new PropSpec(prefix, name, cva);
-
-            return getPropTermQuery(propSpec, value, operator);
+            return getPropTermQuery(p, value, operator);
         }
 
 }

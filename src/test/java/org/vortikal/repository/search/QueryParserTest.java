@@ -146,10 +146,30 @@ public class QueryParserTest extends TestCase {
         PropertyExistsQuery peq = (PropertyExistsQuery) q;
         assertEquals("r", peq.getPropertyDefinition().getName());
         assertEquals("p", peq.getPropertyDefinition().getNamespace().getPrefix());
-
         assertFalse(peq.isInverted());
 
+
         q = queryParser.parse("p:r not exists");
+
+        assertTrue(q instanceof PropertyExistsQuery);
+
+        peq = (PropertyExistsQuery) q;
+        assertEquals("r", peq.getPropertyDefinition().getName());
+        assertEquals("p", peq.getPropertyDefinition().getNamespace().getPrefix());
+        assertTrue(peq.isInverted());
+
+
+        q = queryParser.parse("p:r EXISTS");
+
+        assertTrue(q instanceof PropertyExistsQuery);
+
+        peq = (PropertyExistsQuery) q;
+        assertEquals("r", peq.getPropertyDefinition().getName());
+        assertEquals("p", peq.getPropertyDefinition().getNamespace().getPrefix());
+        assertFalse(peq.isInverted());
+        
+
+        q = queryParser.parse("p:r NOT EXISTS");
 
         assertTrue(q instanceof PropertyExistsQuery);
 
@@ -166,10 +186,12 @@ public class QueryParserTest extends TestCase {
         assertEquals("/i am a file with spaces(YES)?*><=x\\\\/ AND uri=/hoho.txt", ((UriTermQuery) q).getUri());
         assertEquals(((UriTermQuery) q).getOperator(), TermOperator.EQ);
     }
-
+    
     public void testComplexQuery() {
 
-        Query q = queryParser.parse("(type IN emne && emne:emnekode exists && emne:emnenavn exists" + " && foo:bar not exists && emne:status=gjeldende-versjon && depth=6)" + " AND uri = /studier/emner/jus/* AND name=index.xml AND foo@bar.bing.bong >= baz");
+        Query q = queryParser.parse("(type IN emne && emne:emnekode exists && emne:emnenavn exists" 
+                + " && foo:bar not exists && emne:status=gjeldende-versjon && depth=6)" 
+                + " AND uri = /studier/emner/jus/* AND name=index.xml AND foo@bar.bing.bong >= baz");
 
         assertTrue(q instanceof AndQuery);
         AndQuery aqTop = (AndQuery) q;

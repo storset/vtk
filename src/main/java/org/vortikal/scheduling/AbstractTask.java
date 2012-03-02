@@ -69,23 +69,35 @@ public abstract class AbstractTask implements Task {
         return "Task[id = " + this.id + ", trigger = " + this.triggerSpec + "]";
     }
     
-    public void setCronTriggerExpression(String expression) {
-        setTriggerSpecification(new CronTriggerSpecification(expression));
-    }
-    
     /**
-     * Expression consisting of three fields separated by comma.
+     * Set either a simple periodic triggering expression or a cron trigger
+     * expression.
+     * 
+     * Simple expression consists of up to three fields separated by comma.
      * Only first field (period in seconds) is required, the rest is optional.
      * 
      * First field is period in seconds.
      * Second field is initial delay in seconds (optional).
      * Third field is boolean indicating if period should be fixed rate
-     * or fixed delay (optonal).
+     * or fixed delay (optional).
+     * 
+     * For cron trigger expression:
+     * @see CronTriggerSpecification
      * 
      * @param expression 
      */
-    public void setSimplePeriodicTriggerExpression(String expression) {
-        String[] parts = expression.trim().split("\\s*,\\s*");
+    public void setTriggerExpression(String expression) {
+        
+        expression = expression.trim();
+        
+        String[] parts = expression.split("\\s+");
+        if (parts.length == 6) {
+            // Probably cron trigger spec, use that
+            setTriggerSpecification(new CronTriggerSpecification(expression));
+            return;
+        }
+
+        parts = expression.split("\\s*,\\s*");
         int seconds = -1;
         int delay = 0;
         boolean fixedRate = false;
@@ -100,7 +112,7 @@ public abstract class AbstractTask implements Task {
             delay = Integer.parseInt(parts[1]);
             fixedRate = "true".equals(parts[2]) || "1".equals(parts[2]);
         } else {
-            throw new IllegalArgumentException("Invalid simple periodic trigger expression: " + expression);
+            throw new IllegalArgumentException("Unable to recognize trigger expression: " + expression);
         }
         
         setTriggerSpecification(new SimplePeriodicTriggerSpecification(seconds, delay, fixedRate));

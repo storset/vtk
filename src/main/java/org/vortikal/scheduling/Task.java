@@ -32,7 +32,7 @@
 package org.vortikal.scheduling;
 
 /**
- * Marker interface for tasks.
+ * Task interface.
  */
 public interface Task extends Runnable {
     

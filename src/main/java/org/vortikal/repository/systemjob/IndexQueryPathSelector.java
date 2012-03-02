@@ -31,18 +31,15 @@
 
 package org.vortikal.repository.systemjob;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.Parser;
 import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.QueryParser;
 import org.vortikal.repository.search.ResultSet;
@@ -63,16 +60,15 @@ public class IndexQueryPathSelector implements PathSelector {
 
     private static Log logger = LogFactory.getLog(IndexQueryPathSelector.class);
     
-    private Searcher searcher;
-    private QueryParser parser;
-    private ResourceTypeTree resourceTypeTree;
+    protected Searcher searcher;
+    protected Parser parser;
+    protected ResourceTypeTree resourceTypeTree;
     
     private String queryString;
-    private Sorting sorting;
-    
+    private String sortString;
     private boolean onlyPublishedResources = false;
-    private static final int MAX_LIMIT = 2000;
-    private int limit = MAX_LIMIT;
+    
+    private int limit = 2000;
 
     private static final PropertySelect NO_PROPERTIES = new PropertySelect() {
         @Override
@@ -89,16 +85,20 @@ public class IndexQueryPathSelector implements PathSelector {
         final String token = SecurityContext.exists() ? SecurityContext.getSecurityContext().getToken() : null;
                 
         Query query = getQuery(context);
+        Sorting sort = getSorting(context);
         Search search = new Search();
         search.setQuery(query);
-        search.setSorting(getSorting(context));
+        search.setSorting(sort);
         search.setLimit(this.limit);
-        search.setOnlyPublishedResources(isOnlyPublishedResources());
+        search.setOnlyPublishedResources(this.onlyPublishedResources);
         search.setPropertySelect(NO_PROPERTIES);
-        ResultSet results = this.getSearcher().execute(token, search);
-        
-        logger.debug("Ran query " + query + " with " + results.getSize() 
-                + " results of total " + results.getTotalHits());
+        ResultSet results = this.searcher.execute(token, search);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Ran query " + query + (sort != null ? ", sorting: " + sort + "," : "")
+                    + " with " + results.getSize()
+                    + " results of total " + results.getTotalHits());
+        }
 
         callback.beginBatch(results.getSize());
         for (PropertySet result: results) {
@@ -114,20 +114,22 @@ public class IndexQueryPathSelector implements PathSelector {
     }
     
     protected Sorting getSorting(SystemChangeContext context) {
-        return this.sorting;
+        return this.parser.parseSortString(this.sortString);
     }
     
     protected Query getSystemJobQuery(SystemChangeContext context) {
         OrQuery orQuery = new OrQuery();
 
-        // Either all resources which do NOT have system job status property
+        // XXX Logic as query string:
+        //     system-job-status@JOBID !exists OR  system-job-status@JOBID < {$currentTime}
+        //
+        // .. which matches everything ..
+        // What's the intention here ? Looks like it can be removed entirely.
+        
         PropertyExistsQuery systemJobPropertyExistsQuery = new PropertyExistsQuery(context.getSystemJobStatusPropDef(), true);
         systemJobPropertyExistsQuery.setComplexValueAttributeSpecifier(context.getJobName());
         orQuery.add(systemJobPropertyExistsQuery);
 
-        // Or all resources where sytem job time last run is less than now
-        // XXX can this be right ? It would always select all resources with an existing
-        // system job status property for the given job, since time is NOW.
         PropertyTermQuery systemJobPropertyQuery = new PropertyTermQuery(context.getSystemJobStatusPropDef(), 
                 context.getTime(),
                 TermOperator.LT);
@@ -141,30 +143,18 @@ public class IndexQueryPathSelector implements PathSelector {
         this.queryString = queryString;
     }
     
-    public void setSorting(Sorting sorting) {
-        this.sorting = sorting;
+    public void setSortString(String sortString) {
+        this.sortString = sortString;
     }
     
-    public void setParser(QueryParser parser) {
+    public void setParser(Parser parser) {
         this.parser = parser;
     }
     
-    public QueryParser getParser() {
-        return this.parser;
-    }
-
     public boolean isOnlyPublishedResources() {
         return this.onlyPublishedResources;
     }
-
-    public Searcher getSearcher() {
-        return this.searcher;
-    }
     
-    public ResourceTypeTree getResourceTypeTree() {
-        return this.resourceTypeTree;
-    }
-
     public void setLimit(int limit) {
         if (limit < 1) {
             throw new IllegalArgumentException("Limit must be >= 1");

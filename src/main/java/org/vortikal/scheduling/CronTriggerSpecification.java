@@ -42,7 +42,7 @@ package org.vortikal.scheduling;
  * Expression components:
  * <seconds> <minutes> <hours> <day-of-month> <month> <day of week>
  * 
- * Expression example: "* 10 12 * * mon-tue"
+ * Expression example: "00 10 12 * * mon-tue"
  *
  * (run every monday and tuesday at 10 minutes past 12)
  */

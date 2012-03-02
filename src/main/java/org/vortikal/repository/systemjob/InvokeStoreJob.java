@@ -89,8 +89,7 @@ public class InvokeStoreJob extends RepositoryJob {
                         logger.warn("Resource " + resource + " currently locked, will not invoke store.");
                     }
                 } catch (ResourceNotFoundException rnfe) {
-                    // Resource is no longer there after search (deleted, moved
-                    // or renamed)
+                    // Resource is no longer there after search (deleted or moved)
                     logger.warn("A resource ("
                             + path
                             + ") that was to be affected by a systemjob was no longer available: "

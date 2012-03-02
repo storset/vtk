@@ -57,6 +57,7 @@ public class ParserImpl implements Parser, InitializingBean {
         this.queryStringPreProcessor = queryStringPreProcessor;
     }
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (this.resourceTypeTree == null) {
             throw new BeanInitializationException("JavaBean property 'resourceTypeTree' not set");
@@ -71,6 +72,7 @@ public class ParserImpl implements Parser, InitializingBean {
 
     }
 
+    @Override
     public Query parse(String query) {
         query = this.queryStringPreProcessor.process(query);
         return this.parserFactory.getParser().parse(query);
@@ -89,6 +91,7 @@ public class ParserImpl implements Parser, InitializingBean {
      * @return a sort object
      * @throws QueryException if it encounters an invalid, unknown or duplicated sort field
      */
+    @Override
     public Sorting parseSortString(String sortString) throws QueryException {
         if (sortString == null || "".equals(sortString.trim())) {
             return null;

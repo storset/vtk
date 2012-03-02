@@ -41,6 +41,9 @@ public interface Principal extends Comparable<Principal>, java.io.Serializable {
     public static final String PRINCIPAL_USER_DOMAIN = "uio.no";
     public static final String PRINCIPAL_GROUP_DOMAIN = "netgroups.uio.no";
     public static final String PRINCIPAL_WEBID_DOMAIN = "webid.uio.no";
+    
+    // Localhost domain
+    public static final String PRINCIPAL_LOCALHOST_DOMAIN = "localhost";
 
     public enum Type {
         USER, // a named user

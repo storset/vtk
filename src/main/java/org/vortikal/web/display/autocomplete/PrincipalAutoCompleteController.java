@@ -53,7 +53,7 @@ public class PrincipalAutoCompleteController extends AutoCompleteController {
 
             // XXX: Only list uio.no and pseudo users
             if (principal.isUser()) {
-                if (!(principal.getDomain().equals("uio.no") || principal.getDomain().equals(
+                if (!(principal.getDomain().equals(Principal.PRINCIPAL_USER_DOMAIN) || principal.getDomain().equals(
                         "pseudo:"))) {
                     continue;
                 }
@@ -61,8 +61,7 @@ public class PrincipalAutoCompleteController extends AutoCompleteController {
             // XXX: Special treatment for webid-groups and users
             if (principal.getQualifiedName().contains("webid.uio.no")) {
                 if (principal.getType() == Type.GROUP || principal.getType() == Type.PSEUDO) {
-                    suggestion.setField(this.invert ? 0 : 1, principal.getUnqualifiedName()
-                            + "@webid.uio.no");
+                    suggestion.setField(this.invert ? 0 : 1, principal.getUnqualifiedName() + "@webid.uio.no");
                     suggestion.setField(this.invert ? 1 : 0, principal.getDescription());
 
                 } else {

@@ -38,9 +38,6 @@ public class PrincipalImpl implements Principal {
 
     private static final String DOMAIN_DELIMITER = "@";
 
-    private static String DEFAULT_DOMAIN = "uio.no";
-    private static String DEFAULT_GROUP_DOMAIN = "netgroups.uio.no";
-
     private String name;
     private String qualifiedName;
     private String domain;
@@ -61,48 +58,48 @@ public class PrincipalImpl implements Principal {
         this.type = type;
 
         if (id.startsWith(DOMAIN_DELIMITER)) {
-            throw new InvalidPrincipalException(
-                "Invalid principal id: " + id + ": "
-                + "must not start with delimiter: '" + DOMAIN_DELIMITER + "'");
+            throw new InvalidPrincipalException("Invalid principal id: " + id + ": "
+                    + "must not start with delimiter: '" + DOMAIN_DELIMITER + "'");
         }
         if (id.endsWith(DOMAIN_DELIMITER)) {
-            throw new InvalidPrincipalException(
-                "Invalid principal id: " + id + ": "
-                + "must not end with delimiter: '" + DOMAIN_DELIMITER + "'");
+            throw new InvalidPrincipalException("Invalid principal id: " + id + ": " + "must not end with delimiter: '"
+                    + DOMAIN_DELIMITER + "'");
         }
 
         if (id.indexOf(DOMAIN_DELIMITER) != id.lastIndexOf(DOMAIN_DELIMITER)) {
-            throw new InvalidPrincipalException(
-                "Invalid principal id: " + id + ": "
-                + "must not contain more that one delimiter: '"
-                + DOMAIN_DELIMITER + "'");
+            throw new InvalidPrincipalException("Invalid principal id: " + id + ": "
+                    + "must not contain more that one delimiter: '" + DOMAIN_DELIMITER + "'");
         }
 
-
-        /* Initialize name, domain and qualifiedName to default values
-         * matching a setup "without" domains: */
+        /*
+         * Initialize name, domain and qualifiedName to default values matching
+         * a setup "without" domains:
+         */
         this.name = id;
         this.qualifiedName = id;
 
-        String defDomain =
-            (type == Principal.Type.GROUP) ? DEFAULT_GROUP_DOMAIN : DEFAULT_DOMAIN;
+        String defDomain = (type == Principal.Type.GROUP) ? Principal.PRINCIPAL_GROUP_DOMAIN
+                : Principal.PRINCIPAL_USER_DOMAIN;
 
         if (id.indexOf(DOMAIN_DELIMITER) > 0) {
 
             /* id is a fully qualified principal with a domain part: */
             this.domain = id.substring(id.indexOf(DOMAIN_DELIMITER) + 1);
 
-
             if (defDomain != null && defDomain.equals(domain)) {
-                /* In cases where domain equals default domain, strip
-                 * the domain part off the name: */
+                /*
+                 * In cases where domain equals default domain, strip the domain
+                 * part off the name:
+                 */
                 name = id.substring(0, id.indexOf(DOMAIN_DELIMITER));
             }
 
         } else if (defDomain != null) {
 
-            /* id is not a fully qualified principal, but since we
-             * have a default domain, we append it: */
+            /*
+             * id is not a fully qualified principal, but since we have a
+             * default domain, we append it:
+             */
             domain = defDomain;
             qualifiedName = name + DOMAIN_DELIMITER + domain;
         }
@@ -125,8 +122,10 @@ public class PrincipalImpl implements Principal {
 
     /**
      * Gets the name of the principal. Cannot be <code>null</code>.
-     * @return If the domain equals the principalManager's defaultDomain
-     * it returns the unqualified name, otherwise it returns the qualified name
+     * 
+     * @return If the domain equals the principalManager's defaultDomain it
+     *         returns the unqualified name, otherwise it returns the qualified
+     *         name
      */
     @Override
     public String getName() {
@@ -134,9 +133,9 @@ public class PrincipalImpl implements Principal {
     }
 
     /**
-     * Gets the fully qualified name of the principal. If domain is
-     * null, just the user name, otherwise 'user@domain'
-     *
+     * Gets the fully qualified name of the principal. If domain is null, just
+     * the user name, otherwise 'user@domain'
+     * 
      * @return the fully qualified name of the principal
      */
     @Override
@@ -146,9 +145,8 @@ public class PrincipalImpl implements Principal {
 
     /**
      * Gets the domain of the principal. May be <code>null</code>.
-     *
-     * @return the domain of the principal, or <code>null</code> if it
-     * has none
+     * 
+     * @return the domain of the principal, or <code>null</code> if it has none
      */
     @Override
     public String getDomain() {
@@ -162,13 +160,14 @@ public class PrincipalImpl implements Principal {
 
     /**
      * Gets the unqualified name of the principal, stripped of domain
-     *
+     * 
      * @return the unqualified name of the principal
      */
     @Override
     public String getUnqualifiedName() {
-        if (this.domain == null) return this.name;
-        //FIXME: principalmanager's delimiter shouldn't be here!
+        if (this.domain == null)
+            return this.name;
+        // FIXME: principalmanager's delimiter shouldn't be here!
         return this.qualifiedName.substring(0, this.qualifiedName.indexOf("@"));
     }
 
@@ -189,11 +188,9 @@ public class PrincipalImpl implements Principal {
     @Override
     public int compareTo(Principal other) {
         if (other == null) {
-            throw new IllegalArgumentException(
-                "Cannot compare to a null value");
+            throw new IllegalArgumentException("Cannot compare to a null value");
         } else if (this.type != other.getType()) {
-            throw new IllegalArgumentException(
-                    "Connot compare to a different principal type");
+            throw new IllegalArgumentException("Connot compare to a different principal type");
         }
         return this.qualifiedName.compareTo(other.getQualifiedName());
     }

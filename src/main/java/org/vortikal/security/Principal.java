@@ -32,34 +32,39 @@ package org.vortikal.security;
 
 import org.vortikal.repository.store.PrincipalMetadata;
 
-
-
 /**
  * A representation of a principal, either user, group or pseudo.
  */
 public interface Principal extends Comparable<Principal>, java.io.Serializable {
-    
+
+    // The principal domains we support:
+    public static final String PRINCIPAL_USER_DOMAIN = "uio.no";
+    public static final String PRINCIPAL_GROUP_DOMAIN = "netgroups.uio.no";
+    public static final String PRINCIPAL_WEBID_DOMAIN = "webid.uio.no";
+
     public enum Type {
         USER, // a named user
         GROUP, // a named group
         PSEUDO // a pseudo user
-     }
+    }
 
     /**
      * Gets the name of the principal. Cannot be <code>null</code>.
-     * @return If the domain equals the principalManager's defaultDomain
-     * it returns the unqualified name, otherwise it returns the qualified name
+     * 
+     * @return If the domain equals the principalManager's defaultDomain it
+     *         returns the unqualified name, otherwise it returns the qualified
+     *         name
      */
     public String getName();
 
     /**
-     * Gets the fully qualified name of the principal. If domain is
-     * null, just the user name, otherwise 'user@domain'
+     * Gets the fully qualified name of the principal. If domain is null, just
+     * the user name, otherwise 'user@domain'
      * 
      * @return the fully qualified name of the principal
      */
     public String getQualifiedName();
-    
+
     /**
      * Gets the unqualified name of the principal, stripped of domain
      * 
@@ -69,8 +74,9 @@ public interface Principal extends Comparable<Principal>, java.io.Serializable {
 
     /**
      * Returns metadata-instance for this principal.
+     * 
      * @see PrincipalMetadata
-     *
+     * 
      * @return An instance of <code>PrincipalMetadata</code> or null if no
      *         metadata has been retrieved for this principal.
      */
@@ -78,12 +84,11 @@ public interface Principal extends Comparable<Principal>, java.io.Serializable {
 
     /**
      * Gets the domain of the principal. May be <code>null</code>.
-     *
-     * @return the domain of the principal, or <code>null</code> if it
-     * has none
+     * 
+     * @return the domain of the principal, or <code>null</code> if it has none
      */
     public String getDomain();
-    
+
     public String getURL();
 
     public boolean isUser();
@@ -97,6 +102,5 @@ public interface Principal extends Comparable<Principal>, java.io.Serializable {
      */
     @Override
     public String toString();
-    
 
 }

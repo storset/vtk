@@ -30,7 +30,7 @@
         <#list list as res >
           <#assign title = vrtx.propValue(res, 'title') />
           <#assign lastModifiedTime = vrtx.propValue(res, 'lastModified') />
-          <#assign modifiedBy = vrtx.propValue(res, 'modifiedBy', 'name-link') />
+          <#assign modifiedBy = vrtx.propValue(res, 'modifiedBy', 'document-link') />
           <#assign uri = vrtx.getUri(res) />
 
           <#assign contentType = vrtx.propValue(res, 'contentType') />

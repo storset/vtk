@@ -52,8 +52,9 @@ public class PrincipalFactory {
 
     public static Principal ALL = new PrincipalImpl(NAME_ALL);
 
-    // This dao will only be used if configured.
+    // These daos will only be used if configured.
     private PrincipalMetadataDAO principalMetadataDao;
+    private PrincipalMetadataDAO personDocumentPrincipalMetadataDao;
 
     public Principal getPrincipal(String id, Type type) throws InvalidPrincipalException {
         return this.getPrincipal(id, type, true);
@@ -143,6 +144,23 @@ public class PrincipalFactory {
         return retval;
     }
 
+    // XXX [rezam] Separate implementation because I'm to scared to mess with
+    // existing setup. So scared...
+    public Principal getPrincipalDocument(String id, Locale preferredLocale) {
+        if (this.personDocumentPrincipalMetadataDao != null) {
+            PrincipalImpl principal = new PrincipalImpl(id, Type.USER);
+            PrincipalMetadata metadata = this.personDocumentPrincipalMetadataDao
+                    .getMetadata(principal, preferredLocale);
+            if (metadata != null) {
+                principal.setMetadata(metadata);
+                return principal;
+            }
+        }
+        // Not configured to search for documents, or no document for principal
+        // found
+        return null;
+    }
+
     private Principal getPseudoPrincipal(String name) throws InvalidPrincipalException {
         if (NAME_ALL.equals(name))
             return ALL;
@@ -151,6 +169,10 @@ public class PrincipalFactory {
 
     public void setPrincipalMetadataDao(PrincipalMetadataDAO principalMetadataDao) {
         this.principalMetadataDao = principalMetadataDao;
+    }
+
+    public void setPersonDocumentPrincipalMetadataDao(PrincipalMetadataDAO personDocumentPrincipalMetadataDao) {
+        this.personDocumentPrincipalMetadataDao = personDocumentPrincipalMetadataDao;
     }
 
 }

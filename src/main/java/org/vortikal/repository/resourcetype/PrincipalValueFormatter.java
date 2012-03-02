@@ -34,6 +34,7 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.repository.store.PrincipalMetadata;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
@@ -47,6 +48,7 @@ import org.vortikal.text.html.HtmlUtil;
  * <li>'name': {@link Principal#getDescription()}
  * <li>'link' and {@link Principal} has url: &lt;a href="{@link Principal#getURL()}">{@link Principal#getDescription()}&lt;/a>
  * <li>'name-link' and {@link Principal} has url: &lt;a href="{@link Principal#getURL()}">{@link Principal#getName()}&lt;/a>
+ * <li>'document-link' and {@link Principal} has url to a person document, if it exists: &lt;a href="{@link Principal#getURL()}">{@link Principal#getDescription()}&lt;/a>
  */
 public class PrincipalValueFormatter implements ValueFormatter {
 
@@ -54,36 +56,63 @@ public class PrincipalValueFormatter implements ValueFormatter {
     public static final String NAME_FORMAT = "name";
     public static final String LINK_FORMAT = "link";
     public static final String NAME_LINK_FORMAT = "name-link";
+    public static final String DOCUMENT_LINK_FORMAT = "document-link";
 
     private PrincipalFactory principalFactory;
 
-    /* 
-     * Defaults to return the principal description. Also supports the "name", "link" and "name-link" formats, 
-     * the two latter returning an html <a> tag if the principal has a url.
-     * 
-     * @see org.vortikal.repository.resourcetype.ValueFormatter#valueToString(org.vortikal.repository.resourcetype.Value, java.lang.String, java.util.Locale)
+    /*
+     * Defaults to return the principal description. Also supports the "name",
+     * "link", "name-link" and "document-link" formats, the "link" and
+     * "name-link" latter returning an html <a> tag if the principal has a url,
+     * and the "document-link" returning an html <a> tag if the principal has an
+     * existing document (defaults to "link" format if not).
      */
-    public String valueToString(Value value, String format, Locale locale)
-    throws IllegalValueTypeException {
+    public String valueToString(Value value, String format, Locale locale) throws IllegalValueTypeException {
 
         if (value.getType() != Type.PRINCIPAL) {
             throw new IllegalValueTypeException(Type.PRINCIPAL, value.getType());
         }
 
         Principal principal = value.getPrincipalValue();
-        if (LINK_FORMAT.equals(format) && principal.getURL() != null) {
-            return "<a href=\"" + HtmlUtil.escapeHtmlString(principal.getURL()) + "\">" + principal.getDescription() + "</a>"; 
-        } else if (NAME_LINK_FORMAT.equals(format) && principal.getURL() != null) {
-            return "<a href=\"" + HtmlUtil.escapeHtmlString(principal.getURL()) + "\">" + principal.getName() + "</a>";
-        } else if (NAME_FORMAT.equals(format)) {
+
+        // Will only yield results id principal factory is configured for
+        // document search
+        if (DOCUMENT_LINK_FORMAT.equals(format)) {
+            Principal principalDocument = this.principalFactory.getPrincipalDocument(principal.getQualifiedName(),
+                    locale);
+            if (principalDocument != null) {
+                PrincipalMetadata pm = principalDocument.getMetadata();
+                Object urlObj = pm.getValue(PrincipalMetadata.URL_ATTRIBUTE);
+                if (urlObj != null) {
+                    StringBuilder sb = new StringBuilder("<a href=\"");
+                    sb.append(HtmlUtil.escapeHtmlString(urlObj.toString()));
+                    sb.append("\">");
+                    sb.append(principal.getDescription());
+                    sb.append("</a>");
+                    return sb.toString();
+                }
+            }
+            // If no document is found, fall back to LINK_FORMAT
+            format = LINK_FORMAT;
+        }
+
+        String url = principal.getURL();
+        if (LINK_FORMAT.equals(format) && url != null) {
+            return "<a href=\"" + HtmlUtil.escapeHtmlString(url) + "\">" + principal.getDescription() + "</a>";
+        }
+
+        if (NAME_LINK_FORMAT.equals(format) && url != null) {
+            return "<a href=\"" + HtmlUtil.escapeHtmlString(url) + "\">" + principal.getName() + "</a>";
+        }
+
+        if (NAME_FORMAT.equals(format)) {
             return principal.getDescription();
         }
-        
+
         return principal.getName();
     }
 
-    public Value stringToValue(String string, String format, Locale locale) 
-    throws InvalidPrincipalException {
+    public Value stringToValue(String string, String format, Locale locale) throws InvalidPrincipalException {
         Principal principal = principalFactory.getPrincipal(string, Principal.Type.USER);
         return new Value(principal);
     }
@@ -93,5 +122,4 @@ public class PrincipalValueFormatter implements ValueFormatter {
         this.principalFactory = principalFactory;
     }
 
-    
 }

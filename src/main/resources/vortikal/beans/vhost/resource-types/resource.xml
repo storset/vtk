@@ -317,16 +317,10 @@
     <property name="name" value="link-check" />
     <property name="type" value="BINARY" />
     <property name="multiple" value="false" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ROLE_ROOT" />
     <property name="mandatory" value="false" />
-    <property name="propertyEvaluator" ref="resourceLinkCheckEvaluator" />
   </bean>
 
-  <bean id="resourceLinkCheckEvaluator" class="org.vortikal.repository.resourcetype.property.LinkCheckEvaluator">
-    <property name="linksPropDef" ref="linksPropDef" />
-    <property name="linkChecker" ref="repository.linkChecker" />
-    <property name="canonicalUrlConstructor" ref="canonicalUrlConstructor" />
-  </bean>
 
   <bean id="repository.linkChecker" 
         class="org.vortikal.web.display.linkcheck.LinkChecker">

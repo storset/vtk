@@ -53,11 +53,18 @@
 
 
   <!-- Broken link check job for recently modified resources -->
-  <bean id="repository.systemjob.linkcheck.recent" class="org.vortikal.repository.systemjob.InvokeStoreJob"
+  <bean id="repository.systemjob.linkcheck.recent" class="org.vortikal.repository.systemjob.LinkCheckJob"
         parent="repository.systemjob">
     <property name="triggerExpression" value="${systemjob.linkcheck.recent.trigger}" />
     <property name="enabled" value="${systemjob.linkcheck.enabled}"/>
     <property name="id" value="linkcheck-recent" />
+
+    <property name="linksPropDef" ref="linksPropDef" />
+    <property name="linkCheckPropDef" ref="linkCheckPropDef" />
+    <property name="linkChecker" ref="repository.linkChecker" />
+    <property name="canonicalUrlConstructor" ref="canonicalUrlConstructor" />
+
+
     <property name="affectedPropDefPointers">
       <list>
         <value>resource::link-check</value>
@@ -82,11 +89,17 @@
 
   <!-- Broken link check job (regular intervals) -->
 
-  <bean id="repository.systemjob.linkcheck" class="org.vortikal.repository.systemjob.InvokeStoreJob"
+  <bean id="repository.systemjob.linkcheck" class="org.vortikal.repository.systemjob.LinkCheckJob"
         parent="repository.systemjob">
     <property name="triggerExpression" value="${systemjob.linkcheck.trigger}" />
     <property name="enabled" value="${systemjob.linkcheck.enabled}"/>
     <property name="id" value="linkcheck" />
+
+    <property name="linksPropDef" ref="linksPropDef" />
+    <property name="linkCheckPropDef" ref="linkCheckPropDef" />
+    <property name="linkChecker" ref="repository.linkChecker" />
+    <property name="canonicalUrlConstructor" ref="canonicalUrlConstructor" />
+
     <property name="affectedPropDefPointers">
       <list>
         <value>resource::link-check</value>

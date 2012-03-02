@@ -177,6 +177,15 @@ public class QueryParserTest extends TestCase {
         assertEquals("r", peq.getPropertyDefinition().getName());
         assertEquals("p", peq.getPropertyDefinition().getNamespace().getPrefix());
         assertTrue(peq.isInverted());
+
+        q = queryParser.parse("r !EXISTS");
+
+        assertTrue(q instanceof PropertyExistsQuery);
+
+        peq = (PropertyExistsQuery) q;
+        assertEquals("r", peq.getPropertyDefinition().getName());
+        assertEquals(Namespace.DEFAULT_NAMESPACE, peq.getPropertyDefinition().getNamespace());
+        assertTrue(peq.isInverted());
     }
 
     public void testEscaping() {

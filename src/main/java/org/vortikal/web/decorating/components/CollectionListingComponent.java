@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -49,13 +50,16 @@ import org.vortikal.web.search.SearchComponent;
 
 public class CollectionListingComponent extends ViewRenderingDecoratorComponent {
 
+    private static final int MAX_ITEMS = 10;
+
     private SearchComponent search;
     private CollectionListingComponentHelper helper;
 
     private final static String PARAMETER_URI = "uri";
     private final static String PARAMETER_URI_DESCRIPTION = "Uri to the folder. This is a required parameter";
     private final static String PARAMETER_MAX_ITEMS = "max-items";
-    private final static String PARAMETER_MAX_ITEMS_DESCRIPTION = "Defines how many items from the folder that will be visable in the list. Any defined value must be above 0 else the default value is 10";
+    private final static String PARAMETER_MAX_ITEMS_DESCRIPTION = "Defines how many items from the folder that will be visable in the list. Any defined value must be above 0 else the default value is "
+            + MAX_ITEMS;
     private final static String PARAMETER_GO_TO_FOLDER_LINK = "go-to-folder-link";
     private final static String PARAMETER_GO_TO_FOLDER_LINK_DESCRIPTION = "Set to 'true' to show 'Go to folder' link. Default is false";
     private final static String PARAMETER_FOLDER_TITLE = "folder-title";
@@ -69,8 +73,14 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         Map<String, Object> conf = new HashMap<String, Object>();
 
         String uri = request.getStringParameter(PARAMETER_URI);
-        if (uri == null)
+        if (uri == null) {
             throw new DecoratorComponentException("Component parameter 'uri' is required");
+        }
+
+        Path resourcePath = this.getResourcePath(uri);
+        if (resourcePath == null) {
+            throw new DecoratorComponentException("Provided uri is not a valid folder reference: " + uri);
+        }
 
         Repository r = RequestContext.getRequestContext().getRepository();
         String token = SecurityContext.getSecurityContext().getToken();
@@ -78,27 +88,30 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
 
         Resource res;
         try {
-            res = r.retrieve(token, Path.fromString(uri), false);
-        } catch (Exception e) {
-            res = null;
+            res = r.retrieve(token, resourcePath, false);
+        } catch (ResourceNotFoundException rnfe) {
+            throw new DecoratorComponentException(uri + " does not exist");
         }
 
-        if (res == null || !res.isCollection())
+        if (!res.isCollection()) {
             throw new DecoratorComponentException(uri + " is not a folder");
+        }
 
-        int maxItems = 10;
+        int maxItems = MAX_ITEMS;
         try {
-            if ((maxItems = Integer.parseInt(request.getStringParameter(PARAMETER_MAX_ITEMS))) <= 0)
-                maxItems = 10;
-        } catch (Exception ignore) {
+            int suppliedMaxItems = Integer.parseInt(request.getStringParameter(PARAMETER_MAX_ITEMS));
+            maxItems = suppliedMaxItems <= 0 ? maxItems : suppliedMaxItems;
+        } catch (Exception e) {
+            // Ignore, defaults to predefined limit
         }
 
         boolean goToFolderLink, folderTitle = parameterHasValue(PARAMETER_FOLDER_TITLE, "true", request);
         if (goToFolderLink = parameterHasValue(PARAMETER_GO_TO_FOLDER_LINK, "true", request)) {
             model.put("goToFolderLink", uri);
             model.put("folderTitle", res.getTitle());
-        } else if (folderTitle)
+        } else if (folderTitle) {
             model.put("folderTitle", res.getTitle());
+        }
 
         conf.put("goToFolderLink", goToFolderLink);
         conf.put("folderTitle", folderTitle);
@@ -110,6 +123,16 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         model.put("edit", helper.isAuthorized(r, token, principal, l.getFiles().size(), Arrays.asList(l)));
         model.put("list", l.getFiles());
         model.put("conf", conf);
+    }
+
+    private Path getResourcePath(String uri) {
+        // Be lenient on trailing slash
+        uri = uri.endsWith("/") && !uri.equals("/") ? uri.substring(0, uri.lastIndexOf("/")) : uri;
+        try {
+            return Path.fromString(uri);
+        } catch (IllegalArgumentException iae) {
+            return null;
+        }
     }
 
     protected Map<String, String> getParameterDescriptionsInternal() {

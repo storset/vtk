@@ -36,10 +36,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -89,8 +91,20 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         Resource res;
         try {
             res = r.retrieve(token, resourcePath, false);
-        } catch (ResourceNotFoundException rnfe) {
+        } catch (AuthenticationException e) {
+            res = null;
+        } catch (AuthorizationException e) {
+            res = null;
+        } catch (ResourceNotFoundException e) {
             throw new DecoratorComponentException(uri + " does not exist");
+        } catch (Exception e) {
+            throw new DecoratorComponentException(e.getMessage());
+        }
+        
+        conf.put("auth", res != null);
+        if (res == null) {
+            model.put("conf", conf);
+            return;
         }
 
         if (!res.isCollection()) {

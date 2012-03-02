@@ -2,7 +2,7 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
 
-<#if (list?exists && list?size > 0)>
+<#if (conf.auth?string = "true" && list?exists && list?size > 0)>
   <div class="vrtx-collection-listing-component-wrapper">
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/open-webdav.js"></script>

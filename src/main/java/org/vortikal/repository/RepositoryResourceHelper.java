@@ -128,7 +128,6 @@ public class RepositoryResourceHelper {
     public ResourceImpl systemChange(ResourceImpl originalResource, Principal principal, 
             ResourceImpl suppliedResource, Content content, SystemChangeContext systemChangeContext)
             throws AuthenticationException, AuthorizationException, InternalRepositoryException, IOException {
-
         if (logger.isDebugEnabled()) {
             logger.debug("Evaluate system change: " + originalResource.getURI());
         }
@@ -352,8 +351,11 @@ public class RepositoryResourceHelper {
         }
 
         if (ctx.getEvaluationType() == Type.SystemPropertiesChange) {
-
             Property property = ctx.getOriginalResource().getProperty(propDef);
+            Property modified = checkForUserAdditionOrChange(ctx, propDef);
+            if (modified != null) {
+                property = modified;
+            }
             try {
                 if (ctx.isSystemChangeAffectedProperty(propDef)) {
                     if (property == null) {
@@ -442,7 +444,6 @@ public class RepositoryResourceHelper {
     private Property checkForUserAdditionOrChange(PropertyEvaluationContext ctx, PropertyTypeDefinition propDef) {
         Property originalProp = ctx.getOriginalResource().getProperty(propDef);
         Property suppliedProp = ctx.getSuppliedResource().getProperty(propDef);
-
         try {
             // Added
             if (originalProp == null && suppliedProp != null) {

@@ -2199,7 +2199,9 @@ ul.radio-buttons li,
 form.vrtx-admin-form ul,
 form.vrtx-admin-form ul li,
 ul#vrtx-manually-approve-tab-menu,
-ul#vrtx-manually-approve-tab-menu li {
+ul#vrtx-manually-approve-tab-menu li,
+#vrtx-report-filters ul,
+#vrtx-report-filter ul li {
   margin-left: 0px;
   padding-left: 0px;
   list-style: none;

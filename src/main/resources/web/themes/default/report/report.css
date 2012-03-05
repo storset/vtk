@@ -195,6 +195,26 @@ td.vrtx-report-diagram-text {
   width: 25%;
 }
 
+/* Filters */
+
+#vrtx-report-filters {
+  width: 100%;
+  float: left;
+  clear: both;
+}
+
+#vrtx-report-filters ul {
+  margin-right: 25px;
+  float: left;
+}
+
+#vrtx-report-filters ul li {
+  float: left;
+  margin-right: 15px;
+}
+
+/* ^ Filters */
+
 /* Tooltip */
 
 .tip {

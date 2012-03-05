@@ -20,6 +20,17 @@
   </div>
 
   <#if (report.result?exists && report.result?size > 0)>
+    <div id="vrtx-report-filters">
+      <ul class="vrtx-report-filter">
+        <li id="vrtx-report-filter-broken-links-published" class="active-filter"><span>Publiserte</span></li>
+        <li id="vrtx-report-filter-broken-links-unpublished"><a href="javascript:void(0)">Upubliserte</a></li>
+      </ul>
+      <ul class="vrtx-report-filter">
+        <li id="vrtx-report-filter-broken-links-restricted-allowed-for-all" class="active-filter"><span>Åpne og lukkede</span></li>
+        <li id="vrtx-report-filter-broken-links-allowed-for-all"><a href="javascript:void(0)">Åpne</a></li>
+        <li id="vrtx-report-filter-broken-links-restricted"><a href="javascript:void(0)">Lukkede</a></li>
+      </ul>
+    </div>
     <p id="vrtx-report-info-paging-top">
       <@vrtx.msg code="report.${report.reportname}.about"
                  args=[report.from, report.to, report.total]

@@ -3,11 +3,50 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-  <#if cssURLs?exists>
-    <#list cssURLs as cssURL>
-      <link rel="stylesheet" href="${cssURL}" />
-    </#list>
-  </#if>
+    <#if cssURLs?exists>
+      <#list cssURLs as cssURL>
+        <link rel="stylesheet" href="${cssURL}" />
+      </#list>
+    </#if>
+    <script type="text/javascript"><!--
+      $(function() {        
+        updateFilters();
+        $("#app-content").delegate("#vrtx-report-filters a", "click", function(e) {
+          var filter = $(this);
+          var ul = filter.closest("ul");
+          
+          // Remove active
+          var currentActive = ul.find("li.active-filter");
+          var currentActiveSpan = currentActive.find("span");
+          currentActiveSpan.replaceWith("<a href=''>" + currentActiveSpan.html() + "</a>");
+          currentActive.removeClass("active-filter");
+          
+          // Update new active
+          filter.parent().addClass("active-filter");
+          filter.replaceWith("<span>" + filter.html() + "</span>");
+          
+          updateFilters();
+          
+          e.stopPropagation();
+          e.preventDefault();
+        });
+      });
+      
+      function updateFilters() {
+        var filters = $("#vrtx-report-filters ul");
+        $("#directory-listing tr td").hide();
+        for(var i = filters.length; i--;) {
+          var activeClasses = $(filters[i]).find(".active-filter").attr("class").split(" ");
+          for(var j = activeClasses.length; j--;) {
+            var class = activeClasses[j];
+            if(class !== "active-filter") {
+              $("#directory-listing tr." + class + " td").show();
+            }
+          }
+        }
+      }
+    // -->
+    </script>
   </head>
   <body id="vrtx-report-broken-links">
   <div class="resourceInfo">
@@ -22,13 +61,13 @@
   <#if (report.result?exists && report.result?size > 0)>
     <div id="vrtx-report-filters">
       <ul class="vrtx-report-filter">
-        <li id="vrtx-report-filter-broken-links-published" class="active-filter"><span>Publiserte</span></li>
-        <li id="vrtx-report-filter-broken-links-unpublished"><a href="javascript:void(0)">Upubliserte</a></li>
+        <li id="vrtx-report-filter-broken-links-published" class="active-filter published"><span>Publiserte</span></li>
+        <li id="vrtx-report-filter-broken-links-unpublished" class="unpublished"><a href="javascript:void(0)">Upubliserte</a></li>
       </ul>
       <ul class="vrtx-report-filter">
-        <li id="vrtx-report-filter-broken-links-restricted-allowed-for-all" class="active-filter"><span>Åpne og lukkede</span></li>
-        <li id="vrtx-report-filter-broken-links-allowed-for-all"><a href="javascript:void(0)">Åpne</a></li>
-        <li id="vrtx-report-filter-broken-links-restricted"><a href="javascript:void(0)">Lukkede</a></li>
+        <li id="vrtx-report-filter-broken-links-restricted-allowed-for-all" class="active-filter restricted allowed-for-all"><span>Åpne og lukkede</span></li>
+        <li id="vrtx-report-filter-broken-links-allowed-for-all" class="allowed-for-all"><a href="javascript:void(0)">Åpne</a></li>
+        <li id="vrtx-report-filter-broken-links-restricted" class="restricted"><a href="javascript:void(0)">Lukkede</a></li>
       </ul>
     </div>
     <p id="vrtx-report-info-paging-top">

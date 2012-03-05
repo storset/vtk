@@ -132,6 +132,8 @@ public class LinkCheckJob extends RepositoryJob {
                             + ") that was to be affected by a systemjob was no longer available: "
                             + rnfe.getMessage());
                 }
+                
+                checkForInterrupt();
             }
         });
 

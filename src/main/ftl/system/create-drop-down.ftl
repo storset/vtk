@@ -31,6 +31,7 @@
         min-width: 0;
         position: relative;
         text-align: left;
+        overflow: hidden;
       }
       div.dropdown-shortcut-menu-container {
         left: auto !important;

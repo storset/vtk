@@ -998,12 +998,14 @@ form#editor .tip ul a {
 }
 
 .tip.vrtx-create-tree .no-create-permission {
+  /*
   display: block;
   white-space: nowrap;
   padding: 4px 0px 4px 0 !important;
   background-color: #ecf3f9;
   border-top: 1px solid #c7dadf !important;
   border-bottom: 1px solid #c7dadf !important;
+  */
 }
 
 .tipextra {

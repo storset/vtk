@@ -134,7 +134,6 @@
       <map>
         <entry key="cssURLs">
           <list>
-            <value>${themeBaseURL}/default.css</value>
             <value>${themeBaseURL}/report/jquery.treeview.css</value>
           </list>
         </entry>

@@ -375,7 +375,7 @@ function tb_postMessageClose() {
   if(parent && $("ul.manage-create").length) {
     var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
     var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
-    $("ul.manage-create").css("position", "static"); // reset position
+    $("ul.manage-create").css("position", "static"); // reset position to original
     if (hasPostMessage) {
       parent.postMessage("originalsize", vrtxAdminOrigin);
     } else { // use the hash stuff in plugin from jQuery "Cowboy"

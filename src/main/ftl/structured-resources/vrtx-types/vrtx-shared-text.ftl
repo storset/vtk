@@ -19,7 +19,9 @@
     	              <#if language == "no_NO">
     	               <#assign language = "no" />
     	              </#if>
-    	              ${sharedTextProps[inputFieldName][y]['description-' + language]}
+    	              <#if sharedTextProps[inputFieldName][y]['description-' + language]?exists>
+    	               ${sharedTextProps[inputFieldName][y]['description-' + language]}
+    	              </#if>
     	       </div>
 	       </#list>
 	  </div>

@@ -5,11 +5,11 @@
   <head>
   <#if cssURLs?exists>
     <#list cssURLs as cssURL>
-    <link rel="stylesheet" href="${cssURL}" />
+      <link rel="stylesheet" href="${cssURL}" />
     </#list>
   </#if>
   </head>
-  <body id="vrtx-broken-links-report">
+  <body id="vrtx-report-broken-links">
   <div class="resourceInfo">
     <div class="vrtx-report-nav">
       <div class="back">
@@ -29,51 +29,53 @@
         <@displayPaging />  
       </#if>
     </p>
-    <table>
-      <thead>
-        <tr>
-          <th>Resource</th>
-          <th>Broken links</th>
-        </tr>
-      </thead>
-      <tbody>
-      <#list report.result as item>
-        <#assign title = vrtx.propValue(item, 'title') />
-        <#assign url = "">
-        <#if report.viewURLs[item_index]?exists>
-          <#assign url = report.viewURLs[item_index] />
-        </#if>
-        <#if (report.linkCheck[item.URI])?exists>
-          <#assign linkCheck = report.linkCheck[item.URI] />
-          <#if linkCheck['brokenLinks']?exists>
-            <#assign brokenLinks = linkCheck['brokenLinks'] />
+    <div class="vrtx-report">
+      <table id="directory-listing" class="report-broken-links">
+        <thead>
+          <tr>
+            <th id="vrtx-report-resource">Resource</th>
+            <th id="vrtx-report-broken-links">Broken links</th>
+          </tr>
+        </thead>
+        <tbody>
+        <#list report.result as item>
+          <#assign title = vrtx.propValue(item, 'title') />
+          <#assign url = "">
+          <#if report.viewURLs[item_index]?exists>
+            <#assign url = report.viewURLs[item_index] />
           </#if>
-        </#if>
-        <#assign linkStatus = vrtx.propValue(item, 'link-status') />
-        <tr>
-          <td>
-            <a href="${url?html}">${title?html}</a>
-            <#if linkStatus = 'AWAITING_LINKCHECK'>
-              [ * ] <#-- currently being checked, be patient -->
+          <#if (report.linkCheck[item.URI])?exists>
+            <#assign linkCheck = report.linkCheck[item.URI] />
+            <#if linkCheck['brokenLinks']?exists>
+              <#assign brokenLinks = linkCheck['brokenLinks'] />
             </#if>
-          </td>
-          <td>
-            <#if brokenLinks?exists>
-              <ul>
-              <#list brokenLinks as link>
-                <li>${link?html}</li>
-                <#if link_index &gt; 10>
-                  <li>...</li>
-                  <#break />
-                </#if>
-              </#list>
-              </ul>
-            </#if>
-          </td>
-        </tr>
-      </#list>
-      </tbody>
-    </table>
+          </#if>
+          <#assign linkStatus = vrtx.propValue(item, 'link-status') />
+          <tr>
+            <td class="vrtx-report-resource">
+              <a href="${url?html}">${title?html}</a>
+              <#if linkStatus = 'AWAITING_LINKCHECK'>
+                [ * ] <#-- currently being checked, be patient -->
+              </#if>
+            </td>
+            <td class="vrtx-report-broken-links">
+              <#if brokenLinks?exists>
+                <ul>
+                <#list brokenLinks as link>
+                  <li>${link?html}</li>
+                  <#if link_index &gt; 10>
+                    <li>...</li>
+                    <#break />
+                  </#if>
+                </#list>
+                </ul>
+              </#if>
+            </td>
+          </tr>
+        </#list>
+        </tbody>
+      </table>
+    </div>
     <#if report.prev?exists || report.next?exists>
       <p id="vrtx-report-paging-bottom">
         <@displayPaging />
@@ -82,7 +84,6 @@
   <#else>
     <p><@vrtx.msg code="report.document-reporter.no.documents.found" /></p>
   </#if>
-  </div>
 
   <#macro displayPaging>
     <span class="vrtx-report-paging">

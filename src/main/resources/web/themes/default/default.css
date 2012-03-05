@@ -1233,12 +1233,14 @@ p#vrtx-file-upload-info-text {
 
 #vrtx-manage-collectionlisting #contents,
 #vrtx-trash-can #contents,
-#vrtx-report-documents #contents .vrtx-report {
+#vrtx-report-documents #contents .vrtx-report,
+#vrtx-report-broken-links #contents .vrtx-report {
   padding: 5px 0 0 0;
   border: 1px solid #d9d9d9;
 }
 
-#vrtx-report-documents #contents .vrtx-report {
+#vrtx-report-documents #contents .vrtx-report,
+#vrtx-report-broken-links #contents .vrtx-report {
   margin-top: 15px;
 }
 
@@ -1323,7 +1325,9 @@ p#vrtx-file-upload-info-text {
 #directory-listing th#vrtx-trash-can\.name,
 #directory-listing td.vrtx-trash-can-name,
 body#vrtx-report-documents #directory-listing th#vrtx-report-name,
-body#vrtx-report-documents #directory-listing td.vrtx-report-name {
+body#vrtx-report-documents #directory-listing td.vrtx-report-name,
+body#vrtx-report-broken-links #directory-listing th#vrtx-report-resource,
+body#vrtx-report-broken-links #directory-listing td.vrtx-report-resource {
   padding-left: 15px;
   width: 30%;
 }
@@ -1339,7 +1343,9 @@ body#vrtx-report-documents #directory-listing td.vrtx-report-name span.name-spli
 #directory-listing th#vrtx-trash-can\.deletedTime,
 #directory-listing td.vrtx-trash-can\.deletedTime,
 #directory-listing th#vrtx-report-published,
-#directory-listing td.vrtx-report-published {
+#directory-listing td.vrtx-report-published,
+body#vrtx-report-broken-links #directory-listing th#vrtx-report-broken-links,
+body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links {
   padding-right: 15px;
 }
 

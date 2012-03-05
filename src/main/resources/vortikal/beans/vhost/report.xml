@@ -425,6 +425,15 @@
 
   <bean id="brokenLinksReportView" parent="freemarkerView">
     <property name="url" value="pages/report/broken-links.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="cssURLs">
+          <list>
+            <value>${themeBaseURL}/report/report.css</value>
+          </list>
+        </entry>
+      </map>
+    </property>
   </bean>
 
   <bean class="org.springframework.context.support.ResourceBundleMessageSource">

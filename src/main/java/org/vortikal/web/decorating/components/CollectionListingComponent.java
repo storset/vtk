@@ -100,7 +100,7 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         } catch (Exception e) {
             throw new DecoratorComponentException(e.getMessage());
         }
-        
+
         conf.put("auth", res != null);
         if (res == null) {
             model.put("conf", conf);
@@ -142,8 +142,14 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
     private Path getResourcePath(String uri) {
         // Be lenient on trailing slash
         uri = uri.endsWith("/") && !uri.equals("/") ? uri.substring(0, uri.lastIndexOf("/")) : uri;
+
+        RequestContext rc = RequestContext.getRequestContext();
+
         try {
-            return Path.fromString(uri);
+            if (!uri.startsWith("/"))
+                return rc.getCurrentCollection().extend(uri);
+            else
+                return Path.fromString(uri);
         } catch (IllegalArgumentException iae) {
             return null;
         }

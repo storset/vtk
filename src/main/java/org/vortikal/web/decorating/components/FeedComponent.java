@@ -198,7 +198,8 @@ public class FeedComponent extends AbstractFeedComponent {
 
         SyndFeed feed = null;
         URL requestURL = RequestContext.getRequestContext().getRequestURL();
-        URL baseURL;
+        URL baseURL = null;
+        boolean auth = true;
         try {
             URL feedURL = requestURL.relativeURL(url);
             if (feedURL.getHost().equals(requestURL.getHost())) {
@@ -210,18 +211,21 @@ public class FeedComponent extends AbstractFeedComponent {
                 feed = this.cache.get(url);
             }
         } catch (AuthenticationException e) {
-            conf.put("auth", "noAuth");
-            model.put("conf", conf);
-            return;
+            auth = false;
         } catch (AuthorizationException e) {
-            conf.put("auth", "noAuth");
-            model.put("conf", conf);
-            return;
+            auth = false;
         } catch (ResourceNotFoundException e) {
             throw new DecoratorComponentException(url + " does not exist");
         } catch (Exception e) {
             throw new DecoratorComponentException(e.getMessage());
         }
+
+        conf.put("auth", auth);
+        if (!auth) {
+            model.put("conf", conf);
+            return;
+        }
+
         baseURL.clearParameters();
 
         List<String> elementOrder = getElementOrder(PARAMETER_FEED_ELEMENT_ORDER, request);

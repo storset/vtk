@@ -9,19 +9,21 @@
       </#list>
     </#if>
     <script type="text/javascript"><!--
-      $(function() {        
+      $(function() {    
+    
         updateFilters();
+
         $("#app-content").delegate("#vrtx-report-filters a", "click", function(e) {
           var filter = $(this);
-          var ul = filter.closest("ul");
           
-          // Remove active
+          // Remove current active
+          var ul = filter.closest("ul");
           var currentActive = ul.find("li.active-filter");
           var currentActiveSpan = currentActive.find("span");
           currentActiveSpan.replaceWith("<a href='javascript:void(0)'>" + currentActiveSpan.html() + "</a>");
           currentActive.removeClass("active-filter");
           
-          // Update new active
+          // Set this active
           filter.parent().addClass("active-filter");
           filter.replaceWith("<span>" + filter.html() + "</span>");
           
@@ -53,6 +55,12 @@
             $("#directory-listing tbody tr:visible").not(activeClassesOrSelector).hide(); // Apply filter
           }
         }
+        var filteredIn = $("#directory-listing tbody tr:visible");
+        filteredIn.removeClass("last first even odd");
+        filteredIn.filter(":odd").addClass("even");
+        filteredIn.filter(":even").addClass("odd");
+        filteredIn.filter(":first").addClass("first");
+        filteredIn.filter(":last").addClass("last");
       }
     // -->
     </script>

@@ -5,23 +5,23 @@
  *
  */
 
-var lastVal = "", manuallyApproveFoldersTxt, aggregatedFoldersTxt, approvedOnly = false, asyncGenPagesTimer;
+var lastVal = "", manuallyApproveLocationsTxt, aggregatedLocationsTxt, approvedOnly = false, asyncGenPagesTimer;
 
 $(window).load(function() {
   // Retrieve initial resources
-  manuallyApproveFoldersTxt = $("#resource\\.manually-approve-from");
-  aggregatedFoldersTxt = $("#resource\\.aggregation");
+  manuallyApproveLocationsTxt = $("#resource\\.manually-approve-from");
+  aggregatedLocationsTxt = $("#resource\\.aggregation");
   
-  if(manuallyApproveFoldersTxt.length) {
-    var folders, aggregatedFolders;
-    var value = manuallyApproveFoldersTxt.val();
+  if(manuallyApproveLocationsTxt.length) {
+    var locations, aggregatedlocations;
+    var value = manuallyApproveLocationsTxt.val();
     lastVal = $.trim(value);
-    folders = lastVal.split(",");
-    if(aggregatedFoldersTxt.length) {
-      aggregatedFolders = $.trim(aggregatedFoldersTxt.val());
-      aggregatedFolders = aggregatedFolders.split(",");
+    locations = lastVal.split(",");
+    if(aggregatedLocationsTxt.length) {
+      aggregatedlocations = $.trim(aggregatedLocationsTxt.val());
+      aggregatedlocations = aggregatedlocations.split(",");
     }
-    retrieveResources(".", folders, aggregatedFolders);
+    retrieveResources(".", locations, aggregatedlocations);
     
     var html = '<ul id="vrtx-manually-approve-tab-menu">'
                + '<li class="active active-first"><span>' + approveShowAll + '</span></li>'
@@ -60,20 +60,20 @@ $(document).ready(function() {
       clearTimeout(asyncGenPagesTimer);
       $("#approve-spinner").remove();
       
-      if(manuallyApproveFoldersTxt && manuallyApproveFoldersTxt.length) {
-        var folders, aggregatedFolders;
+      if(manuallyApproveLocationsTxt && manuallyApproveLocationsTxt.length) {
+        var locations, aggregatedlocations;
         
         formatDocumentsData();
       
-        var value = manuallyApproveFoldersTxt.val();
+        var value = manuallyApproveLocationsTxt.val();
         lastVal = $.trim(value);
-        folders = lastVal.split(",");
-        if(aggregatedFoldersTxt.length) {
-          aggregatedFolders = $.trim(aggregatedFoldersTxt.val());
-          aggregatedFolders = aggregatedFolders.split(",");
+        locations = lastVal.split(",");
+        if(aggregatedLocationsTxt.length) {
+          aggregatedlocations = $.trim(aggregatedLocationsTxt.val());
+          aggregatedlocations = aggregatedlocations.split(",");
         }
 
-        retrieveResources(".", folders, aggregatedFolders);  
+        retrieveResources(".", locations, aggregatedlocations);  
       }
       e.stopPropagation();
       e.preventDefault();
@@ -124,14 +124,14 @@ $(document).ready(function() {
 });
 
 /**
- * Retrieves resources as JSON array for folders to manually approve from
+ * Retrieves resources as JSON array for locations to manually approve from
  * 
  * @param serviceUri as string
- * @param folders as array
+ * @param locations as array
  *
  */
 
-function retrieveResources(serviceUri, folders, aggregatedFolders) {
+function retrieveResources(serviceUri, locations, aggregatedlocations) {
 
   if(approvedOnly) {
     var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources&approved-only";
@@ -139,20 +139,20 @@ function retrieveResources(serviceUri, folders, aggregatedFolders) {
     var getUri = serviceUri + "/?vrtx=admin&service=manually-approve-resources";
   }
   
-  if (folders) {
-    for (var i = 0, len = folders.length; i < len; i++) {
-      getUri += "&folders=" + $.trim(folders[i]);
+  if (locations) {
+    for (var i = 0, len = locations.length; i < len; i++) {
+      getUri += "&locations=" + $.trim(locations[i]);
     }
   }
-  if (aggregatedFolders) {
-    for (i = 0, len = aggregatedFolders.length; i < len; i++) {
-      getUri += "&aggregate=" + $.trim(aggregatedFolders[i]);
+  if (aggregatedlocations) {
+    for (i = 0, len = aggregatedlocations.length; i < len; i++) {
+      getUri += "&aggregate=" + $.trim(aggregatedlocations[i]);
     }
   }
   
   $("#vrtx-manually-approve-no-approved-msg").remove();
   
-  if(!folders.length) {
+  if(!locations.length) {
     $("#vrtx-manually-approve-tab-menu:visible").addClass("hidden");
     $("#manually-approve-container:visible").addClass("hidden");
     return;

@@ -58,9 +58,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
 
     private ManuallyApproveResourcesSearcher searcher;
 
-    // XXX RENAME! -> May also be complete urls to other hosts
-    @Deprecated
-    private static final String locationS_PARAM = "locations";
+    private static final String LOCATIONS_PARAM = "locations";
     private static final String AGGREGATE_PARAM = "aggregate";
 
     private PropertyTypeDefinition manuallyApproveFromPropDef;
@@ -77,7 +75,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
         Property manuallyApproveFromProp = currentCollection.getProperty(this.manuallyApproveFromPropDef);
         Property manuallyApprovedResourcesProp = currentCollection.getProperty(this.manuallyApprovedResourcesPropDef);
         Property aggregationProp = currentCollection.getProperty(this.aggregationPropDef);
-        String[] manuallyApproveFromParam = request.getParameterValues(locationS_PARAM);
+        String[] manuallyApproveFromParam = request.getParameterValues(LOCATIONS_PARAM);
         String[] aggregateParam = request.getParameterValues(AGGREGATE_PARAM);
 
         // Nothing to work with, need at least one of these

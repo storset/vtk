@@ -34,13 +34,13 @@
       
       function updateFilters() {
         var filters = $("#vrtx-report-filters ul");
-        $("#directory-listing tr td").hide();
+        $("#directory-listing tr:visible").hide();
         for(var i = filters.length; i--;) {
           var activeClasses = $(filters[i]).find(".active-filter").attr("class").split(" ");
           for(var j = activeClasses.length; j--;) {
             var class = activeClasses[j];
             if(class !== "active-filter") {
-              $("#directory-listing tr." + class + " td").show();
+              $("#directory-listing tbody tr." + class + ":hidden").show();
             }
           }
         }

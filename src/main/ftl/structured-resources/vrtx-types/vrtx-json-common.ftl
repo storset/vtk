@@ -53,7 +53,7 @@
                 defaultValue=   elem.getDefaultValue()
               />    
         <#else>
-            <p>fail</p>
+            <p>Kunne ikke laste fellestekst</p>
         </#if>
       <#else>
             <@vrtxString.printPropertyEditView

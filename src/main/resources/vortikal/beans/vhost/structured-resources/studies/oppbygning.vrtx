@@ -6,6 +6,9 @@ resourcetype oppbygning : fellestekst-document{
     caption : simple_html,
     content : html noextract,
     gradsnavn : string,
+    gradsnavn-no : string,
+    gradsnavn-nn : string,
+    gradsnavn-en : string,
     fellestekst : string,
     showAdditionalContent : boolean defaultvalue("true"),
 	related-content : html noextract
@@ -15,6 +18,7 @@ resourcetype oppbygning : fellestekst-document{
     caption (size[small]),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
     gradsnavn (class[vrtx-shared-text]),
+    group grader (gradsnavn, gradsnavn-no, gradsnavn-nn, gradsnavn-en) (after related-content) horizontal,
     fellestekst (class[vrtx-shared-text]),
     group relatedContent (showAdditionalContent, related-content) (after content)
   }
@@ -55,6 +59,28 @@ view-components {
       ##
     }
     
+    gradsnavn {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def locale resource-locale()]       
+          [if locale = "no_NO"]
+             [def grad-fri document.properties.gradsnavn-no]
+          [elseif locale = "nn"]
+             [def grad-fri document.properties.gradsnavn-nn]
+          [else]
+             [def grad-fri document.properties.gradsnavn-en]
+         [endif]
+      [if (grad-fri != null && grad-fri != "") || (gradsnavn != null && gradsnavn != "")]
+      <h2>[localized 'grader']</h2>
+      [endif]
+      [if grad-fri != null && grad-fri != ""]
+      	[val grad-fri]
+      [endif]
+      [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"gradsnavn"}]
+      ##
+      }
+      
     related-content-in-main-column {
       ##
       [resource-props "."]
@@ -164,7 +190,7 @@ view-components {
             <h1>[localized 'oppbygning']</h1>
             [call "comp:introduction"]
             [call "comp:introduction-image"]
-            [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"gradsnavn"}]
+            [call "comp:gradsnavn"]
             [call "json:field" {"select":"content"}]
             [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"fellestekst"}]
             [call "comp:vrtx-date-info"]
@@ -194,7 +220,11 @@ view-components {
     introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
-    gradsnavn : (en : "Grade name", no : "Gradsnavn", nn : "Gradsnamn"),
+	gradsnavn : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+	gradsnavn-no : (en : "Bokmål", no : "Bokmål", nn : "Bokmål"),
+	gradsnavn-nn : (en : "Nynorsk", no : "Nynorsk", nn : "Nynorsk"),
+	gradsnavn-en : (en : "English", no : "Engelsk", nn : "Engelsk"),
+    grader : (en : "Grade name", no : "Gradsnavn", nn : "Gradsnamn"),
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
     showAdditionalContent : (en : "Show in right-column", no : "Vis i høyrekolonne", nn : "Vis i høgrekolonne"),
     content : (en : "Content", no :"Innhold",nn : "Innhold"),

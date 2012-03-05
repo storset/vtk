@@ -529,7 +529,7 @@ public interface Repository {
      * @param token
      *            identifies the client's authenticated session
      * @param uri
-     *            identifies the resource to delete
+     *            identifies the resource
      * @return a <code>true</code> if an only if the resource identified by the
      *         uri exists, <code>false</code> otherwise
      * @exception AuthorizationException

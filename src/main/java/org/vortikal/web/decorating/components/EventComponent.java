@@ -114,7 +114,7 @@ public class EventComponent extends AbstractEventComponent {
         if (resourcePath == null) {
             throw new DecoratorComponentException("Provided uri is not a valid folder reference: " + uri);
         }
-        
+
         conf.put("includeIfEmpty", !parameterHasValue(PARAMETER_INCLUDE_IF_EMPTY, "false", request));
 
         conf.put("eventDescription", parameterHasValue(PARAMETER_EVENT_DESCRIPTION, "true", request));
@@ -173,7 +173,7 @@ public class EventComponent extends AbstractEventComponent {
         } catch (Exception e) {
             throw new DecoratorComponentException(e.getMessage());
         }
-        
+
         conf.put("auth", resource != null);
         if (resource == null) {
             conf.put("type", "noAuth");
@@ -306,9 +306,15 @@ public class EventComponent extends AbstractEventComponent {
     private Path getResourcePath(String uri) {
         // Be lenient on trailing slash
         uri = uri.endsWith("/") && !uri.equals("/") ? uri.substring(0, uri.lastIndexOf("/")) : uri;
+
+        RequestContext rc = RequestContext.getRequestContext();
+
         try {
-            return Path.fromString(uri);
-        } catch (IllegalArgumentException iae) {
+            if (!uri.startsWith("/"))
+                return rc.getCurrentCollection().extend(uri);
+            else
+                return Path.fromString(uri);
+        } catch (Exception e) {
             return null;
         }
     }

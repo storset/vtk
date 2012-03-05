@@ -662,19 +662,25 @@ $(document).ready(function () {
               ["#vrtx-resource\\.hide-additional-content"]);
   }
 
-  // Fix IE 6 collectionlisting hover
-  if (vrtxAdmin.isIE6) {
-    var ie6Msg = "You are using an outdated and not supported version of Internet Explorer. Please go to Windows Updates and install the latest version.";
-    if ($("#app-content > .message").length) {
-      $("#app-content > .message").html(ie6Msg);
+  // Show message in IE7 and IE6
+  if (vrtxAdmin.isIE7) {
+    if(vrtxAdmin.isIE6) {
+      var msg = "You are using an outdated and not supported version of Internet Explorer. Please go to Windows Updates and install the latest version.";    
     } else {
-      $("#app-content").prepend("<div class='infomessage'>" + ie6Msg + "</div>");
+      var msg = "Internet Explorer 7 will be unsupported after 5. may 2012. Please go to Windows Updates and install the latest version.";
     }
-    $("#directory-listing tr").hover(function () {
-      $(this).toggleClass('hover');
-    }, function () {
-      $(this).toggleClass('hover');
-    });
+    if ($("#app-content > .message").length) {
+      $("#app-content > .message").html(msg);
+    } else {
+      $("#app-content").prepend("<div class='infomessage'>" + msg + "</div>");
+    }
+    if(vrtxAdmin.isIE6) {
+      $("#directory-listing tr").hover(function () {
+        $(this).toggleClass('hover');
+      }, function () {
+        $(this).toggleClass('hover');
+      });
+    }
   }
   
   vrtxAdmin.log({msg: "document.ready() in " + (+new Date - startReadyTime) + "ms"});
@@ -721,7 +727,7 @@ function ajaxSave(saveButtonName) {
     },
     error: function(xhr, statusText, errMsg) {
       tb_remove();
-      vrtxAdmin.displayErrorMsg(statusText + " " + errMsg);
+      $("#editor").submit();
     }
   });
 }

@@ -33,8 +33,8 @@
       <table id="directory-listing" class="report-broken-links">
         <thead>
           <tr>
-            <th id="vrtx-report-title">Resource</th>
-            <th id="vrtx-report-broken-links">Broken links</th>
+            <th id="vrtx-report-title"><@vrtx.msg code="report.${report.reportname}.title" /></th>
+            <th id="vrtx-report-broken-links"><@vrtx.msg code="report.${report.reportname}.these" /></th>
           </tr>
         </thead>
         <tbody>

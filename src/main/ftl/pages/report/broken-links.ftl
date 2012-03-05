@@ -34,7 +34,7 @@
         <thead>
           <tr>
             <th id="vrtx-report-broken-links-web-page"><@vrtx.msg code="report.${report.reportname}.web-page" /></th>
-            <th id="vrtx-report-broken-links-count"><@vrtx.msg code="report.${report.reportname}.broken-links-count" /></th>
+            <th id="vrtx-report-broken-links-count"><@vrtx.msg code="report.${report.reportname}.count" /></th>
             <th id="vrtx-report-broken-links"><@vrtx.msg code="report.${report.reportname}.these" /></th>
           </tr>
         </thead>

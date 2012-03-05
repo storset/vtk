@@ -33,8 +33,11 @@ package org.vortikal.web.decorating.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.text.html.HtmlContent;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlFragment;
@@ -73,7 +76,8 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
      * Retrieves the resource corresponding to a local feed for authorization
      * purposes
      */
-    protected Resource retrieveLocalResource(URL feedURL) throws Exception {
+    protected Resource retrieveLocalResource(URL feedURL) throws ResourceNotFoundException,
+    AuthorizationException, AuthenticationException, Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
         String token = requestContext.isViewUnauthenticated() ? null : requestContext.getSecurityToken(); // VTK-2460

@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.vortikal.repository.AuthorizationException;
+import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.text.html.HtmlElement;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.util.cache.ContentCache;
@@ -206,8 +209,18 @@ public class FeedComponent extends AbstractFeedComponent {
                 baseURL = new URL(feedURL);
                 feed = this.cache.get(url);
             }
+        } catch (AuthenticationException e) {
+            conf.put("auth", "noAuth");
+            model.put("conf", conf);
+            return;
+        } catch (AuthorizationException e) {
+            conf.put("auth", "noAuth");
+            model.put("conf", conf);
+            return;
+        } catch (ResourceNotFoundException e) {
+            throw new DecoratorComponentException(url + " does not exist");
         } catch (Exception e) {
-            throw new RuntimeException("Could not read feed url " + url + ": " + e.getMessage(), e);
+            throw new DecoratorComponentException(e.getMessage());
         }
         baseURL.clearParameters();
 

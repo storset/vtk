@@ -314,7 +314,7 @@ public class EventComponent extends AbstractEventComponent {
                 return rc.getCurrentCollection().extend(uri);
             else
                 return Path.fromString(uri);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException iae) {
             return null;
         }
     }

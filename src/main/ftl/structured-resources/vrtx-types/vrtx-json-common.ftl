@@ -40,19 +40,21 @@
       </#if>
       
      <#if sharedTextProps[elem.name]?exists>  
-     
-      <@vrtxSharedText.printPropertyEditView
-        title=localizedTitle
-        inputFieldName=elem.name
-        value=elem.getFormatedValue()
-        classes=classes
-        inputFieldSize=fieldSize
-        tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
-        valuemap=elem.description.getValuemap(locale)
-        dropdown=dropdown
-        defaultValue=   elem.getDefaultValue()
-      />    
-
+        <#if  (sharedTextProps[elem.name]?size > 0) >
+              <@vrtxSharedText.printPropertyEditView
+                title=localizedTitle
+                inputFieldName=elem.name
+                value=elem.getFormatedValue()
+                classes=classes
+                inputFieldSize=fieldSize
+                tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
+                valuemap=elem.description.getValuemap(locale)
+                dropdown=dropdown
+                defaultValue=   elem.getDefaultValue()
+              />    
+        <#else>
+            <p>fail</p>
+        </#if>
       <#else>
             <@vrtxString.printPropertyEditView
         title=localizedTitle

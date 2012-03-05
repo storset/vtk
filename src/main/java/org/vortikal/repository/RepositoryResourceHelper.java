@@ -318,7 +318,16 @@ public class RepositoryResourceHelper {
 
     private Property doEvaluate(PropertyEvaluationContext ctx, PropertyTypeDefinition propDef) throws IOException {
 
-        if (ctx.getEvaluationType() == Type.PropertiesChange) {
+        if (ctx.getEvaluationType() == Type.SystemPropertiesChange) {
+            Property originalUnchanged = ctx.getOriginalResource().getProperty(propDef);
+            if (! ctx.isSystemChangeAffectedProperty(propDef)) {
+                // Not to be affected by system change, return original unchanged.
+                return originalUnchanged;
+            }
+        }
+        
+        if (ctx.getEvaluationType() == Type.PropertiesChange || 
+            ctx.getEvaluationType() == Type.SystemPropertiesChange) {
             // Check for user change or addition
             Property property = checkForUserAdditionOrChange(ctx, propDef);
             if (property != null) {
@@ -350,30 +359,39 @@ public class RepositoryResourceHelper {
             }
         }
 
-        if (ctx.getEvaluationType() == Type.SystemPropertiesChange) {
-            Property property = ctx.getOriginalResource().getProperty(propDef);
-            Property modified = checkForUserAdditionOrChange(ctx, propDef);
-            if (modified != null) {
-                property = modified;
-            }
-            try {
-                if (ctx.isSystemChangeAffectedProperty(propDef)) {
-                    if (property == null) {
-                        property = propDef.createProperty();
-                    }
-                    PropertyEvaluator evaluator = propDef.getPropertyEvaluator();
-                    if (evaluator != null) {
-                        boolean evaluated = evaluator.evaluate(property, ctx);
-                        if (!evaluated) {
-                            return null;
-                        }
-                    }
-                }
-            } catch (Throwable t) {
-                logger.error("An error occured while evaluating a property with system change context", t);
-            }
-            return property;
-        }
+//        if (ctx.getEvaluationType() == Type.SystemPropertiesChange) {
+//            Property property = ctx.getOriginalResource().getProperty(propDef);
+//            if (! ctx.isSystemChangeAffectedProperty(propDef)) {
+//                // Not marked as affected by system change, return original unchanged.
+//                return property;
+//            }
+//            
+//            Property modified = checkForUserAdditionOrChange(ctx, propDef);
+//            if (modified != null) {
+//                property = modified;
+//            } else if (checkForUserDeletion(ctx, propDef)) {
+//                
+//            }
+//            
+//            try {
+//
+//                PropertyEvaluator evaluator = propDef.getPropertyEvaluator();
+//                if (evaluator != null) {
+//                    if (property == null) {
+//                        property = propDef.createProperty();
+//                    }
+//
+//                    boolean evaluated = evaluator.evaluate(property, ctx);
+//                    if (!evaluated) {
+//                        return null;
+//                    }
+//                }
+//
+//            } catch (Throwable t) {
+//                logger.error("An error occured while evaluating a property with system change context", t);
+//            }
+//            return property;
+//        }
 
         Resource newResource = ctx.getNewResource();
 

@@ -8,62 +8,6 @@
         <link rel="stylesheet" href="${cssURL}" />
       </#list>
     </#if>
-    <script type="text/javascript"><!--
-      $(function() {    
-    
-        updateFilters();
-
-        $("#app-content").delegate("#vrtx-report-filters a", "click", function(e) {
-          var filter = $(this);
-          
-          // Remove current active
-          var ul = filter.closest("ul");
-          var currentActive = ul.find("li.active-filter");
-          var currentActiveSpan = currentActive.find("span");
-          currentActiveSpan.replaceWith("<a href='javascript:void(0)'>" + currentActiveSpan.html() + "</a>");
-          currentActive.removeClass("active-filter");
-          
-          // Set this active
-          filter.parent().addClass("active-filter");
-          filter.replaceWith("<span>" + filter.html() + "</span>");
-          
-          updateFilters();
-          
-          e.stopPropagation();
-          e.preventDefault();
-        });
-      });
-      
-      function updateFilters() {
-        $("#directory-listing tbody tr:hidden").show();
-
-        var filters = $("#vrtx-report-filters ul"),
-            activeClasses, activeClassesOrSelector, i, j;
-
-        for(i = filters.length; i--;) {
-          activeClasses = $(filters[i]).find(".active-filter").attr("class");
-          activeClasses = activeClasses.replace(/active-filter/i, "");
-          activeClasses = $.trim(activeClasses).split(" ");
-          if(activeClasses.length) {
-            activeClassesOrSelector = "";
-            for(j = activeClasses.length; j--;) {
-              activeClassesOrSelector += "." + activeClasses[j];
-              if(j > 0) {
-                activeClassesOrSelector += ",";
-              }
-            }
-            $("#directory-listing tbody tr:visible").not(activeClassesOrSelector).hide(); // Apply filter
-          }
-        }
-        var filteredIn = $("#directory-listing tbody tr:visible");
-        filteredIn.removeClass("last first even odd");
-        filteredIn.filter(":odd").addClass("even");
-        filteredIn.filter(":even").addClass("odd");
-        filteredIn.filter(":first").addClass("first");
-        filteredIn.filter(":last").addClass("last");
-      }
-    // -->
-    </script>
   </head>
   <body id="vrtx-report-broken-links">
   <div class="resourceInfo">
@@ -78,13 +22,13 @@
   <#if (report.result?exists && report.result?size > 0)>
     <div id="vrtx-report-filters">
       <ul class="vrtx-report-filter">
-        <li id="vrtx-report-filter-broken-links-published" class="active-filter published"><span>Publiserte</span></li>
-        <li id="vrtx-report-filter-broken-links-unpublished" class="unpublished"><a href="javascript:void(0)">Upubliserte</a></li>
+        <li class="active-filter published"><span>Publiserte</span></li>
+        <li class="unpublished"><a href="javascript:void(0)">Upubliserte</a></li>
       </ul>
       <ul class="vrtx-report-filter">
-        <li id="vrtx-report-filter-broken-links-restricted-allowed-for-all" class="active-filter restricted allowed-for-all"><span>Åpne og lukkede</span></li>
-        <li id="vrtx-report-filter-broken-links-allowed-for-all" class="allowed-for-all"><a href="javascript:void(0)">Åpne</a></li>
-        <li id="vrtx-report-filter-broken-links-restricted" class="restricted"><a href="javascript:void(0)">Lukkede</a></li>
+        <li class="active-filter restricted allowed-for-all"><span>Åpne og lukkede</span></li>
+        <li class="allowed-for-all"><a href="javascript:void(0)">Åpne</a></li>
+        <li class="restricted"><a href="javascript:void(0)">Lukkede</a></li>
       </ul>
     </div>
     <p id="vrtx-report-info-paging-top">

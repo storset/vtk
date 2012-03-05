@@ -18,7 +18,7 @@
           // Remove active
           var currentActive = ul.find("li.active-filter");
           var currentActiveSpan = currentActive.find("span");
-          currentActiveSpan.replaceWith("<a href=''>" + currentActiveSpan.html() + "</a>");
+          currentActiveSpan.replaceWith("<a href='javascript:void(0)'>" + currentActiveSpan.html() + "</a>");
           currentActive.removeClass("active-filter");
           
           // Update new active
@@ -34,7 +34,7 @@
       
       function updateFilters() {
         var filters = $("#vrtx-report-filters ul");
-        $("#directory-listing tr:visible").hide();
+        $("#directory-listing tbody tr:visible").hide();
         for(var i = filters.length; i--;) {
           var activeClasses = $(filters[i]).find(".active-filter").attr("class").split(" ");
           for(var j = activeClasses.length; j--;) {

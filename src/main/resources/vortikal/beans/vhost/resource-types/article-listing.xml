@@ -46,15 +46,6 @@
         <constructor-arg value="BOOLEAN" />
       </bean>
     </property>
-    <property name="vocabulary">
-      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
-        <property name="values">
-          <list>
-            <ref bean="VALUE_FALSE" />
-          </list>
-        </property>
-      </bean>
-    </property>
   </bean>
   
   <bean id="articleListing.recursiveListingSubfoldersPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"

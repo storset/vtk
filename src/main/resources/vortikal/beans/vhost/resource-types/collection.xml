@@ -27,7 +27,7 @@
         <ref bean="navigationTitlePropDef" />
         <ref bean="collection.typePropDef" />
         <ref bean="collection.indexFilePropDef" />
-        <ref bean="collectionListing.recursiveListingPropDef" />
+        <ref bean="collection.recursiveListingPropDef" />
         <ref bean="displayAggregationPropDef" />
         <ref bean="aggregationPropDef" />
         <ref bean="displayManuallyApprovedPropDef" />
@@ -285,11 +285,17 @@
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
+    <property name="valueFormatter">
+      <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
+        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.collection-listing-recursive-listing" />
+        <constructor-arg value="BOOLEAN" />
+      </bean>
+    </property>
     <property name="vocabulary">
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
         <property name="values">
           <list>
-            <ref bean="VALUE_TRUE" />
+            <ref bean="VALUE_FALSE" />
           </list>
         </property>
       </bean>

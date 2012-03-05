@@ -6,6 +6,7 @@ resourcetype oppbygning : fellestekst-document{
     caption : simple_html,
     content : html noextract,
     gradsnavn : string,
+    fellestekst : string,
     showAdditionalContent : boolean defaultvalue("true"),
 	related-content : html noextract
   }
@@ -14,6 +15,7 @@ resourcetype oppbygning : fellestekst-document{
     caption (size[small]),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
     gradsnavn (class[vrtx-shared-text]),
+    fellestekst (class[vrtx-shared-text]),
     group relatedContent (showAdditionalContent, related-content) (after content)
   }
 
@@ -164,6 +166,7 @@ view-components {
             [call "comp:introduction-image"]
             [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"gradsnavn"}]
             [call "json:field" {"select":"content"}]
+            [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"fellestekst"}]
             [call "comp:vrtx-date-info"]
           </div>
           <div id="vrtx-additional-content">
@@ -184,6 +187,7 @@ view-components {
   }
   
   localization {
+  	fellestekst : (en : "Fakultær og/eller sentral info", no : "Fakultær og/eller sentral info", nn : "Fakultær og/eller sentral info"),
   	oppbygning : (en : "Structure and accomplishment", no : "Oppbygging og gjennomføring", nn : "Oppbygging og gjennomføring"),
     introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),

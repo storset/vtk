@@ -33,16 +33,23 @@
       });
       
       function updateFilters() {
-        var filters = $("#vrtx-report-filters ul");
-        $("#directory-listing tbody tr:visible").hide();
-        for(var i = filters.length; i--;) {
-          var activeClasses = $(filters[i]).find(".active-filter").attr("class").split(" ");
-          for(var j = activeClasses.length; j--;) {
-            var class = activeClasses[j];
-            if(class !== "active-filter") {
-              $("#directory-listing tbody tr." + class + ":hidden").show();
+        $("#directory-listing tbody tr:hidden").show();
+
+        var filters = $("#vrtx-report-filters ul"),
+            activeClassesArr = [], activeClasses,i,j;
+
+        for(i = filters.length; i--;) {
+          activeClasses = $(filters[i]).find(".active-filter").attr("class");
+          activeClasses = activeClasses.replace(/active-filter/i, "");
+          activeClassesArr = $.trim(activeClasses).split(" ");
+          activeClasses = "";
+          for(j = activeClassesArr.length; j--;) {
+            activeClasses += "." + activeClassesArr[j];
+            if(j > 0) {
+              activeClasses += ",";
             }
           }
+          $("#directory-listing tbody tr:visible").not(activeClasses).hide(); // Apply filter
         }
       }
     // -->

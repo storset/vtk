@@ -60,7 +60,7 @@ $(document).ready(function () {
             // Go fullsize
             previewCreateIframe.css({
               "height": winHeight + "px",
-              "width": winWidth  + "px"
+              "width": winWidth + "px"
             });
             previewCreateIframe.addClass("iframe-fullscreen");
             $(".dropdown-shortcut-menu-container").css("display", "none");
@@ -72,8 +72,8 @@ $(document).ready(function () {
               var hasPostMessage = previewCreateIframe[0].contentWindow['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
               var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
               if(hasPostMessage) {
-                previewCreateIframe[0].contentWindow.postMessage("top=" + previewCreateIframePosTop
-                                                               + "left=" + previewCreateIframePosLeft, vrtxAdminOrigin);
+                previewCreateIframe[0].contentWindow.postMessage("top=" + Math.ceil(previewCreateIframePosTop)
+                                                               + "left=" + Math.ceil(previewCreateIframePosLeft), vrtxAdminOrigin);
               }
             }
           } else if(isMsgCreateIframeOriginalSize) {

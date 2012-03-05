@@ -40,7 +40,7 @@ function resize(iframe) {
     if(typeof iframe.contentWindow.document === "undefined") {
       setHeight = 700;
     } else {
-      var computedHeight = iframe.contentWindow.document.body.offsetHeight + 45; 
+      var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45; 
       if (computedHeight > setHeight) {
         setHeight = computedHeight;
       }

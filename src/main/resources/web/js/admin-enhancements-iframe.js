@@ -16,14 +16,10 @@ $(document).ready(function () {
   
   // Slide up when choose something in dropdown
   $(".dropdown-shortcut-menu li a").click(function() {
-    $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
-      notifyCollapsedDropdown(true);    
-    });
+    $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing");
   });
   $(".dropdown-shortcut-menu-container li a").click(function() {
-    $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
-       notifyCollapsedDropdown(true);   
-    });  
+    $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing");
   });
   $(document).click(function() {
     $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {

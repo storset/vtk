@@ -36,20 +36,22 @@
         $("#directory-listing tbody tr:hidden").show();
 
         var filters = $("#vrtx-report-filters ul"),
-            activeClassesArr = [], activeClasses,i,j;
+            activeClasses, activeClassesOrSelector, i, j;
 
         for(i = filters.length; i--;) {
           activeClasses = $(filters[i]).find(".active-filter").attr("class");
           activeClasses = activeClasses.replace(/active-filter/i, "");
-          activeClassesArr = $.trim(activeClasses).split(" ");
-          activeClasses = "";
-          for(j = activeClassesArr.length; j--;) {
-            activeClasses += "." + activeClassesArr[j];
-            if(j > 0) {
-              activeClasses += ",";
+          activeClasses = $.trim(activeClasses).split(" ");
+          if(activeClasses.length) {
+            activeClassesOrSelector = "";
+            for(j = activeClasses.length; j--;) {
+              activeClassesOrSelector += "." + activeClasses[j];
+              if(j > 0) {
+                activeClassesOrSelector += ",";
+              }
             }
+            $("#directory-listing tbody tr:visible").not(activeClassesOrSelector).hide(); // Apply filter
           }
-          $("#directory-listing tbody tr:visible").not(activeClasses).hide(); // Apply filter
         }
       }
     // -->

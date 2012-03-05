@@ -33,11 +33,12 @@
       <table id="directory-listing" class="report-broken-links">
         <thead>
           <tr>
-            <th id="vrtx-report-resource">Resource</th>
+            <th id="vrtx-report-title">Resource</th>
             <th id="vrtx-report-broken-links">Broken links</th>
           </tr>
         </thead>
         <tbody>
+        <#assign brokenLinksSize = report.result?size />
         <#list report.result as item>
           <#assign title = vrtx.propValue(item, 'title') />
           <#assign url = "">
@@ -51,8 +52,23 @@
             </#if>
           </#if>
           <#assign linkStatus = vrtx.propValue(item, 'link-status') />
-          <tr>
-            <td class="vrtx-report-resource">
+          
+          <#assign rowType = "odd" />
+          <#if (item_index % 2 == 0) >
+            <#assign rowType = "even" />
+          </#if>
+
+          <#assign firstLast = ""  />
+          <#if (item_index == 0) && (item_index == (brokenLinksSize - 1))>
+            <#assign firstLast = " first last" />
+          <#elseif (item_index == 0)>
+            <#assign firstLast = " first" />
+          <#elseif (item_index == (brokenLinksSize - 1))>
+            <#assign firstLast = " last" />     
+          </#if>
+   
+          <tr class="${rowType}${firstLast}">
+            <td class="vrtx-report-title">
               <a href="${url?html}">${title?html}</a>
               <#if linkStatus = 'AWAITING_LINKCHECK'>
                 [ * ] <#-- currently being checked, be patient -->

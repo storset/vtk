@@ -1326,8 +1326,8 @@ p#vrtx-file-upload-info-text {
 #directory-listing td.vrtx-trash-can-name,
 body#vrtx-report-documents #directory-listing th#vrtx-report-name,
 body#vrtx-report-documents #directory-listing td.vrtx-report-name,
-body#vrtx-report-broken-links #directory-listing th#vrtx-report-resource,
-body#vrtx-report-broken-links #directory-listing td.vrtx-report-resource {
+body#vrtx-report-broken-links #directory-listing th#vrtx-report-title,
+body#vrtx-report-broken-links #directory-listing td.vrtx-report-title {
   padding-left: 15px;
   width: 30%;
 }

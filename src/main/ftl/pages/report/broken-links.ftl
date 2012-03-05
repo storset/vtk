@@ -33,7 +33,7 @@
       <table id="directory-listing" class="report-broken-links">
         <thead>
           <tr>
-            <th id="vrtx-report-broken-links-title"><@vrtx.msg code="report.${report.reportname}.title" /></th>
+            <th id="vrtx-report-broken-links-web-page"><@vrtx.msg code="report.${report.reportname}.web-page" /></th>
             <th id="vrtx-report-broken-links-count"><@vrtx.msg code="report.${report.reportname}.broken-links-count" /></th>
             <th id="vrtx-report-broken-links"><@vrtx.msg code="report.${report.reportname}.these" /></th>
           </tr>
@@ -69,7 +69,7 @@
           </#if>
    
           <tr class="${rowType}${firstLast}">
-            <td class="vrtx-report-broken-links-title">
+            <td class="vrtx-report-broken-links-web-page">
               <a href="${url?html}">${title?html}</a>
               <#if linkStatus = 'AWAITING_LINKCHECK'>
                 [ * ] <#-- currently being checked, be patient -->

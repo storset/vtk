@@ -989,7 +989,6 @@ form#editor .tip ul a {
   font-size: 1.231em;
 }
 
-/*
 .tip.vrtx-create-tree {
   padding: 4px 0px 4px 0 !important;
   border: none !important;
@@ -999,14 +998,13 @@ form#editor .tip ul a {
 }
 
 .tip.vrtx-create-tree .no-create-permission {
-  display: block;
+  display: inline-block;
   white-space: nowrap;
-  padding: 4px 0px 4px 0 !important;
-  background-color: #ecf3f9;
-  border-top: 1px solid #c7dadf !important;
-  border-bottom: 1px solid #c7dadf !important;
+  padding-top: 4px !important;
+  padding-bottom: 2px !important;
+  border-top: none !important;
+  border-bottom: none !important;
 }
-*/
 
 .tipextra {
   background-color: #ecf3f9;

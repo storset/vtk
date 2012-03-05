@@ -67,8 +67,21 @@
           <#elseif (item_index == (brokenLinksSize - 1))>
             <#assign firstLast = " last" />     
           </#if>
+          
+          <#assign restricted = "">
+          <#if report.isReadRestricted[item_index]>
+            <#assign restricted = " restricted">
+          <#else>
+            <#assign restricted = " allowed-for-all">
+          </#if>  
+          <#assign published = "">
+          <#if vrtx.propValue(item, "published") = "true">
+            <#assign published  = " published">
+          <#else>
+            <#assign published  = " unpublished">
+          </#if>
    
-          <tr class="${rowType}${firstLast}">
+          <tr class="${rowType}${firstLast}${published}${restricted}">
             <td class="vrtx-report-broken-links-web-page">
               <a href="${url?html}">${title?html}</a>
               <#if linkStatus = 'AWAITING_LINKCHECK'>

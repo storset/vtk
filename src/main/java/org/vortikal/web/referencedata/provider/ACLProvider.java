@@ -38,8 +38,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
@@ -53,83 +51,49 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 
 /**
- * Model builder that retrieves various Access Control List (ACL)
- * information for the current resource. The information is made
- * available in the model as a sub model with name
- * <code>aclInfo</code>.
+ * Model builder that retrieves various Access Control List (ACL) information
+ * for the current resource. The information is made available in the model as a
+ * sub model with name <code>aclInfo</code>.
  * 
  * Configurable properties:
  * <ul>
- *  <li><code>repository</code> - the {@link Repository} is required
- *  <li> <code>aclInheritanceService</code> - service for editing the 'inherited
- *  property' of the ACL for a resource
- *  <li> <code>aclEditServices</code> - map from privileges to editing
- *  services
- *  <li> <code>modelName</code> - name of the sub-model provided
+ * <li><code>repository</code> - the {@link Repository} is required
+ * <li> <code>aclInheritanceService</code> - service for editing the 'inherited
+ * property' of the ACL for a resource
+ * <li> <code>aclEditServices</code> - map from privileges to editing services
+ * <li> <code>modelName</code> - name of the sub-model provided
  * </ul>
  * 
  * Model data provided in the sub-model:
  * <ul>
- *   inheritance editing service
- *   <li><code>aclEditURLs</code> - map from {@link RepositoryAction actions} to edit URLs
- *   <li><code>privileges</code> - map from {@link Privilege#getName
- *   privilege names} to {@link Privilege privilege objects}
- *   <li><code>inherited</code> - whether or not the ACL of the
- *   current resource is inherited
- *   <li><code>privilegedPseudoPrincipals</code> - map from privileges
- *   to a list of pseudo principals (from the ACL)
- *   <li><code>privilegedUsers</code> - map from privileges to a list
- *   of user principals (from the ACL)
- *   <li><code>privilegedGroups</code> - map from privileges to a list
- *   of groups (from the ACL)
+ * inheritance editing service
+ * <li><code>aclEditURLs</code> - map from {@link RepositoryAction actions} to
+ * edit URLs
+ * <li><code>privileges</code> - map from {@link Privilege#getName privilege
+ * names} to {@link Privilege privilege objects}
+ * <li><code>inherited</code> - whether or not the ACL of the current resource
+ * is inherited
+ * <li><code>privilegedPseudoPrincipals</code> - map from privileges to a list
+ * of pseudo principals (from the ACL)
+ * <li><code>privilegedUsers</code> - map from privileges to a list of user
+ * principals (from the ACL)
+ * <li><code>privilegedGroups</code> - map from privileges to a list of groups
+ * (from the ACL)
  * </ul>
  */
-public class ACLProvider implements ReferenceDataProvider, InitializingBean {
+public class ACLProvider implements ReferenceDataProvider {
 
-    private Service aclInheritanceService = null;
-    
-    private Map<Privilege, Service> aclEditServices;
-    
-    private Map<Privilege, List<String>> permissionShortcuts;
-    private Map<String, List<String>> permissionShortcutsConfig;
-    
     private static final String GROUP_PREFIX = "group:";
     private static final String USER_PREFIX = "user:";
-    
-    private String modelName = "aclInfo";
-    
-    public void setAclInheritanceService(Service aclInheritanceService) {
-        this.aclInheritanceService = aclInheritanceService;
-    }
-    
-    public void setAclEditServices(Map<Privilege, Service> aclEditServices) {
-        this.aclEditServices = aclEditServices;
-    }      
+    private static final String MODEL_NAME = "aclInfo";
 
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
-    }
-    
-
-    public void afterPropertiesSet() {
-        if (this.aclInheritanceService == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'aclInheritanceService' must be set");
-        }
-        if (this.aclEditServices == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'aclEditServices' must be set");
-        }
-        if (this.modelName == null) {
-            throw new BeanInitializationException(
-                "JavaBean property 'modelName' must be set");
-        }
-    }
-
+    private Service aclInheritanceService = null;
+    private Map<Privilege, Service> aclEditServices;
+    private Map<Privilege, List<String>> permissionShortcuts;
+    private Map<String, List<String>> permissionShortcutsConfig;
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void referenceData(Map model, HttpServletRequest request)
-        throws Exception {
+    public void referenceData(Map model, HttpServletRequest request) throws Exception {
 
         Map<String, Object> aclModel = new HashMap<String, Object>();
 
@@ -137,51 +101,52 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
         String token = requestContext.getSecurityToken();
-        
+
         Resource resource = repository.retrieve(token, uri, false);
         Acl acl = resource.getAcl();
         Map<String, String> editURLs = new HashMap<String, String>();
 
         if (!resource.isInheritedAcl()) {
-            for (Privilege action: this.aclEditServices.keySet()) {
+            for (Privilege action : this.aclEditServices.keySet()) {
                 String privilegeName = action.getName();
                 Service editService = this.aclEditServices.get(action);
                 try {
-                    String url = editService.constructLink(
-                        resource, requestContext.getPrincipal());
+                    String url = editService.constructLink(resource, requestContext.getPrincipal());
                     editURLs.put(privilegeName, url);
-                } catch (Exception e) { }
+                } catch (Exception e) {
+                }
             }
         }
 
         try {
             if (this.aclInheritanceService != null) {
-                String url = this.aclInheritanceService.constructLink(
-                    resource, requestContext.getPrincipal());
+                String url = this.aclInheritanceService.constructLink(resource, requestContext.getPrincipal());
                 editURLs.put("inheritance", url);
             }
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
         Map<String, Privilege> privileges = new HashMap<String, Privilege>();
         Map<String, Principal[]> privilegedUsers = new HashMap<String, Principal[]>();
         Map<String, Principal[]> privilegedGroups = new HashMap<String, Principal[]>();
-        Map<String, List<Principal>> privilegedPseudoPrincipals = new HashMap<String, List<Principal>>(); 
+        Map<String, List<Principal>> privilegedPseudoPrincipals = new HashMap<String, List<Principal>>();
         Map<String, String> viewShortcuts = new HashMap<String, String>();
 
         // Check if exact match with a shortcut
-        // TODO: refactor with some of code in ACLEditController->extractAndCheckShortcuts()
-        for (Privilege action: Privilege.values()) {
+        // TODO: refactor with some of code in ACLEditController ->
+        // extractAndCheckShortcuts()
+        for (Privilege action : Privilege.values()) {
             String actionName = action.getName();
 
             Principal[] groupPrincipals = acl.listPrivilegedGroups(action);
             Principal[] userPrincipals = acl.listPrivilegedUsers(action);
             Principal[] pseudoUserPrincipals = acl.listPrivilegedPseudoPrincipals(action);
-            
+
             int totalACEs = groupPrincipals.length + userPrincipals.length + pseudoUserPrincipals.length;
-            
+
             List<String> shortcuts = permissionShortcuts.get(action);
-            String shortcutMatch = ""; 
-            
+            String shortcutMatch = "";
+
             if (shortcuts != null) {
                 for (String shortcut : shortcuts) {
                     List<String> shortcutACEs = permissionShortcutsConfig.get(shortcut);
@@ -210,7 +175,7 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
                                 }
                             }
                         }
-                        
+
                     }
                     if (matchedACEs == totalACEs && matchedACEs == numberOfShortcutACEs) {
                         shortcutMatch = shortcut;
@@ -218,13 +183,12 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
                     }
                 }
             }
-            
+
             privilegedGroups.put(actionName, groupPrincipals);
             privilegedUsers.put(actionName, userPrincipals);
-            privilegedPseudoPrincipals.put(actionName, 
-                      new ArrayList<Principal>(Arrays.asList(pseudoUserPrincipals)));
+            privilegedPseudoPrincipals.put(actionName, new ArrayList<Principal>(Arrays.asList(pseudoUserPrincipals)));
             viewShortcuts.put(actionName, shortcutMatch);
-            
+
             privileges.put(actionName, action);
         }
 
@@ -236,14 +200,23 @@ public class ACLProvider implements ReferenceDataProvider, InitializingBean {
         aclModel.put("privilegedPseudoPrincipals", privilegedPseudoPrincipals);
         aclModel.put("shortcuts", viewShortcuts);
 
-        model.put("aclInfo", aclModel);
+        model.put(MODEL_NAME, aclModel);
     }
-    
+
+    @Required
+    public void setAclInheritanceService(Service aclInheritanceService) {
+        this.aclInheritanceService = aclInheritanceService;
+    }
+
+    @Required
+    public void setAclEditServices(Map<Privilege, Service> aclEditServices) {
+        this.aclEditServices = aclEditServices;
+    }
+
     @Required
     public void setPermissionShortcuts(Map<Privilege, List<String>> permissionShortcuts) {
         this.permissionShortcuts = permissionShortcuts;
     }
-
 
     @Required
     public void setPermissionShortcutsConfig(Map<String, List<String>> permissionShortcutsConfig) {

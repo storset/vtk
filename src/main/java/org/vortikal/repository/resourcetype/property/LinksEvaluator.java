@@ -251,7 +251,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
             parser.parse(input);
         } catch (StopException t) { 
         } finally {
-            //content.close();
+            is.close();
         }
     }
     

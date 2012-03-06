@@ -152,6 +152,14 @@ public class PrincipalFactory {
             PrincipalMetadata metadata = this.personDocumentPrincipalMetadataDao
                     .getMetadata(principal, preferredLocale);
             if (metadata != null) {
+                Object descriptionObj = metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE);
+                if (descriptionObj != null) {
+                    principal.setDescription(descriptionObj.toString());
+                }
+                Object urlObj = metadata.getValue(PrincipalMetadata.URL_ATTRIBUTE);
+                if (urlObj != null) {
+                    principal.setURL(urlObj.toString());
+                }
                 principal.setMetadata(metadata);
                 return principal;
             }

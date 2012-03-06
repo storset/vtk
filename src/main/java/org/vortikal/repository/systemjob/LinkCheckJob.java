@@ -171,9 +171,14 @@ public class LinkCheckJob extends RepositoryJob {
             state.brokenLinks.clear();
             state.complete = false;
             state.index = 0;
-        } else if (logger.isDebugEnabled()){
-            logger.debug("Continuing with link check state: " + state);
         }
+
+        if (state.complete) {
+            // Already complete, and no state reset has been performed.
+            return linkCheckProp;
+        }
+
+        logger.debug("Running with link check state: " + state + " for " + resource.getURI());
         
         ContentStream linksStream = linksProp.getBinaryStream();
         JSONParser parser = new JSONParser();

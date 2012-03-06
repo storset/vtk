@@ -222,6 +222,7 @@ td.vrtx-report-diagram-text {
 #vrtx-report-filters ul li.active-filter:hover span {
   background: url(../images/report-filter-active-right.png) no-repeat top right;
   display: inline-block;
+  width: 11px;
   color: #fff;
 }
 
@@ -232,6 +233,7 @@ td.vrtx-report-diagram-text {
 #vrtx-report-filters ul li:hover a {
   background: url(../images/report-filter-hover-right.png) no-repeat top right;
   display: inline-block;
+  width: 11px;
   color: #363534;
 }
 

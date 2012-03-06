@@ -51,11 +51,7 @@ function tb_show(caption, url, imageGroup) { //function called when the user cli
       }
     }
 
-    if (tb_detectMacXFF()) {
-      $("#TB_overlay").addClass("TB_overlayMacFFBGHack"); //use png overlay so hide flash
-    } else {
-      $("#TB_overlay").addClass("TB_overlayBG"); //use background and opacity
-    }
+    $("#TB_overlay").addClass("TB_overlayBG"); //use background and opacity
 
     if (caption === null) {
       caption = "";
@@ -360,13 +356,6 @@ function tb_getPageSize() {
   var h = window.innerHeight || self.innerHeight || (de && de.clientHeight) || document.body.clientHeight;
   arrayPageSize = [w, h];
   return arrayPageSize;
-}
-
-function tb_detectMacXFF() {
-  var userAgent = navigator.userAgent.toLowerCase();
-  if (userAgent.indexOf('mac') != -1 && userAgent.indexOf('firefox') != -1) {
-    return true;
-  }
 }
 
 function tb_postMessageClose() {

@@ -667,7 +667,7 @@ $(document).ready(function () {
     if ($("#app-content > .message").length) {
       $("#app-content > .message").html(outdatedBrowserText);
     } else {
-      $("#app-content").prepend("<div class='infomessage'>" + msg + "</div>");
+      $("#app-content").prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
     }
     if(vrtxAdmin.isIE6) {
       $("#directory-listing tr").hover(function () {

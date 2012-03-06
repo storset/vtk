@@ -34,11 +34,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.servlet.LocaleResolver;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
@@ -46,6 +48,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -91,6 +94,8 @@ public class ACLProvider implements ReferenceDataProvider {
     private Map<Privilege, Service> aclEditServices;
     private Map<Privilege, List<String>> permissionShortcuts;
     private Map<String, List<String>> permissionShortcutsConfig;
+    private PrincipalFactory principalFactory;
+    private LocaleResolver localeResolver;
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
@@ -185,7 +190,23 @@ public class ACLProvider implements ReferenceDataProvider {
             }
 
             privilegedGroups.put(actionName, groupPrincipals);
-            privilegedUsers.put(actionName, userPrincipals);
+
+            // Search for potential person documents relating to any of the user
+            // principals
+            Locale preferredLocale = this.localeResolver.resolveLocale(request);
+            List<Principal> principals = new ArrayList<Principal>();
+            for (Principal principal : userPrincipals) {
+                Principal principalDoc = this.principalFactory.getPrincipalDocument(principal.getQualifiedName(),
+                        preferredLocale);
+                if (principalDoc != null) {
+                    principals.add(principalDoc);
+                } else {
+                    principals.add(principal);
+                }
+            }
+            Principal[] userPrincipalsWithDocs = new Principal[principals.size()];
+            privilegedUsers.put(actionName, principals.toArray(userPrincipalsWithDocs));
+
             privilegedPseudoPrincipals.put(actionName, new ArrayList<Principal>(Arrays.asList(pseudoUserPrincipals)));
             viewShortcuts.put(actionName, shortcutMatch);
 
@@ -221,6 +242,16 @@ public class ACLProvider implements ReferenceDataProvider {
     @Required
     public void setPermissionShortcutsConfig(Map<String, List<String>> permissionShortcutsConfig) {
         this.permissionShortcutsConfig = permissionShortcutsConfig;
+    }
+
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
+    }
+
+    @Required
+    public void setLocaleResolver(LocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
     }
 
 }

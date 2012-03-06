@@ -947,6 +947,7 @@
     <property name="permissionShortcuts" ref="permissionShortcuts" />
     <property name="permissionShortcutsConfig" ref="permissionShortcutsProvider.config" />
     <property name="roleManager" ref="roleManager" />
+    <property name="localeResolver" ref="manageLocaleResolver" />
   </bean>
 
   <bean id="editReadPermissionsHandler" parent="abstractPermissionsHandler">
@@ -1786,12 +1787,13 @@
         <entry key-ref="PRIVILEGE_READ_WRITE" value-ref="editReadWritePermissionsService" />
         <entry key-ref="PRIVILEGE_ALL" value-ref="editAdminPermissionsService" />
         <entry key-ref="PRIVILEGE_ADD_COMMENT" value-ref="editAddCommentPermissionsService" />
-        <!-- <entry key-ref="PRIVILEGE_BIND_TEMPLATE" value-ref="editBindPermissionsService" /> -->
         <entry key-ref="PRIVILEGE_READ_PROCESSED" value-ref="editReadProcessedPermissionsService" />
       </map>
     </property>
     <property name="permissionShortcuts" ref="permissionShortcuts" />
     <property name="permissionShortcutsConfig" ref="permissionShortcutsProvider.config" />
+    <property name="principalFactory" ref="principalFactory" />
+    <property name="localeResolver" ref="manageLocaleResolver" />
   </bean>
 
   <bean id="manageCollectionlistingProvider" class="org.vortikal.web.referencedata.provider.CollectionListingProvider">

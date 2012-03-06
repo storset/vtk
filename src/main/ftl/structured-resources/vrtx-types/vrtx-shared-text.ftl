@@ -17,10 +17,10 @@
     	       <div class="${sharedTextProps[inputFieldName][y]['id']} descriptionxxx">
     	              <#assign language >${resourceLocaleResolver.resolveLocale(null)}</#assign>
     	              <#if language == "no_NO">
-    	               <#assign language = "no" />
+    	              <#assign language = "no" />
     	              </#if>
     	              <#if sharedTextProps[inputFieldName][y]['description-' + language]?exists>
-    	               ${sharedTextProps[inputFieldName][y]['description-' + language]}
+    	                 ${sharedTextProps[inputFieldName][y]['description-' + language]}
     	              </#if>
     	       </div>
 	       </#list>
@@ -34,7 +34,7 @@
                 var h = $("#${inputFieldName}Descriptions").find(".descriptionxxx");
                 $(h).hide();
                 if($("#${inputFieldName}").val() != ""){
-                    var d =  $("#${inputFieldName}Descriptions").find("." + $("#${inputFieldName}").val());
+                    var d =  $("#${inputFieldName}Descriptions").find("." + $("#${inputFieldName}").val().replace(/\./g, "\\."));
                     $(d).show();
                 }
             }); 
@@ -43,7 +43,7 @@
                 var h = $("#${inputFieldName}Descriptions").find(".descriptionxxx");
                 $(h).hide();
                 if($("#${inputFieldName}").val() != ""){
-                    var d =  $("#${inputFieldName}Descriptions").find("." + $("#${inputFieldName}").val());
+                    var d =  $("#${inputFieldName}Descriptions").find("." + $("#${inputFieldName}").val().replace(/\./g, "\\."));
                     $(d).show();
                 }
             }); 

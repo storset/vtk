@@ -76,7 +76,9 @@
               parent="repository.systemjob.indexPathSelector">
         <property name="queryString">
           <value>
-             link-status = AWAITING_LINKCHECK
+            (type IN json-resource OR type IN html OR type IN managed-xml OR type IN collection)
+            AND
+            link-status = AWAITING_LINKCHECK
           </value>
         </property>
         <property name="sortString">
@@ -115,19 +117,23 @@
                   parent="repository.systemjob.indexPathSelector">
               <property name="queryString">
                 <value>
+                  (type IN json-resource OR type IN html OR type IN managed-xml OR type IN collection)
+                  AND
                   system-job-status@linkcheck !exists
                 </value>
               </property>
               <property name="limit" value="${systemjob.linkcheck.batch}" />
             </bean>
             
-            <!-- Then select those with missing link-status OR haven't been checked in some time. -->
+           <!--  Then select those with missing link-status OR haven't been checked in some time. -->
             <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" 
                   parent="repository.systemjob.indexPathSelector">
               <property name="queryString">
                 <value>
-                  link-status !exists 
-                  OR system-job-status@linkcheck &lt; {$currentTime-${systemjob.linkcheck.interval}|yyyyMMdd\ HH:mm:ss}
+                  (type IN json-resource OR type IN html OR type IN managed-xml OR type IN collection)
+                  AND
+                  (link-status !exists 
+                   OR system-job-status@linkcheck &lt; {$currentTime-${systemjob.linkcheck.interval}|yyyyMMdd\ HH:mm:ss})
                 </value>
               </property>
               <property name="sortString">

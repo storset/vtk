@@ -64,12 +64,12 @@ public class LinkStatusEvaluator implements LatePropertyEvaluator {
             return true;
         }
         
-        Property linkCheckProp = ctx.getNewResource().getProperty(this.linkCheckPropDef);
-        
         if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.SystemPropertiesChange) {
             property.setStringValue("AWAITING_LINKCHECK");
             return true;
         }
+        
+        Property linkCheckProp = ctx.getNewResource().getProperty(this.linkCheckPropDef);
         
         try {
             JSONObject linkCheck = propValue(linkCheckProp);
@@ -90,9 +90,10 @@ public class LinkStatusEvaluator implements LatePropertyEvaluator {
     }
 
     
-    private JSONObject propValue(Property linkStatus) throws Exception {
-        InputStream stream = linkStatus.getBinaryStream().getStream();
+    private JSONObject propValue(Property linkCheck) throws Exception {
+        InputStream stream = linkCheck.getBinaryStream().getStream();
         Object o = JSONValue.parse(new InputStreamReader(stream));
+        stream.close();
         return (JSONObject) o;
     }
 }

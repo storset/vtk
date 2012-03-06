@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.time.FastDateFormat;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public class SystemChangeContext {
@@ -68,7 +69,7 @@ public class SystemChangeContext {
     }
 
     public static String dateAsTimeString(Date date) {
-        return new SimpleDateFormat("yyyyMMdd HH:mm:ss").format(date);
+        return FastDateFormat.getInstance("yyyyMMdd HH:mm:ss").format(date);
     }
  
     @Override

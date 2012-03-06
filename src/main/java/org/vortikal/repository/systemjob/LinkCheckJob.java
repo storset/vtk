@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,6 +52,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
@@ -66,14 +69,15 @@ public class LinkCheckJob extends RepositoryJob {
     
     private LinkChecker linkChecker;
     private CanonicalUrlConstructor urlConstructor;
-    private static final int MAX_BROKEN_LINKS = 100;
+    private static final int MAX_BROKEN_LINKS = 100; // max number of broken links we bother storing
+    private static final int MAX_CHECK = 100; // max number of links to check per resource per round
 
     
     private final Log logger = LogFactory.getLog(getClass());
 
     @Override
     public void executeWithRepository(final Repository repository,
-            final SystemChangeContext context) throws Exception {
+                                      final SystemChangeContext context) throws Exception {
         if (repository.isReadOnly()) {
             return;
         }
@@ -105,18 +109,24 @@ public class LinkCheckJob extends RepositoryJob {
                     
                     Date lastMod = resource.getLastModified();
                     Property prop = linkCheck(resource, context);
-                    if (prop == null) {
-                        return;
-                    }
+                    
                     boolean locked = false;
                     try {
                         resource = repository.lock(token, path, context.getJobName(), Depth.ZERO, 60, null);
                         locked = true;
                         if (!lastMod.equals(resource.getLastModified())) {
-                            logger.warn("Resource " + path + " was modified during link check, skipping");
+                            logger.warn("Resource " + path + " was modified during link check, skipping store");
                             return;
                         }
-                        resource.addProperty(prop);
+                        
+                        // Either we got link check job result or not
+                        if (prop != null) {
+                            resource.addProperty(prop);
+                        } else {
+                            // Delete any old stale value
+                            resource.removeProperty(linkCheckPropDef);
+                        }
+
                         repository.store(token, resource, context);
                     } finally {
                        if (locked) {
@@ -127,10 +137,14 @@ public class LinkCheckJob extends RepositoryJob {
                 } catch (ResourceNotFoundException rnfe) {
                     // Resource is no longer there after search (deleted, moved
                     // or renamed)
+                    // Maybe just log at debug-level here
                     logger.warn("A resource ("
                             + path
                             + ") that was to be affected by a systemjob was no longer available: "
                             + rnfe.getMessage());
+                } catch (ResourceLockedException rl) {
+                    // Maybe just log at debug-level here
+                    logger.warn("Resource at " + path + " locked, cannot store link check results.");
                 }
                 
                 checkForInterrupt();
@@ -147,29 +161,36 @@ public class LinkCheckJob extends RepositoryJob {
             return null;
         }
         
-        Property statusProp = resource.getProperty(this.linkCheckPropDef);
-        final Status status = Status.create(statusProp);
+        Property linkCheckProp = resource.getProperty(this.linkCheckPropDef);
         
-        ContentStream stream = linksProp.getBinaryStream();
+        final LinkCheckState state = LinkCheckState.create(linkCheckProp);
+        if (shouldResetState(state, resource)) {
+            logger.debug("Reset link check state for " + resource.getURI());
+            state.brokenLinks.clear();
+            state.complete = false;
+            state.index = 0;
+        } else if (logger.isDebugEnabled()){
+            logger.debug("Continuing with link check state: " + state);
+        }
+        
+        ContentStream linksStream = linksProp.getBinaryStream();
         JSONParser parser = new JSONParser();
         
         final LinkChecker linkChecker = this.linkChecker;
         final URL base = this.urlConstructor.canonicalUrl(resource).setImmutable();
-        final AtomicInteger number = new AtomicInteger(0);
-        
+        final AtomicInteger n = new AtomicInteger(0);
         try {
-            parser.parse(new InputStreamReader(stream.getStream()), new JSONDefaultHandler() {
+            parser.parse(new InputStreamReader(linksStream.getStream()), new JSONDefaultHandler() {
 
                 boolean url = false;
 
                 @Override
                 public void endJSON() throws ParseException, IOException {
-                    status.complete = true;
+                    state.complete = true;
                 }
 
                 @Override
-                public boolean startObjectEntry(String key) throws ParseException,
-                IOException {
+                public boolean startObjectEntry(String key) throws ParseException, IOException {
                     this.url = "url".equals(key);
                     return true;
                 }
@@ -181,36 +202,38 @@ public class LinkCheckJob extends RepositoryJob {
                 }
 
                 @Override
-                public boolean primitive(Object value) throws ParseException,
-                IOException {
+                public boolean primitive(Object value) throws ParseException, IOException {
                     if (value == null || !this.url) {
                         return true;
                     }
-                    int i = number.incrementAndGet();
-                    if (i < status.index) {
+
+                    if (n.getAndIncrement() < state.index) {
                         return true;
                     }
                     
                     String val = value.toString();
                     
                     if (!shouldCheck(val)) {
-                        status.index++;
                         return true;
                     }
                     LinkCheckResult result = linkChecker.validate(val, base);
-                    status.index++;
                     if (!"OK".equals(result.getStatus())) {
-                        status.brokenLinks.add(val);
+                        state.brokenLinks.add(val);
                     }
-                    if (status.brokenLinks.size() == MAX_BROKEN_LINKS) {
+                    if (state.brokenLinks.size() == MAX_BROKEN_LINKS) {
                         return false;
                     }
+                    if (n.get()-state.index == MAX_CHECK) {
+                        return false;
+                    }
+                    
                     return true;
                 }
             });
-            status.timestamp = context.getTime();
+            state.timestamp = context.getTime();
+            state.index = n.get();
             Property result = this.linkCheckPropDef.createProperty();
-            status.write(result);
+            state.write(result);
             return result;
         } catch (Throwable t) {
             logger.warn("Error checking links for " + resource.getURI(), t);
@@ -218,12 +241,31 @@ public class LinkCheckJob extends RepositoryJob {
         }
     }
 
+    private static final Pattern SCHEME =
+            Pattern.compile("^([a-z][a-z0-9+.-]+):", Pattern.CASE_INSENSITIVE);
+    
     private boolean shouldCheck(String href) {
-        if (href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("ftp:")) {
-            // XXX: need better heuristic
-            return false;
+        Matcher schemeMatcher = SCHEME.matcher(href);
+        if (schemeMatcher.find()) {
+            String scheme = schemeMatcher.group(1);
+            return "http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme);
         }
-        return true;
+        
+        return ! href.startsWith("#");
+    }
+    
+    private boolean shouldResetState(LinkCheckState state, Resource resource) {
+        if (state.timestamp != null) {
+            // If linkcheck timestamp is older than resource last modified, 
+            // we need to invalidate the link check state.
+            String lastModTimestamp = SystemChangeContext.dateAsTimeString(resource.getLastModified());
+            if (state.timestamp.compareTo(lastModTimestamp) < 0) {
+                return true;
+            }
+        }
+        // If complete, reset to check all links again, otherwise continue
+        // checking from currently stored link index.
+        return state.complete;
     }
 
     @Required
@@ -251,17 +293,17 @@ public class LinkCheckJob extends RepositoryJob {
         this.urlConstructor = urlConstructor;
     }
 
-    private static class Status {
+    private static class LinkCheckState {
         private List<String> brokenLinks = new ArrayList<String>();
         private int index = 0;
         private String timestamp = null;
         private boolean complete = false;
         
-        private Status() {}
+        private LinkCheckState() {}
         
         @SuppressWarnings("unchecked")
-        private static Status create(Property statusProp) {
-            Status s = new Status();
+        private static LinkCheckState create(Property statusProp) {
+            LinkCheckState s = new LinkCheckState();
             if (statusProp != null) {
                 try {
                     Object o = JSONValue.parse(new InputStreamReader(statusProp.getBinaryStream().getStream()));

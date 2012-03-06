@@ -102,6 +102,11 @@ void execute(context, args, out) {
         try {
             //tm.startTransaction();
             dao.store(evaluated);
+
+           // trigger re-indexing:
+           event = new ResourceModificationEvent(repo, evaluated, origClone);
+           beanContext.publishEvent(event);
+
             tm.commit(status);
         } catch (Throwable t) {
             tm.rollback(status);
@@ -109,9 +114,6 @@ void execute(context, args, out) {
             //tm.endTransaction();
         }
 
-        // trigger re-indexing:
-        event = new ResourceModificationEvent(repo, evaluated, origClone);
-        beanContext.publishEvent(event);
 
         log.flush();
 

@@ -243,6 +243,7 @@ td.vrtx-report-diagram-text {
 #vrtx-report-filters ul li:hover a {
   background: url(../images/report-filter-hover-right.png) no-repeat top right;
   color: #363534;
+  text-decoration: none;
 }
 
 /* ^ Filters */

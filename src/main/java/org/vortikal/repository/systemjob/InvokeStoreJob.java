@@ -51,6 +51,8 @@ public class InvokeStoreJob extends RepositoryJob {
     
     private final Log logger = LogFactory.getLog(getClass());
     
+    private boolean continueOnException = true;
+    
     @Override
     public void executeWithRepository(final Repository repository, 
                                       final SystemChangeContext context) throws Exception {
@@ -94,6 +96,12 @@ public class InvokeStoreJob extends RepositoryJob {
                             + path
                             + ") that was to be affected by a systemjob was no longer available: "
                             + rnfe.getMessage());
+                } catch (Exception e) {
+                    if (continueOnException) {
+                        logger.warn("Exception when invoking store for resource " + path, e);
+                    } else {
+                        throw e;
+                    }
                 }
                 
                 checkForInterrupt();
@@ -104,5 +112,9 @@ public class InvokeStoreJob extends RepositoryJob {
     @Required
     public void setPathSelector(PathSelector pathSelector) {
         this.pathSelector = pathSelector;
+    }
+    
+    public void setContinueOnException(boolean continueOnException) {
+        this.continueOnException = continueOnException;
     }
 }

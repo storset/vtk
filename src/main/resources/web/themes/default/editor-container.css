@@ -122,3 +122,40 @@
 ul.cke_panel_list a {
   color: #000 !important;
 }
+
+/* Study table */
+
+.vrtx-courseplan-table { 
+  width: 100%;
+}
+
+.vrtx-courseplan-table td.small {
+  white-space: nowrap;
+  width: 10%;
+}
+
+.vrtx-courseplan-table td.large {  
+  width: 30%;
+}
+
+/* ^ Study table */
+
+/* Course combination table expansion */
+
+.vrtx-courseplan-common {
+    background-color: #F9F9F9;
+}
+
+.vrtx-courseplan-specialization {
+    background-color: #F5F2DF;
+}
+
+.vrtx-courseplan-optional {
+    background-color: #C8DEB1;
+}
+
+.vrtx-courseplan-thesis {
+    background-color: #D0EAFC;
+}
+
+/* ^ Course combination table expansion */

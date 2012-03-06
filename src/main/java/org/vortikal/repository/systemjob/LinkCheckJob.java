@@ -174,6 +174,7 @@ public class LinkCheckJob extends RepositoryJob {
         }
 
         if (state.complete) {
+            logger.debug("Link check already complete and up to date for " + resource.getURI());
             // Already complete, and no state reset has been performed.
             return linkCheckProp;
         }

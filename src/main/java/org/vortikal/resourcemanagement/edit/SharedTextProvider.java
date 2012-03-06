@@ -23,13 +23,19 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.security.AuthenticationException;
+import org.vortikal.text.html.HtmlFragment;
+import org.vortikal.text.html.HtmlPageFilter;
+import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
 public class SharedTextProvider implements ReferenceDataProvider {
 
     private ResourceTypeTree resourceTypeTree;
+    private HtmlPageFilter safeHtmlFilter;
+    private HtmlPageParser htmlParser;
 
+    /*TODO: Need better error handling */
     public Map<String, JSONObject> getSharedTextValues(String docType, String propName) {
         Path p = Path.fromString("/vrtx/fellestekst/" + docType + "/" + propName + ".html");
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -49,15 +55,32 @@ public class SharedTextProvider implements ReferenceDataProvider {
         try {
             List json = (List) getJson(p).getJSONObject("properties").get("shared-text-box");
 
-
             for (Object x : json) {
                 JSONObject j = JSONObject.fromObject(x);
-                m.put(j.getString("id"), j);
+                m.put(j.getString("id"), filterDescription(j));
             }
             return m;
         } catch (Exception e) {
-            return null;
+            return m;
         }
+    }
+    
+    private JSONObject filterDescription(JSONObject j){
+        
+        String[] list = {"description-no","description-nn","description-en"};
+        
+        for(String descriptionKey : list){
+            HtmlFragment fragment;
+            try {
+                fragment = htmlParser.parseFragment(j.getString(descriptionKey));
+                fragment.filter(safeHtmlFilter);
+                j.put(descriptionKey,fragment.getStringRepresentation());
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } 
+        }
+        return j;
     }
 
     private JSONObject getJson(Path uri) throws Exception {
@@ -110,5 +133,13 @@ public class SharedTextProvider implements ReferenceDataProvider {
 
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
+    }
+
+    public void setSafeHtmlFilter(HtmlPageFilter safeHtmlFilter) {
+        this.safeHtmlFilter = safeHtmlFilter;
+    }
+    
+    public void setHtmlParser(HtmlPageParser htmlParser) {
+        this.htmlParser = htmlParser;
     }
 }

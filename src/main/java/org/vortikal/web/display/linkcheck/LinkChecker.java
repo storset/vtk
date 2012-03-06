@@ -112,7 +112,7 @@ public class LinkChecker {
         } catch (Throwable t) {
             return new LinkCheckResult(href, Status.MALFORMED_URL, t.getMessage());
         }
-        String cacheKey = href;
+        final String cacheKey = url.toString();
         Element cached = this.cache.get(cacheKey);
         if (cached != null) {
             return (LinkCheckResult) cached.getValue();
@@ -125,8 +125,10 @@ public class LinkChecker {
             status = Status.ERROR;
             reason = t.getMessage();
         }
+        
+        
         LinkCheckResult result = new LinkCheckResult(href, status, reason);
-        this.cache.put(new Element(href, result));
+        this.cache.put(new Element(cacheKey, result));
         return result;
     }
     

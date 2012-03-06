@@ -213,6 +213,28 @@ td.vrtx-report-diagram-text {
   margin-right: 15px;
 }
 
+#vrtx-report-filters ul li.active-filter,
+#vrtx-report-filters ul li.active-filter:hover {
+  background: url(../images/report-filter-active-left.png) no-repeat top left;
+}
+
+#vrtx-report-filters ul li.active-filter span,
+#vrtx-report-filters ul li.active-filter:hover span {
+  background: url(../images/report-filter-active-right.png) no-repeat top right;
+  display: inline-block;
+  color: #fff;
+}
+
+#vrtx-report-filters ul li:hover {
+  background: url(../images/report-filter-hover-left.png) no-repeat top left;
+}
+
+#vrtx-report-filters ul li:hover a {
+  background: url(../images/report-filter-hover-right.png) no-repeat top right;
+  display: inline-block;
+  color: #363534;
+}
+
 /* ^ Filters */
 
 /* Tooltip */

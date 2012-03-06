@@ -243,7 +243,7 @@ $(document).ready(function () {
     $("#vrtx-resource-visit-stats").remove();
     $("#vrtx-resource-visit-info").remove();
     vrtxAdmin.serverFacade.getHtml(this.href, {
-      success: function (results, status, resp) {
+      success: function (results, status, resp) { // fix these 
         $("#vrtx-resource-visit-wrapper").html("<div id='vrtx-resource-visit'>" + $(results).html() + "</div>");
       }
     });
@@ -664,13 +664,8 @@ $(document).ready(function () {
 
   // Show message in IE7 and IE6
   if (vrtxAdmin.isIE7) {
-    if(vrtxAdmin.isIE6) {
-      var msg = "You are using an outdated and not supported version of Internet Explorer. Please go to Windows Updates and install the latest version.";    
-    } else {
-      var msg = "Internet Explorer 7 will be unsupported after 5. may 2012. Please go to Windows Updates and install the latest version.";
-    }
     if ($("#app-content > .message").length) {
-      $("#app-content > .message").html(msg);
+      $("#app-content > .message").html(outdatedBrowserText);
     } else {
       $("#app-content").prepend("<div class='infomessage'>" + msg + "</div>");
     }

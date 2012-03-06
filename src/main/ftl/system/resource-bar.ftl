@@ -5,6 +5,17 @@
 
 <#assign resource = resourceContext.currentResource />
 
+<script type="text/javascript"><!--
+  if(vrtxAdmin.isIE6) {
+    if(vrtxAdmin.isIE6) {
+      var outdatedBrowserText = '<@vrtx.msg code="msg.outdated.browser.msie6" />';    
+    } else {
+      var outdatedBrowserText = '<@vrtx.msg code="msg.outdated.browser.msie7" />';
+    }
+  }
+// -->
+</script>
+
 <#if !resourceContext.currentServiceName?lower_case?contains("preview")>
   <@ping.ping url=pingURL['url'] interval=300/> 
 </#if>

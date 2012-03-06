@@ -42,12 +42,12 @@
         <ref bean="collectionStructureReporter" />
         <ref bean="diagramReport" />
         <ref bean="myDocumentsReporter" />
+        <ref bean="brokenLinksReport" />
       </list>
     </property>
     <property name="reporters">
       <list>
         <ref bean="lastModifiedReporter" />
-        <ref bean="brokenLinksReport" />
       </list>
     </property>
     <property name="hiddenReporters">

@@ -148,15 +148,12 @@ public class LinkCheckJob extends RepositoryJob {
                     // Maybe just log at debug-level here
                     logger.warn("Resource at " + path + " locked, cannot store link check results.");
                 }
-                
-                checkForInterrupt();
             }
         });
 
     }
-
     
-    private Property linkCheck(Resource resource, SystemChangeContext context) {
+    private Property linkCheck(Resource resource, SystemChangeContext context) throws InterruptedException {
 
         Property linksProp = resource.getProperty(this.linksPropDef);
         if (linksProp == null) {
@@ -234,6 +231,12 @@ public class LinkCheckJob extends RepositoryJob {
                     if (n.get()-state.index == MAX_CHECK_LINKS) {
                         return false;
                     }
+
+                    try {
+                        checkForInterrupt();
+                    } catch (InterruptedException ie) {
+                        throw new RuntimeException(ie);
+                    }
                     
                     return true;
                 }
@@ -244,6 +247,9 @@ public class LinkCheckJob extends RepositoryJob {
             state.write(result);
             return result;
         } catch (Throwable t) {
+            if (t.getCause() instanceof InterruptedException) {
+                throw ((InterruptedException)t.getCause());
+            }
             logger.warn("Error checking links for " + resource.getURI(), t);
             return null;
         }

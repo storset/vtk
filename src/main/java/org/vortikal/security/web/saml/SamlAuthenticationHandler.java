@@ -55,7 +55,6 @@ import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.security.web.AuthenticationHandler;
 import org.vortikal.security.web.InvalidAuthenticationRequestException;
-import org.vortikal.security.web.SecurityInitializer;
 import org.vortikal.web.InvalidRequestException;
 import org.vortikal.web.service.URL;
 
@@ -69,12 +68,6 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     private Login login;
     private Logout logout;
     private LostPostHandler postHandler;
-
-    private String serviceProviderURI;
-
-    private String[] wordWhitelist;
-
-    private Long ssoTimeout;
 
     private String spCookieDomain = null;
 
@@ -104,47 +97,6 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     public boolean isRecognizedAuthenticationRequest(HttpServletRequest req) throws AuthenticationProcessingException,
             InvalidAuthenticationRequestException {
         return this.login.isLoginResponse(req);
-    }
-
-    public void checkSSOCookie(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        if (getCookie(req, UIO_AUTH_SSO) != null && getCookie(req, SecurityInitializer.VRTXLINK_COOKIE) == null
-                && req.getParameter("authTarget") == null && !req.getRequestURI().contains(serviceProviderURI)) {
-
-            StringBuffer url = req.getRequestURL();
-            Boolean doRedirect = false;
-
-            for (String word : wordWhitelist) {
-                if (url.toString().endsWith(word.trim())) {
-                    doRedirect = true;
-                }
-            }
-
-            Long cookieTimestamp = new Long(0);
-            try {
-                cookieTimestamp = Long.valueOf(getCookie(req, UIO_AUTH_SSO).getValue());
-            } catch (NumberFormatException e) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Cannot parse, old SSO cookie format");
-                }
-            }
-            Long currentTime = new Date().getTime();
-
-            if (currentTime - cookieTimestamp > ssoTimeout) {
-                doRedirect = false;
-            }
-
-            if (doRedirect) {
-                String queryString = req.getQueryString();
-                if (queryString != null) {
-                    url = url.append("?");
-                    url = url.append(queryString);
-                }
-                URL currentURL = URL.parse(url.toString());
-                currentURL.addParameter("authTarget", req.getScheme());
-                resp.sendRedirect(currentURL.toString());
-            }
-        }
-
     }
 
     /**
@@ -316,23 +268,10 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         this.identifier = identifier;
     }
 
-    @Required
-    public void setServiceProviderURI(String serviceProviderURI) {
-        this.serviceProviderURI = serviceProviderURI;
-    }
-
-    public void setSsoTimeout(Long ssoTimeout) {
-        this.ssoTimeout = ssoTimeout;
-    }
-
     public void setSpCookieDomain(String spCookieDomain) {
         if (spCookieDomain != null && !"".equals(spCookieDomain.trim())) {
             this.spCookieDomain = spCookieDomain;
         }
-    }
-
-    public void setWordWhitelist(String[] wordWhitelist) {
-        this.wordWhitelist = wordWhitelist;
     }
 
     @Required

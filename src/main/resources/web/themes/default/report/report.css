@@ -211,29 +211,37 @@ td.vrtx-report-diagram-text {
 #vrtx-report-filters ul li {
   float: left;
   margin-right: 15px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: visible;
+  height: 22px;
+}
+
+#vrtx-report-filters ul li.active-filter span,
+#vrtx-report-filters ul li a {
+  height: 19px;
+  padding: 3px 13px 0 14px;
+  display: inline-block;
 }
 
 #vrtx-report-filters ul li.active-filter,
 #vrtx-report-filters ul li.active-filter:hover {
-  background: url(../images/report-filter-active-left.png) no-repeat top left;
+  background: url(../images/report-filter-active-left.png) no-repeat 0 0;
 }
 
 #vrtx-report-filters ul li.active-filter span,
 #vrtx-report-filters ul li.active-filter:hover span {
   background: url(../images/report-filter-active-right.png) no-repeat top right;
   display: inline-block;
-  width: 11px;
   color: #fff;
 }
 
 #vrtx-report-filters ul li:hover {
-  background: url(../images/report-filter-hover-left.png) no-repeat top left;
+  background: url(../images/report-filter-hover-left.png) no-repeat 0 0;
 }
 
 #vrtx-report-filters ul li:hover a {
   background: url(../images/report-filter-hover-right.png) no-repeat top right;
-  display: inline-block;
-  width: 11px;
   color: #363534;
 }
 

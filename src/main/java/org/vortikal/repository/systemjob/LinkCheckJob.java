@@ -222,7 +222,7 @@ public class LinkCheckJob extends RepositoryJob {
                     if (!"OK".equals(result.getStatus())) {
                         state.brokenLinks.add(val);
                     }
-                    if (state.brokenLinks.size() == MAX_BROKEN_LINKS) {
+                    if (state.brokenLinks.size() >= MAX_BROKEN_LINKS) {
                         return false;
                     }
                     if (n.get()-state.index == MAX_CHECK_LINKS) {

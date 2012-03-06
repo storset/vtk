@@ -72,7 +72,7 @@ public class LinkCheckJob extends RepositoryJob {
     
     // TODO these should probably be configurable
     private static final int MAX_BROKEN_LINKS = 100;   // max number of broken links we bother storing
-    private static final int MAX_CHECK_LINKS = 2;    // max number of links to check per resource per round
+    private static final int MAX_CHECK_LINKS = 100;    // max number of links to check per resource per round
     private static final int MIN_RECHECK_SECONDS = 3600;
     
     private final Log logger = LogFactory.getLog(getClass());

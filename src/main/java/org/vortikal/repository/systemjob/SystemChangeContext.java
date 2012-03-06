@@ -30,7 +30,9 @@
  */
 package org.vortikal.repository.systemjob;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -39,16 +41,17 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public class SystemChangeContext {
 
-    private String jobName;
-    private String time;
-    private List<PropertyTypeDefinition> affectedProperties;
-    private PropertyTypeDefinition systemJobStatusPropDef;
+    private final String jobName;
+    private final Date time;
+    private final List<PropertyTypeDefinition> affectedProperties;
+    private final PropertyTypeDefinition systemJobStatusPropDef;
 
-    public SystemChangeContext(String jobName, String time, List<PropertyTypeDefinition> affectedProperties,
-            PropertyTypeDefinition systemJobStatusPropDef) {
+    public SystemChangeContext(String jobName,
+                               List<PropertyTypeDefinition> affectedProperties,
+                               PropertyTypeDefinition systemJobStatusPropDef) {
         this.jobName = jobName;
-        this.time = time;
-        this.affectedProperties = affectedProperties;
+        this.time = new Date();
+        this.affectedProperties = Collections.unmodifiableList(affectedProperties);
         this.systemJobStatusPropDef = systemJobStatusPropDef;
     }
 
@@ -56,10 +59,22 @@ public class SystemChangeContext {
         return jobName;
     }
 
-    public String getTime() {
+    public Date getTimestamp() {
         return time;
     }
 
+    public String getTimestampFormatted() {
+        return formatTimestamp(this.time);
+    }
+    
+    public static String formatTimestamp(Date timestamp) {
+        return FastDateFormat.getInstance("yyyyMMdd HH:mm:ss").format(timestamp);
+    }
+    
+    public static Date parseTimestamp(String time) throws ParseException {
+        return new SimpleDateFormat("yyyyMMdd HH:mm:ss").parse(time);
+    }
+ 
     public List<PropertyTypeDefinition> getAffectedProperties() {
         return affectedProperties;
     }
@@ -68,14 +83,10 @@ public class SystemChangeContext {
         return this.systemJobStatusPropDef;
     }
 
-    public static String dateAsTimeString(Date date) {
-        return FastDateFormat.getInstance("yyyyMMdd HH:mm:ss").format(date);
-    }
- 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.jobName);
-        sb.append(", running at ").append(this.time);
+        sb.append(", created at ").append(this.time);
         sb.append(", affecting ").append(this.affectedProperties);
         return sb.toString();
     }

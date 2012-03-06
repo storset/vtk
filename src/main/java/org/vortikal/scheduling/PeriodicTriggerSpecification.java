@@ -29,44 +29,54 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.repository.resourcetype.property;
-
-import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertyEvaluationContext;
-import org.vortikal.repository.resourcetype.PropertyEvaluator;
-import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.systemjob.SystemChangeContext;
-
-import net.sf.json.JSONObject;
+package org.vortikal.scheduling;
 
 /**
- *
+ * Thin abstraction for 
  */
-public class SystemJobStatusEvaluator implements PropertyEvaluator {
+public class PeriodicTriggerSpecification implements TriggerSpecification {
 
-    @Override
-    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-        
-        if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.SystemPropertiesChange) {
-            // Keep existing value for anything but system change evaluation.
-            return property.isValueInitialized();
+    private int seconds;
+    private int initialDelaySeconds;
+    private boolean fixedRate = false;
+    
+    /**
+     * 
+     * @param seconds The seconds between each period
+     * @param fixedRate if seconds should be interpreted as fixed rate insteead of
+     *                  fixed delay between each invocation.
+     */
+    public PeriodicTriggerSpecification(int seconds, int initialDelaySeconds, boolean fixedRate) {
+        if (seconds <= 0) {
+            throw new IllegalArgumentException("seconds must be >= 1");
         }
-        
-        if (ctx.getSystemChangeContext() == null) {
-            throw new IllegalArgumentException("Evaluator called for system change, but no system change context exists");
+        if (initialDelaySeconds < 0) {
+            initialDelaySeconds = 0;
         }
-        
-        Value updated = updateStatusValue(property.getValue(), ctx.getSystemChangeContext());
-        property.setValue(updated);
-        return true;
+        this.seconds = seconds;
+        this.initialDelaySeconds = initialDelaySeconds;
+        this.fixedRate = fixedRate;
     }
     
-    private Value updateStatusValue(Value existing, SystemChangeContext context) {
-        JSONObject json = new JSONObject();
-        if (existing != null) {
-            json = existing.getJSONValue();
-        } 
-        json.put(context.getJobName(), context.getTimestampFormatted());
-        return new Value(json);
+    public int getSeconds() {
+        return this.seconds;
+    }
+    
+    public int getInitialDelaySeconds() {
+        return this.initialDelaySeconds;
+    }
+    
+    public boolean isFixedRate() {
+        return this.fixedRate;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder(getClass().getSimpleName());
+        b.append("[").append("period = ").append(this.seconds).append(" sec");
+        b.append(", delay = ").append(this.initialDelaySeconds).append(" sec");
+        b.append(this.fixedRate ? ", fixed rate" : ", fixed delay");
+        b.append("]");
+        return b.toString();
     }
 }

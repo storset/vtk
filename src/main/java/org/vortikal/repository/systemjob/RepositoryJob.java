@@ -69,10 +69,8 @@ public abstract class RepositoryJob extends AbstractTask implements Initializing
             BaseContext.pushContext();
             SecurityContext.setSecurityContext(this.securityContext);
             
-            String time = SystemChangeContext.dateAsTimeString(Calendar.getInstance().getTime());
             SystemChangeContext systemChangeContext =
-                    new SystemChangeContext(getId(), time,
-                                            this.affectedProperties, this.systemJobStatusPropDef);
+                    new SystemChangeContext(getId(), this.affectedProperties, this.systemJobStatusPropDef);
             
             executeWithRepository(this.repository, systemChangeContext);
         } catch (Throwable t) {

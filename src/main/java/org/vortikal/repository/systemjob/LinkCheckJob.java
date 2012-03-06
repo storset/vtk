@@ -69,9 +69,11 @@ public class LinkCheckJob extends RepositoryJob {
     
     private LinkChecker linkChecker;
     private CanonicalUrlConstructor urlConstructor;
-    private static final int MAX_BROKEN_LINKS = 100; // max number of broken links we bother storing
-    private static final int MAX_CHECK = 100; // max number of links to check per resource per round
-
+    
+    // TODO these should probably be configurable
+    private static final int MAX_BROKEN_LINKS = 100;   // max number of broken links we bother storing
+    private static final int MAX_CHECK_LINKS = 2;    // max number of links to check per resource per round
+    private static final int MIN_RECHECK_SECONDS = 3600;
     
     private final Log logger = LogFactory.getLog(getClass());
 
@@ -164,7 +166,7 @@ public class LinkCheckJob extends RepositoryJob {
         Property linkCheckProp = resource.getProperty(this.linkCheckPropDef);
         
         final LinkCheckState state = LinkCheckState.create(linkCheckProp);
-        if (shouldResetState(state, resource)) {
+        if (shouldResetState(state, resource, context)) {
             logger.debug("Reset link check state for " + resource.getURI());
             state.brokenLinks.clear();
             state.complete = false;
@@ -176,9 +178,9 @@ public class LinkCheckJob extends RepositoryJob {
         ContentStream linksStream = linksProp.getBinaryStream();
         JSONParser parser = new JSONParser();
         
-        final LinkChecker linkChecker = this.linkChecker;
         final URL base = this.urlConstructor.canonicalUrl(resource).setImmutable();
         final AtomicInteger n = new AtomicInteger(0);
+        
         try {
             parser.parse(new InputStreamReader(linksStream.getStream()), new JSONDefaultHandler() {
 
@@ -223,14 +225,14 @@ public class LinkCheckJob extends RepositoryJob {
                     if (state.brokenLinks.size() == MAX_BROKEN_LINKS) {
                         return false;
                     }
-                    if (n.get()-state.index == MAX_CHECK) {
+                    if (n.get()-state.index == MAX_CHECK_LINKS) {
                         return false;
                     }
                     
                     return true;
                 }
             });
-            state.timestamp = context.getTime();
+            state.timestamp = context.getTimestampFormatted();
             state.index = n.get();
             Property result = this.linkCheckPropDef.createProperty();
             state.write(result);
@@ -254,17 +256,30 @@ public class LinkCheckJob extends RepositoryJob {
         return ! href.startsWith("#");
     }
     
-    private boolean shouldResetState(LinkCheckState state, Resource resource) {
+    private boolean shouldResetState(LinkCheckState state, Resource resource, SystemChangeContext context) {
         if (state.timestamp != null) {
-            // If linkcheck timestamp is older than resource last modified, 
-            // we need to invalidate the link check state.
-            String lastModTimestamp = SystemChangeContext.dateAsTimeString(resource.getLastModified());
-            if (state.timestamp.compareTo(lastModTimestamp) < 0) {
+            try {
+                final long lastCheckRun = SystemChangeContext.parseTimestamp(state.timestamp).getTime();
+                final long resourceLastModified = resource.getLastModified().getTime();
+                
+                // If linkcheck timestamp is older than resource last modified, 
+                // we need to invalidate the link check state.
+                if (lastCheckRun < resourceLastModified) return true;
+
+                // If complete and more than MIN_RECHECK_SECONDS between now and last run, do check again.
+                if (state.complete) {
+                    long now = context.getTimestamp().getTime();
+                    if (now - lastCheckRun < MIN_RECHECK_SECONDS*1000) {
+                        logger.debug("Not long enough since last completed check (min "
+                                + MIN_RECHECK_SECONDS + " seconds, will not reset state.");
+                        return false;
+                    }
+                }
+            } catch (java.text.ParseException pe) {
                 return true;
             }
         }
-        // If complete, reset to check all links again, otherwise continue
-        // checking from currently stored link index.
+        
         return state.complete;
     }
 

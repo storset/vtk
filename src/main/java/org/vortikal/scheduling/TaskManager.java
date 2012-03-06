@@ -31,6 +31,9 @@
 
 package org.vortikal.scheduling;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -48,6 +51,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
 
@@ -140,7 +144,7 @@ public class TaskManager implements ApplicationContextAware, InitializingBean {
             if (th.task.isEnabled()) {
                 logger.info("Scheduling task " 
                         + th.task.getId() 
-                        + " with trigger " 
+                        + " with " 
                         + th.task.getTriggerSpecification());
                 th.future = this.scheduler.schedule(th.task, th.trigger);
             } else {
@@ -148,10 +152,11 @@ public class TaskManager implements ApplicationContextAware, InitializingBean {
             }
         }
     }
-    
+
+    // private factory method for creating Spring trigger impls.
     private Trigger getTriggerImpl(TriggerSpecification spec) {
-        if (spec instanceof SimplePeriodicTriggerSpecification) {
-            SimplePeriodicTriggerSpecification s = (SimplePeriodicTriggerSpecification)spec;
+        if (spec instanceof PeriodicTriggerSpecification) {
+            PeriodicTriggerSpecification s = (PeriodicTriggerSpecification)spec;
             
             PeriodicTrigger p = new PeriodicTrigger(s.getSeconds(), TimeUnit.SECONDS);
             p.setFixedRate(s.isFixedRate());
@@ -164,6 +169,19 @@ public class TaskManager implements ApplicationContextAware, InitializingBean {
         if (spec instanceof CronTriggerSpecification) {
             CronTriggerSpecification s = (CronTriggerSpecification)spec;
             return new CronTrigger(s.getExpression());
+        }
+        
+        if (spec instanceof OneShotTriggerSpecification) {
+            final int delay = ((OneShotTriggerSpecification)spec).getDelaySeconds();
+            return new Trigger() {
+                @Override
+                public Date nextExecutionTime(TriggerContext triggerContext) {
+                    if (triggerContext.lastScheduledExecutionTime() != null) return null;
+                    Calendar c = Calendar.getInstance();
+                    c.add(Calendar.SECOND, delay);
+                    return c.getTime();
+                }
+            };
         }
         
         throw new IllegalArgumentException("Unknown trigger specification: " + spec);

@@ -32,51 +32,27 @@
 package org.vortikal.scheduling;
 
 /**
- * Thin abstraction for 
+ * One shot trigger. It fires once, after a configurable delay. Then
+ * never again. Can be used for startup jobs.
  */
-public class SimplePeriodicTriggerSpecification implements TriggerSpecification {
+public class OneShotTriggerSpecification implements TriggerSpecification {
 
-    private int seconds;
-    private int initialDelaySeconds;
-    private boolean fixedRate = false;
-    
-    /**
-     * 
-     * @param seconds The seconds between each period
-     * @param fixedRate if seconds should be interpreted as fixed rate insteead of
-     *                  fixed delay between each invocation.
-     */
-    public SimplePeriodicTriggerSpecification(int seconds, int initialDelaySeconds, boolean fixedRate) {
-        if (seconds <= 0) {
-            throw new IllegalArgumentException("seconds must be >= 1");
+    private int delaySeconds = 0;
+
+    public int getDelaySeconds() {
+        return delaySeconds;
+    }
+
+    public void setDelaySeconds(int delaySeconds) {
+        if (delaySeconds < 0) {
+            throw new IllegalArgumentException("delaySeconds must be >= 0");
         }
-        if (initialDelaySeconds < 0) {
-            initialDelaySeconds = 0;
-        }
-        this.seconds = seconds;
-        this.initialDelaySeconds = initialDelaySeconds;
-        this.fixedRate = fixedRate;
-    }
-    
-    public int getSeconds() {
-        return this.seconds;
-    }
-    
-    public int getInitialDelaySeconds() {
-        return this.initialDelaySeconds;
-    }
-    
-    public boolean isFixedRate() {
-        return this.fixedRate;
+        this.delaySeconds = delaySeconds;
     }
     
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder(getClass().getSimpleName());
-        b.append("[").append("period = ").append(this.seconds).append(" sec");
-        b.append(", delay = ").append(this.initialDelaySeconds).append(" sec");
-        b.append(this.fixedRate ? ", fixed rate" : ", fixed delay");
-        b.append("]");
-        return b.toString();
+        return "OneShotTriggerSpecification[delaySeconds = " + this.delaySeconds + "]";
     }
+    
 }

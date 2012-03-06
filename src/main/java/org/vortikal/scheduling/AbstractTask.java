@@ -70,10 +70,10 @@ public abstract class AbstractTask implements Task {
     }
     
     /**
-     * Set either a simple periodic triggering expression or a cron trigger
-     * expression.
+     * Set either a simple periodic triggering expression, a oneshot trigger or
+     * a cron trigger expression.
      * 
-     * Simple expression consists of up to three fields separated by comma.
+     * Periodic expression consists of up to three fields separated by comma.
      * Only first field (period in seconds) is required, the rest is optional.
      * 
      * First field is period in seconds.
@@ -81,8 +81,14 @@ public abstract class AbstractTask implements Task {
      * Third field is boolean indicating if period should be fixed rate
      * or fixed delay (optional).
      * 
-     * For cron trigger expression:
-     * @see CronTriggerSpecification
+     * Example: 60,60,true
+     * 
+     * One shot expression consists of the keyword 'oneshot' in the first
+     * field, and optionally the delay in seconds as the second field.
+     * 
+     * Example: oneshot,100
+     * 
+     * For cron trigger expression, see {@link CronTriggerSpecification}.
      * 
      * @param expression 
      */
@@ -103,8 +109,20 @@ public abstract class AbstractTask implements Task {
         boolean fixedRate = false;
         
         if (parts.length == 1) {
+            if ("oneshot".equals(parts[0])) {
+                setTriggerSpecification(new OneShotTriggerSpecification());
+                return;
+            }
+            
             seconds = Integer.parseInt(parts[0]);
         } else if (parts.length == 2) {
+            if ("oneshot".equals(parts[0])) {
+                OneShotTriggerSpecification one = new OneShotTriggerSpecification();
+                one.setDelaySeconds(Integer.parseInt(parts[1]));
+                setTriggerSpecification(one);
+                return;
+            }
+            
             seconds = Integer.parseInt(parts[0]);
             delay = Integer.parseInt(parts[1]);
         } else if (parts.length == 3) {
@@ -115,7 +133,7 @@ public abstract class AbstractTask implements Task {
             throw new IllegalArgumentException("Unable to recognize trigger expression: " + expression);
         }
         
-        setTriggerSpecification(new SimplePeriodicTriggerSpecification(seconds, delay, fixedRate));
+        setTriggerSpecification(new PeriodicTriggerSpecification(seconds, delay, fixedRate));
     }
     
     @Override

@@ -209,4 +209,20 @@
     </property>
   </bean>
 
+  <bean id="saml.ssoCookieService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-3"/>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.SSOCookieAssertion">
+          <property name="serviceProviderURI" value="${saml.serviceProviderURI}" />
+          <property name="wordWhitelist" value="${security.ssoWordWhitelist}"/>
+          <property name="ssoTimeout" value="${security.ssoTimeoutMilliseconds}" />  
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="saml.ssoCookieHandler"/>
+  </bean>
+
+  <bean name="saml.ssoCookieHandler" class="org.vortikal.security.web.saml.SSOCookieController" />
+  
 </beans>

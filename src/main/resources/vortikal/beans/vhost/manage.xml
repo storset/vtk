@@ -5,7 +5,7 @@
   <!-- Temporarily redirect ?vrtx=thumbnail on manage hostname to view hostname until editor is fixed to use thumbnail service 
     to generate image URLs -->
   <bean id="manage.redirectThumbnails" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order" value="-3" />
+    <property name="order" value="-5" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.InvertAssertion">

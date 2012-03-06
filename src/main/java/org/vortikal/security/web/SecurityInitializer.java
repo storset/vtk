@@ -61,7 +61,6 @@ import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.security.token.TokenManager;
 import org.vortikal.security.web.AuthenticationHandler.AuthResult;
-import org.vortikal.security.web.saml.SamlAuthenticationHandler;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Assertion;
 import org.vortikal.web.service.Service;
@@ -201,11 +200,6 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         }
 
         for (AuthenticationHandler handler : this.authenticationHandlers) {
-
-            if (handler instanceof SamlAuthenticationHandler) {
-                ((SamlAuthenticationHandler) handler).checkSSOCookie(req, resp);
-            }
-
             if (handler.isRecognizedAuthenticationRequest(req)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Request " + req + " is recognized as an authentication attempt by handler " + handler

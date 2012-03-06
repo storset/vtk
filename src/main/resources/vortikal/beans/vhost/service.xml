@@ -13,7 +13,7 @@
   </bean>
 
   <bean id="configRedirectHttpsWebService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="order" value="-2" />
+    <property name="order" value="-4" />
     <property name="assertions">
       <list>
         <ref bean="webProtocolAssertion.inverted" />

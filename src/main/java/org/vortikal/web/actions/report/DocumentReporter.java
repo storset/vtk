@@ -117,6 +117,8 @@ public abstract class DocumentReporter extends AbstractReporter {
     }
     
     protected void handleResult(Resource resource, Map<String, Object> model) {
+        boolean[] test = (boolean[]) model.get("isReadRestricted");
+        System.out.println("******* " + test.length);
     }
 
     public void setManageService(Service manageService) {

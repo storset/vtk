@@ -71,7 +71,14 @@
              <input type="hidden" name="contacturl" value="${contacturl?html}" />
            </#if>
        
-           <input type="submit" class="submit-email-form" value="Send" name="submit"/>
+           <div id="vrtx-submit-cancel-buttons">
+             <div class="vrtx-button"> 
+               <input type="submit" class="submit-email-form" value="Send" name="submit"/>
+             </div>
+             <div class="vrtx-button"> 
+               <input type="button" class="submit-email-form" value="Send" name="submit"/>
+             </div>  
+           </div>
          </form>
        </#if>
        

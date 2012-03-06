@@ -34,22 +34,27 @@
        
        <#-- Email to -->
        <label for="emailTo"><@vrtx.msg code="tip.form.emailto" default="Send e-mail to" /></label> 
-       <#if emailSavedTo?exists && emailSavedTo?has_content>
-         <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}"/>
-       <#else>
-         <input type="text" id="emailTo" name="emailTo" value=""/>
-       </#if>
-       <div class="email-help"><@vrtx.msg
-       code="tip.form.emailtomessage" default="Use comma as a separator if sending to more than one e-mail recipient" /></div> 
+       
+       <div class="vrtx-textfield">  
+         <#if emailSavedTo?exists && emailSavedTo?has_content>
+           <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}"/>
+         <#else>
+           <input type="text" id="emailTo" name="emailTo" value=""/>
+         </#if>
+       </div>
+       
+       <div class="email-help"><@vrtx.msg code="tip.form.emailtomessage" default="Use comma as a separator if sending to more than one e-mail recipient" /></div> 
        
        <#-- Email from -->
        <label for="emailFrom"><@vrtx.msg code="tip.form.emailfrom" default="Your e-mail address" /></label>  
-         
-       <#if emailSavedFrom?exists && emailSavedFrom?has_content>
-         <input type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom?html}"/>
-       <#else>
-         <input type="text" id="emailFrom" name="emailFrom" value=""/>
-       </#if>
+       
+       <div class="vrtx-textfield">  
+         <#if emailSavedFrom?exists && emailSavedFrom?has_content>
+           <input type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom?html}"/>
+         <#else>
+           <input type="text" id="emailFrom" name="emailFrom" value=""/>
+         </#if>
+       </div>
        
        <#-- Your comment -->
        <label for="yourComment"><@vrtx.msg code="tip.form.yourcomment" default="Your comment" /></label> 
@@ -59,8 +64,14 @@
        <#else>
          <textarea rows="6" cols="10" id="yourComment" name="yourComment" value=""></textarea> 
        </#if>
-       
-       <input type="submit" class="submit-email-form" value="Send" name="submit"/>
+       <div id="vrtx-submit-cancel-buttons">
+         <div class="vrtx-button"> 
+           <input type="submit" class="submit-email-form" value="Send" name="submit"/>
+         </div>
+         <div class="vrtx-button"> 
+           <input type="button" class="submit-email-form" value="Send" name="submit"/>
+         </div>  
+       </div>
     </form>
        
     <#-- Postback from Controller -->

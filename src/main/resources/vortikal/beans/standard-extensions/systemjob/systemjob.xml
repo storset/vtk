@@ -50,8 +50,6 @@
     </property>
   </bean>
 
-
-
   <!-- Broken link check job for recently modified resources -->
   <bean id="repository.systemjob.linkcheck.recent" class="org.vortikal.repository.systemjob.LinkCheckJob"
         parent="repository.systemjob">
@@ -62,6 +60,7 @@
     <property name="linksPropDef" ref="linksPropDef" />
     <property name="linkCheckPropDef" ref="linkCheckPropDef" />
     <property name="linkChecker" ref="repository.linkChecker" />
+    <property name="blackList" ref="repository.systemjob.linkcheck.blacklist" />
     <property name="canonicalUrlConstructor" ref="canonicalUrlConstructor" />
 
 
@@ -100,6 +99,7 @@
     <property name="linksPropDef" ref="linksPropDef" />
     <property name="linkCheckPropDef" ref="linkCheckPropDef" />
     <property name="linkChecker" ref="repository.linkChecker" />
+    <property name="blackList" ref="repository.systemjob.linkcheck.blacklist" />
     <property name="canonicalUrlConstructor" ref="canonicalUrlConstructor" />
 
     <property name="affectedPropDefPointers">
@@ -147,4 +147,27 @@
     </property>
   </bean>
   
+
+  <bean id="repository.systemjob.linkcheck.blacklist" class="org.vortikal.util.repository.JSONBackedListResource" parent="repositoryAware">
+    <property name="uri" value="${systemjob.linkcheck.blacklist}" />
+    <property name="token" ref="writeAllToken" />
+  </bean>
+
+  <bean id="repository.systemjob.linkcheck.blacklist.refreshTrigger"
+        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+    <property name="repository" ref="repository" />
+    <property name="uri" value="${systemjob.linkcheck.blacklist}" />
+    <property name="multipleInvocations">
+      <bean class="org.springframework.beans.factory.config.MapFactoryBean">
+        <property name="targetMapClass" value="java.util.LinkedHashMap" />
+        <property name="sourceMap">
+          <map>
+            <entry key-ref="repository.systemjob.linkcheck.blacklist" value="load" />
+            <entry key-ref="repository.systemjob.linkcheck" value="refreshBlackList" />
+          </map>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
 </beans>

@@ -66,8 +66,10 @@ public class LinkCheckJob extends RepositoryJob {
     private PathSelector pathSelector;
     private PropertyTypeDefinition linkCheckPropDef;
     private PropertyTypeDefinition linksPropDef;
-    
     private LinkChecker linkChecker;
+    private List<String> blackListConfig;
+    private List<Pattern> blackList;
+    
     private CanonicalUrlConstructor urlConstructor;
     
     // TODO these should probably be configurable
@@ -217,7 +219,6 @@ public class LinkCheckJob extends RepositoryJob {
                     }
                     
                     String val = value.toString();
-                    
                     if (!shouldCheck(val)) {
                         return true;
                     }
@@ -259,12 +260,22 @@ public class LinkCheckJob extends RepositoryJob {
             Pattern.compile("^([a-z][a-z0-9+.-]+):", Pattern.CASE_INSENSITIVE);
     
     private boolean shouldCheck(String href) {
+        if (this.blackList != null) {
+            for (Pattern p: this.blackList) {
+                Matcher m = p.matcher(href);
+                if (m.matches()) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Skip " + href + ": black-listed");
+                    }
+                    return false;
+                }
+            }
+        }
         Matcher schemeMatcher = SCHEME.matcher(href);
         if (schemeMatcher.find()) {
             String scheme = schemeMatcher.group(1);
             return "http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme);
         }
-        
         return ! href.startsWith("#");
     }
     
@@ -319,6 +330,23 @@ public class LinkCheckJob extends RepositoryJob {
     public void setCanonicalUrlConstructor(CanonicalUrlConstructor urlConstructor) {
         this.urlConstructor = urlConstructor;
     }
+    
+    public void setBlackList(List<String> blackList) {
+        this.blackListConfig = blackList;
+        refreshBlackList();
+    }
+    
+    public void refreshBlackList() {
+        if (this.blackListConfig != null) {
+            List<Pattern> blackList = new ArrayList<Pattern>();
+            for (String regexp: this.blackListConfig) {
+                Pattern p = Pattern.compile(regexp);
+                blackList.add(p);
+            }
+            this.blackList = blackList;
+        }
+    }
+    
 
     private static class LinkCheckState {
         private List<String> brokenLinks = new ArrayList<String>();
@@ -327,7 +355,7 @@ public class LinkCheckJob extends RepositoryJob {
         private boolean complete = false;
         
         private LinkCheckState() {}
-        
+
         @SuppressWarnings("unchecked")
         private static LinkCheckState create(Property statusProp) {
             LinkCheckState s = new LinkCheckState();

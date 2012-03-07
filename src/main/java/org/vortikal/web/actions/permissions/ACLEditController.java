@@ -157,16 +157,9 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 .listPrivilegedGroups(this.privilege)));
 
         Principal[] privilegedPrincipals = acl.listPrivilegedUsers(this.privilege);
-        List<Principal> authorizedUsers = new ArrayList<Principal>();
-        for (Principal p : privilegedPrincipals) {
-            Principal principalDoc = this.principalFactory
-                    .getPrincipalDocument(p.getUnqualifiedName(), preferredLocale);
-            if (principalDoc != null) {
-                authorizedUsers.add(principalDoc);
-            } else {
-                authorizedUsers.add(p);
-            }
-        }
+        List<Principal> authorizedUsers = this.principalFactory.resolvePrincipalDocuments(new ArrayList<Principal>(
+                Arrays.asList(privilegedPrincipals)), preferredLocale);
+
         authorizedUsers.addAll(Arrays.asList(acl.listPrivilegedPseudoPrincipals(this.privilege)));
 
         if (this.shortcuts != null) {

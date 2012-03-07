@@ -194,16 +194,9 @@ public class ACLProvider implements ReferenceDataProvider {
             // Search for potential person documents relating to any of the user
             // principals
             Locale preferredLocale = this.localeResolver.resolveLocale(request);
-            List<Principal> principals = new ArrayList<Principal>();
-            for (Principal principal : userPrincipals) {
-                Principal principalDoc = this.principalFactory.getPrincipalDocument(principal.getQualifiedName(),
-                        preferredLocale);
-                if (principalDoc != null) {
-                    principals.add(principalDoc);
-                } else {
-                    principals.add(principal);
-                }
-            }
+            List<Principal> principals = this.principalFactory.resolvePrincipalDocuments(
+                    new ArrayList<Principal>(Arrays.asList(userPrincipals)), preferredLocale);
+
             Principal[] userPrincipalsWithDocs = new Principal[principals.size()];
             privilegedUsers.put(actionName, principals.toArray(userPrincipalsWithDocs));
 

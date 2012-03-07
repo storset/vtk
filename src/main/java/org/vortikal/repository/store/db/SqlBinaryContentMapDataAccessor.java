@@ -32,37 +32,25 @@ package org.vortikal.repository.store.db;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.store.BinaryContentDataAccessor;
+import org.vortikal.repository.store.DataAccessException;
 
 public class SqlBinaryContentMapDataAccessor extends AbstractSqlMapDataAccessor implements BinaryContentDataAccessor {
 
-    private static final Logger log = Logger.getLogger(SqlBinaryContentMapDataAccessor.class);
-
     @Override
-    public ContentStream getBinaryStream(String binaryRef) {
-        try {
-            Integer binaryId = Integer.valueOf(binaryRef);
-            String sqlMap = getSqlMap("selectBinaryPropertyEntry");
-            @SuppressWarnings("unchecked")
-            Map result = (Map) getSqlMapClientTemplate().queryForObject(sqlMap, binaryId);
-            return (ContentStream) result.get("binaryStream");
-        } catch (Exception e) {
-            log.error("An error occured while getting the binary stream for property with id: " + binaryRef, e);
-        }
-        return null;
+    public ContentStream getBinaryStream(String binaryRef) throws DataAccessException {
+        Integer binaryId = Integer.valueOf(binaryRef);
+        String sqlMap = getSqlMap("selectBinaryPropertyEntry");
+        @SuppressWarnings("unchecked")
+        Map result = (Map) getSqlMapClientTemplate().queryForObject(sqlMap, binaryId);
+        return (ContentStream) result.get("binaryStream");
     }
 
     @Override
-    public String getBinaryMimeType(String binaryRef) {
-        try {
-            Integer binaryId = Integer.valueOf(binaryRef);
-            String sqlMap = getSqlMap("selectBinaryMimeTypeEntry");
-            return (String) getSqlMapClientTemplate().queryForObject(sqlMap, binaryId);
-        } catch (Exception e) {
-            log.error("An error occured while getting the binary mimetype for property with id: " + binaryRef, e);
-        }
-        return null;
+    public String getBinaryMimeType(String binaryRef) throws DataAccessException {
+        Integer binaryId = Integer.valueOf(binaryRef);
+        String sqlMap = getSqlMap("selectBinaryMimeTypeEntry");
+        return (String) getSqlMapClientTemplate().queryForObject(sqlMap, binaryId);
     }
 }

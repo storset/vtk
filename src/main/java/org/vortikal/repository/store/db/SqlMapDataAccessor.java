@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.store.db;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -75,6 +76,11 @@ import com.ibatis.sqlmap.client.SqlMapExecutor;
 
 /**
  * An iBATIS SQL maps implementation of the DataAccessor interface.
+ * 
+ * What The Fuck
+ * Our DataAccessor interface declares our own DataAccessException type as thrown by all methods,
+ * but THIS CLASS IN PRACTICE MOSTLY THROWS Spring's DataAccessException. What a mess.
+ * 
  */
 public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements DataAccessor {
 
@@ -969,6 +975,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             if (p.getType() == PropertyType.Type.BINARY) {
                 // XXX: mem copying has to be done because of the way properties
                 // are stored: first deleted then inserted (never updated)
+
+                // XXX: handle stale value refs from client code
                 copyBinaryPropValueToMemory(p);
             }
         }
@@ -1228,10 +1236,28 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
     private void copyBinaryPropValueToMemory(Property prop) {
         try {
-            byte[] data = StreamUtil.readInputStream(prop.getBinaryStream().getStream());
-            prop.setBinaryValue(data, prop.getBinaryMimeType());
-        } catch (Exception e) {
-            logger.error("Could not read binary stream for property " + prop.getDefinition().getName(), e);
+            Value[] values;
+            if (prop.getDefinition() != null && prop.getDefinition().isMultiple()) {
+                values = prop.getValues();
+            } else {
+                values = new Value[]{prop.getValue()};
+            }
+            
+            for (int i = 0; i < values.length; i++) {
+                BinaryValue binval = (BinaryValue) values[i];
+                if (!binval.isBuffered()) {
+                    byte[] data = StreamUtil.readInputStream(binval.getContentStream().getStream());
+                    values[i] = new BinaryValue(data, binval.getContentType());
+                }
+            }
+            
+            if (prop.getDefinition() != null && prop.getDefinition().isMultiple()) {
+                prop.setValues(values);
+            } else {
+                prop.setValue(values[0]);
+            }
+        } catch (IOException io) {
+            throw new DataAccessException(io);
         }
     }
 

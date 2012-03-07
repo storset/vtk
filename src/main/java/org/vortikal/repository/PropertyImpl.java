@@ -479,12 +479,11 @@ public class PropertyImpl implements Serializable, Cloneable, Property {
     }
     
     @Override
-    public void setBinaryValue(byte[] binaryValue, String binaryMimeType) {
+    public void setBinaryValue(byte[] buffer, String contentType) {
         if (getType() != PropertyType.Type.BINARY) {
             throw new IllegalOperationException("Property " + this + " not of type BINARY");
         }
-    	Value v = new BinaryValue(binaryValue, binaryMimeType);
-        setValue(v);
+        setValue(new BinaryValue(buffer, contentType));
     }
     
     @Override

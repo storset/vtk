@@ -194,7 +194,7 @@ public class ValueFactoryImpl implements ValueFactory {
         public String getContentType() {
             return this.dao.getBinaryMimeType(this.objRef);
         }
-
+        
         public String getID() {
             return this.objRef;
         }

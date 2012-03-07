@@ -731,11 +731,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     .currentTimeMillis()
                     + (requestedTimeoutSeconds * 1000))));
         }
-        this.dao.store(r);
+        
+        ResourceImpl newResource = this.dao.store(r);
+        try {
+            return (Resource)newResource.clone();
+        } catch (CloneNotSupportedException c) {
+            throw new IOException("Failed to clone resource");
+        }
         // this.authorizationManager.lockResource(r, principal, ownerInfo,
         // depth, requestedTimeoutSeconds, (lockToken != null));
-
-        return r;
     }
 
     private void checkLock(Resource resource, Principal principal) throws ResourceLockedException, IOException,

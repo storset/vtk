@@ -20,7 +20,9 @@
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/plugins/shortcut.js"></script> 
   <script type="text/javascript"><!--
     shortcut.add("Ctrl+S", function() {
-      $(".vrtx-focus-button:last input").click();
+      if(!$("#TB_window").length) {
+        $(".vrtx-focus-button:last input").click();
+      }
     });
 
     var ajaxSaveText = "<@vrtx.msg code='editor.save-visual-profile-ajax-loading-title' />"; 

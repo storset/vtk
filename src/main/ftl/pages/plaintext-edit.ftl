@@ -27,7 +27,9 @@
     var ajaxSaveText = "<@vrtx.msg code='editor.save-plaintext-edit-ajax-loading-title' />";
 
     shortcut.add("Ctrl+S", function() {
-      $(".vrtx-focus-button:last input").click();
+      if(!$("#TB_window").length) {
+        $(".vrtx-focus-button:last input").click();
+      }
     });
 
     $(document).ready(function() {

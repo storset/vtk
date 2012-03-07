@@ -19,7 +19,9 @@
   
   <script type="text/javascript"><!-- 
     shortcut.add("Ctrl+S",function() {
-      $(".vrtx-focus-button:last input").click();
+      if(!$("#TB_window").length) {
+        $(".vrtx-focus-button:last input").click();
+      }
     });
 
     $(window).load(function() {

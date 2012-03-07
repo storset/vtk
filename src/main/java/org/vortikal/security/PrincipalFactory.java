@@ -144,8 +144,7 @@ public class PrincipalFactory {
         return retval;
     }
 
-    // XXX [rezam] Separate implementation because I'm to scared to mess with
-    // existing setup. So scared...
+    // Search for a person document if configuration allows
     public Principal getPrincipalDocument(String id, Locale preferredLocale) {
         if (this.personDocumentPrincipalMetadataDao != null) {
             PrincipalImpl principal = new PrincipalImpl(id, Type.USER);
@@ -167,6 +166,47 @@ public class PrincipalFactory {
         // Not configured to search for documents, or no document for principal
         // found
         return null;
+    }
+
+    // For the supplied list of principals, resolve/swap those for which there
+    // exists a person document
+    public List<Principal> resolvePrincipalDocuments(List<Principal> principals, Locale preferredLocale) {
+        if (this.personDocumentPrincipalMetadataDao != null) {
+
+            StringBuilder sb = new StringBuilder();
+            for (Principal principal : principals) {
+                if (sb.length() != 0) {
+                    sb.append(";");
+                }
+                sb.append(principal.getName());
+            }
+
+            PrincipalSearchImpl ps = new PrincipalSearchImpl(Type.USER, sb.toString(), preferredLocale);
+            List<PrincipalMetadata> metadataList = this.personDocumentPrincipalMetadataDao.search(ps, preferredLocale);
+
+            if (metadataList != null && metadataList.size() > 0) {
+                for (PrincipalMetadata metadata : metadataList) {
+                    PrincipalImpl principal = new PrincipalImpl(metadata.getUid(), Type.USER);
+                    Object descriptionObj = metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE);
+                    if (descriptionObj != null) {
+                        principal.setDescription(descriptionObj.toString());
+                    }
+                    Object urlObj = metadata.getValue(PrincipalMetadata.URL_ATTRIBUTE);
+                    if (urlObj != null) {
+                        principal.setURL(urlObj.toString());
+                    }
+                    principal.setMetadata(metadata);
+
+                    // Replace original principal with document
+                    if (principals.contains(principal)) {
+                        principals.remove(principal);
+                        principals.add(principal);
+                    }
+
+                }
+            }
+        }
+        return principals;
     }
 
     private Principal getPseudoPrincipal(String name) throws InvalidPrincipalException {

@@ -112,28 +112,13 @@
       <bean class="org.vortikal.repository.systemjob.AggregatingPathSelector">
         <constructor-arg>
           <list>
-            <!-- Select first those that have never had system job run before -->
-            <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" 
+           <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" 
                   parent="repository.systemjob.indexPathSelector">
               <property name="queryString">
                 <value>
                   (type IN json-resource OR type IN html OR type IN managed-xml OR type IN collection)
                   AND
-                  system-job-status@linkcheck !exists
-                </value>
-              </property>
-              <property name="limit" value="${systemjob.linkcheck.batch}" />
-            </bean>
-            
-           <!--  Then select those with missing link-status OR haven't been checked in some time. -->
-            <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" 
-                  parent="repository.systemjob.indexPathSelector">
-              <property name="queryString">
-                <value>
-                  (type IN json-resource OR type IN html OR type IN managed-xml OR type IN collection)
-                  AND
-                  (link-status !exists 
-                   OR system-job-status@linkcheck &lt; {$currentTime-${systemjob.linkcheck.interval}|yyyyMMdd\ HH:mm:ss})
+                  link-status != AWAITING_LINKCHECK
                 </value>
               </property>
               <property name="sortString">

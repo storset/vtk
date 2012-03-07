@@ -1015,9 +1015,9 @@ form#editor .tip ul a {
 }
 
 #TB_window {
-  border-radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
+  border-radius: 7px;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
 }
 
 #TB_closeAjaxWindow {

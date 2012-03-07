@@ -137,8 +137,19 @@ public final class BinaryValue extends Value {
     
     @Override
     public String toString() {
-        return "binary#buffer:" + this.buffer + ",ref:" 
-        + this.valueRef + ",type:" + this.contentType;
+        StringBuilder b = new StringBuilder("BinaryValue[");
+        if (this.buffer != null) {
+            b.append("buffered").append(", type = ").append(this.contentType);
+            b.append(", len = ").append(this.buffer.length);
+            b.append(", buffer identity = ").append(System.identityHashCode(this.buffer));
+        } else {
+            b.append("value-ref = ").append(this.valueRef);
+        }
+        b.append("]");
+        return b.toString();
     }
-
+    
+    public boolean isBuffered() {
+        return this.buffer != null;
+    }
 }

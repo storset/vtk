@@ -228,11 +228,11 @@ public class QueryParserTest extends TestCase {
 
         Query q = queryParser.parse("(type IN emne && emne:emnekode exists && emne:emnenavn exists" 
                 + " && foo:bar not exists && emne:status=gjeldende-versjon && depth=6)" 
-                + " AND uri = /studier/emner/jus/* AND name=index.xml AND foo@bar.bing.bong >= baz");
+                + " AND uri = /studier/emner/jus/* AND name=index.xml AND foo@bar.bing.bong >= baz AND acl ALL");
 
         assertTrue(q instanceof AndQuery);
         AndQuery aqTop = (AndQuery) q;
-        assertEquals(4, aqTop.getQueries().size());
+        assertEquals(5, aqTop.getQueries().size());
 
         assertTrue(aqTop.getQueries().get(0) instanceof AndQuery);
         assertTrue(aqTop.getQueries().get(1) instanceof UriPrefixQuery);
@@ -253,6 +253,9 @@ public class QueryParserTest extends TestCase {
         assertEquals("bar.bing.bong", ptq.getComplexValueAttributeSpecifier());
         assertEquals(TermOperator.GE, ptq.getOperator());
 
+        assertTrue(aqTop.getQueries().get(4) instanceof ACLReadForAllQuery);
+        assertFalse(((ACLReadForAllQuery)aqTop.getQueries().get(4)).isInverted());
+        
         // Level 2, first top node
         AndQuery sub1 = (AndQuery) aqTop.getQueries().get(0);
         assertEquals(6, sub1.getQueries().size());

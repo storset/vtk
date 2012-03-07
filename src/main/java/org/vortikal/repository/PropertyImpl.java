@@ -50,7 +50,7 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueSeparator;
-import org.vortikal.repository.resourcetype.value.BinaryValue;
+import org.vortikal.repository.resourcetype.BinaryValue;
 import org.vortikal.security.Principal;
 
 

@@ -40,7 +40,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.repository.resourcetype.value.BinaryValue;
 import org.vortikal.repository.store.BinaryContentDataAccessor;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;

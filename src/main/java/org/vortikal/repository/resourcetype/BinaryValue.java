@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.resourcetype.value;
+package org.vortikal.repository.resourcetype;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

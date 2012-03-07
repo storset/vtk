@@ -47,10 +47,10 @@
   <table id="vrtx-resourceInfoMain" class="resourceInfo">
 
       <!-- Last modified -->
-      <#assign modifiedByStr = resource.modifiedBy.name />
-      <#if resource.modifiedBy.URL?exists>
+      <#assign modifiedByStr = modifiedBy.description />
+      <#if modifiedBy.URL?exists>
         <#assign modifiedByStr>
-          <a title="${resource.modifiedBy.description?html}" href="${resource.modifiedBy.URL?html}">${resource.modifiedBy.name}</a>
+          <a title="${modifiedBy.name?html}" href="${modifiedBy.URL?html}">${modifiedBy.description}</a>
         </#assign>
       </#if>
       <#assign modifiedStr>
@@ -65,10 +65,10 @@
              value = modifiedStr />
 
       <!-- Created -->
-      <#assign createdByStr = resource.createdBy.name />
-      <#if resource.createdBy.URL?exists>
+      <#assign createdByStr = createdBy.description />
+      <#if createdBy.URL?exists>
         <#assign createdByStr>
-          <a title="${resource.createdBy.description?html}" href="${resource.createdBy.URL?html}">${resource.createdBy.name}</a>
+          <a title="${createdBy.name?html}" href="${createdBy.URL?html}">${createdBy.description}</a>
         </#assign>
       </#if>
       <#assign createdByStr>
@@ -90,10 +90,10 @@
           <@vrtx.msg code=msgPrefix default=ownerItem.definition.name />
         </td>
         <td class="value">
-          <#if ownerItem.property.principalValue.URL?exists>
-            <a title="${ownerItem.property.principalValue.description?html}" href="${ownerItem.property.principalValue.URL?html}">${ownerItem.property.principalValue.name?html}</a>
+          <#if owner.URL?exists>
+            <a title="${owner.name?html}" href="${owner.URL?html}">${owner.description?html}</a>
           <#else>
-            ${ownerItem.property.principalValue.name?html}
+            ${owner.description?html}
           </#if>
 
           <#if ownerItem.toggleURL?exists>

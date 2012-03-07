@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +50,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.IllegalOperationException;
@@ -68,6 +70,8 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFactoryImpl;
 import org.vortikal.repository.resourcetype.ValueFormatException;
+import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -114,6 +118,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * </ul>
  * 
  */
+@SuppressWarnings("deprecation")
 public class PropertyEditController extends SimpleFormController implements ReferenceDataProvider, BeanFactoryAware,
         ReferenceDataProviding, InitializingBean {
 
@@ -132,6 +137,8 @@ public class PropertyEditController extends SimpleFormController implements Refe
     private String propertyMapModelName;
 
     private PrincipalManager principalManager;
+    private PrincipalFactory principalFactory;
+    private LocaleResolver localeResolver;
 
     private BeanFactory beanFactory;
     private Service urchinService;
@@ -398,8 +405,9 @@ public class PropertyEditController extends SimpleFormController implements Refe
 
     }
 
-    @SuppressWarnings( { "rawtypes", "unchecked" })
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void referenceData(Map model, HttpServletRequest request) throws Exception {
+
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
         Service service = requestContext.getService();
@@ -410,6 +418,11 @@ public class PropertyEditController extends SimpleFormController implements Refe
         TypeInfo typeInfo = repository.getTypeInfo(token, uri);
         List<PropertyItem> propsList = new ArrayList<PropertyItem>();
         Map<String, PropertyItem> propsMap = new HashMap<String, PropertyItem>();
+
+        Locale preferredLocale = this.localeResolver.resolveLocale(request);
+        this.resolvePrincipal(model, "modifiedBy", resource.getModifiedBy(), preferredLocale);
+        this.resolvePrincipal(model, "createdBy", resource.getCreatedBy(), preferredLocale);
+        this.resolvePrincipal(model, "owner", resource.getOwner(), preferredLocale);
 
         for (PropertyTypeDefinition def : this.propertyTypeDefinitions) {
 
@@ -480,6 +493,16 @@ public class PropertyEditController extends SimpleFormController implements Refe
 
         model.put(this.propertyListModelName, propsList);
         model.put(this.propertyMapModelName, propsMap);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private void resolvePrincipal(Map model, String key, Principal principal, Locale preferredLocale) {
+        Principal principalDoc = this.principalFactory.getPrincipalDocument(principal.getQualifiedName(),
+                preferredLocale);
+        if (principalDoc != null) {
+            principal = principalDoc;
+        }
+        model.put(key, principal);
     }
 
     private boolean hasUrchinStats(Resource resource) {
@@ -584,6 +607,16 @@ public class PropertyEditController extends SimpleFormController implements Refe
     @Required
     public void setPrincipalManager(PrincipalManager principalManager) {
         this.principalManager = principalManager;
+    }
+
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
+    }
+
+    @Required
+    public void setLocaleResolver(LocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
     }
 
     @Required

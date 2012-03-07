@@ -91,4 +91,10 @@ public class CachingQueryAuthorizationFilterFactory extends SimpleQueryAuthoriza
             return aclFilter;
         }
     }
+
+    @Override
+    public Filter readForAllFilter(IndexReader reader) {
+        return this.cachingAclReadForAllFilter;
+    }
+    
 }

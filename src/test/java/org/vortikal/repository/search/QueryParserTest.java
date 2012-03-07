@@ -30,12 +30,14 @@
  */
 package org.vortikal.repository.search;
 
+import org.vortikal.repository.search.query.ACLReadForAllQuery;
 import org.vortikal.testing.mocktypes.MockResourceTypeTree;
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.vortikal.repository.Namespace;
+import org.vortikal.repository.search.query.ACLExistsQuery;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.NameTermQuery;
 import org.vortikal.repository.search.query.OrQuery;
@@ -186,6 +188,32 @@ public class QueryParserTest extends TestCase {
         assertEquals("r", peq.getPropertyDefinition().getName());
         assertEquals(Namespace.DEFAULT_NAMESPACE, peq.getPropertyDefinition().getNamespace());
         assertTrue(peq.isInverted());
+    }
+    
+    public void testAclQuery() {
+        Query q = queryParser.parse("acl EXISTS");
+        assertTrue(q instanceof ACLExistsQuery);
+        assertFalse(((ACLExistsQuery)q).isInverted());
+
+        q = queryParser.parse("acl !EXISTS");
+        assertTrue(q instanceof ACLExistsQuery);
+        assertTrue(((ACLExistsQuery)q).isInverted());
+
+        q = queryParser.parse("acl NOT EXISTS");
+        assertTrue(q instanceof ACLExistsQuery);
+        assertTrue(((ACLExistsQuery)q).isInverted());
+        
+        q = queryParser.parse("acl ALL");
+        assertTrue(q instanceof ACLReadForAllQuery);
+        assertFalse(((ACLReadForAllQuery)q).isInverted());
+
+        q = queryParser.parse("acl !ALL");
+        assertTrue(q instanceof ACLReadForAllQuery);
+        assertTrue(((ACLReadForAllQuery)q).isInverted());
+
+        q = queryParser.parse("acl NOT ALL");
+        assertTrue(q instanceof ACLReadForAllQuery);
+        assertTrue(((ACLReadForAllQuery)q).isInverted());
     }
 
     public void testEscaping() {

@@ -351,4 +351,16 @@ public class DumpQueryTreeVisitor implements QueryTreeVisitor {
 
         return buf.toString();
     }
+
+    @Override
+    public Object visit(ACLReadForAllQuery query, Object data) {
+        if (data == null) data = "";
+        StringBuilder buf = new StringBuilder((String)data);
+        buf.append(query.getClass().getName()).append("\n");
+        buf.append(data).append("Inverted: " + query.isInverted()).append("\n");
+
+        return buf.toString();
+    }
+    
+    
 }

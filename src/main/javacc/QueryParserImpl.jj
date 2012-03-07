@@ -35,6 +35,7 @@ import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.repository.search.query.ACLExistsQuery;
+import org.vortikal.repository.search.query.ACLReadForAllQuery;
 
 
 /**
@@ -174,6 +175,8 @@ TOKEN : {
         //      Cannot change now, since that would probably break a lot of things in the wild.
         | <EXISTS: "exists" | "EXISTS">                                    // Should have been only "EXISTS"
         | <NOTEXISTS: "not exists" | "!exists" | "!EXISTS" | "NOT EXISTS"> // Should have been only "NOT EXISTS" | "!EXISTS"
+        | <ALL: "ALL">
+        | <NOTALL: "NOT ALL" | "!ALL">
 
         | <ASTERISK: "*">
 
@@ -311,14 +314,35 @@ Query DepthQuery() :
 
 Query ACLQuery() :
 {
-   Token ex=null;
+   Query q;
 }
 {
-    /* Currently only support for "acl exists" or "acl not exists"/"acl !exists" */
-    <ACL> (ex=<EXISTS> | <NOTEXISTS>)
+    <ACL> (q=ACLExistsQuery() | q=ACLReadForAllQuery())
+    {
+      return q;
+    }
+}
+
+Query ACLExistsQuery():
+{
+  Token ex=null;
+}
+{
+    (ex=<EXISTS> | <NOTEXISTS>)
     {
       boolean inverted = (ex == null);
       return new ACLExistsQuery(inverted);
+    }
+}
+Query ACLReadForAllQuery():
+{
+  Token all=null;
+}
+{
+    (all=<ALL> | <NOTALL>)
+    {
+      boolean inverted = (all == null);
+      return new ACLReadForAllQuery(inverted);
     }
 }
 

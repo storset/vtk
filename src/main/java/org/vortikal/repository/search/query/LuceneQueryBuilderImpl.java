@@ -72,6 +72,7 @@ import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.builders.ACLInheritedFromQueryBuilder;
+import org.vortikal.repository.search.query.builders.ACLReadForAllQueryBuilder;
 import org.vortikal.repository.search.query.builders.HierarchicalTermQueryBuilder;
 import org.vortikal.repository.search.query.builders.NamePrefixQueryBuilder;
 import org.vortikal.repository.search.query.builders.NameRangeQueryBuilder;
@@ -234,6 +235,13 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
             return new ACLInheritedFromQueryBuilder(
                           getResourceIdFromIndex(aclIHFQuery.getUri(), reader), 
                               aclIHFQuery.isInverted(), this.cachedDeletedDocsFilter);
+        }
+        
+        if (query instanceof ACLReadForAllQuery) {
+            return new ACLReadForAllQueryBuilder(((ACLReadForAllQuery)query).isInverted(),
+                                                  this.queryAuthorizationFilterFactory,
+                                                  reader,
+                                                  this.cachedDeletedDocsFilter);
         }
 
         return null;

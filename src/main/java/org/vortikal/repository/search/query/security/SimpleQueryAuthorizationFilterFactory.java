@@ -84,6 +84,11 @@ public class SimpleQueryAuthorizationFilterFactory extends
         // Build filter for principal and member groups
         return buildACLReadFilter(principal, memberGroups);
     }
+
+    @Override
+    public Filter readForAllFilter(IndexReader reader) {
+        return ACL_READ_FOR_ALL_FILTER;
+    }
     
     private Filter buildACLReadFilter(Principal principal, Set<Principal> memberGroups) {
     
@@ -110,8 +115,6 @@ public class SimpleQueryAuthorizationFilterFactory extends
      */
     private static class ACLReadForAllFilter extends Filter {
         
-        private static final long serialVersionUID = -1927640174374225525L;
-
         @Override
         public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
          
@@ -127,7 +130,6 @@ public class SimpleQueryAuthorizationFilterFactory extends
             
             return docIdSet;
         }
-
     }
     
 }

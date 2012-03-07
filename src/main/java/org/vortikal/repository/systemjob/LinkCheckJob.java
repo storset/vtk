@@ -32,6 +32,7 @@ package org.vortikal.repository.systemjob;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -174,6 +175,7 @@ public class LinkCheckJob extends RepositoryJob {
 
         if (state.complete) {
             logger.debug("Link check already complete and up to date for " + resource.getURI());
+            state.write(linkCheckProp);
             return linkCheckProp;
         }
 
@@ -293,7 +295,7 @@ public class LinkCheckJob extends RepositoryJob {
                     long now = context.getTimestamp().getTime();
                     if (now - lastCheckRun < MIN_RECHECK_SECONDS*1000) {
                         logger.debug("Not long enough since last completed check (min "
-                                + MIN_RECHECK_SECONDS + " seconds, will not reset state.");
+                                + MIN_RECHECK_SECONDS + " seconds, will not reset state).");
                         return false;
                     }
                 }
@@ -388,9 +390,14 @@ public class LinkCheckJob extends RepositoryJob {
             return s;
         }
         
-        public void write(Property statusProp) throws Exception {
+        public void write(Property statusProp) {
             JSONObject obj = toJSONObject();
-            statusProp.setBinaryValue(obj.toJSONString().getBytes("utf-8"), "application/json");
+            try {
+                statusProp.setBinaryValue(obj.toJSONString().getBytes("utf-8"), "application/json");
+            } catch (UnsupportedEncodingException ex) {
+                // Fuck you Java for checked exceptions.
+                statusProp.setBinaryValue(obj.toJSONString().getBytes(), "application/json");
+            }
         }
         
         @SuppressWarnings("unchecked")

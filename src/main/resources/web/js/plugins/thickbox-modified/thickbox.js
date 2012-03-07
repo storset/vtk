@@ -4,10 +4,14 @@
  * Copyright (c) 2007 cody lindley
  * Licensed under the MIT License: http://www.opensource.org/licenses/mit-license.php
  */
+
 // Modified path for use in Vortex
 var tb_pathToImage = "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif";
 
-// USIT added below: tb_postMessageClose() for notifying parent if thickbox closes in iframe
+// USIT added: tb_postMessageClose() for notifying parent if thickbox closes in iframe
+// USIT added: possible with simple loading dialog
+// USIT added: opacity animation
+// USIT removed: old Mac FF hack
 
 /*!!!!!!!!!!!!!!!!! edit below this line at your own risk !!!!!!!!!!!!!!!!!!!!!!!*/
 
@@ -51,7 +55,7 @@ function tb_show(caption, url, imageGroup) { //function called when the user cli
       }
     }
 
-    $("#TB_overlay").addClass("TB_overlayBG"); //use background and opacity
+    $("#TB_overlay").addClass("TB_overlayBG").animate({opacity: 0.4}, "fast");
 
     if (caption === null) {
       caption = "";
@@ -302,6 +306,7 @@ function tb_showIframe() {
 function tb_remove() {
   $("#TB_imageOff").unbind("click");
   $("#TB_closeWindowButton").unbind("click");
+  $("#TB_overlay").animate({opacity: 0}, "fast");
   $("#TB_window").fadeOut("fast", function () {
     $('#TB_window,#TB_overlay,#TB_HideSelect').trigger("unload").unbind().remove();
     tb_postMessageClose();

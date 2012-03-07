@@ -39,10 +39,10 @@
 /* .TB_overlayMacFFBGHack {background: url(macFFBgHack.png) repeat;} */
 .TB_overlayBG {
     background-color: #000;
-    opacity: 0.4;
-    -moz-opacity: 0.4; 
-    -webkit-opacity: 0.4;
-    filter: alpha(opacity=40); 
+    opacity: 0;
+    -moz-opacity: 0; 
+    -webkit-opacity: 0;
+    filter: alpha(opacity=0); 
 }
 
 * html #TB_overlay { /* ie6 hack */

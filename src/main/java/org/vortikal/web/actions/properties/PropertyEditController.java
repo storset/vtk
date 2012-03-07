@@ -420,9 +420,26 @@ public class PropertyEditController extends SimpleFormController implements Refe
         Map<String, PropertyItem> propsMap = new HashMap<String, PropertyItem>();
 
         Locale preferredLocale = this.localeResolver.resolveLocale(request);
-        this.resolvePrincipal(model, "modifiedBy", resource.getModifiedBy(), preferredLocale);
-        this.resolvePrincipal(model, "createdBy", resource.getCreatedBy(), preferredLocale);
-        this.resolvePrincipal(model, "owner", resource.getOwner(), preferredLocale);
+
+        Principal modifiedBy = resource.getModifiedBy();
+        modifiedBy = this.resolvePrincipal(modifiedBy, preferredLocale);
+        model.put("modifiedBy", modifiedBy);
+
+        Principal createdBy = resource.getCreatedBy();
+        if (createdBy.equals(modifiedBy)) {
+            model.put("createdBy", modifiedBy);
+        } else {
+            createdBy = this.resolvePrincipal(createdBy, preferredLocale);
+            model.put("createdBy", createdBy);
+        }
+
+        Principal owner = resource.getOwner();
+        if (owner.equals(modifiedBy)) {
+            model.put("owner", owner);
+        } else {
+            owner = this.resolvePrincipal(owner, preferredLocale);
+            model.put("owner", owner);
+        }
 
         for (PropertyTypeDefinition def : this.propertyTypeDefinitions) {
 
@@ -495,14 +512,13 @@ public class PropertyEditController extends SimpleFormController implements Refe
         model.put(this.propertyMapModelName, propsMap);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private void resolvePrincipal(Map model, String key, Principal principal, Locale preferredLocale) {
+    private Principal resolvePrincipal(Principal principal, Locale preferredLocale) {
         Principal principalDoc = this.principalFactory.getPrincipalDocument(principal.getQualifiedName(),
                 preferredLocale);
         if (principalDoc != null) {
             principal = principalDoc;
         }
-        model.put(key, principal);
+        return principal;
     }
 
     private boolean hasUrchinStats(Resource resource) {

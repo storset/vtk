@@ -435,7 +435,7 @@ public class PropertyEditController extends SimpleFormController implements Refe
 
         Principal owner = resource.getOwner();
         if (owner.equals(modifiedBy)) {
-            model.put("owner", owner);
+            model.put("owner", modifiedBy);
         } else {
             owner = this.resolvePrincipal(owner, preferredLocale);
             model.put("owner", owner);

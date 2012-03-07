@@ -55,7 +55,7 @@ function tb_show(caption, url, imageGroup) { //function called when the user cli
       }
     }
 
-    $("#TB_overlay").addClass("TB_overlayBG").animate({opacity: 0.4}, "fast");
+    $("#TB_overlay").addClass("TB_overlayBG").fadeTo("fast", 0.4);
 
     if (caption === null) {
       caption = "";
@@ -306,8 +306,7 @@ function tb_showIframe() {
 function tb_remove() {
   $("#TB_imageOff").unbind("click");
   $("#TB_closeWindowButton").unbind("click");
-  $("#TB_overlay").animate({opacity: 0}, "fast");
-  $("#TB_window").fadeOut("fast", function () {
+  $("#TB_window, #TB_overlay").fadeOut("fast", function () {
     $('#TB_window,#TB_overlay,#TB_HideSelect').trigger("unload").unbind().remove();
     tb_postMessageClose();
   });

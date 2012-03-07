@@ -19,21 +19,7 @@
 <head>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/plugins/shortcut.js"></script> 
   <script type="text/javascript"><!--
-    shortcut.add("Ctrl+S", function() {
-      if(!$("#TB_window").length) {
-        $(".vrtx-focus-button:last input").click();
-      }
-    });
-
     var ajaxSaveText = "<@vrtx.msg code='editor.save-visual-profile-ajax-loading-title' />"; 
-    
-    $(document).ready(function() {
-      $("#app-content").delegate(".vrtx-focus-button:last input", "click", function(e) {
-        ajaxSave($(this).attr("name"));
-        e.preventDefault();
-      });
-
-    });
   // --> 
   </script>
   <title><@vrtx.msg code="visualProfileAspect.edit" default="Edit visual profile"/></title>

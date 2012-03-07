@@ -26,17 +26,7 @@
   <script type="text/javascript"><!--
     var ajaxSaveText = "<@vrtx.msg code='editor.save-plaintext-edit-ajax-loading-title' />";
 
-    shortcut.add("Ctrl+S", function() {
-      if(!$("#TB_window").length) {
-        $(".vrtx-focus-button:last input").click();
-      }
-    });
-
     $(document).ready(function() {
-      $("#app-content").delegate(".vrtx-focus-button:last input", "click", function(e) {
-        ajaxSave($(this).attr("name"));
-        e.preventDefault();
-      });
       $("#app-content").delegate("#saveViewAction", "click", function(e) {
         performSave();
       });
@@ -44,7 +34,6 @@
 
     var before = null;
     var saveButton = false;
-
     function performSave() {
        saveButton = true;
        return true;
@@ -56,7 +45,6 @@
 
     window.onbeforeunload = function() {
        if (saveButton) return;
-
        var now = hex_md5(document.getElementById("foo").value);
        if (before == now) {
           return;

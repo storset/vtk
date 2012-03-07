@@ -18,11 +18,6 @@
   <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
   
   <script type="text/javascript"><!-- 
-    shortcut.add("Ctrl+S",function() {
-      if(!$("#TB_window").length) {
-        $(".vrtx-focus-button:last input").click();
-      }
-    });
 
     $(window).load(function() {
       initDatePicker(datePickerLang);
@@ -38,12 +33,6 @@
       $("#app-content").delegate("#vrtx-make-public-version-shortcut",  "click", function(e) { $("#makePublicVersionAction").click(); e.preventDefault(); });   
       $("#app-content").delegate("#vrtx-delete-working-copy-shortcut",  "click", function(e) { $("#deleteWorkingCopyAction").click(); e.preventDefault(); });   
       $("#app-content").delegate("#vrtx-save-as-working-copy-shortcut", "click", function(e) { $("#saveWorkingCopyAction").click();   e.preventDefault(); });    
-
-      // Save with AJAX
-      $("#editor").delegate(".vrtx-focus-button:last input", "click", function(e) {
-        ajaxSave($(this).attr("name"));
-        e.preventDefault();
-      });
 
       $("#editor").delegate("#saveAndViewButton, #cancelAction, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", "click", function(e) {
         performSave();

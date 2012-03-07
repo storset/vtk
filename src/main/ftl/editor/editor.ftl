@@ -36,12 +36,6 @@
      </#if>
 
     <script type="text/javascript"><!--
-      shortcut.add("Ctrl+S", function() {
-        if(!$("#TB_window").length) {
-          $(".vrtx-focus-button:last input").click();
-        }
-      });
-     
       $(window).load(function() {
         initDatePicker(datePickerLang);
       });
@@ -53,12 +47,6 @@
         $("#app-content").delegate("#vrtx-save-copy-shortcut", "click", function(e) { $("#saveCopyButton").click();    e.preventDefault(); });
         $("#app-content").delegate("#vrtx-save-shortcut",      "click", function(e) { $("#saveButton").click();        e.preventDefault(); });
         $("#app-content").delegate("#vrtx-cancel-shortcut",    "click", function(e) { $("#cancel").click();            e.preventDefault(); });
-        
-        // Save editor with AJAX
-        $("#editor").delegate(".vrtx-focus-button:last input", "click", function(e) {
-          ajaxSave($(this).attr("name"));
-          e.preventDefault();
-        });
 
         $("#editor").delegate("#saveAndViewButton, #saveCopyButton, #saveButton, #cancel", "click", function(e) {
           performSave();

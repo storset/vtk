@@ -58,9 +58,9 @@
            <#-- Your comment -->
            <label for="yourComment" style="display: none;"><@vrtx.msg code="feedback.form.yourcomment" default="Your comment" /></label> 
            <#if yourSavedComment?exists && yourSavedComment?has_content>
-             <textarea rows="15" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
+             <textarea class="round-corners" rows="15" cols="10" id="yourComment" name="yourComment">${yourSavedComment?html}</textarea>
            <#else>
-             <textarea rows="15" cols="10" id="yourComment" name="yourComment"></textarea> 
+             <textarea class="round-corners" rows="15" cols="10" id="yourComment" name="yourComment"></textarea> 
            </#if>
        
            <#if mailto?has_content>
@@ -71,12 +71,12 @@
              <input type="hidden" name="contacturl" value="${contacturl?html}" />
            </#if>
        
-           <div id="vrtx-submit-cancel-buttons">
-             <div class="vrtx-button"> 
-               <input type="submit" class="submit-email-form" value="Send" name="submit"/>
+           <div id="submitButtons">
+             <div class="vrtx-focus-button"> 
+               <input type="submit" class="submit-email-form" value="Send" name="submit" />
              </div>
              <div class="vrtx-button"> 
-               <input type="button" class="submit-email-form" value="Send" name="submit"/>
+               <input type="button" class="cancel-email-form" value="Cancel" name="cancel" />
              </div>  
            </div>
          </form>

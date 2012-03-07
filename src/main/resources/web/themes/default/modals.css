@@ -1,4 +1,7 @@
-/* Email-a-friend */
+/*
+ *  Vortex - Email-a-friend, feedback etc.
+ *
+ */
 
 body {
   color: #2b2b2b;
@@ -24,40 +27,31 @@ p {
  
 form#email-a-friend-form,
 form#feedback-form {
-  width: 328px; 
   text-align: left;
 }
 
-form#feedback-form {
+form#email-a-friend-form,
+form#email-a-friend-form textarea {
+  width: 328px;
+}
+
+form#email-a-friend-form .vrtx-textfield input {
+  width: 313px;
+}
+
+form#feedback-form,
+form#feedback-form textarea {
   width: 353px;
+}
+
+form#feedback-form .vrtx-textfield input {
+  width: 338px;
 }
 
 form#email-a-friend-form label,
 form#feedback-form label {
   display: block;
-}
-  
-form#email-a-friend-form input.submit-email-form,
-form#feedback-form input.submit-email-form {
-  margin:0;
-}
-
-form#email-a-friend-form input#emailTo, 
-form#email-a-friend-form input#emailFrom {
-  width: 100%;
-  border: 1px solid #888;
-  margin: 0.25em 0 1em 0; 
-}
-
-form#email-a-friend-form input#emailTo {
-  margin-bottom: 0; 
-}
- 
-form#email-a-friend-form textarea,
-form#feedback-form textarea {
-  margin: 0.25em 0 1em 0; 
-  width: 100%;
-  border: 1px solid #888;
+  margin: 15px 0 5px 0;
 }
 
 form#feedback-form textarea {
@@ -69,15 +63,14 @@ form#email-a-friend-form textarea {
 }
 
 form#email-a-friend-form div.email-help {
-  margin-top: 5px;
-  padding-top: 0;
+  padding-top: 5px;
   font-size: 70%; 
   color: #888; 
-  padding-bottom: 1em;
+  line-height: 1.3;
 }
       
 div#tip-response {
-  margin-top: 1em;
+  margin-top: 15px;
   font-style: italic;
   font-size: 80%;
 }
@@ -93,3 +86,17 @@ a#vrtx-feedback-contact {
 #TB_ajaxWindowTitle {
   margin: 20px 0 0 20px !important;
 }
+
+#submitButtons {
+  padding: 15px 0 0 0;
+  clear: left;
+}
+
+#submitButtons .vrtx-button,
+#submitButtons .vrtx-focus-button {
+  margin: 0 10px 0 0;
+  display: inline-block;
+}
+
+/* ^ Vortex - Email-a-friend, feedback etc. */
+

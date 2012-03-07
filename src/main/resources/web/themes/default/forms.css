@@ -1,0 +1,277 @@
+/*
+ *  Vortex - Forms
+ *
+ */
+
+form, fieldset, input, button {
+  margin: 0;
+  padding: 0;
+}
+
+fieldset {
+  background: transparent;
+  border: none;
+}
+
+textarea {
+  border: 1px solid #919191;
+  outline: none;
+}
+
+textarea.round-corners {
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px; 
+}
+
+input[type=button],
+input[type=file],
+input[type=image],
+input[type=password],
+input[type=reset],
+input[type=submit],
+input[type=text],
+button {
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: inherit;
+  font-size: 100%;
+  font-style: inherit; 
+  font-weight: inherit;
+}
+
+form input[type=button]:focus,
+form input[type=file]:focus ,
+form input[type=image]:focus ,
+form input[type=password]:focus ,
+form input[type=reset]:focus ,
+form input[type=submit]:focus ,
+form input[type=text]:focus {
+  outline: 0;
+}
+
+/* Buttons */
+
+.vrtx-button,
+.vrtx-focus-button,
+.vrtx-button-small {
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/dropdown-left.gif) no-repeat 0 0;
+  display: inline-block;
+  height: 27px;
+  white-space: nowrap;
+  overflow: visible;
+  margin: 0;
+  cursor: pointer;
+  text-decoration: none !important;
+}
+
+.vrtx-focus-button {
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-left.gif) no-repeat 0 0;
+}
+
+.vrtx-button-small {
+  height: 22px;
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-left.gif) no-repeat 0 0;
+}
+
+.vrtx-button span,
+.vrtx-button input,
+.vrtx-button button,
+.vrtx-focus-button span,
+.vrtx-focus-button input,
+.vrtx-focus-button button,
+.vrtx-button-small span,
+.vrtx-button-small input,
+.vrtx-button-small button {
+  color: #363534;
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-closed-right.gif) no-repeat top right;
+  display: inline-block;
+  height: 23px;
+  padding: 4px 15px 0 14px;
+  border: none;
+  cursor: pointer;
+  margin: 0 -5px 0 0;
+}
+
+.vrtx-button input,
+.vrtx-button button,
+.vrtx-focus-button input,
+.vrtx-focus-button button {
+  height: 27px;
+  padding: 0 15px 0 14px;
+}
+
+.vrtx-focus-button span,
+.vrtx-focus-button input,
+.vrtx-focus-button button {
+  color: #fff;
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-right.gif) no-repeat top right;
+}
+
+.vrtx-button-small span,
+.vrtx-button-small input,
+.vrtx-button-small button {
+  height: 20px;
+  padding: 2px 11px 0 10px;
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-right.gif) no-repeat top right;
+} 
+
+.vrtx-button-small input,
+.vrtx-button-small button {
+  height: 22px;
+  padding: 0 11px 0 10px;
+}
+
+.vrtx-button:hover,
+.vrtx-button.hover {
+  background-image: url(images/dropdown-left-rollover.gif);
+}
+
+.vrtx-focus-button:hover,
+.vrtx-focus-button.hover {
+  background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-left-rollover.gif);
+}
+
+.vrtx-button-small:hover,
+.vrtx-button-small.hover {
+  background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-left-rollover.gif);
+}
+
+.vrtx-button:hover span,
+.vrtx-button:hover input,
+.vrtx-button:hover button,
+.vrtx-focus-button:hover span,
+.vrtx-focus-button:hover input,
+.vrtx-focus-button:hover button,
+.vrtx-button-small:hover span,
+.vrtx-button-small:hover input,
+.vrtx-button-small:hover button,
+.vrtx-button.hover span,
+.vrtx-button.hover input,
+.vrtx-button.hover button,
+.vrtx-focus-button.hover span,
+.vrtx-focus-button.hover input,
+.vrtx-focus-button.hover button,
+.vrtx-button-small.hover span,
+.vrtx-button-small.hover input,
+.vrtx-button-small.hover button {
+  color: #fff;
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-closed-right-rollover.gif) no-repeat top right;
+}
+
+.vrtx-focus-button:hover span,
+.vrtx-focus-button:hover input,
+.vrtx-focus-button:hover button,
+.vrtx-focus-button.hover span,
+.vrtx-focus-button.hover input,
+.vrtx-focus-button.hover button {
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-right-rollover.gif) no-repeat top right;
+}
+
+.vrtx-button-small:hover span,
+.vrtx-button-small:hover input,
+.vrtx-button-small:hover button,
+.vrtx-button-small.hover span,
+.vrtx-button-small.hover input,
+.vrtx-button-small.hover button {
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-right-rollover.gif) no-repeat top right;
+}
+
+.submitButtons,
+#submitButtons {
+  padding: 15px 0 0 0;
+  clear: left;
+}
+
+.submitButtons .vrtx-button,
+.submitButtons .vrtx-focus-button,
+#submitButtons .vrtx-button,
+#submitButtons .vrtx-focus-button {
+  margin: 0 10px 0 0;
+}
+
+/* ^ Buttons */
+
+/* Textfields */
+
+.vrtx-textfield {
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/textfield-left.gif) no-repeat 0 0;
+  height: 27px;
+  padding: 0 0 0 8px;
+  display: inline-block;
+}
+
+.vrtx-textfield input {
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/textfield-right.gif) no-repeat top right;
+  height: 23px;
+  margin: -1px -5px 0 0;
+  padding: 4px 8px 0 0;
+  display: block;
+  display: inline-block;
+}
+
+.vrtx-textfield-big {
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/textfield-big-left.gif) no-repeat 0 0;
+  height: 33px;
+  padding: 0 0 0 12px;
+  display: inline-block;
+}
+
+.vrtx-textfield-big input {
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/textfield-big-right.gif) no-repeat top right;
+  height: 23px;
+  margin: -1px -6px 0 0;
+  padding: 10px 14px 0 0;
+  display: block;
+  display: inline-block;
+}
+
+/* ^ Textfields */
+
+/* Mozilla hacks */
+
+form::-moz-focus-inner,
+form button::-moz-focus-inner {
+  border: none;
+  padding: 0;
+}
+
+/* Vertical aligning text in textfields: targets Firefox 1.5 and newer 
+   Credits: http://perishablepress.com/press/2009/06/28/css-hacks-for-different-versions-of-firefox/ */
+.vrtx-button input,
+.vrtx-button button,
+.vrtx-focus-button input,
+.vrtx-focus-button button, x:-moz-any-link, x:only-child {
+  padding-bottom: 1px;
+}
+
+.vrtx-textfield input, x:-moz-any-link, x:only-child {
+  padding-top: 2px;
+  height: 25px;
+}
+
+.vrtx-textfield-big input, x:-moz-any-link, x:only-child {
+  padding-top: 2px;
+  height: 31px;
+} 
+
+/* ^ Mozilla hacks */
+
+/* iPhone and iPad hacks */
+
+@media only screen and (max-device-width: 480px) {
+  input { /* input reset */
+    -webkit-appearance: none;
+    -webkit-border-radius: 0;
+  }
+}
+@media only screen and (max-device-width: 1024px) {
+  input { /* input reset */
+    -webkit-appearance: none;
+    -webkit-border-radius: 0;
+  }
+}
+
+/* ^ iPhone and iPad hacks */
+
+/* ^ Vortex - Forms */

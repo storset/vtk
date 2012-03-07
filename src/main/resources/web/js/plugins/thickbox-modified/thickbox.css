@@ -38,7 +38,7 @@
 
 /* .TB_overlayMacFFBGHack {background: url(macFFBgHack.png) repeat;} */
 .TB_overlayBG {
-	background-color: #000;
+    background-color: #000;
     opacity: 0.4;
     -moz-opacity: 0.4; 
     -webkit-opacity: 0.4;
@@ -56,10 +56,14 @@
 	z-index: 102;
 	color:#000000;
 	display:none;
-	border: 2px solid #646464;
+	border: 2px solid #848484;
 	text-align:left;
 	top:50%;
 	left:50%;
+        /* Progressve enhance */
+        -webkit-box-shadow: 1px 1px 5px 2px #848484;
+        -moz-box-shadow: 1px 1px 5px 2px #848484;
+        box-shadow: 1px 1px 5px 2px #848484; 
 }
 
 

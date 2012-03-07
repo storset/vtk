@@ -159,6 +159,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
         Principal[] privilegedPrincipals = acl.listPrivilegedUsers(this.privilege);
         List<Principal> authorizedUsers = this.principalFactory.resolvePrincipalDocuments(new ArrayList<Principal>(
                 Arrays.asList(privilegedPrincipals)), preferredLocale);
+        Collections.sort(authorizedUsers, Principal.PRINCIPAL_NAME_COMPARATOR);
 
         authorizedUsers.addAll(Arrays.asList(acl.listPrivilegedPseudoPrincipals(this.privilege)));
 

@@ -30,6 +30,8 @@
  */
 package org.vortikal.security;
 
+import java.util.Comparator;
+
 import org.vortikal.repository.store.PrincipalMetadata;
 
 /**
@@ -41,7 +43,7 @@ public interface Principal extends Comparable<Principal>, java.io.Serializable {
     public static final String PRINCIPAL_USER_DOMAIN = "uio.no";
     public static final String PRINCIPAL_GROUP_DOMAIN = "netgroups.uio.no";
     public static final String PRINCIPAL_WEBID_DOMAIN = "webid.uio.no";
-    
+
     // Localhost domain
     public static final String PRINCIPAL_LOCALHOST_DOMAIN = "localhost";
 
@@ -105,5 +107,24 @@ public interface Principal extends Comparable<Principal>, java.io.Serializable {
      */
     @Override
     public String toString();
+
+    public static final Comparator<Principal> PRINCIPAL_NAME_COMPARATOR = new Comparator<Principal>() {
+
+        @Override
+        public int compare(Principal o1, Principal o2) {
+
+            String name1 = o1.getName();
+            String name2 = o2.getName();
+
+            // Sort on name
+            int result = 0;
+            if (name1 != null && name2 != null) {
+                result = name1.compareTo(name2);
+            }
+
+            return result;
+        }
+
+    };
 
 }

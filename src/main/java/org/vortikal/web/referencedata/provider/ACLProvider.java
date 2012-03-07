@@ -32,6 +32,7 @@ package org.vortikal.web.referencedata.provider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -194,8 +195,9 @@ public class ACLProvider implements ReferenceDataProvider {
             // Search for potential person documents relating to any of the user
             // principals
             Locale preferredLocale = this.localeResolver.resolveLocale(request);
-            List<Principal> principals = this.principalFactory.resolvePrincipalDocuments(
-                    new ArrayList<Principal>(Arrays.asList(userPrincipals)), preferredLocale);
+            List<Principal> principals = this.principalFactory.resolvePrincipalDocuments(new ArrayList<Principal>(
+                    Arrays.asList(userPrincipals)), preferredLocale);
+            Collections.sort(principals, Principal.PRINCIPAL_NAME_COMPARATOR);
 
             Principal[] userPrincipalsWithDocs = new Principal[principals.size()];
             privilegedUsers.put(actionName, principals.toArray(userPrincipalsWithDocs));

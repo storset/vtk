@@ -24,7 +24,7 @@
   <#if (report.result?exists && report.result?size > 0)>
     <p id="vrtx-report-broken-links-info">
       <#-- <span class="vrtx-report-broken-links-info-number">178</span> brutte lenker, -->
-      <span class="vrtx-report-broken-links-info-number">${report.total}</span> nettsider med brutte lenker
+      <span class="vrtx-report-broken-links-info-number">${report.total}</span> <@vrtx.msg code="report.${report.reportname}.info.num.pages" />
       <#-- , <span class="vrtx-report-broken-links-info-number">7%</span> av nettsidene med brutte lenker  -->
     </p>
 
@@ -123,7 +123,7 @@
       </p>
     </#if>
   <#else>
-    <p><@vrtx.msg code="report.document-reporter.no.documents.found" /></p>
+    <p id="vrtx-report-broken-links-info"><@vrtx.msg code="report.document-reporter.no.documents.found" /><span class="vrtx-report-broken-links-info-number">&nbsp;</p>
   </#if>
 
   <#macro generateFilters filters>

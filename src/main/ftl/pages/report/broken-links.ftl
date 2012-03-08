@@ -21,7 +21,7 @@
   
   <div id="vrtx-report-filters">
     <ul class="vrtx-report-filter" id="vrtx-report-filter-published">
-      <li><a href="${report.backURL?html}">Alle</a></li>
+      <li><a href="${report.backURL?html}">Publiserte</a></li>
       <li><a href="${report.backURL?html}&published=false">Upubliserte</a></li>
     </ul>
     <ul class="vrtx-report-filter" id="vrtx-report-filter-read-restriction">

@@ -4,12 +4,13 @@ resourcetype oppbygning : fellestekst-document{
     introduction : simple_html,
     picture : image_ref,
     caption : simple_html,
-    content : html noextract,
+    content-study : html noextract,
     gradsnavn : string,
     gradsnavn-no : string,
     gradsnavn-nn : string,
     gradsnavn-en : string,
-    fellestekst : string,
+    fellestekst-fakultet : string,
+    fellestekst-sentral : string,
     showAdditionalContent : boolean defaultvalue("true"),
 	related-content : html noextract
   }
@@ -18,9 +19,11 @@ resourcetype oppbygning : fellestekst-document{
     caption (size[small]),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
     gradsnavn (class[vrtx-shared-text]),
-    group grader (gradsnavn, gradsnavn-no, gradsnavn-nn, gradsnavn-en) (after related-content) horizontal,
-    fellestekst (class[vrtx-shared-text]),
-    group relatedContent (showAdditionalContent, related-content) (after content)
+    group grader (gradsnavn, gradsnavn-no, gradsnavn-nn, gradsnavn-en) (before content-study) horizontal,
+    group fellestekster (fellestekst-fakultet, fellestekst-sentral) (after content-study),
+    fellestekst-fakultet (class[vrtx-shared-text]),
+    fellestekst-sentral (class[vrtx-shared-text]),
+    group relatedContent (showAdditionalContent, related-content) (after fellestekster)
   }
 
 view-components {
@@ -191,8 +194,9 @@ view-components {
             [call "comp:introduction"]
             [call "comp:introduction-image"]
             [call "comp:gradsnavn"]
-            [call "json:field" {"select":"content"}]
-            [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"fellestekst"}]
+            [call "json:field" {"select":"content-study"}]
+            [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"fellestekst-fakultet"}]
+            [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"fellestekst-sentral"}]
             [call "comp:vrtx-date-info"]
           </div>
           <div id="vrtx-additional-content">
@@ -213,7 +217,9 @@ view-components {
   }
   
   localization {
-  	fellestekst : (en : "Fakultær og/eller sentral info", no : "Fakultær og/eller sentral info", nn : "Fakultær og/eller sentral info"),
+  	fellestekster : (en : "Local and central info", no : "Lokal og sentral info", nn : "Lokal og sentral info"),
+  	fellestekst-fakultet : (en : "Local info", no : "Fakultær info", nn : "Fakultær info"),
+  	fellestekst-sentral : (en : "Sentral info", no : "Sentral info", nn : "Sentral info"),
   	oppbygning : (en : "Structure and accomplishment", no : "Oppbygging og gjennomføring", nn : "Oppbygging og gjennomføring"),
     introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
@@ -227,7 +233,7 @@ view-components {
     grader : (en : "Grade name", no : "Gradsnavn", nn : "Gradsnamn"),
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
     showAdditionalContent : (en : "Show in right-column", no : "Vis i høyrekolonne", nn : "Vis i høgrekolonne"),
-    content : (en : "Content", no :"Innhold",nn : "Innhold"),
+    content-study : (en : "Content", no :"Innhold",nn : "Innhold"),
     header : (en : "Edit Structure and accomplishment", no : "Rediger oppbygning og gjennomføring", nn : "Rediger oppbygning og gjennomføring"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
     relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),

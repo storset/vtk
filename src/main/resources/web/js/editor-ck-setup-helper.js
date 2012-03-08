@@ -84,9 +84,11 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     || name.indexOf("description-en") != -1
     || name.indexOf("description-nn") != -1
     || name.indexOf("description-no") != -1) {
+    isSimpleHTML = false;
+    isCompleteEditor = true;
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, studyToolbar, 
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
-  } else if (name.indexOf("additional-content") != -1
+    } else if (name.indexOf("additional-content") != -1
           || name.indexOf("additionalContents") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 150, 400, 40, 
                       completeToolbar, true, false, baseDocumentUrl, isSimpleHTML);
@@ -98,12 +100,17 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
       height = 130;
       maxHeight = 300;
     } else if (name == "content"
-            || name == "resource.content") {
+            || name == "resource.content"
+            || name == "content-study") {
       height = 400;
       maxHeight = 800;
       // Old editor
       if (name == "resource.content") {
         completeTB = completeToolbarOld;
+      }
+      // studyToolbar
+      if (name == "content-study"){
+        completeTB = studyToolbar;
       }
     }
 

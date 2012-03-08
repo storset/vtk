@@ -49,6 +49,7 @@ h2 {
 .property-item,
 .html-content,
 .vrtx-html.content,
+.vrtx-html.content-study,
 .vrtx-html.responsibilities {
   clear: left;
 }
@@ -211,6 +212,7 @@ div.description textarea {
 }
 
 div.content textarea,
+div.content-study textarea,
 div.additionalContents textarea,
 div.additionalContent textarea,
 div.relatedContent textarea,

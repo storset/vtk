@@ -46,15 +46,12 @@ import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
-import org.vortikal.repository.search.query.ACLExistsQuery;
 import org.vortikal.repository.search.query.ACLReadForAllQuery;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
 
 public class BrokenLinksReport extends DocumentReporter {
     

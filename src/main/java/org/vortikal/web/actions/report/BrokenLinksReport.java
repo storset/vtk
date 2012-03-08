@@ -31,7 +31,9 @@
 package org.vortikal.web.actions.report;
 
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -80,7 +82,7 @@ public class BrokenLinksReport extends DocumentReporter {
 
         URL reportURL = super.getReportService().constructURL(resource).addParameter(REPORT_TYPE_PARAM, REPORT_TYPE_PARAM_NAME);
         
-        Map<String, URLState> filterURLs = new HashMap<String, URLState>();
+        Map<String, List<URLState>> filtersURLs = new HashMap<String, List<URLState>>();
 
         String published = request.getParameter(PUBLISHED_PARAM_NAME);
         String readRestriction = request.getParameter(READ_RESTRICTION_PARAM_NAME);
@@ -93,28 +95,32 @@ public class BrokenLinksReport extends DocumentReporter {
         }
         
         // Generate published filter
+        List<URLState> filterPublishedURLs = new ArrayList<URLState>();
         for (String param : PUBLISHED_PARAM_VALUES) {
             URL filterOptionURL = reportURL.addParameter(PUBLISHED_PARAM_NAME, param);
             filterOptionURL.addParameter(READ_RESTRICTION_PARAM_NAME, readRestriction);
             if(published.equals(param)) {    
-              filterURLs.put(PUBLISHED_PARAM_NAME, new URLState(filterOptionURL, true));
+               filterPublishedURLs.add(new URLState(filterOptionURL, true));
             } else {
-              filterURLs.put(PUBLISHED_PARAM_NAME, new URLState(filterOptionURL, false));  
+               filterPublishedURLs.add(new URLState(filterOptionURL, false));  
             }
         }
+        filtersURLs.put(PUBLISHED_PARAM_NAME, filterPublishedURLs);
         
         // Generate read restriction filter
+        List<URLState> filterReadRestrictionURLs = new ArrayList<URLState>();
         for (String param : READ_RESTRICTION_PARAM_VALUES) {
             URL filterOptionURL = reportURL.addParameter(READ_RESTRICTION_PARAM_NAME, param);
             filterOptionURL.addParameter(PUBLISHED_PARAM_NAME, published);
             if(readRestriction.equals(param)) {    
-              filterURLs.put(READ_RESTRICTION_PARAM_NAME, new URLState(filterOptionURL, true));
+                filterReadRestrictionURLs.add(new URLState(filterOptionURL, true));
             } else {
-              filterURLs.put(READ_RESTRICTION_PARAM_NAME, new URLState(filterOptionURL, false)); 
+                filterReadRestrictionURLs.add(new URLState(filterOptionURL, false)); 
             }
         }
+        filtersURLs.put(READ_RESTRICTION_PARAM_NAME, filterReadRestrictionURLs);
         
-        model.put("filterURLs", filterURLs);
+        model.put("filtersURLs", filtersURLs);
         
         return model;
     }

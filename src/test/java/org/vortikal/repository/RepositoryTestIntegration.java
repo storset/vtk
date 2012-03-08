@@ -33,10 +33,6 @@ package org.vortikal.repository;
 import java.util.List;
 
 import org.springframework.context.ApplicationContext;
-import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
-import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 
 public class RepositoryTestIntegration extends AbstractBeanContextTestIntegration {
 

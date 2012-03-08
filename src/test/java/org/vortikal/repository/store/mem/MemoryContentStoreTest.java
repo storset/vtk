@@ -34,7 +34,6 @@ package org.vortikal.repository.store.mem;
 import org.apache.log4j.BasicConfigurator;
 import org.vortikal.repository.store.AbstractContentStoreTest;
 import org.vortikal.repository.store.ContentStore;
-import org.vortikal.repository.store.mem.MemoryContentStore;
 
 
 public class MemoryContentStoreTest extends AbstractContentStoreTest {

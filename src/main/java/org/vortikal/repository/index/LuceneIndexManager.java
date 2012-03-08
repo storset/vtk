@@ -39,14 +39,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.LogMergePolicy;
 import org.apache.lucene.search.IndexSearcher;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
-
-
-import org.apache.lucene.index.LogMergePolicy;
 import org.vortikal.util.threads.Mutex;
 
 /**

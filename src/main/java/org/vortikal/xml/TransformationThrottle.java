@@ -31,8 +31,8 @@
 package org.vortikal.xml;
 
 import org.apache.commons.logging.Log;
-import org.vortikal.util.threads.Semaphore;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.util.threads.Semaphore;
 
 
 /**

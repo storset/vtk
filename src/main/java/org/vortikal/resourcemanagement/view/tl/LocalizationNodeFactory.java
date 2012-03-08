@@ -39,11 +39,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
-import org.vortikal.text.tl.Token;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.DirectiveNodeFactory;
 import org.vortikal.text.tl.DirectiveParseContext;
 import org.vortikal.text.tl.Node;
+import org.vortikal.text.tl.Token;
 import org.vortikal.web.RequestContext;
 
 public class LocalizationNodeFactory implements DirectiveNodeFactory {

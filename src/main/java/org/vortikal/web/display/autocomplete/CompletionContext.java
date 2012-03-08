@@ -32,6 +32,7 @@
 package org.vortikal.web.display.autocomplete;
 
 import java.util.Locale;
+
 import org.vortikal.repository.Path;
 
 /**

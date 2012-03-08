@@ -32,7 +32,6 @@
 package org.vortikal.repository.index;
 
 import java.io.IOException;
-import java.util.BitSet;
 import java.util.List;
 import java.util.Set;
 

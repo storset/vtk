@@ -32,11 +32,11 @@ package org.vortikal.util.text;
 
 import java.io.File;
 
+import junit.framework.TestCase;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-
-import junit.framework.TestCase;
 
 public class EvenStructuredTextTest extends TestCase {
 

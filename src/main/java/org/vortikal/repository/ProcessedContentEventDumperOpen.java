@@ -35,7 +35,6 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ChangeLogEntry.Operation;
 import org.vortikal.repository.store.ChangeLogDAO;
-import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.PrincipalFactory;
 
 

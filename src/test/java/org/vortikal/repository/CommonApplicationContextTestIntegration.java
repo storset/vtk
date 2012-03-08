@@ -35,8 +35,8 @@ import java.util.Locale;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
+import org.vortikal.security.PrincipalFactory;
 import org.vortikal.text.html.HtmlUtil;
 
 public class CommonApplicationContextTestIntegration extends AbstractBeanContextTestIntegration {

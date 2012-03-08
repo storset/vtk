@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.text.Collator;
 import java.text.ParseException;
 
-import org.vortikal.repository.search.query.CustomFieldComparatorSource;
-
 import junit.framework.TestCase;
 
 public class CustomSortComparatorTest extends TestCase {

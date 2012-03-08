@@ -35,10 +35,10 @@ import java.util.Locale;
 
 import net.sf.json.JSONObject;
 
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 
 /**

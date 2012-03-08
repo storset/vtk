@@ -33,7 +33,9 @@ package org.vortikal.graphics;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
+
 import org.apache.commons.lang.StringUtils;
 
 public class ScaledImage {

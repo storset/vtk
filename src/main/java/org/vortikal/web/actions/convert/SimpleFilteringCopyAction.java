@@ -37,8 +37,8 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
+import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 
 public class SimpleFilteringCopyAction implements CopyAction, InitializingBean {

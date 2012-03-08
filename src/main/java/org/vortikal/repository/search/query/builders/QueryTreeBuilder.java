@@ -34,14 +34,14 @@ import java.util.List;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
 import org.vortikal.repository.search.query.AbstractMultipleQuery;
 import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.LuceneQueryBuilder;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.QueryBuilder;
-import org.vortikal.repository.search.query.LuceneQueryBuilder;
 
 
 public class QueryTreeBuilder implements QueryBuilder {

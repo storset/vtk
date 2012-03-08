@@ -31,7 +31,6 @@
 package org.vortikal.repository.search.query.filter;
 
 import java.io.IOException;
-import java.util.BitSet;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;

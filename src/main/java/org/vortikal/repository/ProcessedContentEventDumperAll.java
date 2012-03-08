@@ -31,16 +31,10 @@
 package org.vortikal.repository;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ChangeLogEntry.Operation;
 import org.vortikal.repository.store.ChangeLogDAO;
-import org.vortikal.repository.store.DataAccessException;
-import org.vortikal.repository.store.DataAccessor;
-import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 
 
 public class ProcessedContentEventDumperAll extends AbstractRepositoryEventDumper {

@@ -11,12 +11,11 @@ import org.vortikal.context.BaseContext;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.ValueFactoryImpl;
 import org.vortikal.repository.resourcetype.ValueFormatter;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
 
 public abstract class AbstractControllerTest extends TestCase {
 

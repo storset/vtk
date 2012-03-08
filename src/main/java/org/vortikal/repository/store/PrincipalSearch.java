@@ -31,6 +31,7 @@
 package org.vortikal.repository.store;
 
 import java.util.Locale;
+
 import org.vortikal.security.Principal;
 
 /**

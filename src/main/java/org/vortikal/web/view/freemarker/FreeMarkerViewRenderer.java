@@ -46,6 +46,7 @@ import freemarker.template.SimpleHash;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
+
 /**
  * An extension of the FreeMarkerView provided in the Spring Framework.
  * 

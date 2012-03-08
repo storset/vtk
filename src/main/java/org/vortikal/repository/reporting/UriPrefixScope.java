@@ -32,6 +32,7 @@ package org.vortikal.repository.reporting;
 
 import java.util.LinkedList;
 import java.util.List;
+
 import org.vortikal.repository.Path;
 
 /**

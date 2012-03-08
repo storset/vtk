@@ -33,6 +33,7 @@ package org.vortikal.repository.reporting;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 
 /**

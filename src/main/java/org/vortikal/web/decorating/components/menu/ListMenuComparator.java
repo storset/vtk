@@ -36,8 +36,8 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.view.components.menu.MenuItem;
 
 public class ListMenuComparator implements Comparator<MenuItem<PropertySet>> {

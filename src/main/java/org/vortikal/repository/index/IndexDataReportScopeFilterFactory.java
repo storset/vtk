@@ -33,6 +33,7 @@ package org.vortikal.repository.index;
 
 import java.io.IOException;
 import java.util.List;
+
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Filter;
 import org.vortikal.repository.reporting.ReportScope;

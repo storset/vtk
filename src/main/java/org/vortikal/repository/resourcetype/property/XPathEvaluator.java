@@ -48,9 +48,9 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.xml.xpath.XPathFunction;
 
 /**

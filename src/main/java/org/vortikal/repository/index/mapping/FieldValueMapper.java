@@ -38,10 +38,10 @@ import java.util.List;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.util.cache.ReusableObjectArrayStackCache;
 import org.vortikal.util.cache.ReusableObjectCache;
 

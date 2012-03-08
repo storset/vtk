@@ -30,10 +30,10 @@
  */
 package org.vortikal.edit.plaintext;
 
-import org.vortikal.web.actions.UpdateCancelCommand;
-
 import java.util.List;
 import java.util.Map;
+
+import org.vortikal.web.actions.UpdateCancelCommand;
 
 
 /**

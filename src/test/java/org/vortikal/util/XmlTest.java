@@ -31,10 +31,10 @@
 package org.vortikal.util;
 
 
+import junit.framework.TestCase;
+
 import org.jdom.Document;
 import org.jdom.Element;
-
-import junit.framework.TestCase;
 
 public class XmlTest extends TestCase {
 

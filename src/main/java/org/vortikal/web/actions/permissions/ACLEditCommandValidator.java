@@ -38,9 +38,9 @@ import org.springframework.validation.Validator;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.store.PrincipalSearch.SearchType;
 import org.vortikal.security.Principal;
+import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.Principal.Type;
 
 public class ACLEditCommandValidator implements Validator {
 

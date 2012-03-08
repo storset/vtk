@@ -32,6 +32,7 @@
 package org.vortikal.repository.index;
 
 import java.io.IOException;
+
 import org.apache.lucene.index.IndexReader;
 
 /**

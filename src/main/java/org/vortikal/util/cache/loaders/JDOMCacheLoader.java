@@ -31,8 +31,9 @@
 package org.vortikal.util.cache.loaders;
 
 import java.net.URLConnection;
-import org.jdom.input.SAXBuilder;
+
 import org.jdom.Document;
+import org.jdom.input.SAXBuilder;
 
 /**
  * Produces JDOM {@link org.jdom.Document} objects from a

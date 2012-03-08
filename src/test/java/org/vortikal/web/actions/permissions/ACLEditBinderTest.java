@@ -3,9 +3,9 @@ package org.vortikal.web.actions.permissions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
 import junit.framework.TestCase;
+
+import org.junit.Test;
 
 public class ACLEditBinderTest extends TestCase {
     

@@ -32,6 +32,7 @@ package org.vortikal.repository.search;
 
 import org.vortikal.repository.search.query.ACLReadForAllQuery;
 import org.vortikal.testing.mocktypes.MockResourceTypeTree;
+
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -51,6 +52,7 @@ import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriTermQuery;
+import org.vortikal.testing.mocktypes.MockResourceTypeTree;
 
 public class QueryParserTest extends TestCase {
 

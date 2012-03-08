@@ -31,9 +31,6 @@
 package org.vortikal.repository.search.query;
 
 
-import org.vortikal.repository.search.query.filter.DeletedDocsFilter;
-import org.vortikal.repository.search.query.filter.InversionFilter;
-import org.vortikal.repository.search.query.filter.TermExistsFilter;
 import static org.vortikal.repository.search.query.TermOperator.EQ;
 import static org.vortikal.repository.search.query.TermOperator.NE;
 
@@ -66,9 +63,9 @@ import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.index.mapping.FieldNameMapping;
 import org.vortikal.repository.index.mapping.FieldValueMapper;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.query.builders.ACLInheritedFromQueryBuilder;
@@ -89,6 +86,9 @@ import org.vortikal.repository.search.query.builders.UriDepthQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriPrefixQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriSetQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriTermQueryBuilder;
+import org.vortikal.repository.search.query.filter.DeletedDocsFilter;
+import org.vortikal.repository.search.query.filter.InversionFilter;
+import org.vortikal.repository.search.query.filter.TermExistsFilter;
 import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
 
 /**

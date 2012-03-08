@@ -40,9 +40,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.security.Principal;
+import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
-import org.vortikal.security.Principal.Type;
 
 public class PrincipalDataProvider implements VocabularyDataProvider<Principal> {
 

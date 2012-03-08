@@ -31,6 +31,7 @@
 package org.vortikal.security.web.basic;
 
 import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 

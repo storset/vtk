@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-
 import org.vortikal.web.service.URL;
 
 /**

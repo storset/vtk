@@ -32,6 +32,7 @@
 package org.vortikal.testing.mocktypes;
 
 import java.util.List;
+
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.HierarchicalNode;

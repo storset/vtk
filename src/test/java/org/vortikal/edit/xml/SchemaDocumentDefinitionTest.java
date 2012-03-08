@@ -31,6 +31,7 @@
 package org.vortikal.edit.xml;
 
 import java.net.URL;
+
 import junit.framework.TestCase;
 
 import org.jdom.Document;

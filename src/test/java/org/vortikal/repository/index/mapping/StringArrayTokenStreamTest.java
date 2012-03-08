@@ -2,11 +2,8 @@ package org.vortikal.repository.index.mapping;
 
 import junit.framework.TestCase;
 
-import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.TermAttribute;
-import org.vortikal.repository.index.mapping.StringArrayTokenStream;
 
 public class StringArrayTokenStreamTest extends TestCase {
 

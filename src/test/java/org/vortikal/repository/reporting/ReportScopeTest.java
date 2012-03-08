@@ -31,6 +31,10 @@
 
 package org.vortikal.repository.reporting;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -48,7 +52,6 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.testing.mocktypes.MockResourceTypeTree;
-import static org.junit.Assert.*;
 
 /**
  * Test some implementations of <code>ReportScope</code>

@@ -30,12 +30,12 @@
  */
 package org.vortikal.repository.search.query.builders;
 
-import org.apache.lucene.search.Filter;
 import static org.vortikal.repository.search.query.TermOperator.EQ;
 import static org.vortikal.repository.search.query.TermOperator.NE;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;

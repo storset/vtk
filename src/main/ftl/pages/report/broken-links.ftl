@@ -19,22 +19,7 @@
     <h2><@vrtx.msg code="report.${report.reportname}" /></h2>
   </div>
   
-  <#if report.filtersURLs?exists && (report.filtersURLs?size > 0)>
-    <div id="vrtx-report-filters">
-      <#list report.filtersURLs?keys as filterKey>
-        <ul class="vrtx-report-filter" id="vrtx-report-filter-${filterKey}">
-          <#list report.filtersURLs[filterKey] as filterOpt>
-            <#if filterOpt.active>
-              <li class="active-filter"><span><@vrtx.msg code="report.${report.reportname}.filters.${filterKey}.${filterOpt.name}" /></span>
-            <#else>
-              <li><a href="${filterOpt.URL?html}"><@vrtx.msg code="report.${report.reportname}.filters.${filterKey}.${filterOpt.name}" /></a>
-            </#if>
-            </li>
-          </#list>
-        </ul>
-      </#list>
-    </div>
-  </#if>
+  <@generateFilters report.filters />
 
   <#if (report.result?exists && report.result?size > 0)>
     <p id="vrtx-report-info-paging-top">
@@ -134,6 +119,31 @@
   <#else>
     <p><@vrtx.msg code="report.document-reporter.no.documents.found" /></p>
   </#if>
+
+  <#macro generateFilters filters>
+    <#if filters?exists && (filters?size > 0)>
+      <div id="vrtx-report-filters">
+        <#list report.filters?keys as filterKey>
+          <#local filterOpts = filters[filterKey] />
+          <#if (filterOpts?size > 0)>
+            <ul class="vrtx-report-filter" id="vrtx-report-filter-${filterKey}">
+              <#list filterOpts as filterOpt>
+                <#if filterOpt.active>
+                  <li class="active-filter">
+                    <span><@vrtx.msg code="report.${report.reportname}.filters.${filterKey}.${filterOpt.name}" /></span>
+                <#else>
+                  <li>
+                    <a href="${filterOpt.URL?html}"><@vrtx.msg code="report.${report.reportname}.filters.${filterKey}.${filterOpt.name}" /></a>
+                </#if>
+                  </li>
+              </#list>
+            </ul>
+          </#if>
+        </#list>
+      </div>
+    </#if>
+
+  </#macro>
 
   <#macro displayPaging>
     <span class="vrtx-report-paging">

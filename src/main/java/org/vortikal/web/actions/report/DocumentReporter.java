@@ -30,7 +30,9 @@
  */
 package org.vortikal.web.actions.report;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -93,7 +95,7 @@ public abstract class DocumentReporter extends AbstractReporter {
             pos.next = null;
         }
 
-        result.put("result", rs.getAllResults());
+        //result.put("result", rs.getAllResults());
         result.put("from", pos.cursor + 1);
         result.put("to", pos.cursor + Math.min(pageSize, rs.getAllResults().size()));
         result.put("total", rs.getTotalHits());
@@ -102,11 +104,12 @@ public abstract class DocumentReporter extends AbstractReporter {
 
         boolean[] isReadRestricted = new boolean[rs.getSize()];
         URL[] viewURLs = new URL[rs.getSize()];
-
-        for (int i = 0; i < rs.getSize(); i++) {
+        List<PropertySet> list = new ArrayList<PropertySet>();
+        for (int i = 0; i < rs.getSize(); i++) {            
             PropertySet p = rs.getResult(i);
             try {
                 Resource r = this.repository.retrieve(token, p.getURI(), true);
+                p = r; // fresh copy of resource
                 isReadRestricted[i] = r.isReadRestricted();
                 if (this.manageService != null) {
                     viewURLs[i] = this.manageService.constructURL(p.getURI()).setProtocol("http");
@@ -114,7 +117,9 @@ public abstract class DocumentReporter extends AbstractReporter {
                 handleResult(r, result);
             } catch (Exception e) {
             }
+            list.add(p);
         }
+        result.put("result", list);
         result.put("isReadRestricted", isReadRestricted);
         result.put("viewURLs", viewURLs);
         return result;

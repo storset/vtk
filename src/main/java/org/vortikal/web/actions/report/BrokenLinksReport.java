@@ -88,10 +88,10 @@ public class BrokenLinksReport extends DocumentReporter {
         String published = request.getParameter(PUBLISHED_PARAM_NAME);
         String readRestriction = request.getParameter(READ_RESTRICTION_PARAM_NAME);
         
-        if(published == null) {
+        if (published == null) {
            published = PUBLISHED_PARAM_DEFAULT_VALUE;
         }
-        if(readRestriction == null) {
+        if (readRestriction == null) {
            readRestriction = READ_RESTRICTION_PARAM_DEFAULT_VALUE;
         }
         
@@ -128,31 +128,31 @@ public class BrokenLinksReport extends DocumentReporter {
         .add(new PropertyTermQuery(this.linkStatusPropDef, "AWAITING_LINKCHECK", TermOperator.EQ));
 
         AndQuery topLevel = new AndQuery();
-        
+
         // Read restriction (all|true|false)
         String readRestriction = request.getParameter(READ_RESTRICTION_PARAM_NAME);
 
-        if(readRestriction != null) {
-          if ("true".equals(readRestriction)) {
-            ACLReadForAllQuery aclReadForAllQuery = new ACLReadForAllQuery(true);
-            topLevel.add(aclReadForAllQuery);
-          } else if ("false".equals(readRestriction)) {
-            ACLReadForAllQuery aclReadForAllQuery = new ACLReadForAllQuery();
-            topLevel.add(aclReadForAllQuery);
-          }
+        if (readRestriction != null) {
+            if ("true".equals(readRestriction)) {
+                ACLReadForAllQuery aclReadForAllQuery = new ACLReadForAllQuery(true);
+                topLevel.add(aclReadForAllQuery);
+            } else if ("false".equals(readRestriction)) {
+                ACLReadForAllQuery aclReadForAllQuery = new ACLReadForAllQuery();
+                topLevel.add(aclReadForAllQuery);
+            }
         }
-          
+
         topLevel.add(new UriPrefixQuery(currentResource.getURI().toString())).add(linkStatusCriteria);
- 
+
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
         Search search = new Search();
         search.setQuery(topLevel);
         search.setSorting(sorting);
-        
+
         // Published (true|false)
         String published = request.getParameter(PUBLISHED_PARAM_NAME);
-        
+
         if(published != null && "false".equals(published)) {
             // ONLY those NOT published
             PropertyTermQuery ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
@@ -163,7 +163,7 @@ public class BrokenLinksReport extends DocumentReporter {
 
         return search;
     }
-    
+
     @Override
     protected void handleResult(Resource resource, Map<String, Object> model) {
         Property linkCheck = resource.getProperty(this.linkCheckPropDef);
@@ -176,7 +176,7 @@ public class BrokenLinksReport extends DocumentReporter {
             map = new HashMap<String, Object>();
             model.put("linkCheck", map);
         } 
-        
+
         ContentStream binaryStream = linkCheck.getBinaryStream();
         Object obj = JSONValue.parse(new InputStreamReader(binaryStream.getStream()));
         map.put(resource.getURI().toString(), obj);

@@ -63,8 +63,6 @@ public abstract class DocumentReporter extends AbstractReporter {
             switch (backURL) {
               case 1: backURLname = "diagram";
                 break;
-              case 2: backURLname = "broken-links";
-                break;
               default: backURLname = "BACKURL_SET-BUT_UNKNOWN";
                 break;
             }
@@ -134,6 +132,10 @@ public abstract class DocumentReporter extends AbstractReporter {
 
     public void setReportService(Service reportService) {
         this.reportService = reportService;
+    }
+    
+    public Service getReportService() {
+        return this.reportService;
     }
 
     public void setBackURL(int backURL) {

@@ -52,6 +52,7 @@ import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.web.service.URL;
 
 public class BrokenLinksReport extends DocumentReporter {
     
@@ -60,6 +61,62 @@ public class BrokenLinksReport extends DocumentReporter {
     private PropertyTypeDefinition sortPropDef;
     private PropertyTypeDefinition publishedPropDef;
     private SortFieldDirection sortOrder;
+    
+    private final static String   REPORT_TYPE_PARAM_NAME = "broken-links";
+    
+    private final static String   READ_RESTRICTION_PARAM_NAME = "read-restriction";
+    private final static String   READ_RESTRICTION_PARAM_DEFAULT_VALUE = "all";
+    private final static String[] READ_RESTRICTION_PARAM_VALUES = {READ_RESTRICTION_PARAM_DEFAULT_VALUE, "true", "false"};
+    
+    private final static String   PUBLISHED_PARAM_NAME = "published";
+    private final static String   PUBLISHED_PARAM_DEFAULT_VALUE = "true";
+    private final static String[] PUBLISHED_PARAM_VALUES = {PUBLISHED_PARAM_DEFAULT_VALUE, "false"};
+    
+ 
+    @Override
+    public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) { 
+        Map<String, Object> model = super.getReportContent(token, resource, request);  
+
+        URL reportURL = super.getReportService().constructURL(resource).addParameter(REPORT_TYPE_PARAM, REPORT_TYPE_PARAM_NAME);
+        
+        Map<String, URLState> filterURLs = new HashMap<String, URLState>();
+
+        String published = request.getParameter(PUBLISHED_PARAM_NAME);
+        String readRestriction = request.getParameter(READ_RESTRICTION_PARAM_NAME);
+        
+        if(published == null) {
+           published = PUBLISHED_PARAM_DEFAULT_VALUE;
+        }
+        if(readRestriction == null) {
+           readRestriction = READ_RESTRICTION_PARAM_DEFAULT_VALUE;
+        }
+        
+        // Generate published filter
+        for (String param : PUBLISHED_PARAM_VALUES) {
+            URL filterOptionURL = reportURL.addParameter(PUBLISHED_PARAM_NAME, param);
+            filterOptionURL.addParameter(READ_RESTRICTION_PARAM_NAME, readRestriction);
+            if(published.equals(param)) {    
+              filterURLs.put(PUBLISHED_PARAM_NAME, new URLState(filterOptionURL, true));
+            } else {
+              filterURLs.put(PUBLISHED_PARAM_NAME, new URLState(filterOptionURL, false));  
+            }
+        }
+        
+        // Generate read restriction filter
+        for (String param : READ_RESTRICTION_PARAM_VALUES) {
+            URL filterOptionURL = reportURL.addParameter(READ_RESTRICTION_PARAM_NAME, param);
+            filterOptionURL.addParameter(PUBLISHED_PARAM_NAME, published);
+            if(readRestriction.equals(param)) {    
+              filterURLs.put(READ_RESTRICTION_PARAM_NAME, new URLState(filterOptionURL, true));
+            } else {
+              filterURLs.put(READ_RESTRICTION_PARAM_NAME, new URLState(filterOptionURL, false)); 
+            }
+        }
+        
+        model.put("filterURLs", filterURLs);
+        
+        return model;
+    }
 
     @Override
     protected Search getSearch(String token, Resource currentResource, HttpServletRequest request) {
@@ -70,7 +127,7 @@ public class BrokenLinksReport extends DocumentReporter {
         AndQuery topLevel = new AndQuery();
         
         // Read restriction (all|true|false)
-        String readRestriction = request.getParameter("read-restriction");
+        String readRestriction = request.getParameter(READ_RESTRICTION_PARAM_NAME);
 
         if ("true".equals(readRestriction)) {
             ACLReadForAllQuery aclReadForAllQuery = new ACLReadForAllQuery(true);
@@ -89,7 +146,7 @@ public class BrokenLinksReport extends DocumentReporter {
         search.setSorting(sorting);
         
         // Published (true|false)
-        if("false".equals(request.getParameter("published"))) {
+        if("false".equals(request.getParameter(PUBLISHED_PARAM_NAME))) {
             // ONLY those NOT published
             PropertyTermQuery ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
             topLevel.add(ptq);
@@ -116,6 +173,26 @@ public class BrokenLinksReport extends DocumentReporter {
         ContentStream binaryStream = linkCheck.getBinaryStream();
         Object obj = JSONValue.parse(new InputStreamReader(binaryStream.getStream()));
         map.put(resource.getURI().toString(), obj);
+    }
+    
+    private class URLState {
+        private URL url;
+        private boolean active;
+        
+        public URLState(URL url, boolean state) {
+            this.url = url;
+            this.active = state;
+        }
+        
+        @SuppressWarnings("unused")
+        public URL getURL() {
+            return this.url;
+        }
+        
+        @SuppressWarnings("unused")
+        public boolean isActive() {
+            return this.active;
+        }
     }
 
     @Required

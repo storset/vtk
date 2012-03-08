@@ -19,17 +19,19 @@
     <h2><@vrtx.msg code="report.${report.reportname}" /></h2>
   </div>
   
+  <#-- TODO
   <div id="vrtx-report-filters">
     <ul class="vrtx-report-filter" id="vrtx-report-filter-published">
-      <li><a href="${report.backURL?html}">Publiserte</a></li>
-      <li><a href="${report.backURL?html}&published=false">Upubliserte</a></li>
+      <li><a href="${report.publishedFilterURL?html}">Publiserte</a></li>
+      <li><a href="${report.publishedFilterURL?html}&published=false">Upubliserte</a></li>
     </ul>
     <ul class="vrtx-report-filter" id="vrtx-report-filter-read-restriction">
-      <li><a href="${report.backURL?html}">Åpne og lukkede</a></li>
-      <li><a href="${report.backURL?html}&read-restriction=false">Åpne</a></li>
-      <li><a href="${report.backURL?html}&read-restriction=true">Lukkede</a></li>
+      <li><a href="${report.readAllFilterURL?html}">Åpne og lukkede</a></li>
+      <li><a href="${report.readAllFilterURL?html}&read-restriction=false">Åpne</a></li>
+      <li><a href="${report.readAllFilterURL?html}&read-restriction=true">Lukkede</a></li>
     </ul>
   </div>
+  -->
 
   <#if (report.result?exists && report.result?size > 0)>
     <p id="vrtx-report-info-paging-top">

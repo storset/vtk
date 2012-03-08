@@ -466,7 +466,7 @@ public class LinkCheckJob extends RepositoryJob {
                         logger.warn("Resource " + r.getURI() + " was modified during link check, skipping store");
                         continue;
                     }
-                    repository.store(token, resource, context);
+                    repository.store(token, r, context);
                 } catch (ResourceLockedException e) {
                     logger.warn("Resource " + r.getURI() + " was locked by another user, skipping");
                     continue;

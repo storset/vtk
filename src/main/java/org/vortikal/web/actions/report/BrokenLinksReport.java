@@ -78,11 +78,11 @@ public class BrokenLinksReport extends DocumentReporter {
  
     @Override
     public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) { 
-        Map<String, Object> model = super.getReportContent(token, resource, request);  
+        Map<String, Object> result = super.getReportContent(token, resource, request);  
 
         URL reportURL = super.getReportService().constructURL(resource).addParameter(REPORT_TYPE_PARAM, REPORT_TYPE_PARAM_NAME);
         
-        Map<String, List<URLState>> filtersURLs = new HashMap<String, List<URLState>>();
+        Map<String, ArrayList<URLState>> filtersURLs = new HashMap<String, ArrayList<URLState>>();
 
         String published = request.getParameter(PUBLISHED_PARAM_NAME);
         String readRestriction = request.getParameter(READ_RESTRICTION_PARAM_NAME);
@@ -95,7 +95,7 @@ public class BrokenLinksReport extends DocumentReporter {
         }
         
         // Generate published filter
-        List<URLState> filterPublishedURLs = new ArrayList<URLState>();
+        ArrayList<URLState> filterPublishedURLs = new ArrayList<URLState>();
         for (String param : PUBLISHED_PARAM_VALUES) {
             URL filterOptionURL = reportURL.addParameter(PUBLISHED_PARAM_NAME, param);
             filterOptionURL.addParameter(READ_RESTRICTION_PARAM_NAME, readRestriction);
@@ -108,7 +108,7 @@ public class BrokenLinksReport extends DocumentReporter {
         filtersURLs.put(PUBLISHED_PARAM_NAME, filterPublishedURLs);
         
         // Generate read restriction filter
-        List<URLState> filterReadRestrictionURLs = new ArrayList<URLState>();
+        ArrayList<URLState> filterReadRestrictionURLs = new ArrayList<URLState>();
         for (String param : READ_RESTRICTION_PARAM_VALUES) {
             URL filterOptionURL = reportURL.addParameter(READ_RESTRICTION_PARAM_NAME, param);
             filterOptionURL.addParameter(PUBLISHED_PARAM_NAME, published);
@@ -120,9 +120,9 @@ public class BrokenLinksReport extends DocumentReporter {
         }
         filtersURLs.put(READ_RESTRICTION_PARAM_NAME, filterReadRestrictionURLs);
         
-        model.put("filtersURLs", filtersURLs);
+        result.put("filtersURLs", filtersURLs);
         
-        return model;
+        return result;
     }
 
     @Override
@@ -183,8 +183,8 @@ public class BrokenLinksReport extends DocumentReporter {
     }
     
     private class URLState {
-        private URL url;
-        private boolean active;
+        public URL url;
+        public boolean active;
         
         public URLState(URL url, boolean state) {
             this.url = url;

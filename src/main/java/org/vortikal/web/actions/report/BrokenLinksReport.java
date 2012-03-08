@@ -33,6 +33,7 @@ package org.vortikal.web.actions.report;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -82,7 +83,7 @@ public class BrokenLinksReport extends DocumentReporter {
 
         URL reportURL = super.getReportService().constructURL(resource).addParameter(REPORT_TYPE_PARAM, REPORT_TYPE_PARAM_NAME);
         
-        Map<String, List<FilterOption>> filtersURLs = new HashMap<String, List<FilterOption>>();
+        Map<String, List<FilterOption>> filtersURLs = new LinkedHashMap<String, List<FilterOption>>();
 
         String published = request.getParameter(PUBLISHED_PARAM_NAME);
         String readRestriction = request.getParameter(READ_RESTRICTION_PARAM_NAME);
@@ -102,8 +103,7 @@ public class BrokenLinksReport extends DocumentReporter {
             filterOptionURL.addParameter(PUBLISHED_PARAM_NAME, published);  
             filterReadRestrictionURLs.add(new FilterOption(param, filterOptionURL, param.equals(readRestriction) ? true : false));
         }
-        filtersURLs.put(READ_RESTRICTION_PARAM_NAME, filterReadRestrictionURLs);
-        
+
         // Generate published filter
         List<FilterOption> filterPublishedURLs = new ArrayList<FilterOption>();
         for (String param : PUBLISHED_PARAM_VALUES) {
@@ -112,7 +112,9 @@ public class BrokenLinksReport extends DocumentReporter {
             filterOptionURL.addParameter(READ_RESTRICTION_PARAM_NAME, readRestriction);
             filterPublishedURLs.add(new FilterOption(param, filterOptionURL, param.equals(published) ? true : false));
         }
+        
         filtersURLs.put(PUBLISHED_PARAM_NAME, filterPublishedURLs);
+        filtersURLs.put(READ_RESTRICTION_PARAM_NAME, filterReadRestrictionURLs);
         
         result.put("filtersURLs", filtersURLs);
         

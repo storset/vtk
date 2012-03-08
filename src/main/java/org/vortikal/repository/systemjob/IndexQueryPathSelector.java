@@ -70,13 +70,6 @@ public class IndexQueryPathSelector implements PathSelector {
     
     private int limit = 2000;
 
-    private static final PropertySelect NO_PROPERTIES = new PropertySelect() {
-        @Override
-        public boolean isIncludedProperty(PropertyTypeDefinition propertyDefinition) {
-            return false;
-        }
-    };
-    
     @Override
     public void selectWithCallback(Repository repository,
                                    SystemChangeContext context,
@@ -91,7 +84,12 @@ public class IndexQueryPathSelector implements PathSelector {
         search.setSorting(sort);
         search.setLimit(this.limit);
         search.setOnlyPublishedResources(this.onlyPublishedResources);
-        search.setPropertySelect(NO_PROPERTIES);
+        search.setPropertySelect(new PropertySelect(){
+            @Override
+            public boolean isIncludedProperty(PropertyTypeDefinition propertyDefinition) {
+                return false;
+            }
+        });
         ResultSet results = this.searcher.execute(token, search);
 
         if (logger.isDebugEnabled()) {

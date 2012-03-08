@@ -61,39 +61,41 @@ public class BrokenLinksReport extends DocumentReporter {
     private PropertyTypeDefinition linkStatusPropDef;
     private PropertyTypeDefinition linkCheckPropDef;
     private PropertyTypeDefinition sortPropDef;
+    private PropertyTypeDefinition publishedPropDef;
     private SortFieldDirection sortOrder;
 
     @Override
     protected Search getSearch(String token, Resource currentResource, HttpServletRequest request) {
-        OrQuery or = new OrQuery();
-        or.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS", TermOperator.EQ))
+        OrQuery linkStatusCriteria = new OrQuery();
+        linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS", TermOperator.EQ))
         .add(new PropertyTermQuery(this.linkStatusPropDef, "AWAITING_LINKCHECK", TermOperator.EQ));
-        AndQuery and = new AndQuery();
+
+        AndQuery topLevel = new AndQuery();
         
         // Read restriction (all|true|false)
-        String readForAll = request.getParameter("read-restriction");
-        if(readForAll != null) {  
-          if(readForAll.equals("true")) {
+        String readRestriction = request.getParameter("read-restriction");
+
+        if ("true".equals(readRestriction)) {
             ACLReadForAllQuery aclReadForAllQuery = new ACLReadForAllQuery(true);
-            and.add(aclReadForAllQuery);
-          } else if (readForAll.equals("false")) {
+            topLevel.add(aclReadForAllQuery);
+        } else if ("false".equals(readRestriction)) {
             ACLReadForAllQuery aclReadForAllQuery = new ACLReadForAllQuery();
-            and.add(aclReadForAllQuery);
-          }
+            topLevel.add(aclReadForAllQuery);
         }
           
-        and.add(new UriPrefixQuery(currentResource.getURI().toString())).add(or);
+        topLevel.add(new UriPrefixQuery(currentResource.getURI().toString())).add(linkStatusCriteria);
  
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
         Search search = new Search();
-        search.setQuery(and);
+        search.setQuery(topLevel);
         search.setSorting(sorting);
         
         // Published (true|false)
-        String setOnlyPublished = request.getParameter("published");
-        if(setOnlyPublished != null && setOnlyPublished.equals("false")) {
-            search.setOnlyPublishedResources(false); 
+        if("false".equals(request.getParameter("published"))) {
+            // ONLY those NOT published
+            PropertyTermQuery ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
+            topLevel.add(ptq);
         } else {
             search.setOnlyPublishedResources(true);
         }
@@ -127,6 +129,11 @@ public class BrokenLinksReport extends DocumentReporter {
     @Required
     public void setLinkCheckPropDef(PropertyTypeDefinition linkCheckPropDef) {
         this.linkCheckPropDef = linkCheckPropDef;
+    }
+
+    @Required
+    public void setPublishedPropDef(PropertyTypeDefinition publishedPropDef) {
+        this.publishedPropDef = publishedPropDef;
     }
 
     @Required

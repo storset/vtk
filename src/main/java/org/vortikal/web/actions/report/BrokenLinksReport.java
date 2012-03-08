@@ -81,7 +81,7 @@ public class BrokenLinksReport extends DocumentReporter {
 
         URL reportURL = super.getReportService().constructURL(resource).addParameter(REPORT_TYPE_PARAM, REPORT_TYPE_PARAM_NAME);
         
-        Map<String, ArrayList<URLState>> filtersURLs = new HashMap<String, ArrayList<URLState>>();
+        Map<String, ArrayList<URL>> filtersURLs = new HashMap<String, ArrayList<URL>>();
 
         String published = request.getParameter(PUBLISHED_PARAM_NAME);
         String readRestriction = request.getParameter(READ_RESTRICTION_PARAM_NAME);
@@ -93,23 +93,25 @@ public class BrokenLinksReport extends DocumentReporter {
            readRestriction = READ_RESTRICTION_PARAM_DEFAULT_VALUE;
         }
         
-        // Generate published filter
-        ArrayList<URLState> filterPublishedURLs = new ArrayList<URLState>();
-        for (String param : PUBLISHED_PARAM_VALUES) {
-            URL filterOptionURL = reportURL.addParameter(PUBLISHED_PARAM_NAME, param);
-            filterOptionURL.addParameter(READ_RESTRICTION_PARAM_NAME, readRestriction);
-            filterPublishedURLs.add(new URLState(filterOptionURL, published.equals(param) ? true : false));
-        }
-        filtersURLs.put(PUBLISHED_PARAM_NAME, filterPublishedURLs);
-        
         // Generate read restriction filter
-        ArrayList<URLState> filterReadRestrictionURLs = new ArrayList<URLState>();
+        ArrayList<URL> filterReadRestrictionURLs = new ArrayList<URL>();
         for (String param : READ_RESTRICTION_PARAM_VALUES) {
-            URL filterOptionURL = reportURL.addParameter(READ_RESTRICTION_PARAM_NAME, param);
+            URL filterOptionURL = new URL(reportURL);
+            filterOptionURL.addParameter(READ_RESTRICTION_PARAM_NAME, param);
             filterOptionURL.addParameter(PUBLISHED_PARAM_NAME, published);  
-            filterReadRestrictionURLs.add(new URLState(filterOptionURL, readRestriction.equals(param) ? true : false));
+            filterReadRestrictionURLs.add(filterOptionURL);
         }
         filtersURLs.put(READ_RESTRICTION_PARAM_NAME, filterReadRestrictionURLs);
+        
+        // Generate published filter
+        ArrayList<URL> filterPublishedURLs = new ArrayList<URL>();
+        for (String param : PUBLISHED_PARAM_VALUES) {
+            URL filterOptionURL = new URL(reportURL);
+            filterOptionURL.addParameter(PUBLISHED_PARAM_NAME, param);
+            filterOptionURL.addParameter(READ_RESTRICTION_PARAM_NAME, readRestriction);
+            filterPublishedURLs.add(filterOptionURL);
+        }
+        filtersURLs.put(PUBLISHED_PARAM_NAME, filterPublishedURLs);
         
         result.put("filtersURLs", filtersURLs);
         

@@ -23,8 +23,8 @@
     <div id="vrtx-report-filters">
       <#list report.filtersURLs?keys as filterKey>
         <ul class="vrtx-report-filter" id="vrtx-report-filter-${filterKey}">
-          <#list report.filtersURLs[filterKey] as u>
-            <li>u</li>
+          <#list report.filtersURLs[filterKey] as url>
+            <li><a href="${url?html}">Lenke</a></li>
           </#list>
         </ul>
       </#list>

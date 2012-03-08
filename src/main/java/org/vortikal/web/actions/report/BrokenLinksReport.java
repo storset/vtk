@@ -86,6 +86,7 @@ public class BrokenLinksReport extends DocumentReporter {
             map = new HashMap<String, Object>();
             model.put("linkCheck", map);
         }
+        
         ContentStream binaryStream = linkCheck.getBinaryStream();
         Object obj = JSONValue.parse(new InputStreamReader(binaryStream.getStream()));
         map.put(resource.getURI().toString(), obj);

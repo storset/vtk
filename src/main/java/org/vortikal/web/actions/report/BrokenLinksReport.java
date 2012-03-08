@@ -70,7 +70,7 @@ public class BrokenLinksReport extends DocumentReporter {
         .add(new PropertyTermQuery(this.linkStatusPropDef, "AWAITING_LINKCHECK", TermOperator.EQ));
         AndQuery and = new AndQuery();
         
-        // Read restriction
+        // Read restriction (all|true|false)
         String readForAll = request.getParameter("read-restriction");
         if(readForAll != null) {  
           if(readForAll.equals("true")) {
@@ -90,6 +90,7 @@ public class BrokenLinksReport extends DocumentReporter {
         search.setQuery(and);
         search.setSorting(sorting);
         
+        // Published (true|false)
         String setOnlyPublished = request.getParameter("published");
         if(setOnlyPublished != null && setOnlyPublished.equals("false")) {
             search.setOnlyPublishedResources(false); 

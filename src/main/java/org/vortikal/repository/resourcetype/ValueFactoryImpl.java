@@ -38,9 +38,7 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.repository.store.BinaryContentDataAccessor;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
@@ -53,7 +51,6 @@ import org.vortikal.util.cache.ReusableObjectCache;
 public class ValueFactoryImpl implements ValueFactory {
 
     private PrincipalFactory principalFactory;
-    private BinaryContentDataAccessor binaryDao;
 
     private static final String[] DATE_FORMATS = new String[] {
                                                "yyyy-MM-dd HH:mm:ss",
@@ -83,6 +80,7 @@ public class ValueFactoryImpl implements ValueFactory {
      * org.vortikal.repository.resourcetype.ValueFactory#createValues(java.lang
      * .String[], org.vortikal.repository.resourcetype.PropertyType.Type)
      */
+    @Override
     public Value[] createValues(String[] stringValues, Type type) throws ValueFormatException {
 
         if (stringValues == null) {
@@ -105,6 +103,7 @@ public class ValueFactoryImpl implements ValueFactory {
      * org.vortikal.repository.resourcetype.ValueFactory#createValue(java.lang
      * .String, org.vortikal.repository.resourcetype.PropertyType.Type)
      */
+    @Override
     public Value createValue(String stringValue, Type type) throws ValueFormatException {
 
         if (stringValue == null) {
@@ -159,65 +158,24 @@ public class ValueFactoryImpl implements ValueFactory {
             } catch (InvalidPrincipalException e) {
                 throw new ValueFormatException(e.getMessage(), e);
             }
-        case BINARY:
-            // Don't fetch any of the binary content until 
-            // it's specifically needed
-            return new BinaryValue(new ValueRefImpl(this.binaryDao, stringValue));
         }
 
-        throw new IllegalArgumentException("Cannot convert '" + stringValue + "' to unknown type '"
-                + type + "'");
+        throw new IllegalArgumentException("Cannot make string value '" + stringValue + "' into type '" + type + "'");
 
     }
     
-    private class ValueRefImpl implements BinaryValue.ValueRef {
+    @Override
+    public Value createValue(BinaryValue binaryValue) throws ValueFormatException {
+        return new Value(binaryValue);
+    }
 
-        private BinaryContentDataAccessor dao;
-        private String objRef;
-        
-        public ValueRefImpl(BinaryContentDataAccessor dao, String objRef) {
-            if (dao == null) {
-                throw new IllegalArgumentException("Constructor arg 'dao' cannot be null");
-            }
-            if (objRef == null) {
-                throw new IllegalArgumentException("Constructor arg 'objRef' cannot be null");
-            }
-            this.dao = dao;
-            this.objRef = objRef;
+    @Override
+    public Value[] createValues(BinaryValue[] binaryValues) throws ValueFormatException {
+        Value[] values = new Value[binaryValues.length];
+        for (int i=0; i<binaryValues.length; i++) {
+            values[i] = createValue(binaryValues[i]);
         }
-
-        public ContentStream getValue() {
-            return this.dao.getBinaryStream(this.objRef);
-        }
-        
-        public String getContentType() {
-            return this.dao.getBinaryMimeType(this.objRef);
-        }
-        
-        public String getID() {
-            return this.objRef;
-        }
-
-        @Override
-        public String toString() {
-            return "ref#" + this.getID();
-        }
-        
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == this) return true;
-
-            if (! (obj instanceof BinaryValue.ValueRef)) {
-                return false;
-            }
-        
-            return this.getID().equals(((BinaryValue.ValueRef) obj).getID());
-        }
-
-        @Override
-        public int hashCode() {
-            return this.getID().hashCode();
-        }
+        return values;
     }
 
     private Date getDateFromStringValue(String stringValue) throws ValueFormatException {
@@ -253,9 +211,5 @@ public class ValueFactoryImpl implements ValueFactory {
         this.principalFactory = principalFactory;
     }
 
-    //@Required
-    public void setBinaryDao(BinaryContentDataAccessor binaryDao) {
-        this.binaryDao = binaryDao;
-    }
 
 }

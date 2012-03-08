@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.store.db;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -44,6 +45,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.store.PropertySetHandler;
 import org.vortikal.security.Principal;
@@ -317,34 +319,47 @@ class PropertySetRowHandler implements RowHandler {
     protected void populateExtraProperties(List<Map<String, Object>> rowBuffer, 
                                            PropertySetImpl propertySet) {
         
-        Map<SqlDaoUtils.PropHolder, List<String>> propMap = 
-                            new HashMap<SqlDaoUtils.PropHolder, List<String>>();
+        Map<SqlDaoUtils.PropHolder, List<Object>> propMap = 
+                            new HashMap<SqlDaoUtils.PropHolder, List<Object>>();
         
         for (Map<String, Object> row: rowBuffer) {
-
             SqlDaoUtils.PropHolder holder = new SqlDaoUtils.PropHolder();
             holder.namespaceUri = (String)row.get("namespace");
             holder.name = (String)row.get("name");
             holder.resourceId = ((Integer)row.get("id")).intValue();
+            Object isBinary = row.get("binary");
+            if (isBinary instanceof BigDecimal) {
+                holder.binary = BigDecimal.ONE.equals(isBinary);
+            } else {
+                holder.binary = Integer.valueOf(1).equals(isBinary);
+            }
         
             if (holder.name != null) { 
-
-                List<String> values = propMap.get(holder);
+                List<Object> values = propMap.get(holder);
                 if (values == null) {
-                    values = new ArrayList<String>();
+                    values = new ArrayList<Object>(2);
                     holder.values = values;
                     propMap.put(holder, values);
                 }
-                values.add((String)row.get("value"));
+                values.add(row.get("value"));
             }
-
         }
 
         for (SqlDaoUtils.PropHolder holder: propMap.keySet()) {
+            if (holder.binary) {
+                // Skip binary props for system index
+                continue;
+            }
+            
             Namespace namespace = this.resourceTypeTree.getNamespace(holder.namespaceUri);
             PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(
                     namespace, holder.name);
-            Property property = propDef.createProperty(holder.values.toArray(new String[holder.values.size()]));
+            
+            String[] stringValues = new String[holder.values.size()];
+            for (int i=0; i<stringValues.length; i++) {
+                stringValues[i] = (String)holder.values.get(i);
+            }
+            Property property = propDef.createProperty(stringValues);
             propertySet.addProperty(property);
         }
 

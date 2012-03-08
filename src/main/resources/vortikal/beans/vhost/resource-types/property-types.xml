@@ -17,17 +17,8 @@
         <property name="mandatory" value="false" />
     </bean>
     
-    <!-- XXX: cyclic headache -->
     <bean id="valueFactory" class="org.vortikal.repository.resourcetype.ValueFactoryImpl">
         <property name="principalFactory" ref="principalFactory" />
-        <!--
-            One hackey way of resolving the headache is to use this hack instead
-            of ref="repository.binaryDao" when ripping the resource layer away
-            from the backend, and letting the valueFactory-bean itself fetch the
-            binaryDao-bean when it needs it.
-        -->
-        <!--property name="binaryDaoBeanName" value="repository.binaryDao" /-->
-        <property name="binaryDao" ref="repository.binaryDao" />
     </bean>
     
     <bean id="valueFormatterRegistry"

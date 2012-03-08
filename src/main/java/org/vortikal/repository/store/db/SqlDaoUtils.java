@@ -82,7 +82,7 @@ final class SqlDaoUtils {
         int resourceId;
         Object propID = null;
         boolean binary = false;
-        List<String> values;
+        List<Object> values;
 
         @Override
         public boolean equals(Object object) {

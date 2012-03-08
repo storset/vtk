@@ -33,18 +33,16 @@ package org.vortikal.repository.resourcetype;
 import java.io.Serializable;
 import java.util.Date;
 
-import net.sf.json.JSONObject;
-
+import org.vortikal.repository.ContentStream;
+import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
+
+import net.sf.json.JSONObject;
 
 public class Value implements Cloneable, Comparable<Value>, Serializable {
 
     private static final long serialVersionUID = 3436743294757202084L;
-
-    protected Value() {
-        // REMOVE ONCE REFACTORING DONE
-    }
 
     public static final long MAX_LENGTH = 2048;
     protected Type type = PropertyType.Type.STRING;
@@ -55,6 +53,7 @@ public class Value implements Cloneable, Comparable<Value>, Serializable {
     private int intValue;
     private long longValue;
     private Principal principalValue;
+    private BinaryValue binaryValue;
 
     public Value(String stringValue, Type type) {
         if (stringValue == null || stringValue.equals(""))
@@ -128,6 +127,18 @@ public class Value implements Cloneable, Comparable<Value>, Serializable {
         this.type = Type.JSON;
         this.stringValue = value.toString();
     }
+    
+    public Value(byte[] buffer, String contentType) {
+        if (buffer == null) throw new IllegalArgumentException("buffer cannot be null");
+        this.type = Type.BINARY;
+        this.binaryValue = new BufferedBinaryValue(buffer, contentType);
+    }
+    
+    Value(BinaryValue value) {
+        if (value == null) throw new IllegalArgumentException("value cannot be null");
+        this.type = Type.BINARY;
+        this.binaryValue = value;
+    }
 
     public Type getType() {
         return this.type;
@@ -160,7 +171,11 @@ public class Value implements Cloneable, Comparable<Value>, Serializable {
     public JSONObject getJSONValue() {
         return JSONObject.fromObject(this.stringValue);
     }
-
+    
+    public BinaryValue getBinaryValue() {
+        return this.binaryValue;
+    }
+    
     public Object getObjectValue() {
         switch (this.type) {
 
@@ -185,6 +200,9 @@ public class Value implements Cloneable, Comparable<Value>, Serializable {
             
         case PRINCIPAL:
             return this.principalValue;
+            
+        case BINARY:
+            return this.binaryValue;
         }
 
         throw new IllegalStateException("Unable to create object value: Illegal type: " + this.type);
@@ -218,6 +236,10 @@ public class Value implements Cloneable, Comparable<Value>, Serializable {
         case PRINCIPAL:
             return (this.principalValue == null && v.getPrincipalValue() == null)
                     || (this.principalValue != null && this.principalValue.equals(v.getPrincipalValue()));
+        case BINARY:
+            return (this.binaryValue == null && v.binaryValue == null)
+                    || (this.binaryValue != null && this.binaryValue.equals(v.binaryValue));
+
         default:
             return (this.stringValue == null && v.getStringValue() == null)
                     || (this.stringValue != null && this.stringValue.equals(v.getStringValue()));
@@ -240,6 +262,8 @@ public class Value implements Cloneable, Comparable<Value>, Serializable {
             return hash + 4 + (this.dateValue == null ? 0 : this.dateValue.hashCode());
         case PRINCIPAL:
             return hash + 5 + (this.principalValue == null ? 0 : this.principalValue.hashCode());
+        case BINARY:
+            return this.binaryValue.hashCode();
         default:
             return hash + (this.stringValue == null ? 0 : this.stringValue.hashCode());
         }
@@ -261,6 +285,8 @@ public class Value implements Cloneable, Comparable<Value>, Serializable {
             return new Value((Date) this.dateValue.clone(), false);
         case PRINCIPAL:
             return new Value(this.principalValue);
+        case BINARY:
+            return new Value(this.binaryValue);
         default:
             return new Value(this.stringValue, this.type);
         }
@@ -283,6 +309,8 @@ public class Value implements Cloneable, Comparable<Value>, Serializable {
             return this.dateValue.compareTo(other.dateValue);
         case PRINCIPAL:
             return this.principalValue.getQualifiedName().compareTo(other.principalValue.getQualifiedName());
+        case BINARY:
+            throw new IllegalOperationException("cannot compare binary values");
         default:
             return this.stringValue.compareTo(other.stringValue);
         }
@@ -312,6 +340,9 @@ public class Value implements Cloneable, Comparable<Value>, Serializable {
 
         case PRINCIPAL:
             return String.valueOf(this.principalValue);
+            
+        case BINARY:
+            return this.binaryValue.toString();
 
         default:
             return this.stringValue;
@@ -352,8 +383,9 @@ public class Value implements Cloneable, Comparable<Value>, Serializable {
         case JSON:
             representation = this.stringValue;
             break;
+
         case BINARY:
-            // representation = this.binaryValue.toString();
+            representation = "#binary";
             break;
 
         case PRINCIPAL:

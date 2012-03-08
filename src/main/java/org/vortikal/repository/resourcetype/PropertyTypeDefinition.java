@@ -122,7 +122,23 @@ public interface PropertyTypeDefinition {
      *  of this property definition
      */
     public Property createProperty(String[] stringValues) throws ValueFormatException;
+    
+    /**
+     * Create property from binary value.
+     * @param binaryValue
+     * @return
+     * @throws ValueFormatException 
+     */
+    public Property createProperty(BinaryValue binaryValue) throws ValueFormatException;
 
+    /**
+     * Create property from binary values.
+     * @param binaryValues
+     * @return
+     * @throws ValueFormatException 
+     */
+    public Property createProperty(BinaryValue[] binaryValues) throws ValueFormatException;
+    
     /**
      * Create a {@link Property} instance.
      */

@@ -132,11 +132,11 @@ public class IncrementalUpdater {
                 }
             }
         } catch (Throwable t) {
-            logger.error("Unexpected exception during update", t);
+            logger.error("Unexpected exception during index update", t);
         }
     }
     
-    private void applyChanges(final List<ChangeLogEntry> changes) {
+    private void applyChanges(final List<ChangeLogEntry> changes) throws Exception {
 
         try {
             // Take lock immediately, we'll be doing some writing.
@@ -235,8 +235,6 @@ public class IncrementalUpdater {
             logger.debug("--- applyChanges(): Committing changes to index.");
             this.index.commit();
             
-        } catch (Exception e) {
-            logger.error("Something went wrong while updating new index with changes", e);
         } finally {
             this.index.unlock();
         }

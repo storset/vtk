@@ -49,6 +49,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.orm.ibatis.SqlMapClientCallback;
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.LockImpl;
 import org.vortikal.repository.Namespace;
@@ -61,10 +62,11 @@ import org.vortikal.repository.RecoverableResource;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.BinaryValue;
+import org.vortikal.repository.resourcetype.BufferedBinaryValue;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.resourcetype.BinaryValue;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.Principal;
@@ -968,68 +970,60 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
     }
 
     private void storeProperties(final ResourceImpl r) {
-
-        final List<Property> properties = r.getProperties();
-
-        for (Property p : properties) {
+        
+        for (Property p : r) {
             if (p.getType() == PropertyType.Type.BINARY) {
                 // XXX: mem copying has to be done because of the way properties
                 // are stored: first deleted then inserted (never updated)
-
-                // XXX: handle stale value refs from client code
-                copyBinaryPropValueToMemory(p);
+                // If any binary value is of type BinaryValueReference (created only by this class)
+                // then DataAccessException will be thrown if the reference is STALE.
+                ensureBinaryValueBuffered(p);
             }
         }
-
+        
         String sqlMap = getSqlMap("deletePropertiesByResourceId");
         getSqlMapClientTemplate().update(sqlMap, r.getID());
 
-        if (properties != null) {
+        final String batchSqlMap = getSqlMap("insertPropertyEntry");
 
-            final String batchSqlMap = getSqlMap("insertPropertyEntry");
+        getSqlMapClientTemplate().execute(new SqlMapClientCallback() {
 
-            getSqlMapClientTemplate().execute(new SqlMapClientCallback() {
-                @Override
-                public Object doInSqlMapClient(SqlMapExecutor executor) throws SQLException {
-                    executor.startBatch();
-                    Map<String, Object> parameters = new HashMap<String, Object>();
-                    for (Property property : properties) {
-                        if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getDefinition().getName())) {
-                            parameters.put("namespaceUri", property.getDefinition().getNamespace().getUri());
-                            parameters.put("name", property.getDefinition().getName());
-                            parameters.put("resourceId", r.getID());
+            @Override
+            public Object doInSqlMapClient(SqlMapExecutor executor) throws SQLException {
+                executor.startBatch();
+                Map<String, Object> parameters = new HashMap<String, Object>();
+                for (Property property : r) {
+                    if (!PropertyType.SPECIAL_PROPERTIES_SET.contains(property.getDefinition().getName())) {
+                        parameters.put("namespaceUri", property.getDefinition().getNamespace().getUri());
+                        parameters.put("name", property.getDefinition().getName());
+                        parameters.put("resourceId", r.getID());
 
-                            if (property.getDefinition() != null && property.getDefinition().isMultiple()) {
-
-                                Value[] values = property.getValues();
-                                for (int i = 0; i < values.length; i++) {
-                                    parameters.put("value", values[i].getNativeStringRepresentation());
-                                    executor.update(batchSqlMap, parameters);
-                                }
-                            } else {
-                                Value value = property.getValue();
-                                if (value.getType() == PropertyType.Type.BINARY) {
-                                    BinaryValue binaryValue = (BinaryValue) value;
-                                    parameters.put("value", "#binary");
-                                    parameters.put("binaryContent", binaryValue.getContentStream());
-                                    parameters.put("binaryMimeType", binaryValue.getContentType());
-                                } else {
-                                    parameters.put("value", value.getNativeStringRepresentation());
-                                }
-                                executor.update(batchSqlMap, parameters);
-                            }
+                        Value[] values;
+                        if (property.getDefinition() != null && property.getDefinition().isMultiple()) {
+                            values = property.getValues();
+                        } else {
+                            values = new Value[]{property.getValue()};
                         }
-                        parameters.clear();
+
+                        for (Value v : values) {
+                            parameters.put("value", v.getNativeStringRepresentation());
+                            if (property.getType() == PropertyType.Type.BINARY) {
+                                parameters.put("binaryContent", v.getBinaryValue().getContentStream());
+                                parameters.put("binaryMimeType", v.getBinaryValue().getContentType());
+                            }
+                            executor.update(batchSqlMap, parameters);
+                        }
                     }
-                    executor.executeBatch();
-                    return null;
+                    parameters.clear();
                 }
-            });
-        }
+                executor.executeBatch();
+                return null;
+            }
+        });
     }
 
     private void populateCustomProperties(ResourceImpl[] resources,
-                                          List<Map<String, Object>> propertyRows) {
+            List<Map<String, Object>> propertyRows) {
 
         Map<Integer, ResourceImpl> resourceMap =
                 new HashMap<Integer, ResourceImpl>(resources.length+1, 1f);
@@ -1037,7 +1031,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             resourceMap.put(resource.getID(), resource);
         }
 
-        Map<SqlDaoUtils.PropHolder, List<String>> propValuesMap = new HashMap<SqlDaoUtils.PropHolder, List<String>>();
+        Map<SqlDaoUtils.PropHolder, List<Object>> propValuesMap = new HashMap<SqlDaoUtils.PropHolder, List<Object>>();
 
         for (Map<String, Object> propEntry : propertyRows) {
             SqlDaoUtils.PropHolder prop = new SqlDaoUtils.PropHolder();
@@ -1045,29 +1039,29 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             prop.namespaceUri = (String) propEntry.get("namespaceUri");
             prop.name = (String) propEntry.get("name");
             prop.resourceId = (Integer) propEntry.get("resourceId");
-            Object binary = propEntry.get("binary");
-            if (binary instanceof BigDecimal) {
-                prop.binary = !((BigDecimal) binary).equals(BigDecimal.ZERO);
+            Object isBinary = propEntry.get("binary");
+            if (isBinary instanceof BigDecimal) {
+                prop.binary = BigDecimal.ONE.equals(isBinary);
             } else {
-                prop.binary = (Integer) binary != 0;
+                prop.binary = Integer.valueOf(1).equals(isBinary);
             }
             
-            List<String> values = propValuesMap.get(prop);
+            List<Object> values = propValuesMap.get(prop);
             if (values == null) {
-                values = new ArrayList<String>(2); // Most props have only one value
+                values = new ArrayList<Object>(2); // Most props have only one value
                 prop.values = values;
                 propValuesMap.put(prop, values);
             }
             if (prop.binary) {
-                values.add(prop.propID.toString());
+                values.add(prop.propID);
             } else {
-                values.add((String) propEntry.get("value"));
+                values.add(propEntry.get("value"));
             }
         }
 
-        for (SqlDaoUtils.PropHolder prop : propValuesMap.keySet()) {
+        for (SqlDaoUtils.PropHolder propHolder : propValuesMap.keySet()) {
 
-            ResourceImpl r = resourceMap.get(prop.resourceId);
+            ResourceImpl r = resourceMap.get(propHolder.resourceId);
 
             if (r == null) {
                 // A property was loaded for a resource that was committed to
@@ -1079,9 +1073,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                 continue;
             }
             
-            r.addProperty(createProperty(prop.namespaceUri, 
-                                         prop.name,
-                                         prop.values.toArray(new String[prop.values.size()])));
+            r.addProperty(createProperty(propHolder));
         }
     }
 
@@ -1177,11 +1169,23 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return prop;
     }
 
-    private Property createProperty(String namespaceUrl, String name, String[] stringValues) {
-        Namespace namespace = this.resourceTypeTree.getNamespace(namespaceUrl);
-        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
-        Property prop = propDef.createProperty(stringValues);
-        return prop;
+    private Property createProperty(SqlDaoUtils.PropHolder holder) {
+        Namespace namespace = this.resourceTypeTree.getNamespace(holder.namespaceUri);
+        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, holder.name);
+
+        if (holder.binary) {
+            BinaryValueReference[] refs = new BinaryValueReference[holder.values.size()];
+            for (int i=0; i<refs.length; i++) {
+                refs[i] = new BinaryValueReference(this, (Integer)holder.values.get(i));
+            }
+            return propDef.createProperty(refs);
+        } else {
+            String[] stringValues = new String[holder.values.size()];
+            for (int i=0; i<stringValues.length; i++) {
+                stringValues[i] = (String)holder.values.get(i);
+            }
+            return propDef.createProperty(stringValues);
+        }
     }
 
     private Map<String, Object> getResourceAsMap(ResourceImpl r) {
@@ -1233,25 +1237,39 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
         return groups;
     }
+    
+    ContentStream getBinaryPropertyContentStream(Integer reference) throws DataAccessException {
+        String sqlMap = getSqlMap("selectBinaryPropertyEntry");
+        @SuppressWarnings("unchecked")
+        Map result = (Map) getSqlMapClientTemplate().queryForObject(sqlMap, reference);
+        return (ContentStream) result.get("binaryStream");
+    }
 
-    private void copyBinaryPropValueToMemory(Property prop) {
+    String getBinaryPropertyContentType(Integer reference) throws DataAccessException {
+        String sqlMap = getSqlMap("selectBinaryMimeTypeEntry");
+        return (String) getSqlMapClientTemplate().queryForObject(sqlMap, reference);
+    }
+
+    private void ensureBinaryValueBuffered(Property prop) {
         try {
+            boolean multiple = prop.getDefinition() != null && prop.getDefinition().isMultiple();
             Value[] values;
-            if (prop.getDefinition() != null && prop.getDefinition().isMultiple()) {
+            if (multiple) {
                 values = prop.getValues();
             } else {
                 values = new Value[]{prop.getValue()};
             }
             
             for (int i = 0; i < values.length; i++) {
-                BinaryValue binval = (BinaryValue) values[i];
-                if (!binval.isBuffered()) {
-                    byte[] data = StreamUtil.readInputStream(binval.getContentStream().getStream());
-                    values[i] = new BinaryValue(data, binval.getContentType());
+                BinaryValue binVal = values[i].getBinaryValue();
+                if (binVal.getClass() == BinaryValueReference.class) {
+                    byte[] buffer = StreamUtil.readInputStream(binVal.getContentStream().getStream());
+                    String contentType = binVal.getContentType();
+                    values[i] = new Value(buffer, contentType);
                 }
             }
             
-            if (prop.getDefinition() != null && prop.getDefinition().isMultiple()) {
+            if (multiple) {
                 prop.setValues(values);
             } else {
                 prop.setValue(values[0]);
@@ -1283,4 +1301,60 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             set.add(principal);
         }
     }
+}
+
+/**
+ * An on-demand loading binary value with reference and access to value in DataAccesor.
+ * 
+ * Immutable.
+ */
+final class BinaryValueReference implements BinaryValue {
+
+    private final Integer ref;
+    private final SqlMapDataAccessor dao;
+
+    BinaryValueReference(SqlMapDataAccessor dao, Integer ref) {
+        this.ref = ref;
+        this.dao = dao;
+    }
+    
+    @Override
+    public String getContentType() throws DataAccessException {
+        return this.dao.getBinaryPropertyContentType(this.ref);
+    }
+
+    @Override
+    public ContentStream getContentStream() throws DataAccessException {
+        return this.dao.getBinaryPropertyContentStream(this.ref);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final BinaryValueReference other = (BinaryValueReference) obj;
+        if (this.ref != other.ref && (this.ref == null || !this.ref.equals(other.ref))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + (this.ref != null ? this.ref.hashCode() : 0);
+        return hash;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder("BinaryValueReference[");
+        b.append("ref = ").append(this.ref).append("]");
+        return b.toString();
+    }
+
 }

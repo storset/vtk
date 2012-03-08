@@ -85,11 +85,6 @@
 
   <bean id="repository.lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" />
 
-  <bean id="repository.binaryDao" class="org.vortikal.repository.store.db.SqlBinaryContentMapDataAccessor">
-    <property name="sqlMapClient" ref="repository.sqlMapClient" />
-    <property name="sqlMaps" ref="repository.statementMappings" />
-  </bean>
-
   <!-- Override iBATIS SQL map statement names in this map (should generally not be necessary): -->
   <bean id="repository.statementMappings" class="java.util.HashMap">
     <constructor-arg>

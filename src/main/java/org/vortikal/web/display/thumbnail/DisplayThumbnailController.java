@@ -82,7 +82,7 @@ public class DisplayThumbnailController implements Controller, LastModified {
         Resource image = repository.retrieve(token, uri, true);
         Property thumbnail = image.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.THUMBNAIL_PROP_NAME);
 
-        if (thumbnail == null || StringUtils.isBlank(thumbnail.getBinaryMimeType())) {
+        if (thumbnail == null || StringUtils.isBlank(thumbnail.getBinaryContentType())) {
             String resourceType = image.getResourceType().trim();
             if ("image".equals(resourceType)) {
                 if (log.isDebugEnabled()) {
@@ -102,7 +102,7 @@ public class DisplayThumbnailController implements Controller, LastModified {
             return null;
         } else {
             ContentStream binaryStream = thumbnail.getBinaryStream();
-            String mimetype = thumbnail.getBinaryMimeType();
+            String mimetype = thumbnail.getBinaryContentType();
             response.setContentType(mimetype);
             int length = (int) binaryStream.getLength();
             response.setContentLength(length);

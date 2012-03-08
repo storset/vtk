@@ -158,6 +158,16 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
     }
 
     @Override
+    public Property createProperty(BinaryValue binaryValue) throws ValueFormatException {
+        return this.overriddenPropDef.createProperty(binaryValue);
+    }
+
+    @Override
+    public Property createProperty(BinaryValue[] binaryValues) throws ValueFormatException {
+        return this.overriddenPropDef.createProperty(binaryValues);
+    }
+
+    @Override
     public Property createProperty() {
         return this.overriddenPropDef.createProperty();
     }

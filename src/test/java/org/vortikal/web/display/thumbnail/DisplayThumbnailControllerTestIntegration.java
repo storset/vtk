@@ -61,7 +61,7 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
         // No mimetype for binary data, so we should redirect
         context.checking(new Expectations() {
             {
-                one(mockThumbnail).getBinaryMimeType();
+                one(mockThumbnail).getBinaryContentType();
                 will(returnValue(""));
             }
         });
@@ -82,7 +82,7 @@ public class DisplayThumbnailControllerTestIntegration extends AbstractControlle
 
         context.checking(new Expectations() {
             {
-                atLeast(2).of(mockThumbnail).getBinaryMimeType();
+                atLeast(2).of(mockThumbnail).getBinaryContentType();
                 will(returnValue(thumbnailMimeType));
             }
         });

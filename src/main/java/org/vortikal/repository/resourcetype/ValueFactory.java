@@ -34,7 +34,7 @@ import org.vortikal.repository.resourcetype.PropertyType.Type;
 
 /**
  * Interface for a <code>Value</code> "factory". It currently only does
- * value creation from string representation.
+ * {@link Value} creation from string representation and binary values.
  */
 public interface ValueFactory {
 
@@ -56,5 +56,21 @@ public interface ValueFactory {
      * @throws ValueFormatException
      */
     public Value createValue(String stringValue, Type type) throws ValueFormatException;
+    
+    /**
+     * Create Value from binary value.
+     * @param value
+     * @return
+     * @throws ValueFormatException 
+     */
+    public Value createValue(BinaryValue value) throws ValueFormatException;
+    
+    /**
+     * Create values from binary value.
+     * @param value
+     * @return
+     * @throws ValueFormatException 
+     */
+    public Value[] createValues(BinaryValue[] value) throws ValueFormatException;
     
 }

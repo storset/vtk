@@ -42,6 +42,7 @@ import java.util.Set;
 
 import net.sf.json.JSONObject;
 
+import org.vortikal.repository.resourcetype.BufferedBinaryValue;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
@@ -50,7 +51,6 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueSeparator;
-import org.vortikal.repository.resourcetype.BinaryValue;
 import org.vortikal.security.Principal;
 
 
@@ -257,6 +257,16 @@ public class PropertyImpl implements Serializable, Cloneable, Property {
     }
     
     @Override
+    public Type getType() {
+        return this.propertyTypeDefinition.getType();
+    }
+    
+    @Override
+    public PropertyTypeDefinition getDefinition() {
+        return this.propertyTypeDefinition;
+    }
+    
+    @Override
     public void setPrincipalValue(Principal principalValue) throws ValueFormatException {
         Value v = new Value(principalValue);
         setValue(v);
@@ -425,15 +435,6 @@ public class PropertyImpl implements Serializable, Cloneable, Property {
         
     }
     
-    @Override
-    public Type getType() {
-        return this.propertyTypeDefinition.getType();
-    }
-    
-    @Override
-    public PropertyTypeDefinition getDefinition() {
-        return this.propertyTypeDefinition;
-    }
 
     public void setDefinition(PropertyTypeDefinition propertyTypeDefinition) {
         this.propertyTypeDefinition = propertyTypeDefinition;
@@ -483,25 +484,23 @@ public class PropertyImpl implements Serializable, Cloneable, Property {
         if (getType() != PropertyType.Type.BINARY) {
             throw new IllegalOperationException("Property " + this + " not of type BINARY");
         }
-        setValue(new BinaryValue(buffer, contentType));
+        setValue(new Value(buffer, contentType));
     }
     
     @Override
     public ContentStream getBinaryStream() throws IllegalOperationException {
     	if (this.value == null || getType() != PropertyType.Type.BINARY) {
-            throw new IllegalOperationException("Property " + this + " not of type BINARY");
+            throw new IllegalOperationException("Property " + this + " not of type BINARY or is BINARY multi-value");
         }
-    	BinaryValue binaryValue = (BinaryValue) this.value;
-        return binaryValue.getContentStream();
+        return this.value.getBinaryValue().getContentStream();
     }
     
     @Override
-    public String getBinaryMimeType() throws IllegalOperationException {
+    public String getBinaryContentType() throws IllegalOperationException {
     	if (this.value == null || getType() != PropertyType.Type.BINARY) {
-            throw new IllegalOperationException("Property " + this + " not of type BINARY");
+            throw new IllegalOperationException("Property " + this + " not of type BINARY or is BINARY multi-value");
         }
-    	BinaryValue binaryValue = (BinaryValue) this.value;
-    	return binaryValue.getContentType();
+        return this.value.getBinaryValue().getContentType();
     }
 
 }

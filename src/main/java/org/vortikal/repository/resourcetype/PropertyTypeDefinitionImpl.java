@@ -149,17 +149,19 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return prop;
     }
 
+    @Override
     public Property createProperty(String stringValue) throws ValueFormatException {
         return createProperty(new String[] { stringValue });
     }
 
+    @Override
     public Property createProperty(String[] stringValues) throws ValueFormatException {
 
         PropertyImpl prop = new PropertyImpl();
         prop.setDefinition(this);
 
         if (this.isMultiple()) {
-            Value[] values = this.valueFactory.createValues(stringValues, this.getType());
+            Value[] values = this.valueFactory.createValues(stringValues, getType());
             prop.setValues(values);
         } else {
             // Not multi-value, stringValues must be of length 1, otherwise
@@ -170,7 +172,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
                         + " to a single-value property" + " for property " + prop);
             }
 
-            Value value = this.valueFactory.createValue(stringValues[0], this.getType());
+            Value value = this.valueFactory.createValue(stringValues[0], getType());
             prop.setValue(value);
         }
 
@@ -178,6 +180,34 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
 
     }
 
+    @Override
+    public Property createProperty(BinaryValue binaryValue) throws ValueFormatException {
+        return createProperty(new BinaryValue[]{binaryValue});
+    }
+
+    @Override
+    public Property createProperty(BinaryValue[] binaryValues) throws ValueFormatException {
+        if (getType() != Type.BINARY) throw new ValueFormatException(
+                "Cannot create property of type " + getType() + " from binary value(s)");
+        
+        PropertyImpl prop = new PropertyImpl();
+        prop.setDefinition(this);
+        if (this.isMultiple()) {
+            prop.setValues(this.valueFactory.createValues(binaryValues));
+        } else {
+            if (binaryValues.length > 1) {
+                throw new ValueFormatException("Cannot convert multiple values: " + Arrays.asList(binaryValues)
+                        + " to a single-value property for property " + prop);
+            }
+
+            prop.setValue(this.valueFactory.createValue(binaryValues[0]));
+        }
+
+        return prop;
+
+    }
+    
+    @Override
     public void afterPropertiesSet() {
         if (this.valueFormatter == null) {
             if (this.vocabulary != null && this.vocabulary.getValueFormatter() != null) {

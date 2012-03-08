@@ -37,7 +37,7 @@ void execute(context, args, out) {
 
     if (p.getType() == org.vortikal.repository.resourcetype.PropertyType.Type.BINARY) {
         if (!displayBinary) {
-            out.println(" [binary: " + p.getBinaryMimeType() + "]");
+            out.println(" [binary: " + p.getBinaryContentType() + "]");
         } else {
             binaryStream = p.getBinaryStream();
             length = (int) binaryStream.getLength();

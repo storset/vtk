@@ -32,11 +32,10 @@ package org.vortikal.repository.store.db;
 
 import java.util.Arrays;
 
-import junit.framework.TestCase;
-
 import org.vortikal.repository.Path;
 import org.vortikal.repository.store.db.SqlDaoUtils.PropHolder;
 
+import junit.framework.TestCase;
 
 
 public class SqlDaoUtilsTest extends TestCase {
@@ -178,7 +177,7 @@ public class SqlDaoUtilsTest extends TestCase {
         holder.name = "title";
         holder.namespaceUri = null;
         holder.resourceId = 1000;
-        holder.values = Arrays.asList(new String[]{"Root"});
+        holder.values = Arrays.asList(new Object[]{"Root"});
         holder.propID = new Integer(1000);
         holder.binary = false;
         holder.propTypeId = 0;

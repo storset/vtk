@@ -91,6 +91,7 @@
     <result property="name" column="name" />
     <result property="namespace" column="name_space" />
     <result property="value" column="value" />
+    <result property="binary" column="is_binary" />
   </resultMap>
   
   <resultMap id="ResourceAndExtraPropertiesWithAncestorIds" class="java.util.HashMap"
@@ -914,7 +915,11 @@
   
   <select id="orderedPropertySetIteration" resultMap="ResourceAndExtraProperties">
     select r.*, 
-    p.name_space, p.name, p.value from vortex_resource r
+    p.name_space,
+    p.name,
+    p.value,
+    case when p.binary_content is null then 0 else 1 end as is_binary
+    from vortex_resource r
     left outer join extra_prop_entry p on r.resource_id = p.resource_id
     where r.uri like '/%'
     order by r.uri, p.extra_prop_entry_id
@@ -927,11 +932,12 @@
            r.*,
            p.name_space,
            p.name,
-           p.value from vortex_resource r
+           p.value,
+           case when p.binary_content is null then 0 else 1 end as is_binary
+           from vortex_resource r
     left outer join extra_prop_entry p  on r.resource_id = p.resource_id
     where r.uri = #uri# or r.uri like #uriWildcard#
     escape '@' order by r.uri, p.extra_prop_entry_id
-    
   </select>
 
   <select id="orderedPropertySetIterationForUris" parameterClass="java.lang.Integer"
@@ -940,7 +946,8 @@
            r.*,
            p.name_space,
            p.name,
-           p.value
+           p.value,
+           case when p.binary_content is null then 0 else 1 end as is_binary
        from vortex_tmp t, vortex_resource r
        left outer join extra_prop_entry p on r.resource_id = p.resource_id
        where r.uri = t.uri AND t.session_id=#value#

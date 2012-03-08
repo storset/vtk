@@ -195,6 +195,17 @@ td.vrtx-report-diagram-text {
   width: 25%;
 }
 
+#vrtx-report-broken-links-info {
+  font-size: 1.077em;
+  margin: 0 0 15px 0;
+}
+
+#vrtx-report-broken-links-info .vrtx-report-broken-links-info-number {
+  font-size: 1.286em;
+  font-weight: bold;
+  color: #959595;
+}
+
 /* Filters */
 
 #vrtx-report-filters {
@@ -205,6 +216,7 @@ td.vrtx-report-diagram-text {
 
 #vrtx-report-filters ul {
   margin-right: 25px;
+  margin-bottom: 15px;
   float: left;
 }
 

@@ -22,11 +22,17 @@
   <@generateFilters report.filters />
 
   <#if (report.result?exists && report.result?size > 0)>
+    <p id="vrtx-report-broken-links-info">
+      <#-- <span class="vrtx-report-broken-links-info-number">178</span> brutte lenker, -->
+      <span class="vrtx-report-broken-links-info-number">${report.total}</span> nettsider med brutte lenker
+      <#-- , <span class="vrtx-report-broken-links-info-number">7%</span> av nettsidene med brutte lenker  -->
+    </p>
+
     <p id="vrtx-report-info-paging-top">
       <@vrtx.msg code="report.${report.reportname}.about"
-                 args=[report.from, report.to, report.total]
+                 args=[report.from, report.to]
                  default="Listing results " + report.from + " - "
-                 +  report.to + " of total " + report.total + " resources" />
+                 +  report.to />
       <#if report.prev?exists || report.next?exists>
         <@displayPaging />  
       </#if>
@@ -142,7 +148,6 @@
         </#list>
       </div>
     </#if>
-
   </#macro>
 
   <#macro displayPaging>

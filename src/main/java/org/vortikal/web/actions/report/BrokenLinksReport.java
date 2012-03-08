@@ -33,7 +33,6 @@ package org.vortikal.web.actions.report;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -99,11 +98,7 @@ public class BrokenLinksReport extends DocumentReporter {
         for (String param : PUBLISHED_PARAM_VALUES) {
             URL filterOptionURL = reportURL.addParameter(PUBLISHED_PARAM_NAME, param);
             filterOptionURL.addParameter(READ_RESTRICTION_PARAM_NAME, readRestriction);
-            if(published.equals(param)) {    
-               filterPublishedURLs.add(new URLState(filterOptionURL, true));
-            } else {
-               filterPublishedURLs.add(new URLState(filterOptionURL, false));  
-            }
+            filterPublishedURLs.add(new URLState(filterOptionURL, published.equals(param) ? true : false));
         }
         filtersURLs.put(PUBLISHED_PARAM_NAME, filterPublishedURLs);
         
@@ -111,12 +106,8 @@ public class BrokenLinksReport extends DocumentReporter {
         ArrayList<URLState> filterReadRestrictionURLs = new ArrayList<URLState>();
         for (String param : READ_RESTRICTION_PARAM_VALUES) {
             URL filterOptionURL = reportURL.addParameter(READ_RESTRICTION_PARAM_NAME, param);
-            filterOptionURL.addParameter(PUBLISHED_PARAM_NAME, published);
-            if(readRestriction.equals(param)) {    
-                filterReadRestrictionURLs.add(new URLState(filterOptionURL, true));
-            } else {
-                filterReadRestrictionURLs.add(new URLState(filterOptionURL, false)); 
-            }
+            filterOptionURL.addParameter(PUBLISHED_PARAM_NAME, published);  
+            filterReadRestrictionURLs.add(new URLState(filterOptionURL, readRestriction.equals(param) ? true : false));
         }
         filtersURLs.put(READ_RESTRICTION_PARAM_NAME, filterReadRestrictionURLs);
         
@@ -186,9 +177,9 @@ public class BrokenLinksReport extends DocumentReporter {
         public URL url;
         public boolean active;
         
-        public URLState(URL url, boolean state) {
+        public URLState(URL url, boolean active) {
             this.url = url;
-            this.active = state;
+            this.active = active;
         }
         
         @SuppressWarnings("unused")

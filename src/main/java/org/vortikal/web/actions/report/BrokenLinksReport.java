@@ -96,7 +96,7 @@ public class BrokenLinksReport extends DocumentReporter {
             // ONLY those NOT published
             PropertyTermQuery ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
             topLevel.add(ptq);
-        } else {
+        } else { // if ("true".equals(request.getParameter("published"))) {   ??
             search.setOnlyPublishedResources(true);
         }
 

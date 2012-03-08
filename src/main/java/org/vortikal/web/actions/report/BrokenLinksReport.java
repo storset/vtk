@@ -69,7 +69,7 @@ public class BrokenLinksReport extends DocumentReporter {
     // TODO: simplify all this when finished in FTL
     private final static String   READ_RESTRICTION_PARAM_NAME = "read-restriction";
     private final static String   READ_RESTRICTION_PARAM_DEFAULT_VALUE = "all";
-    private final static String[] READ_RESTRICTION_PARAM_VALUES = {READ_RESTRICTION_PARAM_DEFAULT_VALUE, "true", "false"};
+    private final static String[] READ_RESTRICTION_PARAM_VALUES = {READ_RESTRICTION_PARAM_DEFAULT_VALUE, "false", "true"};
     
     private final static String   PUBLISHED_PARAM_NAME = "published";
     private final static String   PUBLISHED_PARAM_DEFAULT_VALUE = "true";
@@ -82,7 +82,7 @@ public class BrokenLinksReport extends DocumentReporter {
 
         URL reportURL = super.getReportService().constructURL(resource).addParameter(REPORT_TYPE_PARAM, REPORT_TYPE_PARAM_NAME);
         
-        Map<String, List<URLState>> filtersURLs = new HashMap<String, List<URLState>>();
+        Map<String, List<FilterOption>> filtersURLs = new HashMap<String, List<FilterOption>>();
 
         String published = request.getParameter(PUBLISHED_PARAM_NAME);
         String readRestriction = request.getParameter(READ_RESTRICTION_PARAM_NAME);
@@ -95,22 +95,22 @@ public class BrokenLinksReport extends DocumentReporter {
         }
         
         // Generate read restriction filter
-        List<URLState> filterReadRestrictionURLs = new ArrayList<URLState>();
+        List<FilterOption> filterReadRestrictionURLs = new ArrayList<FilterOption>();
         for (String param : READ_RESTRICTION_PARAM_VALUES) {
             URL filterOptionURL = new URL(reportURL);
             filterOptionURL.addParameter(READ_RESTRICTION_PARAM_NAME, param);
             filterOptionURL.addParameter(PUBLISHED_PARAM_NAME, published);  
-            filterReadRestrictionURLs.add(new URLState(filterOptionURL, param.equals(readRestriction) ? true : false));
+            filterReadRestrictionURLs.add(new FilterOption(param, filterOptionURL, param.equals(readRestriction) ? true : false));
         }
         filtersURLs.put(READ_RESTRICTION_PARAM_NAME, filterReadRestrictionURLs);
         
         // Generate published filter
-        List<URLState> filterPublishedURLs = new ArrayList<URLState>();
+        List<FilterOption> filterPublishedURLs = new ArrayList<FilterOption>();
         for (String param : PUBLISHED_PARAM_VALUES) {
             URL filterOptionURL = new URL(reportURL);
             filterOptionURL.addParameter(PUBLISHED_PARAM_NAME, param);
             filterOptionURL.addParameter(READ_RESTRICTION_PARAM_NAME, readRestriction);
-            filterPublishedURLs.add(new URLState(filterOptionURL, param.equals(published) ? true : false));
+            filterPublishedURLs.add(new FilterOption(param, filterOptionURL, param.equals(published) ? true : false));
         }
         filtersURLs.put(PUBLISHED_PARAM_NAME, filterPublishedURLs);
         
@@ -180,21 +180,25 @@ public class BrokenLinksReport extends DocumentReporter {
         map.put(resource.getURI().toString(), obj);
     }
     
-    public class URLState {
-        public URL url;
-        public boolean active;
+    public class FilterOption {
+        private String name;
+        private URL url;
+        private boolean active;
         
-        public URLState(URL url, boolean active) {
+        public FilterOption(String name, URL url, boolean active) {
+            this.name = name;
             this.url = url;
             this.active = active;
         }
         
-        @SuppressWarnings("unused")
+        public String getName() {
+            return this.name;
+        }
+        
         public URL getURL() {
             return this.url;
         }
         
-        @SuppressWarnings("unused")
         public boolean isActive() {
             return this.active;
         }

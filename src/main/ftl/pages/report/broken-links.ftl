@@ -23,11 +23,11 @@
     <div id="vrtx-report-filters">
       <#list report.filtersURLs?keys as filterKey>
         <ul class="vrtx-report-filter" id="vrtx-report-filter-${filterKey}">
-          <#list report.filtersURLs[filterKey] as urlState>
-            <#if urlState.active>
-              <li class="active-filter"><span>Lenke</span>
+          <#list report.filtersURLs[filterKey] as filterOpt>
+            <#if filterOpt.active>
+              <li class="active-filter"><span><@vrtx.msg code="report.${report.reportname}.filters.${filterKey}.${filterOpt.name}" /></span>
             <#else>
-              <li><a href="${urlState.URL?html}">Lenke</a>
+              <li><a href="${filterOpt.URL?html}"><@vrtx.msg code="report.${report.reportname}.filters.${filterKey}.${filterOpt.name}" /></a>
             </#if>
             </li>
           </#list>

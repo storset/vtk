@@ -20,14 +20,14 @@
   </div>
   
   <div id="vrtx-report-filters">
-    <ul class="vrtx-report-filter">
-      <li class="published"><a href="${report.backURL?html}">Alle</a></li>
-      <li class="unpublished"><a href="${report.backURL?html}&published=false">Upubliserte</a></li>
+    <ul class="vrtx-report-filter" id="vrtx-report-filter-published">
+      <li><a href="${report.backURL?html}">Alle</a></li>
+      <li><a href="${report.backURL?html}&published=false">Upubliserte</a></li>
     </ul>
-    <ul class="vrtx-report-filter">
-      <li class="restricted allowed-for-all"><a href="${report.backURL?html}">Åpne og lukkede</a></li>
-      <li class="allowed-for-all"><a href="${report.backURL?html}&read-restriction=false">Åpne</a></li>
-      <li class="restricted"><a href="${report.backURL?html}&read-restriction=true">Lukkede</a></li>
+    <ul class="vrtx-report-filter" id="vrtx-report-filter-read-restriction">
+      <li><a href="${report.backURL?html}">Åpne og lukkede</a></li>
+      <li><a href="${report.backURL?html}&read-restriction=false">Åpne</a></li>
+      <li><a href="${report.backURL?html}&read-restriction=true">Lukkede</a></li>
     </ul>
   </div>
 

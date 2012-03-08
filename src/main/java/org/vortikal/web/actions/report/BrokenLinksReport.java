@@ -64,6 +64,7 @@ public class BrokenLinksReport extends DocumentReporter {
     
     private final static String   REPORT_TYPE_PARAM_NAME = "broken-links";
     
+    // TODO: simplify all this when finished in FTL
     private final static String   READ_RESTRICTION_PARAM_NAME = "read-restriction";
     private final static String   READ_RESTRICTION_PARAM_DEFAULT_VALUE = "all";
     private final static String[] READ_RESTRICTION_PARAM_VALUES = {READ_RESTRICTION_PARAM_DEFAULT_VALUE, "true", "false"};

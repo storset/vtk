@@ -19,15 +19,17 @@
     <h2><@vrtx.msg code="report.${report.reportname}" /></h2>
   </div>
   
-  <div id="vrtx-report-filters">
-    <#list report.filtersURLs?keys as filterKey>
-      <ul class="vrtx-report-filter" id="vrtx-report-filter-${filterKey}">
-        <#list report.filtersURLs[filterKey] as u>
-          <li>u</li>
-        </#list>
-      </ul>
-    </#list>
-  </div>
+  <#if report.filtersURLs?exists && (report.filtersURLs?size > 0)>
+    <div id="vrtx-report-filters">
+      <#list report.filtersURLs?keys as filterKey>
+        <ul class="vrtx-report-filter" id="vrtx-report-filter-${filterKey}">
+          <#list report.filtersURLs[filterKey] as u>
+            <li>u</li>
+          </#list>
+        </ul>
+      </#list>
+    </div>
+  </#if>
 
   <#if (report.result?exists && report.result?size > 0)>
     <p id="vrtx-report-info-paging-top">

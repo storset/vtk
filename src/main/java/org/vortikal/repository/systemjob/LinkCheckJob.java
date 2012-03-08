@@ -53,6 +53,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
@@ -445,6 +446,9 @@ public class LinkCheckJob extends RepositoryJob {
                         continue;
                     }
                     repository.store(token, r, context);
+                } catch (ResourceLockedException e) {
+                    logger.warn("Resource " + r.getURI() + " was locked by another user, skipping");
+                    continue;
                 } catch (Throwable t) {
                     logger.warn("Unable to store resource " + r, t);
                 }
@@ -463,6 +467,9 @@ public class LinkCheckJob extends RepositoryJob {
                         continue;
                     }
                     repository.store(token, resource, context);
+                } catch (ResourceLockedException e) {
+                    logger.warn("Resource " + r.getURI() + " was locked by another user, skipping");
+                    continue;
                 } catch (Throwable t) {
                     logger.warn("Unable to store resource " + r, t);
                 } finally {

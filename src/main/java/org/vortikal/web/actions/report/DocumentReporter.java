@@ -48,28 +48,32 @@ public abstract class DocumentReporter extends AbstractReporter {
     private Service manageService, reportService;
     private int backURL;
 
-    protected abstract Search getSearch(String token, Resource currentResource);
+    protected abstract Search getSearch(String token, Resource currentResource, HttpServletRequest request);
 
     @Override
     public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("reportname", this.getName());
 
-        /* Create back to diagram URL. */
+        /* Create back to diagram URL. TODO: more general */
         if (backURL > 0) {
             String backURLname;
-            if (backURL == 1)
-                backURLname = "diagram";
-            else
-                backURLname = "BACKURL_SET-BUT_UNKNOWN";
-
-            URL backURL = new URL(reportService.constructURL(resource)).addParameter(REPORT_TYPE_PARAM, backURLname);
-
+            switch (backURL) {
+              case 1: backURLname = "diagram";
+                break;
+              case 2: backURLname = "broken-links";
+                break;
+              default: backURLname = "BACKURL_SET-BUT_UNKNOWN";
+                break;
+            }
+            
+            URL backURLConstructed = new URL(reportService.constructURL(resource)).addParameter(REPORT_TYPE_PARAM, backURLname);
+            
             result.put("backURLname", backURLname);
-            result.put("backURL", backURL);
+            result.put("backURL", backURLConstructed);
         }
 
-        Search search = this.getSearch(token, resource);
+        Search search = this.getSearch(token, resource, request);
         if (search == null) {
             return result;
         }

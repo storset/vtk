@@ -34,6 +34,8 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ContentStream;
@@ -44,11 +46,15 @@ import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
+import org.vortikal.repository.search.query.ACLExistsQuery;
+import org.vortikal.repository.search.query.ACLReadForAllQuery;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 public class BrokenLinksReport extends DocumentReporter {
     
@@ -58,19 +64,39 @@ public class BrokenLinksReport extends DocumentReporter {
     private SortFieldDirection sortOrder;
 
     @Override
-    protected Search getSearch(String token, Resource currentResource) {
+    protected Search getSearch(String token, Resource currentResource, HttpServletRequest request) {
         OrQuery or = new OrQuery();
         or.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS", TermOperator.EQ))
         .add(new PropertyTermQuery(this.linkStatusPropDef, "AWAITING_LINKCHECK", TermOperator.EQ));
         AndQuery and = new AndQuery();
+        
+        // Read restriction
+        String readForAll = request.getParameter("read-restriction");
+        if(readForAll != null) {  
+          if(readForAll.equals("true")) {
+            ACLReadForAllQuery aclReadForAllQuery = new ACLReadForAllQuery(true);
+            and.add(aclReadForAllQuery);
+          } else if (readForAll.equals("false")) {
+            ACLReadForAllQuery aclReadForAllQuery = new ACLReadForAllQuery();
+            and.add(aclReadForAllQuery);
+          }
+        }
+          
         and.add(new UriPrefixQuery(currentResource.getURI().toString())).add(or);
+ 
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
-        
         Search search = new Search();
         search.setQuery(and);
         search.setSorting(sorting);
-        search.setOnlyPublishedResources(false);
+        
+        String setOnlyPublished = request.getParameter("published");
+        if(setOnlyPublished != null && setOnlyPublished.equals("false")) {
+            search.setOnlyPublishedResources(false); 
+        } else {
+            search.setOnlyPublishedResources(true);
+        }
+
         return search;
     }
     
@@ -85,7 +111,7 @@ public class BrokenLinksReport extends DocumentReporter {
         if (map == null) {
             map = new HashMap<String, Object>();
             model.put("linkCheck", map);
-        }
+        } 
         
         ContentStream binaryStream = linkCheck.getBinaryStream();
         Object obj = JSONValue.parse(new InputStreamReader(binaryStream.getStream()));

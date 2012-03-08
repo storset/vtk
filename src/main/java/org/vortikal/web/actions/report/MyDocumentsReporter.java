@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.actions.report;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -51,7 +53,7 @@ public class MyDocumentsReporter extends DocumentReporter {
     private SortFieldDirection sortOrder;
 
     @Override
-    protected Search getSearch(String token, Resource currentResource) {
+    protected Search getSearch(String token, Resource currentResource, HttpServletRequest request) {
 
         Principal currentUser = SecurityContext.getSecurityContext().getPrincipal();
         if (currentUser == null) {

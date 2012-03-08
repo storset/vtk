@@ -18,19 +18,20 @@
     </div>
     <h2><@vrtx.msg code="report.${report.reportname}" /></h2>
   </div>
+  
+  <div id="vrtx-report-filters">
+    <ul class="vrtx-report-filter">
+      <li class="published"><a href="${report.backURL?html}">Alle</a></li>
+      <li class="unpublished"><a href="${report.backURL?html}&published=false">Upubliserte</a></li>
+    </ul>
+    <ul class="vrtx-report-filter">
+      <li class="restricted allowed-for-all"><a href="${report.backURL?html}">Åpne og lukkede</a></li>
+      <li class="allowed-for-all"><a href="${report.backURL?html}&read-restriction=false">Åpne</a></li>
+      <li class="restricted"><a href="${report.backURL?html}&read-restriction=true">Lukkede</a></li>
+    </ul>
+  </div>
 
   <#if (report.result?exists && report.result?size > 0)>
-    <div id="vrtx-report-filters">
-      <ul class="vrtx-report-filter">
-        <li class="active-filter published"><span>Publiserte</span></li>
-        <li class="unpublished"><a href="javascript:void(0)">Upubliserte</a></li>
-      </ul>
-      <ul class="vrtx-report-filter">
-        <li class="active-filter restricted allowed-for-all"><span>Åpne og lukkede</span></li>
-        <li class="allowed-for-all"><a href="javascript:void(0)">Åpne</a></li>
-        <li class="restricted"><a href="javascript:void(0)">Lukkede</a></li>
-      </ul>
-    </div>
     <p id="vrtx-report-info-paging-top">
       <@vrtx.msg code="report.${report.reportname}.about"
                  args=[report.from, report.to, report.total]

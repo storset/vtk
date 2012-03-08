@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.actions.report;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -51,7 +53,7 @@ public class LastModifiedReporter extends DocumentReporter {
     private boolean termIN = true;
 
     @Override
-    protected Search getSearch(String token, Resource resource) {
+    protected Search getSearch(String token, Resource resource, HttpServletRequest request) {
         AndQuery query = new AndQuery();
 
         if (termIN)

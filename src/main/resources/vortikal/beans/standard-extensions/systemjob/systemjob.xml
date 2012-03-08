@@ -135,7 +135,7 @@
 
   <bean id="repository.systemjob.linkcheck.blacklist" class="org.vortikal.util.repository.JSONBackedListResource" parent="repositoryAware">
     <property name="uri" value="${systemjob.linkcheck.blacklist}" />
-    <property name="token" ref="writeAllToken" />
+    <property name="token" ref="trustedToken" />
   </bean>
 
   <bean id="repository.systemjob.linkcheck.blacklist.refreshTrigger"

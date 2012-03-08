@@ -61,6 +61,7 @@ public class FeedbackController implements Controller {
     private MailTemplateProvider mailTemplateProvider;
     private LocaleResolver localeResolver;
     private Service viewService;
+    private String displayUpscoping;
 
     private String[] recipients;
     private String recipientsStr;
@@ -87,6 +88,10 @@ public class FeedbackController implements Controller {
         Map<String, Object> model = new HashMap<String, Object>();
         
         model.put("resource", this.resourceManager.createResourceWrapper());
+
+        if(this.displayUpscoping != null) {
+          model.put("displayUpscoping", displayUpscoping);
+        }
 
         String method = request.getMethod();
 
@@ -196,6 +201,10 @@ public class FeedbackController implements Controller {
         this.siteName = siteName;
     }
 
+    @Required
+    public void setDisplayUpscoping(String displayUpscoping) {
+        this.displayUpscoping = displayUpscoping;
+    }
 
     @Required
     public void setSender(String sender) {

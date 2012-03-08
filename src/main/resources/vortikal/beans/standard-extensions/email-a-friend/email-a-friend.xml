@@ -55,6 +55,7 @@
     <property name="mailExecutor" ref="emailafriend.mailExecutor" />
     <property name="mailTemplateProvider" ref="emailafriend.mailTemplateProvider" />
     <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
+    <property name="displayUpscoping" value="${displayUpscoping}" />
   </bean>
 
   <bean id="emailafriend.mailExecutor" class="org.vortikal.util.mail.MailExecutor">

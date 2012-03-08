@@ -61,6 +61,7 @@ public class ShareViaEmailController implements Controller {
     private MailTemplateProvider mailTemplateProvider;
     private LocaleResolver localeResolver;
     private Service viewService;
+    private String displayUpscoping;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -81,6 +82,10 @@ public class ShareViaEmailController implements Controller {
 
         Map<String, Object> model = new HashMap<String, Object>();
         String method = request.getMethod();
+
+        if (this.displayUpscoping != null) {
+          model.put("displayUpscoping", displayUpscoping);
+        }
 
         if (method.equals("POST")) {
             String emailTo = request.getParameter("emailTo");
@@ -184,6 +189,11 @@ public class ShareViaEmailController implements Controller {
     @Required
     public void setSiteName(String siteName) {
         this.siteName = siteName;
+    }
+
+    @Required
+    public void setDisplayUpscoping(String displayUpscoping) {
+        this.displayUpscoping = displayUpscoping;
     }
 
 }

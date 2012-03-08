@@ -62,6 +62,7 @@
     <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
     <property name="recipients" value="${mailFeedback.recipients}" />
     <property name="sender" value="${mailFeedback.sender}" />
+    <property name="displayUpscoping" value="${displayUpscoping}" />
   </bean>
 
   <bean id="feedback.mailExecutor" class="org.vortikal.util.mail.MailExecutor">

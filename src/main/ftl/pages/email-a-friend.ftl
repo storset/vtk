@@ -19,6 +19,9 @@
       <link href="${cssUrl}" type="text/css" rel="stylesheet"/>
     </#list>
   </#if> 
+  <#if (displayUpscoping?exists && displayUpscoping = "true") || resourceContext.repositoryId = "uio.no">
+    <link href="/vrtx/__vrtx/static-resources/themes/default/forms.css" type="text/css" rel="stylesheet"/>
+  </#if>
   <meta name="robots" content="noindex"/> 
  </head>
  <body>

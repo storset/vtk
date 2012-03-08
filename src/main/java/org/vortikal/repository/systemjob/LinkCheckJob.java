@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -48,12 +47,12 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ContentStream;
+import org.vortikal.repository.Lock;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
@@ -70,6 +69,8 @@ public class LinkCheckJob extends RepositoryJob {
     private LinkChecker linkChecker;
     private List<String> blackListConfig;
     private List<Pattern> blackList;
+    private int updateBatch = 0;
+    private boolean useRepositoryLocks = false;
     
     private CanonicalUrlConstructor urlConstructor;
     
@@ -78,7 +79,7 @@ public class LinkCheckJob extends RepositoryJob {
     private static final int MAX_CHECK_LINKS = 100;    // max number of links to check per resource per round
     private static final int MIN_RECHECK_SECONDS = 3600;
     
-    private final Log logger = LogFactory.getLog(getClass());
+    private static final Log logger = LogFactory.getLog(LinkCheckJob.class);
 
     @Override
     public void executeWithRepository(final Repository repository,
@@ -88,7 +89,7 @@ public class LinkCheckJob extends RepositoryJob {
         }
 
         final String token = SecurityContext.exists() ? SecurityContext.getSecurityContext().getToken() : null;
-
+        final UpdateBatch batch = new UpdateBatch(repository, token, context, this.updateBatch, this.useRepositoryLocks);
         this.pathSelector.selectWithCallback(repository, context, new PathSelectCallback() {
 
             int count = 0;
@@ -111,33 +112,14 @@ public class LinkCheckJob extends RepositoryJob {
                                 + " [" + this.count + "/" + (this.total > 0 ? this.total : "?") + "]");
                     }
                     Resource resource = repository.retrieve(token, path, false);
-                    
-                    Date lastMod = resource.getLastModified();
                     Property prop = linkCheck(resource, context);
-                    
-                    boolean locked = false;
-                    try {
-                        resource = repository.lock(token, path, context.getJobName(), Depth.ZERO, 60, null);
-                        locked = true;
-                        if (!lastMod.equals(resource.getLastModified())) {
-                            logger.warn("Resource " + path + " was modified during link check, skipping store");
-                            return;
-                        }
-                        
-                        // Either we got link check job result or not
-                        if (prop != null) {
-                            resource.addProperty(prop);
-                        } else {
-                            // Delete any old stale value
-                            resource.removeProperty(linkCheckPropDef);
-                        }
-
-                        repository.store(token, resource, context);
-                    } finally {
-                       if (locked) {
-                           repository.unlock(token, resource.getURI(), resource.getLock().getLockToken());
-                       }
+                    if (prop != null) {
+                        resource.addProperty(prop);
+                    } else {
+                        // Delete any old stale value
+                        resource.removeProperty(linkCheckPropDef);
                     }
+                    batch.add(resource);
 
                 } catch (ResourceNotFoundException rnfe) {
                     // Resource is no longer there after search (deleted, moved
@@ -147,14 +129,12 @@ public class LinkCheckJob extends RepositoryJob {
                             + path
                             + ") that was to be affected by a systemjob was no longer available: "
                             + rnfe.getMessage());
-                } catch (ResourceLockedException rl) {
-                    // Maybe just log at debug-level here
-                    logger.warn("Resource at " + path + " locked, cannot store link check results.");
                 }
             }
         });
-
+        batch.flush();
     }
+
     
     private Property linkCheck(Resource resource, SystemChangeContext context) throws InterruptedException {
 
@@ -337,6 +317,14 @@ public class LinkCheckJob extends RepositoryJob {
         refreshBlackList();
     }
     
+    public void setUseRepositoryLocks(boolean useRepositoryLocks) {
+        this.useRepositoryLocks = useRepositoryLocks;
+    }
+    
+    public void setUpdateBatch(int updateBatch) {
+        this.updateBatch = updateBatch;
+    }
+    
     public void refreshBlackList() {
         if (this.blackListConfig != null) {
             List<Pattern> blackList = new ArrayList<Pattern>();
@@ -416,5 +404,79 @@ public class LinkCheckJob extends RepositoryJob {
         public String toString() {
             return toJSONObject().toJSONString();
         }
-    }    
+    }
+    
+    private static class UpdateBatch {
+        private Repository repository;
+        private SystemChangeContext context;
+        private String token;
+        private int batchSize;
+        private boolean locking = false;
+        private List<Resource> updateList = new ArrayList<Resource>();
+
+        public UpdateBatch(Repository repository, String token, SystemChangeContext context, int batchSize, boolean locking) {
+            this.repository = repository;
+            this.token = token;
+            this.context = context;
+            this.batchSize = batchSize;
+            this.locking = locking;
+        }
+
+        public void add(Resource resource) {
+            this.updateList.add(resource);
+            if (this.updateList.size() >= this.batchSize) {
+                flush();
+            }
+        }
+
+        public void flush() {
+            if (this.updateList.size() > 0) {
+                logger.info("Attempting to store " + this.updateList.size() + " resources");
+            }
+            if (this.locking) {
+                flushWithLocking();
+                return;
+            }
+            for (Resource r: this.updateList) {
+                try {
+                    Resource existing = repository.retrieve(token, r.getURI(), false);
+                    if (!existing.getLastModified().equals(r.getLastModified())) {
+                        logger.warn("Resource " + r.getURI() + " was modified during link check, skipping store");
+                        continue;
+                    }
+                    repository.store(token, r, context);
+                } catch (Throwable t) {
+                    logger.warn("Unable to store resource " + r, t);
+                }
+            }
+            this.updateList.clear();
+        }
+
+        public void flushWithLocking() {
+            for (Resource r: this.updateList) {
+                Lock lock = null;
+                try {
+                    Resource resource = repository.lock(token, r.getURI(), context.getJobName(), Depth.ZERO, 60, null);
+                    lock = resource.getLock();
+                    if (!resource.getLastModified().equals(r.getLastModified())) {
+                        logger.warn("Resource " + r.getURI() + " was modified during link check, skipping store");
+                        continue;
+                    }
+                    repository.store(token, resource, context);
+                } catch (Throwable t) {
+                    logger.warn("Unable to store resource " + r, t);
+                } finally {
+                    if (lock != null) {
+                        try {
+                            repository.unlock(token, r.getURI(), lock.getLockToken());
+                        } catch (Exception e) {
+                            logger.warn("Unable to unlock resource " + r.getURI(), e);
+                        }
+                    }
+                }
+            }
+            this.updateList.clear();
+        }
+    }
+    
 }

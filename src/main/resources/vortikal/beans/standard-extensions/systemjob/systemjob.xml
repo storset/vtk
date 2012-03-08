@@ -61,6 +61,8 @@
     <property name="linkCheckPropDef" ref="linkCheckPropDef" />
     <property name="linkChecker" ref="repository.linkChecker" />
     <property name="blackList" ref="repository.systemjob.linkcheck.blacklist" />
+    <property name="useRepositoryLocks" value="${systemjob.linkcheck.locking}" />
+    <property name="updateBatch" value="${systemjob.linkcheck.batch}" />
     <property name="canonicalUrlConstructor" ref="canonicalUrlConstructor" />
 
 
@@ -100,6 +102,8 @@
     <property name="linkCheckPropDef" ref="linkCheckPropDef" />
     <property name="linkChecker" ref="repository.linkChecker" />
     <property name="blackList" ref="repository.systemjob.linkcheck.blacklist" />
+    <property name="useRepositoryLocks" value="${systemjob.linkcheck.locking}" />
+    <property name="updateBatch" value="${systemjob.linkcheck.batch}" />
     <property name="canonicalUrlConstructor" ref="canonicalUrlConstructor" />
 
     <property name="affectedPropDefPointers">

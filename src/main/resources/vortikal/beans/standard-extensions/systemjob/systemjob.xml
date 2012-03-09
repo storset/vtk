@@ -54,7 +54,7 @@
   <bean id="repository.systemjob.linkcheck.recent" class="org.vortikal.repository.systemjob.LinkCheckJob"
         parent="repository.systemjob">
     <property name="triggerExpression" value="${systemjob.linkcheck.recent.trigger}" />
-    <property name="enabled" value="${systemjob.linkcheck.enabled}"/>
+    <property name="enabled" value="${systemjob.linkcheck.recent.enabled}"/>
     <property name="id" value="linkcheck-recent" />
 
     <property name="linksPropDef" ref="linksPropDef" />
@@ -78,6 +78,8 @@
         <property name="queryString">
           <value>
             (type IN json-resource OR type IN html OR type IN managed-xml OR type IN collection)
+            AND
+            link-status != NO_LINKS
             AND
             link-status = AWAITING_LINKCHECK
           </value>
@@ -121,6 +123,8 @@
               <property name="queryString">
                 <value>
                   (type IN json-resource OR type IN html OR type IN managed-xml OR type IN collection)
+                  AND
+                  link-status != NO_LINKS
                   AND
                   link-status != AWAITING_LINKCHECK
                 </value>

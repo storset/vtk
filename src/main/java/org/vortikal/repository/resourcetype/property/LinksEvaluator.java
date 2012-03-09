@@ -34,7 +34,13 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
@@ -53,9 +59,6 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 public class LinksEvaluator implements LatePropertyEvaluator {
     
@@ -117,7 +120,12 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                         for (PropertyDescription pdesc : desc.getAllPropertyDescriptions()) {
                             if (pdesc.isNoExtract()) {
                                 Object p = res.getProperty(pdesc.getName());
-                                if (p != null) {
+                                if (p == null) {
+                                    continue;
+                                }
+                                if ("json".equals(pdesc.getType())) {
+                                    unwrapJSON(p, collector);
+                                } else {
                                     InputStream is = new ByteArrayInputStream(p.toString().getBytes());
                                     extractLinks(is, new HtmlHandler(collector, LinkSource.CONTENT));
                                 }
@@ -140,7 +148,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
             return false;
         }
     }
-    
+
     private enum LinkSource {
         PROPERTIES,
         CONTENT
@@ -234,6 +242,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
         }
     }
 
+    
     // TODO:
     // Handlers/link parsing strategies should be pluggable, keyed on content type.
         
@@ -352,12 +361,31 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                     
                     if (type != null && attrValue != null) {
                         this.listener.add(new Link(attrValue, type, this.linkSource));
-                        //this.listener.add(attrValue, this.linkSource);
                     }
                 }                
             }
         }
     }
+
+    private void unwrapJSON(Object object, LinkCollector collector) throws Exception {
+        if (object instanceof List) {
+            List<?> list = (List<?>) object;
+            for (Object o: list) {
+                unwrapJSON(o, collector);
+            }
+            
+        } else if (object instanceof Map) {
+            Map<?, ?> map = (Map<?, ?>) object;
+            for (Object k: map.keySet()) {
+                Object o = map.get(k);
+                unwrapJSON(o, collector);
+            }
+        } else if (!(object instanceof JSONNull)) {
+            InputStream is = new ByteArrayInputStream(object.toString().getBytes());
+            extractLinks(is, new HtmlHandler(collector, LinkSource.CONTENT));
+        }
+    }
+    
     
     @Required
     public void setResourceManager(StructuredResourceManager resourceManager) {

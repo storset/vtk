@@ -32,11 +32,14 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
@@ -274,6 +277,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
         private final LinkSource source;
         private final StringBuilder buffer = new StringBuilder();
         private boolean linkData = false;
+        private final Deque<String> ancestorElements = new ArrayDeque<String>();
         
         XmlHandler(LinkCollector collector, LinkSource source) {
             this.collector = collector;
@@ -286,12 +290,24 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                 return;
             }
 
-            // TODO figure out all elements that can contain links in our XML doc types ..
-            // TODO do we have dynamically created XSL-generated links ? If so, this won't help us much..
-            if ("webadresse".equals(localName)) {
+            final String parentElement = ancestorElements.peekLast();
+
+            if ("webadresse".equals(localName)
+                || "url".equals(localName)) {
                 linkData = true;
                 buffer.delete(0, buffer.length());
+            } else if ("pensumpunkt".equals(parentElement)
+                       || "bilde-referanse".equals(parentElement)) {
+                if ("src".equals(localName)
+                    || "lenkeadresse".equals(localName)
+                    || "bibsys".equals(localName)
+                    || "fulltekst".equals(localName)) {
+                    linkData = true;
+                    buffer.delete(0, buffer.length());
+                }
             }
+            
+            ancestorElements.addLast(localName);
         }
 
         @Override
@@ -303,6 +319,8 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                 }
                 linkData = false;
             }
+            
+            ancestorElements.pollLast();
         }
 
         @Override

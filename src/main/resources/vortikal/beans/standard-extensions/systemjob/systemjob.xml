@@ -78,7 +78,7 @@
               parent="repository.systemjob.indexPathSelector">
         <property name="queryString">
           <value>
-            (type IN json-resource OR type IN html OR type IN managed-xml OR type IN collection)
+            ${systemjob.linkcheck.queryFilterExpression}
             AND
             link-status != NO_LINKS
             AND
@@ -124,7 +124,7 @@
                   parent="repository.systemjob.indexPathSelector">
               <property name="queryString">
                 <value>
-                  (type IN json-resource OR type IN html OR type IN managed-xml OR type IN collection)
+                  ${systemjob.linkcheck.queryFilterExpression}
                   AND
                   link-status != NO_LINKS
                   AND

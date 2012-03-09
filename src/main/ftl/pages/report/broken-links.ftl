@@ -22,17 +22,19 @@
   <@generateFilters report.filters />
 
   <#if (report.result?exists && report.result?size > 0)>
+    <#--
     <p id="vrtx-report-broken-links-info">
-      <#-- <span class="vrtx-report-broken-links-info-number">178</span> brutte lenker, -->
+      <span class="vrtx-report-broken-links-info-number">178</span> brutte lenker,
       <span class="vrtx-report-broken-links-info-number">${report.total}</span> <@vrtx.msg code="report.${report.reportname}.info.web-pages.num" />
-      <#-- , <span class="vrtx-report-broken-links-info-number">7%</span> av nettsidene med brutte lenker  -->
+      <span class="vrtx-report-broken-links-info-number">7%</span> av nettsidene med brutte lenker
     </p>
+    -->
 
     <p id="vrtx-report-info-paging-top">
-      <@vrtx.msg code="report.${report.reportname}.about"
-                 args=[report.from, report.to]
+      <@vrtx.msg code="report.document-reporter.about"
+                 args=[report.from, report.to, report.total]
                  default="Listing results " + report.from + " - "
-                 +  report.to />
+                 +  report.to + " of total " + report.total + " resources" />
       <#if report.prev?exists || report.next?exists>
         <@displayPaging />  
       </#if>
@@ -98,11 +100,7 @@
             </td>
             <td class="vrtx-report-broken-links-count">
               <#if brokenLinks?exists>
-                <#if (brokenLinks?size > 99)>
-                  99+
-                <#else>
-                  ${brokenLinks?size}
-                </#if>
+                <#if (brokenLinks?size > 99)>99+<#else>${brokenLinks?size}</#if>
               </#if>
             </td>
             <td class="vrtx-report-broken-links">

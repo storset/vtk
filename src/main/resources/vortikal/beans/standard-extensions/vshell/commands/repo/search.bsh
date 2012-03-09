@@ -46,6 +46,8 @@ void execute(context, args, out) {
             }
         }
     }
+    out.println();
+    out.println("[Total results fetched: " + rs.getSize() + ", total hits: " + rs.getTotalHits() + "]");
 }
 
 

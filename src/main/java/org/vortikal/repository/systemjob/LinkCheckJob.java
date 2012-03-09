@@ -72,13 +72,13 @@ public class LinkCheckJob extends RepositoryJob {
     private List<Pattern> blackList;
     private int updateBatch = 0;
     private boolean useRepositoryLocks = false;
+    private int minRecheckSeconds = 3600;
     
     private CanonicalUrlConstructor urlConstructor;
     
     // TODO these should probably be configurable
     private static final int MAX_BROKEN_LINKS = 100;   // max number of broken links we bother storing
     private static final int MAX_CHECK_LINKS = 100;    // max number of links to check per resource per round
-    private static final int MIN_RECHECK_SECONDS = 3600;
     
     private static final Log logger = LogFactory.getLog(LinkCheckJob.class);
 
@@ -274,9 +274,9 @@ public class LinkCheckJob extends RepositoryJob {
                 // If complete and more than MIN_RECHECK_SECONDS between now and last run, do check again.
                 if (state.complete) {
                     long now = context.getTimestamp().getTime();
-                    if (now - lastCheckRun < MIN_RECHECK_SECONDS*1000) {
+                    if (now - lastCheckRun < this.minRecheckSeconds*1000) {
                         logger.debug("Not long enough since last completed check (min "
-                                + MIN_RECHECK_SECONDS + " seconds, will not reset state).");
+                                + this.minRecheckSeconds + " seconds). Will not reset state.");
                         return false;
                     }
                 }
@@ -288,44 +288,6 @@ public class LinkCheckJob extends RepositoryJob {
         return state.complete;
     }
 
-    @Required
-    public void setLinksPropDef(PropertyTypeDefinition linksPropDef) {
-        this.linksPropDef = linksPropDef;
-    }
-
-    @Required
-    public void setPathSelector(PathSelector pathSelector) {
-        this.pathSelector = pathSelector;
-    }
-
-    @Required
-    public void setLinkCheckPropDef(PropertyTypeDefinition linkCheckPropDef) {
-        this.linkCheckPropDef = linkCheckPropDef;
-    }
-
-    @Required
-    public void setLinkChecker(LinkChecker linkChecker) {
-        this.linkChecker = linkChecker;
-    }
-    
-    @Required
-    public void setCanonicalUrlConstructor(CanonicalUrlConstructor urlConstructor) {
-        this.urlConstructor = urlConstructor;
-    }
-    
-    public void setBlackList(List<String> blackList) {
-        this.blackListConfig = blackList;
-        refreshBlackList();
-    }
-    
-    public void setUseRepositoryLocks(boolean useRepositoryLocks) {
-        this.useRepositoryLocks = useRepositoryLocks;
-    }
-    
-    public void setUpdateBatch(int updateBatch) {
-        this.updateBatch = updateBatch;
-    }
-    
     public void refreshBlackList() {
         if (this.blackListConfig != null) {
             List<Pattern> blackList = new ArrayList<Pattern>();
@@ -336,7 +298,6 @@ public class LinkCheckJob extends RepositoryJob {
             this.blackList = blackList;
         }
     }
-    
 
     private static class LinkCheckState {
         private List<String> brokenLinks = new ArrayList<String>();
@@ -484,6 +445,55 @@ public class LinkCheckJob extends RepositoryJob {
             }
             this.updateList.clear();
         }
+    }
+    
+    @Required
+    public void setLinksPropDef(PropertyTypeDefinition linksPropDef) {
+        this.linksPropDef = linksPropDef;
+    }
+
+    @Required
+    public void setPathSelector(PathSelector pathSelector) {
+        this.pathSelector = pathSelector;
+    }
+
+    @Required
+    public void setLinkCheckPropDef(PropertyTypeDefinition linkCheckPropDef) {
+        this.linkCheckPropDef = linkCheckPropDef;
+    }
+
+    @Required
+    public void setLinkChecker(LinkChecker linkChecker) {
+        this.linkChecker = linkChecker;
+    }
+    
+    @Required
+    public void setCanonicalUrlConstructor(CanonicalUrlConstructor urlConstructor) {
+        this.urlConstructor = urlConstructor;
+    }
+    
+    public void setBlackList(List<String> blackList) {
+        this.blackListConfig = blackList;
+        refreshBlackList();
+    }
+    
+    public void setUseRepositoryLocks(boolean useRepositoryLocks) {
+        this.useRepositoryLocks = useRepositoryLocks;
+    }
+    
+    public void setUpdateBatch(int updateBatch) {
+        this.updateBatch = updateBatch;
+    }
+
+    /**
+     * Minimum number of seconds that must have passed since link check
+     * was last COMPLETED for resource (without the resource having been
+     * modified in the meantime), before a new round of checking is started.
+     * 
+     * @param minRecheckSeconds 
+     */
+    public void setMinRecheckSeconds(int minRecheckSeconds) {
+        this.minRecheckSeconds = minRecheckSeconds;
     }
     
 }

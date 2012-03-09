@@ -32,12 +32,9 @@
 package org.vortikal.repository.resourcetype;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.Arrays;
+
 import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.store.DataAccessException;
-import org.vortikal.repository.store.DataAccessor;
-import org.vortikal.util.io.StreamUtil;
 
 /**
  * Immutable binary value buffer.

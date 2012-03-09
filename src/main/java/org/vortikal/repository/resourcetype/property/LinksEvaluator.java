@@ -40,10 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
@@ -61,6 +57,10 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
 
 public class LinksEvaluator implements LatePropertyEvaluator {
     

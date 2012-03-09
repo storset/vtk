@@ -39,11 +39,18 @@ public class CollectionListingCacheKey implements Serializable {
     String token;
     String name;
     String requestUri;
+    String sortString;
+    int searchLimit;
+    int offset;
 
-    public CollectionListingCacheKey(String token, String name, String requestUri) {
+    public CollectionListingCacheKey(String token, String name, String requestUri, String sortString, int searchLimit,
+            int offset) {
         this.token = token;
         this.name = name;
         this.requestUri = requestUri;
+        this.sortString = sortString;
+        this.searchLimit = searchLimit;
+        this.offset = offset;
     }
 
     @Override
@@ -52,26 +59,7 @@ public class CollectionListingCacheKey implements Serializable {
             return false;
         }
         CollectionListingCacheKey other = (CollectionListingCacheKey) obj;
-        String otherRequestUri = other.requestUri;
-        if (otherRequestUri.equals(this.requestUri)) {
-            // Same request uri
-            // Check further on search component name
-            String otherName = other.name;
-            if (otherName.equals(this.name)) {
-                // Check further on provided authentication
-                String otherToken = other.token;
-                if (otherToken != null) {
-                    return otherToken.equals(this.token);
-                } else if (this.token == null) {
-                    // Anonymous access on same request uri
-                    return true;
-                }
-            }
-            // Same request uri, but different search components
-            return false;
-        }
-        // Not the same request uri
-        return false;
+        return this.hashCode() == other.hashCode();
     }
 
     @Override
@@ -80,6 +68,9 @@ public class CollectionListingCacheKey implements Serializable {
         hash = 39 * hash + this.requestUri.hashCode();
         hash = 39 * hash + this.name.hashCode();
         hash = 39 * hash + (this.token != null ? this.token.hashCode() : 0);
+        hash = hash + (this.sortString != null ? this.sortString.hashCode() : 0);
+        hash = hash + this.searchLimit;
+        hash = hash + this.offset;
         return hash;
     }
 
@@ -90,6 +81,11 @@ public class CollectionListingCacheKey implements Serializable {
         if (this.token != null) {
             sb.append(" - ").append(this.token);
         }
+        if (this.sortString != null) {
+            sb.append(" - ").append(this.sortString.toString());
+        }
+        sb.append(" - search limit: ").append(this.searchLimit);
+        sb.append(" - offset: ").append(this.offset);
         return sb.toString();
     }
 

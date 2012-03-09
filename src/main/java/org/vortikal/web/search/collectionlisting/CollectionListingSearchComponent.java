@@ -83,7 +83,9 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
 
         // Check cache
         URL url = RequestContext.getRequestContext().getRequestURL();
-        CollectionListingCacheKey cacheKey = new CollectionListingCacheKey(token, this.getName(), url.toString());
+        String sortString = sorting != null ? sorting.toString() : null;
+        CollectionListingCacheKey cacheKey = new CollectionListingCacheKey(token, this.getName(), url.toString(),
+                sortString, searchLimit, offset);
         Element cached = this.cache.get(cacheKey);
         Object cachedObj = cached != null ? cached.getObjectValue() : null;
         ResultSet result = null;

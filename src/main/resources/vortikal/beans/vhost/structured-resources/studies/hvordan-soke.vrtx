@@ -289,6 +289,7 @@ view {
             [call "comp:politiattest"]
             [call "comp:rangering-sokere"]
             [call "comp:poenggrenser-admin"]
+            [call "comp:innpassing-tidl-utdanning-admin"]
           </div>
           [if ((regelverk-fri != null && regelverk-fri != "") || (relatert-innhold-regelverk != null && relatert-innhold-regelverk != ""))]
             <div id="vrtx-additional-content">

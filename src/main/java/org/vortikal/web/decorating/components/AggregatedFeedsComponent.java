@@ -122,8 +122,8 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         // desc item-title
         // etc..
         String sortString = request.getStringParameter(Parameter.SORT.getId());
-        boolean directionSpecified = false; // Indicates explicitly set sort
-                                            // direction
+        // Indicates explicitly set sort direction
+        boolean directionSpecified = false;
         if (sortString != null) {
             StringTokenizer tokenizer = new StringTokenizer(sortString);
             while (tokenizer.hasMoreTokens()) {
@@ -198,6 +198,9 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         if (displayIfEmptyMessage != null && displayIfEmptyMessage.length() > 0) {
             model.put("displayIfEmptyMessage", displayIfEmptyMessage);
         }
+
+        /* Temp fix for auth variable in ftl. */
+        conf.put("auth", true);
 
         model.put("feed", feed);
         model.put("conf", conf);

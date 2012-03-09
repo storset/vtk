@@ -97,7 +97,13 @@
               </#if>
             </td>
             <td class="vrtx-report-broken-links-count">
-              <#if brokenLinks?exists>${brokenLinks?size}</#if> 
+              <#if brokenLinks?exists>
+                <#if (brokenLinks?size > 99)>
+                  99+
+                <#else>
+                  ${brokenLinks?size}
+                </#if>
+              </#if>
             </td>
             <td class="vrtx-report-broken-links">
               <#if brokenLinks?exists>

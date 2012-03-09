@@ -35,7 +35,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -166,7 +166,7 @@ public class LinkCheckJob extends RepositoryJob {
         JSONParser parser = new JSONParser();
         
         final URL base = this.urlConstructor.canonicalUrl(resource).setImmutable();
-        final AtomicInteger n = new AtomicInteger(0);
+        final AtomicLong n = new AtomicLong(0);
         
         try {
             parser.parse(new InputStreamReader(linksStream.getStream()), new JSONDefaultHandler() {
@@ -287,7 +287,7 @@ public class LinkCheckJob extends RepositoryJob {
         
         return state.complete;
     }
-
+    
     public void refreshBlackList() {
         if (this.blackListConfig != null) {
             List<Pattern> blackList = new ArrayList<Pattern>();
@@ -301,7 +301,7 @@ public class LinkCheckJob extends RepositoryJob {
 
     private static class LinkCheckState {
         private List<String> brokenLinks = new ArrayList<String>();
-        private int index = 0;
+        private long index = 0;
         private String timestamp = null;
         private boolean complete = false;
         
@@ -328,7 +328,7 @@ public class LinkCheckJob extends RepositoryJob {
                         }
                         obj = status.get("index");
                         if (obj != null) {
-                            s.index = Integer.parseInt(obj.toString());
+                            s.index = (Long)obj;
                         }
                         obj = status.get("timestamp");
                         if (obj != null) {
@@ -358,7 +358,7 @@ public class LinkCheckJob extends RepositoryJob {
             }
             obj.put("status", this.complete ? "COMPLETE" : "INCOMPLETE");
             obj.put("timestamp", this.timestamp);
-            obj.put("index", String.valueOf(this.index));
+            obj.put("index", this.index);
             return obj;
         }
         

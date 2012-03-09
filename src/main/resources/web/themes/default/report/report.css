@@ -206,6 +206,12 @@ td.vrtx-report-diagram-text {
   color: #959595;
 }
 
+td.vrtx-report-broken-links li {
+  background: url(../images/list-bullet-dark-grey.png) no-repeat center left;
+  padding: 0 0 0 10px;
+  margin: 0 0 5px 0;
+}
+
 /* Filters */
 
 #vrtx-report-filters {

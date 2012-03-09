@@ -111,16 +111,22 @@
     <@editor.addDatePickerScripts language true />
     
     <script type="text/javascript" src="${jsBaseURL?html}/collectionlisting/manually-approve.js"></script>
-
+    
+    <#assign isImage = resource.contentType?exists && resource.contentType?starts_with("image/") />
+    <#assign supportedImageEditor = isImage && (resource.contentType == "image/jpeg" 
+                                             || resource.contentType == "image/pjpeg"
+                                             || resource.contentType == "image/png") />
+    <#if supportedImageEditor>
+      <!--[if IE 8]>
+        <script type="text/javascript" src="${jsBaseURL?html}/image-editor/excanvas.compiled.js"></script>
+      <![endif]-->
+    </#if>
   </head>
   <body id="vrtx-editor">
     <#assign header>
       <@vrtx.msg code="editor.edit" args=[vrtx.resourceTypeName(resource)?lower_case] />
     </#assign>
-    <#assign isImage = resource.contentType?exists && resource.contentType?starts_with("image/") />
-    <#assign supportedImageEditor = isImage && (resource.contentType == "image/jpeg" 
-                                             || resource.contentType == "image/pjpeg"
-                                             || resource.contentType == "image/png") />
+
     <div id="vrtx-editor-title-submit-buttons">
       <div id="vrtx-editor-title-submit-buttons-inner-wrapper">
         <h2>${header}</h2>
@@ -155,7 +161,6 @@
       </div>
  
      <#if isImage>
-        <!--[if IE 8]><script type="text/javascript" src="${jsBaseURL?html}/image-editor/excanvas.compiled.js"></script><![endif]-->
        <script type="text/javascript" src="${jsBaseURL?html}/image-editor/editor.js"></script>    
        <script type="text/javascript"><!--  
          var startCropText = '<@vrtx.msg code="editor.image.start-crop" default="Start cropping" />';

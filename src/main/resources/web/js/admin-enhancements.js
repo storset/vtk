@@ -644,10 +644,18 @@ $(document).ready(function () {
     }
  
     $("#app-content").delegate("#resource\\.display-aggregation\\.true", "click", function() {
+      if(!$(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
+        $(".aggregation-row").remove();
+        $("#resource\\.aggregation").val("");
+      }
       $("#vrtx-resource\\.aggregation").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
     });
 
     $("#app-content").delegate("#resource\\.display-manually-approved\\.true", "click", function() {
+      if(!$(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
+        $(".manually-approve-from-row").remove();
+        $("#resource\\.manually-approve-from").val("");
+      }
       $("#vrtx-resource\\.manually-approve-from").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
     });
 

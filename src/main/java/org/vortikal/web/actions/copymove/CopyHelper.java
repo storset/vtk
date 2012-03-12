@@ -46,13 +46,12 @@ public class CopyHelper {
     private CopyAction copyAction;
     private CopyThenStoreAction copyThenStoreAction;
 
-    public Path copyResource (Path uri, Path destUri, Repository repository, String token, Resource src, InputStream is, String extraMidfix) throws Exception {
+    public Path copyResource (Path uri, Path destUri, Repository repository, String token, Resource src, InputStream is) throws Exception {
         int number = 1;
         while (repository.exists(token, destUri)) {
-            destUri = appendCopySuffix(destUri, number, extraMidfix);
+            destUri = appendCopySuffix(destUri, number);
             number++;
         }
-        
         if (this.copyThenStoreAction != null && src != null && is != null) {
             this.copyThenStoreAction.process(destUri, src, is);
         } else if (this.copyAction != null) {
@@ -63,7 +62,7 @@ public class CopyHelper {
         return destUri;
     }
 
-    protected Path appendCopySuffix(Path newUri, int number, String extraMidfix) {
+    protected Path appendCopySuffix(Path newUri, int number) {
         String extension = "";
         String dot = "";
         String name = newUri.getName();
@@ -87,11 +86,8 @@ public class CopyHelper {
             } catch (Exception e) {
             }
         }
-        if(extraMidfix != "" && !name.contains("-" + extraMidfix)) {
-            name = name + "-" + extraMidfix + "(" + number + ")" + dot + extension; 
-        } else {
-            name = name + "(" + number + ")" + dot + extension;
-        }
+
+        name = name + "(" + number + ")" + dot + extension;
         return newUri.getParent().extend(name);
     }
     

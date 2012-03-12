@@ -31,7 +31,6 @@
 package org.vortikal.web.actions.copymove;
 
 import java.io.InputStream;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +46,7 @@ public class CopyHelper {
     private CopyAction copyAction;
     private CopyThenStoreAction copyThenStoreAction;
 
-    public Path copyResource (Path uri, Path destUri, Repository repository, String token, Resource src, InputStream is, boolean extraMidfix) throws Exception {
+    public Path copyResource (Path uri, Path destUri, Repository repository, String token, Resource src, InputStream is, String extraMidfix) throws Exception {
         int number = 1;
         while (repository.exists(token, destUri)) {
             destUri = appendCopySuffix(destUri, number, extraMidfix);
@@ -64,7 +63,7 @@ public class CopyHelper {
         return destUri;
     }
 
-    protected Path appendCopySuffix(Path newUri, int number, boolean extraMidfix) {
+    protected Path appendCopySuffix(Path newUri, int number, String extraMidfix) {
         String extension = "";
         String dot = "";
         String name = newUri.getName();
@@ -88,8 +87,8 @@ public class CopyHelper {
             } catch (Exception e) {
             }
         }
-        if(extraMidfix && !name.contains("-kopi")) {
-            name = name + "-kopi(" + number + ")" + dot + extension; 
+        if(extraMidfix != "" && !name.contains("-" + extraMidfix)) {
+            name = name + "-" + extraMidfix + "(" + number + ")" + dot + extension; 
         } else {
             name = name + "(" + number + ")" + dot + extension;
         }

@@ -98,7 +98,12 @@ public class ResourceEditController extends SimpleFormController {
             InputStream is = saveImageHelper.saveImage(resource, repository, token, resource.getURI(),
                                                        wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(),
                                                        wrapper.getCropHeight(), wrapper.getNewWidth(), wrapper.getNewHeight());
-            Path destUri = this.copyHelper.copyResource(resource.getURI(), resource.getURI(), repository, token, wrapper.getResource(), is, true);
+            
+            org.springframework.web.servlet.support.RequestContext springContext = new org.springframework.web.servlet.support.RequestContext(requestContext.getServletRequest());
+            String currentLocale = springContext.getLocale().toString();
+            String copyMidfix = "en".equals(currentLocale) ? "copy" : "kopi";
+            
+            Path destUri = this.copyHelper.copyResource(resource.getURI(), resource.getURI(), repository, token, wrapper.getResource(), is, copyMidfix);
             URL editServiceUrl = editImageService.constructURL(destUri);
             this.resourceManager.unlock();
             return new ModelAndView(new RedirectView(editServiceUrl.toString()));

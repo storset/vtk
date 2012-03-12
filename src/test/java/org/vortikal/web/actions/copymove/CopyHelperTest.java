@@ -17,21 +17,21 @@ public class CopyHelperTest extends TestCase {
     public void testAppendCopySuffix() {
         Path original = Path.fromString("/lala.html");
         
-        Path firstCopy = copyHelper.appendCopySuffix(original, 1, false);
+        Path firstCopy = copyHelper.appendCopySuffix(original, 1, "");
         assertEquals(firstCopy, Path.fromString("/lala(1).html"));
         
-        Path secondCopy = copyHelper.appendCopySuffix(firstCopy, 1, false);
+        Path secondCopy = copyHelper.appendCopySuffix(firstCopy, 1, "");
         assertEquals(secondCopy, Path.fromString("/lala(2).html"));
         
-        Path thirdCopy = copyHelper.appendCopySuffix(secondCopy, 1, false);
+        Path thirdCopy = copyHelper.appendCopySuffix(secondCopy, 1, "");
         assertEquals(thirdCopy, Path.fromString("/lala(3).html"));
         
         Path parenthesisName = Path.fromString("/test/te(3)st.xml");
-        Path copiedParenthesis = copyHelper.appendCopySuffix(parenthesisName, 3, false);
+        Path copiedParenthesis = copyHelper.appendCopySuffix(parenthesisName, 3, "");
         assertEquals(copiedParenthesis, Path.fromString("/test/te(3)st(3).xml"));
         
         Path copyToDoubleDigit = Path.fromString("/foo(9).html");
-        Path firstToDoubleDigitCopy = copyHelper.appendCopySuffix(copyToDoubleDigit, 1, false);
+        Path firstToDoubleDigitCopy = copyHelper.appendCopySuffix(copyToDoubleDigit, 1, "");
         assertEquals(firstToDoubleDigitCopy, Path.fromString("/foo(10).html"));
     }
     

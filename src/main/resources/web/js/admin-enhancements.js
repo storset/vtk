@@ -88,6 +88,7 @@ vrtxAdmin.browserVersion = $.browser.version;
 vrtxAdmin.isIE7 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7;
 vrtxAdmin.isIE6 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 6;
 vrtxAdmin.isIE5OrHigher = vrtxAdmin.isIE && vrtxAdmin.browserVersion >= 5;
+vrtxAdmin.isIETridentInComp = vrtxAdmin.isIE7 && /trident/.test(ua);
 vrtxAdmin.isOpera = $.browser.opera;
 vrtxAdmin.isIPhone = /iphone/.test(ua);
 vrtxAdmin.isIPad= /ipad/.test(ua);
@@ -720,7 +721,7 @@ $(document).ready(function () {
   }
 
   // Show message in IE7 and IE6
-  if (vrtxAdmin.isIE7) {
+  if (vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp) {
     if ($("#app-content > .message").length) {
       $("#app-content > .message").html(outdatedBrowserText);
     } else {

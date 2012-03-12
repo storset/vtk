@@ -6,11 +6,13 @@
 <#assign resource = resourceContext.currentResource />
 
 <script type="text/javascript"><!--
-  if(vrtxAdmin.isIE7) {
-    if(vrtxAdmin.isIE6) {
-      var outdatedBrowserText = '<@vrtx.msg code="msg.outdated.browser.msie6" />';    
-    } else {
-      var outdatedBrowserText = '<@vrtx.msg code="msg.outdated.browser.msie7" />';
+  if(vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp) {
+    if(vrtxAdmin.isIETridentInComp) {
+      var outdatedBrowserText = '<@vrtx.msg code="msg.browser.msie.comp" />';   
+    } else if(vrtxAdmin.isIE7) {   
+      var outdatedBrowserText = '<@vrtx.msg code="msg.browser.msie.msie7" />';    
+    } else if(vrtxAdmin.isIE6) {
+      var outdatedBrowserText = '<@vrtx.msg code="msg.browser.msie.msie6" />';
     }
   }
 // -->

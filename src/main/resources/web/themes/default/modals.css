@@ -98,5 +98,11 @@ a#vrtx-feedback-contact {
   display: inline-block;
 }
 
-/* ^ Vortex - Email-a-friend, feedback etc. */
+*:first-child+html #submitButtons .vrtx-button,
+*:first-child+html #submitButtons .vrtx-focus-button,
+*:first-child+html form,
+*:first-child+html h2 {
+  display: inline;
+}
 
+/* ^ Vortex - Email-a-friend, feedback etc. */

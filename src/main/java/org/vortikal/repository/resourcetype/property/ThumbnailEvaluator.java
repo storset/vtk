@@ -55,7 +55,7 @@ public class ThumbnailEvaluator implements PropertyEvaluator {
     private boolean scaleUp = false;
     
     private long maxSourceImageFileSize = 35000000;
-    private long maxSourceImageRawMemoryUsage = 300000000;
+    private long maxSourceImageRawMemoryUsage = 100000000;
 
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {

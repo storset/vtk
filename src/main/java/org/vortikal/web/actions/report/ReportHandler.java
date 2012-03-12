@@ -102,6 +102,7 @@ public class ReportHandler implements Controller {
         if (reportList != null) {
             List<ReporterObject> reporterObjects = new ArrayList<ReporterObject>();
             for (Reporter reporter : reportList) {
+                if (!reporter.isEnabled()) continue;
                 URL reporterURL = new URL(serviceURL);
                 reporterURL.addParameter(REPORT_TYPE_PARAM, reporter.getName());
                 reporterObjects.add(new ReporterObject(reporter.getName(), reporterURL));

@@ -42,6 +42,7 @@ public abstract class AbstractReporter implements Reporter {
     private String viewName;
     protected Searcher searcher;
     protected Repository repository;
+    private boolean enabled = true;
 
     public String getName() {
         return name;
@@ -69,5 +70,14 @@ public abstract class AbstractReporter implements Reporter {
     @Required
     public void setRepository(Repository repository) {
         this.repository = repository;
+    }
+    
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+    
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

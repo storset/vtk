@@ -110,6 +110,7 @@
     <property name="publishedPropDef" ref="publishedPropDef" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
     <property name="backURL" value="2" />
+    <property name="enabled" value="${report.brokenLinks.enabled}" />
   </bean>
 
   <bean id="myDocumentsReporter" class="org.vortikal.web.actions.report.MyDocumentsReporter" parent="documentReporter">

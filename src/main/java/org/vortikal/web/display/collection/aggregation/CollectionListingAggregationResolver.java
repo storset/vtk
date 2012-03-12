@@ -122,7 +122,12 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             if (manuallyApprovedProp != null) {
                 Value[] values = manuallyApprovedProp.getValues();
                 for (Value manApp : values) {
-                    manuallyApprovedSet.add(URL.parse(manApp.getStringValue()));
+                    try {
+                        URL url = URL.parse(manApp.getStringValue());
+                        manuallyApprovedSet.add(url);
+                    } catch (Exception e) {
+                        // Ignore invalid urls
+                    }
                 }
             }
         }

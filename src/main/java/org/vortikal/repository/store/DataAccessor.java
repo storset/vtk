@@ -34,7 +34,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.RecoverableResource;

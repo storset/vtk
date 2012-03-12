@@ -32,6 +32,7 @@ package org.vortikal.repository.content;
 
 import java.util.Stack;
 
+import org.vortikal.text.html.TagsoupParserFactory;
 import org.vortikal.util.text.TextUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -51,8 +52,7 @@ public class HtmlInfoContentFactory implements ContentFactory {
     public Object getContentRepresentation(Class<?> clazz,
             InputStreamWrapper content) throws Exception {
         HtmlInfo map = new HtmlInfo();
-        org.ccil.cowan.tagsoup.Parser parser
-            = new org.ccil.cowan.tagsoup.Parser();
+        org.ccil.cowan.tagsoup.Parser parser = TagsoupParserFactory.newParser(true);
         Handler handler = new Handler(map);
         parser.setContentHandler(handler);
         parser.setProperty(org.ccil.cowan.tagsoup.Parser.lexicalHandlerProperty, handler);

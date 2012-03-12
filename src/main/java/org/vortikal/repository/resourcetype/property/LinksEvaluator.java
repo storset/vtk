@@ -52,6 +52,7 @@ import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResource;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
+import org.vortikal.text.html.TagsoupParserFactory;
 import org.vortikal.util.io.StreamUtil;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -248,26 +249,12 @@ public class LinksEvaluator implements LatePropertyEvaluator {
     
     // TODO Handlers/link parsing strategies should be pluggable, keyed on content type.
         
-    /**
-     * Single HTMLSchema instance re-used across all Tagsoup parser instances due to
-     * heavy constructor which can impact performance.
-     * If this instance is to be used, then the following parser feature MUST be
-     * set to 'true' to keep thread safety:
-     * {@link org.ccil.cowan.tagsoup.Parser#ignoreBogonsFeature}
-     * 
-     * See for instance: <a href="https://issues.apache.org/jira/browse/TIKA-599">TIKA-599</a>
-     */
-    private static final org.ccil.cowan.tagsoup.HTMLSchema TAGSOUP_HTML_SCHEMA = 
-                                         new org.ccil.cowan.tagsoup.HTMLSchema();
-    
     private void extractLinksHtml(InputStream is,
                                   LinkCollector collector,
                                   LinkSource source)
         throws Exception {
         
-        org.ccil.cowan.tagsoup.Parser parser = new org.ccil.cowan.tagsoup.Parser();
-        parser.setFeature(org.ccil.cowan.tagsoup.Parser.ignoreBogonsFeature, true);
-        parser.setProperty(org.ccil.cowan.tagsoup.Parser.schemaProperty, TAGSOUP_HTML_SCHEMA);
+        org.ccil.cowan.tagsoup.Parser parser = TagsoupParserFactory.newParser(true);
         parser.setContentHandler(new HtmlHandler(collector, source));
 
         InputSource input = new InputSource(is);

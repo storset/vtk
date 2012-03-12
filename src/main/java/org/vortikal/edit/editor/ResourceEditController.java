@@ -92,15 +92,15 @@ public class ResourceEditController extends SimpleFormController {
             return new ModelAndView(getFormView(), model);
         }
  
-        if(wrapper.isSaveCopy() && this.editImageService != null && this.copyHelper != null && this.saveImageHelper != null) {
-            this.resourceManager.unlock();
+        if(wrapper.isSaveCopy() && this.editImageService != null && this.copyHelper != null && this.saveImageHelper != null) { 
             Repository repository = requestContext.getRepository();
             String token = requestContext.getSecurityToken();               
             InputStream is = saveImageHelper.saveImage(resource, repository, token, resource.getURI(),
                                                        wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(),
                                                        wrapper.getCropHeight(), wrapper.getNewWidth(), wrapper.getNewHeight());
-            Path destUri = this.copyHelper.copyResource(resource.getURI(), resource.getURI(), repository, token, wrapper.getResource(), is);
+            Path destUri = this.copyHelper.copyResource(resource.getURI(), resource.getURI(), repository, token, wrapper.getResource(), is, true);
             URL editServiceUrl = editImageService.constructURL(destUri);
+            this.resourceManager.unlock();
             return new ModelAndView(new RedirectView(editServiceUrl.toString()));
         }
 
@@ -111,9 +111,13 @@ public class ResourceEditController extends SimpleFormController {
 
         this.resourceManager.store(wrapper);
         
-        if(this.copyHelper != null && this.saveImageHelper != null) {
+        if(this.editImageService != null && this.copyHelper != null && this.saveImageHelper != null) {
             Repository repository = requestContext.getRepository();
             String token = requestContext.getSecurityToken(); 
+            
+            System.out.println("____________________" + wrapper.getCropX() + " " + wrapper.getCropY() + " " + wrapper.getCropWidth()
+                    + " " + wrapper.getCropHeight() + " " + wrapper.getNewWidth() + " " + wrapper.getNewHeight());
+            
             InputStream is = saveImageHelper.saveImage(resource, repository, token, resource.getURI(),
                     wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(),
                     wrapper.getCropHeight(), wrapper.getNewWidth(), wrapper.getNewHeight());

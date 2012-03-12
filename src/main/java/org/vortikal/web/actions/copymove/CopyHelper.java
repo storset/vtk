@@ -31,6 +31,7 @@
 package org.vortikal.web.actions.copymove;
 
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,12 +47,13 @@ public class CopyHelper {
     private CopyAction copyAction;
     private CopyThenStoreAction copyThenStoreAction;
 
-    public Path copyResource (Path uri, Path destUri, Repository repository, String token, Resource src, InputStream is) throws Exception {
+    public Path copyResource (Path uri, Path destUri, Repository repository, String token, Resource src, InputStream is, boolean extraMidfix) throws Exception {
         int number = 1;
         while (repository.exists(token, destUri)) {
-            destUri = appendCopySuffix(destUri, number);
+            destUri = appendCopySuffix(destUri, number, extraMidfix);
             number++;
         }
+        
         if (this.copyThenStoreAction != null && src != null && is != null) {
             this.copyThenStoreAction.process(destUri, src, is);
         } else if (this.copyAction != null) {
@@ -62,7 +64,7 @@ public class CopyHelper {
         return destUri;
     }
 
-    protected Path appendCopySuffix(Path newUri, int number) {
+    protected Path appendCopySuffix(Path newUri, int number, boolean extraMidfix) {
         String extension = "";
         String dot = "";
         String name = newUri.getName();
@@ -86,8 +88,11 @@ public class CopyHelper {
             } catch (Exception e) {
             }
         }
-
-        name = name + "(" + number + ")" + dot + extension;
+        if(extraMidfix && !name.contains("-kopi")) {
+            name = name + "-kopi(" + number + ")" + dot + extension; 
+        } else {
+            name = name + "(" + number + ")" + dot + extension;
+        }
         return newUri.getParent().extend(name);
     }
     

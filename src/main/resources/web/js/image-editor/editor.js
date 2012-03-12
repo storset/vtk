@@ -237,18 +237,6 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
       }
     });
   
-    $("#app-content").delegate("#saveAndViewButton, #saveButton, #saveCopyButton", "click", function(e) {;
-      if(!editor.savedImage) {
-        if(editor.hasCropBeenInitialized) {
-          editor.cropNone(editor); // Remove selection
-        }
-        editor.save($(this).attr("id"));
-        return false; 
-      } else {
-        editor.savedImage = false;
-      }
-    });
-  
     $(document).click(function(e) {
       if(editor.hasCropBeenInitialized && $(e.target).parents().index($('#vrtx-image-editor-inner-wrapper')) == -1) {
         editor.cropNone(editor);
@@ -300,10 +288,12 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
 
 VrtxImageEditor.prototype.save = function save(buttonId) {
   var editor = this;
-  editor.savedImage = true;
+  
+  if(editor.hasCropBeenInitialized) {
+    editor.cropNone(editor); // Remove selection
+  }
 
   var form = $("form#editor");
-  
   var dataString = "<input style='display: none' name='crop-x' value='" + editor.cropX + "' />"
                  + "<input style='display: none' name='crop-y' value='" + editor.cropY + "' />"
                  + "<input style='display: none' name='crop-width' value='" + editor.cropWidth + "' />"
@@ -311,7 +301,9 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
                  + "<input style='display: none' name='new-width' value='" + editor.rw + "' />"
                  + "<input style='display: none' name='new-height' value='" + editor.rh + "' />";
    form.append(dataString);
-   $("#" + buttonId).click();
+   if(typeof buttonId !== "undefined") {
+     $("#" + buttonId).click();
+   }
 };
 
 VrtxImageEditor.prototype.scale = function scale(newWidth, newHeight) {

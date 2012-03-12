@@ -596,6 +596,9 @@ $(document).ready(function () {
       tb_show(ajaxSaveText + "...", 
               "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
               false);
+      if(vrtxImageEditor && vrtxImageEditor.save) {
+        vrtxImageEditor.save();
+      }
       if(typeof performSave !== "undefined") {      
         performSave();
       }
@@ -618,8 +621,9 @@ $(document).ready(function () {
           }
         },
         error: function(xhr, statusText, errMsg) {
+          alert(statusText + " " + xhr.status);
           tb_remove();
-          $("#editor").submit();
+          // $("#editor").submit();
         }
       });
       e.preventDefault();

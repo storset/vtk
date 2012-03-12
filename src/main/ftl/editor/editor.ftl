@@ -25,6 +25,12 @@
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
     <#assign isCollection = resource.resource.collection />
     <#assign simpleHTML = resource.resourceType = 'xhtml10trans' || resource.resourceType = 'html' />
+    <#assign isImage = resource.contentType?exists && resource.contentType?starts_with("image/") />
+    <#assign isAudio = resource.contentType?exists && resource.contentType?starts_with("audio/") />
+    <#assign isVideo = resource.contentType?exists && resource.contentType?starts_with("video/") />
+    <#assign supportedImageEditor = isImage && (resource.contentType == "image/jpeg" 
+                                             || resource.contentType == "image/pjpeg"
+                                             || resource.contentType == "image/png") />
 
     <#global baseFolder = "/" />
     <#if resourceContext.parentURI?exists>
@@ -48,10 +54,17 @@
         $("#app-content").delegate("#vrtx-save-shortcut",      "click", function(e) { $("#saveButton").click();        e.preventDefault(); });
         $("#app-content").delegate("#vrtx-cancel-shortcut",    "click", function(e) { $("#cancel").click();            e.preventDefault(); });
 
-        $("#editor").delegate("#saveAndViewButton, #saveCopyButton, #saveButton, #cancel", "click", function(e) {
+        $("#editor").delegate("#cancel", "click", function(e) {
           performSave();
         });
-
+        
+        $("#editor").delegate("#saveAndViewButton, #saveCopyButton", "click", function(e) {
+          if(vrtxImageEditor && vrtxImageEditor.save) {
+            vrtxImageEditor.save();
+          }
+          performSave();
+        });
+        
         <#if !isCollection>
           interceptEnterKey('#resource\\.tags');
         </#if>
@@ -81,7 +94,19 @@
       } 
 
       // i18n
-      var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
+      
+      <#if isCollection>
+        var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
+      <#elseif isImage>
+        var ajaxSaveText = "<@vrtx.msg code='editor.save-image-ajax-loading-title' />";   
+      <#elseif isAudio
+        var ajaxSaveText = "<@vrtx.msg code='editor.save-audio-ajax-loading-title' />";         
+      <#elseif isVideo>
+        var ajaxSaveText = "<@vrtx.msg code='editor.save-video-ajax-loading-title' />";         
+      <#else>
+        var ajaxSaveText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
+      </#if>
+      
       var approveGeneratingPage = "<@vrtx.msg code='editor.manually-approve.generating-page' />";
       var approvePrev = "<@vrtx.msg code='imageListing.previous' />";
       var approveNext = "<@vrtx.msg code='imageListing.next' />";
@@ -112,10 +137,6 @@
     
     <script type="text/javascript" src="${jsBaseURL?html}/collectionlisting/manually-approve.js"></script>
     
-    <#assign isImage = resource.contentType?exists && resource.contentType?starts_with("image/") />
-    <#assign supportedImageEditor = isImage && (resource.contentType == "image/jpeg" 
-                                             || resource.contentType == "image/pjpeg"
-                                             || resource.contentType == "image/png") />
     <#if supportedImageEditor>
       <!--[if IE 8]>
         <script type="text/javascript" src="${jsBaseURL?html}/image-editor/excanvas.compiled.js"></script>

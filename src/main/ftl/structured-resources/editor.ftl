@@ -34,9 +34,10 @@
       $("#app-content").delegate("#vrtx-delete-working-copy-shortcut",  "click", function(e) { $("#deleteWorkingCopyAction").click(); e.preventDefault(); });   
       $("#app-content").delegate("#vrtx-save-as-working-copy-shortcut", "click", function(e) { $("#saveWorkingCopyAction").click();   e.preventDefault(); });    
 
-      $("#editor").delegate("#saveAndViewButton, #cancelAction, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", "click", function(e) {
+      $("#editor").delegate("#saveAndViewButton, "#cancelAction, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", "click", function(e) {
         performSave();
       });
+
     });
     
     var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";

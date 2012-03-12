@@ -621,9 +621,8 @@ $(document).ready(function () {
           }
         },
         error: function(xhr, statusText, errMsg) {
-          alert(statusText + " " + xhr.status);
           tb_remove();
-          // $("#editor").submit();
+          $("#editor").submit();
         }
       });
       e.preventDefault();

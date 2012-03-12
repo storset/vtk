@@ -59,10 +59,12 @@
         });
         
         $("#editor").delegate("#saveAndViewButton, #saveCopyButton", "click", function(e) {
-          if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save) {
-            vrtxImageEditor.save();
-          }
           performSave();
+          if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save) {
+            vrtxImageEditor.save($(this).attr("id"));
+            e.preventDefault();
+            e.stopPropagation();
+          }
         });
         
         <#if !isCollection>

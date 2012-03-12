@@ -259,13 +259,11 @@ form button::-moz-focus-inner {
 
 /* iPhone and iPad hacks */
 
-@media only screen and (max-device-width: 480px) {
-  input { /* input reset */
-    -webkit-appearance: none;
-    -webkit-border-radius: 0;
-  }
-}
-@media only screen and (max-device-width: 1024px) {
+@media only screen and (max-device-width: 1024px) and (min-device-width: 768px),      /* iPad      */                                     
+       only screen and (min-device-width: 1536px) and (max-device-width: 2048px) 
+                   and (-webkit-min-device-pixel-ratio: 2),                           /* iPad 3    */
+       only screen and (max-device-width: 480px),                                     /* iPhone    */
+       only screen and (resolution: 326dpi) and (-webkit-min-device-pixel-ratio: 2) { /* iPhone 4S */
   input { /* input reset */
     -webkit-appearance: none;
     -webkit-border-radius: 0;

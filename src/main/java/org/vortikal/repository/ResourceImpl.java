@@ -324,7 +324,8 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
     }
 
     // XXX Where is hashCode impl ??
-    // TODO remove, good enough to differentiate on object instance only.
+    // TODO remove, good enough to differentiate on object instance only
+    //      (this method is probably never called in practice).
     public boolean equals(Object obj) {
         if (!(obj instanceof ResourceImpl))
             return false;

@@ -32,18 +32,15 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Deque;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
-
+import org.jdom.Document;
+import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
@@ -57,19 +54,22 @@ import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
 import org.vortikal.util.io.StreamUtil;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
+
 public class LinksEvaluator implements LatePropertyEvaluator {
-    
+
     private StructuredResourceManager resourceManager;
     
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
             throws PropertyEvaluationException {
-
+        
         final LinkCollector collector = new LinkCollector();
         boolean evaluateContent = true;
         try {
@@ -108,7 +108,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                     collector.add(link);
                 } else if (p.getType() == PropertyType.Type.HTML) {
                     InputStream is = new ByteArrayInputStream(p.getStringValue().getBytes());
-                    extractLinks(is, new HtmlHandler(collector, LinkSource.PROPERTIES));
+                    extractLinksHtml(is, collector, LinkSource.PROPERTIES);
                 }
             }
 
@@ -129,15 +129,16 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                                     unwrapJSON(p, collector);
                                 } else {
                                     InputStream is = new ByteArrayInputStream(p.toString().getBytes());
-                                    extractLinks(is, new HtmlHandler(collector, LinkSource.CONTENT));
+                                    extractLinksHtml(is, collector, LinkSource.CONTENT);
                                 }
                             }
                         }
                     }
                 } else if ("text/html".equals(resource.getContentType())) {
-                    extractLinks(ctx.getContent().getContentInputStream(), new HtmlHandler(collector, LinkSource.CONTENT));
+                    extractLinksHtml(ctx.getContent().getContentInputStream(), collector, LinkSource.CONTENT);
                 } else if ("text/xml".equals(resource.getContentType())) {
-                    extractLinks(ctx.getContent().getContentInputStream(), new XmlHandler(collector, LinkSource.CONTENT));
+                    Document doc = (Document)ctx.getContent().getContentRepresentation(Document.class);
+                    extractLinksXml(doc, collector, LinkSource.CONTENT);
                 }
             }
 
@@ -245,16 +246,29 @@ public class LinksEvaluator implements LatePropertyEvaluator {
     }
 
     
-    // TODO:
-    // Handlers/link parsing strategies should be pluggable, keyed on content type.
+    // TODO Handlers/link parsing strategies should be pluggable, keyed on content type.
         
-    private void extractLinks(InputStream is, ContentHandler handler) throws Exception {
-
+    /**
+     * Single HTMLSchema instance re-used across all Tagsoup parser instances due to
+     * heavy constructor which can impact performance.
+     * If this instance is to be used, then the following parser feature MUST be
+     * set to 'true' to keep thread safety:
+     * {@link org.ccil.cowan.tagsoup.Parser#ignoreBogonsFeature}
+     * 
+     * See for instance: <a href="https://issues.apache.org/jira/browse/TIKA-599">TIKA-599</a>
+     */
+    private static final org.ccil.cowan.tagsoup.HTMLSchema TAGSOUP_HTML_SCHEMA = 
+                                         new org.ccil.cowan.tagsoup.HTMLSchema();
+    
+    private void extractLinksHtml(InputStream is,
+                                  LinkCollector collector,
+                                  LinkSource source)
+        throws Exception {
+        
         org.ccil.cowan.tagsoup.Parser parser = new org.ccil.cowan.tagsoup.Parser();
-        parser.setContentHandler(handler);
-        if (handler.getClass() == XmlHandler.class) {
-            parser.setFeature("http://www.ccil.org/~cowan/tagsoup/features/root-bogons", true);
-        }
+        parser.setFeature(org.ccil.cowan.tagsoup.Parser.ignoreBogonsFeature, true);
+        parser.setProperty(org.ccil.cowan.tagsoup.Parser.schemaProperty, TAGSOUP_HTML_SCHEMA);
+        parser.setContentHandler(new HtmlHandler(collector, source));
 
         InputSource input = new InputSource(is);
 
@@ -266,70 +280,46 @@ public class LinksEvaluator implements LatePropertyEvaluator {
         }
     }
     
-    @SuppressWarnings("serial")
-    private static class StopException extends RuntimeException { }
-
-    // TODO perhaps switch to pull-parser for XML content, instead of classic SAX.
-    private static class XmlHandler extends DefaultHandler {
-
-        private final LinkCollector collector;
-        private final LinkSource source;
-        private final StringBuilder buffer = new StringBuilder();
-        private boolean linkData = false;
-        private final Deque<String> ancestorElements = new ArrayDeque<String>();
+    private void extractLinksXml(Document doc,
+                                 LinkCollector collector,
+                                 LinkSource source) throws Exception {
         
-        XmlHandler(LinkCollector collector, LinkSource source) {
-            this.collector = collector;
-            this.source = source;
-        }
-        
-        @Override
-        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
-            if (localName == null) {
-                return;
+        Iterator nodeIterator = doc.getDescendants();
+        while (nodeIterator.hasNext()) {
+            Object next = nodeIterator.next();
+            if (! (next instanceof Element)) {
+                continue;
             }
 
-            final String parentElement = ancestorElements.peekLast();
-
-            if ("webadresse".equals(localName)
-                || "url".equals(localName)) {
-                linkData = true;
-                buffer.delete(0, buffer.length());
-            } else if ("pensumpunkt".equals(parentElement)
-                       || "bilde-referanse".equals(parentElement)) {
-                if ("src".equals(localName)
-                    || "lenkeadresse".equals(localName)
-                    || "bibsys".equals(localName)
-                    || "fulltekst".equals(localName)) {
-                    linkData = true;
-                    buffer.delete(0, buffer.length());
+            Element e = (Element) next;
+            String href = null;
+            
+            if ("webadresse".equals(e.getName())
+                    || "url".equals(e.getName())) {
+                href = e.getTextTrim();
+            } else {
+                Element p = e.getParentElement();
+                if (p != null) {
+                    if ("pensumpunkt".equals(p.getName()) || "bilde-referanse".equals(p.getName())) {
+                        if ("src".equals(e.getName())
+                            || "lenkeadresse".equals(e.getName())
+                            || "bibsys".equals(e.getName())
+                            || "fulltekst".equals(e.getName())) {
+                            href = e.getTextTrim();
+                        }
+                    }
                 }
             }
             
-            ancestorElements.addLast(localName);
-        }
-
-        @Override
-        public void endElement(String uri, String localName, String qName) throws SAXException {
-            if (linkData) {
-                String href = buffer.toString().trim();
-                if (!href.isEmpty()) {
-                    collector.add(new Link(href, LinkType.ANCHOR, source));
-                }
-                linkData = false;
-            }
-            
-            ancestorElements.pollLast();
-        }
-
-        @Override
-        public void characters(char[] ch, int start, int length) throws SAXException {
-            if (linkData) {
-                buffer.append(ch, start, length);
+            if (href != null && !href.isEmpty()) {
+                collector.add(new Link(href, LinkType.ANCHOR, source));
             }
         }
     }
     
+    @SuppressWarnings("serial")
+    private static class StopException extends RuntimeException { }
+
     private static class HtmlHandler extends DefaultHandler {
         private final LinkCollector listener;
         private final LinkSource linkSource;
@@ -399,7 +389,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
             }
         } else if (!(object instanceof JSONNull)) {
             InputStream is = new ByteArrayInputStream(object.toString().getBytes());
-            extractLinks(is, new HtmlHandler(collector, LinkSource.CONTENT));
+            extractLinksHtml(is, collector, LinkSource.CONTENT);
         }
     }
     

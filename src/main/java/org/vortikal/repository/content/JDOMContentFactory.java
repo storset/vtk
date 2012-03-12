@@ -39,11 +39,13 @@ import org.jdom.input.SAXBuilder;
  */
 public class JDOMContentFactory implements ContentFactory {
 
+    @Override
     public Class<?>[] getRepresentationClasses() {
         return new Class[] {Document.class};
     }
     
 
+    @Override
     public Object getContentRepresentation(Class<?> clazz,  InputStreamWrapper content) throws Exception {
         SAXBuilder saxBuilder = new SAXBuilder();
         saxBuilder.setValidation(false);
@@ -51,8 +53,5 @@ public class JDOMContentFactory implements ContentFactory {
 
         return saxBuilder.build(content.getInputStream());
     }
-
-
-   
     
 }

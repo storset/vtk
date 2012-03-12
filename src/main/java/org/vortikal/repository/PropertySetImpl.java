@@ -236,6 +236,8 @@ public class PropertySetImpl implements PropertySet, Cloneable, Serializable {
 
 
     @Override
+    // TODO remove, good enough to differentiate on object instance only
+    //      (this method is probably never called in practice).
     public boolean equals(Object obj) {
         if (!(obj instanceof PropertySetImpl))
             return false;

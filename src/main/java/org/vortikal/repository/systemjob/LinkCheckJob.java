@@ -34,7 +34,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -206,7 +208,10 @@ public class LinkCheckJob extends RepositoryJob {
                     }
                     LinkCheckResult result = linkChecker.validate(val, base);
                     if (!"OK".equals(result.getStatus())) {
-                        state.brokenLinks.add(val);
+                        Map<String, Object> m = new HashMap<String, Object>();
+                        m.put("link", val);
+                        m.put("status", result.getStatus());
+                        state.brokenLinks.add(m);
                     }
                     if (state.brokenLinks.size() >= MAX_BROKEN_LINKS) {
                         return false;
@@ -300,7 +305,7 @@ public class LinkCheckJob extends RepositoryJob {
     }
 
     private static class LinkCheckState {
-        private List<String> brokenLinks = new ArrayList<String>();
+        private List<Object> brokenLinks = new ArrayList<Object>();
         private long index = 0;
         private String timestamp = null;
         private boolean complete = false;
@@ -321,9 +326,9 @@ public class LinkCheckJob extends RepositoryJob {
                         }
                         obj = status.get("brokenLinks");
                         if (obj != null) {
-                            List<String> list = (List<String>) obj;
-                            for (String str: list) {
-                                s.brokenLinks.add(str);
+                            List<Object> list = (List<Object>) obj;
+                            for (Object b: list) {
+                                s.brokenLinks.add(b);
                             }
                         }
                         obj = status.get("index");
@@ -446,6 +451,8 @@ public class LinkCheckJob extends RepositoryJob {
             this.updateList.clear();
         }
     }
+    
+    
     
     @Required
     public void setLinksPropDef(PropertyTypeDefinition linksPropDef) {

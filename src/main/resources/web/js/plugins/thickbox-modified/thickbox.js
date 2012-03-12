@@ -54,14 +54,17 @@ function tb_show(caption, url, imageGroup) { //function called when the user cli
         $("#TB_overlay").click(tb_remove);
       }
     }
+    
+    $("body").append("<div id='TB_load'><img src='" + imgLoader.src + "' /></div>"); //add loader to the page
 
-    $("#TB_overlay").addClass("TB_overlayBG").fadeTo("fast", 0.4);
+    $("#TB_overlay").addClass("TB_overlayBG").fadeTo("fast", 0.4, function() {
+      $('#TB_load').show(); //show loader
+    });
 
     if (caption === null) {
       caption = "";
     }
-    $("body").append("<div id='TB_load'><img src='" + imgLoader.src + "' /></div>"); //add loader to the page
-    $('#TB_load').show(); //show loader
+
     var baseURL;
     if (url.indexOf("?") !== -1) { //ff there is a query string involved
       baseURL = url.substr(0, url.indexOf("?"));

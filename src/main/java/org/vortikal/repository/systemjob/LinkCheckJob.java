@@ -411,6 +411,14 @@ public class LinkCheckJob extends RepositoryJob {
                         logger.warn("Resource " + r.getURI() + " was modified during link check, skipping store");
                         continue;
                     }
+                    // --> Here be race <--
+                    //
+                    // Typically we risk AuthorizationException if link-status prop is updated
+                    // by something else after last-modified check, and we try to write old value
+                    // (the property is uneditable, and an old value will be interpreted by
+                    // repo as an attempt to modify). Still, it should be harmless, 
+                    // since it will only be an ephemeral problem for props marked as affected
+                    // in system change context.
                     repository.store(token, r, context);
                 } catch (ResourceLockedException e) {
                     logger.warn("Resource " + r.getURI() + " was locked by another user, skipping");

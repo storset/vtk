@@ -94,9 +94,7 @@
           <tr class="${rowType}${firstLast}${published}${restricted}">
             <td class="vrtx-report-broken-links-web-page">
               <a href="${url?html}">${title?html}</a>
-              <#if linkStatus = 'AWAITING_LINKCHECK'>
-                [ * ] <#-- currently being checked, be patient -->
-              </#if>
+              <#if linkStatus = 'AWAITING_LINKCHECK'>*<#-- currently being checked, be patient --></#if>
             </td>
             <td class="vrtx-report-broken-links-count">
               <#if brokenLinks?exists>
@@ -107,7 +105,15 @@
               <#if brokenLinks?exists>
                 <ul>
                 <#list brokenLinks as link>
-                  <li>${link?html}</li>
+                  <li>
+                  <#if link?is_hash>
+                    <#if (link.link)?exists>
+                      ${link.link?html}<#if (link.status)?exists><!--${link.status?html}--></#if>
+                    </#if>
+                  <#else>
+                    ${link?html}
+                  </#if>
+                  </li>
                   <#if link_index &gt; 10>
                     <li>...</li>
                     <#break />

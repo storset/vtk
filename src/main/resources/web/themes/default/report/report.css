@@ -60,7 +60,7 @@ ul.vrtx-primary-reporters li a {
   background: #f9f9f9;
   float: left;
   display: block;
-  min-height: 90px;
+  min-height: 100px;
 }
 
 ul.vrtx-primary-reporters li a:hover {

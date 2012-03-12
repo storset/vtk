@@ -176,7 +176,7 @@ public class ThumbnailEvaluator implements PropertyEvaluator {
      * actual estimate. To fix that, one needs to provide the bpp value
      * from the {@link org.vortikal.repository.content.ImageContentFactory}.
      * 
-     * Default value of 350MB is roughly equivalent to an image of about 10000x10000.
+     * Default value of 100MB is roughly equivalent to an image of about 33 megapixels.
      * 
      * @param maxSourceImageRawMemoryUsage 
      */

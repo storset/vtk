@@ -52,7 +52,9 @@ body#vrtx-permissions .removePermission {
 .vrtx-textfield-big,
 .vrtx-button,
 .vrtx-focus-button,
-.vrtx-button-small {
+.vrtx-button-small,
+#submitButtons .vrtx-button,
+#submitButtons .vrtx-focus-button {
   display: inline;
 }
 

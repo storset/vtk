@@ -99,7 +99,7 @@
         var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
       <#elseif isImage>
         var ajaxSaveText = "<@vrtx.msg code='editor.save-image-ajax-loading-title' />";   
-      <#elseif isAudio
+      <#elseif isAudio>
         var ajaxSaveText = "<@vrtx.msg code='editor.save-audio-ajax-loading-title' />";         
       <#elseif isVideo>
         var ajaxSaveText = "<@vrtx.msg code='editor.save-video-ajax-loading-title' />";         

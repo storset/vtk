@@ -59,7 +59,7 @@
         });
         
         $("#editor").delegate("#saveAndViewButton, #saveCopyButton", "click", function(e) {
-          if(vrtxImageEditor && vrtxImageEditor.save) {
+          if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save) {
             vrtxImageEditor.save();
           }
           performSave();
@@ -93,8 +93,7 @@
         NEED_TO_CONFIRM = false;
       } 
 
-      // i18n
-      
+      // i18n     
       <#if isCollection>
         var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
       <#elseif isImage>

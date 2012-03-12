@@ -60,7 +60,7 @@
         
         $("#editor").delegate("#saveAndViewButton, #saveCopyButton", "click", function(e) {
           performSave();
-          if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save) {
+          if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save && !vrtxImageEditor.savedImage) {
             vrtxImageEditor.save($(this).attr("id"));
             e.preventDefault();
             e.stopPropagation();

@@ -302,6 +302,7 @@ VrtxImageEditor.prototype.save = function save(buttonId) {
                  + "<input style='display: none' name='new-height' value='" + editor.rh + "' />";
    form.append(dataString);
    if(typeof buttonId !== "undefined") {
+     editor.savedImage = true;
      $("#" + buttonId).click();
    }
 };

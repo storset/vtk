@@ -212,8 +212,8 @@ td.vrtx-report-diagram-text {
 
 td.vrtx-report-broken-links li {
   background: url(../images/list-bullet-dark-grey.png) no-repeat center left;
-  padding: 0 0 0 10px;
-  margin: 0 0 5px 0;
+  padding: 0 0 0 10px !important;
+  margin: 0 0 2px 0 !important;
 }
 
 /* Filters */

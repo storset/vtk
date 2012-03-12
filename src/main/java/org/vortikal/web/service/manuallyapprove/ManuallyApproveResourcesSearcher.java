@@ -134,6 +134,7 @@ public class ManuallyApproveResourcesSearcher {
         // Get all resources that are eligible for manual approval, all
         // separated on origin (location)
         Map<String, List<PropertySet>> resourceSet = new HashMap<String, List<PropertySet>>();
+
         for (String location : locations) {
 
             // Is it a local resource ref?
@@ -141,17 +142,19 @@ public class ManuallyApproveResourcesSearcher {
 
             CollectionListingAggregatedResources clar = null;
             URL locationURL = this.getAsURL(location);
+            boolean multiHostSearch = false;
+
             if (localPath != null) {
                 Resource resource = repository.retrieve(token, localPath, false);
                 clar = this.aggregationResolver.getAggregatedResources(resource);
             } else if (this.multiHostSearcher.isMultiHosSearchEnabled() && locationURL != null) {
                 clar = this.aggregationResolver.getAggregatedResources(locationURL);
+                multiHostSearch = true;
             }
 
             ResultSet rs = null;
 
-            if (this.multiHostSearcher.isMultiHosSearchEnabled() && clar != null
-                    && clar.includesResourcesFromOtherHosts(localURL)) {
+            if (multiHostSearch || (clar != null && clar.includesResourcesFromOtherHosts(localURL))) {
 
                 // Resolved aggregation indicates resources from other hosts,
                 // and we have proper configuration to meet demands -> search

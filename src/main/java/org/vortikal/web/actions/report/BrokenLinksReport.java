@@ -31,6 +31,7 @@
 package org.vortikal.web.actions.report;
 
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -220,8 +221,14 @@ public class BrokenLinksReport extends DocumentReporter {
         } 
 
         ContentStream binaryStream = linkCheck.getBinaryStream();
-        Object obj = JSONValue.parse(new InputStreamReader(binaryStream.getStream()));
-        map.put(resource.getURI().toString(), obj);
+
+        Object obj;
+        try {
+            obj = JSONValue.parse(new InputStreamReader(binaryStream.getStream(), "utf-8"));
+            map.put(resource.getURI().toString(), obj);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
     
     public class FilterOption {

@@ -48,6 +48,7 @@ import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Lock;
 import org.vortikal.repository.Path;
@@ -450,7 +451,8 @@ public class LinkCheckJob extends RepositoryJob {
                     repository.store(token, r, context);
                 } catch (ResourceLockedException e) {
                     logger.warn("Resource " + r.getURI() + " was locked by another user, skipping");
-                    continue;
+                } catch (AuthorizationException ae) {
+                    logger.warn("Could not store resource " + r.getURI() + " due to AuthorizationException: " + ae.getMessage());
                 } catch (Throwable t) {
                     logger.warn("Unable to store resource " + r, t);
                 }
@@ -468,10 +470,13 @@ public class LinkCheckJob extends RepositoryJob {
                         logger.warn("Resource " + r.getURI() + " was modified during link check, skipping store");
                         continue;
                     }
+                    // Risk AuthorizationException here if resource is stored somewhere else
+                    // WITHOUT locking (like resource evaluation does).
                     repository.store(token, r, context);
                 } catch (ResourceLockedException e) {
                     logger.warn("Resource " + r.getURI() + " was locked by another user, skipping");
-                    continue;
+                } catch (AuthorizationException ae) {
+                    logger.warn("Could not store resource " + r.getURI() + " due to AuthorizationException: " + ae.getMessage());
                 } catch (Throwable t) {
                     logger.warn("Unable to store resource " + r, t);
                 } finally {

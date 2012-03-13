@@ -76,7 +76,9 @@ public class BrokenLinksReport extends DocumentReporter {
     private final static String[] FILTER_READ_RESTRICTION_PARAM_VALUES = { FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE, "false", "true" };
 
     private final static String   FILTER_LINK_TYPE_PARAM_NAME = "link-type";
-    private final static String[] FILTER_LINK_TYPE_PARAM_VALUES = { "anchor", "img", "other" };
+    private final static String   FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE = "anchor";
+    
+    private final static String[] FILTER_LINK_TYPE_PARAM_VALUES = { FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE, "img", "other" };
 
     
     private final static String   FILTER_PUBLISHED_PARAM_NAME = "published";
@@ -96,6 +98,7 @@ public class BrokenLinksReport extends DocumentReporter {
         String published = request.getParameter(FILTER_PUBLISHED_PARAM_NAME);
         String readRestriction = request.getParameter(FILTER_READ_RESTRICTION_PARAM_NAME);
         
+        if (linkType == null) linkType = FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE;
         if (published == null) published = FILTER_PUBLISHED_PARAM_DEFAULT_VALUE;
         if (readRestriction == null) readRestriction = FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE;
         
@@ -144,7 +147,7 @@ public class BrokenLinksReport extends DocumentReporter {
         OrQuery linkStatusCriteria = new OrQuery();
         String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
         
-        if ("anchor".equals(linkType) || linkType == null) {
+        if (FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE.equals(linkType) || linkType == null) {
             linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_ANCHOR", TermOperator.EQ));
 
         } else if ("img".equals(linkType)) {

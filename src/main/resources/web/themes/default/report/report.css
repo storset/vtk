@@ -229,14 +229,14 @@ td.vrtx-report-broken-links li {
 }
 
 #vrtx-report-filters ul {
-  margin-right: 25px;
+  margin-right: 35px;
   margin-bottom: 15px;
   float: left;
 }
 
 #vrtx-report-filters ul li {
   float: left;
-  margin-right: 15px;
+  margin-right: 10px;
   display: inline-block;
   white-space: nowrap;
   overflow: visible;

@@ -118,10 +118,10 @@
   <#macro displayPaging>
     <span class="vrtx-report-paging">
       <#if report.prev?exists>
-        <a href="${report.prev?html}">
-        <@vrtx.msg code="report.prev-page" default="Previous page" /></a><#if report.next?exists>&nbsp;&nbsp;&nbsp;<a href="${report.next?html}"><@vrtx.msg code="report.next-page" default="Next page" /></a></#if>
+        <a href="${report.prev?html}" class="prev">
+        <@vrtx.msg code="report.prev-page" default="Previous page" /></a><#if report.next?exists><a href="${report.next?html}" class="next"><@vrtx.msg code="report.next-page" default="Next page" /></a></#if>
       <#elseif report.next?exists>
-        <a href="${report.next?html}"><@vrtx.msg code="report.next-page" default="Next page" /></a>
+        <a href="${report.next?html}" class="next"><@vrtx.msg code="report.next-page" default="Next page" /></a>
       </#if>
     </span>
   </#macro>

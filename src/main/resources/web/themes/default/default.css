@@ -1307,13 +1307,16 @@ p#vrtx-file-upload-info-text {
   width: 12%;
 }
 
-#directory-listing th#vrtx-report-published,
-#directory-listing th#vrtx-report-broken-links-count {
+#directory-listing th#vrtx-report-published {
   width: 9%;
 }
 
+#directory-listing th#vrtx-report-broken-links-count {
+  width: 6%;
+}
+
 #directory-listing th#vrtx-report-broken-links {
-  width: 50%;
+  width: 35%;
 }
 
 #directory-listing td.permissions,

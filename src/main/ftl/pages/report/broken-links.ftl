@@ -46,6 +46,7 @@
             <th id="vrtx-report-broken-links-web-page"><@vrtx.msg code="report.${report.reportname}.web-page" /></th>
             <th id="vrtx-report-broken-links-count"><@vrtx.msg code="report.${report.reportname}.count" /></th>
             <th id="vrtx-report-broken-links"><@vrtx.msg code="report.${report.reportname}.these" /></th>
+            <th id="vrtx-report-last-modified"><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
           </tr>
         </thead>
         <tbody>
@@ -63,6 +64,7 @@
             </#if>
           </#if>
           <#assign linkStatus = vrtx.propValue(item, 'link-status') />
+          <#assign lastModifiedTime = vrtx.propValue(item, 'lastModified') />
           
           <#assign rowType = "odd" />
           <#if (item_index % 2 == 0) >
@@ -122,6 +124,7 @@
                 </ul>
               </#if>
             </td>
+            <td>${lastModifiedTime?html}</td>
           </tr>
         </#list>
         </tbody>

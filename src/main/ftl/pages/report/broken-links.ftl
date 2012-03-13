@@ -127,7 +127,7 @@
               <#if linkStatus = 'AWAITING_LINKCHECK'>
                 <@vrtx.msg code="report.broken-links.awaiting-linkcheck" />
               <#else>
-              ${lastModified?html}
+                ${lastModified?html}
               </#if>
             </td>
           </tr>

@@ -39,6 +39,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Required;
@@ -58,10 +62,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
 
 public class LinksEvaluator implements LatePropertyEvaluator {
 
@@ -176,7 +176,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
         private LinkType type;
         private LinkSource source;
         public Link(String url, LinkType type, LinkSource source) {
-            this.url = url;
+            this.url = url.trim();
             this.type = type;
             this.source = source;
         }
@@ -271,7 +271,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                                  LinkCollector collector,
                                  LinkSource source) throws Exception {
         
-        Iterator nodeIterator = doc.getDescendants();
+        Iterator<?> nodeIterator = doc.getDescendants();
         while (nodeIterator.hasNext()) {
             Object next = nodeIterator.next();
             if (! (next instanceof Element)) {

@@ -264,7 +264,13 @@ form button::-moz-focus-inner {
                    and (-webkit-min-device-pixel-ratio: 2),                           /* iPad 3    */
        only screen and (max-device-width: 480px),                                     /* iPhone    */
        only screen and (-webkit-min-device-pixel-ratio: 2) {                          /* iPhone 4S */
-  input { /* input reset */
+  input[type=button],
+  input[type=file],
+  input[type=image],
+  input[type=password],
+  input[type=reset],
+  input[type=submit],
+  input[type=text] { /* input reset */
     -webkit-appearance: none;
     -webkit-border-radius: 0;
   }

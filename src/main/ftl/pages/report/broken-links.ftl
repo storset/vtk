@@ -33,7 +33,7 @@
     <p id="vrtx-report-info-paging-top">
       <@vrtx.msg code="report.document-reporter.about"
                  args=[report.from, report.to, report.total]
-                 default="Listing results " + report.from + " - "
+                 default="Listing results " + report.from + "–"
                  +  report.to + " of total " + report.total + " resources" />
       <#if report.prev?exists || report.next?exists>
         <@displayPaging />  

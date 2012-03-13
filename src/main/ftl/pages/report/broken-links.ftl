@@ -46,7 +46,6 @@
             <th id="vrtx-report-broken-links-web-page"><@vrtx.msg code="report.${report.reportname}.web-page" /></th>
             <th id="vrtx-report-broken-links-count"><@vrtx.msg code="report.${report.reportname}.count" /></th>
             <th id="vrtx-report-broken-links"><@vrtx.msg code="report.${report.reportname}.list" /></th>
-            <th id="vrtx-report-broken-links"><@vrtx.msg code="report.${report.reportname}.last-modified" /></th>
             <th id="vrtx-report-last-modified"><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
           </tr>
         </thead>

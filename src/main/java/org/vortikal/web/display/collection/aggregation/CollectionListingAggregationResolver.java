@@ -206,16 +206,19 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         return resultSet;
     }
 
-    private URL getAsURL(URL currentHostURL, String aggregationStringValue) {
+    private URL getAsURL(URL currentHostURL, String strVal) {
 
         URL url = null;
         try {
-            url = URL.parse(aggregationStringValue);
+            url = URL.parse(strVal);
         } catch (Exception e) {
             // Ignore, continue, assume valid path
         }
         try {
-            Path path = Path.fromString(aggregationStringValue);
+            // Be lenient on trailing slash
+            String pathString = strVal.endsWith("/") && !strVal.equals("/") ? strVal
+                    .substring(0, strVal.lastIndexOf("/")) : strVal;
+            Path path = Path.fromString(pathString);
             url = new URL(currentHostURL);
             url.setPath(path);
         } catch (IllegalArgumentException iae) {

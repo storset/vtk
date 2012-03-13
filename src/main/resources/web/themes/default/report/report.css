@@ -210,6 +210,10 @@ td.vrtx-report-diagram-text {
 
 /* Broken links */
 
+table.report-broken-links td {
+  vertical-align: top;
+}
+
 td.vrtx-report-broken-links li {
   background: url(../images/list-bullet-dark-grey.png) no-repeat center left;
   padding: 0 0 0 10px !important;

@@ -31,10 +31,10 @@
     -->
 
     <p id="vrtx-report-info-paging-top">
-      <@vrtx.msg code="report.document-reporter.about"
+      <@vrtx.msg code="report.${report.reportname}.about"
                  args=[report.from, report.to, report.total]
                  default="Listing results " + report.from + "–"
-                 +  report.to + " of total " + report.total + " resources" />
+                 +  report.to + " of total " + report.total + " of web pages with broken links" />
       <#if report.prev?exists || report.next?exists>
         <@displayPaging />  
       </#if>

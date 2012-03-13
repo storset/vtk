@@ -1097,6 +1097,13 @@ function autocompleteUsernames(selector) {
   }
 }
 
+function autocompleteUsername(selector, subselector) {
+  var autocompleteTextfield = $(selector).find('input#' + subselector);
+  if(autocompleteTextfield.length) {
+    permissionsAutocomplete(subselector, 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
+  }
+}
+
 function autocompleteTags(selector) {
   var autocompleteTextfields = $(selector).find('.vrtx-textfield input');
   var i = autocompleteTextfields.length;

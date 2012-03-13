@@ -119,9 +119,10 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
 
       }
       LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]++;
+      autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
     }
 
-    COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]++;
+    COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]++;   
 }
 
 function removeFormField(name, that) {

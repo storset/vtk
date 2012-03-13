@@ -124,7 +124,7 @@
                 </ul>
               </#if>
             </td>
-            <td>${lastModifiedTime?html}</td>
+            <td class="vrtx-report-last-modified">${lastModifiedTime?html}</td>
           </tr>
         </#list>
         </tbody>

@@ -86,16 +86,16 @@ public abstract class DocumentReporter extends AbstractReporter {
         search.setLimit(pageSize);
 
         ResultSet rs = this.searcher.execute(token, search);
-        if (pos.cursor + Math.min(pageSize, rs.getAllResults().size()) >= rs.getTotalHits()) {
+        if (pos.cursor + Math.min(pageSize, rs.getSize()) >= rs.getTotalHits()) {
             pos.next = null;
         }
-        if (pos.cursor + Math.min(pageSize, rs.getAllResults().size()) >= Search.MAX_LIMIT) {
+        if (pos.cursor + Math.min(pageSize, rs.getSize()) >= Search.MAX_LIMIT) {
             pos.next = null;
         }
 
         //result.put("result", rs.getAllResults());
         result.put("from", pos.cursor + 1);
-        result.put("to", pos.cursor + Math.min(pageSize, rs.getAllResults().size()));
+        result.put("to", pos.cursor + Math.min(pageSize, rs.getSize()));
         result.put("total", rs.getTotalHits());
         result.put("next", pos.next);
         result.put("prev", pos.prev);

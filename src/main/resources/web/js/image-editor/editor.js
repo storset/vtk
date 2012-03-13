@@ -55,7 +55,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
   editor.isIE8 = vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9;
   editor.canvasSupported = (editor.isIE8 || ('getContext' in document.createElement('canvas'))) && imageSupported === "true";
   if(editor.canvasSupported) {
-    if(editor.isIE8 && !editor.canvas.getContext('2d')) {
+    if(editor.isIE8 && typeof editor.canvas.getContext === "undefined") {
       G_vmlCanvasManager.initElement(editor.canvas); 
     }
     editor.ctx = editor.canvas.getContext('2d');

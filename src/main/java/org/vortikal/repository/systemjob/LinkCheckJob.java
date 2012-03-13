@@ -172,44 +172,66 @@ public class LinkCheckJob extends RepositoryJob {
         
         try {
             parser.parse(new InputStreamReader(linksStream.getStream()), new JSONDefaultHandler() {
-
-                boolean url = false;
+                String field = null;
+                
+                String url = null;
+                String type = null;
 
                 @Override
                 public void endJSON() throws ParseException, IOException {
                     state.complete = true;
                 }
-
+                
                 @Override
-                public boolean startObjectEntry(String key) throws ParseException, IOException {
-                    this.url = "url".equals(key);
+                public boolean startObject() throws ParseException, IOException {
                     return true;
                 }
-
-                @Override
-                public boolean endObjectEntry() throws ParseException, IOException {
-                    this.url = false;
-                    return true;
-                }
+                
+                 @Override
+                 public boolean startObjectEntry(String key) throws ParseException, IOException {
+                     if ("url".equals(key) || "type".equals(key)) {
+                         this.field = key;
+                     } else {
+                         this.field = null;
+                     }
+                     return true;
+                 }
 
                 @Override
                 public boolean primitive(Object value) throws ParseException, IOException {
-                    if (value == null || !this.url) {
+                    if (value == null) {
                         return true;
                     }
-
+                    if ("url".equals(this.field)) {
+                        this.url = value.toString();
+                    } else if ("type".equals(this.field)){
+                        this.type = value.toString();
+                    }
+                    return true;
+                }
+                
+                @Override
+                public boolean endObject() throws ParseException, IOException {
                     if (n.getAndIncrement() < state.index) {
+                        this.field = this.url = this.type = null;
                         return true;
                     }
-                    
-                    String val = value.toString();
-                    if (!shouldCheck(val)) {
+                    if (this.url == null) {
+                        this.field = this.url = this.type = null;
+                        return true;
+                        
+                    }
+                    if (!shouldCheck(this.url)) {
+                        this.field = this.url = this.type = null;
                         return true;
                     }
-                    LinkCheckResult result = linkChecker.validate(val, base);
+                    LinkCheckResult result = linkChecker.validate(this.url, base);
                     if (!"OK".equals(result.getStatus())) {
                         Map<String, Object> m = new HashMap<String, Object>();
-                        m.put("link", val);
+                        m.put("link", this.url);
+                        if (this.type != null) {
+                            m.put("type", this.type);
+                        }
                         m.put("status", result.getStatus());
                         state.brokenLinks.add(m);
                     }
@@ -224,8 +246,14 @@ public class LinkCheckJob extends RepositoryJob {
                         checkForInterrupt();
                     } catch (InterruptedException ie) {
                         throw new RuntimeException(ie);
-                    }
-                    
+                    }                   
+                    this.field = this.url = this.type = null;
+                    return true;
+                }
+
+                
+                @Override
+                public boolean endObjectEntry() throws ParseException, IOException {
                     return true;
                 }
             });

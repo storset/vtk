@@ -32,6 +32,11 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -39,7 +44,9 @@ import org.json.simple.JSONValue;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.resourcetype.LatePropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
 
 public class LinkStatusEvaluator implements LatePropertyEvaluator {
 
@@ -54,18 +61,30 @@ public class LinkStatusEvaluator implements LatePropertyEvaluator {
         this.linkCheckPropDef = linkCheckPropDef;
     }
 
+    /**
+     * Values evaluated:
+     *
+     * <pre>
+     * NO_LINKS
+     * AWAITING_LINKCHECK
+     * OK
+     * LINKCHECK_ERROR
+     * BROKEN_LINKS plus one or more qualifiers: 
+     *      (BROKEN_LINKS_ANCHOR, BROKEN_LINKS_IMG, ...)
+     * </pre>
+     */
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
             throws PropertyEvaluationException {
         Property linksProp = ctx.getNewResource().getProperty(this.linksPropDef);
 
         if (linksProp == null) {
-            property.setStringValue("NO_LINKS");
+            property.setValues(new Value[] {new Value("NO_LINKS", Type.STRING)});
             return true;
         }
         
         if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.SystemPropertiesChange) {
-            property.setStringValue("AWAITING_LINKCHECK");
+            property.setValues(new Value[] {new Value("AWAITING_LINKCHECK", Type.STRING)});
             return true;
         }
         
@@ -74,14 +93,31 @@ public class LinkStatusEvaluator implements LatePropertyEvaluator {
         try {
             JSONObject linkCheck = propValue(linkCheckProp);
             Object brokenLinks = linkCheck.get("brokenLinks");
-            String value = "OK";
-            if (brokenLinks != null) {
-                JSONArray arr = (JSONArray) brokenLinks;
-                if (!arr.isEmpty()) {
-                    value = "BROKEN_LINKS";
+            
+            if (brokenLinks == null || ((JSONArray)brokenLinks).isEmpty()) {
+                property.setValues(new Value[] {new Value("OK", Type.STRING)});
+                return true;
+            }
+
+            JSONArray arr = (JSONArray) brokenLinks;
+            Set<String> errors = new HashSet<String>();
+            errors.add("BROKEN_LINKS");
+            for (Object o: arr) {
+                Map<?, ?> map = (Map<?, ?>) o;
+                Object type = map.get("type");
+                if (type != null) {
+                    if ("PROPERTY".equals(type.toString())) {
+                        // Map PROPERTY type refs to IMG for now
+                        type = "IMG";
+                    }
+                    errors.add("BROKEN_LINKS_" + type.toString());
                 }
             }
-            property.setStringValue(value);
+            List<Value> values = new ArrayList<Value>();
+            for (String s: errors) {
+                values.add(new Value(s, Type.STRING));
+            }
+            property.setValues(values.toArray(new Value[values.size()]));
             return true;
         } catch (Throwable t) {
             property.setStringValue("LINKCHECK_ERROR");

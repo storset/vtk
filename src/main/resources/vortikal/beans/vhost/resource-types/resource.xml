@@ -334,7 +334,7 @@
         parent="abstractPropDef">
     <property name="name" value="link-status" />
     <property name="type" value="STRING" />
-    <property name="multiple" value="false" />
+    <property name="multiple" value="true" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="mandatory" value="false" />
     <property name="propertyEvaluator" ref="linkStatusEvaluator" />

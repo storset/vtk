@@ -45,6 +45,7 @@ import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.Parser;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortFieldDirection;
@@ -53,6 +54,7 @@ import org.vortikal.repository.search.query.ACLReadForAllQuery;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
+import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.web.service.URL;
@@ -64,7 +66,9 @@ public class BrokenLinksReport extends DocumentReporter {
     private PropertyTypeDefinition sortPropDef;
     private PropertyTypeDefinition publishedPropDef;
     private SortFieldDirection sortOrder;
-    
+    private Parser parser;
+    private String queryFilterExpression;
+
     private final static String   REPORT_TYPE_PARAM_NAME = "broken-links";
     
     private final static String   FILTER_READ_RESTRICTION_PARAM_NAME = "read-restriction";
@@ -124,27 +128,34 @@ public class BrokenLinksReport extends DocumentReporter {
         linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS", TermOperator.EQ))
         .add(new PropertyTermQuery(this.linkStatusPropDef, "AWAITING_LINKCHECK", TermOperator.EQ));
 
-        AndQuery topLevel = new AndQuery();
+        AndQuery topLevelQ = new AndQuery();
 
         // Read restriction (all|true|false)
         String readRestriction = request.getParameter(FILTER_READ_RESTRICTION_PARAM_NAME);
 
         if (readRestriction != null) {
             if ("true".equals(readRestriction)) {
-                ACLReadForAllQuery aclReadForAllQuery = new ACLReadForAllQuery(true);
-                topLevel.add(aclReadForAllQuery);
+                ACLReadForAllQuery aclReadForAllQ = new ACLReadForAllQuery(true);
+                topLevelQ.add(aclReadForAllQ);
             } else if ("false".equals(readRestriction)) {
-                ACLReadForAllQuery aclReadForAllQuery = new ACLReadForAllQuery();
-                topLevel.add(aclReadForAllQuery);
+                ACLReadForAllQuery aclReadForAllQ = new ACLReadForAllQuery();
+                topLevelQ.add(aclReadForAllQ);
             }
         }
 
-        topLevel.add(new UriPrefixQuery(currentResource.getURI().toString())).add(linkStatusCriteria);
+        // Add clauses for limiting to current folder and link status criteria
+        topLevelQ.add(new UriPrefixQuery(currentResource.getURI().toString())).add(linkStatusCriteria);
+        
+        // Add clauses for any configured default filter query
+        Query filterQ = getFilterQuery();
+        if (filterQ != null) {
+            topLevelQ.add(filterQ);
+        }
 
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
         Search search = new Search();
-        search.setQuery(topLevel);
+        search.setQuery(topLevelQ);
         search.setSorting(sorting);
 
         // Published (true|false)
@@ -153,11 +164,11 @@ public class BrokenLinksReport extends DocumentReporter {
         if(published != null && "false".equals(published)) {
             // ONLY those NOT published
             PropertyTermQuery ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
-            topLevel.add(ptq);
+            topLevelQ.add(ptq);
         } else {
             search.setOnlyPublishedResources(true);
         }
-
+        
         return search;
     }
 
@@ -202,6 +213,16 @@ public class BrokenLinksReport extends DocumentReporter {
             return this.active;
         }
     }
+    
+    private Query getFilterQuery() {
+        if (this.queryFilterExpression != null) {
+            if (this.parser == null) {
+                throw new IllegalStateException("parser must be configured when using queryFilterExpression");
+            }
+            return this.parser.parse(this.queryFilterExpression);
+        }
+        return null;
+    }
 
     @Required
     public void setLinkStatusPropDef(PropertyTypeDefinition linkStatusPropDef) {
@@ -226,6 +247,14 @@ public class BrokenLinksReport extends DocumentReporter {
     @Required
     public void setSortOrder(SortFieldDirection sortOrder) {
         this.sortOrder = sortOrder;
+    }
+    
+    public void setParser(Parser parser) {
+        this.parser = parser;
+    }
+    
+    public void setQueryFilterExpression(String exp) {
+        this.queryFilterExpression = exp;
     }
 
 }

@@ -51,35 +51,40 @@ public class ResultSetImpl implements ResultSet, Serializable {
 
     public ResultSetImpl() {
         this.results = new ArrayList<PropertySet>();
-        this.totalHits = 0;
     }
 
     public ResultSetImpl(int initialCapacity) {
         this.results = new ArrayList<PropertySet>(initialCapacity);
     }
 
+    @Override
     public PropertySet getResult(int index) {
         return this.results.get(index);
     }
 
+    @Override
     public boolean hasResult(int index) {
         return (this.results.size() >= index + 1);
     }
 
+    @Override
     public List<PropertySet> getResults(int maxIndex) {
         int max = Math.min(maxIndex, this.results.size());
 
         return this.results.subList(0, max);
     }
 
+    @Override
     public List<PropertySet> getResults(int fromIndex, int toIndex) {
         return this.results.subList(fromIndex, toIndex);
     }
 
+    @Override
     public List<PropertySet> getAllResults() {
         return this.results;
     }
 
+    @Override
     public int getSize() {
         return this.results.size();
     }
@@ -88,10 +93,12 @@ public class ResultSetImpl implements ResultSet, Serializable {
         this.results.add(propSet);
     }
 
+    @Override
     public Iterator<PropertySet> iterator() {
         return this.results.iterator();
     }
 
+    @Override
     public int getTotalHits() {
         return this.totalHits;
     }
@@ -100,6 +107,7 @@ public class ResultSetImpl implements ResultSet, Serializable {
         this.totalHits = totalHits;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(": [size=").append(this.results.size());

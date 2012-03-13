@@ -139,10 +139,10 @@ public class SearcherImpl implements Searcher {
 
             ScoreDoc[] scoreDocs = topDocs.scoreDocs;
             
-            ResultSetImpl rs = new ResultSetImpl();
-            rs.setTotalHits(topDocs.totalHits);
+            ResultSetImpl rs;
             if (clientCursor < scoreDocs.length) {
                 int end = Math.min(need, scoreDocs.length);
+                rs = new ResultSetImpl(end-clientCursor);
                 
                 startTime = System.currentTimeMillis();
                 for (int i=clientCursor; i < end; i++) {
@@ -158,7 +158,10 @@ public class SearcherImpl implements Searcher {
                 if (logger.isDebugEnabled()){
                     logger.debug("Document mapping took " + (endTime-startTime) + "ms");
                 }
+            } else {
+                rs = new ResultSetImpl(0);
             }
+            rs.setTotalHits(topDocs.totalHits);
             
             if (totalTime > this.totalQueryTimeWarnThreshold) {
                 // Log a warning, query took too long to complete.

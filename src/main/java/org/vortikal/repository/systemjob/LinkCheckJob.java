@@ -172,7 +172,7 @@ public class LinkCheckJob extends RepositoryJob {
         final AtomicLong n = new AtomicLong(0);
         
         try {
-            parser.parse(new InputStreamReader(linksStream.getStream()), new JSONDefaultHandler() {
+            parser.parse(new InputStreamReader(linksStream.getStream(), "utf-8"), new JSONDefaultHandler() {
                 String field = null;
                 
                 String url = null;
@@ -203,10 +203,14 @@ public class LinkCheckJob extends RepositoryJob {
                     if (value == null) {
                         return true;
                     }
+                    String v = value.toString();
+                    if (v.length() > 1500) {
+                        return true;
+                    }
                     if ("url".equals(this.field)) {
-                        this.url = value.toString();
+                        this.url = v;
                     } else if ("type".equals(this.field)){
-                        this.type = value.toString();
+                        this.type = v;
                     }
                     return true;
                 }

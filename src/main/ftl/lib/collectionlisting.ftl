@@ -179,7 +179,7 @@
                     </span>
                   </span>
                   <#if withForm>
-                    </td><td class="checkbox">&nbsp;
+                    </td><td class="checkbox"><input name="${child.URI?html}" type="checkbox"/>
                   </#if> 
                 </#if>
                 <#break>

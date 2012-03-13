@@ -8,11 +8,11 @@
 <script type="text/javascript"><!--
   if(vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp) {
     if(vrtxAdmin.isIETridentInComp) {
-      var outdatedBrowserText = '<@vrtx.msg code="msg.browser.msie.comp" />';   
+      var outdatedBrowserText = '${vrtx.getMsg("msg.browser.msie.comp")}';   
     } else if(vrtxAdmin.isIE7) {   
-      var outdatedBrowserText = '<@vrtx.msg code="msg.browser.msie.msie7" />';    
+      var outdatedBrowserText = '${vrtx.getMsg("msg.browser.msie.msie7")}';    
     } else if(vrtxAdmin.isIE6) {
-      var outdatedBrowserText = '<@vrtx.msg code="msg.browser.msie.msie6" />';
+      var outdatedBrowserText = '${vrtx.getMsg("msg.browser.msie.msie6")}';
     }
   }
 // -->

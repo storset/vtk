@@ -45,7 +45,8 @@
           <tr>
             <th id="vrtx-report-broken-links-web-page"><@vrtx.msg code="report.${report.reportname}.web-page" /></th>
             <th id="vrtx-report-broken-links-count"><@vrtx.msg code="report.${report.reportname}.count" /></th>
-            <th id="vrtx-report-broken-links"><@vrtx.msg code="report.${report.reportname}.these" /></th>
+            <th id="vrtx-report-broken-links"><@vrtx.msg code="report.${report.reportname}.list" /></th>
+            <th id="vrtx-report-broken-links"><@vrtx.msg code="report.${report.reportname}.last-modified" /></th>
             <th id="vrtx-report-last-modified"><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
           </tr>
         </thead>
@@ -64,7 +65,6 @@
             </#if>
           </#if>
           <#assign linkStatus = vrtx.propValue(item, 'link-status') />
-          <#assign lastModifiedTime = vrtx.propValue(item, 'lastModified') />
           
           <#assign rowType = "odd" />
           <#if (item_index % 2 == 0) >
@@ -92,11 +92,11 @@
           <#else>
             <#assign published  = " unpublished">
           </#if>
+          <#assign lastModified = vrtx.propValue(item, 'lastModified') />
    
           <tr class="${rowType}${firstLast}${published}${restricted}">
             <td class="vrtx-report-broken-links-web-page">
               <a href="${url?html}">${title?html}</a>
-              <#if linkStatus = 'AWAITING_LINKCHECK'>*<#-- currently being checked, be patient --></#if>
             </td>
             <td class="vrtx-report-broken-links-count">
               <#if brokenLinks?exists>
@@ -124,7 +124,13 @@
                 </ul>
               </#if>
             </td>
-            <td class="vrtx-report-last-modified">${lastModifiedTime?html}</td>
+            <td class="vrtx-report-last-modified">
+              <#if linkStatus = 'AWAITING_LINKCHECK'>
+                <@vrtx.msg code="report.broken-links.awaiting-linkcheck" />
+              <#else>
+              ${lastModified?html}
+              </#if>
+            </td>
           </tr>
         </#list>
         </tbody>

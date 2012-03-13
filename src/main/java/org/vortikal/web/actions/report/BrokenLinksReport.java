@@ -74,6 +74,10 @@ public class BrokenLinksReport extends DocumentReporter {
     private final static String   FILTER_READ_RESTRICTION_PARAM_NAME = "read-restriction";
     private final static String   FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE = "all";
     private final static String[] FILTER_READ_RESTRICTION_PARAM_VALUES = { FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE, "false", "true" };
+
+    private final static String   FILTER_LINK_TYPE_PARAM_NAME = "link-type";
+    private final static String[] FILTER_LINK_TYPE_PARAM_VALUES = { "anchor", "img", "other" };
+
     
     private final static String   FILTER_PUBLISHED_PARAM_NAME = "published";
     private final static String   FILTER_PUBLISHED_PARAM_DEFAULT_VALUE = "true";
@@ -88,11 +92,12 @@ public class BrokenLinksReport extends DocumentReporter {
         
         Map<String, List<FilterOption>> filters = new LinkedHashMap<String, List<FilterOption>>();
 
+        String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
         String published = request.getParameter(FILTER_PUBLISHED_PARAM_NAME);
         String readRestriction = request.getParameter(FILTER_READ_RESTRICTION_PARAM_NAME);
         
-        if(published == null) published = FILTER_PUBLISHED_PARAM_DEFAULT_VALUE;
-        if(readRestriction == null) readRestriction = FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE;
+        if (published == null) published = FILTER_PUBLISHED_PARAM_DEFAULT_VALUE;
+        if (readRestriction == null) readRestriction = FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE;
         
         // TODO: refactor method and generalize for 1..infinity filters
 
@@ -101,20 +106,32 @@ public class BrokenLinksReport extends DocumentReporter {
         for (String param : FILTER_READ_RESTRICTION_PARAM_VALUES) {
             URL filterOptionURL = new URL(reportURL);
             filterOptionURL.addParameter(FILTER_READ_RESTRICTION_PARAM_NAME, param);
-            filterOptionURL.addParameter(FILTER_PUBLISHED_PARAM_NAME, published); // Add published filter option 
+            filterOptionURL.addParameter(FILTER_PUBLISHED_PARAM_NAME, published);
+            filterOptionURL.addParameter(FILTER_LINK_TYPE_PARAM_NAME, linkType);
             filterReadRestrictionOptions.add(new FilterOption(param, filterOptionURL, param.equals(readRestriction) ? true : false));
         }
-
+        
+        List<FilterOption> filterLinkTypeOptions = new ArrayList<FilterOption>();
+        for (String param : FILTER_LINK_TYPE_PARAM_VALUES) {
+            URL filterOptionURL = new URL(reportURL);
+            filterOptionURL.addParameter(FILTER_LINK_TYPE_PARAM_NAME, param);
+            filterOptionURL.addParameter(FILTER_PUBLISHED_PARAM_NAME, published);
+            filterOptionURL.addParameter(FILTER_READ_RESTRICTION_PARAM_NAME, readRestriction);
+            filterLinkTypeOptions.add(new FilterOption(param, filterOptionURL, param.equals(linkType) ? true : false));
+        }
+        
         // Generate published filter
         List<FilterOption> filterPublishedOptions = new ArrayList<FilterOption>();
         for (String param : FILTER_PUBLISHED_PARAM_VALUES) {
             URL filterOptionURL = new URL(reportURL);
             filterOptionURL.addParameter(FILTER_PUBLISHED_PARAM_NAME, param);
-            filterOptionURL.addParameter(FILTER_READ_RESTRICTION_PARAM_NAME, readRestriction); // Add read restriction filter option 
+            filterOptionURL.addParameter(FILTER_READ_RESTRICTION_PARAM_NAME, readRestriction); 
+            filterOptionURL.addParameter(FILTER_LINK_TYPE_PARAM_NAME, linkType);
             filterPublishedOptions.add(new FilterOption(param, filterOptionURL, param.equals(published) ? true : false));
         }
         
         filters.put(FILTER_PUBLISHED_PARAM_NAME, filterPublishedOptions);
+        filters.put(FILTER_LINK_TYPE_PARAM_NAME, filterLinkTypeOptions);
         filters.put(FILTER_READ_RESTRICTION_PARAM_NAME, filterReadRestrictionOptions);
         
         result.put("filters", filters);
@@ -125,8 +142,22 @@ public class BrokenLinksReport extends DocumentReporter {
     @Override
     protected Search getSearch(String token, Resource currentResource, HttpServletRequest request) {
         OrQuery linkStatusCriteria = new OrQuery();
-        linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS", TermOperator.EQ))
-        .add(new PropertyTermQuery(this.linkStatusPropDef, "AWAITING_LINKCHECK", TermOperator.EQ));
+        String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
+        
+        if ("anchor".equals(linkType) || linkType == null) {
+            linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_ANCHOR", TermOperator.EQ));
+
+        } else if ("img".equals(linkType)) {
+            linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_IMG", TermOperator.EQ));
+
+        } else {
+            AndQuery and = new AndQuery();
+            and.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS", TermOperator.EQ));
+            and.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_ANCHOR", TermOperator.NE));
+            and.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_IMG", TermOperator.NE));
+            linkStatusCriteria.add(and);
+        }
+        linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "AWAITING_LINKCHECK", TermOperator.EQ));
 
         AndQuery topLevelQ = new AndQuery();
 
@@ -142,7 +173,7 @@ public class BrokenLinksReport extends DocumentReporter {
                 topLevelQ.add(aclReadForAllQ);
             }
         }
-
+        
         // Add clauses for limiting to current folder and link status criteria
         topLevelQ.add(new UriPrefixQuery(currentResource.getURI().toString())).add(linkStatusCriteria);
         
@@ -161,7 +192,7 @@ public class BrokenLinksReport extends DocumentReporter {
         // Published (true|false)
         String published = request.getParameter(FILTER_PUBLISHED_PARAM_NAME);
 
-        if(published != null && "false".equals(published)) {
+        if (published != null && "false".equals(published)) {
             // ONLY those NOT published
             PropertyTermQuery ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
             topLevelQ.add(ptq);

@@ -98,6 +98,9 @@ vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
 vrtxAdmin.supportsFileList = window.FileList;
 
 // Logging capabilities
+VrtxAdmin.prototype.isUndefined = function(variable) {
+  return typeof variable === "undefined";
+};
 vrtxAdmin.hasConsole = !vrtxAdmin.isUndefined(console);
 vrtxAdmin.hasConsoleLog = vrtxAdmin.hasConsole && console.log;
 vrtxAdmin.hasConsoleError = vrtxAdmin.hasConsole && console.error;
@@ -1984,10 +1987,6 @@ VrtxAdmin.prototype.outerHTML = function(selector, subselector) {
       return $('<div>').append($(selector).find(subselector).clone()).html();
     }
   }
-};
-
-VrtxAdmin.prototype.isUndefined = function(variable) {
-  return typeof variable === "undefined";
 };
 
 VrtxAdmin.prototype.log = function(options) {

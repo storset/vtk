@@ -1803,8 +1803,8 @@ function loadMultipleDocuments(appendParentLast, textfieldId, browse, addName, r
   }
 }
 
-// Stupid test to check if script is loaded from editor
-// UNSAVED_CHANGES_CONFIRMATION is defined in "structured-resource/editor.ftl"
+// Check if script is loaded from editor
+// UNSAVED_CHANGES_CONFIRMATION is defined in "structured-resource/editor.ftl" and "editor/editor.ftl"
 function requestFromEditor() {
   return !(typeof(UNSAVED_CHANGES_CONFIRMATION) === "undefined");
 }

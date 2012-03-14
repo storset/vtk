@@ -824,7 +824,7 @@ function interceptEnterKey(idOrClass) {
   });
 }
 
-function interceptEnterKeyAndReroute(txts, btn) {
+function interceptEnterKeyAndReroute(txt, btn) {
   $("#app-content").on("keypress", txt, function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       $(btn).click(); // click the associated button

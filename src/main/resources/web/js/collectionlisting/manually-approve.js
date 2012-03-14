@@ -169,7 +169,7 @@ function retrieveResources(serviceUri, locations, aggregatedlocations) {
         
         generateManuallyApprovedContainer(data);
         // TODO !spageti && !run twice
-        if (!vrtxAdmin.isUndefined(UNSAVED_CHANGES_CONFIRMATION)) {
+        if (vrtxAdmin.isDefined(UNSAVED_CHANGES_CONFIRMATION)) {
           storeInitPropValues();
         }
       } else {
@@ -308,7 +308,7 @@ function generateManuallyApprovedContainer(resources) {
         $("#manually-approve-container #approve-page-" + pages).hide();
       }
       // TODO !spageti && !run twice
-     if (!vrtxAdmin.isUndefined(UNSAVED_CHANGES_CONFIRMATION)) {
+     if (vrtxAdmin.isDefined(UNSAVED_CHANGES_CONFIRMATION)) {
        storeInitPropValues();
      }
     }

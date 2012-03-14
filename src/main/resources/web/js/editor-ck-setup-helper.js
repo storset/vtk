@@ -331,7 +331,7 @@ function unsavedChangesInEditor() {
   // Textareas (CK->checkDirty())
   var currentStateOfTextFields = contents.find("textarea");
   for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
-    if (!vrtxAdmin.isUndefined(CKEDITOR)) {
+    if (vrtxAdmin.isDefined(CKEDITOR)) {
       if (getCkInstance(currentStateOfTextFields[i].name)) {
         if (getCkInstance(currentStateOfTextFields[i].name).checkDirty()) {
           return true  // unsaved textarea

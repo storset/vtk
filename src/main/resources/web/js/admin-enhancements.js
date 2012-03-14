@@ -96,11 +96,11 @@ vrtxAdmin.isAndroid = /android/.test(ua); // http://www.gtrifonov.com/2011/04/15
 vrtxAdmin.isMobileWebkitDevice = (vrtxAdmin.isIPhone || vrtxAdmin.isIPad || vrtxAdmin.isAndroid);
 vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
 vrtxAdmin.supportsFileList = window.FileList;
-VrtxAdmin.prototype.isUndefined = function(variable) {
-  return typeof variable === "undefined";
+VrtxAdmin.prototype.isDefined = function(variable) {
+  return typeof variable !== "undefined";
 };
 // Logging capabilities
-vrtxAdmin.hasConsole = !vrtxAdmin.isUndefined(console);
+vrtxAdmin.hasConsole = vrtxAdmin.isDefined(console);
 vrtxAdmin.hasConsoleLog = vrtxAdmin.hasConsole && console.log;
 vrtxAdmin.hasConsoleError = vrtxAdmin.hasConsole && console.error;
 
@@ -548,7 +548,7 @@ $(document).ready(function () {
       vrtxAdmin.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
           $("#contents").html($(results).find("#contents").html());
-          if(!vrtxAdmin.isUndefined(versionsRestoredInfoMsg)) {         
+          if(vrtxAdmin.isDefined(versionsRestoredInfoMsg)) {         
             var revisionNr = url.substring(url.lastIndexOf("=")+1, url.length);
             var versionsRestoredInfoMsgTmp = versionsRestoredInfoMsg.replace("X", revisionNr);
             vrtxAdmin.displayInfoMsg(versionsRestoredInfoMsgTmp);
@@ -570,7 +570,7 @@ $(document).ready(function () {
         success: function (results, status, resp) {
           $("#contents").html($(results).find("#contents").html());
           $("#app-tabs").html($(results).find("#app-tabs").html());
-          if(!vrtxAdmin.isUndefined(versionsMadeCurrentInfoMsg)) {
+          if(vrtxAdmin.isDefined(versionsMadeCurrentInfoMsg)) {
             vrtxAdmin.displayInfoMsg(versionsMadeCurrentInfoMsg);
           }
         }
@@ -598,10 +598,10 @@ $(document).ready(function () {
       tb_show(ajaxSaveText + "...", 
               "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
               false);
-      if(!vrtxAdmin.isUndefined(vrtxImageEditor) && vrtxImageEditor.save) {
+      if(vrtxAdmin.isDefined(vrtxImageEditor) && vrtxImageEditor.save) {
         vrtxImageEditor.save();
       }
-      if(!vrtxAdmin.isUndefined(performSave)) {      
+      if(vrtxAdmin.isDefined(performSave)) {      
         performSave();
       }
       $("#editor").ajaxSubmit({
@@ -609,13 +609,13 @@ $(document).ready(function () {
           var endTime = new Date() - startTime;
           var waitMinMs = 800;
           if(endTime >= waitMinMs) { // Wait minimum 0.8s
-            if(!vrtxAdmin.isUndefined(initDatePicker)) {
+            if(vrtxAdmin.isDefined(initDatePicker)) {
               initDatePicker(datePickerLang);
             }
             tb_remove();
           } else {
             setTimeout(function() {
-               if(!vrtxAdmin.isUndefined(initDatePicker)) {
+               if(vrtxAdmin.isDefined(initDatePicker)) {
                  initDatePicker(datePickerLang);
                }
                tb_remove();
@@ -782,7 +782,7 @@ function initFileUpload() {
       var files = this.files;
       if (files.length > 1) {
         var tailMsg = "files selected";
-        if (!vrtxAdmin.isUndefined(fileUploadMoreFilesTailMessage)) { 
+        if (vrtxAdmin.isDefined(fileUploadMoreFilesTailMessage)) { 
           tailMsg = fileUploadMoreFilesTailMessage;
         }
         filePath = files.length + " " + tailMsg;
@@ -802,7 +802,7 @@ function initFileUpload() {
   }
   if (supportsMultipleAttribute(document.getElementById("file"))) {
     inputFile.attr("multiple", "multiple");
-    if(!vrtxAdmin.isUndefined(multipleFilesInfoText)) {
+    if(vrtxAdmin.isDefined(multipleFilesInfoText)) {
       $("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-textfield");
     }
   }
@@ -866,7 +866,7 @@ function logoutButtonAsLink() {
 function collectionListingInteraction() {
   if(!$("#directory-listing").length) return;
   
-  if(!vrtxAdmin.isUndefined(moveUncheckedMessage)) { 
+  if(vrtxAdmin.isDefined(moveUncheckedMessage)) { 
     var options = {
       formName: "collectionListingForm",
       btnId: "collectionListing\\.action\\.move-resources",
@@ -875,7 +875,7 @@ function collectionListingInteraction() {
     };
     placeCopyMoveButtonInActiveTab(options);
   }
-  if(!vrtxAdmin.isUndefined(copyUncheckedMessage)) {
+  if(vrtxAdmin.isDefined(copyUncheckedMessage)) {
     options = {
       formName: "collectionListingForm",
       btnId: "collectionListing\\.action\\.copy-resources",
@@ -1079,7 +1079,7 @@ function checkStillAdmin(selector) {
   doReloadFromServer = false;
   if(stillAdmin == "false") {
     var msg = "Are you sure you want to remove all admin permissions for yourself?";
-    if(!vrtxAdmin.isUndefined(removeAdminPermissionsMsg)) {
+    if(vrtxAdmin.isDefined(removeAdminPermissionsMsg)) {
       msg = removeAdminPermissionsMsg;
     }
     var confirmRemoveAllAdmin = confirm(msg);
@@ -1611,7 +1611,7 @@ VrtxAdmin.prototype.getHtmlAsTextAsync = function getHtmlAsTextAsync(url, insert
 
 VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function(inputFields) {
   var dataStringChunk = "";
-  if(!vrtxAdmin.isUndefined(inputFields)) {
+  if(vrtxAdmin.isDefined(inputFields)) {
     for (i = inputFields.length; i--;) {
       dataStringChunk += '&' + $(inputFields[i]).attr("name")
                        + '=' + $(inputFields[i]).val();
@@ -1800,7 +1800,7 @@ function loadMultipleDocuments(appendParentLast, textfieldId, browse, addName, r
   }
   
   // TODO !spageti && !run twice
-  if (!vrtxAdmin.isUndefined(UNSAVED_CHANGES_CONFIRMATION)) {
+  if (vrtxAdmin.isDefined(UNSAVED_CHANGES_CONFIRMATION)) {
     storeInitPropValues();
   }
 }

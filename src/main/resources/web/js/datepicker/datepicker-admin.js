@@ -18,7 +18,7 @@ function initDatePicker(language) {
   }
 
   // TODO !spageti && !run twice
-  if (!vrtxAdmin.isUndefined(UNSAVED_CHANGES_CONFIRMATION)) {
+  if (vrtxAdmin.isDefined(UNSAVED_CHANGES_CONFIRMATION)) {
     storeInitPropValues();
   }
 
@@ -122,7 +122,7 @@ function saveDateAndTimeFields() {
     }
 
     // Hack fix for editor.. .must be removed!!!
-    if (!vrtxAdmin.isUndefined(UNSAVED_CHANGES_CONFIRMATION)) {
+    if (vrtxAdmin.isDefined(UNSAVED_CHANGES_CONFIRMATION)) {
        $("#" + fieldName + "-hours").parent().remove();
        $("#" + fieldName + "-minutes").parent().remove();
        $("#" + fieldName + "-date").parent().remove();

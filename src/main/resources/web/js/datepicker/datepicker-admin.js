@@ -122,7 +122,7 @@ function saveDateAndTimeFields() {
     }
 
     // Hack fix for editor.. .must be removed!!!
-    if (vrtxAdmin.isDefined(UNSAVED_CHANGES_CONFIRMATION)) {
+    if (typeof UNSAVED_CHANGES_CONFIRMATION !== "undefined") {
        $("#" + fieldName + "-hours").parent().remove();
        $("#" + fieldName + "-minutes").parent().remove();
        $("#" + fieldName + "-date").parent().remove();

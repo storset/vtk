@@ -185,44 +185,32 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
     });
 
     // TODO: combine with keydown for resource-height
-    $("#app-content").delegate("#resource-width", "keydown", function (e) {
+    $("#app-content").delegate("#resource-width, #resource-height", "keydown", function (e) {
       if (e.which == 38 || e.which == 40) {
-        var w = parseInt($.trim($("#resource-width").val()));
-        if (e.which == 38) {
+        if($(this).attr("id") == "resource-width") {
+          var w = parseInt($.trim($("#resource-width").val()));
+          if (e.which == 38) {
           w++;
-        } else {
-          if (w > 2) {
-            w--;
+          } else {
+            if (w > 2) {
+              w--;
+            }
           }
-        }
-        if (editor.keepAspectRatio) {
-          h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
-        }
-        if ((w / editor.cropWidth) <= 1) {
-          editor.lastWidth = w;
-          editor.lastHeight = h;
-          $("#resource-width").val(w);
-          $("#resource-height").val(h);
-          editor.scale(w, h);
-        }
-      } else if (e.which == 13) {
-        $(this).trigger("change");
-        return false;
-      }
-    });
-
-    $("#app-content").delegate("#resource-height", "keydown", function (e) {
-      if (e.which == 38 || e.which == 40) {
-        var h = parseInt($.trim($(this).val()));
-        if (e.which == 38) {
-          h++;
-        } else {
-          if (h > 2) {
-            h--;
+          if (editor.keepAspectRatio) {
+            h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
           }
-        }
-        if (editor.keepAspectRatio) {
-          w = Math.round(h * (editor.aspectRatioOver / editor.aspectRatioUnder));
+        } else {
+          var h = parseInt($.trim($(this).val()));
+          if (e.which == 38) {
+            h++;
+          } else {
+            if (h > 2) {
+              h--;
+            }
+          }
+          if (editor.keepAspectRatio) {
+            w = Math.round(h * (editor.aspectRatioOver / editor.aspectRatioUnder));
+          }
         }
         if ((w / editor.cropWidth) <= 1) {
           editor.lastWidth = w;

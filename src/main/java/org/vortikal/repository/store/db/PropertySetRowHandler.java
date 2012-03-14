@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.store.db;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -45,7 +44,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.store.PropertySetHandler;
 import org.vortikal.security.Principal;
@@ -326,13 +324,8 @@ class PropertySetRowHandler implements RowHandler {
             SqlDaoUtils.PropHolder holder = new SqlDaoUtils.PropHolder();
             holder.namespaceUri = (String)row.get("namespace");
             holder.name = (String)row.get("name");
-            holder.resourceId = ((Integer)row.get("id")).intValue();
-            Object isBinary = row.get("binary");
-            if (isBinary instanceof BigDecimal) {
-                holder.binary = BigDecimal.ONE.equals(isBinary);
-            } else {
-                holder.binary = Integer.valueOf(1).equals(isBinary);
-            }
+            holder.resourceId = (Integer)row.get("id");
+            holder.binary = (Boolean)row.get("binary");
         
             if (holder.name != null) { 
                 List<Object> values = propMap.get(holder);

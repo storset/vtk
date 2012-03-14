@@ -41,6 +41,7 @@ public class BooleanCharTypeHandlerCallback implements TypeHandlerCallback {
     private static final String TRUE = "Y"; 
     private static final String FALSE = "N"; 
 
+    @Override
     public Object getResult(ResultGetter getter) throws SQLException { 
         String value = getter.getString();
         if (TRUE.equals(value)) {
@@ -54,6 +55,7 @@ public class BooleanCharTypeHandlerCallback implements TypeHandlerCallback {
         }
     } 
 
+    @Override
     public void setParameter(ParameterSetter setter, Object parameter) throws SQLException { 
         Boolean value = ((Boolean) parameter).booleanValue();
         if (value) {
@@ -63,6 +65,7 @@ public class BooleanCharTypeHandlerCallback implements TypeHandlerCallback {
         }
     } 
 
+    @Override
     public Object valueOf(String s) { 
         if (TRUE.equals(s)) {
             return Boolean.TRUE;

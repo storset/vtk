@@ -46,7 +46,8 @@
     <result property="name" column="name" />
     <result property="namespaceUri" column="name_space" />
     <result property="value" column="value" />
-    <result property="binary" column="is_binary" />
+    <result property="binary" column="is_binary"
+            typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>
 
 
@@ -91,7 +92,8 @@
     <result property="name" column="name" />
     <result property="namespace" column="name_space" />
     <result property="value" column="value" />
-    <result property="binary" column="is_binary" />
+    <result property="binary" column="is_binary"
+            typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>
   
   <resultMap id="ResourceAndExtraPropertiesWithAncestorIds" class="java.util.HashMap"
@@ -424,7 +426,7 @@
   <select id="loadPropertiesForResource" parameterClass="int" resultMap="Property">
     select
       p.*,
-      case when binary_content is null then 0 else 1 end as is_binary 
+      case when binary_content is null then 'N' else 'Y' end as is_binary
     from extra_prop_entry p
     where resource_id = #value#
     order by p.extra_prop_entry_id
@@ -435,7 +437,7 @@
           resultMap="Property">
     select
       p.*,
-      case when binary_content is null then 0 else 1 end as is_binary
+      case when binary_content is null then 'N' else 'Y' end as is_binary
     from extra_prop_entry p
     where p.resource_id in
       (select resource_id from vortex_resource
@@ -918,7 +920,7 @@
     p.name_space,
     p.name,
     p.value,
-    case when p.binary_content is null then 0 else 1 end as is_binary
+    case when p.binary_content is null then 'N' else 'Y' end as is_binary
     from vortex_resource r
     left outer join extra_prop_entry p on r.resource_id = p.resource_id
     where r.uri like '/%'
@@ -933,7 +935,7 @@
            p.name_space,
            p.name,
            p.value,
-           case when p.binary_content is null then 0 else 1 end as is_binary
+           case when p.binary_content is null then 'N' else 'Y' end as is_binary
            from vortex_resource r
     left outer join extra_prop_entry p  on r.resource_id = p.resource_id
     where r.uri = #uri# or r.uri like #uriWildcard#
@@ -947,7 +949,7 @@
            p.name_space,
            p.name,
            p.value,
-           case when p.binary_content is null then 0 else 1 end as is_binary
+           case when p.binary_content is null then 'N' else 'Y' end as is_binary
        from vortex_tmp t, vortex_resource r
        left outer join extra_prop_entry p on r.resource_id = p.resource_id
        where r.uri = t.uri AND t.session_id=#value#

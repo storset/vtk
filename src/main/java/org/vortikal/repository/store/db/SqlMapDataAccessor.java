@@ -31,7 +31,6 @@
 package org.vortikal.repository.store.db;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -63,7 +62,6 @@ import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.BinaryValue;
-import org.vortikal.repository.resourcetype.BufferedBinaryValue;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -79,9 +77,8 @@ import com.ibatis.sqlmap.client.SqlMapExecutor;
 /**
  * An iBATIS SQL maps implementation of the DataAccessor interface.
  * 
- * What The Fuck
- * Our DataAccessor interface declares our own DataAccessException type as thrown by all methods,
- * but THIS CLASS IN PRACTICE MOSTLY THROWS Spring's DataAccessException. What a mess.
+ * XXX XXX XXX Our DataAccessor interface declares our own DataAccessException type as thrown by all methods,
+ *             but THIS CLASS IN PRACTICE MOSTLY THROWS Spring's DataAccessException. What a mess.
  * 
  */
 public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements DataAccessor {
@@ -1039,12 +1036,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             prop.namespaceUri = (String) propEntry.get("namespaceUri");
             prop.name = (String) propEntry.get("name");
             prop.resourceId = (Integer) propEntry.get("resourceId");
-            Object isBinary = propEntry.get("binary");
-            if (isBinary instanceof BigDecimal) {
-                prop.binary = BigDecimal.ONE.equals(isBinary);
-            } else {
-                prop.binary = Integer.valueOf(1).equals(isBinary);
-            }
+            prop.binary = (Boolean)propEntry.get("binary");
             
             List<Object> values = propValuesMap.get(prop);
             if (values == null) {

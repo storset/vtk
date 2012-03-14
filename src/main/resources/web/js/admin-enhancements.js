@@ -188,7 +188,7 @@ $(window).resize(function() {
 $(document).ready(function () {   
   var startReadyTime = +new Date();
 
-  var whereAmI = $("body").attr("id");
+  var bodyId = $("body").attr("id");
 
   // Buttons into links
   logoutButtonAsLink();
@@ -328,7 +328,7 @@ $(document).ready(function () {
     });
   }
 
-  if(whereAmI == "vrtx-manage-collectionlisting") {
+  if(bodyId == "vrtx-manage-collectionlisting") {
     var tabMenuServices = ["fileUploadService",
                            "createDocumentService",
                            "createCollectionService"];
@@ -386,7 +386,7 @@ $(document).ready(function () {
   }
 
   // Permission privilegie forms (READ, READ_WRITE, ALL)
-  if(whereAmI == "vrtx-permissions") {
+  if(bodyId == "vrtx-permissions") {
     var privilegiesPermissions = ["read",
                                   "read-write",
                                   "all"];
@@ -452,7 +452,7 @@ $(document).ready(function () {
   }
   
   // About property forms
-  if(whereAmI == "vrtx-about") { // turn of tmp. in IE7
+  if(bodyId == "vrtx-about") { // turn of tmp. in IE7
     if(!vrtxAdmin.isIE7) {
       var propsAbout = [
         "contentLocale",
@@ -516,7 +516,7 @@ $(document).ready(function () {
     e.preventDefault();
   });
  
-  if(whereAmI == "vrtx-revisions") {
+  if(bodyId == "vrtx-revisions") {
     $("#contents").delegate(".vrtx-revisions-delete-form input[type=submit]", "click", function(e) { // Delete revisions
       var form = $(this).closest("form")
       var url = form.attr("action");
@@ -630,7 +630,7 @@ $(document).ready(function () {
   }
   
   // Editor
-  if(whereAmI == "vrtx-editor") {
+  if(bodyId == "vrtx-editor") {
     autocompleteUsernames(".vrtx-autocomplete-username");
     autocompleteTags(".vrtx-autocomplete-tag");
 
@@ -805,7 +805,7 @@ function initFileUpload() {
   }
 }
 
-// Both methods taken from: http://miketaylr.com/code/input-type-attr.html (MIT license)
+// Credits: http://miketaylr.com/code/input-type-attr.html (MIT license)
 function supportsMultipleAttribute(inputfield) {
   return (!!(inputfield.multiple === false) && !!(inputfield.multiple !== "undefined"));
 }
@@ -1059,7 +1059,7 @@ function initSimplifiedPermissionForm() {
 function toggleConfigCustomPermissions(selectorClass) {
   var customInput = $("." + selectorClass + " ul.shortcuts label[for=custom] input");
   if (!customInput.is(":checked") && customInput.length) {
-      $("." + selectorClass).find(".principalList").hide(0);
+    $("." + selectorClass).find(".principalList").hide(0);
   }
   $("#app-content").delegate("." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
     $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideDown);

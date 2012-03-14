@@ -48,7 +48,7 @@
       }
     });
 
-    $(wrapper).delegate("ul li a", "mouseover mouseout click", function (e) {
+    $(wrapper).on("mouseover mouseout click", "ul li a", function (e) {
       var h = $(this);
       if (e.type == "mouseover") {
         if (!h.hasClass("active")) {
@@ -69,15 +69,15 @@
     });
 
     // TODO: how to delegate events to two seperate DOM-elements
-    $(wrapper).delegate("a.next", "click mouseover mouseout", function (e) {
+    $(wrapper).on("click mouseover mouseout", "a.next", function (e) {
       next(e);
     });
 
-    $(wrapper).delegate(container + "-link", "click mouseover mouseout", function (e) {
+    $(wrapper).on("click mouseover mouseout", container + "-link", function (e) {
       next(e);
     });
 
-    $(wrapper).delegate("a.prev", "click mouseover mouseout", function (e) {
+    $(wrapper).on("click mouseover mouseout", "a.prev", function (e) {
       if (e.type == "mouseover") {
         fadeMultiple([wrapper + " a.next span",
                                 wrapper + " a.prev span"], settings.fadeNavInOutTime, 0.2);

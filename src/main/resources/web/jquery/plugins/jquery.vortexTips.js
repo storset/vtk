@@ -26,7 +26,7 @@
     var tipText;
     var fadeOutTimer;
 
-    $(this).delegate(subSelector, "mouseenter mouseleave", function (e) {
+    $(this).on("mouseenter mouseleave", subSelector, function (e) {
       if (e.type == "mouseenter") {
         var link = $(this);
         if (typeof linkTriggeredMouseEnter !== "undefined" && linkTriggeredMouseEnter) {

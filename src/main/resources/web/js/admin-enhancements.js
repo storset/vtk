@@ -232,7 +232,7 @@ $(document).ready(function () {
   });
   
   // Ignore all AJAX errors on tab change
-  $("#app-tabs").delegate("li a", "click", function(e) {
+  $("#app-tabs").on("click", "li a", function(e) {
     vrtxAdmin.ignoreAjaxErrors = true;
   });
   
@@ -496,7 +496,7 @@ $(document).ready(function () {
       }
     }
     // Urchin stats
-    $("#app-content").delegate("#vrtx-resource-visit-tab-menu a", "click", function(e) {
+    $("#app-content").on("click", "#vrtx-resource-visit-tab-menu a", function(e) {
       $("#vrtx-resource-visit-wrapper").append("<span id='urchin-loading'></span>");
       $("#vrtx-resource-visit-chart").remove();
       $("#vrtx-resource-visit-stats").remove();
@@ -506,20 +506,18 @@ $(document).ready(function () {
           $("#vrtx-resource-visit-wrapper").html("<div id='vrtx-resource-visit'>" + $(results).html() + "</div>");
         }
       });
-      e.stopPropagation();
       e.preventDefault();
     });
   }
 
   // Versioning
-  $("#app-content").delegate("a.vrtx-revision-view", "click", function(e) {
+  $("#app-content").on("click", "a.vrtx-revision-view", function(e) {
     var openedRevision = openVersioning(this.href, 1020, 800);
-    e.stopPropagation();
     e.preventDefault();
   });
  
   if(bodyId == "vrtx-revisions") {
-    $("#contents").delegate(".vrtx-revisions-delete-form input[type=submit]", "click", function(e) { // Delete revisions
+    $("#contents").on("click", ".vrtx-revisions-delete-form input[type=submit]", function(e) { // Delete revisions
       var form = $(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
@@ -537,10 +535,9 @@ $(document).ready(function () {
           });
         }
       });
-      e.stopPropagation();
       e.preventDefault();
     });
-    $("#contents").delegate(".vrtx-revisions-restore-form input[type=submit]", "click", function(e) { // Restore revisions
+    $("#contents").on("click", ".vrtx-revisions-restore-form input[type=submit]", function(e) { // Restore revisions
       var form = $(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
@@ -559,10 +556,9 @@ $(document).ready(function () {
           $("td.vrtx-revisions-buttons-column input").removeAttr("disabled"); // Unlock buttons
         }
       });
-      e.stopPropagation();
       e.preventDefault();
     });
-    $("#contents").delegate("#vrtx-revisions-make-current-form input[type=submit]", "click", function(e) { // Make working copy into current version
+    $("#contents").on("click", "#vrtx-revisions-make-current-form input[type=submit]", function(e) { // Make working copy into current version
       var form = $(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
@@ -575,7 +571,6 @@ $(document).ready(function () {
           }
         }
       });
-      e.stopPropagation();
       e.preventDefault();
     });
   }
@@ -587,7 +582,7 @@ $(document).ready(function () {
         $(".vrtx-focus-button:last input").click();
       }
     });
-    $("#app-content").delegate(".vrtx-focus-button:last input", "click", function(e) {
+    $("#app-content").on("click", ".vrtx-focus-button:last input", function(e) {
       EDITOR_SAVE_BUTTON_NAME = $(this).attr("name");
       if(typeof CKEDITOR !== "undefined") { 
         for (instance in CKEDITOR.instances) {
@@ -645,7 +640,7 @@ $(document).ready(function () {
       $("#vrtx-resource\\.manually-approve-from").slideUp(0, "linear");
     }
  
-    $("#app-content").delegate("#resource\\.display-aggregation\\.true", "click", function() {
+    $("#app-content").on("click", "#resource\\.display-aggregation\\.true", function() {
       if(!$(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
         $(".aggregation-row").remove();
         $("#resource\\.aggregation").val("");
@@ -653,7 +648,7 @@ $(document).ready(function () {
       $("#vrtx-resource\\.aggregation").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
     });
 
-    $("#app-content").delegate("#resource\\.display-manually-approved\\.true", "click", function() {
+    $("#app-content").on("click", "#resource\\.display-manually-approved\\.true", function() {
       if(!$(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
         $(".manually-approve-from-row").remove();
         $("#resource\\.manually-approve-from").val("");
@@ -680,7 +675,7 @@ $(document).ready(function () {
     }
 
     // Add save/help when CK is maximized
-    $("#app-content").delegate(".cke_button_maximize.cke_on", "click", function(e) {	
+    $("#app-content").on("click", ".cke_button_maximize.cke_on", function(e) {	
       var stickyBar = $("#vrtx-editor-title-submit-buttons");			
       stickyBar.hide();
     	 
@@ -710,7 +705,7 @@ $(document).ready(function () {
       }
     }); 
 
-    $("#app-content").delegate(".cke_button_maximize.cke_off", "click", function(e) {	
+    $("#app-content").on("click", ".cke_button_maximize.cke_off", function(e) {	
       var stickyBar = $("#vrtx-editor-title-submit-buttons");			
       stickyBar.show();
       var ckInject = $(this).closest(".cke_skin_kama").find(".ck-injected-save-help").hide();
@@ -822,15 +817,15 @@ function supportsReadOnly(inputfield) {
 \*-------------------------------------------------------------------*/
 
 function interceptEnterKey(idOrClass) {
-  $("#app-content").delegate("form input" + idOrClass, "keypress", function (e) {
+  $("#app-content").on("keypress", "form input" + idOrClass, function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       e.preventDefault(); // cancel the default browser click
     }
   });
 }
 
-function interceptEnterKeyAndReroute(txt, btn) {
-  $("#app-content").delegate(txt, "keypress", function (e) {
+function interceptEnterKeyAndReroute(txts, btn) {
+  $("#app-content").on("keypress", txt, function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       $(btn).click(); // click the associated button
        e.preventDefault();
@@ -896,7 +891,7 @@ function initializeCheckUncheckAll() {
   var tdCheckbox = $("td.checkbox");
   if(tdCheckbox.length && !$("form#editor").length) {
     $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
-    $("#directory-listing").delegate("th.checkbox input", "click", function() {
+    $("#directory-listing").on("click", "th.checkbox input", function() {
       var checkAll = this.checked;
       var checkboxes = $("td.checkbox input");
       var funcClassAddRemover = classAddRemover; 
@@ -914,7 +909,7 @@ function initializeCheckUncheckAll() {
         }
       }
     });
-    $("#directory-listing").delegate("td.checkbox input", "click", function() {
+    $("#directory-listing").on("click", "td.checkbox input", function() {
       var checkbox = this;
       var isChecked = checkbox.checked;
       var tr = $(checkbox).closest("tr");
@@ -983,7 +978,6 @@ function placeDeleteButtonInActiveTab() {
         $('#collectionListing\\.action\\.delete-resources').click();
       }
     }
-    e.stopPropagation(); 
     e.preventDefault();
   });
 }
@@ -1002,7 +996,6 @@ function placeRecoverButtonInActiveTab() {
     } else {
       $('.recoverResource').click();
     }
-    e.stopPropagation(); 
     e.preventDefault();
   });
 }
@@ -1034,7 +1027,6 @@ function placeDeletePermanentButtonInActiveTab() {
         $('.deleteResourcePermanent').click();
       }
     }
-    e.stopPropagation(); 
     e.preventDefault();
   });
 }
@@ -1064,13 +1056,11 @@ function toggleConfigCustomPermissions(selectorClass) {
   if (!customInput.is(":checked") && customInput.length) {
     $("." + selectorClass).find(".principalList").hide(0);
   }
-  $("#app-content").delegate("." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
+  $("#app-content").on("click", "." + selectorClass + " ul.shortcuts label[for=custom]", function (e) {
     $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideDown);
-    e.stopPropagation(); 
   });
-  $("#app-content").delegate("." + selectorClass + " ul.shortcuts label:not([for=custom])", "click", function (e) {
+  $("#app-content").on("click", "." + selectorClass + " ul.shortcuts label:not([for=custom])", function (e) {
     $(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideUp);
-    e.stopPropagation(); 
   });
 }
 
@@ -1136,10 +1126,9 @@ function dropdownLanguageMenu(selector) {
 
   languageMenu.addClass("dropdown-shortcut-menu-container");
 
-  $("body").delegate(selector + "-header", "click", function (e) {
+  $("body").on("click", selector + "-header", function (e) {
     $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
     $(this).next(".dropdown-shortcut-menu-container").not(":visible").slideDown(vrtxAdmin.transitionDropdownSpeed, "swing");
-    e.stopPropagation();
     e.preventDefault();
   });
 }
@@ -1262,7 +1251,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
   var args = arguments, // this function
       vrtxAdm = this; // use prototypal hierarchy 
 
-  $("#app-content").delegate(options.selector, "click", function (e) {
+  $("#app-content").on("click", options.selector, function (e) {
   
     var url = $(this).attr("href") || $(this).closest("form").attr("action");
     if(location.protocol == "http:" && url.indexOf("https://") != -1) {
@@ -1345,8 +1334,6 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
         }
       }
     });
-
-    e.stopPropagation(); 
     e.preventDefault();
   });
 };
@@ -1414,7 +1401,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
   var args = arguments,
       vrtxAdm = this;   
       
-  $("#app-content").delegate(options.selector, "click", function (e) {
+  $("#app-content").on("click", options.selector, function (e) {
   
     var selector = options.selector,
         isReplacing = options.isReplacing,
@@ -1438,7 +1425,6 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
         $(".expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
           $(this).remove();
         });
-        e.stopPropagation(); 
         e.preventDefault();
       } else {
         return;
@@ -1487,7 +1473,6 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
           }
         });
       }
-      e.stopPropagation(); 
       e.preventDefault();
     }
   });
@@ -1504,7 +1489,7 @@ VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selec
   var args = arguments,
       vrtxAdm = this;
 
-  $("#app-content").delegate(selector, "click", function (e) {
+  $("#app-content").on("click", selector, function (e) {
     var link = $(this);
     var form = link.closest("form");
     var url = form.attr("action");
@@ -1519,8 +1504,6 @@ VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selec
         initSimplifiedPermissionForm();
       }
     });
-
-    e.stopPropagation(); 
     e.preventDefault();
   });
 };
@@ -1537,7 +1520,7 @@ VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, u
   var args = arguments;
   var vrtxAdm = this;
 
-  $("#app-content").delegate(selector + " input[type=submit]", "click", function (e) {
+  $("#app-content").on("click", selector + " input[type=submit]", function (e) {
     var link = $(this);
     var form = link.closest("form");
     var url = form.attr("action");
@@ -1562,8 +1545,6 @@ VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, u
         }
       }
     });
-
-    e.stopPropagation(); 
     e.preventDefault();
   });
 };

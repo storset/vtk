@@ -49,21 +49,20 @@
       $(document).ready(function() {
 
         // Sticky bar shortcuts
-        $("#app-content").delegate("#vrtx-save-view-shortcut", "click", function(e) { $("#saveAndViewButton").click(); e.preventDefault(); });
-        $("#app-content").delegate("#vrtx-save-copy-shortcut", "click", function(e) { $("#saveCopyButton").click();    e.preventDefault(); });
-        $("#app-content").delegate("#vrtx-save-shortcut",      "click", function(e) { $("#saveButton").click();        e.preventDefault(); });
-        $("#app-content").delegate("#vrtx-cancel-shortcut",    "click", function(e) { $("#cancel").click();            e.preventDefault(); });
+        $("#app-content").on("click", "#vrtx-save-view-shortcut", function(e) { $("#saveAndViewButton").click(); e.preventDefault(); });
+        $("#app-content").on("click", "#vrtx-save-copy-shortcut", function(e) { $("#saveCopyButton").click();    e.preventDefault(); });
+        $("#app-content").on("click", "#vrtx-save-shortcut",      function(e) { $("#saveButton").click();        e.preventDefault(); });
+        $("#app-content").on("click", "#vrtx-cancel-shortcut",    function(e) { $("#cancel").click();            e.preventDefault(); });
 
-        $("#editor").delegate("#cancel", "click", function(e) {
+        $("#editor").on("click", "#cancel", function(e) {
           performSave();
         });
         
-        $("#editor").delegate("#saveAndViewButton, #saveCopyButton", "click", function(e) {
+        $("#editor").on("click", "#saveAndViewButton, #saveCopyButton", function(e) {
           performSave();
           if(vrtxAdmin.isDefined(vrtxImageEditor) && vrtxImageEditor.save && !vrtxImageEditor.savedImage) {
             vrtxImageEditor.save($(this).attr("id"));
             e.preventDefault();
-            e.stopPropagation();
           }
         });
         

@@ -26,15 +26,15 @@
     $(document).ready(function() {
 
       // Sticky bar shortcuts
-      $("#app-content").delegate("#vrtx-save-view-shortcut",            "click", function(e) { $("#saveAndViewButton").click();       e.preventDefault(); });
-      $("#app-content").delegate("#vrtx-save-shortcut",                 "click", function(e) { $("#updateAction").click();            e.preventDefault(); });
-      $("#app-content").delegate("#vrtx-cancel-shortcut",               "click", function(e) { $("#cancelAction").click();            e.preventDefault(); });  
-      $("#app-content").delegate("#vrtx-save-working-copy-shortcut",    "click", function(e) { $("#saveWorkingCopyAction").click();   e.preventDefault(); });    
-      $("#app-content").delegate("#vrtx-make-public-version-shortcut",  "click", function(e) { $("#makePublicVersionAction").click(); e.preventDefault(); });   
-      $("#app-content").delegate("#vrtx-delete-working-copy-shortcut",  "click", function(e) { $("#deleteWorkingCopyAction").click(); e.preventDefault(); });   
-      $("#app-content").delegate("#vrtx-save-as-working-copy-shortcut", "click", function(e) { $("#saveWorkingCopyAction").click();   e.preventDefault(); });    
+      $("#app-content").on("click", "#vrtx-save-view-shortcut",            function(e) { $("#saveAndViewButton").click();       e.preventDefault(); });
+      $("#app-content").on("click", "#vrtx-save-shortcut",                 function(e) { $("#updateAction").click();            e.preventDefault(); });
+      $("#app-content").on("click", "#vrtx-cancel-shortcut",               function(e) { $("#cancelAction").click();            e.preventDefault(); });  
+      $("#app-content").on("click", "#vrtx-save-working-copy-shortcut",    function(e) { $("#saveWorkingCopyAction").click();   e.preventDefault(); });    
+      $("#app-content").on("click", "#vrtx-make-public-version-shortcut",  function(e) { $("#makePublicVersionAction").click(); e.preventDefault(); });   
+      $("#app-content").on("click", "#vrtx-delete-working-copy-shortcut",  function(e) { $("#deleteWorkingCopyAction").click(); e.preventDefault(); });   
+      $("#app-content").on("click", "#vrtx-save-as-working-copy-shortcut", function(e) { $("#saveWorkingCopyAction").click();   e.preventDefault(); });    
 
-      $("#editor").delegate("#saveAndViewButton, #cancelAction, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", "click", function(e) {
+      $("#editor").on("click", "#saveAndViewButton, #cancelAction, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", function(e) {
         performSave();
       });
 

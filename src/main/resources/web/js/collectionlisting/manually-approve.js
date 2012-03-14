@@ -33,7 +33,7 @@ $(window).load(function() {
 
 $(document).ready(function() {
 
-    $("#app-content").delegate("#vrtx-manually-approve-tab-menu a", "click", function(e) {
+    $("#app-content").on("click", "#vrtx-manually-approve-tab-menu a", function(e) {
       var parent = $(this).parent();
       $(this).replaceWith("<span>" + $(this).html() + "</span>");
       if(parent.hasClass("last")) {
@@ -52,7 +52,6 @@ $(document).ready(function() {
         parentNextSpan.replaceWith('<a href="javascript:void(0);">' + parentNextSpan.html() + "</a>");     
       }
       $("#manually-approve-refresh").trigger("click");
-      e.stopPropagation();
       e.preventDefault();
     });
 
@@ -80,7 +79,7 @@ $(document).ready(function() {
     });
 
     // Add / remove manually approved uri's
-    $("#manually-approve-container").delegate("td.checkbox input", "change", function(e) {
+    $("#manually-approve-container").on("change", "td.checkbox input", function(e) {
       var textfield = $("#resource\\.manually-approved-resources");
       var value = textfield.val();
       var uri = $(this).val();
@@ -101,7 +100,7 @@ $(document).ready(function() {
     });
     
     // Paging - next
-    $("#manually-approve-container").delegate(".next", "click", function(e) {
+    $("#manually-approve-container").on("click", ".next", function(e) {
       var that = $(this).parent();
       var next = that.next();
       if (next.attr("id") && next.attr("id").indexOf("approve-page") != -1) {
@@ -112,7 +111,7 @@ $(document).ready(function() {
     });
 
     // Paging - previous
-    $("#manually-approve-container").delegate(".prev", "click", function(e) {
+    $("#manually-approve-container").on("click", ".prev", function(e) {
       var that = $(this).parent();
       var prev = that.prev();
       if (prev.attr("id") && prev.attr("id").indexOf("approve-page") != -1) {
@@ -289,7 +288,7 @@ function generateManuallyApprovedContainer(resources) {
       table.find("tr:last-child").addClass("last");
       table.find("tr:nth-child(even)").addClass("even");
       table.find("input").removeAttr("disabled");
-      $("#manually-approve-container").delegate("th.checkbox input", "click", function() {
+      $("#manually-approve-container").on("click", "th.checkbox input", function() {
         var checkAll = this.checked; 
         var checkboxes = $("td.checkbox input:visible");
         for(var i = 0, len = checkboxes.length; i < len; i++) {

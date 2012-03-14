@@ -101,11 +101,11 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
   }
 
   if(editor.canvasSupported) {
-    $("#app-content").delegate("#vrtx-image-editor", "dblclick", function (e) {
+    $("#app-content").on("dblclick", "#vrtx-image-editor", function (e) {
       $("#vrtx-image-crop").click();
     });
   
-    $("#app-content").delegate("#vrtx-image-crop", "click", function (e) {
+    $("#app-content").on("click", "#vrtx-image-crop", function (e) {
       if (editor.hasCropBeenInitialized) {
         editor.cropX += Math.round(editor.selection.x * editor.reversedScaleRatio);
         editor.cropY += Math.round(editor.selection.y * editor.reversedScaleRatio);
@@ -156,11 +156,10 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
         
         editor.hasCropBeenInitialized = true;
       }
-      e.stopPropagation();
       e.preventDefault();
     });
 
-    $("#app-content").delegate("#resource-width, #resource-height", "change", function (e) {
+    $("#app-content").on("change", "#resource-width, #resource-height", function (e) {
       var w = parseInt($.trim($("#resource-width").val()));
       var h = parseInt($.trim($("#resource-height").val()));
       if (!isNaN(w) && !isNaN(h) && ((w / editor.cropWidth) <= 1)) {
@@ -184,7 +183,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
       }
     });
 
-    $("#app-content").delegate("#resource-width, #resource-height", "keydown", function (e) {
+    $("#app-content").on("keydown", "#resource-width, #resource-height", function (e) {
       if (e.which == 38 || e.which == 40) {
         var isWidth = $(this).attr("id") == "resource-width";
         var x = parseInt($.trim($(this).val()));

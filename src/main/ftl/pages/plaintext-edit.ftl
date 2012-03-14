@@ -27,7 +27,7 @@
     var ajaxSaveText = "<@vrtx.msg code='editor.save-plaintext-edit-ajax-loading-title' />";
 
     $(document).ready(function() {
-      $("#app-content").delegate("#saveViewAction", "click", function(e) {
+      $("#app-content").on("click", "#saveViewAction", function(e) {
         performSave();
       });
     });

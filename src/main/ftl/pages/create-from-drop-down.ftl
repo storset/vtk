@@ -50,7 +50,7 @@
          }
        })
 
-       $(".tree-create").delegate("a", "click", function(e) { // Don't want click on links
+       $(".tree-create").on( "click", "a", function(e) { // Don't want click on links
          e.preventDefault();
        });
               

@@ -39,7 +39,7 @@
          service: "subresource-retrieve"
        })
        
-       $("#tree").delegate("a", "click", function(e){ // Don't want click on links
+       $("#tree").on("click", "a", function(e){ // Don't want click on links
 	     return false;
        });
        

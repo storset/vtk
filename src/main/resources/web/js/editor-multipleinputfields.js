@@ -53,16 +53,16 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
 function registerClicks(name) {
   var wrapper = $("." + name);  // cache
 
-  wrapper.delegate(".remove", "click", function(){
+  wrapper.on("click", ".remove", function(){
 	removeFormField(name, $(this));
   });
-  wrapper.delegate(".moveup", "click", function(){
+  wrapper.on("click", ".moveup", function(){
 	moveUpFormField($(this));
   });
-  wrapper.delegate(".movedown", "click", function(){
+  wrapper.on("click", ".movedown", function(){
 	moveDownFormField($(this));
   });
-  wrapper.delegate(".browse-resource-ref", "click", function(){
+  wrapper.on("click", ".browse-resource-ref", function(){
 	browseServer($(this).parent().parent().find('input').attr('id'), browseBase, browseBaseFolder, browseBasePath, 'File');
   });
 }

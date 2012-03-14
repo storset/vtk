@@ -96,11 +96,10 @@ vrtxAdmin.isAndroid = /android/.test(ua); // http://www.gtrifonov.com/2011/04/15
 vrtxAdmin.isMobileWebkitDevice = (vrtxAdmin.isIPhone || vrtxAdmin.isIPad || vrtxAdmin.isAndroid);
 vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
 vrtxAdmin.supportsFileList = window.FileList;
-
-// Logging capabilities
 VrtxAdmin.prototype.isUndefined = function(variable) {
   return typeof variable === "undefined";
 };
+// Logging capabilities
 vrtxAdmin.hasConsole = !vrtxAdmin.isUndefined(console);
 vrtxAdmin.hasConsoleLog = vrtxAdmin.hasConsole && console.log;
 vrtxAdmin.hasConsoleError = vrtxAdmin.hasConsole && console.error;

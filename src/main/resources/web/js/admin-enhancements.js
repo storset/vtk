@@ -736,13 +736,6 @@ $(document).ready(function () {
     } else {
       $("#app-content").prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
     }
-    if(vrtxAdmin.isIE6) {
-      $("#directory-listing tr").hover(function () {
-        $(this).toggleClass('hover');
-      }, function () {
-        $(this).toggleClass('hover');
-      });
-    }
   }
   
   vrtxAdmin.log({msg: "document.ready() in " + (+new Date - startReadyTime) + "ms"});

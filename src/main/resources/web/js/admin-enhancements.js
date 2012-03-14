@@ -1879,7 +1879,6 @@ function formatDocumentsDataSubFunc(id) {
 \*-------------------------------------------------------------------*/
 
 var urlobj;
-
 function previewImage(urlobj) {
   var previewNode = document.getElementById(urlobj + '.preview');
   if (previewNode) {

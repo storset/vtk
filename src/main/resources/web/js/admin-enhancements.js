@@ -133,7 +133,7 @@ vrtxAdmin.usernameAutocompleteParams = { multiple: false,
 vrtxAdmin.tagAutocompleteParams = { minChars: 1 };
                     
 $.ajaxSetup({
-  timeout: 60000 // 1min
+  timeout: 300000 // 5min
 });
 
 var EDITOR_SAVE_BUTTON_NAME = "";

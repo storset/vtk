@@ -186,31 +186,22 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
 
     $("#app-content").delegate("#resource-width, #resource-height", "keydown", function (e) {
       if (e.which == 38 || e.which == 40) {
-        if($(this).attr("id") == "resource-width") {
-          var w = parseInt($.trim($("#resource-width").val()));
-          if (e.which == 38) {
-          w++;
-          } else {
-            if (w > 2) {
-              w--;
-            }
-          }
-          if (editor.keepAspectRatio) {
-            h = Math.round(w / (editor.aspectRatioOver / editor.aspectRatioUnder));
-          }
+        var isWidth = $(this).attr("id") == "resource-width";
+        var x = parseInt($.trim($(this).val()));
+        if (e.which == 38) {
+          x++;
         } else {
-          var h = parseInt($.trim($(this).val()));
-          if (e.which == 38) {
-            h++;
-          } else {
-            if (h > 2) {
-              h--;
-            }
-          }
-          if (editor.keepAspectRatio) {
-            w = Math.round(h * (editor.aspectRatioOver / editor.aspectRatioUnder));
+          if (x > 2) {
+            x--;
           }
         }
+        if(isWidth) {
+          y = Math.round(x / (editor.aspectRatioOver / editor.aspectRatioUnder));
+        } else {
+          y = Math.round(x * (editor.aspectRatioOver / editor.aspectRatioUnder));
+        }
+        var w = isWidth ? x : y;
+        var h = isWidth ? y : x;
         if ((w / editor.cropWidth) <= 1) {
           editor.lastWidth = w;
           editor.lastHeight = h;

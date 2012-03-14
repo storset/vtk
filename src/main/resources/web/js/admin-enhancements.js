@@ -661,7 +661,8 @@ $(document).ready(function () {
 
     // Stickybar
     var titleSubmitButtons = $("#vrtx-editor-title-submit-buttons");
-    if(titleSubmitButtons.length && !vrtxAdmin.isIPhone) { // Turn off for iPhone
+    // TODO: also check minimum device height (with high density displays on new devices accounted for)
+    if(titleSubmitButtons.length && !vrtxAdmin.isIPhone) { // Turn off for iPhone. 
       var titleSubmitButtonsPos = titleSubmitButtons.offset();
       $(window).bind("scroll", function() {
         if($(window).scrollTop() >= titleSubmitButtonsPos.top) {

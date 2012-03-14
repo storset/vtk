@@ -191,8 +191,8 @@ function saveMultipleInputFields(){
 }
 
 function logMultipleInputFields(str) {
-  if (typeof console !== "undefined" && console.log && debugMultipleInputFields) {
-    console.log(str);
+  if (debugMultipleInputFields) {
+    vrtxAdmin.log(str);
   }
 }
 

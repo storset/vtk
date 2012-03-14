@@ -18,7 +18,7 @@ function initDatePicker(language) {
   }
 
   // TODO !spageti && !run twice
-  if (requestFromEditor()) {
+  if (!vrtxAdmin.isUndefined(UNSAVED_CHANGES_CONFIRMATION)) {
     storeInitPropValues();
   }
 
@@ -33,12 +33,6 @@ function initDatePicker(language) {
   $("#start-date-date").change(function () {
     setDefaultEndDate();
   });
-}
-
-// Stupid test to check if script is loaded from editor
-// UNSAVED_CHANGES_CONFIRMATION is defined in "structured-resource/editor.ftl"
-function requestFromEditor() {
-  return !(typeof(UNSAVED_CHANGES_CONFIRMATION) === "undefined");
 }
 
 function displayDateAsMultipleInputFields(name) {
@@ -128,7 +122,7 @@ function saveDateAndTimeFields() {
     }
 
     // Hack fix for editor.. .must be removed!!!
-    if (requestFromEditor()) {
+    if (!vrtxAdmin.isUndefined(UNSAVED_CHANGES_CONFIRMATION)) {
        $("#" + fieldName + "-hours").parent().remove();
        $("#" + fieldName + "-minutes").parent().remove();
        $("#" + fieldName + "-date").parent().remove();

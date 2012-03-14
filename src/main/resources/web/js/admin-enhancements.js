@@ -1961,7 +1961,7 @@ VrtxAdmin.prototype.wrap = function(node, cls, html) {
 // jQuery outerHTML (because FF don't support regular outerHTML)
 VrtxAdmin.prototype.outerHTML = function(selector, subselector) {
   if($(selector).find(subselector).length) { 
-    if(!isUndefined($(selector).find(subselector)[0].outerHTML)) {
+    if(vrtxAdmin.isDefined($(selector).find(subselector)[0].outerHTML)) {
       return $(selector).find(subselector)[0].outerHTML;
     } else {
       return $('<div>').append($(selector).find(subselector).clone()).html();

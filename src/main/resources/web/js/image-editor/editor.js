@@ -184,7 +184,6 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
       }
     });
 
-    // TODO: combine with keydown for resource-height
     $("#app-content").delegate("#resource-width, #resource-height", "keydown", function (e) {
       if (e.which == 38 || e.which == 40) {
         if($(this).attr("id") == "resource-width") {

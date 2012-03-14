@@ -261,7 +261,7 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
     $("#resource-width").attr("autocomplete", "off");
     $("#resource-height").attr("autocomplete", "off");
     // TODO !spageti && !run twice
-    if (vrtxAdmin.isDefined(UNSAVED_CHANGES_CONFIRMATION)) {
+    if (typeof UNSAVED_CHANGES_CONFIRMATION !== "undefined") {
       storeInitPropValues();
     }
   }

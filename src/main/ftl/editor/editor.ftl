@@ -60,7 +60,7 @@
         
         $("#editor").on("click", "#saveAndViewButton, #saveCopyButton", function(e) {
           performSave();
-          if(vrtxAdmin.isDefined(vrtxImageEditor) && vrtxImageEditor.save && !vrtxImageEditor.savedImage) {
+          if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save && !vrtxImageEditor.savedImage) {
             vrtxImageEditor.save($(this).attr("id"));
             e.preventDefault();
           }

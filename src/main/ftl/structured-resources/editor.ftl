@@ -47,7 +47,7 @@
 
     function performSave() {
       saveDateAndTimeFields(); // js/datepicker/datepicker-admin.js
-      if (vrtxAdmin.isDefined(MULTIPLE_INPUT_FIELD_NAMES)) {
+      if (typeof MULTIPLE_INPUT_FIELD_NAMES !== "undefined") {
         saveMultipleInputFields();  // js/editor-multipleinputfields.js
       }
       var boxUrlTextFields = $(".boxUrlText input");

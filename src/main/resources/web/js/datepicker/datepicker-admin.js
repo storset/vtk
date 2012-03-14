@@ -18,7 +18,7 @@ function initDatePicker(language) {
   }
 
   // TODO !spageti && !run twice
-  if (vrtxAdmin.isDefined(UNSAVED_CHANGES_CONFIRMATION)) {
+  if (typeof UNSAVED_CHANGES_CONFIRMATION !== "undefined") {
     storeInitPropValues();
   }
 

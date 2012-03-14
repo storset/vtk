@@ -1735,11 +1735,8 @@ function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
 }
 
 function showHideProperties(init, conditionHide, conditionHideEqual, showHideProps) {
-  var conditionHideVal = $(conditionHide).val(),
-      showHidePropertyFunc = showHideProperty,  // cache to function scope
-      i = 0,
-      len = showHideProps.length;
-  for (; i < len; i++) {
+  for (var conditionHideVal = $(conditionHide).val(), showHidePropertyFunc = showHideProperty, 
+       i = 0, len = showHideProps.length; i < len; i++) {
     showHidePropertyFunc(showHideProps[i], init, conditionHideVal == conditionHideEqual ? false : true);
   }
 }
@@ -1774,10 +1771,12 @@ function loadMultipleDocuments(appendParentLast, textfieldId, browse, addName, r
   documents.hide();
   
   var appendHtml = "<div id='vrtx-" + simpleTextfieldId + "-add'>"
-                   + "<div class=\"vrtx-button\"><button onclick=\"addFormField('" + simpleTextfieldId  + "'," + browse + ",null, '" 
+                   + "<div class=\"vrtx-button\">"
+                   + "<button onclick=\"addFormField('" + simpleTextfieldId  + "'," + browse + ",null, '" 
                    + removeName + "', '" + browseName + "', '" + editorBase + "', '" + baseFolder 
                    + "', '" + editorBrowseUrl + "'); return false;\">" + addName + "</button></div>"
-                   + "<input type='hidden' id='id-" + simpleTextfieldId  + "' name='id' value='1' /></div>";
+                   + "<input type='hidden' id='id-" + simpleTextfieldId  + "' name='id' value='1' />"
+                 + "</div>";
                    
   var documentsParent = documents.parent();     
   documentsParent.hide();           

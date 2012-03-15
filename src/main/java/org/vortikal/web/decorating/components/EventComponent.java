@@ -214,7 +214,10 @@ public class EventComponent extends AbstractEventComponent {
                 if (eprop == null)
                     eprop = ps.getProperty(Namespace.DEFAULT_NAMESPACE, "end-date");
 
-                psList.add(new PropertySetTmp(ps, sprop.getDateValue(), eprop.getDateValue()));
+                if (eprop == null)
+                    psList.add(new PropertySetTmp(ps, sprop.getDateValue()));
+                else
+                    psList.add(new PropertySetTmp(ps, sprop.getDateValue(), eprop.getDateValue()));
             }
 
             /* Set midnight to 00:00. */
@@ -279,10 +282,16 @@ public class EventComponent extends AbstractEventComponent {
 
     }
 
+    /* Class to keep date and PropertySet so sdate can be incremented */
     public class PropertySetTmp {
         private PropertySet ps;
         private Calendar sdate = Calendar.getInstance();
         private Calendar edate = Calendar.getInstance();
+
+        public PropertySetTmp(PropertySet ps, Date sdate) {
+            this.ps = ps;
+            this.sdate.setTimeInMillis(sdate.getTime());
+        }
 
         public PropertySetTmp(PropertySet ps, Date sdate, Date edate) {
             this.ps = ps;

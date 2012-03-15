@@ -94,7 +94,7 @@ public class TrashCanCommand extends UpdateCancelCommand {
             return false;
         }
         for (TrashCanObject tco : this.trashCanObjects) {
-            if (tco.isSelectedForRecovery()) {
+            if (tco.isSelectedForRecovery() && tco.getRecoverableResource() != null) {
                 return true;
             }
         }
@@ -105,8 +105,9 @@ public class TrashCanCommand extends UpdateCancelCommand {
         List<RecoverableResource> result = new ArrayList<RecoverableResource>();
         if (this.trashCanObjects != null && this.trashCanObjects.size() > 0) {
             for (TrashCanObject tco : this.trashCanObjects) {
-                if (tco.isSelectedForRecovery()) {
-                    result.add(tco.getRecoverableResource());
+                RecoverableResource rr = tco.getRecoverableResource();
+                if (tco.isSelectedForRecovery() && rr != null) {
+                    result.add(rr);
                 }
             }
         }

@@ -31,7 +31,10 @@
 package org.vortikal.web.actions.copymove;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,6 +46,8 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.ResourceLockedException;
+import org.vortikal.repository.ResourceOverwriteException;
 import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.convert.CopyAction;
@@ -54,17 +59,16 @@ import org.vortikal.web.actions.convert.CopyAction;
  * Configurable properties:
  * <ul>
  * <li>{@link String viewName} - the view to which to return to
- * <li>{@link CopyAction copyAction} - if specified, invoke this 
- *     {@link CopyAction} instead of {@link Repository#copy} to 
- *     copy resources
+ * <li>{@link CopyAction copyAction} - if specified, invoke this
+ * {@link CopyAction} instead of {@link Repository#copy} to copy resources
  * </ul>
  * </p>
  * <p>
  * Model data published:
  * <ul>
  * <li>{@code createErrorMessage}: error message
- * <li>{@code errorItems}: an array of repository items which the
- *      error message relates to
+ * <li>{@code errorItems}: an array of repository items which the error message
+ * relates to
  * </ul>
  * </p>
  */
@@ -86,7 +90,7 @@ public class CopyMoveToSelectedFolderController implements Controller {
         String token = requestContext.getSecurityToken();
         Path destinationUri = requestContext.getCurrentCollection();
         Repository repository = requestContext.getRepository();
-        
+
         CopyMoveSessionBean sessionBean = (CopyMoveSessionBean) request.getSession(true).getAttribute(
                 COPYMOVE_SESSION_ATTRIBUTE);
         if (sessionBean == null) {
@@ -97,58 +101,66 @@ public class CopyMoveToSelectedFolderController implements Controller {
         }
         long before = System.currentTimeMillis();
 
-        List<Path> filesFailed = new ArrayList<Path>();
         String action = sessionBean.getAction();
-
-        List<String> items = sessionBean.getFilesToBeCopied();
-
-        boolean authorizationFailed = false;
         boolean moveAction = "move-resources".equals(action);
 
-        for (String s : items) {
-            Path uri = Path.fromString(s);
-            String name = uri.getName();
+        List<String> filesToMoveOrCopy = sessionBean.getFilesToBeCopied();
 
+        // Map of files that for some reason failed on copy/move. Separated by a
+        // key (String) that specifies type of failure and identifies list of
+        // paths to resources that failed.
+        Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
+        String msgKey = "manage".concat(moveAction ? ".move" : ".copy").concat(".error.");
+
+        for (String filePath : filesToMoveOrCopy) {
+
+            Path fileUri = Path.fromString(filePath);
+            if (!repository.exists(token, fileUri)) {
+                // A selected object for copying/moving no longer exists
+                this.addToFailures(failures, fileUri, msgKey, "nonExisting");
+                continue;
+            }
+
+            String name = fileUri.getName();
             Path newResourceUri = destinationUri.extend(name);
 
             try {
+
                 if (moveAction) {
+                    // Special case of moving to self -> throws
+                    // IllegalOperationException, but we want a more specific
+                    // error message (naming conflict)
                     if (repository.exists(token, newResourceUri)) {
-                        throw new RuntimeException("Trying to move to resource with same filename: " + newResourceUri);
+                        this.addToFailures(failures, fileUri, msgKey, "namingConflict");
+                        continue;
                     }
-                    repository.move(token, uri, newResourceUri, false);
+                    repository.move(token, fileUri, newResourceUri, false);
 
                 } else {
                     Path destUri = newResourceUri;
-                    newResourceUri = this.copyHelper.copyResource(uri, destUri, repository, token, null, null);    
+                    newResourceUri = this.copyHelper.copyResource(fileUri, destUri, repository, token, null, null);
                 }
-            } catch (AuthorizationException e) {
-                filesFailed.add(uri);
-                authorizationFailed = true;
 
+            } catch (AuthorizationException ae) {
+                this.addToFailures(failures, fileUri, msgKey, "unAuthorized");
+            } catch (ResourceLockedException rle) {
+                this.addToFailures(failures, fileUri, msgKey, "locked");
+            } catch (ResourceOverwriteException roe) {
+                this.addToFailures(failures, fileUri, msgKey, "namingConflict");
             } catch (Exception e) {
-                filesFailed.add(uri);
+                StringBuilder msg = new StringBuilder("Could not perform ");
+                msg.append(moveAction ? "move of " : "copy of ").append(filePath);
+                msg.append(": ").append(e.getMessage());
+                logger.warn(msg);
+                this.addToFailures(failures, fileUri, msgKey, "generic");
             }
         }
 
-        if (filesFailed.size() > 0) {
-            String msgCode = "";
-            if (authorizationFailed) {
-                if (moveAction) {
-                    msgCode = "manage.create.copyMove.error.authorization.moveFailed";
-                } else {
-                    msgCode = "manage.create.copyMove.error.authorization.copyFailed";
-                }
-            } else {
-                if (moveAction) {
-                    msgCode = "manage.create.copyMove.error.moveFailed";
-                } else {
-                    msgCode = "manage.create.copyMove.error.copyFailed";
-                }
-            }
-
-            Message msg = new Message(msgCode);
-            for (Path p : filesFailed) {
+        for (Entry<String, List<Path>> entry : failures.entrySet()) {
+            String key = entry.getKey();
+            List<Path> failedResources = entry.getValue();
+            Message msg = new Message(key);
+            for (Path p : failedResources) {
                 msg.addMessage(p.getName());
             }
             requestContext.addErrorMessage(msg);
@@ -163,6 +175,16 @@ public class CopyMoveToSelectedFolderController implements Controller {
         }
 
         return new ModelAndView(this.viewName);
+    }
+
+    private void addToFailures(Map<String, List<Path>> failures, Path fileUri, String msgKey, String failureType) {
+        String key = msgKey.concat(failureType);
+        List<Path> failedPaths = failures.get(key);
+        if (failedPaths == null) {
+            failedPaths = new ArrayList<Path>();
+            failures.put(key, failedPaths);
+        }
+        failedPaths.add(fileUri);
     }
 
     public void setCopyHelper(CopyHelper copyHelper) {

@@ -285,16 +285,20 @@ public class EventComponent extends AbstractEventComponent {
     /* Class to keep date and PropertySet so sdate can be incremented */
     public class PropertySetTmp {
         private PropertySet ps;
-        private Calendar sdate = Calendar.getInstance();
-        private Calendar edate = Calendar.getInstance();
+        private Calendar sdate;
+        private Calendar edate;
 
         public PropertySetTmp(PropertySet ps, Date sdate) {
             this.ps = ps;
+            this.sdate = Calendar.getInstance();
             this.sdate.setTimeInMillis(sdate.getTime());
+            this.edate = null;
         }
 
         public PropertySetTmp(PropertySet ps, Date sdate, Date edate) {
             this.ps = ps;
+            this.sdate = Calendar.getInstance();
+            this.edate = Calendar.getInstance();
             this.sdate.setTimeInMillis(sdate.getTime());
             this.edate.setTimeInMillis(edate.getTime());
         }

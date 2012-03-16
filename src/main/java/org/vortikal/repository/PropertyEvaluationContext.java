@@ -33,18 +33,11 @@ package org.vortikal.repository;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 
 import org.vortikal.repository.resourcetype.Content;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.systemjob.SystemChangeContext;
 import org.vortikal.security.Principal;
 

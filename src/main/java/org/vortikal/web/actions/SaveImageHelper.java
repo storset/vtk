@@ -59,40 +59,40 @@ public class SaveImageHelper {
     public void setImageService(ImageServiceImpl imageService) {
         this.imageService = imageService;
     }
-    
-    @SuppressWarnings("unchecked")
-    public InputStream saveImage(Resource resource, Repository repository, String token, Path uri,
-            int cropX, int cropY, int cropWidth, int cropHeight, int newWidth, int newHeight) throws Exception {     
+
+    public InputStream saveImage(Resource resource, Repository repository, String token, Path uri, int cropX,
+            int cropY, int cropWidth, int cropHeight, int newWidth, int newHeight) throws Exception {
 
         // Crop and scale (downscale bilinear)
-        BufferedImage image = ImageIO.read(repository.getInputStream(token, uri, true)).getSubimage(cropX, cropY, cropWidth, cropHeight);
+        BufferedImage image = ImageIO.read(repository.getInputStream(token, uri, true)).getSubimage(cropX, cropY,
+                cropWidth, cropHeight);
         BufferedImage scaledImage = imageService.getScaledInstance(image, newWidth, newHeight); // Bilinear
 
         // Find a writer
         ImageWriter writer = null;
-        Iterator iter = null;
-        if("image/jpeg".equals(resource.getContentType()) || "image/pjpeg".equals(resource.getContentType())) {
-          iter = ImageIO.getImageWritersByFormatName("jpg");
-        } else if("image/png".equals(resource.getContentType())) {
-          iter = ImageIO.getImageWritersByFormatName("png");  
+        Iterator<ImageWriter> iter = null;
+        if ("image/jpeg".equals(resource.getContentType()) || "image/pjpeg".equals(resource.getContentType())) {
+            iter = ImageIO.getImageWritersByFormatName("jpg");
+        } else if ("image/png".equals(resource.getContentType())) {
+            iter = ImageIO.getImageWritersByFormatName("png");
         }
-        if (iter.hasNext()) {
-          writer = (ImageWriter)iter.next();
+        if (iter != null && iter.hasNext()) {
+            writer = (ImageWriter) iter.next();
         }
 
         // Prepare output file
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ImageOutputStream ios = ImageIO.createImageOutputStream(bos);
         writer.setOutput(ios);
-            
+
         // Set the compression quality
-        if("image/jpeg".equals(resource.getContentType()) || "image/pjpeg".equals(resource.getContentType())) {
-          ImageWriteParam iwp = writer.getDefaultWriteParam();
-          iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-          iwp.setCompressionQuality(0.8f);
-          writer.write(null, new IIOImage(scaledImage, null, null), iwp);
+        if ("image/jpeg".equals(resource.getContentType()) || "image/pjpeg".equals(resource.getContentType())) {
+            ImageWriteParam iwp = writer.getDefaultWriteParam();
+            iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            iwp.setCompressionQuality(0.8f);
+            writer.write(null, new IIOImage(scaledImage, null, null), iwp);
         } else {
-          writer.write(new IIOImage(scaledImage, null, null));  
+            writer.write(new IIOImage(scaledImage, null, null));
         }
         // Cleanup
         ios.flush();

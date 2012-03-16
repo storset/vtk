@@ -51,9 +51,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.vortikal.repository.resourcetype.AbstractResourceTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.HierarchicalNode;
 import org.vortikal.repository.resourcetype.LatePropertyEvaluator;
@@ -509,7 +506,6 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
         this.resourceTypeDescendantNames = buildResourceTypeDescendantsMap();
     }
     
-    @SuppressWarnings("unchecked")
     private void init() {
 
         this.primaryTypes = 
@@ -841,11 +837,13 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
         this.typeLocalizationProvider = typeLocalizationProvider;
     }
 
-    @Required public void setValueFormatterRegistry(ValueFormatterRegistry valueFormatterRegistry) {
+    @Required
+    public void setValueFormatterRegistry(ValueFormatterRegistry valueFormatterRegistry) {
         this.valueFormatterRegistry = valueFormatterRegistry;
     }
 
-    @Required public void setValueFactory(ValueFactory valueFactory) {
+    @Required
+    public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
     }
 

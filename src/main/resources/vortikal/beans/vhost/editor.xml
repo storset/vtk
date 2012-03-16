@@ -99,6 +99,15 @@
     <property name="handler" ref="editor.imageListingEditHandler" />
   </bean>
 
+  <bean id="editor.messageListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsMessageListing" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.messageListingEditHandler" />
+  </bean>
+
   <bean id="editor.imageEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
@@ -444,6 +453,12 @@
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
+  
+  <bean id="editor.messageListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.messageListingResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToPreviewCollection" />
+  </bean>
 
   <bean id="editor.audioVideoListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.audioVideoListingResourceManager" />
@@ -739,6 +754,30 @@
             <ref bean="articleListing.hideIntroductionImagePropDef" />
             <ref bean="hideNumberOfCommentsPropDef" />
             <ref bean="additionalContentPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+ <bean id="editor.messageListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="pageLimitPropDef" />
+         <!--    <ref bean="displayAggregationPropDef" />
+            <ref bean="aggregationPropDef" />
+            <ref bean="collection.sortingPropDef" />
+         -->
           </list>
         </property>
       </bean>

@@ -30,8 +30,10 @@
  */
 package org.vortikal.util.text;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +44,10 @@ import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
+import org.vortikal.repository.Path;
+import org.vortikal.repository.Repository;
 import org.vortikal.util.io.StreamUtil;
+import org.vortikal.web.RequestContext;
 
 public final class JSON {
     
@@ -113,5 +118,24 @@ public final class JSON {
             return null;
         }
         return object;
+    }
+    
+    public static JSONObject getResource(Path uri) throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+
+        InputStream is = repository.getInputStream(token, uri, false);
+        InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+        BufferedReader br = new BufferedReader(isr);
+
+        String line;
+        String result = "";
+        while ((line = br.readLine()) != null) {
+            result += line;
+        }
+        is.close();
+
+        return JSONObject.fromObject(result);
     }
 }

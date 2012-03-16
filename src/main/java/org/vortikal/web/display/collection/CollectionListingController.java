@@ -38,8 +38,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
@@ -55,12 +57,14 @@ import org.vortikal.web.service.URL;
 public class CollectionListingController extends AbstractCollectionListingController {
 
     protected List<SearchComponent> searchComponents;
-    protected PropertyTypeDefinition hideIcon; 
+    protected PropertyTypeDefinition hideIcon;
     protected CollectionListingComponentHelper helper;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
             throws Exception {
+        
+        
         int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         int offset = (page - 1) * pageLimit;
         int limit = pageLimit;
@@ -95,20 +99,20 @@ public class CollectionListingController extends AbstractCollectionListingContro
             }
 
         }
-        RequestContext requestContext =  RequestContext.getRequestContext();
-        Service service =  requestContext.getService();
-        Repository repository =  requestContext.getRepository();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Service service = requestContext.getService();
+        Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
         Principal principal = requestContext.getPrincipal();
-        
+
         URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
 
         if (getHideIcon(collection)) {
             model.put("hideIcon", true);
         }
-        
+
         model.put("edit", helper.isAuthorized(repository, token, principal, totalHits, results));
-        
+
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL, page);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
         model.put(MODEL_KEY_SEARCH_COMPONENTS, results);
@@ -117,7 +121,6 @@ public class CollectionListingController extends AbstractCollectionListingContro
             model.put("numberOfRecords", getNumberOfRecords(page, pageLimit, results.get(0).size()));
         }
     }
-
 
     protected Map<String, Integer> getNumberOfRecords(int page, int pageLimit, int resultSize) {
         Map<String, Integer> numbers = new HashMap<String, Integer>();
@@ -128,7 +131,6 @@ public class CollectionListingController extends AbstractCollectionListingContro
         return numbers;
     }
 
-
     protected boolean getHideIcon(Resource collection) {
         if (this.hideIcon == null)
             return false;
@@ -138,11 +140,11 @@ public class CollectionListingController extends AbstractCollectionListingContro
         }
         return p.getBooleanValue();
     }
-    
+
     @Required
     public void setHelper(CollectionListingComponentHelper helper) {
         this.helper = helper;
-    }   
+    }
 
     @Required
     public void setSearchComponents(List<SearchComponent> searchComponents) {

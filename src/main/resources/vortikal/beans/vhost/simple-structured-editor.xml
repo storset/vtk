@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="simpleMessageEditor" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-9900" />
+    <property name="assertions">
+      <list>
+        <ref bean="requiresWritePermissionAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="mode" />
+          <property name="parameterValue" value="simple-editor" />
+        </bean>
+        <ref bean="adminVrtxParameterRule" />
+        <ref bean="editor.parameterEqualsEdit" />
+      </list>
+    </property>
+    <property name="handler" ref="messageEditorHandler" />
+  </bean>
+
+  <bean id="messageEditorHandler" class="org.vortikal.resourcemanagement.edit.SimpleStructuredEditor">
+    <property name="viewName" value="messageEditorHandler.view" />
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="viewService" ref="viewService" />
+  </bean>
+
+  <bean id="messageEditorHandler.viewResolver" parent="viewResolver">
+    <property name="views">
+      <map>
+        <entry key="messageEditorHandler.view" value-ref="messageEditorHandler.view" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="messageEditorHandler.view" parent="freemarkerView">
+    <property name="url" value="pages/simple-structured-editor.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="jsURLs">
+          <list>
+            <value>${webResources.baseURL}/jquery/include-jquery.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <bean class="org.vortikal.resourcemanagement.edit.SharedTextProvider">
+          <property name="resourceTypeTree" ref="resourceTypeTree" />
+          <property name="safeHtmlFilter" ref="safeHtml.filterWithClass" />
+          <property name="htmlParser" ref="decorating.htmlParser" />
+        </bean>
+        <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="service" ref="staticResourceService" />
+          <property name="path" value="${editor.fck.resourcesURL}" />
+          <property name="modelName" value="fckeditorBase" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
+          <property name="service" ref="editor.browseService" />
+          <property name="path" value="${editor.fck.browseURL}" />
+          <property name="modelName" value="fckBrowse" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="service" ref="viewService" />
+          <property name="modelName" value="fckeditorBase" />
+          <property name="urlName" value="documentURL" />
+          <property name="staticURLProtocol" value="${webProtocolRestricted}" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="service" ref="decorating.viewUnpublishedService" />
+          <property name="modelName" value="versioning" />
+          <property name="urlName" value="currentVersionURL" />
+        </bean>
+
+        <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
+          <property name="modelDataMap">
+            <map>
+              <entry key="cssURLs" value-ref="structuredResources.editCSSURLs" />
+              <entry key="jsBaseURL" value="${jsBaseURL}" />
+              <entry key="webResources" value="${webResources.baseURL}" />
+              <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
+              <entry key="themeBaseURL" value="${themeBaseURL}" />
+            </map>
+          </property>
+        </bean>
+      </list>
+    </property>
+  </bean>
+  
+  
+  <!--  listing -->
+  
+  <bean id="messageListingResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="message-listing" />
+    <property name="namespace" ref="MESSAGE_LISTING_NAMESPACE" />
+    <property name="parentTypeDefinition" ref="collectionResourceTypeDefinition" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="DEFAULT_NAMESPACE" />
+          <property name="name" value="collection-type" />
+          <property name="value" value="message-listing" />
+          <property name="checkExistenceOnly" value="false" />
+        </bean>
+      </list>
+    </property>
+    <property name="propertyTypeDefinitions">
+      <list>
+        <ref bean="messageListing.displayTypePropDef" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="messageListing.displayTypePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="display-type" />
+    <property name="type" value="STRING" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="valueFormatter">
+      <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
+        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.message-listing-display-type" />
+        <constructor-arg value="STRING" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="resourceIsMessageListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceTypeDefinition" ref="messageListingResourceTypeDefinition" />
+    <property name="exactMatch" value="true" />
+  </bean>
+  
+  
+</beans>
+  

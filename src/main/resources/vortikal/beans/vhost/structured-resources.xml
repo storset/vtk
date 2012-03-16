@@ -391,14 +391,15 @@
         <entry key="helpURL.editor.nn" value="${helpURL.editor.nn}" />
         <entry key="helpURL.editor.en" value="${helpURL.editor.en}" />
       </map>
+      
     </property>
     <property name="referenceDataProviders">
       <list>
-              <bean class="org.vortikal.resourcemanagement.edit.SharedTextProvider" >
-                <property name="resourceTypeTree" ref="resourceTypeTree" />
-                <property name="safeHtmlFilter" ref="safeHtml.filterWithClass" />
-                    <property name="htmlParser" ref="decorating.htmlParser" />
-              </bean>
+            <bean class="org.vortikal.resourcemanagement.edit.SharedTextProvider" >
+              <property name="resourceTypeTree" ref="resourceTypeTree" />
+              <property name="safeHtmlFilter" ref="safeHtml.filterWithClass" />
+              <property name="htmlParser" ref="decorating.htmlParser" />
+            </bean>
         <ref bean="resourceContextProvider" />
         <bean class="org.vortikal.web.referencedata.provider.StaticURIServiceURLProvider">
           <property name="service" ref="staticResourceService" />
@@ -430,6 +431,7 @@
               <entry key="webResources" value="${webResources.baseURL}" />
               <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
               <entry key="themeBaseURL" value="${themeBaseURL}" />
+              
             </map>
           </property>
         </bean>

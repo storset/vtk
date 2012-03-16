@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="messageListing.viewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListing.viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsMessageListing" />
+      </list>
+    </property>
+    <property name="handler" ref="messageListing.handler" />
+    <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
+  </bean>
+
+  <bean id="messageListing.handler" class="org.vortikal.web.display.collection.MessageListingController"
+    parent="collectionListing.handler">
+    <property name="searchComponents">
+      <list>
+        <ref bean="messageListing.searchComponent" />
+      </list>
+    </property>
+    <property name="viewName" value="collectionListing.view" />
+  </bean>
+
+  <bean id="messageListing.searchComponent" parent="collectionListing.searchComponent">
+    <property name="name" value="messageListing.defaultListing" />
+    <property name="listingUriQueryBuilder" ref="collection.defaultRecursiveListingUriQueryBuilder" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN structured-message" />
+        </bean>
+      </list>
+    </property>
+        <property name="searchSorting" ref="messageListing.searchSorting" />
+  </bean>
+
+
+  <bean id="messageListing.feedService" parent="collectionListing.atomService">
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsMessageListing" />
+        <ref bean="feedParameterSetAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="messageListing.feedHandler" />
+  </bean>
+
+  <bean id="messageListing.feedHandler" parent="collectionListing.atomHandler">
+    <property name="searchComponent" ref="messageListing.searchComponent" />
+  </bean>
+  
+  <bean id="messageListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>lastModified</value>
+      </list>
+    </property>
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
+    
+  </bean>
+
+</beans>

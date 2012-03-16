@@ -224,6 +224,12 @@
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
+                <value>message-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
                 <value>audio-video-listing</value>
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
@@ -466,7 +472,7 @@
       </map>
     </property>
   </bean>
-  
+
   <bean id="collection.hideIconPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="hide-icon" />

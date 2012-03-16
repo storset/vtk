@@ -26,6 +26,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.util.text.JSON;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 
@@ -53,7 +54,7 @@ public class SharedTextProvider implements ReferenceDataProvider {
             return m;
         }
         try {
-            List json = (List) getJson(p).getJSONObject("properties").get("shared-text-box");
+            List json = (List) JSON.getResource(p).getJSONObject("properties").get("shared-text-box");
 
             for (Object x : json) {
                 JSONObject j = JSONObject.fromObject(x);
@@ -83,24 +84,6 @@ public class SharedTextProvider implements ReferenceDataProvider {
         return j;
     }
 
-    private JSONObject getJson(Path uri) throws Exception {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        Repository repository = requestContext.getRepository();
-        String token = requestContext.getSecurityToken();
-
-        InputStream is = repository.getInputStream(token, uri, false);
-        InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-        BufferedReader br = new BufferedReader(isr);
-
-        String line;
-        String result = "";
-        while ((line = br.readLine()) != null) {
-            result += line;
-        }
-        is.close();
-
-        return JSONObject.fromObject(result);
-    }
 
     @Override
     public void referenceData(Map model, HttpServletRequest request) throws Exception {

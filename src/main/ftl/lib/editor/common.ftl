@@ -44,11 +44,14 @@
 
 <#macro createEditor content completeEditor=false withoutSubSuper=false simpleHTML=false>
   <script type="text/javascript"><!--
+        $(document).ready(function() {
     if (CKEDITOR.env.isCompatible) {
       newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
 	    '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
 	    '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
     }
+    
+    });
   //-->
   </script>
 </#macro>

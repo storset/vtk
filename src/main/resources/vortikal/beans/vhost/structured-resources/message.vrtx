@@ -1,0 +1,38 @@
+resourcetype structured-message {
+
+  properties {
+    title : string required overrides title,
+    message : html
+  }
+ 
+   view-components {
+
+    message {
+      ##
+      [def m resource-prop(".", "message")]
+      [if m != null]
+        [val m # unescaped]
+      [endif]
+      ##
+    }
+    
+  }
+ 
+   view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[call "resource:property" {"id":"title"}]</title>
+      </head>
+      <body>
+      <h1>[call "resource:property" {"id":"title"}]</h1>
+      <div>
+        [call "comp:message"]
+      </div>
+      </body>
+    </html>
+    ##
+  } 
+}
+  

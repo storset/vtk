@@ -115,6 +115,7 @@
     <property name="valueFormatter" ref="htmlFormatter" />
   </bean>
   
+  
   <bean id="createdByPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="createdBy" />

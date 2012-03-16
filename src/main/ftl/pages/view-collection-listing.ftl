@@ -34,6 +34,7 @@
 <#import "/lib/collections/view-image-listing.ftl" as images />
 <#import "/lib/collections/view-blog-listing.ftl" as blogs />
 <#import "/lib/collections/view-audio-video-listing.ftl" as audioVideo />
+<#import "/lib/collections/view-message-listing.ftl" as messages />
 
 <#assign resource = collection />
 <#assign title = vrtx.propValue(resource, "title") />
@@ -85,6 +86,12 @@
 <body id="vrtx-${resource.resourceType}">
   
   <#assign page = page?default(1) />
+  
+  <#if resource.resourceType = 'message-listing' >
+   <#if editCurrentResource?exists && editCurrentResource >
+    <a href="${vrtx.relativeLinkConstructor("", 'simpleMessageEditor')}">${vrtx.getMsg("message-listing.new-message")}</a>
+    </#if>
+  </#if>
 
   <#assign isBlogListing = resource.resourceType = 'blog-listing' />
   <#assign eventListingDisplayType = vrtx.propValue(resource, 'display-type', '', 'el') />
@@ -185,6 +192,8 @@
               <@blogs.displayBlogs searchComponent collection />
            <#elseif collection.resourceType = 'audio-video-listing' >
            	  <@audioVideo.displayCollection collectionListing=searchComponent />
+           <#elseif collection.resourceType = 'message-listing'>
+             <@messages.displayCollection collectionListing=searchComponent /> 
            <#else>
               <@coll.displayCollection collectionListing=searchComponent />
            </#if>

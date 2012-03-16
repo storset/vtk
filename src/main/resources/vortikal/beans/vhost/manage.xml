@@ -92,7 +92,7 @@
     </property>
     <property name="urlPostProcessors" ref="manage.urlPostProcessors" />
     <property name="handlerFilters">
-      <ref bean="system.csrfPreventionHandler" />
+      <ref bean="system.csrfPreventionHandler" />  
     </property>
     <property name="handlerInterceptors">
       <list>

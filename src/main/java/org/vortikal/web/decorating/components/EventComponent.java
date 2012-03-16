@@ -162,7 +162,7 @@ public class EventComponent extends AbstractEventComponent {
         String token = rc.getSecurityToken();
         Resource resource;
         try {
-            resource = repo.retrieve(token, resourcePath, true);
+            resource = repo.retrieve(token, resourcePath, false);
             conf.put("uri", viewService.constructURL(resource));
         } catch (AuthenticationException e) {
             resource = null;

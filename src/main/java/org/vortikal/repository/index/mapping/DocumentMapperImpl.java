@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006,2012 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -42,10 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
@@ -70,11 +66,13 @@ import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+
 /**
  * Simple mapping from Lucene {@link org.apache.lucene.document.Document} to
  * {@link org.vortikal.repository.PropertySet} objects and vice-versa.
- * 
- * XXX: doc
  * 
  */
 public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
@@ -101,7 +99,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                 = this.resourceTypeTree.getPropertyTypeDefinitionsIncludingAncestors(rtDef);
 
         for (PropertyTypeDefinition propDef : propDefs) {
-            String fieldName = FieldNameMapping.getStoredFieldName(propDef);
+            String fieldName = FieldNames.getStoredFieldName(propDef);
             if (!storedFieldPropDefMap.containsKey(fieldName)) {
                 storedFieldPropDefMap.put(fieldName, propDef);
             }
@@ -110,7 +108,6 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         for (PrimaryResourceTypeDefinition child : this.resourceTypeTree.getResourceTypeDefinitionChildren(rtDef)) {
             populateTypeInfoCacheMaps(storedFieldPropDefMap, child);
         }
-
     }
 
     /**
@@ -124,47 +121,49 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
 
         // Special fields
         // uri
-        Field uriField = this.fieldValueMapper.getStoredKeywordField(FieldNameMapping.URI_FIELD_NAME, propSet.getURI()
-                .toString());
+        Field uriField = this.fieldValueMapper.getStoredKeywordField(
+                FieldNames.URI_FIELD_NAME, propSet.getURI().toString());
         doc.add(uriField);
 
         // uriDepth (not stored, but indexed for use in searches)
         int uriDepth = propSet.getURI().getDepth();
-        Field uriDepthField = this.fieldValueMapper.getKeywordField(FieldNameMapping.URI_DEPTH_FIELD_NAME, uriDepth);
+        Field uriDepthField = this.fieldValueMapper.getKeywordField(
+                FieldNames.URI_DEPTH_FIELD_NAME, uriDepth);
         doc.add(uriDepthField);
+        
+        // Ancestor URIs (system field used for hierarchical queries)
+        Field ancestorPaths = this.fieldValueMapper.getUnencodedMultiValueFieldFromStrings(
+                                          FieldNames.URI_ANCESTORS_FIELD_NAME, 
+                                          getPathAncestorStrings(propSet.getURI()));
+        doc.add(ancestorPaths);
 
         // name
-        Field nameField = this.fieldValueMapper.getStoredKeywordField(FieldNameMapping.NAME_FIELD_NAME, propSet
-                .getName());
+        Field nameField = this.fieldValueMapper.getStoredKeywordField(
+                FieldNames.NAME_FIELD_NAME, propSet.getName());
         doc.add(nameField);
         // name (lowercased, indexed, but not stored)
-        Field nameFieldLc = this.fieldValueMapper.getKeywordField(FieldNameMapping.NAME_LC_FIELD_NAME, propSet
-                .getName().toLowerCase());
+        Field nameFieldLc = this.fieldValueMapper.getKeywordField(
+                FieldNames.NAME_LC_FIELD_NAME, propSet.getName().toLowerCase());
         doc.add(nameFieldLc);
 
         // resourceType
-        Field resourceTypeField = this.fieldValueMapper.getStoredKeywordField(FieldNameMapping.RESOURCETYPE_FIELD_NAME,
-                propSet.getResourceType());
+        Field resourceTypeField = this.fieldValueMapper.getStoredKeywordField(
+                FieldNames.RESOURCETYPE_FIELD_NAME, propSet.getResourceType());
         doc.add(resourceTypeField);
 
-        // ANCESTORIDS (index system field)
-        Field ancestorIdsField = this.fieldValueMapper.getUnencodedMultiValueFieldFromIntegers(
-                FieldNameMapping.ANCESTORIDS_FIELD_NAME, propSet.getAncestorIds());
-        doc.add(ancestorIdsField);
-
         // ID (index system field)
-        Field idField = this.fieldValueMapper.getKeywordField(FieldNameMapping.ID_FIELD_NAME, propSet.getID());
+        Field idField = this.fieldValueMapper.getKeywordField(FieldNames.ID_FIELD_NAME, propSet.getID());
         doc.add(idField);
-        Field storedIdField = this.fieldValueMapper.getStoredBinaryIntegerField(FieldNameMapping.STORED_ID_FIELD_NAME,
+        Field storedIdField = this.fieldValueMapper.getStoredBinaryIntegerField(FieldNames.STORED_ID_FIELD_NAME,
                 propSet.getID());
         doc.add(storedIdField);
 
         // ACL_INHERITED_FROM (index system field)
-        Field aclField = this.fieldValueMapper.getKeywordField(FieldNameMapping.ACL_INHERITED_FROM_FIELD_NAME, propSet
+        Field aclField = this.fieldValueMapper.getKeywordField(FieldNames.ACL_INHERITED_FROM_FIELD_NAME, propSet
                 .getAclInheritedFrom());
         doc.add(aclField);
         Field storedAclField = this.fieldValueMapper.getStoredBinaryIntegerField(
-                FieldNameMapping.STORED_ACL_INHERITED_FROM_FIELD_NAME, propSet.getAclInheritedFrom());
+                FieldNames.STORED_ACL_INHERITED_FROM_FIELD_NAME, propSet.getAclInheritedFrom());
         doc.add(storedAclField);
 
         // ACL_READ_PRINCIPALS (index system field)
@@ -311,12 +310,12 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
     public PropertySetImpl getPropertySet(Document doc) throws DocumentMappingException {
 
         PropertySetImpl propSet = new PropertySetImpl();
-        propSet.setUri(Path.fromString(doc.get(FieldNameMapping.URI_FIELD_NAME)));
+        propSet.setUri(Path.fromString(doc.get(FieldNames.URI_FIELD_NAME)));
         propSet.setAclInheritedFrom(this.fieldValueMapper.getIntegerFromStoredBinaryField(doc
-                .getField(FieldNameMapping.STORED_ACL_INHERITED_FROM_FIELD_NAME)));
+                .getField(FieldNames.STORED_ACL_INHERITED_FROM_FIELD_NAME)));
         propSet.setID(this.fieldValueMapper.getIntegerFromStoredBinaryField(doc
-                .getField(FieldNameMapping.STORED_ID_FIELD_NAME)));
-        propSet.setResourceType(doc.get(FieldNameMapping.RESOURCETYPE_FIELD_NAME));
+                .getField(FieldNames.STORED_ID_FIELD_NAME)));
+        propSet.setResourceType(doc.get(FieldNames.RESOURCETYPE_FIELD_NAME));
 
         // Loop through all stored binary fields and re-create properties with
         // values. Multi-valued properties are stored as a
@@ -329,7 +328,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
 
             String fieldName = field.name();
 
-            if (FieldNameMapping.isReservedField(fieldName))
+            if (FieldNames.isReservedField(fieldName))
                 continue;
 
             if (currentName == null) {
@@ -376,12 +375,12 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
 
         if (def == null) {
             // No definition found, make it a String type and log a warning
-            String name = FieldNameMapping.getPropertyNameFromStoredFieldName(fieldName);
-            String nsPrefix = FieldNameMapping.getPropertyNamespacePrefixFromStoredFieldName(fieldName);
+            String name = FieldNames.getPropertyNameFromStoredFieldName(fieldName);
+            String nsPrefix = FieldNames.getPropertyNamespacePrefixFromStoredFieldName(fieldName);
 
             def = this.resourceTypeTree.getPropertyTypeDefinition(Namespace.getNamespaceFromPrefix(nsPrefix), name);
 
-            logger.warn("Definition for property '" + nsPrefix + FieldNameMapping.FIELD_NAMESPACEPREFIX_NAME_SEPARATOR
+            logger.warn("Definition for property '" + nsPrefix + FieldNames.FIELD_NAMESPACEPREFIX_NAME_SEPARATOR
                     + name + "' not found by " + " property manager. Config might have been updated without "
                     + " updating index(es)");
 
@@ -398,7 +397,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                 // Fail hard if multiple stored fields found for single
                 // value property
                 throw new FieldValueMappingException("Single value property '" + def.getNamespace().getPrefix()
-                        + FieldNameMapping.FIELD_NAMESPACEPREFIX_NAME_SEPARATOR + def.getName()
+                        + FieldNames.FIELD_NAMESPACEPREFIX_NAME_SEPARATOR + def.getName()
                         + "' has an invalid number of stored values (" + storedValueFields.size() + ") in index.");
             }
 
@@ -421,8 +420,8 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             throw new DocumentMappingException("Cannot create indexed field for property with null definition");
         }
 
-        String fieldName = FieldNameMapping.getSearchFieldName(def, lowercase);
-        if (FieldNameMapping.isReservedField(fieldName)) {
+        String fieldName = FieldNames.getSearchFieldName(def, lowercase);
+        if (FieldNames.isReservedField(fieldName)) {
             throw new DocumentMappingException(
                     "Property type definition has name which collides with reserved index field:" + fieldName);
         }
@@ -481,7 +480,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                         indexFieldValues.add(value);
                     }
                     
-                    String fieldName = FieldNameMapping.getJSONSearchFieldName(def, attribute, lowercase);
+                    String fieldName = FieldNames.getJSONSearchFieldName(def, attribute, lowercase);
                     Field field = this.fieldValueMapper.getUnencodedMultiValueFieldfFromObjects(fieldName,
                             indexFieldValues.toArray(), lowercase);
                     fields.add(field);
@@ -507,7 +506,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             throw new DocumentMappingException("Cannot create stored field for a property with null definition");
         }
 
-        String fieldName = FieldNameMapping.getStoredFieldName(def);
+        String fieldName = FieldNames.getStoredFieldName(def);
 
         if (def.isMultiple()) {
             Value[] values = property.getValues();
@@ -517,14 +516,23 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         singleField[0] = this.fieldValueMapper.getStoredBinaryFieldFromValue(fieldName, property.getValue());
         return singleField;
     }
+    
+    private String[] getPathAncestorStrings(Path path) {
+        List<Path> ancestors = path.getAncestors();
+        String[] ancestorStrings = new String[ancestors.size()];
+        for (int i=0; i<ancestorStrings.length; i++) {
+            ancestorStrings[i] = ancestors.get(i).toString();
+        }
+        return ancestorStrings;
+    }
 
     @Override
     public Set<String> getACLReadPrincipalNames(Document doc) throws DocumentMappingException {
 
-        Field[] fields = doc.getFields(FieldNameMapping.STORED_ACL_READ_PRINCIPALS_FIELD_NAME);
+        Field[] fields = doc.getFields(FieldNames.STORED_ACL_READ_PRINCIPALS_FIELD_NAME);
 
         if (fields.length == 0) {
-            throw new DocumentMappingException("The field " + FieldNameMapping.STORED_ACL_READ_PRINCIPALS_FIELD_NAME
+            throw new DocumentMappingException("The field " + FieldNames.STORED_ACL_READ_PRINCIPALS_FIELD_NAME
                     + " does not exist or is not loaded for document: " + doc);
         }
 
@@ -553,12 +561,12 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
 
     private Field getAclReadPrincipalsField(String[] qualifiedNames) {
         return this.fieldValueMapper.getUnencodedMultiValueFieldFromStrings(
-                FieldNameMapping.ACL_READ_PRINCIPALS_FIELD_NAME, qualifiedNames);
+                FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, qualifiedNames);
     }
 
     private Field[] getStoredAclReadPrincipalsFields(String[] qualifiedNames) {
         return this.fieldValueMapper.getStoredBinaryFieldsFromStrings(
-                FieldNameMapping.STORED_ACL_READ_PRINCIPALS_FIELD_NAME, qualifiedNames);
+                FieldNames.STORED_ACL_READ_PRINCIPALS_FIELD_NAME, qualifiedNames);
     }
 
     @Required

@@ -113,7 +113,6 @@ public final class FieldValueMapper {
         return field;
     }
 
-
     // No encoding (un-typed)
     public Field getStoredKeywordField(String name, String value) {
         Field field = new Field(name, value, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
@@ -135,8 +134,6 @@ public final class FieldValueMapper {
         for (int i = 0; i < values.length; i++) {
             encodedValues[i] = encodeIndexFieldValue(values[i], lowercase);
         }
-
-
 
         Field field = new Field(name, new StringArrayTokenStream(encodedValues));
         field.setOmitTermFreqAndPositions(true);
@@ -172,21 +169,6 @@ public final class FieldValueMapper {
             strValues[i] = lowercase ? values[i].toString().toLowerCase() : values[i].toString();
         }
         return getUnencodedMultiValueFieldFromStrings(name, strValues);
-    }
-    
-    /**
-     * Used for generating ancestor ids field. We don't bother to encode it
-     * because of its system-specific nature, and that it should never be used
-     * as a sane sorting key or in range queries.
-     */
-    public Field getUnencodedMultiValueFieldFromIntegers(String name, int[] integers) {
-
-        String[] values = new String[integers.length];
-        for (int i = 0; i < integers.length; i++) {
-            values[i] = Integer.toString(integers[i]);
-        }
-        
-        return getUnencodedMultiValueFieldFromStrings(name, values);
     }
     
     public Field getUnencodedMultiValueFieldFromStrings(String name, String[] values) {

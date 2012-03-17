@@ -35,15 +35,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.FieldSelector;
-import org.apache.lucene.document.FieldSelectorResult;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanFilter;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.FilterClause;
@@ -51,7 +46,7 @@ import org.apache.lucene.search.TermsFilter;
 import org.apache.lucene.util.OpenBitSet;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.index.mapping.FieldValueMapper;
 import org.vortikal.repository.reporting.ReportScope;
 import org.vortikal.repository.reporting.ResourcePropertyValueScope;
@@ -105,9 +100,9 @@ public class IndexDataReportScopeFilterFactoryImpl
 
             } else if (scope instanceof UriPrefixScope) {
 
-                UriPrefixScope upscope = (UriPrefixScope)scope;
+                UriPrefixScope upScope = (UriPrefixScope)scope;
 
-                filter = getUriScopeFilter(upscope.getUriPrefixes(), reader);
+                filter = getUriScopeFilter(upScope.getUriPrefixes());
                 
             } else {
                 
@@ -131,7 +126,7 @@ public class IndexDataReportScopeFilterFactoryImpl
     private Filter getResourceTypeFilter(Set<ResourceTypeDefinition> types) {
         TermsFilter tf = new TermsFilter();
         for (ResourceTypeDefinition type: types) {
-            tf.addTerm(new Term(FieldNameMapping.RESOURCETYPE_FIELD_NAME, type.getName()));
+            tf.addTerm(new Term(FieldNames.RESOURCETYPE_FIELD_NAME, type.getName()));
         }
 
         return tf;
@@ -139,7 +134,7 @@ public class IndexDataReportScopeFilterFactoryImpl
 
     private Filter getPropertyValueFilter(PropertyTypeDefinition def, Set<Value> values) {
         TermsFilter tf = new TermsFilter();
-        String searchFieldName = FieldNameMapping.getSearchFieldName(def, false);
+        String searchFieldName = FieldNames.getSearchFieldName(def, false);
 
         for (Value value: values) {
             String searchFieldValue = this.fieldValueMapper.encodeIndexFieldValue(value, false);
@@ -154,57 +149,22 @@ public class IndexDataReportScopeFilterFactoryImpl
         return this.queryAuthorizationFilterFactory.authorizationQueryFilter(token, reader);
     }
 
-    private Filter getUriScopeFilter(List<Path> uris, IndexReader reader) throws IOException {
-
+    private Filter getUriScopeFilter(List<Path> uris) throws IOException {
         if (uris.isEmpty()) {
             // If a UriPrefixScope is defined, but it contains no URIs, then it matches nothing.
             return MATCH_NOTHING_FILTER;
         }
 
         TermsFilter tf = new TermsFilter();
-        int validUris = 0;
-        for (Path path : uris) {
-            if (path.isRoot()) {
-                return null; // Signal that scope doesn't restrict anything.
+        for (Path uri: uris) {
+            if (uri.isRoot()) {
+                return null; // No restriction when scoping on root ..
             }
-
-            TermDocs tdocs = reader.termDocs(
-                    new Term(FieldNameMapping.URI_FIELD_NAME, path.toString()));
-            try {
-                if (tdocs.next()) {
-                    Document doc = reader.document(tdocs.doc(), new FieldSelector() {
-
-                        private static final long serialVersionUID = 2294209998307991707L;
-
-                        public FieldSelectorResult accept(String name) {
-                            // Interned string comparison
-                            if (FieldNameMapping.STORED_ID_FIELD_NAME == name) {
-                                return FieldSelectorResult.LOAD;
-                            }
-
-                            return FieldSelectorResult.NO_LOAD;
-                        }
-                    });
-
-                    String idValue = Integer.toString(
-                            this.fieldValueMapper.getIntegerFromStoredBinaryField(
-                                                  doc.getField(FieldNameMapping.STORED_ID_FIELD_NAME)));
-
-                    BooleanQuery bq = new BooleanQuery(true);
-
-                    tf.addTerm(new Term(FieldNameMapping.ANCESTORIDS_FIELD_NAME, idValue));
-                    tf.addTerm(new Term(FieldNameMapping.ID_FIELD_NAME, idValue));
-                    ++validUris;
-                } 
-            } finally {
-                tdocs.close();
-            }
+            
+            tf.addTerm(new Term(FieldNames.URI_FIELD_NAME, uri.toString()));
+            tf.addTerm(new Term(FieldNames.URI_ANCESTORS_FIELD_NAME, uri.toString()));
         }
-
-        if (validUris == 0) {
-            return MATCH_NOTHING_FILTER; // No valid URIs means this scope matches nothing.
-        }
-
+        
         return tf;
     }
 

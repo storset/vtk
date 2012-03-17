@@ -37,7 +37,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 
 /**
  * Simple URI-only iterator, lexicographic order.
@@ -51,7 +51,7 @@ public class PropertySetIndexUriIterator implements CloseableIterator<Object> {
     private TermEnum te;
     private TermDocs td;
     private IndexReader reader;
-    private String iteratorField = FieldNameMapping.URI_FIELD_NAME;
+    private String iteratorField = FieldNames.URI_FIELD_NAME;
         
     public PropertySetIndexUriIterator(IndexReader reader) throws IOException {
         this.te = reader.terms(new Term(this.iteratorField, ""));

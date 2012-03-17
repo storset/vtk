@@ -41,7 +41,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
  * 
  * @author oyviste
  */
-public final class FieldNameMapping {
+public final class FieldNames {
 
     /* Special field characters and prefixes */
     public static final String FIELD_NAMESPACEPREFIX_NAME_SEPARATOR = ":";
@@ -54,8 +54,8 @@ public final class FieldNameMapping {
     public static final String NAME_LC_FIELD_NAME =      LOWERCASE_FIELD_PREFIX + NAME_FIELD_NAME;
     public static final String URI_FIELD_NAME =          PropertySet.URI_IDENTIFIER;
     public static final String URI_DEPTH_FIELD_NAME =    "uriDepth";
+    public static final String URI_ANCESTORS_FIELD_NAME = "uriAncestors";
     public static final String RESOURCETYPE_FIELD_NAME = "resourceType";
-    public static final String ANCESTORIDS_FIELD_NAME =  "ANCESTORIDS";
     public static final String ID_FIELD_NAME =           "ID";
     public static final String ACL_INHERITED_FROM_FIELD_NAME = "ACL_INHERITED_FROM";
     public static final String ACL_READ_PRINCIPALS_FIELD_NAME = "ACL_READ_PRINCIPALS";
@@ -74,9 +74,9 @@ public final class FieldNameMapping {
     static {
         RESERVED_FIELD_NAMES.add(NAME_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(URI_FIELD_NAME);
+        RESERVED_FIELD_NAMES.add(URI_ANCESTORS_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(URI_DEPTH_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(RESOURCETYPE_FIELD_NAME);
-        RESERVED_FIELD_NAMES.add(ANCESTORIDS_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(ID_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(STORED_ID_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(ACL_READ_PRINCIPALS_FIELD_NAME);
@@ -190,7 +190,7 @@ public final class FieldNameMapping {
         if (pos == -1) {
             return fieldName.substring(sfpLength);
         } else {
-            return  fieldName.substring(pos + 1);
+            return fieldName.substring(pos + 1);
         }
     }
 }

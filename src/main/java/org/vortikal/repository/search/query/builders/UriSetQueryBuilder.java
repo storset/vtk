@@ -36,7 +36,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.TermsFilter;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.UriSetQuery;
@@ -63,7 +63,7 @@ public class UriSetQueryBuilder implements QueryBuilder {
         
         TermsFilter tf = new TermsFilter();
         for (String uri: uris) {
-            tf.addTerm(new Term(FieldNameMapping.URI_FIELD_NAME, uri));
+            tf.addTerm(new Term(FieldNames.URI_FIELD_NAME, uri));
         }
 
         switch (usQuery.getOperator()) {

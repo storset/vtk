@@ -99,7 +99,7 @@ public class SearcherImpl implements Searcher {
                 this.queryBuilder.buildQuery(query, searcher.getIndexReader());
 
             // Should include ACL filter combined with any other necessary filters ..
-            org.apache.lucene.search.Filter luceneFilter = 
+            org.apache.lucene.search.Filter luceneFilter =
                 this.queryBuilder.buildSearchFilter(token, search, searcher.getIndexReader());
 
             // Build Lucene sorting

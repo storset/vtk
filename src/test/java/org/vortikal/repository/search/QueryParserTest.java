@@ -30,15 +30,11 @@
  */
 package org.vortikal.repository.search;
 
-import org.vortikal.repository.search.query.ACLReadForAllQuery;
-import org.vortikal.testing.mocktypes.MockResourceTypeTree;
-
 import java.util.List;
-
-import junit.framework.TestCase;
 
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.search.query.ACLExistsQuery;
+import org.vortikal.repository.search.query.ACLReadForAllQuery;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.NameTermQuery;
 import org.vortikal.repository.search.query.OrQuery;
@@ -53,6 +49,8 @@ import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.UriTermQuery;
 import org.vortikal.testing.mocktypes.MockResourceTypeTree;
+
+import junit.framework.TestCase;
 
 public class QueryParserTest extends TestCase {
 
@@ -226,6 +224,43 @@ public class QueryParserTest extends TestCase {
         assertEquals(((UriTermQuery) q).getOperator(), TermOperator.EQ);
     }
     
+    public void testUriPrefixQuery() {
+        Query q = queryParser.parse("uri = /foo*");
+        assertTrue(q instanceof UriPrefixQuery);
+        UriPrefixQuery upq = (UriPrefixQuery)q;
+        assertTrue(upq.isIncludeSelf());
+        assertFalse(upq.isInverted());
+        assertEquals("/foo", upq.getUri());
+        
+        q = queryParser.parse("uri = /foo/*");
+        assertTrue(q instanceof UriPrefixQuery);
+        upq = (UriPrefixQuery)q;
+        assertFalse(upq.isIncludeSelf());
+        assertFalse(upq.isInverted());
+        assertEquals("/foo", upq.getUri());
+        
+        q = queryParser.parse("uri != /foo*");
+        assertTrue(q instanceof UriPrefixQuery);
+        upq = (UriPrefixQuery)q;
+        assertTrue(upq.isIncludeSelf());
+        assertTrue(upq.isInverted());
+        assertEquals("/foo", upq.getUri());
+
+        q = queryParser.parse("uri != /foo/*");
+        assertTrue(q instanceof UriPrefixQuery);
+        upq = (UriPrefixQuery)q;
+        assertFalse(upq.isIncludeSelf());
+        assertTrue(upq.isInverted());
+        assertEquals("/foo", upq.getUri());
+
+        q = queryParser.parse("uri = /*");
+        assertTrue(q instanceof UriPrefixQuery);
+        upq = (UriPrefixQuery)q;
+        assertFalse(upq.isIncludeSelf());
+        assertFalse(upq.isInverted());
+        assertEquals("/", upq.getUri());
+    }
+    
     public void testComplexQuery() {
 
         Query q = queryParser.parse("(type IN emne && emne:emnekode exists && emne:emnenavn exists" 
@@ -239,8 +274,9 @@ public class QueryParserTest extends TestCase {
         assertTrue(aqTop.getQueries().get(0) instanceof AndQuery);
         assertTrue(aqTop.getQueries().get(1) instanceof UriPrefixQuery);
         UriPrefixQuery upq = (UriPrefixQuery) aqTop.getQueries().get(1);
-        assertEquals("/studier/emner/jus/", upq.getUri());
-        assertEquals(TermOperator.EQ, upq.getOperator());
+        assertEquals("/studier/emner/jus", upq.getUri());
+        assertFalse(upq.isIncludeSelf());
+        assertFalse(upq.isInverted());
 
         assertTrue(aqTop.getQueries().get(2) instanceof NameTermQuery);
         NameTermQuery ntq = (NameTermQuery) aqTop.getQueries().get(2);

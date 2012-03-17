@@ -69,16 +69,16 @@ public class FieldNameMappingTest extends TestCase {
         
         Property prop = getUndefinedProperty(Namespace.getNamespaceFromPrefix("bar"), "foo");
         
-        assertEquals("bar:foo", FieldNameMapping.getSearchFieldName(prop, false));
-        assertEquals(FieldNameMapping.LOWERCASE_FIELD_PREFIX + "bar:foo", 
-                               FieldNameMapping.getSearchFieldName(prop, true));
+        assertEquals("bar:foo", FieldNames.getSearchFieldName(prop, false));
+        assertEquals(FieldNames.LOWERCASE_FIELD_PREFIX + "bar:foo", 
+                               FieldNames.getSearchFieldName(prop, true));
         
         prop = getUndefinedProperty(Namespace.DEFAULT_NAMESPACE, "lastModified");
         
-        assertEquals("lastModified", FieldNameMapping.getSearchFieldName(prop, false));
+        assertEquals("lastModified", FieldNames.getSearchFieldName(prop, false));
         
-        assertEquals(FieldNameMapping.LOWERCASE_FIELD_PREFIX + 
-                "lastModified", FieldNameMapping.getSearchFieldName(prop, true));
+        assertEquals(FieldNames.LOWERCASE_FIELD_PREFIX + 
+                "lastModified", FieldNames.getSearchFieldName(prop, true));
         
         
         
@@ -92,46 +92,46 @@ public class FieldNameMappingTest extends TestCase {
         def.setName("foo");
         def.setNamespace(Namespace.getNamespaceFromPrefix("bar"));
         
-        assertEquals("bar:foo", FieldNameMapping.getSearchFieldName(def, false));
-        assertEquals(FieldNameMapping.LOWERCASE_FIELD_PREFIX + 
-                "bar:foo", FieldNameMapping.getSearchFieldName(def, true));
+        assertEquals("bar:foo", FieldNames.getSearchFieldName(def, false));
+        assertEquals(FieldNames.LOWERCASE_FIELD_PREFIX + 
+                "bar:foo", FieldNames.getSearchFieldName(def, true));
         
         def = new PropertyTypeDefinitionImpl();
         def.setName("lastModified");
         def.setNamespace(Namespace.DEFAULT_NAMESPACE);
         
-        assertEquals("lastModified", FieldNameMapping.getSearchFieldName(def, false));
-        assertEquals(FieldNameMapping.LOWERCASE_FIELD_PREFIX 
-                + "lastModified", FieldNameMapping.getSearchFieldName(def, true));
+        assertEquals("lastModified", FieldNames.getSearchFieldName(def, false));
+        assertEquals(FieldNames.LOWERCASE_FIELD_PREFIX 
+                + "lastModified", FieldNames.getSearchFieldName(def, true));
         
     }
 
     public void testGetSearchFieldNameStringString() {
         
-        String fieldName = FieldNameMapping.getSearchFieldName("foo", null, false);
+        String fieldName = FieldNames.getSearchFieldName("foo", null, false);
         assertEquals("foo", fieldName);
         
-        fieldName = FieldNameMapping.getSearchFieldName("foo", null, true);
-        assertEquals(FieldNameMapping.LOWERCASE_FIELD_PREFIX + "foo", fieldName);
+        fieldName = FieldNames.getSearchFieldName("foo", null, true);
+        assertEquals(FieldNames.LOWERCASE_FIELD_PREFIX + "foo", fieldName);
         
-        fieldName = FieldNameMapping.getSearchFieldName("bar", "foo", false);
+        fieldName = FieldNames.getSearchFieldName("bar", "foo", false);
         assertEquals("foo:bar", fieldName);
         
-        fieldName = FieldNameMapping.getSearchFieldName("bar", "foo", true);
-        assertEquals(FieldNameMapping.LOWERCASE_FIELD_PREFIX + "foo:bar", fieldName);
+        fieldName = FieldNames.getSearchFieldName("bar", "foo", true);
+        assertEquals(FieldNames.LOWERCASE_FIELD_PREFIX + "foo:bar", fieldName);
     }
 
     public void testGetStoredFieldNameProperty() {
         
         Property prop = getUndefinedProperty(Namespace.getNamespaceFromPrefix("bar"), "foo");
         
-        String fieldName = FieldNameMapping.getStoredFieldName(prop);
+        String fieldName = FieldNames.getStoredFieldName(prop);
         
         assertEquals("b_bar:foo", fieldName);
         
         prop = getUndefinedProperty(Namespace.DEFAULT_NAMESPACE, "lastModified");
         
-        fieldName = FieldNameMapping.getStoredFieldName(prop);
+        fieldName = FieldNames.getStoredFieldName(prop);
         assertEquals("b_lastModified", fieldName);
         
     }
@@ -143,7 +143,7 @@ public class FieldNameMappingTest extends TestCase {
         def.setName("foo");
         def.setNamespace(Namespace.getNamespaceFromPrefix("bar"));
         
-        String fieldName = FieldNameMapping.getStoredFieldName(def);
+        String fieldName = FieldNames.getStoredFieldName(def);
         
         assertEquals("b_bar:foo", fieldName);
         
@@ -151,7 +151,7 @@ public class FieldNameMappingTest extends TestCase {
         def.setName("lastModified");
         def.setNamespace(Namespace.DEFAULT_NAMESPACE);
         
-        fieldName = FieldNameMapping.getStoredFieldName(def);
+        fieldName = FieldNames.getStoredFieldName(def);
         
         assertEquals("b_lastModified", fieldName);
         
@@ -161,13 +161,13 @@ public class FieldNameMappingTest extends TestCase {
         
         String fieldName = "foo";
         
-        String nsPrefix = FieldNameMapping.getPropertyNamespacePrefixFromStoredFieldName(fieldName);
+        String nsPrefix = FieldNames.getPropertyNamespacePrefixFromStoredFieldName(fieldName);
         
         assertNull(nsPrefix);
         
         fieldName = "b_bar:foo";
         
-        nsPrefix = FieldNameMapping.getPropertyNamespacePrefixFromStoredFieldName(fieldName);
+        nsPrefix = FieldNames.getPropertyNamespacePrefixFromStoredFieldName(fieldName);
         
         assertEquals("bar", nsPrefix);
     }
@@ -175,13 +175,13 @@ public class FieldNameMappingTest extends TestCase {
     public void testGetPropertyNameFromStoredFieldName() {
         String fieldName = "b_foo";
         
-        String name = FieldNameMapping.getPropertyNameFromStoredFieldName(fieldName);
+        String name = FieldNames.getPropertyNameFromStoredFieldName(fieldName);
         
         assertEquals("foo", name);
         
         fieldName = "b_bar:foo";
         
-        name = FieldNameMapping.getPropertyNameFromStoredFieldName(fieldName);
+        name = FieldNames.getPropertyNameFromStoredFieldName(fieldName);
         
         assertEquals("foo", name);
         

@@ -40,7 +40,7 @@ import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.TermsFilter;
 import org.apache.lucene.util.OpenBitSet;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
@@ -52,7 +52,7 @@ public class SimpleQueryAuthorizationFilterFactory extends
         AbstractQueryAuthorizationFilterFactory {
 
     protected final static Term READ_FOR_ALL_TERM = 
-            new Term(FieldNameMapping.ACL_READ_PRINCIPALS_FIELD_NAME, 
+            new Term(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, 
                         PrincipalFactory.NAME_ALL);
     
     protected final static Filter ACL_READ_FOR_ALL_FILTER = 
@@ -93,15 +93,15 @@ public class SimpleQueryAuthorizationFilterFactory extends
     
         TermsFilter termsFilter = new TermsFilter();
         for (Principal group: memberGroups) {
-            termsFilter.addTerm(new Term(FieldNameMapping.ACL_READ_PRINCIPALS_FIELD_NAME, 
+            termsFilter.addTerm(new Term(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, 
                                                     group.getQualifiedName()));
         }
 
         // Add ALL principal
-        termsFilter.addTerm(new Term(FieldNameMapping.ACL_READ_PRINCIPALS_FIELD_NAME, PrincipalFactory.ALL.getQualifiedName()));
+        termsFilter.addTerm(new Term(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, PrincipalFactory.ALL.getQualifiedName()));
         
         // Add principal executing the query
-        termsFilter.addTerm(new Term(FieldNameMapping.ACL_READ_PRINCIPALS_FIELD_NAME, principal.getQualifiedName()));
+        termsFilter.addTerm(new Term(FieldNames.ACL_READ_PRINCIPALS_FIELD_NAME, principal.getQualifiedName()));
         
         return termsFilter;
     }

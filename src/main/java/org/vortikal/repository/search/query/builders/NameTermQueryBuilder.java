@@ -36,7 +36,7 @@ import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeFilter;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.search.query.NameTermQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
@@ -68,7 +68,7 @@ public class NameTermQueryBuilder implements QueryBuilder {
         TermOperator op = this.ntq.getOperator();
 
         if (op == TermOperator.EQ || op == TermOperator.NE) {
-            TermQuery tq = new TermQuery(new Term(FieldNameMapping.NAME_FIELD_NAME, term));
+            TermQuery tq = new TermQuery(new Term(FieldNames.NAME_FIELD_NAME, term));
                 
             if (op == TermOperator.EQ){
                 return tq;
@@ -78,7 +78,7 @@ public class NameTermQueryBuilder implements QueryBuilder {
         }
 
         if (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE) {
-            TermQuery tq = new TermQuery(new Term(FieldNameMapping.NAME_LC_FIELD_NAME, term.toLowerCase()));
+            TermQuery tq = new TermQuery(new Term(FieldNames.NAME_LC_FIELD_NAME, term.toLowerCase()));
             
             if (op == TermOperator.EQ_IGNORECASE) {
                 return tq;
@@ -110,7 +110,7 @@ public class NameTermQueryBuilder implements QueryBuilder {
             throw new QueryBuilderException("Unknown term operator"); 
         }
 
-        TermRangeFilter trFilter = new TermRangeFilter(FieldNameMapping.NAME_FIELD_NAME,
+        TermRangeFilter trFilter = new TermRangeFilter(FieldNames.NAME_FIELD_NAME,
                                         lowerTerm,
                                         upperTerm,
                                         includeLower,
@@ -118,7 +118,7 @@ public class NameTermQueryBuilder implements QueryBuilder {
 
         return new ConstantScoreQuery(trFilter);
         
-//        return new ConstantScoreRangeQuery(FieldNameMapping.NAME_FIELD_NAME,
+//        return new ConstantScoreRangeQuery(FieldNames.NAME_FIELD_NAME,
 //                                                                    lowerTerm,
 //                                                                    upperTerm,
 //                                                                    includeLower,

@@ -1245,7 +1245,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
     private void ensureBinaryValueBuffered(Property prop) {
         try {
             boolean multiple = prop.getDefinition() != null && prop.getDefinition().isMultiple();
-            Value[] values;
+            final Value[] values;
             if (multiple) {
                 values = prop.getValues();
             } else {

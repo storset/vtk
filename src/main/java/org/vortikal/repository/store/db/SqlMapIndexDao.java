@@ -72,9 +72,8 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         SqlMapClientTemplate client = getSqlMapClientTemplate();
         String statementId = getSqlMap("orderedPropertySetIteration");
 
-        ResourceIdCachingPropertySetRowHandler rowHandler = 
-            new ResourceIdCachingPropertySetRowHandler(
-                handler, this.resourceTypeTree, this.principalFactory, this);
+        PropertySetRowHandler rowHandler = 
+            new PropertySetRowHandler(handler, this.resourceTypeTree, this.principalFactory, this);
 
         client.queryWithRowHandler(statementId, rowHandler);
 
@@ -96,7 +95,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
 
         parameters.put("uri", startUri);
         parameters.put("uriWildcard", SqlDaoUtils.getUriSqlWildcard(startUri,
-                AbstractSqlMapDataAccessor.SQL_ESCAPE_CHAR));
+                                      AbstractSqlMapDataAccessor.SQL_ESCAPE_CHAR));
 
         client.queryWithRowHandler(statementId, parameters, rowHandler);
 

@@ -35,7 +35,7 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.TermOperator;
@@ -69,13 +69,13 @@ public class UriTermQueryBuilder implements QueryBuilder {
 
         if (TermOperator.EQ.equals(operator)) {
             // URI equality
-            return new TermQuery(new Term(FieldNameMapping.URI_FIELD_NAME, uri));
+            return new TermQuery(new Term(FieldNames.URI_FIELD_NAME, uri));
         } 
 
         if (TermOperator.NE.equals(operator)) {
             // URI NOT equal
             TermQuery tq = 
-                new TermQuery(new Term(FieldNameMapping.URI_FIELD_NAME, uri));
+                new TermQuery(new Term(FieldNames.URI_FIELD_NAME, uri));
             return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq), this.deletedDocsFilter));
         }
         

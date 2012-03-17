@@ -51,33 +51,6 @@ create index vortex_resource_acl_index on vortex_resource(acl_inherited_from);
 create index vortex_resource_depth_index on vortex_resource(depth);
 
 
------------------------------------------------------------------------------
--- resource_ancestor_ids
--- Stored function for retrieving a resource's ancestor IDs.
--- Returns a VARCHAR of space-separated id integers.
------------------------------------------------------------------------------
-create or replace function resource_ancestor_ids(uri in varchar)
-return varchar as
-  ancestor varchar(1500) default '/';
-  id number;
-  ids varchar(1500) default '';
-  slashpos number default 1;
-begin
-  if uri = '/' then return ids; end if;
-
-  loop
-    select vr.resource_id into id from vortex_resource vr
-    where vr.uri = ancestor and vr.is_collection = 'Y';
-    ids := ids || ' ' || id;
-    slashpos := instr(uri, '/', slashpos+1);
-    exit when slashpos = 0;
-    ancestor := substr(uri, 1, slashpos-1);
-  end loop;
-  return ids;
-end resource_ancestor_ids;
-/
-show errors;
-
 
 -----------------------------------------------------------------------------
 -- vortex_tmp - Auxiliary temp-table used to hold lists of URIs or resource-

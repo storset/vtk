@@ -60,7 +60,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.Vocabulary;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.index.mapping.FieldValueMapper;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
@@ -115,7 +115,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     public void afterPropertiesSet() {
         // Setup filter for published resources
         TermsFilter tf = new TermsFilter();
-        String searchFieldName = FieldNameMapping.getSearchFieldName(this.publishedPropDef, false);
+        String searchFieldName = FieldNames.getSearchFieldName(this.publishedPropDef, false);
         String searchFieldValue = this.fieldValueMapper.encodeIndexFieldValue("true", Type.BOOLEAN, false);
         Term publishedTrueTerm = new Term(searchFieldName, searchFieldValue);
         tf.addTerm(publishedTrueTerm);
@@ -128,7 +128,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         if (this.hiddenPropDef != null) {
             // Special case caching for common "navigation:hidden !exists" query clause
             TermExistsFilter te = new TermExistsFilter(
-                    FieldNameMapping.getSearchFieldName(this.hiddenPropDef, false));
+                    FieldNames.getSearchFieldName(this.hiddenPropDef, false));
             this.cachedHiddenPropDefNotExistsFilter =
                     new CachingWrapperFilter(new InversionFilter(te, this.cachedDeletedDocsFilter));
         }
@@ -156,21 +156,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
 
         else if (query instanceof UriPrefixQuery) {
         	UriPrefixQuery uriPrefixQuery = (UriPrefixQuery) query;
-            String uri = uriPrefixQuery.getUri();
-            TermOperator operator = uriPrefixQuery.getOperator();
-            List<Term> idTerms = new ArrayList<Term>();
-            
-            // XXX: Syntax parser does not really support IN operator for URI prefixes (/foo/*,/*), 
-            //      query 'uri IN /*,/src/*' yields error: 'Encountered " <WILDVALUE> "/*,/src/ ""'
-            if (TermOperator.IN.equals(operator)) {
-            	String[] uris = uri.split(",");
-            	for (String inUri : uris) {
-            		idTerms.add(getPropertySetIdTermFromIndex(inUri, reader));
-            	}
-            } else {
-                idTerms.add(getPropertySetIdTermFromIndex(uri, reader));
-            }
-            builder =  new UriPrefixQueryBuilder(uri, operator, idTerms, uriPrefixQuery.isInverted(), this.cachedDeletedDocsFilter);
+            builder = new UriPrefixQueryBuilder(uriPrefixQuery, this.cachedDeletedDocsFilter);
         }
         
         else if (query instanceof UriDepthQuery) {
@@ -204,7 +190,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
                 builder = new TypeTermQueryBuilder(ttq.getTerm(), ttq.getOperator(), this.cachedDeletedDocsFilter);
             } else {
                 builder = new HierarchicalTermQueryBuilder<String>(this.resourceTypeTree, 
-                        ttq.getOperator(), FieldNameMapping.RESOURCETYPE_FIELD_NAME, ttq.getTerm(),
+                        ttq.getOperator(), FieldNames.RESOURCETYPE_FIELD_NAME, ttq.getTerm(),
                         this.cachedDeletedDocsFilter);
             }
         } 
@@ -272,7 +258,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
                 }
                 HierarchicalVocabulary<Value> hv = (HierarchicalVocabulary<Value>) vocabulary;
                 
-                String fieldName = FieldNameMapping.getSearchFieldName(propDef, false);
+                String fieldName = FieldNames.getSearchFieldName(propDef, false);
                 String fieldValue = this.fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType(), false);
                 return new HierarchicalTermQueryBuilder<Value>(hv,
                                       ptq.getOperator(), fieldName,
@@ -282,11 +268,11 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
             TermOperator op = ptq.getOperator();
             boolean lowercase = (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE);
             if (cva != null) {
-                String fieldName = FieldNameMapping.getJSONSearchFieldName(propDef, cva, lowercase);
+                String fieldName = FieldNames.getJSONSearchFieldName(propDef, cva, lowercase);
                 String fieldValue = lowercase ? ptq.getTerm().toLowerCase() : ptq.getTerm();
                 return new PropertyTermQueryBuilder(op, fieldName, fieldValue, this.cachedDeletedDocsFilter);
             } else {
-                String fieldName = FieldNameMapping.getSearchFieldName(propDef, lowercase);
+                String fieldName = FieldNames.getSearchFieldName(propDef, lowercase);
                 String fieldValue = this.fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), propDef.getType(), lowercase);
                 return new PropertyTermQueryBuilder(op, fieldName, fieldValue, this.cachedDeletedDocsFilter);
             }
@@ -333,7 +319,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
 
         @Override
         public FieldSelectorResult accept(String fieldName) {
-            if (FieldNameMapping.STORED_ID_FIELD_NAME == fieldName) { // Interned string comparison
+            if (FieldNames.STORED_ID_FIELD_NAME == fieldName) { // Interned string comparison
                 return FieldSelectorResult.LOAD;
             } 
                 
@@ -341,28 +327,17 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         }
     };
     
-    private Term getPropertySetIdTermFromIndex(String uri, IndexReader reader) 
-        throws QueryBuilderException {
-        if (!"/".equals(uri) && uri.endsWith("/")) {
-            uri = uri.substring(0, uri.length() - 1);
-        }
-        Path p = Path.fromString(uri);
-        return new Term(FieldNameMapping.ID_FIELD_NAME, 
-                            String.valueOf(getResourceIdFromIndex(p, reader)));
-
-    }
-    
     private int getResourceIdFromIndex(Path uri, IndexReader reader) 
         throws QueryBuilderException {
         
         TermDocs td = null;
         try {
-            td = reader.termDocs(new Term(FieldNameMapping.URI_FIELD_NAME, 
+            td = reader.termDocs(new Term(FieldNames.URI_FIELD_NAME, 
                                                 uri.toString()));
             
             if (td.next()) {
                 Field field= reader.document(td.doc(), ID_FIELD_SELECTOR).getField(
-                                            FieldNameMapping.STORED_ID_FIELD_NAME);
+                                            FieldNames.STORED_ID_FIELD_NAME);
                 
                 return this.fieldValueMapper.getIntegerFromStoredBinaryField(field);
             }

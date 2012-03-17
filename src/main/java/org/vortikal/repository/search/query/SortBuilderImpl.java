@@ -33,7 +33,7 @@ package org.vortikal.repository.search.query;
 import java.util.Iterator;
 
 import org.vortikal.repository.PropertySet;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.SortField;
@@ -76,11 +76,11 @@ public class SortBuilderImpl implements SortBuilder {
             if (sortField instanceof TypedSortField) {
                 TypedSortField tsf =  (TypedSortField)sortField;
                 if (PropertySet.TYPE_IDENTIFIER.equals(tsf.getType())) {
-                    fieldName = FieldNameMapping.RESOURCETYPE_FIELD_NAME;
+                    fieldName = FieldNames.RESOURCETYPE_FIELD_NAME;
                 } else if (PropertySet.URI_IDENTIFIER.equals(tsf.getType())) {
-                    fieldName = FieldNameMapping.URI_FIELD_NAME;
+                    fieldName = FieldNames.URI_FIELD_NAME;
                 } else if (PropertySet.NAME_IDENTIFIER.equals(tsf.getType())) {
-                    fieldName = FieldNameMapping.NAME_FIELD_NAME;
+                    fieldName = FieldNames.NAME_FIELD_NAME;
                 } else {
                     throw new SortBuilderException("Unknown typed sort field type: " + tsf.getType());
                 }
@@ -92,13 +92,13 @@ public class SortBuilderImpl implements SortBuilder {
                 PropertySortField psf = (PropertySortField)sortField;
                 PropertyTypeDefinition def = psf.getDefinition();
 
-                fieldName = FieldNameMapping.getSearchFieldName(def, false);
+                fieldName = FieldNames.getSearchFieldName(def, false);
 
                 switch (def.getType()) {
                 case JSON:
                     String cva = psf.getComplexValueAttributeSpecifier();
                     if (cva != null) {
-                        fieldName = FieldNameMapping.getJSONSearchFieldName(def, cva, false);
+                        fieldName = FieldNames.getJSONSearchFieldName(def, cva, false);
                     }
                 case DATE:
                 case TIMESTAMP:

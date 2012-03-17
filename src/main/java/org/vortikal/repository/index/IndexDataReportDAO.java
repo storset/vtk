@@ -51,7 +51,7 @@ import org.apache.lucene.search.FilterClause;
 import org.codehaus.plexus.util.FastMap;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.index.mapping.DocumentMapper;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.index.mapping.FieldValueMapper;
 import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.repository.reporting.Pair;
@@ -115,7 +115,7 @@ public class IndexDataReportDAO implements DataReportDAO {
 
             DocIdSet allowedDocs = mainFilter.getDocIdSet(reader);
             DocIdSetIterator iterator = allowedDocs.iterator();
-            final String fieldName = FieldNameMapping.getStoredFieldName(def);
+            final String fieldName = FieldNames.getStoredFieldName(def);
             int docID = 0;
             while ((docID = iterator.nextDoc()) != DocIdSetIterator.NO_MORE_DOCS) {
                 Document doc = reader.document(docID, fieldSelector);
@@ -246,7 +246,7 @@ public class IndexDataReportDAO implements DataReportDAO {
     }
 
     private Filter getPropertyExistsFilter(PropertyTypeDefinition def) {
-        String fieldName = FieldNameMapping.getSearchFieldName(def, false);
+        String fieldName = FieldNames.getSearchFieldName(def, false);
         return new TermExistsFilter(fieldName);
     }
 

@@ -42,7 +42,7 @@ import org.apache.lucene.index.TermDocs;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.index.mapping.DocumentMapper;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 
 /**
  * Random accessor for property set index.
@@ -62,8 +62,8 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
         throws IOException {
         this.mapper = mapper;
         this.reader = reader;
-        this.uriTermDocs = reader.termDocs(new Term(FieldNameMapping.URI_FIELD_NAME, ""));
-        this.uuidTermDocs = reader.termDocs(new Term(FieldNameMapping.ID_FIELD_NAME, ""));
+        this.uriTermDocs = reader.termDocs(new Term(FieldNames.URI_FIELD_NAME, ""));
+        this.uuidTermDocs = reader.termDocs(new Term(FieldNames.ID_FIELD_NAME, ""));
   
     }
     
@@ -74,7 +74,7 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
     public int countInstances(Path uri) throws IndexException {
         int count = 0;
         try {
-            this.uriTermDocs.seek(new Term(FieldNameMapping.URI_FIELD_NAME, uri.toString()));
+            this.uriTermDocs.seek(new Term(FieldNames.URI_FIELD_NAME, uri.toString()));
             while (this.uriTermDocs.next()) {
                 ++count;
             }
@@ -89,7 +89,7 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
         PropertySet propSet = null;
 
         try {
-            this.uriTermDocs.seek(new Term(FieldNameMapping.URI_FIELD_NAME, uri.toString()));
+            this.uriTermDocs.seek(new Term(FieldNames.URI_FIELD_NAME, uri.toString()));
             if (this.uriTermDocs.next()) {
                 propSet = this.mapper.getPropertySet(
                         this.reader.document(this.uriTermDocs.doc()));
@@ -104,7 +104,7 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
     public PropertySet getPropertySetByUUID(String uuid) throws IndexException {
         PropertySet propSet = null;
         try {
-            this.uuidTermDocs.seek(new Term(FieldNameMapping.ID_FIELD_NAME, uuid));
+            this.uuidTermDocs.seek(new Term(FieldNames.ID_FIELD_NAME, uuid));
             if (this.uuidTermDocs.next()) {
                 propSet = this.mapper.getPropertySet(
                         this.reader.document(this.uuidTermDocs.doc()));
@@ -122,7 +122,7 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
             private static final long serialVersionUID = 7589928184323641722L;
 
             public FieldSelectorResult accept(String fieldName) {
-                if (FieldNameMapping.STORED_ACL_READ_PRINCIPALS_FIELD_NAME == fieldName) { // Interned string comparison
+                if (FieldNames.STORED_ACL_READ_PRINCIPALS_FIELD_NAME == fieldName) { // Interned string comparison
                     return FieldSelectorResult.LOAD;
                 }
                 
@@ -132,7 +132,7 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
 
     public Set<String> getAclReadPrincipalNamesByURI(Path uri) throws IndexException {
         try {
-            this.uriTermDocs.seek(new Term(FieldNameMapping.URI_FIELD_NAME, uri.toString()));
+            this.uriTermDocs.seek(new Term(FieldNames.URI_FIELD_NAME, uri.toString()));
             
             if (this.uriTermDocs.next()) {
                 Document doc = this.reader.document(this.uriTermDocs.doc(), 

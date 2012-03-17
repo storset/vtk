@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.search.query.builders;
 
-import java.util.List;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
@@ -40,10 +39,10 @@ import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
-import org.vortikal.repository.search.query.TermOperator;
+import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.repository.search.query.filter.InversionFilter;
 
 /**
@@ -52,66 +51,35 @@ import org.vortikal.repository.search.query.filter.InversionFilter;
  */
 public class UriPrefixQueryBuilder implements QueryBuilder {
 
-    private List<Term> idTerms;
-    private String uri;
-    private final boolean inverted;
-    private TermOperator operator;
+    private final UriPrefixQuery upQuery;
     private Filter deletedDocsFilter;
     
-    /**
-     * 
-     * @param idTerm The <code>Term</code> containing the special id of the property set
-     *        that represents the URI prefix (the ancestor).
-     */
-    public UriPrefixQueryBuilder(String uri, TermOperator operator, List<Term>  idTerms, boolean inverted) {
-        this.idTerms = idTerms;
-        this.uri = uri;
-        this.inverted = inverted;
-        this.operator = operator;
+    public UriPrefixQueryBuilder(UriPrefixQuery upQuery) {
+        this.upQuery = upQuery;
     }
     
-    public UriPrefixQueryBuilder(String uri, TermOperator operator, List<Term>  idTerms, boolean inverted, Filter deletedDocs) {
-        this(uri, operator, idTerms, inverted);
+    public UriPrefixQueryBuilder(UriPrefixQuery upQuery, Filter deletedDocs) {
+        this.upQuery = upQuery;
         this.deletedDocsFilter = deletedDocs;
     }
 
     @Override
     public Query buildQuery() throws QueryBuilderException {
-        // Use ancestor ids field from index to get all descendants
-    	
-    	if (TermOperator.IN.equals(this.operator)) {
-    		
-    		BooleanQuery query = new BooleanQuery();
-    		for (Term idTerm : this.idTerms) {
-    			Term term = new Term(FieldNameMapping.ANCESTORIDS_FIELD_NAME, idTerm.text());
-				query.add(new TermQuery(term), BooleanClause.Occur.SHOULD);
-			}
-    		return query;
-    		
-    	} else {
-    		
-        	Term idTerm = this.idTerms.get(0);
-            Query query = new TermQuery(new Term(FieldNameMapping.ANCESTORIDS_FIELD_NAME, idTerm.text()));
+        Query query = new TermQuery(new Term(FieldNames.URI_ANCESTORS_FIELD_NAME, upQuery.getUri()));
 
-            if (!this.uri.endsWith("/")) {
-                // Include parent
-                // XXX: Note that the root URI '/' is a special case, it will not be included
-                //      as part of URI prefix query results (only the children).
-                //      If we need to differentiate between the "include-self or not"-case
-                //      for the root resource, this info has to be explicitly available in query class.
-                BooleanQuery bq = new BooleanQuery();
-                TermQuery uriTermq = new TermQuery(idTerm);
-                bq.add(uriTermq, BooleanClause.Occur.SHOULD);
-                bq.add(query, BooleanClause.Occur.SHOULD);
-                query = bq;
-            }
-            
-            if (this.inverted) {
-                Filter filter = new InversionFilter(new QueryWrapperFilter(query), this.deletedDocsFilter);
-                return new ConstantScoreQuery(filter);
-            }
-    		
-            return query;
-    	}
+        if (this.upQuery.isIncludeSelf()) {
+            BooleanQuery bq = new BooleanQuery();
+            TermQuery uriTermq = new TermQuery(new Term(FieldNames.URI_FIELD_NAME, upQuery.getUri()));
+            bq.add(uriTermq, BooleanClause.Occur.SHOULD);
+            bq.add(query, BooleanClause.Occur.SHOULD);
+            query = bq;
+        }
+
+        if (this.upQuery.isInverted()) {
+            Filter filter = new InversionFilter(new QueryWrapperFilter(query), this.deletedDocsFilter);
+            return new ConstantScoreQuery(filter);
+        }
+
+        return query;
     }
 }

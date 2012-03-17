@@ -35,7 +35,7 @@ import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.WildcardTermEnum;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.search.query.NameWildcardQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
@@ -72,7 +72,7 @@ public class NameWildcardQueryBuilder implements QueryBuilder {
                     + wildcard + "' does not have any wildcard characters (?,*) !");
         }
         
-        Term wTerm = new Term(FieldNameMapping.NAME_FIELD_NAME, wildcard);
+        Term wTerm = new Term(FieldNames.NAME_FIELD_NAME, wildcard);
         
         Filter filter = new WildcardTermFilter(wTerm);
 

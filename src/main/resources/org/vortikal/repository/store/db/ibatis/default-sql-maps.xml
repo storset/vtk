@@ -96,13 +96,6 @@
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>
   
-  <resultMap id="ResourceAndExtraPropertiesWithAncestorIds" class="java.util.HashMap"
-    extends="ResourceAndExtraProperties">
-    
-    <!-- Resource ancestor ids -->
-    <result property="ancestorIds" column="ancestor_ids" javaType="string"/>
-  </resultMap>
-  
   <!-- ChangeLog entry result mapping -->
   <resultMap id="ChangeLogEntry" class="org.vortikal.repository.ChangeLogEntry">
     <result property="changeLogEntryId" column="changelog_entry_id" javaType="int"/>
@@ -928,10 +921,8 @@
   </select>
   
   <select id="orderedPropertySetIterationWithStartUri" parameterClass="java.util.Map"
-    resultMap="ResourceAndExtraPropertiesWithAncestorIds">
-    
-    select resource_ancestor_ids(r.uri) AS ancestor_ids, 
-           r.*,
+                                                       resultMap="ResourceAndExtraProperties">
+    select r.*,
            p.name_space,
            p.name,
            p.value,
@@ -943,9 +934,8 @@
   </select>
 
   <select id="orderedPropertySetIterationForUris" parameterClass="java.lang.Integer"
-                    resultMap="ResourceAndExtraPropertiesWithAncestorIds">
-    select resource_ancestor_ids(r.uri) AS ancestor_ids, 
-           r.*,
+                                                  resultMap="ResourceAndExtraProperties">
+    select r.*,
            p.name_space,
            p.name,
            p.value,
@@ -953,7 +943,7 @@
        from vortex_tmp t, vortex_resource r
        left outer join extra_prop_entry p on r.resource_id = p.resource_id
        where r.uri = t.uri AND t.session_id=#value#
-       order by p.resource_id, p.extra_prop_entry_id            
+       order by p.resource_id, p.extra_prop_entry_id
   </select>
 
   <select id="getAclReadPrincipalNames" resultMap="Principal"
@@ -961,7 +951,7 @@
     select user_or_group_name, is_user from acl_entry
     where resource_id = #value#
       and action_type_id in (1, 2, 3, 4)
-  </select>                                        
+  </select>
   
   <delete id="removeChangelogEntriesByTempTable" parameterClass="java.lang.Integer">
     delete from changelog_entry 

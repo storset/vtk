@@ -61,7 +61,7 @@ public class LastModifiedReporter extends DocumentReporter {
         else
             query.add(new TypeTermQuery(type, TermOperator.EQ));
 
-        query.add(new UriPrefixQuery(resource.getURI().toString(), TermOperator.IN, false));
+        query.add(new UriPrefixQuery(resource.getURI().toString(), false));
         query.add(new UriPrefixQuery("/vrtx", true));
 
         Search search = new Search();

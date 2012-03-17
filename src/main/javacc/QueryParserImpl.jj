@@ -357,24 +357,14 @@ Query UriQuery() :
 
 Query UriPrefixQuery() : 
 {
-    Token t, eq = null, ne = null, in = null;
-    TermOperator o;
+    Token t, ne = null;
 }
 {
-    <URI> (eq=<EQ> | ne=<NE> | in=<IN>) t=<VALUE> <ASTERISK>
-        { 
-            boolean inverted = false; 
-            
-            if (eq != null) 
-                o = TermOperator.EQ;
-            else if (ne != null) {
-                o = TermOperator.NE;
-                inverted = true;
-            } else 
-                o = TermOperator.IN;
-            
+    <URI> (<EQ> | ne=<NE>) t=<VALUE> <ASTERISK>
+        {
+            boolean inverted = (ne != null);
             String value = unescape(t.image);
-            return new UriPrefixQuery(value, o, inverted); 
+            return new UriPrefixQuery(value, inverted);
         }
 }
 

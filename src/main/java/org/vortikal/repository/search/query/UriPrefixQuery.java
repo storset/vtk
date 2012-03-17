@@ -35,23 +35,28 @@ public class UriPrefixQuery implements UriQuery {
 
     private String uri;
     private boolean inverted = false;
-    private TermOperator operator;
+    private boolean includeSelf = true;
     
     public UriPrefixQuery(String uri) {
-        this.uri = uri;
+        this(uri, false);
     }
 
     public UriPrefixQuery(String uri, boolean inverted) {
+        // Be backwards compatible with older behaviour on significance of trailing slash.
+        // XXX: Note that the root URI '/' is a special case, it will not be included
+        //      as part of URI prefix query results (only the children), unless
+        //      this is explicitly set using #setIncludeSelf(boolean)
+        if ("/".equals(uri)) {
+            this.includeSelf = false;
+        } else if (uri.endsWith("/")) {
+            this.includeSelf = false;
+            uri = uri.substring(0, uri.length()-1);
+        }
+
         this.uri = uri;
         this.inverted = inverted;
     }
     
-    public UriPrefixQuery(String uri, TermOperator operator, boolean inverted) {
-        this.uri = uri;
-        this.inverted = inverted;
-        this.operator = operator;
-    }
-
     public String getUri() {
         return this.uri;
     }
@@ -60,17 +65,23 @@ public class UriPrefixQuery implements UriQuery {
         return inverted;
     }
     
-    public TermOperator getOperator() {
-    	return this.operator;
+    public boolean isIncludeSelf() {
+        return this.includeSelf;
     }
-
+    
+    public void setIncludeSelf(boolean includeSelf) {
+        this.includeSelf = includeSelf;
+    }
+    
+    @Override
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getSimpleName());
-        sb.append(";uri=").append(this.uri);
+        sb.append(";uriPrefix = ").append(this.uri);
         return sb.toString();
     }
 

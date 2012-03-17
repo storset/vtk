@@ -35,7 +35,7 @@ import java.io.IOException;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.vortikal.repository.index.mapping.DocumentMapper;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 
 /**
  * Iterator over <code>PropertySet</code> instances by URI.
@@ -49,7 +49,7 @@ class PropertySetIndexIterator extends AbstractDocumentFieldIterator {
     public PropertySetIndexIterator(IndexReader reader, DocumentMapper mapper)
             throws IOException {
         
-        super(reader, FieldNameMapping.URI_FIELD_NAME, null);
+        super(reader, FieldNames.URI_FIELD_NAME, null);
         this.mapper = mapper;
     }
 

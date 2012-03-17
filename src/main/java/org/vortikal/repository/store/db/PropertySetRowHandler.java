@@ -85,7 +85,6 @@ class PropertySetRowHandler implements RowHandler {
         this.indexDao = indexDao;
     }
     
-        
     /**
      * iBATIS callback
      */
@@ -104,7 +103,7 @@ class PropertySetRowHandler implements RowHandler {
             Set<Principal> aclReadPrincipals = getAclReadPrincipals(propertySet);
             
             if (aclReadPrincipals != null) {
-                // Do client callback (only if we have ACL, which means the resource is present in the database) 
+                // Do client callback (only if we have ACL, which means the resource is present in the database)
                 this.clientHandler.handlePropertySet(propertySet, aclReadPrincipals);
             }
             
@@ -172,9 +171,7 @@ class PropertySetRowHandler implements RowHandler {
 
         propertySet.setUri(Path.fromString(uri));
         populateStandardProperties(firstRow, propertySet);
-        populateAncestorIds(firstRow, propertySet);
         populateExtraProperties(rowBuffer, propertySet);
-        
         
         return propertySet;
     }
@@ -357,46 +354,4 @@ class PropertySetRowHandler implements RowHandler {
         }
 
     }
-    
-    protected void populateAncestorIds(Map<String, Object> row, PropertySetImpl propSet) {
-        String idString = (String)row.get("ancestorIds");
-        propSet.setAncestorIds(getAncestorIdsFromString(idString));
-    }
-
-    /**
-     * XXX: Horrible hack mapping from a single string of ids returned by database 
-     * function for getting ancestor ids, to a Java int[] array. Needed because
-     * we haven't ported Oracle-function to something more intelligent, and we
-     * don't want to have two different Java-classes for Oracle and PostgreSQL.
-     * 
-     * Only temporary, until we get the id-problem 
-     * sorted out, either by not using procedures/functions at all, or change
-     * how we do the SQL/procedures.
-     * 
-     * @param idString Single-space separated string of ancestor ids 
-     *                 (where ids are parseable integers) 
-     * @return array of integers
-     */
-    private int[] getAncestorIdsFromString(String idString) {
-        if (idString == null || "".equals(idString)) {
-            return new int[0];
-        }
-        
-        idString = idString.trim();
-        
-        int n = 1, p = -1, c = 0;
-        while ((p = idString.indexOf(' ', p+1)) != -1) ++n;
-        
-        int[] ids = new int[n];
-        
-        p = 0; n = -1;
-        while ((n = idString.indexOf(' ', (p = n+1))) != -1) {
-            ids[c++] = Integer.parseInt(idString.substring(p, n));
-        }
-        ids[c] = Integer.parseInt(idString.substring(p, idString.length()));
-        
-        return ids;
-    }
-
-
 }

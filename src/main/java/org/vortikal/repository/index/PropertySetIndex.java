@@ -43,18 +43,7 @@ import org.vortikal.security.Principal;
  * 
  * <p>Note that this interface cannot be used for searching the index.
  * 
- * <p>
- * Each <code>PropertySet</code> is primarily identified by its URI. In addition, 
- * implementations may provide an auxilliary UUID, which should be uniqe for any given <code>
- * PropertySet</code> <em>and also independent of time</em> (UUIDs should thus never 
- * be re-used, even for new nodes at the same URI in the same index instance).
- * 
- * This might be used in the implementation for increased efficiency when
- * modifying or searching an index hierarchially and for consistency reasons. 
- * The benefits of using UUIDs is entirely implementation specific. This interface
- * does not state how a UUID should be generated for a <code>PropertySet</code>.
- * This is up to the implementation.
- * </p>
+ * <p>Each <code>PropertySet</code> is identified by its URI.
  * 
  * <p>
  * A node (<code>PropertySet</code>) can be a parent of other nodes 
@@ -114,15 +103,6 @@ public interface PropertySetIndex {
     public void deletePropertySet(Path uri) throws IndexException;
     
     /**
-     * Delete <code>PropertySet</code> with the given auxilliary UUID.
-     * Optional.
-     * 
-     * @param uuid
-     * @throws IndexException
-     */
-    public void deletePropertySetByUUID(String uuid) throws IndexException;
-    
-    /**
      * Delete the <code>PropertySet</code> at the given root URI and all its
      * descendants. This method should <em>also delete URI duplicates in the tree</em>, 
      * if there are any.
@@ -134,16 +114,6 @@ public interface PropertySetIndex {
      * @throws IndexException
      */
     public void deletePropertySetTree(Path rootUri) throws IndexException;
-    
-    /**
-     * Delete the <code>PropertySet</code> with the given auxilliary UUID and all its
-     * descendants.
-     * Optional.
-     * 
-     * @param rootUuid
-     * @throws IndexException
-     */
-    public void deletePropertySetTreeByUUID(String rootUuid) throws IndexException;
     
     /**
      * Get a {@link PropertySetIndexRandomAccessor} instances for this index.

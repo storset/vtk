@@ -34,7 +34,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyWildcardQuery;
@@ -83,9 +83,9 @@ public class PropertyWildcardQueryBuilder implements QueryBuilder {
         boolean ignorecase = (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE);
         boolean invert = (op == TermOperator.NE || op == TermOperator.NE_IGNORECASE);
         
-        String fieldName = FieldNameMapping.getSearchFieldName(def, ignorecase);
+        String fieldName = FieldNames.getSearchFieldName(def, ignorecase);
         if (def.getType() == Type.JSON && query.getComplexValueAttributeSpecifier() != null) {
-            fieldName = FieldNameMapping.getJSONSearchFieldName(def,
+            fieldName = FieldNames.getJSONSearchFieldName(def,
                     query.getComplexValueAttributeSpecifier(), ignorecase);
         }
 

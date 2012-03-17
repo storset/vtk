@@ -39,7 +39,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.index.mapping.DocumentMapper;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 
 class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterator {
 
@@ -49,7 +49,7 @@ class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterat
     
     public PropertySetIndexSubtreeIterator(IndexReader reader, DocumentMapper mapper, String rootUri)
             throws IOException {
-        super(reader, FieldNameMapping.URI_FIELD_NAME, ("/".equals(rootUri) ? "/" : rootUri + "/"));
+        super(reader, FieldNames.URI_FIELD_NAME, ("/".equals(rootUri) ? "/" : rootUri + "/"));
         this.mapper = mapper;
         if (!"/".equals(rootUri)) {
             this.rootUriPropset = rootUriPropSet(reader, rootUri);
@@ -59,7 +59,7 @@ class PropertySetIndexSubtreeIterator extends  AbstractDocumentFieldPrefixIterat
     }
 
     private PropertySet rootUriPropSet(IndexReader reader, String rootUri) throws IOException {
-        TermDocs tdocs = reader.termDocs(new Term(FieldNameMapping.URI_FIELD_NAME, rootUri));
+        TermDocs tdocs = reader.termDocs(new Term(FieldNames.URI_FIELD_NAME, rootUri));
         try {
             if (tdocs.next()) {
                 return this.mapper.getPropertySet(reader.document(tdocs.doc()));

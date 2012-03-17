@@ -45,7 +45,7 @@ import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopFieldDocs;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.query.LuceneQueryBuilder;
@@ -95,18 +95,16 @@ public class IndexReaderWarmupImpl implements IndexReaderWarmup {
     }
 
     private Query getWarmupQuery() {
-        // XXX hardcoded. Should pull ID from root resource. Need a generic query that is
-        // guaranteed to match a lot of docs.
         BooleanQuery bq = new BooleanQuery();
-        bq.add(new TermQuery(new Term(FieldNameMapping.ANCESTORIDS_FIELD_NAME, "1000")), Occur.SHOULD);
-        bq.add(new TermQuery(new Term(FieldNameMapping.RESOURCETYPE_FIELD_NAME, "collection")), Occur.SHOULD);
+        bq.add(new TermQuery(new Term(FieldNames.URI_ANCESTORS_FIELD_NAME, "/")), Occur.SHOULD);
+        bq.add(new TermQuery(new Term(FieldNames.RESOURCETYPE_FIELD_NAME, "collection")), Occur.SHOULD);
         return bq;
     }
 
     private Sort getWarmupSorting() {
         SortField[] fields = new SortField[2];
-        fields[0] = new SortField(FieldNameMapping.getSearchFieldName(this.lastModifiedPropDef, false), SortField.STRING, true);
-        fields[1] = new SortField(FieldNameMapping.URI_FIELD_NAME, SortField.STRING);
+        fields[0] = new SortField(FieldNames.getSearchFieldName(this.lastModifiedPropDef, false), SortField.STRING, true);
+        fields[1] = new SortField(FieldNames.URI_FIELD_NAME, SortField.STRING);
         return new Sort(fields);
     }
 

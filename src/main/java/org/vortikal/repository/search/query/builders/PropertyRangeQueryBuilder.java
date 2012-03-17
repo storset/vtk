@@ -33,7 +33,7 @@ package org.vortikal.repository.search.query.builders;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermRangeFilter;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.index.mapping.FieldValueMapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyRangeQuery;
@@ -64,9 +64,9 @@ public class PropertyRangeQueryBuilder implements QueryBuilder {
         String fromEncoded = this.fieldValueMapper.encodeIndexFieldValue(from, def.getType(), false);
         String toEncoded = this.fieldValueMapper.encodeIndexFieldValue(to, def.getType(), false);
 
-        String fieldName = FieldNameMapping.getSearchFieldName(def, false);
+        String fieldName = FieldNames.getSearchFieldName(def, false);
         if (this.prq.getComplexValueAttributeSpecifier() != null) {
-            fieldName = FieldNameMapping.getJSONSearchFieldName(def,
+            fieldName = FieldNames.getJSONSearchFieldName(def,
                     this.prq.getComplexValueAttributeSpecifier(), false);
         }
 

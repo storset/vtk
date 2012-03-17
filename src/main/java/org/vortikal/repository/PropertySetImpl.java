@@ -70,9 +70,6 @@ public class PropertySetImpl implements PropertySet, Cloneable, Serializable {
     // Numeric ID of resource from which this resource inherits its ACL definition.
     private int aclInheritedFrom = NULL_RESOURCE_ID;
                                
-    // Numeric ID of ancestors. Might be null. Used by indexing system.
-    private int[] ancestorIds;  
-   
     // Note: needs uri set explicitly
     public PropertySetImpl() {
     }
@@ -226,15 +223,6 @@ public class PropertySetImpl implements PropertySet, Cloneable, Serializable {
         return sb.toString();
     }
     
-    public int[] getAncestorIds() {
-        return this.ancestorIds;
-    }
-
-    public void setAncestorIds(int[] ancestorIds) {
-        this.ancestorIds = ancestorIds;
-    }
-
-
     @Override
     // TODO remove, good enough to differentiate on object instance only
     //      (this method is probably never called in practice).
@@ -247,13 +235,6 @@ public class PropertySetImpl implements PropertySet, Cloneable, Serializable {
         if (!this.propertyMap.equals(other.propertyMap)) return false;
         if (this.id != other.id) return false;
         if (this.aclInheritedFrom != other.aclInheritedFrom) return false;
-        if (this.ancestorIds == null && other.ancestorIds != null) return false;
-        if (this.ancestorIds != null && other.ancestorIds == null) return false;
-        if (this.ancestorIds != null) {
-            for (int i = 0; i < this.ancestorIds.length; i++) {
-                if (this.ancestorIds[i] != other.ancestorIds[i]) return false;
-            }
-        }
         return true;
     }
 

@@ -53,35 +53,6 @@ create index vortex_resource_depth_index on vortex_resource(depth);
 
 
 -----------------------------------------------------------------------------
--- resource_ancestor_ids
--- Stored function for retrieving a resource's ancestor IDs.
--- Returns a VARCHAR of single-space-separated id integers.
------------------------------------------------------------------------------
-drop function resource_ancestor_ids(varchar); 
-create or replace
-function resource_ancestor_ids(varchar) returns varchar as ' DECLARE
-  parent varchar DEFAULT ''/'';
-  id integer;
-  ids varchar DEFAULT '''';
-  slashpos integer DEFAULT 1;
-  nextslash integer DEFAULT -1;
-BEGIN
-  IF $1 = ''/'' THEN RETURN ids; END IF;
-
-  LOOP
-    SELECT INTO id vr.resource_id FROM vortex_resource vr
-    WHERE vr.uri = parent AND vr.is_collection = ''Y'';
-    ids := ids || '' '' || id;
-    nextslash := position(''/'' in substring($1 from slashpos+1 for char_length($1)-slashpos));
-    EXIT WHEN nextslash = 0;
-    slashpos := slashpos + nextslash;
-    parent := substring($1 from 1 for slashpos-1);
-  END LOOP;
-  RETURN ids;
-END;
-' language plpgsql;
-
------------------------------------------------------------------------------
 -- vortex_tmp 
 -- Auxiliary temp-table used to hold lists of URIs or resource-IDs
 

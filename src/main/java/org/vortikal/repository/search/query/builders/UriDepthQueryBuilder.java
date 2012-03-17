@@ -33,7 +33,7 @@ package org.vortikal.repository.search.query.builders;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.UriDepthQuery;
@@ -56,7 +56,7 @@ public class UriDepthQueryBuilder implements QueryBuilder {
     public Query buildQuery() throws QueryBuilderException {
         
         Term uriDepthTerm = new Term(
-                FieldNameMapping.URI_DEPTH_FIELD_NAME,
+                FieldNames.URI_DEPTH_FIELD_NAME,
                 Integer.toString(query.getDepth()));
         
         return new TermQuery(uriDepthTerm);

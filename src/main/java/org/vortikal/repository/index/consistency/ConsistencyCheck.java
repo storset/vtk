@@ -161,6 +161,7 @@ public class ConsistencyCheck {
         
         PropertySetHandler handler = new PropertySetHandler() {
 
+            @Override
             public void handlePropertySet(PropertySet propertySet, 
                                           Set<Principal> aclReadPrincipals) {
 
@@ -223,7 +224,7 @@ public class ConsistencyCheck {
     
         try {
             PropertySetImpl indexPropSet = 
-                                (PropertySetImpl)randomIndexAccessor.getPropertySetByURI(indexUri);
+                    (PropertySetImpl)randomIndexAccessor.getPropertySetByURI(indexUri);
             
             // If we get here, the index document has been successfully
             // mapped to a property set instance.
@@ -458,6 +459,5 @@ public class ConsistencyCheck {
     public List<AbstractConsistencyError> getErrors() {
         return Collections.unmodifiableList(this.errors);
     }
-
 
 }

@@ -39,7 +39,7 @@ import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
-import org.vortikal.repository.index.mapping.FieldNameMapping;
+import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.search.query.QueryBuilder;
 import org.vortikal.repository.search.query.QueryBuilderException;
 import org.vortikal.repository.search.query.TermOperator;
@@ -47,7 +47,7 @@ import org.vortikal.repository.search.query.filter.InversionFilter;
 
 public class TypeTermQueryBuilder implements QueryBuilder {
 
-    private String fieldName = FieldNameMapping.RESOURCETYPE_FIELD_NAME;
+    private String fieldName = FieldNames.RESOURCETYPE_FIELD_NAME;
     private Object term;
     private TermOperator op;
     private Filter deletedDocsFilter;

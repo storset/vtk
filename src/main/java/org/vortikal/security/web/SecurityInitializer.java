@@ -173,7 +173,6 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
         String token = getToken(req, resp);
         if (token != null) {
-
             Principal principal = this.tokenManager.getPrincipal(token);
             if (principal != null) {
                 if (logger.isDebugEnabled()) {
@@ -485,11 +484,13 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             }
             return (String) session.getAttribute(SECURITY_TOKEN_SESSION_ATTR);
         }
-        if (session != null && session.getAttribute(SECURITY_TOKEN_SESSION_ATTR) != null) {
-            Principal principal = this.tokenManager.getPrincipal(session.getAttribute(SECURITY_TOKEN_SESSION_ATTR)
-                    .toString());
-            if (principal != null) {
-                return (String) session.getAttribute(SECURITY_TOKEN_SESSION_ATTR);
+        if (session != null) {
+            final String tokenFromSession = (String)session.getAttribute(SECURITY_TOKEN_SESSION_ATTR);
+            if (tokenFromSession != null) {
+                Principal principal = this.tokenManager.getPrincipal(tokenFromSession);
+                if (principal != null) {
+                    return tokenFromSession;
+                }
             }
         }
         if (request.getCookies() != null && !request.isSecure()) {

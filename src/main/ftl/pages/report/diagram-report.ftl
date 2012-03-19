@@ -6,7 +6,7 @@
   <head>
   <#if cssURLs?exists>
     <#list cssURLs as cssURL>
-    <link rel="stylesheet" href="${cssURL}" />
+      <link rel="stylesheet" href="${cssURL}" type="text/css" />
     </#list>
   </#if>
   </head>

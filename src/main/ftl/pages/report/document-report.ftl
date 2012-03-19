@@ -6,7 +6,7 @@
   <head>
   <#if cssURLs?exists>
     <#list cssURLs as cssURL>
-    <link rel="stylesheet" href="${cssURL}" />
+      <link rel="stylesheet" href="${cssURL}" type="text/css" />
     </#list>
   </#if>
   </head>
@@ -15,9 +15,9 @@
     <div class="vrtx-report-nav">
       <div class="back">
         <#if report.backURL?exists>
-        <a href="${report.backURL?html}" ><@vrtx.msg code="report.${report.backURLname}" default="Back" /></a>
+          <a href="${report.backURL?html}" ><@vrtx.msg code="report.${report.backURLname}" default="Back" /></a>
         <#else>
-        <a href="${serviceURL?html}" ><@vrtx.msg code="report.back" default="Back" /></a>
+          <a href="${serviceURL?html}" ><@vrtx.msg code="report.back" default="Back" /></a>
         </#if>
       </div>
     </div>

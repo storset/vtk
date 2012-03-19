@@ -16,7 +16,7 @@
   <head>
   <#if cssURLs?exists>
     <#list cssURLs as cssURL>
-    <link rel="stylesheet" href="${cssURL}" />
+      <link rel="stylesheet" href="${cssURL}" type="text/css" />
     </#list>
   </#if>
   <!--[if lte IE 8]>
@@ -24,25 +24,20 @@
   <![endif]-->
   <#if jsURLs?exists>
     <#list jsURLs as jsURL>
-    <script type="text/javascript" src="${jsURL}"></script>
+      <script type="text/javascript" src="${jsURL}"></script>
     </#list>
   </#if>
   <script type="text/javascript"><!--
      $(document).ready(function(){
-       var timestamp = 1 - new Date();
-       
-       $("#tree li").remove();
-       
+       $(".vrtx-permission-tree").prepend("<ul id='tree' class='filetree treeview-gray'></ul>");
        $("#tree").treeview({
          animated: "fast",
-         url: "?vrtx=admin&service=subresource-retrieve&uri=${report.uri}&ts=" + timestamp,
+         url: "?vrtx=admin&service=subresource-retrieve&uri=${report.uri}&ts=" + (+new Date()),
          service: "subresource-retrieve"
        })
-       
-       $("#tree").on("click", "a", function(e){ // Don't want click on links
-	     return false;
+       $("#tree").on("click", "a", function(e) { // Don't want click on links
+	     e.preventDefault();
        });
-       
        // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset, autoWidth, extra
        $("#tree").vortexTips("li a", "#contents", 400, 300, 4000, 3000, 30, 80, false, false);
      });
@@ -61,9 +56,6 @@
 	  <@vrtx.msg code="report.collection-structure.about" />
 	</p>
 	<div class="vrtx-report vrtx-permission-tree">
-	
-	  <ul id="tree" class="filetree treeview-gray"><li>null</li></ul>
-	  
 	  <div id="vrtx-report-help">
 	    <h2><@vrtx.msg code="report.collection-structure.help" /></h2>
 	    <p id="vrtx-report-help-restricted">

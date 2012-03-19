@@ -6,12 +6,12 @@
   <head>
   <#if cssURLs?exists>
     <#list cssURLs as cssURL>
-    <link rel="stylesheet" href="${cssURL}" />
+      <link rel="stylesheet" href="${cssURL}" />
     </#list>
   </#if>
   <#if jsURLs?exists>
     <#list jsURLs as jsURL>
-    <script type="text/javascript" src="${jsURL}"></script>
+      <script type="text/javascript" src="${jsURL}"></script>
     </#list>
   </#if>
   </head>

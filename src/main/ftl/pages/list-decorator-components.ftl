@@ -21,29 +21,25 @@
 </head>
 <body>
   <h1>Available decorator components</h1>
-  <#if componentList?exists>
-
-  <#-- table of contents -->
+<#if componentList?exists>
+  <#-- Table of contents -->
   <div class="content">                         
-  <h2>List of components</h2>
-  <ul>
-    <#list componentList?sort_by('name')?sort_by('namespace') as component>
-      <#assign componentID = component.namespace + ":" + component.name />
-      <#if !hiddenComponents?exists || !hiddenComponents?seq_contains(componentID)>
-      <li><a href="#${componentID?html}">${componentID?html}</a></li>
-      </#if>
+    <h2>List of components</h2>
+    <ul>
+      <#list componentList?sort_by('name')?sort_by('namespace') as component>
+        <#assign componentID = component.namespace + ":" + component.name />
+        <#if !hiddenComponents?exists || !hiddenComponents?seq_contains(componentID)>
+          <li><a href="#${componentID?html}">${componentID?html}</a></li>
+        </#if>
       </#list>
-  </ul>
+    </ul>
   </div>
-    <#list componentList?sort_by('name')?sort_by('namespace') as component>
-      <#assign componentID = component.namespace + ":" + component.name />
-      <#if !hiddenComponents?exists || !hiddenComponents?seq_contains(componentID)>
-      <h2 id="${componentID?html}">
-        ${componentID?html}
-      </h2>
+  <#list componentList?sort_by('name')?sort_by('namespace') as component>
+    <#assign componentID = component.namespace + ":" + component.name />
+    <#if !hiddenComponents?exists || !hiddenComponents?seq_contains(componentID)>
+      <h2 id="${componentID?html}">${componentID?html}</h2>
       <h3>Description</h3>
       <div class="componentDescription">${(component.description?html)?if_exists}</div>
-
       <#if (component.parameterDescriptions)?exists>
         <h3>Parameters</h3>
         <#list component.parameterDescriptions?keys as paramName>
@@ -56,13 +52,13 @@
       <#if (component.usageExamples)?exists && component.usageExamples?size &gt; 0>
         <h3>Examples</h3>
         <#list component.usageExamples as example>
-        <div style="font-family: monospace;">
+          <div style="font-family: monospace;">
             ${example.example(componentID)}
-        </div>
+          </div>
         </#list>
       </#if>
-      </#if>
-   </#list>
-  </#if>
+    </#if>
+  </#list>
+</#if>
 </body>
 </html>

@@ -12,15 +12,15 @@
 
     <#if cssURLs?exists>
       <#list cssURLs as cssURL>
-      <link rel="stylesheet" href="${cssURL}" />
+        <link rel="stylesheet" href="${cssURL}" type="text/css" />
       </#list>
     </#if>
   
     <!--[if IE 7]>
-      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css"/> 
+      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css" /> 
     <![endif]--> 
     <!--[if lte IE 6]>
-      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css"/> 
+      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css" /> 
     <![endif]--> 
   
     <style type="text/css">

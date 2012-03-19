@@ -12,12 +12,12 @@
   
   <#if cssURLs?exists>
     <#list cssURLs as cssURL>
-      <link rel="stylesheet" href="${cssURL}" />
+      <link rel="stylesheet" href="${cssURL}" type="text/css" />
     </#list>
   </#if>
   
   <!--[if lte IE 8]>
-    <link rel="stylesheet" type="text/css" href="/vrtx/__vrtx/static-resources/themes/default/report/jquery.treeview.ie.css" />
+    <link rel="stylesheet" type="text/css" href="/vrtx/__vrtx/static-resources/themes/default/report/jquery.treeview.ie.css" type="text/css" />
   <![endif]-->
   
   <#if jsURLs?exists>

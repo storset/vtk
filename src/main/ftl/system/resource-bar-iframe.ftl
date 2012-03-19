@@ -8,12 +8,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Resource bar</title>
-  <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default.css" type="text/css"/> 
+  <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default.css" type="text/css" /> 
   <!--[if IE 7]>
-    <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css"/> 
+    <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css" /> 
   <![endif]--> 
   <!--[if lte IE 6]>
-    <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css"/> 
+    <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css" /> 
   <![endif]--> 
   
   <style type="text/css">

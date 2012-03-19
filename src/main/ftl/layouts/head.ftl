@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#--
   - File: head.ftl
   - 
@@ -17,18 +18,18 @@
   
 <#assign defaultTitle = ''/>
 <#if resourceContext?exists && resourceContext.currentResource?exists>
-<#assign defaultTitle = vrtx.getMsg("title.title",
-         resourceContext.currentResource.name,
-         [resourceContext.currentResource.name])/>
+  <#assign defaultTitle = vrtx.getMsg("title.title",
+           resourceContext.currentResource.name,
+           [resourceContext.currentResource.name])/>
 </#if>
 <#if cssURLs?exists>
-<#list cssURLs as cssURL>
-  <link rel="stylesheet" href="${cssURL}">
-</#list>
+  <#list cssURLs as cssURL>
+    <link rel="stylesheet" href="${cssURL}" type="text/css" />
+  </#list>
 </#if>
 <#if jsURLs?exists>
   <#list jsURLs as jsURL>
-  <script type="text/javascript" src="${jsURL}"></script>
+    <script type="text/javascript" src="${jsURL}"></script>
   </#list>
 </#if>
 <title>
@@ -42,4 +43,3 @@
   ${defaultTitle}
 </#if>
 </title>
-

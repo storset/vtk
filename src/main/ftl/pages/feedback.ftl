@@ -16,16 +16,16 @@
   <title><@vrtx.msg code="feedback.title" default="Give feedback" /></title>
   <#if cssURLs?exists>
     <#list cssURLs as cssUrl>
-      <link href="${cssUrl}" type="text/css" rel="stylesheet"/>
+      <link href="${cssUrl}" type="text/css" rel="stylesheet" />
     </#list>
   </#if>
   <#if (displayUpscoping?exists && displayUpscoping = "true") || resourceContext.repositoryId = "uio.no">
-    <link href="/vrtx/__vrtx/static-resources/themes/default/forms.css" type="text/css" rel="stylesheet"/>
+    <link href="/vrtx/__vrtx/static-resources/themes/default/forms.css" type="text/css" rel="stylesheet" />
     <!--[if lte IE 7]>
-      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css"/> 
+      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css" /> 
     <![endif]--> 
     <!--[if lte IE 6]>
-      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css"/> 
+      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css" /> 
     <![endif]--> 
   </#if>
   <#if jsURLs?exists>

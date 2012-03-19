@@ -26,13 +26,13 @@
   
   <#if cssURLs?exists>
     <#list cssURLs as cssUrl>
-       <link href="${cssUrl}" type="text/css" rel="stylesheet"/>
+       <link href="${cssUrl}" type="text/css" rel="stylesheet" />
     </#list>
   </#if>
   
   <#if alternativeRepresentations?exists>
     <#list alternativeRepresentations as alt>
-    <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
+      <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
     </#list>
   </#if>
  

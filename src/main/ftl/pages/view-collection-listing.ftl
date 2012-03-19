@@ -51,12 +51,12 @@
   <#else>
     <#if cssURLs?exists>
       <#list cssURLs as cssURL>
-        <link rel="stylesheet" href="${cssURL}" />
+        <link rel="stylesheet" href="${cssURL}" type="text/css" />
       </#list>
     </#if>
     <#if printCssURLs?exists>
       <#list printCssURLs as cssURL>
-        <link rel="stylesheet" href="${cssURL}" media="print" />
+        <link rel="stylesheet" href="${cssURL}" media="print" type="text/css" />
       </#list>
     </#if>
     <#if jsURLs?exists>

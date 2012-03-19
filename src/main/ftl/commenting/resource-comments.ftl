@@ -20,7 +20,7 @@
     </#if>
     <#if cssURLs?exists>
       <#list cssURLs as cssUrl>
-        <link href="${cssUrl}" type="text/css" rel="stylesheet"/>
+        <link href="${cssUrl}" type="text/css" rel="stylesheet" />
       </#list>
     </#if>
     <title>${title?html}</title>

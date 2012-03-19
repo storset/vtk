@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
 
@@ -17,7 +18,7 @@
   <#if urls[listingType]?exists>
     <#list urls[listingType] as commonUrl>
       <#if scriptType == "css">
-        <link rel="stylesheet" href="${commonUrl}" />
+        <link rel="stylesheet" href="${commonUrl}" type="text/css" />
       <#elseif scriptType == "js">
         <script type="text/javascript" src="${commonUrl}"></script>
       </#if>

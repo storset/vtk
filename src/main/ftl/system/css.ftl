@@ -11,7 +11,7 @@
 </#if>
 <#if printCssURLs?exists>
   <#list printCssURLs as cssURL>
-   <link rel="stylesheet" href="${cssURL?html}" type="text/css" media="print" />
+    <link rel="stylesheet" href="${cssURL?html}" type="text/css" media="print" />
   </#list>
 </#if>
 

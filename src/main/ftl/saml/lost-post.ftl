@@ -22,26 +22,24 @@
   <body>
 </#if>
     <form name="vrtxLostPost" action="${postURL?html}" method="post">
-    <p>A problem has occured while processing your posted data. Your login session
-      was not found or was invalid.</p><p>This can typically happen in the following situations:</p>
-    <ul>
-      <li>Logging out in a different browser window/tab while editing a document.</li>
-      <li>Switching internet connection while editing a document.</li>
-      <li>Leaving the editor open without any activity for a long time.</li>
-    </ul>
-
-    <#list body?keys as name>
-      <#if 'csrf-prevention-token' == name>
-        <@vrtx.csrfPreventionToken url=postURL />
-      <#else>
-      <#list body[name] as value>
-        <input type="hidden" name="${name?html}" value="${value?html}" />
+      <p>A problem has occured while processing your posted data. Your login session
+        was not found or was invalid.</p><p>This can typically happen in the following situations:</p>
+      <ul>
+        <li>Logging out in a different browser window/tab while editing a document.</li>
+        <li>Switching internet connection while editing a document.</li>
+        <li>Leaving the editor open without any activity for a long time.</li>
+      </ul>
+      <#list body?keys as name>
+        <#if 'csrf-prevention-token' == name>
+          <@vrtx.csrfPreventionToken url=postURL />
+        <#else>
+          <#list body[name] as value>
+            <input type="hidden" name="${name?html}" value="${value?html}" />
+          </#list>
+        </#if>
       </#list>
-      </#if>
-    </#list>
       You can retry the operation by clicking on this button:
       <input name="submit" type="submit" value="submit form again" />
     </form>
   </body>
 </html>
-

@@ -187,16 +187,8 @@
               <#case "content-length">
                 <#if child.isCollection()>
                   &nbsp;
-                <#elseif child.contentLength <= 1000>
-                  ${child.contentLength} B
-                <#elseif child.contentLength <= 1000000>
-                  ${(child.contentLength / 1000)?string("0.#")} KB
-                <#elseif child.contentLength <= 1000000000>
-                  ${(child.contentLength / 1000000)?string("0.#")} MB
-                <#elseif child.contentLength <= 1000000000000>
-                  ${(child.contentLength / 1000000000)?string("0.#")} GB
                 <#else>
-                  ${child.contentLength} B
+                  <@vrtx.calculateResourceSize child.contentLength />
                 </#if>
                 <#break>
             
@@ -299,12 +291,6 @@
              id="collectionListing.action.${actionName?html}"
              name="action"
              title="${submitActions[actionName]?html}" />
-      <#--
-      <button type="submit" value="${actionName?html}" 
-              id="collectionListing.action.${actionName?html}" name="action">
-        ${submitActions[actionName]?html}
-      </button>
-      -->
     </#list>
   </div>
   </form>

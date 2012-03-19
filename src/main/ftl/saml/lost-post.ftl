@@ -14,13 +14,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title></title>
+    <title>Lost post</title>
   </head>
-  <#if autosubmit?exists && autosubmit == "true">
+<#if autosubmit?exists && autosubmit == "true">
   <body onload="document.vrtxLostPost.submit.click()">
-  <#else>
+<#else>
   <body>
-  </#if>
+</#if>
     <form name="vrtxLostPost" action="${postURL?html}" method="post">
     <p>A problem has occured while processing your posted data. Your login session
       was not found or was invalid.</p><p>This can typically happen in the following situations:</p>

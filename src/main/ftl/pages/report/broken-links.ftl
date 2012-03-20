@@ -112,7 +112,9 @@
                     </#if>
                   <#else>
                     <#assign countedBrokenLinks = countedBrokenLinks + 1 />
-                    <li>${link?html}</li>
+                    <#if !justCountBrokenLinks>
+                      <li>${link?html}</li>
+                    </#if>
                   </#if>
                   <#if countedBrokenLinks &gt; 10>
                     <li>...</li>

@@ -1187,4 +1187,8 @@ public class URL {
         }
         return cur;
     }
+    
+    public static Path toPath(HttpServletRequest request){
+        return create(request).getPath();
+    }
 }

@@ -102,6 +102,8 @@ public class BrokenLinksReport extends DocumentReporter {
         if (linkType == null) linkType = FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE;
         if (published == null) published = FILTER_PUBLISHED_PARAM_DEFAULT_VALUE;
         if (readRestriction == null) readRestriction = FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE;
+        
+        result.put("linkType", linkType);
 
         // TODO: Refactor method and generalize for 1..infinity filters
 

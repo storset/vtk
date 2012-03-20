@@ -109,7 +109,11 @@
                   <li>
                   <#if link?is_hash>
                     <#if (link.link)?exists>
-                      ${link.link?html}<#if (link.status)?exists><!--${link.status?html}--></#if>
+                      <#if (report.linkType == "anchor" && link.type == "ANCHOR")
+                        || (report.linkType == "img" && link.type == "IMG" || link.type == "PROPERTY")
+                        || (report.linkType == "other" && link.type != "ANCHOR" && link.type != "IMG" && link.type != "PROPERTY")>
+                        ${link.link?html}<#if (link.status)?exists><!--${link.status?html}--></#if>
+                      </#if>
                     </#if>
                   <#else>
                     ${link?html}

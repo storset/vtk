@@ -97,7 +97,7 @@
             <#assign justCountBrokenLinks = false />
             <#assign countedBrokenLinks = 0 />
             <#if brokenLinks?exists>
-                <ul>
+              <ul>
                 <#list brokenLinks as link>
                   <#if link?is_hash>
                     <#if (link.link)?exists>
@@ -119,7 +119,7 @@
                     <#assign justCountBrokenLinks = true />
                   </#if>
                 </#list>
-                </ul>
+              </ul>
             </#if>
           </#assign>
    

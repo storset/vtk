@@ -151,9 +151,9 @@ public class BrokenLinksReport extends DocumentReporter {
         
         if (FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE.equals(linkType) || linkType == null) {
             linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_ANCHOR", TermOperator.EQ));
-        } else if ("img".equals(linkType) || "property".equals(linkType)) {
+        } else if ("img".equals(linkType)) {
             linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_IMG", TermOperator.EQ));
-        } else if (!FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE.equals(linkType) && !"img".equals(linkType) && !"property".equals(linkType)) {
+        } else {
             AndQuery and = new AndQuery();
             and.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS", TermOperator.EQ));
             and.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_ANCHOR", TermOperator.NE));

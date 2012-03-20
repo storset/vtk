@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <bean id="messageListing.viewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
@@ -14,8 +14,7 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="messageListing.handler" class="org.vortikal.web.display.collection.MessageListingController"
-    parent="collectionListing.handler">
+  <bean id="messageListing.handler" class="org.vortikal.web.display.collection.MessageListingController" parent="collectionListing.handler">
     <property name="searchComponents">
       <list>
         <ref bean="messageListing.searchComponent" />
@@ -34,7 +33,7 @@
         </bean>
       </list>
     </property>
-        <property name="searchSorting" ref="messageListing.searchSorting" />
+    <property name="searchSorting" ref="messageListing.searchSorting" />
   </bean>
 
 
@@ -52,16 +51,15 @@
   <bean id="messageListing.feedHandler" parent="collectionListing.atomHandler">
     <property name="searchComponent" ref="messageListing.searchComponent" />
   </bean>
-  
+
   <bean id="messageListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
     <property name="sortOrderPropDefPointers">
       <list>
-        <value>lastModified</value>
+        <value>publish-date</value>
       </list>
     </property>
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
-    
   </bean>
 
 </beans>

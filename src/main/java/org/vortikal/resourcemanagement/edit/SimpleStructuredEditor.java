@@ -31,6 +31,11 @@ import org.vortikal.web.service.URL;
 
 public class SimpleStructuredEditor implements Controller {
 
+    public static final String ACTION_PARAMETER_VALUE_CANCEL = "cancel";
+    public static final String ACTION_PARAMETER_VALUE_DELETE = "delete";
+    public static final String ACTION_PARAMETER_VALUE_NEW = "new";
+    public static final String ACTION_PARAMETER_VALUE_UPDATE = "update";
+ 
     private static final String TITLE_PARAMETER = "title";
     private String viewName;
     private PropertyTypeDefinition publishDatePropDef;
@@ -48,28 +53,28 @@ public class SimpleStructuredEditor implements Controller {
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
 
-        Path uri = URL.create(request).getPath();
+        Path uri = URL.toPath(request);
         model.put("url", URL.create(request));
 
         Resource currentResource = repository.retrieve(token, uri, false);
         model.put("isCollection", currentResource.isCollection());
 
         if ("POST".equals(request.getMethod())) {
-            if (request.getParameter("cancel") != null) {
+            if (request.getParameter(ACTION_PARAMETER_VALUE_CANCEL) != null) {
                 repository.unlock(token, uri, null);
-                setRedirect(response, uri, !currentResource.isCollection(), true);
-            } else if (request.getParameter("delete") != null) {
+                setRedirect(response, currentResource.isCollection() ? uri : uri.getParent(), null, null);
+            } else if (request.getParameter(ACTION_PARAMETER_VALUE_DELETE) != null) {
                 // This is going to be replaced later
                 repository.unlock(token, uri, null);
                 repository.delete(token, uri, true);
-                setRedirect(response, uri.getParent(), false, false);
+                setRedirect(response, uri.getParent(), uri, ACTION_PARAMETER_VALUE_DELETE);
             } else if (currentResource.isCollection()) {
-                createNewDocument(request, repository, token, uri);
-                setRedirect(response, uri, false, false);
+                Path newUri = createNewDocument(request, repository, token, uri);
+                setRedirect(response, uri, newUri, ACTION_PARAMETER_VALUE_NEW);
             } else if (resourceType.equals(currentResource.getResourceType())) {
                 updateDocument(request, token, repository, uri);
                 repository.unlock(token, uri, null);
-                setRedirect(response, uri, true, false);
+                setRedirect(response, uri.getParent(), uri, ACTION_PARAMETER_VALUE_UPDATE);
             }
         } else if (resourceType.equals(currentResource.getResourceType())) {
             // Edit some document
@@ -81,17 +86,16 @@ public class SimpleStructuredEditor implements Controller {
         return new ModelAndView(viewName, model);
     }
 
-    private void setRedirect(HttpServletResponse response, Path uri, boolean redirectToParent, boolean isCancel)
+    private void setRedirect(HttpServletResponse response, Path collection, Path document, String action)
             throws IOException, Exception {
-        // TODO: force refresh of index and wait!
-        if (!isCancel) {
-            Thread.sleep(1000 * 16);
-            response.addIntHeader("Refresh", 0);
+        response.addIntHeader("Refresh", 0);
+
+        URL url = viewService.constructURL(collection);
+        if (action != null || document != null) {
+            url.addParameter("action", action);
+            url.addParameter("uri", document.toString());
         }
-        if (redirectToParent) {
-            response.sendRedirect(viewService.constructURL(uri.getParent()).toString());
-        }
-        response.sendRedirect(viewService.constructURL(uri).toString());
+        response.sendRedirect(url.toString());
     }
 
     private void updateDocument(HttpServletRequest request, String token, Repository repository, Path uri)
@@ -106,7 +110,7 @@ public class SimpleStructuredEditor implements Controller {
         repository.storeContent(token, uri, is);
     }
 
-    private void createNewDocument(HttpServletRequest request, Repository repository, String token, Path uri)
+    private Path createNewDocument(HttpServletRequest request, Repository repository, String token, Path uri)
             throws Exception {
         JSONObject document = new JSONObject();
         document.put("resourcetype", resourceType);
@@ -121,6 +125,7 @@ public class SimpleStructuredEditor implements Controller {
 
         Resource resource = repository.createDocument(token, newUri, is);
         publishResource(resource, token, repository);
+        return newUri;
     }
 
     private Path generateFilename(HttpServletRequest request, Repository repository, String token, Path uri)

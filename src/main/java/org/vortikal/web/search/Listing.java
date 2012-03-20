@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -188,5 +189,52 @@ public class Listing {
         sb.append("; size: " + this.files.size());
         sb.append("; more:").append(this.more);
         return sb.toString();
+    }
+
+    public void addFile(PropertySet file) {
+        for (PropertySet x : files) {
+            if (x.getURI().equals(file.getURI())) {
+                return;
+            }
+        }
+        files.add(0, file);
+        this.totalHits++;
+    }
+
+    /*
+     * Manipulating file list for use in message listing. This is a prototype
+     * and will be removed if Øyinvd dislikes it :)
+     */
+
+    public void updateFile(PropertySet file) {
+        int index = 0;
+        boolean found = false;
+        for (PropertySet x : files) {
+            if (x.getURI().equals(file.getURI())) {
+                found = true;
+                break;
+            }
+            index++;
+        }
+        if (found) {
+            files.remove(index);
+            files.add(index, file);
+        }
+    }
+
+    public void removeFile(Path p) {
+        int index = 0;
+        boolean found = false;
+        for (PropertySet x : files) {
+            if (x.getURI().equals(p)) {
+                found = true;
+                break;
+            }
+            index++;
+        }
+        if (found) {
+            files.remove(index);
+            totalHits--;
+        }
     }
 }

@@ -1347,6 +1347,8 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links-web
 #directory-listing td.vrtx-report-broken-links-web-page span {
   display: block;
   clear: left;
+  font-size: 0.867em;
+  color: #5e5e5e;
 }
 
 #directory-listing td.name span.name-split,

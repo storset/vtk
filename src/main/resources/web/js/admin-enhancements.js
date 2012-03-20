@@ -506,10 +506,15 @@ $(document).ready(function () {
       e.preventDefault();
     });
   }
+  
+  $("#app-content").on("click", "td.vrtx-report-broken-links-web-page a", function(e) {
+    var openedWebpageWithBrokenLinks = openRegular(this.href, 1020, 800, "DisplayWebpageBrokenLinks");
+    e.preventDefault();
+  });
 
   // Versioning
   $("#app-content").on("click", "a.vrtx-revision-view", function(e) {
-    var openedRevision = openVersioning(this.href, 1020, 800);
+    var openedRevision = openRegular(this.href, 1020, 800, "DisplayRevision");
     e.preventDefault();
   });
  
@@ -1909,7 +1914,7 @@ function openServerBrowser(url, width, height) {
   return oWindow;
 }
 
-function openVersioning(url, width, height) {
+function openRegular(url, width, height, winTitle) {
   var iLeft = (screen.width - width) / 2;
   var iTop = (screen.height - height) / 2;
   var sOptions = "toolbar=yes,status=yes,resizable=yes";
@@ -1920,7 +1925,7 @@ function openVersioning(url, width, height) {
   sOptions += ",left=" + iLeft;
   sOptions += ",top=" + iTop;
   var now = +new Date();
-  var oWindow = window.open(url, "DisplayRevision" + now, sOptions); // title must be without spaces in IE
+  var oWindow = window.open(url, winTitle + now, sOptions); // title must be without spaces in IE
   return oWindow;
 }
 

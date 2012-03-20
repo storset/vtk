@@ -117,6 +117,7 @@ public class BrokenLinksReport extends DocumentReporter {
             filterReadRestrictionOptions.add(new FilterOption(param, filterOptionURL, param.equals(readRestriction) ? true : false));
         }
         
+        // Generate link type filter
         List<FilterOption> filterLinkTypeOptions = new ArrayList<FilterOption>();
         for (String param : FILTER_LINK_TYPE_PARAM_VALUES) {
             URL filterOptionURL = new URL(reportURL);

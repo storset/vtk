@@ -96,6 +96,7 @@
           <tr class="${rowType}${firstLast}${published}${restricted}">
             <td class="vrtx-report-broken-links-web-page">
               <a href="${url?html}">${title?html}</a>
+              <span>${url?html}</span>
             </td>
             <td class="vrtx-report-broken-links-count">
               <#if brokenLinks?exists>

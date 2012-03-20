@@ -38,30 +38,13 @@
 		</div>
         </div>
             <div>
-                <#assign message = vrtx.propValue(r, "message", "", "") />
+            <#assign message = vrtx.propValue(r, "message", "", "") />
+                ${message} 
             </div>
-            ${message} 
-      
-      
-              <#list collectionListing.displayPropDefs as displayPropDef>
-         
-          <#if displayPropDef.name = 'lastModified'>
-            <#assign val>
-              <@vrtx.msg code="viewCollectionListing.lastModified"
-                         args=[vrtx.propValue(r, displayPropDef.name, "long")] />
-            </#assign>
-            <#assign val = val + " " + vrtx.propValue(r, 'modifiedBy', 'document-link') />
-          <#else>
-            <#assign val = vrtx.propValue(r, displayPropDef.name, "long") /> <#-- Default to 'long' format -->
-          </#if>
-
-          <#if val?has_content>
-            <div class="${displayPropDef.name}">
-              ${val}
+            <#local publishDate = vrtx.propValue(r, 'publish-date') />
+            <div class="published-date">
+              <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishDate}                
             </div>
-          </#if>
-        </#list>
-      
     </#list>
    </div>
   </#if>

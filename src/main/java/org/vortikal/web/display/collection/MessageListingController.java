@@ -1,11 +1,13 @@
 package org.vortikal.web.display.collection;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Path;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
@@ -20,7 +22,6 @@ public class MessageListingController extends CollectionListingController {
     @SuppressWarnings("unchecked")
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
             throws Exception {
-
         super.runSearch(request, collection, model, pageLimit);
 
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -31,10 +32,18 @@ public class MessageListingController extends CollectionListingController {
         Path uriParameter = request.getParameter("uri") != null ? Path.fromString(request.getParameter("uri")) : null;
         String actionParameter = request.getParameter("action");
 
-        /* Manipulate the result set to compensate for slow index */
+        /*
+         * Manipulate the result set to compensate for slow index --
+         * alternatively do it the other way around.. but complex view code...
+         */
         if (uriParameter != null && actionParameter != null) {
-            List<Listing> results = (List<Listing>) model.get(MODEL_KEY_SEARCH_COMPONENTS);
+            List<Listing> results;
+            results = (List<Listing>) model.get(MODEL_KEY_SEARCH_COMPONENTS);
+            if (results.size() == 0) {
+                results.add(new Listing(null, "", "", 0));
+            }
             Listing l = results.get(0);
+
             if (SimpleStructuredEditor.ACTION_PARAMETER_VALUE_NEW.equals(actionParameter)
                     && repository.exists(token, uriParameter)) {
                 l.addFile(repository.retrieve(token, uriParameter, false));
@@ -42,7 +51,15 @@ public class MessageListingController extends CollectionListingController {
                     && repository.exists(token, uriParameter)) {
                 l.updateFile(repository.retrieve(token, uriParameter, false));
             } else if (SimpleStructuredEditor.ACTION_PARAMETER_VALUE_DELETE.equals(actionParameter)) {
-                l.removeFile(uriParameter);
+                List<Path> remove = new ArrayList<Path>();
+                for(PropertySet p : l.getFiles()){
+                    if(!repository.exists(token, p.getURI())){
+                        remove.add(p.getURI());
+                    }
+                }
+                for(Path p : remove){
+                    l.removeFile(p);
+                }
             }
             model.put("edit", helper.isAuthorized(repository, token, principal, l.getTotalHits(), results));
         }

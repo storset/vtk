@@ -197,7 +197,11 @@ public class Listing {
                 return;
             }
         }
-        files.add(0, file);
+        if(files.size() > 0){
+            files.add(0, file);
+        }else{
+            files.add(file);
+        }
         this.totalHits++;
     }
 

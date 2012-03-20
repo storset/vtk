@@ -1344,6 +1344,11 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links-web
   width: 30%;
 }
 
+#directory-listing td.vrtx-report-broken-links-web-page span {
+  display: block;
+  clear: left;
+}
+
 #directory-listing td.name span.name-split,
 #directory-listing td.vrtx-trash-can-name span.name-split,
 body#vrtx-report-documents #directory-listing td.vrtx-report-name span.name-split {

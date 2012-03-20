@@ -92,6 +92,36 @@
             <#assign published  = " unpublished">
           </#if>
           <#assign lastModified = vrtx.propValue(item, 'lastModified') />
+          
+          <#assign brokenLinksList>
+            <#assign justCountBrokenLinks = false />
+            <#assign countedBrokenLinks = 0 />
+            <#if brokenLinks?exists>
+                <ul>
+                <#list brokenLinks as link>
+                  <#if link?is_hash>
+                    <#if (link.link)?exists>
+                      <#if (report.linkType == "anchor" && link.type == "ANCHOR")
+                        || (report.linkType == "img" && link.type == "IMG" || link.type == "PROPERTY")
+                        || (report.linkType == "other" && link.type != "ANCHOR" && link.type != "IMG" && link.type != "PROPERTY")>
+                        <#assign countedBrokenLinks = countedBrokenLinks + 1 />
+                        <#if !justCountBrokenLinks>
+                          <li>${link.link?html}<#if (link.status)?exists><!--${link.status?html}--></#if></li>
+                        </#if>
+                      </#if>
+                    </#if>
+                  <#else>
+                    <#assign countedBrokenLinks = countedBrokenLinks + 1 />
+                    <li>${link?html}</li>
+                  </#if>
+                  <#if countedBrokenLinks &gt; 10>
+                    <li>...</li>
+                    <#assign justCountBrokenLinks = true />
+                  </#if>
+                </#list>
+                </ul>
+            </#if>
+          </#assign>
    
           <tr class="${rowType}${firstLast}${published}${restricted}">
             <td class="vrtx-report-broken-links-web-page">
@@ -99,34 +129,12 @@
               <span>${url?html}</span>
             </td>
             <td class="vrtx-report-broken-links-count">
-              <#if brokenLinks?exists>
-                <#if (brokenLinks?size > 99)>99+<#else>${brokenLinks?size}</#if>
+              <#if countedBrokenLinks?exists>
+                <#if (countedBrokenLinks > 99)>99+<#else>${countedBrokenLinks}</#if>
               </#if>
             </td>
             <td class="vrtx-report-broken-links">
-              <#if brokenLinks?exists>
-                <ul>
-                <#list brokenLinks as link>
-                  <li>
-                  <#if link?is_hash>
-                    <#if (link.link)?exists>
-                      <#if (report.linkType == "anchor" && link.type == "ANCHOR")
-                        || (report.linkType == "img" && link.type == "IMG" || link.type == "PROPERTY")
-                        || (report.linkType == "other" && link.type != "ANCHOR" && link.type != "IMG" && link.type != "PROPERTY")>
-                        ${link.link?html}<#if (link.status)?exists><!--${link.status?html}--></#if>
-                      </#if>
-                    </#if>
-                  <#else>
-                    ${link?html}
-                  </#if>
-                  </li>
-                  <#if link_index &gt; 10>
-                    <li>...</li>
-                    <#break />
-                  </#if>
-                </#list>
-                </ul>
-              </#if>
+               ${brokenLinksList}
             </td>
             <td class="vrtx-report-last-modified">
               <#if linkStatus = 'AWAITING_LINKCHECK'>

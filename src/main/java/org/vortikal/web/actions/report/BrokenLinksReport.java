@@ -102,10 +102,8 @@ public class BrokenLinksReport extends DocumentReporter {
         if (linkType == null) linkType = FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE;
         if (published == null) published = FILTER_PUBLISHED_PARAM_DEFAULT_VALUE;
         if (readRestriction == null) readRestriction = FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE;
-        
-        result.put("linkType", linkType);
 
-        // TODO: refactor method and generalize for 1..infinity filters
+        // TODO: Refactor method and generalize for 1..infinity filters
 
         // Generate read restriction filter
         List<FilterOption> filterReadRestrictionOptions = new ArrayList<FilterOption>();
@@ -153,11 +151,9 @@ public class BrokenLinksReport extends DocumentReporter {
         
         if (FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE.equals(linkType) || linkType == null) {
             linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_ANCHOR", TermOperator.EQ));
-
-        } else if ("img".equals(linkType)) {
+        } else if ("img".equals(linkType) || "property".equals(linkType)) {
             linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_IMG", TermOperator.EQ));
-
-        } else {
+        } else if (!FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE.equals(linkType) && !"img".equals(linkType) && !"property".equals(linkType)) {
             AndQuery and = new AndQuery();
             and.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS", TermOperator.EQ));
             and.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_ANCHOR", TermOperator.NE));

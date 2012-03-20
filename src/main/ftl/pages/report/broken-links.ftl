@@ -116,7 +116,7 @@
                       <li>${link?html}</li>
                     </#if>
                   </#if>
-                  <#if countedBrokenLinks &gt; 10>
+                  <#if (countedBrokenLinks > 10 && !justCountBrokenLinks)>
                     <li>...</li>
                     <#assign justCountBrokenLinks = true />
                   </#if>

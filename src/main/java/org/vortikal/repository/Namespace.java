@@ -30,24 +30,19 @@
  */
 package org.vortikal.repository;
 
-import java.io.Serializable;
-
-
-public class Namespace implements Serializable {
-
-    private static final long serialVersionUID = 2843338379249275679L;
+public class Namespace {
 
     public static final Namespace DEFAULT_NAMESPACE = new Namespace(null, null);
-    
+
     /**
      * @deprecated This namespace will be removed.
      */
-    public static final Namespace CUSTOM_NAMESPACE = 
-        new Namespace("custom", "http://www.uio.no/vortex/custom-properties");
-    
-    public static final Namespace STRUCTURED_RESOURCE_NAMESPACE = 
-        new Namespace("resource", "http://www.uio.no/vrtx/__vrtx/ns/structured-resources");
-    
+    public static final Namespace CUSTOM_NAMESPACE = new Namespace("custom",
+            "http://www.uio.no/vortex/custom-properties");
+
+    public static final Namespace STRUCTURED_RESOURCE_NAMESPACE = new Namespace("resource",
+            "http://www.uio.no/vrtx/__vrtx/ns/structured-resources");
+
     private String prefix;
     private String uri;
 
@@ -60,15 +55,18 @@ public class Namespace implements Serializable {
         this.prefix = uri;
         this.uri = uri;
     }
-    
+
     public static Namespace getNamespace(String uri) {
-        if (uri == null) return DEFAULT_NAMESPACE;
-        if (uri.equals(STRUCTURED_RESOURCE_NAMESPACE.getUri())) return STRUCTURED_RESOURCE_NAMESPACE;
-        if (uri.equals(CUSTOM_NAMESPACE.getUri())) return CUSTOM_NAMESPACE;
-        
+        if (uri == null)
+            return DEFAULT_NAMESPACE;
+        if (uri.equals(STRUCTURED_RESOURCE_NAMESPACE.getUri()))
+            return STRUCTURED_RESOURCE_NAMESPACE;
+        if (uri.equals(CUSTOM_NAMESPACE.getUri()))
+            return CUSTOM_NAMESPACE;
+
         return new Namespace(uri);
     }
-    
+
     public static Namespace getNamespaceFromPrefix(String prefix) {
         if (prefix == null) {
             return DEFAULT_NAMESPACE;
@@ -79,22 +77,24 @@ public class Namespace implements Serializable {
         if ("custom".equals(prefix)) {
             return CUSTOM_NAMESPACE;
         }
-        
+
         return new Namespace(prefix); // XXX: unknown prefix
     }
 
     public String getPrefix() {
         return this.prefix;
     }
-    
+
     public String getUri() {
         return this.uri;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (! (obj instanceof Namespace)) return false;
+        if (obj == this)
+            return true;
+        if (!(obj instanceof Namespace))
+            return false;
         Namespace ns = (Namespace) obj;
 
         String thisUri = (this.uri == null) ? "" : this.uri;
@@ -106,7 +106,7 @@ public class Namespace implements Serializable {
     public int hashCode() {
         return this.uri == null ? 0 : this.uri.hashCode();
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -121,5 +121,5 @@ public class Namespace implements Serializable {
         }
         return sb.toString();
     }
-    
+
 }

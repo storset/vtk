@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.service;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -52,7 +53,9 @@ import org.vortikal.repository.Path;
  * that it has getters/setters for all URL components to achieve easy
  * "on-the-fly" manipulation when constructing URLs.
  */
-public class URL {
+public class URL implements Serializable {
+
+    private static final long serialVersionUID = 7929064929434323950L;
 
     private String protocol = null;
     private String host = null;
@@ -65,7 +68,7 @@ public class URL {
     private boolean collection = false;
 
     private boolean immutable = false;
-    
+
     private static final Integer PORT_80 = Integer.valueOf(80);
     private static final Integer PORT_443 = Integer.valueOf(443);
 
@@ -335,15 +338,16 @@ public class URL {
     }
 
     /**
-     * Makes this URL immutable (i.e. no further modifications 
-     * to this URL can be made).
+     * Makes this URL immutable (i.e. no further modifications to this URL can
+     * be made).
+     * 
      * @return this URL
      */
     public URL setImmutable() {
         this.immutable = true;
         return this;
     }
-    
+
     public boolean isImmutable() {
         return this.immutable;
     }
@@ -435,17 +439,16 @@ public class URL {
         url.append(this.protocol).append("://");
         url.append(this.host);
         if (this.port != null) {
-            if (!(this.port.equals(PORT_80) &&
-                  (PROTOCOL_HTTP.equals(this.protocol) || PROTOCL_RTMP.equals(protocol))
-                  || (this.port.equals(PORT_443) && PROTOCOL_HTTPS
-                    .equals(this.protocol)))) {
+            if (!(this.port.equals(PORT_80) && (PROTOCOL_HTTP.equals(this.protocol) || PROTOCL_RTMP.equals(protocol)) || (this.port
+                    .equals(PORT_443) && PROTOCOL_HTTPS.equals(this.protocol)))) {
                 url.append(":").append(this.port.intValue());
             }
         }
         if (PROTOCL_RTMP.equals(protocol)) {
             url.append(getPath());
         } else {
-            url.append(getPathRepresentation()); // Includes encoded /path, ?query parameters and #ref.
+            url.append(getPathRepresentation()); // Includes encoded /path,
+                                                 // ?query parameters and #ref.
         }
 
         return url.toString();
@@ -528,8 +531,7 @@ public class URL {
             url.append(this.protocol).append("://");
             url.append(this.host);
             if (this.port != null) {
-                if (!(this.port.equals(PORT_80) && PROTOCOL_HTTP.equals(this.protocol)
-                      || (this.port.equals(PORT_443) && PROTOCOL_HTTPS
+                if (!(this.port.equals(PORT_80) && PROTOCOL_HTTP.equals(this.protocol) || (this.port.equals(PORT_443) && PROTOCOL_HTTPS
                         .equals(this.protocol)))) {
                     url.append(":").append(this.port.intValue());
                 }
@@ -606,8 +608,7 @@ public class URL {
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("UTF-8 encoding not supported on this system");
         } catch (Exception e) {
-            throw new IllegalArgumentException("Unable to parse request URL: " 
-                    + request.getRequestURL(), e);
+            throw new IllegalArgumentException("Unable to parse request URL: " + request.getRequestURL(), e);
         }
     }
 
@@ -651,7 +652,7 @@ public class URL {
     private static enum ParseState {
         PROTOCOL, HOST, PORT, PATH, QUERY, REF
     }
-    
+
     /**
      * Parses a URL from a string representation. Also attempts to decode the
      * URL.
@@ -685,8 +686,8 @@ public class URL {
                     state = ParseState.HOST;
                     i += 2;
                 } else if (!(c >= 'a' && c <= 'z')) {
-                    throw new IllegalArgumentException("Malformed URL: '" + url
-                                    + "': illegal character in protocol: " + c);
+                    throw new IllegalArgumentException("Malformed URL: '" + url + "': illegal character in protocol: "
+                            + c);
                 } else {
                     protocol.append(c);
                 }
@@ -699,10 +700,9 @@ public class URL {
                     i--;
                 } else if (c == '?') {
                     state = ParseState.QUERY;
-                } else if (!(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9')
-                           && c != '.' && c != '-' && c != '_') {
-                    throw new IllegalArgumentException("Malformed URL: '" + url
-                            + "': illegal character in host name: "
+                } else if (!(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9') && c != '.'
+                        && c != '-' && c != '_') {
+                    throw new IllegalArgumentException("Malformed URL: '" + url + "': illegal character in host name: "
                             + c);
                 } else {
                     host.append(Character.toLowerCase(c));
@@ -717,8 +717,8 @@ public class URL {
                 } else if (c == '#') {
                     state = ParseState.REF;
                 } else if (!(c >= '0' && c <= '9')) {
-                    throw new IllegalArgumentException("Malformed URL: '" + url
-                              + "': illegal port number character: '" + c + "'");
+                    throw new IllegalArgumentException("Malformed URL: '" + url + "': illegal port number character: '"
+                            + c + "'");
                 } else {
                     port.append(c);
                 }
@@ -788,11 +788,11 @@ public class URL {
                 // Special case: remove last element if it is '%20'
                 if ("".equals(decoded.trim())) {
                     break;
-                }                    
+                }
             }
             resultPath = resultPath.expand(decoded);
         }
-        
+
         Integer portNumber = null;
         if (port.length() > 0) {
             try {
@@ -812,8 +812,8 @@ public class URL {
             }
         }
         if (query.length() > 0) {
-            for (Map.Entry<String,String[]> entry: splitQueryString(query.toString()).entrySet()) {
-                for (String value: entry.getValue()) {
+            for (Map.Entry<String, String[]> entry : splitQueryString(query.toString()).entrySet()) {
+                for (String value : entry.getValue()) {
                     // FIXME strictly speaking, keys need decoding as well..
                     resultURL.addParameter(entry.getKey(), decode(value));
                 }
@@ -822,14 +822,14 @@ public class URL {
         if (ref.length() > 0) {
             resultURL.setRef(ref.toString());
         }
-        
+
         resultURL.setCollection(collection);
-        
+
         return resultURL;
     }
-    
+
     private static final Pattern ABSOLUTE_URL_START = Pattern.compile("^[a-zA-Z]+:");
-    
+
     public static boolean isRelativeURL(String rel) {
         if (rel == null) {
             throw new IllegalArgumentException("Malformed URL: " + rel);
@@ -946,12 +946,11 @@ public class URL {
         return url;
     }
 
-
     private static final Pattern AMP_PATTERN = Pattern.compile("&");
-    
+
     /**
-     * Splits a query string into a map of (String, String[]). 
-     * NOTE: neither keys nor values are URL-decoded.
+     * Splits a query string into a map of (String, String[]). NOTE: neither
+     * keys nor values are URL-decoded.
      */
     public static Map<String, String[]> splitQueryString(String queryString) {
         Map<String, String[]> queryMap = new LinkedHashMap<String, String[]>();
@@ -992,7 +991,7 @@ public class URL {
         }
         return queryMap;
     }
-    
+
     /**
      * URL encodes the elements of a path using encoding UTF-8.
      * 
@@ -1145,14 +1144,16 @@ public class URL {
         }
         return true;
     }
-    
+
     /**
-     * Does the same as {@link Path#expand(String)}, except that too 
-     * many {@literal ../} segments resolve to the root path 
-     * ({@link Path#expand(String)} returns {@literal null} in such cases).
+     * Does the same as {@link Path#expand(String)}, except that too many
+     * {@literal ../} segments resolve to the root path (
+     * {@link Path#expand(String)} returns {@literal null} in such cases).
      * 
-     * @param the path to expand from 
-     * @param the expansion string
+     * @param the
+     *            path to expand from
+     * @param the
+     *            expansion string
      * @return the expanded path
      */
     private static Path expandPath(Path base, String expansion) {
@@ -1187,8 +1188,8 @@ public class URL {
         }
         return cur;
     }
-    
-    public static Path toPath(HttpServletRequest request){
+
+    public static Path toPath(HttpServletRequest request) {
         return create(request).getPath();
     }
 }

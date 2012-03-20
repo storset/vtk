@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.search;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -42,9 +41,7 @@ import org.vortikal.repository.PropertySet;
  * 
  * @author oyviste
  */
-public class ResultSetImpl implements ResultSet, Serializable {
-
-    private static final long serialVersionUID = -6971684549261941757L;
+public class ResultSetImpl implements ResultSet {
 
     private List<PropertySet> results;
     private int totalHits;

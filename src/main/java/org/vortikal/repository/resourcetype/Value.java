@@ -30,19 +30,15 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import java.io.Serializable;
 import java.util.Date;
 
-import org.vortikal.repository.ContentStream;
+import net.sf.json.JSONObject;
+
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
 
-import net.sf.json.JSONObject;
-
-public class Value implements Cloneable, Comparable<Value>, Serializable {
-
-    private static final long serialVersionUID = 3436743294757202084L;
+public class Value implements Cloneable, Comparable<Value> {
 
     public static final long MAX_LENGTH = 2048;
     protected Type type = PropertyType.Type.STRING;
@@ -77,9 +73,8 @@ public class Value implements Cloneable, Comparable<Value>, Serializable {
                 break;
             }
         default:
-            throw new IllegalArgumentException(
-                    "Invalid type [" + type + "] " 
-                    + "for constructor of value [" + stringValue + "]");
+            throw new IllegalArgumentException("Invalid type [" + type + "] " + "for constructor of value ["
+                    + stringValue + "]");
         }
     }
 
@@ -122,20 +117,22 @@ public class Value implements Cloneable, Comparable<Value>, Serializable {
         this.type = PropertyType.Type.PRINCIPAL;
         this.principalValue = principalValue;
     }
-    
+
     public Value(JSONObject value) {
         this.type = Type.JSON;
         this.stringValue = value.toString();
     }
-    
+
     public Value(byte[] buffer, String contentType) {
-        if (buffer == null) throw new IllegalArgumentException("buffer cannot be null");
+        if (buffer == null)
+            throw new IllegalArgumentException("buffer cannot be null");
         this.type = Type.BINARY;
         this.binaryValue = new BufferedBinaryValue(buffer, contentType);
     }
-    
+
     Value(BinaryValue value) {
-        if (value == null) throw new IllegalArgumentException("value cannot be null");
+        if (value == null)
+            throw new IllegalArgumentException("value cannot be null");
         this.type = Type.BINARY;
         this.binaryValue = value;
     }
@@ -167,15 +164,15 @@ public class Value implements Cloneable, Comparable<Value>, Serializable {
     public String getStringValue() {
         return this.stringValue;
     }
-    
+
     public JSONObject getJSONValue() {
         return JSONObject.fromObject(this.stringValue);
     }
-    
+
     public BinaryValue getBinaryValue() {
         return this.binaryValue;
     }
-    
+
     public Object getObjectValue() {
         switch (this.type) {
 
@@ -197,10 +194,10 @@ public class Value implements Cloneable, Comparable<Value>, Serializable {
         case IMAGE_REF:
         case JSON:
             return this.stringValue;
-            
+
         case PRINCIPAL:
             return this.principalValue;
-            
+
         case BINARY:
             return this.binaryValue;
         }
@@ -340,7 +337,7 @@ public class Value implements Cloneable, Comparable<Value>, Serializable {
 
         case PRINCIPAL:
             return String.valueOf(this.principalValue);
-            
+
         case BINARY:
             return this.binaryValue.toString();
 

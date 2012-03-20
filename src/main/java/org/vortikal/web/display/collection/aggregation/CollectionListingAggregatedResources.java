@@ -109,6 +109,19 @@ public class CollectionListingAggregatedResources implements Serializable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof CollectionListingAggregatedResources)) {
+            return false;
+        }
+        return this.toString().equals(((CollectionListingAggregatedResources) obj).toString());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if (this.aggregationSet != null) {

@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.store;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
@@ -45,7 +44,7 @@ import java.util.Set;
  *
  * Generic interface for holding/accessing metadata
  */
-public interface Metadata extends Serializable {
+public interface Metadata {
 
     /**
      * Get value of attribute with the given name. If the attribute has multiple

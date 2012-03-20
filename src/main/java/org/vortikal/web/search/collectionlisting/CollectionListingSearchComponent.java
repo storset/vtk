@@ -78,65 +78,67 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
     protected ResultSet getResultSet(HttpServletRequest request, Resource collection, String token, Sorting sorting,
             int searchLimit, int offset) {
 
+        // Check cache for aggregation set containing ref to other hosts
+        CollectionListingCacheKey cacheKey = this.getCacheKey(request, collection, token);
+        Element cached = this.cache.get(cacheKey);
+        Object cachedObj = cached != null ? cached.getObjectValue() : null;
+
+        boolean isMultiHostSearch = false;
+        CollectionListingAggregatedResources clar = null;
+        if (cachedObj != null) {
+            clar = (CollectionListingAggregatedResources) cachedObj;
+            isMultiHostSearch = true;
+        } else {
+            clar = this.aggregationResolver.getAggregatedResources(collection);
+            isMultiHostSearch = this.isMultiHostSearch(clar);
+        }
+
+        ResultSet result = null;
+
         Query uriQuery = this.listingUriQueryBuilder.build(collection);
         List<Query> additionalQueries = this.getAdditionalQueries(collection, request);
 
-        // Check cache
-        URL url = RequestContext.getRequestContext().getRequestURL();
-        String sortString = sorting != null ? sorting.toString() : null;
-        CollectionListingCacheKey cacheKey = new CollectionListingCacheKey(token, this.getName(), url.toString(),
-                sortString, searchLimit, offset);
-        Element cached = this.cache.get(cacheKey);
-        Object cachedObj = cached != null ? cached.getObjectValue() : null;
-        ResultSet result = null;
+        boolean successfulMultiHostSearch = false;
+        if (isMultiHostSearch) {
 
-        if (cachedObj != null && cachedObj instanceof ResultSet) {
+            // Keep aggregation set in cache
+            cache.put(new Element(cacheKey, clar));
 
-            // Found in cache
-            logger.info("Fetching search results from cache, key: " + cacheKey);
-            result = (ResultSet) cachedObj;
-
-        } else {
-
-            // Nothing found in cache, perform search
-            CollectionListingAggregatedResources clar = this.aggregationResolver.getAggregatedResources(collection);
-            Map<URL, Set<Path>> aggregationSet = clar.getAggregationSet();
-            Set<URL> manuallyApprovedSet = clar.getManuallyApproved();
-            boolean isMultiHostSearch = this.isMultiHostSearch(aggregationSet.keySet(), manuallyApprovedSet);
-
-            boolean successfulMultiHostSearch = false;
-            if (isMultiHostSearch) {
-                CollectionListingConditions clc = new CollectionListingConditions(token, uriQuery, additionalQueries,
-                        clar, searchLimit, offset, sorting, null);
-                try {
-                    result = this.multiHostSearcher.collectionListing(clc);
-                    if (result != null) {
-                        successfulMultiHostSearch = true;
-                        cache.put(new Element(cacheKey, result));
-                    }
-                } catch (Exception e) {
-                    logger.error("An error occured while searching multiple hosts: " + e.getMessage());
+            CollectionListingConditions clc = new CollectionListingConditions(token, uriQuery, additionalQueries, clar,
+                    searchLimit, offset, sorting, null);
+            try {
+                result = this.multiHostSearcher.collectionListing(clc);
+                if (result != null) {
+                    successfulMultiHostSearch = true;
                 }
+            } catch (Exception e) {
+                logger.error("An error occured while searching multiple hosts: " + e.getMessage());
             }
+        }
 
-            if (!successfulMultiHostSearch) {
+        if (!successfulMultiHostSearch) {
 
-                Query query = generateLocalQuery(uriQuery, additionalQueries, clar);
+            Query query = generateLocalQuery(uriQuery, additionalQueries, clar);
 
-                Search search = new Search();
-                search.setQuery(query);
-                search.setLimit(searchLimit);
-                search.setCursor(offset);
-                search.setSorting(sorting);
+            Search search = new Search();
+            search.setQuery(query);
+            search.setLimit(searchLimit);
+            search.setCursor(offset);
+            search.setSorting(sorting);
 
-                Repository repository = RequestContext.getRequestContext().getRepository();
-                result = repository.search(token, search);
-
-            }
+            Repository repository = RequestContext.getRequestContext().getRepository();
+            result = repository.search(token, search);
 
         }
 
         return result;
+    }
+
+    private CollectionListingCacheKey getCacheKey(HttpServletRequest request, Resource collection, String token) {
+        String lastModified = collection.getPropertiesLastModified().toString();
+        String url = request.getRequestURL().toString();
+        CollectionListingCacheKey cacheKey = new CollectionListingCacheKey(lastModified, token, this.getName(), url);
+        return cacheKey;
     }
 
     private List<Query> getAdditionalQueries(Resource collection, HttpServletRequest request) {
@@ -153,7 +155,11 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
         return null;
     }
 
-    private boolean isMultiHostSearch(Set<URL> aggregationSet, Set<URL> manuallyApprovedSet) {
+    private boolean isMultiHostSearch(CollectionListingAggregatedResources clar) {
+
+        Map<URL, Set<Path>> aggregationSet = clar.getAggregationSet();
+        Set<URL> manuallyApprovedSet = clar.getManuallyApproved();
+
         if (!this.multiHostSearcher.isMultiHosSearchEnabled()) {
             return false;
         }
@@ -162,7 +168,7 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             return false;
         }
         URL currentHost = RequestContext.getRequestContext().getRequestURL().relativeURL("/");
-        for (URL url : aggregationSet) {
+        for (URL url : aggregationSet.keySet()) {
             if (!url.equals(currentHost)) {
                 return true;
             }

@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.resourcetype;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -55,31 +54,27 @@ import org.vortikal.security.Principal;
  * 
  */
 @SuppressWarnings("deprecation")
-public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, InitializingBean, Serializable {
-
-    private static final long serialVersionUID = 3343489440040263038L;
+public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, InitializingBean {
 
     private Map<String, Object> metadata = new HashMap<String, Object>();
-
     private Namespace namespace;
     private String name;
     private Type type = PropertyType.Type.STRING;
     private boolean multiple = false;
     private boolean mandatory = false;
-
-    private transient RepositoryAction protectionLevel = PropertyType.PROTECTION_LEVEL_ACL_WRITE;
-    private transient Value defaultValue;
-    private transient Value[] allowedValues;
-    private transient PropertyEvaluator propertyEvaluator;
-    private transient PropertyValidator validator;
-    private transient ValueFormatter valueFormatter;
-    private transient ValueSeparator defaultValueSeparator = new ConfigurableValueSeparator();
-    private transient Map<String, ValueSeparator> valueSeparators = new HashMap<String, ValueSeparator>();
-    private transient Vocabulary<Value> vocabulary;
-    private transient ValueFactory valueFactory;
-    private transient ValueFormatterRegistry valueFormatterRegistry;
-    private transient ContentRelation contentRelation;
-    private transient TypeLocalizationProvider typeLocalizationProvider = null;
+    private RepositoryAction protectionLevel = PropertyType.PROTECTION_LEVEL_ACL_WRITE;
+    private Value defaultValue;
+    private Value[] allowedValues;
+    private PropertyEvaluator propertyEvaluator;
+    private PropertyValidator validator;
+    private ValueFormatter valueFormatter;
+    private ValueSeparator defaultValueSeparator = new ConfigurableValueSeparator();
+    private Map<String, ValueSeparator> valueSeparators = new HashMap<String, ValueSeparator>();
+    private Vocabulary<Value> vocabulary;
+    private ValueFactory valueFactory;
+    private ValueFormatterRegistry valueFormatterRegistry;
+    private ContentRelation contentRelation;
+    private TypeLocalizationProvider typeLocalizationProvider = null;
 
     public void setContentRelation(ContentRelation contentRelation) {
         this.contentRelation = contentRelation;
@@ -178,14 +173,14 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
 
     @Override
     public Property createProperty(BinaryValue binaryValue) throws ValueFormatException {
-        return createProperty(new BinaryValue[]{binaryValue});
+        return createProperty(new BinaryValue[] { binaryValue });
     }
 
     @Override
     public Property createProperty(BinaryValue[] binaryValues) throws ValueFormatException {
-        if (getType() != Type.BINARY) throw new ValueFormatException(
-                "Cannot create property of type " + getType() + " from binary value(s)");
-        
+        if (getType() != Type.BINARY)
+            throw new ValueFormatException("Cannot create property of type " + getType() + " from binary value(s)");
+
         PropertyImpl prop = new PropertyImpl();
         prop.setDefinition(this);
         if (this.isMultiple()) {
@@ -202,7 +197,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
         return prop;
 
     }
-    
+
     @Override
     public void afterPropertiesSet() {
         if (this.valueFormatter == null) {

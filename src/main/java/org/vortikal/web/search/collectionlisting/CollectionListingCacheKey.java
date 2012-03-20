@@ -36,21 +36,16 @@ public class CollectionListingCacheKey implements Serializable {
 
     private static final long serialVersionUID = -4326224006550057333L;
 
+    String lastModified;
     String token;
     String name;
     String requestUri;
-    String sortString;
-    int searchLimit;
-    int offset;
 
-    public CollectionListingCacheKey(String token, String name, String requestUri, String sortString, int searchLimit,
-            int offset) {
+    public CollectionListingCacheKey(String lastModified, String token, String name, String requestUri) {
+        this.lastModified = lastModified;
         this.token = token;
         this.name = name;
         this.requestUri = requestUri;
-        this.sortString = sortString;
-        this.searchLimit = searchLimit;
-        this.offset = offset;
     }
 
     @Override
@@ -64,13 +59,11 @@ public class CollectionListingCacheKey implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 39 * hash + this.requestUri.hashCode();
-        hash = 39 * hash + this.name.hashCode();
-        hash = 39 * hash + (this.token != null ? this.token.hashCode() : 0);
-        hash = hash + (this.sortString != null ? this.sortString.hashCode() : 0);
-        hash = hash + this.searchLimit;
-        hash = hash + this.offset;
+        int hash = 9;
+        hash = 7 * hash + this.lastModified.hashCode();
+        hash = 7 * hash + this.requestUri.hashCode();
+        hash = 7 * hash + this.name.hashCode();
+        hash = 7 * hash + (this.token != null ? this.token.hashCode() : 0);
         return hash;
     }
 
@@ -78,14 +71,10 @@ public class CollectionListingCacheKey implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder(this.name);
         sb.append(": ").append(this.requestUri);
+        sb.append(" - ").append(this.lastModified);
         if (this.token != null) {
             sb.append(" - ").append(this.token);
         }
-        if (this.sortString != null) {
-            sb.append(" - ").append(this.sortString.toString());
-        }
-        sb.append(" - search limit: ").append(this.searchLimit);
-        sb.append(" - offset: ").append(this.offset);
         return sb.toString();
     }
 

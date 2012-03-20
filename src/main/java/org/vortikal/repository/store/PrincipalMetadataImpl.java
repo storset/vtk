@@ -36,8 +36,6 @@ package org.vortikal.repository.store;
  */
 public class PrincipalMetadataImpl extends MetadataImpl implements PrincipalMetadata {
 
-    private static final long serialVersionUID = 3115695954782646707L;
-
     private String qualifiedName;
 
     public PrincipalMetadataImpl(String qualifiedName) {

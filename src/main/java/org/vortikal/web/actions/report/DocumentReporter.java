@@ -114,7 +114,7 @@ public abstract class DocumentReporter extends AbstractReporter {
                     previewURLs[i] = this.manageService.constructURL(p.getURI()).setProtocol("http");
                 }
                 if (this.viewService != null) {
-                    viewURLs[i] = this.viewService.constructURL(p.getURI()).setProtocol("http");
+                    viewURLs[i] = this.viewService.constructURL(p.getURI());
                 }
                 handleResult(r, result);
             } catch (Exception e) {
@@ -123,6 +123,7 @@ public abstract class DocumentReporter extends AbstractReporter {
         }
         result.put("result", list);
         result.put("isReadRestricted", isReadRestricted);
+        result.put("previewURLs", previewURLs);
         result.put("viewURLs", viewURLs);
         return result;
     }

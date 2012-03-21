@@ -37,6 +37,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.ResultSet;
@@ -47,7 +48,7 @@ import org.vortikal.web.service.URL;
 public abstract class DocumentReporter extends AbstractReporter {
 
     private int pageSize = DEFAULT_SEARCH_LIMIT;
-    private Service manageService, reportService, viewService;
+    private Service manageService, reportService;
     private int backURL;
 
     protected abstract Search getSearch(String token, Resource currentResource, HttpServletRequest request);
@@ -101,7 +102,6 @@ public abstract class DocumentReporter extends AbstractReporter {
         result.put("prev", pos.prev);
 
         boolean[] isReadRestricted = new boolean[rs.getSize()];
-        URL[] previewURLs = new URL[rs.getSize()];
         URL[] viewURLs = new URL[rs.getSize()];
         List<PropertySet> list = new ArrayList<PropertySet>();
         for (int i = 0; i < rs.getSize(); i++) {            
@@ -111,10 +111,7 @@ public abstract class DocumentReporter extends AbstractReporter {
                 p = r; // fresh copy of resource
                 isReadRestricted[i] = r.isReadRestricted();
                 if (this.manageService != null) {
-                    previewURLs[i] = this.manageService.constructURL(p.getURI()).setProtocol("http");
-                }
-                if (this.viewService != null) {
-                    viewURLs[i] = this.viewService.constructURL(p.getURI());
+                    viewURLs[i] = this.manageService.constructURL(p.getURI()).setProtocol("http");
                 }
                 handleResult(r, result);
             } catch (Exception e) {
@@ -123,7 +120,6 @@ public abstract class DocumentReporter extends AbstractReporter {
         }
         result.put("result", list);
         result.put("isReadRestricted", isReadRestricted);
-        result.put("previewURLs", previewURLs);
         result.put("viewURLs", viewURLs);
         return result;
     }
@@ -141,10 +137,6 @@ public abstract class DocumentReporter extends AbstractReporter {
     
     public Service getReportService() {
         return this.reportService;
-    }
-    
-    public void setViewService(Service viewService) {
-        this.viewService = viewService;
     }
 
     public void setBackURL(int backURL) {

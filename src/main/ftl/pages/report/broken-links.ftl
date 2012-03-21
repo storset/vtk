@@ -54,12 +54,8 @@
         <#list report.result as item>
           <#assign title = vrtx.propValue(item, 'title') />
           <#assign url = "">
-          <#if report.previewURLs[item_index]?exists>
-            <#assign url = report.previewURLs[item_index] />
-          </#if>
-          <#assign viewUrl = "" />
           <#if report.viewURLs[item_index]?exists>
-            <#assign viewUrl = report.viewURLs[item_index] />
+            <#assign url = report.viewURLs[item_index] />
           </#if>
           <#if (report.linkCheck[item.URI])?exists>
             <#assign linkCheck = report.linkCheck[item.URI] />
@@ -120,7 +116,7 @@
           <tr class="${rowType}${firstLast}">
             <td class="vrtx-report-broken-links-web-page">
               <a href="${url?html}">${title?html}</a>
-              <span>${viewUrl?html}</span>
+              <span>${item.URI?html}</span>
             </td>
             <td class="vrtx-report-broken-links-count">
               ${countedBrokenLinks}

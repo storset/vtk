@@ -63,7 +63,7 @@
   </bean>
 
   <bean id="rootView" parent="freemarkerView">
-    <property name="url" value="pages/root1.ftl" />
+    <property name="url" value="pages/root/root1.ftl" />
     <property name="referenceDataProviders">
       <list>
         <bean class="org.vortikal.web.referencedata.provider.ShellExecutionResultProvider">
@@ -256,7 +256,7 @@
   </bean>
   
   <bean id="serviceTreeView" parent="freemarkerView">
-    <property name="url" value="pages/root1.ftl" />
+    <property name="url" value="pages/root/root1.ftl" />
     <property name="referenceDataProviders">
       <list>
         <bean class="org.vortikal.web.referencedata.provider.ShellExecutionResultProvider">
@@ -326,7 +326,7 @@
   </bean>
 
   <bean id="repositoryReadOnlyView" parent="freemarkerView">
-    <property name="url" value="pages/repository-read-only.ftl" />
+    <property name="url" value="pages/root/repository-read-only.ftl" />
     <property name="referenceDataProviders">
       <list>
         <ref bean="resourceContextProvider" />

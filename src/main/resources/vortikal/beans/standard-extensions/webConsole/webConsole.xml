@@ -42,7 +42,7 @@
   </bean>
 
   <bean id="webConsoleView" parent="freemarkerView">
-    <property name="url" value="pages/webconsole.ftl" />
+    <property name="url" value="pages/root/webconsole.ftl" />
   </bean>
 
   <bean id="webConsoleViewResolver" parent="rootViewResolver">

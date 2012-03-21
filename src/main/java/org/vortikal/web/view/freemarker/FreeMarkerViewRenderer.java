@@ -33,9 +33,7 @@ package org.vortikal.web.view.freemarker;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.LocaleResolver;
@@ -94,13 +92,6 @@ public class FreeMarkerViewRenderer extends FreeMarkerView implements ReferenceD
         model.put("statics", BeansWrapper.getDefaultInstance().getStaticModels());
 
         super.processTemplate(template, model, response);
-    }
-    
-    @Override
-    protected void exposeModelAsRequestAttributes(Map<String, Object> model,
-            HttpServletRequest request) throws Exception {
-        // Prevent entire model from being exposed as request attributes. 
-        // This causes leaking of state between view invocations.
     }
 
     public ReferenceDataProvider[] getReferenceDataProviders() {

@@ -39,17 +39,18 @@ public class MessageListingController extends CollectionListingController {
         if (uriParameter != null && actionParameter != null) {
             List<Listing> results;
             results = (List<Listing>) model.get(MODEL_KEY_SEARCH_COMPONENTS);
-            if (results.size() == 0) {
+            if (results.isEmpty()) {
+                // XXX Construct with proper ResourceWrapper:
                 results.add(new Listing(null, "", "", 0));
             }
             Listing l = results.get(0);
 
             if (SimpleStructuredEditor.ACTION_PARAMETER_VALUE_NEW.equals(actionParameter)
                     && repository.exists(token, uriParameter)) {
-                l.addFile(repository.retrieve(token, uriParameter, false));
+                l.addFile(repository.retrieve(token, uriParameter, true));
             } else if (SimpleStructuredEditor.ACTION_PARAMETER_VALUE_UPDATE.equals(actionParameter)
                     && repository.exists(token, uriParameter)) {
-                l.updateFile(repository.retrieve(token, uriParameter, false));
+                l.updateFile(repository.retrieve(token, uriParameter, true));
             } else if (SimpleStructuredEditor.ACTION_PARAMETER_VALUE_DELETE.equals(actionParameter)) {
                 List<Path> remove = new ArrayList<Path>();
                 for(PropertySet p : l.getFiles()){

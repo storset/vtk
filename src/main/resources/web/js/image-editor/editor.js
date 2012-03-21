@@ -283,6 +283,10 @@ VrtxImageEditor.prototype.displayDimensions = function displayDimensions(w, h) {
     $(dimensionHtml).insertBefore("#vrtx-image-editor-preview");
     $("#resource-width").attr("autocomplete", "off");
     $("#resource-height").attr("autocomplete", "off");
+    // TODO !spageti && !run twice
+    if (typeof UNSAVED_CHANGES_CONFIRMATION !== "undefined") {
+      storeInitPropValues();
+    }
   }
 };
 

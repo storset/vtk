@@ -18,10 +18,10 @@
   </head>
   <body>
     <#list managementStats?keys as key>
-      <h3>${key?html}</h3>
-<pre>
-<#list managementStats[key]?keys as itemKey>${itemKey?html}: ${managementStats[key][itemKey]?html}</#list>
-</pre>
+      <h2>${key?html}</h2>
+      <pre>
+        <#list managementStats[key]?keys as itemKey>${itemKey?html}: ${managementStats[key][itemKey]?html}</#list>
+      </pre>
     </#list>
   </body>
 </html>

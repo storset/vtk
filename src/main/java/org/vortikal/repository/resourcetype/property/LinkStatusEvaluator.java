@@ -120,7 +120,7 @@ public class LinkStatusEvaluator implements LatePropertyEvaluator {
             property.setValues(values.toArray(new Value[values.size()]));
             return true;
         } catch (Throwable t) {
-            property.setStringValue("LINKCHECK_ERROR");
+            property.setValues(new Value[]{new Value("LINKCHECK_ERROR", Type.STRING)});
             return true;
         }
     }

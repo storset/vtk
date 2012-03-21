@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
@@ -46,20 +47,19 @@ import org.vortikal.web.decorating.DecoratorComponent;
  * Configurable JavaBean properties
  * 
  * <ul>
- * <li><code>description</code> - by default delegates to sub class,
- * optionally overridden by user. Generic sub classes may not set this, in which case a
+ * <li><code>description</code> - by default delegates to sub class, optionally
+ * overridden by user. Generic sub classes may not set this, in which case a
  * description is required by the user.</li>
  * </ul>
  */
-public abstract class AbstractDecoratorComponent implements DecoratorComponent,
-        InitializingBean {
+public abstract class AbstractDecoratorComponent implements DecoratorComponent, InitializingBean {
 
     private String namespace;
 
     private String name;
 
     private String description;
-    
+
     private Collection<UsageExample> usageExamples;
 
     private Map<String, String> parameterDescriptions;
@@ -92,31 +92,31 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
         if (this.description == null) {
             return getDescriptionInternal();
         }
-        
+
         return this.description;
     }
 
     public void setParameterDescriptions(Map<String, String> parameterDescriptions) {
-        this.parameterDescriptions = Collections.unmodifiableMap(parameterDescriptions);
+        this.parameterDescriptions = parameterDescriptions;
     }
 
-    @Override 
+    @Override
     public final Map<String, String> getParameterDescriptions() {
         return this.parameterDescriptions;
     }
-    
+
     public void setExamples(Map<String, String> examples) {
         if (examples == null) {
             return;
         }
         List<UsageExample> result = new ArrayList<UsageExample>();
-        for (String key: examples.keySet()) {
+        for (String key : examples.keySet()) {
             String value = examples.get(key);
             result.add(new UsageExample(value, key));
         }
         this.usageExamples = Collections.unmodifiableCollection(result);
     }
-    
+
     @Override
     public Collection<UsageExample> getUsageExamples() {
         return this.usageExamples;
@@ -133,6 +133,10 @@ public abstract class AbstractDecoratorComponent implements DecoratorComponent,
 
         if (this.parameterDescriptions == null)
             this.parameterDescriptions = getParameterDescriptionsInternal();
+
+        if (this.parameterDescriptions != null)
+            this.parameterDescriptions = Collections.unmodifiableSortedMap(new TreeMap<String, String>(
+                    this.parameterDescriptions));
 
     }
 

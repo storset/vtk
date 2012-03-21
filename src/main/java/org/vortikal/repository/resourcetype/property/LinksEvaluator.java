@@ -32,6 +32,7 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -66,6 +67,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class LinksEvaluator implements LatePropertyEvaluator {
 
     private StructuredResourceManager resourceManager;
+    private static final int MAX_LINKS = 500;
     
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx)
@@ -91,7 +93,9 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                     LinkSource source = LinkSource.valueOf(obj.getString("source"));
                     if (source == LinkSource.CONTENT) {
                         Link link = new Link(url, LinkType.valueOf(type), source);
-                        collector.add(link);
+                        if (!collector.add(link)) {
+                            break;
+                        }
                     }
                 }
                 evaluateContent = false;
@@ -106,7 +110,9 @@ public class LinksEvaluator implements LatePropertyEvaluator {
             for (Property p: resource) {
                 if (p.getType() == PropertyType.Type.IMAGE_REF) {
                     Link link = new Link(p.getStringValue(), LinkType.PROPERTY, LinkSource.PROPERTIES);
-                    collector.add(link);
+                    if (!collector.add(link)) {
+                        break;
+                    }
                 } else if (p.getType() == PropertyType.Type.HTML) {
                     InputStream is = new ByteArrayInputStream(p.getStringValue().getBytes());
                     extractLinksHtml(is, collector, LinkSource.PROPERTIES);
@@ -222,10 +228,14 @@ public class LinksEvaluator implements LatePropertyEvaluator {
     }
     
     private static class LinkCollector {
-        private Set<Link> links = new HashSet<Link>();
+        private List<Link> links = new ArrayList<Link>();
 
-        public void add(Link link) {
+        public boolean add(Link link) {
+            if (this.links.size() >= MAX_LINKS) {
+                return false;
+            }
             this.links.add(link);
+            return true;
         }
         public void clear() {
             this.links.clear();
@@ -299,7 +309,9 @@ public class LinksEvaluator implements LatePropertyEvaluator {
             }
             
             if (href != null && !href.isEmpty()) {
-                collector.add(new Link(href, LinkType.ANCHOR, source));
+                if (!collector.add(new Link(href, LinkType.ANCHOR, source))) {
+                    break;
+                }
             }
         }
     }
@@ -354,7 +366,9 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                     }
                     
                     if (type != null && attrValue != null) {
-                        this.listener.add(new Link(attrValue, type, this.linkSource));
+                        if (!this.listener.add(new Link(attrValue, type, this.linkSource))) {
+                            throw new StopException();
+                        }
                     }
                 }                
             }

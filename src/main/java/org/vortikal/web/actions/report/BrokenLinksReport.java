@@ -103,7 +103,9 @@ public class BrokenLinksReport extends DocumentReporter {
         if (published == null) published = FILTER_PUBLISHED_PARAM_DEFAULT_VALUE;
         if (readRestriction == null) readRestriction = FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE;
         
-        // TODO: refactor method and generalize for 1..infinity filters
+        result.put("linkType", linkType);
+
+        // TODO: Refactor method and generalize for 1..infinity filters
 
         // Generate read restriction filter
         List<FilterOption> filterReadRestrictionOptions = new ArrayList<FilterOption>();
@@ -115,6 +117,7 @@ public class BrokenLinksReport extends DocumentReporter {
             filterReadRestrictionOptions.add(new FilterOption(param, filterOptionURL, param.equals(readRestriction) ? true : false));
         }
         
+        // Generate link type filter
         List<FilterOption> filterLinkTypeOptions = new ArrayList<FilterOption>();
         for (String param : FILTER_LINK_TYPE_PARAM_VALUES) {
             URL filterOptionURL = new URL(reportURL);
@@ -150,10 +153,8 @@ public class BrokenLinksReport extends DocumentReporter {
         
         if (FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE.equals(linkType) || linkType == null) {
             linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_ANCHOR", TermOperator.EQ));
-
         } else if ("img".equals(linkType)) {
             linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_IMG", TermOperator.EQ));
-
         } else {
             AndQuery and = new AndQuery();
             and.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS", TermOperator.EQ));
@@ -161,7 +162,7 @@ public class BrokenLinksReport extends DocumentReporter {
             and.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_IMG", TermOperator.NE));
             linkStatusCriteria.add(and);
         }
-        linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "AWAITING_LINKCHECK", TermOperator.EQ));
+        //linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "AWAITING_LINKCHECK", TermOperator.EQ));
 
         AndQuery topLevelQ = new AndQuery();
 

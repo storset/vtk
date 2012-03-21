@@ -5,7 +5,7 @@
   <head>
     <#if cssURLs?exists>
       <#list cssURLs as cssURL>
-        <link rel="stylesheet" href="${cssURL}" />
+        <link rel="stylesheet" href="${cssURL}" type="text/css" />
       </#list>
     </#if>
   </head>
@@ -79,48 +79,51 @@
             <#assign firstLast = " last" />     
           </#if>
           
-          <#assign restricted = "">
-          <#if report.isReadRestricted[item_index]>
-            <#assign restricted = " restricted">
-          <#else>
-            <#assign restricted = " allowed-for-all">
-          </#if>  
-          <#assign published = "">
-          <#if vrtx.propValue(item, "published") = "true">
-            <#assign published  = " published">
-          <#else>
-            <#assign published  = " unpublished">
-          </#if>
           <#assign lastModified = vrtx.propValue(item, 'lastModified') />
-   
-          <tr class="${rowType}${firstLast}${published}${restricted}">
-            <td class="vrtx-report-broken-links-web-page">
-              <a href="${url?html}">${title?html}</a>
-            </td>
-            <td class="vrtx-report-broken-links-count">
-              <#if brokenLinks?exists>
-                <#if (brokenLinks?size > 99)>99+<#else>${brokenLinks?size}</#if>
-              </#if>
-            </td>
-            <td class="vrtx-report-broken-links">
-              <#if brokenLinks?exists>
-                <ul>
+          
+          <#assign brokenLinksList>
+            <#assign onlyCount = false />
+            <#assign countedBrokenLinks = 0 />
+            <#if brokenLinks?exists>
+              <ul>
                 <#list brokenLinks as link>
-                  <li>
                   <#if link?is_hash>
                     <#if (link.link)?exists>
-                      ${link.link?html}<#if (link.status)?exists><!--${link.status?html}--></#if>
+                      <#if (report.linkType == "anchor" && link.type == "ANCHOR")
+                        || (report.linkType == "img"    && (link.type == "IMG" || link.type == "PROPERTY"))
+                        || (report.linkType == "other"  && (link.type != "ANCHOR" && link.type != "IMG" && link.type != "PROPERTY"))>
+                        <#assign countedBrokenLinks = countedBrokenLinks + 1 />
+                        <#if !onlyCount>
+                          <li>${link.link?html}<#if (link.status)?exists><!--${link.status?html}--></#if></li>
+                        </#if>
+                      </#if>
                     </#if>
                   <#else>
-                    ${link?html}
+                    <#assign countedBrokenLinks = countedBrokenLinks + 1 />
+                    <#if !onlyCount>
+                      <li>${link?html}</li>
+                    </#if>
                   </#if>
-                  </li>
-                  <#if link_index &gt; 10>
+                  <#if (countedBrokenLinks > 9 && !onlyCount)>
                     <li>...</li>
-                    <#break />
+                    <#assign onlyCount = true />
                   </#if>
                 </#list>
-                </ul>
+              </ul>
+            </#if>
+          </#assign>
+   
+          <tr class="${rowType}${firstLast}">
+            <td class="vrtx-report-broken-links-web-page">
+              <a href="${url?html}">${title?html}</a>
+              <span>${item.URI?html}</span>
+            </td>
+            <td class="vrtx-report-broken-links-count">
+              ${countedBrokenLinks}
+            </td>
+            <td class="vrtx-report-broken-links">
+              <#if brokenLinksList?exists>
+                ${brokenLinksList}
               </#if>
             </td>
             <td class="vrtx-report-last-modified">

@@ -215,7 +215,7 @@ table.report-broken-links td {
 }
 
 td.vrtx-report-broken-links li {
-  background: url(../images/list-bullet-dark-grey.png) no-repeat center left;
+  background: url(../images/list-bullet-dark-grey.png) no-repeat 0 8px;
   padding: 0 0 0 10px !important;
   margin: 0 0 2px 0 !important;
 }

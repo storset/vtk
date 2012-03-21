@@ -1344,6 +1344,13 @@ body#vrtx-report-broken-links #directory-listing td.vrtx-report-broken-links-web
   width: 30%;
 }
 
+#directory-listing td.vrtx-report-broken-links-web-page span {
+  display: block;
+  clear: left;
+  font-size: 0.867em;
+  color: #5e5e5e;
+}
+
 #directory-listing td.name span.name-split,
 #directory-listing td.vrtx-trash-can-name span.name-split,
 body#vrtx-report-documents #directory-listing td.vrtx-report-name span.name-split {
@@ -2032,6 +2039,14 @@ div.errormessage {
 
 div.infomessage {
   background: #fff url(images/info.png) no-repeat 14px 8px;
+}
+
+#vrtx-compat-icon {
+  background: url(images/compat-icon.png) no-repeat 0 0;
+  display: inline-block;
+  width: 27px;
+  height: 22px;
+  margin: -10px 0 0 0;
 }
  
 div.errormessage {

@@ -82,7 +82,7 @@
           <#assign lastModified = vrtx.propValue(item, 'lastModified') />
           
           <#assign brokenLinksList>
-            <#assign justCountBrokenLinks = false />
+            <#assign onlyCount = false />
             <#assign countedBrokenLinks = 0 />
             <#if brokenLinks?exists>
               <ul>
@@ -93,20 +93,20 @@
                         || (report.linkType == "img"    && (link.type == "IMG" || link.type == "PROPERTY"))
                         || (report.linkType == "other"  && (link.type != "ANCHOR" && link.type != "IMG" && link.type != "PROPERTY"))>
                         <#assign countedBrokenLinks = countedBrokenLinks + 1 />
-                        <#if !justCountBrokenLinks>
+                        <#if !onlyCount>
                           <li>${link.link?html}<#if (link.status)?exists><!--${link.status?html}--></#if></li>
                         </#if>
                       </#if>
                     </#if>
                   <#else>
                     <#assign countedBrokenLinks = countedBrokenLinks + 1 />
-                    <#if !justCountBrokenLinks>
+                    <#if !onlyCount>
                       <li>${link?html}</li>
                     </#if>
                   </#if>
-                  <#if (countedBrokenLinks > 9 && !justCountBrokenLinks)>
+                  <#if (countedBrokenLinks > 9 && !onlyCount)>
                     <li>...</li>
-                    <#assign justCountBrokenLinks = true />
+                    <#assign onlyCount = true />
                   </#if>
                 </#list>
               </ul>

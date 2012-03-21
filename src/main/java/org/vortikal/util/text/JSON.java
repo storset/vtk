@@ -119,23 +119,18 @@ public final class JSON {
         }
         return object;
     }
-    
+
+    // XXX not sure this belongs in this class, due to being very repository-specific
     public static JSONObject getResource(Path uri) throws Exception {
+        
+        // Vortex boilerplate code, should refactor to somewhere else
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
 
         InputStream is = repository.getInputStream(token, uri, false);
-        InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-        BufferedReader br = new BufferedReader(isr);
+        String jsonString = StreamUtil.streamToString(is, "utf-8");
 
-        String line;
-        String result = "";
-        while ((line = br.readLine()) != null) {
-            result += line;
-        }
-        is.close();
-
-        return JSONObject.fromObject(result);
+        return JSONObject.fromObject(jsonString);
     }
 }

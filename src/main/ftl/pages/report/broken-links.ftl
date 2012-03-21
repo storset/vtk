@@ -54,8 +54,12 @@
         <#list report.result as item>
           <#assign title = vrtx.propValue(item, 'title') />
           <#assign url = "">
+          <#if report.previewURLs[item_index]?exists>
+            <#assign url = report.previewURLs[item_index] />
+          </#if>
+          <#assign viewUrl = "" />
           <#if report.viewURLs[item_index]?exists>
-            <#assign url = report.viewURLs[item_index] />
+            <#assign viewUrl = report.viewURLs[item_index] />
           </#if>
           <#if (report.linkCheck[item.URI])?exists>
             <#assign linkCheck = report.linkCheck[item.URI] />
@@ -79,18 +83,6 @@
             <#assign firstLast = " last" />     
           </#if>
           
-          <#assign restricted = "">
-          <#if report.isReadRestricted[item_index]>
-            <#assign restricted = " restricted">
-          <#else>
-            <#assign restricted = " allowed-for-all">
-          </#if>  
-          <#assign published = "">
-          <#if vrtx.propValue(item, "published") = "true">
-            <#assign published  = " published">
-          <#else>
-            <#assign published  = " unpublished">
-          </#if>
           <#assign lastModified = vrtx.propValue(item, 'lastModified') />
           
           <#assign brokenLinksList>
@@ -116,7 +108,7 @@
                       <li>${link?html}</li>
                     </#if>
                   </#if>
-                  <#if (countedBrokenLinks > 10 && !justCountBrokenLinks)>
+                  <#if (countedBrokenLinks > 9 && !justCountBrokenLinks)>
                     <li>...</li>
                     <#assign justCountBrokenLinks = true />
                   </#if>
@@ -125,18 +117,18 @@
             </#if>
           </#assign>
    
-          <tr class="${rowType}${firstLast}${published}${restricted}">
+          <tr class="${rowType}${firstLast}">
             <td class="vrtx-report-broken-links-web-page">
               <a href="${url?html}">${title?html}</a>
-              <span>${url?html}</span>
+              <span>${viewUrl?html}</span>
             </td>
             <td class="vrtx-report-broken-links-count">
-              <#if countedBrokenLinks?exists>
-                <#if (countedBrokenLinks > 99)>99+<#else>${countedBrokenLinks}</#if>
-              </#if>
+              ${countedBrokenLinks}
             </td>
             <td class="vrtx-report-broken-links">
-               ${brokenLinksList}
+              <#if brokenLinksList?exists>
+                ${brokenLinksList}
+              </#if>
             </td>
             <td class="vrtx-report-last-modified">
               <#if linkStatus = 'AWAITING_LINKCHECK'>

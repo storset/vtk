@@ -60,8 +60,8 @@
           <#assign isReadRestricted = vrtx.getMsg("collectionListing.permissions.restricted")>
         </#if>
         <#assign url = "">
-        <#if report.viewURLs[res_index]?exists>
-          <#assign url = report.viewURLs[res_index] />
+        <#if report.previewURLs[res_index]?exists>
+          <#assign url = report.previewURLs[res_index] />
         </#if>
         <#assign published = vrtx.propValue(res, 'published') />
         <#assign publishedStatus = vrtx.getMsg("report.yes", "Yes")>

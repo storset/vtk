@@ -454,8 +454,8 @@ a:hover {
   clear: left;
 }
 
-#app-content h2 {
-  margin-top: 0; /* implies that h2 is always at the top */
+#app-content h2:first-child {
+  margin-top: 0;
 }
 
 #app-content #main,

@@ -19,9 +19,7 @@
   <body>
     <#list managementStats?keys as key>
       <h2>${key?html}</h2>
-      <pre>
-        <#list managementStats[key]?keys as itemKey>${itemKey?html}: ${managementStats[key][itemKey]?html}</#list>
-      </pre>
+      <pre><#list managementStats[key]?keys as itemKey>${itemKey?html}: ${managementStats[key][itemKey]?html}</#list></pre>
     </#list>
   </body>
 </html>

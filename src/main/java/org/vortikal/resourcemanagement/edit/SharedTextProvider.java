@@ -26,6 +26,7 @@ import org.vortikal.security.AuthenticationException;
 import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
+import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.text.JSON;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -54,7 +55,12 @@ public class SharedTextProvider implements ReferenceDataProvider {
             return m;
         }
         try {
-            List json = (List) JSON.getResource(p).getJSONObject("properties").get("shared-text-box");
+            
+            InputStream stream = repository.getInputStream(token, p, false);
+            String jsonString = StreamUtil.streamToString(stream, "utf-8");
+            JSONObject document = JSONObject.fromObject(jsonString);
+            
+            List json = (List) document.getJSONObject("properties").get("shared-text-box");
 
             for (Object x : json) {
                 JSONObject j = JSONObject.fromObject(x);

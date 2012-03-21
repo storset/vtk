@@ -191,54 +191,46 @@ public class Listing {
         return sb.toString();
     }
 
+    /*
+     * addFile updateFile and removeFile are used to manipulate the result set
+     * to compensate for slow index in the message listing controller
+     */
+
     public void addFile(PropertySet file) {
         for (PropertySet x : files) {
             if (x.getURI().equals(file.getURI())) {
                 return;
             }
         }
-        if(files.size() > 0){
-            files.add(0, file);
-        }else{
+        if (files.isEmpty()) {
             files.add(file);
+        } else {
+            files.add(0, file);
         }
         this.totalHits++;
     }
 
-    /*
-     * Manipulating file list for use in message listing. This is a prototype
-     * and will be removed if Øyinvd dislikes it :)
-     */
-
     public void updateFile(PropertySet file) {
         int index = 0;
-        boolean found = false;
         for (PropertySet x : files) {
             if (x.getURI().equals(file.getURI())) {
-                found = true;
-                break;
+                files.remove(index);
+                files.add(index, file);
+                return;
             }
             index++;
-        }
-        if (found) {
-            files.remove(index);
-            files.add(index, file);
         }
     }
 
     public void removeFile(Path p) {
         int index = 0;
-        boolean found = false;
         for (PropertySet x : files) {
             if (x.getURI().equals(p)) {
-                found = true;
-                break;
+                files.remove(index);
+                totalHits--;
+                return;
             }
             index++;
-        }
-        if (found) {
-            files.remove(index);
-            totalHits--;
         }
     }
 }

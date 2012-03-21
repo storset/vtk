@@ -33,15 +33,14 @@ public class MessageListingController extends CollectionListingController {
         String actionParameter = request.getParameter("action");
 
         /*
-         * Manipulate the result set to compensate for slow index --
-         * alternatively do it the other way around.. but complex view code...
+         * Manipulate the result set to compensate for slow index
          */
         if (uriParameter != null && actionParameter != null) {
             List<Listing> results;
             results = (List<Listing>) model.get(MODEL_KEY_SEARCH_COMPONENTS);
             if (results.isEmpty()) {
-                // XXX Construct with proper ResourceWrapper:
-                results.add(new Listing(null, "", "", 0));
+                results.add(new Listing(resourceManager.createResourceWrapper(collection), null,
+                        "messageListing.defaultListing", 0));
             }
             Listing l = results.get(0);
 
@@ -53,12 +52,12 @@ public class MessageListingController extends CollectionListingController {
                 l.updateFile(repository.retrieve(token, uriParameter, true));
             } else if (SimpleStructuredEditor.ACTION_PARAMETER_VALUE_DELETE.equals(actionParameter)) {
                 List<Path> remove = new ArrayList<Path>();
-                for(PropertySet p : l.getFiles()){
-                    if(!repository.exists(token, p.getURI())){
+                for (PropertySet p : l.getFiles()) {
+                    if (!repository.exists(token, p.getURI())) {
                         remove.add(p.getURI());
                     }
                 }
-                for(Path p : remove){
+                for (Path p : remove) {
                     l.removeFile(p);
                 }
             }

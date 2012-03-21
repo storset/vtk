@@ -24,6 +24,7 @@ import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
+import org.vortikal.util.io.StreamUtil;
 import org.vortikal.util.text.JSON;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
@@ -35,7 +36,7 @@ public class SimpleStructuredEditor implements Controller {
     public static final String ACTION_PARAMETER_VALUE_DELETE = "delete";
     public static final String ACTION_PARAMETER_VALUE_NEW = "new";
     public static final String ACTION_PARAMETER_VALUE_UPDATE = "update";
- 
+
     private static final String TITLE_PARAMETER = "title";
     private String viewName;
     private PropertyTypeDefinition publishDatePropDef;
@@ -80,7 +81,9 @@ public class SimpleStructuredEditor implements Controller {
             // Edit some document
             Principal principal = requestContext.getPrincipal();
             repository.lock(token, uri, principal.getQualifiedName(), Depth.ZERO, 600, null);
-            JSONObject document = JSON.getResource(uri);
+            InputStream stream = repository.getInputStream(token, uri, false);
+            String jsonString = StreamUtil.streamToString(stream, "utf-8");
+            JSONObject document = JSONObject.fromObject(jsonString);
             model.put("properties", document.get("properties"));
         }
         return new ModelAndView(viewName, model);
@@ -100,7 +103,12 @@ public class SimpleStructuredEditor implements Controller {
 
     private void updateDocument(HttpServletRequest request, String token, Repository repository, Path uri)
             throws Exception, UnsupportedEncodingException {
-        JSONObject document = JSON.getResource(uri);
+
+        InputStream stream = repository.getInputStream(token, uri, false);
+        String jsonString = StreamUtil.streamToString(stream, "utf-8");
+        JSONObject document = JSONObject.fromObject(jsonString);
+        ;
+
         Map<String, String> propertyValues = (Map<String, String>) document.get("properties");
         for (String propertyName : properties) {
             propertyValues.put(propertyName, request.getParameter(propertyName));

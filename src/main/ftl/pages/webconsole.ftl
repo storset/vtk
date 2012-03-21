@@ -29,7 +29,7 @@
     <form class="webConsole" action="${commandForm.submitURL}" method="POST">
       <pre>Enter command:</pre>
       <div class="vrtx-textfield">
-        <input type="text" name="command" size="80" />
+        <input type="text" name="command" size="60" />
       </div>
     </form>
   </p>

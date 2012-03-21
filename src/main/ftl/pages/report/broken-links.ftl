@@ -91,7 +91,7 @@
                     <#if (link.link)?exists>
                       <#if (report.linkType == "anchor" && link.type == "ANCHOR")
                         || (report.linkType == "img"    && (link.type == "IMG" || link.type == "PROPERTY"))
-                        || (report.linkType == "other"  && (link.type != "ANCHOR" && link.type != "IMG" && link.type != "PROPERTY"))>
+                        || (report.linkType == "other"  && link.type != "ANCHOR" && link.type != "IMG" && link.type != "PROPERTY")>
                         <#assign countedBrokenLinks = countedBrokenLinks + 1 />
                         <#if !onlyCount>
                           <li>${link.link?html}<#if (link.status)?exists><!--${link.status?html}--></#if></li>

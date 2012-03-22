@@ -29,6 +29,9 @@ var studyToolbar = [['Studytable', 'Studyreferencecomponent', '-', 'Source', 'Pa
                         'BulletedList', 'Outdent', 'Indent', 'JustifyLeft',
                         'JustifyCenter', 'JustifyRight', 
                         'Maximize']];
+                        
+var messageToolbar = [['PasteText', 'Bold', 'Italic', 'Strike', '-', 'Undo', 'Redo', '-', 'Link', 'Unlink', 'Anchor',
+                       'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent']];
 
 
 var completeToolbarOld = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
@@ -67,7 +70,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   } else if (name.indexOf("caption") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, inlineToolbar, 
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
-  //Studier                      
+  // Studies                     
   } else if (name.indexOf("frist-frekvens-fri") != -1
     || name.indexOf("metode-fri") != -1
     || name.indexOf("internasjonale-sokere-fri") != -1
@@ -88,9 +91,12 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
     isCompleteEditor = true;
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, studyToolbar, 
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
-    } else if (name.indexOf("additional-content") != -1
+  } else if (name.indexOf("message") != -1) {
+    setCKEditorConfig(name, null, null, null, defaultLanguage, cssFileList, 250, 400, 40, messageToolbar, 
+                      isCompleteEditor, false, null, isSimpleHTML);                       
+  } else if (name.indexOf("additional-content") != -1
           || name.indexOf("additionalContents") != -1) {
-    setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 150, 400, 40, 
+    setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 900, 100, 40, 
                       completeToolbar, true, false, baseDocumentUrl, isSimpleHTML);
   } else if (isCompleteEditor) {
     var height = 220;

@@ -64,7 +64,7 @@
     </#list>
   </#if>
   <@editor.addCkScripts />
-  <@editor.createEditor 'message' true false />
+  <@editor.createEditor 'message' false false />
 </head>
 <body>
 <div id="app-content">

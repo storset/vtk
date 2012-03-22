@@ -37,16 +37,20 @@
 <#if url?exists>
   <form method="POST" style="float:left;margin-top:10px">
     <@vrtx.csrfPreventionToken url />
-    <div class="property-label">
-      ${vrtx.getMsg("property.title")}
-    </div> 
-    <div class="vrtx-textfield">
-      <input type="text" name="title" id="title"<#if properties?exists && properties.title?exists> value="${properties.title?html}"</#if>/>
+    <div class="property-item">
+      <div class="property-label">
+        ${vrtx.getMsg("property.title")}
+      </div> 
+      <div class="vrtx-textfield">
+        <input type="text" name="title" id="title"<#if properties?exists && properties.title?exists> value="${properties.title?html}"</#if>/>
+      </div>
     </div>
-    <div class="property-label">
-      ${vrtx.getMsg("resourcetype.name.structured-message")}
-    </div> 
-    <textarea  id="message"  name="message"><#if properties?exists && properties.message?exists>${properties.message?html}</#if></textarea>
+    <div class="property-item">
+      <div class="property-label">
+        ${vrtx.getMsg("resourcetype.name.structured-message")}
+      </div> 
+      <textarea  id="message"  name="message"><#if properties?exists && properties.message?exists>${properties.message?html}</#if></textarea>
+    </div>
     <div class="vrtx-focus-button">   
       <button type="submit" id="submit" name="submit" value="create" >${vrtx.getMsg("editor.save")}</button>
     </div> 

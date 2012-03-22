@@ -13,8 +13,18 @@
       background: #fff;
     }
   </style>
-  <script type="text/javascript">
-    var cssFileList = "";
+  <script type="text/javascript"><!--
+    // Div container display in IE
+    var cssFileList = [<#if fckEditorAreaCSSURL?exists>
+                         <#list fckEditorAreaCSSURL as cssURL>
+                           "${cssURL?html}" <#if cssURL_has_next>,</#if>
+                         </#list>
+                       </#if>]; 
+     
+    if (vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7) {
+      cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
+    }
+  // -->
   </script>
   <#global baseFolder = "/" />
   <#if resourceContext.parentURI?exists>

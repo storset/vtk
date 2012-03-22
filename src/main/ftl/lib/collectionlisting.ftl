@@ -1,4 +1,3 @@
-<#ftl strip_whitespace=true>
 <#--
   - File: collectionlisting.ftl
   - 
@@ -197,10 +196,8 @@
                 <#break>
 
               <#case "last-modified">
-                <#--${child.lastModified?string("yyyy-MM-dd HH:mm:ss")}-->
-                ${child.lastModified?string("yyyy-MM-dd")}
+                ${vrtx.getPropValue(child, "lastModified", "longlong")}
                 <#break>
-
               <#case "locked">
                 <#if child.lock?exists>
                   <span class="lockOwner"></span>

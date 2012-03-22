@@ -60,6 +60,8 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var isSimpleHTML = simpleHTML != null ? simpleHTML : false;
 
   // CKEditor configurations
+  
+  // Introductions / descriptions
   if (name.indexOf("introduction") != -1
    || name.indexOf("resource.description") != -1 
    || name.indexOf("resource.image-description") != -1
@@ -67,6 +69,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
    || name.indexOf("resource.audio-description") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar,
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
+  // Caption
   } else if (name.indexOf("caption") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, inlineToolbar, 
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
@@ -93,11 +96,13 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (name.indexOf("message") != -1) {
     setCKEditorConfig(name, null, null, null, defaultLanguage, cssFileList, 250, 400, 40, messageToolbar, 
-                      isCompleteEditor, false, null, isSimpleHTML);                       
+                      isCompleteEditor, false, null, isSimpleHTML);  
+  // Additional content                             
   } else if (name.indexOf("additional-content") != -1
           || name.indexOf("additionalContents") != -1) {
     setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 900, 100, 40, 
                       completeToolbar, true, false, baseDocumentUrl, isSimpleHTML);
+  // Complete editor      
   } else if (isCompleteEditor) {
     var height = 220;
     var maxHeight = 400;
@@ -114,7 +119,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
       if (name == "resource.content") {
         completeTB = completeToolbarOld;
       }
-      // studyToolbar
+      // Study toolbar
       if (name == "content-study"){
         completeTB = studyToolbar;
       }

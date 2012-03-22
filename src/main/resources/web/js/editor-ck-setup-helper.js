@@ -30,7 +30,7 @@ var studyToolbar = [['Studytable', 'Studyreferencecomponent', '-', 'Source', 'Pa
                         'JustifyCenter', 'JustifyRight', 
                         'Maximize']];
                         
-var messageToolbar = [['PasteText', 'Bold', 'Italic', 'Strike', '-', 'Undo', 'Redo', '-', 'Link', 'Unlink', 'Anchor',
+var messageToolbar = [['PasteText', 'Bold', 'Italic', 'Strike', '-', 'Undo', 'Redo', '-', 'Link', 'Unlink',
                        'Subscript', 'Superscript', 'NumberedList', 'BulletedList', 'Outdent', 'Indent']];
 
 

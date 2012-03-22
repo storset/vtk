@@ -24,8 +24,7 @@
     </#if>
   <@editor.addCkScripts />
   <@editor.createEditor 'message' true false />
-      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/forms.css" type="text/css" />
-      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default.css" type="text/css" />
+  <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default.css" type="text/css" />
 </head>
 <body>
     <div id="app-content">

@@ -89,7 +89,9 @@
   
   <#if resource.resourceType = 'message-listing' >
    <#if editCurrentResource?exists && editCurrentResource >
-    <a href="${vrtx.relativeLinkConstructor("", 'simpleMessageEditor')}">${vrtx.getMsg("message-listing.new-message")}</a>
+      <a id="vrtx-new-message" class="button" href="${vrtx.relativeLinkConstructor("", 'simpleMessageEditor')}">
+        <span>${vrtx.getMsg("message-listing.new-message")}</span>
+      </a>
     </#if>
   </#if>
 

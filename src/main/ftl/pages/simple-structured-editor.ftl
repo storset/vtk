@@ -17,6 +17,8 @@
       padding: 20px 20px 68px 20px;
       position: relative;
       background: #fff;
+      border: 2px solid #848484;
+      box-shadow: 1px 1px 5px 2px #848484;
     }
     .vrtx-focus-button,
     #vrtx-message-cancel,

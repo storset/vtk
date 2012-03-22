@@ -36,6 +36,11 @@
     #property-item-first {
       margin-top: 0px;
     }
+    .vrtx-back {
+      background: transparent url("http://www.uio.no/vrtx/decorating/resources/dist/images/arrow-back-red.gif") no-repeat left center;
+      padding-left: 14px;
+      margin: 10px 0;
+    }
   </style>
   <script type="text/javascript"><!--
     // Div container display in IE

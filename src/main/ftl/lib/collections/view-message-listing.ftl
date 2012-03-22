@@ -4,6 +4,7 @@
 
 <#macro displayCollection collectionListing>
   <#local resources=collectionListing.files />
+  <#local i = 1 />
   <#if (resources?size > 0)>
     <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
       <#if collectionListing.title?exists && collectionListing.offset == 0>
@@ -11,13 +12,13 @@
       </#if>
       <#list resources as r>
         <#assign uri = vrtx.getUri(r) />
-        <div class="vrtx-resource">
+        <div id="vrtx-result-${i}" class="vrtx-resource">
 		  <div class="vrtx-title">
 		    <#assign title = vrtx.propValue(r, "title", "", "") />
 		    <#if !title?has_content>
 		      <#assign title = vrtx.propValue(r, "solr.name", "", "") />
 		    </#if>
-            <h2>${title?html}</h2>
+            <a class="vrtx-title" href="${uri?html}">${title?html}</a>
             <#if edit?exists && edit[r_index]?string = "true">
               <a class="vrtx-resource-edit" href="${vrtx.relativeLinkConstructor(uri, 'simpleMessageEditor')}"><@vrtx.msg code="report.collection-structure.edit" /></a>
             </#if> 
@@ -31,6 +32,7 @@
             ${message}
           </div>
         </div>
+        <#local i = i + 1 />
       </#list>
     </div>
   </#if>

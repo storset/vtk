@@ -12,6 +12,15 @@
     body {
       background: #fff;
     }
+    .vrtx-focus-button {
+      float: right;
+    }
+    #vrtx-message-cancel {
+      float: right;
+    }
+    #vrtx-message-delete {
+      float: left;
+    }
   </style>
   <script type="text/javascript"><!--
     // Div container display in IE
@@ -65,14 +74,14 @@
       <button type="submit" id="submit" name="submit" value="create" >${vrtx.getMsg("editor.save")}</button>
     </div> 
   </form>  
-  <form method="POST">
+  <form method="POST" id="vrtx-message-cancel">
     <@vrtx.csrfPreventionToken url />
-    <div class="vrtx-button" style="float:left;margin-right:10px;margin-top:10px">     
+    <div class="vrtx-button">     
         <button type="submit" id="cancel" name="cancel" value="cancel" >${vrtx.getMsg("editor.cancel")}</button>
     </div>
   </form>
   <#if !isCollection>
-    <form method="POST">        
+    <form method="POST" id="vrtx-message-delete">        
       <@vrtx.csrfPreventionToken url />
       <input name="${url.path}" value="${url.path}" type="hidden" />
       <div class="vrtx-button">     

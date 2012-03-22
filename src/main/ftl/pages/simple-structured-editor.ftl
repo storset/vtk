@@ -18,20 +18,20 @@
       margin: 0 25px;
       position: relative;
     }
-    .vrtx-focus-button {
-      position: absolute;
-      right: 5px;
-      bottom: 0px;
-    }
-    #vrtx-message-cancel {
-      position: absolute;
-      right: 80px;
-      bottom: 0px;
-    }
+    .vrtx-focus-button,
+    #vrtx-message-cancel,
     #vrtx-message-delete {
       position: absolute;
+      bottom: 0px;  
+    }
+    .vrtx-focus-button {
       left: 0px;
-      bottom: 0px;
+    }
+    #vrtx-message-cancel {
+      left: 75px;
+    }
+    #vrtx-message-delete {
+      left: 175px;
     }
     #property-item-first {
       margin-top: 0px;

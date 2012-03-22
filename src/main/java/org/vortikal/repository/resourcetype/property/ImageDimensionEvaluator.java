@@ -59,13 +59,13 @@ public class ImageDimensionEvaluator implements PropertyEvaluator {
         try {
             Content content = ctx.getContent();
             if (content == null) {
-                logger.info("Unable to get Dimension representation of " 
+                logger.warn("Unable to get Dimension representation of " 
                         + ctx.getNewResource().getURI());
                 return false;
             }
             Dimension dim = (Dimension) content.getContentRepresentation(Dimension.class);
             if (dim == null) {
-                logger.info("Unable to get Dimension representation of "
+                logger.warn("Unable to get Dimension representation of "
                         + ctx.getNewResource().getURI());
                 return false;
             }

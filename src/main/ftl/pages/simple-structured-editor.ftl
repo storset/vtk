@@ -12,14 +12,29 @@
     body {
       background: #fff;
     }
+    #app-content {
+      width: 620px;
+      padding: 0 0 48px 0;
+      margin: 0 25px;
+      position: relative;
+    }
     .vrtx-focus-button {
-      float: right;
+      position: absolute;
+      right: 5px;
+      bottom: 0px;
     }
     #vrtx-message-cancel {
-      float: right;
+      position: absolute;
+      right: 80px;
+      bottom: 0px;
     }
     #vrtx-message-delete {
-      float: left;
+      position: absolute;
+      left: 0px;
+      bottom: 0px;
+    }
+    #property-item-first {
+      margin-top: 0px;
     }
   </style>
   <script type="text/javascript"><!--
@@ -56,7 +71,7 @@
 <#if url?exists>
   <form method="POST" style="float:left;margin-top:10px">
     <@vrtx.csrfPreventionToken url />
-    <div class="property-item">
+    <div class="property-item" id="property-item-first">
       <div class="property-label">
         ${vrtx.getMsg("property.title")}
       </div> 

@@ -9,29 +9,29 @@
   <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default.css" type="text/css" />
   <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/editor.css" type="text/css" />
   <style type="text/css">
-    body {
-      background: #fff;
+    body, html {
+      background: #999999;
     }
     #app-content {
       width: 490px;
-      padding: 0 0 48px 0;
-      margin: 0 25px;
+      padding: 20px 20px 68px 20px;
       position: relative;
+      background: #fff;
     }
     .vrtx-focus-button,
     #vrtx-message-cancel,
     #vrtx-message-delete {
       position: absolute;
-      bottom: 0px;  
+      bottom: 20px;  
     }
     .vrtx-focus-button {
-      left: 0px;
+      left: 20px;
     }
     #vrtx-message-cancel {
-      left: 75px;
+      left: 95px;
     }
     #vrtx-message-delete {
-      left: 175px;
+      left: 195px;
     }
     #property-item-first {
       margin-top: 0px;
@@ -68,11 +68,12 @@
   <@editor.createEditor 'message' false false />
   <script type="text/javascript"><!--
     $(function() {
-      $("body").on("click", ".vrtx-back a", function(e) {
+      $("#app-content").css("marginTop", (($(window).outerHeight() / 2) - $("#app-content").outerHeight()) + "px");
+      $("#app-content").on("click", ".vrtx-back a", function(e) {
         $("#vrtx-message-cancel").submit();
         e.preventDefault();
       }); 
-    });
+    });  
   // -->
   </script>
 </head>

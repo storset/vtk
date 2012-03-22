@@ -66,7 +66,7 @@ import org.vortikal.repository.ResourceNotFoundException;
  *   <code>false</code> (attempt to load the resource immediately).
  * </ul>
  */
-public class PropertiesResource extends Properties implements InitializingBean {
+public final class PropertiesResource extends Properties implements InitializingBean {
     
     private static final long serialVersionUID = 8393113714334599560L;
 
@@ -79,7 +79,6 @@ public class PropertiesResource extends Properties implements InitializingBean {
     private boolean lazyInit = false;
     
     public PropertiesResource() {
-        super();
     }
     
     public PropertiesResource(Properties defaults) {
@@ -89,8 +88,6 @@ public class PropertiesResource extends Properties implements InitializingBean {
     public PropertiesResource(Repository repository, Path uri, String token,
                               boolean demandResourceAvailability, boolean lazyInit) 
         throws Exception {
-        
-        super();
         
         this.repository = repository;
         this.uri = uri;
@@ -161,17 +158,12 @@ public class PropertiesResource extends Properties implements InitializingBean {
                             + "', token '" + token + "' (" + e.getMessage() + ")");
             }
         }
-
     }
     
     private void doLoad(String token, Path uri) throws Exception {
         InputStream inputStream = this.repository.getInputStream(token, uri, false);
         super.load(inputStream); 
         inputStream.close();
-        
-        if (logger.isInfoEnabled()) {
-            logger.info("Loaded properties from resource " + uri);
-        }
     }
 
 }

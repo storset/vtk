@@ -43,6 +43,13 @@
       padding-left: 14px;
       margin: 0 0 10px 0;
     }
+    #vrtx-close-simple-structured-editor {
+      background: url("/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png") no-repeat scroll center center transparent;
+      display: block;
+      width: 20px;
+      height: 20px;
+      float: right;
+    }
   </style>
   <script type="text/javascript"><!--
     // Div container display in IE
@@ -71,7 +78,7 @@
   <script type="text/javascript"><!--
     $(function() {
       $("#app-content").css("marginTop", (($(window).outerHeight() / 2) - $("#app-content").outerHeight()) + "px");
-      $("#app-content").on("click", ".vrtx-back a", function(e) {
+      $("#app-content").on("click", ".vrtx-back a, #vrtx-close-simple-structured-editor", function(e) {
         $("#vrtx-message-cancel").submit();
         e.preventDefault();
       }); 
@@ -83,6 +90,7 @@
 <div id="app-content">
 <div class="vrtx-back">
   <a href="javascript:void(0)">Tilbake</a>
+  <a href="javascript:void(0)" id="vrtx-close-simple-structured-editor"></a>
 </div>
 <#if url?exists>
   <form method="POST">
@@ -102,13 +110,13 @@
       <textarea id="message" name="message"><#if properties?exists && properties.message?exists>${properties.message?html}</#if></textarea>
     </div>
     <div class="vrtx-focus-button">   
-      <button type="submit" id="submit" name="submit" value="create" >${vrtx.getMsg("editor.save")}</button>
+      <input type="submit" id="submit" name="submit" value="${vrtx.getMsg("editor.save")}" />
     </div> 
   </form>  
   <form method="POST" id="vrtx-message-cancel">
     <@vrtx.csrfPreventionToken url />
     <div class="vrtx-button">     
-        <button type="submit" id="cancel" name="cancel" value="cancel" >${vrtx.getMsg("editor.cancel")}</button>
+        <input type="submit" id="cancel" name="cancel" value="${vrtx.getMsg("editor.cancel")}" />
     </div>
   </form>
   <#if !isCollection>
@@ -116,7 +124,7 @@
       <@vrtx.csrfPreventionToken url />
       <input name="${url.path}" value="${url.path}" type="hidden" />
       <div class="vrtx-button">     
-        <button type="submit" name="delete" >${vrtx.getMsg("tabMenuRight.deleteResourcesService")}</button>
+        <input type="submit" name="delete" value="${vrtx.getMsg("tabMenuRight.deleteResourcesService")}" />
       </div>
     </form>
   </#if>

@@ -41,7 +41,7 @@
     .vrtx-back {
       background: transparent url("http://www.uio.no/vrtx/decorating/resources/dist/images/arrow-back-red.gif") no-repeat left center;
       padding-left: 14px;
-      margin: 10px 0;
+      margin: 0 0 10px 0;
     }
   </style>
   <script type="text/javascript"><!--

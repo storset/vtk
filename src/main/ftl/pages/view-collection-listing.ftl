@@ -86,14 +86,6 @@
 <body id="vrtx-${resource.resourceType}">
   
   <#assign page = page?default(1) />
-  
-  <#if resource.resourceType = 'message-listing' >
-   <#if editCurrentResource?exists && editCurrentResource >
-      <a id="vrtx-message-listing-create" class="button" href="${vrtx.relativeLinkConstructor("", 'simpleMessageEditor')}">
-        <span>${vrtx.getMsg("message-listing.new-message")}</span>
-      </a>
-    </#if>
-  </#if>
 
   <#assign isBlogListing = resource.resourceType = 'blog-listing' />
   <#assign eventListingDisplayType = vrtx.propValue(resource, 'display-type', '', 'el') />

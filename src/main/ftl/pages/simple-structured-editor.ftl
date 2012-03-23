@@ -82,6 +82,8 @@
     <#if !isCollection>
       <form  action="" method="post" id="vrtx-message-delete">        
         <@vrtx.csrfPreventionToken url />
+        <span id="buttons-or-text"><@vrtx.msg code="editor.orText" default="or" /></span>
+        &nbsp;
         <input name="${url.path}" value="${url.path}" type="hidden" />
         <div class="vrtx-button">     
           <input type="submit" name="delete" value="${vrtx.getMsg("tabMenuRight.deleteResourcesService")}" />

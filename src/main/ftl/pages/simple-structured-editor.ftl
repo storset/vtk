@@ -35,7 +35,9 @@
   <@editor.createEditor 'message' false false />
   <script type="text/javascript"><!--
     $(function() {
-      $("#app-content").css("marginTop", (($(window).outerHeight() / 2) - $("#app-content").outerHeight()) + "px")
+      var centerFromTop = (($(window).outerHeight() / 2) - $("#app-content").outerHeight());
+      centerFromTop = !isNaN(centerFromTop) ? centerFromTop : 20;
+      $("#app-content").css("marginTop", centerFromTop + "px")
                        .on("click", ".vrtx-back a, #vrtx-close-simple-structured-editor", function(e) {
         $("#cancel").click();
         e.preventDefault();

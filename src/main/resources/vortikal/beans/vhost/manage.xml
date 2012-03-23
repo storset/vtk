@@ -895,6 +895,7 @@
         <entry key="ø" value="o" />
         <entry key="å" value="a" />
         <entry key="\?" value="" />
+        <entry key="#" value="" />
       </map>
     </constructor-arg>
   </bean>

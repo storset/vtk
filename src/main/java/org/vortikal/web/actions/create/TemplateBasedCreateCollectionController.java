@@ -63,16 +63,8 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
     private boolean downcaseCollectionNames = false;
     private Map<String, String> replaceNameChars;
 
-    public boolean isDowncaseCollectionNames() {
-        return downcaseCollectionNames;
-    }
-
     public void setDowncaseCollectionNames(boolean downcaseCollectionNames) {
         this.downcaseCollectionNames = downcaseCollectionNames;
-    }
-
-    public Map<String, String> getReplaceNameChars() {
-        return replaceNameChars;
     }
 
     public void setReplaceNameChars(Map<String, String> replaceNameChars) {

@@ -77,7 +77,7 @@
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
           <property name="modelDataMap">
             <map>
-              <entry key="cssURLs" value-ref="structuredResources.editCSSURLs" />
+              <entry key="cssURLs" value-ref="editor.editCSSURLs" />
               <entry key="jsBaseURL" value="${jsBaseURL}" />
               <entry key="webResources" value="${webResources.baseURL}" />
               <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />

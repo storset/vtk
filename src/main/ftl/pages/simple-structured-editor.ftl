@@ -6,13 +6,22 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Simple structured resource editor</title>
-  <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default.css" type="text/css" />
-  <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/editor.css" type="text/css" />
+  <#include "/system/css.ftl" />
   <style type="text/css">
     html {
       background: #999999;
     }
   </style>
+
+  <#global baseFolder = "/" />
+  <#if resourceContext.parentURI?exists>
+    <#if isCollection?exists && isCollection>
+      <#global baseFolder = resourceContext.currentURI?html />
+    <#else>
+      <#global baseFolder = resourceContext.parentURI?html />
+    </#if>
+  </#if>
+  <#include "/system/javascript.ftl" />
   <script type="text/javascript"><!--
     // Div container display in IE
     var cssFileList = [<#if fckEditorAreaCSSURL?exists>
@@ -22,19 +31,6 @@
                        </#if>]; 
   // -->
   </script>
-  <#global baseFolder = "/" />
-  <#if resourceContext.parentURI?exists>
-    <#if isCollection?exists && isCollection>
-      <#global baseFolder = resourceContext.currentURI?html />
-    <#else>
-      <#global baseFolder = resourceContext.parentURI?html />
-    </#if>
-  </#if>
-  <#if jsURLs?exists>
-    <#list jsURLs as jsURL>
-      <script type="text/javascript" src="${jsURL}"></script>
-    </#list>
-  </#if>
   <@editor.addCkScripts />
   <@editor.createEditor 'message' false false />
   <script type="text/javascript"><!--

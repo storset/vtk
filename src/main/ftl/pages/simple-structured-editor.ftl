@@ -79,7 +79,7 @@
     $(function() {
       $("#app-content").css("marginTop", (($(window).outerHeight() / 2) - $("#app-content").outerHeight()) + "px")
                        .on("click", ".vrtx-back a, #vrtx-close-simple-structured-editor", function(e) {
-        $("#vrtx-message-cancel").submit();
+        $("#cancel").click();
         e.preventDefault();
       }); 
     });  

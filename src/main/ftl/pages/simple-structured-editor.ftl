@@ -70,7 +70,7 @@
         <textarea id="message" name="message"><#if properties?exists && properties.message?exists>${properties.message?html}</#if></textarea>
       </div>
       <div class="vrtx-focus-button">   
-        <input type="submit" id="submit" name="submit" value="${vrtx.getMsg("editor.save")}" />
+        <input type="submit" id="save" name="save" value="${vrtx.getMsg("editor.save")}" />
       </div> 
     </form>  
     <form action="" method="post" id="vrtx-message-cancel">

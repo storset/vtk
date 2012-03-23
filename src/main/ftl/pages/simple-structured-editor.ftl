@@ -89,7 +89,7 @@
 <body>
 <div id="app-content">
   <div class="vrtx-back">
-    <a href="javascript:void(0)">Tilbake</a>
+    <a href="javascript:void(0)">${vrtx.getMsg("report.back.to.diagram")}</a>
     <a href="javascript:void(0)" id="vrtx-close-simple-structured-editor"></a>
   </div>
   <#if url?exists>

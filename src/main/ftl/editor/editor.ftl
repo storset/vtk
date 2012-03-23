@@ -47,17 +47,14 @@
       });
     
       $(document).ready(function() {
-
         // Sticky bar shortcuts
-        $("#app-content").on("click", "#vrtx-save-view-shortcut", function(e) { $("#saveAndViewButton").click(); e.preventDefault(); });
-        $("#app-content").on("click", "#vrtx-save-copy-shortcut", function(e) { $("#saveCopyButton").click();    e.preventDefault(); });
-        $("#app-content").on("click", "#vrtx-save-shortcut",      function(e) { $("#saveButton").click();        e.preventDefault(); });
-        $("#app-content").on("click", "#vrtx-cancel-shortcut",    function(e) { $("#cancel").click();            e.preventDefault(); });
-
+        mapShortcut("#vrtx-save-view-shortcut", "#saveAndViewButton");
+        mapShortcut("#vrtx-save-copy-shortcut", "#saveCopyButton");
+        mapShortcut("#vrtx-save-shortcut", "#saveButton");
+        mapShortcut("#vrtx-cancel-shortcut", "#cancel");
         $("#editor").on("click", "#cancel", function(e) {
           performSave();
         });
-        
         $("#editor").on("click", "#saveAndViewButton, #saveCopyButton", function(e) {
           performSave();
           if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save && !vrtxImageEditor.savedImage) {

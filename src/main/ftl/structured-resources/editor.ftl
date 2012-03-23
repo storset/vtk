@@ -23,21 +23,17 @@
       initDatePicker(datePickerLang);
     });
 
-    $(document).ready(function() {
-
-      // Sticky bar shortcuts
-      $("#app-content").on("click", "#vrtx-save-view-shortcut",            function(e) { $("#saveAndViewButton").click();       e.preventDefault(); });
-      $("#app-content").on("click", "#vrtx-save-shortcut",                 function(e) { $("#updateAction").click();            e.preventDefault(); });
-      $("#app-content").on("click", "#vrtx-cancel-shortcut",               function(e) { $("#cancelAction").click();            e.preventDefault(); });  
-      $("#app-content").on("click", "#vrtx-save-working-copy-shortcut",    function(e) { $("#saveWorkingCopyAction").click();   e.preventDefault(); });    
-      $("#app-content").on("click", "#vrtx-make-public-version-shortcut",  function(e) { $("#makePublicVersionAction").click(); e.preventDefault(); });   
-      $("#app-content").on("click", "#vrtx-delete-working-copy-shortcut",  function(e) { $("#deleteWorkingCopyAction").click(); e.preventDefault(); });   
-      $("#app-content").on("click", "#vrtx-save-as-working-copy-shortcut", function(e) { $("#saveWorkingCopyAction").click();   e.preventDefault(); });    
-
+    $(document).ready(function() { // Sticky bar shortcuts
+      mapShortcut("#vrtx-save-view-shortcut", "#saveAndViewButton");
+      mapShortcut("#vrtx-save-shortcut", "#updateAction");
+      mapShortcut("#vrtx-cancel-shortcut", "#cancelAction");
+      mapShortcut("#vrtx-save-working-copy-shortcut", "#saveWorkingCopyAction");
+      mapShortcut("#vrtx-make-public-version-shortcut", "#makePublicVersionAction");
+      mapShortcut("#vrtx-delete-working-copy-shortcut", "#deleteWorkingCopyAction");
+      mapShortcut("#vrtx-save-as-working-copy-shortcut", "#saveWorkingCopyAction");
       $("#editor").on("click", "#saveAndViewButton, #cancelAction, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", function(e) {
         performSave();
       });
-
     });
     
     var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";

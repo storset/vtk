@@ -823,8 +823,15 @@ function interceptEnterKeyAndReroute(txt, btn) {
   $("#app-content").on("keypress", txt, function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       $(btn).click(); // click the associated button
-       e.preventDefault();
+      e.preventDefault();
     }
+  });
+}
+
+function mapShortcut(selectors, reroutedSelector) {
+  $("#app-content").on("click", selectors, function(e) {
+    $(reroutedSelector).click();
+    e.preventDefault();
   });
 }
 

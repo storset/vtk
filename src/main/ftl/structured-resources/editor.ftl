@@ -23,7 +23,8 @@
       initDatePicker(datePickerLang);
     });
 
-    $(document).ready(function() { // Sticky bar shortcuts
+    $(document).ready(function() {
+      // Sticky bar shortcuts
       mapShortcut("#vrtx-save-view-shortcut", "#saveAndViewButton");
       mapShortcut("#vrtx-save-shortcut", "#updateAction");
       mapShortcut("#vrtx-cancel-shortcut", "#cancelAction");

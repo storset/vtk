@@ -302,4 +302,54 @@ h3#vrtx-image-editor-preview {
 
 /* ^ Image editor */
 
+/* Simple editor */
+
+body#vrtx-simple-editor {
+  background: #999999;
+}
+
+body#vrtx-simple-editor #app-content {
+  width: 490px;
+  padding: 20px 20px 68px 20px;
+  position: relative;
+  background: #fff;
+  border: 2px solid #848484;
+  box-shadow: 1px 1px 5px 2px #848484;
+}
+
+body#vrtx-simple-editor .vrtx-focus-button,
+body#vrtx-simple-editor #vrtx-message-cancel,
+body#vrtx-simple-editor #vrtx-message-delete {
+  position: absolute;
+  bottom: 20px;  
+}
+
+body#vrtx-simple-editor .vrtx-focus-button {
+  left: 20px;
+}
+
+body#vrtx-simple-editor #vrtx-message-cancel {
+  left: 95px;
+}
+
+body#vrtx-simple-editor #vrtx-message-delete {
+  left: 195px;
+}
+
+body#vrtx-simple-editor .vrtx-back {
+  background: transparent url("http://www.uio.no/vrtx/decorating/resources/dist/images/arrow-back-red.gif") no-repeat left center;
+  padding-left: 14px;
+  margin: 0 0 10px 0;
+}
+
+body#vrtx-simple-editor #vrtx-close-simple-structured-editor {
+  background: url("/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png") no-repeat scroll center center transparent;
+  display: block;
+  width: 20px;
+  height: 20px;
+  float: right;
+}
+
+/* ^ Simple editor */
+
 /* ^ Vortex - Editor - Old documenttypes and folders */

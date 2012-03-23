@@ -2,53 +2,15 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/editor/common.ftl" as editor />
 
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Simple structured resource editor</title>
   <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default.css" type="text/css" />
   <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/editor.css" type="text/css" />
   <style type="text/css">
-    body, html {
+    html {
       background: #999999;
-    }
-    #app-content {
-      width: 490px;
-      padding: 20px 20px 68px 20px;
-      position: relative;
-      background: #fff;
-      border: 2px solid #848484;
-      box-shadow: 1px 1px 5px 2px #848484;
-    }
-    .vrtx-focus-button,
-    #vrtx-message-cancel,
-    #vrtx-message-delete {
-      position: absolute;
-      bottom: 20px;  
-    }
-    .vrtx-focus-button {
-      left: 20px;
-    }
-    #vrtx-message-cancel {
-      left: 95px;
-    }
-    #vrtx-message-delete {
-      left: 195px;
-    }
-    #property-item-first {
-      margin-top: 0px;
-    }
-    .vrtx-back {
-      background: transparent url("http://www.uio.no/vrtx/decorating/resources/dist/images/arrow-back-red.gif") no-repeat left center;
-      padding-left: 14px;
-      margin: 0 0 10px 0;
-    }
-    #vrtx-close-simple-structured-editor {
-      background: url("/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png") no-repeat scroll center center transparent;
-      display: block;
-      width: 20px;
-      height: 20px;
-      float: right;
     }
   </style>
   <script type="text/javascript"><!--
@@ -86,7 +48,7 @@
   // -->
   </script>
 </head>
-<body>
+<body id="vrtx-simple-editor">
 <div id="app-content">
   <div class="vrtx-back">
     <a href="javascript:void(0)">${vrtx.getMsg("report.back.to.diagram")}</a>

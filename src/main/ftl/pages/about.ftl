@@ -43,7 +43,6 @@
        default="${defaultHeader}"/>
   </h2>
 
-
   <table id="vrtx-resourceInfoMain" class="resourceInfo">
 
       <!-- Last modified -->

@@ -50,22 +50,27 @@ public class MessageListingController extends CollectionListingController {
             } else if (SimpleStructuredEditor.ACTION_PARAMETER_VALUE_UPDATE.equals(actionParameter)
                     && repository.exists(token, uriParameter)) {
                 l.updateFile(repository.retrieve(token, uriParameter, true));
-            } else if (SimpleStructuredEditor.ACTION_PARAMETER_VALUE_DELETE.equals(actionParameter)) {
-                List<Path> remove = new ArrayList<Path>();
-                for (PropertySet p : l.getFiles()) {
-                    if (!repository.exists(token, p.getURI())) {
-                        remove.add(p.getURI());
-                    }
-                }
-                for (Path p : remove) {
-                    l.removeFile(p);
-                }
             }
+
+            checkFilesExists(repository, token, l);
+
             model.put("edit", helper.isAuthorized(repository, token, principal, l.getTotalHits(), results));
         }
 
         model.put("editCurrentResource", repository.isAuthorized(
                 repository.retrieve(token, URL.create(request).getPath(), false), RepositoryAction.READ_WRITE,
                 principal, false));
+    }
+
+    private void checkFilesExists(Repository repository, String token, Listing l) throws Exception {
+        List<Path> remove = new ArrayList<Path>();
+        for (PropertySet p : l.getFiles()) {
+            if (!repository.exists(token, p.getURI())) {
+                remove.add(p.getURI());
+            }
+        }
+        for (Path p : remove) {
+            l.removeFile(p);
+        }
     }
 }

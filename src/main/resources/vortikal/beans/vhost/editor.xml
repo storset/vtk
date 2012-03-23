@@ -774,8 +774,12 @@
             <ref bean="importancePropDef" />
             <ref bean="hiddenPropDef" />
             <ref bean="pageLimitPropDef" />
-         <!--    <ref bean="displayAggregationPropDef" />
+            <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
+            <ref bean="displayManuallyApprovedPropDef" />
+            <ref bean="manuallyApproveFromPropDef" />
+            <ref bean="manuallyApprovedResourcesPropDef" />
+         <!-- 
             <ref bean="collection.sortingPropDef" />
          -->
           </list>

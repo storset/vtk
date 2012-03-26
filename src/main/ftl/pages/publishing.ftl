@@ -15,13 +15,7 @@
     
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
     
-    <#if language = "no">
-      <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.8.custom/js/jquery.ui.datepicker-no.js"></script>
-    </#if>
-    <#if language = "nn">
-      <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.8.custom/js/jquery.ui.datepicker-nn.js"></script>
-    </#if>
-    <script type="text/javascript" src="${jsBaseURL?html}/datepicker/datepicker-admin.js"></script>
+    <@editor.addDatePickerScripts language />
 
     <script type="text/javascript">
     <!--

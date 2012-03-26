@@ -36,12 +36,9 @@
     </#list>
     </ul>
   </p>
-
   <h2>Response</h2>
   <p>Status: ${responseInfo.status}</p>
-
   <p>Duration: ${responseInfo.duration} ms</p>
-
   <ul>
   <#list responseInfo.headers?keys as name>
     <#list responseInfo.headers[name] as value>
@@ -51,8 +48,5 @@
     </#list>
   </#list>
   </ul>
-
 </body>
 </html>
-
-

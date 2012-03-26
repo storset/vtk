@@ -104,17 +104,17 @@
         var ajaxSaveText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
       </#if>
       
-      var approveGeneratingPage = "<@vrtx.msg code='editor.manually-approve.generating-page' />";
-      var approvePrev = "<@vrtx.msg code='imageListing.previous' />";
-      var approveNext = "<@vrtx.msg code='imageListing.next' />";
-      var approveShowing = "<@vrtx.msg code='editor.manually-approve.table-showing' />";
-      var approveOf = "<@vrtx.msg code='person-listing.of' />";
-      var approveTableTitle = "<@vrtx.msg code='proptype.name.title' />";
-      var approveTableSrc = "<@vrtx.msg code='resource.sourceURL' />";
-      var approveTablePublished = "<@vrtx.msg code='publish.permission.published' />";
-      var approveShowAll = "<@vrtx.msg code='editor.manually-approve.show-all' />";
-      var approveShowApprovedOnly = "<@vrtx.msg code='editor.manually-approve.show-approved-only' />";
-      var approveNoApprovedMsg = "<@vrtx.msg code='editor.manually-approve.no-approved-msg' />";
+      var approveGeneratingPage = "<@vrtx.msg code='editor.manually-approve.generating-page' />",
+          approvePrev = "<@vrtx.msg code='imageListing.previous' />",
+          approveNext = "<@vrtx.msg code='imageListing.next' />",
+          approveShowing = "<@vrtx.msg code='editor.manually-approve.table-showing' />",
+          approveOf = "<@vrtx.msg code='person-listing.of' />",
+          approveTableTitle = "<@vrtx.msg code='proptype.name.title' />",
+          approveTableSrc = "<@vrtx.msg code='resource.sourceURL' />",
+          approveTablePublished = "<@vrtx.msg code='publish.permission.published' />",
+          approveShowAll = "<@vrtx.msg code='editor.manually-approve.show-all' />",
+          approveShowApprovedOnly = "<@vrtx.msg code='editor.manually-approve.show-approved-only' />",
+          approveNoApprovedMsg = "<@vrtx.msg code='editor.manually-approve.no-approved-msg' />";
       
       // Div container display in IE
       var cssFileList = [<#if fckEditorAreaCSSURL?exists>
@@ -155,9 +155,7 @@
     </#if>
   </head>
   <body id="vrtx-editor">
-    <#assign header>
-      <@vrtx.msg code="editor.edit" args=[vrtx.resourceTypeName(resource)?lower_case] />
-    </#assign>
+    <#assign header><@vrtx.msg code="editor.edit" args=[vrtx.resourceTypeName(resource)?lower_case] /></#assign>
 
     <div id="vrtx-editor-title-submit-buttons">
       <div id="vrtx-editor-title-submit-buttons-inner-wrapper">

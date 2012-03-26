@@ -233,11 +233,9 @@
                    ${vrtx.getMsg("publish.permission.unpublished")}
                  </#if>
                <#else>
-                 <#if published == "true">
-                   <span style="color: #bbb">${vrtx.getMsg("publish.permission.published")}</span>
-                 <#else>
-                   <span style="color: #bbb">${vrtx.getMsg("publish.permission.unpublished")}</span>
-                 </#if>
+                 <span style="color: #bbb">
+                   <#if published == "true">${vrtx.getMsg("publish.permission.published")}<#else>${vrtx.getMsg("publish.permission.unpublished")}</#if>
+                 </span>
                </#if>
                <#break>
           </#switch>
@@ -292,5 +290,4 @@
   </div>
   </form>
 </#if>
-
 </#macro>

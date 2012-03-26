@@ -95,10 +95,10 @@
           </ul>
         <div id="submitButtons" class="submitButtons">
           <div class="vrtx-focus-button">
-            <input type="submit" id="${bindName}UpdateAction" name="${bindName}UpdateAction" value="${vrtx.getMsg("editor.save")}" onclick="saveDateAndTimeFields();"/>
+            <input type="submit" id="${bindName}UpdateAction" name="${bindName}UpdateAction" value="${vrtx.getMsg("editor.save")}" onclick="saveDateAndTimeFields();" />
           </div>
           <div class="vrtx-button">
-            <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg("editor.cancel")}">
+            <input type="submit" id="cancelAction" name="cancelAction" value="${vrtx.getMsg("editor.cancel")}" />
           </div>
         </div>
       </form>

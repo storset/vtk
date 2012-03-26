@@ -40,9 +40,8 @@
       </#if>
       <#if element.type == 'flag'>
         <input type="checkbox" name="${element.identifier?html}"
-               value="true" <#if element.value?exists>checked="checked"</#if>> 
+               value="true" <#if element.value?exists>checked="checked"</#if> /> 
           ${element.label?html}
-
       <#elseif element.type == 'string'>
         <h3>${element.label?html}</h3>
         <div class="vrtx-textfield">
@@ -74,13 +73,11 @@
         <input type="submit" id="saveAction" name="saveAction" value="<@vrtx.msg code="editor.save" default="Save"/>" />
       </div>
       <div class="vrtx-button">
-        <input type="submit" id="cancelAction" name="cancelAction" value="<@vrtx.msg code="editor.cancel" default="Cancel"/>">
+        <input type="submit" id="cancelAction" name="cancelAction" value="<@vrtx.msg code="editor.cancel" default="Cancel"/>" />
       </div>
     </div>
-    
   </form>
   </div>
   </#if>
 </body>
 </html>
-

@@ -29,7 +29,7 @@
       <#else>
         <div class="vrtx-textfield">
       </#if>
-	    <input size="${inputFieldSize}" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}"/>
+	    <input size="${inputFieldSize}" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}" />
 	  </div>
     </#if>
     <#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>

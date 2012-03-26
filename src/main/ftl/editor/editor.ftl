@@ -208,18 +208,18 @@
 
       <div id="submit" class="submitButtons save-cancel">
         <div class="vrtx-button">
-          <input type="submit" id="saveAndViewButton" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}">
+          <input type="submit" id="saveAndViewButton" name="saveview"  value="${vrtx.getMsg("editor.saveAndView")}"  />
         </div>
         <#if supportedImageEditor>
            <div class="vrtx-button">
-             <input type="submit" id="saveCopyButton" name="savecopy" value="${vrtx.getMsg("editor.saveCopy")}">
+             <input type="submit" id="saveCopyButton" name="savecopy" value="${vrtx.getMsg("editor.saveCopy")}" />
            </div>  
         </#if>
         <div class="vrtx-focus-button">
-          <input type="submit" id="saveButton" name="save" value="${vrtx.getMsg("editor.save")}">
+          <input type="submit" id="saveButton" name="save" value="${vrtx.getMsg("editor.save")}" />
         </div>  
         <div class="vrtx-button">
-          <input type="submit" id="cancel" name="cancel" value="${vrtx.getMsg("editor.cancel")}">
+          <input type="submit" id="cancel" name="cancel" value="${vrtx.getMsg("editor.cancel")}" />
         </div>
       </div>
 
@@ -449,7 +449,7 @@
               <#if value == allowedValues[0]>
                 <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" checked="checked" />
               <#else>
-                <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}"/>
+                <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" />
               </#if>
             </#if>
 

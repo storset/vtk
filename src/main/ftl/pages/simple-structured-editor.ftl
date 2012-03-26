@@ -60,7 +60,7 @@
           ${vrtx.getMsg("property.title")}
         </div> 
         <div class="vrtx-textfield">
-          <input type="text" name="title" id="title"<#if properties?exists && properties.title?exists> value="${properties.title?html}"</#if>/>
+          <input type="text" name="title" id="title"<#if properties?exists && properties.title?exists> value="${properties.title?html}"</#if> />
         </div>
       </div>
       <div id="vrtx-message" class="property-item">

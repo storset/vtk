@@ -185,7 +185,7 @@
     <div class="submit submitButtons">
     <#if !form.published && !form.workingCopy>
       <div class="vrtx-button">
-        <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
+        <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}" />
       </div>
       <div class="vrtx-focus-button">
         <input type="submit" id="updateAction" name="updateAction" value="${vrtx.getMsg("editor.save")}" />
@@ -196,7 +196,7 @@
 
     <#elseif form.workingCopy>
       <div class="vrtx-button">
-        <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
+        <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}" />
       </div>
       <div class="vrtx-focus-button">
         <input type="submit" id="saveWorkingCopyAction" name="saveWorkingCopyAction" value="${vrtx.getMsg("editor.save")}" />
@@ -216,7 +216,7 @@
       
     <#else>
       <div class="vrtx-button">
-        <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}">
+        <input type="submit" id="saveAndViewButton" name="updateViewAction"  value="${vrtx.getMsg("editor.saveAndView")}" />
       </div>
       <div class="vrtx-focus-button">
         <input type="submit" id="updateAction" name="updateAction" value="${vrtx.getMsg("editor.save")}" />

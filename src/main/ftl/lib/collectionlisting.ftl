@@ -169,7 +169,7 @@
                     </span>
                   </a>
                   <#if withForm>
-                    </td><td class="checkbox"><input name="${child.URI?html}" type="checkbox"/>
+                    </td><td class="checkbox"><input name="${child.URI?html}" type="checkbox" />
                   </#if>
                 <#else>
                   <span class="unauthorizedListedResource-wrapper">
@@ -178,7 +178,7 @@
                     </span>
                   </span>
                   <#if withForm>
-                    </td><td class="checkbox"><input name="${child.URI?html}" type="checkbox"/>
+                    </td><td class="checkbox"><input name="${child.URI?html}" type="checkbox" />
                   </#if> 
                 </#if>
                 <#break>

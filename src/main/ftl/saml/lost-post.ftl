@@ -39,7 +39,7 @@
         </#if>
       </#list>
       You can retry the operation by clicking on this button:
-      <input name="submit" type="submit" value="submit form again" />
+      <input name="submit" type="submit" value="Submit form again" />
     </form>
   </body>
 </html>

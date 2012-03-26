@@ -48,9 +48,9 @@
        
        <div class="vrtx-textfield">  
          <#if emailSavedTo?exists && emailSavedTo?has_content>
-           <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}"/>
+           <input type="text" id="emailTo" name="emailTo" value="${emailSavedTo?html}" />
          <#else>
-           <input type="text" id="emailTo" name="emailTo" value=""/>
+           <input type="text" id="emailTo" name="emailTo" value="" />
          </#if>
        </div>
        
@@ -61,9 +61,9 @@
        
        <div class="vrtx-textfield">  
          <#if emailSavedFrom?exists && emailSavedFrom?has_content>
-           <input type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom?html}"/>
+           <input type="text" id="emailFrom" name="emailFrom" value="${emailSavedFrom?html}" />
          <#else>
-           <input type="text" id="emailFrom" name="emailFrom" value=""/>
+           <input type="text" id="emailFrom" name="emailFrom" value="" />
          </#if>
        </div>
        

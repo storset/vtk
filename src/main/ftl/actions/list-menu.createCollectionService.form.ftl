@@ -35,14 +35,14 @@
         </div>
       </#if>
     <div class="vrtx-textfield">
-      <input type="text" name="name">
+      <input type="text" name="name" />
     </div>
     <div id="submitButtons">
       <div class="vrtx-focus-button">
-        <input type="submit" name="save" value="<@vrtx.msg code="actions.createCollectionService.save" default="Create"/>">
+        <input type="submit" name="save" value="<@vrtx.msg code="actions.createCollectionService.save" default="Create"/>" />
       </div>
       <div class="vrtx-button">
-        <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createCollectionService.cancel" default="Cancel"/>">
+        <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createCollectionService.cancel" default="Cancel"/>" />
       <div>
     </div>
   </form>

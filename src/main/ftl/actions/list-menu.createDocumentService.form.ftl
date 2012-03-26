@@ -45,14 +45,14 @@
         </div>
       </#if>
     <div class="vrtx-textfield">
-      <input type="text" name="${spring.status.expression}" value="${newDocName}">
+      <input type="text" name="${spring.status.expression}" value="${newDocName}" />
     </div>
     <div id="submitButtons">
       <div class="vrtx-focus-button">
-        <input type="submit" name="save" value="<@vrtx.msg code="actions.createDocumentService.save" default="Create"/>">
+        <input type="submit" name="save" value="<@vrtx.msg code="actions.createDocumentService.save" default="Create"/>" />
       </div>
       <div class="vrtx-button">
-        <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createDocumentService.cancel" default="Cancel"/>"/>
+        <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createDocumentService.cancel" default="Cancel"/>" />
       </div>
     </div>
   </form>

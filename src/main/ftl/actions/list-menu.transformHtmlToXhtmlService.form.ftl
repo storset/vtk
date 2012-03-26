@@ -16,14 +16,14 @@
 	</ul>
       </#if>
     <div class="vrtx-textfield">
-      <input type="text" size="30" name="${spring.status.expression}" value="${spring.status.value?if_exists}">
+      <input type="text" size="30" name="${spring.status.expression}" value="${spring.status.value?if_exists}" />
     </div>
     <div id="submitButtons">
       <div class="vrtx-focus-button">
-        <input type="submit" name="save" value="<@vrtx.msg code="actions.transformHtmlToXhtmlService.save" default="Create"/>">
+        <input type="submit" name="save" value="<@vrtx.msg code="actions.transformHtmlToXhtmlService.save" default="Create"/>" />
       </div>
       <div class="vrtx-button">
-        <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.transformHtmlToXhtmlService.cancel" default="Cancel"/>">
+        <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.transformHtmlToXhtmlService.cancel" default="Cancel"/>" />
       </div>
     </div>
   </form>

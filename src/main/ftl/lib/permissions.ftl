@@ -222,7 +222,7 @@
                 </#if>
               
                 <#-- Remove -->
-                &nbsp;<input class="removePermission" name="remove${capitalizedType}.${groupOrUser.name?html}" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />"/>  
+                &nbsp;<input class="removePermission" name="remove${capitalizedType}.${groupOrUser.name?html}" type="submit" value="<@vrtx.msg code='permissions.remove' default='remove' />" />  
               </#compress>
             </li>
           </#list>
@@ -280,7 +280,7 @@
         
         <div class="vrtx-button">
           <input class="add${capitalizedType}Button" type="submit" name="add${capitalizedType}Action"
-                       value="<@vrtx.msg code="permissions.add${capitalizedType}" default="Add ${capitalizedType}"/>"/>
+                       value="<@vrtx.msg code="permissions.add${capitalizedType}" default="Add ${capitalizedType}"/>" />
         </div>
       </span>
     </fieldset>

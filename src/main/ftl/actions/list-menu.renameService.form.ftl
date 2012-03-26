@@ -22,13 +22,13 @@
       <div id="submitButtons">
         <div class="vrtx-focus-button">
       	<#if confirm>
-      		<input type="submit" name="overwrite" value="<@vrtx.msg code="actions.renameService.overwrite" default="Overwrite"/>">
+      		<input type="submit" name="overwrite" value="<@vrtx.msg code="actions.renameService.overwrite" default="Overwrite"/>" />
       	<#else>
-        	<input type="submit" name="save" value="<@vrtx.msg code="actions.renameService.save" default="Save"/>">
+        	<input type="submit" name="save" value="<@vrtx.msg code="actions.renameService.save" default="Save"/>" />
         </#if>
         </div>
         <div class="vrtx-button">
-        	<input type="submit" name="cancel" value="<@vrtx.msg code="actions.renameService.cancel" default="Cancel"/>"/>
+        	<input type="submit" name="cancel" value="<@vrtx.msg code="actions.renameService.cancel" default="Cancel"/>" />
         </div>
       </div>
     </form>
@@ -38,5 +38,3 @@
 <#recover>
 ${.error}
 </#recover>
-
-

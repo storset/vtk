@@ -21,10 +21,10 @@
     </div>
     <div id="submitButtons">
       <div class="vrtx-focus-button">
-        <input type="submit" name="save" value="<@vrtx.msg code="actions.fileUploadService.save" default="Save"/>">
+        <input type="submit" name="save" value="<@vrtx.msg code="actions.fileUploadService.save" default="Save"/>" />
       </div>
       <div class="vrtx-button">
-        <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.fileUploadService.cancel" default="Cancel"/>">
+        <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.fileUploadService.cancel" default="Cancel"/>" />
       </div>
     </div>      
   </form>

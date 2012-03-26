@@ -481,13 +481,13 @@
             <#if alternative?has_content>
               <#local label><@vrtx.msg code="${msgPrefix}.value.${alternative}" default="${alternative}" /></#local>
               <input id="${alternative}" type="radio" name="value" value="${alternative}"
-                         <#if form.value?has_content && form.value = alternative>checked</#if>>
+                         <#if form.value?has_content && form.value = alternative>checked</#if> />
                <label for="${alternative}">${label}</label>
             <#else>
               <#local defaultNotSet><@vrtx.msg code="resource.property.unset" default="Not set" /></#local>
               <#local label><@vrtx.msg code="${msgPrefix}.unset" default="${defaultNotSet}" /></#local>
                 <input id="unset" type="radio" name="value" value=""
-                           <#if !form.value?has_content>checked</#if>>
+                           <#if !form.value?has_content>checked</#if> />
                   <label for="unset">${label}</label>
             </#if>
             </@formInputWrapper>
@@ -545,18 +545,20 @@
               <textarea name="value" rows="5" cols="60">${value}</textarea>
             <#else>
               <div class="vrtx-textfield">
-                <input type="text" id="value" name="value" value="${value}" size=${inputSize}>
+                <input type="text" id="value" name="value" value="${value}" size="${inputSize}" />
               </div>
               <#if item.format?exists>(${item.format})</#if>
             </#if>
             <#if form.hierarchicalHelpUrl?exists>
-          <script type="text/javascript">
-                function popitup(url) {
-                  var fixedUrl = url + '&selected=' + document.getElementById('value').value;
-	          var newwindow=window.open(fixedUrl,'vocabulary','scrollbars=1');
-	          if (window.focus) {newwindow.focus()}
-	          return false;
-                }
+          <script type="text/javascript"><!--
+            function popitup(url) {
+              var fixedUrl = url + '&selected=' + document.getElementById('value').value;
+	          var newwindow = window.open(fixedUrl,'vocabulary','scrollbars=1');
+	          if (window.focus) {
+	            newwindow.focus()}
+	            return false;
+              }
+          // -->
           </script>
 
           <a target="vocabulary" href="${form.hierarchicalHelpUrl}" onclick="return popitup('${form.hierarchicalHelpUrl}')" ><@vrtx.msg code="propertyEditor.browse" default="Browse"/></a>
@@ -577,11 +579,11 @@
       <@formSubmitWrapper item>
         <div class="vrtx-focus-button">
           <input type="submit" name="save"
-                 value="<@vrtx.msg code="propertyEditor.save" default="Save"/>">
+                 value="<@vrtx.msg code="propertyEditor.save" default="Save"/>" />
         </div>
         <div class="vrtx-button">
           <input type="submit" name="cancelAction"
-                 value="<@vrtx.msg code="propertyEditor.cancel" default="Cancel"/>">
+                 value="<@vrtx.msg code="propertyEditor.cancel" default="Cancel"/>" />
       </div>
       </@formSubmitWrapper>
       </@formWrapper>

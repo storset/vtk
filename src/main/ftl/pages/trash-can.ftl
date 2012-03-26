@@ -65,7 +65,7 @@
           <#if spring.status.value?string = 'true' >
             <#assign checked = "checked" />
           </#if>
-          <input type="checkbox" name="${spring.status.expression}" title="${rr.name?html}" value="true" ${checked} />
+          <input type="checkbox" name="${spring.status.expression}" title="${rr.name?html}" value="true" checked="${checked}" />
           </td>
           <td class="vrtx-trash-can-deleted-by">${rr.deletedBy}</td>
           <td class="vrtx-trash-can-deleted-time"><@printDeletedTime tco.recoverableResource.deletedTime /></td>
@@ -85,9 +85,9 @@
   </table>
 
   <input class="recoverResource" type="submit" name="recoverAction"
-               value="<@vrtx.msg code="trash-can.recover" default="Recover"/>"/>
+               value="<@vrtx.msg code="trash-can.recover" default="Recover"/>" />
   <input class="deleteResourcePermanent" type="submit" name="deletePermanentAction"
-               value="<@vrtx.msg code="trash-can.delete-permanent" default="Delete permanently"/>"/>
+               value="<@vrtx.msg code="trash-can.delete-permanent" default="Delete permanently"/>" />
 </form>
 
 </body>

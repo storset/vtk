@@ -112,10 +112,10 @@
       
       // Move up, move down, delete
 
-      var moveDownButton = "<div class=\"vrtx-button vrtx-move-down-button\"><input type=\"button\" value=\"&darr; ${vrtx.getMsg("editor.move-down")}\" /><\/div>";
-      var moveUpButton = "<div class=\"vrtx-button vrtx-move-up-button\"><input type=\"button\" value=\"&uarr; ${vrtx.getMsg("editor.move-up")}\" /><\/div>";
+      var moveDownButton = "<div class=\"vrtx-button vrtx-move-down-button\"><input type=\"button\" value=\"&darr; ${vrtx.getMsg("editor.move-down")}\" \/><\/div>";
+      var moveUpButton = "<div class=\"vrtx-button vrtx-move-up-button\"><input type=\"button\" value=\"&uarr; ${vrtx.getMsg("editor.move-up")}\" \/><\/div>";
       var deleteButton = "<div class=\"vrtx-button vrtx-remove-button\"><input type=\"button\" value=\"${vrtx.getMsg("editor.remove")}\" \/><\/div>";
-      var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" />";
+      var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>";
       var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
     
       $("#" + j.name + " .vrtx-add-button").before("<div class=\"vrtx-json-element\" id=\"" + newElementId + "\"><\/div>");
@@ -218,7 +218,7 @@
       htmlTemplate = '<div class=\"' + classes + '\">';
       htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
       htmlTemplate += '<div class=\"inputfield vrtx-textfield\">';
-      htmlTemplate += '<input size=\"40\" type=\"text\" name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" />';
+      htmlTemplate += '<input size=\"40\" type=\"text\" name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" \/>';
       htmlTemplate += '<\/div>';
       htmlTemplate += '<\/div>';
       return htmlTemplate;

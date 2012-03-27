@@ -776,12 +776,6 @@
             <ref bean="pageLimitPropDef" />
             <ref bean="displayAggregationPropDef" />
             <ref bean="aggregationPropDef" />
-            <ref bean="displayManuallyApprovedPropDef" />
-            <ref bean="manuallyApproveFromPropDef" />
-            <ref bean="manuallyApprovedResourcesPropDef" />
-         <!-- 
-            <ref bean="collection.sortingPropDef" />
-         -->
           </list>
         </property>
       </bean>

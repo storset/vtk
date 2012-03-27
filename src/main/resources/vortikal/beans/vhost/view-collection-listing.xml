@@ -30,7 +30,6 @@
 
   <bean id="collectionListing.handler" class="org.vortikal.web.display.collection.CollectionListingController">
     <property name="resourceManager" ref="resourceManager" />
-    <property name="searchSorting" ref="collectionListing.searchSorting" />
     <property name="viewName" value="collectionListing.view" />
     <property name="pageLimitPropDef" ref="pageLimitPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />

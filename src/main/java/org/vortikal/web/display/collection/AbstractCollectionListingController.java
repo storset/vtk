@@ -50,7 +50,6 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.components.menu.SubFolderMenuProvider;
-import org.vortikal.web.search.SearchSorting;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 import org.vortikal.web.view.freemarker.MessageLocalizer;
@@ -69,18 +68,16 @@ public abstract class AbstractCollectionListingController implements ListingCont
     protected int defaultPageLimit = 20;
     protected int collectionDisplayLimit = 1000;
     protected PropertyTypeDefinition pageLimitPropDef;
-    protected PropertyTypeDefinition hideNumberOfComments; 
+    protected PropertyTypeDefinition hideNumberOfComments;
     protected String viewName;
     protected Map<String, Service> alternativeRepresentations;
     private boolean includeRequestParametersInAlternativeRepresentation;
-
     private SubFolderMenuProvider subFolderMenuProvider;
-
-    private SearchSorting searchSorting;
 
     @Override
     @SuppressWarnings("unchecked")
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
         String token = requestContext.getSecurityToken();
@@ -236,17 +233,9 @@ public abstract class AbstractCollectionListingController implements ListingCont
     public void setHideNumberOfComments(PropertyTypeDefinition hideNumberOfComments) {
         this.hideNumberOfComments = hideNumberOfComments;
     }
-    
+
     public void setCollectionDisplayLimit(int collectionDisplayLimit) {
         this.collectionDisplayLimit = collectionDisplayLimit;
-    }
-
-    public void setSearchSorting(SearchSorting searchSorting) {
-        this.searchSorting = searchSorting;
-    }
-
-    public SearchSorting getSearchSorting() {
-        return searchSorting;
     }
 
     public void setSubFolderMenuProvider(SubFolderMenuProvider subFolderMenuProvider) {

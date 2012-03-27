@@ -104,13 +104,15 @@ public abstract class QuerySearchComponent implements SearchComponent {
         }
 
         List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();
-        for (PropertyDisplayConfig config : this.listableProperties) {
-            Property hide = null;
-            if (config.getPreventDisplayProperty() != null) {
-                hide = collection.getProperty(config.getPreventDisplayProperty());
-            }
-            if (hide == null) {
-                displayPropDefs.add(config.getDisplayProperty());
+        if (this.listableProperties != null) {
+            for (PropertyDisplayConfig config : this.listableProperties) {
+                Property hide = null;
+                if (config.getPreventDisplayProperty() != null) {
+                    hide = collection.getProperty(config.getPreventDisplayProperty());
+                }
+                if (hide == null) {
+                    displayPropDefs.add(config.getDisplayProperty());
+                }
             }
         }
 
@@ -153,6 +155,10 @@ public abstract class QuerySearchComponent implements SearchComponent {
     }
 
     @Required
+    public void setSearchSorting(SearchSorting searchSorting) {
+        this.searchSorting = searchSorting;
+    }
+
     public void setListableProperties(List<PropertyDisplayConfig> listableProperties) {
         this.listableProperties = listableProperties;
     }
@@ -163,11 +169,6 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
     public String getTitleLocalizationKey() {
         return titleLocalizationKey;
-    }
-
-    @Required
-    public void setSearchSorting(SearchSorting searchSorting) {
-        this.searchSorting = searchSorting;
     }
 
 }

@@ -38,10 +38,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
@@ -63,8 +61,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
             throws Exception {
-        
-        
+
         int page = ListingPager.getPage(request, ListingPager.UPCOMING_PAGE_PARAM);
         int offset = (page - 1) * pageLimit;
         int limit = pageLimit;

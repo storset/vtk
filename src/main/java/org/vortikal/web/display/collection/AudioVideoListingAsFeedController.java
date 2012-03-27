@@ -30,14 +30,12 @@
  */
 package org.vortikal.web.display.collection;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
 import org.apache.abdera.Abdera;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.apache.abdera.model.Link;
-import org.apache.commons.httpclient.URIException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
@@ -48,14 +46,7 @@ import org.vortikal.web.RequestContext;
 
 public class AudioVideoListingAsFeedController extends CollectionListingAsAtomFeed {
 
-
-    @Override
-    protected Feed populateFeed(Resource collection, String feedTitle, boolean showIntroduction) throws IOException,
-            URIException, UnsupportedEncodingException {
-
-        Feed feed = super.populateFeed(collection, feedTitle, showIntroduction);
-        return feed;
-    }
+    private final Log logger = LogFactory.getLog(AudioVideoListingAsFeedController.class);
 
     @Override
     protected void addEntry(Feed feed, RequestContext requestContext, PropertySet result) {
@@ -68,13 +59,13 @@ public class AudioVideoListingAsFeedController extends CollectionListingAsAtomFe
             Entry entry = Abdera.getInstance().newEntry();
 
             Property publishedDateProp = getPublishDate(result);
-            publishedDateProp = publishedDateProp == null ? result.getProperty(getCreationTimePropDef())
+            publishedDateProp = publishedDateProp == null ? result.getProperty(this.creationTimePropDef)
                     : publishedDateProp;
             String id = getId(result.getURI(), publishedDateProp, null);
             entry.setId(id);
             entry.addCategory(result.getResourceType());
 
-            Property title = result.getProperty(getTitlePropDef());
+            Property title = result.getProperty(this.titlePropDef);
             if (title != null) {
                 entry.setTitle(title.getFormattedValue());
             }
@@ -97,7 +88,7 @@ public class AudioVideoListingAsFeedController extends CollectionListingAsAtomFe
                 entry.setPublished(publishDate.getDateValue());
             }
 
-            Property updated = result.getProperty(getLastModifiedPropDef());
+            Property updated = result.getProperty(this.lastModifiedPropDef);
             if (updated != null) {
                 entry.setUpdated(updated.getDateValue());
             }
@@ -127,5 +118,4 @@ public class AudioVideoListingAsFeedController extends CollectionListingAsAtomFe
         }
 
     }
-
 }

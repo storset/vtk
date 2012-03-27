@@ -71,7 +71,7 @@ import org.vortikal.web.service.URL;
 
 public abstract class AtomFeedController implements Controller {
 
-    protected final Log logger = LogFactory.getLog(AtomFeedController.class);
+    private final Log logger = LogFactory.getLog(AtomFeedController.class);
     public static final String TAG_PREFIX = "tag:";
 
     protected Service viewService;
@@ -80,45 +80,15 @@ public abstract class AtomFeedController implements Controller {
     protected PropertyTypeDefinition publishDatePropDef;
     protected int entryCountLimit = 200;
 
-    private PropertyTypeDefinition titlePropDef;
+    protected PropertyTypeDefinition titlePropDef;
     protected PropertyTypeDefinition lastModifiedPropDef;
-    private PropertyTypeDefinition creationTimePropDef;
+    protected PropertyTypeDefinition creationTimePropDef;
 
     private HtmlUtil htmlUtil;
-
-    public PropertyTypeDefinition getTitlePropDef() {
-        return titlePropDef;
-    }
-
-    protected PropertyTypeDefinition getLastModifiedPropDef() {
-        return lastModifiedPropDef;
-    }
-
-    public PropertyTypeDefinition getCreationTimePropDef() {
-        return creationTimePropDef;
-    }
-
-    public String getAuthorPropDefPointer() {
-        return authorPropDefPointer;
-    }
-
-    public String getIntroductionPropDefPointer() {
-        return introductionPropDefPointer;
-    }
-
-    public String getPicturePropDefPointer() {
-        return picturePropDefPointer;
-    }
-
-    public String getMediaPropDefPointer() {
-        return mediaPropDefPointer;
-    }
-
     private String authorPropDefPointer;
     private String introductionPropDefPointer;
     private String picturePropDefPointer;
     private String mediaPropDefPointer;
-
     private String structuredAuthorPropDefPointer;
     private String structuredIntroductionPropDefPointer;
     private String structuredPicturePropDefPointer;
@@ -196,6 +166,10 @@ public abstract class AtomFeedController implements Controller {
     }
 
     protected void addEntry(Feed feed, RequestContext requestContext, PropertySet result) {
+        this.addEntry(feed, requestContext, result, false);
+    }
+    
+    protected void addEntry(Feed feed, RequestContext requestContext, PropertySet result, boolean includeContent) {
         try {
 
             Entry entry = Abdera.getInstance().newEntry();
@@ -507,52 +481,39 @@ public abstract class AtomFeedController implements Controller {
         this.mediaPropDefPointer = mediaPropDefPointer;
     }
 
-    public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
-        this.publishDatePropDef = publishDatePropDef;
-    }
-
+    @Required
     public void setCreationTimePropDef(PropertyTypeDefinition creationTimePropDef) {
         this.creationTimePropDef = creationTimePropDef;
     }
 
+    @Required
+    public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
+        this.publishDatePropDef = publishDatePropDef;
+    }
+
+    @Required
     public void setStructuredAuthorPropDefPointer(String structuredAuthorPropDefPointer) {
         this.structuredAuthorPropDefPointer = structuredAuthorPropDefPointer;
     }
 
-    public String getStructuredAuthorPropDefPointer() {
-        return structuredAuthorPropDefPointer;
-    }
-
+    @Required
     public void setStructuredIntroductionPropDefPointer(String structuredIntroductionPropDefPointer) {
         this.structuredIntroductionPropDefPointer = structuredIntroductionPropDefPointer;
     }
 
-    public String getStructuredIntroductionPropDefPointer() {
-        return structuredIntroductionPropDefPointer;
-    }
-
+    @Required
     public void setStructuredPicturePropDefPointer(String structuredPicturePropDefPointer) {
         this.structuredPicturePropDefPointer = structuredPicturePropDefPointer;
     }
 
-    public String getStructuredPicturePropDefPointer() {
-        return structuredPicturePropDefPointer;
-    }
-
+    @Required
     public void setStructuredMediaPropDefPointer(String structuredMediaPropDefPointer) {
         this.structuredMediaPropDefPointer = structuredMediaPropDefPointer;
     }
 
-    public String getStructuredMediaPropDefPointer() {
-        return structuredMediaPropDefPointer;
-    }
-
+    @Required
     public void setHtmlUtil(HtmlUtil htmlUtil) {
         this.htmlUtil = htmlUtil;
-    }
-
-    public HtmlUtil getHtmlUtil() {
-        return htmlUtil;
     }
 
 }

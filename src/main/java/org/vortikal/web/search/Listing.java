@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -191,46 +190,4 @@ public class Listing {
         return sb.toString();
     }
 
-    /*
-     * addFile updateFile and removeFile are used to manipulate the result set
-     * to compensate for slow index in the message listing controller
-     */
-
-    public void addFile(PropertySet file) {
-        for (PropertySet x : files) {
-            if (x.getURI().equals(file.getURI())) {
-                return;
-            }
-        }
-        if (files.isEmpty()) {
-            files.add(file);
-        } else {
-            files.add(0, file);
-        }
-        this.totalHits++;
-    }
-
-    public void updateFile(PropertySet file) {
-        int index = 0;
-        for (PropertySet x : files) {
-            if (x.getURI().equals(file.getURI())) {
-                files.remove(index);
-                files.add(index, file);
-                return;
-            }
-            index++;
-        }
-    }
-
-    public void removeFile(Path p) {
-        int index = 0;
-        for (PropertySet x : files) {
-            if (x.getURI().equals(p)) {
-                files.remove(index);
-                totalHits--;
-                return;
-            }
-            index++;
-        }
-    }
 }

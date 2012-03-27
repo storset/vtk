@@ -14,18 +14,17 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="messageListing.handler" class="org.vortikal.web.display.collection.MessageListingController" parent="collectionListing.handler">
+  <bean id="messageListing.handler" parent="collectionListing.handler">
     <property name="searchComponents">
       <list>
         <ref bean="messageListing.searchComponent" />
       </list>
     </property>
-    <property name="viewName" value="collectionListing.view" />
   </bean>
 
-  <bean id="messageListing.searchComponent" parent="collectionListing.searchComponent">
+  <bean id="messageListing.searchComponent" class="org.vortikal.web.search.messagelisting.MessageListingSearchComponent"
+        parent="collectionListing.searchComponent">
     <property name="name" value="messageListing.defaultListing" />
-    <property name="listingUriQueryBuilder" ref="collection.defaultRecursiveListingUriQueryBuilder" />
     <property name="queryBuilders">
       <list>
         <bean parent="queryStringParser">
@@ -35,7 +34,6 @@
     </property>
     <property name="searchSorting" ref="messageListing.searchSorting" />
   </bean>
-
 
   <bean id="messageListing.feedService" parent="collectionListing.atomService">
     <property name="order" value="-2" />

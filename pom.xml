@@ -460,12 +460,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <version>1.8.0.7</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <version>1.1.1</version>
@@ -499,32 +493,32 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
-      <version>3.1.0.RELEASE</version>
+      <version>3.1.1.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
-      <version>3.1.0.RELEASE</version>
+      <version>3.1.1.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>3.1.0.RELEASE</version>
+      <version>3.1.1.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-jdbc</artifactId>
-      <version>3.1.0.RELEASE</version>
+      <version>3.1.1.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-orm</artifactId>
-      <version>3.1.0.RELEASE</version>
+      <version>3.1.1.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>3.1.0.RELEASE</version>
+      <version>3.1.1.RELEASE</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -676,11 +670,18 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- JDBC drivers and databases -->
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <version>8.4-703.jdbc4</version>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>2.2.8</version>
+      <scope>test</scope>
     </dependency>
 
     <!-- Provide slf4j code with log4j-output: -->

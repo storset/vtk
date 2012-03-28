@@ -143,9 +143,8 @@ public abstract class AbstractCollectionListingController implements ListingCont
     }
 
     protected Map<String, Object> getSubFolderMenu(Resource collection, HttpServletRequest request) {
-        Map<String, Object> result = new HashMap<String, Object>();
 
-        result = subFolderMenuProvider.getSubfolderMenuWithGeneratedResultSets(collection, request);
+        Map<String, Object> result = subFolderMenuProvider.getSubfolderMenuWithGeneratedResultSets(collection, request);
         if (result == null) {
             return null;
         }

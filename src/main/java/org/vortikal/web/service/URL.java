@@ -631,20 +631,21 @@ public class URL implements Serializable {
         }
         Map<String, String[]> queryStringMap = splitQueryString(request.getQueryString());
 
-        for (String key : queryStringMap.keySet()) {
-            String[] values = queryStringMap.get(key);
+        for (Map.Entry<String,String[]> entry: queryStringMap.entrySet()) {
+            String key = entry.getKey();
             try {
                 key = decode(key, encoding);
             } catch (IllegalArgumentException e) {
             }
-            for (String value : values) {
+            for (String value : entry.getValue()) {
                 try {
-                    url.addParameter(key, decode(value));
+                    url.addParameter(key, decode(value, encoding));
                 } catch (IllegalArgumentException e) {
                     url.addParameter(key, value);
                 }
             }
         }
+        
         url.setCharacterEncoding(encoding);
         return url;
     }

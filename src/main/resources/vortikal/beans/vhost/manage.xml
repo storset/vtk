@@ -857,8 +857,11 @@
     <property name="viewName" value="redirectToManage" />
   </bean>
 
-  <bean id="manage.unlockFormHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-    <property name="viewName" value="manage.unlockForm" />
+  <bean id="manage.unlockFormHandler" class="org.vortikal.web.actions.lock.UnlockFormController">
+    <property name="formView" value="admin" />
+    <property name="successView" value="redirectToManage" />
+    <property name="commandName" value="unlockFormCommand" />
+    <property name="commandClass" value="org.vortikal.web.actions.lock.UnlockFormCommand" />
   </bean>
 
   <bean id="createDocumentHandler" class="org.vortikal.web.actions.create.TemplateBasedCreateController">
@@ -1076,28 +1079,6 @@
     </property>
   </bean>
 
-  <bean id="manage.unlockFormResolver" parent="adminViewResolver">
-    <property name="views">
-      <map>
-        <entry key="manage.unlockForm" value-ref="manage.unlockFormView" />
-      </map>
-    </property>
-  </bean>
-
-  <bean id="manage.unlockFormView" parent="freemarkerView">
-    <property name="url" value="pages/unlock-form.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
-          <property name="service" ref="manage.unlockResourceService" />
-          <property name="modelName" value="form" />
-        </bean>
-      </list>
-    </property>
-  </bean>
-
-
   <bean id="expiresSecProvider" class="org.vortikal.web.referencedata.provider.ResourcePropertiesValueProvider">
     <property name="modelNames">
       <map>
@@ -1114,7 +1095,6 @@
   <bean id="decorating.manageNamespace" class="java.lang.String">
     <constructor-arg type="java.lang.String" value="manage" />
   </bean>
-  
   
   <bean id="manage.lineTopComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />

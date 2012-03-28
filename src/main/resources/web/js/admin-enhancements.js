@@ -303,13 +303,14 @@ $(document).ready(function () {
   }
   
   var resourceMenuRightServices = ["vrtx-unpublish-document",
-                                   "vrtx-publish-document"];
+                                   "vrtx-publish-document",
+                                   "manage\\.unlockFormService"];
 
   for (i = resourceMenuRightServices.length; i--;) {
     vrtxAdmin.getFormAsync({
         selector: "#title-container a#" + resourceMenuRightServices[i],
         selectorClass: "globalmenu",
-        insertAfterOrReplaceClass: "ul#resourceMenuLeft",
+        insertAfterOrReplaceClass: "#resource-title > ul:last-child",
         isReplacing: false,
         nodeType: "div",
         simultanSliding: true,

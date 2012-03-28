@@ -24,12 +24,12 @@
      <#assign actionURL = vrtx.linkConstructor("", 'manage.unlockResourceService') />
      <form method="post" action="${actionURL?html}" name="unlockForm">
        <@vrtx.csrfPreventionToken url=actionURL />
-       <div id="vrtx-unlock" class="vrtx-button-small vrtx-admin-button" title="${titleMsg}">
+       <a id="manage.unlockFormService" class="vrtx-button-small vrtx-admin-button" title="${titleMsg}">
          <input tabindex="1" type="submit" name="unlock" value="${item.title?html}" />
-       </div>
+       </a>
      </form>
   <#else>  
-    <a id="vrtx-unlock" class="vrtx-button-small vrtx-admin-button" title="${titleMsg}" href="${actionURL?html}">
+    <a id="manage.unlockFormService" class="vrtx-button-small vrtx-admin-button" title="${titleMsg}" href="${actionURL?html}">
       <span>${item.title?html}</span>
     </a>  
   </#if>

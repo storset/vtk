@@ -451,7 +451,7 @@
   <select id="selectBinaryMimeTypeEntry" parameterClass="java.lang.Integer" resultClass="java.lang.String">
     select binary_mimetype from extra_prop_entry where extra_prop_entry_id = #value#
   </select>
-
+  
   <insert id="insertPropertyEntry" parameterClass="java.util.Map">
     insert into extra_prop_entry
       (extra_prop_entry_id, resource_id, name_space, name, value

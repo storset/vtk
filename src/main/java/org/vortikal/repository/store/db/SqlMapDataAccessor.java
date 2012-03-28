@@ -31,7 +31,6 @@
 package org.vortikal.repository.store.db;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -63,7 +62,6 @@ import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.BinaryValue;
-import org.vortikal.repository.resourcetype.BufferedBinaryValue;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -72,7 +70,6 @@ import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
-import org.vortikal.util.io.StreamUtil;
 
 import com.ibatis.sqlmap.client.SqlMapExecutor;
 

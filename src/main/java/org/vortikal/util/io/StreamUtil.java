@@ -36,12 +36,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-public class StreamUtil {
-
-    private static final Log LOGGER = LogFactory.getLog(StreamUtil.class);
+public abstract class StreamUtil {
 
     /**
      * Reads an input stream into a byte array. Closes the stream
@@ -91,11 +87,7 @@ public class StreamUtil {
 
             return returnbuf;
         } finally {
-            try {
-                content.close();
-            } catch (IOException e) {
-                LOGGER.warn("Error closing input stream", e);
-            }
+            content.close();
         }
     }
 
@@ -164,11 +156,7 @@ public class StreamUtil {
 
             return returnbuf;
         } finally {
-            try {
-                content.close();
-            } catch (IOException e) {
-                LOGGER.warn("Error closing input stream", e);
-            }
+            content.close();
         }
     }
 
@@ -229,17 +217,9 @@ public class StreamUtil {
             }
             return count;
         } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-                LOGGER.warn("Error closing input stream", e);
-            }
+            in.close();
             if (closeOutput) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    LOGGER.warn("Error closing output stream", e);
-                }
+                out.close();
             }
         }
         
@@ -279,17 +259,9 @@ public class StreamUtil {
             }
             return count;
         } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-                LOGGER.warn("Error closing input stream", e);
-            }
+            in.close();
             if (closeOutput) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    LOGGER.warn("Error closing output stream", e);
-                }
+                out.close();
             }
         }
     }
@@ -309,11 +281,7 @@ public class StreamUtil {
             out.write(data, 0, data.length);
         } finally {
             if (closeOutput) {
-                try {
-                    out.close();
-                } catch (IOException io) {
-                    LOGGER.warn("Error closing output stream", io);
-                }
+                out.close();
             }
         }
     }

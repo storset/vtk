@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.store.db;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.BinaryValue;
+import org.vortikal.repository.resourcetype.BufferedBinaryValue;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -1005,7 +1007,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                         for (Value v : values) {
                             parameters.put("value", v.getNativeStringRepresentation());
                             if (property.getType() == PropertyType.Type.BINARY) {
-                                parameters.put("binaryContent", v.getBinaryValue().getContentStream());
+                                parameters.put("binaryContent", v.getBinaryValue().getBytes());
                                 parameters.put("binaryMimeType", v.getBinaryValue().getContentType());
                             }
                             executor.update(batchSqlMap, parameters);
@@ -1230,11 +1232,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return groups;
     }
     
-    ContentStream getBinaryPropertyContentStream(Integer reference) throws DataAccessException {
+    byte[] getBinaryPropertyBytes(Integer reference) throws DataAccessException {
         String sqlMap = getSqlMap("selectBinaryPropertyEntry");
         @SuppressWarnings("unchecked")
         Map result = (Map) getSqlMapClientTemplate().queryForObject(sqlMap, reference);
-        return (ContentStream) result.get("binaryStream");
+        return (byte[]) result.get("byteArray");
     }
 
     String getBinaryPropertyContentType(Integer reference) throws DataAccessException {
@@ -1242,32 +1244,31 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return (String) getSqlMapClientTemplate().queryForObject(sqlMap, reference);
     }
 
+    /**
+     * Makes sure binary value is not backed only by a reference to database id.
+     * If so, then copy to memory buffered value.
+     * @param prop 
+     */
     private void ensureBinaryValueBuffered(Property prop) {
-        try {
-            boolean multiple = prop.getDefinition() != null && prop.getDefinition().isMultiple();
-            final Value[] values;
-            if (multiple) {
-                values = prop.getValues();
-            } else {
-                values = new Value[]{prop.getValue()};
+        boolean multiple = prop.getDefinition() != null && prop.getDefinition().isMultiple();
+        final Value[] values;
+        if (multiple) {
+            values = prop.getValues();
+        } else {
+            values = new Value[]{prop.getValue()};
+        }
+
+        for (int i = 0; i < values.length; i++) {
+            BinaryValue binVal = values[i].getBinaryValue();
+            if (binVal.getClass() == BinaryValueReference.class) {
+                values[i] = new Value(binVal.getBytes(), binVal.getContentType());
             }
-            
-            for (int i = 0; i < values.length; i++) {
-                BinaryValue binVal = values[i].getBinaryValue();
-                if (binVal.getClass() == BinaryValueReference.class) {
-                    byte[] buffer = StreamUtil.readInputStream(binVal.getContentStream().getStream());
-                    String contentType = binVal.getContentType();
-                    values[i] = new Value(buffer, contentType);
-                }
-            }
-            
-            if (multiple) {
-                prop.setValues(values);
-            } else {
-                prop.setValue(values[0]);
-            }
-        } catch (IOException io) {
-            throw new DataAccessException(io);
+        }
+
+        if (multiple) {
+            prop.setValues(values);
+        } else {
+            prop.setValue(values[0]);
         }
     }
 
@@ -1296,9 +1297,9 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 }
 
 /**
- * An on-demand loading binary value with reference and access to value in DataAccesor.
+ * An on-demand loading binary value with reference and
+ * access to value in DataAccesor.
  * 
- * Immutable.
  */
 final class BinaryValueReference implements BinaryValue {
 
@@ -1317,9 +1318,18 @@ final class BinaryValueReference implements BinaryValue {
 
     @Override
     public ContentStream getContentStream() throws DataAccessException {
-        return this.dao.getBinaryPropertyContentStream(this.ref);
+        // Consider avoiding copy to mem here, but then we depend
+        // on client code closing the underlying InputStream properly to free
+        // database resource.
+        byte[] data = getBytes();
+        return new ContentStream(new ByteArrayInputStream(data), data.length);
     }
-
+    
+    @Override
+    public byte[] getBytes() throws DataAccessException {
+        return this.dao.getBinaryPropertyBytes(this.ref);
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

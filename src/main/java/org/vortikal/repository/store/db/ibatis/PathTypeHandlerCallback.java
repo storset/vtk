@@ -41,16 +41,19 @@ import com.ibatis.sqlmap.client.extensions.TypeHandlerCallback;
 
 public class PathTypeHandlerCallback implements TypeHandlerCallback {
 
+    @Override
     public Object getResult(ResultGetter getter) throws SQLException { 
         String value = getter.getString();
         return Path.fromString(value);
     } 
 
-    public void setParameter(ParameterSetter setter, Object parameter) throws SQLException { 
+    @Override
+    public void setParameter(ParameterSetter setter, Object parameter) throws SQLException {
         Path path = (Path) parameter;
         setter.setString(path.toString());
     } 
 
+    @Override
     public Object valueOf(String s) { 
         return Path.fromString(s);
     } 

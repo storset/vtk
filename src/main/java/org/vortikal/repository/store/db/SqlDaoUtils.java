@@ -36,7 +36,7 @@ import org.vortikal.repository.Path;
 
 final class SqlDaoUtils {
 
-    public static String getUriSqlWildcard(Path uri, final char escape) {
+    public static String getUriSqlWildcard(final Path uri, final char escape) {
         if (uri.isRoot()) {
             return "/%";
         }
@@ -47,7 +47,7 @@ final class SqlDaoUtils {
      * XXX Method is named like a generic string escape, but still does a path-like
      *     modification by appending '/%' at end of string.
      */
-    public static String getStringSqlWildcard(String s, final char escape) {
+    public static String getStringSqlWildcard(final String s, final char escape) {
         StringBuilder result = new StringBuilder(s.length() + 2);
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);

@@ -37,114 +37,103 @@ import java.io.OutputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
-import org.vortikal.repository.ContentStream;
 import org.vortikal.util.io.StreamUtil;
 
 import com.ibatis.sqlmap.client.extensions.ParameterSetter;
 import com.ibatis.sqlmap.client.extensions.ResultGetter;
 import com.ibatis.sqlmap.client.extensions.TypeHandlerCallback;
 
+/**
+ * Returns or sets binary content as byte[] array.
+ * 
+ */
 public class BinaryContentTypeHandlerCallBack implements TypeHandlerCallback {
-
-    private static final Logger log = Logger.getLogger(BinaryContentTypeHandlerCallBack.class);
 
     @Override
     public Object getResult(ResultGetter getter) throws SQLException {
         Blob blob = getter.getBlob();
         try {
-            byte[] blobdata = StreamUtil.readInputStream(blob.getBinaryStream());
-            return new ContentStream(new ByteArrayInputStream(blobdata), blobdata.length);
+            return StreamUtil.readInputStream(blob.getBinaryStream());
         } catch (IOException e) {
-            log.error("An error occured while getting binary stream for a blob", e);
+            throw new SQLException("Failed to read binary stream from database", e);
         }
-        return null;
     }
 
     @Override
     public void setParameter(ParameterSetter setter, Object parameter) throws SQLException {
-        ContentStream cs;
-        if (parameter instanceof byte[]) {
-            byte[] b = (byte[]) parameter;
-            cs = new ContentStream(new ByteArrayInputStream(b), b.length);
-        } else {
-            cs = (ContentStream) parameter;
-        }
-        Blob blob = new ContentStreamBlob(cs);
-        setter.setBlob(blob);
+        setter.setBlob(new ByteArrayBlobImpl((byte[])parameter));
     }
 
     @Override
     public Object valueOf(String s) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
-    private static final class ContentStreamBlob implements Blob {
+    private static final class ByteArrayBlobImpl implements Blob {
 
-        private ContentStream stream = null;
+        private final byte[] bytes;
 
-        public ContentStreamBlob(ContentStream stream) {
-            this.stream = stream;
-        }
-
-        @Override
-        public void free() throws SQLException {
-            this.stream = null;
+        ByteArrayBlobImpl(byte[] bytes) {
+            if (bytes == null) { 
+                throw new IllegalArgumentException("bytes cannot be null");
+            }
+            this.bytes = bytes;
         }
 
         @Override
         public InputStream getBinaryStream() throws SQLException {
-            return this.stream.getStream();
+            return new ByteArrayInputStream(this.bytes);
+        }
+        
+        @Override
+        public long length() throws SQLException {
+            return this.bytes.length;
+        }
+        
+        @Override
+        public void free() throws SQLException {
+            // No-op
         }
 
+        // All other ops are unsupported:
         @Override
         public InputStream getBinaryStream(long pos, long length) throws SQLException {
-            throw new UnsupportedOperationException("TODO: implement getBinaryStream(pos, length)");
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public byte[] getBytes(long pos, int length) throws SQLException {
-            throw new UnsupportedOperationException("TODO: implement getBytes(pos, length)");
-        }
-
-        @Override
-        public long length() throws SQLException {
-            return this.stream.getLength();
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public long position(byte[] pattern, long start) throws SQLException {
-            // TODO implement
-            return 0;
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public long position(Blob pattern, long start) throws SQLException {
-            // TODO implement
-            return 0;
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public OutputStream setBinaryStream(long pos) throws SQLException {
-            // TODO implement
-            return null;
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public int setBytes(long pos, byte[] bytes) throws SQLException {
-            // TODO implement
-            return 0;
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public int setBytes(long pos, byte[] bytes, int offset, int len) throws SQLException {
-            // TODO implement
-            return 0;
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public void truncate(long len) throws SQLException {
-            // TODO implement
+            throw new UnsupportedOperationException();
         }
     }
 }

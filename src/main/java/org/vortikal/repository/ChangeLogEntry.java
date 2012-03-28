@@ -49,7 +49,7 @@ public class ChangeLogEntry {
         ACL_READ_ALL_YES("acl_read_all_yes"),
         ACL_READ_ALL_NO ("acl_read_all_no");
 
-        private String operationId;
+        private final String operationId;
         
         Operation(String operationId) {
             this.operationId = operationId;

@@ -32,12 +32,12 @@
 package org.vortikal.repository.resourcetype;
 
 import java.io.Serializable;
+
 import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.store.DataAccessException;
 
 /**
  * Represents a binary value.
- * Implementations should be immutable.
  * 
  */
 public interface BinaryValue extends Serializable {
@@ -55,5 +55,14 @@ public interface BinaryValue extends Serializable {
      * @throws DataAccessException 
      */
     public ContentStream getContentStream() throws DataAccessException;
+    
+    /**
+     * Get binary value byte buffer.
+     * May be an unsupported operation, depending on underlying implementation.
+     * 
+     * @return
+     * @throws DataAccessException 
+     */
+    public byte[] getBytes() throws DataAccessException;
     
 }

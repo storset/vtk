@@ -37,7 +37,7 @@ import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.store.DataAccessException;
 
 /**
- * Immutable binary value buffer.
+ * Binary value buffer.
  */
 public final class BufferedBinaryValue implements BinaryValue {
 
@@ -63,6 +63,11 @@ public final class BufferedBinaryValue implements BinaryValue {
     public ContentStream getContentStream() throws DataAccessException {
         ByteArrayInputStream bis = new ByteArrayInputStream(this.buffer);
         return new ContentStream(bis, this.buffer.length);
+    }
+    
+    @Override
+    public byte[] getBytes() {
+        return this.buffer;
     }
 
     @Override

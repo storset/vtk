@@ -69,7 +69,7 @@
     values (<include refid="nextExtraPropEntryId" />, #resourceId#, 
       #namespaceUri#, #name#, #value#
         <isNotEmpty property="binaryContent">
-          , #binaryContent,handler=org.vortikal.repository.store.db.ibatis.BlobByteArrayTypeHandlerCallBack#,
+          , #binaryContent,handler=org.springframework.orm.ibatis.support.BlobByteArrayTypeHandler#,
           #binaryMimeType#
         </isNotEmpty>)
   </insert>

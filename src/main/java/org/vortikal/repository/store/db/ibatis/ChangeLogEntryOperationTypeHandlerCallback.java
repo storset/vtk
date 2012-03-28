@@ -46,9 +46,9 @@ public class ChangeLogEntryOperationTypeHandlerCallback implements
         TypeHandlerCallback {
 
     
+    @Override
     public Object getResult(ResultGetter getter) throws SQLException {
         String value = getter.getString();
-        
         for (Operation op: Operation.values()) {
             if (value.equals(op.getOperationId())) {
                 return op;
@@ -58,12 +58,14 @@ public class ChangeLogEntryOperationTypeHandlerCallback implements
         throw new SQLException("Unable to map unknown operation id value: " + value);
     }
 
+    @Override
     public void setParameter(ParameterSetter setter, Object parameter)
             throws SQLException {
         Operation value = (Operation)parameter;
         setter.setString(value.getOperationId());
     }
 
+    @Override
     public Object valueOf(String s) {
         for(Operation op: Operation.values()) {
             if (s.equals(op.getOperationId())) {

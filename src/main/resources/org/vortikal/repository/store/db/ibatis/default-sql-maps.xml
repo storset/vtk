@@ -438,11 +438,13 @@
     order by p.resource_id, p.extra_prop_entry_id
   </select>
   
-  <resultMap id="BinaryStream" class="java.util.HashMap">
-    <result property="binaryStream" column="binary_content" typeHandler="org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack" />
+  <resultMap id="ByteArray" class="java.util.HashMap">
+    <result property="byteArray" column="binary_content"
+            typeHandler="org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack" />
   </resultMap>
 
-  <select id="selectBinaryPropertyEntry" parameterClass="java.lang.Integer" resultMap="BinaryStream">
+  <select id="selectBinaryPropertyEntry" parameterClass="java.lang.Integer"
+                                         resultMap="ByteArray">
     select binary_content from extra_prop_entry where extra_prop_entry_id = #value#
   </select>
   
@@ -897,7 +899,7 @@
   
   <!--  TODO: Column vortex_tmp.resource_id should be renamed to vortex_tmp.generic_id -->
   <insert id="insertChangelogEntryIdIntoTempTable" parameterClass="java.util.Map">
-    insert into vortex_tmp(session_id, resource_id) values (#sessionId#, #changelogEntryId#)     
+    insert into vortex_tmp(session_id, resource_id) values (#sessionId#, #changelogEntryId#)
   </insert>
   
   <insert id="insertResourceIdIntoTempTable" parameterClass="java.util.Map">

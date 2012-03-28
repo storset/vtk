@@ -46,6 +46,10 @@ import com.ibatis.sqlmap.client.extensions.TypeHandlerCallback;
 /**
  * Returns or sets binary content as byte[] array.
  * 
+ * TODO Investigate if we can just replace this class with Spring's BlobByteArrayTypeHandler.
+ *      Let the configured LobHandler impl handle the differences between Oracle and others.
+ *      (We already explicitly set OracleLobHandler in config when running on Oracle db.)
+ * 
  */
 public class BinaryContentTypeHandlerCallBack implements TypeHandlerCallback {
 

@@ -3,6 +3,7 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/propertyList.ftl" as propList />
+<#import "/lib/editor/common.ftl" as editor />
 
 <#if !resourceContext?exists>
   <#stop "Unable to render model: required submodel 'resourceContext' missing">

@@ -46,7 +46,8 @@
     <property name="handler" ref="messageListing.feedHandler" />
   </bean>
 
-  <bean id="messageListing.feedHandler" parent="collectionListing.atomHandler">
+  <bean id="messageListing.feedHandler" class="org.vortikal.web.display.collection.message.MessageListingAsAtomFeed"
+        parent="viewAsFeedHandler">
     <property name="searchComponent" ref="messageListing.searchComponent" />
   </bean>
 

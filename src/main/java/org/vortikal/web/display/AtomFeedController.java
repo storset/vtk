@@ -103,9 +103,28 @@ public abstract class AtomFeedController implements Controller {
         return collection.getProperty(lastModifiedPropDef).getDateValue();
     }
 
+    // To be overridden where necessary
+    protected void setFeedEntrySummary(Entry entry, PropertySet result) throws Exception {
+        // Hack for project resource type
+        String type = result.getResourceType();
+        if (type != null && type.equals("structured-project")) {
+            HtmlFragment summary = prepareSummary(result);
+            if (summary != null) {
+                entry.setSummaryAsXhtml(summary.getStringRepresentation());
+            }
+            // ...add description as plain text else
+        } else {
+            String description = getDescription(result);
+            if (description != null) {
+                entry.setSummary(description);
+            }
+        }
+    }
+
+    @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
-        Feed feed = createFeed(requestContext);
+        Feed feed = this.createFeed(requestContext);
         if (feed != null) {
             response.setContentType("application/atom+xml;charset=utf-8");
             feed.writeTo("prettyxml", response.getWriter());
@@ -153,7 +172,7 @@ public abstract class AtomFeedController implements Controller {
 
             Property picture = getPicture(collection);
             if (picture != null) {
-                String val = picture.getFormattedValue("thumbnail", Locale.getDefault());
+                String val = picture.getFormattedValue(PropertyType.THUMBNAIL_PROP_NAME, Locale.getDefault());
                 feed.setLogo(val);
             }
         }
@@ -166,10 +185,6 @@ public abstract class AtomFeedController implements Controller {
     }
 
     protected void addEntry(Feed feed, RequestContext requestContext, PropertySet result) {
-        this.addEntry(feed, requestContext, result, false);
-    }
-    
-    protected void addEntry(Feed feed, RequestContext requestContext, PropertySet result, boolean includeContent) {
         try {
 
             Entry entry = Abdera.getInstance().newEntry();
@@ -185,24 +200,9 @@ public abstract class AtomFeedController implements Controller {
             if (title != null) {
                 entry.setTitle(title.getFormattedValue());
             }
-            String type = result.getResourceType();
-            // Add introduction and/or pic as xhtml if resource is event or
-            // article...
-            if (type != null
-                    && (type.equals("event") || type.equals("article") || type.equals("structured-article")
-                            || type.equals("structured-event") || type.equals("structured-project"))) {
 
-                HtmlFragment summary = prepareSummary(result);
-                if (summary != null) {
-                    entry.setSummaryAsXhtml(summary.getStringRepresentation());
-                }
-                // ...add description as plain text else
-            } else {
-                String description = getDescription(result);
-                if (description != null) {
-                    entry.setSummary(description);
-                }
-            }
+            // Set the summary
+            this.setFeedEntrySummary(entry, result);
 
             Property publishDate = getPublishDate(result);
             if (publishDate != null) {
@@ -278,7 +278,7 @@ public abstract class AtomFeedController implements Controller {
                 } catch (Throwable t) {
                 }
             }
-            String imgPath = picture.getFormattedValue("thumbnail", Locale.getDefault());
+            String imgPath = picture.getFormattedValue(PropertyType.THUMBNAIL_PROP_NAME, Locale.getDefault());
             String imgAlt = getImageAlt(imgPath);
 
             sb.append("<img src=\"" + HtmlUtil.escapeHtmlString(imgPath) + "\" alt=\""

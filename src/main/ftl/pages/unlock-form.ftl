@@ -18,21 +18,16 @@
 <title>${vrtx.getMsg("unlockwarning.title")} '${resourceContext.currentResource.name}'</title>
 </head>
 
-
 <#if resourceContext.currentResource.lock?exists>
   <#assign owner = resourceContext.currentResource.lock.principal.qualifiedName />
 </#if>
 <#assign currentPrincipal = resourceContext.principal.qualifiedName />
 
-<#if !owner?exists || owner = currentPrincipal >
-  <body onload="document.unlockForm.unlock.click()">
-<#else>
-  <body>
-</#if>
+<body>
   <h1>${vrtx.getMsg("unlockwarning.title")} '${resourceContext.currentResource.name}'</h1>
   <form method="post" action="${form.url?html}" name="unlockForm">
     <@vrtx.csrfPreventionToken url=form.url />
-    <#if owner?exists && owner != currentPrincipal>
+    <#if owner?exists>
       <p>${vrtx.getMsg("unlockwarning.steal")}: <strong>${owner}</strong>.</p> 
       <p>${vrtx.getMsg("unlockwarning.modified")}: <strong>${resourceContext.currentResource.lastModified?datetime?html}</strong>.</p>
       <p>${vrtx.getMsg("unlockwarning.explanation")}</p>
@@ -52,4 +47,3 @@
   </form>
 </body>
 </html>
- 

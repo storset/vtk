@@ -83,7 +83,12 @@
     <property name="lobHandler" ref="repository.lobHandler" />
   </bean>
 
-  <bean id="repository.lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" />
+  <!-- See org.springframework.jdbc.support.lob.DefaultLobHandler for documentation.
+       PostgreSQL requires wrapAsLob set to true.
+       For Oracle we use an entirely different LobHandler impl. -->
+  <bean id="repository.lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler">
+    <property name="wrapAsLob" value="true"/>
+  </bean>
 
   <!-- Override iBATIS SQL map statement names in this map (should generally not be necessary): -->
   <bean id="repository.statementMappings" class="java.util.HashMap">

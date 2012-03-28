@@ -60,20 +60,6 @@
     #parentUri# || substring(uri, #uriTrimLength#)
   </sql>
 
-  <insert id="insertPropertyEntry" parameterClass="java.util.Map">
-    insert into extra_prop_entry
-      (extra_prop_entry_id, resource_id, name_space, name, value
-        <isNotEmpty property="binaryContent">
-          , binary_content, binary_mimetype
-        </isNotEmpty>)
-    values (<include refid="nextExtraPropEntryId" />, #resourceId#, 
-      #namespaceUri#, #name#, #value#
-        <isNotEmpty property="binaryContent">
-          , #binaryContent,handler=org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack#,
-          #binaryMimeType#
-        </isNotEmpty>)
-  </insert>
-  
   <update id="updateAclInheritedFromByPreviousResourceId" parameterClass="java.util.Map">
     update vortex_resource
       set acl_inherited_from = r.resource_id

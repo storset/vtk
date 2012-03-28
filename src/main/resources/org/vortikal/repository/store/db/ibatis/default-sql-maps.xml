@@ -440,7 +440,7 @@
   
   <resultMap id="ByteArray" class="java.util.HashMap">
     <result property="byteArray" column="binary_content"
-            typeHandler="org.vortikal.repository.store.db.ibatis.BinaryContentTypeHandlerCallBack" />
+            typeHandler="org.springframework.orm.ibatis.support.BlobByteArrayTypeHandler" />
   </resultMap>
 
   <select id="selectBinaryPropertyEntry" parameterClass="java.lang.Integer"
@@ -452,6 +452,20 @@
     select binary_mimetype from extra_prop_entry where extra_prop_entry_id = #value#
   </select>
 
+  <insert id="insertPropertyEntry" parameterClass="java.util.Map">
+    insert into extra_prop_entry
+      (extra_prop_entry_id, resource_id, name_space, name, value
+        <isNotEmpty property="binaryContent">
+          , binary_content, binary_mimetype
+        </isNotEmpty>)
+    values (<include refid="nextExtraPropEntryId" />, #resourceId#, 
+      #namespaceUri#, #name#, #value#
+        <isNotEmpty property="binaryContent">
+          , #binaryContent,handler=org.springframework.orm.ibatis.support.BlobByteArrayTypeHandler#,
+          #binaryMimeType#
+        </isNotEmpty>)
+  </insert>
+  
   <insert id="copyProperties" parameterClass="java.util.Map">
     insert into extra_prop_entry
       (extra_prop_entry_id,
@@ -669,7 +683,7 @@
     select user_or_group_name from revision_acl_entry where is_user = 'N'
   </select>
   
-  
+  <!-- Change log section -->
   <insert id="insertChangeLogEntriesRecursively" 
           parameterClass="java.util.Map">
     insert into changelog_entry 

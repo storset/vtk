@@ -3,7 +3,33 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-    <property name="configLocation" value="classpath:ehcache.xml" />
+    <property name="configLocation" value="classpath:/org/vortikal/ehcache/ehcache.xml" />
+  </bean>
+
+  <!-- Ehcache used by bean 'linkCheck.validator' defined in link-check.xml -->
+  <bean id="ehCache.LINK_CHECK_CACHE"
+        class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheManager" ref="ehCacheManager" />
+    <property name="cacheName" value="org.vortikal.LINK_CHECK_CACHE"/>
+    <property name="maxElementsInMemory" value="500" />
+    <property name="maxElementsOnDisk" value="1000000" />
+    <property name="eternal" value="false"/>
+    <property name="overflowToDisk" value="true"/>
+    <property name="timeToIdle" value="0" />
+    <property name="timeToLive" value="43200" />
+  </bean>
+  
+  <!-- Ehcache used by bean 'collectionListing.searchComponent' defined in view-collection-listing.xml -->
+  <bean id="ehCache.MULTI_HOST_INDEX_SEARCH_CACHE"
+        class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheManager" ref="ehCacheManager" />
+    <property name="cacheName" value="org.vortikal.MULTI_HOST_INDEX_SEARCH_CACHE"/>
+    <property name="maxElementsInMemory" value="100" />
+    <property name="maxElementsOnDisk" value="10000" />
+    <property name="eternal" value="false"/>
+    <property name="overflowToDisk" value="true"/>
+    <property name="timeToIdle" value="0" />
+    <property name="timeToLive" value="600" />
   </bean>
 
 </beans>

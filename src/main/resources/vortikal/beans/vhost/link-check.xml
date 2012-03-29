@@ -23,16 +23,15 @@
     <property name="linkChecker" ref="linkCheck.validator" />
   </bean>
 
-
   <bean id="linkCheck.htmlFilter" class="org.vortikal.web.display.linkcheck.LinkCheckFilter">
     <property name="elementClass" value="${linkCheck.htmlClass}" />
   </bean>
 
   <bean id="linkCheck.validator" class="org.vortikal.web.display.linkcheck.LinkChecker">
-    <property name="cacheManager" ref="ehCacheManager" />
+    <property name="cache" ref="ehCache.LINK_CHECK_CACHE" />
     <property name="connectTimeout" value="5000" />
     <property name="readTimeout" value="10000" />
     <property name="userAgent" value="Link checker for ${repositoryID}" />
   </bean>
-
-</beans>
+  
+  </beans>

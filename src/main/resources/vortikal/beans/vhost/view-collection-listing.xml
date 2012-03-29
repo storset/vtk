@@ -75,7 +75,7 @@
         </bean>
       </list>
     </property>
-    <property name="cacheManager" ref="ehCacheManager" />
+    <property name="cache" ref="ehCache.MULTI_HOST_INDEX_SEARCH_CACHE" />
   </bean>
 
   <bean id="collection.listingUriQueryBuilder" class="org.vortikal.web.search.ListingUriQueryBuilder">

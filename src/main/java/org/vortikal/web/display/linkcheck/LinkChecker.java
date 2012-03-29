@@ -35,20 +35,19 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.web.service.URL;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+
 public class LinkChecker {
     
     private static Log logger = LogFactory.getLog(LinkChecker.class); 
     
-    private Cache cache;
+    private Ehcache cache;
     private int connectTimeout = 5000;
     private int readTimeout = 5000;
     private String userAgent = "Link checker";
@@ -117,7 +116,7 @@ public class LinkChecker {
         if (cached != null) {
             return (LinkCheckResult) cached.getValue();
         }
-        Status status = null;
+        Status status;
         String reason = null;
         try {
             status = validateURL(url);
@@ -187,10 +186,8 @@ public class LinkChecker {
     }
 
     @Required
-    public void setCacheManager(CacheManager cacheManager) {
-        Cache c = cacheManager.getCache("org.vortikal.LINK_CHECK_CACHE");
-        if (c == null) throw new IllegalArgumentException("Provided cache manager has no cache named 'org.vortikal.LINK_CHECK_CACHE'");
-        this.cache = c;
+    public void setCache(Ehcache cache) {
+        this.cache = cache;
     }
     
     public void setConnectTimeout(int connectTimeout) {

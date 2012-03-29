@@ -37,10 +37,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -64,6 +60,9 @@ import org.vortikal.web.search.QueryBuilder;
 import org.vortikal.web.search.QueryPartsSearchComponent;
 import org.vortikal.web.service.URL;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+
 public class CollectionListingSearchComponent extends QueryPartsSearchComponent {
 
     private static Log logger = LogFactory.getLog(CollectionListingSearchComponent.class.getName());
@@ -71,8 +70,7 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
     private AggregationResolver aggregationResolver;
     private MultiHostSearcher multiHostSearcher;
     private ListingUriQueryBuilder listingUriQueryBuilder;
-    private CacheManager cacheManager;
-    private Cache cache;
+    private Ehcache cache;
 
     @Override
     protected ResultSet getResultSet(HttpServletRequest request, Resource collection, String token, Sorting sorting,
@@ -238,13 +236,7 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
     }
 
     @Required
-    public void setCacheManager(CacheManager cacheManager) {
-        this.cacheManager = cacheManager;
-        String cacheName = "org.vortikal.MULTI_HOST_INDEX_SEARCH_CACHE";
-        Cache cache = this.cacheManager.getCache(cacheName);
-        if (cache == null) {
-            throw new IllegalArgumentException("Could not find cache with name " + cacheName);
-        }
+    public void setCache(Ehcache cache) {
         this.cache = cache;
     }
 

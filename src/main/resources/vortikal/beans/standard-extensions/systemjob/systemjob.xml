@@ -59,7 +59,7 @@
 
     <property name="linksPropDef" ref="linksPropDef" />
     <property name="linkCheckPropDef" ref="linkCheckPropDef" />
-    <property name="linkChecker" ref="repository.linkChecker" />
+    <property name="linkChecker" ref="linkCheck.validator" />
     <property name="blackList" ref="repository.systemjob.linkcheck.blacklist" />
     <property name="useRepositoryLocks" value="${systemjob.linkcheck.locking}" />
     <property name="updateBatch" value="${systemjob.linkcheck.batch}" />
@@ -103,7 +103,7 @@
 
     <property name="linksPropDef" ref="linksPropDef" />
     <property name="linkCheckPropDef" ref="linkCheckPropDef" />
-    <property name="linkChecker" ref="repository.linkChecker" />
+    <property name="linkChecker" ref="linkCheck.validator" />
     <property name="blackList" ref="repository.systemjob.linkcheck.blacklist" />
     <property name="useRepositoryLocks" value="${systemjob.linkcheck.locking}" />
     <property name="updateBatch" value="${systemjob.linkcheck.batch}" />

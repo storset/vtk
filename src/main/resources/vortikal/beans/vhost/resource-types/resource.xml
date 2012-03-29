@@ -322,15 +322,6 @@
     <property name="mandatory" value="false" />
   </bean>
 
-
-  <bean id="repository.linkChecker" 
-        class="org.vortikal.web.display.linkcheck.LinkChecker">
-    <property name="cacheManager" ref="ehCacheManager" />
-    <property name="connectTimeout" value="5000" />
-    <property name="readTimeout" value="10000" />
-    <property name="userAgent" value="Link checker for ${repositoryID}" />
-  </bean>
-
   <bean id="linkStatusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
         parent="abstractPropDef">
     <property name="name" value="link-status" />

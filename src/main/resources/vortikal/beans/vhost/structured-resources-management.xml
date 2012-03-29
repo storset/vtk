@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <bean id="structuredResources.resourceManager" class="org.vortikal.resourcemanagement.StructuredResourceManager">
     <property name="resourceTypeTree" ref="resourceTypeTree" />
@@ -8,13 +8,16 @@
     <property name="valueFactory" ref="valueFactory" />
     <property name="valueFormatterRegistry" ref="valueFormatterRegistry" />
     <property name="assertion" ref="json.objectHasResourceTypeAssertion" />
-    <property name="serviceInvoker" ref="externalServiceInvoker" />
-
+    <property name="evaluatorResolver" ref="evaluatorResolver" />
   </bean>
 
   <bean id="structuredResource.parser" class="org.vortikal.resourcemanagement.parser.StructuredResourceParser">
     <property name="defaultResourceTypeDefinitions" value="${structuredResources.definitionsLocation}" />
     <property name="structuredResourceManager" ref="structuredResources.resourceManager" />
+  </bean>
+
+  <bean id="evaluatorResolver" class="org.vortikal.resourcemanagement.property.EvaluatorResolver">
+    <property name="serviceInvoker" ref="externalServiceInvoker" />
   </bean>
 
   <bean id="externalServiceInvoker" class="org.vortikal.resourcemanagement.service.ExternalServiceInvoker" />

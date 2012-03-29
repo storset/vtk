@@ -143,6 +143,22 @@ public class Login extends SamlService {
         response.setHeader("Location", url.toString());
     }
 
+    public URL getRelayStateURL(HttpServletRequest request) {
+        // Get original request URL (saved in challenge()) from session, redirect to it
+        String relayState = request.getParameter("RelayState");
+        if (relayState == null) {
+            throw new InvalidRequestException("Missing RelayState parameter");
+        }
+        URL url = URL.parse(relayState);
+        if (this.urlSessionAttribute != null) {
+            HttpSession session = request.getSession(false);
+            if (session != null && session.getAttribute(this.urlSessionAttribute) != null) {
+                url = (URL) session.getAttribute(this.urlSessionAttribute);
+            }
+        }
+        return url;
+    }
+
     UserData getUserData(HttpServletRequest request, UUID expectedRequestID) {
         String encodedSamlResponseString = request.getParameter("SAMLResponse");
 

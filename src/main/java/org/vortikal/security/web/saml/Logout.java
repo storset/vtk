@@ -30,7 +30,9 @@
  */
 package org.vortikal.security.web.saml;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +53,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.web.SecurityInitializer;
 import org.vortikal.web.InvalidRequestException;
+import org.vortikal.web.service.Assertion;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -58,32 +61,57 @@ public class Logout extends SamlService {
 
     private Service redirectService;
     private SecurityInitializer securityInitializer;
-    
+
+    private String ieCookieTicket;
+    private String vrtxAuthSP;
+    private String uioAuthIDP;
+    private String uioAuthSSO;
+    private IECookieStore iECookieStore;
+
+    private Assertion manageAssertion;
+
     public void initiateLogout(HttpServletRequest request, HttpServletResponse response) {
 
         URL savedURL = URL.create(request);
         if (this.redirectService != null) {
             savedURL = this.redirectService.constructURL(savedURL.getPath());
         }
-    
+
+        if (SamlAuthenticationHandler.browserIsIE(request) && manageAssertion.matches(request, null, null)) {
+            Map<String, String> cookieMap = new HashMap<String, String>();
+
+            if (SamlAuthenticationHandler.getCookie(request, vrtxAuthSP) != null) {
+                cookieMap.put(vrtxAuthSP, SamlAuthenticationHandler.getCookie(request, vrtxAuthSP).getValue());
+            }
+            if (SamlAuthenticationHandler.getCookie(request, uioAuthIDP) != null) {
+                cookieMap.put(uioAuthIDP, SamlAuthenticationHandler.getCookie(request, uioAuthIDP).getValue());
+            }
+            if (SamlAuthenticationHandler.getCookie(request, uioAuthSSO) != null) {
+                cookieMap.put(uioAuthSSO, SamlAuthenticationHandler.getCookie(request, uioAuthSSO).getValue());
+            }
+            String cookieTicket = iECookieStore.addToken(request, cookieMap).toString();
+            savedURL.addParameter(ieCookieTicket, cookieTicket);
+        }
+
         // Generate request ID, save in session
         UUID requestID = UUID.randomUUID();
         setRequestIDSessionAttribute(request, savedURL, requestID);
-                
+
         String relayState = savedURL.toString();
+
         SamlConfiguration samlConfiguration = newSamlConfiguration(request);
         String url = urlToLogoutServiceForDomain(samlConfiguration, requestID, relayState);
-        
+
         response.setStatus(HttpServletResponse.SC_FOUND);
         response.setHeader("Location", url.toString());
     }
-    
+
     public void handleLogoutRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         LogoutRequest logoutRequest = logoutRequestFromServletRequest(request);
 
-//        String statusCode = StatusCode.SUCCESS_URI;
-//        String consent = null;
-//        Issuer requestIssuer = logoutRequest.getIssuer();
+        // String statusCode = StatusCode.SUCCESS_URI;
+        // String consent = null;
+        // Issuer requestIssuer = logoutRequest.getIssuer();
 
         // verifyLogoutRequestIssuerIsSameAsLoginRequestIssuer(requestIssuer);
         Credential signingCredential = getSigningCredential();
@@ -93,12 +121,12 @@ public class Logout extends SamlService {
         LogoutResponse logoutResponse = createLogoutResponse(samlConfiguration, logoutRequest, responseID);
 
         String relayState = request.getParameter("RelayState");
-        
+
         String redirectURL = buildRedirectURL(logoutResponse, relayState, signingCredential);
 
         // Remove authentication state
         this.securityInitializer.removeAuthState(request, response);
-        
+
         // Handle the response ourselves.
         response.setStatus(HttpServletResponse.SC_FOUND);
         response.setHeader("Location", redirectURL);
@@ -110,14 +138,14 @@ public class Logout extends SamlService {
         }
         return true;
     }
-    
+
     public boolean isLogoutResponse(HttpServletRequest request) {
         if (request.getParameter("SAMLResponse") == null) {
             return false;
         }
         return true;
     }
-    
+
     public void handleLogoutResponse(HttpServletRequest request, HttpServletResponse response) throws Exception {
         HttpSession session = request.getSession(false);
         if (session == null) {
@@ -131,7 +159,7 @@ public class Logout extends SamlService {
             throw new InvalidRequestException("Missing RelayState parameter");
         }
         URL url = URL.parse(relayState);
-        
+
         UUID expectedRequestID = getRequestIDSessionAttribute(request, url);
         if (expectedRequestID == null) {
             throw new InvalidRequestException("Missing request ID attribute in session");
@@ -140,20 +168,19 @@ public class Logout extends SamlService {
 
         LogoutResponse logoutResponse = getLogoutResponse(request);
         logoutResponse.validate(true);
-        
+
         this.securityInitializer.removeAuthState(request, response);
-        
+
         response.setStatus(HttpServletResponse.SC_FOUND);
         response.setHeader("Location", url.toString());
     }
-    
+
     private String urlToLogoutServiceForDomain(SamlConfiguration config, UUID requestID, String relayState) {
         LogoutRequest logoutRequest = createLogoutRequest(config, requestID);
         String url = buildSignedAndEncodedLogoutRequestUrl(logoutRequest, relayState);
         return url;
     }
 
-    
     private LogoutRequest logoutRequestFromServletRequest(HttpServletRequest request) {
         BasicSAMLMessageContext<LogoutRequest, ?, ?> messageContext = new BasicSAMLMessageContext<LogoutRequest, SAMLObject, SAMLObject>();
         HttpServletRequestAdapter adapter = new HttpServletRequestAdapter(request);
@@ -170,11 +197,12 @@ public class Logout extends SamlService {
         return logoutRequest;
 
     }
-    
-    private String buildRedirectURL(LogoutResponse logoutResponse, String relayState, Credential signingCredential) throws Exception {
+
+    private String buildRedirectURL(LogoutResponse logoutResponse, String relayState, Credential signingCredential)
+            throws Exception {
         Encoder enc = new Encoder();
         String message = enc.deflateAndBase64Encode(logoutResponse);
-        
+
         URLBuilder urlBuilder = new URLBuilder(logoutResponse.getDestination());
 
         List<Pair<String, String>> queryParams = urlBuilder.getQueryParams();
@@ -184,9 +212,11 @@ public class Logout extends SamlService {
 
         if (signingCredential != null) {
             try {
-                queryParams.add(new Pair<String, String>("SigAlg", enc.getSignatureAlgorithmURI(signingCredential, null)));
+                queryParams.add(new Pair<String, String>("SigAlg", enc
+                        .getSignatureAlgorithmURI(signingCredential, null)));
                 String sigMaterial = urlBuilder.buildQueryString();
-                queryParams.add(new Pair<String, String>("Signature", enc.generateSignature(signingCredential, enc.getSignatureAlgorithmURI(signingCredential, null), sigMaterial)));
+                queryParams.add(new Pair<String, String>("Signature", enc.generateSignature(signingCredential, enc
+                        .getSignatureAlgorithmURI(signingCredential, null), sigMaterial)));
             } catch (MessageEncodingException ex) {
                 throw new AuthenticationProcessingException("Exception caught when encoding and signing parameters", ex);
             }
@@ -202,5 +232,28 @@ public class Logout extends SamlService {
     public void setRedirectService(Service redirectService) {
         this.redirectService = redirectService;
     }
-    
+
+    public void setIeCookieTicket(String ieCookieTicket) {
+        this.ieCookieTicket = ieCookieTicket;
+    }
+
+    public void setVrtxAuthSP(String vrtxAuthSP) {
+        this.vrtxAuthSP = vrtxAuthSP;
+    }
+
+    public void setUioAuthIDP(String uioAuthIDP) {
+        this.uioAuthIDP = uioAuthIDP;
+    }
+
+    public void setUioAuthSSO(String uioAuthSSO) {
+        this.uioAuthSSO = uioAuthSSO;
+    }
+
+    public void setiECookieStore(IECookieStore iECookieStore) {
+        this.iECookieStore = iECookieStore;
+    }
+
+    public void setManageAssertion(Assertion manageAssertion) {
+        this.manageAssertion = manageAssertion;
+    }
 }

@@ -25,7 +25,7 @@ import org.vortikal.security.web.SecurityInitializer;
 
 public class SSOCookieAssertion implements Assertion {
 
-    private static final String UIO_AUTH_SSO = "UIO_AUTH_SSO";
+    private String uioAuthSSO;
     private String serviceProviderURI;
     private String[] wordWhitelist;
     private Long ssoTimeout;
@@ -39,7 +39,10 @@ public class SSOCookieAssertion implements Assertion {
     @Override
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         Boolean doRedirect = false;
-        if (getCookie(request, UIO_AUTH_SSO) != null && getCookie(request, SecurityInitializer.VRTXLINK_COOKIE) == null
+
+        // No check for action=refresh-lock on the assumption that java refreshes don't trigger
+        // a redirect in the browser
+        if (getCookie(request, uioAuthSSO) != null && getCookie(request, SecurityInitializer.VRTXLINK_COOKIE) == null
                 && request.getParameter("authTarget") == null && !request.getRequestURI().contains(serviceProviderURI)) {
 
             StringBuffer url = request.getRequestURL();
@@ -52,7 +55,7 @@ public class SSOCookieAssertion implements Assertion {
 
             Long cookieTimestamp = new Long(0);
             try {
-                cookieTimestamp = Long.valueOf(getCookie(request, UIO_AUTH_SSO).getValue());
+                cookieTimestamp = Long.valueOf(getCookie(request, uioAuthSSO).getValue());
             } catch (NumberFormatException e) {
 
             }
@@ -76,6 +79,10 @@ public class SSOCookieAssertion implements Assertion {
     public void processURL(URL url) {
         // TODO Auto-generated method stub
 
+    }
+
+    public void setUioAuthSSO(String uioAuthSSO) {
+        this.uioAuthSSO = uioAuthSSO;
     }
 
     public void setServiceProviderURI(String serviceProviderURI) {

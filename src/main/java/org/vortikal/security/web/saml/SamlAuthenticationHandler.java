@@ -31,9 +31,13 @@
 package org.vortikal.security.web.saml;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -48,6 +52,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Path;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.AuthenticationProcessingException;
 import org.vortikal.security.Principal;
@@ -56,6 +61,8 @@ import org.vortikal.security.web.AuthenticationChallenge;
 import org.vortikal.security.web.AuthenticationHandler;
 import org.vortikal.security.web.InvalidAuthenticationRequestException;
 import org.vortikal.web.InvalidRequestException;
+import org.vortikal.web.service.Assertion;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 /**
@@ -71,7 +78,15 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
 
     private String spCookieDomain = null;
 
-    private static final String UIO_AUTH_SSO = "UIO_AUTH_SSO";
+    private String ieCookieTicket;
+
+    private String vrtxAuthSP;
+
+    private String uioAuthIDP;
+
+    private String uioAuthSSO;
+
+    private String ieReturnURL;
 
     private Map<String, String> staticHeaders = new HashMap<String, String>();
 
@@ -82,6 +97,16 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     private Set<?> categories = Collections.EMPTY_SET;
 
     private static Log logger = LogFactory.getLog(SamlAuthenticationHandler.class);
+
+    private IECookieStore iECookieStore;
+
+    private Service redirectToViewService;
+
+    private Service redirectToAdminService;
+
+    private String ieCookieSetterURI;
+
+    private Assertion manageAssertion;
 
     @Override
     public void challenge(HttpServletRequest request, HttpServletResponse response)
@@ -138,8 +163,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
 
         Random generator = new Random();
         String currentTime = String.valueOf(new Date().getTime() + generator.nextInt(120000));
-
-        Cookie ssoCookie = new Cookie(UIO_AUTH_SSO, currentTime);
+        Cookie ssoCookie = new Cookie(uioAuthSSO, currentTime);
         ssoCookie.setPath("/");
 
         if (this.spCookieDomain != null) {
@@ -147,6 +171,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         }
 
         response.addCookie(ssoCookie);
+
         if (logger.isDebugEnabled()) {
             logger.debug("Setting cookie: " + ssoCookie + ": " + this.getIdentifier());
         }
@@ -157,9 +182,56 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
             return true;
         }
 
+        if (browserIsIE(request)) {
+            Map<String, String> cookieMap = new HashMap<String, String>();
+
+            URL resourceURL = this.login.getRelayStateURL(request);
+
+            resourceURL.removeParameter("authTicket");
+
+            cookieMap.put(uioAuthIDP, this.getIdentifier());
+            cookieMap.put(vrtxAuthSP, this.getIdentifier());
+            cookieMap.put(uioAuthSSO, ssoCookie.getValue());
+            cookieMap.put(ieReturnURL, resourceURL.toString());
+
+            String cookieTicket = iECookieStore.addToken(request, cookieMap).toString();
+
+            boolean inManageMode = false;
+            if (manageAssertion.matches(request, null, null)) {
+                inManageMode = true;
+            }
+
+            URL currentURL = null;
+            if (inManageMode) {
+                currentURL = this.redirectToViewService.constructURL(Path.fromString(ieCookieSetterURI));
+            } else {
+                currentURL = this.redirectToAdminService.constructURL(Path.fromString(ieCookieSetterURI));
+            }
+
+            currentURL.addParameter(ieCookieTicket, cookieTicket);
+
+            try {
+                currentURL.addParameter(ieReturnURL, URLEncoder.encode(resourceURL.toString(), "UTF-8"));
+                response.sendRedirect(currentURL.toString());
+            } catch (UnsupportedEncodingException ue) {
+                ue.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         this.login.redirectAfterLogin(request, response);
         setHeaders(response);
         return true;
+    }
+
+    public static boolean browserIsIE(HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        if (userAgent.contains("MSIE 7.0") || (userAgent.contains("MSIE") && userAgent.contains("Trident"))) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -168,20 +240,22 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     @Override
     public boolean logout(Principal principal, HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationProcessingException, ServletException, IOException {
-        removeSSOCookie(request, response);
+        removeCookies(request, response);
 
         this.logout.initiateLogout(request, response);
+
         setHeaders(response);
         return true;
     }
 
-    private void removeSSOCookie(HttpServletRequest request, HttpServletResponse response) {
-        Cookie c = getCookie(request, UIO_AUTH_SSO);
+    private void removeCookies(HttpServletRequest request, HttpServletResponse response) {
+        Cookie c = getCookie(request, uioAuthSSO);
+
         if (c != null) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Deleting cookie " + UIO_AUTH_SSO);
+                logger.debug("Deleting cookie " + uioAuthSSO);
             }
-            c = new Cookie(UIO_AUTH_SSO, c.getValue());
+            c = new Cookie(uioAuthSSO, c.getValue());
 
             c.setPath("/");
             if (this.spCookieDomain != null) {
@@ -189,6 +263,26 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
             }
             c.setMaxAge(0);
             response.addCookie(c);
+        }
+        List<String> spCookies = new ArrayList<String>();
+        spCookies.add(vrtxAuthSP);
+        spCookies.add(uioAuthIDP);
+
+        for (String cookie : spCookies) {
+            c = getCookie(request, cookie);
+            if (c != null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Deleting cookie " + cookie);
+                }
+                c = new Cookie(cookie, c.getValue());
+                c.setSecure(true);
+                c.setPath("/");
+                if (this.spCookieDomain != null) {
+                    c.setDomain(this.spCookieDomain);
+                }
+                c.setMaxAge(0);
+                response.addCookie(c);
+            }
         }
     }
 
@@ -274,6 +368,26 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         }
     }
 
+    public void setIeCookieTicket(String ieCookieTicket) {
+        this.ieCookieTicket = ieCookieTicket;
+    }
+
+    public void setVrtxAuthSP(String vrtxAuthSP) {
+        this.vrtxAuthSP = vrtxAuthSP;
+    }
+
+    public void setUioAuthIDP(String uioAuthIDP) {
+        this.uioAuthIDP = uioAuthIDP;
+    }
+
+    public void setUioAuthSSO(String uioAuthSSO) {
+        this.uioAuthSSO = uioAuthSSO;
+    }
+
+    public void setIeReturnURL(String ieReturnURL) {
+        this.ieReturnURL = ieReturnURL;
+    }
+
     @Required
     public void setPostHandler(LostPostHandler postHandler) {
         this.postHandler = postHandler;
@@ -310,7 +424,27 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
         return this.categories;
     }
 
-    private static Cookie getCookie(HttpServletRequest request, String name) {
+    public void setiECookieStore(IECookieStore iECookieStore) {
+        this.iECookieStore = iECookieStore;
+    }
+
+    public void setRedirectToViewService(Service redirectToViewService) {
+        this.redirectToViewService = redirectToViewService;
+    }
+
+    public void setRedirectToAdminService(Service redirectToAdminService) {
+        this.redirectToAdminService = redirectToAdminService;
+    }
+
+    public void setIeCookieSetterURI(String ieCookieSetterURI) {
+        this.ieCookieSetterURI = ieCookieSetterURI;
+    }
+
+    public void setManageAssertion(Assertion manageAssertion) {
+        this.manageAssertion = manageAssertion;
+    }
+
+    public static Cookie getCookie(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) {
             return null;

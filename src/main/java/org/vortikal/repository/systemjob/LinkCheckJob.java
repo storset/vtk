@@ -231,13 +231,18 @@ public class LinkCheckJob extends RepositoryJob {
                         return true;
                     }
                     LinkCheckResult result = linkChecker.validate(this.url, base);
-                    if (!"OK".equals(result.getStatus())) {
+                    switch (result.getStatus()) {
+                    case OK:
+                    case TIMEOUT:
+                        break;
+                    default:
+                        // Mark as broken
                         Map<String, Object> m = new HashMap<String, Object>();
                         m.put("link", this.url);
                         if (this.type != null) {
                             m.put("type", this.type);
                         }
-                        m.put("status", result.getStatus());
+                        m.put("status", result.getStatus().toString());
                         state.brokenLinks.add(m);
                     }
                     if (state.brokenLinks.size() >= MAX_BROKEN_LINKS) {

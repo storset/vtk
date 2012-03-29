@@ -69,8 +69,8 @@ public class LinkChecker {
         public String getLink() {
             return this.link;
         }
-        public String getStatus() {
-            return this.status.toString();
+        public Status getStatus() {
+            return this.status;
         }
         public String getReason() {
             return this.reason;

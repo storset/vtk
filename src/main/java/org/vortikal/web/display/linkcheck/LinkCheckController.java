@@ -93,7 +93,7 @@ public class LinkCheckController implements Controller, InitializingBean {
         for (LinkCheckResult result: results) {
             JSONObject o = new JSONObject();
             o.put("link", result.getLink());
-            o.put("status", result.getStatus());
+            o.put("status", result.getStatus().toString());
             if (result.getReason() != null) {
                 o.put("message", result.getReason());
             }

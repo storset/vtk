@@ -43,7 +43,7 @@
         </div>
         <div class="vrtx-button">
           <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createCollectionService.cancel" default="Cancel"/>" />
-        <div>
+        </div>
       </div>
     </form>
   </div>

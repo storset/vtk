@@ -42,8 +42,8 @@ import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.resourcemanagement.ServiceDefinition;
 
+@Deprecated
 public class ExternalServiceInvoker implements ApplicationContextAware {
-
     private ApplicationContext applicationContext;
 
     public void invokeService(Property property, PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition) {

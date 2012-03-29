@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,18 +28,19 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.resourcemanagement.service;
+package org.vortikal.resourcemanagement.property;
 
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
-import org.vortikal.resourcemanagement.ServiceDefinition;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
+import org.vortikal.repository.resourcetype.property.PropertyEvaluationException;
 
-//XXX Must die. No good implementation of system jobs processing
-//properties. Too tightly knit with resource type definition and requires a
-//certain order of definition to work. Simply a poor implementation.
-@Deprecated
-public interface ExternalService {
+public class TruncatedMessageEvaluator implements PropertyEvaluator {
 
-    public void invoke(Property property, PropertyEvaluationContext ctx, ServiceDefinition serviceDefinition);
+    @Override
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
+        // XXX implement
+        return false;
+    }
 
 }

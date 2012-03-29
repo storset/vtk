@@ -2,14 +2,14 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 
-  <#if createDocumentForm?exists && !createDocumentForm.done>
+<#if createDocumentForm?exists && !createDocumentForm.done>
   <div class="expandedForm vrtx-admin-form">
-  <form name="createDocumentService" id="createDocumentService-form" action="${createDocumentForm.submitURL?html}"
-        method="post" accept-charset="utf-8">
-    <h3><@vrtx.msg code="actions.createDocumentService" default="Create Document"/></h3>
-    <h4><@vrtx.msg code="actions.createDocumentService.subtitle" default="Choose a template"/></h4>
-    <#compress>
-    <@spring.bind "createDocumentForm" + ".sourceURI" /> 
+    <form name="createDocumentService" id="createDocumentService-form" action="${createDocumentForm.submitURL?html}"
+          method="post" accept-charset="utf-8">
+      <h3><@vrtx.msg code="actions.createDocumentService" default="Create Document"/></h3>
+      <h4><@vrtx.msg code="actions.createDocumentService.subtitle" default="Choose a template"/></h4>
+      <#compress>
+      <@spring.bind "createDocumentForm" + ".sourceURI" /> 
       <#if spring.status.errorMessages?size &gt; 0>
         <div class="errorContainer">
           <ul class="errors">
@@ -17,7 +17,7 @@
               <li>${error}</li> 
             </#list>
 		  </ul>
-		</div>
+	    </div>
       </#if>
       <#assign newDocName = "">
       <#-- Set the name of the new file to whatever the user already has supplied-->
@@ -44,22 +44,21 @@
           </ul>
         </div>
       </#if>
-    <div class="vrtx-textfield">
-      <input type="text" name="${spring.status.expression}" value="${newDocName}" />
-    </div>
-    <div id="submitButtons">
-      <div class="vrtx-focus-button">
-        <input type="submit" name="save" value="<@vrtx.msg code="actions.createDocumentService.save" default="Create"/>" />
+      <div class="vrtx-textfield">
+        <input type="text" name="${spring.status.expression}" value="${newDocName}" />
       </div>
-      <div class="vrtx-button">
-        <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createDocumentService.cancel" default="Cancel"/>" />
+      <div id="submitButtons">
+        <div class="vrtx-focus-button">
+          <input type="submit" name="save" value="<@vrtx.msg code="actions.createDocumentService.save" default="Create"/>" />
+        </div>
+        <div class="vrtx-button">
+          <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createDocumentService.cancel" default="Cancel"/>" />
+        </div>
       </div>
-    </div>
-  </form>
-  
+    </form>
   </div>
-  </#if>
-  
+</#if>
+ 
 <#recover>
 ${.error}
 </#recover>

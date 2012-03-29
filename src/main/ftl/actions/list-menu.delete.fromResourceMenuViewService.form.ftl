@@ -1,8 +1,7 @@
 <#attempt>
 <div class="globalmenu expandedForm">
-<form name="vrtx-delete-resource" id="vrtx-delete-resource" action="${url}" method="post">
-${vrtx.getMsg("collectionListing.confirmation.delete")} <span class="vrtx-confirm-delete-name"> ${name}</span>? 
-
+  <form name="vrtx-delete-resource" id="vrtx-delete-resource" action="${url}" method="post">
+  ${vrtx.getMsg("collectionListing.confirmation.delete")} <span class="vrtx-confirm-delete-name"> ${name}</span>? 
   <div class="submitButtons">
     <div class="vrtx-focus-button">
       <button tabindex="1" type="submit" value="ok" id="deleteResourceAction" name="deleteResourceAction">
@@ -15,7 +14,7 @@ ${vrtx.getMsg("collectionListing.confirmation.delete")} <span class="vrtx-confir
       </button>
     </div>
   </div>
-</form>
+  </form>
 </div>
 
 <#recover>

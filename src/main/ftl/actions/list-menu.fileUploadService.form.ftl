@@ -1,7 +1,6 @@
 <#attempt>
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
-
 <#if uploadForm?exists && !uploadForm.done>
   <div class="expandedForm vrtx-admin-form">
     <form name="fileUploadService" id="fileUploadService-form" action="${uploadForm.submitURL?html}" method="post" enctype="multipart/form-data">
@@ -30,7 +29,6 @@
     </form>
   </div>
 </#if>
-
 <#recover>
 ${.error}
 </#recover>

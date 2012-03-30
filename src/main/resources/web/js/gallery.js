@@ -68,13 +68,24 @@
       }
     });
 
-    // TODO: how to delegate events to two seperate DOM-elements
-    $(wrapper).on("click mouseover mouseout", "a.next", function (e) {
-      next(e);
-    });
-
-    $(wrapper).on("click mouseover mouseout", container + "-link", function (e) {
-      next(e);
+    $(wrapper).on("click mouseover mouseout", "a.next, " + container + "-link", function (e) {
+      if (e.type == "mouseover") {
+        fadeMultiple([wrapper + " a.next span",
+                                 wrapper + " a.prev span"], settings.fadeNavInOutTime, 0.2);
+        $(wrapper + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 1);
+        $(wrapper + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 0.5);
+      } else if (e.type == "mouseout") {
+        fadeMultiple([wrapper + " a.next", wrapper + " a.next span",
+                                 wrapper + " a.prev", wrapper + " a.prev span"], settings.fadeNavInOutTime, 0);
+      } else {
+        var activeThumb = $(wrapperThumbsLinks + ".active");
+        if (activeThumb.parent().next().length != 0) {
+          activeThumb.parent().next().find("a").click();
+        } else {
+          $(wrapper + " ul li:first a").click();
+        }
+        e.preventDefault();
+      }
     });
 
     $(wrapper).on("click mouseover mouseout", "a.prev", function (e) {
@@ -116,27 +127,6 @@
       centerThumbnailImageFunc(link.find("img.vrtx-thumbnail-image"), link);
     });
 
-    function next(e) { // TODO: how to delegate events to two seperate DOM-elements
-      if (e.type == "mouseover") {
-        fadeMultiple([wrapper + " a.next span",
-                                 wrapper + " a.prev span"], settings.fadeNavInOutTime, 0.2);
-        $(wrapper + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 1);
-        $(wrapper + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 0.5);
-      } else if (e.type == "mouseout") {
-        fadeMultiple([wrapper + " a.next", wrapper + " a.next span",
-                                 wrapper + " a.prev", wrapper + " a.prev span"], settings.fadeNavInOutTime, 0);
-      } else {
-        var activeThumb = $(wrapperThumbsLinks + ".active");
-        if (activeThumb.parent().next().length != 0) {
-          activeThumb.parent().next().find("a").click();
-        } else {
-          $(wrapper + " ul li:first a").click();
-        }
-
-        e.preventDefault();
-      }
-    }
-
     function calculateImage(image, fullImage, init) {
       if (settings.fadeInOutTime > 0 && !init) {
         $(wrapperContainer).append("<div class='over'>" + $(wrapperContainerLink).html() + "</div>");
@@ -171,7 +161,6 @@
           thumb.find("img").stop().fadeTo(0, settings.fadedThumbsOutOpacity);
         }
       }
-
     }
 
     function initPagingEvents(navClass) {

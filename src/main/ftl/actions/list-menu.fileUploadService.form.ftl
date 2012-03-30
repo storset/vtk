@@ -1,6 +1,9 @@
+<#ftl strip_whitespace=true>
 <#attempt>
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/actions.ftl" as actionsLib />
+
 <#if uploadForm?exists && !uploadForm.done>
   <div class="expandedForm vrtx-admin-form">
     <form name="fileUploadService" id="fileUploadService-form" action="${uploadForm.submitURL?html}" method="post" enctype="multipart/form-data">
@@ -18,14 +21,7 @@
       <div id="file-upload-container">   
         <input id="file" type="file" name="file" />
       </div>
-      <div id="submitButtons">
-        <div class="vrtx-focus-button">
-          <input type="submit" name="save" value="<@vrtx.msg code="actions.fileUploadService.save" default="Save"/>" />
-        </div>
-        <div class="vrtx-button">
-          <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.fileUploadService.cancel" default="Cancel"/>" />
-        </div>
-      </div>      
+      <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.fileUploadService.save" "actions.fileUploadService.cancel" />     
     </form>
   </div>
 </#if>

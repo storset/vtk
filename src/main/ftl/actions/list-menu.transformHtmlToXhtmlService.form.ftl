@@ -1,6 +1,8 @@
+<#ftl strip_whitespace=true>
 <#attempt>
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/actions.ftl" as actionsLib />
 
 <#if command?exists && !command.done>
   <div class="globalmenu expandedForm">
@@ -18,14 +20,7 @@
       <div class="vrtx-textfield">
         <input type="text" size="30" name="${spring.status.expression}" value="${spring.status.value?if_exists}" />
       </div>
-      <div id="submitButtons">
-        <div class="vrtx-focus-button">
-          <input type="submit" name="save" value="<@vrtx.msg code="actions.transformHtmlToXhtmlService.save" default="Create"/>" />
-        </div>
-        <div class="vrtx-button">
-          <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.transformHtmlToXhtmlService.cancel" default="Cancel"/>" />
-        </div>
-      </div>
+      <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.transformHtmlToXhtmlService.save" "actions.transformHtmlToXhtmlService.cancel" />
     </form>
   </div>
 </#if>

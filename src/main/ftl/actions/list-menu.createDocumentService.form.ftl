@@ -1,6 +1,8 @@
+<#ftl strip_whitespace=true>
 <#attempt>
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/actions.ftl" as actionsLib />
 
 <#if createDocumentForm?exists && !createDocumentForm.done>
   <div class="expandedForm vrtx-admin-form">
@@ -47,14 +49,7 @@
       <div class="vrtx-textfield">
         <input type="text" name="${spring.status.expression}" value="${newDocName}" />
       </div>
-      <div id="submitButtons">
-        <div class="vrtx-focus-button">
-          <input type="submit" name="save" value="<@vrtx.msg code="actions.createDocumentService.save" default="Create"/>" />
-        </div>
-        <div class="vrtx-button">
-          <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createDocumentService.cancel" default="Cancel"/>" />
-        </div>
-      </div>
+      <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createDocumentService.save" "actions.createDocumentService.cancel" />
     </form>
   </div>
 </#if>

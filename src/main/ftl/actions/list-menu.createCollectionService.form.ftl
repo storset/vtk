@@ -1,6 +1,8 @@
+<#ftl strip_whitespace=true>
 <#attempt>
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/actions.ftl" as actionsLib />
 
 <#if createCollectionForm?exists && !createCollectionForm.done>
   <div class="expandedForm vrtx-admin-form">
@@ -36,14 +38,7 @@
       <div class="vrtx-textfield">
         <input type="text" name="name" />
       </div>
-      <div id="submitButtons">
-        <div class="vrtx-focus-button">
-          <input type="submit" name="save" value="<@vrtx.msg code="actions.createCollectionService.save" default="Create"/>" />
-        </div>
-        <div class="vrtx-button">
-          <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createCollectionService.cancel" default="Cancel"/>" />
-        </div>
-      </div>
+      <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createCollectionService.save" "actions.createCollectionService.cancel" />
     </form>
   </div>
 </#if>

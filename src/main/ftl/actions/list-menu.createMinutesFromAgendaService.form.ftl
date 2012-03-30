@@ -1,6 +1,8 @@
 <#attempt>
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/actions.ftl" as actionsLib />
+
 <#if command?exists && !command.done>
   <div class="globalmenu expandedForm">
     <form name="form" action="${command.submitURL?html}" method="POST">
@@ -16,14 +18,7 @@
       <div class="vrtx-textfield">
         <input type="text" size="30" name="${spring.status.expression}" value="${spring.status.value?if_exists}" />
       </div>
-      <div id="submitButtons">
-        <div class="vrtx-focus-button">
-          <input type="submit" name="save" value="<@vrtx.msg code="actions.createMinutes.save" default="Create"/>" />
-        </div>
-        <div class="vrtx-button">
-          <input type="submit" name="cancelAction" value="<@vrtx.msg code="actions.createMinutes.cancel" default="Cancel"/>" />
-        </div>
-      </div>
+      <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createMinutes.save" "actions.createMinutes.cancel" />
     </form>
   </div>
 </#if>

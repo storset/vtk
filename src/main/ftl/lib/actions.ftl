@@ -1,3 +1,12 @@
+<#ftl strip_whitespace=true>
+<#--
+  - File: actions.ftl
+  - 
+  - Description: Library for actions
+  -   
+  -->
+<#import "vortikal.ftl" as vrtx />
+
 <#macro genOkCancelButtons nameOk nameCancel msgOk msgCancel>
   <div id="submitButtons">
     <div class="vrtx-focus-button">

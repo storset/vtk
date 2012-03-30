@@ -12,15 +12,7 @@
       <h4><@vrtx.msg code="actions.createDocumentService.subtitle" default="Choose a template"/></h4>
       <#compress>
       <@spring.bind "createDocumentForm" + ".sourceURI" /> 
-      <#if spring.status.errorMessages?size &gt; 0>
-        <div class="errorContainer">
-          <ul class="errors">
-            <#list spring.status.errorMessages as error> 
-              <li>${error}</li> 
-            </#list>
-		  </ul>
-	    </div>
-      </#if>
+      <@actionsLib.genErrorMessages spring.status.errorMessages />
       <#assign newDocName = "">
       <#-- Set the name of the new file to whatever the user already has supplied-->
       <#if createDocumentForm.name?exists>

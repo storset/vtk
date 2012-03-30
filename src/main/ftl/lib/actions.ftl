@@ -8,3 +8,15 @@
     </div>
   </div>
 </#macro>
+
+<#macro genErrorMessages errors>
+  <#if (errors?size > 0)>
+    <div class="errorContainer">
+      <ul class="errors">
+        <#list spring.status.errorMessages as error> 
+          <li>${error}</li> 
+        </#list>
+	  </ul>
+    </div>
+  </#if>
+</#macro>

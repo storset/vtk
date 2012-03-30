@@ -1,16 +1,17 @@
+<#ftl strip_whitespace=true>
 <#import "../vortikal.ftl" as vrtx />
 
 <#macro displayProjectsAlphabetical projectListing>
   <#list alpthabeticalOrdredResult?keys as key >
-	<ul  class="vrtx-alphabetical-project-listing">
-		<li>${key}
-		<ul>
-		<#list alpthabeticalOrdredResult[key] as project>
+	<ul class="vrtx-alphabetical-project-listing">
+	  <li>${key}
+	    <ul>
+		  <#list alpthabeticalOrdredResult[key] as project>
 			<#local title = vrtx.propValue(project, 'title') />
 			<li><a href="${projectListing.urls[project.URI]?html}">${title}</a></li>
-		</#list>
+		  </#list>
 		</ul>
-		</li>
+	  </li>
 	</ul>
   </#list>
 </#macro>

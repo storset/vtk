@@ -9,15 +9,7 @@
     <form name="fileUploadService" id="fileUploadService-form" action="${uploadForm.submitURL?html}" method="post" enctype="multipart/form-data">
       <h3><@vrtx.msg code="actions.fileUploadService" default="Upload File"/></h3>
       <@spring.bind "uploadForm.file" /> 
-      <#if spring.status.errorMessages?size &gt; 0>
-        <div class="errorContainer">
-          <ul class="errors">
-            <#list spring.status.errorMessages as error> 
-              <li>${error}</li> 
-            </#list>
-	      </ul>
-	    </div>
-      </#if>
+      <@actionsLib.genErrorMessages spring.status.errorMessages /> 
       <div id="file-upload-container">   
         <input id="file" type="file" name="file" />
       </div>
@@ -25,6 +17,7 @@
     </form>
   </div>
 </#if>
+
 <#recover>
 ${.error}
 </#recover>

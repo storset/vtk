@@ -3,23 +3,23 @@
 <#macro displayPersons personListing title="">
   <#local persons=personListing.files />
   <#if (persons?size > 0)>
-  <table class="vrtx-person-listing" summary="${vrtx.getMsg("person-listing.overview-of")} ${title?html}">
-    <#if numberOfRecords?exists>
-      <caption>
-        ${vrtx.getMsg("person-listing.persons")} ${numberOfRecords["elementsOnPreviousPages"]} -
-        ${numberOfRecords["elementsIncludingThisPage"]} ${vrtx.getMsg("person-listing.of")} 
-        ${personListing.totalHits?string}
-      </caption>
-    </#if>
-    <thead>
-      <tr>
-        <th class="vrtx-person-listing-name">${vrtx.getMsg("person-listing.name")}</th>
-        <th class="vrtx-person-listing-phone">${vrtx.getMsg("person-listing.phone")}</th>
-        <th class="vrtx-person-listing-email">${vrtx.getMsg("person-listing.email")}</th>
-        <th class="vrtx-person-listing-tags">${vrtx.getMsg("person-listing.tags")}</th>
-      </tr>
-    </thead>
-    <tbody>
+    <table class="vrtx-person-listing" summary="${vrtx.getMsg("person-listing.overview-of")} ${title?html}">
+      <#if numberOfRecords?exists>
+        <caption>
+          ${vrtx.getMsg("person-listing.persons")} ${numberOfRecords["elementsOnPreviousPages"]} -
+          ${numberOfRecords["elementsIncludingThisPage"]} ${vrtx.getMsg("person-listing.of")} 
+          ${personListing.totalHits?string}
+        </caption>
+      </#if>
+      <thead>
+        <tr>
+          <th class="vrtx-person-listing-name">${vrtx.getMsg("person-listing.name")}</th>
+          <th class="vrtx-person-listing-phone">${vrtx.getMsg("person-listing.phone")}</th>
+          <th class="vrtx-person-listing-email">${vrtx.getMsg("person-listing.email")}</th>
+          <th class="vrtx-person-listing-tags">${vrtx.getMsg("person-listing.tags")}</th>
+        </tr>
+      </thead>
+      <tbody>
     <#local personNr = 1 />
     <#list persons as person>
       <#local firstName = vrtx.propValue(person, 'firstName') />
@@ -101,7 +101,7 @@
       </tr>
       <#local personNr = personNr+1 />
     </#list>
-    </tbody>
-  </table>
+      </tbody>
+    </table>
   </#if>
 </#macro>

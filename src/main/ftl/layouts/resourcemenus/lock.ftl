@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#--
   - File: lock.ftl
   - 
@@ -17,7 +18,6 @@
 <#if resourceContext.currentResource.lock?exists>
   <#assign lock="locked" />
 </#if>
-
 
 <#if lock="locked">
   <#assign lockedBy = resourceContext.currentResource.lock.principal.name />

@@ -13,7 +13,6 @@
       <div class="vrtx-textfield">
         <input type="text" size="30" name="${spring.status.expression}" value="${spring.status.value?if_exists}" />
       </div>
-    
       <p>
       <div>Enter comma separated list of paths to ignore. Paths <b>MUST</b> be entered as they are written in the manifest, i.e. all 
       start with a slash ("/") and collections also end with one.<br/>

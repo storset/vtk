@@ -1,5 +1,4 @@
 <#ftl strip_whitespace=true>
-
 <#attempt>
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
@@ -34,6 +33,7 @@
     </a>  
   </#if>
 </#if>
+
 <#recover>
 ${.error}
 </#recover>

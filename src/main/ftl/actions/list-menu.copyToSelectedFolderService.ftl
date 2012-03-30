@@ -9,10 +9,6 @@
 <#assign filesTipI18n = vrtx.getMsg("copyMove.files.copy.tip.title") /> 
 <#assign actionURL = item.url />
 <#assign method = "post" />
-<#if resourcesDisclosed?exists>
-  <#assign actionURL =  warningDialogURL + '&showAsHtml=true&height=110&width=250' />
-  <#assign method = "get" />
-</#if>
 
 <h3>${headerMsg}</h3>
 <#if session.filesToBeCopied?exists>
@@ -28,15 +24,11 @@
   </p>
 </#if>
 
-<#if !resourcesDisclosed?exists>
-  <form id="vrtx-copy-to-selected-folder" action="${actionURL?html}" method="${method}" class="vrtx-admin-button">
-     <div class="vrtx-button-small"><button title="${titleMsg}" type="submit"
-          id="vrtx-copy-to-selected-folder.submit"
-          value="copy-resources-to-this-folder" name="action">${item.title?html}</button></div>
-  </form>
-<#else>
-  <a class="vrtx-button-small thickbox" title="${titleMsg}" id="vrtx-copy-to-selected-folder" href="${actionURL?html}"><span>${item.title?html}</span></a>
-</#if>
+<form id="vrtx-copy-to-selected-folder" action="${actionURL?html}" method="${method}" class="vrtx-admin-button">
+  <div class="vrtx-button-small"><button title="${titleMsg}" type="submit"
+       id="vrtx-copy-to-selected-folder.submit"
+       value="copy-resources-to-this-folder" name="action">${item.title?html}</button></div>
+</form>
 
 <#recover>
 ${.error}

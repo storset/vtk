@@ -17,6 +17,7 @@
     </form>
   </div>
 </#if>
+
 <#recover>
 ${.error}
 </#recover>

@@ -26,7 +26,7 @@
 <body>
   <#if commandForm?exists>
   <p>
-    <form class="webConsole" action="${commandForm.submitURL}" method="POST">
+    <form class="webConsole" action="${commandForm.submitURL}" method="post">
       <pre>Enter command:</pre>
       <div class="vrtx-textfield">
         <input type="text" name="command" size="60" />

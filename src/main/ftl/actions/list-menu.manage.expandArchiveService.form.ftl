@@ -6,7 +6,7 @@
 
 <#if command?exists && !command.done>
   <div class="globalmenu expandedForm">
-    <form name="manage.expandArchiveService" id="manage.expandArchiveService-form" action="${command.submitURL?html}" method="POST">
+    <form name="manage.expandArchiveService" id="manage.expandArchiveService-form" action="${command.submitURL?html}" method="post">
       <h3 class="nonul"><@vrtx.msg code="actions.expandArchive" default="Expand archive"/>:</h3>
       <@spring.bind "command.name" /> 
       <@actionsLib.genErrorMessages spring.status.errorMessages />

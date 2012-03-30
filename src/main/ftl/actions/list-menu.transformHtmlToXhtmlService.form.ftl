@@ -6,7 +6,7 @@
 
 <#if command?exists && !command.done>
   <div class="globalmenu expandedForm">
-    <form name="form" action="${command.submitURL?html}" method="POST">
+    <form name="form" action="${command.submitURL?html}" method="post">
       <h3><@vrtx.msg code="actions.transformHtmlToXhtmlService" default="Make webeditable copy"/>:</h3>
       <@spring.bind "command.name" /> 
       <@actionsLib.genErrorMessages spring.status.errorMessages />

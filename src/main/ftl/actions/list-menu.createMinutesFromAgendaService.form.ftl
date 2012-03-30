@@ -6,7 +6,7 @@
 
 <#if command?exists && !command.done>
   <div class="globalmenu expandedForm">
-    <form name="form" action="${command.submitURL?html}" method="POST">
+    <form name="form" action="${command.submitURL?html}" method="post">
       <h3 class="nonul"><@vrtx.msg code="actions.createMinutes" default="Make minutes"/>:</h3>
       <@spring.bind "command.name" /> 
       <@actionsLib.genOkCancelButtons spring.status.errorMessages />

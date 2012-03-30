@@ -27,9 +27,6 @@
     wrapperContainerLink = wrapperContainer + " a" + container + "-link";
     wrapperThumbsLinks = wrapper + " ul li a";
 
-    // TODO: init-time-brancing
-    var isIE6 = jQuery.browser.msie && jQuery.browser.version <= 6;
-
     var images = []; // cache image HTML with src as hash
     var imagesWidth = [];
     var imagesHeight = [];
@@ -38,8 +35,27 @@
     var centerThumbnailImageFunc = centerThumbnailImage;
     var calculateImageFunc = calculateImage;
     var generateLinkImageFunc = generateLinkImage;
+    
+    // Init first active image
+    calculateImageFunc($(wrapperThumbsLinks + ".active img.vrtx-thumbnail-image"), 
+                       $(wrapperThumbsLinks + ".active img.vrtx-full-image"), true);
 
-    // Event-handlers
+    initPagingEvents("prev");
+    initPagingEvents("next");
+
+    //TODO: use for- or async loop
+    // Center thumbnails and cache images with link
+    return this.each(function () {
+      var link = $(this);
+      var img = link.find("img.vrtx-full-image");
+      var src = img.attr("src");
+      imagesWidth[src] = parseInt(link.find("span.hiddenWidth").text());
+      imagesHeight[src] = parseInt(link.find("span.hiddenHeight").text());
+      images[src] = generateLinkImageFunc(img, link, false);
+      centerThumbnailImageFunc(link.find("img.vrtx-thumbnail-image"), link);
+    });
+    
+     // Event-handlers
     $(document).keydown(function (e) {
       if (e.keyCode == 37) {
         $(wrapper + " a.prev").click();
@@ -71,12 +87,12 @@
     $(wrapper).on("click mouseover mouseout", "a.next, " + container + "-link", function (e) {
       if (e.type == "mouseover") {
         fadeMultiple([wrapper + " a.next span",
-                                 wrapper + " a.prev span"], settings.fadeNavInOutTime, 0.2);
+                      wrapper + " a.prev span"], settings.fadeNavInOutTime, 0.2);
         $(wrapper + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 1);
         $(wrapper + " a.prev").stop().fadeTo(settings.fadeNavInOutTime, 0.5);
       } else if (e.type == "mouseout") {
         fadeMultiple([wrapper + " a.next", wrapper + " a.next span",
-                                 wrapper + " a.prev", wrapper + " a.prev span"], settings.fadeNavInOutTime, 0);
+                      wrapper + " a.prev", wrapper + " a.prev span"], settings.fadeNavInOutTime, 0);
       } else {
         var activeThumb = $(wrapperThumbsLinks + ".active");
         if (activeThumb.parent().next().length != 0) {
@@ -96,7 +112,7 @@
         $(wrapper + " a.next").stop().fadeTo(settings.fadeNavInOutTime, 0.5);
       } else if (e.type == "mouseout") {
         fadeMultiple([wrapper + " a.next", wrapper + " a.next span",
-                                wrapper + " a.prev", wrapper + " a.prev span"], settings.fadeNavInOutTime, 0);
+                      wrapper + " a.prev", wrapper + " a.prev span"], settings.fadeNavInOutTime, 0);
       } else {
         var activeThumb = $(wrapperThumbsLinks + ".active");
         if (activeThumb.parent().prev().length != 0) {
@@ -106,25 +122,6 @@
         }
         e.preventDefault();
       }
-    });
-
-    // Init first active image
-    calculateImageFunc($(wrapperThumbsLinks + ".active img.vrtx-thumbnail-image"), 
-                      $(wrapperThumbsLinks + ".active img.vrtx-full-image"), true);
-
-    initPagingEvents("prev");
-    initPagingEvents("next");
-
-    //TODO: use for- or async loop
-    // Center thumbnails and cache images with link
-    return this.each(function () {
-      var link = $(this);
-      var img = link.find("img.vrtx-full-image");
-      var src = img.attr("src");
-      imagesWidth[src] = parseInt(link.find("span.hiddenWidth").text());
-      imagesHeight[src] = parseInt(link.find("span.hiddenHeight").text());
-      images[src] = generateLinkImageFunc(img, link, false);
-      centerThumbnailImageFunc(link.find("img.vrtx-thumbnail-image"), link);
     });
 
     function calculateImage(image, fullImage, init) {

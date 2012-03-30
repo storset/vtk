@@ -39,24 +39,14 @@
 </#function>
 
 
-<#macro localizeMessage code default args=nullArg locale=springMacroRequestContext.getLocale() >
-  
-  <#--
-    VRTX_MESSAGE_SOURCE is a springframework.*.ResourceBundleMessageSource. It requires
-    resourcebundles to be suffixed with the locale used to fetch messages. Therefore, 
-    our current solution won't work for nynorsk because we add the contentlocale "*_NY" 
-    to these resources and we have no resourcebundle with the suffix "_ny". Hence we 
-    hack a fix like so:
-
-    XXX: the mapping  ny:nn should be done in Java code
-  -->
-  <#if locale?string?contains('NY')>
-    <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
-    <#local locale = constructor("java.util.Locale", "nn") />
-  </#if>
-  
-  <#local localizedMessage = VRTX_MESSAGE_SOURCE.getMessage(code, args, default, locale) />
-  ${localizedMessage?replace("[", "")?replace("]", "")}
+<#macro localizeMessage code default args=nullArg locale=springMacroRequestContext.getLocale() escape=true >
+  <#local localizer =
+    "org.vortikal.web.view.freemarker.MessageLocalizer"?new(code, default, args, springMacroRequestContext, locale) />
+    <#if escape>
+      ${localizer.msg?html}
+    <#else>
+      ${localizer.msg}
+    </#if>
 </#macro>
 
 <#--

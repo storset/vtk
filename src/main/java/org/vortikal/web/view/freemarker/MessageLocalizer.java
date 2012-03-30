@@ -30,6 +30,8 @@
  */
 package org.vortikal.web.view.freemarker;
 
+import java.util.Locale;
+
 import org.springframework.web.servlet.support.RequestContext;
 
 import freemarker.ext.beans.BeansWrapper;
@@ -40,49 +42,65 @@ import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateSequenceModel;
 
 public class MessageLocalizer implements TemplateHashModel {
+
     private String code;
     private String defaultMessage;
     private RequestContext springRequestContext;
     private TemplateSequenceModel args;
-    
-    
+    private Locale preferredLocale;
 
-    public MessageLocalizer(String code, String defaultMessage,
-                            TemplateSequenceModel args,
-                            RequestContext springRequestContext) {
+    public MessageLocalizer(String code, String defaultMessage, TemplateSequenceModel args,
+            RequestContext springRequestContext) {
+        this(code, defaultMessage, args, springRequestContext, null);
+    }
+
+    public MessageLocalizer(String code, String defaultMessage, TemplateSequenceModel args,
+            RequestContext springRequestContext, Locale preferredLocale) {
         this.code = code;
         this.defaultMessage = defaultMessage;
         this.args = args;
         this.springRequestContext = springRequestContext;
+        this.preferredLocale = preferredLocale;
     }
-
 
     public boolean isEmpty() {
         return false;
     }
-    
 
     /**
-     * Gets a localized message. The <code>key</code> parameter is
-     * ignored, and the message is retrieved based on the values in
-     * the constructor of this class.
-     *
-     * @param key a <code>String</code> value
+     * Gets a localized message. The <code>key</code> parameter is ignored, and
+     * the message is retrieved based on the values in the constructor of this
+     * class.
+     * 
+     * @param key
+     *            a <code>String</code> value
      * @return a <code>StringModel</code> containing the localized message.
      */
     public TemplateModel get(String key) throws TemplateModelException {
-        String msg = null;
-        if (this.args == null || this.args.size() == 0) {
-            msg = this.springRequestContext.getMessage(this.code, this.defaultMessage);
-        } else {
-            String[] argsInternal = new String[this.args.size()];
+
+        String[] argsInternal = null;
+        if (this.args != null && this.args.size() > 0) {
+            argsInternal = new String[this.args.size()];
             for (int i = 0; i < this.args.size(); i++) {
                 Object o = this.args.get(i);
                 argsInternal[i] = o.toString();
             }
-            msg = this.springRequestContext.getMessage(this.code, argsInternal, this.defaultMessage);
-            if (msg != null) msg = msg.trim();
         }
+
+        String msg = null;
+        if (this.preferredLocale == null) {
+            msg = this.springRequestContext.getMessage(this.code, argsInternal, this.defaultMessage);
+        } else {
+            msg = this.springRequestContext.getMessageSource().getMessage(this.code, argsInternal, this.defaultMessage,
+                    this.preferredLocale);
+        }
+
+        if (msg != null) {
+            msg = msg.trim();
+        } else {
+            msg = this.code;
+        }
+
         return new StringModel(msg, new BeansWrapper());
     }
 }

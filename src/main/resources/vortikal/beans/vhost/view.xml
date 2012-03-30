@@ -335,7 +335,6 @@
          <entry key="VRTX_RESOURCE_TYPE_TREE" value-ref="resourceTypeTree" />
          <entry key="VRTX_HTML_UTIL" value-ref="htmlUtil" />
          <entry key="VRTX_DECORATING_NODE_FILTER" value-ref="decorating.ssiNodeFilter" />
-         <entry key="VRTX_MESSAGE_SOURCE" value-ref="defaultMessageSource" />
          <entry key="VRTX_CSRF_PREVENTION_HANDLER" value-ref="system.csrfPreventionHandler" />
          <entry key="VRTX_LINK_CONSTRUCTOR" value-ref="linkConstructor" />
          <entry key="VRTX_INHERITED_PROPERTY_RESOLVER" value-ref="inheritedPropertyResolver" />

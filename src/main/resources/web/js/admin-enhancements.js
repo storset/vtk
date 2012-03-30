@@ -319,7 +319,7 @@ $(document).ready(function () {
         transitionEasingSlideUp: vrtxAdmin.transitionEasingSlideUp
     });
     vrtxAdmin.completeFormAsync({
-        selector: "form#" + resourceMenuRightServices[i] + "-form .submitButtons button",
+        selector: "form#" + resourceMenuRightServices[i] + "-form input[type=submit]",
         isReplacing: false,
         updateSelectors: [],
         transitionSpeed: vrtxAdmin.transitionSpeed,

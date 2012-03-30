@@ -13,7 +13,7 @@
   <#if (errors?size > 0)>
     <div class="errorContainer">
       <ul class="errors">
-        <#list spring.status.errorMessages as error> 
+        <#list errors as error> 
           <li>${error}</li> 
         </#list>
 	  </ul>

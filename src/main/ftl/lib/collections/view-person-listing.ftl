@@ -1,14 +1,15 @@
+<#ftl strip_whitespace=true>
 <#import "../vortikal.ftl" as vrtx />
 <#macro displayPersons personListing title="">
   <#local persons=personListing.files />
   <#if (persons?size > 0)>
   <table class="vrtx-person-listing" summary="${vrtx.getMsg("person-listing.overview-of")} ${title?html}">
     <#if numberOfRecords?exists>
-    <caption>
-      ${vrtx.getMsg("person-listing.persons")} ${numberOfRecords["elementsOnPreviousPages"]} -
-      ${numberOfRecords["elementsIncludingThisPage"]} ${vrtx.getMsg("person-listing.of")} 
-      ${personListing.totalHits?string}
-    </caption>
+      <caption>
+        ${vrtx.getMsg("person-listing.persons")} ${numberOfRecords["elementsOnPreviousPages"]} -
+        ${numberOfRecords["elementsIncludingThisPage"]} ${vrtx.getMsg("person-listing.of")} 
+        ${personListing.totalHits?string}
+      </caption>
     </#if>
     <thead>
       <tr>
@@ -19,7 +20,7 @@
       </tr>
     </thead>
     <tbody>
-      <#local personNr = 1 />
+    <#local personNr = 1 />
     <#list persons as person>
       <#local firstName = vrtx.propValue(person, 'firstName') />
       <#local surname = vrtx.propValue(person, 'surname') />
@@ -37,8 +38,8 @@
       <#if introImgURI?exists>
     		<#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
       <#else>
-    		<#local thumbnail = "" />
-   	   </#if>
+        <#local thumbnail = "" />
+   	  </#if>
       
       <#local imageAlt = vrtx.getMsg("person-listing.image-alt") >
       <#local imageAlt = imageAlt + " " + firstName + " " + surname />

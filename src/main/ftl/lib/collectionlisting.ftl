@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#--
   - File: collectionlisting.ftl
   - 
@@ -10,10 +11,8 @@
   - Required model data:
   -   resourceContext
   -   collectionListing
-  -   
   -  
   - Optional model data:
-  -   
   -
   -->
 

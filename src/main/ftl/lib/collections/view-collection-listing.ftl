@@ -1,25 +1,25 @@
+<#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
 
 <#macro displayCollection collectionListing>
-
   <#local resources=collectionListing.files />
   <#if (resources?size > 0)>
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/open-webdav.js"></script>
     <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
-    <#if collectionListing.title?exists && collectionListing.offset == 0>
-      <h2>${collectionListing.title?html}</h2>
-    </#if>
-    
-    <#list resources as r>
-      <#assign uri = vrtx.getUri(r) />
-      
-      <#if !hideIcon?exists>
-        <div class="vrtx-resource vrtx-resource-icon">
-      <#else>
-        <div class="vrtx-resource">
+      <#if collectionListing.title?exists && collectionListing.offset == 0>
+        <h2>${collectionListing.title?html}</h2>
       </#if>
+    
+      <#list resources as r>
+        <#assign uri = vrtx.getUri(r) />
+      
+        <#if !hideIcon?exists>
+          <div class="vrtx-resource vrtx-resource-icon">
+        <#else>
+          <div class="vrtx-resource">
+        </#if>
         <#if !hideIcon?exists>
 		  <a class="vrtx-icon <@vrtx.iconResolver r.resourceType r.contentType />" href="${collectionListing.urls[r.URI]?html}"></a>
 		</#if> 
@@ -56,9 +56,8 @@
             </div>
           </#if>
         </#list>
-      </div>
-    </#list>
-   </div>
+        </div>
+      </#list>
+    </div>
   </#if>
-  
 </#macro>

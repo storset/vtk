@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#--
   - File: toc.ftl
   - 
@@ -19,10 +20,9 @@
 
 <#assign tocHeader>'<span class="vrtx-toc-header">${headerTitle}<\/span>'</#assign>
 
-<script type="text/javascript">
-<!--
-document.write(${tocHeader});
--->
+<script type="text/javascript"><!--
+  document.write(${tocHeader});
+// -->
 </script>
 
 <div id="toc"></div>

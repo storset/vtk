@@ -2,6 +2,7 @@
 <#attempt>
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/actions.ftl" as actionsLib />
 
 <div class="globalmenu expandedForm">
   <form id="manage.unlockFormService-form" method="post" action="${unlockFormCommand.submitURL?html}" name="unlockForm">
@@ -14,18 +15,7 @@
       <p>${vrtx.getMsg("unlockwarning.modified")}: <strong>${resourceContext.currentResource.lastModified?datetime?html}</strong>.</p>
       <p>${vrtx.getMsg("unlockwarning.explanation")}</p>
     </#if>
-    <div class="submitButtons">
-      <div class="vrtx-focus-button">
-        <button tabindex="1" type="submit" name="unlock">
-          ${vrtx.getMsg("unlockwarning.unlock")}
-        </button>
-      </div>
-      <div class="vrtx-button">
-        <button tabindex="2" type="submit" name="cancel" >
-          ${vrtx.getMsg("unlockwarning.cancel")}
-        </button>
-      </div>
-    </div> 
+    <@actionsLib.genOkCancelButtons "unlock" "cancel" "unlockwarning.unlock" "unlockwarning.cancel" />
   </form>
 </div>
 

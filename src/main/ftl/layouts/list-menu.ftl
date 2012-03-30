@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#--
   - File: list-menu.ftl
   - 
@@ -29,10 +30,8 @@
   </#list>
 </#macro>
 
-
 <#macro listItem item>
   <#assign class="" />
-
   <#if item.active>
     <#assign class="vrtx-active-item" />
     <#if item.label?exists>
@@ -58,14 +57,14 @@
 </#macro> 
 
 <#function isCurrent item>
-      <#if !item.menu?exists>
-        <#return true />
-      </#if>
-      <#list item.menu.items as child>
-        <#if child.active>
-          <#return false />
-        </#if>
-      </#list>
+  <#if !item.menu?exists>
+    <#return true />
+  </#if>
+  <#list item.menu.items as child>
+    <#if child.active>
+      <#return false />
+    </#if>
+  </#list>
   <#return true />
 </#function>
 

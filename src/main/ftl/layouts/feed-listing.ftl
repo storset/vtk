@@ -1,3 +1,5 @@
+<#ftl strip_whitespace=true>
+
 <#import "/lib/vortikal.ftl" as vrtx />
 <#if conf.auth && (feed.entries?size &gt; 0 || conf.includeIfEmpty)>
 <div class="vrtx-feed<#if conf.itemPicture?exists > with-images</#if>">
@@ -79,7 +81,7 @@
      </#if>
   </#if>
 
-    <#if element = "categories" >
+  <#if element = "categories" >
      <#if conf.displayCategories?exists && (entry.categories)?exists && (entry.categories)?size &gt; 0>
        <ul class="categories">
          <#list entry.categories as category>
@@ -100,9 +102,7 @@
        ${descriptionNoImage[entry]?string}
     </div>
   </#if>
-  
   <#if element = "picture" && conf.itemPicture?exists && imageMap[entry]?exists && imageMap[entry]?has_content >
      <a class="vrtx-image" href="<#if entry.link?exists>${entry.link?html}<#else>${entry.uri?html}</#if>">${imageMap[entry]?string}</a>
   </#if>
-
 </#macro>

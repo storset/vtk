@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#--
   - File: keywords.ftl
   - 
@@ -12,16 +13,16 @@
 <#import "/lib/vortikal.ftl" as vrtx/>
 
 <#if values?exists>
-<span class="vrtx-tags">
-  <#if title?exists>
-    <span class="title">${title?html}:</span>
-  <#else>
-    <span class="title"><@vrtx.msg code="decorating.tags" default="Tags" />:</span>
-  </#if>
-  <span class="vrtx-tags-links">
-     <#list values as v>
-       <a href="${urls[v_index]?html}">${v?html}</a><#if v_index &lt; values?size - 1>,<#t/></#if>
-     </#list>
+  <span class="vrtx-tags">
+    <#if title?exists>
+      <span class="title">${title?html}:</span>
+    <#else>
+      <span class="title"><@vrtx.msg code="decorating.tags" default="Tags" />:</span>
+    </#if>
+    <span class="vrtx-tags-links">
+       <#list values as v>
+         <a href="${urls[v_index]?html}">${v?html}</a><#if v_index &lt; values?size - 1>,<#t/></#if>
+       </#list>
+    </span>
   </span>
-</span>
 </#if>

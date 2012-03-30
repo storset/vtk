@@ -1,3 +1,4 @@
+<#ftl strip_whitespace=true>
 <#--
   - File: breadcrumb.ftl
   - 
@@ -37,6 +38,6 @@
   <#assign start = .vars['display-from-level']?number />
 </#if>
 <#if (start < 1)>
-	<#assign start = 1 />
+  <#assign start = 1 />
 </#if>
 <@brdcrmb.breadCrumb crumbs=breadcrumb downcase=downcaseElements hidePrefix=hide stopLevel=stop startLevel=start />

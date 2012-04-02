@@ -9,7 +9,7 @@
  *
  *  TODO: i18n/more specific AJAX error messages
  *  TODO: CPU usage in ready() vs. wait for it in load()
- *
+ *  TODO: Add more functions as prototype to vrtxAdmin (with maybe some exceptions)
  */
  
 /* 
@@ -1343,7 +1343,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
   });
 };
 
-VrtxAdmin.prototype.addOriginalMarkup= function addOriginalMarkupForReplacedExpandedForm(url, results, resultSelectorClass, expanded) {
+VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results, resultSelectorClass, expanded) {
   var args = arguments,
       vrtxAdm = this;
 
@@ -1359,7 +1359,7 @@ VrtxAdmin.prototype.addOriginalMarkup= function addOriginalMarkupForReplacedExpa
   }
 };
 
-VrtxAdmin.prototype.addNewMarkup = function(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form) {
+VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form) {
   var vrtxAdm = this,
       insertAfterOrReplaceClass = options.insertAfterOrReplaceClass,
       isReplacing = options.isReplacing,
@@ -1600,7 +1600,7 @@ VrtxAdmin.prototype.getHtmlAsTextAsync = function getHtmlAsTextAsync(url, insert
     10. Async helper functions and AJAX server façade	
 \*-------------------------------------------------------------------*/
 
-VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function(inputFields) { 
+VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function appendInputNameValuePairsToDataString(inputFields) { 
   var dataStringChunk = "", _$ = vrtxAdmin._$;
   if(typeof inputFields !== "undefined") {
     for (i = inputFields.length; i--;) {
@@ -1611,13 +1611,13 @@ VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function(inputFields
   return dataStringChunk;
 };
 
-VrtxAdmin.prototype.hasErrorContainers = function(results, errorContainer) {
+VrtxAdmin.prototype.hasErrorContainers = function hasErrorContainers(results, errorContainer) {
   return this._$(results).find("div." + errorContainer).length > 0;
 };
 
 /* TODO: support for multiple errorContainers
   (place the correct one in correct place (e.g. users and groups)) */
-VrtxAdmin.prototype.displayErrorContainers = function(results, form, errorContainerInsertAfter, errorContainer) {
+VrtxAdmin.prototype.displayErrorContainers = function displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer) {
   var wrapper = form.find(errorContainerInsertAfter).parent(), _$ = this._$;
   if (wrapper.find("div." + errorContainer).length) {
     wrapper.find("div." + errorContainer).html(_$(results).find("div." + errorContainer).html());
@@ -1627,7 +1627,7 @@ VrtxAdmin.prototype.displayErrorContainers = function(results, form, errorContai
   }
 }; 
 
-VrtxAdmin.prototype.displayErrorMsg = function(msg) {
+VrtxAdmin.prototype.displayErrorMsg = function displayErrorMsg(msg) {
   var vrtxAdm = this, _$ = vrtxAdm.$;
   if(!vrtxAdm.ignoreAjaxErrors) {
     if (_$("#app-content > .errormessage").length) {
@@ -1641,7 +1641,7 @@ VrtxAdmin.prototype.displayErrorMsg = function(msg) {
   }
 };
 
-VrtxAdmin.prototype.displayInfoMsg = function(msg) {
+VrtxAdmin.prototype.displayInfoMsg = function displayInfoMsg(msg) {
   var vrtxAdm = this, _$ = vrtxAdm._$;
   if (_$("#app-content > .infomessage").length) {
     _$("#app-content > .infomessage").html(msg);

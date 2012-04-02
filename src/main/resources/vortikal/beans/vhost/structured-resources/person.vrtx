@@ -343,7 +343,7 @@ resourcetype person {
           </div>
           <div id="vrtx-person-main-content-wrapper">
             [call "json:field" {"select":"content"}]
-            [call "resource:tags"]
+            [call "resource:tags" {"service-url":"/?vrtx=tags&tag=%v&resource-type=person&sorting=resource%3Asurname%3Aasc&sorting=resource%3AfirstName%3Aasc"}]
             [call "comp:scientific-info"]
             [call "comp:vrtx-date-info"]
           </div>

@@ -1,7 +1,9 @@
 /*
  *  Vortex Admin enhancements
  *
+ *
  *  Some patterns used: 
+ *
  *    * Flyweight (http://addyosmani.com/resources/essentialjsdesignpatterns/book/#detailflyweight)
  *    * DRY       (http://addyosmani.com/resources/essentialjsdesignpatterns/book/#drypatternjavascript
  *    * Façade    (http://addyosmani.com/resources/essentialjsdesignpatterns/book/#facadepatternjavascript)
@@ -10,26 +12,24 @@
  *  TODO: i18n/more specific AJAX error messages
  *  TODO: CPU usage in ready() vs. wait for it in load()
  *  TODO: Add more functions as prototype to vrtxAdmin (with maybe some exceptions)
- */
- 
-/* 
- * ToC: 
  *
- * 1.  Config
- * 2.  DOM is fully loaded
- * 3.  DOM is ready
- * 4.  File upload
- * 5.  Keyboard interceptors / rerouters
- * 6.  Collectionlisting interaction
- * 7.  Permissions
- * 8.  Dropdowns
- * 9.  Async functions
- * 10. Async helper functions and AJAX server façade
- * 11. Show and hide properties
- * 12. Featured articles, aggregation and manually approved
- * 13. CK browse server integration
- * 14. Utils
- * 15. Override JavaScript / jQuery
+ *  ToC: 
+ *
+ *  1.  Config
+ *  2.  DOM is fully loaded
+ *  3.  DOM is ready
+ *  4.  File upload
+ *  5.  Keyboard interceptors / rerouters
+ *  6.  Collectionlisting interaction
+ *  7.  Permissions
+ *  8.  Dropdowns
+ *  9.  Async functions
+ *  10. Async helper functions and AJAX server façade
+ *  11. Show and hide properties
+ *  12. Featured articles, aggregation and manually approved
+ *  13. CK browse server integration
+ *  14. Utils
+ *  15. Override JavaScript / jQuery
  *
  */
  

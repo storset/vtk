@@ -1,7 +1,7 @@
 /*
  *  Vortex Admin enhancements
  *
- *  Patterns used: Flyweight (http://en.wikipedia.org/wiki/Flyweight_pattern)
+ *  Patterns used: Flyweight (http://addyosmani.com/resources/essentialjsdesignpatterns/book/#detailflyweight)
  *
  *  TODO: i18n/more specific AJAX error messages
  *  TODO: prototypes vs. static (memory vs. speed?) -- it seem to be boiling down to using at the right time and test alot:
@@ -2075,8 +2075,7 @@ jQuery.fn.slideDown = function(speed, easing, callback) {
   }
 };
 
-/* Flyweight pattern (as we're consolidating multiple possible objects into a more central singular structure)
- * aka. minimize creating new jQuery instances
+/* Minimize creating new jQuery instances (in addition to caching jQuery ref in vrtxAdmin)
  * Credits: http://james.padolsey.com/javascript/76-bytes-for-faster-jquery/
  *          http://addyosmani.com/resources/essentialjsdesignpatterns/book/
  */

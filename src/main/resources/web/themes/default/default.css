@@ -1295,9 +1295,10 @@ p#vrtx-file-upload-info-text {
 }
 
 #directory-listing th.resource-type {
-  width: 18%;
+  width: 15%;
 }
 
+#directory-listing th.last-modified,
 #directory-listing th#vrtx-report-last-modified {
   width: 19%;
 }

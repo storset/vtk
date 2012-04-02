@@ -732,7 +732,7 @@ $(document).ready(function () {
               ["#vrtx-resource\\.hide-additional-content"]);
   }
 
-  // Show message in IE7 and IE6
+  // Show message in IE6, IE7 and IETrident in compability mode
   if (vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp) {
     if ($("#app-content > .message").length) {
       $("#app-content > .message").html(outdatedBrowserText);

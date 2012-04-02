@@ -37,8 +37,7 @@
     1. Config
 \*-------------------------------------------------------------------*/
  
-var startLoadTime = +new Date(),
-    ua = navigator.userAgent.toLowerCase();
+var startLoadTime = +new Date();
 
 function VrtxAdmin() {
 
@@ -52,27 +51,38 @@ function VrtxAdmin() {
   instance.constructor = VrtxAdmin; // reset construction pointer
   //--
 
+  // Cache jQuery instance internally
   this._$ = $;
-
-  this.isIE = null;
-  this.browserVersion = null;
-  this.isIE7 = null;
-  this.isIE6 = null;
-  this.isIE5OrHigher = null;
-  this.isOpera = null;
-  this.isIPhone = null;
-  this.isIPad = null;
-  this.isAndroid = null;
-  this.isMobileWebkitDevice = null;
-  this.isWin = null;
-  this.supportsFileAPI = null;
   
-  this.hasConsole = null;
-  this.hasConsoleLog = null;
-  this.hasConsoleError = null;
+  // Browser info: used for progressive enhancement and performance scaling based on knowledge of current JS-engine
+  this.ua = navigator.userAgent.toLowerCase();
+  this.isIE = this._$.browser.msie;
+  this.browserVersion = this._$.browser.version;
+  this.isIE7 = this.isIE && this.browserVersion <= 7;
+  this.isIE6 = this.isIE && this.browserVersion <= 6;
+  this.isIE5OrHigher = this.isIE && this.browserVersion >= 5;
+  this.isIETridentInComp = this.isIE7 && /trident/.test(this.ua);
+  this.isOpera = this._$.browser.opera;
+  this.isIPhone = /iphone/.test(this.ua);
+  this.isIPad = /ipad/.test(this.ua);
+  this.isAndroid = /android/.test(this.ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
+  this.isMobileWebkitDevice = (this.isIPhone || this.isIPad || this.isAndroid);
+  this.isWin = ((this.ua.indexOf("win") != -1) || (this.ua.indexOf("16bit") != -1));
+  this.supportsFileList = window.FileList;
   
-  this.permissionsAutocompleteParams = null;
+  // Logging capabilities
+  this.hasConsole = typeof console !== "undefined";
+  this.hasConsoleLog = this.hasConsole && console.log;
+  this.hasConsoleError = this.hasConsole && console.error;
   
+  // Autocomplete parameters
+  this.permissionsAutocompleteParams = { minChars: 4, selectFirst: false, width: 300, 
+                                         max: 30,     delay: 800 };                              
+  this.usernameAutocompleteParams =    { multiple: false, minChars: 2, selectFirst: false, 
+                                         width: 300, max: 30, delay: 500 };                                       
+  this.tagAutocompleteParams =         { minChars: 1 };
+     
+  // Transitions
   this.transitionSpeed = 200; // same as 'fast'
   this.transitionCustomPermissionSpeed = 200; // same as 'fast'
   this.transitionPropSpeed = 100;
@@ -88,25 +98,6 @@ function VrtxAdmin() {
 
 var vrtxAdmin = new VrtxAdmin();
 
-// Browser info: used for progressive enhancement and performance scaling based on knowledge of current JS-engine
-vrtxAdmin.isIE = vrtxAdmin._$.browser.msie;
-vrtxAdmin.browserVersion = vrtxAdmin._$.browser.version;
-vrtxAdmin.isIE7 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7;
-vrtxAdmin.isIE6 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 6;
-vrtxAdmin.isIE5OrHigher = vrtxAdmin.isIE && vrtxAdmin.browserVersion >= 5;
-vrtxAdmin.isIETridentInComp = vrtxAdmin.isIE7 && /trident/.test(ua);
-vrtxAdmin.isOpera = vrtxAdmin._$.browser.opera;
-vrtxAdmin.isIPhone = /iphone/.test(ua);
-vrtxAdmin.isIPad= /ipad/.test(ua);
-vrtxAdmin.isAndroid = /android/.test(ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
-vrtxAdmin.isMobileWebkitDevice = (vrtxAdmin.isIPhone || vrtxAdmin.isIPad || vrtxAdmin.isAndroid);
-vrtxAdmin.isWin = ((ua.indexOf("win") != -1) || (ua.indexOf("16bit") != -1));
-vrtxAdmin.supportsFileList = window.FileList;
-// Logging capabilities
-vrtxAdmin.hasConsole = typeof console !== "undefined";
-vrtxAdmin.hasConsoleLog = vrtxAdmin.hasConsole && console.log;
-vrtxAdmin.hasConsoleError = vrtxAdmin.hasConsole && console.error;
-
 // Upgrade easing algorithm from 'linear' to 'easeOutQuad' and 'easeInQuad'
 // -- if not < IE 9 (and not iPhone, iPad and Android devices)
 if(!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) && !vrtxAdmin.isMobileWebkitDevice) {
@@ -114,29 +105,14 @@ if(!(vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) && !vrtxAdmin.isMobileWebki
   vrtxAdmin.transitionEasingSlideUp = "easeInQuad";
 }
 
-if(vrtxAdmin.isMobileWebkitDevice) { // turn off animation in iPhone, iPad and Android (consider when iOS 5)
+// Turn off animation in iPhone, iPad and Android (consider when iOS 5)
+if(vrtxAdmin.isMobileWebkitDevice) {
   vrtxAdmin.transitionSpeed = 0;
   vrtxAdmin.transitionCustomPermissionSpeed = 0;
   vrtxAdmin.transitionPropSpeed = 0;
   vrtxAdmin.transitionDropdownSpeed = 0;
 }
 
-// Autocomplete parameters
-vrtxAdmin.permissionsAutocompleteParams = { minChars: 4, 
-                                            selectFirst: false, 
-                                            width: 300, 
-                                            max: 30,
-                                            delay: 800 };
-                                            
-vrtxAdmin.usernameAutocompleteParams = { multiple: false,
-                                         minChars: 2, 
-                                         selectFirst: false, 
-                                         width: 300, 
-                                         max: 30,
-                                         delay: 500 };
-                                         
-vrtxAdmin.tagAutocompleteParams = { minChars: 1 };
-                    
 vrtxAdmin._$.ajaxSetup({
   timeout: 300000 // 5min
 });

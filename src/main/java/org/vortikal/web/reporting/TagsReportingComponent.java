@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.ehcache.Ehcache;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -61,6 +60,7 @@ import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 
+import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 public class TagsReportingComponent {
@@ -188,10 +188,11 @@ public class TagsReportingComponent {
         
         Query masterScopeQuery = pathScopeQuery;
         if (typeScopeQuery != null) {
-            if (pathScopeQuery != null) {
+            if (masterScopeQuery != null) {
                 AndQuery andQuery = new AndQuery();
-                andQuery.add(pathScopeQuery);
+                andQuery.add(masterScopeQuery);
                 andQuery.add(typeScopeQuery);
+                masterScopeQuery = andQuery;
             } else {
                 masterScopeQuery = typeScopeQuery;
             }
@@ -296,11 +297,11 @@ public class TagsReportingComponent {
     }
     
     private static final class CacheKey implements Serializable {
-        private Path scopeUri;
-        private Set<String> resourceTypes;
-        private int limit;
-        private int minFreq;
-        private String token;
+        private final Path scopeUri;
+        private final Set<String> resourceTypes;
+        private final int limit;
+        private final int minFreq;
+        private final String token;
 
         CacheKey(Path scopeUri, Set<String> resourceTypes, int limit, int minFreq, String token) {
             this.scopeUri = scopeUri;

@@ -206,15 +206,11 @@ $(document).ready(function () {
   dropdown({selector: "ul#editor-menu"});
   
   // Slide up when choose something in dropdown
-  $(".dropdown-shortcut-menu li a").click(function() {
+  $("body").on("click", ".dropdown-shortcut-menu li a, .dropdown-shortcut-menu-container li a", function() {
     $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
   });
 
-  $(".dropdown-shortcut-menu-container li a").click(function() {
-    $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");    
-  });
-
-  $(document).click(function() {
+  $("body").on("click", document, function(e) {
     $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
     $(".tip:visible").fadeOut(vrtxAdmin.transitionDropdownSpeed, "swing");
     // Communicate this to create-iframe if exists
@@ -1133,6 +1129,7 @@ function dropdownLanguageMenu(selector) {
     $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
     $(this).next(".dropdown-shortcut-menu-container").not(":visible").slideDown(vrtxAdmin.transitionDropdownSpeed, "swing");
     e.preventDefault();
+    e.stopPropagation();
   });
 }
 
@@ -2038,5 +2035,15 @@ jQuery.fn.slideDown = function(speed, easing, callback) {
     originalSlideDown.apply($trOrOtherElm, arguments);
   }
 };
+
+// Just initiate one jQuery instance
+// Credits: http://james.padolsey.com/javascript/76-bytes-for-faster-jquery/
+jQuery.single = (function(o){
+    var collection = jQuery([1]); // Fill with 1 item, to make sure length === 1
+    return function(element) {
+        collection[0] = element; // Give collection the element:
+        return collection; // Return the collection:
+    };
+}());
 
 /* ^ Vortex Admin enhancements */

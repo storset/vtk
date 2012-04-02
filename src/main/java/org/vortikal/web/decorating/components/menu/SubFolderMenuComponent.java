@@ -40,9 +40,9 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.TermOperator;
@@ -181,7 +181,7 @@ public class SubFolderMenuComponent extends ListMenuComponent {
         Search search = new Search();
         search.setQuery(mainQuery);
         search.setLimit(menuRequest.getSearchLimit());
-        search.setPropertySelect(new WildcardPropertySelect());
+        search.setPropertySelect(PropertySelect.ALL);
         return search;
     }
 

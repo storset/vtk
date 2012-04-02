@@ -65,5 +65,31 @@ public abstract class AbstractSortField implements SortField {
     public Locale getLocale() {
         return this.locale;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AbstractSortField other = (AbstractSortField) obj;
+        if (this.direction != other.direction) {
+            return false;
+        }
+        if (this.locale != other.locale && (this.locale == null || !this.locale.equals(other.locale))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + (this.direction != null ? this.direction.hashCode() : 0);
+        hash = 97 * hash + (this.locale != null ? this.locale.hashCode() : 0);
+        return hash;
+    }
     
 }

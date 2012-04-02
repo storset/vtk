@@ -65,13 +65,13 @@ import org.vortikal.repository.search.query.Query;
  */
 public final class Search {
 
-    public final static int MAX_LIMIT = 40000; 
+    public final static int DEFAULT_LIMIT = 40000;
     
-    private PropertySelect propertySelect = new WildcardPropertySelect();
+    private PropertySelect propertySelect = PropertySelect.ALL;
     private Query query;
     private Sorting sorting;
     private boolean onlyPublishedResources = false;
-    private int limit = MAX_LIMIT;
+    private int limit = DEFAULT_LIMIT;
     private int cursor = 0;
     
     public Search() {
@@ -88,9 +88,6 @@ public final class Search {
         if (cursor < 0) {
             throw new IllegalArgumentException("Cursor cannot be negative");
         }
-        if (cursor >= MAX_LIMIT) {
-            throw new IllegalArgumentException("Too big cursor value: " + cursor);
-        }
         this.cursor = cursor;
     }
     
@@ -99,13 +96,10 @@ public final class Search {
     }
     
     public void setLimit(int limit) {
-        if (limit > MAX_LIMIT) {
-            this.limit = MAX_LIMIT;
-        } else if (limit < 0) {
+        if (limit < 0) {
             throw new IllegalArgumentException("Limit cannot be negative");
-        } else {
-            this.limit = limit;
-        }
+        }         
+        this.limit = limit;
     }
     
     public PropertySelect getPropertySelect() {
@@ -154,6 +148,48 @@ public final class Search {
 
     public void setOnlyPublishedResources(boolean onlyPublishedResources) {
         this.onlyPublishedResources = onlyPublishedResources;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Search other = (Search) obj;
+        if (this.propertySelect != other.propertySelect && (this.propertySelect == null || !this.propertySelect.equals(other.propertySelect))) {
+            return false;
+        }
+        if (this.query != other.query && (this.query == null || !this.query.equals(other.query))) {
+            return false;
+        }
+        if (this.sorting != other.sorting && (this.sorting == null || !this.sorting.equals(other.sorting))) {
+            return false;
+        }
+        if (this.onlyPublishedResources != other.onlyPublishedResources) {
+            return false;
+        }
+        if (this.limit != other.limit) {
+            return false;
+        }
+        if (this.cursor != other.cursor) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + (this.propertySelect != null ? this.propertySelect.hashCode() : 0);
+        hash = 47 * hash + (this.query != null ? this.query.hashCode() : 0);
+        hash = 47 * hash + (this.sorting != null ? this.sorting.hashCode() : 0);
+        hash = 47 * hash + (this.onlyPublishedResources ? 1 : 0);
+        hash = 47 * hash + this.limit;
+        hash = 47 * hash + this.cursor;
+        return hash;
     }
     
 }

@@ -51,10 +51,12 @@ public class PropertyPrefixQuery extends AbstractPropertyQuery {
         return this.op;
     }
 
+    @Override
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
     
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder(getClass().getName()).append(": ");
         buf.append("propdef = ").append(getPropertyDefinition());
@@ -63,4 +65,33 @@ public class PropertyPrefixQuery extends AbstractPropertyQuery {
         return buf.toString();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) return false;
+        
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PropertyPrefixQuery other = (PropertyPrefixQuery) obj;
+        if ((this.term == null) ? (other.term != null) : !this.term.equals(other.term)) {
+            return false;
+        }
+        if (this.op != other.op) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash = 97 * hash + (this.term != null ? this.term.hashCode() : 0);
+        hash = 97 * hash + (this.op != null ? this.op.hashCode() : 0);
+        return hash;
+    }
+
+    
 }

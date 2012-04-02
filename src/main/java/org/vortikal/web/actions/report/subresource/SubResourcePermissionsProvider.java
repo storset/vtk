@@ -46,10 +46,10 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
-import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
@@ -80,7 +80,7 @@ public class SubResourcePermissionsProvider {
         Search search = new Search();
         search.setQuery(mainQuery);
         search.setLimit(maxLimit);
-        search.setPropertySelect(new WildcardPropertySelect());
+        search.setPropertySelect(PropertySelect.ALL);
         
         ResultSet rs = searcher.execute(token, search);
 

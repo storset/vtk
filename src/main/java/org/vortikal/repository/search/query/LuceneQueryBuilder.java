@@ -61,6 +61,16 @@ public interface LuceneQueryBuilder {
      */
     public org.apache.lucene.search.Filter buildSearchFilter(String token, Search search, IndexReader reader)
         throws QueryBuilderException;
+    
+    /**
+     * Build iteration filter based on search query, token and options.
+     * @param token
+     * @param search
+     * @param reader
+     * @return 
+     */
+    public org.apache.lucene.search.Filter buildIterationFilter(String token, Search search, IndexReader reader);
+
 
     /**
      * Build a {@link org.apache.lucene.search.Sort} from given 

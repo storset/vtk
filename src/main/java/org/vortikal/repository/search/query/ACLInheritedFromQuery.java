@@ -54,10 +54,12 @@ public class ACLInheritedFromQuery implements ACLQuery {
         return this.uri;
     }
     
+    @Override
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         if (this.inverted) {
@@ -66,6 +68,32 @@ public class ACLInheritedFromQuery implements ACLQuery {
             sb.append(";uri=").append(this.uri);
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ACLInheritedFromQuery other = (ACLInheritedFromQuery) obj;
+        if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
+            return false;
+        }
+        if (this.inverted != other.inverted) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + (this.uri != null ? this.uri.hashCode() : 0);
+        hash = 47 * hash + (this.inverted ? 1 : 0);
+        return hash;
     }
 
 }

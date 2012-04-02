@@ -79,7 +79,7 @@ public abstract class DocumentReporter extends AbstractReporter {
         }
 
         Position pos = Position.create(request, this.pageSize);
-        if (pos.cursor >= Search.MAX_LIMIT) {
+        if (pos.cursor >= Search.DEFAULT_LIMIT) {
             return result;
         }
         search.setCursor(pos.cursor);
@@ -89,7 +89,7 @@ public abstract class DocumentReporter extends AbstractReporter {
         if (pos.cursor + Math.min(pageSize, rs.getSize()) >= rs.getTotalHits()) {
             pos.next = null;
         }
-        if (pos.cursor + Math.min(pageSize, rs.getSize()) >= Search.MAX_LIMIT) {
+        if (pos.cursor + Math.min(pageSize, rs.getSize()) >= Search.DEFAULT_LIMIT) {
             pos.next = null;
         }
 

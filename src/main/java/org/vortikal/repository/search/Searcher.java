@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository.search;
 
+import org.vortikal.repository.PropertySet;
+
 
 /**
  * Simple search interface
@@ -37,6 +39,65 @@ package org.vortikal.repository.search;
  */
 public interface Searcher {
 
+    /**
+     * Callback interface that should be implemented by client code for match iteration
+     * API.
+     */
+    public interface MatchCallback {
+        /**
+         * Called once for each matching <code>PropertySet</code>.
+         * 
+         * @param propertySet 
+         * @return Return <code>false</code> to stop matching iteration, <code>true</code> to continue.
+         */
+        boolean matching(PropertySet propertySet) throws Exception;
+    }
+    
+    /**
+     * Execute a regular search returning a <code>ResultSet</code>.
+     * 
+     * @param token
+     * @param search
+     * @return
+     * @throws QueryException 
+     */
     public ResultSet execute(String token, Search search) throws QueryException;
-
+ 
+    /**
+     * Execute an iteration of all property sets that match the criteria in the
+     * provided <code>Search</code>.  There are no limits on the number of matching
+     * PropertySet instances that can be included in the iteration.
+     * 
+     * Note however that the following limitations do apply:
+     * <ul>
+     *   <li>The iteration can support simple ASCENDING NON-LOCALE-SENSITIVE ordering on
+     *       a single field/property only. If provided sorting specification violates
+     *       these constraints, an exception will be thrown.
+     * 
+     *   <li>If sorting on a field, then ONLY docs which have the property/field
+     *       are included in the matching iteration. If you want to make sure you
+     *       get all docs for which your query matches, then sort on a property/field
+     *       which is guaranteed to be present in all docs, or don't sort at all
+     *       (Search.setSorting(null)).
+     * </ul>
+     * 
+     * <em>
+     * It is most efficient to remove the sorting criterium from <code>Search</code> 
+     * unless it is specifically required !
+     * </em>
+     * 
+     * Since an iteration can potentially load a lot of documents, client code
+     * should take care to set a proper field/property-selector in <code>Search</code> for
+     * better efficiency.
+     *
+     * @param token
+     * @param search A <code>Search</code> instance, encapsulating all aspects
+     *        of the index search. The search query itself may be null, in which case
+     *        everything will match.
+     * 
+     * @param callback a provided <code>MatchCallback</code> that will be
+     *        used to process matching results.
+     */
+    public void iterateMatching(String token, Search search, MatchCallback callback) throws QueryException;
+    
 }

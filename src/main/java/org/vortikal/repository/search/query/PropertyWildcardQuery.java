@@ -51,15 +51,45 @@ public class PropertyWildcardQuery extends AbstractPropertyQuery {
         return this.op;
     }
 
+    @Override
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
     
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder(getClass().getName()).append(':');
         buf.append(" propdef = ").append(getPropertyDefinition());
         buf.append("; term ").append(this.op).append(" '").append(this.term).append("'");
         return buf.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) return false;
+        
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PropertyWildcardQuery other = (PropertyWildcardQuery) obj;
+        if ((this.term == null) ? (other.term != null) : !this.term.equals(other.term)) {
+            return false;
+        }
+        if (this.op != other.op) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash = 73 * hash + (this.term != null ? this.term.hashCode() : 0);
+        hash = 73 * hash + (this.op != null ? this.op.hashCode() : 0);
+        return hash;
     }
 
 }

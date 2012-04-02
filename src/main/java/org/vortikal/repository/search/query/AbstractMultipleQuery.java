@@ -52,6 +52,7 @@ public abstract class AbstractMultipleQuery implements Query {
         return this.queries;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getSimpleName());
         if (this.queries != null) {
@@ -65,6 +66,28 @@ public abstract class AbstractMultipleQuery implements Query {
             sb.append("]");
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AbstractMultipleQuery other = (AbstractMultipleQuery) obj;
+        if (this.queries != other.queries && (this.queries == null || !this.queries.equals(other.queries))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + (this.queries != null ? this.queries.hashCode() : 0);
+        return hash;
     }
 
 }

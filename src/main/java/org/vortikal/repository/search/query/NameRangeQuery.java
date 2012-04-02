@@ -55,19 +55,39 @@ public class NameRangeQuery implements NameQuery {
         return this.toTerm;
     }
 
-//    public String dump(String prefix) {
-//        StringBuffer buf = new StringBuffer().append(prefix);
-//        buf.append(this.getClass().getName()).append("\n");
-//
-//        buf.append(prefix).append("fromTerm = '").append(this.fromTerm);
-//        buf.append("', toTerm = '").append(this.toTerm).append("', inclusive = '");
-//        buf.append(this.inclusive).append("'\n");
-//        
-//        return buf.toString();
-//    }
-
+    @Override
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final NameRangeQuery other = (NameRangeQuery) obj;
+        if ((this.fromTerm == null) ? (other.fromTerm != null) : !this.fromTerm.equals(other.fromTerm)) {
+            return false;
+        }
+        if ((this.toTerm == null) ? (other.toTerm != null) : !this.toTerm.equals(other.toTerm)) {
+            return false;
+        }
+        if (this.inclusive != other.inclusive) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + (this.fromTerm != null ? this.fromTerm.hashCode() : 0);
+        hash = 67 * hash + (this.toTerm != null ? this.toTerm.hashCode() : 0);
+        hash = 67 * hash + (this.inclusive ? 1 : 0);
+        return hash;
     }
     
 }

@@ -48,11 +48,13 @@ public class ThrottlingSearcherWrapper implements Searcher, InitializingBean {
     private int maxConcurrentQueries = 8;
     private Semaphore searchPermits;
     
+    @Override
     public void afterPropertiesSet() {
         // Use fair queueing if contention
         this.searchPermits = new Semaphore(this.maxConcurrentQueries, true);
     }
 
+    @Override
     public ResultSet execute(String token, Search search) throws QueryException {
         try {
             this.searchPermits.acquire();
@@ -74,5 +76,21 @@ public class ThrottlingSearcherWrapper implements Searcher, InitializingBean {
 
     public void setMaxConcurrentQueries(int maxConcurrentQueries) {
         this.maxConcurrentQueries = maxConcurrentQueries;
+    }
+
+    @Override
+    public void iterateMatching(String token, Search search, MatchCallback callback) throws QueryException {
+        try {
+            this.searchPermits.acquire();
+        } catch (InterruptedException e) {
+            throw new QueryException("Thread interrupted while waiting for search permit");
+        }
+        
+        try {
+            this.searcher.iterateMatching(token, search, callback);
+        } finally {
+            this.searchPermits.release();
+        }
+
     }
 }

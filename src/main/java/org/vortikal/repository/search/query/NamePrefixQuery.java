@@ -49,8 +49,35 @@ public class NamePrefixQuery implements NameQuery {
         return inverted;
     }
 
+    @Override
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final NamePrefixQuery other = (NamePrefixQuery) obj;
+        if ((this.term == null) ? (other.term != null) : !this.term.equals(other.term)) {
+            return false;
+        }
+        if (this.inverted != other.inverted) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + (this.term != null ? this.term.hashCode() : 0);
+        hash = 97 * hash + (this.inverted ? 1 : 0);
+        return hash;
+    }
+    
 }

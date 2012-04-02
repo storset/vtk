@@ -78,4 +78,31 @@ public class TypedSortField extends AbstractSortField {
     public String toString() {
         return this.type + " " + getDirection().toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TypedSortField other = (TypedSortField) obj;
+        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode() * 7;
+        hash = 59 * hash + (this.type != null ? this.type.hashCode() : 0);
+        return hash;
+    }
+    
+    
 }

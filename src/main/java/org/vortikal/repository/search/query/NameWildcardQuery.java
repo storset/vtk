@@ -49,17 +49,34 @@ public class NameWildcardQuery implements NameQuery {
         return this.inverted;
     }
 
-//    public String dump(String prefix) {
-//        StringBuffer buf = new StringBuffer().append(prefix);
-//        buf.append(this.getClass().getName()).append("\n");
-//        
-//        buf.append(prefix).append("Term = ").append(this.term).append("\n");
-//        return buf.toString();
-//    }
-
     @Override
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
-    
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final NameWildcardQuery other = (NameWildcardQuery) obj;
+        if ((this.term == null) ? (other.term != null) : !this.term.equals(other.term)) {
+            return false;
+        }
+        if (this.inverted != other.inverted) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 37 * hash + (this.term != null ? this.term.hashCode() : 0);
+        hash = 37 * hash + (this.inverted ? 1 : 0);
+        return hash;
+    }
 }

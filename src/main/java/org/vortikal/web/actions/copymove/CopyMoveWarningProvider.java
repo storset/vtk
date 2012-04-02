@@ -160,11 +160,7 @@ public class CopyMoveWarningProvider implements ReferenceDataProvider {
         if (setLimit) {
             search.setLimit(1);
         }
-        search.setPropertySelect(new PropertySelect() {
-            public boolean isIncludedProperty(PropertyTypeDefinition propertyDefinition) {
-                return false;
-            }
-        });
+        search.setPropertySelect(PropertySelect.NONE);
         return this.searcher.execute(token, search);
     }
 

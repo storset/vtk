@@ -84,12 +84,7 @@ public class IndexQueryPathSelector implements PathSelector {
         search.setSorting(sort);
         search.setLimit(this.limit);
         search.setOnlyPublishedResources(this.onlyPublishedResources);
-        search.setPropertySelect(new PropertySelect(){
-            @Override
-            public boolean isIncludedProperty(PropertyTypeDefinition propertyDefinition) {
-                return false;
-            }
-        });
+        search.setPropertySelect(PropertySelect.NONE);
         ResultSet results = this.searcher.execute(token, search);
 
         if (logger.isDebugEnabled()) {

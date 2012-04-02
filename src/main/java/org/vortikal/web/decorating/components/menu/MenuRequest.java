@@ -41,9 +41,9 @@ import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
@@ -401,7 +401,7 @@ public class MenuRequest {
         Search search = new Search();
         search.setQuery(mainQuery);
         search.setLimit(searchLimit);
-        search.setPropertySelect(new WildcardPropertySelect());
+        search.setPropertySelect(PropertySelect.ALL);
         return search;
     }
 

@@ -54,4 +54,27 @@ public class PropertyExistsQuery extends AbstractPropertyQuery {
     public String toString() {
         return getPropertyDefinition() + (inverted ? " !exists" : " exists");
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) return false;
+        
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PropertyExistsQuery other = (PropertyExistsQuery) obj;
+        if (this.inverted != other.inverted) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() * 59 + (this.inverted ? 1 : 0);
+    }
+    
 }

@@ -60,15 +60,39 @@ public class ConfigurablePropertySelect implements PropertySelect {
         return this.properties.isEmpty();
     }
 
+    @Override
     public boolean isIncludedProperty(PropertyTypeDefinition def) {
         return this.properties.contains(def);
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.getClass().getName()).append(":");
         sb.append("properties = ").append(this.properties);
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ConfigurablePropertySelect other = (ConfigurablePropertySelect) obj;
+        if (this.properties != other.properties && (this.properties == null || !this.properties.equals(other.properties))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + (this.properties != null ? this.properties.hashCode() : 0);
+        return hash;
     }
     
 }

@@ -44,14 +44,38 @@ public class ACLExistsQuery implements ACLQuery {
         return this.inverted;
     }
 
+    @Override
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(";inverted=").append(this.inverted);
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ACLExistsQuery other = (ACLExistsQuery) obj;
+        if (this.inverted != other.inverted) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 59 * hash + (this.inverted ? 1 : 0);
+        return hash;
+    }
+    
 }

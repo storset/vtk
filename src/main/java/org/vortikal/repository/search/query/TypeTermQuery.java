@@ -57,10 +57,12 @@ public class TypeTermQuery implements Query {
         this.term = term;
     }
 
+    @Override
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getSimpleName());
         sb.append(";term=").append(this.term);
@@ -68,4 +70,30 @@ public class TypeTermQuery implements Query {
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TypeTermQuery other = (TypeTermQuery) obj;
+        if ((this.term == null) ? (other.term != null) : !this.term.equals(other.term)) {
+            return false;
+        }
+        if (this.operator != other.operator) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + (this.term != null ? this.term.hashCode() : 0);
+        hash = 23 * hash + (this.operator != null ? this.operator.hashCode() : 0);
+        return hash;
+    }
+    
 }

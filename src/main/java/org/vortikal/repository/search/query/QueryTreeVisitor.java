@@ -74,4 +74,6 @@ public interface QueryTreeVisitor {
     
     public Object visit(ACLReadForAllQuery query, Object data);
     
+    public Object visit(MatchAllQuery query, Object data);
+    
 }

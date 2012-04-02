@@ -48,14 +48,43 @@ public class UriTermQuery implements UriQuery {
         return this.operator;
     }
 
+    @Override
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getName());
         sb.append(";uri=").append(this.uri);
         sb.append(", operator=").append(this.operator);
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final UriTermQuery other = (UriTermQuery) obj;
+        if ((this.uri == null) ? (other.uri != null) : !this.uri.equals(other.uri)) {
+            return false;
+        }
+        if (this.operator != other.operator) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 31 * hash + (this.uri != null ? this.uri.hashCode() : 0);
+        hash = 31 * hash + (this.operator != null ? this.operator.hashCode() : 0);
+        return hash;
+    }
+    
 }

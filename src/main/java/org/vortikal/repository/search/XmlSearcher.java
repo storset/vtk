@@ -402,7 +402,7 @@ public class XmlSearcher {
         
         private void parseFields(String fields) {
             if (fields == null || "".equals(fields.trim())) {
-                this.select = WildcardPropertySelect.WILDCARD_PROPERTY_SELECT;
+                this.select = PropertySelect.ALL;
                 this.reportUri = true;
                 this.reportName = true;
                 this.reportType = true;
@@ -462,10 +462,8 @@ public class XmlSearcher {
                 }
                 //System.out.println("__formats: " + this.formats);
             }
-            
         }
         
-
         private void resolveLocale() {
             try {
                 RequestContext requestContext = RequestContext.getRequestContext();

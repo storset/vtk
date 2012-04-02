@@ -91,6 +91,9 @@ public class SortBuilderImpl implements SortBuilder {
             } else if (sortField instanceof PropertySortField) {
                 PropertySortField psf = (PropertySortField)sortField;
                 PropertyTypeDefinition def = psf.getDefinition();
+                if (def.isMultiple()) {
+                    throw new SortBuilderException("Cannot sort on multi-value property: " + def);
+                }
 
                 fieldName = FieldNames.getSearchFieldName(def, false);
 
@@ -120,8 +123,7 @@ public class SortBuilderImpl implements SortBuilder {
                             fieldName, sortField.getLocale(), reverse);
                 }
             } else {
-                throw new SortBuilderException("Unknown sorting type "
-                        + sortField.getClass().getName());
+                throw new SortBuilderException("Unknown sorting type " + sortField.getClass().getName());
             }
 
             //luceneSortFields[j] = new org.apache.lucene.search.SortField(fieldName, sortComparatorSource, direction);

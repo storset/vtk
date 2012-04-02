@@ -60,10 +60,12 @@ public class PropertyTermQuery extends AbstractPropertyQuery {
         this.term = term;
     }
 
+    @Override
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getSimpleName());
         sb.append(";propdef=").append(getPropertyDefinition());
@@ -74,4 +76,34 @@ public class PropertyTermQuery extends AbstractPropertyQuery {
         sb.append(";operator=").append(this.operator);
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) return false;
+        
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PropertyTermQuery other = (PropertyTermQuery) obj;
+        if ((this.term == null) ? (other.term != null) : !this.term.equals(other.term)) {
+            return false;
+        }
+        if (this.operator != other.operator) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash = 59 * hash + (this.term != null ? this.term.hashCode() : 0);
+        hash = 59 * hash + (this.operator != null ? this.operator.hashCode() : 0);
+        return hash;
+    }
+    
+    
 }

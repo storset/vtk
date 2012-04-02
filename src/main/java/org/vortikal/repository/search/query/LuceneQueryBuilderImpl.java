@@ -35,8 +35,6 @@ import static org.vortikal.repository.search.query.TermOperator.EQ;
 import static org.vortikal.repository.search.query.TermOperator.NE;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,6 +50,8 @@ import org.apache.lucene.search.CachingWrapperFilter;
 import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.FilterClause;
+import org.apache.lucene.search.MatchAllDocsQuery;
+import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermsFilter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
@@ -197,6 +197,10 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         
         else if (query instanceof ACLQuery) {
             builder = getACLQueryBuilder(query, reader);
+        }
+        
+        else if (query instanceof MatchAllQuery) {
+            return new MatchAllDocsQuery();
         }
 
         if (builder == null) {
@@ -389,6 +393,30 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
 
         return filter;
     }
+    
+    @Override
+    public Filter buildIterationFilter(String token, Search search, IndexReader reader) {
+        Query query = search.getQuery();
+        Filter filter = null;
+        if (query != null && !(query instanceof MatchAllQuery)) {
+            filter = new QueryWrapperFilter(buildQuery(query, reader));
+        }
+
+        Filter searchFilter = buildSearchFilter(token, search, reader);
+        if (searchFilter != null) {
+            if (filter == null) {
+                filter = searchFilter;
+            } else {
+                BooleanFilter bf = new BooleanFilter();
+                bf.add(new FilterClause(filter, BooleanClause.Occur.MUST));
+                bf.add(new FilterClause(searchFilter, BooleanClause.Occur.MUST));
+                filter = bf;
+            }
+        }
+        
+        return filter;
+    }
+    
     
     /* (non-Javadoc)
      * @see org.vortikal.repository.search.query.LuceneQueryBuilder#buildSort(org.vortikal.repository.search.Sorting)

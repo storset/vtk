@@ -34,6 +34,26 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 public interface PropertySelect {
 
+    /**
+     * A selector which selects ALL properties available.
+     */
+    public static final PropertySelect ALL = new PropertySelect() {
+        @Override
+        public boolean isIncludedProperty(PropertyTypeDefinition propertyDefinition) {
+            return true;
+        }
+    };
+    
+    /**
+     * A selector which selects NO properties.
+     */
+    public static final PropertySelect NONE = new PropertySelect() {
+        @Override
+        public boolean isIncludedProperty(PropertyTypeDefinition propertyDefinition) {
+            return false;
+        }
+    };
+    
     public boolean isIncludedProperty(PropertyTypeDefinition propertyDefinition);
 
 }

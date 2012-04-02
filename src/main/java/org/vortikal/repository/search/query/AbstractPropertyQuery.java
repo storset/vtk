@@ -41,10 +41,12 @@ public abstract class AbstractPropertyQuery implements PropertyQuery {
         this.propDef = propDef;
     }
     
+    @Override
     public PropertyTypeDefinition getPropertyDefinition() {
         return this.propDef;
     }
 
+    @Override
     public String getComplexValueAttributeSpecifier() {
         return this.complexValueAttributeSpecifier;
     }
@@ -53,4 +55,30 @@ public abstract class AbstractPropertyQuery implements PropertyQuery {
         this.complexValueAttributeSpecifier = specifier;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AbstractPropertyQuery other = (AbstractPropertyQuery) obj;
+        if (this.propDef != other.propDef && (this.propDef == null || !this.propDef.equals(other.propDef))) {
+            return false;
+        }
+        if ((this.complexValueAttributeSpecifier == null) ? (other.complexValueAttributeSpecifier != null) : !this.complexValueAttributeSpecifier.equals(other.complexValueAttributeSpecifier)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + (this.propDef != null ? this.propDef.hashCode() : 0);
+        hash = 79 * hash + (this.complexValueAttributeSpecifier != null ? this.complexValueAttributeSpecifier.hashCode() : 0);
+        return hash;
+    }
+    
 }

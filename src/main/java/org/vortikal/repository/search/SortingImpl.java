@@ -60,5 +60,28 @@ public class SortingImpl implements Sorting {
         sb.append(": ").append(this.sortFields);
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final SortingImpl other = (SortingImpl) obj;
+        if (this.sortFields != other.sortFields && (this.sortFields == null || !this.sortFields.equals(other.sortFields))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 79 * hash + (this.sortFields != null ? this.sortFields.hashCode() : 0);
+        return hash;
+    }
+    
     
 }

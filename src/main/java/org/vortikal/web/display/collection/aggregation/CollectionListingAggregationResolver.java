@@ -252,7 +252,10 @@ public class CollectionListingAggregationResolver implements AggregationResolver
     }
 
     private PropertySet getResource(URL url) {
-        String token = RequestContext.getRequestContext().getSecurityToken();
+        String token = null;
+        if (RequestContext.exists()) {
+            token = RequestContext.getRequestContext().getSecurityToken();
+        }
         try {
 
             PropertySet resource = null;
@@ -296,7 +299,10 @@ public class CollectionListingAggregationResolver implements AggregationResolver
 
     @Override
     public Set<Path> getAggregationPaths(Path pathToResource) {
-        String token = RequestContext.getRequestContext().getSecurityToken();
+        String token = null;
+        if (RequestContext.exists()) {
+            token = RequestContext.getRequestContext().getSecurityToken();
+        }
         try {
             Resource collection = this.repository.retrieve(token, pathToResource, false);
             CollectionListingAggregatedResources clar = this.getAggregatedResources(collection);

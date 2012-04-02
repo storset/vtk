@@ -81,5 +81,34 @@ public class PropertySortField extends AbstractSortField {
     public void setComplexValueAttributeSpecifier(String complexValueAttributeSpecifier) {
         this.complexValueAttributeSpecifier = complexValueAttributeSpecifier;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PropertySortField other = (PropertySortField) obj;
+        if (this.definition != other.definition && (this.definition == null || !this.definition.equals(other.definition))) {
+            return false;
+        }
+        if ((this.complexValueAttributeSpecifier == null) ? (other.complexValueAttributeSpecifier != null) : !this.complexValueAttributeSpecifier.equals(other.complexValueAttributeSpecifier)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode() * 7;
+        hash = 79 * hash + (this.definition != null ? this.definition.hashCode() : 0);
+        hash = 79 * hash + (this.complexValueAttributeSpecifier != null ? this.complexValueAttributeSpecifier.hashCode() : 0);
+        return hash;
+    }
     
 }

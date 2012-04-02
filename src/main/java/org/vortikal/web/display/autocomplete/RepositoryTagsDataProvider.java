@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.display.autocomplete;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -42,7 +43,9 @@ import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.repository.reporting.Pair;
 import org.vortikal.repository.reporting.PropertyValueFrequencyQueryResult;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.search.QueryException;
 import org.vortikal.web.reporting.TagsReportingComponent;
+import org.vortikal.web.reporting.TagsReportingComponent.TagFrequency;
 import org.vortikal.web.tags.Tag;
 
 /**
@@ -60,6 +63,7 @@ public class RepositoryTagsDataProvider implements VocabularyDataProvider<Tag> {
      * org.vortikal.web.display.autocomplete.VocabularyDataProvider#getCompletions
      * (java.lang.String, org.vortikal.repository.Path, java.lang.String)
      */
+    @Override
     public List<Tag> getCompletions(String prefix, CompletionContext context) {
         List<Tag> tags = getCompletions(context);
         filterTagListByPrefix(prefix, tags);
@@ -73,23 +77,22 @@ public class RepositoryTagsDataProvider implements VocabularyDataProvider<Tag> {
      * org.vortikal.web.display.autocomplete.VocabularyDataProvider#getCompletions
      * (org.vortikal.repository.Path, java.lang.String)
      */
+    @Override
     public List<Tag> getCompletions(CompletionContext context) {
 
         // TODO might consider adding limit on number of unique tags that are
         // fetched.
         try {
-            PropertyValueFrequencyQueryResult pfqResult = tagsReporter.getTags(context.getContextUri(),
+            List<TagFrequency> reportResult = tagsReporter.getTags(context.getContextUri(),
                                                             null, -1, -1, context.getToken());
-            List<Pair<Value, Integer>> pfqList = pfqResult.getValueFrequencyList();
-            List<Tag> result = new LinkedList<Tag>();
-
-            for (Pair<Value, Integer> pair : pfqList) {
-                result.add(new Tag(pair.first().getStringValue()));
+            List<Tag> retVal = new ArrayList<Tag>(reportResult.size());
+            for (TagFrequency tf : reportResult) {
+                retVal.add(new Tag(tf.getTag()));
             }
 
-            return result;
-        } catch (DataReportException de) {
-            logger.warn("Failed to execute data report query", de);
+            return retVal;
+        } catch (QueryException qe) {
+            logger.warn("Failed to execute query", qe);
 
             // Return empty list when failed, for now.
             return Collections.emptyList();

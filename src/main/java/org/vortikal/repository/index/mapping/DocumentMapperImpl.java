@@ -62,7 +62,6 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.PropertySelect;
-import org.vortikal.repository.search.WildcardPropertySelect;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
@@ -245,20 +244,17 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
 
     @Override
     public FieldSelector getDocumentFieldSelector(final PropertySelect select) {
-
-        FieldSelector selector = null;
-        if (select == WildcardPropertySelect.WILDCARD_PROPERTY_SELECT) {
-            selector = new FieldSelector() {
+        if (select == PropertySelect.ALL) {
+            return new FieldSelector() {
                 private static final long serialVersionUID = -8502087584408029619L;
 
                 @Override
                 public FieldSelectorResult accept(String fieldName) {
                     return FieldSelectorResult.LOAD;
                 }
-
             };
         } else {
-            selector = new FieldSelector() {
+            return new FieldSelector() {
                 private static final long serialVersionUID = 3919989917870796613L;
 
                 @Override
@@ -279,8 +275,6 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                 }
             };
         }
-
-        return selector;
     }
 
     /**

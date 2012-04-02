@@ -47,13 +47,38 @@ public class UriDepthQuery implements UriQuery {
         return this.depth;
     }
     
+    @Override
     public Object accept(QueryTreeVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.getClass().getSimpleName());
         sb.append(";depth=").append(this.depth);
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final UriDepthQuery other = (UriDepthQuery) obj;
+        if (this.depth != other.depth) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 41 * hash + this.depth;
+        return hash;
+    }
+    
 }

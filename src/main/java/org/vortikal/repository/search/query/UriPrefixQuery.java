@@ -85,4 +85,34 @@ public class UriPrefixQuery implements UriQuery {
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final UriPrefixQuery other = (UriPrefixQuery) obj;
+        if ((this.uri == null) ? (other.uri != null) : !this.uri.equals(other.uri)) {
+            return false;
+        }
+        if (this.inverted != other.inverted) {
+            return false;
+        }
+        if (this.includeSelf != other.includeSelf) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + (this.uri != null ? this.uri.hashCode() : 0);
+        hash = 97 * hash + (this.inverted ? 1 : 0);
+        hash = 97 * hash + (this.includeSelf ? 1 : 0);
+        return hash;
+    }
+
 }

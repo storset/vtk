@@ -36,13 +36,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.reporting.DataReportException;
-import org.vortikal.repository.reporting.Pair;
-import org.vortikal.repository.reporting.PropertyValueFrequencyQueryResult;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
-import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.search.QueryException;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.reporting.TagsReportingComponent;
+import org.vortikal.web.reporting.TagsReportingComponent.TagFrequency;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -72,29 +70,29 @@ public class RepositoryTagElementsDataProvider {
 
     public List<TagElement> getTagElements(Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs,
             List<String> urlSortingParmas, String token, int magnitudeMin, int magnitudeMax, int limit,
-            int tagOccurenceMin) throws DataReportException, IllegalArgumentException {
+            int tagOccurenceMin) throws QueryException, IllegalArgumentException {
         return getTagElementsInternal(scopeUri, resourceTypeDefs, urlSortingParmas, token, magnitudeMin, magnitudeMax,
                 limit, tagOccurenceMin);
     }
 
     public List<TagElement> getTagElements(Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs, String token,
-            int magnitudeMin, int magnitudeMax, int limit, int tagOccurenceMin) throws DataReportException,
+            int magnitudeMin, int magnitudeMax, int limit, int tagOccurenceMin) throws QueryException,
             IllegalArgumentException {
         return getTagElementsInternal(scopeUri, resourceTypeDefs, null, token, magnitudeMin, magnitudeMax, limit,
                 tagOccurenceMin);
     }
 
     public List<TagElement> getTagElements(Path scopeUri, String token, int magnitudeMin, int magnitudeMax, int limit,
-            int tagOccurenceMin) throws DataReportException, IllegalArgumentException {
+            int tagOccurenceMin) throws QueryException, IllegalArgumentException {
         return getTagElementsInternal(scopeUri, null, null, token, magnitudeMin, magnitudeMax, limit, tagOccurenceMin);
     }
 
     private List<TagElement> getTagElementsInternal(Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs,
             List<String> urlSortingParams, String token, int magnitudeMin, int magnitudeMax, int limit,
-            int tagOccurenceMin) throws DataReportException, IllegalArgumentException {
+            int tagOccurenceMin) throws QueryException, IllegalArgumentException {
 
         // Do data report query
-        PropertyValueFrequencyQueryResult result = this.tagsReporter.getTags(scopeUri, resourceTypeDefs, limit,
+        List<TagFrequency> result = this.tagsReporter.getTags(scopeUri, resourceTypeDefs, limit,
                 tagOccurenceMin, token);
 
         // Generate list of tag elements
@@ -105,26 +103,24 @@ public class RepositoryTagElementsDataProvider {
     }
 
     private List<TagElement> generateTagElementList(Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs,
-            List<String> urlSortingParmas, PropertyValueFrequencyQueryResult result, int magnitudeMax, int magnitudeMin) {
+            List<String> urlSortingParmas, List<TagFrequency> freqList, int magnitudeMax, int magnitudeMin) {
 
-        List<Pair<Value, Integer>> freqList = result.getValueFrequencyList();
-
-        // Makes a list with tagelements.
+        // Makes a list with TagElement instances
         List<TagElement> tagElements = new ArrayList<TagElement>(freqList.size());
 
         if (!freqList.isEmpty()) {
 
-            int minFreq = freqList.get(freqList.size() - 1).second().intValue();
-            int maxFreq = freqList.get(0).second().intValue();
+            int minFreq = freqList.get(freqList.size() - 1).getFrequency();
+            int maxFreq = freqList.get(0).getFrequency();
 
-            for (Pair<Value, Integer> pair : freqList) {
-                String tagName = pair.first().getStringValue();
+            for (TagFrequency tf : freqList) {
+                String tagName = tf.getTag();
                 URL link = getUrl(tagName, scopeUri, resourceTypeDefs, urlSortingParmas);
 
-                int magnitude = getNormalizedMagnitude(pair.second().intValue(), maxFreq, minFreq, magnitudeMin,
+                int magnitude = getNormalizedMagnitude(tf.getFrequency(), maxFreq, minFreq, magnitudeMin,
                         magnitudeMax);
 
-                tagElements.add(new TagElement(magnitude, link, tagName, pair.second().intValue()));
+                tagElements.add(new TagElement(magnitude, link, tagName, tf.getFrequency()));
             }
 
             // Sort alphabetically

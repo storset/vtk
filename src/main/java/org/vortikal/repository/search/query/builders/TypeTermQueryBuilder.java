@@ -47,7 +47,6 @@ import org.vortikal.repository.search.query.filter.InversionFilter;
 
 public class TypeTermQueryBuilder implements QueryBuilder {
 
-    private String fieldName = FieldNames.RESOURCETYPE_FIELD_NAME;
     private Object term;
     private TermOperator op;
     private Filter deletedDocsFilter;
@@ -70,10 +69,12 @@ public class TypeTermQueryBuilder implements QueryBuilder {
 
     @Override
     public Query buildQuery() throws QueryBuilderException {
-        TermQuery tq = new TermQuery(new Term(fieldName, this.term.toString()));
+        TermQuery tq = new TermQuery(new Term(FieldNames.RESOURCETYPE_FIELD_NAME, this.term.toString()));
 
         if (op == TermOperator.NE) {
-            return new ConstantScoreQuery(new InversionFilter(new QueryWrapperFilter(tq), this.deletedDocsFilter));
+            return new ConstantScoreQuery(
+                     new InversionFilter(
+                       new QueryWrapperFilter(tq), this.deletedDocsFilter));
         } 
 
         return tq;

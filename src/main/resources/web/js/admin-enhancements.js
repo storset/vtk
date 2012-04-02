@@ -1693,7 +1693,7 @@ VrtxAdmin.prototype.serverFacade = {
       }
     });
   },
-  error: function(xhr, textStatus) {
+  error: function(xhr, textStatus) { // TODO: detect function origin
     var status = xhr.status;
     if (xhr.readyState == 4 && status == 200) {
       var msg = "The service is not active: " + textStatus;

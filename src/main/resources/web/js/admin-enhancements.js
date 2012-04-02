@@ -2035,10 +2035,11 @@ jQuery.fn.slideDown = function(speed, easing, callback) {
   }
 };
 
-// Flyweight pattern (as we're consolidating multiple possible objects into a more central singular structure)
-// Just initiate one jQuery instance
-// Credits: http://james.padolsey.com/javascript/76-bytes-for-faster-jquery/
-//          http://addyosmani.com/resources/essentialjsdesignpatterns/book/
+/* Flyweight pattern (as we're consolidating multiple possible objects into a more central singular structure)
+ * aka. minimize creating new jQuery instances
+ * Credits: http://james.padolsey.com/javascript/76-bytes-for-faster-jquery/
+ *          http://addyosmani.com/resources/essentialjsdesignpatterns/book/
+ */
 jQuery.single = (function(o){
     var collection = jQuery([1]); // Fill with 1 item, to make sure length === 1
     return function(element) {

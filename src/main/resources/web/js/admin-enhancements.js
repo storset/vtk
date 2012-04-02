@@ -537,7 +537,7 @@ $(document).ready(function () {
       e.preventDefault();
     });
     $("#contents").on("click", ".vrtx-revisions-restore-form input[type=submit]", function(e) { // Restore revisions
-      var form = $(this).closest("form")
+      var form = $.single(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
       $("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
@@ -2035,5 +2035,17 @@ jQuery.fn.slideDown = function(speed, easing, callback) {
     originalSlideDown.apply($trOrOtherElm, arguments);
   }
 };
+
+// Flyweight pattern (as we're consolidating multiple possible objects into a more central singular structure)
+// Just initiate one jQuery instance
+// Credits: http://james.padolsey.com/javascript/76-bytes-for-faster-jquery/
+//          http://addyosmani.com/resources/essentialjsdesignpatterns/book/
+jQuery.single = (function(o){
+    var collection = jQuery([1]); // Fill with 1 item, to make sure length === 1
+    return function(element) {
+        collection[0] = element; // Give collection the element:
+        return collection; // Return the collection:
+    };
+}());
 
 /* ^ Vortex Admin enhancements */

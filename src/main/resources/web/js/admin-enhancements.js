@@ -521,7 +521,7 @@ $(document).ready(function () {
 
   if(bodyId == "vrtx-revisions") {
     _$("#contents").on("click", ".vrtx-revisions-delete-form input[type=submit]", function(e) { // Delete revisions
-      var form = $.single(this).closest("form")
+      var form = _$.single(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
       vrtxAdmin.serverFacade.postHtml(url, dataString, {
@@ -541,7 +541,7 @@ $(document).ready(function () {
       e.preventDefault();
     });
     _$("#contents").on("click", ".vrtx-revisions-restore-form input[type=submit]", function(e) { // Restore revisions
-      var form = $.single(this).closest("form")
+      var form = _$.single(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
       _$("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
@@ -562,7 +562,7 @@ $(document).ready(function () {
       e.preventDefault();
     });
     _$("#contents").on("click", "#vrtx-revisions-make-current-form input[type=submit]", function(e) { // Make working copy into current version
-      var form = $.single(this).closest("form")
+      var form = _$.single(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
       vrtxAdmin.serverFacade.postHtml(url, dataString, {
@@ -586,7 +586,7 @@ $(document).ready(function () {
       }
     });
     _$("#app-content").on("click", ".vrtx-focus-button:last input", function(e) {
-      EDITOR_SAVE_BUTTON_NAME = $.single(this).attr("name");
+      EDITOR_SAVE_BUTTON_NAME = _$.single(this).attr("name");
       if(typeof CKEDITOR !== "undefined") { 
         for (instance in CKEDITOR.instances) {
           CKEDITOR.instances[instance].updateElement();
@@ -644,7 +644,7 @@ $(document).ready(function () {
     }
  
     $("#app-content").on("click", "#resource\\.display-aggregation\\.true", function() {
-      if(!$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
+      if(!_$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
         _$(".aggregation-row").remove();
         _$("#resource\\.aggregation").val("");
       }
@@ -652,7 +652,7 @@ $(document).ready(function () {
     });
 
     $("#app-content").on("click", "#resource\\.display-manually-approved\\.true", function() {
-      if(!$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
+      if(!_$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
         _$(".manually-approve-from-row").remove();
         _$("#resource\\.manually-approve-from").val("");
       }
@@ -682,7 +682,7 @@ $(document).ready(function () {
       var stickyBar = _$("#vrtx-editor-title-submit-buttons");			
       stickyBar.hide();
     	 
-      var ckInject = $.single(this).closest(".cke_skin_kama")
+      var ckInject = _$.single(this).closest(".cke_skin_kama")
                                    .find(".cke_toolbar_end:last");
                                
       if(!ckInject.find("#editor-help-menu").length) {  
@@ -711,7 +711,7 @@ $(document).ready(function () {
     _$("#app-content").on("click", ".cke_button_maximize.cke_off", function(e) {	
       var stickyBar = _$("#vrtx-editor-title-submit-buttons");			
       stickyBar.show();
-      var ckInject = $.single(this).closest(".cke_skin_kama").find(".ck-injected-save-help").hide();
+      var ckInject = _$.single(this).closest(".cke_skin_kama").find(".ck-injected-save-help").hide();
     }); 
 
     // Show/hide multiple properties (initalization / config)
@@ -769,7 +769,7 @@ function initFileUpload() {
   inputFile.addClass("js-on");
       
   inputFile.change(function(e) {
-    var filePath = $.single(this).val();
+    var filePath = _$.single(this).val();
     filePath = filePath.substring(filePath.lastIndexOf("\\")+1);
     if (vrtxAdmin.supportsFileList) {
       var files = this.files;
@@ -1076,10 +1076,10 @@ function toggleConfigCustomPermissions(selectorClass) {
     _$("." + selectorClass).find(".principalList").hide(0);
   }
   $("#app-content").on("click", "." + selectorClass + " ul.shortcuts label[for=custom]", function (e) {
-    $.single(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideDown);
+    _$.single(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideDown);
   });
   $("#app-content").on("click", "." + selectorClass + " ul.shortcuts label:not([for=custom])", function (e) {
-    $.single(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideUp);
+    _$.single(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideUp);
   });
 }
 
@@ -1151,7 +1151,7 @@ function dropdownLanguageMenu(selector) {
 
   _$("body").on("click", selector + "-header", function (e) {
     _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
-    $.single(this).next(".dropdown-shortcut-menu-container").not(":visible").slideDown(vrtxAdmin.transitionDropdownSpeed, "swing");
+    _$.single(this).next(".dropdown-shortcut-menu-container").not(":visible").slideDown(vrtxAdmin.transitionDropdownSpeed, "swing");
     e.preventDefault();
     e.stopPropagation();
   });
@@ -1192,11 +1192,11 @@ function dropdown(options) {
     });
 
     list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").hover(function () {
-      var $this = $.single(this);
+      var $this = _$.single(this);
       $this.parent().toggleClass('unhover');
       $this.prev().toggleClass('hover');
     }, function () {
-      var $this = $.single(this);
+      var $this = _$.single(this);
       $this.parent().toggleClass('unhover');
       $this.prev().toggleClass('hover');
     });
@@ -1280,7 +1280,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
       _$ = vrtxAdm._$;
       
   _$("#app-content").on("click", options.selector, function (e) {
-    var url = $.single(this).attr("href") || $.single(this).closest("form").attr("action");
+    var url = _$.single(this).attr("href") || _$.single(this).closest("form").attr("action");
     if(location.protocol == "http:" && url.indexOf("https://") != -1) {
       return; // no AJAX when http -> https (tmp. solution)
     }
@@ -1344,11 +1344,11 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
                 vrtxAdm.addOriginalMarkup(url, results, resultSelectorClass, expandedForm);
               }
             } else {
-              var node = $.single(this).parent().parent();
+              var node = _$.single(this).parent().parent();
               if(node.is("tr")) {  // Because 'this' is tr > td > div
                 node.remove();
               } else {
-                $.single(this).remove();            
+                _$.single(this).remove();            
               }
             }
             if(!simultanSliding && !fromModeToNotMode) {
@@ -1404,7 +1404,7 @@ VrtxAdmin.prototype.addNewMarkup = function(options, selectorClass, transitionSp
     _$(nodeType + "." + selectorClass).prepareTableRowForSliding();
   }
   _$(nodeType + "." + selectorClass).hide().slideDown(transitionSpeed, transitionEasingSlideDown, function() {
-    $.single(this).find("input[type=text]:first").focus();
+    _$.single(this).find("input[type=text]:first").focus();
   });
 };
 
@@ -1444,7 +1444,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
         transitionEasingSlideUp = options.transitionEasingSlideUp || "linear",
         post = options.post || false;
   
-    var link = $.single(this);
+    var link = _$.single(this);
     var form = link.closest("form");
     
     var isCancelAction = link.attr("name").toLowerCase().indexOf("cancel") != -1;
@@ -1452,7 +1452,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     if(!post) {
       if(isCancelAction && !isReplacing) {
         _$(".expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
-          $.single(this).remove();
+          _$.single(this).remove();
         });
         e.preventDefault();
       } else {
@@ -1495,7 +1495,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
                   funcComplete();
                 }
                 form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
-                  $.single(this).remove();
+                  _$.single(this).remove();
                 });            
               }
             }
@@ -1520,7 +1520,7 @@ VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selec
       _$ = vrtxAdm._$;
 
   _$("#app-content").on("click", selector, function (e) {
-    var link = $.single(this);
+    var link = _$.single(this);
     var form = link.closest("form");
     var url = form.attr("action");
     var listElement = link.parent();
@@ -1552,7 +1552,7 @@ VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, u
       _$ = vrtxAdm._$;
 
   _$("#app-content").on("click", selector + " input[type=submit]", function (e) {
-    var link = $.single(this);
+    var link = _$.single(this);
     var form = link.closest("form");
     var url = form.attr("action");
     var textfield = link.parent().parent().find("input[type=text]");
@@ -1650,29 +1650,27 @@ VrtxAdmin.prototype.displayErrorContainers = function(results, form, errorContai
 }; 
 
 VrtxAdmin.prototype.displayErrorMsg = function(msg) {
-  var vrtxAdm = this,
-      _$ = vrtxAdm.$;
+  var vrtxAdm = this, _$ = vrtxAdm.$;
   if(!vrtxAdm.ignoreAjaxErrors) {
     if (_$("#app-content > .errormessage").length) {
       _$("#app-content > .errormessage").html(msg);
     } else {
       _$("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
       _$("#app-content > .infomessage").slideUp(0, "linear", function() {
-        $.single(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
+        _$.single(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
       });
     }
   }
 };
 
 VrtxAdmin.prototype.displayInfoMsg = function(msg) {
-  var vrtxAdm = this,
-      _$ = vrtxAdm._$;
+  var vrtxAdm = this, _$ = vrtxAdm._$;
   if (_$("#app-content > .infomessage").length) {
     _$("#app-content > .infomessage").html(msg);
   } else {
     _$("#app-content").prepend("<div class='infomessage message'>" + msg + "</div>")
     _$("#app-content > .infomessage").slideUp(0, "linear", function() {
-      $.single(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
+      _$.single(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
     });
   }
 };
@@ -1904,9 +1902,11 @@ function previewImage(urlobj) {
 
 // Make sure these is space below previewed image
 function adjustImageAndCaptionContainer(previewNode) {
-  $(previewNode).find("img").load(function() {
-    var previewNodeImg = $.single(this);
-    var container = $(previewNode).parent().parent();
+  var _$ = vrtxAdmin._$;
+  var previewNd = _$(previewNode);
+  previewNd.find("img").load(function() {
+    var previewNodeImg = _$.single(this);
+    var container = previewNd.parent().parent();
     
     if(container.attr("id") == "vrtx-resource.picture") { // old
       var origHeight = 241;

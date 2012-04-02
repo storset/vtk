@@ -735,7 +735,7 @@ function changeTemplateName(n) {
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
-  var vrtxAdm = this, _$ = vrtxAdm._$;
+  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
 
   var form = _$("form[name=fileUploadService]");
   if(!form.length) return;
@@ -846,7 +846,7 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInteraction() {
-  var vrtxAdm = this, _$ = vrtxAdm._$;
+  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
   
   if(!_$("#directory-listing").length) return;
   

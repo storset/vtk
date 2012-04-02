@@ -1986,14 +1986,14 @@ function SetUrl(url) {
 \*-------------------------------------------------------------------*/
 
 // Use our own wrap function
-VrtxAdmin.prototype.wrap = function(node, cls, html) {
+VrtxAdmin.prototype.wrap = function wrap(node, cls, html) {
   return "<" + node + " class='" + cls + "'>" 
          + html 
          + "</" + node + ">";
 };
 
 // jQuery outerHTML (because FF don't support regular outerHTML)
-VrtxAdmin.prototype.outerHTML = function(selector, subselector) {
+VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
   var _$ = this._$;
   
   if(_$(selector).find(subselector).length) { 
@@ -2005,14 +2005,14 @@ VrtxAdmin.prototype.outerHTML = function(selector, subselector) {
   }
 };
 
-VrtxAdmin.prototype.log = function(options) {
+VrtxAdmin.prototype.log = function log(options) {
   if(vrtxAdmin.hasConsoleLog) {
     var msgMid = options.args ? " -> " + options.args.callee.name : "";
     console.log("Vortex admin log" + msgMid + ": " + options.msg);
   }
 };
 
-VrtxAdmin.prototype.error = function(options) {
+VrtxAdmin.prototype.error = function error(options) {
   if(vrtxAdmin.hasConsoleError) {
     var msgMid = options.args ? " -> " + options.args.callee.name : "";
     console.error("Vortex admin error" + msgMid + ": " + options.msg);
@@ -2022,7 +2022,7 @@ VrtxAdmin.prototype.error = function(options) {
   }
 };
 
-VrtxAdmin.prototype.zebraTables = function(selector) {
+VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
   var _$ = this._$;
   if(!_$("table" + selector).length || _$("table" + selector).hasClass("revisions")) return;
   if((vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) || vrtxAdmin.isOpera) { // http://www.quirksmode.org/css/contents.html

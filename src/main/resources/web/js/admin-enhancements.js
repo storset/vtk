@@ -1,11 +1,13 @@
 /*
  *  Vortex Admin enhancements
  *
- *  Patterns used: Flyweight (http://addyosmani.com/resources/essentialjsdesignpatterns/book/#detailflyweight)
+ *  Some patterns used: 
+ *    * Flyweight (http://addyosmani.com/resources/essentialjsdesignpatterns/book/#detailflyweight)
+ *    * DRY       (http://addyosmani.com/resources/essentialjsdesignpatterns/book/#drypatternjavascript
+ *    * Façade    (http://addyosmani.com/resources/essentialjsdesignpatterns/book/#facadepatternjavascript)
+ *    * Observer  (http://addyosmani.com/resources/essentialjsdesignpatterns/book/#observerpatternjquery)
  *
  *  TODO: i18n/more specific AJAX error messages
- *  TODO: prototypes vs. static (memory vs. speed?) -- it seem to be boiling down to using at the right time and test alot:
- *        http://stackoverflow.com/questions/3493252/javascript-prototype-operator-performance-saves-memory-but-is-it-faster
  *  TODO: CPU usage in ready() vs. wait for it in load()
  *
  */

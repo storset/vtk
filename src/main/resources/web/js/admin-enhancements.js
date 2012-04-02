@@ -198,7 +198,7 @@ vrtxAdmin._$(document).ready(function () {
     _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
     _$(".tip:visible").fadeOut(vrtxAdm.transitionDropdownSpeed, "swing");
     // Communicate this to create-iframe if exists
-    var previewCreateIframe = $("#create-iframe");
+    var previewCreateIframe = _$("#create-iframe");
     if(previewCreateIframe.length) { 
       var hasPostMessage = window['postMessage'] && (!(_$.browser.opera && _$.browser.version < 9.65));
       var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
@@ -345,7 +345,7 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
-          funcComplete: function(p){ initFileUpload() },
+          funcComplete: function(p){ vrtxAdm.initFileUpload() },
           simultanSliding: true,
           transitionSpeed: vrtxAdm.transitionSpeed,
           transitionEasingSlideDown: vrtxAdm.transitionEasingSlideDown,
@@ -360,7 +360,7 @@ vrtxAdmin._$(document).ready(function () {
           transitionEasingSlideDown: vrtxAdm.transitionEasingSlideDown,
           transitionEasingSlideUp: vrtxAdm.transitionEasingSlideUp
         });
-        initFileUpload(); // when error message
+        vrtxAdm.initFileUpload(); // when error message
       }
     }
   }
@@ -511,8 +511,8 @@ vrtxAdmin._$(document).ready(function () {
                                              vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
           var animB = tr.slideUp(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
           _$.when(animA, animB).done(function() {
-            _$("#contents").html($(results).find("#contents").html());
-            _$("#app-tabs").html($(results).find("#app-tabs").html());
+            _$("#contents").html(_$(results).find("#contents").html());
+            _$("#app-tabs").html(_$(results).find("#app-tabs").html());
           });
         }
       });
@@ -661,7 +661,7 @@ vrtxAdmin._$(document).ready(function () {
       stickyBar.hide();
     	 
       var ckInject = _$.single(this).closest(".cke_skin_kama")
-                                   .find(".cke_toolbar_end:last");
+                                    .find(".cke_toolbar_end:last");
                                
       if(!ckInject.find("#editor-help-menu").length) {  
       	var shortcuts = stickyBar.find(".submit-extra-buttons");
@@ -734,8 +734,8 @@ function changeTemplateName(n) {
     4. File upload
 \*-------------------------------------------------------------------*/
 
-function initFileUpload() {
-  var _$ = vrtxAdmin._$;
+VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
+  var vrtxAdm = this, _$ = vrtxAdm._$;
 
   var form = _$("form[name=fileUploadService]");
   if(!form.length) return;
@@ -749,7 +749,7 @@ function initFileUpload() {
   inputFile.change(function(e) {
     var filePath = _$.single(this).val();
     filePath = filePath.substring(filePath.lastIndexOf("\\")+1);
-    if (vrtxAdmin.supportsFileList) {
+    if (vrtxAdm.supportsFileList) {
       var files = this.files;
       if (files.length > 1) {
         var tailMsg = "files selected";
@@ -768,24 +768,26 @@ function initFileUpload() {
     _$("a.vrtx-file-upload").removeClass("hover");;
   });
 
-  if (supportsReadOnly(document.getElementById("fake-file"))) {
+  if (vrtxAdm.supportsReadOnly(document.getElementById("fake-file"))) {
     form.find("#fake-file").attr("readOnly", "readOnly");  
   }
-  if (supportsMultipleAttribute(document.getElementById("file"))) {
+  if (vrtxAdm.supportsMultipleAttribute(document.getElementById("file"))) {
     inputFile.attr("multiple", "multiple");
     if(typeof multipleFilesInfoText !== "undefined") {
       _$("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-textfield");
     }
   }
-}
+};
 
 // Credits: http://miketaylr.com/code/input-type-attr.html (MIT license)
-function supportsMultipleAttribute(inputfield) {
+VrtxAdmin.prototype.supportsMultipleAttribute = function supportsMultipleAttribute(inputfield) {
   return (!!(inputfield.multiple === false) && !!(inputfield.multiple !== "undefined"));
-}
-function supportsReadOnly(inputfield) {
+};
+
+VrtxAdmin.prototype.supportsReadOnly = function supportsReadOnly(inputfield) {
   return (!!(inputfield.readOnly === false) && !!(inputfield.readOnly !== "undefined"));
-}
+};
+
 
 
 /*-------------------------------------------------------------------*\

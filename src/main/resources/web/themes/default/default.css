@@ -1284,6 +1284,9 @@ p#vrtx-file-upload-info-text {
   padding-right: 30px;
 }
 
+#directory-listing th.checkbox {
+  width: 5%;
+}
 
 #directory-listing th.permissions,
 #directory-listing th#vrtx-report-permissions,
@@ -1307,6 +1310,7 @@ p#vrtx-file-upload-info-text {
   width: 12%;
 }
 
+#directory-listing th.published,
 #directory-listing th#vrtx-report-published {
   width: 9%;
 }

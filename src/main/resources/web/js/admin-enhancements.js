@@ -517,7 +517,7 @@ $(document).ready(function () {
 
   if(bodyId == "vrtx-revisions") {
     $("#contents").on("click", ".vrtx-revisions-delete-form input[type=submit]", function(e) { // Delete revisions
-      var form = $(this).closest("form")
+      var form = $.single(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
       vrtxAdmin.serverFacade.postHtml(url, dataString, {
@@ -558,7 +558,7 @@ $(document).ready(function () {
       e.preventDefault();
     });
     $("#contents").on("click", "#vrtx-revisions-make-current-form input[type=submit]", function(e) { // Make working copy into current version
-      var form = $(this).closest("form")
+      var form = $.single(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
       vrtxAdmin.serverFacade.postHtml(url, dataString, {
@@ -582,7 +582,7 @@ $(document).ready(function () {
       }
     });
     $("#app-content").on("click", ".vrtx-focus-button:last input", function(e) {
-      EDITOR_SAVE_BUTTON_NAME = $(this).attr("name");
+      EDITOR_SAVE_BUTTON_NAME = $.single(this).attr("name");
       if(typeof CKEDITOR !== "undefined") { 
         for (instance in CKEDITOR.instances) {
           CKEDITOR.instances[instance].updateElement();
@@ -640,7 +640,7 @@ $(document).ready(function () {
     }
  
     $("#app-content").on("click", "#resource\\.display-aggregation\\.true", function() {
-      if(!$(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
+      if(!$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
         $(".aggregation-row").remove();
         $("#resource\\.aggregation").val("");
       }
@@ -648,7 +648,7 @@ $(document).ready(function () {
     });
 
     $("#app-content").on("click", "#resource\\.display-manually-approved\\.true", function() {
-      if(!$(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
+      if(!$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
         $(".manually-approve-from-row").remove();
         $("#resource\\.manually-approve-from").val("");
       }
@@ -678,8 +678,8 @@ $(document).ready(function () {
       var stickyBar = $("#vrtx-editor-title-submit-buttons");			
       stickyBar.hide();
     	 
-      var ckInject = $(this).closest(".cke_skin_kama")
-                            .find(".cke_toolbar_end:last");
+      var ckInject = $.single(this).closest(".cke_skin_kama")
+                                   .find(".cke_toolbar_end:last");
                                
       if(!ckInject.find("#editor-help-menu").length) {  
       	var shortcuts = stickyBar.find(".submit-extra-buttons");
@@ -707,7 +707,7 @@ $(document).ready(function () {
     $("#app-content").on("click", ".cke_button_maximize.cke_off", function(e) {	
       var stickyBar = $("#vrtx-editor-title-submit-buttons");			
       stickyBar.show();
-      var ckInject = $(this).closest(".cke_skin_kama").find(".ck-injected-save-help").hide();
+      var ckInject = $.single(this).closest(".cke_skin_kama").find(".ck-injected-save-help").hide();
     }); 
 
     // Show/hide multiple properties (initalization / config)
@@ -763,7 +763,7 @@ function initFileUpload() {
   inputFile.addClass("js-on");
       
   inputFile.change(function(e) {
-    var filePath = $(this).val();
+    var filePath = $.single(this).val();
     filePath = filePath.substring(filePath.lastIndexOf("\\")+1);
     if (vrtxAdmin.supportsFileList) {
       var files = this.files;
@@ -1056,10 +1056,10 @@ function toggleConfigCustomPermissions(selectorClass) {
     $("." + selectorClass).find(".principalList").hide(0);
   }
   $("#app-content").on("click", "." + selectorClass + " ul.shortcuts label[for=custom]", function (e) {
-    $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideDown);
+    $.single(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideDown);
   });
   $("#app-content").on("click", "." + selectorClass + " ul.shortcuts label:not([for=custom])", function (e) {
-    $(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideUp);
+    $.single(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideUp);
   });
 }
 
@@ -1127,7 +1127,7 @@ function dropdownLanguageMenu(selector) {
 
   $("body").on("click", selector + "-header", function (e) {
     $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
-    $(this).next(".dropdown-shortcut-menu-container").not(":visible").slideDown(vrtxAdmin.transitionDropdownSpeed, "swing");
+    $.single(this).next(".dropdown-shortcut-menu-container").not(":visible").slideDown(vrtxAdmin.transitionDropdownSpeed, "swing");
     e.preventDefault();
     e.stopPropagation();
   });
@@ -1166,11 +1166,11 @@ function dropdown(options) {
     });
 
     list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").hover(function () {
-      var $this = $(this);
+      var $this = $.single(this);
       $this.parent().toggleClass('unhover');
       $this.prev().toggleClass('hover');
     }, function () {
-      var $this = $(this);
+      var $this = $.single(this);
       $this.parent().toggleClass('unhover');
       $this.prev().toggleClass('hover');
     });
@@ -1252,8 +1252,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
       vrtxAdm = this; // use prototypal hierarchy 
 
   $("#app-content").on("click", options.selector, function (e) {
-  
-    var url = $(this).attr("href") || $(this).closest("form").attr("action");
+    var url = $.single(this).attr("href") || $.single(this).closest("form").attr("action");
     if(location.protocol == "http:" && url.indexOf("https://") != -1) {
       return; // no AJAX when http -> https (tmp. solution)
     }
@@ -1317,11 +1316,11 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
                 vrtxAdm.addOriginalMarkup(url, results, resultSelectorClass, expandedForm);
               }
             } else {
-              var node = $(this).parent().parent();
+              var node = $.single(this).parent().parent();
               if(node.is("tr")) {  // Because 'this' is tr > td > div
                 node.remove();
               } else {
-                $(this).remove();            
+                $.single(this).remove();            
               }
             }
             if(!simultanSliding && !fromModeToNotMode) {
@@ -1376,7 +1375,7 @@ VrtxAdmin.prototype.addNewMarkup = function(options, selectorClass, transitionSp
     $(nodeType + "." + selectorClass).prepareTableRowForSliding();
   }
   $(nodeType + "." + selectorClass).hide().slideDown(transitionSpeed, transitionEasingSlideDown, function() {
-    $(this).find("input[type=text]:first").focus();
+    $.single(this).find("input[type=text]:first").focus();
   });
 };
 
@@ -1415,7 +1414,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
         transitionEasingSlideUp = options.transitionEasingSlideUp || "linear",
         post = options.post || false;
   
-    var link = $(this);
+    var link = $.single(this);
     var form = link.closest("form");
     
     var isCancelAction = link.attr("name").toLowerCase().indexOf("cancel") != -1;
@@ -1423,7 +1422,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     if(!post) {
       if(isCancelAction && !isReplacing) {
         $(".expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
-          $(this).remove();
+          $.single(this).remove();
         });
         e.preventDefault();
       } else {
@@ -1466,7 +1465,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
                   funcComplete();
                 }
                 form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
-                  $(this).remove();
+                  $.single(this).remove();
                 });            
               }
             }
@@ -1490,7 +1489,7 @@ VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selec
       vrtxAdm = this;
 
   $("#app-content").on("click", selector, function (e) {
-    var link = $(this);
+    var link = $.single(this);
     var form = link.closest("form");
     var url = form.attr("action");
     var listElement = link.parent();
@@ -1521,7 +1520,7 @@ VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, u
   var vrtxAdm = this;
 
   $("#app-content").on("click", selector + " input[type=submit]", function (e) {
-    var link = $(this);
+    var link = $.single(this);
     var form = link.closest("form");
     var url = form.attr("action");
     var textfield = link.parent().parent().find("input[type=text]");
@@ -1625,7 +1624,7 @@ VrtxAdmin.prototype.displayErrorMsg = function(msg) {
     } else {
       $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
       $("#app-content > .infomessage").slideUp(0, "linear", function() {
-        $(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
+        $.single(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
       });
     }
   }
@@ -1638,7 +1637,7 @@ VrtxAdmin.prototype.displayInfoMsg = function(msg) {
   } else {
     $("#app-content").prepend("<div class='infomessage message'>" + msg + "</div>")
     $("#app-content > .infomessage").slideUp(0, "linear", function() {
-      $(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
+      $.single(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
     });
   }
 };
@@ -1871,7 +1870,7 @@ function previewImage(urlobj) {
 // Make sure these is space below previewed image
 function adjustImageAndCaptionContainer(previewNode) {
   $(previewNode).find("img").load(function() {
-    var previewNodeImg = $(this);
+    var previewNodeImg = $.single(this);
     var container = $(previewNode).parent().parent();
     
     if(container.attr("id") == "vrtx-resource.picture") { // old

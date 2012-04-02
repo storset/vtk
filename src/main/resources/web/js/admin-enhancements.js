@@ -2043,7 +2043,7 @@ jQuery.fn.slideDown = function(speed, easing, callback) {
 jQuery.single = (function(o){
     var collection = jQuery([1]); // Fill with 1 item, to make sure length === 1
     return function(element) {
-        if(element.length) return jQuery(element);
+        if(element.length) return jQuery(element); // If length exists return new instance instead
         collection[0] = element; // Give collection the element:
         return collection; // Return the collection:
     };

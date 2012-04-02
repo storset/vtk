@@ -77,9 +77,9 @@ function VrtxAdmin() {
   
   // Autocomplete parameters
   this.permissionsAutocompleteParams = { minChars: 4, selectFirst: false, width: 300, 
-                                         max: 30,     delay: 800 };                              
-  this.usernameAutocompleteParams =    { multiple: false, minChars: 2, selectFirst: false, 
-                                         width: 300, max: 30, delay: 500 };                                       
+                                         max: 30, delay: 800 };                              
+  this.usernameAutocompleteParams =    { minChars: 2, selectFirst: false, width: 300,
+                                         max: 30, delay: 500, multiple: false };                                       
   this.tagAutocompleteParams =         { minChars: 1 };
      
   // Transitions

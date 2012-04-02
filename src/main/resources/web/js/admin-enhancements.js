@@ -168,12 +168,10 @@ vrtxAdmin._$(window).resize(function() {
        readyState === "complete" || "DOMContentLoaded"-event (++)
 \*-------------------------------------------------------------------*/
 
-$(document).ready(function () {   
-  var startReadyTime = +new Date();
-  
-  var _$ = vrtxAdmin._$;
-
-  var bodyId = _$("body").attr("id");
+vrtxAdmin._$(document).ready(function () {   
+  var startReadyTime = +new Date(),
+      _$ = vrtxAdmin._$,
+      bodyId = _$("body").attr("id");
 
   // Buttons into links
   logoutButtonAsLink();

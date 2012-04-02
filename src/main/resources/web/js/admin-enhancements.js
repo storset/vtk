@@ -1664,8 +1664,14 @@ VrtxAdmin.prototype.serverFacade = {
   getHtml: function(url, callbacks) {
     this.get(url, callbacks, "html");
   },
+  getJSON: function(url, callbacks) {
+    this.get(url, callbacks, "json");
+  },
   postHtml: function(url, params, callbacks) {
-    this.post(url, params, callbacks, "html");
+    this.post(url, params, callbacks, "html", "application/x-www-form-urlencoded;charset=UTF-8");
+  },
+  postJSON: function(url, params, callbacks) {
+    this.post(url, params, callbacks, "json", "text/plain;charset=utf-8");
   },
   get: function(url, callbacks, type) {
     vrtxAdmin._$.ajax({
@@ -1678,21 +1684,31 @@ VrtxAdmin.prototype.serverFacade = {
         if(callbacks.error) {
           callbacks.error(xhr, textStatus);
         }
+      },
+      complete: function (xhr, testStatus) {
+        if(callbacks.complete) {
+          callbacks.complete(xhr, testStatus);
+        }
       }
     });
   },
-  post: function(url, params, callbacks, type) {
+  post: function(url, params, callbacks, type, contentType) {
     vrtxAdmin._$.ajax({
       type: "POST",
       url: url,
       data: params,
       dataType: type,
-      contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+      contentType: contentType,
       success: callbacks.success,
       error: function (xhr, textStatus) {
         vrtxAdmin.displayErrorMsg(vrtxAdmin.serverFacade.error(xhr, textStatus));
         if(callbacks.error) {
           callbacks.error(xhr, textStatus);
+        }
+      },
+      complete: function (xhr, testStatus) {
+        if(callbacks.complete) {
+          callbacks.complete(xhr, testStatus);
         }
       }
     });

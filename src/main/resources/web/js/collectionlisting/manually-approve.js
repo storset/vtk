@@ -157,16 +157,13 @@ function retrieveResources(serviceUri, locations, aggregatedlocations) {
     return;
   }
 
-  $.ajax( {
-    url: getUri + "&no-cache=" + (+new Date()),
-    dataType: "json",
-    cache: false,
-    success: function(data) {
-      if (data != null && data.length > 0) {
+  vrtxAdmin.serverFacade.getJSON(getUri + "&no-cache=" + (+new Date()), {
+    success: function (results, status, resp) {
+      if (results != null && results.length > 0) {
         $("#vrtx-manually-approve-tab-menu:hidden").removeClass("hidden");
         $("#manually-approve-container:hidden").removeClass("hidden");
         
-        generateManuallyApprovedContainer(data);
+        generateManuallyApprovedContainer(results);
         // TODO !spageti && !run twice
         if (typeof UNSAVED_CHANGES_CONFIRMATION !== "undefined") {
           storeInitPropValues();
@@ -180,16 +177,6 @@ function retrieveResources(serviceUri, locations, aggregatedlocations) {
         }
         $("#manually-approve-container:visible").addClass("hidden");
       }
-    },
-    error: function(xhr, textStatus) {
-      var errMsg = "<span class='manually-approve-from-ajax-error'>";
-      if (xhr.readyState == 4 && xhr.status == 200) {
-        errMsg += "The service is not active.";
-      } else {
-        errMsg += "The service returned " + xhr.status + " and failed to retrieve resources.";
-      }
-      errMsg += "</span>";
-      $("#manually-approve-container").html(errMsg);
     }
   });
 

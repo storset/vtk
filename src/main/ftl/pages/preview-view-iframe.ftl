@@ -79,7 +79,6 @@
   }
 
   $(document).ready(function() {
-     
      $('iframe').load(function() {
         $(this).contents().find("a").attr("target", "_top");
         

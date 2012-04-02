@@ -514,7 +514,7 @@ $(document).ready(function () {
     var openedRevision = openRegular(this.href, 1020, 800, "DisplayRevision");
     e.preventDefault();
   });
- 
+
   if(bodyId == "vrtx-revisions") {
     $("#contents").on("click", ".vrtx-revisions-delete-form input[type=submit]", function(e) { // Delete revisions
       var form = $(this).closest("form")
@@ -2035,16 +2035,5 @@ jQuery.fn.slideDown = function(speed, easing, callback) {
     originalSlideDown.apply($trOrOtherElm, arguments);
   }
 };
-
-// Flyweight pattern
-// Just initiate one jQuery instance
-// Credits: http://james.padolsey.com/javascript/76-bytes-for-faster-jquery/
-jQuery.single = (function(o){
-    var collection = jQuery([1]); // Fill with 1 item, to make sure length === 1
-    return function(element) {
-        collection[0] = element; // Give collection the element:
-        return collection; // Return the collection:
-    };
-}());
 
 /* ^ Vortex Admin enhancements */

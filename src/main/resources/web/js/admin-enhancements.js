@@ -158,7 +158,7 @@ vrtxAdmin._$(window).load(function() {
 
 var lastBreadcrumbPosLeft = -999;
 vrtxAdmin._$(window).resize(function() {
-  adaptiveBreadcrumbs();
+  vrtxAdmin.adaptiveBreadcrumbs();
 });
 
 

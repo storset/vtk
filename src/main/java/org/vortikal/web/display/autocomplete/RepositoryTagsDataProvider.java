@@ -33,16 +33,11 @@ package org.vortikal.web.display.autocomplete;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.reporting.DataReportException;
-import org.vortikal.repository.reporting.Pair;
-import org.vortikal.repository.reporting.PropertyValueFrequencyQueryResult;
-import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.QueryException;
 import org.vortikal.web.reporting.TagsReportingComponent;
 import org.vortikal.web.reporting.TagsReportingComponent.TagFrequency;

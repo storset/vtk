@@ -21,7 +21,6 @@
   <import resource="actions.xml" />
   <import resource="repository.xml" />
   <import resource="query.xml" />
-  <import resource="reporting.xml" />
   <import resource="schema-registry.xml" />
   <import resource="template-lang.xml" />
   <import resource="view.xml" />

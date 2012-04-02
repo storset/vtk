@@ -237,7 +237,8 @@ public class TagsReportingComponent {
         }
         
         tagFreqs = Collections.unmodifiableList(tagFreqs);
-        
+
+        // Populate cache
         if (this.cache != null) {
             this.cache.put(new Element(cacheKey, tagFreqs));
         }
@@ -347,49 +348,6 @@ public class TagsReportingComponent {
             return hash;
         }
     }
-
-//    public PropertyValueFrequencyQueryResult getTags(Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs,
-//            int limit, int tagOccurenceMin, String token) throws DataReportException, IllegalArgumentException {
-//
-//        PropertyValueFrequencyQuery query = new PropertyValueFrequencyQuery();
-//        query.setPropertyTypeDefinition(this.tagsPropDef);
-//        query.setCaseInsensitive(true);
-//
-//        // Sort by highest frequency first.
-//        query.setOrdering(PropertyValueFrequencyQuery.Ordering.DESCENDING_BY_FREQUENCY);
-//
-//        if (limit > -1)
-//            query.setLimit(limit);
-//
-//        if (tagOccurenceMin > -1)
-//            query.setMinValueFrequency(tagOccurenceMin);
-//
-//        if (scopeUri != null && !scopeUri.isRoot()) {
-//            UriPrefixScope scope = new UriPrefixScope();
-//            scope.addUriPrefix(scopeUri);
-//
-//            // If we have an aggregation resolver available, then include whatever URIs
-//            // the scope URI might aggregate from.
-//            if (this.aggregationResolver != null) {
-//                Set<Path> aggregationPaths = this.aggregationResolver.getAggregationPaths(scopeUri);
-//                if (aggregationPaths != null) {
-//                    for (Path p : aggregationPaths) {
-//                        scope.addUriPrefix(p);
-//                    }
-//                }
-//            }
-//
-//            query.addScope(scope);
-//        }
-//
-//        if (resourceTypeDefs != null && resourceTypeDefs.size() > 0) {
-//            ResourceTypeScope rtscope = new ResourceTypeScope(
-//                        new HashSet<ResourceTypeDefinition>(resourceTypeDefs));
-//            query.addScope(rtscope);
-//        }
-//        
-//        return (PropertyValueFrequencyQueryResult) this.dataReportManager.executeReportQuery(query, token);
-//    }
 
     @Required
     public void setTagsPropDef(PropertyTypeDefinition tagsPropDef) {

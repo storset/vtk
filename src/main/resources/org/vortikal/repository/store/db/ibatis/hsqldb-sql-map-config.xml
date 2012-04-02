@@ -4,12 +4,12 @@
 <sqlMapConfig>
 
     <!-- Global type handler for Path -->    
-    <typeHandler
-        javaType="org.vortikal.repository.Path"
-        callback="org.vortikal.repository.store.db.ibatis.PathTypeHandlerCallback"/>
+  <typeHandler
+    javaType="org.vortikal.repository.Path"
+    callback="org.vortikal.repository.store.db.ibatis.PathTypeHandlerCallback"/>
 
 
-	<sqlMap resource="org/vortikal/repository/store/db/ibatis/hsqldb-functions.xml" />
-	<sqlMap resource="org/vortikal/repository/store/db/ibatis/default-sql-maps.xml" />
+  <sqlMap resource="org/vortikal/repository/store/db/ibatis/hsqldb-functions.xml" />
+  <sqlMap resource="org/vortikal/repository/store/db/ibatis/default-sql-maps.xml" />
 	
 </sqlMapConfig>

@@ -39,8 +39,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.reporting.DataReportException;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.repository.search.QueryException;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
@@ -203,8 +203,8 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
                 model.put("resourceTypes", resourceTypeDefs);
             }
 
-        } catch (DataReportException d) {
-            throw new DecoratorComponentException("There was a problem with the data report query: " + d.getMessage());
+        } catch (QueryException qe) {
+            throw new DecoratorComponentException("There was a problem with the data report query: " + qe.getMessage());
         } catch (IllegalArgumentException e) {
             throw new DecoratorComponentException("Illegal value for parameter '" + PARAMETER_SCOPE
                     + "', must be a valid URI.");

@@ -2036,6 +2036,7 @@ jQuery.fn.slideDown = function(speed, easing, callback) {
   }
 };
 
+// Flyweight pattern
 // Just initiate one jQuery instance
 // Credits: http://james.padolsey.com/javascript/76-bytes-for-faster-jquery/
 jQuery.single = (function(o){

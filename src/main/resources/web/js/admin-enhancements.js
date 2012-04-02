@@ -85,13 +85,13 @@ function VrtxAdmin() {
 var vrtxAdmin = new VrtxAdmin();
 
 // Browser info: used for progressive enhancement and performance scaling based on knowledge of current JS-engine
-vrtxAdmin.isIE = $.browser.msie;
-vrtxAdmin.browserVersion = $.browser.version;
+vrtxAdmin.isIE = vrtxAdmin._$.browser.msie;
+vrtxAdmin.browserVersion = vrtxAdmin._$.browser.version;
 vrtxAdmin.isIE7 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7;
 vrtxAdmin.isIE6 = vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 6;
 vrtxAdmin.isIE5OrHigher = vrtxAdmin.isIE && vrtxAdmin.browserVersion >= 5;
 vrtxAdmin.isIETridentInComp = vrtxAdmin.isIE7 && /trident/.test(ua);
-vrtxAdmin.isOpera = $.browser.opera;
+vrtxAdmin.isOpera = vrtxAdmin._$.browser.opera;
 vrtxAdmin.isIPhone = /iphone/.test(ua);
 vrtxAdmin.isIPad= /ipad/.test(ua);
 vrtxAdmin.isAndroid = /android/.test(ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
@@ -133,7 +133,7 @@ vrtxAdmin.usernameAutocompleteParams = { multiple: false,
                                          
 vrtxAdmin.tagAutocompleteParams = { minChars: 1 };
                     
-$.ajaxSetup({
+vrtxAdmin._$.ajaxSetup({
   timeout: 300000 // 5min
 });
 
@@ -171,7 +171,7 @@ vrtxAdmin._$(window).load(function() {
   var formResourceMenu = _$("#title-container:last-child").hasClass("expandedForm");
   if(!formResourceMenu) {
     var expandedForm = _$("#title-container .expandedForm").remove();
-    $("#title-container").append(expandedForm);
+    _$("#title-container").append(expandedForm);
   }
 
   vrtxAdmin.log({msg: "window.load() in " + (+new Date - startLoadTime) + "ms"});
@@ -496,14 +496,12 @@ $(document).ready(function () {
       }
     }
     // Urchin stats
-    $("#app-content").on("click", "#vrtx-resource-visit-tab-menu a", function(e) {
-      $("#vrtx-resource-visit-wrapper").append("<span id='urchin-loading'></span>");
-      $("#vrtx-resource-visit-chart").remove();
-      $("#vrtx-resource-visit-stats").remove();
-      $("#vrtx-resource-visit-info").remove();
+    _$("#app-content").on("click", "#vrtx-resource-visit-tab-menu a", function(e) {
+      _$("#vrtx-resource-visit-wrapper").append("<span id='urchin-loading'></span>");
+      _$("#vrtx-resource-visit-chart, #vrtx-resource-visit-stats, #vrtx-resource-visit-info").remove();
       vrtxAdmin.serverFacade.getHtml(this.href, {
         success: function (results, status, resp) { // fix these 
-          $("#vrtx-resource-visit-wrapper").html("<div id='vrtx-resource-visit'>" + $(results).html() + "</div>");
+          _$("#vrtx-resource-visit-wrapper").html("<div id='vrtx-resource-visit'>" + _$(results).html() + "</div>");
         }
       });
       e.preventDefault();
@@ -558,7 +556,7 @@ $(document).ready(function () {
           scroll(0,0);
         },
         error: function (xhr, textStatus) {
-          $("td.vrtx-revisions-buttons-column input").removeAttr("disabled"); // Unlock buttons
+          _$("td.vrtx-revisions-buttons-column input").removeAttr("disabled"); // Unlock buttons
         }
       });
       e.preventDefault();
@@ -569,8 +567,8 @@ $(document).ready(function () {
       var dataString = form.serialize();
       vrtxAdmin.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
-          $("#contents").html(_$(results).find("#contents").html());
-          $("#app-tabs").html(_$(results).find("#app-tabs").html());
+          _$("#contents").html(_$(results).find("#contents").html());
+          _$("#app-tabs").html(_$(results).find("#app-tabs").html());
           if(typeof versionsMadeCurrentInfoMsg !== "undefined") {
             vrtxAdmin.displayInfoMsg(versionsMadeCurrentInfoMsg);
           }
@@ -587,7 +585,7 @@ $(document).ready(function () {
         _$(".vrtx-focus-button:last input").click();
       }
     });
-    $("#app-content").on("click", ".vrtx-focus-button:last input", function(e) {
+    _$("#app-content").on("click", ".vrtx-focus-button:last input", function(e) {
       EDITOR_SAVE_BUTTON_NAME = $.single(this).attr("name");
       if(typeof CKEDITOR !== "undefined") { 
         for (instance in CKEDITOR.instances) {
@@ -1625,7 +1623,7 @@ VrtxAdmin.prototype.getHtmlAsTextAsync = function getHtmlAsTextAsync(url, insert
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function(inputFields) { 
-  var dataStringChunk = "", _$ = this._$;
+  var dataStringChunk = "", _$ = vrtxAdmin._$;
   if(typeof inputFields !== "undefined") {
     for (i = inputFields.length; i--;) {
       dataStringChunk += '&' + _$(inputFields[i]).attr("name")
@@ -1642,7 +1640,7 @@ VrtxAdmin.prototype.hasErrorContainers = function(results, errorContainer) {
 /* TODO: support for multiple errorContainers
   (place the correct one in correct place (e.g. users and groups)) */
 VrtxAdmin.prototype.displayErrorContainers = function(results, form, errorContainerInsertAfter, errorContainer) {
-  var wrapper = form.find(errorContainerInsertAfter).parent(), _$ = this._$;;
+  var wrapper = form.find(errorContainerInsertAfter).parent(), _$ = this._$;
   if (wrapper.find("div." + errorContainer).length) {
     wrapper.find("div." + errorContainer).html(_$(results).find("div." + errorContainer).html());
   } else {

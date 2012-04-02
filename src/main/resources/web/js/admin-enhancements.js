@@ -48,6 +48,8 @@ function VrtxAdmin() {
   instance.constructor = VrtxAdmin; // reset construction pointer
   //--
 
+  this._$ = $;
+
   this.isIE = null;
   this.browserVersion = null;
   this.isIE7 = null;
@@ -153,20 +155,22 @@ var reloadFromServer = function() {
     2. DOM is fully loaded ("load"-event) 
 \*-------------------------------------------------------------------*/
                                             
-$(window).load(function() {
+vrtxAdmin._$(window).load(function() {
+  var _$ = vrtxAdmin._$;
+
   // More compact when no left resource menu and no buttons in right resource menu
   // Should never occur in IE because of "Show in file explorer" in root-folder 
-  var resourceMenuRight = $("#resourceMenuRight"); 
+  var resourceMenuRight = _$("#resourceMenuRight"); 
   var resourceMenuRightListElements = resourceMenuRight.find("li");
   var buttonsInResourceMenuRightListElements = resourceMenuRightListElements.find(".vrtx-button-small");
-  if(!$("ul#resourceMenuLeft li").length && !buttonsInResourceMenuRightListElements.length) {
+  if(!_$("ul#resourceMenuLeft li").length && !buttonsInResourceMenuRightListElements.length) {
     resourceMenuRight.addClass("smaller-seperator");
   }
   
   // When AJAX is turned of because of http->https we need to ensure form is in the right place
-  var formResourceMenu = $("#title-container:last-child").hasClass("expandedForm");
+  var formResourceMenu = _$("#title-container:last-child").hasClass("expandedForm");
   if(!formResourceMenu) {
-    var expandedForm = $("#title-container .expandedForm").remove();
+    var expandedForm = _$("#title-container .expandedForm").remove();
     $("#title-container").append(expandedForm);
   }
 
@@ -174,7 +178,7 @@ $(window).load(function() {
 });
 
 var lastBreadcrumbPosLeft = -999;
-$(window).resize(function() {
+vrtxAdmin._$(window).resize(function() {
   adaptiveBreadcrumbs();
 });
 
@@ -186,8 +190,10 @@ $(window).resize(function() {
 
 $(document).ready(function () {   
   var startReadyTime = +new Date();
+  
+  var _$ = vrtxAdmin._$;
 
-  var bodyId = $("body").attr("id");
+  var bodyId = _$("body").attr("id");
 
   // Buttons into links
   logoutButtonAsLink();
@@ -206,17 +212,17 @@ $(document).ready(function () {
   dropdown({selector: "ul#editor-menu"});
   
   // Slide up when choose something in dropdown
-  $("body").on("click", ".dropdown-shortcut-menu li a, .dropdown-shortcut-menu-container li a", function() {
-    $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
+  _$("body").on("click", ".dropdown-shortcut-menu li a, .dropdown-shortcut-menu-container li a", function() {
+    _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
   });
 
-  $("body").on("click", document, function(e) {
-    $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
-    $(".tip:visible").fadeOut(vrtxAdmin.transitionDropdownSpeed, "swing");
+  _$("body").on("click", document, function(e) {
+    _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
+    _$(".tip:visible").fadeOut(vrtxAdmin.transitionDropdownSpeed, "swing");
     // Communicate this to create-iframe if exists
     var previewCreateIframe = $("#create-iframe");
     if(previewCreateIframe.length) { 
-      var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
+      var hasPostMessage = window['postMessage'] && (!(_$.browser.opera && _$.browser.version < 9.65));
       var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
       if(hasPostMessage) {
         previewCreateIframe[0].contentWindow.postMessage("collapsedsize", vrtxAdminOrigin);
@@ -225,12 +231,12 @@ $(document).ready(function () {
   });
   
   // Ignore all AJAX errors on tab change
-  $("#app-tabs, #vrtx-breadcrumb-wrapper").on("click", "li a", function(e) {
+  _$("#app-tabs, #vrtx-breadcrumb-wrapper").on("click", "li a", function(e) {
     vrtxAdmin.ignoreAjaxErrors = true;
   });
   
   // Remove active tab if it has no children
-  var activeTab = $("#active-tab");
+  var activeTab = _$("#active-tab");
   if (!activeTab.find(" > *").length) {
     activeTab.remove();
   }
@@ -242,16 +248,16 @@ $(document).ready(function () {
   }
   
   // Hack for setting iframe width if english i18n
-  if ($("#locale-selection li.active").hasClass("en")) {
-    $("#create-iframe").css("width", "162px");
+  if (_$("#locale-selection li.active").hasClass("en")) {
+    _$("#create-iframe").css("width", "162px");
   }
   
   // Make breadcrumbs play along when you minimize window and have multiple rows of it
   adaptiveBreadcrumbs();
   
   // Move down resource menu when long title
-  var titleSplits = $("h1 .title-split");
-  var resourceMenuLeft = $("#resourceMenuLeft");
+  var titleSplits = _$("h1 .title-split");
+  var resourceMenuLeft = _$("#resourceMenuLeft");
   var titleSplitsLength = titleSplits.length;
   if (resourceMenuLeft.length) {
     if (titleSplitsLength == 2) {
@@ -504,19 +510,19 @@ $(document).ready(function () {
     });
   }
   
-  $("#app-content").on("click", "td.vrtx-report-broken-links-web-page a", function(e) {
+  _$("#app-content").on("click", "td.vrtx-report-broken-links-web-page a", function(e) {
     var openedWebpageWithBrokenLinks = openRegular(this.href, 1020, 800, "DisplayWebpageBrokenLinks");
     e.preventDefault();
   });
 
   // Versioning
-  $("#app-content").on("click", "a.vrtx-revision-view", function(e) {
+  _$("#app-content").on("click", "a.vrtx-revision-view", function(e) {
     var openedRevision = openRegular(this.href, 1020, 800, "DisplayRevision");
     e.preventDefault();
   });
 
   if(bodyId == "vrtx-revisions") {
-    $("#contents").on("click", ".vrtx-revisions-delete-form input[type=submit]", function(e) { // Delete revisions
+    _$("#contents").on("click", ".vrtx-revisions-delete-form input[type=submit]", function(e) { // Delete revisions
       var form = $.single(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
@@ -526,21 +532,21 @@ $(document).ready(function () {
           tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
           // Check when multiple animations are complete; credits: http://tinyurl.com/83oodnp
           var animA = tr.find("td").animate({paddingTop: '0px', paddingBottom: '0px'}, 
-                                             vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideUp, $.noop);
-          var animB = tr.slideUp(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideUp, $.noop);
-          $.when(animA, animB).done(function() {
-            $("#contents").html($(results).find("#contents").html());
-            $("#app-tabs").html($(results).find("#app-tabs").html());
+                                             vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideUp, _$.noop);
+          var animB = tr.slideUp(vrtxAdmin.transitionDropdownSpeed, vrtxAdmin.transitionEasingSlideUp, _$.noop);
+          _$.when(animA, animB).done(function() {
+            _$("#contents").html($(results).find("#contents").html());
+            _$("#app-tabs").html($(results).find("#app-tabs").html());
           });
         }
       });
       e.preventDefault();
     });
-    $("#contents").on("click", ".vrtx-revisions-restore-form input[type=submit]", function(e) { // Restore revisions
+    _$("#contents").on("click", ".vrtx-revisions-restore-form input[type=submit]", function(e) { // Restore revisions
       var form = $.single(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
-      $("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
+      _$("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
       vrtxAdmin.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
           $("#contents").html($(results).find("#contents").html());
@@ -557,14 +563,14 @@ $(document).ready(function () {
       });
       e.preventDefault();
     });
-    $("#contents").on("click", "#vrtx-revisions-make-current-form input[type=submit]", function(e) { // Make working copy into current version
+    _$("#contents").on("click", "#vrtx-revisions-make-current-form input[type=submit]", function(e) { // Make working copy into current version
       var form = $.single(this).closest("form")
       var url = form.attr("action");
       var dataString = form.serialize();
       vrtxAdmin.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
-          $("#contents").html($(results).find("#contents").html());
-          $("#app-tabs").html($(results).find("#app-tabs").html());
+          $("#contents").html(_$(results).find("#contents").html());
+          $("#app-tabs").html(_$(results).find("#app-tabs").html());
           if(typeof versionsMadeCurrentInfoMsg !== "undefined") {
             vrtxAdmin.displayInfoMsg(versionsMadeCurrentInfoMsg);
           }
@@ -575,10 +581,10 @@ $(document).ready(function () {
   }
 
   // Save shortcut and AJAX
-  if($("form#editor").length) {
+  if(_$("form#editor").length) {
     shortcut.add("Ctrl+S", function() {
-      if(!$("#TB_window").length) {
-        $(".vrtx-focus-button:last input").click();
+      if(!_$("#TB_window").length) {
+        _$(".vrtx-focus-button:last input").click();
       }
     });
     $("#app-content").on("click", ".vrtx-focus-button:last input", function(e) {
@@ -598,7 +604,7 @@ $(document).ready(function () {
       if(typeof performSave !== "undefined") {      
         performSave();
       }
-      $("#editor").ajaxSubmit({
+      _$("#editor").ajaxSubmit({
         success: function() {
           var endTime = new Date() - startTime;
           var waitMinMs = 800;
@@ -618,7 +624,7 @@ $(document).ready(function () {
         },
         error: function(xhr, statusText, errMsg) {
           tb_remove();
-          $("#editor").submit();
+          _$("#editor").submit();
         }
       });
       e.preventDefault();
@@ -631,51 +637,51 @@ $(document).ready(function () {
     autocompleteTags(".vrtx-autocomplete-tag");
 
     // Aggregation and manually approved
-    if(!$("#resource\\.display-aggregation\\.true").is(":checked")) {
-      $("#vrtx-resource\\.aggregation").slideUp(0, "linear");
+    if(!_$("#resource\\.display-aggregation\\.true").is(":checked")) {
+      _$("#vrtx-resource\\.aggregation").slideUp(0, "linear");
     }
 
-    if(!$("#resource\\.display-manually-approved\\.true").is(":checked")) {
-      $("#vrtx-resource\\.manually-approve-from").slideUp(0, "linear");
+    if(!_$("#resource\\.display-manually-approved\\.true").is(":checked")) {
+      _$("#vrtx-resource\\.manually-approve-from").slideUp(0, "linear");
     }
  
     $("#app-content").on("click", "#resource\\.display-aggregation\\.true", function() {
       if(!$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
-        $(".aggregation-row").remove();
-        $("#resource\\.aggregation").val("");
+        _$(".aggregation-row").remove();
+        _$("#resource\\.aggregation").val("");
       }
-      $("#vrtx-resource\\.aggregation").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
+      _$("#vrtx-resource\\.aggregation").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
     });
 
     $("#app-content").on("click", "#resource\\.display-manually-approved\\.true", function() {
       if(!$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
-        $(".manually-approve-from-row").remove();
-        $("#resource\\.manually-approve-from").val("");
+        _$(".manually-approve-from-row").remove();
+        _$("#resource\\.manually-approve-from").val("");
       }
-      $("#vrtx-resource\\.manually-approve-from").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
+      _$("#vrtx-resource\\.manually-approve-from").slideToggle(vrtxAdmin.transitionDropdownSpeed, "swing");
     });
 
     // Stickybar
-    var titleSubmitButtons = $("#vrtx-editor-title-submit-buttons");
+    var titleSubmitButtons = _$("#vrtx-editor-title-submit-buttons");
     // TODO: also check minimum device height (with high density displays on new devices accounted for)
     if(titleSubmitButtons.length && !vrtxAdmin.isIPhone) { // Turn off for iPhone. 
       var titleSubmitButtonsPos = titleSubmitButtons.offset();
-      $(window).bind("scroll", function() {
-        if($(window).scrollTop() >= titleSubmitButtonsPos.top) {
+      _$(window).bind("scroll", function() {
+        if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
           titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons"); 
-          titleSubmitButtons.css("width", $("#contents").width() + "px");
-          $("#contents").css("paddingTop", titleSubmitButtons.outerHeight(true) + "px");
+          titleSubmitButtons.css("width", _$("#contents").width() + "px");
+          _$("#contents").css("paddingTop", titleSubmitButtons.outerHeight(true) + "px");
         } else {
           titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
           titleSubmitButtons.css("width", "auto");
-          $("#contents").css("paddingTop", "0px");
+          _$("#contents").css("paddingTop", "0px");
         }
       });
     }
 
     // Add save/help when CK is maximized
-    $("#app-content").on("click", ".cke_button_maximize.cke_on", function(e) {	
-      var stickyBar = $("#vrtx-editor-title-submit-buttons");			
+    _$("#app-content").on("click", ".cke_button_maximize.cke_on", function(e) {	
+      var stickyBar = _$("#vrtx-editor-title-submit-buttons");			
       stickyBar.hide();
     	 
       var ckInject = $.single(this).closest(".cke_skin_kama")
@@ -704,8 +710,8 @@ $(document).ready(function () {
       }
     }); 
 
-    $("#app-content").on("click", ".cke_button_maximize.cke_off", function(e) {	
-      var stickyBar = $("#vrtx-editor-title-submit-buttons");			
+    _$("#app-content").on("click", ".cke_button_maximize.cke_off", function(e) {	
+      var stickyBar = _$("#vrtx-editor-title-submit-buttons");			
       stickyBar.show();
       var ckInject = $.single(this).closest(".cke_skin_kama").find(".ck-injected-save-help").hide();
     }); 
@@ -730,10 +736,10 @@ $(document).ready(function () {
 
   // Show message in IE6, IE7 and IETrident in compability mode
   if (vrtxAdmin.isIE7 || vrtxAdmin.isIETridentInComp) {
-    if ($("#app-content > .message").length) {
-      $("#app-content > .message").html(outdatedBrowserText);
+    if (_$("#app-content > .message").length) {
+      _$("#app-content > .message").html(outdatedBrowserText);
     } else {
-      $("#app-content").prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
+      _$("#app-content").prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
     }
   }
   
@@ -743,7 +749,7 @@ $(document).ready(function () {
 
 /* Used by "createDocumentService" available from "manageCollectionListingService" */
 function changeTemplateName(n) {
-  $("form[name=createDocumentService] input[type=text]").val(n);
+  vrtxAdmin._$("form[name=createDocumentService] input[type=text]").val(n);
 }
 
 
@@ -753,11 +759,13 @@ function changeTemplateName(n) {
 \*-------------------------------------------------------------------*/
 
 function initFileUpload() {
-  var form = $("form[name=fileUploadService]");
+  var _$ = vrtxAdmin._$;
+
+  var form = _$("form[name=fileUploadService]");
   if(!form.length) return;
   var inputFile = form.find("#file");
 
-  $("<div class='vrtx-textfield vrtx-file-upload'><input id='fake-file' type='text' /><a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a></div>'")
+  _$("<div class='vrtx-textfield vrtx-file-upload'><input id='fake-file' type='text' /><a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a></div>'")
     .insertAfter(inputFile);
       
   inputFile.addClass("js-on");
@@ -779,9 +787,9 @@ function initFileUpload() {
   });
 
   inputFile.hover(function () {
-    $("a.vrtx-file-upload").addClass("hover");
+    _$("a.vrtx-file-upload").addClass("hover");
   }, function () {
-    $("a.vrtx-file-upload").removeClass("hover");;
+    _$("a.vrtx-file-upload").removeClass("hover");;
   });
 
   if (supportsReadOnly(document.getElementById("fake-file"))) {
@@ -790,7 +798,7 @@ function initFileUpload() {
   if (supportsMultipleAttribute(document.getElementById("file"))) {
     inputFile.attr("multiple", "multiple");
     if(typeof multipleFilesInfoText !== "undefined") {
-      $("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-textfield");
+      _$("<p id='vrtx-file-upload-info-text'>" + multipleFilesInfoText + "</p>").insertAfter(".vrtx-textfield");
     }
   }
 }
@@ -839,12 +847,14 @@ function mapShortcut(selectors, reroutedSelector) {
 \*-------------------------------------------------------------------*/
 
 function logoutButtonAsLink() {
-  var btn = $('input#logoutAction');
+  var _$ = vrtxAdmin._$;
+
+  var btn = _$('input#logoutAction');
   if (!btn.length) return;
   btn.hide();
   btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">'
           + btn.attr('value') + '</a>');
-  $('#logoutAction\\.link').click(function (e) {
+  _$('#logoutAction\\.link').click(function (e) {
     btn.click();
     e.stopPropagation();
     e.preventDefault();
@@ -858,7 +868,8 @@ function logoutButtonAsLink() {
 \*-------------------------------------------------------------------*/
 
 function collectionListingInteraction() {
-  if(!$("#directory-listing").length) return;
+
+  if(!vrtxAdmin._$("#directory-listing").length) return;
   
   if(typeof moveUncheckedMessage !== "undefined") { 
     var options = {
@@ -887,12 +898,13 @@ function collectionListingInteraction() {
 }
 
 function initializeCheckUncheckAll() {
-  var tdCheckbox = $("td.checkbox");
-  if(tdCheckbox.length && !$("form#editor").length) {
-    $("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
-    $("#directory-listing").on("click", "th.checkbox input", function() {
+  var _$ = vrtxAdmin._$;
+  var tdCheckbox = _$("td.checkbox");
+  if(tdCheckbox.length && !_$("form#editor").length) {
+    _$("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
+    _$("#directory-listing").on("click", "th.checkbox input", function() {
       var checkAll = this.checked;
-      var checkboxes = $("td.checkbox input");
+      var checkboxes = _$("td.checkbox input");
       var funcClassAddRemover = classAddRemover; 
       for(var i = 0, len = checkboxes.length; i < len; i++) {
         var isChecked = checkboxes[i].checked;
@@ -908,7 +920,7 @@ function initializeCheckUncheckAll() {
         }
       }
     });
-    $("#directory-listing").on("click", "td.checkbox input", function() {
+    _$("#directory-listing").on("click", "td.checkbox input", function() {
       var checkbox = this;
       var isChecked = checkbox.checked;
       var tr = $(checkbox).closest("tr");
@@ -935,16 +947,18 @@ function classAddRemover(elem, name, isAdding) {
 
 // options: formName, btnId, service, msg
 function placeCopyMoveButtonInActiveTab(options) {
-  var btn = $("#" + options.btnId);
+  var _$ = vrtxAdmin._$;
+  
+  var btn = _$("#" + options.btnId);
   if (!btn.length) return;
   btn.hide();
-  var li = $("li." + options.service);
+  var li = _$("li." + options.service);
   li.html("<a id='" + options.service + "' href='javascript:void(0);'>" + btn.attr('title') + "</a>");
   $("#" + options.service).click(function (e) {
-    if (!$("form[name=" + options.formName + "] td input[type=checkbox]:checked").length) {
+    if (!_$("form[name=" + options.formName + "] td input[type=checkbox]:checked").length) {
       alert(options.msg);
     } else {
-      $("#" + options.btnId).click();
+      _$("#" + options.btnId).click();
     }
     e.stopPropagation();
     e.preventDefault();
@@ -952,13 +966,15 @@ function placeCopyMoveButtonInActiveTab(options) {
 }
 
 function placeDeleteButtonInActiveTab() {
-  var btn = $('#collectionListing\\.action\\.delete-resources');
+  var _$ = vrtxAdmin._$;
+
+  var btn = _$('#collectionListing\\.action\\.delete-resources');
   if (!btn.length) return;
   btn.hide();
-  var li = $('li.deleteResourcesService');
+  var li = _$('li.deleteResourcesService');
   li.html('<a id="deleteResourceService" href="javascript:void(0);">' + btn.attr('title') + '</a>');
   $('#deleteResourceService').click(function (e) {
-    var boxes = $('form[name=collectionListingForm] td input[type=checkbox]:checked');
+    var boxes = _$('form[name=collectionListingForm] td input[type=checkbox]:checked');
     if (!boxes.length) {
       alert(deleteUncheckedMessage);
     } else {
@@ -974,7 +990,7 @@ function placeDeleteButtonInActiveTab() {
         list += "... " + confirmDeleteAnd + " " + (boxesSize - 10) + " " + confirmDeleteMore;
       }
       if (confirm(confirmDelete.replace("(1)", boxesSize) + '\n\n' + list)) {
-        $('#collectionListing\\.action\\.delete-resources').click();
+        _$('#collectionListing\\.action\\.delete-resources').click();
       }
     }
     e.preventDefault();
@@ -982,32 +998,36 @@ function placeDeleteButtonInActiveTab() {
 }
 
 function placeRecoverButtonInActiveTab() {
-  var btn = $('.recoverResource');
+  var _$ = vrtxAdmin._$;
+
+  var btn = _$('.recoverResource');
   if (!btn.length) return;
   btn.hide();
-  $("#active-tab").prepend('<ul class="list-menu" id="tabMenuRight"><li class="recoverResourceService">'
+  _$("#active-tab").prepend('<ul class="list-menu" id="tabMenuRight"><li class="recoverResourceService">'
                               + '<a id="recoverResourceService" href="javascript:void(0);">' 
                               + btn.attr('value') + '</a></li></ul>');
-  $('#recoverResourceService').click(function (e) {
-    var boxes = $('form.trashcan td input[type=checkbox]:checked');
+  _$('#recoverResourceService').click(function (e) {
+    var boxes = _$('form.trashcan td input[type=checkbox]:checked');
     if (!boxes.length) {
       alert(recoverUncheckedMessage); //TODO i18n from somewhere
     } else {
-      $('.recoverResource').click();
+      _$('.recoverResource').click();
     }
     e.preventDefault();
   });
 }
 
 function placeDeletePermanentButtonInActiveTab() {
-  var btn = $('.deleteResourcePermanent');
+  var _$ = vrtxAdmin._$;
+  
+  var btn = _$('.deleteResourcePermanent');
   if (!btn.length) return;
   btn.hide();
-  $("#tabMenuRight")
+  _$("#tabMenuRight")
     .append('<li class="deleteResourcePermanentService"><a id="deleteResourcePermanentService" href="javascript:void(0);">' 
           + btn.attr('value') + '</a></li>');
-  $('#deleteResourcePermanentService').click(function (e) {
-    var boxes = $('form.trashcan td input[type=checkbox]:checked');
+  _$('#deleteResourcePermanentService').click(function (e) {
+    var boxes = _$('form.trashcan td input[type=checkbox]:checked');
     
     if (!boxes.length) {
       alert(deletePermanentlyUncheckedMessage);
@@ -1023,7 +1043,7 @@ function placeDeletePermanentButtonInActiveTab() {
         list += "... " + confirmDeletePermanentlyAnd + " " + (boxesSize - 10) + " " + confirmDeletePermanentlyMore;
       }
       if (confirm(confirmDeletePermanently.replace("(1)", boxesSize) + '\n\n' + list)) {
-        $('.deleteResourcePermanent').click();
+        _$('.deleteResourcePermanent').click();
       }
     }
     e.preventDefault();
@@ -1037,7 +1057,7 @@ function placeDeletePermanentButtonInActiveTab() {
 \*-------------------------------------------------------------------*/
 
 function initPermissionForm(selectorClass) {
-  if (!$("." + selectorClass + " .aclEdit").length) return;
+  if (!vrtxAdmin._$("." + selectorClass + " .aclEdit").length) return;
   toggleConfigCustomPermissions(selectorClass);
   interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]", "." + selectorClass + " input.addUserButton");
   interceptEnterKeyAndReroute("." + selectorClass + " .addGroup input[type=text]", "." + selectorClass + " input.addGroupButton");
@@ -1051,9 +1071,11 @@ function initSimplifiedPermissionForm() {
 }
 
 function toggleConfigCustomPermissions(selectorClass) {
-  var customInput = $("." + selectorClass + " ul.shortcuts label[for=custom] input");
+  var _$ = vrtxAdmin._$;
+
+  var customInput = _$("." + selectorClass + " ul.shortcuts label[for=custom] input");
   if (!customInput.is(":checked") && customInput.length) {
-    $("." + selectorClass).find(".principalList").hide(0);
+    _$("." + selectorClass).find(".principalList").hide(0);
   }
   $("#app-content").on("click", "." + selectorClass + " ul.shortcuts label[for=custom]", function (e) {
     $.single(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideDown);
@@ -1082,25 +1104,27 @@ function checkStillAdmin(selector) {
 }
 
 function autocompleteUsernames(selector) {
-  var autocompleteTextfields = $(selector).find('.vrtx-textfield input');
+  var _$ = vrtxAdmin._$;
+  var autocompleteTextfields = _$(selector).find('.vrtx-textfield input');
   var i = autocompleteTextfields.length;
   while(i--) {
-    permissionsAutocomplete($(autocompleteTextfields[i]).attr("id"), 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
+    permissionsAutocomplete(_$(autocompleteTextfields[i]).attr("id"), 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
   }
 }
 
 function autocompleteUsername(selector, subselector) {
-  var autocompleteTextfield = $(selector).find('input#' + subselector);
+  var autocompleteTextfield = vrtxAdmin._$(selector).find('input#' + subselector);
   if(autocompleteTextfield.length) {
     permissionsAutocomplete(subselector, 'userNames', vrtxAdmin.usernameAutocompleteParams, true);
   }
 }
 
 function autocompleteTags(selector) {
-  var autocompleteTextfields = $(selector).find('.vrtx-textfield input');
+  var _$ = vrtxAdmin._$;
+  var autocompleteTextfields = _$(selector).find('.vrtx-textfield input');
   var i = autocompleteTextfields.length;
   while(i--) {
-    setAutoComplete($(autocompleteTextfields[i]).attr("id"), 'tags', vrtxAdmin.tagAutocompleteParams);
+    setAutoComplete(_$(autocompleteTextfields[i]).attr("id"), 'tags', vrtxAdmin.tagAutocompleteParams);
   }
 }
 
@@ -1110,7 +1134,9 @@ function autocompleteTags(selector) {
 \*-------------------------------------------------------------------*/
 
 function dropdownLanguageMenu(selector) {
-  var languageMenu = $(selector + " ul");
+  var _$ = vrtxAdmin._$;
+  
+  var languageMenu = _$(selector + " ul");
   if (!languageMenu.length) return;
 
   var parent = languageMenu.parent();
@@ -1125,8 +1151,8 @@ function dropdownLanguageMenu(selector) {
 
   languageMenu.addClass("dropdown-shortcut-menu-container");
 
-  $("body").on("click", selector + "-header", function (e) {
-    $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
+  _$("body").on("click", selector + "-header", function (e) {
+    _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
     $.single(this).next(".dropdown-shortcut-menu-container").not(":visible").slideDown(vrtxAdmin.transitionDropdownSpeed, "swing");
     e.preventDefault();
     e.stopPropagation();
@@ -1134,7 +1160,9 @@ function dropdownLanguageMenu(selector) {
 }
 
 function dropdown(options) {
-  var list = $(options.selector);
+  var _$ = vrtxAdmin._$;
+
+  var list = _$(options.selector);
   if (!list.length) return;
 
   var numOfListElements = list.find("li").size();
@@ -1159,7 +1187,7 @@ function dropdown(options) {
     list.find("li" + dropdownClickArea).addClass("dropdown-init");
     
     list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").click(function (e) {
-      $(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
+      _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
       shortcutMenu.not(":visible").slideDown(vrtxAdmin.transitionDropdownSpeed, "swing");   
       e.stopPropagation();
       e.preventDefault();
@@ -1178,18 +1206,19 @@ function dropdown(options) {
 }
 
 function closeDropdowns() {
-  var dropdowns = $(".dropdown-shortcut-menu-container:visible");
+  var dropdowns = vrtxAdmin._$(".dropdown-shortcut-menu-container:visible");
   if(dropdowns.length) {
     dropdowns.slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
   }
 }
 
 function adaptiveBreadcrumbs() {
-  var breadcrumbs = $("#vrtx-breadcrumb > span"), 
+  var _$ = vrtxAdmin._$;
+  var breadcrumbs = _$("#vrtx-breadcrumb > span"), 
       i = breadcrumbs.length,
       runnedAtStart = false;
   while(i--) {
-    var breadcrumb = $(breadcrumbs[i]);
+    var breadcrumb = _$(breadcrumbs[i]);
     var breadcrumbPos = breadcrumb.position();
     var breadcrumbPosTop = breadcrumbPos.top;
     var breadcrumbPosLeft = breadcrumbPos.left;
@@ -1248,10 +1277,11 @@ function adaptiveBreadcrumbs() {
  */
 
 VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
-  var args = arguments, // this function
-      vrtxAdm = this; // use prototypal hierarchy 
-
-  $("#app-content").on("click", options.selector, function (e) {
+  var args = arguments,       // this function
+      vrtxAdm = this,         // use prototypal hierarchy 
+      _$ = vrtxAdm._$;
+      
+  _$("#app-content").on("click", options.selector, function (e) {
     var url = $.single(this).attr("href") || $.single(this).closest("form").attr("action");
     if(location.protocol == "http:" && url.indexOf("https://") != -1) {
       return; // no AJAX when http -> https (tmp. solution)
@@ -1281,7 +1311,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     
     vrtxAdmin.serverFacade.getHtml(url, {
       success: function (results, status, resp) {
-        var form = $(results).find("." + selectorClass).html();
+        var form = _$(results).find("." + selectorClass).html();
 
         // If something went wrong
         if(!form) {
@@ -1358,23 +1388,24 @@ VrtxAdmin.prototype.addNewMarkup = function(options, selectorClass, transitionSp
       insertAfterOrReplaceClass = options.insertAfterOrReplaceClass,
       isReplacing = options.isReplacing,
       nodeType = options.nodeType,
-      funcComplete = options.funcComplete;
+      funcComplete = options.funcComplete,
+      _$ = vrtxAdm._$;
 
   if (isReplacing) {
-    var classes = $(insertAfterOrReplaceClass).attr("class");
-    $(insertAfterOrReplaceClass).replaceWith(vrtxAdm.wrap(nodeType, "expandedForm expandedFormIsReplaced nodeType"
-                                                        + nodeType + " " + selectorClass + " " + classes, form));
+    var classes = _$(insertAfterOrReplaceClass).attr("class");
+    _$(insertAfterOrReplaceClass).replaceWith(vrtxAdm.wrap(nodeType, "expandedForm expandedFormIsReplaced nodeType"
+                                                         + nodeType + " " + selectorClass + " " + classes, form));
   } else {
-    $(vrtxAdm.wrap(nodeType, "expandedForm nodeType" + nodeType + " " + selectorClass, form))
+    _$(vrtxAdm.wrap(nodeType, "expandedForm nodeType" + nodeType + " " + selectorClass, form))
       .insertAfter(insertAfterOrReplaceClass);
   }
   if(funcComplete) {
     funcComplete(selectorClass);
   }
   if(nodeType == "tr") {
-    $(nodeType + "." + selectorClass).prepareTableRowForSliding();
+    _$(nodeType + "." + selectorClass).prepareTableRowForSliding();
   }
-  $(nodeType + "." + selectorClass).hide().slideDown(transitionSpeed, transitionEasingSlideDown, function() {
+  _$(nodeType + "." + selectorClass).hide().slideDown(transitionSpeed, transitionEasingSlideDown, function() {
     $.single(this).find("input[type=text]:first").focus();
   });
 };
@@ -1398,9 +1429,10 @@ VrtxAdmin.prototype.addNewMarkup = function(options, selectorClass, transitionSp
 
 VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
   var args = arguments,
-      vrtxAdm = this;   
+      vrtxAdm = this,
+      _$ = vrtxAdm._$;   
       
-  $("#app-content").on("click", options.selector, function (e) {
+  _$("#app-content").on("click", options.selector, function (e) {
   
     var selector = options.selector,
         isReplacing = options.isReplacing,
@@ -1421,7 +1453,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     
     if(!post) {
       if(isCancelAction && !isReplacing) {
-        $(".expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
+        _$(".expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
           $.single(this).remove();
         });
         e.preventDefault();
@@ -1450,7 +1482,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
                 form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
                   for(var i = updateSelectors.length; i--;) {
                     var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
-                    $("#app-content " + updateSelectors[i]).replaceWith(outer);
+                    _$("#app-content " + updateSelectors[i]).replaceWith(outer);
                   }
                   if (funcComplete) {
                     funcComplete();
@@ -1459,7 +1491,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
               } else {
                 for(var i = updateSelectors.length; i--;) {
                   var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
-                  $("#app-content " + updateSelectors[i]).replaceWith(outer);
+                  _$("#app-content " + updateSelectors[i]).replaceWith(outer);
                 }
                 if (funcComplete) {
                   funcComplete();
@@ -1486,9 +1518,10 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
 
 VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selector, updateSelector) {
   var args = arguments,
-      vrtxAdm = this;
+      vrtxAdm = this,
+      _$ = vrtxAdm._$;
 
-  $("#app-content").on("click", selector, function (e) {
+  _$("#app-content").on("click", selector, function (e) {
     var link = $.single(this);
     var form = link.closest("form");
     var url = form.attr("action");
@@ -1499,7 +1532,7 @@ VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selec
     
     vrtxAdmin.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {
-        form.find(updateSelector).html($(results).find(updateSelector).html());
+        form.find(updateSelector).html(_$(results).find(updateSelector).html());
         initSimplifiedPermissionForm();
       }
     });
@@ -1516,10 +1549,11 @@ VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selec
  */
 
 VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, updateSelector, errorContainerInsertAfter, errorContainer) {
-  var args = arguments;
-  var vrtxAdm = this;
+  var args = arguments,
+      vrtxAdm = this,
+      _$ = vrtxAdm._$;
 
-  $("#app-content").on("click", selector + " input[type=submit]", function (e) {
+  _$("#app-content").on("click", selector + " input[type=submit]", function (e) {
     var link = $.single(this);
     var form = link.closest("form");
     var url = form.attr("action");
@@ -1538,7 +1572,7 @@ VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, u
         } else {
           var upSelector = form.find(updateSelector);
           upSelector.parent().find("div." + errorContainer).remove();
-          upSelector.html($(results).find(updateSelector).html());
+          upSelector.html(_$(results).find(updateSelector).html());
           textfield.val("");
           initSimplifiedPermissionForm();
         }
@@ -1556,74 +1590,76 @@ VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, u
  * @param wrapperSelector: wrapper for the HTML
  */
 VrtxAdmin.prototype.getHtmlAsTextAsync = function getHtmlAsTextAsync(url, insertAfterSelector, wrapperSelector) {
-  var args = arguments;
-  var vrtxAdm = this;
+  var args = arguments,
+      vrtxAdm = this,
+      _$ = vrtxAdm._$;
 
-  var wrapper = $(wrapperSelector);
+  var wrapper = _$(wrapperSelector);
   if(wrapper.length) {
     wrapper.html("<span id='urchin-loading'></span>");
   } else {
-    $("<div id='" + wrapperSelector.substring(1) + "'><span id='urchin-loading'></span></div>").insertAfter(insertAfterSelector);
+    _$("<div id='" + wrapperSelector.substring(1) + "'><span id='urchin-loading'></span></div>").insertAfter(insertAfterSelector);
   }
   
   vrtxAdmin.serverFacade.getText(url, {
     success : function (results, status, resp) {
-      var trimmedResults = $.trim(results);
-      var wrapper = $(wrapperSelector);
+      var trimmedResults = _$.trim(results);
+      var wrapper = _$(wrapperSelector);
       if(trimmedResults.length) { // if there is text
         if(wrapper.length) {
           wrapper.html(trimmedResults);
         } else {
-          $(trimmedResults).insertAfter(insertAfterSelector);
+          _$(trimmedResults).insertAfter(insertAfterSelector);
         }
       } else {
         wrapper.remove();
       }
     }
   });
-  
 };
+
 
 
 /*-------------------------------------------------------------------*\
     10. Async helper functions and AJAX server façade	
 \*-------------------------------------------------------------------*/
 
-VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function(inputFields) {
-  var dataStringChunk = "";
+VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function(inputFields) { 
+  var dataStringChunk = "", _$ = this._$;
   if(typeof inputFields !== "undefined") {
     for (i = inputFields.length; i--;) {
-      dataStringChunk += '&' + $(inputFields[i]).attr("name")
-                       + '=' + $(inputFields[i]).val();
+      dataStringChunk += '&' + _$(inputFields[i]).attr("name")
+                       + '=' + _$(inputFields[i]).val();
     }
   }
   return dataStringChunk;
 };
 
 VrtxAdmin.prototype.hasErrorContainers = function(results, errorContainer) {
-  return $(results).find("div." + errorContainer).length > 0;
+  return this._$(results).find("div." + errorContainer).length > 0;
 };
 
 /* TODO: support for multiple errorContainers
   (place the correct one in correct place (e.g. users and groups)) */
 VrtxAdmin.prototype.displayErrorContainers = function(results, form, errorContainerInsertAfter, errorContainer) {
-  var wrapper = form.find(errorContainerInsertAfter).parent();
+  var wrapper = form.find(errorContainerInsertAfter).parent(), _$ = this._$;;
   if (wrapper.find("div." + errorContainer).length) {
-    wrapper.find("div." + errorContainer).html($(results).find("div." + errorContainer).html());
+    wrapper.find("div." + errorContainer).html(_$(results).find("div." + errorContainer).html());
   } else {
     var outer = vrtxAdmin.outerHTML(results, "div." + errorContainer); 
-    $(outer).insertAfter(wrapper.find(errorContainerInsertAfter));
+    _$(outer).insertAfter(wrapper.find(errorContainerInsertAfter));
   }
 }; 
 
 VrtxAdmin.prototype.displayErrorMsg = function(msg) {
-  var vrtxAdm = this;
+  var vrtxAdm = this,
+      _$ = vrtxAdm.$;
   if(!vrtxAdm.ignoreAjaxErrors) {
-    if ($("#app-content > .errormessage").length) {
-      $("#app-content > .errormessage").html(msg);
+    if (_$("#app-content > .errormessage").length) {
+      _$("#app-content > .errormessage").html(msg);
     } else {
-      $("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
-      $("#app-content > .infomessage").slideUp(0, "linear", function() {
+      _$("#app-content").prepend("<div class='errormessage message'>" + msg + "</div>");
+      _$("#app-content > .infomessage").slideUp(0, "linear", function() {
         $.single(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
       });
     }
@@ -1631,12 +1667,13 @@ VrtxAdmin.prototype.displayErrorMsg = function(msg) {
 };
 
 VrtxAdmin.prototype.displayInfoMsg = function(msg) {
-  var vrtxAdm = this;
-  if ($("#app-content > .infomessage").length) {
-    $("#app-content > .infomessage").html(msg);
+  var vrtxAdm = this,
+      _$ = vrtxAdm._$;
+  if (_$("#app-content > .infomessage").length) {
+    _$("#app-content > .infomessage").html(msg);
   } else {
-    $("#app-content").prepend("<div class='infomessage message'>" + msg + "</div>")
-    $("#app-content > .infomessage").slideUp(0, "linear", function() {
+    _$("#app-content").prepend("<div class='infomessage message'>" + msg + "</div>")
+    _$("#app-content > .infomessage").slideUp(0, "linear", function() {
       $.single(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
     });
   }
@@ -1653,7 +1690,7 @@ VrtxAdmin.prototype.serverFacade = {
     this.post(url, params, callbacks, "html");
   },
   get: function(url, callbacks, type) {
-    $.ajax({
+    vrtxAdmin._$.ajax({
       type: "GET",
       url: url,
       dataType: type,
@@ -1667,7 +1704,7 @@ VrtxAdmin.prototype.serverFacade = {
     });
   },
   post: function(url, params, callbacks, type) {
-    $.ajax({
+    vrtxAdmin._$.ajax({
       type: "POST",
       url: url,
       data: params,
@@ -1959,11 +1996,13 @@ VrtxAdmin.prototype.wrap = function(node, cls, html) {
 
 // jQuery outerHTML (because FF don't support regular outerHTML)
 VrtxAdmin.prototype.outerHTML = function(selector, subselector) {
-  if($(selector).find(subselector).length) { 
-    if(typeof $(selector).find(subselector)[0].outerHTML !== "undefined") {
-      return $(selector).find(subselector)[0].outerHTML;
+  var _$ = this._$;
+  
+  if(_$(selector).find(subselector).length) { 
+    if(typeof _$(selector).find(subselector)[0].outerHTML !== "undefined") {
+      return _$(selector).find(subselector)[0].outerHTML;
     } else {
-      return $('<div>').append($(selector).find(subselector).clone()).html();
+      return _$('<div>').append(_$(selector).find(subselector).clone()).html();
     }
   }
 };
@@ -1986,10 +2025,11 @@ VrtxAdmin.prototype.error = function(options) {
 };
 
 VrtxAdmin.prototype.zebraTables = function(selector) {
-  if(!$("table" + selector).length || $("table" + selector).hasClass("revisions")) return;
+  var _$ = this._$;
+  if(!_$("table" + selector).length || _$("table" + selector).hasClass("revisions")) return;
   if((vrtxAdmin.isIE && vrtxAdmin.browserVersion < 9) || vrtxAdmin.isOpera) { // http://www.quirksmode.org/css/contents.html
-    $("table" + selector + " tbody tr:odd").addClass("even"); // hmm.. somehow even is odd and odd is even
-    $("table" + selector + " tbody tr:first-child").addClass("first");
+    _$("table" + selector + " tbody tr:odd").addClass("even"); // hmm.. somehow even is odd and odd is even
+    _$("table" + selector + " tbody tr:first-child").addClass("first");
   }
 };
 

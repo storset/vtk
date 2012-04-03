@@ -2,6 +2,7 @@ import org.vortikal.repository.*;
 import org.vortikal.repository.content.*;
 import org.vortikal.repository.event.*;
 import org.vortikal.repository.resourcetype.*;
+import org.vortikal.repository.search.*;
 
 getDescription() {
     return "Re-evaluates resources for a given query";
@@ -43,85 +44,83 @@ void execute(context, args, out) {
     search = new org.vortikal.repository.search.Search();
     search.setQuery(query);
 
-    results = searcher.execute(token, search);
-    duration = System.currentTimeMillis() - before;
-    log.println("-- query: " + results.getSize() + " results, " + duration + " ms");
+    //log.println("-- query: " + results.getSize() + " results, " + duration + " ms");
 
     before = System.currentTimeMillis();
 
-    iter = results.iterator();
-    while (iter.hasNext()) {
+    number = 0;
 
-        propset = iter.next();
+    searcher.iterateMatching(token, search, new Searcher.MatchCallback() {
+            public boolean matching(PropertySet propset) {
 
-        orig = repo.retrieve(token, propset.getURI(), true);
-        origClone = orig.clone();
+                number++;
+                orig = repo.retrieve(token, propset.getURI(), true);
+                origClone = orig.clone();
 
-        log.println(propset.getURI().toString());
+                log.println(propset.getURI().toString());
 
-        boolean coll = propset.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.COLLECTION_PROP_NAME).getBooleanValue();
+                boolean coll = propset.getProperty(Namespace.DEFAULT_NAMESPACE,
+                                                   PropertyType.COLLECTION_PROP_NAME).getBooleanValue();
 
-        content = coll ? null : new ContentImpl(propset.getURI(), contentStore, contentRegistry);
+                content = coll ? null : new ContentImpl(propset.getURI(), contentStore, contentRegistry);
 
-        evaluated = helper.contentModification(orig, orig.getOwner(), content);
+                evaluated = helper.contentModification(orig, orig.getOwner(), content);
         
-        prop = orig.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME);
-        if (prop != null) evaluated.addProperty((Property) prop.clone());
-        prop = orig.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME);
-        if (prop != null) evaluated.addProperty((Property) prop.clone());
-        prop = orig.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME);
-        if (prop != null) evaluated.addProperty((Property) prop.clone());
-        prop = orig.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME);
-        if (prop != null) evaluated.addProperty((Property) prop.clone());
+                prop = orig.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME);
+                if (prop != null) evaluated.addProperty((Property) prop.clone());
+                prop = orig.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME);
+                if (prop != null) evaluated.addProperty((Property) prop.clone());
+                prop = orig.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLASTMODIFIED_PROP_NAME);
+                if (prop != null) evaluated.addProperty((Property) prop.clone());
+                prop = orig.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME);
+                if (prop != null) evaluated.addProperty((Property) prop.clone());
 
 
-        for (Property prop: evaluated.getProperties()) {
-            ns = prop.getDefinition().getNamespace();
-            prefix = ns.getPrefix() == null ? "" : ns.getPrefix() + ":";
-            name = prop.getDefinition().getName();
-            multi = prop.getDefinition().isMultiple();
-            old = origClone.getProperty(ns, name);
+                for (Property prop: evaluated.getProperties()) {
+                    ns = prop.getDefinition().getNamespace();
+                    prefix = ns.getPrefix() == null ? "" : ns.getPrefix() + ":";
+                    name = prop.getDefinition().getName();
+                    multi = prop.getDefinition().isMultiple();
+                    old = origClone.getProperty(ns, name);
             
-            if (prop.getDefinition() != null) {
-                if (old == null) {
-                    curVal = multi ? Arrays.asList(prop.getValues()) : prop.getValue();
-                } else if (!old.equals(prop)) {
+                    if (prop.getDefinition() != null) {
+                        if (old == null) {
+                            curVal = multi ? Arrays.asList(prop.getValues()) : prop.getValue();
+                        } else if (!old.equals(prop)) {
 
-                    prevVal = old.getDefinition().isMultiple() ? Arrays.asList(old.getValues()) : old.getValue();
-                    curVal = multi ? Arrays.asList(prop.getValues()) : prop.getValue();
-                    log.println("   m " + prefix + name 
-                                + ": '" + prevVal + "' --> '" + curVal + "'");
+                            prevVal = old.getDefinition().isMultiple() ? Arrays.asList(old.getValues()) : old.getValue();
+                            curVal = multi ? Arrays.asList(prop.getValues()) : prop.getValue();
+                            log.println("   m " + prefix + name 
+                                        + ": '" + prevVal + "' --> '" + curVal + "'");
+                        }
+                    }
                 }
+
+
+                // store directly to DAO layer:
+
+                status = tm.getTransaction(null);
+                try {
+                    //tm.startTransaction();
+                    dao.store(evaluated);
+
+                    // trigger re-indexing:
+                    event = new ResourceModificationEvent(repo, evaluated, origClone);
+                    beanContext.publishEvent(event);
+
+                    tm.commit(status);
+                } catch (Throwable t) {
+                    tm.rollback(status);
+                } finally {
+                    //tm.endTransaction();
+                }
+                log.flush();
+                return true;
             }
-        }
-
-
-        // store directly to DAO layer:
-
-        status = tm.getTransaction(null);
-        try {
-            //tm.startTransaction();
-            dao.store(evaluated);
-
-           // trigger re-indexing:
-           event = new ResourceModificationEvent(repo, evaluated, origClone);
-           beanContext.publishEvent(event);
-
-            tm.commit(status);
-        } catch (Throwable t) {
-            tm.rollback(status);
-        } finally {
-            //tm.endTransaction();
-        }
-
-
-        log.flush();
-
-        //    Thread.sleep(1000);
-    }
+        });
 
     duration = System.currentTimeMillis() - before;
-    log.println("-- iteration done in " + duration / 1000 + " s");
+    log.println("-- evaluated " + number + " resources in " + duration / 1000 + " s");
     log.flush();
     if (logFile != null) {
         log.close();

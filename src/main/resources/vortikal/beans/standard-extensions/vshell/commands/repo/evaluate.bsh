@@ -43,6 +43,7 @@ void execute(context, args, out) {
     before = System.currentTimeMillis();
     search = new org.vortikal.repository.search.Search();
     search.setQuery(query);
+    search.setLimit(Integer.MAX_VALUE);
 
     //log.println("-- query: " + results.getSize() + " results, " + duration + " ms");
 

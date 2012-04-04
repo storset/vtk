@@ -34,8 +34,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.lucene.document.Field;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -47,6 +45,8 @@ import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalImpl;
+
+import junit.framework.TestCase;
 
 public class FieldValueMapperTest extends TestCase {
 

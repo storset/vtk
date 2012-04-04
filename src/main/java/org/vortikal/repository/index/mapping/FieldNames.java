@@ -91,7 +91,6 @@ public final class FieldNames {
     public static String getSearchFieldName(Property prop, boolean lowercase) {
         return getSearchFieldName(prop.getDefinition(), lowercase);
     }
-
     
     public static String getSearchFieldName(PropertyTypeDefinition def, boolean lowercase) {
         switch (def.getType()) {
@@ -143,7 +142,7 @@ public final class FieldNames {
         return fieldName.toString();
     }
     
-    public static String getJSONSearchFieldName(PropertyTypeDefinition def, String jsonAttrKey, 
+    public static String getJsonSearchFieldName(PropertyTypeDefinition def, String jsonAttrKey, 
                                                                              boolean lowercase) {
         StringBuilder fieldName = new StringBuilder(getSearchFieldName(def, lowercase));
         fieldName.append(JSON_ATTRIBUTE_SEPARATOR).append(jsonAttrKey);

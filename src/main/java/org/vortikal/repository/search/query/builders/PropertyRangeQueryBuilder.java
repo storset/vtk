@@ -35,6 +35,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermRangeFilter;
 import org.vortikal.repository.index.mapping.FieldNames;
 import org.vortikal.repository.index.mapping.FieldValueMapper;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.query.PropertyRangeQuery;
 import org.vortikal.repository.search.query.QueryBuilder;
@@ -60,14 +61,17 @@ public class PropertyRangeQueryBuilder implements QueryBuilder {
         String from = this.prq.getFromTerm();
         String to = this.prq.getToTerm();
         PropertyTypeDefinition def = this.prq.getPropertyDefinition();
-        
-        String fromEncoded = this.fieldValueMapper.encodeIndexFieldValue(from, def.getType(), false);
-        String toEncoded = this.fieldValueMapper.encodeIndexFieldValue(to, def.getType(), false);
 
-        String fieldName = FieldNames.getSearchFieldName(def, false);
-        if (this.prq.getComplexValueAttributeSpecifier() != null) {
-            fieldName = FieldNames.getJSONSearchFieldName(def,
-                    this.prq.getComplexValueAttributeSpecifier(), false);
+        String fromEncoded, toEncoded, fieldName, cva = prq.getComplexValueAttributeSpecifier();
+        if (cva == null) {
+            fieldName = FieldNames.getSearchFieldName(def, false);
+            fromEncoded = this.fieldValueMapper.encodeIndexFieldValue(from, def.getType(), false);
+            toEncoded = this.fieldValueMapper.encodeIndexFieldValue(to, def.getType(), false);
+        } else {
+            Type dataType = FieldValueMapper.getJsonFieldDataType(prq.getPropertyDefinition(), cva);
+            fieldName = FieldNames.getJsonSearchFieldName(def, cva, false);
+            fromEncoded = this.fieldValueMapper.encodeIndexFieldValue(from, dataType, false);
+            toEncoded = this.fieldValueMapper.encodeIndexFieldValue(to, dataType, false);
         }
 
         TermRangeFilter trFilter = new TermRangeFilter(fieldName, fromEncoded,
@@ -75,11 +79,5 @@ public class PropertyRangeQueryBuilder implements QueryBuilder {
 
         return new ConstantScoreQuery(trFilter);
 
-//        ConstantScoreRangeQuery csrq = new ConstantScoreRangeQuery(fieldName,
-//                fromEncoded, toEncoded, this.prq.isInclusive(), this.prq.isInclusive());
-//
-//        return csrq;
-
     }
-
 }

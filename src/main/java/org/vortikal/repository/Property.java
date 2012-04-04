@@ -33,13 +33,13 @@ package org.vortikal.repository;
 import java.util.Date;
 import java.util.Locale;
 
-import net.sf.json.JSONObject;
-
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.Principal;
+
+import net.sf.json.JSONObject;
 
 /**
  * This interface represents meta information about resources. A resource

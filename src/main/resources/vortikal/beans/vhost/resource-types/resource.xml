@@ -46,6 +46,7 @@
         <ref bean="resourceAspectsPropDef" />
         <ref bean="linksPropDef" />
         <ref bean="linkCheckPropDef" />
+        <ref bean="brokenLinksCountPropDef" />
         <ref bean="linkStatusPropDef" />
         <ref bean="systemJobStatusPropDef" />
       </list>
@@ -322,6 +323,26 @@
     <property name="mandatory" value="false" />
   </bean>
 
+  <bean id="brokenLinksCountPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+        parent="abstractPropDef">
+    <property name="name" value="broken-links-count" />
+    <property name="type" value="JSON" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="multiple" value="false" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator">
+      <bean class="org.vortikal.repository.resourcetype.property.BrokenLinksCountEvaluator">
+        <property name="linkCheckPropDef" ref="linkCheckPropDef"/>
+      </bean>
+    </property>
+    <property name="metadata">
+      <map>
+        <entry key="indexableJsonHint" value="true"/>
+        <entry key="indexableJsonHint.DefaultFieldType" value="INT"/>
+      </map>
+    </property>
+  </bean>
+  
   <bean id="linkStatusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
         parent="abstractPropDef">
     <property name="name" value="link-status" />
@@ -337,11 +358,6 @@
     <property name="linkCheckPropDef" ref="linkCheckPropDef" />
   </bean>
   
-  <bean id="PROPERTY_METADATA_INDEXABLE_JSON"
-        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-    <property name="staticField" value="org.vortikal.repository.resourcetype.PropertyTypeDefinition.METADATA_INDEXABLE_JSON"/>
-  </bean>
-  
   <bean id="systemJobStatusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="system-job-status" />
@@ -352,7 +368,7 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
     <property name="metadata">
       <map>
-        <entry key-ref="PROPERTY_METADATA_INDEXABLE_JSON" value="true"/>
+        <entry key="indexableJsonHint" value="true"/>
       </map>
     </property>
   </bean>

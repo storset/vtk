@@ -296,8 +296,8 @@ public final class FieldDataEncoder {
                     "Unsigned long integers must be represented by exactly 8 bytes.");
         }
 
-        char[] output = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-                '0', '0' };
+        char[] output = { '0', '0', '0', '0', '0', '0', '0', '0',
+                          '0', '0', '0', '0', '0', '0', '0', '0' };
 
         // Dump hex characters
         byte ch = 0x00;

@@ -34,11 +34,14 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFormatException;
@@ -83,8 +86,6 @@ public final class FieldValueMapper {
             CACHED_DATE_FORMAT_PARSERS[i] = new ReusableObjectArrayStackCache<SimpleDateFormat>(3);
         }
     }
-
-    public static final char MULTI_VALUE_FIELD_SEPARATOR = ';';
 
     private ValueFactory valueFactory;
 
@@ -153,22 +154,22 @@ public final class FieldValueMapper {
         return getKeywordField(name, encoded);
     }
 
-
     /**
-     * Create indexed (but not stored) <code>Field</code> from array of Object. No special encoding
-     * of value is applied, tokenization is done per object value, optionally applying lowercasing.
-     *  
+     * Create indexed (but not stored) <code>Field</code> from array of Object.
+     * Encoding is done based on provided value type.
      * @param name
      * @param values
      * @param lowercase
-     * @return
+     * @return 
      */
-    public Field getUnencodedMultiValueFieldfFromObjects(String name, Object[] values, boolean lowercase) {
+    public Field getEncodedMultiValueFieldFromObjects(String name, Object[] values, Type type, boolean lowercase) {
         String[] strValues = new String[values.length];
         for (int i=0; i<values.length; i++) {
-            strValues[i] = lowercase ? values[i].toString().toLowerCase() : values[i].toString();
+            strValues[i] = encodeIndexFieldValue(values[i], type, lowercase);
         }
-        return getUnencodedMultiValueFieldFromStrings(name, strValues);
+        Field field = new Field(name, new StringArrayTokenStream(strValues));
+        field.setOmitTermFreqAndPositions(true);
+        return field;
     }
     
     public Field getUnencodedMultiValueFieldFromStrings(String name, String[] values) {
@@ -207,7 +208,6 @@ public final class FieldValueMapper {
         default:
             throw new FieldDataEncodingException("Unknown or unsupported type: " + value.getType());
         }
-
     }
 
 
@@ -221,7 +221,7 @@ public final class FieldValueMapper {
      * This method is mostly used when constructing searchable values from query
      * building process.
      */
-    public String encodeIndexFieldValue(String stringValue, Type type, boolean lowercase)
+    public String encodeIndexFieldValue(Object value, Type type, boolean lowercase)
             throws ValueFormatException, FieldDataEncodingException {
 
         switch (type) {
@@ -229,17 +229,21 @@ public final class FieldValueMapper {
         case HTML:
         case JSON:
             if (lowercase) {
-                return stringValue.toLowerCase();
+                return value.toString().toLowerCase();
             }
-            return stringValue;
+            return value.toString();
 
         case IMAGE_REF:
         case BOOLEAN:
         case PRINCIPAL:
-            return stringValue;
+            return value.toString();
 
         case DATE:
         case TIMESTAMP:
+            if (value.getClass() == Long.class) {
+                return FieldDataEncoder.encodeDateValueToString(((Long)value).longValue());
+            }
+            String stringValue = value.toString();
             try {
                 return FieldDataEncoder.encodeDateValueToString(Long.parseLong(stringValue));
             } catch (NumberFormatException nfe) { 
@@ -265,7 +269,7 @@ public final class FieldValueMapper {
             }
 
             if (d == null) {
-                throw new ValueFormatException("Unable to encode date string value '" + stringValue
+                throw new ValueFormatException("Unable to encode date value '" + stringValue
                         + "' to index field value representation");
             }
 
@@ -274,9 +278,12 @@ public final class FieldValueMapper {
             return FieldDataEncoder.encodeDateValueToString(d.getTime());
 
         case INT:
+            if (value.getClass() == Integer.class) {
+                return FieldDataEncoder.encodeIntegerToString(((Integer)value).intValue());
+            }
             try {
                 // Validate and encode
-                int n = Integer.parseInt(stringValue);
+                int n = Integer.parseInt(value.toString());
                 return FieldDataEncoder.encodeIntegerToString(n);
             } catch (NumberFormatException nfe) {
                 throw new ValueFormatException("Unable to encode integer string value to "
@@ -284,9 +291,12 @@ public final class FieldValueMapper {
             }
 
         case LONG:
+            if (value.getClass() == Long.class) {
+                return FieldDataEncoder.encodeLongToString(((Long)value).longValue());
+            }
             try {
                 // Validate and pad
-                long l = Long.parseLong(stringValue);
+                long l = Long.parseLong(value.toString());
                 return FieldDataEncoder.encodeLongToString(l);
             } catch (NumberFormatException nfe) {
                 throw new ValueFormatException("Unable to encode long integer string value to "
@@ -295,9 +305,7 @@ public final class FieldValueMapper {
 
         default:
             throw new FieldDataEncodingException("Unknown or unsupported type " + type);
-
         }
-
     }
 
 
@@ -504,10 +512,31 @@ public final class FieldValueMapper {
                 f.getBinaryOffset(), f.getBinaryLength());
     }
 
-
+    /**
+     * Get suitable data type for a JSON field. Only accepts property
+     * defs with value type JSON. Uses JSON field type hints set in property
+     * definition metadata.
+     * 
+     * @param def
+     * @param jsonFieldName Name of a JSON field.
+     * @return 
+     */
+    public static Type getJsonFieldDataType(PropertyTypeDefinition def, String jsonFieldName) {
+        if (def.getType() != PropertyType.Type.JSON) {
+            throw new IllegalArgumentException("Type JSON required: " + def);
+        }
+        Map<String,Object> metadata = def.getMetadata();
+        String typeHint = (String) metadata.get(
+                PropertyTypeDefinition.METADATA_INDEXABLE_JSON_TYPEHINT_FIELD_PREFIX + jsonFieldName);
+        if (typeHint == null) {
+            typeHint = (String) metadata.get(
+                    PropertyTypeDefinition.METADATA_INDEXABLE_JSON_TYPEHINT_DEFAULT);
+        }
+        return typeHint != null ? Type.valueOf(typeHint) : Type.STRING;
+    }
+    
     @Required
     public void setValueFactory(ValueFactory valueFactory) {
         this.valueFactory = valueFactory;
     }
-
 }

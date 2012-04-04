@@ -70,6 +70,7 @@
     <property name="affectedPropDefPointers">
       <list>
         <value>resource::link-check</value>
+        <value>resource::broken-links-count</value>
         <value>resource::link-status</value>
       </list>
     </property>
@@ -113,6 +114,7 @@
     <property name="affectedPropDefPointers">
       <list>
         <value>resource::link-check</value>
+        <value>resource::broken-links-count</value>
         <value>resource::link-status</value>
       </list>
     </property>

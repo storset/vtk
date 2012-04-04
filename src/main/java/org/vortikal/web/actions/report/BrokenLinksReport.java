@@ -44,11 +44,14 @@ import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.ContentStream;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.Parser;
 import org.vortikal.repository.search.PropertySortField;
 import org.vortikal.repository.search.Search;
+import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.ACLReadForAllQuery;
@@ -60,10 +63,13 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.web.service.URL;
 
+
+
 public class BrokenLinksReport extends DocumentReporter {
     
     private PropertyTypeDefinition linkStatusPropDef;
     private PropertyTypeDefinition linkCheckPropDef;
+    private PropertyTypeDefinition brokenLinksCountPropDef;
     private PropertyTypeDefinition sortPropDef;
     private PropertyTypeDefinition publishedPropDef;
     private SortFieldDirection sortOrder;
@@ -143,7 +149,64 @@ public class BrokenLinksReport extends DocumentReporter {
         
         result.put("filters", filters);
         
+        result.put("brokenLinkCount", getBrokenLinkCount(token, resource, request, linkType));
+        
         return result;
+    }
+    
+    private int getBrokenLinkCount(String token, Resource currentResource,
+                                   HttpServletRequest request, final String linkType) {
+        // Set up search
+        Search search = getSearch(token, currentResource, request);
+        search.setLimit(Integer.MAX_VALUE);
+        ConfigurablePropertySelect cfg = new ConfigurablePropertySelect();
+        cfg.addPropertyDefinition(this.brokenLinksCountPropDef);
+        search.setPropertySelect(cfg);
+        search.setSorting(null);
+
+        // Set up include/exclude link types sum of broken links
+        String[] includeTypes;
+        String[] excludeTypes = new String[0];
+        if (FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE.equals(linkType) || linkType == null) {
+            includeTypes = new String[]{"BROKEN_LINKS_ANCHOR"};
+        } else if ("img".equals(linkType)) {
+            includeTypes = new String[] {"BROKEN_LINKS_IMG"};
+        } else {
+            includeTypes = new String[] {"BROKEN_LINKS"};
+            excludeTypes = new String[] {"BROKEN_LINKS_IMG", "BROKEN_LINKS_ANCHOR"};
+        }
+
+        // Search callback which sums up broken link counts
+        final class Accumulator implements Searcher.MatchCallback {
+            int sum = 0;
+            final String[] includeTypes;
+            final String[] excludeTypes;
+            
+            Accumulator(String[] includeTypes, String[] excludeTypes) {
+                this.includeTypes = includeTypes;
+                this.excludeTypes = excludeTypes;
+            }
+            
+            @Override
+            public boolean matching(PropertySet propertySet) throws Exception {
+                Property prop = propertySet.getProperty(brokenLinksCountPropDef);
+                if (prop == null) return true;
+                
+                net.sf.json.JSONObject obj = prop.getJSONValue();
+                for (String includeType: this.includeTypes) {
+                    sum += obj.optInt(includeType);
+                }
+                for (String excludeType: this.excludeTypes) {
+                    sum -= obj.optInt(excludeType);
+                }
+
+                return true;
+            }
+        }
+
+        Accumulator accumulator = new Accumulator(includeTypes, excludeTypes);
+        searcher.iterateMatching(token, search, accumulator);
+        return accumulator.sum;
     }
 
     @Override
@@ -188,10 +251,10 @@ public class BrokenLinksReport extends DocumentReporter {
             topLevelQ.add(filterQ);
         }
 
-        SortingImpl sorting = new SortingImpl();
-        sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
         Search search = new Search();
         search.setQuery(topLevelQ);
+        SortingImpl sorting = new SortingImpl();
+        sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
         search.setSorting(sorting);
 
         // Published (true|false)
@@ -277,6 +340,11 @@ public class BrokenLinksReport extends DocumentReporter {
     }
 
     @Required
+    public void setBrokenLinksCountPropDef(PropertyTypeDefinition def) {
+        this.brokenLinksCountPropDef = def;
+    }
+    
+    @Required
     public void setPublishedPropDef(PropertyTypeDefinition publishedPropDef) {
         this.publishedPropDef = publishedPropDef;
     }
@@ -290,7 +358,7 @@ public class BrokenLinksReport extends DocumentReporter {
     public void setSortOrder(SortFieldDirection sortOrder) {
         this.sortOrder = sortOrder;
     }
-    
+
     public void setParser(Parser parser) {
         this.parser = parser;
     }

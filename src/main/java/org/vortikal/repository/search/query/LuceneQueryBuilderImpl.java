@@ -272,8 +272,9 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
             TermOperator op = ptq.getOperator();
             boolean lowercase = (op == TermOperator.EQ_IGNORECASE || op == TermOperator.NE_IGNORECASE);
             if (cva != null) {
-                String fieldName = FieldNames.getJSONSearchFieldName(propDef, cva, lowercase);
-                String fieldValue = lowercase ? ptq.getTerm().toLowerCase() : ptq.getTerm();
+                Type dataType = FieldValueMapper.getJsonFieldDataType(propDef, cva);
+                String fieldName = FieldNames.getJsonSearchFieldName(propDef, cva, lowercase);
+                String fieldValue = this.fieldValueMapper.encodeIndexFieldValue(ptq.getTerm(), dataType, lowercase);
                 return new PropertyTermQueryBuilder(op, fieldName, fieldValue, this.cachedDeletedDocsFilter);
             } else {
                 String fieldName = FieldNames.getSearchFieldName(propDef, lowercase);

@@ -85,7 +85,7 @@ public class PropertyWildcardQueryBuilder implements QueryBuilder {
         
         String fieldName = FieldNames.getSearchFieldName(def, ignorecase);
         if (def.getType() == Type.JSON && query.getComplexValueAttributeSpecifier() != null) {
-            fieldName = FieldNames.getJSONSearchFieldName(def,
+            fieldName = FieldNames.getJsonSearchFieldName(def,
                     query.getComplexValueAttributeSpecifier(), ignorecase);
         }
 

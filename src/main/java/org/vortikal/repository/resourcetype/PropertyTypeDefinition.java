@@ -56,13 +56,19 @@ public interface PropertyTypeDefinition {
     
     /**
      * Temporary marker for properties that are visualized as content for the resource.
-     * Will only have meaning for properties/resources using the new editor regime.
+     * Will only have meaning for properties/resources using the old editor regime.
      */
     public ContentRelation getContentRelation();
 
     public static final String METADATA_EDITING_HINTS = "editingHints";
     
     public static final String METADATA_INDEXABLE_JSON = "indexableJsonHint";
+    
+    public static final String METADATA_INDEXABLE_JSON_TYPEHINT_FIELD_PREFIX = 
+                                              METADATA_INDEXABLE_JSON + ".FieldType.";
+    
+    public static final String METADATA_INDEXABLE_JSON_TYPEHINT_DEFAULT = 
+                                              METADATA_INDEXABLE_JSON + ".DefaultFieldType";
     
     public Map<String, Object> getMetadata();
     

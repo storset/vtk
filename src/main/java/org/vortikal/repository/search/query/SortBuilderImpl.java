@@ -101,7 +101,7 @@ public class SortBuilderImpl implements SortBuilder {
                 case JSON:
                     String cva = psf.getComplexValueAttributeSpecifier();
                     if (cva != null) {
-                        fieldName = FieldNames.getJSONSearchFieldName(def, cva, false);
+                        fieldName = FieldNames.getJsonSearchFieldName(def, cva, false);
                     }
                 case DATE:
                 case TIMESTAMP:

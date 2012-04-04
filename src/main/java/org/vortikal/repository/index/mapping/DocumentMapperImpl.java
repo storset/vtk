@@ -30,11 +30,13 @@
  */
 package org.vortikal.repository.index.mapping;
 
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import static org.vortikal.repository.resourcetype.PropertyType.Type.BINARY;
 import static org.vortikal.repository.resourcetype.PropertyType.Type.JSON;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,6 +60,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -209,11 +212,8 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
             case JSON:
                 // Add any indexable JSON value attributes (both as lowercase
                 // and regular)
-                for (Field jsonAttrField : getIndexedFieldsFromJSONProperty(property, false)) {
+                for (Field jsonAttrField : getIndexedFieldsFromJSONProperty(property)) {
                     doc.add(jsonAttrField);
-                }
-                for (Field jsonAttrFieldLc : getIndexedFieldsFromJSONProperty(property, true)) {
-                    doc.add(jsonAttrFieldLc);
                 }
                 break;
 
@@ -420,7 +420,7 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                     "Property type definition has name which collides with reserved index field:" + fieldName);
         }
 
-        Field field = null;
+        Field field;
         if (def.isMultiple()) {
             Value[] values = property.getValues();
             field = this.fieldValueMapper.getFieldFromValues(fieldName, values, lowercase);
@@ -431,8 +431,14 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         return field;
     }
 
+    /**
+     * Returns all searchable fields for a given JSON property, both lowercased
+     * and regular variants.
+     * @param prop
+     * @return 
+     */
     @SuppressWarnings("unchecked")
-    private Field[] getIndexedFieldsFromJSONProperty(Property prop, boolean lowercase) {
+    private List<Field> getIndexedFieldsFromJSONProperty(Property prop) {
 
         PropertyTypeDefinition def = prop.getDefinition();
         if (def == null || def.getType() != JSON) {
@@ -440,9 +446,10 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
                     "Cannot create indexed JSON fields for property with no definition or non-JSON type");
         }
 
-        if (! def.getMetadata().containsKey(PropertyTypeDefinition.METADATA_INDEXABLE_JSON)) {
+        Map<String, Object> metadata = def.getMetadata();
+        if (! metadata.containsKey(PropertyTypeDefinition.METADATA_INDEXABLE_JSON)) {
             // No indexing hint for this JSON property.
-            return new Field[0];
+            return Collections.EMPTY_LIST;
         }
         
         final List<Field> fields = new ArrayList<Field>();
@@ -457,36 +464,54 @@ public class DocumentMapperImpl implements DocumentMapper, InitializingBean {
         try {
             final List<Object> indexFieldValues = new ArrayList<Object>();
             for (Value jsonValue : jsonPropValues) {
-                JSONObject json = JSONObject.fromObject(jsonValue.getObjectValue());
+                JSONObject json = jsonValue.getJSONValue();
                 for (Iterator it = json.entrySet().iterator(); it.hasNext();) {
                     indexFieldValues.clear();
                     Map.Entry entry = (Map.Entry) it.next();
-                    String attribute = (String)entry.getKey();
-                    Object value = entry.getValue();
-                    if (value instanceof JSONArray) {
+                    final String jsonAttribute = (String)entry.getKey();
+                    final Object value = entry.getValue();
+                    if (value == null) continue;
+                    
+                    // Only index primitives and arrays of primitives, exactly ONE level deep.
+                    if (value.getClass() == JSONArray.class) {
                         for (Iterator iter = ((JSONArray) value).iterator(); iter.hasNext();) {
                             Object nextVal = iter.next();
-                            if (nextVal != null) {
+                            if (nextVal != null 
+                                    && nextVal.getClass() != JSONObject.class
+                                    && nextVal.getClass() != JSONArray.class) {
                                 indexFieldValues.add(nextVal);
                             }
                         }
-                    } else if (value != null) {
+                    } else if (value.getClass() != JSONObject.class) {
                         indexFieldValues.add(value);
                     }
+                    // Set up type for searchable JSON field
+                    Type dataType = FieldValueMapper.getJsonFieldDataType(def, jsonAttribute);
                     
-                    String fieldName = FieldNames.getJSONSearchFieldName(def, attribute, lowercase);
-                    Field field = this.fieldValueMapper.getUnencodedMultiValueFieldfFromObjects(fieldName,
-                            indexFieldValues.toArray(), lowercase);
+                    // Create regular searchable field for all values
+                    String fieldName = FieldNames.getJsonSearchFieldName(def, jsonAttribute, false);
+                    Field field = this.fieldValueMapper.getEncodedMultiValueFieldFromObjects(
+                            fieldName, indexFieldValues.toArray(), dataType, false);
                     fields.add(field);
+                    
+                    // Lowercased searchable field for all values with type hint STRING or HTML
+                    if (dataType == Type.STRING || dataType == Type.HTML) {
+                        fieldName = FieldNames.getJsonSearchFieldName(def, jsonAttribute, true);
+                        field = this.fieldValueMapper.getEncodedMultiValueFieldFromObjects(
+                                fieldName, indexFieldValues.toArray(), dataType, true);
+                        fields.add(field);
+                    }
                 }
             }
-        } catch (JSONException je) {
-            logger.warn("JSON property " + prop + " has a value containing invalid or non-indexable JSON data: " + je.getMessage()
-                    + ", will not index any JSON values.");
-            return new Field[0];
+        } catch (Exception e) {
+            logger.warn("JSON property " 
+                    + prop + " has a value(s) containing invalid or non-indexable JSON data: " 
+                    + e.getMessage()
+                    + ", will not index.");
+            return Collections.EMPTY_LIST;
         }
 
-        return fields.toArray(new Field[fields.size()]);
+        return fields;
     }
 
     /**

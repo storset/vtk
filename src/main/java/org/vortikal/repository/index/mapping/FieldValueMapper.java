@@ -138,6 +138,7 @@ public final class FieldValueMapper {
 
         Field field = new Field(name, new StringArrayTokenStream(encodedValues));
         field.setOmitTermFreqAndPositions(true);
+        field.setOmitNorms(true);
         return field;
     }
     
@@ -169,12 +170,14 @@ public final class FieldValueMapper {
         }
         Field field = new Field(name, new StringArrayTokenStream(strValues));
         field.setOmitTermFreqAndPositions(true);
+        field.setOmitNorms(true);
         return field;
     }
     
     public Field getUnencodedMultiValueFieldFromStrings(String name, String[] values) {
         Field field = new Field(name, new StringArrayTokenStream(values));
         field.setOmitTermFreqAndPositions(true);
+        field.setOmitNorms(true);
         return field;
     }
 

@@ -38,6 +38,8 @@ void execute(context, args, out) {
                     p = p.substring(prefix.length() + 1);
                 }
                 prop = r.getPropertyByPrefix(prefix, p);
+                if (prop == null) continue;
+
                 if (prop.getType() == org.vortikal.repository.resourcetype.PropertyType.Type.BINARY) {
                     out.println("  " + propName + ": [binary]");
                 } else {

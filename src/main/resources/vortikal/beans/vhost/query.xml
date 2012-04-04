@@ -46,7 +46,7 @@
   </bean>
 
   <!-- Document mapper -->
-  <bean id="documentMapper" class="org.vortikal.repository.index.mapping.DocumentMapperImpl"
+  <bean id="documentMapper" class="org.vortikal.repository.index.mapping.DocumentMapper"
         depends-on="structuredResource.parser">
     <!-- 
          XXX: This bean depends the structured resource parser being

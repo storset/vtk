@@ -74,10 +74,11 @@ public class BrokenLinksCountEvaluator implements PropertyEvaluator{
         Property linkCheckProp = ctx.getNewResource().getProperty(this.linkCheckPropDef);
         if (linkCheckProp == null) return false;
 
-        // Link check prop only changes for system evaluation, so don't evaluate
-        // if other context:
-        if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.SystemPropertiesChange) {
-            return property.isValueInitialized();
+        // Link check prop only changes for system evaluation, so only evaluate if it does
+        // not already exist or when system change:
+        if (property.isValueInitialized() &&
+                ctx.getEvaluationType() != PropertyEvaluationContext.Type.SystemPropertiesChange) {
+            return true;
         }
         
         try {

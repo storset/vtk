@@ -1176,7 +1176,6 @@
             <value>${jquery.baseURL}/plugins/jquery.form.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
-            <value>${jsBaseURL}/plugins/thickbox-modified/check-unsaved-changes.js</value>
           </list>
         </entry>
       </map>
@@ -1737,7 +1736,6 @@
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/iframe-admin.js</value>
             <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
-            <value>${jsBaseURL}/plugins/thickbox-modified/check-unsaved-changes.js</value>
           </list>
         </entry>
       </map>
@@ -1754,7 +1752,6 @@
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/iframe-admin-alone.js</value>
             <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
-            <value>${jsBaseURL}/plugins/thickbox-modified/check-unsaved-changes.js</value>
           </list>
         </entry>
       </map>

@@ -10,7 +10,7 @@ resourcetype research-group {
     tags : string multiple overrides tags,
     contactInfo : html noextract,
 	participantsUsernames : string multiple,
-    participantsCachedFullNames : binary external:researchGroupParticipantsFullNameService,
+    participantsCachedFullNames : binary external:participantsFullNameService,
     participants : json (participantName:string, participantUrl:string) multiple,
     numberOfParticipantsToDisplay : string defaultvalue("50"),        
     listRelatedProjects : boolean defaultvalue("true"),
@@ -32,7 +32,7 @@ resourcetype research-group {
   }
     
   services {
-      participantsUsernames researchGroupParticipantsFullNameService
+      participantsUsernames participantsFullNameService
   }
 
   view-components {

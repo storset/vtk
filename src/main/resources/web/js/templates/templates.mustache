@@ -11,7 +11,7 @@
 
 <div class="{{ classes }}">
   <label for="{{ inputFieldName  }}">{{ elemTitle }}</label>
-  <textarea name="{{ inputFieldName }}" id="{{ inputFieldName }} rows="7" cols="60" ></textarea>
+  <textarea name="{{ inputFieldName }}" id="{{ inputFieldName }}" rows="7" cols="60" ></textarea>
 </div>
 
 ### {{! RADIO }}
@@ -69,13 +69,7 @@
   {{{ preview }}}
 </div>
 
-### {{! ADD }}
-
-<div class="vrtx-button vrtx-add-button" onclick="addNewJsonElement('{{ element }}', this);">
-  <input type="button" value="{{ buttonText }}" />
-<div>
-
-### {{! REMOVE MOVE UP MOVE DOWN }}
+### {{! ADD, REMOVE, MOVE UP, MOVE DOWN }}
 
 <div class="vrtx-button vrtx-{{ class }}-button">
   <input type="button" value="{{ buttonText }}" />

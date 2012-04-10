@@ -19,7 +19,7 @@
       vrtxAdmin.serverFacade.getText("${webResources?html}/js/templates/templates.mustache", {
         success: function (results, status, resp) {
           var templates = results.split("###");
-          var templateNames = [ "string", "html", "radio", "dropdown", "date", "browse", "add", "remove-move"];
+          var templateNames = [ "string", "html", "radio", "dropdown", "date", "browse", "add-remove-move"];
           for(var i = 0, len = templates.length; i < len; i++) {
             TEMPLATES[templateNames[i]] = $.trim(templates[i]);
           }
@@ -73,19 +73,24 @@
 
       $.when(templatesRetrieved, jsonElementsBuilt).done(function() {
         for (var i = 0, len = LIST_OF_JSON_ELEMENTS.length; i < len; i++) {
-          var json = { element: i,
-                       buttonText: '${vrtx.getMsg("editor.add")}' }
-          $("#" + LIST_OF_JSON_ELEMENTS[i].name).append($.mustache(TEMPLATES["add"], json));
+          var json = { class: "add", buttonText: '${vrtx.getMsg("editor.add")}' }
+          $("#" + LIST_OF_JSON_ELEMENTS[i].name)
+            .append($.mustache(TEMPLATES["add-remove-move"], json))
+            .find(".vrtx-add-button input").data({'number': i});
         }
       });
 
+     $("#app-content").on("click", ".vrtx-json .vrtx-add-button input", function(e) {
+        addNewJsonElement(this);
+        e.stopPropagation();
+        e.preventDefault();
+      });
+      
     });
 
-    function addNewJsonElement(k, button) {
-
-      var j = LIST_OF_JSON_ELEMENTS[k];
-    
-      var counter = parseInt($(button).prev(".vrtx-json-element").find("input.id").val()) + 1;
+    function addNewJsonElement(button) {
+      var j = LIST_OF_JSON_ELEMENTS[parseInt($(button).data('number'))];
+      var counter = parseInt($(button).parent().prev(".vrtx-json-element").find("input.id").val()) + 1;
       if (isNaN(counter)) {
         counter = 0;
       }
@@ -136,9 +141,9 @@
       
       // Move up, move down, remove
 
-      var moveDownButton = "" || $.mustache(TEMPLATES["remove-move"], { class: 'move-down', buttonText: '&darr; ${vrtx.getMsg("editor.move-down")}' });
-      var moveUpButton = "" ||  $.mustache(TEMPLATES["remove-move"],   { class: 'move-up',   buttonText: '&uarr; ${vrtx.getMsg("editor.move-up")}'   });
-      var removeButton = "" || $.mustache(TEMPLATES["remove-move"],   { class: 'remove',    buttonText: '${vrtx.getMsg("editor.remove")}'           });
+      var moveDownButton = $.mustache(TEMPLATES["add-remove-move"], { class: 'move-down', buttonText: '&darr; ${vrtx.getMsg("editor.move-down")}' });
+      var moveUpButton = $.mustache(TEMPLATES["add-remove-move"],   { class: 'move-up',   buttonText: '&uarr; ${vrtx.getMsg("editor.move-up")}'   });
+      var removeButton = $.mustache(TEMPLATES["add-remove-move"],   { class: 'remove',    buttonText: '${vrtx.getMsg("editor.remove")}'           });
 
       var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>";
       var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
@@ -158,7 +163,7 @@
         newElement.append(moveUpButton);
       }
       newElement.find(".vrtx-remove-button").click(function () {
-        removeNode(j.name, counter, arrayOfIds);
+        removeNode(j.name, counter);
       });
       newElement.find(".vrtx-move-up-button").click(function () {
         swapContent(counter, arrayOfIds, -1, j.name);
@@ -186,7 +191,7 @@
       }
     }
     
-    function removeNode(name, counter, arrayOfIds) {
+    function removeNode(name, counter) {
       var removeElementId = '#vrtx-json-element-' + name + '-' + counter;
       var removeElement = $(removeElementId);
       var siblingElement;
@@ -195,6 +200,7 @@
       } else if (removeElement.next(".vrtx-json-element").length) {
         siblingElement = removeElement.next(".vrtx-json-element");
       }
+      
       $(removeElementId + " textarea").each(function () {
         if (isCkEditor(this.name)) {
           getCkInstance(this.name).destroy();

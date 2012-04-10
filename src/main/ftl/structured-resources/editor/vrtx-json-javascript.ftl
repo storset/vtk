@@ -3,8 +3,8 @@
 
 <#macro script>
   <#assign locale = springMacroRequestContext.getLocale() />
-  <script type="text/javascript" src="${webResources?html}/jquery/plugins/jquery.scrollTo-1.4.2-min.js"></script>
 
+  <script type="text/javascript" src="${webResources?html}/jquery/plugins/jquery.scrollTo-1.4.2-min.js"></script>
   <script type="text/javascript"> <!--
    
     var TEMPLATES = [];
@@ -16,7 +16,8 @@
       vrtxAdmin.serverFacade.getText("${webResources?html}/js/templates/templates.mustache", {
         success: function (results, status, resp) {
           var templates = results.split("###");
-          var templateNames = [ "string", "html", "radio", "dropdown", "date", "browse" ];
+          var templateNames = [ "string", "html",  "radio", "dropdown", "date", "browse",
+                                   "add", "remove-move"];
           for(var i = 0, len = templates.length; i < len; i++) {
             TEMPLATES[templateNames[i]] = $.trim(templates[i]);
           }
@@ -65,8 +66,9 @@
       </#list>
 
       for (var i = 0, len = LIST_OF_JSON_ELEMENTS.length; i < len; i++) {
-        $("#" + LIST_OF_JSON_ELEMENTS[i].name).append("<div class=\"vrtx-button vrtx-add-button\" onClick=\"addNewJsonElement(LIST_OF_JSON_ELEMENTS["
-                                                    + i + "],this)\"><input type=\"button\" value=\"${vrtx.getMsg("editor.add")}\" /></div>");
+        var json = { element: LIST_OF_JSON_ELEMENTS[" + i + "],
+                    buttonText: '${vrtx.getMsg("editor.add")}' }
+        $("#" + LIST_OF_JSON_ELEMENTS[i].name).append($.mustache(TEMPLATES["add"], json));
       }
 
     });
@@ -122,11 +124,12 @@
         }
       }
       
-      // Move up, move down, delete
+      // Move up, move down, remove
 
-      var moveDownButton = "<div class=\"vrtx-button vrtx-move-down-button\"><input type=\"button\" value=\"&darr; ${vrtx.getMsg("editor.move-down")}\" \/><\/div>";
-      var moveUpButton = "<div class=\"vrtx-button vrtx-move-up-button\"><input type=\"button\" value=\"&uarr; ${vrtx.getMsg("editor.move-up")}\" \/><\/div>";
-      var deleteButton = "<div class=\"vrtx-button vrtx-remove-button\"><input type=\"button\" value=\"${vrtx.getMsg("editor.remove")}\" \/><\/div>";
+      var moveDownButton = $.mustache(TEMPLATES["remove-move"], { class: 'move-down', buttonText: '&darr; ${vrtx.getMsg("editor.move-down")}' });
+      var moveUpButton = $.mustache(TEMPLATES["remove-move"],   { class: 'move-up',   buttonText: '&uarr; ${vrtx.getMsg("editor.move-up")}'   });
+      var removeButton = $.mustache(TEMPLATES["remove-move"],   { class: 'remove',    buttonText: '${vrtx.getMsg("editor.remove")}'           });
+
       var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>";
       var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
     
@@ -139,7 +142,7 @@
       if (counter > 0 && newElement.prev(".vrtx-json-element").length) {
         newElement.prev(".vrtx-json-element").append(moveDownButton);
       }
-      newElement.append(deleteButton);
+      newElement.append(removeButton);
     
       if (counter > 0) {
         newElement.append(moveUpButton);

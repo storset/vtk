@@ -16,8 +16,7 @@
       vrtxAdmin.serverFacade.getText("${webResources?html}/js/templates/templates.mustache", {
         success: function (results, status, resp) {
           var templates = results.split("###");
-          var templateNames = [ "dropdown",   "string", "html", "radio", 
-                                   "image", "resource", "date", "media" ];
+          var templateNames = [ "string", "html", "radio", "dropdown", "date", "browse" ];
           for(var i = 0, len = templates.length; i < len; i++) {
             TEMPLATES[templateNames[i]] = $.trim(templates[i]);
           }
@@ -206,21 +205,6 @@
       }
     }
     
-    function addDropdown(elem, inputFieldName) {
-      var htmlOpts = [];
-      for (i in elem.valuemap) {
-        var keyValuePair = elem.valuemap[i];
-        var key = keyValuePair.split("$")[0];
-        var value = keyValuePair.split("$")[1];
-        htmlOpts.push({key: key, value: value});
-      }
-      var json = { classes: "vrtx-string" + " " + elem.name,
-                   elemTitle: elem.title,
-                   inputFieldName: inputFieldName,
-                   options: htmlOpts }
-      return $.mustache(TEMPLATES["dropdown"], json);  
-    }
-    
     function addStringField(elem, inputFieldName) {
       var json = { classes: "vrtx-string" + " " + elem.name,
                    elemTitle: elem.title,
@@ -244,41 +228,71 @@
                    inputFieldName: inputFieldName }
       return $.mustache(TEMPLATES["radio"], json); 
     }
-    
-    function addImageRef(elem, inputFieldName) {
-      var json = { elemTitle: elem.title,
+
+    function addDropdown(elem, inputFieldName) {
+      var htmlOpts = [];
+      for (i in elem.valuemap) {
+        var keyValuePair = elem.valuemap[i];
+        var key = keyValuePair.split("$")[0];
+        var value = keyValuePair.split("$")[1];
+        htmlOpts.push({key: key, value: value});
+      }
+      var json = { classes: "vrtx-string" + " " + elem.name,
+                   elemTitle: elem.title,
                    inputFieldName: inputFieldName,
-                   fckEditorBaseUrl: '${fckeditorBase.url}',
-                   parentURI: '${resourceContext.parentURI?js_string}',
-                   fckBrowsePath: '${fckBrowse.url.pathRepresentation}',
-                   browseButtonText: '<@vrtx.msg code="editor.browseImages" />' }
-      return $.mustache(TEMPLATES["image"], json); 
+                   options: htmlOpts }
+      return $.mustache(TEMPLATES["dropdown"], json);  
     }
-    
-    function addResourceRef(elem, inputFieldName) {
-      var json = { elemTitle: elem.title,
-                   inputFieldName: inputFieldName,
-                   fckEditorBaseUrl: '${fckeditorBase.url}',
-                   parentURI: '${resourceContext.parentURI?js_string}',
-                   fckBrowsePath: '${fckBrowse.url.pathRepresentation}',
-                   browseButtonText: '<@vrtx.msg code="editor.browseImages" />' }
-      return $.mustache(TEMPLATES["resource"], json); 
-    }
-    
+
     function addDateField(elem, inputFieldName) {
       var json = { elemTitle: elem.title,
                    inputFieldName: inputFieldName }
       return $.mustache(TEMPLATES["date"], json); 
     }
     
-    function addMediaRef(elem, inputFieldName) {
-      var json = { elemTitle: elem.title,
+    function addImageRef(elem, inputFieldName) {
+      var json = { class: 'vrtx-image-ref',
+                   elemTitle: elem.title,
                    inputFieldName: inputFieldName,
                    fckEditorBaseUrl: '${fckeditorBase.url}',
                    parentURI: '${resourceContext.parentURI?js_string}',
                    fckBrowsePath: '${fckBrowse.url.pathRepresentation}',
-                   browseButtonText: '<@vrtx.msg code="editor.browseImages" />' }      
-      return $.mustache(TEMPLATES["media"], json); 
+                   browseButtonText: '<@vrtx.msg code="editor.browseImages" />',
+                   type: '',
+                   size: 30,
+                   onBlur: "previewImage('" + inputFieldName + "');",
+                   preview: "<div id='" + inputFieldName + ".preview'></div>" }
+      return $.mustache(TEMPLATES["browse"], json); 
+    }
+    
+    function addResourceRef(elem, inputFieldName) {
+      var json = { class: 'vrtx-resource-ref',
+                   elemTitle: elem.title,
+                   inputFieldName: inputFieldName,
+                   fckEditorBaseUrl: '${fckeditorBase.url}',
+                   parentURI: '${resourceContext.parentURI?js_string}',
+                   fckBrowsePath: '${fckBrowse.url.pathRepresentation}',
+                   browseButtonText: '<@vrtx.msg code="editor.browseImages" />',
+                   type: 'File',
+                   size: 40,
+                   onBlur: "",
+                   preview: "" }
+      return $.mustache(TEMPLATES["browse"], json); 
+    }
+    
+    function addMediaRef(elem, inputFieldName) {
+      var json = { class: 'vrtx-media-ref',
+                   elemTitle: elem.title,
+                   inputFieldName: inputFieldName,
+                   fckEditorBaseUrl: '${fckeditorBase.url}',
+                   parentURI: '${resourceContext.parentURI?js_string}',
+                   fckBrowsePath: '${fckBrowse.url.pathRepresentation}',
+                   browseButtonText: '<@vrtx.msg code="editor.browseImages" />',
+                   type: 'Media',
+                   size: 30,
+                   onBlur: "",
+                   preview: "" }      
+      return $.mustache(TEMPLATES["browse"], json); 
     }
     
     // When move up or move down (+ scroll to)

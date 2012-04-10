@@ -12,6 +12,7 @@
 
     $(document).ready(function() {
 
+      // Retrieve HTML templates
       vrtxAdmin.serverFacade.getText("/vrtx/__vrtx/static-resources/js/templates/templates.mustache", {
         success: function (results, status, resp) {
           var templates = results.split("###");

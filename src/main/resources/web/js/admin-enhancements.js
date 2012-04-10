@@ -742,7 +742,7 @@ VrtxAdmin.prototype.supportsReadOnly = function supportsReadOnly(inputfield) {
     5. Keyboard interceptors / rerouters
 \*-------------------------------------------------------------------*/
 
-function interceptEnterKey(idOrClass) {
+VrtxAdmin.prototype.interceptEnterKey = function interceptEnterKey(idOrClass) {
   $("#app-content").on("keypress", "form input" + idOrClass, function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       e.preventDefault(); // cancel the default browser click
@@ -750,21 +750,21 @@ function interceptEnterKey(idOrClass) {
   });
 }
 
-function interceptEnterKeyAndReroute(txt, btn) {
+VrtxAdmin.prototype.interceptEnterKeyAndReroute = function interceptEnterKeyAndReroute(txt, btn) {
   $("#app-content").on("keypress", txt, function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
       $(btn).click(); // click the associated button
       e.preventDefault();
     }
   });
-}
+};
 
-function mapShortcut(selectors, reroutedSelector) {
+VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelector) {
   $("#app-content").on("click", selectors, function(e) {
     $(reroutedSelector).click();
     e.preventDefault();
   });
-}
+};
 
 
 
@@ -984,32 +984,35 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
     7. Permissions	
 \*-------------------------------------------------------------------*/
 
-function initPermissionForm(selectorClass) {
-  if (!vrtxAdmin._$("." + selectorClass + " .aclEdit").length) return;
-  toggleConfigCustomPermissions(selectorClass);
-  interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]", "." + selectorClass + " input.addUserButton");
-  interceptEnterKeyAndReroute("." + selectorClass + " .addGroup input[type=text]", "." + selectorClass + " input.addGroupButton");
-  initSimplifiedPermissionForm();
-}
+VrtxAdmin.prototype.initPermissionForm = function initPermissionForm(selectorClass) {
+  var vrtxAdm = this;
 
-function initSimplifiedPermissionForm() {
+  if (!vrtxAdm._$("." + selectorClass + " .aclEdit").length) return;
+  vrtxAdm.toggleConfigCustomPermissions(selectorClass);
+  vrtxAdm.interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]", "." + selectorClass + " input.addUserButton");
+  vrtxAdm.interceptEnterKeyAndReroute("." + selectorClass + " .addGroup input[type=text]", "." + selectorClass + " input.addGroupButton");
+  vrtxAdm.initSimplifiedPermissionForm();
+};
+
+// Run functions from autocomplete JS
+VrtxAdmin.prototype.initSimplifiedPermissionForm = function initSimplifiedPermissionForm() {
   permissionsAutocomplete('userNames', 'userNames', vrtxAdmin.permissionsAutocompleteParams, false);
   splitAutocompleteSuggestion('userNames');
   permissionsAutocomplete('groupNames', 'groupNames', vrtxAdmin.permissionsAutocompleteParams, false);  
-}
+};
 
-function toggleConfigCustomPermissions(selectorClass) {
-  var _$ = vrtxAdmin._$;
+VrtxAdmin.prototype.toggleConfigCustomPermissions = function toggleConfigCustomPermissions(selectorClass) {
+  var vrtxAdm = this, _$ = vrtxAdm._$;
 
   var customInput = _$("." + selectorClass + " ul.shortcuts label[for=custom] input");
   if (!customInput.is(":checked") && customInput.length) {
     _$("." + selectorClass).find(".principalList").hide(0);
   }
   $("#app-content").on("click", "." + selectorClass + " ul.shortcuts label[for=custom]", function (e) {
-    _$.single(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideDown);
+    _$.single(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdm.transitionCustomPermissionSpeed, vrtxAdm.transitionEasingSlideDown);
   });
   $("#app-content").on("click", "." + selectorClass + " ul.shortcuts label:not([for=custom])", function (e) {
-    _$.single(this).closest("form").find(".principalList:visible").slideUp(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideUp);
+    _$.single(this).closest("form").find(".principalList:visible").slideUp(vrtxAdm.transitionCustomPermissionSpeed, vrtxAdm.transitionEasingSlideUp);
   });
 }
 

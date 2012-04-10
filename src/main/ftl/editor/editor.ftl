@@ -47,36 +47,38 @@
       });
     
       $(document).ready(function() {
+        var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+      
         // Sticky bar shortcuts
-        mapShortcut("#vrtx-save-view-shortcut", "#saveAndViewButton");
-        mapShortcut("#vrtx-save-copy-shortcut", "#saveCopyButton");
-        mapShortcut("#vrtx-save-shortcut", "#saveButton");
-        mapShortcut("#vrtx-cancel-shortcut", "#cancel");
-        $("#editor").on("click", "#cancel", function(e) {
+        vrtxAdm.mapShortcut("#vrtx-save-view-shortcut", "#saveAndViewButton");
+        vrtxAdm.mapShortcut("#vrtx-save-copy-shortcut", "#saveCopyButton");
+        vrtxAdm.mapShortcut("#vrtx-save-shortcut", "#saveButton");
+        vrtxAdm.mapShortcut("#vrtx-cancel-shortcut", "#cancel");
+        _$("#editor").on("click", "#cancel", function(e) {
           performSave();
         });
-        $("#editor").on("click", "#saveAndViewButton, #saveCopyButton", function(e) {
+        _$("#editor").on("click", "#saveAndViewButton, #saveCopyButton", function(e) {
           performSave();
           if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save && !vrtxImageEditor.savedImage) {
-            vrtxImageEditor.save($(this).attr("id"));
+            vrtxImageEditor.save(_$.single(this).attr("id"));
             e.preventDefault();
           }
         });
         
         <#if !isCollection>
-          interceptEnterKey('#resource\\.tags');
+          vrtxAdm.interceptEnterKey('#resource\\.tags');
         </#if>
         
         // Multiple fields
-        if($("#resource\\.featured-articles").length) {
+        if(_$("#resource\\.featured-articles").length) {
           loadMultipleDocuments(true, "resource\\.featured-articles", true, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
                                 '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
         }   
-        if($("#resource\\.aggregation").length) {                  
+        if(_$("#resource\\.aggregation").length) {                  
           loadMultipleDocuments(true, "resource\\.aggregation", false, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
                                 '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
         } 
-        if($("#resource\\.manually-approve-from").length) {                
+        if(_$("#resource\\.manually-approve-from").length) {                
           loadMultipleDocuments(false, "resource\\.manually-approve-from", false, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
                                 '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
         }
@@ -90,9 +92,8 @@
         formatDocumentsData();
         NEED_TO_CONFIRM = false;
       } 
-
-      // i18n     
-      <#if isCollection>
+ 
+      <#if isCollection> // i18n
         var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
       <#elseif isImage>
         var ajaxSaveText = "<@vrtx.msg code='editor.save-image-ajax-loading-title' />";   
@@ -123,7 +124,7 @@
                            </#list>
                          </#if>]; 
      
-      if (vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7) {
+      if (vrtxAdm.isIE && vrtxAdm.browserVersion <= 7) {
         cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
       }
      

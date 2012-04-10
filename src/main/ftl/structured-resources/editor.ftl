@@ -24,15 +24,17 @@
     });
 
     $(document).ready(function() {
+      var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+    
       // Sticky bar shortcuts
-      mapShortcut("#vrtx-save-view-shortcut", "#saveAndViewButton");
-      mapShortcut("#vrtx-save-shortcut", "#updateAction");
-      mapShortcut("#vrtx-cancel-shortcut", "#cancelAction");
-      mapShortcut("#vrtx-save-working-copy-shortcut", "#saveWorkingCopyAction");
-      mapShortcut("#vrtx-make-public-version-shortcut", "#makePublicVersionAction");
-      mapShortcut("#vrtx-delete-working-copy-shortcut", "#deleteWorkingCopyAction");
-      mapShortcut("#vrtx-save-as-working-copy-shortcut", "#saveWorkingCopyAction");
-      $("#editor").on("click", "#saveAndViewButton, #cancelAction, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", function(e) {
+      vrtxAdm.mapShortcut("#vrtx-save-view-shortcut", "#saveAndViewButton");
+      vrtxAdm.mapShortcut("#vrtx-save-shortcut", "#updateAction");
+      vrtxAdm.mapShortcut("#vrtx-cancel-shortcut", "#cancelAction");
+      vrtxAdm.mapShortcut("#vrtx-save-working-copy-shortcut", "#saveWorkingCopyAction");
+      vrtxAdm.mapShortcut("#vrtx-make-public-version-shortcut", "#makePublicVersionAction");
+      vrtxAdm.mapShortcut("#vrtx-delete-working-copy-shortcut", "#deleteWorkingCopyAction");
+      vrtxAdm.mapShortcut("#vrtx-save-as-working-copy-shortcut", "#saveWorkingCopyAction");
+      _$("#editor").on("click", "#saveAndViewButton, #cancelAction, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", function(e) {
         performSave();
       });
     });
@@ -47,11 +49,11 @@
       if (typeof MULTIPLE_INPUT_FIELD_NAMES !== "undefined") {
         saveMultipleInputFields();  // js/editor-multipleinputfields.js
       }
-      var boxUrlTextFields = $(".boxUrlText input");
+      var boxUrlTextFields = _$(".boxUrlText input");
       var i = boxUrlTextFields.length;
       while(i--) {
-        var boxUrlTextField = $(boxUrlTextFields[i]);
-        boxUrlTextField.val($.trim(boxUrlTextField.val()));
+        var boxUrlTextField = _$(boxUrlTextFields[i]);
+        boxUrlTextField.val(_$.trim(boxUrlTextField.val()));
       }
       NEED_TO_CONFIRM = false;  
     }
@@ -66,7 +68,7 @@
                          </#list>
                        </#if>];   
    
-    if (vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7) {
+    if (vrtxAdm.isIE && vrtxAdm.browserVersion <= 7) {
      cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
     }
     

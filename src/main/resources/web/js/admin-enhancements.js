@@ -1610,16 +1610,13 @@ VrtxAdmin.prototype.displayInfoMsg = function displayInfoMsg(msg) {
 
 VrtxAdmin.prototype.serverFacade = {
   getText: function(url, callbacks) {
-    this.get(url, callbacks, "text", true);
+    this.get(url, callbacks, "text");
   },
   getHtml: function(url, callbacks) {
-    this.get(url, callbacks, "html", true);
-  },
-  getHtmlSync: function(url, callbacks) {
-    this.get(url, callbacks, "html", false);
+    this.get(url, callbacks, "html");
   },
   getJSON: function(url, callbacks) {
-    this.get(url, callbacks, "json", true);
+    this.get(url, callbacks, "json");
   },
   postHtml: function(url, params, callbacks) {
     this.post(url, params, callbacks, "html", "application/x-www-form-urlencoded;charset=UTF-8");
@@ -1627,10 +1624,9 @@ VrtxAdmin.prototype.serverFacade = {
   postJSON: function(url, params, callbacks) {
     this.post(url, params, callbacks, "json", "text/plain;charset=utf-8");
   },
-  get: function(url, callbacks, type, async) {
+  get: function(url, callbacks, type) {
     vrtxAdmin._$.ajax({
       type: "GET",
-      async: async,
       url: url,
       dataType: type,
       success: callbacks.success,

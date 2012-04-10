@@ -7,9 +7,16 @@
 
   <script type="text/javascript"> <!--
    
-    LIST_OF_JSON_ELEMENTS = [];
+    var TEMPLATES = [];
+    var LIST_OF_JSON_ELEMENTS = [];
 
     $(document).ready(function() {
+
+      vrtxAdmin.serverFacade.getHtml("/vrtx/__vrtx/static-resources/js/templates/dropdown.mustache", {
+        success: function (results, status, resp) {
+          TEMPLATES["dropdown"] = results;
+        }
+      });
 
       <#assign i = 0 />
       <#list form.elements as elementBox>
@@ -197,22 +204,18 @@
     
     function addDropdown(elem, inputFieldName) {
       var htmlTemplate = "";
-      vrtxAdmin.serverFacade.getHtmlSync("/vrtx/__vrtx/static-resources/js/templates/dropdown.mustache", {
-        success: function (results, status, resp) {
-          var htmlOpts = "";
-          for (i in elem.valuemap) {
-            var keyValuePair = elem.valuemap[i];
-            var key = keyValuePair.split("$")[0];
-            var value = keyValuePair.split("$")[1];
-            htmlOpts += '<option value="' + key + '">' + value + '</option>';
-          }
-          var json = { classes: "vrtx-string" + " " + elem.name,
-                       elemTitle: elem.title,
-                       inputFieldName: inputFieldName,
-                       options: htmlOpts }
-          htmlTemplate = $.mustache(results, json);
-        }
-      });
+      var htmlOpts = "";
+      for (i in elem.valuemap) {
+        var keyValuePair = elem.valuemap[i];
+        var key = keyValuePair.split("$")[0];
+        var value = keyValuePair.split("$")[1];
+        htmlOpts += '<option value="' + key + '">' + value + '</option>';
+      }
+      var json = { classes: "vrtx-string" + " " + elem.name,
+                   elemTitle: elem.title,
+                   inputFieldName: inputFieldName,
+                   options: htmlOpts }
+      htmlTemplate = $.mustache(TEMPLATES["dropdown"], json);
       return htmlTemplate;  
     }
     

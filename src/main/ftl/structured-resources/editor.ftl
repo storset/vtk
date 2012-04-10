@@ -49,11 +49,11 @@
       if (typeof MULTIPLE_INPUT_FIELD_NAMES !== "undefined") {
         saveMultipleInputFields();  // js/editor-multipleinputfields.js
       }
-      var boxUrlTextFields = _$(".boxUrlText input");
+      var boxUrlTextFields = vrtxAdmin._$(".boxUrlText input");
       var i = boxUrlTextFields.length;
       while(i--) {
-        var boxUrlTextField = _$(boxUrlTextFields[i]);
-        boxUrlTextField.val(_$.trim(boxUrlTextField.val()));
+        var boxUrlTextField = vrtxAdmin._$(boxUrlTextFields[i]);
+        boxUrlTextField.val(vrtxAdmin._$.trim(boxUrlTextField.val()));
       }
       NEED_TO_CONFIRM = false;  
     }
@@ -68,7 +68,7 @@
                          </#list>
                        </#if>];   
    
-    if (vrtxAdm.isIE && vrtxAdm.browserVersion <= 7) {
+    if (vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7) {
      cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
     }
     

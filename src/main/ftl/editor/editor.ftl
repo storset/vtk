@@ -124,7 +124,7 @@
                            </#list>
                          </#if>]; 
      
-      if (vrtxAdm.isIE && vrtxAdm.browserVersion <= 7) {
+      if (vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7) {
         cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
       }
      

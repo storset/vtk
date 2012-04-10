@@ -17,6 +17,11 @@
           TEMPLATES["dropdown"] = results;
         }
       });
+      vrtxAdmin.serverFacade.getHtml("/vrtx/__vrtx/static-resources/js/templates/string.mustache", {
+        success: function (results, status, resp) {
+          TEMPLATES["string"] = results;
+        }
+      });
 
       <#assign i = 0 />
       <#list form.elements as elementBox>
@@ -200,10 +205,7 @@
       }
     }
     
-    // We need some way to add HTML from vrtx-types instead of building markup in JS
-    
     function addDropdown(elem, inputFieldName) {
-      var htmlTemplate = "";
       var htmlOpts = [];
       for (i in elem.valuemap) {
         var keyValuePair = elem.valuemap[i];
@@ -215,19 +217,14 @@
                    elemTitle: elem.title,
                    inputFieldName: inputFieldName,
                    options: htmlOpts }
-      htmlTemplate = $.mustache(TEMPLATES["dropdown"], json);
-      return htmlTemplate;  
+      return $.mustache(TEMPLATES["dropdown"], json);  
     }
     
     function addStringField(elem, inputFieldName) {
-      var classes = "vrtx-string" + " " + elem.name;
-      htmlTemplate = '<div class=\"' + classes + '\">';
-      htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
-      htmlTemplate += '<div class=\"inputfield vrtx-textfield\">';
-      htmlTemplate += '<input size=\"40\" type=\"text\" name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" \/>';
-      htmlTemplate += '<\/div>';
-      htmlTemplate += '<\/div>';
-      return htmlTemplate;
+      var json = { classes: "vrtx-string" + " " + elem.name,
+                   elemTitle: elem.title,
+                   inputFieldName: inputFieldName }
+      return $.mustache(TEMPLATES["string"], json); 
     }
     
     function addHtmlField(elem, inputFieldName) {

@@ -12,14 +12,11 @@
 
     $(document).ready(function() {
 
-      vrtxAdmin.serverFacade.getHtml("/vrtx/__vrtx/static-resources/js/templates/dropdown.mustache", {
+      vrtxAdmin.serverFacade.getText("/vrtx/__vrtx/static-resources/js/templates/templates.mustache", {
         success: function (results, status, resp) {
-          TEMPLATES["dropdown"] = results;
-        }
-      });
-      vrtxAdmin.serverFacade.getHtml("/vrtx/__vrtx/static-resources/js/templates/string.mustache", {
-        success: function (results, status, resp) {
-          TEMPLATES["string"] = results;
+          var templates = results.split("###");
+          TEMPLATES["dropdown"] = templates[0];
+          TEMPLATES["string"] = templates[1];
         }
       });
 

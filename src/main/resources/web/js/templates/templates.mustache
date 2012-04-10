@@ -77,3 +77,29 @@
   </div>
 </div>
 
+###
+
+<div class="vrtx-string">
+  <label for="{{ inputFieldName }}">{{ elemTitle }}</label>
+  <div class="inputfield vrtx-textfield">
+    <input size="20" type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" class="date" />
+  </div>
+</div>
+
+###
+
+<div class="vrtx-media-ref">
+  <div>
+    <label for="{{ inputFieldName }}">{{ elemTitle }}</label>
+  </div>
+  <div>
+    <div class="vrtx-textfield">
+      <input type="text" id="{{ inputFieldName }}" name="{{ inputFieldName }}" value="" size="30" />
+    </div>
+    <div class="vrtx-button">
+      <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ fckEditorBaseUrl }}', '{{ parentURI }}', '{{ fckBrowsePath }}', 'Media');">
+        {{ browseButtonText }}
+      </button>
+    </div>
+  </div>
+</div>

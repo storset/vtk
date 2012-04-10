@@ -16,7 +16,8 @@
       vrtxAdmin.serverFacade.getText("${webResources?html}/js/templates/templates.mustache", {
         success: function (results, status, resp) {
           var templates = results.split("###");
-          var templateNames = ["dropdown", "string", "html", "radio", "image", "resource"];
+          var templateNames = [ "dropdown",   "string", "html", "radio", 
+                                   "image", "resource", "date", "media" ];
           for(var i = 0, len = templates.length; i < len; i++) {
             TEMPLATES[templateNames[i]] = $.trim(templates[i]);
           }
@@ -265,23 +266,19 @@
     }
     
     function addDateField(elem, inputFieldName) {
-      htmlTemplate = '<div class=\"vrtx-string\">';
-      htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
-      htmlTemplate += '<div class=\"inputfield vrtx-textfield\">';
-      htmlTemplate += '<input size=\"20\" type=\"text\" name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" value=\"\" class=\"date\" \/>';
-      htmlTemplate += '<\/div>';
-      htmlTemplate += '<\/div>';
-      return htmlTemplate;
+      var json = { elemTitle: elem.title,
+                   inputFieldName: inputFieldName }
+      return $.mustache(TEMPLATES["date"], json); 
     }
     
     function addMediaRef(elem, inputFieldName) {
-      htmlTemplate = '<div class=\"vrtx-media-ref\">';
-      htmlTemplate += '<div><label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
-      htmlTemplate += '<\/div><div>';
-      htmlTemplate += '<div class=\"vrtx-textfield\"><input type=\"text\" id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\" value=\"\" size=\"30\"\/><\/div>';
-      htmlTemplate += '<div class=\"vrtx-button\"><button type=\"button\" onclick=\"browseServer(\'' + inputFieldName + '\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\', \'Media\');\"><@vrtx.msg code="editor.browseImages" /><\/button><\/div>';
-      htmlTemplate += '<\/div><\/div>'
-      return htmlTemplate;
+      var json = { elemTitle: elem.title,
+                   inputFieldName: inputFieldName,
+                   fckEditorBaseUrl: '${fckeditorBase.url}',
+                   parentURI: '${resourceContext.parentURI?js_string}',
+                   fckBrowsePath: '${fckBrowse.url.pathRepresentation}',
+                   browseButtonText: '<@vrtx.msg code="editor.browseImages" />' }      
+      return $.mustache(TEMPLATES["media"], json); 
     }
     
     // When move up or move down (+ scroll to)

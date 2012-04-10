@@ -18,7 +18,7 @@
           var templates = results.split("###");
           var templateNames = ["dropdown", "string", "html", "radio"]
           for(var i = 0, len = templates.length; i < len; i++) {
-            TEMPLATES[templateNames[i]] = templates[i];
+            TEMPLATES[templateNames[i]] = $.trim(templates[i]);
           }
         }
       });

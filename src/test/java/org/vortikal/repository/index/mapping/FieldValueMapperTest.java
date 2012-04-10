@@ -34,7 +34,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Fieldable;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
@@ -90,9 +90,9 @@ public class FieldValueMapperTest extends TestCase {
      */
     public void testBinaryMapping() {
         
-        Field stringField = this.fieldValueMapper.getStoredBinaryFieldFromValue("string", this.vf.createValue("bâr", Type.STRING));
-        Field intField = this.fieldValueMapper.getStoredBinaryFieldFromValue("int", this.vf.createValue("1024", Type.INT));
-        Field longField = this.fieldValueMapper.getStoredBinaryFieldFromValue("long", this.vf.createValue("1024", Type.LONG));
+        Fieldable stringField = this.fieldValueMapper.getStoredBinaryFieldFromValue("string", this.vf.createValue("bâr", Type.STRING));
+        Fieldable intField = this.fieldValueMapper.getStoredBinaryFieldFromValue("int", this.vf.createValue("1024", Type.INT));
+        Fieldable longField = this.fieldValueMapper.getStoredBinaryFieldFromValue("long", this.vf.createValue("1024", Type.LONG));
         
         assertEquals("string", stringField.name());
         assertEquals("int", intField.name());

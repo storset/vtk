@@ -39,8 +39,6 @@ import org.vortikal.repository.store.IndexDao;
  * directly on the target index. This has the advantage that the target index can be searched 
  * while re-indexing is running. When the temporary index is complete, its contents will
  * replace the target index' contents in one go.
- * XXX: this takes too long, should probably switch directories at file system level, instead.
- *      index downtime is usually very visible, so we should try our best to minimize it.
  * 
  * <p>The target index will be exclusively locked for writing immediately, while the re-indexing runs
  * on the temporary index. This is done to avoid losing any updates that might happen
@@ -67,6 +65,7 @@ public class IndirectReindexer implements PropertySetIndexReindexer {
         this.indexDao = indexDao;
     }
     
+    @Override
     public int run() throws IndexException {
 
         // Lock target index immediately to prevent concurrent modification and updates

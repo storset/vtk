@@ -39,9 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.LogMergePolicy;
 import org.apache.lucene.search.IndexSearcher;
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
@@ -65,10 +63,9 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     
     private String storageRootPath;
     private String storageId;
-    private int optimizeInterval = 25;
+    private int optimizeInterval = 50;
     private int commitCounter = 0;
-    private int mergeFactor = LogMergePolicy.DEFAULT_MERGE_FACTOR;
-    private int maxMergeDocs = LogMergePolicy.DEFAULT_MAX_MERGE_DOCS;
+    private boolean batchIndexingMode = false;
 
     private int maxReadOnlyReaders = 1;
     private int maxAgingReadOnlyReaders = 0;
@@ -93,35 +90,28 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     private final Mutex lock = new Mutex();
     
     @Override
-    public void afterPropertiesSet() throws BeanInitializationException {
-        try {
-            // Initialization of physical storage directory
-            File storageDirectory = initializeStorageDirectory(this.storageRootPath, 
-                                                               this.storageId);
-            
-            // Initialization of file-system backed Lucene index
-            this.fsIndex = new FSBackedLuceneIndex(storageDirectory,
-                                                   new KeywordAnalyzer(),
-                                                   this.forceUnlock);
-            
-            this.fsIndex.setMaxMergeDocs(this.maxMergeDocs);
-            this.fsIndex.setMergeFactor(this.mergeFactor);
-            this.fsIndex.setMaxReadOnlyReaders(this.maxReadOnlyReaders);
-            this.fsIndex.setMaxAgingReadOnlyReaders(this.maxAgingReadOnlyReaders);
-            this.fsIndex.setAgingReadOnlyReaderThreshold(this.agingReadOnlyReaderThreshold);
-            this.fsIndex.setIndexReaderWarmup(this.irw);
-            this.fsIndex.reinitialize();
-            
-            logger.info("Initialization of index '" + this.getStorageId() + "' complete.");
-            
-            if (this.closeAfterInitialization) {
-                logger.info("Closing instance after initialization.");
-                this.fsIndex.close();
-            }
-            
-        } catch (IOException io) {
-            logger.error("Got IOException while initializing index: " + io.getMessage());
-            throw new BeanInitializationException("Got IOException while initializing index", io);
+    public void afterPropertiesSet() throws IOException {
+        // Initialization of physical storage directory
+        File storageDirectory = initializeStorageDirectory(this.storageRootPath,
+                this.storageId);
+
+        // Initialization of file-system backed Lucene index
+        this.fsIndex = new FSBackedLuceneIndex(storageDirectory,
+                new KeywordAnalyzer(),
+                this.forceUnlock);
+
+        this.fsIndex.setBatchIndexingMode(this.batchIndexingMode);
+        this.fsIndex.setMaxReadOnlyReaders(this.maxReadOnlyReaders);
+        this.fsIndex.setMaxAgingReadOnlyReaders(this.maxAgingReadOnlyReaders);
+        this.fsIndex.setAgingReadOnlyReaderThreshold(this.agingReadOnlyReaderThreshold);
+        this.fsIndex.setIndexReaderWarmup(this.irw);
+        this.fsIndex.reinitialize();
+
+        logger.info("Initialization of index '" + this.getStorageId() + "' complete.");
+
+        if (this.closeAfterInitialization) {
+            logger.info("Closing instance after initialization.");
+            this.fsIndex.close();
         }
     }
     
@@ -209,7 +199,9 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     
     // CAN ONLY BE CALLED IF THREAD HAS ACQUIRED THE WRITE LOCK !!
     public void optimize() throws IOException {
-        this.fsIndex.getIndexWriter().optimize();
+        // XXX It is generally recommended to avoid optimize calls in newer Lucene versions.
+        //     Consider removing this from API entirely.
+        this.fsIndex.getIndexWriter().forceMerge(1, true);
         this.fsIndex.commit(); // Mark read-only reader dirty (force refresh)
     }
     
@@ -220,7 +212,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
         if (++this.commitCounter % this.optimizeInterval == 0) {
             logger.info("Reached " + this.commitCounter
                                         + " commits, auto-optimizing index ..");
-            this.fsIndex.getIndexWriter().optimize();
+            this.fsIndex.getIndexWriter().forceMerge(1, true);
             logger.info("Auto-optimization completed.");
         }
         
@@ -235,6 +227,7 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.DisposableBean#destroy()
      */
+    @Override
     public void destroy() throws Exception {
        logger.info("Graceful index shutdown, waiting for write lock on index '"
                + this.storageId + "' ..");
@@ -306,14 +299,6 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
         this.forceUnlock = forceUnlock;
     }
 
-    public void setMaxMergeDocs(int maxMergeDocs) {
-        this.maxMergeDocs = maxMergeDocs;
-    }
-
-    public void setMergeFactor(int mergeFactor) {
-        this.mergeFactor = mergeFactor;
-    }
-
     public void setOptimizeInterval(int optimizeInterval) {
         this.optimizeInterval = optimizeInterval;
     }
@@ -358,6 +343,10 @@ public class LuceneIndexManager implements InitializingBean, DisposableBean {
 
     public void setIndexReaderWarmup(IndexReaderWarmup irw) {
         this.irw = irw;
+    }
+    
+    public void setBatchIndexingMode(boolean batchIndexingMode) {
+        this.batchIndexingMode = batchIndexingMode;
     }
 
 }

@@ -69,13 +69,11 @@ public class PropertySetIndexImpl implements PropertySetIndex {
     public void addPropertySet(PropertySet propertySet,
                                Set<Principal> aclReadPrincipals) throws IndexException {
 
-        
-        Document doc = null;
         // NOTE: Write-locking should be done above this level.
         // This is needed to ensure the possibility of efficiently batching
         // together operations without interruption.
         try {
-            doc = this.documentMapper.getDocument((PropertySetImpl) propertySet, aclReadPrincipals);
+            Document doc = this.documentMapper.getDocument((PropertySetImpl) propertySet, aclReadPrincipals);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Adding new property set at URI '" + propertySet.getURI() + "'");
@@ -321,12 +319,12 @@ public class PropertySetIndexImpl implements PropertySetIndex {
             }
             
             IndexWriter indexWriter = this.indexAccessor.getIndexWriter();
-            indexWriter.addIndexesNoOptimize(dirs);
+            indexWriter.addIndexes(dirs);
             
             if (logger.isDebugEnabled()){
                 logger.debug("Optimizing index ..");
             }
-            indexWriter.optimize();
+            indexWriter.forceMerge(1, true);
 
         } catch (IOException io) {
             throw new IndexException(io);

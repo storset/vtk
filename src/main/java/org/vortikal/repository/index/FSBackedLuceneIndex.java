@@ -80,6 +80,7 @@ public class FSBackedLuceneIndex extends AbstractLuceneIndex {
 
         // Picks default best Impl at runtime based on current system.
         // For all but Windows, this means NIOFSDirectory.
+        // On 64-bit JVM, MMAPDirectory might be used.
         return FSDirectory.open(this.storageDirectory);
     }
     

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005, University of Oslo, Norway
+/* Copyright (c) 2005–2012, University of Oslo, Norway
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,9 +39,11 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriter.MaxFieldLength;
-import org.apache.lucene.index.LogMergePolicy;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.index.LogByteSizeMergePolicy;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.util.Version;
 
 /**
  * Some common Lucene index
@@ -50,15 +52,22 @@ import org.apache.lucene.store.Directory;
  * automatically closing one or the other. It is, by itself, synchronized, and
  * thus should be thread safe.
  * 
+ * TODO consider taking advantage of near realtime reader.
+ * @see org.apache.lucene.index.IndexWriter#getReader(boolean) 
+ * 
  * @author oyviste
  */
 public abstract class AbstractLuceneIndex {
 
     private final Log logger = LogFactory.getLog(AbstractLuceneIndex.class);
 
-    /* Lucene tunables */
-    private int mergeFactor = LogMergePolicy.DEFAULT_MERGE_FACTOR;
-    private int maxMergeDocs = LogMergePolicy.DEFAULT_MAX_MERGE_DOCS;
+    /**
+     * Whether to tune IndexWriter settings for batch indexing. Default
+     * is <code>false</code>, which means use mostly Lucene defaults and
+     * optimize for incremental updates. Batch-indexing mode should not be
+     * used for indexes which are searched directly.
+     */
+    private boolean batchIndexingMode = false;
 
     /**
      * Specifies if any existing index should be forcibly unlocked, if it was
@@ -173,13 +182,21 @@ public abstract class AbstractLuceneIndex {
 
         // Create a new writer if necessary.
         if (this.writer == null) {
-            this.writer = new IndexWriter(this.directory, this.analyzer, false,
-                    MaxFieldLength.LIMITED);
-            this.writer.setMaxMergeDocs(this.maxMergeDocs);
-            this.writer.setMergeFactor(this.mergeFactor);
+            this.writer = new IndexWriter(this.directory, newIndexWriterConfig());
         }
 
         return this.writer;
+    }
+    
+    private IndexWriterConfig newIndexWriterConfig() {
+        IndexWriterConfig cfg = new IndexWriterConfig(Version.LUCENE_35, this.analyzer);
+        cfg.setMaxThreadStates(1);
+        // TODO switch to newer TieredMergePolicy when ready, but keep old behaviour for now.
+        LogByteSizeMergePolicy mp = new LogByteSizeMergePolicy();
+        mp.setMergeFactor(this.batchIndexingMode ? 20 : 4);
+        cfg.setMergePolicy(mp);
+        cfg.setRAMBufferSizeMB(this.batchIndexingMode ? 32.0 : IndexWriterConfig.DEFAULT_RAM_BUFFER_SIZE_MB);
+        return cfg;
     }
 
     protected final synchronized IndexReader getIndexReader() throws IOException {
@@ -194,8 +211,8 @@ public abstract class AbstractLuceneIndex {
 
         if (this.reader == null) {
             // This reader is typically not used for queries, so
-            // decrease RAM usage by setting TermInfosIndexDivisor to 2.
-            this.reader = IndexReader.open(this.directory, null, false, 2);
+            // decrease RAM usage by setting TermInfosIndexDivisor to 4.
+            this.reader = IndexReader.open(this.directory, null, false, 4);
         }
 
         return this.reader;
@@ -360,11 +377,10 @@ public abstract class AbstractLuceneIndex {
     private void initializeIndexDirectory(Directory directory, boolean createNew)
             throws IOException {
 
-        if (createNew || !IndexReader.indexExists(directory)) {
-            IndexWriter w = new IndexWriter(directory, this.analyzer,
-                    true, MaxFieldLength.LIMITED);
-            w.setUseCompoundFile(true);
-            w.close();
+        if (!IndexReader.indexExists(directory) || createNew) {
+            IndexWriterConfig cfg = newIndexWriterConfig();
+            cfg.setOpenMode(OpenMode.CREATE);
+            new IndexWriter(directory, cfg).close();
             logger.info("Empty new index created in directory '" + directory + "'");
         } else {
             checkIndexLock(directory);
@@ -383,16 +399,6 @@ public abstract class AbstractLuceneIndex {
                         + "' is locked and 'forceUnlock' is set to false.");
             }
         }
-    }
-
-    /** @see org.apache.lucene.index.IndexWriter#setMergeFactor(int)  */
-    public void setMergeFactor(int mergeFactor) {
-        this.mergeFactor = mergeFactor;
-    }
-
-    /** @see org.apache.lucene.index.IndexWriter#setMaxMergeDocs(int) */
-    public void setMaxMergeDocs(int maxMergeDocs) {
-        this.maxMergeDocs = maxMergeDocs;
     }
 
     public void setMaxReadOnlyReaders(int maxReadOnlyReaders) {
@@ -425,6 +431,10 @@ public abstract class AbstractLuceneIndex {
 
     public void setIndexReaderWarmup(IndexReaderWarmup irw) {
         this.irw = irw;
+    }
+    
+    public void setBatchIndexingMode(boolean batchIndexingMode) {
+        this.batchIndexingMode = batchIndexingMode;
     }
 
 }

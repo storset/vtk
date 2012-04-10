@@ -57,6 +57,7 @@ public class DirectReindexer implements PropertySetIndexReindexer {
         this.indexDao = indexDao;
     }
     
+    @Override
     public int run() throws IndexException {
         if (! this.targetIndex.lock()) {
             throw new IndexException("Unable to acquire exclusive write lock on target index '"
@@ -116,6 +117,7 @@ public class DirectReindexer implements PropertySetIndexReindexer {
             this.index = index;
         }
         
+        @Override
         public void handlePropertySet(PropertySet propertySet, 
                                       Set<Principal> aclReadPrincipals) {
 

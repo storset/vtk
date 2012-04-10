@@ -34,6 +34,7 @@ import java.io.IOException;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.DocIdSet;
+import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.util.OpenBitSet;
 import org.apache.lucene.util.OpenBitSetDISI;
@@ -85,8 +86,11 @@ public class InversionFilter extends Filter {
         if (wrappedSet instanceof OpenBitSet) {
             // Optimized case for OpenBitSet
             inverted.or((OpenBitSet)wrappedSet);
-        } else {
-            inverted.inPlaceOr(wrappedSet.iterator());
+        } else if (wrappedSet != null && wrappedSet != DocIdSet.EMPTY_DOCIDSET) {
+            DocIdSetIterator disi = wrappedSet.iterator();
+            if (disi != null) {
+                inverted.inPlaceOr(disi);
+            }
         }
 
         inverted.flip(0, maxDoc);
@@ -105,7 +109,7 @@ public class InversionFilter extends Filter {
             if (deletedSet instanceof OpenBitSet) {
                 // Optimized case for OpenBitSet
                 inverted.andNot((OpenBitSet) deletedSet);
-            } else {
+            } else if (deletedSet != null && deletedSet != DocIdSet.EMPTY_DOCIDSET) {
                 inverted.inPlaceNot(deletedSet.iterator());
             }
         }

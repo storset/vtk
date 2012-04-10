@@ -324,7 +324,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
 
         @Override
         public FieldSelectorResult accept(String fieldName) {
-            if (FieldNames.STORED_ID_FIELD_NAME == fieldName) { // Interned string comparison
+            if (FieldNames.STORED_ID_FIELD_NAME == fieldName) { // Interned string comparison OK
                 return FieldSelectorResult.LOAD;
             } 
                 

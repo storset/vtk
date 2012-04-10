@@ -287,9 +287,10 @@ final class ReadOnlyIndexReaderPool {
             IndexReader reader = null;
             try {
                 ReadOnlyIndexReaderPool.this.logger.debug("RWAPT: Re-opening oldReader");
-                reader = this.oldReader.reopen();
+//                reader = this.oldReader.reopen();
+                reader = IndexReader.openIfChanged(this.oldReader, true);
 
-                if (reader == this.oldReader) {
+                if (reader == null) {
                     // This should never happen. Warm-up and replace task should only be started
                     // when the item's reader is actually dirty, never otherwise. Log a warning
                     // and deploy parachute (return).

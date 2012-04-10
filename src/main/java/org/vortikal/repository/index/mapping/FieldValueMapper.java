@@ -38,6 +38,8 @@ import java.util.Map;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.index.FieldInfo;
+import org.apache.lucene.index.FieldInfo.IndexOptions;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
@@ -59,7 +61,7 @@ import org.vortikal.util.cache.ReusableObjectCache;
  * <li>Binary values for storage in index</li>
  * </ul>
  *
- * TODO Consider using NumericField (Lucene 3) for numeric values.
+ * TODO Switch to Lucene field types instead of rolling our own encoding scheme.
  * 
  * @author oyviste
  */
@@ -90,34 +92,33 @@ public final class FieldValueMapper {
     private ValueFactory valueFactory;
 
     // No encoding (un-typed)
-    public Field getKeywordField(String name, int value) {
+    public Fieldable getKeywordField(String name, int value) {
         
         Field field = new Field(name, Integer.toString(value), Field.Store.NO,
                 Field.Index.NOT_ANALYZED_NO_NORMS);
-
-        field.setOmitTermFreqAndPositions(true);
+        field.setIndexOptions(IndexOptions.DOCS_ONLY);
         return field;
     }
 
     // No encoding (un-typed)
-    public Field getKeywordField(String name, String value) {
+    public Fieldable getKeywordField(String name, String value) {
         Field field = new Field(name, value, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
-        field.setOmitTermFreqAndPositions(true);
+        field.setIndexOptions(IndexOptions.DOCS_ONLY);
         return field;
     }
 
     // No encoding (un-typed)
-    public Field getStoredKeywordField(String name, int value) {
+    public Fieldable getStoredKeywordField(String name, int value) {
         Field field = new Field(name, Integer.toString(value), Field.Store.YES,
                 Field.Index.NOT_ANALYZED_NO_NORMS);
-        field.setOmitTermFreqAndPositions(true);
+        field.setIndexOptions(IndexOptions.DOCS_ONLY);
         return field;
     }
 
     // No encoding (un-typed)
-    public Field getStoredKeywordField(String name, String value) {
+    public Fieldable getStoredKeywordField(String name, String value) {
         Field field = new Field(name, value, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
-        field.setOmitTermFreqAndPositions(true);
+        field.setIndexOptions(IndexOptions.DOCS_ONLY);
         return field;
     }
 
@@ -130,14 +131,14 @@ public final class FieldValueMapper {
      * @param values
      * @return
      */
-    public Field getFieldFromValues(String name, Value[] values, boolean lowercase) {
+    public Fieldable getFieldFromValues(String name, Value[] values, boolean lowercase) {
         String[] encodedValues = new String[values.length];
         for (int i = 0; i < values.length; i++) {
             encodedValues[i] = encodeIndexFieldValue(values[i], lowercase);
         }
 
         Field field = new Field(name, new StringArrayTokenStream(encodedValues));
-        field.setOmitTermFreqAndPositions(true);
+        field.setIndexOptions(IndexOptions.DOCS_ONLY);
         field.setOmitNorms(true);
         return field;
     }
@@ -150,7 +151,7 @@ public final class FieldValueMapper {
      * @param value
      * @return
      */
-    public Field getFieldFromValue(String name, Value value, boolean lowercase) {
+    public Fieldable getFieldFromValue(String name, Value value, boolean lowercase) {
         String encoded = encodeIndexFieldValue(value, lowercase);
         return getKeywordField(name, encoded);
     }
@@ -163,20 +164,20 @@ public final class FieldValueMapper {
      * @param lowercase
      * @return 
      */
-    public Field getEncodedMultiValueFieldFromObjects(String name, Object[] values, Type type, boolean lowercase) {
+    public Fieldable getEncodedMultiValueFieldFromObjects(String name, Object[] values, Type type, boolean lowercase) {
         String[] strValues = new String[values.length];
         for (int i=0; i<values.length; i++) {
             strValues[i] = encodeIndexFieldValue(values[i], type, lowercase);
         }
         Field field = new Field(name, new StringArrayTokenStream(strValues));
-        field.setOmitTermFreqAndPositions(true);
+        field.setIndexOptions(IndexOptions.DOCS_ONLY);
         field.setOmitNorms(true);
         return field;
     }
     
-    public Field getUnencodedMultiValueFieldFromStrings(String name, String[] values) {
+    public Fieldable getUnencodedMultiValueFieldFromStrings(String name, String[] values) {
         Field field = new Field(name, new StringArrayTokenStream(values));
-        field.setOmitTermFreqAndPositions(true);
+        field.setIndexOptions(IndexOptions.DOCS_ONLY);
         field.setOmitNorms(true);
         return field;
     }
@@ -314,7 +315,7 @@ public final class FieldValueMapper {
 
     /* Binary field value mapping methods below */
 
-    public Field getStoredBinaryFieldFromValue(String name, Value value)
+    public Fieldable getStoredBinaryFieldFromValue(String name, Value value)
             throws FieldDataEncodingException {
 
         byte[] byteValue = null;
@@ -352,8 +353,8 @@ public final class FieldValueMapper {
 
         }
 
-        Field field = new Field(name, byteValue, Field.Store.YES);
-        field.setOmitTermFreqAndPositions(true);
+        Field field = new Field(name, byteValue);
+        field.setIndexOptions(IndexOptions.DOCS_ONLY);
         return field;
     }
 
@@ -365,14 +366,14 @@ public final class FieldValueMapper {
      * @param values
      * @return
      */
-    public Field[] getStoredBinaryFieldsFromValues(String name, Value[] values)
+    public Fieldable[] getStoredBinaryFieldsFromValues(String name, Value[] values)
             throws FieldDataEncodingException {
 
         if (values.length == 0) {
             throw new IllegalArgumentException("Length of values must be greater than zero.");
         }
 
-        Field[] fields = new Field[values.length];
+        Fieldable[] fields = new Fieldable[values.length];
         for (int i = 0; i < values.length; i++) {
             fields[i] = getStoredBinaryFieldFromValue(name, values[i]);
         }
@@ -456,11 +457,11 @@ public final class FieldValueMapper {
         throws FieldValueMappingException {
         Field field = new Field(name,
                 FieldDataEncoder.encodeIntegerToBinary(value), Field.Store.YES);
-        field.setOmitTermFreqAndPositions(true);
+        field.setIndexOptions(IndexOptions.DOCS_ONLY);
         return field;
     }
 
-    public String getStringFromStoredBinaryField(Field f) throws FieldValueMappingException {
+    public String getStringFromStoredBinaryField(Fieldable f) throws FieldValueMappingException {
         try {
             return new String(f.getBinaryValue(),
                               f.getBinaryOffset(),
@@ -470,7 +471,7 @@ public final class FieldValueMapper {
         }
     }
     
-    public String[] getStringsFromStoredBinaryFields(Field[] fields) 
+    public String[] getStringsFromStoredBinaryFields(Fieldable[] fields) 
                 throws FieldValueMappingException {
 
         String[] values = new String[fields.length];
@@ -488,14 +489,13 @@ public final class FieldValueMapper {
         return values;
     }
     
-    public Field[] getStoredBinaryFieldsFromStrings(String name, String[] values) {
+    public Fieldable[] getStoredBinaryFieldsFromStrings(String name, String[] values) {
 
-        Field[] fields = new Field[values.length];
+        Fieldable[] fields = new Fieldable[values.length];
         try {
             for (int i = 0; i < values.length; i++) {
-                fields[i] = new Field(name, values[i].getBytes(STRING_VALUE_ENCODING), 
-                                      Field.Store.YES);
-                fields[i].setOmitTermFreqAndPositions(true);
+                fields[i] = new Field(name, values[i].getBytes(STRING_VALUE_ENCODING));
+                fields[i].setIndexOptions(IndexOptions.DOCS_ONLY);
             }
         } catch (UnsupportedEncodingException uee) {
             throw new FieldValueMappingException(uee.getMessage());
@@ -505,7 +505,7 @@ public final class FieldValueMapper {
     }
         
 
-    public int getIntegerFromStoredBinaryField(Field f) throws FieldValueMappingException {
+    public int getIntegerFromStoredBinaryField(Fieldable f) throws FieldValueMappingException {
 
         if (!f.isBinary()) {
             throw new FieldValueMappingException("Not a binary stored field");

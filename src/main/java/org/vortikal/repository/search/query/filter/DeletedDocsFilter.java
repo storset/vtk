@@ -45,18 +45,18 @@ public class DeletedDocsFilter extends Filter {
 
     @Override
     public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
-        int maxDoc = reader.maxDoc();
-        OpenBitSet deletedSet = new OpenBitSet(maxDoc);
-
         if (reader.hasDeletions()) {
+            int maxDoc = reader.maxDoc();
+            OpenBitSet deletedSet = new OpenBitSet(maxDoc);
+
             for (int i = 0; i < maxDoc; i++) {
                 if (reader.isDeleted(i)) {
                     deletedSet.fastSet(i);
                 }
             }
+            return deletedSet;
         }
 
-        return deletedSet;
+        return DocIdSet.EMPTY_DOCIDSET;
     }
-
 }

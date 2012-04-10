@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.search.query.builders;
 
-
 import java.util.List;
 
 import org.apache.lucene.index.Term;

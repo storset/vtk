@@ -36,7 +36,8 @@ import java.io.IOException;
 import org.apache.lucene.index.IndexReader;
 
 /**
- *
+ * TODO Lucene 3.5 has built-in interface for warming up readers. Use that after upgrade.
+ * @see org.apache.lucene.index.IndexWriterConfig#setMergedSegmentWarmer(org.apache.lucene.index.IndexWriter.IndexReaderWarmer) 
  */
 public interface IndexReaderWarmup {
 

@@ -3,27 +3,31 @@
 
 <#macro script>
   <#assign locale = springMacroRequestContext.getLocale() />
-
   <script type="text/javascript" src="${webResources?html}/jquery/plugins/jquery.scrollTo-1.4.2-min.js"></script>
-  <script type="text/javascript"> <!--
+
+  <script type="text/javascript"><!--
    
     var TEMPLATES = [];
     var LIST_OF_JSON_ELEMENTS = [];
 
     $(document).ready(function() {
 
+      var templatesRetrieved = $.Deferred();
+      var jsonElementsBuilt = $.Deferred();
+
       // Retrieve HTML templates
       vrtxAdmin.serverFacade.getText("${webResources?html}/js/templates/templates.mustache", {
         success: function (results, status, resp) {
           var templates = results.split("###");
-          var templateNames = [ "string", "html",  "radio", "dropdown", "date", "browse",
-                                   "add", "remove-move"];
+          var templateNames = [ "string", "html", "radio", "dropdown", "date", "browse", "add", "remove-move"];
           for(var i = 0, len = templates.length; i < len; i++) {
             TEMPLATES[templateNames[i]] = $.trim(templates[i]);
           }
+          templatesRetrieved.resolve();
         }
       });
 
+      // Build JSON elements
       <#assign i = 0 />
       <#list form.elements as elementBox>
         <#assign j = 0 />
@@ -65,15 +69,21 @@
         </#list>
       </#list>
 
-      for (var i = 0, len = LIST_OF_JSON_ELEMENTS.length; i < len; i++) {
-        var json = { element: LIST_OF_JSON_ELEMENTS[" + i + "],
-                    buttonText: '${vrtx.getMsg("editor.add")}' }
-        $("#" + LIST_OF_JSON_ELEMENTS[i].name).append($.mustache(TEMPLATES["add"], json));
-      }
+      jsonElementsBuilt.resolve();
+
+      $.when(templatesRetrieved, jsonElementsBuilt).done(function() {
+        for (var i = 0, len = LIST_OF_JSON_ELEMENTS.length; i < len; i++) {
+          var json = { element: i,
+                       buttonText: '${vrtx.getMsg("editor.add")}' }
+          $("#" + LIST_OF_JSON_ELEMENTS[i].name).append($.mustache(TEMPLATES["add"], json));
+        }
+      });
 
     });
 
-    function addNewJsonElement(j, button) {
+    function addNewJsonElement(k, button) {
+
+      var j = LIST_OF_JSON_ELEMENTS[k];
     
       var counter = parseInt($(button).prev(".vrtx-json-element").find("input.id").val()) + 1;
       if (isNaN(counter)) {
@@ -126,9 +136,9 @@
       
       // Move up, move down, remove
 
-      var moveDownButton = $.mustache(TEMPLATES["remove-move"], { class: 'move-down', buttonText: '&darr; ${vrtx.getMsg("editor.move-down")}' });
-      var moveUpButton = $.mustache(TEMPLATES["remove-move"],   { class: 'move-up',   buttonText: '&uarr; ${vrtx.getMsg("editor.move-up")}'   });
-      var removeButton = $.mustache(TEMPLATES["remove-move"],   { class: 'remove',    buttonText: '${vrtx.getMsg("editor.remove")}'           });
+      var moveDownButton = "" || $.mustache(TEMPLATES["remove-move"], { class: 'move-down', buttonText: '&darr; ${vrtx.getMsg("editor.move-down")}' });
+      var moveUpButton = "" ||  $.mustache(TEMPLATES["remove-move"],   { class: 'move-up',   buttonText: '&uarr; ${vrtx.getMsg("editor.move-up")}'   });
+      var removeButton = "" || $.mustache(TEMPLATES["remove-move"],   { class: 'remove',    buttonText: '${vrtx.getMsg("editor.remove")}'           });
 
       var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>";
       var newElementId = "vrtx-json-element-" + j.name + "-" + counter;

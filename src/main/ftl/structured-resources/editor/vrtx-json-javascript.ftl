@@ -196,21 +196,24 @@
     // We need some way to add HTML from vrtx-types instead of building markup in JS
     
     function addDropdown(elem, inputFieldName) {
-      var classes = "vrtx-string" + " " + elem.name;
-      htmlTemplate = '<div class=\"' + classes + '\">';
-      htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
-      htmlTemplate += '<div class=\"inputfield\">';
-      htmlTemplate += '<select id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\">';
-      for (i in elem.valuemap) {
-        var keyValuePair = elem.valuemap[i];
-        var key = keyValuePair.split("$")[0];
-        var value = keyValuePair.split("$")[1];
-        htmlTemplate += '<option value=\"' + key + '\">' + value + '<\/option>';
-      }
-      htmlTemplate += '<\/select>';
-      htmlTemplate += '<\/div>';
-      htmlTemplate += '<\/div>';
-      return htmlTemplate;
+      var htmlTemplate = "";
+      vrtxAdmin.serverFacade.getHtmlSync("/vrtx/__vrtx/static-resources/js/templates/dropdown.mustache", {
+        success: function (results, status, resp) {
+          var htmlOpts = "";
+          for (i in elem.valuemap) {
+            var keyValuePair = elem.valuemap[i];
+            var key = keyValuePair.split("$")[0];
+            var value = keyValuePair.split("$")[1];
+            htmlOpts += '<option value="' + key + '">' + value + '</option>';
+          }
+          var json = { classes: "vrtx-string" + " " + elem.name,
+                       elemTitle: elem.title,
+                       inputFieldName: inputFieldName,
+                       options: htmlOpts }
+          htmlTemplate = $.mustache(results, json);
+        }
+      });
+      return htmlTemplate;  
     }
     
     function addStringField(elem, inputFieldName) {

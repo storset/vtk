@@ -10,6 +10,7 @@
 
 <#macro addCkScripts>
   <script type="text/javascript" src="${fckeditorBase.url?html}/ckeditor.js"></script>
+  <script type="text/javascript" src="${webResources?html}/js/plugins/mustache.js"></script>
   <script type="text/javascript" src="${jsBaseURL?html}/editor-ck-setup-helper.js"></script>
   <script type="text/javascript" src="${fckeditorBase.url?html}/adapters/jquery.js"></script>
   <link rel="stylesheet" type="text/css" href="${webResources?html}/jquery/plugins/jquery.autocomplete.css" />

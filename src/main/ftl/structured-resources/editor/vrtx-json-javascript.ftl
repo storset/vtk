@@ -204,12 +204,12 @@
     
     function addDropdown(elem, inputFieldName) {
       var htmlTemplate = "";
-      var htmlOpts = "";
+      var htmlOpts = [];
       for (i in elem.valuemap) {
         var keyValuePair = elem.valuemap[i];
         var key = keyValuePair.split("$")[0];
         var value = keyValuePair.split("$")[1];
-        htmlOpts += '<option value="' + key + '">' + value + '</option>';
+        htmlOpts.push({key: key, value: value});
       }
       var json = { classes: "vrtx-string" + " " + elem.name,
                    elemTitle: elem.title,

@@ -13,11 +13,13 @@
     $(document).ready(function() {
 
       // Retrieve HTML templates
-      vrtxAdmin.serverFacade.getText("/vrtx/__vrtx/static-resources/js/templates/templates.mustache", {
+      vrtxAdmin.serverFacade.getText("${webResources?html}/js/templates/templates.mustache", {
         success: function (results, status, resp) {
           var templates = results.split("###");
-          TEMPLATES["dropdown"] = templates[0];
-          TEMPLATES["string"] = templates[1];
+          var templateNames = ["dropdown", "string", "html", "radio"]
+          for(var i = 0, len = templates.length; i < len; i++) {
+            TEMPLATES[templateNames[i]] = templates[i];
+          }
         }
       });
 
@@ -230,24 +232,16 @@
       if (elem.type == "simple_html") {
         baseclass = "vrtx-simple-html";
       }
-      var classes = baseclass + " " + elem.name;
-      htmlTemplate = '<div class=\"' + classes + '\">';
-      htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
-      htmlTemplate += '<textarea name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" ';
-      htmlTemplate += ' rows=\"7\" cols=\"60\" ><\/textarea>';
-      htmlTemplate += '<\/div>';
-      return htmlTemplate;
+      var json = { classes: baseclass + " " + elem.name,
+                   elemTitle: elem.title,
+                   inputFieldName: inputFieldName }
+      return $.mustache(TEMPLATES["html"], json); 
     }
     
     function addBooleanField(elem, inputFieldName) {
-      htmlTemplate = '<div class=\"vrtx-radio\">';
-      htmlTemplate += '<div><label>elem.title<\/label><\/div>';
-      htmlTemplate += '<input name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '-true\" type=\"radio\" value=\"true\" \/>';
-      htmlTemplate += '<label for=\"' + inputFieldName + '-true\">True<\/label>';
-      htmlTemplate += '<input name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '-false\" type=\"radio\" value=\"false\" \/>';
-      htmlTemplate += '<label for=\"' + inputFieldName + '-false\">False<\/label>';
-      htmlTemplate += '<\/div>';
-      return htmlTemplate;
+      var json = { elemTitle: elem.title,
+                   inputFieldName: inputFieldName }
+      return $.mustache(TEMPLATES["radio"], json); 
     }
     
     function addImageRef(elem, inputFieldName) {

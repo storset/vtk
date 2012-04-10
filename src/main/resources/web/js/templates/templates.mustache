@@ -15,6 +15,23 @@
     <input size="40" type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" />
   </div>
 </div>
+###
+<div class="{{ classes }}">
+  <label for="{{ inputFieldName  }}">{{ elemTitle }}</label>
+  <textarea name="{{ inputFieldName }}" id="{{ inputFieldName }} rows="7" cols="60" ></textarea>'
+</div>
+###
+<div class="vrtx-radio">
+  <div>
+    <label>{{ elemTitle }}</label>
+  </div>
+
+  <input name="{{ inputFieldName }}" id="{{ inputFieldName }}-true" type="radio" value="true" />
+  <label for="{{ inputFieldName }}-true">True</label>
+
+  <input name="{{ inputFieldName }}" id="{{ inputFieldName }}-false" type="radio" value="false" />
+  <label for="{{ inputFieldName }}-false">False</label>
+</div>
 
 
 

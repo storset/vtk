@@ -22,7 +22,7 @@
 
 <div class="{{ classes }}">
   <label for="{{ inputFieldName  }}">{{ elemTitle }}</label>
-  <textarea name="{{ inputFieldName }}" id="{{ inputFieldName }} rows="7" cols="60" ></textarea>'
+  <textarea name="{{ inputFieldName }}" id="{{ inputFieldName }} rows="7" cols="60" ></textarea>
 </div>
 
 ###
@@ -39,5 +39,41 @@
   <label for="{{ inputFieldName }}-false">False</label>
 </div>
 
+###
 
+<div class="vrtx-image-ref">
+  <div class="vrtx-image-ref-label">
+    <label for="{{ inputFieldName }}">{{ elemTitle }}</label>
+  </div>
+  <div class="vrtx-image-ref-browse">
+    <div class="vrtx-textfield">
+      <input type="text" id="{{ inputFieldName }}" name="{{ inputFieldName }}"
+             value="" onblur="previewImage('{{ inputFieldName }}');" size="30" />
+    </div>
+    <div class="vrtx-button">
+      <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ fckEditorBaseUrl }}', '{{ parentURI }}', '{{ fckBrowsePath }}');">
+        {{ browseButtonText }}
+      </button>
+    </div>
+    <div id="{{ inputFieldName }}.preview"></div>
+  </div>
+</div>
+
+###
+
+<div class="vrtx-resource-ref-browse">
+  <div class="vrtx-resource-ref-browse-label">
+    <label for="{{ inputFieldName }}">{{ elemTitle }}</label>
+  </div>
+  <div class="vrtx-resource-ref-browse-browse">
+    <div class="vrtx-textfield">
+      <input type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" value="" size="40" />
+    </div>
+    <div class="vrtx-button">
+      <button type="button" onclick="browseServer('{{ inputFieldName }}', '{{ fckEditorBaseUrl }}', '{{ parentURI }}', '{{ fckBrowsePath }}', 'File');">
+        {{ browseButtonText }}
+      </button>
+    </div>
+  </div>
+</div>
 

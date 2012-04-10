@@ -16,7 +16,7 @@
       vrtxAdmin.serverFacade.getText("${webResources?html}/js/templates/templates.mustache", {
         success: function (results, status, resp) {
           var templates = results.split("###");
-          var templateNames = ["dropdown", "string", "html", "radio"]
+          var templateNames = ["dropdown", "string", "html", "radio", "image", "resource"];
           for(var i = 0, len = templates.length; i < len; i++) {
             TEMPLATES[templateNames[i]] = $.trim(templates[i]);
           }
@@ -245,30 +245,23 @@
     }
     
     function addImageRef(elem, inputFieldName) {
-      htmlTemplate = '<div class=\"vrtx-image-ref\">';
-      htmlTemplate += '<div class=\"vrtx-image-ref-label\">';
-      htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
-      htmlTemplate += '<\/div>';
-      htmlTemplate += '<div class=\"vrtx-image-ref-browse\">';
-      htmlTemplate += '<div class=\"vrtx-textfield\"><input type=\"text\" id=\"' + inputFieldName + '\" name=\"' + inputFieldName + '\" value=\"\" onblur=\"previewImage(\'' + inputFieldName + '\');\" size=\"30\" \/><\/div>';
-      htmlTemplate += '<div class=\"vrtx-button\"><button type=\"button\" onclick=\"browseServer(\'' + inputFieldName + '\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\');\"><@vrtx.msg code="editor.browseImages" /><\/button><\/div>';
-      htmlTemplate += '<div id=\"' + inputFieldName + '.preview\"><\/div>';
-      htmlTemplate += '<\/div>';
-      htmlTemplate += '<\/div>';
-      return htmlTemplate;
+      var json = { elemTitle: elem.title,
+                   inputFieldName: inputFieldName,
+                   fckEditorBaseUrl: '${fckeditorBase.url}',
+                   parentURI: '${resourceContext.parentURI?js_string}',
+                   fckBrowsePath: '${fckBrowse.url.pathRepresentation}',
+                   browseButtonText: '<@vrtx.msg code="editor.browseImages" />' }
+      return $.mustache(TEMPLATES["image"], json); 
     }
     
     function addResourceRef(elem, inputFieldName) {
-      htmlTemplate = '<div class=\"vrtx-resource-ref-browse\">';
-      htmlTemplate += '<div class=\"vrtx-resource-ref-browse-label\">';
-      htmlTemplate += '<label for=\"' + inputFieldName + '\">' + elem.title + '<\/label>';
-      htmlTemplate += '<\/div>';
-      htmlTemplate += '<div class=\"vrtx-resource-ref-browse-browse\">';
-      htmlTemplate += '<div class=\"vrtx-textfield\"><input type=\"text\" name=\"' + inputFieldName + '\" id=\"' + inputFieldName + '\" value=\"\" size=\"40\" \/><\/div>';
-      htmlTemplate += '<div class=\"vrtx-button\"><button type=\"button\" onclick=\"browseServer(\'' + inputFieldName + '\', \'${fckeditorBase.url}\', \'${resourceContext.parentURI?js_string}\', \'${fckBrowse.url.pathRepresentation}\',\'File\');\"><@vrtx.msg code="editor.browseImages" /><\/button><\/div>';
-      htmlTemplate += '<\/div>';
-      htmlTemplate += '<\/div>';
-      return htmlTemplate;
+      var json = { elemTitle: elem.title,
+                   inputFieldName: inputFieldName,
+                   fckEditorBaseUrl: '${fckeditorBase.url}',
+                   parentURI: '${resourceContext.parentURI?js_string}',
+                   fckBrowsePath: '${fckBrowse.url.pathRepresentation}',
+                   browseButtonText: '<@vrtx.msg code="editor.browseImages" />' }
+      return $.mustache(TEMPLATES["resource"], json); 
     }
     
     function addDateField(elem, inputFieldName) {

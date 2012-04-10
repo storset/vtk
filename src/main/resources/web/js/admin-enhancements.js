@@ -303,10 +303,7 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
-          simultanSliding: true,
-          transitionSpeed: vrtxAdm.transitionSpeed,
-          transitionEasingSlideDown: vrtxAdm.transitionEasingSlideDown,
-          transitionEasingSlideUp: vrtxAdm.transitionEasingSlideUp
+          simultanSliding: true
         });
         vrtxAdm.completeFormAsync({ 
           selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
@@ -314,7 +311,7 @@ vrtxAdmin._$(document).ready(function () {
           updateSelectors: ["#contents"],
           errorContainer: "errorContainer",
           errorContainerInsertAfter: "> ul",
-          funcComplete: vrtxAdm.collectionListingInteraction
+          funcComplete: vrtxAdm.collectionListingInteraction,
           post: true
         });
       } else { // Half-async for file upload
@@ -390,7 +387,7 @@ vrtxAdmin._$(document).ready(function () {
         updateSelectors: ["tr." +  privilegiesPermissionsInTable[i],
                           ".resource-menu.read-permissions"],
         errorContainer: "errorContainer",
-        errorContainerInsertAfter: ".groups-wrapper"
+        errorContainerInsertAfter: ".groups-wrapper",
         post: true
       });
     }

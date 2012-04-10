@@ -1149,7 +1149,6 @@
         <entry key="cssURLs">
           <list>
             <value>${themeBaseURL}/default.css</value>
-            <value>${themeBaseURL}/view-container.css</value>
             <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.css</value>
           </list>
         </entry>

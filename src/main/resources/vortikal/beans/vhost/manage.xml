@@ -866,6 +866,7 @@
 
   <bean id="createDocumentHandler" class="org.vortikal.web.actions.create.TemplateBasedCreateController">
     <property name="formView" value="manageCollectionListing" />
+    <property name="cancelView" value="redirectToManage" />
     <property name="successView" value="redirectToManage" />
     <property name="commandName" value="createDocumentForm" />
     <property name="commandClass" value="org.vortikal.web.actions.create.CreateDocumentCommand" />

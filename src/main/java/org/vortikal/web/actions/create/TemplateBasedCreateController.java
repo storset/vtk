@@ -39,21 +39,24 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.Repository.Depth;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.templates.ResourceTemplate;
 import org.vortikal.web.templates.ResourceTemplateManager;
 
+@SuppressWarnings("deprecation")
 public class TemplateBasedCreateController extends SimpleFormController {
 
     private ResourceTemplateManager templateManager;
     private boolean downcaseNames = false;
     private Map<String, String> replaceNameChars;
+    private String cancelView;
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -135,11 +138,13 @@ public class TemplateBasedCreateController extends SimpleFormController {
         }
     }
 
-    protected void doSubmitAction(Object command) throws Exception {
+    protected ModelAndView onSubmit(Object command) throws Exception {
+        Map<String, Object> model = new HashMap<String, Object>();
+
         CreateDocumentCommand createDocumentCommand = (CreateDocumentCommand) command;
         if (createDocumentCommand.getCancelAction() != null) {
             createDocumentCommand.setDone(true);
-            return;
+            return new ModelAndView(this.cancelView);
         }
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
@@ -156,6 +161,9 @@ public class TemplateBasedCreateController extends SimpleFormController {
         repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);
         createDocumentCommand.setDone(true);
 
+        model.put("resource", repository.retrieve(token, destinationURI, false));
+
+        return new ModelAndView(getSuccessView(), model);
     }
 
     @Required
@@ -165,6 +173,10 @@ public class TemplateBasedCreateController extends SimpleFormController {
 
     public void setReplaceNameChars(Map<String, String> replaceNameChars) {
         this.replaceNameChars = replaceNameChars;
+    }
+
+    public void setCancelView(String cancelView) {
+        this.cancelView = cancelView;
     }
 
     public void setDowncaseNames(boolean downcaseNames) {

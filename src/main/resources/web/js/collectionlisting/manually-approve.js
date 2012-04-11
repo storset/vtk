@@ -75,7 +75,7 @@ $(document).ready(function() {
       e.preventDefault();
     });
 
-    $("#manually-approve-refresh").click(function(e) {
+    $("#app-content").on("click", "#manually-approve-refresh", function(e) {
       clearTimeout(asyncGenPagesTimer);
       $("#approve-spinner").remove();
       

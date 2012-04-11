@@ -62,44 +62,44 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   // CKEditor configurations
   
   // Introductions / descriptions
-  if (name.indexOf("introduction") != -1
-   || name.indexOf("resource.description") != -1 
-   || name.indexOf("resource.image-description") != -1
-   || name.indexOf("resource.video-description") != -1
-   || name.indexOf("resource.audio-description") != -1) {
+  if (contains(name, "introduction")
+   || contains(name, "resource.description")
+   || contains(name, "resource.image-description")
+   || contains(name, "resource.video-description")
+   || contains(name, "resource.audio-description")) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar,
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   // Caption
-  } else if (name.indexOf("caption") != -1) {
+  } else if (contains(name, "caption")) {
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, inlineToolbar, 
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   // Studies                     
-  } else if (name.indexOf("frist-frekvens-fri") != -1
-    || name.indexOf("metode-fri") != -1
-    || name.indexOf("internasjonale-sokere-fri") != -1
-    || name.indexOf("nordiske-sokere-fri") != -1
-    || name.indexOf("opptakskrav-fri") != -1
-    || name.indexOf("generelle-fri") != -1
-    || name.indexOf("spesielle-fri")  != -1
-    || name.indexOf("politiattest-fri") != -1
-    || name.indexOf("rangering-sokere-fri") != -1
-    || name.indexOf("forstevitnemal-kvote-fri") != -1
-    || name.indexOf("ordinar-kvote-alle-kvalifiserte-fri")  != -1   
-    || name.indexOf("innpassing-tidl-utdanning-fri") != -1
-    || name.indexOf("regelverk-fri") != -1
-    || name.indexOf("description-en") != -1
-    || name.indexOf("description-nn") != -1
-    || name.indexOf("description-no") != -1) {
+  } else if (contains(name, "frist-frekvens-fri")
+          || contains(name, "metode-fri")
+          || contains(name, "internasjonale-sokere-fri")
+          || contains(name, "nordiske-sokere-fri")
+          || contains(name, "opptakskrav-fri")
+          || contains(name, "generelle-fri")
+          || contains(name, "spesielle-fri")
+          || contains(name, "politiattest-fri")
+          || contains(name, "rangering-sokere-fri")
+          || contains(name, "forstevitnemal-kvote-fri")
+          || contains(name, "ordinar-kvote-alle-kvalifiserte-fri")
+          || contains(name, "innpassing-tidl-utdanning-fri")
+          || contains(name, "regelverk-fri")
+          || contains(name, "description-en")
+          || contains(name, "description-nn")
+          || contains(name, "description-no")) {
     isSimpleHTML = false;
     isCompleteEditor = true;
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, studyToolbar, 
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
-  } else if (name.indexOf("message") != -1) {
+  } else if (contains(name, "message")) {
     setCKEditorConfig(name, null, null, null, defaultLanguage, cssFileList, 250, 400, 40, messageToolbar, 
                       isCompleteEditor, false, null, isSimpleHTML);  
   // Additional content                             
-  } else if (name.indexOf("additional-content") != -1
-          || name.indexOf("additionalContents") != -1) {
+  } else if (contains(name, "additional-content")
+          || contains(name, "additionalContents")) {
     setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 900, 100, 40, 
                       completeToolbar, true, false, baseDocumentUrl, isSimpleHTML);
   // Complete editor      
@@ -135,6 +135,10 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
                       isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
   }
 
+}
+
+function contains(string, substring) {
+  return string.indexOf(substring) != -1; 
 }
 
 function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, 

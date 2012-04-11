@@ -23,7 +23,7 @@ $(window).load(function() {
   vrtxAdmin.serverFacade.getText("/vrtx/__vrtx/static-resources/js/templates/manually-approve.mustache", {
     success: function (results, status, resp) {
       var templates = results.split("###");
-      var templateNames = ["menu"];
+      var templateNames = ["menu", "table-row"];
       for(var i = 0, len = templates.length; i < len; i++) {
         MANUALLY_APPROVE_TEMPLATES[templateNames[i]] = $.trim(templates[i]);
       }
@@ -40,9 +40,9 @@ $(window).load(function() {
       aggregatedlocations = $.trim(aggregatedLocationsTxt.val());
       aggregatedlocations = aggregatedlocations.split(",");
     }
-    retrieveResources(".", locations, aggregatedlocations);
 
     $.when(manuallyApprovedTemplatesRetrieved).done(function() {
+      retrieveResources(".", locations, aggregatedlocations);
       var html = $.mustache(MANUALLY_APPROVE_TEMPLATES["menu"], { approveShowAll: approveShowAll, 
                                                                   approveShowApprovedOnly: approveShowApprovedOnly });  
     
@@ -325,16 +325,7 @@ function generateManuallyApprovedContainer(resources) {
 /* HTML generation functions */
 
 function generateTableRow(resource) {
-  var html = "<tr>";
-  if (resource.approved) {
-    html += "<td class='checkbox'><input type='checkbox' disabled='disabled' checked='checked' value='" + resource.uri + "'/></td>";
-  } else {
-    html += "<td class='checkbox'><input type='checkbox' disabled='disabled' value='" + resource.uri + "'/></td>";
-  }
-  html += "<td><a class='approve-link' target='_blank' href='" + resource.uri + "' title='" + resource.title + "'>" + resource.title
-      + "</a></td>" + "<td>" + resource.source + "</td><td class='approve-published'>" + resource.published
-      + "</td></tr>";
-  return html;
+  return $.mustache(MANUALLY_APPROVE_TEMPLATES["table-row"], { resource: resource });  
 }
 
 function generateTableEndAndPageInfo(pages, prPage, len, lastRow) {

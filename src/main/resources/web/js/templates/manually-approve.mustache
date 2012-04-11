@@ -4,3 +4,24 @@
   <li class="active active-first"><span>{{ approveShowAll }}</span></li>
   <li class="last"><a href="javascript:void(0);">{{ approveShowApprovedOnly }}</a></li>
 </ul>
+
+### {{! TABLE ROW }}
+
+<tr>
+  {{#resource.approved}}
+    <td class='checkbox'>
+      <input type='checkbox' disabled='disabled' checked='checked' value='{{ resource.uri }}'/>
+    </td>
+  {{/resource.approved}}
+  {{^resource.approved}}
+    <td class='checkbox'>
+      <input type='checkbox' disabled='disabled' value='{{ resource.uri }}'/>
+    </td>
+  {{/resource.approved}}
+  <td><a class='approve-link' target='_blank' href='{{ resource.uri }}' title='{{ resource.title }}'>
+        {{ resource.title }}
+      </a>
+  </td>
+  <td>{{ resource.source }}</td>
+  <td class='approve-published'>{{ resource.published }}</td>
+</tr>

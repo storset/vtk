@@ -34,7 +34,19 @@ public class ExternalLink {
 
     private String url;
     private String name;
+    private String title;
+     
+    public ExternalLink(){
+        
+    }
     
+    public ExternalLink(String url, String name, String title) {
+        this.url = url;
+        this.name = name;
+        this.title = title;
+    }
+
+
     public String getUrl() {
         return this.url;
     }
@@ -49,6 +61,14 @@ public class ExternalLink {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
     
 }

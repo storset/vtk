@@ -32,12 +32,10 @@ package org.vortikal.repository.resourcetype;
 
 /**
  * Subclass of {@link PropertyTypeDefinitionImpl} inheriting all funcionality.
- * Simply adds the marker interface {@link OverridablePropertyTypeDefinition}, indicating that
- * this property is overridable.
+ * Simply adds the marker interface {@link OverridablePropertyTypeDefinition},
+ * indicating that this property is overridable.
  */
 public class OverridablePropertyTypeDefinitionImpl extends PropertyTypeDefinitionImpl implements
         OverridablePropertyTypeDefinition {
-
-    private static final long serialVersionUID = 126608072927528820L;
 
 }

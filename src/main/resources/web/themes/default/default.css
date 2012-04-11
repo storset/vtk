@@ -2014,7 +2014,7 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 
 .vrtx-report-paging .next,
 #manually-approve-container .next {
-  margin-left: 20px;
+  margin-left: 20px !important;
   background: url(images/arrow-grey-next.gif) no-repeat center right;
   padding: 0 12px 0 0;
 }

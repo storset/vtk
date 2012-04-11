@@ -53,3 +53,14 @@
 <span class='approve-info'>
   {{ approveShowing }} {{ page }}-{{ last }} {{ approveOf }} {{ len }}
 </span>
+
+### {{! NAVIGATION NEXT }}
+<a href='#page-{{ pages }}' class='next' id='page-{{ pages }}'>
+  {{ approveNext }} {{ nextPrPage }}
+</a>
+
+### {{! NAVIGATION PREV }}
+
+<a href='#page-{{ prevPage }}' class='prev' id='page-{{ prevPage }}'>
+  {{ approvePrev }} {{ prPage }}
+</a>

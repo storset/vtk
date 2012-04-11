@@ -23,7 +23,8 @@ $(window).load(function() {
   vrtxAdmin.serverFacade.getText("/vrtx/__vrtx/static-resources/js/templates/manually-approve.mustache", {
     success: function (results, status, resp) {
       var templates = results.split("###");
-      var templateNames = ["menu", "table-start", "table-row", "table-end", "navigate"];
+      var templateNames = [    "menu",     "table-start",       "table-row", 
+                          "table-end", "navigation-next", "navigation-prev"];
       for(var i = 0, len = templates.length; i < len; i++) {
         MANUALLY_APPROVE_TEMPLATES[templateNames[i]] = $.trim(templates[i]);
       }
@@ -344,13 +345,14 @@ function generateTableEndAndPageInfo(pages, prPage, len, lastRow) {
 }
 
 function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
-  var nextPrPage = pages < totalPages || remainder == 0 ? prPage : remainder;
-  var html = "<a href='#page-" + pages + "' class='next' id='page-" + pages + "'>" 
-             + approveNext + " " + nextPrPage + "</a>";
+  var html = $.mustache(MANUALLY_APPROVE_TEMPLATES["navigation-next"], { pages: pages,
+                                                                         approveNext: approveNext,
+                                                                         nextPrPage: (pages < totalPages || remainder == 0) ? prPage : remainder });
   if (i > prPage) {
     var prevPage = pages - 2;
-    html += "<a href='#page-" + prevPage + "' class='prev' id='page-" + prevPage + "'>"
-          + approvePrev + " " + prPage + "</a>";
+    html += $.mustache(MANUALLY_APPROVE_TEMPLATES["navigation-prev"], { prevPage: prevPage,
+                                                                        approvePrev: approvePrev,
+                                                                        prPage: prPage });
   }
   html += "</div>";
   return html;

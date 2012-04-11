@@ -23,7 +23,7 @@ $(window).load(function() {
   vrtxAdmin.serverFacade.getText("/vrtx/__vrtx/static-resources/js/templates/manually-approve.mustache", {
     success: function (results, status, resp) {
       var templates = results.split("###");
-      var templateNames = ["menu", "table-row"];
+      var templateNames = ["menu", "table-start", "table-row", "table-end", "navigate"];
       for(var i = 0, len = templates.length; i < len; i++) {
         MANUALLY_APPROVE_TEMPLATES[templateNames[i]] = $.trim(templates[i]);
       }
@@ -324,14 +324,23 @@ function generateManuallyApprovedContainer(resources) {
 
 /* HTML generation functions */
 
+function generateStartPageAndTableHead(pages) {
+  return $.mustache(MANUALLY_APPROVE_TEMPLATES["table-start"], { pages: pages,
+                                                                 approveTableTitle: approveTableTitle,
+                                                                 approveTableSrc: approveTableSrc,
+                                                                 approveTablePublished: approveTablePublished }); 
+}
+
 function generateTableRow(resource) {
   return $.mustache(MANUALLY_APPROVE_TEMPLATES["table-row"], { resource: resource });  
 }
 
 function generateTableEndAndPageInfo(pages, prPage, len, lastRow) {
-  var last = lastRow ? len : pages * prPage;
-  return "</tbody></table><span class='approve-info'>" + approveShowing + " " + (((pages - 1) * prPage) + 1)
-         + "-" + last + " " + approveOf + " " + len + "</span>";
+  return $.mustache(MANUALLY_APPROVE_TEMPLATES["table-end"], { approveShowing: approveShowing,
+                                                               page: (((pages - 1) * prPage) + 1),
+                                                               last: lastRow ? len : pages * prPage,
+                                                               approveOf: approveOf,
+                                                               len: len });
 }
 
 function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
@@ -347,10 +356,6 @@ function generateNavAndEndPage(i, html, prPage, remainder, pages, totalPages) {
   return html;
 }
 
-function generateStartPageAndTableHead(pages) {
-  return "<div id='approve-page-" + pages + "'><table><thead><tr><th id='approve-checkbox' class='checkbox'><input type='checkbox' disabled='disabled' name='checkUncheckAll' /></th><th id='approve-title'>" 
-        + approveTableTitle + "</th><th id='approve-src'>" + approveTableSrc + "</th><th id='approve-published'>" + approveTablePublished + "</th></tr></thead><tbody>";
-}
 
 /* ^ HTML generation functions */
 

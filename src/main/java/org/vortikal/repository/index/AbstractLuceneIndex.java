@@ -193,7 +193,7 @@ public abstract class AbstractLuceneIndex {
         cfg.setMaxThreadStates(1);
         // TODO switch to newer TieredMergePolicy when ready, but keep old behaviour for now.
         LogByteSizeMergePolicy mp = new LogByteSizeMergePolicy();
-        mp.setMergeFactor(this.batchIndexingMode ? 20 : 4);
+        mp.setMergeFactor(this.batchIndexingMode ? 50: 4);
         cfg.setMergePolicy(mp);
         cfg.setRAMBufferSizeMB(this.batchIndexingMode ? 32.0 : IndexWriterConfig.DEFAULT_RAM_BUFFER_SIZE_MB);
         return cfg;

@@ -5,12 +5,31 @@
  *
  */
 
-var lastVal = "", manuallyApproveLocationsTxt, aggregatedLocationsTxt, approvedOnly = false, asyncGenPagesTimer;
+var lastVal = "",
+    manuallyApproveLocationsTxt,
+    aggregatedLocationsTxt,
+    approvedOnly = false,
+    asyncGenPagesTimer,
+    MANUALLY_APPROVE_TEMPLATES = [];
 
 $(window).load(function() {
   // Retrieve initial resources
   manuallyApproveLocationsTxt = $("#resource\\.manually-approve-from");
   aggregatedLocationsTxt = $("#resource\\.aggregation");
+  
+  var manuallyApprovedTemplatesRetrieved = $.Deferred();
+  
+  // Retrieve HTML templates
+  vrtxAdmin.serverFacade.getText("/vrtx/__vrtx/static-resources/js/templates/manually-approve.mustache", {
+    success: function (results, status, resp) {
+      var templates = results.split("###");
+      var templateNames = ["menu"];
+      for(var i = 0, len = templates.length; i < len; i++) {
+        MANUALLY_APPROVE_TEMPLATES[templateNames[i]] = $.trim(templates[i]);
+      }
+      manuallyApprovedTemplatesRetrieved.resolve();
+    }
+  });
   
   if(manuallyApproveLocationsTxt.length) {
     var locations, aggregatedlocations;
@@ -22,12 +41,13 @@ $(window).load(function() {
       aggregatedlocations = aggregatedlocations.split(",");
     }
     retrieveResources(".", locations, aggregatedlocations);
+
+    $.when(manuallyApprovedTemplatesRetrieved).done(function() {
+      var html = $.mustache(MANUALLY_APPROVE_TEMPLATES["menu"], { approveShowAll: approveShowAll, 
+                                                                  approveShowApprovedOnly: approveShowApprovedOnly });  
     
-    var html = '<ul id="vrtx-manually-approve-tab-menu">'
-               + '<li class="active active-first"><span>' + approveShowAll + '</span></li>'
-               + '<li class="last"><a href="javascript:void(0);">' + approveShowApprovedOnly + '</a></li>'
-             + '</ul>';
-    $(html).insertAfter("#manually-approve-container-title"); 
+      $(html).insertAfter("#manually-approve-container-title"); 
+    });
   }
 });
 

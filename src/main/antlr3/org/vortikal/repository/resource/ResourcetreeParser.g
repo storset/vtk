@@ -217,8 +217,6 @@ scripts	:	SCRIPTS LCB
 
 scriptdef:	NAME SHOWHIDE SCRIPTTRIGGER namelist
 		-> ^(NAME ^(SHOWHIDE ^(SCRIPTTRIGGER namelist)))
-	|	NAME AUTOCOMPLETE LP (namevaluepair (COMMA namevaluepair)*) RP
-		-> ^(NAME ^(AUTOCOMPLETE (namevaluepair)*))
 	|	NAME MULTIPLEINPUTFIELDS
 		-> ^(NAME ^(MULTIPLEINPUTFIELDS))
 	;

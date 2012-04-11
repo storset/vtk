@@ -26,7 +26,7 @@
  *  9.  Async functions
  *  10. Async helper functions and AJAX server façade
  *  11. Show and hide properties
- *  12. Multiple fields
+ *  12. Multiple inputfields
  *  13. CK browse server integration
  *  14. Utils
  *  15. Override JavaScript / jQuery
@@ -1716,7 +1716,8 @@ function showHideProperty(id, init, show) {
 
 
 /*-------------------------------------------------------------------*\
-	12. Multiple fields
+	12. Multiple inputfields
+            TODO: Use Mustache templates 
 \*-------------------------------------------------------------------*/
 
 var MULTIPLE_INPUT_FIELD_NAMES = [];
@@ -1767,22 +1768,22 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
 function registerClicks() {
   var wrapper = $("#editor");
 
-  wrapper.on("click", "button.remove", function(e){
+  wrapper.on("click", ".vrtx-multipleinputfield button.remove", function(e){
 	removeFormField($(this));
         e.preventDefault();
         e.stopPropagation();
   });
-  wrapper.on("click", "button.moveup", function(e){
+  wrapper.on("click", ".vrtx-multipleinputfield button.moveup", function(e){
 	moveUpFormField($(this));
         e.preventDefault();
         e.stopPropagation();
   });
-  wrapper.on("click", "button.movedown", function(e){
+  wrapper.on("click", ".vrtx-multipleinputfield button.movedown", function(e){
 	moveDownFormField($(this));
         e.preventDefault();
         e.stopPropagation();
   });
-  wrapper.on("click", "button.browse-resource-ref", function(e){
+  wrapper.on("click", ".vrtx-multipleinputfield button.browse-resource-ref", function(e){
 	browseServer($(this).parent().parent().find('input').attr('id'), browseBase, browseBaseFolder, browseBasePath, 'File');
         e.preventDefault();
         e.stopPropagation();
@@ -1898,6 +1899,7 @@ function formatMultipleInputFields(name) {
     }
     $("." + name + " input[type=text]:hidden").val(result);
 }
+
 
 
 /*-------------------------------------------------------------------*\

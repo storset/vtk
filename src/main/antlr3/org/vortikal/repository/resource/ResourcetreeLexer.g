@@ -62,8 +62,6 @@ EXISTS	:	'exists';
 SHOWHIDE:	'show-hide';
 MULTIPLEINPUTFIELDS
 	:	'multipleinputfields';
-AUTOCOMPLETE
-	:	'autocomplete';
 SCRIPTTRIGGER 
 	:	 (ONCLICK | ONFOCUS | ONSELECT);
 REQUIRES:	'requires';

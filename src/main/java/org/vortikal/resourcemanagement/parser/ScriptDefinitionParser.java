@@ -50,24 +50,17 @@ public class ScriptDefinitionParser {
             CommonTree scriptType = (CommonTree) scriptEntry.getChild(0);
             switch (scriptType.getType()) {
             case ResourcetreeLexer.SHOWHIDE:
-                srd.addScriptDefinition(parseScriptDefinition(propName,
-                        ScriptType.SHOWHIDE, scriptType.getChildren()));
-                break;
-            case ResourcetreeLexer.AUTOCOMPLETE:
-                srd.addScriptDefinition(parseScriptDefinition(propName,
-                        ScriptType.AUTOCOMPLETE, scriptType.getChildren()));
+                srd.addScriptDefinition(parseScriptDefinition(propName, ScriptType.SHOWHIDE, scriptType.getChildren()));
                 break;
             case ResourcetreeLexer.MULTIPLEINPUTFIELDS:
-                srd.addScriptDefinition(new ScriptDefinition(propName,
-                        ScriptType.MULTIPLEINPUTFIELDS, null));
+                srd.addScriptDefinition(new ScriptDefinition(propName, ScriptType.MULTIPLEINPUTFIELDS, null));
             default:
                 break;
             }
         }
     }
 
-    private ScriptDefinition parseScriptDefinition(String propName,
-            ScriptType scriptType, List<CommonTree> paramValues) {
+    private ScriptDefinition parseScriptDefinition(String propName, ScriptType scriptType, List<CommonTree> paramValues) {
         Object params = getScriptParams(scriptType, paramValues);
         ScriptDefinition sd = new ScriptDefinition(propName, scriptType, params);
         return sd;

@@ -37,6 +37,8 @@
       _$("#editor").on("click", "#saveAndViewButton, #cancelAction, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", function(e) {
         performSave();
       });
+
+      registerClicks();
     });
     
     var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";
@@ -47,7 +49,7 @@
     function performSave() {
       saveDateAndTimeFields(); // js/datepicker/datepicker-admin.js
       if (typeof MULTIPLE_INPUT_FIELD_NAMES !== "undefined") {
-        saveMultipleInputFields();  // js/editor-multipleinputfields.js
+        saveMultipleInputFields();
       }
       var boxUrlTextFields = vrtxAdmin._$(".boxUrlText input");
       var i = boxUrlTextFields.length;

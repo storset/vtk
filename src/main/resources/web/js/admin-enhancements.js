@@ -26,7 +26,7 @@
  *  9.  Async functions
  *  10. Async helper functions and AJAX server façade
  *  11. Show and hide properties
- *  12. Featured articles, aggregation and manually approved
+ *  12. Multiple fields
  *  13. CK browse server integration
  *  14. Utils
  *  15. Override JavaScript / jQuery
@@ -571,7 +571,7 @@ vrtxAdmin._$(document).ready(function () {
  
     $("#app-content").on("click", "#resource\\.display-aggregation\\.true", function() {
       if(!_$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
-        _$(".aggregation-row").remove();
+        _$(".aggregation .vrtx-multipleinputfield").remove();
         _$("#resource\\.aggregation").val("");
       }
       _$("#vrtx-resource\\.aggregation").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
@@ -579,7 +579,7 @@ vrtxAdmin._$(document).ready(function () {
 
     $("#app-content").on("click", "#resource\\.display-manually-approved\\.true", function() {
       if(!_$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
-        _$(".manually-approve-from-row").remove();
+        _$(".manually-approve-from .vrtx-multipleinputfield").remove();
         _$("#resource\\.manually-approve-from").val("");
       }
       _$("#vrtx-resource\\.manually-approve-from").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
@@ -1716,119 +1716,188 @@ function showHideProperty(id, init, show) {
 
 
 /*-------------------------------------------------------------------*\
-	12. Featured articles, aggregation and manually approved
-	    TODO: cleanup, simplify
+	12. Multiple fields
 \*-------------------------------------------------------------------*/
 
-var definedMultipleFields = [];
+var MULTIPLE_INPUT_FIELD_NAMES = [];
+var COUNTER_FOR_MULTIPLE_INPUT_FIELD = [];
+var LENGTH_FOR_MULTIPLE_INPUT_FIELD = [];
 
-function loadMultipleDocuments(appendParentLast, textfieldId, browse, addName, removeName, browseName, editorBase, baseFolder, editorBrowseUrl) {
-  var documents = $("#" + textfieldId);
-  if(!documents.length) return;
+function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName) {
+    var inputField = $("." + name + " input[type=text]");
 
-  var documentsVal = documents.val();
-  if (documentsVal == null) return;
-  
-  var simpleTextfieldId = textfieldId.substring(textfieldId.indexOf(".")+1);
-  
-  definedMultipleFields.push(simpleTextfieldId); // Register
-   
-  documents.hide();
-  
-  var appendHtml = "<div id='vrtx-" + simpleTextfieldId + "-add'>"
-                   + "<div class=\"vrtx-button\">"
-                   + "<button onclick=\"addFormField('" + simpleTextfieldId  + "'," + browse + ",null, '" 
-                   + removeName + "', '" + browseName + "', '" + editorBase + "', '" + baseFolder 
-                   + "', '" + editorBrowseUrl + "'); return false;\">" + addName + "</button></div>"
-                   + "<input type='hidden' id='id-" + simpleTextfieldId  + "' name='id' value='1' />"
-                 + "</div>";
-                   
-  var documentsParent = documents.parent();     
-  documentsParent.hide();           
-  if(appendParentLast) {
-    documentsParent.parent().append(appendHtml);
-  } else {
-    $(appendHtml).insertAfter(documentsParent.parent().find(".vrtx-textfield:first"));
-  }
-  
-  if($.trim(documentsVal) !== "") {
-    var listOfFiles = documentsVal.split(",");
+    if (inputField.val() == null) { return; }
+
+    var formFields = inputField.val().split(",");
+
+    COUNTER_FOR_MULTIPLE_INPUT_FIELD[name] = 1; // 1-index
+    LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] = formFields.length;
+    MULTIPLE_INPUT_FIELD_NAMES.push(name);
+
+    var size = inputField.attr("size");
+
+    inputFieldParent = inputField.parent();
+    
+    var isResourceRef = false;
+    if(inputFieldParent.parent().hasClass("vrtx-resource-ref-browse")) {
+      isResourceRef = true;
+      if(inputFieldParent.next().hasClass("vrtx-button")) {
+        inputFieldParent.next().hide();
+      }	
+    }
+
+    inputField.hide();
+
+    var appendHtml = "<div id='vrtx-" + name + "-add' class='vrtx-button'>"
+		      + "<button onclick=\"addFormField('" + name + "',null, '"
+		      + removeName + "','" + moveUpName + "','" + moveDownName + "','" 
+                      + browseName + "','" + size + "'," + isResourceRef + "," + false + "); return false;\">"
+		      + addName + "</button></div>";
+
+    inputFieldParent.removeClass("vrtx-textfield").append(appendHtml);
+    
     var addFormFieldFunc = addFormField;
-    for (var i = 0, len = listOfFiles.length; i < len; i++) {
-      addFormFieldFunc(simpleTextfieldId, browse, $.trim(listOfFiles[i]), removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
+    for (var i = 0; i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]; i++) {
+       addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isResourceRef, true);
     }
-  } else {
-    addFormField(simpleTextfieldId, browse, "", removeName, browseName, editorBase, baseFolder, editorBrowseUrl);
-  }
-  
-  // TODO !spageti && !run twice
-  if (typeof UNSAVED_CHANGES_CONFIRMATION !== "undefined") {
-    storeInitPropValues();
-  }
+    
+    autocompleteUsernames(".vrtx-autocomplete-username");
 }
 
-var countId = 1;
-function addFormField(textfieldId, browse, value, removeName, browsName, editorBase, baseFolder, editorBrowseUrl) {
-  var idstr = textfieldId + "-";
-  if (value == null) {
-    value = "";
-  }
+function registerClicks() {
+  var wrapper = $("#editor");
 
-  if (!removeName == null) {
-    var deleteRow = "";
-  } else {
-    var deleteRow = "<div class=\"vrtx-button\"><button type='button' id='" + idstr
-                  + "remove' onclick='removeFormField(\"#" + idstr + "row-" + countId + "\"); return false;'>" 
-                  + removeName + "</button></div>";
-  }
-  if(browse) {
-    var browseServer = "<div class=\"vrtx-button\"><button type=\"button\" id=\"" + idstr 
-                     + "browse\" onclick=\"browseServer('" + idstr + countId + "', '" + editorBase 
-                     + "', '" + baseFolder + "', '" + editorBrowseUrl + "', 'File');\">" + browsName + "</button></div>";
-  } else {
-    var browseServer = "";
-  }
-
-  var html = "<div class='" + idstr + "row' id='" + idstr + "row-" + countId + "'><div class=\"vrtx-textfield\"><input value='" 
-    + value + "' type='text' size='20′ name='txt[]' id='" + idstr + countId + "' /></div>" 
-    + browseServer + deleteRow + "</div>";
-
-  $(html).insertBefore("#vrtx-" + textfieldId + "-add");
-
-  countId++;
+  wrapper.on("click", "button.remove", function(e){
+	removeFormField($(this));
+        e.preventDefault();
+        e.stopPropagation();
+  });
+  wrapper.on("click", "button.moveup", function(e){
+	moveUpFormField($(this));
+        e.preventDefault();
+        e.stopPropagation();
+  });
+  wrapper.on("click", "button.movedown", function(e){
+	moveDownFormField($(this));
+        e.preventDefault();
+        e.stopPropagation();
+  });
+  wrapper.on("click", "button.browse-resource-ref", function(e){
+	browseServer($(this).parent().parent().find('input').attr('id'), browseBase, browseBaseFolder, browseBasePath, 'File');
+        e.preventDefault();
+        e.stopPropagation();
+  });
 }
 
-function removeFormField(id) {
-  $(id).remove();
-}
+function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isResourceRef, init) {
+    if (value == null) { value = ""; }
 
-function formatDocumentsData() {
-  var i = definedMultipleFields.length; 
-  while(i--) {
-    formatDocumentsDataSubFunc(definedMultipleFields[i]);
-  }
-}
+    var idstr = "vrtx-" + name + "-";
+    var i = COUNTER_FOR_MULTIPLE_INPUT_FIELD[name];
+    var removeButton = "";
+    var moveUpButton = "";
+    var moveDownButton = "";
 
-function formatDocumentsDataSubFunc(id) {
-  var data = $("input[id^='" + id + "-']");
-  var result = "";
-  for (var i = 0, len = data.length; i < len; i++) {
-    var value = $.trim(data[i].value);
-    if(value != "") {
-      if(value.lastIndexOf("/") === (value.length-1)) { // Remove last forward slash if not root
-        if(value.length > 1) {
-          value = value.substring(value, (value.length-1))
+    if (removeName) {
+        var removeButton = "<div class='vrtx-button'><button class='remove " + name + "' type='button' " + "id='" + idstr + "remove' >" + removeName + "</button></div>";
+    }
+    if (moveUpName && i > 1) {
+    	var moveUpButton = "<div class='vrtx-button'><button class='moveup' type='button' " + "id='" + idstr + "moveup' >"
+    	+ "&uarr; " + moveUpName + "</button></div>";
+    }
+    if (moveDownName && i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]) {
+    	var moveDownButton = "<div class='vrtx-button'><button class='movedown' type='button' " + "id='" + idstr + "movedown' >"
+    	+ "&darr; " + moveDownName + "</button></div>";
+    }
+
+    if(!isResourceRef) {
+      var html = "<div class='vrtx-multipleinputfield' id='" + idstr + "row-" + i + "'>"
+               + "<div class='vrtx-textfield'><input value='" + value + "' type='text' size='" + size + "' id='" + idstr + i + "' /></div>"
+               + removeButton + moveUpButton + moveDownButton + "</div>";
+    } else {
+      var browseButton = "<div class='vrtx-button'><button type='button' class='browse-resource-ref'>" + browseName + "</button></div>";
+      var html = "<div class='vrtx-multipleinputfield' id='" + idstr + "row-" + i + "'>"
+               + "<div class='vrtx-textfield'><input value='" + value + "' type='text' size='" + size + "' id='" + idstr + i + "' /></div>"
+               + browseButton + removeButton + moveUpButton + moveDownButton + "</div>";
+    }
+
+    $(html).insertBefore("#vrtx-" + name + "-add");
+    
+    if(!init) {
+      if(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] > 0) {
+        var fields = $("." + name + " div.vrtx-multipleinputfield");
+        if(fields.eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).not("has:button.movedown")) {
+          moveDownButton = "<div class='vrtx-button'><button class='movedown' type='button' " + "id='" + idstr + "movedown' >"
+                         + "&darr; " + moveDownName + "</button></div>";
+          fields.eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).append(moveDownButton);
         }
+
       }
-      result += value;
-      if (i < (len-1)) {
-        result += ",";
-      }
+      LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]++;
+      autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
     }
-  }
-  $("#resource\\." + id).val(result);
+
+    COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]++;   
 }
 
+function removeFormField(that) {
+    var name = $(that).attr("class").replace("remove ", "");
+    $(that).parent().parent().remove();
+
+    LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]--;
+    COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]--;
+
+    var fields = "." + name + " div.vrtx-multipleinputfield";
+
+    if($(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).has("button.movedown")) {
+      $(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).find("button.movedown").parent().remove();
+    }
+
+    if($(fields).eq(0).has("button.moveup")) {
+      $(fields).eq(0).find("button.moveup").parent().remove();
+    }
+}
+
+function moveUpFormField(that) {
+  var thisInput = $(that).parent().parent().find("input");
+  var prevInput = $(that).parent().parent().prev().find("input");
+  var thisText = thisInput.val();
+  var prevText = prevInput.val();
+  $(thisInput).val(prevText);
+  $(prevInput).val(thisText);
+}
+
+function moveDownFormField(that) {
+  var thisInput = $(that).parent().parent().find("input");
+  var nextInput = $(that).parent().parent().next().find("input");
+  var thisText = $(thisInput).val();
+  var nextText = $(nextInput).val();
+  $(thisInput).val(nextText);
+  $(nextInput).val(thisText);
+}
+
+function saveMultipleInputFields() {
+  var MULTIPLE_INPUT_FIELD_NAMES_LENGTH = MULTIPLE_INPUT_FIELD_NAMES.length;
+  var formatMultipleInputFieldsFunc = formatMultipleInputFields;
+  for(var i = 0; i < MULTIPLE_INPUT_FIELD_NAMES_LENGTH; i++){
+    formatMultipleInputFields(MULTIPLE_INPUT_FIELD_NAMES[i]);
+  }
+}
+
+function formatMultipleInputFields(name) {
+    if ($("." + name + " input[type=text]:hidden").val() == null) return;
+
+    var allFields = $.find("input[id^='vrtx-" + name + "']");
+    var result = "";
+    var allFieldsLength = allFields.length;
+    for (var i = 0; i < allFieldsLength; i++) {
+        result += $.trim(allFields[i].value);
+        if (i < (allFieldsLength-1)) {
+            result += ",";
+        }
+    }
+    $("." + name + " input[type=text]:hidden").val(result);
+}
 
 
 /*-------------------------------------------------------------------*\

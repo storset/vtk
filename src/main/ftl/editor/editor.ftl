@@ -70,17 +70,22 @@
         </#if>
         
         // Multiple fields
+        registerClicks();
+
         if(_$("#resource\\.featured-articles").length) {
-          loadMultipleDocuments(true, "resource\\.featured-articles", true, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
-                                '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
+          loadMultipleInputFields("featured-articles",'${vrtx.getMsg("editor.add")}',
+                                  '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
+                                  '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}');
         }   
         if(_$("#resource\\.aggregation").length) {                  
-          loadMultipleDocuments(true, "resource\\.aggregation", false, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
-                                '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
+          loadMultipleInputFields("aggregation", '${vrtx.getMsg("editor.add")}',
+                                  '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
+                                  '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}');
         } 
-        if(_$("#resource\\.manually-approve-from").length) {                
-          loadMultipleDocuments(false, "resource\\.manually-approve-from", false, '${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}','${vrtx.getMsg("editor.browse")}',
-                                '${fckeditorBase.url?html}', '${baseFolder}', '${fckBrowse.url.pathRepresentation}');
+        if(_$("#resource\\.manually-approve-from").length) {     
+          loadMultipleInputFields("manually-approve-from", '${vrtx.getMsg("editor.add")}',
+                                  '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
+                                  '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}');
         }
       }); 
 
@@ -89,7 +94,7 @@
       window.onbeforeunload = unsavedChangesInEditorMessage;
       
       function performSave() {
-        formatDocumentsData();
+        saveMultipleInputFields();
         NEED_TO_CONFIRM = false;
       } 
  

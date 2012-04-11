@@ -83,7 +83,7 @@ $(document).ready(function() {
       if(manuallyApproveLocationsTxt && manuallyApproveLocationsTxt.length) {
         var locations, aggregatedlocations;
         
-        formatDocumentsData();
+        saveMultipleInputFields();
       
         var value = manuallyApproveLocationsTxt.val();
         lastVal = $.trim(value);

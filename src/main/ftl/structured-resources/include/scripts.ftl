@@ -8,9 +8,6 @@
   <#if containsShowHideScripts>
     <@showhide.addShowHideScripts srcBase="${jsBaseURL?html}"/>
   </#if>
-  <#if containsMultipleInputFieldScripts>
-    <@multipleinputfields.addMultipleInputFieldsScripts srcBase="${jsBaseURL?html}" />
-  </#if>
   <script type="text/javascript"><!--
     $(document).ready(function() {
       <#list scripts as script>

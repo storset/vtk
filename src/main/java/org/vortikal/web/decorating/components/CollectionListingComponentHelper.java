@@ -21,7 +21,7 @@ public class CollectionListingComponentHelper {
         boolean[] edit = new boolean[maxItems];
         for (Listing l : ll) {
             for (PropertySet ps : l.getFiles()) {
-              res = repo.retrieve(token, ps.getURI(), false);
+              res = repo.retrieve(token, ps.getURI(), false); // XXX: Throw or catch exception?
               edit[i++] = this.isAuthorized(repo, res, principal);                
             }
 
@@ -29,6 +29,7 @@ public class CollectionListingComponentHelper {
         return edit;
     }
 
+   // XXX: Throw exception?
    public boolean isAuthorized(Repository repo, Resource res, Principal principal) {
      try {
        return repo.isAuthorized(res, RepositoryAction.READ_WRITE, principal, true);

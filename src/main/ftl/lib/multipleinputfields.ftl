@@ -3,5 +3,5 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#macro addMultipleInputFields script>
-  loadMultipleInputFields('${script.name}','${vrtx.getMsg("editor.add")}','${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}', '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}');
+  loadMultipleInputFields('${script.name}', '${vrtx.getMsg("editor.add")}', '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}', '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', true);
 </#macro>

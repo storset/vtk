@@ -1753,7 +1753,7 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
     var appendHtml = "<div id='vrtx-" + name + "-add' class='vrtx-button'>"
 		      + "<button onclick=\"addFormField('" + name + "',null, '"
 		      + removeName + "','" + moveUpName + "','" + moveDownName + "','" 
-                      + browseName + "','" + size + "'," + isResourceRef + "," + false + "); return false;\">"
+                      + browseName + "','" + size + "'," + isResourceRef + "," + false + "," + isMovable + "); return false;\">"
 		      + addName + "</button></div>";
 
     inputFieldParent.removeClass("vrtx-textfield").append(appendHtml);
@@ -1803,11 +1803,11 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
     if (removeName) {
         var removeButton = "<div class='vrtx-button'><button class='remove " + name + "' type='button' " + "id='" + idstr + "remove' >" + removeName + "</button></div>";
     }
-    if (moveUpName && i > 1) {
+    if (isMovable && moveUpName && i > 1) {
     	var moveUpButton = "<div class='vrtx-button'><button class='moveup' type='button' " + "id='" + idstr + "moveup' >"
     	+ "&uarr; " + moveUpName + "</button></div>";
     }
-    if (moveDownName && i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]) {
+    if (isMovable && moveDownName && i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]) {
     	var moveDownButton = "<div class='vrtx-button'><button class='movedown' type='button' " + "id='" + idstr + "movedown' >"
     	+ "&darr; " + moveDownName + "</button></div>";
     }
@@ -1826,14 +1826,13 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
     $(html).insertBefore("#vrtx-" + name + "-add");
     
     if(!init) {
-      if(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] > 0) {
+      if(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] > 0 && isMovable) {
         var fields = $("." + name + " div.vrtx-multipleinputfield");
         if(fields.eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).not("has:button.movedown")) {
           moveDownButton = "<div class='vrtx-button'><button class='movedown' type='button' " + "id='" + idstr + "movedown' >"
                          + "&darr; " + moveDownName + "</button></div>";
           fields.eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).append(moveDownButton);
         }
-
       }
       LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]++;
       autocompleteUsername(".vrtx-autocomplete-username", idstr + i);

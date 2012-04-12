@@ -53,7 +53,7 @@
 
       <p><@vrtx.msg code="feedback.cant-respond" default="We can unfortunately not respond directly." /></p>
       <p>
-      <@vrtx.msg code="feedback.contact-pre" default="See" />&nbsp;
+      <@vrtx.msg code="feedback.contact-pre" default="See" />
       <#if contacturl?has_content>
         <a id="vrtx-feedback-contact" target="_top" href='${contacturl?html}'>
       <#else>

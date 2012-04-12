@@ -14,7 +14,7 @@ function setShowHide(name, parameters) {
 function toggle(name, parameters) {
   var trues = $('#' + name + '-true');
   for(var i = 0, truesLen = trues.length; i < truesLen; i++) {
-    if (this.checked) {
+    if (trues[i].checked) {
       for (var k = 0, parametersLen = parameters.length; k < parametersLen; k++) {
         $('div.' + parameters[k]).hide("fast");
       }
@@ -22,7 +22,7 @@ function toggle(name, parameters) {
   }
   var falses = $('#' + name + '-false');
   for(i = 0, falsesLen = falses.length; i < falsesLen; i++) {
-    if (this.checked) {
+    if (falses[i].checked) {
       for (k = 0, parametersLength = parameters.length; k < parametersLength; k++) {
         $('div.' + parameters[k]).show("fast");
       }

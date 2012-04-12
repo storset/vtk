@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,27 +28,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.referencedata.provider;
+package org.vortikal.web.referencedata;
 
-public class ExternalLink {
+import org.vortikal.web.service.URL;
 
-    private String url;
-    private String name;
+public class Link {
 
-    public String getUrl() {
-        return this.url;
+    private URL url; 
+    private String title;
+    
+    public URL getUrl() {
+        return url;
     }
     
-    public String getName() {
-        return this.name;
-    }
-
-    public void setUrl(String url) {
+    public void setUrl(URL url) {
         this.url = url;
     }
-
-    public void setName(String name) {
-        this.name = name;
+    
+    public String getTitle() {
+        return title;
+    }
+    
+    public void setTitle(String title) {
+        this.title = title;
     }
     
 }

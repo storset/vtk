@@ -60,21 +60,17 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
   var isSimpleHTML = simpleHTML != null ? simpleHTML : false;
 
   // CKEditor configurations
-  
-  // Introductions / descriptions
   if (contains(name, "introduction")
    || contains(name, "resource.description")
    || contains(name, "resource.image-description")
    || contains(name, "resource.video-description")
-   || contains(name, "resource.audio-description")) {
+   || contains(name, "resource.audio-description")) { // Introductions / descriptions
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 150, 400, 40, inlineToolbar,
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
-  // Caption
-  } else if (contains(name, "caption")) {
+  } else if (contains(name, "caption")) { // Caption
     setCKEditorConfig(name, linkBrowseUrl, null, null, defaultLanguage, cssFileList, 78, 400, 40, inlineToolbar, 
-                      isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
-  // Studies                     
-  } else if (contains(name, "frist-frekvens-fri")
+                      isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);               
+  } else if (contains(name, "frist-frekvens-fri") // Studies  
           || contains(name, "metode-fri")
           || contains(name, "internasjonale-sokere-fri")
           || contains(name, "nordiske-sokere-fri")
@@ -96,14 +92,12 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
                       isCompleteEditor, false, baseDocumentUrl, isSimpleHTML);
   } else if (contains(name, "message")) {
     setCKEditorConfig(name, null, null, null, defaultLanguage, cssFileList, 250, 400, 40, messageToolbar, 
-                      isCompleteEditor, false, null, isSimpleHTML);  
-  // Additional content                             
+                      isCompleteEditor, false, null, isSimpleHTML);           
   } else if (contains(name, "additional-content")
-          || contains(name, "additionalContents")) {
+          || contains(name, "additionalContents")) { // Additional content
     setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 900, 100, 40, 
                       completeToolbar, true, false, baseDocumentUrl, isSimpleHTML);
-  // Complete editor      
-  } else if (isCompleteEditor) {
+  } else if (isCompleteEditor) { // Complete editor 
     var height = 220;
     var maxHeight = 400;
     var completeTB = completeToolbar;   
@@ -115,16 +109,13 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
             || name == "content-study") {
       height = 400;
       maxHeight = 800;
-      // Old editor
-      if (name == "resource.content") {
+      if (name == "resource.content") { // Old editor
         completeTB = completeToolbarOld;
-      }
-      // Study toolbar
-      if (name == "content-study"){
+      } 
+      if (name == "content-study") { // Study toolbar
         completeTB = studyToolbar;
       }
     }
-
     setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, height, maxHeight, 50, completeTB,
                       isCompleteEditor, true, baseDocumentUrl, isSimpleHTML);
   } else if (isWithoutSubSuper) {

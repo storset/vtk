@@ -38,7 +38,7 @@
         performSave();
       });
 
-      registerClicks();
+      registerMultipleInputFieldsClicks();
     });
     
     var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";

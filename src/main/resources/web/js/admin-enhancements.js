@@ -1725,7 +1725,7 @@ var MULTIPLE_INPUT_FIELD_NAMES = [];
 var COUNTER_FOR_MULTIPLE_INPUT_FIELD = [];
 var LENGTH_FOR_MULTIPLE_INPUT_FIELD = [];
 
-function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName) {
+function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName, isMovable) {
     var inputField = $("." + name + " input[type=text]");
 
     if (inputField.val() == null) { return; }
@@ -1760,13 +1760,13 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
     
     var addFormFieldFunc = addFormField;
     for (var i = 0; i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]; i++) {
-       addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isResourceRef, true);
+       addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isResourceRef, true, isMovable);
     }
     
     autocompleteUsernames(".vrtx-autocomplete-username");
 }
 
-function registerClicks() {
+function registerMultipleInputFieldsClicks() {
   var wrapper = $("#editor");
 
   wrapper.on("click", ".vrtx-multipleinputfield button.remove", function(e){
@@ -1791,7 +1791,7 @@ function registerClicks() {
   });
 }
 
-function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isResourceRef, init) {
+function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isResourceRef, init, isMovable) {
     if (value == null) { value = ""; }
 
     var idstr = "vrtx-" + name + "-";

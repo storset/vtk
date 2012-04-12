@@ -70,7 +70,7 @@
         </#if>
         
         // Multiple fields
-        registerClicks();
+        registerMultipleInputFieldsClicks();
 
         if(_$("#resource\\.featured-articles").length) {
           loadMultipleInputFields("featured-articles",'${vrtx.getMsg("editor.add")}',

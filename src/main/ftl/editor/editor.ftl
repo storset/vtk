@@ -69,7 +69,7 @@
           vrtxAdm.interceptEnterKey('#resource\\.tags');
         </#if>
         
-        // Multiple fields
+        // Multiple fields interaction
         registerMultipleInputFieldsClicks();
 
         if(_$("#resource\\.featured-articles").length) {

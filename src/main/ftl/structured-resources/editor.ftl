@@ -37,7 +37,8 @@
       _$("#editor").on("click", "#saveAndViewButton, #cancelAction, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", function(e) {
         performSave();
       });
-
+      
+      // Multiple fields interaction
       registerMultipleInputFieldsClicks();
     });
     

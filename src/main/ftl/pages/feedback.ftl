@@ -86,7 +86,7 @@
                <input type="submit" class="submit-email-form" value="Send" name="submit" />
              </div>
              <div class="vrtx-button"> 
-               <input type="button" class="cancel-email-form" value="Cancel" name="cancel" />
+               <input type="button" class="cancel-email-form" value="${vrtx.getMsg('editor.cancel')}" name="cancel" onclick="javascript:window.parent.tb_remove();" />
              </div>  
            </div>
          </form>

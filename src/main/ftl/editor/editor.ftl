@@ -86,6 +86,8 @@
           loadMultipleInputFields("manually-approve-from", '${vrtx.getMsg("editor.add")}',
                                   '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
                                   '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, false);
+          var manuallyApproveButton = $("#manually-approve-container-title");
+          manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());
         }
       }); 
 
@@ -120,8 +122,11 @@
           approveTablePublished = "<@vrtx.msg code='publish.permission.published' />",
           approveShowAll = "<@vrtx.msg code='editor.manually-approve.show-all' />",
           approveShowApprovedOnly = "<@vrtx.msg code='editor.manually-approve.show-approved-only' />",
-          approveNoApprovedMsg = "<@vrtx.msg code='editor.manually-approve.no-approved-msg' />";
-      
+          approveNoApprovedMsg = "<@vrtx.msg code='editor.manually-approve.no-approved-msg' />",
+          browseBase = '${fckeditorBase.url?html}',
+          browseBaseFolder = '${baseFolder}',
+          browseBasePath = '${fckBrowse.url.pathRepresentation}';
+
       // Div container display in IE
       var cssFileList = [<#if fckEditorAreaCSSURL?exists>
                            <#list fckEditorAreaCSSURL as cssURL>

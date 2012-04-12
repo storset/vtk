@@ -42,8 +42,7 @@ function resize(iframe) {
       }
     }
     iframe.style.height = setHeight + "px";
-    if (parent) {
-      // Pass our height to parent since it is typically cross domain (and can't access it directly)
+    if (parent) { // Pass our height to parent since it is typically cross domain (and can't access it directly)
       if(hasPostMessage) {
         parent.postMessage(setHeight, vrtxAdminOrigin);
       } else { // Use the hash stuff in plugin from jQuery "Cowboy" 

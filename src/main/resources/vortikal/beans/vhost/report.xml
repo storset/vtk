@@ -107,9 +107,9 @@
     <property name="linkStatusPropDef" ref="linkStatusPropDef" />
     <property name="linkCheckPropDef" ref="linkCheckPropDef" />
     <property name="brokenLinksCountPropDef" ref="brokenLinksCountPropDef"/>
-    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <!--property name="sortPropDef" ref="lastModifiedPropDef" /-->
     <property name="publishedPropDef" ref="publishedPropDef" />
-    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+    <property name="sortOrder" ref="SORT_ORDER.ASC" />
     <property name="parser" ref="searchParser"/>
     <property name="queryFilterExpression" value="${systemjob.linkcheck.queryFilterExpression}"/>
     <property name="backURL" value="2" />

@@ -54,6 +54,7 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
+import org.vortikal.repository.search.TypedSortField;
 import org.vortikal.repository.search.query.ACLReadForAllQuery;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
@@ -254,7 +255,12 @@ public class BrokenLinksReport extends DocumentReporter {
         Search search = new Search();
         search.setQuery(topLevelQ);
         SortingImpl sorting = new SortingImpl();
-        sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
+        
+        if (this.sortPropDef == null) {
+            sorting.addSortField(new TypedSortField(PropertySet.URI_IDENTIFIER, this.sortOrder));
+        } else {
+            sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
+        }
         search.setSorting(sorting);
 
         // Published (true|false)
@@ -349,7 +355,6 @@ public class BrokenLinksReport extends DocumentReporter {
         this.publishedPropDef = publishedPropDef;
     }
 
-    @Required
     public void setSortPropDef(PropertyTypeDefinition sortPropDef) {
         this.sortPropDef = sortPropDef;
     }

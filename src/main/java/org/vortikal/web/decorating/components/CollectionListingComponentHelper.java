@@ -14,22 +14,27 @@ public class CollectionListingComponentHelper {
     // XXX FIXME!!!
     // Indices of return array must match indices of each property set in each
     // result set in each listing!!!
-    public boolean[] isAuthorized(Repository r, String token, Principal principal, int maxItems, List<Listing> ll)
+    public boolean[] isAuthorized(Repository repo, String token, Principal principal, int maxItems, List<Listing> ll)
             throws Exception {
         Resource res;
         int i = 0;
         boolean[] edit = new boolean[maxItems];
         for (Listing l : ll) {
             for (PropertySet ps : l.getFiles()) {
-                try {
-                    res = r.retrieve(token, ps.getURI(), false);
-                    edit[i++] = r.isAuthorized(res, RepositoryAction.READ_WRITE, principal, true);
-                } catch (Exception e) {
-                    edit[i++] = false;
-                }
+              res = repo.retrieve(token, ps.getURI(), false);
+              edit[i++] = this.isAuthorized(repo, res, principal);                
             }
 
         }
         return edit;
     }
+
+   public boolean isAuthorized(Repository repo, Resource res, Principal principal) {
+     try {
+       return repo.isAuthorized(res, RepositoryAction.READ_WRITE, principal, true);
+     } catch(Exception e)  {
+       return false;
+     }
+   }
+
 }

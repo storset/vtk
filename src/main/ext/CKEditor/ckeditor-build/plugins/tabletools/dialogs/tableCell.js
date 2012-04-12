@@ -506,7 +506,7 @@ CKEDITOR.dialog.add( 'cellProperties', function( editor )
 											{
 												selectedCell.setAttribute( 'class', this.getValue() );
 											}
-										},
+										}
 									]
 								}
 							]

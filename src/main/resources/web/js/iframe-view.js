@@ -32,12 +32,8 @@ function resize(iframe) {
   var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
 
   try {
-    // Set inline style to equal the body height of the iframed content,
-    // when body content is at least 350px height
-    var setHeight = 350;
-    
-    // When login redirect fails
-    if(typeof iframe.contentWindow.document === "undefined") {
+    var setHeight = 350; // Set inline style to equal the body height of the iframed content, when body content is at least 350px height
+    if(typeof iframe.contentWindow.document === "undefined") { // When login redirect fails
       setHeight = 700;
     } else {
       var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45; 

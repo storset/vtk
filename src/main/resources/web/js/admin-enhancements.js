@@ -296,7 +296,8 @@ vrtxAdmin._$(document).ready(function () {
     var tabMenuServices = ["fileUploadService", "createDocumentService", "createCollectionService"];
 
     for (i = tabMenuServices.length; i--;) {
-      if(tabMenuServices[i] != "fileUploadService" && tabMenuServices[i] != "createDocumentService") {
+      if(tabMenuServices[i] != "fileUploadService"
+      && tabMenuServices[i] != "createDocumentService") {
         vrtxAdm.getFormAsync({
           selector: "ul#tabMenuRight a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",

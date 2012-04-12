@@ -45,14 +45,15 @@
             <th id="vrtx-report-broken-links-web-page"><@vrtx.msg code="report.${report.reportname}.web-page" /></th>
             <th id="vrtx-report-broken-links-count"><@vrtx.msg code="report.${report.reportname}.count" /></th>
             <th id="vrtx-report-broken-links"><@vrtx.msg code="report.${report.reportname}.list" /></th>
-            <th id="vrtx-report-last-modified"><@vrtx.msg code="report.last-modified" default="Last modified" /></th>
+            <th id="vrtx-report-last-checked"><@vrtx.msg code="report.broken-links.last-checked" default="Last checked" /></th>
           </tr>
         </thead>
         <tbody>
         <#assign brokenLinksSize = report.result?size />
         <#list report.result as item>
           <#assign title = vrtx.propValue(item, 'title') />
-          <#assign url = "">
+          <#assign url = "" />
+          <#assign timestamp = "" />
           <#if report.viewURLs[item_index]?exists>
             <#assign url = report.viewURLs[item_index] />
           </#if>
@@ -61,9 +62,12 @@
             <#if linkCheck['brokenLinks']?exists>
               <#assign brokenLinks = linkCheck['brokenLinks'] />
             </#if>
+            <#if linkCheck['timestamp']?exists>
+              <#assign timestamp = linkCheck['timestamp'] />
+            </#if>
           </#if>
           <#assign linkStatus = vrtx.propValue(item, 'link-status') />
-          
+
           <#assign rowType = "odd" />
           <#if (item_index % 2 == 0) >
             <#assign rowType = "even" />
@@ -126,10 +130,11 @@
               </#if>
             </td>
             <td class="vrtx-report-last-modified">
+              <#if timestamp != "">
+                <@vrtx.date value=timestamp?datetime('yyyyMMdd HH:mm:ss') format="long" />
+              </#if>
               <#if linkStatus = 'AWAITING_LINKCHECK'>
-                <@vrtx.msg code="report.broken-links.awaiting-linkcheck" />
-              <#else>
-                ${lastModified?html}
+                (<@vrtx.msg code="report.broken-links.awaiting-linkcheck" />)
               </#if>
             </td>
           </tr>

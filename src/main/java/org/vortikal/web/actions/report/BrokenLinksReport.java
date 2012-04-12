@@ -226,7 +226,7 @@ public class BrokenLinksReport extends DocumentReporter {
             and.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_IMG", TermOperator.NE));
             linkStatusCriteria.add(and);
         }
-        //linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "AWAITING_LINKCHECK", TermOperator.EQ));
+        linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "AWAITING_LINKCHECK", TermOperator.EQ));
 
         AndQuery topLevelQ = new AndQuery();
 

@@ -15,23 +15,18 @@ $(document).ready(function () {
   var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
   var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
 
-  $(window).load(function (e) {
-    // Set inline style to equal the body height of the iframed content,
-    // when body content is at least 350px height
-    var setHeight = 350;
+  $(window).load(function (e) {  // Set inline style to equal the body height of the iframed content,                     
+    var setHeight = 350;         // when body content is at least 350px height
     var computedHeight = document.body.offsetHeight;
     if (computedHeight > setHeight) {
       setHeight = computedHeight;
     }
     document.body.style.height = setHeight + "px"; 
-    if(parent) {
-      // Pass our height to parent since it is typically cross domain (and can't access it directly)
+    if(parent) { // Pass our height to parent since it is typically cross domain (and can't access it directly)
       if(hasPostMessage) {
         parent.postMessage(setHeight, vrtxAdminOrigin);
       } else { // use the hash stuff in plugin from jQuery "Cowboy"
-        // TODO: fix IE 7 endless loop because of setting iframe.src
-        // var parent_url = decodeURIComponent(document.location.hash.replace(/^#/,''));
-        // $.postMessage({height: setHeight}, parent_url, parent);        
+        // TODO: remove Postmessage     
       }
     }
     var links = $("a");

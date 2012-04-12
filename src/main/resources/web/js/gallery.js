@@ -8,9 +8,7 @@
 
 (function ($) {
   $.fn.vrtxSGallery = function (wrapper, container, maxWidth, options) {
-
-    // Default animation settings
-    settings = jQuery.extend({
+    settings = jQuery.extend({ // Default animation settings
       fadeInOutTime: 250,
       fadedOutOpacity: 0,
       fadeThumbsInOutTime: 250,

@@ -26,9 +26,9 @@ $(document).ready(function () {
           var previewIframeMinHeight = 350;
           var previewIframeMaxHeight = 20000;
           var newHeight = previewIframeMinHeight;
-          if(recievedData.indexOf) { // recieved via hash
+          if(recievedData.indexOf) { // Recieved via hash
             var dataHeight = Number(recievedData.replace(/.*height=(\d+)(?:&|$)/, '$1' ));
-          } else { // recieved with postMessage
+          } else { // Recieved with postMessage
             var dataHeight = parseInt(recievedData, 10);
           }
           if (!isNaN(dataHeight) && (dataHeight > previewIframeMinHeight)) {
@@ -43,8 +43,7 @@ $(document).ready(function () {
       } else {
         var previewCreateIframe = $("#create-iframe");
         if (previewCreateIframe) {
-          // Hack for width when english i18n
-          var originalWidth = 150;
+          var originalWidth = 150; // Hack for width when english i18n
           if ($("#locale-selection li.active").hasClass("en")) {
             originalWidth = 162;
           }
@@ -52,13 +51,11 @@ $(document).ready(function () {
             var winHeight = window.innerHeight ? window.innerHeight : $(window).height();
             var winWidth = $(window).width();
           
-            // Get original iframe position
-            previewCreateIframePos = previewCreateIframe.offset();
+            previewCreateIframePos = previewCreateIframe.offset(); // Get original iframe position
             previewCreateIframePosTop = previewCreateIframePos.top;
             previewCreateIframePosLeft = previewCreateIframePos.left;
 
-            // Go fullsize
-            previewCreateIframe.css({
+            previewCreateIframe.css({ // Go fullsize
               "height": winHeight + "px",
               "width": winWidth + "px"
             });

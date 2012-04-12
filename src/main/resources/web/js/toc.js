@@ -11,14 +11,14 @@ function getElementsByTagNames(list, obj) {
   if (!obj) var obj = document;
   var tagNames = list.split(',');
   var resultArray = new Array();
-  var tagNamesLength = tagNames.length; //performance
+  var tagNamesLength = tagNames.length;
   for (var i = 0; i < tagNames.length; i++) {
     if (tocTargetId != "") {
       var tags = obj.getElementById(tocTargetId).getElementsByTagName(tagNames[i]);
     } else {
       var tags = obj.getElementsByTagName(tagNames[i]);
     }
-    var tagsLength = tags.length; //performance
+    var tagsLength = tags.length;
     for (var j = 0; j < tagsLength; j++) {
       resultArray.push(tags[j]);
     }

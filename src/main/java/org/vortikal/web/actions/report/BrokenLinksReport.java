@@ -84,9 +84,9 @@ public class BrokenLinksReport extends DocumentReporter {
     private final static String[] FILTER_READ_RESTRICTION_PARAM_VALUES = { FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE, "false", "true" };
 
     private final static String   FILTER_LINK_TYPE_PARAM_NAME = "link-type";
-    private final static String   FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE = "anchor";
+    private final static String   FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE = "anchor-img";
     
-    private final static String[] FILTER_LINK_TYPE_PARAM_VALUES = { FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE, "img", "other" };
+    private final static String[] FILTER_LINK_TYPE_PARAM_VALUES = { FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE, "img", "anchor", "other" };
 
     
     private final static String   FILTER_PUBLISHED_PARAM_NAME = "published";
@@ -169,7 +169,9 @@ public class BrokenLinksReport extends DocumentReporter {
         String[] includeTypes;
         String[] excludeTypes = new String[0];
         if (FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE.equals(linkType) || linkType == null) {
-            includeTypes = new String[]{"BROKEN_LINKS_ANCHOR"};
+            includeTypes = new String[]{"BROKEN_LINKS_ANCHOR", "BROKEN_LINKS_IMG"};
+        } else if ("anchor".equals(linkType)) {
+            includeTypes = new String[] {"BROKEN_LINKS_ANCHOR"};
         } else if ("img".equals(linkType)) {
             includeTypes = new String[] {"BROKEN_LINKS_IMG"};
         } else {
@@ -192,7 +194,6 @@ public class BrokenLinksReport extends DocumentReporter {
             public boolean matching(PropertySet propertySet) throws Exception {
                 Property prop = propertySet.getProperty(brokenLinksCountPropDef);
                 if (prop == null) return true;
-                
                 net.sf.json.JSONObject obj = prop.getJSONValue();
                 for (String includeType: this.includeTypes) {
                     sum += obj.optInt(includeType);
@@ -216,6 +217,9 @@ public class BrokenLinksReport extends DocumentReporter {
         String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
         
         if (FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE.equals(linkType) || linkType == null) {
+            linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_ANCHOR", TermOperator.EQ));
+            linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_IMG", TermOperator.EQ));
+        } else if ("anchor".equals(linkType)) {
             linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_ANCHOR", TermOperator.EQ));
         } else if ("img".equals(linkType)) {
             linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_IMG", TermOperator.EQ));

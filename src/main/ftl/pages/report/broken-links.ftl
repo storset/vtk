@@ -92,7 +92,8 @@
                 <#list brokenLinks as link>
                   <#if link?is_hash>
                     <#if (link.link)?exists>
-                      <#if (report.linkType == "anchor" && link.type == "ANCHOR")
+                      <#if (report.linkType == "anchor-img" && (link.type == "ANCHOR" || link.type == "IMG"))
+                        || (report.linkType == "anchor" && link.type == "ANCHOR")
                         || (report.linkType == "img"    && (link.type == "IMG" || link.type == "PROPERTY"))
                         || (report.linkType == "other"  && link.type != "ANCHOR" && link.type != "IMG" && link.type != "PROPERTY")>
                         <#assign countedBrokenLinks = countedBrokenLinks + 1 />

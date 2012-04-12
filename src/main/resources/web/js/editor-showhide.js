@@ -12,18 +12,20 @@ function setShowHide(name, parameters) {
 }
 
 function toggle(name, parameters) {
-  $('#' + name + '-true').each(function () {
+  var trues = $('#' + name + '-true');
+  for(var i = 0, truesLen = trues.length; i < truesLength; i++) {
     if (this.checked) {
-      for (var i = 0, parametersLength = parameters.length; i < parametersLength; i++) {
-        $('div.' + parameters[i]).hide("fast");
+      for (var k = 0, parametersLength = parameters.length; k < parametersLength; k++) {
+        $('div.' + parameters[k]).hide("fast");
       }
     }
-  });
-  $('#' + name + '-false').each(function () {
+  }
+  var falses = $('#' + name + '-false');
+  for(i = 0, falsesLen = falses.length; i < falsesLength; i++) {
     if (this.checked) {
-      for (var i = 0, parametersLength = parameters.length; i < parametersLength; i++) {
-        $('div.' + parameters[i]).show("fast");
+      for (k = 0, parametersLength = parameters.length; k < parametersLength; k++) {
+        $('div.' + parameters[k]).show("fast");
       }
     }
-  });
+  }
 }

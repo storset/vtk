@@ -5,13 +5,7 @@
 <#macro displayCollection collectionListing>
   <#local resources=collectionListing.files />
   <#local i = 1 />
-    
-  <div class="vrtx-introduction">
-    <a id="vrtx-message-listing-create" class="button" href="${vrtx.relativeLinkConstructor("", 'simpleMessageEditor')}">
-      <span>${vrtx.getMsg("message-listing.new-message")}</span>
-    </a>
-  </div>
-  
+      
   <#if (resources?size > 0)>
     <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
       <#if collectionListing.title?exists && collectionListing.offset == 0>

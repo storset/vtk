@@ -84,7 +84,6 @@
           <list>
             <value>${webResources.baseURL}/jquery/include-jquery.js</value>
             <value>${webResources.baseURL}/jquery/plugins/jquery.masonry.min.js</value>
-            <value>${jsBaseURL}/ie6-image-listing.js</value>
           </list>
         </entry>
       </map>

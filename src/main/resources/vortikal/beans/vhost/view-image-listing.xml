@@ -81,11 +81,6 @@
                 <value>${webResources.baseURL}/jquery/include-jquery.js</value>
               </list>
             </entry>
-            <entry key="list">
-              <list>
-                <value>${jsBaseURL}/ie6-image-listing.js</value>
-              </list>
-            </entry>
             <entry key="table">
               <list>
                 <value>${jsBaseURL}/plugins/tablesort-1.5.min.js</value>

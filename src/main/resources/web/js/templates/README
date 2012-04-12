@@ -1,0 +1,20 @@
+README
+------
+
+The files in this folder are Mustache templates (HTML) for JS.
+
+A templates-file can be retrieved via. vrtxAdmin.serverFacade.getText().
+
+Different templates in the file can be splitted by e.g. ### which JS
+can split the retrived string by, and assign to template names in
+an hash array.
+
+To make HTML with a template:
+
+var html = $.mustache(templates["<assigned-template-name>"], JSON-object);
+
+The properties of the JSON-object is outputted with {{ }} around it
+in the template-file.
+
+Se more documentation of template writing:
+https://github.com/janl/mustache.js

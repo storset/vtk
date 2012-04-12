@@ -75,17 +75,17 @@
         if(_$("#resource\\.featured-articles").length) {
           loadMultipleInputFields("featured-articles",'${vrtx.getMsg("editor.add")}',
                                   '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
-                                  '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', true);
+                                  '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', true, true);
         }   
         if(_$("#resource\\.aggregation").length) {                  
           loadMultipleInputFields("aggregation", '${vrtx.getMsg("editor.add")}',
                                   '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
-                                  '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false);
+                                  '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, false);
         } 
         if(_$("#resource\\.manually-approve-from").length) {     
           loadMultipleInputFields("manually-approve-from", '${vrtx.getMsg("editor.add")}',
                                   '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
-                                  '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false);
+                                  '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, false);
         }
       }); 
 

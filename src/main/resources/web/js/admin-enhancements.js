@@ -1725,7 +1725,7 @@ var MULTIPLE_INPUT_FIELD_NAMES = [];
 var COUNTER_FOR_MULTIPLE_INPUT_FIELD = [];
 var LENGTH_FOR_MULTIPLE_INPUT_FIELD = [];
 
-function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName, isMovable) {
+function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName, isMovable, isResourceRef) {
     var inputField = $("." + name + " input[type=text]");
 
     if (inputField.val() == null) { return; }
@@ -1739,8 +1739,7 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
     var size = inputField.attr("size");
 
     inputFieldParent = inputField.parent();
-    
-    var isResourceRef = false;
+
     if(inputFieldParent.parent().hasClass("vrtx-resource-ref-browse")) {
       isResourceRef = true;
       if(inputFieldParent.next().hasClass("vrtx-button")) {

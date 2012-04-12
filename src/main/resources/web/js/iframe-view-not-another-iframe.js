@@ -25,9 +25,8 @@ $(document).ready(function () {
     if(parent) { // Pass our height to parent since it is typically cross domain (and can't access it directly)
       if(hasPostMessage) {
         parent.postMessage(setHeight, vrtxAdminOrigin);
-      } else { // use the hash stuff in plugin from jQuery "Cowboy"
-        // TODO: remove Postmessage     
-      }
+      } else { // use the hash stuff in plugin from jQuery "Cowboy". TODO: remove Postmessage
+      }  
     }
     var links = $("a");
     for (var i = 0, len = links.length; i < len; i++) {

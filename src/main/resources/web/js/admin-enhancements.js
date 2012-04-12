@@ -347,7 +347,7 @@ vrtxAdmin._$(document).ready(function () {
         insertAfterOrReplaceClass: "div.permissions-" + privilegiesPermissions[i] + "-wrapper",
         isReplacing: true,
         nodeType: "div",
-        funcComplete: initPermissionForm,
+        funcComplete: vrtxAdm.initPermissionForm,
         simultanSliding: false,
         transitionSpeed: 0,
         transitionEasingSlideDown: "linear",
@@ -379,7 +379,7 @@ vrtxAdmin._$(document).ready(function () {
         insertAfterOrReplaceClass: "tr." + privilegiesPermissionsInTable[i],
         isReplacing: true,
         nodeType: "tr",
-        funcComplete: initPermissionForm,
+        funcComplete: vrtxAdm.initPermissionForm,
         simultanSliding: true
       });
       vrtxAdm.completeFormAsync({
@@ -986,8 +986,7 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.initPermissionForm = function initPermissionForm(selectorClass) {
-  var vrtxAdm = this;
-
+  var vrtxAdm = vrtxAdmin;
   if (!vrtxAdm._$("." + selectorClass + " .aclEdit").length) return;
   vrtxAdm.toggleConfigCustomPermissions(selectorClass);
   vrtxAdm.interceptEnterKeyAndReroute("." + selectorClass + " .addUser input[type=text]", "." + selectorClass + " input.addUserButton");
@@ -1003,7 +1002,7 @@ VrtxAdmin.prototype.initSimplifiedPermissionForm = function initSimplifiedPermis
 };
 
 VrtxAdmin.prototype.toggleConfigCustomPermissions = function toggleConfigCustomPermissions(selectorClass) {
-  var vrtxAdm = this, _$ = vrtxAdm._$;
+  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
 
   var customInput = _$("." + selectorClass + " ul.shortcuts label[for=custom] input");
   if (!customInput.is(":checked") && customInput.length) {

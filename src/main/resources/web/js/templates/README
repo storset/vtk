@@ -3,11 +3,11 @@ README
 
 The files in this folder are Mustache templates (HTML) for JS.
 
-A templates-file can be retrieved via. vrtxAdmin.serverFacade.getText().
+A templates-file can be retrieved as a String via. vrtxAdmin.serverFacade.getText().
 
-Different templates in the file can be splitted by e.g. ### which JS
-can split the retrived string by, and assign to template names in
-an hash array.
+Different templates in a file can be splitted by e.g. ### which JS
+can split the retreived String by, and assign to template names in
+an hash array (to minimize AJAX-requests).
 
 To make HTML with a template:
 

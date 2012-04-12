@@ -24,12 +24,13 @@
     wrapperContainer = wrapper + " " + container;
     wrapperContainerLink = wrapperContainer + " a" + container + "-link";
     wrapperThumbsLinks = wrapper + " ul li a";
-
-    var images = []; // cache image HTML with src as hash
+    
+    // Cache image HTML with src as hash
+    var images = []; 
     var imagesWidth = [];
     var imagesHeight = [];
 
-    //Performance: function pointers to use inside loops
+    // Performance: Function pointers to use inside loops
     var centerThumbnailImageFunc = centerThumbnailImage;
     var calculateImageFunc = calculateImage;
     var generateLinkImageFunc = generateLinkImage;
@@ -41,7 +42,7 @@
     initPagingEvents("prev");
     initPagingEvents("next");
 
-    //TODO: use for- or async loop
+    // TODO: use for- or async loop
     // Center thumbnails and cache images with link
     return this.each(function () {
       var link = $(this);
@@ -63,7 +64,7 @@
     });
 
     $(wrapper).on("mouseover mouseout click", "ul li a", function (e) {
-      var h = $(this);
+      var h = $(this);      
       if (e.type == "mouseover") {
         if (!h.hasClass("active")) {
           h.find("img").stop().fadeTo(settings.fadeThumbsInOutTime, 1);

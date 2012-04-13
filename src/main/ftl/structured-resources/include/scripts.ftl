@@ -15,16 +15,19 @@
           <@showhide.addShowHide script />
         </#if>
       </#list>
-      $.when(MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED).done(function() {
-        browseBase = '${fckeditorBase.url?html}';
-        browseBaseFolder = '${baseFolder}';
-        browseBasePath = '${fckBrowse.url.pathRepresentation}';
-        <#list scripts as script>
-          <#if script.type == 'MULTIPLEINPUTFIELDS' >
-            <@multipleinputfields.addMultipleInputFields script />
-          </#if>
-        </#list>
-      });
+      <#if containsMultipleInputFieldScripts>
+        $.when(MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED).done(function() {
+          browseBase = '${fckeditorBase.url?html}';
+          browseBaseFolder = '${baseFolder}';
+          browseBasePath = '${fckBrowse.url.pathRepresentation}';
+          <#list scripts as script>
+            <#if script.type == 'MULTIPLEINPUTFIELDS' >
+              loadMultipleInputFields('${script.name}', '${vrtx.getMsg("editor.add")}', '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}', 
+                                      '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', true, false);
+            </#if>
+          </#list>
+        });
+      </#if>
     });
     //-->
   </script>

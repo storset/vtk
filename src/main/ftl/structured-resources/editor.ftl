@@ -39,7 +39,7 @@
       });
       
       // Multiple fields interaction
-      registerMultipleInputFieldsClicks();
+      initMultipleInputFields();
     });
     
     var CURRENT_RESOURCE_LANGAGE = "${resourceLocaleResolver.resolveLocale(null)?string}";

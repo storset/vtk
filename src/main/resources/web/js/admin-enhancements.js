@@ -1742,10 +1742,12 @@ function showHideProperty(id, init, show) {
             TODO: Use Mustache templates 
 \*-------------------------------------------------------------------*/
 
+// TODO: simplify
 var MULTIPLE_INPUT_FIELD_NAMES = [];
 var COUNTER_FOR_MULTIPLE_INPUT_FIELD = [];
 var LENGTH_FOR_MULTIPLE_INPUT_FIELD = [];
 var MULTIPLE_INPUT_FIELD_TEMPLATES = [];
+var MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED;
 
 function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName, isMovable, isBrowsable) {
     var inputField = $("." + name + " input[type=text]");
@@ -1761,38 +1763,38 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
 
     inputFieldParent = inputField.parent();
 
-    if(inputFieldParent.parent().hasClass("vrtx-resource-ref-browse")) {
-      isBrowsable = true;
-      if(inputFieldParent.next().hasClass("vrtx-button")) {
-        inputFieldParent.next().hide();
-      }	
-    }
+      if(inputFieldParent.parent().hasClass("vrtx-resource-ref-browse")) {
+        isBrowsable = true;
+        if(inputFieldParent.next().hasClass("vrtx-button")) {
+          inputFieldParent.next().hide();
+        }	
+      }
 
-    if (isBrowsable && (typeof browseBase === "undefined" 
-                     || typeof browseBaseFolder === "undefined"
-                     || typeof browseBasePath === "undefined")) {
-      isBrowsable = false; 
-    }
+      if (isBrowsable && (typeof browseBase === "undefined" 
+                       || typeof browseBaseFolder === "undefined"
+                       || typeof browseBasePath === "undefined")) {
+        isBrowsable = false; 
+      }
 
-    inputField.hide();
+      inputField.hide();
 
-    var appendHtml = "<div id='vrtx-" + name + "-add' class='vrtx-button'>"
-		      + "<button onclick=\"addFormField('" + name + "',null, '"
-		      + removeName + "','" + moveUpName + "','" + moveDownName + "','" 
-                      + browseName + "','" + size + "'," + isBrowsable + "," + false + "," + isMovable + "); return false;\">"
-		      + addName + "</button></div>";
+      var appendHtml = "<div id='vrtx-" + name + "-add' class='vrtx-button'>"
+  		        + "<button onclick=\"addFormField('" + name + "',null, '"
+		        + removeName + "','" + moveUpName + "','" + moveDownName + "','" 
+                        + browseName + "','" + size + "'," + isBrowsable + "," + false + "," + isMovable + "); return false;\">"
+		        + addName + "</button></div>";
 
-    inputFieldParent.removeClass("vrtx-textfield").append(appendHtml);
+      inputFieldParent.removeClass("vrtx-textfield").append(appendHtml);
     
-    var addFormFieldFunc = addFormField;
-    for (var i = 0; i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]; i++) {
-       addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isBrowsable, true, isMovable);
-    }
-    
-    autocompleteUsernames(".vrtx-autocomplete-username");
+      var addFormFieldFunc = addFormField;
+      for (var i = 0; i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]; i++) {
+         addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isBrowsable, true, isMovable);
+      }
+      
+      autocompleteUsernames(".vrtx-autocomplete-username");
 }
 
-function registerMultipleInputFieldsClicks() {
+function initMultipleInputFields() {
   var wrapper = $("#editor");
 
   wrapper.on("click", ".vrtx-multipleinputfield button.remove", function(e){
@@ -1816,9 +1818,10 @@ function registerMultipleInputFieldsClicks() {
         e.stopPropagation();
   });
   
+  MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED = $.Deferred();
   MULTIPLE_INPUT_FIELD_TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("multiple-inputfields",
-                                                                  ["a", "b"],
-                                                                   $.Deferred());
+                                                                   ["button", "v"],
+                                                                   MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED);
 }
 
 function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, init, isMovable) {
@@ -1831,7 +1834,8 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
     var moveDownButton = "";
 
     if (removeName) {
-        var removeButton = "<div class='vrtx-button'><button class='remove " + name + "' type='button' " + "id='" + idstr + "remove' >" + removeName + "</button></div>";
+      var removeButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "remove", name: " " + name, 
+                                                                                idstr: idstr,   buttonText: removeName });
     }
     if (isMovable && moveUpName && i > 1) {
     	var moveUpButton = "<div class='vrtx-button'><button class='moveup' type='button' " + "id='" + idstr + "moveup' >"

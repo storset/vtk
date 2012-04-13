@@ -70,25 +70,27 @@
         </#if>
         
         // Multiple fields interaction
-        registerMultipleInputFieldsClicks();
-
-        if(_$("#resource\\.featured-articles").length) {
-          loadMultipleInputFields("featured-articles",'${vrtx.getMsg("editor.add")}',
-                                  '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
-                                  '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', true, true);
-        }   
-        if(_$("#resource\\.aggregation").length) {                  
-          loadMultipleInputFields("aggregation", '${vrtx.getMsg("editor.add")}',
-                                  '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
-                                  '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, false);
-        } 
-        if(_$("#resource\\.manually-approve-from").length) {     
-          loadMultipleInputFields("manually-approve-from", '${vrtx.getMsg("editor.add")}',
-                                  '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
-                                  '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, false);
-          var manuallyApproveButton = $("#manually-approve-container-title");
-          manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());
-        }
+        initMultipleInputFields();
+        
+        $.when(MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED).done(function() {
+          if(_$("#resource\\.featured-articles").length) {
+            loadMultipleInputFields("featured-articles",'${vrtx.getMsg("editor.add")}',
+                                    '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
+                                    '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', true, true);
+          }   
+          if(_$("#resource\\.aggregation").length) {                  
+            loadMultipleInputFields("aggregation", '${vrtx.getMsg("editor.add")}',
+                                    '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
+                                    '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, false);
+          } 
+          if(_$("#resource\\.manually-approve-from").length) {     
+            loadMultipleInputFields("manually-approve-from", '${vrtx.getMsg("editor.add")}',
+                                    '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
+                                    '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, false);
+            var manuallyApproveButton = $("#manually-approve-container-title");
+            manuallyApproveButton.parent().find("> div:first-child").append(manuallyApproveButton.remove());
+          }
+        }); 
       }); 
 
       UNSAVED_CHANGES_CONFIRMATION = "<@vrtx.msg code='manage.unsavedChangesConfirmation' />";

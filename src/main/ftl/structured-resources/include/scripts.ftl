@@ -13,13 +13,18 @@
       <#list scripts as script>
         <#if script.type == 'SHOWHIDE' >
           <@showhide.addShowHide script />
-        <#elseif script.type == 'MULTIPLEINPUTFIELDS' >
-          browseBase = '${fckeditorBase.url?html}';
-          browseBaseFolder = '${baseFolder}';
-          browseBasePath = '${fckBrowse.url.pathRepresentation}';
-          <@multipleinputfields.addMultipleInputFields script />
         </#if>
       </#list>
+      $.when(MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED).done(function() {
+        browseBase = '${fckeditorBase.url?html}';
+        browseBaseFolder = '${baseFolder}';
+        browseBasePath = '${fckBrowse.url.pathRepresentation}';
+        <#list scripts as script>
+          <#if script.type == 'MULTIPLEINPUTFIELDS' >
+            <@multipleinputfields.addMultipleInputFields script />
+          </#if>
+        </#list>
+      });
     });
     //-->
   </script>

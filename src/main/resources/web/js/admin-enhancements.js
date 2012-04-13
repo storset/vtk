@@ -1820,7 +1820,7 @@ function initMultipleInputFields() {
   
   MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED = $.Deferred();
   MULTIPLE_INPUT_FIELD_TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("multiple-inputfields",
-                                                                   ["button", "v"],
+                                                                   ["button"],
                                                                    MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED);
 }
 
@@ -1838,12 +1838,12 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
                                                                                 idstr: idstr,   buttonText: removeName });
     }
     if (isMovable && moveUpName && i > 1) {
-    	var moveUpButton = "<div class='vrtx-button'><button class='moveup' type='button' " + "id='" + idstr + "moveup' >"
-    	+ "&uarr; " + moveUpName + "</button></div>";
+      var moveUpButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "moveup", name: "", 
+                                                                                idstr: idstr,   buttonText: "&uarr; " + moveUpName });
     }
     if (isMovable && moveDownName && i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]) {
-    	var moveDownButton = "<div class='vrtx-button'><button class='movedown' type='button' " + "id='" + idstr + "movedown' >"
-    	+ "&darr; " + moveDownName + "</button></div>";
+      var moveDownButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "movedown", name: "", 
+                                                                                  idstr: idstr, buttonText: "&darr; " + moveDownName });
     }
 
     if(!isBrowsable) {

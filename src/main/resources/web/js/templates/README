@@ -1,15 +1,23 @@
 README
 ------
 
-The files in this folder are Mustache templates (HTML) for JS.
+The files in this folder are Mustache template files (HTML) for JS.
 
-A templates-file can be retrieved as a String via. vrtxAdmin.serverFacade.getText().
+A template-file can be retrieved as a hash array splitted on ###
+with each template assigned to a template-name:
 
-Different templates in a file can be splitted by e.g. ### which JS
-can split the retreived String by, and assign to template names in
-an hash array (to minimize AJAX-requests).
+vrtxAdmin.retrieveHTMLTemplates(fileName,
+                                ["<template-name-1", ..., "<template-name-n>"],
+                                deferred);
+                                
+E.g. for frontpage-boxes:
 
-To make HTML with a template:
+var templatesRetrieved = $.Deferred();
+vrtxAdmin.retrieveHTMLTemplates("templates",
+                                ["string", "html", "radio", "dropdown", "date", "browse", "add-remove-move"],
+                                templatesRetrieved);
+
+To make HTML with the array:
 
 var html = $.mustache(templates["<assigned-template-name>"], JSON-object);
 
@@ -17,5 +25,6 @@ The properties of the JSON-object is outputted with {{ }} around it
 in the template-file.
 
 Se more documentation of template writing:
+
 https://github.com/janl/mustache.js
 http://mustache.github.com/mustache.5.html

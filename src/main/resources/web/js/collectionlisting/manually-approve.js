@@ -18,19 +18,10 @@ $(window).load(function() {
   aggregatedLocationsTxt = $("#resource\\.aggregation");
   
   var manuallyApprovedTemplatesRetrieved = $.Deferred();
-  
-  // Retrieve HTML templates
-  vrtxAdmin.serverFacade.getText("/vrtx/__vrtx/static-resources/js/templates/manually-approve.mustache", {
-    success: function (results, status, resp) {
-      var templates = results.split("###");
-      var templateNames = [    "menu",     "table-start",       "table-row", 
-                          "table-end", "navigation-next", "navigation-prev"];
-      for(var i = 0, len = templates.length; i < len; i++) {
-        MANUALLY_APPROVE_TEMPLATES[templateNames[i]] = $.trim(templates[i]);
-      }
-      manuallyApprovedTemplatesRetrieved.resolve();
-    }
-  });
+  MANUALLY_APPROVE_TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("manually-approve",
+                                                               ["menu", "table-start", "table-row", 
+                                                                "table-end", "navigation-next", "navigation-prev"],
+                                                                manuallyApprovedTemplatesRetrieved);
   
   if(manuallyApproveLocationsTxt.length) {
     var locations, aggregatedlocations;

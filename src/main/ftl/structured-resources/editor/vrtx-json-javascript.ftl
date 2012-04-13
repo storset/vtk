@@ -15,17 +15,9 @@
       var templatesRetrieved = $.Deferred();
       var jsonElementsBuilt = $.Deferred();
 
-      // Retrieve HTML templates
-      vrtxAdmin.serverFacade.getText("${webResources?html}/js/templates/templates.mustache", {
-        success: function (results, status, resp) {
-          var templates = results.split("###");
-          var templateNames = [ "string", "html", "radio", "dropdown", "date", "browse", "add-remove-move"];
-          for(var i = 0, len = templates.length; i < len; i++) {
-            TEMPLATES[templateNames[i]] = $.trim(templates[i]);
-          }
-          templatesRetrieved.resolve();
-        }
-      });
+      TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("templates",
+                                                  ["string", "html", "radio", "dropdown", "date", "browse", "add-remove-move"],
+                                                   templatesRetrieved);
 
       // Build JSON elements
       <#assign i = 0 />

@@ -117,6 +117,7 @@ vrtxAdmin._$.ajaxSetup({
 });
 
 var EDITOR_SAVE_BUTTON_NAME = "";
+    
                            
 // funcComplete for postAjaxForm()
 var doReloadFromServer = false; // global var changed by checkStillAdmin() (funcProceedCondition)             
@@ -1549,6 +1550,27 @@ VrtxAdmin.prototype.getHtmlAsTextAsync = function getHtmlAsTextAsync(url, insert
   });
 };
 
+/**
+ * Retrieve Mustache HTML templates-file
+ * 
+ * @param fileName: fileName for HTML template
+ * @param templateNames: array with names of templates
+ * @param templatesIsRetrieved: resolve deferred on success
+ */
+VrtxAdmin.prototype.retrieveHTMLTemplates = function retrieveHTMLTemplates(fileName, templateNames, templatesIsRetrieved) { 
+  var templatesHashArray = [];
+  vrtxAdmin.serverFacade.getText("/vrtx/__vrtx/static-resources/js/templates/" + fileName + ".mustache", {
+    success: function (results, status, resp) {
+      var templates = results.split("###");
+      for(var i = 0, len = templates.length; i < len; i++) {
+        templatesHashArray[templateNames[i]] = $.trim(templates[i]);
+      }
+      templatesIsRetrieved.resolve();
+    }
+  });
+  return templatesHashArray;
+};
+
 
 
 /*-------------------------------------------------------------------*\
@@ -1583,7 +1605,7 @@ VrtxAdmin.prototype.displayErrorContainers = function displayErrorContainers(res
 }; 
 
 VrtxAdmin.prototype.displayErrorMsg = function displayErrorMsg(msg) {
-  var vrtxAdm = this, _$ = vrtxAdm.$;
+  var vrtxAdm = this, _$ = vrtxAdm._$;
   if(!vrtxAdm.ignoreAjaxErrors) {
     if (_$("#app-content > .errormessage").length) {
       _$("#app-content > .errormessage").html(msg);

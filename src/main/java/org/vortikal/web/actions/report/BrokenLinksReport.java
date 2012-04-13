@@ -93,6 +93,7 @@ public class BrokenLinksReport extends DocumentReporter {
     private final static String   FILTER_PUBLISHED_PARAM_DEFAULT_VALUE = "true";
     private final static String[] FILTER_PUBLISHED_PARAM_VALUES = { FILTER_PUBLISHED_PARAM_DEFAULT_VALUE, "false" };
 
+    private final static String   EXCLUDE_PATH_PARAM_NAME = "exclude-path";
  
     @Override
     public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) { 
@@ -249,6 +250,15 @@ public class BrokenLinksReport extends DocumentReporter {
         
         // Add clauses for limiting to current folder and link status criteria
         topLevelQ.add(new UriPrefixQuery(currentResource.getURI().toString())).add(linkStatusCriteria);
+        
+        String[] excludes = request.getParameterValues(EXCLUDE_PATH_PARAM_NAME);
+        if (excludes != null && excludes.length > 0) {
+            for (String s: excludes) {
+                try {
+                    topLevelQ.add(new UriPrefixQuery(s, true));
+                } catch (Throwable t) { }
+            }
+        }
         
         // Add clauses for any configured default filter query
         Query filterQ = getFilterQuery();

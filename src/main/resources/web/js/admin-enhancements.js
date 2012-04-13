@@ -1745,6 +1745,7 @@ function showHideProperty(id, init, show) {
 var MULTIPLE_INPUT_FIELD_NAMES = [];
 var COUNTER_FOR_MULTIPLE_INPUT_FIELD = [];
 var LENGTH_FOR_MULTIPLE_INPUT_FIELD = [];
+var MULTIPLE_INPUT_FIELD_TEMPLATES = [];
 
 function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName, isMovable, isBrowsable) {
     var inputField = $("." + name + " input[type=text]");
@@ -1814,6 +1815,10 @@ function registerMultipleInputFieldsClicks() {
         e.preventDefault();
         e.stopPropagation();
   });
+  
+  MULTIPLE_INPUT_FIELD_TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("multiple-inputfields",
+                                                                  ["a", "b"],
+                                                                   $.Deferred());
 }
 
 function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, init, isMovable) {

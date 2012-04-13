@@ -1551,9 +1551,9 @@ VrtxAdmin.prototype.getHtmlAsTextAsync = function getHtmlAsTextAsync(url, insert
 };
 
 /**
- * Retrieve Mustache HTML templates-file
+ * Retrieve Mustache template file (HTML)
  * 
- * @param fileName: fileName for HTML template
+ * @param fileName: fileName
  * @param templateNames: array with names of templates
  * @param templatesIsRetrieved: resolve deferred on success
  */

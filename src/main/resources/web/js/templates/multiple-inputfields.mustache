@@ -5,3 +5,28 @@
     {{ buttonText }}
   </button>
 </div>
+
+###
+
+{{! ADD BUTTON }}
+
+<div id="vrtx-{{ name }}-add" class="vrtx-button">
+  <button onclick="addFormField('{{ name }}', null, '{{ removeName }}', '{{ moveUpName }}','{{ moveDownName }}', 
+                                '{{ browseName }}', '{{ size }}', {{ isBrowsable }}, false, {{ isMovable }}); return false;">
+    {{ buttonText }}
+  </button>
+</div>
+
+###
+
+{{! MULTIPLE INPUTFIELD }}
+
+<div class="vrtx-multipleinputfield" id="{{ idstr }}row-{{ i }}">
+  <div class="vrtx-textfield">
+    <input value="{{  value }}" type="text" size="{{ size }}" id="{{ idstr }}{{ i }}" />
+  </div>
+  {{{ browseButton }}}
+  {{{ removeButton }}}
+  {{{ moveUpButton }}}
+  {{{ moveDownButton }}}
+</div>

@@ -1763,35 +1763,34 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
 
     inputFieldParent = inputField.parent();
 
-      if(inputFieldParent.parent().hasClass("vrtx-resource-ref-browse")) {
-        isBrowsable = true;
-        if(inputFieldParent.next().hasClass("vrtx-button")) {
-          inputFieldParent.next().hide();
-        }	
-      }
+    if(inputFieldParent.parent().hasClass("vrtx-resource-ref-browse")) {
+      isBrowsable = true;
+      if(inputFieldParent.next().hasClass("vrtx-button")) {
+        inputFieldParent.next().hide();
+      }	
+    }
 
-      if (isBrowsable && (typeof browseBase === "undefined" 
-                       || typeof browseBaseFolder === "undefined"
-                       || typeof browseBasePath === "undefined")) {
-        isBrowsable = false; 
-      }
+    if (isBrowsable && (typeof browseBase === "undefined" 
+                     || typeof browseBaseFolder === "undefined"
+                     || typeof browseBasePath === "undefined")) {
+      isBrowsable = false; 
+    }
 
-      inputField.hide();
+    inputField.hide();
 
-      var appendHtml = "<div id='vrtx-" + name + "-add' class='vrtx-button'>"
-  		        + "<button onclick=\"addFormField('" + name + "',null, '"
-		        + removeName + "','" + moveUpName + "','" + moveDownName + "','" 
-                        + browseName + "','" + size + "'," + isBrowsable + "," + false + "," + isMovable + "); return false;\">"
-		        + addName + "</button></div>";
+    var appendHtml = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["add-button"], { name: name, removeName: removeName, moveUpName: moveUpName, 
+                                                                                moveDownName: moveDownName, browseName: browseName,
+                                                                                size: size, isBrowsable: isBrowsable, isMovable: isMovable,
+                                                                                buttonText: addName });
 
-      inputFieldParent.removeClass("vrtx-textfield").append(appendHtml);
+    inputFieldParent.removeClass("vrtx-textfield").append(appendHtml);
     
-      var addFormFieldFunc = addFormField;
-      for (var i = 0; i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]; i++) {
-         addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isBrowsable, true, isMovable);
-      }
+    var addFormFieldFunc = addFormField;
+    for (var i = 0; i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]; i++) {
+      addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isBrowsable, true, isMovable);
+    }
       
-      autocompleteUsernames(".vrtx-autocomplete-username");
+    autocompleteUsernames(".vrtx-autocomplete-username");
 }
 
 function initMultipleInputFields() {
@@ -1821,16 +1820,16 @@ function initMultipleInputFields() {
   // Retrieve HTML templates
   MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED = $.Deferred();
   MULTIPLE_INPUT_FIELD_TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("multiple-inputfields",
-                                                                   ["button"],
+                                                                   ["button", "add-button", "multiple-inputfield"],
                                                                    MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED);
 }
 
 function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, init, isMovable) {
-    if (value == null) { value = ""; }
+    if (value == null) value = "";
 
     var idstr = "vrtx-" + name + "-",
         i = COUNTER_FOR_MULTIPLE_INPUT_FIELD[name],
-       removeButton = "", moveUpButton = "", moveDownButton = "", browseButton = "";
+        removeButton = "", moveUpButton = "", moveDownButton = "", browseButton = "";
 
     if (removeName) {
       removeButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "remove", name: " " + name, 
@@ -1842,16 +1841,17 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
     }
     if (isMovable && moveDownName && i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]) {
       moveDownButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "movedown", name: "", 
-                                                                              idstr: idstr, buttonText: "&darr; " + moveDownName });
+                                                                              idstr: idstr,     buttonText: "&darr; " + moveDownName });
     }
     if(isBrowsable) {
       browseButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "browse", name: "-resource-ref", 
-                                                                            idstr: idstr, buttonText: browseName });
+                                                                            idstr: idstr,   buttonText: browseName });
     }
     
-    var html = "<div class='vrtx-multipleinputfield' id='" + idstr + "row-" + i + "'>"
-               + "<div class='vrtx-textfield'><input value='" + value + "' type='text' size='" + size + "' id='" + idstr + i + "' /></div>"
-               + browseButton + removeButton + moveUpButton + moveDownButton + "</div>";
+    var html = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["multiple-inputfield"], { idstr: idstr, i: i, value: value, 
+                                                                                   size: size, browseButton: browseButton,
+                                                                                   removeButton: removeButton, moveUpButton: moveUpButton,
+                                                                                   moveDownButton: moveDownButton });
 
     $(html).insertBefore("#vrtx-" + name + "-add");
     
@@ -1859,8 +1859,8 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
       if(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] > 0 && isMovable) {
         var fields = $("." + name + " div.vrtx-multipleinputfield");
         if(fields.eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).not("has:button.movedown")) {
-          moveDownButton = "<div class='vrtx-button'><button class='movedown' type='button' " + "id='" + idstr + "movedown' >"
-                         + "&darr; " + moveDownName + "</button></div>";
+          moveDownButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "movedown", name: "", 
+                                                                                  idstr: idstr,     buttonText: "&darr; " + moveDownName });
           fields.eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).append(moveDownButton);
         }
       }

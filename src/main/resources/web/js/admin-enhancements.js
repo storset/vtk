@@ -1739,7 +1739,6 @@ function showHideProperty(id, init, show) {
 
 /*-------------------------------------------------------------------*\
 	12. Multiple inputfields
-            TODO: Use Mustache templates 
 \*-------------------------------------------------------------------*/
 
 // TODO: simplify

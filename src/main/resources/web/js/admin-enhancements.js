@@ -1828,35 +1828,30 @@ function initMultipleInputFields() {
 function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, init, isMovable) {
     if (value == null) { value = ""; }
 
-    var idstr = "vrtx-" + name + "-";
-    var i = COUNTER_FOR_MULTIPLE_INPUT_FIELD[name];
-    var removeButton = "";
-    var moveUpButton = "";
-    var moveDownButton = "";
+    var idstr = "vrtx-" + name + "-",
+        i = COUNTER_FOR_MULTIPLE_INPUT_FIELD[name],
+       removeButton = "", moveUpButton = "", moveDownButton = "", browseButton = "";
 
     if (removeName) {
-      var removeButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "remove", name: " " + name, 
-                                                                                idstr: idstr,   buttonText: removeName });
+      removeButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "remove", name: " " + name, 
+                                                                            idstr: idstr,   buttonText: removeName });
     }
     if (isMovable && moveUpName && i > 1) {
-      var moveUpButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "moveup", name: "", 
-                                                                                idstr: idstr,   buttonText: "&uarr; " + moveUpName });
+      moveUpButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "moveup", name: "", 
+                                                                            idstr: idstr,   buttonText: "&uarr; " + moveUpName });
     }
     if (isMovable && moveDownName && i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]) {
-      var moveDownButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "movedown", name: "", 
-                                                                                  idstr: idstr, buttonText: "&darr; " + moveDownName });
+      moveDownButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "movedown", name: "", 
+                                                                              idstr: idstr, buttonText: "&darr; " + moveDownName });
     }
-
-    if(!isBrowsable) {
-      var html = "<div class='vrtx-multipleinputfield' id='" + idstr + "row-" + i + "'>"
-               + "<div class='vrtx-textfield'><input value='" + value + "' type='text' size='" + size + "' id='" + idstr + i + "' /></div>"
-               + removeButton + moveUpButton + moveDownButton + "</div>";
-    } else {
-      var browseButton = "<div class='vrtx-button'><button type='button' class='browse-resource-ref'>" + browseName + "</button></div>";
-      var html = "<div class='vrtx-multipleinputfield' id='" + idstr + "row-" + i + "'>"
+    if(isBrowsable) {
+      browseButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "browse", name: "-resource-ref", 
+                                                                            idstr: idstr, buttonText: browseName });
+    }
+    
+    var html = "<div class='vrtx-multipleinputfield' id='" + idstr + "row-" + i + "'>"
                + "<div class='vrtx-textfield'><input value='" + value + "' type='text' size='" + size + "' id='" + idstr + i + "' /></div>"
                + browseButton + removeButton + moveUpButton + moveDownButton + "</div>";
-    }
 
     $(html).insertBefore("#vrtx-" + name + "-add");
     

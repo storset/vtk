@@ -273,7 +273,7 @@ td.vrtx-report-broken-links li {
 }
 
 /* Remove "Other:" */
-#vrtx-report-filters ul li#report\.broken-links\.filters\.link-type\.other {
+#vrtx-report-filters ul li#vrtx-report-filter-link-type-other {
   display: none;
 }
 

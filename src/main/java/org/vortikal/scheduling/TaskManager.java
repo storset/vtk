@@ -33,7 +33,6 @@ package org.vortikal.scheduling;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -45,10 +44,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
@@ -64,7 +64,7 @@ import org.springframework.scheduling.support.PeriodicTrigger;
  * TODO consider not being lenient on duplicate task IDs.
  * 
  */
-public class TaskManager implements ApplicationContextAware, InitializingBean {
+public class TaskManager implements ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
 
     private TaskScheduler scheduler;
     
@@ -75,33 +75,32 @@ public class TaskManager implements ApplicationContextAware, InitializingBean {
     private final Log logger = LogFactory.getLog(getClass());
     
     @Override
-    public void afterPropertiesSet() {
-
+    public void onApplicationEvent(ContextRefreshedEvent event) {
         Map<String,Task> tasksInContext =
-             BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 
-                                                            Task.class, false, false);
-        
-        for (Map.Entry<String,Task> entry: tasksInContext.entrySet()) {
-            Task task = entry.getValue();
-            String id = task.getId();
-            if (id == null) {
-                // Set ID to bean id if it's not explicitly specified in task
-                task.setId(entry.getKey());
-            }
-            final TriggerSpecification triggerSpec = task.getTriggerSpecification();
-            if (triggerSpec == null) {
-                // Fail early, we don't accept tasks without a valid trigger specification
-                throw new BeanInitializationException("Task with id " 
-                        + task.getId() 
-                        + " returned null for trigger specification");
-            }
-            
-            tasks.add(new TaskHolder(task, getTriggerImpl(task.getTriggerSpecification())));
-        }
-        
-        scheduleEnabledTasksInitially();
+                BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, 
+                                                               Task.class, false, false);
+           
+           for (Map.Entry<String,Task> entry: tasksInContext.entrySet()) {
+               Task task = entry.getValue();
+               String id = task.getId();
+               if (id == null) {
+                   // Set ID to bean id if it's not explicitly specified in task
+                   task.setId(entry.getKey());
+               }
+               final TriggerSpecification triggerSpec = task.getTriggerSpecification();
+               if (triggerSpec == null) {
+                   // Fail early, we don't accept tasks without a valid trigger specification
+                   throw new BeanInitializationException("Task with id " 
+                           + task.getId() 
+                           + " returned null for trigger specification");
+               }
+               
+               tasks.add(new TaskHolder(task, getTriggerImpl(task.getTriggerSpecification())));
+           }
+           
+           scheduleEnabledTasksInitially();
     }
-    
+
     public synchronized void disableTask(String taskId) {
         for (TaskHolder th: this.tasks) {
             if (taskId.equals(th.task.getId())) {
@@ -207,4 +206,5 @@ public class TaskManager implements ApplicationContextAware, InitializingBean {
     public void setTaskScheduler(TaskScheduler scheduler) {
         this.scheduler = scheduler;
     }
+
 }

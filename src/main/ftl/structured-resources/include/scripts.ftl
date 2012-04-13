@@ -1,6 +1,8 @@
 <#ftl strip_whitespace=true>
 <#import "/lib/showhide.ftl" as showhide />
 
+<#-- TODO: filter scripts in containsScript => getScripts -->
+
 <#macro includeScripts scripts>
   <#local containsShowHideScripts = containsScripts(scripts, 'SHOWHIDE') />
   <#local containsMultipleInputFieldScripts = containsScripts(scripts, 'MULTIPLEINPUTFIELDS') />

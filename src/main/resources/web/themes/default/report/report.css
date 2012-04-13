@@ -272,6 +272,11 @@ td.vrtx-report-broken-links li {
   text-decoration: none;
 }
 
+/* Remove "Other:" */
+#vrtx-report-filters ul li#report\.broken-links\.filters\.link-type\.other {
+  display: none;
+}
+
 /* ^ Filters */
 
 /* ^ Broken links */

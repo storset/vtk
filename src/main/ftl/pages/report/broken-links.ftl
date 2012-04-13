@@ -160,11 +160,12 @@
           <#if (filterOpts?size > 0)>
             <ul class="vrtx-report-filter" id="vrtx-report-filter-${filterKey}">
               <#list filterOpts as filterOpt>
+                <#local filterID = "report." + report.reportname + ".filters." + filterKey + "." + filterOpt.name />
                 <#if filterOpt.active>
-                  <li class="active-filter">
+                  <li class="active-filter" id="${filterID}">
                     <span><@vrtx.msg code="report.${report.reportname}.filters.${filterKey}.${filterOpt.name}" /></span>
                 <#else>
-                  <li>
+                  <li id="${filterID}">
                     <a href="${filterOpt.URL?html}"><@vrtx.msg code="report.${report.reportname}.filters.${filterKey}.${filterOpt.name}" /></a>
                 </#if>
                   </li>

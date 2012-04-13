@@ -17,6 +17,7 @@ $(window).load(function() {
   manuallyApproveLocationsTxt = $("#resource\\.manually-approve-from");
   aggregatedLocationsTxt = $("#resource\\.aggregation");
   
+  // Retrieve HTML templates
   var manuallyApprovedTemplatesRetrieved = $.Deferred();
   MANUALLY_APPROVE_TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("manually-approve",
                                                                ["menu", "table-start", "table-row", 

@@ -1818,6 +1818,7 @@ function initMultipleInputFields() {
         e.stopPropagation();
   });
   
+  // Retrieve HTML templates
   MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED = $.Deferred();
   MULTIPLE_INPUT_FIELD_TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("multiple-inputfields",
                                                                    ["button"],

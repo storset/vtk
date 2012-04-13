@@ -12,14 +12,14 @@
 
     $(document).ready(function() {
 
+      // Retrieve HTML templates
       var templatesRetrieved = $.Deferred();
-      var jsonElementsBuilt = $.Deferred();
-
       TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("templates",
                                                   ["string", "html", "radio", "dropdown", "date", "browse", "add-remove-move"],
                                                    templatesRetrieved);
 
       // Build JSON elements
+      var jsonElementsBuilt = $.Deferred();
       <#assign i = 0 />
       <#list form.elements as elementBox>
         <#assign j = 0 />

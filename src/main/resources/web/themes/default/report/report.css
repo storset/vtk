@@ -285,7 +285,7 @@ td.vrtx-report-broken-links li {
   clear: both;
   float: left;
   width: 100%;
-  margin: 10px 0;
+  margin: 10px 0 25px 0;
   display: none;
 }
 
@@ -300,9 +300,18 @@ td.vrtx-report-broken-links li {
 }
 
 #vrtx-report-filters #vrtx-report-filters-show-hide-advanced {
-  margin-top: 10px;
+  margin-top: 11px;
   display: block;
   float: left;
+}
+
+.vrtx-multipleinputfield {
+  margin-bottom: 10px;
+}
+
+.vrtx-multipleinputfield .vrtx-textfield,
+.vrtx-multipleinputfield .vrtx-button {
+  margin-right: 20px;
 }
 
 /* ^ Advanced */

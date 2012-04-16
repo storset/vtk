@@ -195,15 +195,15 @@ vrtxAdmin._$(document).ready(function () {
     _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
   });
   
-  // TODO: localize, use multiple functionality and generate HTML with Mustache
+  // TODO: localize and generate HTML with Mustache
   var brokenLinksFilters = _$("#vrtx-report-filters");
   if(brokenLinksFilters.length) {
-    brokenLinksFilters.append("<a href='#' id='vrtx-report-filters-show-hide-advanced' onclick='javascript:void(0);'>Avansert søk</a>");
+    brokenLinksFilters.append("<a href='#' id='vrtx-report-filters-show-hide-advanced' onclick='javascript:void(0);'>Avansert...</a>");
      var html = "<div id='vrtx-report-filters-folders-include-exclude'>"
-                + "<div id='vrtx-report-filters-folders-exclude'><h3>Fjern mapper</h3>"
-                + "<div class='vrtx-textfield'><input type='text' id='exclude-folders' /></div></div>"
-                + "<div id='vrtx-report-filters-folders-include'><h3>Inkluder mapper</h3>"
-                + "<div class='vrtx-textfield'><input type='text' id='include-folders' /></div></div>"
+                + "<div id='vrtx-report-filters-folders-exclude' class='report-filters-folders-exclude'><h3>Fjern mapper</h3>"
+                + "<div class='vrtx-textfield'><input type='text' id='exclude-folders' size='32' /></div></div>"
+                + "<div id='vrtx-report-filters-folders-include' class='report-filters-folders-include'><h3>Inkluder mapper</h3>"
+                + "<div class='vrtx-textfield'><input type='text' id='include-folders' size='32' /></div></div>"
                 + "<a class='vrtx-button'><span>Oppdater</span></a>"
               + "</div>";
     _$(html).insertAfter(brokenLinksFilters);
@@ -212,12 +212,12 @@ vrtxAdmin._$(document).ready(function () {
     var pairsLen = pairs.length;
     var includedFolders = "";
     var excludedFolders = "";
-    for(var i = 0; i < pairsLen; i++) { // Add include path folders
+    for(var i = 0; i < pairsLen; i++) { // Add include folders
       if(pairs[i].match(/^include-path/g)) {
         includedFolders += pairs[i].split("=")[1] + ", ";
       }
     }
-    for(i = 0; i < pairsLen; i++) { // Add exclude path folders
+    for(i = 0; i < pairsLen; i++) { // Add exclude folders
       if(pairs[i].match(/^exclude-path/g)) {
         excludedFolders += pairs[i].split("=")[1] + ", ";
       }   
@@ -230,23 +230,30 @@ vrtxAdmin._$(document).ready(function () {
     $("#include-folders").val(includedFolders.substring(0, includedFolders.lastIndexOf(",")));
     $("#exclude-folders").val(excludedFolders.substring(0, excludedFolders.lastIndexOf(",")));
     
-    _$("#app-content").on("click", "#vrtx-report-filters #vrtx-report-filters-show-hide-advanced", function(e) { // Show/hide advanced settings
+    _$("#app-content").on("click", "#vrtx-report-filters #vrtx-report-filters-show-hide-advanced", function(e) { // Show / hide advanced settings
       _$("#vrtx-report-filters-folders-include-exclude").slideToggle(vrtxAdm.transitionDropdownSpeed);
       e.stopPropagation();
       e.preventDefault();
     });
     
     _$("#app-content").on("click", "#vrtx-report-filters-folders-include-exclude a.vrtx-button", function(e) { // Filter exclude and include folders
+      saveMultipleInputFields();
       var includeFolders = $("#include-folders").val().split(",");
       var excludeFolders = $("#exclude-folders").val().split(",");
       var includeFoldersLen = includeFolders.length,
           excludeFoldersLen = excludeFolders.length,
           includeQueryString = "", excludeQueryString = ""; 
       for(var i = 0; i < includeFoldersLen; i++) {
-        includeQueryString += "&include-path=" + $.trim(includeFolders[i]);      
+        var theIncludeFolder = $.trim(includeFolders[i]);
+        if(theIncludeFolder.length) {
+          includeQueryString += "&include-path=" + theIncludeFolder;
+        }     
       }
       for(i = 0; i < excludeFoldersLen; i++) {
-        excludeQueryString += "&exclude-path=" + $.trim(excludeFolders[i]);  
+        var theExcludeFolder = $.trim(excludeFolders[i]);
+        if(theExcludeFolder.length) {
+          excludeQueryString += "&exclude-path=" + theExcludeFolder;
+        }
       }
       // Update URL in address bar
       var thehref = location.href;
@@ -1859,7 +1866,7 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
 }
 
 function initMultipleInputFields() {
-  var wrapper = $("#editor");
+  var wrapper = $("#app-content");
 
   wrapper.on("click", ".vrtx-multipleinputfield button.remove", function(e){
 	removeFormField($(this));

@@ -91,7 +91,7 @@ public class SyndFeedBuilder {
 
         for (Object o : feed.getEntries()) {
             SyndEntry entry = (SyndEntry) o;
-            if (base != null) {
+            if (base != null && entry.getLink() != null) {
                 String link = base.relativeURL(entry.getLink()).toString();
                 entry.setLink(link);
             }

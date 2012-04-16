@@ -70,8 +70,14 @@
 </#if>
 
 <#macro displayEntry entry conf element>
+ <#--local href="${entry.link?default(entry.uri?default(''))}" /-->
+ <#local href="${entry.link?default('')}" />
  <#if element = "title" >
-     <a class="item-title" href="<#if entry.link?exists>${entry.link?html}<#else>${entry.uri?html}</#if>">${entry.title?trim?html}</a>
+   <#if href != ''>
+     <a class="item-title" href="${href?html}">${entry.title?trim?html}</a>
+   <#else>
+     ${entry.title?trim?html}
+   </#if>
  </#if>
  <#if element = "publishDate" >
      <#if conf.publishedDate?exists && entry.publishedDate?exists>
@@ -103,6 +109,10 @@
     </div>
   </#if>
   <#if element = "picture" && conf.itemPicture?exists && imageMap[entry]?exists && imageMap[entry]?has_content >
-     <a class="vrtx-image" href="<#if entry.link?exists>${entry.link?html}<#else>${entry.uri?html}</#if>">${imageMap[entry]?string}</a>
+    <#if href != ''>
+     <a class="vrtx-image" href="${href?html}">${imageMap[entry]?string}</a>
+    <#else>
+      ${imageMap[entry]?string}
+    </#if>
   </#if>
 </#macro>

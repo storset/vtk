@@ -198,13 +198,13 @@ vrtxAdmin._$(document).ready(function () {
   // TODO: localize and generate HTML with Mustache
   var brokenLinksFilters = _$("#vrtx-report-filters");
   if(brokenLinksFilters.length) {
-    brokenLinksFilters.append("<a href='#' id='vrtx-report-filters-show-hide-advanced' onclick='javascript:void(0);'>Avansert...</a>");
+    brokenLinksFilters.append("<a href='#' id='vrtx-report-filters-show-hide-advanced' onclick='javascript:void(0);'>" + filtersAdvancedToggle + "...</a>");
      var html = "<div id='vrtx-report-filters-folders-include-exclude'>"
-                + "<div id='vrtx-report-filters-folders-exclude' class='report-filters-folders-exclude'><h3>Fjern mapper</h3>"
+                + "<div id='vrtx-report-filters-folders-exclude' class='report-filters-folders-exclude'><h3>" + filtersAdvancedExcludeTitle + "</h3>"
                 + "<div class='vrtx-textfield'><input type='text' id='exclude-folders' size='32' /></div></div>"
-                + "<div id='vrtx-report-filters-folders-include' class='report-filters-folders-include'><h3>Inkluder mapper</h3>"
+                + "<div id='vrtx-report-filters-folders-include' class='report-filters-folders-include'><h3>" + filtersAdvancedIncludeTitle + "</h3>"
                 + "<div class='vrtx-textfield'><input type='text' id='include-folders' size='32' /></div></div>"
-                + "<a class='vrtx-button'><span>Oppdater</span></a>"
+                + "<a class='vrtx-button'><span>" + filtersAdvancedUpdate + "</span></a>"
               + "</div>";
     _$(html).insertAfter(brokenLinksFilters);
 

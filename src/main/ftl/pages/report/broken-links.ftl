@@ -8,12 +8,13 @@
         <link rel="stylesheet" href="${cssURL}" type="text/css" />
       </#list>
     </#if>
-    <#global baseFolder = "/" />
-    <#if resourceContext.parentURI?exists>
-      <#global baseFolder = resourceContext.currentURI?html />
-    </#if>
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/plugins/mustache.js"></script>
     <script type="text/javascript"><!--
+      var filtersAdvancedToggle = "<@vrtx.msg code='report.broken-links.filters.advanced.toggle' />",
+          filtersAdvancedExcludeTitle = "<@vrtx.msg code='report.broken-links.filters.advanced.exclude-title' />",
+          filtersAdvancedIncludeTitle = "<@vrtx.msg code='report.broken-links.filters.advanced.include-title' />",
+          filtersAdvancedUpdate = "<@vrtx.msg code='report.broken-links.filters.advanced.update' />";
+
       $(document).ready(function() {
         // Multiple fields interaction
         initMultipleInputFields();

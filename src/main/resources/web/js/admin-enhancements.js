@@ -221,6 +221,11 @@ vrtxAdmin._$(document).ready(function () {
         excludedFolders += pairs[i].split("=")[1] + ", ";
       }   
     }
+    
+    if(includedFolders.length || excludedFolders.length) {
+      _$("#vrtx-report-filters-folders-include-exclude").slideToggle(0);
+    }
+    
     $("#include-folders").val(includedFolders.substring(0, includedFolders.lastIndexOf(",")));
     $("#exclude-folders").val(excludedFolders.substring(0, excludedFolders.lastIndexOf(",")));
     

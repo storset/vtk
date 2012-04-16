@@ -230,13 +230,13 @@ vrtxAdmin._$(document).ready(function () {
     $("#include-folders").val(includedFolders.substring(0, includedFolders.lastIndexOf(",")));
     $("#exclude-folders").val(excludedFolders.substring(0, excludedFolders.lastIndexOf(",")));
     
-    _$("#app-content").on("click", "#vrtx-report-filters #vrtx-report-filters-show-hide-advanced", function(e) {
+    _$("#app-content").on("click", "#vrtx-report-filters #vrtx-report-filters-show-hide-advanced", function(e) { // Show/hide advanced settings
       _$("#vrtx-report-filters-folders-include-exclude").slideToggle(vrtxAdm.transitionDropdownSpeed);
       e.stopPropagation();
       e.preventDefault();
     });
     
-    _$("#app-content").on("click", "#vrtx-report-filters-folders-include-exclude a.vrtx-button", function(e) {
+    _$("#app-content").on("click", "#vrtx-report-filters-folders-include-exclude a.vrtx-button", function(e) { // Filter exclude and include folders
       var includeFolders = $("#include-folders").val().split(",");
       var excludeFolders = $("#exclude-folders").val().split(",");
       var includeFoldersLen = includeFolders.length,

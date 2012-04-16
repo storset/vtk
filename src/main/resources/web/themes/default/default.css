@@ -1298,8 +1298,8 @@ p#vrtx-file-upload-info-text {
   width: 15%;
 }
 
-#directory-listing #vrtx-report-last-checked,
 #directory-listing th.last-modified,
+#directory-listing th#vrtx-report-last-checked,
 #directory-listing th#vrtx-report-last-modified {
   width: 19%;
 }

@@ -47,7 +47,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.tidy.Configuration;
 import org.w3c.tidy.Tidy;
 
 
@@ -72,6 +71,8 @@ public class JTidyTransformer implements Filter {
         + "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title></title>"
         + "</head><body></body></html>";
 
+    private final static String DEFAULT_ENCODING = "utf-8";
+    
     private static boolean tidyMark = false;
     private static boolean makeClean = true;
     private static boolean smartIndent = true;
@@ -104,25 +105,26 @@ public class JTidyTransformer implements Filter {
             tidy.setXHTML(xhtml);
             tidy.setDocType(doctype);
             tidy.setQuiet(quiet);
-            tidy.setCharEncoding(Configuration.UTF8);
+            tidy.setInputEncoding(DEFAULT_ENCODING);
+            tidy.setOutputEncoding(DEFAULT_ENCODING);
             
             if (null == characterEncoding ) {
-                characterEncoding = "utf-8";
+                characterEncoding = DEFAULT_ENCODING;
             } else if ("null".equals(characterEncoding.toLowerCase()) || "".equals(characterEncoding)) {
-                characterEncoding = "utf-8";
+                characterEncoding = DEFAULT_ENCODING;
             }
             
             // Buffer the input stream:
             byte[] buffer = StreamUtil.readInputStream(inStream);
 
             // Convert stream to utf-8 encoding if necessary:
-            if (!"utf-8".equals(characterEncoding)) {
+            if (!DEFAULT_ENCODING.equals(characterEncoding)) {
                 String s = new String(buffer, characterEncoding);
-                buffer = s.getBytes("utf-8");
+                buffer = s.getBytes(DEFAULT_ENCODING);
             }
             
-            if ("".equals(new String(buffer, "utf-8").trim())) {
-                buffer = MINIMAL_DOCUMENT.getBytes("utf-8");
+            if ("".equals(new String(buffer, DEFAULT_ENCODING).trim())) {
+                buffer = MINIMAL_DOCUMENT.getBytes(DEFAULT_ENCODING);
             }
             
             InputStream bufferedStream = new ByteArrayInputStream(buffer);
@@ -166,15 +168,16 @@ public class JTidyTransformer implements Filter {
                                                // content is written)
             tidy.setQuiet(quiet);
             tidy.setXHTML(xhtml);
-            tidy.setDocType(doctype); 
-            tidy.setCharEncoding(Configuration.UTF8);
+            tidy.setDocType(doctype);
+            tidy.setInputEncoding(DEFAULT_ENCODING);
+            tidy.setOutputEncoding(DEFAULT_ENCODING);
 
             byte[] buffer = StreamUtil.readInputStream(inStream);
             String s = new String(buffer, resource.getCharacterEncoding());
             if ("".equals(s.trim())) {
                 s = MINIMAL_DOCUMENT;
             }
-            InputStream newStream = StreamUtil.stringToStream(s, "utf-8");
+            InputStream newStream = StreamUtil.stringToStream(s, DEFAULT_ENCODING);
 
             Document document = tidy.parseDOM(newStream, null);
             alterContentTypeMetaElement(document);

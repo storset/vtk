@@ -31,6 +31,7 @@
 package org.vortikal.web.decorating;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -48,6 +49,8 @@ import org.vortikal.text.html.HtmlNodeFilter;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageFilter;
 import org.vortikal.text.html.HtmlPageParser;
+import org.w3c.dom.Document;
+import org.w3c.tidy.Tidy;
 
 public class TemplateDecorator implements Decorator {
 
@@ -57,9 +60,9 @@ public class TemplateDecorator implements Decorator {
         + "<html><head></head><body>";
 
     private final static String EMPTY_DOCUMENT_END = "</body></html>";
-
     private final static String EMPTY_DOCUMENT = EMPTY_DOCUMENT_START + EMPTY_DOCUMENT_END;
-        
+    private final static String DEFAULT_ENCODING = "utf-8";
+
     private static Log logger = LogFactory.getLog(TemplateDecorator.class);
     
     private HtmlPageParser htmlParser;
@@ -194,23 +197,23 @@ public class TemplateDecorator implements Decorator {
     }
     
     protected PageContent tidyContent(PageContent content) throws Exception {
-        java.io.ByteArrayInputStream inStream = new java.io.ByteArrayInputStream(
-            content.getContent().getBytes("utf-8"));
+        ByteArrayInputStream inStream = new ByteArrayInputStream(content.getContent().getBytes(DEFAULT_ENCODING));
 
-        org.w3c.tidy.Tidy tidy = new org.w3c.tidy.Tidy();
+        Tidy tidy = new Tidy();
         tidy.setTidyMark(false);
         tidy.setMakeClean(false);
         tidy.setShowWarnings(false);
         tidy.setQuiet(true);
         tidy.setXHTML(tidyXhtml);
-        tidy.setDocType("transitional"); 
-        tidy.setCharEncoding(org.w3c.tidy.Configuration.UTF8);
+        tidy.setDocType("transitional");
+        tidy.setInputEncoding(DEFAULT_ENCODING);
+        tidy.setOutputEncoding(DEFAULT_ENCODING);
 
-        org.w3c.dom.Document document = tidy.parseDOM(inStream, null);
-        java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
+        Document document = tidy.parseDOM(inStream, null);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         tidy.pprint(document, outputStream);
             
-        content = new ContentImpl(new String(outputStream.toByteArray(), "utf-8"),
+        content = new ContentImpl(new String(outputStream.toByteArray(), DEFAULT_ENCODING),
                 content.getOriginalCharacterEncoding());
         return content;
     }

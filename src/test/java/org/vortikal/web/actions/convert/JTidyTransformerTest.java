@@ -31,122 +31,118 @@
 
 package org.vortikal.web.actions.convert;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Test case for <code>org.vortikal.web.controller.web.actions.convert.JTidyTransformer</code> 
+ * Test case for
+ * <code>org.vortikal.web.controller.web.actions.convert.JTidyTransformer</code>
  */
-public class JTidyTransformerTest extends TestCase {
+public class JTidyTransformerTest {
 
-    private JTidyTransformer jti; 
-    
-    
-    protected void setUp() throws Exception {
-        super.setUp();
+    private JTidyTransformer jti = new JTidyTransformer();
+
+    @Before
+    public void setUp() throws Exception {
         this.jti = new JTidyTransformer();
     }
 
-    
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-    
-    
+    @Test
     public void testParseValidHtmlToXhtml() {
         try {
-            InputStream is = 
-                this.getClass().getResourceAsStream("valid.html");
+            InputStream is = this.getClass().getResourceAsStream("valid.html");
             if (is == null) {
                 fail("InputStream containing valid HTML was not found");
             }
-            
-            assertTrue( parserTest(is) );
-            
+
+            assertTrue(parserTest(is));
+
         } catch (FileNotFoundException fnfe) {
             fail(fnfe.getMessage());
         } catch (IOException ioe) {
             fail(ioe.getMessage());
         }
     }
-    
-    
+
+    @Test
     public void testParseInvalidHtmlToXhtml() {
         try {
-            InputStream is = 
-                this.getClass().getResourceAsStream("invalid.html");
+            InputStream is = this.getClass().getResourceAsStream("invalid.html");
             if (is == null) {
                 fail("InputStream containing invalid HTML was not found");
             }
-                        
-            assertTrue( parserTest(is) );
-            
+
+            assertTrue(parserTest(is));
+
         } catch (FileNotFoundException fnfe) {
             fail(fnfe.getMessage());
         } catch (IOException ioe) {
             fail(ioe.getMessage());
         }
     }
-    
-    
+
+    @Test
     public void testParseFrontpageHtmlToXhtml() {
         try {
-            InputStream is = 
-                this.getClass().getResourceAsStream("frontpage.html");
+            InputStream is = this.getClass().getResourceAsStream("frontpage.html");
             if (is == null) {
                 fail("InputStream containing invalid HTML was not found");
             }
-                        
-            assertTrue( parserTest(is) );
-            
+
+            assertTrue(parserTest(is));
+
         } catch (FileNotFoundException fnfe) {
             fail(fnfe.getMessage());
         } catch (IOException ioe) {
             fail(ioe.getMessage());
         }
     }
-    
-    
+
     // This test will fail if doctype is not set to "transitional"/"loose"
+    @Test
     public void testStrict() {
         try {
-            InputStream is = 
-                this.getClass().getResourceAsStream("strict.html");
+            InputStream is = this.getClass().getResourceAsStream("strict.html");
             if (is == null) {
                 fail("InputStream containing invalid HTML was not found");
             }
-            
-            assertTrue( parserTest(is) );
-            
+
+            assertTrue(parserTest(is));
+
         } catch (FileNotFoundException fnfe) {
             fail(fnfe.getMessage());
         } catch (IOException ioe) {
             fail(ioe.getMessage());
         }
     }
+
+    @Test
     public void testLoose() {
         try {
-            InputStream is = 
-                this.getClass().getResourceAsStream("loose.html");
+            InputStream is = this.getClass().getResourceAsStream("loose.html");
             if (is == null) {
                 fail("InputStream containing invalid HTML was not found");
             }
-                        
-            assertTrue( parserTest(is) );
-            
+
+            assertTrue(parserTest(is));
+
         } catch (FileNotFoundException fnfe) {
             fail(fnfe.getMessage());
         } catch (IOException ioe) {
             fail(ioe.getMessage());
         }
     }
-    
 
+    @Test
     public void testEmpty() {
         try {
             InputStream is = new ByteArrayInputStream("".getBytes());
@@ -156,50 +152,46 @@ public class JTidyTransformerTest extends TestCase {
         } catch (IOException ioe) {
             fail(ioe.getMessage());
         }
-        
+
     }
-    
+
     /*
      * Helper methods
      */
-    private boolean parserTest(InputStream isOriginal) 
-        throws FileNotFoundException, IOException {
+    private boolean parserTest(InputStream isOriginal) throws FileNotFoundException, IOException {
 
-        InputStream isParsed = this.jti.transform(isOriginal, "utf-8"); 
-	
+        InputStream isParsed = this.jti.transform(isOriginal, "utf-8");
+
         // throws FileNotFoundException for invalid input streams!
-        
+
         if (isParsed == null) {
             fail("JTidy parsing failed");
         }
-        
-        // Write resulting contents to OutputStream in order to genereate 
+
+        // Write resulting contents to OutputStream in order to genereate
         // testable string of the JTidy-parsed content
         byte[] buffer = new byte[5000];
-        
+
         int n;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         while ((n = isParsed.read(buffer, 0, buffer.length)) != -1) {
             baos.write(buffer, 0, n);
         }
-        
+
         isParsed.close();
-        
+
         // Parse resulting OutputStream to String for testing of contents
         String isParsedAsString = String.valueOf(baos);
         baos.close();
-                     
-        //System.out.println(isParsedAsString); // debug helper
-          
-        if (isParsedAsString.indexOf("XHTML 1.0 Transitional") != -1 &&
-                isParsedAsString.indexOf("http://www.w3.org/TR/xhtml1/DTD/xhtml1" +
-                            "-transitional.dtd") != -1 &&
-                isParsedAsString.indexOf("<head>") != -1 &&
-                isParsedAsString.indexOf("<title>") != -1 &&
-                isParsedAsString.indexOf("<body") != -1) {
+
+        // System.out.println(isParsedAsString); // debug helper
+
+        if (isParsedAsString.indexOf("XHTML 1.0 Transitional") != -1
+                && isParsedAsString.indexOf("http://www.w3.org/TR/xhtml1/DTD/xhtml1" + "-transitional.dtd") != -1
+                && isParsedAsString.indexOf("<head>") != -1 && isParsedAsString.indexOf("<title>") != -1
+                && isParsedAsString.indexOf("<body") != -1) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }

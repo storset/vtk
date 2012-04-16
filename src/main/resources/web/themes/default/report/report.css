@@ -285,7 +285,7 @@ td.vrtx-report-broken-links li {
   clear: both;
   float: left;
   width: 100%;
-  margin: 10px 0 25px 0;
+  margin: 10px 0 0 0;
   display: none;
 }
 
@@ -293,6 +293,10 @@ td.vrtx-report-broken-links li {
 #vrtx-report-filters-folders-include-exclude h3 {
   float: left;
   margin-right: 30px;
+}
+
+#vrtx-report-filters-folders-include-exclude > div {
+  margin-bottom: 25px;
 }
 
 #vrtx-report-filters-folders-include-exclude h3 {

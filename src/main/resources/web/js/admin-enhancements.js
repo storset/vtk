@@ -195,6 +195,7 @@ vrtxAdmin._$(document).ready(function () {
     _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
   });
   
+  // TODO: localize, use multiple functionality and generate HTML with Mustache
   var brokenLinksFilters = _$("#vrtx-report-filters");
   if(brokenLinksFilters.length) {
     brokenLinksFilters.append("<a href='#' id='vrtx-report-filters-show-hide-advanced' onclick='javascript:void(0);'>Avansert søk</a>");

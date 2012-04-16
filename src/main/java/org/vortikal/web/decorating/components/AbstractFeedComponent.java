@@ -150,10 +150,10 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         String value = null;
         HtmlFragment html;
         
-        if(filter){
+        if (filter) {
             html = filterEntry(entry, safeHtmlFilter);
             value = html.getStringRepresentation();
-        }else{
+        } else {
             value = entry.getDescription().getValue();
         }
         

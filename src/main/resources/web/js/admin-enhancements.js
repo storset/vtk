@@ -248,6 +248,7 @@ vrtxAdmin._$(document).ready(function () {
       for(i = 0; i < excludeFoldersLen; i++) {
         excludeQueryString += "&exclude-path=" + $.trim(excludeFolders[i]);  
       }
+      // Update URL in address bar
       var thehref = location.href;
       var indexOfIncludeFolder = thehref.indexOf("&include-path");
       if(indexOfIncludeFolder !== -1) {

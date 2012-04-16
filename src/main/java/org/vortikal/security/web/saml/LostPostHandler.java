@@ -46,6 +46,8 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -55,7 +57,7 @@ import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.service.URL;
 
 public class LostPostHandler implements Controller {
-    
+    private static final Log logger = LogFactory.getLog(LostPostHandler.class);
     private static final String COOKIE_NAME = "vrtx.lostpost.id";
     
     private File workingDirectory;
@@ -166,7 +168,11 @@ public class LostPostHandler implements Controller {
     }
     
     public void init() {
-        cleanup();
+        try {
+            cleanup();
+        } catch (Throwable t) {
+            logger.warn("Failed to perform cleanup during initialization", t);
+        }
     }
     
     public void cleanup() {

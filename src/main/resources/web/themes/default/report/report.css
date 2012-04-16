@@ -307,6 +307,7 @@ td.vrtx-report-broken-links li {
 
 .vrtx-multipleinputfield {
   margin-bottom: 10px;
+  clear: left;
 }
 
 .vrtx-multipleinputfield .vrtx-textfield,

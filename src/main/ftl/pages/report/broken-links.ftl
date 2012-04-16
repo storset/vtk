@@ -8,12 +8,19 @@
         <link rel="stylesheet" href="${cssURL}" type="text/css" />
       </#list>
     </#if>
+    <#global baseFolder = "/" />
+    <#if resourceContext.parentURI?exists>
+      <#global baseFolder = resourceContext.currentURI?html />
+    </#if>
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/plugins/mustache.js"></script>
     <script type="text/javascript"><!--
       var filtersAdvancedToggle = "<@vrtx.msg code='report.broken-links.filters.advanced.toggle' />",
           filtersAdvancedExcludeTitle = "<@vrtx.msg code='report.broken-links.filters.advanced.exclude-title' />",
           filtersAdvancedIncludeTitle = "<@vrtx.msg code='report.broken-links.filters.advanced.include-title' />",
-          filtersAdvancedUpdate = "<@vrtx.msg code='report.broken-links.filters.advanced.update' />";
+          filtersAdvancedUpdate = "<@vrtx.msg code='report.broken-links.filters.advanced.update' />",
+          browseBase = '${fckeditorBase.url?html}',
+          browseBaseFolder = '${baseFolder}',
+          browseBasePath = '${fckBrowse.url.pathRepresentation}';
 
       $(document).ready(function() {
         // Multiple fields interaction
@@ -23,12 +30,12 @@
           if($(".report-filters-folders-exclude").length) {
             loadMultipleInputFields("report-filters-folders-exclude", '${vrtx.getMsg("editor.add")}',
                                     '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
-                                    '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, false);
+                                    '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, true);
           }   
           if($(".report-filters-folders-include").length) {                  
             loadMultipleInputFields("report-filters-folders-include", '${vrtx.getMsg("editor.add")}',
                                     '${vrtx.getMsg("editor.remove")}', '${vrtx.getMsg("editor.move-up")}',
-                                    '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, false);
+                                    '${vrtx.getMsg("editor.move-down")}', '${vrtx.getMsg("editor.browseImages")}', false, true);
           } 
         }); 
       }); 

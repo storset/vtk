@@ -195,7 +195,7 @@ vrtxAdmin._$(document).ready(function () {
     _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
   });
   
-  // TODO: localize and generate HTML with Mustache
+  // TODO: Generate HTML with Mustache
   var brokenLinksFilters = _$("#vrtx-report-filters");
   if(brokenLinksFilters.length) {
     brokenLinksFilters.append("<a href='#' id='vrtx-report-filters-show-hide-advanced' onclick='javascript:void(0);'>" + filtersAdvancedToggle + "...</a>");
@@ -237,9 +237,10 @@ vrtxAdmin._$(document).ready(function () {
     });
     
     _$("#app-content").on("click", "#vrtx-report-filters-folders-include-exclude a.vrtx-button", function(e) { // Filter exclude and include folders
-      saveMultipleInputFields();
-      var includeFolders = $("#include-folders").val().split(",");
-      var excludeFolders = $("#exclude-folders").val().split(",");
+      saveMultipleInputFields(); // Multiple to comma-separated
+      // Build query string
+      var includeFolders = $("#include-folders").val().split(",").unique(); // Get included folders and remove duplicates
+      var excludeFolders = $("#exclude-folders").val().split(",").unique(); // Get excluded folders and remove duplicates
       var includeFoldersLen = includeFolders.length,
           excludeFoldersLen = excludeFolders.length,
           includeQueryString = "", excludeQueryString = ""; 
@@ -257,9 +258,13 @@ vrtxAdmin._$(document).ready(function () {
       }
       // Update URL in address bar
       var thehref = location.href;
-      var indexOfIncludeFolder = thehref.indexOf("&include-path");
-      if(indexOfIncludeFolder !== -1) {
-        location.href = thehref.substring(0, indexOfIncludeFolder) + includeQueryString + excludeQueryString;
+      var indexOfIncludeFolder = thehref.indexOf("&include-path"),
+          indexOfExcludeFolder = thehref.indexOf("&exclude-path"),
+          indexOfIncludeORExcludeFolder = (indexOfIncludeFolder !== -1) ? (indexOfExcludeFolder !== -1) 
+                                                                        ? Math.min(indexOfIncludeFolder, indexOfExcludeFolder)
+                                                                        : indexOfIncludeFolder : indexOfExcludeFolder;
+      if(indexOfIncludeORExcludeFolder !== -1) {
+        location.href = thehref.substring(0, indexOfIncludeORExcludeFolder) + includeQueryString + excludeQueryString;
       } else {
         location.href = thehref + includeQueryString + excludeQueryString;      
       }
@@ -2207,5 +2212,15 @@ jQuery.single = (function(o){
         return collection; // Return the collection:
     };
 }());
+
+/* Remove duplicates from an array
+ * Credits: http://www.shamasis.net/2009/09/fast-algorithm-to-find-unique-items-in-javascript-array/
+ */
+Array.prototype.unique = function() {
+  var o = {}, i, l = this.length, r = [];
+  for(i=0; i<l;i+=1) o[this[i]] = this[i];
+  for(i in o) r.push(o[i]);
+  return r;
+};
 
 /* ^ Vortex Admin enhancements */

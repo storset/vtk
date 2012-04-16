@@ -16,7 +16,7 @@
     <property name="eternal" value="false"/>
     <property name="overflowToDisk" value="true"/>
     <property name="timeToIdle" value="0" />
-    <property name="timeToLive" value="43200" />
+    <property name="timeToLive" value="86400" />
   </bean>
   
   <!-- Ehcache used by bean 'collectionListing.searchComponent' defined in view-collection-listing.xml -->

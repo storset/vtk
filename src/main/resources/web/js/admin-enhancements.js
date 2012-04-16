@@ -194,6 +194,65 @@ vrtxAdmin._$(document).ready(function () {
   _$("body").on("click", ".dropdown-shortcut-menu li a, .dropdown-shortcut-menu-container li a", function() {
     _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
   });
+  
+  var brokenLinksFilters = _$("#vrtx-report-filters");
+  if(brokenLinksFilters.length) {
+    brokenLinksFilters.append("<a href='#' id='vrtx-report-filters-show-hide-advanced' onclick='javascript:void(0);'>Avansert søk</a>");
+     var html = "<div id='vrtx-report-filters-folders-include-exclude'>"
+                + "<div id='vrtx-report-filters-folders-exclude'><h3>Fjern mapper</h3>"
+                + "<div class='vrtx-textfield'><input type='text' id='exclude-folders' /></div></div>"
+                + "<div id='vrtx-report-filters-folders-include'><h3>Inkluder mapper</h3>"
+                + "<div class='vrtx-textfield'><input type='text' id='include-folders' /></div></div>"
+                + "<a class='vrtx-button'><span>Oppdater</span></a>"
+              + "</div>";
+    _$(html).insertAfter(brokenLinksFilters);
+
+    var pairs = location.search.split(/\&/);
+    var pairsLen = pairs.length;
+    var includedFolders = "";
+    var excludedFolders = "";
+    for(var i = 0; i < pairsLen; i++) {
+      if(pairs[i].match(/^include-path/g)) {
+        includedFolders += pairs[i].split("=")[1] + ", ";
+      }
+    }
+    for(i = 0; i < pairsLen; i++) {
+      if(pairs[i].match(/^exclude-path/g)) {
+        excludedFolders += pairs[i].split("=")[1] + ", ";
+      }   
+    }
+    $("#include-folders").val(includedFolders.substring(0, includedFolders.lastIndexOf(",")));
+    $("#exclude-folders").val(excludedFolders.substring(0, excludedFolders.lastIndexOf(",")));
+    
+    _$("#app-content").on("click", "#vrtx-report-filters #vrtx-report-filters-show-hide-advanced", function(e) {
+      _$("#vrtx-report-filters-folders-include-exclude").slideToggle(vrtxAdm.transitionDropdownSpeed);
+      e.stopPropagation();
+      e.preventDefault();
+    });
+    
+    _$("#app-content").on("click", "#vrtx-report-filters-folders-include-exclude a.vrtx-button", function(e) {
+      var includeFolders = $("#include-folders").val().split(",");
+      var excludeFolders = $("#exclude-folders").val().split(",");
+      var includeFoldersLen = includeFolders.length,
+          excludeFoldersLen = excludeFolders.length,
+          includeQueryString = "", excludeQueryString = ""; 
+      for(var i = 0; i < includeFoldersLen; i++) {
+        includeQueryString += "&include-path=" + $.trim(includeFolders[i]);      
+      }
+      for(i = 0; i < excludeFoldersLen; i++) {
+        excludeQueryString += "&exclude-path=" + $.trim(excludeFolders[i]);  
+      }
+      var thehref = location.href;
+      var indexOfIncludeFolder = thehref.indexOf("&include-path");
+      if(indexOfIncludeFolder !== -1) {
+        location.href = thehref.substring(0, indexOfIncludeFolder) + includeQueryString + excludeQueryString;
+      } else {
+        location.href = thehref + includeQueryString + excludeQueryString;      
+      }
+      e.stopPropagation();
+      e.preventDefault();
+    });
+  }
 
   _$("body").on("click", document, function(e) {
     _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");

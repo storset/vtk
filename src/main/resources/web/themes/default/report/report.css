@@ -279,6 +279,33 @@ td.vrtx-report-broken-links li {
 
 /* ^ Filters */
 
+/* Advanced */
+
+#vrtx-report-filters-folders-include-exclude {
+  clear: both;
+  float: left;
+  width: 100%;
+  margin: 10px 0;
+  display: none;
+}
+
+#vrtx-report-filters-folders-include-exclude > div,
+#vrtx-report-filters-folders-include-exclude h3 {
+  float: left;
+  margin-right: 30px;
+}
+
+#vrtx-report-filters-folders-include-exclude h3 {
+  margin-top: -1px;
+}
+
+#vrtx-report-filters #vrtx-report-filters-show-hide-advanced {
+  margin-top: 10px;
+  display: block;
+}
+
+/* ^ Advanced */
+
 /* ^ Broken links */
 
 /* Tooltip */

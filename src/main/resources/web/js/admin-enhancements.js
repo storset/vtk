@@ -212,16 +212,24 @@ vrtxAdmin._$(document).ready(function () {
     var pairsLen = pairs.length;
     var includedFolders = "";
     var excludedFolders = "";
+    var query = "";
     for(var i = 0; i < pairsLen; i++) { // Add include folders
       if(pairs[i].match(/^include-path/g)) {
         includedFolders += pairs[i].split("=")[1] + ", ";
+        query += "&" + pairs[i];
       }
     }
     for(i = 0; i < pairsLen; i++) { // Add exclude folders
       if(pairs[i].match(/^exclude-path/g)) {
         excludedFolders += pairs[i].split("=")[1] + ", ";
+        query += "&" + pairs[i];
       }   
     }
+    
+    var filterLinks = $("#vrtx-report-filters ul a"), i = filterLinks.length;
+    while(i--) {
+      filterLinks[i].href = filterLinks[i].href + query;
+    } 
     
     if(includedFolders.length || excludedFolders.length) { // If any included or excluded folders show advanced settings
       _$("#vrtx-report-filters-folders-include-exclude").slideToggle(0);

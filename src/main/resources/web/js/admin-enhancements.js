@@ -231,9 +231,10 @@ vrtxAdmin._$(document).ready(function () {
       filterLinks[i].href = filterLinks[i].href + query;
     } 
     
-    if(includedFolders.length || excludedFolders.length) { // If any included or excluded folders show advanced settings
-      _$("#vrtx-report-filters-folders-include-exclude").slideToggle(0);
-    }
+    // If any included or excluded folders show advanced settings
+    //if(includedFolders.length || excludedFolders.length) { 
+      //_$("#vrtx-report-filters-folders-include-exclude").slideToggle(0);
+    //}
     
     $("#include-folders").val(includedFolders.substring(0, includedFolders.lastIndexOf(",")));
     $("#exclude-folders").val(excludedFolders.substring(0, excludedFolders.lastIndexOf(",")));

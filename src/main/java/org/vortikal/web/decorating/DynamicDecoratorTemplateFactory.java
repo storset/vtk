@@ -290,7 +290,7 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
 
             Property property = resource.getProperty(Namespace.DEFAULT_NAMESPACE, propName);
             if (property == null) {
-                for (Property prop : resource.getProperties()) {
+                for (Property prop : resource) {
                     if (propName.equals(prop.getDefinition().getName())) {
                         property = prop;
                     }

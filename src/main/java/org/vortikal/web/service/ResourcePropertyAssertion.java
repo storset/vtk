@@ -189,7 +189,7 @@ public class ResourcePropertyAssertion
         }
         @Override
         public boolean callback(Resource r) {
-            for (Property p: r.getProperties()) {
+            for (Property p: r) {
                 if (p.getDefinition().getName().equals(propName)) {
                     this.result = r;
                     return false;

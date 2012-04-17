@@ -55,7 +55,7 @@ public final class InheritedPropertyResolver {
         traversal.traverse(new TraversalCallback() {
             @Override
             public boolean callback(Resource resource) {
-                for (Property p: resource.getProperties()) {
+                for (Property p: resource) {
                     if (p.getDefinition().getName().equals(propName)) {
                         result[0] = resource;
                         return false;

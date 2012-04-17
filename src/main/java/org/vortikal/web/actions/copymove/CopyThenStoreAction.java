@@ -59,7 +59,7 @@ public class CopyThenStoreAction {
         
         // Store updated preserved properties
         Resource newRsrc = repository.retrieve(token, copyUri, true);
-        for (Property prop : src.getProperties()) { 
+        for (Property prop : src) { 
           if (preservedProperties.contains(prop.getDefinition())) {
             newRsrc.addProperty(prop);
           }

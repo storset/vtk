@@ -74,7 +74,7 @@ public class CommentsFeedUrlProvider extends ViewRenderingDecoratorComponent {
         traversal.traverse(new TraversalCallback() {
             @Override
             public boolean callback(Resource resource) {
-                for (Property p: resource.getProperties()) {
+                for (Property p: resource) {
                     if (p.getDefinition().getName().equals("commentsEnabled")) {
                         model.put("commentsEnabled", p.getBooleanValue());
                         return false;

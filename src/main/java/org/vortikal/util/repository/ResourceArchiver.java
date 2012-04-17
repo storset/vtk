@@ -363,9 +363,8 @@ public class ResourceArchiver {
     }
 
     private void addProperties(Resource r, PrintWriter out) throws Exception {
-        List<Property> properties = r.getProperties();
         int propCounter = 0;
-        for (Property property : properties) {
+        for (Property property : r) {
             PropertyTypeDefinition propDef = property.getDefinition();
             Namespace namespace = propDef.getNamespace();
 

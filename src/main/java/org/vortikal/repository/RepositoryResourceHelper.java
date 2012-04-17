@@ -210,7 +210,7 @@ public class RepositoryResourceHelper {
         if (resource == null)
             resource = ctx.getOriginalResource();
 
-        for (Property suppliedProp : resource.getProperties()) {
+        for (Property suppliedProp : resource) {
             PropertyTypeDefinition propDef = suppliedProp.getDefinition();
 
             ResourceTypeDefinition[] rts = resourceTypeTree.getPrimaryResourceTypesForPropDef(propDef);

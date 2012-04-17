@@ -220,7 +220,7 @@ public class XmlSearcher {
         if (envir.reportUrl())
             propertySetElement.setAttribute(URL_IDENTIFIER, getUrl(propSet).toString());
 
-        for (Property prop: propSet.getProperties()) {
+        for (Property prop: propSet) {
             addPropertyToPropertySetElement(propSet.getURI(), propertySetElement, prop, envir);
         }
         

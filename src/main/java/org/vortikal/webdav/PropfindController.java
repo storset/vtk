@@ -284,8 +284,7 @@ public class PropfindController extends AbstractWebdavController {
         
 
             /* Other properties: */
-            List<Property> otherProperties = res.getProperties();
-            for (Property prop: otherProperties) {
+            for (Property prop: res) {
                 Namespace namespace = prop.getDefinition().getNamespace();
                 String name = prop.getDefinition().getName();
 

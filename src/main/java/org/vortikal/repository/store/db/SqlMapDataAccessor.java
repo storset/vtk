@@ -547,7 +547,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         storeProperties(destParent);
 
         ResourceImpl created = loadResourceInternal(newResource.getURI());
-        for (Property prop : newResource.getProperties()) {
+        for (Property prop : newResource) {
             created.addProperty(prop);
             Property fixedProp = fixedProperties != null ? fixedProperties.getProperty(prop.getDefinition()
                     .getNamespace(), prop.getDefinition().getName()) : null;
@@ -605,7 +605,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         getSqlMapClientTemplate().update(sqlMap, parameters);
 
         ResourceImpl created = loadResourceInternal(newResource.getURI());
-        for (Property prop : newResource.getProperties()) {
+        for (Property prop : newResource) {
             created.addProperty(prop);
         }
         sqlMap = getSqlMap("updateResource");

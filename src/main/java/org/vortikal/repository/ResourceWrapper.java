@@ -47,7 +47,6 @@ public class ResourceWrapper implements Resource {
     private Resource resource;
 
     public ResourceWrapper(ResourceWrapperManager resourceManager) {
-        super();
         this.resourceManager = resourceManager;
     }
 
@@ -60,7 +59,7 @@ public class ResourceWrapper implements Resource {
     }
 
     public Property getPropertyByName(String name) {
-        for (Property prop : getProperties()) {
+        for (Property prop : this.resource) {
             if (prop.getDefinition().getName().equals(name)) {
                 return prop;
             }
@@ -69,7 +68,7 @@ public class ResourceWrapper implements Resource {
     }
 
     public String getValueByName(String name) {
-        for (Property prop : getProperties()) {
+        for (Property prop : this.resource) {
             if (prop.getDefinition().getName().equals(name)) {
                 return prop.getFormattedValue();
             }
@@ -108,162 +107,202 @@ public class ResourceWrapper implements Resource {
         return null;
     }
 
+    @Override
     public Locale getContentLocale() {
         return this.resource.getContentLocale();
     }
 
+    @Override
     public Acl getAcl() {
         return this.resource.getAcl();
     }
 
+    @Override
     public String getCharacterEncoding() {
         return this.resource.getCharacterEncoding();
     }
 
+    @Override
     public List<Path> getChildURIs() {
         return this.resource.getChildURIs();
     }
 
+    @Override
     public String getContentLanguage() {
         return this.resource.getContentLanguage();
     }
 
+    @Override
     public Date getContentLastModified() {
         return this.resource.getContentLastModified();
     }
 
+    @Override
     public long getContentLength() {
         return this.resource.getContentLength();
     }
 
+    @Override
     public Principal getContentModifiedBy() {
         return this.resource.getContentModifiedBy();
     }
 
+    @Override
     public String getContentType() {
         return this.resource.getContentType();
     }
 
+    @Override
     public Principal getCreatedBy() {
         return this.resource.getCreatedBy();
     }
 
+    @Override
     public Date getCreationTime() {
         return this.resource.getCreationTime();
     }
 
+    @Override
     public String getEtag() {
         return this.resource.getEtag();
     }
 
+    @Override
     public String getGuessedCharacterEncoding() {
         return this.resource.getGuessedCharacterEncoding();
     }
 
+    @Override
     public Date getLastModified() {
         return this.resource.getLastModified();
     }
 
+    @Override
     public Lock getLock() {
         return this.resource.getLock();
     }
 
+    @Override
     public Principal getModifiedBy() {
         return this.resource.getModifiedBy();
     }
 
+    @Override
     public String getName() {
         return this.resource.getName();
     }
 
+    @Override
     public Principal getOwner() {
         return this.resource.getOwner();
     }
 
+    @Override
     public Date getPropertiesLastModified() {
         return this.resource.getPropertiesLastModified();
     }
 
+    @Override
     public Principal getPropertiesModifiedBy() {
         return this.resource.getPropertiesModifiedBy();
     }
 
+    @Override
     public String getSerial() {
         return this.resource.getSerial();
     }
 
+    @Override
     public String getTitle() {
         return this.resource.getTitle();
     }
 
+    @Override
     public String getUserSpecifiedCharacterEncoding() {
         return this.resource.getUserSpecifiedCharacterEncoding();
     }
 
+    @Override
     public boolean isCollection() {
         return this.resource.isCollection();
     }
 
+    @Override
     public boolean isInheritedAcl() {
         return this.resource.isInheritedAcl();
     }
 
+    @Override
     public void removeProperty(Namespace namespace, String name) {
         this.resource.removeProperty(namespace, name);
     }
 
+    @Override
     public void removeProperty(PropertyTypeDefinition propDef) {
         this.resource.removeProperty(propDef);
     }
 
+    @Override
     public void removeAllProperties() {
         this.resource.removeAllProperties();
     }
 
+    @Override
     public List<Property> getProperties() {
         return this.resource.getProperties();
     }
 
+    @Override
     public List<Property> getProperties(Namespace namespace) {
         return this.resource.getProperties(namespace);
     }
 
+    @Override
     public Property getProperty(Namespace namespace, String name) {
         return this.resource.getProperty(namespace, name);
     }
 
+    @Override
     public Property getProperty(PropertyTypeDefinition type) {
         return this.resource.getProperty(type);
     }
 
+    @Override
     public Property getPropertyByPrefix(String prefix, String name) {
         return this.resource.getPropertyByPrefix(prefix, name);
     }
 
+    @Override
     public String getResourceType() {
         return this.resource.getResourceType();
     }
 
+    @Override
     public Path getURI() {
         return this.resource.getURI();
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         return this.resource.clone();
     }
 
+    @Override
     public boolean isReadRestricted() {
         return this.resource.isReadRestricted();
     }
     
+    @Override
     public boolean isPublished() {
         return this.resource.isPublished();
     }
 
+    @Override
     public void addProperty(Property property) {
         this.resource.addProperty(property);
     }
     
+    @Override
     public Iterator<Property> iterator() {
         return this.resource.iterator();
     }

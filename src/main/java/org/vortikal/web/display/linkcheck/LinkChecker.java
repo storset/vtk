@@ -100,7 +100,7 @@ public class LinkChecker {
         logger.info("Validate: " + href + ", " + base + ": " + result);
         return result;
     }
-        
+
     private LinkCheckResult validateInternal(String href, URL base) {
         if (href == null) {
             throw new IllegalArgumentException("Link argument cannot be NULL");

@@ -86,6 +86,71 @@ public class PropertySetImplTest {
     }
     
     @Test
+    public void testPropIterationPerfomance() {
+        ps.addProperty(title);
+        ps.propertyMap.put(new Namespace("foo", "bar"), new HashMap<String,Property>());
+        ps.propertyMap.put(new Namespace("baz", "boz"), new HashMap<String,Property>());
+        ps.propertyMap.put(new Namespace("bing", "bing"), new HashMap<String,Property>());
+        ps.propertyMap.put(new Namespace("1", "2"), new HashMap<String,Property>());
+        ps.propertyMap.put(new Namespace("3", "4"), new HashMap<String,Property>());
+        ps.addProperty(modifiedBy);
+        ps.addProperty(custom);
+        ps.addProperty(newStringProperty(Namespace.DEFAULT_NAMESPACE, "prop1", "value1"));
+        ps.addProperty(newStringProperty(Namespace.DEFAULT_NAMESPACE, "prop2", "value1"));
+        ps.addProperty(newStringProperty(Namespace.DEFAULT_NAMESPACE, "prop3", "value1"));
+        ps.addProperty(newStringProperty(Namespace.DEFAULT_NAMESPACE, "prop4", "value1"));
+        ps.addProperty(newStringProperty(Namespace.DEFAULT_NAMESPACE, "prop5", "value1"));
+        ps.addProperty(newStringProperty(Namespace.DEFAULT_NAMESPACE, "prop6", "value1"));
+        ps.addProperty(newStringProperty(Namespace.DEFAULT_NAMESPACE, "prop7", "value1"));
+        ps.addProperty(newStringProperty(Namespace.DEFAULT_NAMESPACE, "prop8", "value1"));
+        ps.addProperty(newStringProperty(Namespace.DEFAULT_NAMESPACE, "prop9", "value1"));
+        ps.addProperty(newStringProperty(Namespace.DEFAULT_NAMESPACE, "prop10", "value1"));
+        ps.addProperty(newStringProperty(Namespace.DEFAULT_NAMESPACE, "prop11", "value1"));
+        ps.addProperty(newStringProperty(Namespace.DEFAULT_NAMESPACE, "prop12", "value1"));
+        ps.addProperty(newStringProperty(Namespace.DEFAULT_NAMESPACE, "prop13", "value1"));
+        ps.addProperty(newStringProperty(Namespace.DEFAULT_NAMESPACE, "prop14", "value1"));
+        ps.addProperty(newStringProperty(Namespace.DEFAULT_NAMESPACE, "prop15", "value1"));
+        
+        ps.addProperty(newStringProperty(Namespace.CUSTOM_NAMESPACE, "prop1", "value1"));
+        ps.addProperty(newStringProperty(Namespace.CUSTOM_NAMESPACE, "prop2", "value1"));
+        ps.addProperty(newStringProperty(Namespace.CUSTOM_NAMESPACE, "prop3", "value1"));
+        ps.addProperty(newStringProperty(Namespace.CUSTOM_NAMESPACE, "prop4", "value1"));
+        ps.addProperty(newStringProperty(Namespace.CUSTOM_NAMESPACE, "prop5", "value1"));
+        ps.addProperty(newStringProperty(Namespace.CUSTOM_NAMESPACE, "prop6", "value1"));
+        ps.addProperty(newStringProperty(Namespace.CUSTOM_NAMESPACE, "prop7", "value1"));
+        ps.addProperty(newStringProperty(Namespace.CUSTOM_NAMESPACE, "prop8", "value1"));
+        ps.addProperty(newStringProperty(Namespace.CUSTOM_NAMESPACE, "prop9", "value1"));
+        ps.addProperty(newStringProperty(Namespace.CUSTOM_NAMESPACE, "prop10", "value1"));
+        ps.addProperty(newStringProperty(Namespace.CUSTOM_NAMESPACE, "prop11", "value1"));
+        ps.addProperty(newStringProperty(Namespace.CUSTOM_NAMESPACE, "prop12", "value1"));
+        ps.addProperty(newStringProperty(Namespace.CUSTOM_NAMESPACE, "prop13", "value1"));
+        ps.addProperty(newStringProperty(Namespace.CUSTOM_NAMESPACE, "prop14", "value1"));
+        ps.addProperty(newStringProperty(Namespace.CUSTOM_NAMESPACE, "prop15", "value1"));
+        
+        long count = 0;
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 20000; i++) {
+            for (Property p : ps.getProperties()) {
+                Value v = p.getValue();
+                count++;
+            }
+        }
+        System.out.println("Time usage with getProperties(): " 
+                + (System.currentTimeMillis() - start) + "ms, count = " + count);
+        
+        count = 0;
+        start = System.currentTimeMillis();
+        for (int i = 0; i < 20000; i++) {
+            for (Property p : ps) {
+                Value v = p.getValue();
+                count++;
+            }
+        }
+        System.out.println("Time usage with Iterable<Property>: "
+                + (System.currentTimeMillis() - start) + "ms, count = " + count);
+    }
+    
+    @Test
     public void testIterationOneProp() {
         ps.addProperty(title);
         Iterator<Property> it = ps.iterator();

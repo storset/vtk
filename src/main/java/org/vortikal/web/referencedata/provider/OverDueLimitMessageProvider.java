@@ -42,8 +42,7 @@ public class OverDueLimitMessageProvider implements ReferenceDataProvider {
     private int permanentDeleteOverdueLimitInDays;
 
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
 
         org.springframework.web.servlet.support.RequestContext springContext = new org.springframework.web.servlet.support.RequestContext(
                 request);

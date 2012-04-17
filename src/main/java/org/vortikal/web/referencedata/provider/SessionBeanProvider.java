@@ -42,11 +42,8 @@ public class SessionBeanProvider implements ReferenceDataProvider {
     private String attributeName;
     private String modelName;
     
-    
-    
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
         HttpSession session = request.getSession(true);
         if (session == null) return;
         Object o = session.getAttribute(this.attributeName);

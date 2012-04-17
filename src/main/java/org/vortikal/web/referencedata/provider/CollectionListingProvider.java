@@ -157,8 +157,8 @@ public class CollectionListingProvider implements ReferenceDataProvider {
         }
     }
 
-    @SuppressWarnings( { "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
 
         Map<String, Object> collectionListingModel = new HashMap<String, Object>();
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -201,6 +201,7 @@ public class CollectionListingProvider implements ReferenceDataProvider {
 
         collectionListingModel.put("linkedServiceNames", linkedServiceNames);
 
+        @SuppressWarnings("unchecked")
         Map<String, String>[] childLinks = new HashMap[children.length];
         String[] browsingLinks = new String[children.length];
         for (int i = 0; i < children.length; i++) {

@@ -87,8 +87,8 @@ public class ResourceDetailProvider implements InitializingBean, ReferenceDataPr
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request)
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request)
         throws Exception {
         Map<String, Object> resourceDetailModel = new HashMap<String, Object>();
 

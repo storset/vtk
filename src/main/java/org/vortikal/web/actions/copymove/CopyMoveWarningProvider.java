@@ -43,7 +43,6 @@ import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
@@ -65,9 +64,8 @@ public class CopyMoveWarningProvider implements ReferenceDataProvider {
     private Service confirmationService;
     private Searcher searcher;
 
-    @SuppressWarnings("rawtypes")
     @Override
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();

@@ -150,9 +150,8 @@ public class BreadCrumbProvider implements ReferenceDataProvider, InitializingBe
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public void referenceData(Map model, HttpServletRequest request) {
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();

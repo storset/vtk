@@ -70,8 +70,7 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
     private Service viewAllPreviousService;
 
     @Override
-    @SuppressWarnings( { "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
 
         SpecificDateSearchType searchType = this.helper.getSpecificDateSearchType(request);
         if (searchType != null) {

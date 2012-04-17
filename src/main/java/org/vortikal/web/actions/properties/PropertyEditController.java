@@ -405,8 +405,8 @@ public class PropertyEditController extends SimpleFormController implements Refe
 
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();

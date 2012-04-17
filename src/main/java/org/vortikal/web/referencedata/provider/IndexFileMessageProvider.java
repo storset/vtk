@@ -75,8 +75,8 @@ public class IndexFileMessageProvider implements ReferenceDataProvider {
         this.modelName = modelName;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void referenceData(Map model, HttpServletRequest request)
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request)
             throws Exception {
 
         RequestContext context = RequestContext.getRequestContext();

@@ -63,15 +63,18 @@ public class CommentsProvider implements ReferenceDataProvider {
     private String trustedToken = null;
     
 
-    @Required public void setPostCommentService(Service postCommentService) {
+    @Required
+    public void setPostCommentService(Service postCommentService) {
         this.postCommentService = postCommentService;
     }
     
-    @Required public void setDeleteCommentService(Service deleteCommentService) {
+    @Required
+    public void setDeleteCommentService(Service deleteCommentService) {
         this.deleteCommentService = deleteCommentService;
     }
     
-    @Required public void setDeleteAllCommentsService(Service deleteAllCommentsService) {
+    @Required
+    public void setDeleteAllCommentsService(Service deleteAllCommentsService) {
         this.deleteAllCommentsService = deleteAllCommentsService;
     }
     
@@ -91,13 +94,13 @@ public class CommentsProvider implements ReferenceDataProvider {
         this.trustedToken = trustedToken;
     }
     
-    @SuppressWarnings(value={"rawtypes", "unchecked"}) 
-    public void referenceData(final Map model, HttpServletRequest servletRequest) throws Exception {
+    @Override
+    public void referenceData(final Map<String, Object> model, HttpServletRequest servletRequest) throws Exception {
         
         if (this.formSessionAttributeName != null) {
 
             if (servletRequest.getSession(false) != null) {
-                Map map = (Map) servletRequest.getSession(false).getAttribute(
+                Map<?, ?> map = (Map<?, ?>) servletRequest.getSession(false).getAttribute(
                     this.formSessionAttributeName);
                 if (map != null) {
                     model.put("form", map.get("form"));

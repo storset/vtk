@@ -109,8 +109,8 @@ public class ResourcePrincipalPermissionsProvider implements ReferenceDataProvid
     }
 
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void referenceData(Map model, HttpServletRequest request)
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request)
         throws Exception {
         boolean result = false;
         Map<String, Object> permissionsModel = new HashMap<String, Object>();

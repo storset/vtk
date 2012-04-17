@@ -55,8 +55,8 @@ public class InvalidUidMessageProvider implements ReferenceDataProvider {
     private ResourceTypeTree resourceTypeTree;
     private PrincipalFactory principalFactory;
 
-    @SuppressWarnings("unchecked")
-    public void referenceData(@SuppressWarnings("rawtypes") Map model, HttpServletRequest request) throws Exception {
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
 
         RequestContext context = RequestContext.getRequestContext();
         Repository repository = context.getRepository();

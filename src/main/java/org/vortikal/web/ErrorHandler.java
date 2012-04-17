@@ -89,7 +89,7 @@ public interface ErrorHandler {
      * @exception Exception if an error occurs during error handling
      * (this will most likely cause a servlet exception)
      */
-    public Map<Object, Object> 
+    public Map<String, Object> 
     getErrorModel(HttpServletRequest request, HttpServletResponse response,
             Throwable error) throws Exception;
     

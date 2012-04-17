@@ -169,8 +169,8 @@ public class ResourcePropertiesValueProvider
     
 
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request)
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request)
             throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
@@ -186,9 +186,10 @@ public class ResourcePropertiesValueProvider
                 subModelKey = this.modelNames.get("");
             }
 
-            Map subModel = (Map) model.get(subModelKey);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> subModel = (Map<String, Object>) model.get(subModelKey);
             if (subModel == null) {
-                subModel = new HashMap();
+                subModel = new HashMap<String, Object>();
                 model.put(subModelKey, subModel);
             }
 

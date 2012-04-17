@@ -98,8 +98,7 @@ public class ACLProvider implements ReferenceDataProvider {
     private PrincipalFactory principalFactory;
     private LocaleResolver localeResolver;
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
 
         Map<String, Object> aclModel = new HashMap<String, Object>();
 

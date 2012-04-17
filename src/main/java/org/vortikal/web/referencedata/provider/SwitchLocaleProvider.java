@@ -86,8 +86,8 @@ public class SwitchLocaleProvider implements ReferenceDataProvider {
         this.locales = locales;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
         Map<String, Object> localeMap = new HashMap<String, Object>();
 
         RequestContext requestContext = RequestContext.getRequestContext();

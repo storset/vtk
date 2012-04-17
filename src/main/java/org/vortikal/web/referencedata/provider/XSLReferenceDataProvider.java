@@ -148,8 +148,8 @@ public class XSLReferenceDataProvider implements ReferenceDataProvider {
         this.breadCrumbProvider = breadCrumbProvider;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request) {
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) {
         RequestContext requestContext = RequestContext.getRequestContext();
         Principal principal = requestContext.getPrincipal();
         String token = requestContext.getSecurityToken();
@@ -162,6 +162,7 @@ public class XSLReferenceDataProvider implements ReferenceDataProvider {
                 Repository repository = requestContext.getRepository();
                 resource = repository.retrieve(token, uri, true);
             }
+            @SuppressWarnings("unchecked")
             Map<String, Object> subModel = (Map<String, Object>) model.get(this.modelName);
             if (subModel == null) {
                 subModel = new HashMap<String, Object>();

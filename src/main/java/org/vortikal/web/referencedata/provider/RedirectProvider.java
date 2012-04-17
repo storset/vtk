@@ -85,8 +85,8 @@ public class RedirectProvider implements InitializingBean, ReferenceDataProvider
     }
 
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request)
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request)
         throws Exception {
         
         RequestContext requestContext = RequestContext.getRequestContext();

@@ -118,8 +118,8 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
     }
 
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
 
         Map<String, Object> resourceContextModel = new HashMap<String, Object>();
 

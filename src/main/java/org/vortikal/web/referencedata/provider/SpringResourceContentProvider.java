@@ -54,8 +54,8 @@ public class SpringResourceContentProvider implements ReferenceDataProvider, App
     private String encoding = "utf-8";
     private String modelKey = "content";
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request) {
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) {
         List<String> fileLocaltions = new ArrayList<String>();
         RequestContext rc = new RequestContext(request);
         Locale locale = rc.getLocale();

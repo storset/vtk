@@ -50,9 +50,8 @@ public class ResourceServiceSwitchURLProvider implements ReferenceDataProvider {
     private String linkToServiceName;
     private String linkToResourceName;
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();

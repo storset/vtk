@@ -102,8 +102,8 @@ public class RecentCommentsProvider implements ReferenceDataProvider {
         this.trustedToken = trustedToken;
     }
 
-    @SuppressWarnings(value = { "rawtypes", "unchecked" })
-    public void referenceData(final Map model, HttpServletRequest servletRequest) throws Exception {
+    @Override
+    public void referenceData(final Map<String, Object> model, HttpServletRequest servletRequest) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();

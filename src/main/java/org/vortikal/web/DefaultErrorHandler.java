@@ -158,13 +158,13 @@ public class DefaultErrorHandler
     
     
     @Override
-    public Map<Object, Object> getErrorModel(HttpServletRequest request,
+    public Map<String, Object> getErrorModel(HttpServletRequest request,
                              HttpServletResponse response,
                              Throwable error) throws Exception {
         if (this.logExceptions) {
             logger.warn("Error in request " + request, error);
         }
-        Map<Object, Object> model = new HashMap<Object, Object>();
+        Map<String, Object> model = new HashMap<String, Object>();
         if (this.providers != null) {
             try {
                 for (int i = 0; i < this.providers.length; i++) {

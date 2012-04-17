@@ -55,8 +55,7 @@ public class EditPublishingProvider implements ReferenceDataProvider {
     private PropertyTypeDefinition publishedPropDef;
 
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Path resourceURI = requestContext.getResourceURI();

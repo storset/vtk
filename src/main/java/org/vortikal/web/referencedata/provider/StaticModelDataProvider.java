@@ -148,8 +148,9 @@ public class StaticModelDataProvider implements ReferenceDataProvider {
     }
     
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request)
+    @SuppressWarnings("unchecked")
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request)
             throws Exception {
 
         for (String key: this.staticModelData.keySet()) {
@@ -159,8 +160,8 @@ public class StaticModelDataProvider implements ReferenceDataProvider {
             } else if (this.mergeModelData && (model.get(key) instanceof Map)
                        && (this.staticModelData.get(key) instanceof Map)) {
                 // Merge model data:
-                Map destination = (Map) model.get(key);
-                destination.putAll((Map) this.staticModelData.get(key));
+                Map<String, Object> destination = (Map<String, Object>) model.get(key);
+                destination.putAll((Map<String, Object>) this.staticModelData.get(key));
             }
         }
     }

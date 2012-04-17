@@ -133,8 +133,8 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
         this.staticURLParameters = staticURLParameters;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request)
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request)
         throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -154,9 +154,10 @@ public class ResourceServiceURLProvider implements ReferenceDataProvider {
             }
         } catch (Throwable t) { }
 
-        Map urlMap = (Map) model.get(this.modelName);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> urlMap = (Map<String, Object>) model.get(this.modelName);
         if (urlMap == null) {
-            urlMap = new HashMap();
+            urlMap = new HashMap<String, Object>();
         }
 
         URL url = null;

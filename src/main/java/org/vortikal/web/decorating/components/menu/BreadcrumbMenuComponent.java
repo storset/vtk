@@ -155,9 +155,13 @@ public class BreadcrumbMenuComponent extends ListMenuComponent {
         titleProp[1] = this.menuGenerator.getTitlePropDef();
         p.setTitleOverrideProperties(titleProp);
         p.afterPropertiesSet();
-        Map<String, BreadcrumbElement[]> map = new HashMap<String, BreadcrumbElement[]>();
+        Map<String, Object> map = new HashMap<String, Object>();
         p.referenceData(map, RequestContext.getRequestContext().getServletRequest());
-        BreadcrumbElement[] list = map.get(breadcrumbName);
+        Object o = map.get(breadcrumbName);
+        if (!(o instanceof BreadcrumbElement[])) {
+            throw new IllegalStateException("Expected BreadCrumbElement[] in model, found " + o);
+        }
+        BreadcrumbElement[] list = (BreadcrumbElement[]) o;
         List<BreadcrumbElement> result = new ArrayList<BreadcrumbElement>();
         for (int i = 0; i < list.length; i++) {
             result.add(list[i]);

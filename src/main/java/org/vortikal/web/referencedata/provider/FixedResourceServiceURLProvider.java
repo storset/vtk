@@ -128,9 +128,8 @@ public class FixedResourceServiceURLProvider
     }
     
 
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request)
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request)
         throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Principal principal = requestContext.getPrincipal();
@@ -141,6 +140,7 @@ public class FixedResourceServiceURLProvider
             resource = repository.retrieve(requestContext.getSecurityToken(), this.uri, true);
         } catch (Throwable t) { }
 
+        @SuppressWarnings("unchecked")
         Map<String, String> urlMap = (Map<String, String>) model.get(this.modelName);
         if (urlMap == null) {
             urlMap = new HashMap<String, String>();

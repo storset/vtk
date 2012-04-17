@@ -156,8 +156,7 @@ public class DefaultListMenuProvider implements ReferenceDataProvider {
         this.retrieveForProcessing = retrieveForProcessing;
     }
 
-    @SuppressWarnings( { "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
 
         ListMenu<String> menu = new ListMenu<String>();
         menu.setLabel(this.label);

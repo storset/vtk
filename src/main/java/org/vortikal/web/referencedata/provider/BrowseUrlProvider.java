@@ -78,8 +78,8 @@ public class BrowseUrlProvider implements ReferenceDataProvider, InitializingBea
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request) throws Exception {
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Principal principal = requestContext.getPrincipal();

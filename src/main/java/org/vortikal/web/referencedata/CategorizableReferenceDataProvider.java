@@ -63,9 +63,8 @@ public final class CategorizableReferenceDataProvider implements
         this.provider = provider;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
-    public void referenceData(Map model, HttpServletRequest request)
+    public void referenceData(Map<String, Object> model, HttpServletRequest request)
             throws Exception {
         this.provider.referenceData(model, request);
     }

@@ -113,10 +113,8 @@ public class ResourceMessageProvider implements ReferenceDataProvider, Initializ
         }
     }
     
-
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void referenceData(Map model, HttpServletRequest request)
+    @Override
+    public void referenceData(Map<String, Object> model, HttpServletRequest request)
             throws Exception {
 
         Resource resource = getResource(model);

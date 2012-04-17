@@ -109,6 +109,8 @@
     <property name="brokenLinksCountPropDef" ref="brokenLinksCountPropDef"/>
     <!--property name="sortPropDef" ref="lastModifiedPropDef" /-->
     <property name="publishedPropDef" ref="publishedPropDef" />
+    <property name="indexFilePropDef" ref="collection.indexFilePropDef" />
+
     <property name="sortOrder" ref="SORT_ORDER.ASC" />
     <property name="parser" ref="searchParser"/>
     <property name="queryFilterExpression" value="${systemjob.linkcheck.queryFilterExpression}"/>

@@ -58,6 +58,7 @@ import org.vortikal.repository.search.TypedSortField;
 import org.vortikal.repository.search.query.ACLReadForAllQuery;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.OrQuery;
+import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
@@ -73,6 +74,7 @@ public class BrokenLinksReport extends DocumentReporter {
     private PropertyTypeDefinition brokenLinksCountPropDef;
     private PropertyTypeDefinition sortPropDef;
     private PropertyTypeDefinition publishedPropDef;
+    private PropertyTypeDefinition indexFilePropDef;
     private SortFieldDirection sortOrder;
     private Parser parser;
     private String queryFilterExpression;
@@ -275,6 +277,9 @@ public class BrokenLinksReport extends DocumentReporter {
             topLevelQ.add(filterQ);
         }
 
+        // Don't include collections with index files:
+        topLevelQ.add(new PropertyExistsQuery(this.indexFilePropDef, true));
+        
         Search search = new Search();
         search.setQuery(topLevelQ);
         SortingImpl sorting = new SortingImpl();
@@ -376,6 +381,11 @@ public class BrokenLinksReport extends DocumentReporter {
     @Required
     public void setPublishedPropDef(PropertyTypeDefinition publishedPropDef) {
         this.publishedPropDef = publishedPropDef;
+    }
+
+    @Required
+    public void setIndexFilePropDef(PropertyTypeDefinition indexFilePropDef) {
+        this.indexFilePropDef = indexFilePropDef;
     }
 
     public void setSortPropDef(PropertyTypeDefinition sortPropDef) {

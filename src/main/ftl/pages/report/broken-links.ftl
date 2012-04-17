@@ -68,7 +68,7 @@
       <@vrtx.msg code="report.${report.reportname}.about"
                  args=[report.from, report.to, report.total, report.brokenLinkCount]
                  default="Listing results " + report.from + "–"
-                 + report.to + " of total " + report.total + " of web pages with " + report.brokenLinkCount + " broken links under selected folder(s)." />
+                 + report.to + " of total " + report.total + " of web pages with " + report.brokenLinkCount + " broken links." />
       <#if report.prev?exists || report.next?exists>
         <@displayPaging />  
       </#if>

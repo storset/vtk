@@ -14,7 +14,9 @@
     </#if>
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/plugins/mustache.js"></script>
     <script type="text/javascript"><!--
-      var filtersAdvancedToggle = "<@vrtx.msg code='report.broken-links.filters.advanced.toggle' />",
+      var filtersAdvancedShow = "<@vrtx.msg code='report.broken-links.filters.advanced.show' />",
+          filtersAdvancedHide = "<@vrtx.msg code='report.broken-links.filters.advanced.hide' />",
+          filtersAdvancedTitle = "<@vrtx.msg code='report.broken-links.filters.advanced.title' />",
           filtersAdvancedExcludeTitle = "<@vrtx.msg code='report.broken-links.filters.advanced.exclude-title' />",
           filtersAdvancedIncludeTitle = "<@vrtx.msg code='report.broken-links.filters.advanced.include-title' />",
           filtersAdvancedUpdate = "<@vrtx.msg code='report.broken-links.filters.advanced.update' />",

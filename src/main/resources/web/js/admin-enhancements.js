@@ -198,11 +198,12 @@ vrtxAdmin._$(document).ready(function () {
   // TODO: Generate HTML with Mustache
   var brokenLinksFilters = _$("#vrtx-report-filters");
   if(brokenLinksFilters.length) {
-    brokenLinksFilters.append("<a href='#' id='vrtx-report-filters-show-hide-advanced' onclick='javascript:void(0);'>" + filtersAdvancedToggle + "...</a>");
-     var html = "<div id='vrtx-report-filters-folders-include-exclude'>"
-                + "<div id='vrtx-report-filters-folders-exclude' class='report-filters-folders-exclude'><h3>" + filtersAdvancedExcludeTitle + "</h3>"
+    brokenLinksFilters.append("<a href='#' id='vrtx-report-filters-show-hide-advanced' onclick='javascript:void(0);'>" + filtersAdvancedShow + "...</a>");
+     var html = "<div id='vrtx-report-filters-folders-include-exclude' class='expandedForm'>"
+                + "<h3>" + filtersAdvancedTitle + "</h3>"
+                + "<div id='vrtx-report-filters-folders-exclude' class='report-filters-folders-exclude'><h4>" + filtersAdvancedExcludeTitle + "</h4>"
                 + "<div class='vrtx-textfield'><input type='text' id='exclude-folders' size='32' /></div></div>"
-                + "<div id='vrtx-report-filters-folders-include' class='report-filters-folders-include'><h3>" + filtersAdvancedIncludeTitle + "</h3>"
+                + "<div id='vrtx-report-filters-folders-include' class='report-filters-folders-include'><h4>" + filtersAdvancedIncludeTitle + "</h4>"
                 + "<div class='vrtx-textfield'><input type='text' id='include-folders' size='32' /></div></div>"
                 + "<a class='vrtx-button'><span>" + filtersAdvancedUpdate + "</span></a>"
               + "</div>";
@@ -226,7 +227,7 @@ vrtxAdmin._$(document).ready(function () {
       }   
     }
     
-    var filterLinks = $("#vrtx-report-filters ul a"), i = filterLinks.length;
+    var filterLinks = _$("#vrtx-report-filters ul a"), i = filterLinks.length;
     while(i--) {
       filterLinks[i].href = filterLinks[i].href + query;
     } 
@@ -236,11 +237,16 @@ vrtxAdmin._$(document).ready(function () {
       //_$("#vrtx-report-filters-folders-include-exclude").slideToggle(0);
     //}
     
-    $("#include-folders").val(includedFolders.substring(0, includedFolders.lastIndexOf(",")));
-    $("#exclude-folders").val(excludedFolders.substring(0, excludedFolders.lastIndexOf(",")));
+    _$("#include-folders").val(includedFolders.substring(0, includedFolders.lastIndexOf(",")));
+    _$("#exclude-folders").val(excludedFolders.substring(0, excludedFolders.lastIndexOf(",")));
     
     _$("#app-content").on("click", "#vrtx-report-filters #vrtx-report-filters-show-hide-advanced", function(e) { // Show / hide advanced settings
-      _$("#vrtx-report-filters-folders-include-exclude").slideToggle(vrtxAdm.transitionDropdownSpeed);
+      _$("#vrtx-report-filters-folders-include-exclude:visible").slideUp(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
+        _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedShow + "...");        
+      });
+      _$("#vrtx-report-filters-folders-include-exclude:not(:visible)").slideDown(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideDown, function() {
+        _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedHide + "...");
+      });
       e.stopPropagation();
       e.preventDefault();
     });

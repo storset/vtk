@@ -91,6 +91,10 @@ public class RenameController extends SimpleFormController {
         try {
             Path newUri = renameCommand.getRenamePath();
             if (!name.equals(renameCommand.getName())) {
+                if (overwrite) {
+                    repository.delete(token, newUri, true);
+                }
+                
                 repository.move(token, uri, newUri, overwrite);
                 resource = repository.retrieve(token, newUri, false);
             }

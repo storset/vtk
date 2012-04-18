@@ -28,18 +28,41 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.display.collection.message;
+package org.vortikal.text.html;
 
-import org.apache.abdera.model.Entry;
-import org.vortikal.repository.PropertySet;
-import org.vortikal.web.display.collection.CollectionListingAsAtomFeed;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-public class MessageListingAsAtomFeed extends CollectionListingAsAtomFeed {
+import org.junit.Before;
+import org.junit.Test;
 
-    @Override
-    protected void setFeedEntrySummary(Entry entry, PropertySet resource) throws Exception {
-        // XXX implement
-        // Feed summary is truncatedMessage property
+public class HtmlDigesterTest {
+
+    private HtmlDigester htmlDigester;
+    private String simpleHtmlParagraph;
+
+    @Before
+    public void init() {
+        this.htmlDigester = new HtmlDigester();
+        this.simpleHtmlParagraph = "<p>Some bold <b>text</b> and <i>italic</i>. A list:</p>"
+                + "<ul><li>element 1</li><li>element 2</li><li>element 3</li></ul>";
+    }
+
+    @Test
+    public void truncateHtmlAlreadyWithinLimit() {
+        this.truncateHtml(this.simpleHtmlParagraph, 500);
+    }
+
+    @Test
+    public void truncateSimpleHtml() {
+        this.truncateHtml(this.simpleHtmlParagraph, 50);
+    }
+
+    private void truncateHtml(String html, int limit) {
+        this.htmlDigester.setLimit(limit);
+        String truncated = this.htmlDigester.truncateHtml(html, limit);
+        assertNotNull(truncated);
+        assertTrue(truncated.length() <= limit);
     }
 
 }

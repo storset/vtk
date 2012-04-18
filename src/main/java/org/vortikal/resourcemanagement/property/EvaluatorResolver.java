@@ -43,26 +43,29 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.property.PropertyEvaluationException;
 import org.vortikal.resourcemanagement.BinaryPropertyDescription;
 import org.vortikal.resourcemanagement.DerivedPropertyDescription;
 import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription;
+import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.EvaluationCondition;
+import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.EvaluationElement;
 import org.vortikal.resourcemanagement.JSONPropertyDescription;
 import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.ServiceDefinition;
 import org.vortikal.resourcemanagement.SimplePropertyDescription;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
-import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.EvaluationElement;
 import org.vortikal.resourcemanagement.service.ExternalServiceInvoker;
+import org.vortikal.text.html.HtmlDigester;
 import org.vortikal.util.text.JSON;
 
 public class EvaluatorResolver {
 
     // XXX Reconsider this whole setup. No good implementation.
     private ExternalServiceInvoker serviceInvoker;
+    private HtmlDigester htmlDigester;
 
     public PropertyEvaluator createPropertyEvaluator(PropertyDescription desc,
             StructuredResourceDescription resourceDesc) {
@@ -242,9 +245,10 @@ public class EvaluatorResolver {
             }
 
             DerivedPropertyEvaluationDescription evaluationDescription = desc.getEvaluationDescription();
-            if (evaluationDescription.getEvaluationCondition() != null) {
+            EvaluationCondition evaluationCondition = evaluationDescription.getEvaluationCondition();
+            if (evaluationCondition != null) {
                 String propName = evaluationDescription.getEvaluationElements().get(0).getValue();
-                return getEvaluatedConditionalValue(ctx, propName);
+                return getEvaluatedConditionalValue(ctx, evaluationCondition, propName);
             }
 
             StringBuilder value = new StringBuilder();
@@ -264,10 +268,17 @@ public class EvaluatorResolver {
             return value.toString();
         }
 
-        private Object getEvaluatedConditionalValue(PropertyEvaluationContext ctx, String propName) {
+        private Object getEvaluatedConditionalValue(PropertyEvaluationContext ctx,
+                EvaluationCondition evaluationCondition, String propName) {
+
             Property prop = getProperty(ctx.getNewResource(), propName);
             if (prop != null) {
-                return Boolean.valueOf(true);
+                if (EvaluationCondition.EXISTS.equals(evaluationCondition)) {
+                    return Boolean.valueOf(true);
+                } else if (EvaluationCondition.TRUNCATE.equals(evaluationCondition)) {
+                    return this.getTruncated(prop.getStringValue());
+                }
+                return null;
             } else {
                 JSONObject json;
                 try {
@@ -277,8 +288,21 @@ public class EvaluatorResolver {
                 }
                 String expression = "properties." + propName;
                 Object jsonObject = JSON.select(json, expression);
-                return Boolean.valueOf(jsonObject != null);
+                if (jsonObject != null) {
+                    if (EvaluationCondition.EXISTS.equals(evaluationCondition)) {
+                        return Boolean.valueOf(true);
+                    } else if (EvaluationCondition.TRUNCATE.equals(evaluationCondition)) {
+                        return this.getTruncated(jsonObject.toString());
+                    }
+                }
+                return null;
             }
+
+        }
+
+        private String getTruncated(String original) {
+            String truncated = htmlDigester.truncateHtml(original);
+            return truncated != null ? truncated : original;
         }
     }
 
@@ -381,6 +405,11 @@ public class EvaluatorResolver {
     @Required
     public void setServiceInvoker(ExternalServiceInvoker serviceInvoker) {
         this.serviceInvoker = serviceInvoker;
+    }
+
+    @Required
+    public void setHtmlDigester(HtmlDigester htmlDigester) {
+        this.htmlDigester = htmlDigester;
     }
 
 }

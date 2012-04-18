@@ -59,6 +59,7 @@ DEFAULTPROP
 	:	'default';
 MULTIPLE:	'multiple';
 EXISTS	:	'exists';
+TRUNCATE:	'truncate';
 SHOWHIDE:	'show-hide';
 MULTIPLEINPUTFIELDS
 	:	'multipleinputfields';

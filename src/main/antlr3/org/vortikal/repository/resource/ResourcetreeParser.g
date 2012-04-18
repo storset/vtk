@@ -112,7 +112,8 @@ fieldlist
 	:	NAME (COMMA NAME)* ->  NAME+;
 
 evallist:	nameorqtext (PLUS nameorqtext)* -> nameorqtext+
-	|	NAME QUESTION EXISTS -> ^(NAME EXISTS);
+	|	NAME QUESTION EXISTS -> ^(NAME EXISTS)
+	|	NAME QUESTION TRUNCATE -> ^(NAME TRUNCATE);
 
 nameorqtext
 	:	NAME -> NAME

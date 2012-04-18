@@ -18,8 +18,11 @@
 
   <bean id="evaluatorResolver" class="org.vortikal.resourcemanagement.property.EvaluatorResolver">
     <property name="serviceInvoker" ref="externalServiceInvoker" />
+    <property name="htmlDigester" ref="htmlDigester" />
   </bean>
 
   <bean id="externalServiceInvoker" class="org.vortikal.resourcemanagement.service.ExternalServiceInvoker" />
+
+  <bean id="htmlDigester" class="org.vortikal.text.html.HtmlDigester" />
 
 </beans>

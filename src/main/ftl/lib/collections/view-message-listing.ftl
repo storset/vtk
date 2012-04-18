@@ -29,7 +29,7 @@
             <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishDate}                
           </div>
           <div class="description introduction">
-            <#assign message = vrtx.propValue(r, "message", "", "") />
+            <#assign message = vrtx.propValue(r, "truncatedMessage", "", "") />
             ${message}
           </div>
         </div>

@@ -1,3 +1,5 @@
+/* TODO: add a class to the container instead and show / hide correspondings fields with CSS */
+
 function hideShowStudy(typeToDisplay) {
   switch (typeToDisplay) {
   case "so":

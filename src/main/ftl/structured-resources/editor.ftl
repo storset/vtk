@@ -88,7 +88,7 @@
   <#if form.resource.type.scripts?exists>
     <@scripts.includeScripts form.resource.type.scripts />
   </#if>
-	<script type="text/javascript" src="${jsBaseURL?html}/study-admin-enhancements.js"></script>
+  <script type="text/javascript" src="${jsBaseURL?html}/study-admin-enhancements.js"></script>
 </head>
 <body id="vrtx-editor">
 

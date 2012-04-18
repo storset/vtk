@@ -108,6 +108,32 @@
   padding-left: 5px;
 }
 
+/* Study enhancements */
+
+#editor.so .internasjonale-sokere-admin,
+#editor.so .nordiske-sokere,
+#editor.so .generelle-admin,
+#editor.so .pris,
+#editor.so .regelverk {
+  display: none;
+}
+
+#editor.nm .internasjonale-sokere-admin,
+#editor.nm .nordiske-sokere,
+#editor.nm .opptakskrav-admin,
+#editor.nm .studiekode {
+  display: none;
+}
+
+#editor.em .frist-frekvens-admin
+#editor.em .metode-admin,
+#editor.em .opptakskrav-admin,
+#editor.em .studiekode {
+  display: none;
+}
+
+/* ^ Study enhancements */
+
 /* JSON-boxes - explicit settings */
 
 .vrtx-json #main-content .vrtx-json-element,

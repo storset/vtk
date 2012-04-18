@@ -1,51 +1,18 @@
-/* TODO: add a class to the container instead and show / hide correspondings fields with CSS */
-
 function hideShowStudy(typeToDisplay) {
+  var container = $("#editor");
   switch (typeToDisplay) {
-  case "so":
-    $('.frist-frekvens-admin').show();
-    $('.metode-admin').show();
-    $('.internasjonale-sokere-admin').hide();
-    $('.nordiske-sokere').hide();
-    $('.opptakskrav-admin').show();
-    $('.generelle-admin').hide();
-    $('.studiekode').show();
-    $('.pris').hide();
-    $('.regelverk').hide();
-    break;
-  case "nm":
-    $('.frist-frekvens-admin').show();
-    $('.metode-admin').show();
-    $('.internasjonale-sokere-admin').hide();
-    $('.nordiske-sokere').hide();
-    $('.opptakskrav-admin').hide();
-    $('.generelle-admin').show();
-    $('.studiekode').hide();
-    $('.pris').show();
-    $('.regelverk').show();
-    break;
-  case "em":
-    $('.frist-frekvens-admin').hide();
-    $('.metode-admin').hide();
-    $('.internasjonale-sokere-admin').show();
-    $('.nordiske-sokere').show();
-    $('.opptakskrav-admin').hide();
-    $('.generelle-admin').show();
-    $('.studiekode').hide();
-    $('.pris').show();
-    $('.regelverk').show();
-    break;
-  default:
-    $('.frist-frekvens-admin').show();
-    $('.metode-admin').show();
-    $('.internasjonale-sokere-admin').show();
-    $('.nordiske-sokere').show();
-    $('.opptakskrav-admin').show();
-    $('.generelle-admin').show();
-    $('.studiekode').show();
-    $('.pris').show();
-    $('.regelverk').show();
-    break;
+    case "so":
+      container.removeClass("nm, em").addClass("so");
+      break;
+    case "nm":
+      container.removeClass("so, em").addClass("nm");
+      break;
+    case "em":
+      container.removeClass("so, nm").addClass("em");
+      break;
+    default:
+      container.removeClass("so, nm, em");
+      break;
   }
 }
 
@@ -58,7 +25,6 @@ $(document).ready(function () {
     return false;
   }
   $(document).on('change', '#typeToDisplay', function () {
-    var typeToDisplay = $('#typeToDisplay').val();
-    hideShowStudy(typeToDisplay);
+    hideShowStudy($(this).val());
   });
 });

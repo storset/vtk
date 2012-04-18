@@ -30,6 +30,16 @@
  */
 package org.vortikal.text.html;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+
+import org.w3c.tidy.Tidy;
+
+/**
+ * XXX Should also handle inputstreams and doms
+ */
 public class HtmlDigester {
 
     private static final int DEFAULT_TRUNCATE_LIMIT = 1000;
@@ -38,45 +48,99 @@ public class HtmlDigester {
 
     private int limit = DEFAULT_TRUNCATE_LIMIT;
 
-    public String truncateHtml(String html) {
-        return this.truncateHtml(html, this.limit, DEFAUL_TAIL);
+    /**
+     * Compress the html, remove whitespaces, linebreaks and comments
+     */
+    public String compress(String html) {
+
+        // XXX Any good library for this? HtmlCleaner etc?
+
+        String compressed = html.replaceAll("\\r|\\n", "");
+        compressed = compressed.trim().replaceAll("\\s+", " ");
+        return compressed;
     }
 
-    public String truncateHtml(String html, int limit) {
-        return this.truncateHtml(html, limit, DEFAUL_TAIL);
+    public String truncateHtml(String html) {
+        return this.truncateHtml(html, this.limit, DEFAUL_TAIL, true);
     }
 
     /**
      * Truncate supplied html to within the given limit. Append tail to
      * truncated result and use JTidy to close removed tags.
      */
-    public String truncateHtml(String html, int limit, String tail) {
-
-        // XXX implement
+    public String truncateHtml(String html, int limit, String tail, boolean compress) {
 
         if (html == null) {
             throw new IllegalArgumentException("Must supply html to truncate");
         }
 
-        // 1. Trim html and remove excessive whitespaces and linebreaks
-        // -> then check length
-        if (html.length() <= limit) {
-            return html;
+        // XXX Handle values for limit, also check tail to make sure it does not
+        // violate limits when added
+
+        if (compress) {
+            String compressed = this.compress(html);
+            if (compressed.length() <= limit) {
+                return compressed;
+            }
+            html = compressed;
         }
 
-        // 2. Truncate html and add tail
-        // -> check truncated for invalid end tags (cut of in middle of tag)
-        // JTidy struggles with those
-        // -> check end of truncated for match with tail and handle
+        // Leave room for the tail -> what about the closing tags that will be
+        // added by jTidy? Consider that here? 'Cuz this isn't right. We already
+        // know we'll be exceeding the limit once truncated html is sanitized by
+        // JTidy.
+        int truncationLimit = limit - tail.length();
+        String truncated = html.substring(0, truncationLimit);
 
-        // 3. Run through JTidy to get valid html
+        // If truncated ends with a tag, valid or not, remove it before adding
+        // the tail. XXX Any good regex solution for this instead?
+        if (truncated.endsWith(">") || (truncated.lastIndexOf("<") > truncated.lastIndexOf(">"))) {
+            truncated = truncated.substring(0, truncated.lastIndexOf("<"));
 
-        // 4. Check limit and retry if length of valid html exceeds limit
-        // -> attempt only up to a certain criterea (count?)
-        // -> configuration of JTidy? Default or overridable? e.g.
-        // printBodyOnly?
+            // XXX Perhaps we should keep the end tag if it's valid and append
+            // it back on after tail has been added...
 
-        return null;
+        }
+
+        // Add the tail
+        truncated = truncated.concat(tail);
+
+        String sanitizedTruncated = this.sanitizeTruncated(truncated, compress);
+
+        // XXX Check result for limit violation and retry with new limit. (how
+        // to calculate new limit?)
+
+        return sanitizedTruncated;
+
+    }
+
+    private String sanitizeTruncated(String truncated, boolean compress) {
+
+        // XXX Setup/configuration? Add tags without attributes... e.g. <li
+        // style...>? Print body only?
+        Tidy tidy = new Tidy();
+        tidy.setPrintBodyOnly(true);
+        tidy.setMakeClean(true);
+        tidy.setInputEncoding("utf-8");
+        tidy.setOutputEncoding("utf-8");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayInputStream bais = new ByteArrayInputStream(truncated.getBytes());
+        tidy.parseDOM(new BufferedInputStream(bais), baos);
+
+        String sanitized = null;
+        try {
+            sanitized = new String(baos.toByteArray(), "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            // XXX log?
+            sanitized = new String(baos.toByteArray());
+        }
+
+        if (compress) {
+            sanitized = this.compress(sanitized);
+        }
+
+        return sanitized;
     }
 
     public void setLimit(int limit) {

@@ -30,6 +30,7 @@
  */
 package org.vortikal.text.html;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -44,8 +45,23 @@ public class HtmlDigesterTest {
     @Before
     public void init() {
         this.htmlDigester = new HtmlDigester();
-        this.simpleHtmlParagraph = "<p>Some bold <b>text</b> and <i>italic</i>. A list:</p>"
-                + "<ul><li>element 1</li><li>element 2</li><li>element 3</li></ul>";
+        // 132 chars
+        this.simpleHtmlParagraph = "  <p>Some bold <b>text</b> and <i>italic</i>. A   list:</p>"
+                + "<ul>\n<li>element 1</li>\r<li>element    2</li>\n<li>element 3</li>\r\n</ul>  ";
+    }
+
+    @Test
+    public void compress() {
+        String expected = "<p>Some bold <b>text</b> and <i>italic</i>. A list:"
+                + "</p><ul><li>element 1</li><li>element 2</li><li>element 3</li></ul>";
+        String result = this.htmlDigester.compress(this.simpleHtmlParagraph);
+        assertEquals(expected, result);
+
+    }
+
+    @Test
+    public void truncateHtmlWithinLimitAfterCompress() {
+        this.truncateHtml(this.simpleHtmlParagraph, 120);
     }
 
     @Test
@@ -55,12 +71,25 @@ public class HtmlDigesterTest {
 
     @Test
     public void truncateSimpleHtml() {
-        this.truncateHtml(this.simpleHtmlParagraph, 50);
+        this.truncateHtml(this.simpleHtmlParagraph, 90);
+    }
+
+    @Test
+    public void truncateSimpleHtmlWithEndTag() {
+        this.truncateHtml(this.simpleHtmlParagraph, 84);
+    }
+
+    @Test
+    public void truncateSimpleHtmlInMiddleOfTag() {
+        this.truncateHtml(this.simpleHtmlParagraph, 82);
     }
 
     private void truncateHtml(String html, int limit) {
         this.htmlDigester.setLimit(limit);
-        String truncated = this.htmlDigester.truncateHtml(html, limit);
+        String truncated = this.htmlDigester.truncateHtml(html);
+
+        System.out.println(truncated + " " + truncated.length() + " (" + limit + ")");
+
         assertNotNull(truncated);
         assertTrue(truncated.length() <= limit);
     }

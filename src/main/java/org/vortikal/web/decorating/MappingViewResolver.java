@@ -47,6 +47,7 @@ public class MappingViewResolver extends AbstractWrappingViewResolver
 
     private Map<String, View> views = new HashMap<String, View>();
     
+    @Override
     protected View resolveViewNameInternal(String viewName, Locale locale) {
 
         return this.views.get(viewName);

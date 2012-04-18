@@ -65,4 +65,9 @@
     <constructor-arg value="http://www.uio.no/resource-types/message-listing" />
   </bean>
 
+  <bean id="PROGRAM_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="program" />
+    <constructor-arg value="http://www.uio.no/resource-types/program" />
+  </bean>
+
 </beans>

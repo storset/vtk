@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <import resource="blog-listing-editor.xml" />
 
@@ -43,7 +43,7 @@
     </property>
     <property name="handler" ref="editor.unstructuredXhtmlEditHandler" />
   </bean>
-  
+
   <bean id="editor.ooXmlEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
@@ -69,6 +69,15 @@
       </list>
     </property>
     <property name="handler" ref="editor.personEditHandler" />
+  </bean>
+
+  <bean id="editor.programListingEditService" parent="editor.abstractEditService">
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsProgram" />
+      </list>
+    </property>
+    <property name="handler" ref="editor.programEditHandler" />
   </bean>
 
   <bean id="editor.projectListingEditService" parent="editor.abstractEditService">
@@ -130,7 +139,7 @@
     </property>
     <property name="handler" ref="editor.loadImageHandler" />
   </bean>
-  
+
   <bean id="editor.loadImageHandler" class="org.vortikal.web.display.file.DisplayResourceController">
     <property name="displayProcessed" value="false" />
     <property name="ignoreLastModified" value="true" />
@@ -180,7 +189,7 @@
     </property>
     <property name="handler" ref="editor.audioVideoListingEditHandler" />
   </bean>
-  
+
   <bean id="editor.eventListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
@@ -325,7 +334,7 @@
       </list>
     </property>
   </bean>
-  
+
   <bean id="editor.ooXmlEditView" parent="freemarkerView">
     <property name="url" value="editor/ooxml-editor.ftl" />
     <property name="referenceDataProviders">
@@ -387,7 +396,7 @@
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToManage" />
   </bean>
-  
+
   <bean id="editor.ooXmlEditHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     <property name="viewName" value="editor.ooXmlEditView" />
   </bean>
@@ -407,13 +416,15 @@
     <property name="saveImageHelper" ref="saveImageHelper" />
     <property name="copyHelper" ref="copyHelperImageEdit" />
   </bean>
-  
+
   <bean id="copyHelperImageEdit" class="org.vortikal.web.actions.copymove.CopyHelper">
     <property name="copyThenStoreAction" ref="copy.imageCopyThenStoreAction" />
   </bean>
-  
+
   <bean id="saveImageHelper" class="org.vortikal.web.actions.SaveImageHelper">
-    <property name="imageService"><bean class="org.vortikal.graphics.ImageServiceImpl" /></property>
+    <property name="imageService">
+      <bean class="org.vortikal.graphics.ImageServiceImpl" />
+    </property>
   </bean>
 
   <bean id="editor.videoEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
@@ -434,7 +445,11 @@
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-
+  <bean id="editor.programEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+    <property name="resourceManager" ref="editor.programResourceManager" />
+    <property name="formView" value="editor.editView" />
+    <property name="successView" value="redirectToPreviewCollection" />
+  </bean>
 
   <bean id="editor.projectEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.projectResourceManager" />
@@ -453,7 +468,7 @@
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
-  
+
   <bean id="editor.messageListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.messageListingResourceManager" />
     <property name="formView" value="editor.editView" />
@@ -622,6 +637,35 @@
     </property>
   </bean>
 
+  <bean id="editor.programResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+    <property name="htmlParser" ref="decorating.htmlParser" />
+    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
+    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
+    <property name="editPropertyProvider">
+      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
+        <property name="preContentProperties">
+          <list>
+            <ref bean="userTitlePropDef" />
+            <ref bean="introductionPropDef" />
+            <ref bean="introductionImagePropDef" />
+            <ref bean="introductionImageCaptionPropDef" />
+            <ref bean="navigationTitlePropDef" />
+            <ref bean="importancePropDef" />
+            <ref bean="hiddenPropDef" />
+            <ref bean="displayAggregationPropDef" />
+            <ref bean="aggregationPropDef" />
+            <ref bean="facultyPropDef" />
+            <ref bean="programSortPropDef" />
+            <ref bean="displayGradeSortPropDef" />
+            <ref bean="displayManuallyApprovedPropDef" />
+            <ref bean="manuallyApproveFromPropDef" />
+            <ref bean="manuallyApprovedResourcesPropDef" />
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
   <bean id="editor.projectResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
@@ -760,7 +804,7 @@
     </property>
   </bean>
 
- <bean id="editor.messageListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+  <bean id="editor.messageListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />

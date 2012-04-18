@@ -240,6 +240,12 @@
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>program</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
           </list>
         </property>
       </bean>

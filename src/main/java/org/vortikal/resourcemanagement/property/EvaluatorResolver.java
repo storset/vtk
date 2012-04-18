@@ -43,6 +43,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
@@ -276,7 +277,7 @@ public class EvaluatorResolver {
                 if (EvaluationCondition.EXISTS.equals(evaluationCondition)) {
                     return Boolean.valueOf(true);
                 } else if (EvaluationCondition.TRUNCATE.equals(evaluationCondition)) {
-                    return this.getTruncated(prop.getStringValue());
+                    return this.getTruncated(prop, prop.getStringValue());
                 }
                 return null;
             } else {
@@ -292,7 +293,7 @@ public class EvaluatorResolver {
                     if (EvaluationCondition.EXISTS.equals(evaluationCondition)) {
                         return Boolean.valueOf(true);
                     } else if (EvaluationCondition.TRUNCATE.equals(evaluationCondition)) {
-                        return this.getTruncated(jsonObject.toString());
+                        return this.getTruncated(prop, jsonObject.toString());
                     }
                 }
                 return null;
@@ -300,9 +301,11 @@ public class EvaluatorResolver {
 
         }
 
-        private String getTruncated(String original) {
-            String truncated = htmlDigester.truncateHtml(original);
-            return truncated != null ? truncated : original;
+        private String getTruncated(Property prop, String value) {
+            if (prop.getDefinition().getType().equals(PropertyType.Type.HTML)) {
+                return htmlDigester.truncateHtml(value);
+            }
+            return null;
         }
     }
 

@@ -193,8 +193,8 @@ view-components {
             <h1>[localized 'oppbygning']</h1>
             [call "comp:introduction"]
             [call "comp:introduction-image"]
-            [call "comp:gradsnavn"]
             [call "json:field" {"select":"content-study"}]
+            [call "comp:gradsnavn"]
             [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"fellestekst-fakultet"}]
             [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"fellestekst-sentral"}]
             [call "comp:vrtx-date-info"]

@@ -246,14 +246,12 @@ vrtxAdmin._$(document).ready(function () {
       e.stopPropagation();
       e.preventDefault();
     });
-    
     _$("#app-content").on("click", "#vrtx-report-filters-folders-include-exclude a.vrtx-button", function(e) { // Filter exclude and include folders
       saveMultipleInputFields(); // Multiple to comma-separated
       // Build query string
       var includeFolders = $("#include-folders").val().split(",").unique(); // Get included folders and remove duplicates
       var excludeFolders = $("#exclude-folders").val().split(",").unique(); // Get excluded folders and remove duplicates
-      var includeFoldersLen = includeFolders.length,
-          excludeFoldersLen = excludeFolders.length,
+      var includeFoldersLen = includeFolders.length, excludeFoldersLen = excludeFolders.length,
           includeQueryString = "", excludeQueryString = ""; 
       for(var i = 0; i < includeFoldersLen; i++) {
         var theIncludeFolder = $.trim(includeFolders[i]);

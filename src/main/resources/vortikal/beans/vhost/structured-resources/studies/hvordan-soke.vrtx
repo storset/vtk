@@ -323,7 +323,7 @@ view {
 	title : (en : "How to apply?", no : "Hvordan søke på dette studiet?", nn : "Korleis søkje på dette studiet?"),
 
 	frist-frekvens-view : (en : "Frist og frekvens", no : "Frist og frekvens", nn : "Frist og frekvens"),
-    frist-frekvens-admin : (en : "Admission: Application deadline and frequency (SO and Norwegian master)", no : "Opptak: Frist og frekvens (SO og norsk master)", nn : "Opptak: Frist og frekvens (SO og norsk master)"),
+    frist-frekvens-admin : (en : "Admission: Application deadline and frequency (All)", no : "Opptak: Frist og frekvens (Alle)", nn : "Opptak: Frist og frekvens (Alle)"),
     frist-frekvens-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     opptak-frist-frekvens : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 

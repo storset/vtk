@@ -4,7 +4,7 @@
 
 
   <bean id="programResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="program" />
+    <property name="name" value="program-listing" />
     <property name="namespace" ref="PROGRAM_NAMESPACE" />
     <property name="parentTypeDefinition" ref="collectionResourceTypeDefinition" />
     <property name="assertions">
@@ -12,7 +12,7 @@
         <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
           <property name="namespace" ref="DEFAULT_NAMESPACE" />
           <property name="name" value="collection-type" />
-          <property name="value" value="program" />
+          <property name="value" value="program-listing" />
           <property name="checkExistenceOnly" value="false" />
         </bean>
       </list>
@@ -152,11 +152,5 @@
       </map>
     </property>
   </bean>
-
-  <!-- <bean id="personListing.additionalContentPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" 
-    parent="abstractPropDef"> <property name="name" value="additionalContent"/> <property name="type" value="HTML"/> <property 
-    name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/> <property name="mandatory" value="false"/> </bean> <bean id="personListing.unitAreaCodePropDef" 
-    class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef"> <property name="name" value="unit-areacode"/> 
-    <property name="type" value="STRING"/> <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE"/> <property name="mandatory" 
-    value="false"/> </bean> -->
+  
 </beans>

@@ -88,17 +88,25 @@ public class CopyMoveWarningProvider implements ReferenceDataProvider {
 
         Resource srcAclResource = findNearestAcl(requestContext, sourceParentUri);
         Resource destAclResource = findNearestAcl(requestContext, destinationUri);
-        URL url = this.confirmationService.constructURL(destinationUri);
+        Acl srcAcl = srcAclResource.getAcl();
+        Acl destAcl = destAclResource.getAcl();
+        
+        URL confirmURL = this.confirmationService.constructURL(destinationUri);
+        
         if ("copy-resources".equals(sessionBean.getAction())) {
+            if (!(destAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL) || destAcl.containsEntry(
+                    Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
+                return;
+            }
             // XXX index search can be optimized to avoid iterating resourceset
-            ResultSet rs = this.indexAclSearch(sessionBean, token, new ACLExistsQuery(), false);
+            ResultSet rs = indexAclSearch(sessionBean, token, new ACLExistsQuery(), false);
             if (rs.getSize() > 0) {
                 for (PropertySet ps : rs.getAllResults()) {
                     Resource resource = repository.retrieve(token, ps.getURI(), false);
                     Acl acl = resource.getAcl();
                     if (!(acl.containsEntry(Privilege.READ, PrincipalFactory.ALL) || acl.containsEntry(
                             Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
-                        this.addWarning(model, url, sessionBean);
+                        addWarning(model, confirmURL, sessionBean);
                         break;
                     }
                 }
@@ -110,13 +118,11 @@ public class CopyMoveWarningProvider implements ReferenceDataProvider {
             return;
         }
 
-        Acl srcAcl = srcAclResource.getAcl();
         if (srcAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL)
                 || srcAcl.containsEntry(Privilege.READ_PROCESSED, PrincipalFactory.ALL)) {
             return;
         }
 
-        Acl destAcl = destAclResource.getAcl();
         if (!(destAcl.containsEntry(Privilege.READ, PrincipalFactory.ALL) || destAcl.containsEntry(
                 Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
             return;
@@ -126,16 +132,14 @@ public class CopyMoveWarningProvider implements ReferenceDataProvider {
             return;
         }
 
-        ResultSet rs = this
-                .indexAclSearch(sessionBean, token, new ACLInheritedFromQuery(srcAclResource.getURI()), true);
+        ResultSet rs = indexAclSearch(sessionBean, token, new ACLInheritedFromQuery(srcAclResource.getURI()), true);
         if (rs.getSize() > 0) {
-            this.addWarning(model, url, sessionBean);
+            addWarning(model, confirmURL, sessionBean);
         }
 
     }
 
-    @SuppressWarnings( { "rawtypes", "unchecked" })
-    private void addWarning(Map model, URL url, CopyMoveSessionBean sessionBean) {
+    private void addWarning(Map<String, Object> model, URL url, CopyMoveSessionBean sessionBean) {
         model.put("resourcesDisclosed", Boolean.TRUE);
         model.put("warningDialogURL", url);
         model.put("action", sessionBean.getAction());

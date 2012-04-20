@@ -32,8 +32,10 @@ package org.vortikal.web.referencedata;
 
 import org.vortikal.web.service.URL;
 
-public class Link {
+public class Link implements java.io.Serializable {
 
+    private static final long serialVersionUID = 1L;
+    
     private URL url; 
     private String title;
     

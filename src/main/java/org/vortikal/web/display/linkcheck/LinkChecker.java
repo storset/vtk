@@ -94,14 +94,39 @@ public class LinkChecker {
         MALFORMED_URL,
         ERROR;
     }
-    
+
+    /**
+     * Request validation of reference with a base URL.
+     * 
+     * @param href Reference, may be absolute or relative to base.
+     * @param base Absolute base URL.
+     * 
+     * @return A <code>LinkCheckResult</code> with result of link check.
+     */
     public LinkCheckResult validate(String href, URL base) {
-        LinkCheckResult result = validateInternal(href, base);
+        return validate(href, base, false);
+    }
+    
+    /**
+     * Request validation of reference with a base URL, optionally sending
+     * base URL as an HTTP Referer(sic) header when doing the request.
+     * 
+     * @param href Reference, may be absolute or relative to base.
+     * @param base Absolute base URL.
+     * @param sendReferrer Set to <code>true</code> to add a Referer header
+     *                     to HTTP request when doing link validation. Base URL
+     *                     will be used as the value.
+     * 
+     * @return A {@link LinkCheckResult} with result of link check.
+     */
+    public LinkCheckResult validate(String href, URL base, boolean sendReferrer) {
+        LinkCheckResult result = validateInternal(href, base, sendReferrer);
         logger.info("Validate: " + href + ", " + base + ": " + result);
         return result;
+
     }
 
-    private LinkCheckResult validateInternal(String href, URL base) {
+    private LinkCheckResult validateInternal(String href, URL base, boolean sendReferrer) {
         if (href == null) {
             throw new IllegalArgumentException("Link argument cannot be NULL");
         }
@@ -119,7 +144,7 @@ public class LinkChecker {
         Status status;
         String reason = null;
         try {
-            status = validateURL(url);
+            status = validateURL(url, sendReferrer ? base : null);
         } catch (Throwable t) {
             status = Status.ERROR;
             reason = t.getMessage();
@@ -131,15 +156,15 @@ public class LinkChecker {
         return result;
     }
     
-    private Status validateURL(URL url) {
+    private Status validateURL(URL url, URL referrer) {
         HttpURLConnection urlConnection = null;
         try {
-            urlConnection = createHeadRequest(url);
+            urlConnection = createHeadRequest(url, referrer);
             urlConnection.connect();
             int responseCode = urlConnection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_MOVED_PERM 
                     || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
-                responseCode = checkMoved(urlConnection, responseCode);
+                responseCode = checkMoved(urlConnection, responseCode, referrer);
             }
             if (responseCode == HttpURLConnection.HTTP_NOT_FOUND 
                 || responseCode == HttpURLConnection.HTTP_GONE) {
@@ -157,7 +182,7 @@ public class LinkChecker {
         }
     }
 
-    private int checkMoved(HttpURLConnection urlConnection, int responseCode) throws IOException {
+    private int checkMoved(HttpURLConnection urlConnection, int responseCode, URL referrer) throws IOException {
         int retry = 0;
         // try a maximum of three times
         while (retry < 3
@@ -167,7 +192,7 @@ public class LinkChecker {
             if (location == null) {
                 return responseCode;
             }
-            urlConnection = createHeadRequest(URL.parse(location));
+            urlConnection = createHeadRequest(URL.parse(location), referrer);
             urlConnection.connect();
             responseCode = urlConnection.getResponseCode();
             retry++;
@@ -175,13 +200,17 @@ public class LinkChecker {
         return responseCode;
     }
     
-    private HttpURLConnection createHeadRequest(URL url) throws IOException {
+    private HttpURLConnection createHeadRequest(URL url, URL referrer) throws IOException {
         java.net.URL location = new java.net.URL(url.toString());
         HttpURLConnection urlConnection = (HttpURLConnection) location.openConnection();
         urlConnection.setRequestMethod("HEAD");
         urlConnection.setConnectTimeout(this.connectTimeout);
         urlConnection.setReadTimeout(this.readTimeout);
         urlConnection.setRequestProperty("User-Agent", this.userAgent);
+        if (referrer != null) {
+            urlConnection.setRequestProperty("Referer", referrer.toString());
+        }
+        
         return urlConnection;
     }
 

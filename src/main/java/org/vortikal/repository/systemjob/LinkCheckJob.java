@@ -140,7 +140,7 @@ public class LinkCheckJob extends RepositoryJob {
     }
 
     
-    private Property linkCheck(Resource resource, SystemChangeContext context) throws InterruptedException {
+    private Property linkCheck(final Resource resource, final SystemChangeContext context) throws InterruptedException {
 
         Property linksProp = resource.getProperty(this.linksPropDef);
         if (linksProp == null) {
@@ -230,7 +230,7 @@ public class LinkCheckJob extends RepositoryJob {
                         this.field = this.url = this.type = null;
                         return true;
                     }
-                    LinkCheckResult result = linkChecker.validate(this.url, base);
+                    LinkCheckResult result = linkChecker.validate(this.url, base, !resource.isReadRestricted());
                     switch (result.getStatus()) {
                     case OK:
                     case TIMEOUT:

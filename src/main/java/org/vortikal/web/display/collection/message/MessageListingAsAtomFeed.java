@@ -31,6 +31,8 @@
 package org.vortikal.web.display.collection.message;
 
 import org.apache.abdera.model.Entry;
+import org.vortikal.repository.Namespace;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.web.display.collection.CollectionListingAsAtomFeed;
 
@@ -38,8 +40,10 @@ public class MessageListingAsAtomFeed extends CollectionListingAsAtomFeed {
 
     @Override
     protected void setFeedEntrySummary(Entry entry, PropertySet resource) throws Exception {
-        // XXX implement
-        // Feed summary is truncatedMessage property
+        Property messageProp = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "listingDisplayedMessage");
+        if (messageProp != null) {
+            entry.setSummaryAsXhtml(messageProp.getStringValue());
+        }
     }
 
 }

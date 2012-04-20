@@ -45,13 +45,17 @@
    </script>
   </head>
   <body id="vrtx-report-broken-links">
+  <#assign linkTypeLocalization>
+    <@vrtx.msg code="report.${report.reportname}.filters.link-type.${report.linkType}" />
+  </#assign>
+  
   <div class="resourceInfo">
     <div class="vrtx-report-nav">
       <div class="back">
         <a href="${serviceURL?html}" ><@vrtx.msg code="report.back" default="Back" /></a>
       </div>
     </div>
-    <h2><@vrtx.msg code="report.${report.reportname}" /></h2>
+    <h2><@vrtx.msg code="report.${report.reportname}" /> ${linkTypeLocalization?lower_case}</h2>
   </div>
   
   <@generateFilters report.filters />
@@ -68,7 +72,7 @@
       <@vrtx.msg code="report.${report.reportname}.about"
                  args=[report.from, report.to, report.total, report.brokenLinkCount]
                  default="Listing results " + report.from + "–"
-                 + report.to + " of total " + report.total + " of web pages with " + report.brokenLinkCount + " broken links." />
+                 + report.to + " of total " + report.total + " of web pages with " + report.brokenLinkCount + " broken" /> ${linkTypeLocalization?lower_case}
       <#if report.prev?exists || report.next?exists>
         <@displayPaging />  
       </#if>
@@ -79,7 +83,7 @@
           <tr>
             <th id="vrtx-report-broken-links-web-page"><@vrtx.msg code="report.${report.reportname}.web-page" /></th>
             <th id="vrtx-report-broken-links-count"><@vrtx.msg code="report.${report.reportname}.count" /></th>
-            <th id="vrtx-report-broken-links"><@vrtx.msg code="report.${report.reportname}.list" /></th>
+            <th id="vrtx-report-broken-links">${linkTypeLocalization} <@vrtx.msg code="report.${report.reportname}.list" /></th>
             <th id="vrtx-report-last-checked"><@vrtx.msg code="report.broken-links.last-checked" default="Last checked" /></th>
           </tr>
         </thead>

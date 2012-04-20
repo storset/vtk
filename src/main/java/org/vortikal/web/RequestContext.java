@@ -67,8 +67,8 @@ public class RequestContext {
     private final Path indexFileURI;
     private final boolean isIndexFile;
     private final boolean viewUnauthenticated;
-    private List<Message> infoMessages = new ArrayList<Message>();
-    private List<Message> errorMessages = new ArrayList<Message>();
+    private List<Message> infoMessages = new ArrayList<Message>(0);
+    private List<Message> errorMessages = new ArrayList<Message>(0);
     
     /**
      * Creates a new request context.

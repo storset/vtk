@@ -39,23 +39,25 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
 import org.vortikal.web.service.URL;
 
-public class LinkCheckController implements Controller, InitializingBean {
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+public class LinkCheckController implements Controller {
 
     private LinkChecker linkChecker;
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List<String> urls = null;
+        List<String> urls;
         try {
             urls = readInput(request);
         } catch (BadRequestException e) {
@@ -64,15 +66,15 @@ public class LinkCheckController implements Controller, InitializingBean {
         }
         URL base = URL.create(request);
         base.clearParameters();
-        List<LinkCheckResult> results = checkLinks(urls, base);
+        List<LinkCheckResult> results = checkLinks(urls, base, shouldSendReferrer(request));
         writeResults(results, response);
         return null;
     }
     
-    private List<LinkCheckResult> checkLinks(List<String> input, URL base) {
+    private List<LinkCheckResult> checkLinks(List<String> input, URL base, boolean sendReferrer) {
         List<LinkCheckResult> results = new ArrayList<LinkCheckResult>();
         for (String link: input) {
-            LinkCheckResult r = this.linkChecker.validate(link, base);
+            LinkCheckResult r = this.linkChecker.validate(link, base, sendReferrer);
             results.add(r);
         }
         return results;
@@ -153,6 +155,17 @@ public class LinkCheckController implements Controller, InitializingBean {
         }
         return input;
     }
+    
+    private boolean shouldSendReferrer(HttpServletRequest request) {
+        try {
+            RequestContext rc = RequestContext.getRequestContext();
+            Repository repo = rc.getRepository();
+            Resource r = repo.retrieve(rc.getSecurityToken(), rc.getResourceURI(), true);
+            return !r.isReadRestricted();
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     private static class BadRequestException extends Exception {
         private static final long serialVersionUID = -8967067839019333139L;
@@ -166,7 +179,4 @@ public class LinkCheckController implements Controller, InitializingBean {
         this.linkChecker = linkChecker;
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-    }
 }

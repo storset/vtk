@@ -76,6 +76,7 @@ public class SecurityContext {
         return getSecurityContext().token;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getClass().getName());
         sb.append(": ");

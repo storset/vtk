@@ -33,18 +33,12 @@ package org.vortikal.text.html;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.vortikal.edit.xml.Validator;
 import org.vortikal.util.io.StreamUtil;
-import org.w3c.dom.Document;
-import org.w3c.tidy.Tidy;
 
 public class HtmlDigesterTest {
 
@@ -67,24 +61,30 @@ public class HtmlDigesterTest {
 
     @Test
     public void truncateHtmlWithinLimitAfterCompress() {
-        this.truncateHtml(this.testHtml, 3500);
+        this.truncate(this.testHtml, 3500);
+    }
+
+    @Test
+    public void truncateSimpleHtml() {
+        this.truncate("<p>A paragraph with some <b>bold</b> content<p/>", 50, 10);
     }
 
     @Test
     public void truncateHtml() {
-        int startLimit = 1500;
-        int endLimit = 1000;
+        this.truncate(this.testHtml, 1500, 1000);
+    }
+
+    private void truncate(String html, int startLimit, int endLimit) {
         for (int limit = startLimit; limit >= endLimit; limit--) {
-            this.truncateHtml(this.testHtml, limit);
+            this.truncate(html, limit);
         }
     }
 
-    private void truncateHtml(String html, int limit) {
+    private void truncate(String html, int limit) {
         String truncated = this.htmlDigester.truncateHtml(html, limit);
         assertNotNull(truncated);
         assertTrue(truncated.length() <= limit);
-        // System.out.println(truncated + " " + truncated.length() + " (" +
-        // limit + ")");
+        System.out.println(truncated + " " + truncated.length() + " (" + limit + ")");
     }
 
 }

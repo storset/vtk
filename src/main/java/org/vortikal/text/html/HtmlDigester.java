@@ -93,37 +93,49 @@ public class HtmlDigester {
             return compressed;
         }
 
-        // Be greedy. Assume that half of the tags removed will be added back
-        // during sanitization (tags are closed and made valid) -> leave room
-        // for them by further reducing limit
-        String removed = compressed.substring(limit, compressed.length());
-        int removedTagsLength = this.getRemoveTagsLength(removed);
-        int truncationLimit = limit - (removedTagsLength / 2);
+        int processedLimit = limit;
+        int tryCount = 0;
 
-        // We were too greedy, we ended up removing everything. Go with half
-        // the original limit and hope
-        if (truncationLimit < 0) {
-            truncationLimit = limit / 2;
+        // Worst case, make 3 attempts
+        while (tryCount <= 3) {
+
+            // Be greedy. Assume that half of the tags removed will be added
+            // back during sanitization (tags are closed and made valid) ->
+            // leave room for them by further reducing limit
+            String removed = compressed.substring(processedLimit, compressed.length());
+            int removedTagsLength = this.getRemoveTagsLength(removed);
+            int truncationLimit = processedLimit - (removedTagsLength / 2);
+            // Leave room for the tail
+            truncationLimit -= DEFAUL_TAIL.length();
+
+            // We were too greedy, we ended up removing everything. Go with half
+            // the original limit and hope
+            if (truncationLimit < 0) {
+                truncationLimit = processedLimit / 2;
+            }
+            String truncated = compressed.substring(0, truncationLimit);
+
+            // If html was truncated in the middle of a tag, remove what remains
+            // of that tag
+            if (truncated.lastIndexOf("<") > truncated.lastIndexOf(">")) {
+                truncated = truncated.substring(0, truncated.lastIndexOf("<"));
+            }
+
+            // Add the tail
+            truncated = this.addTail(truncated, DEFAUL_TAIL);
+
+            String sanitizedTruncated = this.sanitizeTruncated(truncated);
+
+            if (sanitizedTruncated.length() <= limit) {
+                return sanitizedTruncated;
+            }
+
+            // Try again with a ~10% shorter limit
+            processedLimit -= (limit / 10);
+
         }
-        String truncated = compressed.substring(0, truncationLimit);
 
-        // If html was truncated in the middle of a tag, remove what remains of
-        // that tag
-        if (truncated.lastIndexOf("<") > truncated.lastIndexOf(">")) {
-            truncated = truncated.substring(0, truncated.lastIndexOf("<"));
-        }
-
-        // Add the tail
-        truncated = this.addTail(truncated, DEFAUL_TAIL);
-
-        String sanitizedTruncated = this.sanitizeTruncated(truncated);
-
-        if (sanitizedTruncated.length() > limit) {
-            // We failed... XXX return nothing or try again?
-            return null;
-        }
-
-        return sanitizedTruncated;
+        return null;
 
     }
 
@@ -145,13 +157,19 @@ public class HtmlDigester {
                 endTags.add(endTag);
                 truncated = truncated.substring(0, truncated.lastIndexOf("<"));
             }
-            truncated = truncated.concat(tail);
-            Collections.reverse(endTags);
-            truncated = truncated.concat(StringUtils.join(endTags, ""));
+            truncated = truncated.trim();
+            if (!truncated.equals("")) {
+                truncated = truncated.concat(tail);
+                Collections.reverse(endTags);
+                truncated = truncated.concat(StringUtils.join(endTags, ""));
+            } else {
+                truncated = truncated.concat(StringUtils.join(endTags, ""));
+                truncated = truncated.concat(tail);
+            }
             return truncated;
         }
 
-        return truncated.concat(tail);
+        return truncated.trim().concat(tail);
     }
 
     private String sanitizeTruncated(String truncated) {
@@ -161,6 +179,8 @@ public class HtmlDigester {
         Tidy tidy = new Tidy();
         tidy.setPrintBodyOnly(true);
         tidy.setMakeClean(true);
+        tidy.setDropFontTags(true);
+        tidy.setDropProprietaryAttributes(true);
         tidy.setInputEncoding("utf-8");
         tidy.setOutputEncoding("utf-8");
 

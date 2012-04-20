@@ -32,7 +32,6 @@
 package org.vortikal.repository.systemjob;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.logging.Log;

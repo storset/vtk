@@ -302,10 +302,14 @@ public class EvaluatorResolver {
         }
 
         private String getTruncated(Property prop, String value) {
-            if (prop.getDefinition().getType().equals(PropertyType.Type.HTML)) {
+            if (prop != null && prop.getDefinition().getType().equals(PropertyType.Type.HTML)) {
                 return htmlDigester.truncateHtml(value);
             }
-            return null;
+
+            // XXX need to check value -> is it html?
+            return htmlDigester.truncateHtml(value);
+
+            // return null;
         }
     }
 

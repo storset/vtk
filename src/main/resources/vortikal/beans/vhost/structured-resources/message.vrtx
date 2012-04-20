@@ -3,7 +3,7 @@ resourcetype structured-message {
   properties {
     title : string required overrides title,
     message : html noextract,
-    truncatedMessage : derived (message) eval (message?truncate)
+    listingDisplayedMessage : derived (message) eval (message?truncate)
   }
 
   view {

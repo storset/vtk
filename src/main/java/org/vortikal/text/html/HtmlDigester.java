@@ -34,87 +34,127 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.w3c.tidy.Tidy;
+
+import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 
 /**
  * XXX Should also handle inputstreams and doms
  */
 public class HtmlDigester {
 
+    private static final Pattern TAG_PATTERN = Pattern.compile("<.*?>");
+
     private static final int DEFAULT_TRUNCATE_LIMIT = 1000;
-    // HORIZONTAL ELLIPSIS (&#8230;) instead?
     private static final String DEFAUL_TAIL = "...";
 
-    private int limit = DEFAULT_TRUNCATE_LIMIT;
-
     /**
-     * Compress the html, remove whitespaces, linebreaks and comments
+     * Compress the html
      */
     public String compress(String html) {
-
-        // XXX Any good library for this? HtmlCleaner etc?
-
-        String compressed = html.replaceAll("\\r|\\n", "");
-        compressed = compressed.trim().replaceAll("\\s+", " ");
-        return compressed;
+        HtmlCompressor compressor = new HtmlCompressor();
+        compressor.setRemoveIntertagSpaces(true);
+        return compressor.compress(html);
     }
 
     public String truncateHtml(String html) {
-        return this.truncateHtml(html, this.limit, DEFAUL_TAIL, true);
+        return this.truncateHtml(html, DEFAULT_TRUNCATE_LIMIT);
     }
 
     /**
      * Truncate supplied html to within the given limit. Append tail to
      * truncated result and use JTidy to close removed tags.
      */
-    public String truncateHtml(String html, int limit, String tail, boolean compress) {
+    public String truncateHtml(String html, int limit) {
 
         if (html == null) {
             throw new IllegalArgumentException("Must supply html to truncate");
         }
 
-        // XXX Handle values for limit, also check tail to make sure it does not
-        // violate limits when added
-
-        if (compress) {
-            String compressed = this.compress(html);
-            if (compressed.length() <= limit) {
-                return compressed;
-            }
-            html = compressed;
+        if (limit < 0 || limit < DEFAUL_TAIL.length()) {
+            throw new IllegalArgumentException("Limit is too small");
         }
 
-        // Leave room for the tail -> what about the closing tags that will be
-        // added by jTidy? Consider that here? 'Cuz this isn't right. We already
-        // know we'll be exceeding the limit once truncated html is sanitized by
-        // JTidy.
-        int truncationLimit = limit - tail.length();
-        String truncated = html.substring(0, truncationLimit);
+        if (html.length() < limit) {
+            return html;
+        }
 
-        // If truncated ends with a tag, valid or not, remove it before adding
-        // the tail. XXX Any good regex solution for this instead?
-        if (truncated.endsWith(">") || (truncated.lastIndexOf("<") > truncated.lastIndexOf(">"))) {
+        // Compress before truncating. If within limits, no need to remove
+        // content and truncate
+        String compressed = this.compress(html);
+        if (compressed.length() < limit) {
+            return compressed;
+        }
+
+        // Be greedy. Assume that half of the tags removed will be added back
+        // during sanitization (tags are closed and made valid) -> leave room
+        // for them by further reducing limit
+        String removed = compressed.substring(limit, compressed.length());
+        int removedTagsLength = this.getRemoveTagsLength(removed);
+        int truncationLimit = limit - (removedTagsLength / 2);
+
+        // We were too greedy, we ended up removing everything. Go with half
+        // the original limit and hope
+        if (truncationLimit < 0) {
+            truncationLimit = limit / 2;
+        }
+        String truncated = compressed.substring(0, truncationLimit);
+
+        // If html was truncated in the middle of a tag, remove what remains of
+        // that tag
+        if (truncated.lastIndexOf("<") > truncated.lastIndexOf(">")) {
             truncated = truncated.substring(0, truncated.lastIndexOf("<"));
-
-            // XXX Perhaps we should keep the end tag if it's valid and append
-            // it back on after tail has been added...
-
         }
 
         // Add the tail
-        truncated = truncated.concat(tail);
+        truncated = this.addTail(truncated, DEFAUL_TAIL);
 
-        String sanitizedTruncated = this.sanitizeTruncated(truncated, compress);
+        String sanitizedTruncated = this.sanitizeTruncated(truncated);
 
-        // XXX Check result for limit violation and retry with new limit. (how
-        // to calculate new limit?)
+        if (sanitizedTruncated.length() > limit) {
+            // We failed... XXX return nothing or try again?
+            return null;
+        }
 
         return sanitizedTruncated;
 
     }
 
-    private String sanitizeTruncated(String truncated, boolean compress) {
+    private int getRemoveTagsLength(String removed) {
+        Matcher m = TAG_PATTERN.matcher(removed);
+        int removedTagsLength = 0;
+        while (m.find()) {
+            removedTagsLength += m.group().length();
+        }
+        return removedTagsLength;
+    }
+
+    private String addTail(String truncated, String tail) {
+
+        if (truncated.endsWith(">")) {
+            List<String> endTags = new ArrayList<String>();
+            while (truncated.endsWith(">")) {
+                String endTag = truncated.substring(truncated.lastIndexOf("<"), truncated.length());
+                endTags.add(endTag);
+                truncated = truncated.substring(0, truncated.lastIndexOf("<"));
+            }
+            truncated = truncated.concat(tail);
+            Collections.reverse(endTags);
+            truncated = truncated.concat(StringUtils.join(endTags, ""));
+            return truncated;
+        }
+
+        return truncated.concat(tail);
+    }
+
+    private String sanitizeTruncated(String truncated) {
 
         // XXX Setup/configuration? Add tags without attributes... e.g. <li
         // style...>? Print body only?
@@ -136,18 +176,10 @@ public class HtmlDigester {
             sanitized = new String(baos.toByteArray());
         }
 
-        if (compress) {
-            sanitized = this.compress(sanitized);
-        }
+        // Compress result
+        sanitized = this.compress(sanitized);
 
         return sanitized;
-    }
-
-    public void setLimit(int limit) {
-        if (limit < 1) {
-            return;
-        }
-        this.limit = limit;
     }
 
 }

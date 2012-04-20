@@ -30,68 +30,61 @@
  */
 package org.vortikal.text.html;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.vortikal.edit.xml.Validator;
+import org.vortikal.util.io.StreamUtil;
+import org.w3c.dom.Document;
+import org.w3c.tidy.Tidy;
 
 public class HtmlDigesterTest {
 
     private HtmlDigester htmlDigester;
-    private String simpleHtmlParagraph;
+    private String testHtml;
 
     @Before
-    public void init() {
+    public void init() throws IOException {
         this.htmlDigester = new HtmlDigester();
-        // 132 chars
-        this.simpleHtmlParagraph = "  <p>Some bold <b>text</b> and <i>italic</i>. A   list:</p>"
-                + "<ul>\n<li>element 1</li>\r<li>element    2</li>\n<li>element 3</li>\r\n</ul>  ";
+        InputStream in = this.getClass().getResourceAsStream("test-html401strict.html");
+        this.testHtml = StreamUtil.streamToString(in);
     }
 
     @Test
     public void compress() {
-        String expected = "<p>Some bold <b>text</b> and <i>italic</i>. A list:"
-                + "</p><ul><li>element 1</li><li>element 2</li><li>element 3</li></ul>";
-        String result = this.htmlDigester.compress(this.simpleHtmlParagraph);
-        assertEquals(expected, result);
-
+        int startLength = this.testHtml.length();
+        String result = this.htmlDigester.compress(this.testHtml);
+        assertTrue(result.length() < startLength);
     }
 
     @Test
     public void truncateHtmlWithinLimitAfterCompress() {
-        this.truncateHtml(this.simpleHtmlParagraph, 120);
+        this.truncateHtml(this.testHtml, 3500);
     }
 
     @Test
-    public void truncateHtmlAlreadyWithinLimit() {
-        this.truncateHtml(this.simpleHtmlParagraph, 500);
-    }
-
-    @Test
-    public void truncateSimpleHtml() {
-        this.truncateHtml(this.simpleHtmlParagraph, 90);
-    }
-
-    @Test
-    public void truncateSimpleHtmlWithEndTag() {
-        this.truncateHtml(this.simpleHtmlParagraph, 84);
-    }
-
-    @Test
-    public void truncateSimpleHtmlInMiddleOfTag() {
-        this.truncateHtml(this.simpleHtmlParagraph, 82);
+    public void truncateHtml() {
+        int startLimit = 1500;
+        int endLimit = 1000;
+        for (int limit = startLimit; limit >= endLimit; limit--) {
+            this.truncateHtml(this.testHtml, limit);
+        }
     }
 
     private void truncateHtml(String html, int limit) {
-        this.htmlDigester.setLimit(limit);
-        String truncated = this.htmlDigester.truncateHtml(html);
-
-        System.out.println(truncated + " " + truncated.length() + " (" + limit + ")");
-
+        String truncated = this.htmlDigester.truncateHtml(html, limit);
         assertNotNull(truncated);
         assertTrue(truncated.length() <= limit);
+        // System.out.println(truncated + " " + truncated.length() + " (" +
+        // limit + ")");
     }
 
 }

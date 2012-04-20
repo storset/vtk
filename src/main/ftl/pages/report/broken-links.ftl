@@ -62,11 +62,11 @@
 
   <#if (report.result?exists && report.result?size > 0)>
     <#--
-    <p id="vrtx-report-broken-links-info">
-      <span class="vrtx-report-broken-links-info-number">${report.brokenLinkCount} <@vrtx.msg code="report.${report.reportname}.info.total-broken-links-count" /></span>
-      <span class="vrtx-report-broken-links-info-number">${report.total}</span> <@vrtx.msg code="report.${report.reportname}.info.web-pages.num" />
-      <span class="vrtx-report-broken-links-info-number">7%</span> av nettsidene med brutte lenker
-    </p>
+      <p id="vrtx-report-broken-links-info">
+        <span class="vrtx-report-broken-links-info-number">${report.brokenLinkCount} <@vrtx.msg code="report.${report.reportname}.info.total-broken-links-count" /></span>
+        <span class="vrtx-report-broken-links-info-number">${report.total}</span> <@vrtx.msg code="report.${report.reportname}.info.web-pages.num" />
+        <span class="vrtx-report-broken-links-info-number">7%</span> av nettsidene med brutte lenker
+      </p>
     -->
     <p id="vrtx-report-info-paging-top">
       <@vrtx.msg code="report.${report.reportname}.about"

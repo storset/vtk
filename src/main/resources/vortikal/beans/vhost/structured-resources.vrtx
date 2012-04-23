@@ -14,4 +14,3 @@ include structured-resources/studies/shared-text.vrtx
 include structured-resources/studies/oppbygning.vrtx
 include structured-resources/studies/fellestekst-document.vrtx
 include structured-resources/studies/hvordan-soke.vrtx
-include structured-resources/message.vrtx

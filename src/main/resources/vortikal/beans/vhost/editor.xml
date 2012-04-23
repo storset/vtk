@@ -108,14 +108,14 @@
     <property name="handler" ref="editor.imageListingEditHandler" />
   </bean>
 
-  <bean id="editor.messageListingEditService" parent="editor.abstractEditService">
+  <!--bean id="editor.messageListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
       <list>
         <ref bean="resourceIsMessageListing" />
       </list>
     </property>
     <property name="handler" ref="editor.messageListingEditHandler" />
-  </bean>
+  </bean-->
 
   <bean id="editor.imageEditService" parent="editor.abstractEditService">
     <property name="assertions">
@@ -469,11 +469,11 @@
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-  <bean id="editor.messageListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+  <!--bean id="editor.messageListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.messageListingResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
-  </bean>
+  </bean-->
 
   <bean id="editor.audioVideoListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.audioVideoListingResourceManager" />
@@ -804,7 +804,7 @@
     </property>
   </bean>
 
-  <bean id="editor.messageListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
+  <!--bean id="editor.messageListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="htmlPropsFilter" ref="resourceManager.htmlPropsFilter" />
     <property name="contentResourceType" ref="documentResourceTypeDefinition" />
@@ -824,7 +824,7 @@
         </property>
       </bean>
     </property>
-  </bean>
+  </bean-->
 
   <bean id="editor.blogListingResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />

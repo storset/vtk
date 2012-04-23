@@ -42,7 +42,7 @@
   <import resource="view-person-listing.xml" />
   <import resource="view-project-listing.xml" />
   <import resource="view-research-group-listing.xml" />
-  <import resource="view-message-listing.xml" />
+  <!--import resource="view-message-listing.xml" /-->
   <import resource="view-image-listing.xml" />
   <import resource="view-audio-video-listing.xml" />
   

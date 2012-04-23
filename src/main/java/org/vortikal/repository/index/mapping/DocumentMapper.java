@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.index.mapping;
 
-import org.vortikal.repository.resourcetype.PropertyType.Type;
 import static org.vortikal.repository.resourcetype.PropertyType.Type.BINARY;
 import static org.vortikal.repository.resourcetype.PropertyType.Type.JSON;
 
@@ -60,6 +59,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
+import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
@@ -137,7 +137,7 @@ public class DocumentMapper implements InitializingBean {
         doc.add(ancestorPaths);
 
         // name
-        Fieldable nameField = this.fieldValueMapper.getStoredKeywordField(
+        Fieldable nameField = this.fieldValueMapper.getKeywordField(
                 FieldNames.NAME_FIELD_NAME, propSet.getName());
         doc.add(nameField);
         // name (lowercased, indexed, but not stored)

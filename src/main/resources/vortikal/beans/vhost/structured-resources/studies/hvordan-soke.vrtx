@@ -3,26 +3,26 @@ resourcetype hvordan-soke : fellestekst-document {
   properties {
   	typeToDisplay : string defaultvalue("all"),
     opptak-frist-frekvens : string, 
-    frist-frekvens-fri : html,
+    frist-frekvens-fri : html noextract,
     opptak-metode : string, 
-    metode-fri : html,
+    metode-fri : html noextract,
     opptak-internasjonale-sokere : string, 
-    internasjonale-sokere-fri : html,
+    internasjonale-sokere-fri : html noextract,
     opptak-nordiske-sokere : string, 
-    nordiske-sokere-fri : html,
+    nordiske-sokere-fri : html noextract,
     studiekode: string,
     studieplasser: string,
     pris: string,
     opptakskrav: string,
-    opptakskrav-fri: html,
+    opptakskrav-fri: html noextract,
     opptakskrav-generelle: string,
-    generelle-fri: html,
+    generelle-fri: html noextract,
     opptakskrav-spesielle: string,
-    spesielle-fri: html,
+    spesielle-fri: html noextract,
     opptakskrav-politiattest: string,
-    politiattest-fri: html,
+    politiattest-fri: html noextract,
     rangering-av-sokere: string,
-    rangering-sokere-fri: html,
+    rangering-sokere-fri: html noextract,
     poenggrenser-aar: string,
     poenggrenser-forstegang-alle-kvalifiserte: string,
     forstevitnemal-kvote-fri: string,
@@ -30,9 +30,9 @@ resourcetype hvordan-soke : fellestekst-document {
     ordinar-kvote-alle-kvalifiserte-fri: string,
     poenggrenser-poengberegning: string,
     innpassing-tidl-utdanning: string,
-    innpassing-tidl-utdanning-fri: html,
+    innpassing-tidl-utdanning-fri: html noextract,
     relatert-innhold-regelverk: string,
-    regelverk-fri: html
+    regelverk-fri: html noextract
  }
 
   edit-rules {
@@ -258,7 +258,7 @@ resourcetype hvordan-soke : fellestekst-document {
 
 view {
     ##
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <!DOCTYPE html noextract PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <title></title>

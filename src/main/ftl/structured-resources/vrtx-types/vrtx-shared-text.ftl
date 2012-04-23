@@ -14,7 +14,7 @@
 	  </select>
 	  <div id="${inputFieldName}Descriptions">
 	       <#list sharedTextProps[inputFieldName]?keys as y >
-    	       <div class="${sharedTextProps[inputFieldName][y]['id']} descriptionxxx">
+    	       <div class="${sharedTextProps[inputFieldName][y]['id']} shared-text-description">
     	              <#assign language >${resourceLocaleResolver.resolveLocale(null)}</#assign>
     	              <#if language == "no_NO">
     	              <#assign language = "no" />
@@ -31,7 +31,7 @@
   <script type="text/javascript"> 
   <!--
             $(document).ready(function () {
-                var h = $("#${inputFieldName}Descriptions").find(".descriptionxxx");
+                var h = $("#${inputFieldName}Descriptions").find(".shared-text-description");
                 $(h).hide();
                 if($("#${inputFieldName}").val() != ""){
                     var d =  $("#${inputFieldName}Descriptions").find("." + $("#${inputFieldName}").val().replace(/\./g, "\\."));
@@ -40,7 +40,7 @@
             }); 
   
             $("#${inputFieldName}").change(function(){
-                var h = $("#${inputFieldName}Descriptions").find(".descriptionxxx");
+                var h = $("#${inputFieldName}Descriptions").find(".shared-text-description");
                 $(h).hide();
                 if($("#${inputFieldName}").val() != ""){
                     var d =  $("#${inputFieldName}Descriptions").find("." + $("#${inputFieldName}").val().replace(/\./g, "\\."));

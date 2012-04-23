@@ -31,13 +31,13 @@ resourcetype shared-text {
              [def number _index + 1]
              <div class="vrtx-shared-text-title">
              [if title != null && title != ""]
-               [val title # unescaped]
+               <h2>[val title # unescaped]</h2>
              [endif]  
              </div>          
 
              [if id != null && id != ""]
                <div class="vrtx-shared-text-box" id="[val id]">
-               [val id]
+               (ID: [val id])
              [else]
              <div class="vrtx-shared-text-box">
              [endif]

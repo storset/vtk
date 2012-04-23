@@ -21,7 +21,7 @@ public class CollectionListingComponentHelper {
         boolean[] edit = new boolean[maxItems];
         for (Listing l : ll) {
             for (PropertySet ps : l.getFiles()) {
-              res = repo.retrieve(token, ps.getURI(), false); // XXX: Throw or catch exception?
+              res = repo.retrieve(token, ps.getURI(), true); // XXX: Throw or catch exception?
               edit[i++] = this.isAuthorized(repo, res, principal);                
             }
 

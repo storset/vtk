@@ -49,6 +49,7 @@ import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class CollectionListingAggregationResolver implements AggregationResolver {
@@ -64,6 +65,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
     private PropertyTypeDefinition aggregationPropDef;
     private PropertyTypeDefinition displayManuallyApprovedPropDef;
     private PropertyTypeDefinition manuallyApprovedPropDef;
+    private Service viewService;
 
     /**
      * Limit the number of folders to aggregate from
@@ -216,8 +218,8 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         }
         try {
             // Be lenient on trailing slash
-            String pathString = strVal.endsWith("/") && !strVal.equals("/") ? strVal
-                    .substring(0, strVal.lastIndexOf("/")) : strVal;
+            String pathString = strVal.endsWith("/") && !strVal.equals("/") ? strVal.substring(0,
+                    strVal.lastIndexOf("/")) : strVal;
             Path path = Path.fromString(pathString);
             url = new URL(currentHostURL);
             url.setPath(path);
@@ -294,7 +296,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
     }
 
     private URL getLocalHostUrl() {
-        return RequestContext.getRequestContext().getRequestURL().relativeURL("/");
+        return this.viewService.constructURL(Path.ROOT);
     }
 
     @Override
@@ -340,6 +342,11 @@ public class CollectionListingAggregationResolver implements AggregationResolver
     @Required
     public void setManuallyApprovedPropDef(PropertyTypeDefinition manuallyApprovedPropDef) {
         this.manuallyApprovedPropDef = manuallyApprovedPropDef;
+    }
+
+    @Required
+    public void setViewService(Service viewService) {
+        this.viewService = viewService;
     }
 
     public void setLimit(int limit) {

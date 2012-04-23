@@ -37,6 +37,9 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -60,9 +63,6 @@ import org.vortikal.web.search.QueryBuilder;
 import org.vortikal.web.search.QueryPartsSearchComponent;
 import org.vortikal.web.service.URL;
 
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
-
 public class CollectionListingSearchComponent extends QueryPartsSearchComponent {
 
     private static Log logger = LogFactory.getLog(CollectionListingSearchComponent.class.getName());
@@ -71,7 +71,7 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
     private MultiHostSearcher multiHostSearcher;
     private ListingUriQueryBuilder listingUriQueryBuilder;
     private Ehcache cache;
-
+   
     @Override
     protected ResultSet getResultSet(HttpServletRequest request, Resource collection, String token, Sorting sorting,
             int searchLimit, int offset) {
@@ -81,6 +81,8 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
         Element cached = this.cache.get(cacheKey);
         Object cachedObj = cached != null ? cached.getObjectValue() : null;
 
+        URL localURL = this.viewService.constructURL(Path.ROOT);
+
         boolean isMultiHostSearch = false;
         CollectionListingAggregatedResources clar = null;
         if (cachedObj != null) {
@@ -88,7 +90,7 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             isMultiHostSearch = true;
         } else {
             clar = this.aggregationResolver.getAggregatedResources(collection);
-            isMultiHostSearch = this.isMultiHostSearch(clar);
+            isMultiHostSearch = this.isMultiHostSearch(clar, localURL);
         }
 
         ResultSet result = null;
@@ -116,7 +118,7 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
 
         if (!successfulMultiHostSearch) {
 
-            Query query = generateLocalQuery(uriQuery, additionalQueries, clar);
+            Query query = generateLocalQuery(uriQuery, additionalQueries, clar, localURL);
 
             Search search = new Search();
             search.setQuery(query);
@@ -153,7 +155,7 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
         return null;
     }
 
-    private boolean isMultiHostSearch(CollectionListingAggregatedResources clar) {
+    private boolean isMultiHostSearch(CollectionListingAggregatedResources clar, URL localURL) {
 
         Map<URL, Set<Path>> aggregationSet = clar.getAggregationSet();
         Set<URL> manuallyApprovedSet = clar.getManuallyApproved();
@@ -165,15 +167,14 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
                 && (manuallyApprovedSet == null || manuallyApprovedSet.isEmpty())) {
             return false;
         }
-        URL currentHost = RequestContext.getRequestContext().getRequestURL().relativeURL("/");
         for (URL url : aggregationSet.keySet()) {
-            if (!url.equals(currentHost)) {
+            if (!url.equals(localURL)) {
                 return true;
             }
         }
         for (URL url : manuallyApprovedSet) {
             url = url.relativeURL("/");
-            if (!url.equals(currentHost)) {
+            if (!url.equals(localURL)) {
                 return true;
             }
         }
@@ -181,15 +182,13 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
     }
 
     public static Query generateLocalQuery(Query uriQuery, List<Query> additionalQueries,
-            CollectionListingAggregatedResources clar) {
-
-        URL localHost = RequestContext.getRequestContext().getRequestURL().relativeURL("/");
+            CollectionListingAggregatedResources clar, URL localURL) {
 
         Set<Path> aggregationSet = null;
         Set<Path> manuallyApprovedSet = null;
         if (clar != null) {
-            aggregationSet = clar.getHostAggregationSet(localHost);
-            manuallyApprovedSet = clar.getHostManuallyApprovedSet(localHost);
+            aggregationSet = clar.getHostAggregationSet(localURL);
+            manuallyApprovedSet = clar.getHostManuallyApprovedSet(localURL);
         }
 
         AndQuery and = new AndQuery();

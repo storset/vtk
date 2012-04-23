@@ -65,6 +65,7 @@ import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
 import org.vortikal.web.search.collectionlisting.CollectionListingConditions;
 import org.vortikal.web.search.collectionlisting.CollectionListingSearchComponent;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class ManuallyApproveResourcesSearcher {
@@ -77,6 +78,7 @@ public class ManuallyApproveResourcesSearcher {
     private PropertyTypeDefinition publishDatePropDef;
     private PropertyTypeDefinition creationTimePropDef;
     private MultiHostSearcher multiHostSearcher;
+    private Service viewService;
 
     public List<ManuallyApproveResource> getManuallyApproveResources(Resource collection, Set<String> locations,
             Set<String> alreadyApproved) throws Exception {
@@ -102,7 +104,7 @@ public class ManuallyApproveResourcesSearcher {
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.publishDatePropDef, SortFieldDirection.DESC));
 
-        URL localURL = RequestContext.getRequestContext().getRequestURL().relativeURL("/");
+        URL localURL = this.viewService.constructURL(Path.ROOT);
 
         // Get the already approved resources.
         Set<PropertySet> alreadyApprovedResources = new HashSet<PropertySet>();
@@ -176,7 +178,8 @@ public class ManuallyApproveResourcesSearcher {
                 Query uriQuery = new UriPrefixQuery(localPath.toString());
                 List<Query> additionalQueries = new ArrayList<Query>();
                 additionalQueries.add(resourceTypeQuery);
-                Query query = CollectionListingSearchComponent.generateLocalQuery(uriQuery, additionalQueries, clar);
+                Query query = CollectionListingSearchComponent.generateLocalQuery(uriQuery, additionalQueries, clar,
+                        localURL);
 
                 Search search = new Search();
                 search.setSorting(sorting);
@@ -319,6 +322,11 @@ public class ManuallyApproveResourcesSearcher {
     @Required
     public void setMultiHostSearcher(MultiHostSearcher multiHostSearcher) {
         this.multiHostSearcher = multiHostSearcher;
+    }
+
+    @Required
+    public void setViewService(Service viewService) {
+        this.viewService = viewService;
     }
 
 }

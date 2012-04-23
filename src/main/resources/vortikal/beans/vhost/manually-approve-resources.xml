@@ -36,6 +36,7 @@
     <property name="publishDatePropDef" ref="publishDatePropDef" />
     <property name="creationTimePropDef" ref="creationTimePropDef" />
     <property name="multiHostSearcher" ref="multiHostSearcher" />
+    <property name="viewService" ref="viewService" />
   </bean>
 
 </beans>

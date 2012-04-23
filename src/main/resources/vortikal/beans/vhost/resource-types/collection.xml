@@ -156,6 +156,7 @@
     <property name="aggregationPropDef" ref="aggregationPropDef" />
     <property name="displayManuallyApprovedPropDef" ref="displayManuallyApprovedPropDef" />
     <property name="manuallyApprovedPropDef" ref="manuallyApprovedResourcesPropDef" />
+    <property name="viewService" ref="viewService" />
   </bean>
 
   <bean id="navigationTitlePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">

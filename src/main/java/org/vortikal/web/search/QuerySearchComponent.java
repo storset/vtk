@@ -58,9 +58,10 @@ public abstract class QuerySearchComponent implements SearchComponent {
     private String name;
     private String titleLocalizationKey;
     private ResourceWrapperManager resourceManager;
-    private Service viewService;
     private List<PropertyDisplayConfig> listableProperties;
     private SearchSorting searchSorting;
+
+    protected Service viewService;
 
     protected abstract ResultSet getResultSet(HttpServletRequest request, Resource collection, String token,
             Sorting sorting, int searchLimit, int baseOffset);

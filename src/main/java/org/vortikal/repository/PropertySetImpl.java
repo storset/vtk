@@ -177,7 +177,7 @@ public class PropertySetImpl implements PropertySet, Cloneable {
     @Override
     public List<Property> getProperties(Namespace namespace) {
         Map<String, Property> map = this.propertyMap.get(namespace);
-        if (map == null) return new ArrayList<Property>(1);
+        if (map == null) return new ArrayList<Property>(0);
         return new ArrayList<Property>(map.values());
     }
 

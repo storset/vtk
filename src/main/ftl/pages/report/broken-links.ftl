@@ -55,7 +55,7 @@
         <a href="${serviceURL?html}" ><@vrtx.msg code="report.back" default="Back" /></a>
       </div>
     </div>
-    <h2><@vrtx.msg code="report.${report.reportname}" /> ${linkTypeLocalization?lower_case}</h2>
+    <h2><@vrtx.msg code="report.${report.reportname}.title" /> ${linkTypeLocalization?lower_case}</h2>
   </div>
   
   <@generateFilters report.filters />

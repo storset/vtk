@@ -52,6 +52,7 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO, I
     private SimpleCache<String, CacheItem> cache;
     private int timeoutSeconds = 60;
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         SimpleCacheImpl<String, CacheItem> cacheImpl = new SimpleCacheImpl<String, CacheItem>(this.timeoutSeconds);
         cacheImpl.setRefreshTimestampOnGet(false);
@@ -65,6 +66,7 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO, I
      * org.vortikal.repository.store.PrincipalMetadataDAO#getMetadata(org.vortikal
      * .security.Principal)
      */
+    @Override
     public PrincipalMetadata getMetadata(Principal principal, Locale preferredLocale) {
         if (principal == null) {
             throw new IllegalArgumentException("Principal cannot be null");
@@ -80,6 +82,7 @@ public class PrincipalMetadataDAOCacheWrapper implements PrincipalMetadataDAO, I
      * org.vortikal.repository.store.PrincipalMetadataDAO#getMetadata(java.lang
      * .String)
      */
+    @Override
     public PrincipalMetadata getMetadata(String qualifiedName, Locale preferredLocale) {
         if (qualifiedName == null) {
             throw new IllegalArgumentException("Qualified name cannot be null");

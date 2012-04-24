@@ -127,6 +127,7 @@ public class DiagramReport extends AbstractReporter {
 
             result.put("secondtotal", total);
         } catch (Exception e) {
+            return result;
         }
 
         /*
@@ -197,7 +198,9 @@ public class DiagramReport extends AbstractReporter {
         query.add(new TypeTermQuery(type, t));
 
         /* In current resource but not in /vrtx. */
-        query.add(new UriPrefixQuery(resource.getURI().toString(), false));
+        UriPrefixQuery upq = new UriPrefixQuery(resource.getURI().toString(), false);
+        upq.setIncludeSelf(false);
+        query.add(upq);
         query.add(new UriPrefixQuery("/vrtx", true));
 
         search.setQuery(query);

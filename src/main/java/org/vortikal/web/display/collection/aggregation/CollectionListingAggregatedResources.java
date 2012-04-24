@@ -34,6 +34,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.vortikal.repository.Path;
@@ -67,9 +68,10 @@ public class CollectionListingAggregatedResources implements Serializable {
 
     public Set<Path> getHostAggregationSet(URL host) {
         if (this.aggregationSet != null) {
-            Set<Path> set = this.aggregationSet.get(host);
-            if (set != null) {
-                return Collections.unmodifiableSet(this.aggregationSet.get(host));
+            for (Entry<URL, Set<Path>> entry : this.aggregationSet.entrySet()) {
+                if (host.getHost().equals(entry.getKey().getHost())) {
+                    return Collections.unmodifiableSet(entry.getValue());
+                }
             }
         }
         return null;
@@ -79,7 +81,7 @@ public class CollectionListingAggregatedResources implements Serializable {
         if (this.manuallyApprovedSet != null) {
             Set<Path> set = new HashSet<Path>();
             for (URL url : this.manuallyApprovedSet) {
-                if (host.equals(url.relativeURL("/"))) {
+                if (host.getHost().equals(url.getHost())) {
                     set.add(url.getPath());
                 }
             }
@@ -93,14 +95,14 @@ public class CollectionListingAggregatedResources implements Serializable {
     public boolean includesResourcesFromOtherHosts(URL currentURL) {
         if (this.aggregationSet != null) {
             for (URL url : this.aggregationSet.keySet()) {
-                if (!url.equals(currentURL)) {
+                if (!url.getHost().equals(currentURL.getHost())) {
                     return true;
                 }
             }
         }
         if (this.manuallyApprovedSet != null) {
             for (URL url : this.manuallyApprovedSet) {
-                if (!url.relativeURL("/").equals(currentURL)) {
+                if (!url.getHost().equals(currentURL.getHost())) {
                     return true;
                 }
             }

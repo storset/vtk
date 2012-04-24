@@ -262,7 +262,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
 
             PropertySet resource = null;
             Path path = null;
-            if (this.getLocalHostUrl().equals(url.relativeURL("/"))) {
+            if (this.getLocalHostUrl().getHost().equals(url.getHost())) {
                 path = url.getPath();
             }
             if (path != null) {

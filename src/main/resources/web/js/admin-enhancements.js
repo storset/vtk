@@ -1552,7 +1552,7 @@ VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selec
     vrtxAdmin.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {
         form.find(updateSelector).html(_$(results).find(updateSelector).html());
-        initSimplifiedPermissionForm();
+        vrtxAdmin.initSimplifiedPermissionForm();
       }
     });
     e.preventDefault();
@@ -1593,7 +1593,7 @@ VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, u
           upSelector.parent().find("div." + errorContainer).remove();
           upSelector.html(_$(results).find(updateSelector).html());
           textfield.val("");
-          initSimplifiedPermissionForm();
+          vrtxAdmin.initSimplifiedPermissionForm();
         }
       }
     });

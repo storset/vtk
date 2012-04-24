@@ -66,7 +66,7 @@
         });
         
         <#if !isCollection>
-          vrtxAdm.interceptEnterKey('#resource\\.tags');
+          interceptEnterKey('#resource\\.tags');
         </#if>
         
         // Multiple fields interaction

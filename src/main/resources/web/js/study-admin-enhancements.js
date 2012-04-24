@@ -2,16 +2,16 @@ function hideShowStudy(typeToDisplay) {
   var container = $("#editor");
   switch (typeToDisplay) {
     case "so":
-      container.removeClass("nm, em").addClass("so");
+      container.removeClass("nm").removeClass("em").addClass("so");
       break;
     case "nm":
-      container.removeClass("so, em").addClass("nm");
+      container.removeClass("so").removeClass("em").addClass("nm");
       break;
     case "em":
-      container.removeClass("so, nm").addClass("em");
+      container.removeClass("so").removeClass("nm").addClass("em");
       break;
     default:
-      container.removeClass("so, nm, em");
+      container.removeClass("so").removeClass("nm").removeClass("em");
       break;
   }
 }

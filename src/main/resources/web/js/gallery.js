@@ -41,20 +41,8 @@
 
     initPagingEvents("prev");
     initPagingEvents("next");
-
-    // TODO: use for- or async loop
-    // Center thumbnails and cache images with link
-    return this.each(function () {
-      var link = $(this);
-      var img = link.find("img.vrtx-full-image");
-      var src = img.attr("src");
-      imagesWidth[src] = parseInt(link.find("span.hiddenWidth").text());
-      imagesHeight[src] = parseInt(link.find("span.hiddenHeight").text());
-      images[src] = generateLinkImageFunc(img, link, false);
-      centerThumbnailImageFunc(link.find("img.vrtx-thumbnail-image"), link);
-    });
     
-     // Event-handlers
+    // Event-handlers
     $(document).keydown(function (e) {
       if (e.keyCode == 37) {
         $(wrapper + " a.prev").click();
@@ -121,6 +109,18 @@
         }
         e.preventDefault();
       }
+    });
+
+    // TODO: use for- or async loop
+    // Center thumbnails and cache images with link
+    return this.each(function () {
+      var link = $(this);
+      var img = link.find("img.vrtx-full-image");
+      var src = img.attr("src");
+      imagesWidth[src] = parseInt(link.find("span.hiddenWidth").text());
+      imagesHeight[src] = parseInt(link.find("span.hiddenHeight").text());
+      images[src] = generateLinkImageFunc(img, link, false);
+      centerThumbnailImageFunc(link.find("img.vrtx-thumbnail-image"), link);
     });
 
     function calculateImage(image, fullImage, init) {

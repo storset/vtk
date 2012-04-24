@@ -869,7 +869,7 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
   btn.hide();
   btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">'
           + btn.attr('value') + '</a>');
-  _$("#editor").on("click", '#logoutAction\\.link', function (e) {
+  _$("#app-head-wrapper").on("click", '#logoutAction\\.link', function (e) {
     btn.click();
     e.stopPropagation();
     e.preventDefault();

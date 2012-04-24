@@ -233,7 +233,7 @@ public class ManuallyApproveResourcesSearcher {
 
         try {
             URL url = URL.parse(location);
-            if (url.relativeURL("/").equals(localURL)) {
+            if (url.getHost().equals(localURL.getHost())) {
                 // Is a url ref to a resource on local host
                 return url.getPath();
             }

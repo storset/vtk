@@ -71,7 +71,7 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
     private MultiHostSearcher multiHostSearcher;
     private ListingUriQueryBuilder listingUriQueryBuilder;
     private Ehcache cache;
-   
+
     @Override
     protected ResultSet getResultSet(HttpServletRequest request, Resource collection, String token, Sorting sorting,
             int searchLimit, int offset) {
@@ -168,13 +168,12 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             return false;
         }
         for (URL url : aggregationSet.keySet()) {
-            if (!url.equals(localURL)) {
+            if (!url.getHost().equals(localURL.getHost())) {
                 return true;
             }
         }
         for (URL url : manuallyApprovedSet) {
-            url = url.relativeURL("/");
-            if (!url.equals(localURL)) {
+            if (!url.getHost().equals(localURL.getHost())) {
                 return true;
             }
         }

@@ -94,7 +94,7 @@ function newEditor(name, completeEditor, withoutSubSuper, baseFolder, baseUrl, b
                       isCompleteEditor, false, null, isSimpleHTML);           
   } else if (contains(name, "additional-content")
           || contains(name, "additionalContents")) { // Additional content
-    setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 900, 100, 40, 
+    setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, defaultLanguage, cssFileList, 150, 400, 40, 
                       completeToolbar, true, false, baseDocumentUrl, isSimpleHTML);
   } else if (isCompleteEditor) { // Complete editor 
     var height = 220;

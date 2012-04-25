@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <bean id="imageListing.viewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
@@ -15,7 +15,7 @@
   </bean>
 
   <bean id="imageListing.handler" class="org.vortikal.web.display.collection.ImageListingController"
-    parent="collectionListing.handler">
+    parent="collectionListing.abstract.handler">
     <property name="searchComponents">
       <list>
         <ref bean="imageListing.searchComponent" />
@@ -67,7 +67,7 @@
             </entry>
             <entry key="gallery">
               <list>
-                
+
               </list>
             </entry>
           </map>
@@ -94,7 +94,7 @@
             </entry>
           </map>
         </entry>
-        
+
       </map>
     </property>
   </bean>
@@ -113,5 +113,5 @@
   <bean id="imageListing.feedHandler" parent="collectionListing.atomHandler">
     <property name="searchComponent" ref="imageListing.searchComponent" />
   </bean>
-  
+
 </beans>

@@ -28,7 +28,7 @@
     <property name="handler" ref="collectionListing.atomHandler" />
   </bean>
 
-  <bean id="collectionListing.handler" class="org.vortikal.web.display.collection.CollectionListingController">
+  <bean id="collectionListing.abstract.handler" abstract="true" class="org.vortikal.web.display.collection.CollectionListingController">
     <property name="resourceManager" ref="resourceManager" />
     <property name="viewName" value="collectionListing.view" />
     <property name="pageLimitPropDef" ref="pageLimitPropDef" />
@@ -36,16 +36,20 @@
     <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
     <property name="hideIcon" ref="collection.hideIconPropDef" />
     <property name="helper" ref="decorating.collectionListingComponentHelper" />
-    <property name="searchComponents">
-      <list>
-        <ref bean="collectionListing.searchComponent" />
-      </list>
-    </property>
     <property name="alternativeRepresentations">
       <map>
         <entry key="application/atom+xml" value-ref="collectionListing.atomService" />
       </map>
     </property>
+  </bean>
+
+  <bean id="collectionListing.handler" parent="collectionListing.abstract.handler">
+    <property name="searchComponents">
+      <list>
+        <ref bean="collectionListing.searchComponent" />
+      </list>
+    </property>
+    <property name="displayEditLinks" value="true" />
   </bean>
 
   <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.collectionlisting.CollectionListingSearchComponent">

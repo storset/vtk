@@ -14,7 +14,8 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="researchGroupListing.handler" class="org.vortikal.web.display.collection.AlphabeticalCollectionListingController" parent="collectionListing.handler">
+  <bean id="researchGroupListing.handler" class="org.vortikal.web.display.collection.AlphabeticalCollectionListingController"
+    parent="collectionListing.abstract.handler">
     <property name="searchComponents">
       <list>
         <ref bean="researchGroupListing.searchComponent" />

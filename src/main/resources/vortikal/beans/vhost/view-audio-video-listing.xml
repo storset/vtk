@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <bean id="audioVideoListing.viewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
@@ -15,7 +15,7 @@
   </bean>
 
   <bean id="audioVideoListing.handler" class="org.vortikal.web.display.collection.CollectionListingController"
-    parent="collectionListing.handler">
+    parent="collectionListing.abstract.handler">
     <property name="searchComponents">
       <list>
         <ref bean="audioVideoListing.searchComponent" />
@@ -36,8 +36,8 @@
       </list>
     </property>
     <property name="listableProperties">
-          <list>
-         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+      <list>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="audioDurationPropDef" />
         </bean>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
@@ -51,7 +51,7 @@
         </bean>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="audioHtmlDescriptionPropDef" />
-        </bean>        
+        </bean>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="introductionPropDef" />
           <property name="preventDisplayProperty" ref="collection.hideIntroductionPropDef" />
@@ -104,7 +104,7 @@
   <bean id="audioVideoListing.feedHandler" class="org.vortikal.web.display.collection.AudioVideoListingAsFeedController"
     parent="viewAsFeedHandler">
     <property name="searchComponent" ref="audioVideoListing.searchComponent" />
-    <property name ="publishDatePropDef" ref="publishDatePropDef" />
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
   </bean>
 
 </beans>

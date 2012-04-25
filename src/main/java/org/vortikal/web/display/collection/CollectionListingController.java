@@ -57,6 +57,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
     protected List<SearchComponent> searchComponents;
     protected PropertyTypeDefinition hideIcon;
     protected CollectionListingComponentHelper helper;
+    private boolean displayEditLinks;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -108,8 +109,10 @@ public class CollectionListingController extends AbstractCollectionListingContro
             model.put("hideIcon", true);
         }
 
-        model.put("edit", helper.isAuthorized(repository, token, principal, totalHits, results));
-        model.put("editCurrentResource", helper.isAuthorized(repository, collection, principal));
+        if (this.displayEditLinks) {
+            model.put("edit", helper.isAuthorized(repository, token, principal, totalHits, results));
+            model.put("editCurrentResource", helper.isAuthorized(repository, collection, principal));
+        }
 
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL, page);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
@@ -152,6 +155,10 @@ public class CollectionListingController extends AbstractCollectionListingContro
     @Required
     public void setHideIcon(PropertyTypeDefinition hideIcon) {
         this.hideIcon = hideIcon;
+    }
+
+    public void setDisplayEditLinks(boolean displayEditLinks) {
+        this.displayEditLinks = displayEditLinks;
     }
 
 }

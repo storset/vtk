@@ -124,7 +124,7 @@ public class Logout extends SamlService {
 
         String redirectURL = buildRedirectURL(logoutResponse, relayState, signingCredential);
 
-        System.out.println("REDIRECT FROM RELAYSTATE: " + redirectURL);
+        System.out.println("handleLogoutRequest" + " : " + redirectURL);
 
         // Remove authentication state
         this.securityInitializer.removeAuthState(request, response);
@@ -172,6 +172,8 @@ public class Logout extends SamlService {
         logoutResponse.validate(true);
 
         this.securityInitializer.removeAuthState(request, response);
+
+        System.out.println("handleLogoutResponse" + " : " + url.toString());
 
         response.setStatus(HttpServletResponse.SC_FOUND);
         response.setHeader("Location", url.toString());

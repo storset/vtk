@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.web.service.URL;
 
 public class IECookieRedirectController implements Controller {
 
@@ -29,7 +30,7 @@ public class IECookieRedirectController implements Controller {
 
         String returnURL = URLDecoder.decode(request.getParameter(ieReturnURL), "UTF-8");
 
-        System.out.println("REQUESTURL: " + request.getRequestURI() + request.getQueryString());
+        System.out.println("REQUESTURL: " + URL.create(request).toString());
 
         if (request.getParameter("vrtxPreviewForceRefresh") == null) {
             String cookieTicket = request.getParameter(ieCookieTicket);

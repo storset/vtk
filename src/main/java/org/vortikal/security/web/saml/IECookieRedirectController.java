@@ -41,6 +41,7 @@ public class IECookieRedirectController implements Controller {
 
                 if (spCookie != null) {
                     Cookie c = new Cookie(vrtxAuthSP, cookieMap.get(vrtxAuthSP));
+                    System.out.println("SETTING COOKIE: " + c.getName() + ":" + c.getValue());
                     c.setSecure(true);
                     c.setPath("/");
                     if (this.spCookieDomain != null) {
@@ -51,6 +52,7 @@ public class IECookieRedirectController implements Controller {
 
                 if (idpCookie != null) {
                     Cookie c = new Cookie(uioAuthIDP, cookieMap.get(uioAuthIDP));
+                    System.out.println("SETTING COOKIE: " + c.getName() + ":" + c.getValue());
                     c.setSecure(true);
                     c.setPath("/");
                     if (this.spCookieDomain != null) {
@@ -61,6 +63,7 @@ public class IECookieRedirectController implements Controller {
 
                 if (ssoCookie != null) {
                     Cookie c = new Cookie(uioAuthSSO, cookieMap.get(uioAuthSSO));
+                    System.out.println("SETTING COOKIE: " + c.getName() + ":" + c.getValue());
                     c.setPath("/");
                     if (this.spCookieDomain != null) {
                         c.setDomain(this.spCookieDomain);

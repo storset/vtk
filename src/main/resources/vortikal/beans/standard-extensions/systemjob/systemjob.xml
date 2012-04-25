@@ -81,8 +81,6 @@
           <value>
             ${systemjob.linkcheck.queryFilterExpression}
             AND
-            link-status != NO_LINKS
-            AND
             link-status = AWAITING_LINKCHECK
           </value>
         </property>

@@ -236,7 +236,7 @@ td.vrtx-report-broken-links li {
 
 #vrtx-report-filters ul li {
   float: left;
-  margin-right: 10px;
+  margin-right: 2px;
   display: inline-block;
   white-space: nowrap;
   overflow: visible;

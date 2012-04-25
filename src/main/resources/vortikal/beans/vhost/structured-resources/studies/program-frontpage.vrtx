@@ -13,7 +13,7 @@ resourcetype program-frontpage {
     faculty : string,
     theme : string,
     tags : string multiple overrides tags,
-    links : json (linkTitle:string, linkUrl:string) multiple
+    links : json (linkCollectionTitle:string, linkTitle:string, linkUrl:string, linkDescription:string) multiple
 
   }
 
@@ -47,6 +47,15 @@ resourcetype program-frontpage {
       [def status resource-prop(".", "status")]
       [if status != null]
         [localized status]
+      [endif]
+      ##
+    }
+    
+    program-display-degree {
+      ##
+      [def degree resource-prop(".", "program-display-degree")]
+      [if degree != null]
+        [localized degree]
       [endif]
       ##
     }
@@ -130,6 +139,7 @@ resourcetype program-frontpage {
             <h1>[call "comp:title"]</h1>
             [call "comp:fs-program-code"]     
             [call "comp:status"]
+            [call "comp:program-display-degree"]
             [call "comp:introduction"]
             [call "comp:introduction-image"]
             [call "resource:tags"]
@@ -152,21 +162,11 @@ resourcetype program-frontpage {
      no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inactive" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
      nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inactive" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
    	}
-    years {
-       en : (range = "0..5"),
-       no : (range = "0..5"),
-       nn : (range = "0..5")
-    }
-    studypoints {
-       en : (range = "0..30"),
-       no : (range = "0..30"),
-       nn : (range = "0..30")
-    }
     faculty {
        en : ("hf" = "Faculty of Humanities", "jus" = "Faculty of Law", "matnat" = "Faculty of Mathematics and Natural Sciences", "med" = "Faculty of Medicine", "odont" = "Faculty of Dentistry", "sv" = "Faculty of Social Sciences", "tf" = "Faculty of Theology", "uv" = "Faculty of Educational Sciences"),
        no : ("hf" = "Det humanistiske fakultet", "jus" = "Det juridiske fakultet", "matnat" = "Det matematisk-naturvitenskapelige fakultet", "med" = "Det medisinske fakultet", "odont" = "Det odontologiske fakultet", "sv" = "Det samfunnsvitenskapelige fakultet", "tf" = "Det teologiske fakultet", "uv" = "Det utdanningsvitenskapelige fakultet"),
        nn : ("hf" = "Det humanistiske fakultet", "jus" = "Det juridiske fakultet", "matnat" = "Det matematisk-naturvitenskapelige fakultet", "med" = "Det medisinske fakultet", "odont" = "Det odontologiske fakultet", "sv" = "Det samfunnsvitenskapelige fakultet", "tf" = "Det teologiske fakultet", "uv" = "Det utdanningsvitenskapelige fakultet")
-     }
+    }
     theme {
      en : ("estetiske-studier-musikkvitenskap" = "Esthetic Studies and Musicology", "helsefag-medisin" = "Health and Medicine", "historie-filosofi-kulturstudier" ="History, Philosophy, and Culture Studies", "informasjonsteknologi" ="Information Technology and Informatics", "jus-okonomi-ledelse-administrasjon" ="Law, Economics, Leadership, and Administration", "lektor-og-adjunktutdanning" ="Teacher Education", "matematikk-naturvitenskap-teknologi" ="Mathematics, Natural Science, and Technology", "mediefag" ="Media Studies", "pedagogiske-fag" ="Education", "religion-teologi" ="Religion and Theology", "samfunnsfag" ="Social Sciences and Psychology", "spraak-litteratur" ="Language and Literature", "engelskspraakligeprogram" ="Master's Degree Programmes"
 ),
@@ -176,15 +176,25 @@ resourcetype program-frontpage {
 )
 
 	}
+    program-display-degree {
+      en : ("bachelor" = "Bachelor", "master" = "Master", "profession" = "Profession"),
+      no : ("bachelor" = "Bachelor", "master" = "Master", "profession" = "Profession"),
+      nn : ("bachelor" = "Bachelor", "master" = "Master", "profession" = "Profession")
+    }
     program-sort {
       en : ("false" = "Alphabetical", "true" = "Degree"),
       no : ("false" = "Alfabetisk", "true" = "Grad"),
       nn : ("false" = "Alfabetisk", "true" = "Grad")
     }
-    program-display-degree {
-      en : ("bachelor" = "Bachelor", "master" = "Master", "profession" = "Profession"),
-      no : ("bachelor" = "Bachelor", "master" = "Master", "profession" = "Profession"),
-      nn : ("bachelor" = "Bachelor", "master" = "Master", "profession" = "Profession")
+    years {
+       en : (range = "0..5"),
+       no : (range = "0..5"),
+       nn : (range = "0..5")
+    }
+    study-points {
+       en : (range = "0..70"),
+       no : (range = "0..70"),
+       nn : (range = "0..70")
     }
   }
 
@@ -212,7 +222,12 @@ resourcetype program-frontpage {
     links : (en : "Links", no : "Lenker", nn : "Lenker"),
     linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
     linkUrl : (en : "Url", no : "Url", nn : "Url"),
+    linkCollectionTitle : (en : "Header", no : "Overskrift", nn : "Overskrift"),
+    linkDescription : (en : "Description", no : "Beskrivelse", nn : "Beskrivelse"),
     program-sort : (en : "Sort by", no : "Sorter etter", nn : "Sorter etter"),
-    program-display-degree : (en : "", no : "Sorter etter", nn : "Sorter etter")
+    program-display-degree : (en : "", no : "Sorter etter", nn : "Sorter etter"),
+    bachelor : (en : "Bachelor", no : "Bachelor", nn : "Bachelor"),
+    master : (en : "Master", no : "Master", nn : "Master"),   
+    profession : (en : "Profession", no : "Profession", nn : "Profession")
   }
 }

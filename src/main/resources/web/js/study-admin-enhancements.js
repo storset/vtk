@@ -1,5 +1,6 @@
 function hideShowStudy(typeToDisplay) {
   var container = $("#editor");
+  // TODO: possible use container.attr("class", "").addClass(""); instead
   switch (typeToDisplay) {
     case "so":
       container.removeClass("nm").removeClass("em").addClass("so");

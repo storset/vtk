@@ -249,8 +249,8 @@ vrtxAdmin._$(document).ready(function () {
     _$("#app-content").on("click", "#vrtx-report-filters-folders-include-exclude a.vrtx-button", function(e) { // Filter exclude and include folders
       saveMultipleInputFields(); // Multiple to comma-separated
       // Build query string
-      var includeFolders = $("#include-folders").val().split(",").unique(); // Get included folders and remove duplicates
-      var excludeFolders = $("#exclude-folders").val().split(",").unique(); // Get excluded folders and remove duplicates
+      var includeFolders = unique($("#include-folders").val().split(",")); // Get included folders and remove duplicates
+      var excludeFolders = unique($("#exclude-folders").val().split(",")); // Get excluded folders and remove duplicates
       var includeFoldersLen = includeFolders.length, excludeFoldersLen = excludeFolders.length,
           includeQueryString = "", excludeQueryString = ""; 
       for(var i = 0; i < includeFoldersLen; i++) {
@@ -2223,11 +2223,11 @@ jQuery.single = (function(o){
 /* Remove duplicates from an array
  * Credits: http://www.shamasis.net/2009/09/fast-algorithm-to-find-unique-items-in-javascript-array/
  */
-Array.prototype.unique = function() {
-  var o = {}, i, l = this.length, r = [];
-  for(i=0; i<l;i+=1) o[this[i]] = this[i];
+function unique(array) {
+  var o = {}, i, l = array.length, r = [];
+  for(i=0; i<l;i+=1) o[array[i]] = array[i];
   for(i in o) r.push(o[i]);
   return r;
-};
+}
 
 /* ^ Vortex Admin enhancements */

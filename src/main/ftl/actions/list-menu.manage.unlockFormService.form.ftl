@@ -9,8 +9,9 @@
     <h3><@vrtx.msg code="resourceMenuRight.manage.unlockFormService" default="Unlock"/></h3>
     <#if resourceContext.currentResource.lock?exists>
       <#assign owner = resourceContext.currentResource.lock.principal.qualifiedName />
+      <#assign currentPrincipal = resourceContext.principal.qualifiedName />
     </#if>
-    <#if owner?exists>
+    <#if owner?exists && owner != currentPrincipal>
       <p>${vrtx.getMsg("unlockwarning.steal")}: <strong>${owner}</strong>.</p> 
       <p>${vrtx.getMsg("unlockwarning.modified")}: <strong>${resourceContext.currentResource.lastModified?datetime?html}</strong>.</p>
       <p>${vrtx.getMsg("unlockwarning.explanation")}</p>

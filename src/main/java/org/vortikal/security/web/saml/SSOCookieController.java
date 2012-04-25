@@ -34,6 +34,9 @@ public class SSOCookieController implements Controller {
             if (cookieMap != null) {
                 for (String key : cookieMap.keySet()) {
                     Cookie c = new Cookie(key, cookieMap.get(key));
+
+                    System.out.println("DELETING cookie: " + c.getName() + ":" + c.getValue());
+
                     c.setPath("/");
                     if (this.spCookieDomain != null) {
                         c.setDomain(this.spCookieDomain);

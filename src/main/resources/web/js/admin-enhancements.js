@@ -2221,6 +2221,7 @@ jQuery.single = (function(o){
 }());
 
 /* Remove duplicates from an array
+ *
  * Credits: http://www.shamasis.net/2009/09/fast-algorithm-to-find-unique-items-in-javascript-array/
  */
 function unique(array) {

@@ -29,7 +29,7 @@ public class IECookieRedirectController implements Controller {
 
         String returnURL = URLDecoder.decode(request.getParameter(ieReturnURL), "UTF-8");
 
-        System.out.println("RETURNURL: " + returnURL);
+        System.out.println("REQUESTURL: " + request.getRequestURI() + request.getQueryString());
 
         if (request.getParameter("vrtxPreviewForceRefresh") == null) {
             String cookieTicket = request.getParameter(ieCookieTicket);

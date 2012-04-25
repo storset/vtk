@@ -435,7 +435,7 @@ vrtxAdmin._$(document).ready(function () {
         insertAfterOrReplaceClass: "div.permissions-" + privilegiesPermissions[i] + "-wrapper",
         isReplacing: true,
         nodeType: "div",
-        funcComplete: vrtxAdm.initPermissionForm,
+        funcComplete: initPermissionForm,
         simultanSliding: false,
         transitionSpeed: 0,
         transitionEasingSlideDown: "linear",
@@ -467,7 +467,7 @@ vrtxAdmin._$(document).ready(function () {
         insertAfterOrReplaceClass: "tr." + privilegiesPermissionsInTable[i],
         isReplacing: true,
         nodeType: "tr",
-        funcComplete: vrtxAdm.initPermissionForm,
+        funcComplete: initPermissionForm,
         simultanSliding: true
       });
       vrtxAdm.completeFormAsync({
@@ -1090,7 +1090,7 @@ function initSimplifiedPermissionForm() {
 function toggleConfigCustomPermissions(selectorClass) {
   var customInput = $("." + selectorClass + " ul.shortcuts label[for=custom] input");
   if (!customInput.is(":checked") && customInput.length) {
-      $("." + selectorClass).find(".principalList").hide(0);
+    $("." + selectorClass).find(".principalList").hide(0);
   }
   $("#app-content").delegate("." + selectorClass + " ul.shortcuts label[for=custom]", "click", function (e) {
     $(this).closest("form").find(".principalList:hidden").slideDown(vrtxAdmin.transitionCustomPermissionSpeed, vrtxAdmin.transitionEasingSlideDown);

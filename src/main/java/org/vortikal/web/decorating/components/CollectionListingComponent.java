@@ -134,7 +134,7 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
 
         Listing l = search.execute(request.getServletRequest(), res, 1, maxItems, 0);
 
-        model.put("edit", helper.isAuthorized(r, token, principal, l.getFiles().size(), Arrays.asList(l)));
+        model.put("edit", helper.checkListingsForEditLinks(r, token, principal, l.getFiles().size(), Arrays.asList(l)));
         model.put("list", l.getFiles());
         model.put("conf", conf);
     }

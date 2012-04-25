@@ -110,8 +110,8 @@ public class CollectionListingController extends AbstractCollectionListingContro
         }
 
         if (this.displayEditLinks) {
-            model.put("edit", helper.isAuthorized(repository, token, principal, totalHits, results));
-            model.put("editCurrentResource", helper.isAuthorized(repository, collection, principal));
+            model.put("edit", helper.checkListingsForEditLinks(repository, token, principal, totalHits, results));
+            model.put("editCurrentResource", helper.checkResourceForEditLink(repository, collection, principal));
         }
 
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL, page);

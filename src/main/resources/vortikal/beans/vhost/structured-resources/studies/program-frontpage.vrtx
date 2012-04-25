@@ -1,0 +1,218 @@
+resourcetype program-frontpage {
+
+  properties {
+    fs-program-code : string,
+    title : string overrides title,
+    status : string,
+    introduction : simple_html,
+    picture : image_ref,
+    years : string,
+    program-sort : boolean defaultvalue("false"),
+    program-display-degree : string,  
+    study-points : string,
+    faculty : string,
+    theme : string,
+    tags : string multiple overrides tags,
+    links : json (linkTitle:string, linkUrl:string) multiple
+
+  }
+
+  edit-rules {
+    fs-program-code (before title),
+    status (dropdown),
+    years (dropdown),
+    study-points (dropdown),
+    faculty (dropdown),
+    theme (dropdown),
+    program-display-degree (dropdown),
+    title (size[large]),
+    tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
+    tags (class[vrtx-autocomplete-tag]),
+    links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker")
+  }
+  
+  view-components {
+ 
+   fs-program-code {
+      ##
+      [def v resource-prop(".", "fs-program-code")]
+      [if v != null]
+        [val v]
+      [endif]
+      ##
+    }
+
+    status {
+      ##
+      [def status resource-prop(".", "status")]
+      [if status != null]
+        [localized status]
+      [endif]
+      ##
+    }
+
+     title {
+      ##
+      [def v resource-prop(".", "title")]
+      [if v != null]
+        [val v]
+      [endif]
+      ##
+    }
+       
+    introduction-image {
+      ##
+      [def img-uri resource-prop(".", "picture")]
+      [def pixel-width null]
+      [def img null]
+      [def pixel-width null]
+      [def style null]
+      
+      [if img-uri != null]
+         [def img resource(img-uri)]
+      [endif]
+      [if img != null]
+        [def pixel-width resource-prop(img-uri, "pixelWidth")]
+       [endif]
+       [if pixel-width != null]
+        [def style concat("width:", pixel-width, "px")]
+     [endif]
+     
+     [if img-uri != null]
+       [if pixel-width != null]  
+        <div class="vrtx-introduction-image" style="[val style]">
+       [else]
+        <div class="vrtx-introduction-image">
+       [endif]
+       </div>
+     [endif]
+      ##
+    }
+       
+    introduction {
+      ##
+      [def intro resource-prop(".", "introduction")]
+      [if intro != null]
+        <div class="vrtx-introduction">[val intro # unescaped]</div>
+      [endif]
+      ##
+    }
+       
+    related-content-in-additional-column {
+      ##
+      [resource-props "."]
+      [def theRelated-content document.properties.related-content]
+
+      [if theRelated-content != null]
+        <div id="vrtx-additional-content">
+          <div id="vrtx-related-content">
+            [val theRelated-content # unescaped]
+          </div>
+        </div>
+      [endif]
+      ##
+    }  
+ 
+  }
+
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        [call "resource:comments-feed-link"]
+        <title>[call "comp:title"]</title>
+      </head>
+      <body id="vrtx-structured-article">
+        <div id="vrtx-content">
+        [resources-props "."]
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
+            <h1>[call "comp:title"]</h1>
+            [call "comp:fs-program-code"]     
+            [call "comp:status"]
+            [call "comp:introduction"]
+            [call "comp:introduction-image"]
+            [call "resource:tags"]
+            <div class="vrtx-social-components">
+            <!--  [call "resource:email-friend"] -->
+              [call "resource:share-at"]
+            </div> 
+            [call "resource:comments"]
+          </div>
+          [call "comp:related-content-in-additional-column"]
+        </div>
+      </body>
+    </html>
+    ##
+  }
+  
+  vocabulary {
+    status {
+     en : ("under-arbeid" = "In progress", "aktivt" = "Active", "inactive" = "Inactive", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
+     no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inactive" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
+     nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inactive" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
+   	}
+    years {
+       en : (range = "0..5"),
+       no : (range = "0..5"),
+       nn : (range = "0..5")
+    }
+    studypoints {
+       en : (range = "0..30"),
+       no : (range = "0..30"),
+       nn : (range = "0..30")
+    }
+    faculty {
+       en : ("hf" = "Faculty of Humanities", "jus" = "Faculty of Law", "matnat" = "Faculty of Mathematics and Natural Sciences", "med" = "Faculty of Medicine", "odont" = "Faculty of Dentistry", "sv" = "Faculty of Social Sciences", "tf" = "Faculty of Theology", "uv" = "Faculty of Educational Sciences"),
+       no : ("hf" = "Det humanistiske fakultet", "jus" = "Det juridiske fakultet", "matnat" = "Det matematisk-naturvitenskapelige fakultet", "med" = "Det medisinske fakultet", "odont" = "Det odontologiske fakultet", "sv" = "Det samfunnsvitenskapelige fakultet", "tf" = "Det teologiske fakultet", "uv" = "Det utdanningsvitenskapelige fakultet"),
+       nn : ("hf" = "Det humanistiske fakultet", "jus" = "Det juridiske fakultet", "matnat" = "Det matematisk-naturvitenskapelige fakultet", "med" = "Det medisinske fakultet", "odont" = "Det odontologiske fakultet", "sv" = "Det samfunnsvitenskapelige fakultet", "tf" = "Det teologiske fakultet", "uv" = "Det utdanningsvitenskapelige fakultet")
+     }
+    theme {
+     en : ("estetiske-studier-musikkvitenskap" = "Esthetic Studies and Musicology", "helsefag-medisin" = "Health and Medicine", "historie-filosofi-kulturstudier" ="History, Philosophy, and Culture Studies", "informasjonsteknologi" ="Information Technology and Informatics", "jus-okonomi-ledelse-administrasjon" ="Law, Economics, Leadership, and Administration", "lektor-og-adjunktutdanning" ="Teacher Education", "matematikk-naturvitenskap-teknologi" ="Mathematics, Natural Science, and Technology", "mediefag" ="Media Studies", "pedagogiske-fag" ="Education", "religion-teologi" ="Religion and Theology", "samfunnsfag" ="Social Sciences and Psychology", "spraak-litteratur" ="Language and Literature", "engelskspraakligeprogram" ="Master's Degree Programmes"
+),
+     no : ("estetiske-studier-musikkvitenskap"= "Estetiske studier og musikkvitenskap", "helsefag-medisin" = "Helsefag og medisin", "historie-filosofi-kulturstudier" ="Historie, filosofi og kulturstudier", "informasjonsteknologi" ="Informasjonsteknologi og informatikk", "jus-okonomi-ledelse-administrasjon" ="Jus, økonomi, ledelse, administrasjon", "lektor-og-adjunktutdanning" ="Lærerutdanning: Lektor- og adjunktutdanning", "matematikk-naturvitenskap-teknologi" ="Matematikk, naturvitenskap, teknologi", "mediefag" ="Mediefag", "pedagogiske-fag" ="Pedagogiske fag", "religion-teologi" ="Religion og teologi", "samfunnsfag" ="Samfunnsfag og psykologi", "spraak-litteratur" ="Språk og litteratur", "engelskspraakligeprogram" ="Engelskspråklege program"
+),
+     nn : ("estetiske-studier-musikkvitenskap"= "Estetiske studium og musikkvitskap", "helsefag-medisin" = "Helsefag og medisin", "historie-filosofi-kulturstudier" ="Historie, filosofi og kulturstudium", "informasjonsteknologi" ="Informasjonsteknologi og informatikk", "jus-okonomi-ledelse-administrasjon" ="Jus, økonomi, leiing, administrasjon", "lektor-og-adjunktutdanning" ="Lærarutdaning: Lektor- og adjunktutdaning", "matematikk-naturvitenskap-teknologi" ="Matematikk, naturvitskap, teknologi", "mediefag" ="Mediefag", "pedagogiske-fag" ="Pedagogiske fag", "religion-teologi" ="Religion og teologi", "samfunnsfag" ="Samfunnsfag og psykologi", "spraak-litteratur" ="Språk og litteratur", "engelskspraakligeprogram" ="Engelskspråklige program"
+)
+
+	}
+    program-sort {
+      en : ("false" = "Alphabetical", "true" = "Degree"),
+      no : ("false" = "Alfabetisk", "true" = "Grad"),
+      nn : ("false" = "Alfabetisk", "true" = "Grad")
+    }
+    program-display-degree {
+      en : ("bachelor" = "Bachelor", "master" = "Master", "profession" = "Profession"),
+      no : ("bachelor" = "Bachelor", "master" = "Master", "profession" = "Profession"),
+      nn : ("bachelor" = "Bachelor", "master" = "Master", "profession" = "Profession")
+    }
+  }
+
+
+  localization {
+    fs-program-code : (en : "FS program code", no : "FS programkode", nn : "FS programkode"),
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    status : (en : "Status", no : "Status", nn : "Status"),
+    under-arbeid : (en : "In progress", no : "Under arbeid" ,nn : "Under arbeid"),
+    aktivt : (en: "Active", no : "Aktiv", nn : "Aktiv"), 
+    inactive : (en : "Inactive", no : "Inaktiv", nn : "Inaktiv"),
+    under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
+    nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt"),
+    introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
+    picture : (en: "Image", no: "Bilde", nn : "Bilete"),
+    introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
+    years : (en : "Number of years", no : "Antall år", nn : "Antall år"),
+    study-points : (en : "Study points", no : "Studiepoeng", nn : "Studiepoeng"),
+    faculty : (en : "Responsible faculty", no : "Ansvarlig fakultet", nn : "Ansvarlig fakultet"),
+    theme : (en : "Theme", no : "Temaområde", nn : "Temaområde"),
+    published : (en : "Published", no : "Publisert", nn : "Publisert"),
+    tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
+    relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
+    header : (en : "Edit program frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
+    links : (en : "Links", no : "Lenker", nn : "Lenker"),
+    linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
+    linkUrl : (en : "Url", no : "Url", nn : "Url"),
+    program-sort : (en : "Sort by", no : "Sorter etter", nn : "Sorter etter"),
+    program-display-degree : (en : "", no : "Sorter etter", nn : "Sorter etter")
+  }
+}

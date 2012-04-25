@@ -233,6 +233,11 @@ vrtxAdmin._$(document).ready(function () {
       filterLinks[i].href = filterLinks[i].href + query;
     }
     
+    // If any included or excluded folders show advanced settings
+    if(includedFolders.length || excludedFolders.length) { 
+      _$("#vrtx-report-filters-folders-include-exclude").slideToggle(0);
+    }
+    
     _$("#include-folders").val(includedFolders.substring(0, includedFolders.lastIndexOf(",")));
     _$("#exclude-folders").val(excludedFolders.substring(0, excludedFolders.lastIndexOf(",")));
     

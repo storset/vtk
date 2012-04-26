@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
@@ -153,8 +154,7 @@ public class LinkChecker {
             status = Status.ERROR;
             reason = t.getMessage();
         }
-        
-        
+
         LinkCheckResult result = new LinkCheckResult(href, status, reason);
         this.cache.put(new Element(cacheKey, result));
         return result;
@@ -177,6 +177,8 @@ public class LinkChecker {
             return Status.OK;
         } catch (SocketTimeoutException e) {
             return Status.TIMEOUT;
+        } catch (UnknownHostException e) {
+            return Status.NOT_FOUND;
         } catch (Exception e) {
             return Status.ERROR;
         } finally {

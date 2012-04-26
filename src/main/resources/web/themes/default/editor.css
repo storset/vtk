@@ -194,7 +194,7 @@ div.manually-approve-from table th input {
 #manually-approve-container .next,
 #manually-approve-container .prev,
 #manually-approve-container .approve-info {
-  margin: 10px 0 0 0;
+  margin-top: 10px;
   display: block;
 }
 

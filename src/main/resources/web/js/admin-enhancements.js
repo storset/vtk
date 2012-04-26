@@ -117,7 +117,7 @@ vrtxAdmin._$.ajaxSetup({
 });
 
 var EDITOR_SAVE_BUTTON_NAME = "";
-var GET_FORM_ASYNCS_IN_PROGRESS = 0;
+    
                            
 // funcComplete for postAjaxForm()
 var doReloadFromServer = false; // global var changed by checkStillAdmin() (funcProceedCondition)             
@@ -1309,12 +1309,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     if(location.protocol == "http:" && url.indexOf("https://") != -1) {
       return; // no AJAX when http -> https (tmp. solution)
     }
-    
-    if(GET_FORM_ASYNCS_IN_PROGRESS) { // If there are any getFormAsync() in progress
-      return false;
-    }
-    GET_FORM_ASYNCS_IN_PROGRESS++;
-    
+
     var selector = options.selector,
         selectorClass = options.selectorClass,
         simultanSliding = options.simultanSliding,
@@ -1344,10 +1339,6 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
         // If something went wrong
         if(!form) {
           vrtxAdm.error({args: args, msg: "retrieved form from " + url + " is null"});
-          if(GET_FORM_ASYNCS_IN_PROGRESS) {
-            GET_FORM_ASYNCS_IN_PROGRESS--;
-          }
-          return;
         }
 
         // Another form is already open
@@ -1370,23 +1361,12 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
               if(fromModeToNotMode) { // When we need the 'mode=' HTML when requesting a 'not mode=' service
                 vrtxAdmin.serverFacade.getHtml(modeUrl, {
                   success: function (results, status, resp) {
-                    var succeededAddedOriginalMarkup = vrtxAdm.addOriginalMarkup(modeUrl, results, resultSelectorClass, expandedForm);
-                    if(succeededAddedOriginalMarkup) {
-                      vrtxAdm.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
-                    } else {
-                      if(GET_FORM_ASYNCS_IN_PROGRESS) {
-                        GET_FORM_ASYNCS_IN_PROGRESS--;
-                      }
-                    }
-                  },
-                  error: function(xhr, textStatus) {
-                    if(GET_FORM_ASYNCS_IN_PROGRESS) {
-                      GET_FORM_ASYNCS_IN_PROGRESS--;
-                    }
+                    vrtxAdm.addOriginalMarkup(modeUrl, results, resultSelectorClass, expandedForm);
+                    vrtxAdm.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
                   }
                 });
               } else {
-                var succeededAddedOriginalMarkup = vrtxAdm.addOriginalMarkup(url, results, resultSelectorClass, expandedForm);
+                vrtxAdm.addOriginalMarkup(url, results, resultSelectorClass, expandedForm);
               }
             } else {
               var node = _$.single(this).parent().parent();
@@ -1397,23 +1377,12 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
               }
             }
             if(!simultanSliding && !fromModeToNotMode) {
-              if(typeof succeededAddedOriginalMarkup !== "undefined" && !succeededAddedOriginalMarkup) {
-                if(GET_FORM_ASYNCS_IN_PROGRESS) {
-                  GET_FORM_ASYNCS_IN_PROGRESS--;
-                }
-              } else {
-                vrtxAdm.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
-              }
+              vrtxAdm.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
             }
           });
         }
         if ((!existExpandedForm || simultanSliding) && !fromModeToNotMode) {
           vrtxAdm.addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form);
-        }
-      },
-      error: function(xhr, textStatus) {
-        if(GET_FORM_ASYNCS_IN_PROGRESS) {
-          GET_FORM_ASYNCS_IN_PROGRESS--;
         }
       }
     });
@@ -1428,7 +1397,6 @@ VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results,
   var resultHtml = vrtxAdm.outerHTML(results, resultSelectorClass);
   if(!resultHtml) { // If all went wrong
     vrtxAdm.error({args: args, msg: "trying to retrieve existing expandedForm from " + url + " returned null"});
-    return false;
   }
   var node = expanded.parent().parent();
   if(node.is("tr")) {  // Because 'this' is tr > td > div
@@ -1436,7 +1404,6 @@ VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results,
   } else {
     expanded.replaceWith(resultHtml).show(0);              
   }
-  return true;
 };
 
 VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form) {
@@ -1457,9 +1424,6 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
   }
   if(funcComplete) {
     funcComplete(selectorClass);
-  }
-  if(GET_FORM_ASYNCS_IN_PROGRESS) {
-    GET_FORM_ASYNCS_IN_PROGRESS--;
   }
   if(nodeType == "tr") {
     _$(nodeType + "." + selectorClass).prepareTableRowForSliding();

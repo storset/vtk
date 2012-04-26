@@ -35,13 +35,13 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.web.service.URL;
-
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
 
 public class LinkChecker {
     
@@ -121,9 +121,8 @@ public class LinkChecker {
      */
     public LinkCheckResult validate(String href, URL base, boolean sendReferrer) {
         LinkCheckResult result = validateInternal(href, base, sendReferrer);
-        logger.info("Validate: " + href + ", " + base + ": " + result);
+        logger.info("Validate: href='" + href + "', base='" + base + "': " + result);
         return result;
-
     }
 
     private LinkCheckResult validateInternal(String href, URL base, boolean sendReferrer) {
@@ -139,7 +138,12 @@ public class LinkChecker {
         final String cacheKey = url.toString();
         Element cached = this.cache.get(cacheKey);
         if (cached != null) {
-            return (LinkCheckResult) cached.getValue();
+            LinkCheckResult r = (LinkCheckResult) cached.getValue();
+            // Multiple input hrefs can map to the same URL:
+            if (r.link.equals(href)) {
+                return r;
+            }
+            return new LinkCheckResult(href, r.status, r.reason);
         }
         Status status;
         String reason = null;

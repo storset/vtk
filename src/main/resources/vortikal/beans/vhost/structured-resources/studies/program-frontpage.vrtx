@@ -46,6 +46,7 @@ resourcetype program-frontpage {
       ##
       [def status resource-prop(".", "status")]
       [if status != null]
+      <br>
         [localized status]
       [endif]
       ##
@@ -55,7 +56,28 @@ resourcetype program-frontpage {
       ##
       [def degree resource-prop(".", "program-display-degree")]
       [if degree != null]
+      <br>
         [localized degree]
+      [endif]
+      ##
+    }
+
+    faculty {
+      ##
+      [def faculty resource-prop(".", "faculty")]
+      [if faculty != null]
+      <br>
+        [localized faculty]
+      [endif]
+      ##
+    }
+
+    theme {
+      ##
+      [def theme resource-prop(".", "theme")]
+      [if theme != null]
+      <br>
+        [localized theme]
       [endif]
       ##
     }
@@ -140,6 +162,8 @@ resourcetype program-frontpage {
             [call "comp:fs-program-code"]     
             [call "comp:status"]
             [call "comp:program-display-degree"]
+            [call "comp:faculty"]
+            [call "comp:theme"]
             [call "comp:introduction"]
             [call "comp:introduction-image"]
             [call "resource:tags"]
@@ -202,32 +226,58 @@ resourcetype program-frontpage {
   localization {
     fs-program-code : (en : "FS program code", no : "FS programkode", nn : "FS programkode"),
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
+    picture : (en: "Image", no: "Bilde", nn : "Bilete"),
+    introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
+    years : (en : "Number of years", no : "Antall år", nn : "Antall år"),
+    study-points : (en : "Study points", no : "Studiepoeng", nn : "Studiepoeng"),
+    published : (en : "Published", no : "Publisert", nn : "Publisert"),
+    tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
+    relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
+    header : (en : "Edit program frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
+
+    links : (en : "Links", no : "Lenker", nn : "Lenker"),
+    linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
+    linkUrl : (en : "Url", no : "Url", nn : "Url"),
+    linkCollectionTitle : (en : "Header", no : "Overskrift", nn : "Overskrift"),
+    linkDescription : (en : "Description", no : "Beskrivelse", nn : "Beskrivelse"),
+
     status : (en : "Status", no : "Status", nn : "Status"),
     under-arbeid : (en : "In progress", no : "Under arbeid" ,nn : "Under arbeid"),
     aktivt : (en: "Active", no : "Aktiv", nn : "Aktiv"), 
     inactive : (en : "Inactive", no : "Inaktiv", nn : "Inaktiv"),
     under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
     nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt"),
-    introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
-    picture : (en: "Image", no: "Bilde", nn : "Bilete"),
-    introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
-    years : (en : "Number of years", no : "Antall år", nn : "Antall år"),
-    study-points : (en : "Study points", no : "Studiepoeng", nn : "Studiepoeng"),
-    faculty : (en : "Responsible faculty", no : "Ansvarlig fakultet", nn : "Ansvarlig fakultet"),
-    theme : (en : "Theme", no : "Temaområde", nn : "Temaområde"),
-    published : (en : "Published", no : "Publisert", nn : "Publisert"),
-    tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
-    relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
-    header : (en : "Edit program frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
-    links : (en : "Links", no : "Lenker", nn : "Lenker"),
-    linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
-    linkUrl : (en : "Url", no : "Url", nn : "Url"),
-    linkCollectionTitle : (en : "Header", no : "Overskrift", nn : "Overskrift"),
-    linkDescription : (en : "Description", no : "Beskrivelse", nn : "Beskrivelse"),
+    
     program-sort : (en : "Sort by", no : "Sorter etter", nn : "Sorter etter"),
     program-display-degree : (en : "", no : "Sorter etter", nn : "Sorter etter"),
     bachelor : (en : "Bachelor", no : "Bachelor", nn : "Bachelor"),
     master : (en : "Master", no : "Master", nn : "Master"),   
-    profession : (en : "Profession", no : "Profession", nn : "Profession")
+    profession : (en : "Profession", no : "Profession", nn : "Profession"),
+    
+    faculty : (en : "Responsible faculty", no : "Ansvarlig fakultet", nn : "Ansvarlig fakultet"),
+    hf : (en : "Faculty of Humanities", no : "Det humanistiske fakultet", nn : "Det humanistiske fakultet"),
+  	jus : (en : "Faculty of Law", no : "Det juridiske fakultet", nn : "Det juridiske fakultet"),		      
+	matnat : (en : "Faculty of Mathematics and Natural Sciences",no : "Det matematisk-naturvitenskapelige fakultet", nn : "Det matematisk-naturvitenskapelige fakultet"),  
+	med : (en : "Faculty of Medicine", no : "Det medisinske fakultet", nn : "Det medisinske fakultet"),		      
+	odont : (en : "Faculty of Dentistry", no : "Det odontologiske fakultet", nn : "Det odontologiske fakultet"),		      
+	sv : (en : "Faculty of Social Sciences", no : "Det samfunnsvitenskapelige fakultet", nn : "Det samfunnsvitenskapelige fakultet"), 	      
+	tf : (en : "Faculty of Theology", no : "Det teologiske fakultet", nn : "Det teologiske fakultet"),		      
+	uv : (en : "Faculty of Educational Sciences", no : "Det utdanningsvitenskapelige fakultet", nn : "Det utdanningsvitenskapelige fakultet")     
+    
+    theme : (en : "Theme", no : "Temaområde", nn : "Temaområde"),
+	estetiske-studier-musikkvitenskap : (en : "Esthetic Studies and Musicology", no : "Estetiske studier og musikkvitenskap", nn : "Estetiske studium og musikkvitskap"),
+	helsefag-medisin : (en : "Health and Medicine", no : "Helsefag og medisin", nn : "Helsefag og medisin"),
+	historie-filosofi-kulturstudier : (en : "History Philosophy and Culture Studies", no : "Historie filosofi og kulturstudier", nn : "Historie filosofi og kulturstudium"),
+	informasjonsteknologi : (en : "Information Technology and Informatics", no : "Informasjonsteknologi og informatikk", nn : "Informasjonsteknologi og informatikk"),
+	jus-okonomi-ledelse-administrasjon : (en : "Law Economics Leadership and Administration", no : "Jus økonomi ledelse administrasjon", nn : "Jus økonomi leiing administrasjon"),
+	lektor-og-adjunktutdanning : (en : "Teacher Education", no : "Lærerutdanning: Lektor- og adjunktutdanning", nn : "Lærarutdaning: Lektor- og adjunktutdaning"),
+	matematikk-naturvitenskap-teknologi : (en : "Mathematics Natural Science and Technology", no : "Matematikk naturvitenskap teknologi", nn : "Matematikk naturvitskap teknologi"),
+	mediefag : (en : "Media Studies", no : "Mediefag", nn : "Mediefag"),
+	pedagogiske-fag : (en : "Education", no : "Pedagogiske fag", nn : "Pedagogiske fag"),
+	religion-teologi : (en : "Religion and Theology", no : "Religion og teologi", nn : "Religion og teologi"),
+	samfunnsfag : (en : "Social Sciences and Psychology", no : "Samfunnsfag og psykologi", nn : "Samfunnsfag og psykologi"),
+	spraak-litteratur : (en : "Language and Literature", no : "Språk og litteratur", nn : "Språk og litteratur"),
+	engelskspraakligeprogram : (en : "Master's Degree Programmes", no : "Engelskspråklege program", nn : "Engelskspråklige program")
   }
 }

@@ -288,28 +288,34 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                 continue;
             }
 
-            Element e = (Element) next;
+            Element element = (Element) next;
+            Element parent = element.getParentElement();
+
             String href = null;
-            
-            if ("webadresse".equals(e.getName())
-                    || "url".equals(e.getName())) {
-                href = e.getTextTrim();
+
+            if ("webadresse".equals(element.getName())
+                    || "url".equals(element.getName())) {
+                href = element.getTextTrim();
             } else {
-                Element p = e.getParentElement();
-                if (p != null) {
-                    if ("pensumpunkt".equals(p.getName()) || "bilde-referanse".equals(p.getName())) {
-                        if ("src".equals(e.getName())
-                            || "lenkeadresse".equals(e.getName())
-                            || "bibsys".equals(e.getName())
-                            || "fulltekst".equals(e.getName())) {
-                            href = e.getTextTrim();
+                if (parent != null) {                
+                    if ("pensumpunkt".equals(parent.getName()) || "bilde-referanse".equals(parent.getName())) {
+                        if ("src".equals(element.getName())
+                            || "lenkeadresse".equals(element.getName())
+                            || "bibsys".equals(element.getName())
+                            || "fulltekst".equals(element.getName())) {
+                            href = element.getTextTrim();
                         }
                     }
                 }
             }
             
             if (href != null && !href.isEmpty()) {
-                if (!collector.add(new Link(href, LinkType.ANCHOR, source))) {
+                LinkType type = LinkType.ANCHOR;
+                if (parent != null && "bilde".equals(parent.getName()) 
+                        || "bilde-referanse".equals(parent.getName())) {
+                    type = LinkType.IMG;
+                }
+                if (!collector.add(new Link(href, type, source))) {
                     break;
                 }
             }

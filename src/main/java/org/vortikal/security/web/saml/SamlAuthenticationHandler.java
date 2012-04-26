@@ -205,9 +205,10 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
             if (inManageMode) {
                 currentURL = this.redirectToViewService.constructURL(Path.fromString(ieCookieSetterURI));
             } else {
+                // TODO: Needs to redirect using something other than vrtx=admin
                 currentURL = this.redirectToAdminService.constructURL(Path.fromString(ieCookieSetterURI));
             }
-
+            currentURL.setProtocol("https");
             currentURL.addParameter(ieCookieTicket, cookieTicket);
 
             try {
@@ -228,7 +229,9 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
     public static boolean browserIsIE(HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
         if (userAgent.contains("MSIE 7.0") || (userAgent.contains("MSIE") && userAgent.contains("Trident"))) {
-            return true;
+            // TODO: Change back to enable ie cookie setter
+            // return true;
+            return false;
         } else {
             return false;
         }

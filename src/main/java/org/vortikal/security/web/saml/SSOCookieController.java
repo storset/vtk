@@ -1,9 +1,5 @@
 package org.vortikal.security.web.saml;
 
-import java.util.Map;
-import java.util.UUID;
-
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,30 +22,7 @@ public class SSOCookieController implements Controller {
             url = url.append(queryString);
         }
         URL currentURL = URL.parse(url.toString());
-
-        if (request.getParameter(ieCookieTicket) != null) {
-            String cookieTicket = request.getParameter(ieCookieTicket);
-
-            Map<String, String> cookieMap = iECookieStore.getToken(request, UUID.fromString(cookieTicket));
-            if (cookieMap != null) {
-                for (String key : cookieMap.keySet()) {
-                    Cookie c = new Cookie(key, cookieMap.get(key));
-
-                    System.out.println("DELETING cookie: " + c.getName() + ":" + c.getValue());
-
-                    c.setPath("/");
-                    if (this.spCookieDomain != null) {
-                        c.setDomain(this.spCookieDomain);
-                    }
-                    c.setMaxAge(0);
-                    response.addCookie(c);
-                }
-                iECookieStore.dropToken(request, UUID.fromString(cookieTicket));
-            }
-            currentURL.removeParameter(ieCookieTicket);
-        } else {
-            currentURL.addParameter("authTarget", request.getScheme());
-        }
+        currentURL.addParameter("authTarget", request.getScheme());
         response.sendRedirect(currentURL.toString());
 
         return null;

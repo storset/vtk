@@ -39,7 +39,7 @@
     <property name="iECookieStore" ref="saml.ieCookieStore" />
     
     <property name="redirectToViewService" ref="viewService"/>
-    <property name="redirectToAdminService" ref="redirectToManageHTTPSService" />
+    <property name="redirectToAdminService" ref="manageService" />
 
     <property name="spCookieDomain" value="${security.spCookieDomain}" />
 
@@ -89,11 +89,8 @@
   <bean id="saml.logout" class="org.vortikal.security.web.saml.Logout" parent="saml.abstractHandler">
     <property name="securityInitializer" ref="securityInitializer"/>
     <property name="redirectService" ref="viewService"/>
-    <property name="ieCookieTicket" value="${saml.ieCookieTicket}" />
+    <property name="ieCookieLogoutTicket" value="${saml.ieCookieLogoutTicket}" />    
     <property name="iECookieStore" ref="saml.ieCookieStore" />
-    <property name="vrtxAuthSP" value="${saml.vrtxAuthSP}" />
-    <property name="uioAuthIDP" value="${saml.uioAuthIDP}" />
-    <property name="uioAuthSSO" value="${saml.uioAuthSSO}" />
     <property name="manageAssertion" ref="manage.hostNameAssertion" />    
   </bean>
 
@@ -248,6 +245,7 @@
     <property name="iECookieStore" ref="saml.ieCookieStore" />
   </bean>
 
+<!--
   <bean id="saml.ieCookieRedirectService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-3"/> 
     <property name="assertions">
@@ -269,12 +267,33 @@
     <property name="uioAuthSSO" value="${saml.uioAuthSSO}" />
     <property name="ieReturnURL" value="${saml.ieReturnURL}" />
   </bean>
-  
+
+  <bean id="saml.ieCookieLogoutService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="order" value="-4"/> 
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.IERemoveCookieAssertion">
+          <property name="ieCookieLogoutTicket" value="${saml.ieCookieLogoutTicket}"/>
+          <property name="uioAuthSSO" value="${saml.uioAuthSSO}" />         
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="saml.ieCookieLogoutHandler"/>
+  </bean>
+
+  <bean name="saml.ieCookieLogoutHandler" class="org.vortikal.security.web.saml.IERemoveCookieController"> 
+    <property name="iECookieStore" ref="saml.ieCookieStore" />
+    <property name="spCookieDomain" value="${security.spCookieDomain}" />
+    <property name="ieCookieLogoutTicket" value="${saml.ieCookieLogoutTicket}" />
+    <property name="uioAuthSSO" value="${saml.uioAuthSSO}" />    
+  </bean>
+-->
+
   <bean id="saml.ieCookieStore" class="org.vortikal.security.web.saml.IECookieStore">
     <property name="cache" ref="saml.ieCookieStore.cache" />
   </bean>
   <bean id="saml.ieCookieStore.cache" class="org.vortikal.util.cache.SimpleCacheImpl">
     <property name="timeoutSeconds" value="3600" />
   </bean>
-  
+
 </beans>

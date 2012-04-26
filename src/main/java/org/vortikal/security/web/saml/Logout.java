@@ -62,10 +62,7 @@ public class Logout extends SamlService {
     private Service redirectService;
     private SecurityInitializer securityInitializer;
 
-    private String ieCookieTicket;
-    private String vrtxAuthSP;
-    private String uioAuthIDP;
-    private String uioAuthSSO;
+    private String ieCookieLogoutTicket;
     private IECookieStore iECookieStore;
 
     private Assertion manageAssertion;
@@ -78,19 +75,10 @@ public class Logout extends SamlService {
         }
 
         if (SamlAuthenticationHandler.browserIsIE(request) && manageAssertion.matches(request, null, null)) {
-            Map<String, String> cookieMap = new HashMap<String, String>();
-
-            if (SamlAuthenticationHandler.getCookie(request, vrtxAuthSP) != null) {
-                cookieMap.put(vrtxAuthSP, SamlAuthenticationHandler.getCookie(request, vrtxAuthSP).getValue());
-            }
-            if (SamlAuthenticationHandler.getCookie(request, uioAuthIDP) != null) {
-                cookieMap.put(uioAuthIDP, SamlAuthenticationHandler.getCookie(request, uioAuthIDP).getValue());
-            }
-            if (SamlAuthenticationHandler.getCookie(request, uioAuthSSO) != null) {
-                cookieMap.put(uioAuthSSO, SamlAuthenticationHandler.getCookie(request, uioAuthSSO).getValue());
-            }
-            String cookieTicket = iECookieStore.addToken(request, cookieMap).toString();
-            savedURL.addParameter(ieCookieTicket, cookieTicket);
+            Map<String, String> myMap = new HashMap<String, String>();
+            myMap.put("true", "true");
+            String cookieTicket = iECookieStore.addToken(request, myMap).toString();
+            savedURL.addParameter(ieCookieLogoutTicket, cookieTicket);
         }
 
         // Generate request ID, save in session
@@ -123,8 +111,6 @@ public class Logout extends SamlService {
         String relayState = request.getParameter("RelayState");
 
         String redirectURL = buildRedirectURL(logoutResponse, relayState, signingCredential);
-
-        System.out.println("handleLogoutRequest" + " : " + redirectURL);
 
         // Remove authentication state
         this.securityInitializer.removeAuthState(request, response);
@@ -172,8 +158,6 @@ public class Logout extends SamlService {
         logoutResponse.validate(true);
 
         this.securityInitializer.removeAuthState(request, response);
-
-        System.out.println("handleLogoutResponse" + " : " + url.toString());
 
         response.setStatus(HttpServletResponse.SC_FOUND);
         response.setHeader("Location", url.toString());
@@ -237,20 +221,8 @@ public class Logout extends SamlService {
         this.redirectService = redirectService;
     }
 
-    public void setIeCookieTicket(String ieCookieTicket) {
-        this.ieCookieTicket = ieCookieTicket;
-    }
-
-    public void setVrtxAuthSP(String vrtxAuthSP) {
-        this.vrtxAuthSP = vrtxAuthSP;
-    }
-
-    public void setUioAuthIDP(String uioAuthIDP) {
-        this.uioAuthIDP = uioAuthIDP;
-    }
-
-    public void setUioAuthSSO(String uioAuthSSO) {
-        this.uioAuthSSO = uioAuthSSO;
+    public void setIeCookieLogoutTicket(String ieCookieLogoutTicket) {
+        this.ieCookieLogoutTicket = ieCookieLogoutTicket;
     }
 
     public void setiECookieStore(IECookieStore iECookieStore) {

@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.web.service.URL;
 
 public class IECookieRedirectController implements Controller {
 
@@ -30,8 +29,6 @@ public class IECookieRedirectController implements Controller {
 
         String returnURL = URLDecoder.decode(request.getParameter(ieReturnURL), "UTF-8");
 
-        System.out.println("REQUESTURL: " + URL.create(request).toString());
-
         if (request.getParameter("vrtxPreviewForceRefresh") == null) {
             String cookieTicket = request.getParameter(ieCookieTicket);
 
@@ -44,7 +41,6 @@ public class IECookieRedirectController implements Controller {
 
                 if (spCookie != null) {
                     Cookie c = new Cookie(vrtxAuthSP, cookieMap.get(vrtxAuthSP));
-                    System.out.println("SETTING COOKIE: " + c.getName() + ":" + c.getValue());
                     c.setSecure(true);
                     c.setPath("/");
                     if (this.spCookieDomain != null) {
@@ -55,7 +51,6 @@ public class IECookieRedirectController implements Controller {
 
                 if (idpCookie != null) {
                     Cookie c = new Cookie(uioAuthIDP, cookieMap.get(uioAuthIDP));
-                    System.out.println("SETTING COOKIE: " + c.getName() + ":" + c.getValue());
                     c.setSecure(true);
                     c.setPath("/");
                     if (this.spCookieDomain != null) {
@@ -66,7 +61,6 @@ public class IECookieRedirectController implements Controller {
 
                 if (ssoCookie != null) {
                     Cookie c = new Cookie(uioAuthSSO, cookieMap.get(uioAuthSSO));
-                    System.out.println("SETTING COOKIE: " + c.getName() + ":" + c.getValue());
                     c.setPath("/");
                     if (this.spCookieDomain != null) {
                         c.setDomain(this.spCookieDomain);

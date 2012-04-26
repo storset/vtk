@@ -270,6 +270,8 @@ alter table simple_content_revision
           references vortex_resource (resource_id) on delete cascade;
 
 
+create index simple_content_revision_index1 on simple_content_revision(resource_id);
+
 -----------------------------------------------------------------------------
 -- revision_acl_entry
 -----------------------------------------------------------------------------
@@ -298,8 +300,7 @@ alter table revision_acl_entry
     add constraint revision_acl_entry_FK_1 foreign key (revision_id)
     references simple_content_revision (id) on delete cascade;
 
-
-
+create index revision_acl_entry_index1 on revision_acl_entry(revision_id);
 
 -----------------------------------------------------------------------------
 -- vortex_comment

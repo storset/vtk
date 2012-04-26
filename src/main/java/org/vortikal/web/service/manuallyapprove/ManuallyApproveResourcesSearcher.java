@@ -41,6 +41,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.MultiHostSearcher;
 import org.vortikal.repository.Namespace;
@@ -70,6 +72,8 @@ import org.vortikal.web.service.URL;
 
 public class ManuallyApproveResourcesSearcher {
 
+    private static Log logger = LogFactory.getLog(ManuallyApproveResourcesSearcher.class.getName());
+
     private static final int RESOURCE_LIST_LIMIT = 1000;
 
     private Map<String, String> listingResourceTypeMappingPointers;
@@ -85,6 +89,9 @@ public class ManuallyApproveResourcesSearcher {
 
         // The final product. Will be populated with search results.
         List<ManuallyApproveResource> result = new ArrayList<ManuallyApproveResource>();
+
+        logger.info("Manually approving from: " + locations);
+        logger.info("Already approved: " + alreadyApproved);
 
         Repository repository = RequestContext.getRequestContext().getRepository();
         String token = SecurityContext.getSecurityContext().getToken();

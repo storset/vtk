@@ -74,7 +74,7 @@ function linkCheckResponse(results, context, localizer, linkClass) {
           } else {
             var color = "brown";
             if (results[i].status == "ERROR") {
-              brokenLinks++;
+              //brokenLinks++;
             }
           }
           var msg = (localizer) ? localizer(results[i].status) : results[i].status;

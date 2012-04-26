@@ -202,9 +202,9 @@ vrtxAdmin._$(document).ready(function () {
      var html = "<div id='vrtx-report-filters-folders-include-exclude' class='expandedForm'>"
                 + "<h3>" + filtersAdvancedTitle + "</h3>"
                 + "<div id='vrtx-report-filters-folders-exclude' class='report-filters-folders-exclude'><h4>" + filtersAdvancedExcludeTitle + "</h4>"
-                + "<div class='vrtx-textfield'><input type='text' id='exclude-folders' size='32' /></div></div>"
+                + "<div class='vrtx-textfield'><input type='text' id='exclude-folders' size='25' /></div></div>"
                 + "<div id='vrtx-report-filters-folders-include' class='report-filters-folders-include'><h4>" + filtersAdvancedIncludeTitle + "</h4>"
-                + "<div class='vrtx-textfield'><input type='text' id='include-folders' size='32' /></div></div>"
+                + "<div class='vrtx-textfield'><input type='text' id='include-folders' size='25' /></div></div>"
                 + "<a class='vrtx-button'><span>" + filtersAdvancedUpdate + "</span></a>"
               + "</div>";
     _$(html).insertAfter(brokenLinksFilters);
@@ -1586,7 +1586,7 @@ VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, u
     var dataString = textfieldName + '=' + textfieldVal
                    + '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
                    + "&" + link.attr("name");
-    
+
     vrtxAdmin.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {
         if (vrtxAdm.hasErrorContainers(results, errorContainer)) {

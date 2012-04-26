@@ -73,6 +73,9 @@ function linkCheckResponse(results, context, localizer, linkClass) {
             brokenLinks++;
           } else {
             var color = "brown";
+            if (results[i].status == "ERROR") {
+              brokenLinks++;
+            }
           }
           var msg = (localizer) ? localizer(results[i].status) : results[i].status;
           $(links[j]).append(" - [" + msg + "]").css("color", color).removeClass(linkClass);

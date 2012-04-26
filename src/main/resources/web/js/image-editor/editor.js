@@ -157,6 +157,7 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
         editor.hasCropBeenInitialized = true;
       }
       e.preventDefault();
+      e.stopPropagation();
     });
 
     $("#app-content").on("change", "#resource-width, #resource-height", function (e) {

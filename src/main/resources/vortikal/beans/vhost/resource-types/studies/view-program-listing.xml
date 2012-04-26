@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="programListing.viewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="collectionListing.viewService" />
+    <property name="order" value="0" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsProgramListing" />
+      </list>
+    </property>
+    <property name="handler" ref="programListing.handler" />
+    <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
+  </bean>
+
+  <bean id="programListing.handler" class="org.vortikal.web.display.collection.studies.ProgramListingController"
+    parent="collectionListing.handler">
+    <property name="searchComponents">
+      <list>
+        <ref bean="masterProgramListing.searchComponent" />
+        <ref bean="bachelorProgramListing.searchComponent" />
+        <ref bean="professionProgramListing.searchComponent" />
+      </list>
+    </property>
+    <property name="viewName" value="programListing.view" />
+  </bean>
+
+  <bean id="programListing.searchComponent" parent="collectionListing.searchComponent">
+    <property name="name" value="programListing.defaultListing" />
+    <property name="listingUriQueryBuilder" ref="collection.defaultRecursiveListingUriQueryBuilder" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN program-frontpage" />
+        </bean>
+      </list>
+    </property>
+    <property name="listableProperties">
+      <list>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionImagePropDef" />
+          <property name="preventDisplayProperty" ref="articleListing.hideIntroductionImagePropDef" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyDisplayConfig">
+          <property name="displayProperty" ref="introductionPropDef" />
+          <property name="preventDisplayProperty" ref="articleListing.hideIntroductionPropDef" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="masterProgramListing.searchComponent" parent="programListing.searchComponent">
+    <property name="name" value="master" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN program-frontpage AND resource:program-display-degree = master" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="bachelorProgramListing.searchComponent" parent="programListing.searchComponent">
+    <property name="name" value="bachelor" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN program-frontpage AND resource:program-display-degree = bachelor" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="professionProgramListing.searchComponent" parent="programListing.searchComponent">
+    <property name="name" value="profession" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN program-frontpage AND resource:program-display-degree = profession" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="programListing.viewResolver" parent="decoratorViewResolver">
+    <property name="views">
+      <map>
+        <entry key="programListing.view" value-ref="programListing.view" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="programListing.view" parent="collectionListing.view">
+    <property name="url" value="pages/studies/view-program-listing.ftl" />
+  </bean>
+
+  <bean id="programListing.feedService" parent="collectionListing.atomService">
+    <property name="order" value="-2" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsProgramListing" />
+        <ref bean="feedParameterSetAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="programListing.feedHandler" />
+  </bean>
+
+  <bean id="programListing.feedHandler" parent="collectionListing.atomHandler">
+    <property name="searchComponent" ref="programListing.searchComponent" />
+  </bean>
+
+</beans>

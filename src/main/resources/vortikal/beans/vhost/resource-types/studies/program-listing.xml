@@ -24,29 +24,60 @@
     </property>
   </bean>
 
-  <bean id="resourceIsProgram" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+  <bean id="resourceIsProgramListing" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="programResourceTypeDefinition" />
     <property name="exactMatch" value="true" />
   </bean>
 
-  <bean id="facultyPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+ <bean id="facultyPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="faculty" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
-    <property name="valueFormatter">
-      <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
-        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.faculty" />
-        <constructor-arg value="STRING" />
-      </bean>
-    </property>
     <property name="vocabulary">
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+        <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.mixins.properties.units" />
         <property name="values">
           <list>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
+                <value>hf</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>jf</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
                 <value>mn</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>mf</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>od</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>sv</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>tf</value>
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>
@@ -56,27 +87,20 @@
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>
-            <bean class="org.vortikal.repository.resourcetype.Value">
-              <constructor-arg type="java.lang.String">
-                <value>hf</value>
-              </constructor-arg>
-              <constructor-arg ref="TYPE_STRING" />
-            </bean>
-          </list>
+           </list>
         </property>
       </bean>
     </property>
   </bean>
 
-
   <bean id="programSortPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="program-sort" />
+    <property name="name" value="sortby" />
     <property name="type" value="STRING" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <property name="valueFormatter">
       <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
-        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.faculty" />
+        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.program-sort" />
         <constructor-arg value="STRING" />
       </bean>
     </property>

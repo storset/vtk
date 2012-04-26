@@ -223,12 +223,12 @@
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>
-            <!--bean class="org.vortikal.repository.resourcetype.Value">
+           <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>message-listing</value>
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
-            </bean-->
+            </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>audio-video-listing</value>
@@ -244,6 +244,18 @@
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
                 <value>program-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>program-option-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>studieretninger-listing</value>
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>

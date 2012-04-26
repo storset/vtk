@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <!-- RESOURCE TYPE DEFINITIONS -->
   <import resource="resource.xml" />
@@ -12,10 +12,10 @@
   <import resource="person-listing.xml" />
   <import resource="project-listing.xml" />
   <import resource="master-listing.xml" />
-  <!--import resource="message-listing.xml" /-->
+  <import resource="message-listing.xml" />
   <import resource="research-group-listing.xml" />
   <import resource="image-listing.xml" />
-  <import resource="audio-video-listing.xml" /> 
+  <import resource="audio-video-listing.xml" />
   <import resource="image.xml" />
   <import resource="audio.xml" />
   <import resource="video.xml" />
@@ -32,7 +32,8 @@
   <import resource="msoffice.xml" />
   <import resource="odf.xml" />
   <import resource="json.xml" />
-  <import resource="program-collection.xml" />
+  <import resource="studies/program-listing.xml" />
+  <import resource="studies/program-option-listing.xml" />
 
   <!-- Studinfo -->
   <import resource="emne.xml" />

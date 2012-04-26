@@ -236,6 +236,7 @@ vrtxAdmin._$(document).ready(function () {
     // If any included or excluded folders show advanced settings
     if(includedFolders.length || excludedFolders.length) { 
       _$("#vrtx-report-filters-folders-include-exclude").slideToggle(0);
+      _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedHide + "...");
     }
     
     _$("#include-folders").val(includedFolders.substring(0, includedFolders.lastIndexOf(",")));
@@ -243,7 +244,7 @@ vrtxAdmin._$(document).ready(function () {
     
     _$("#app-content").on("click", "#vrtx-report-filters #vrtx-report-filters-show-hide-advanced", function(e) { // Show / hide advanced settings
       _$("#vrtx-report-filters-folders-include-exclude:visible").slideUp(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
-        _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedShow + "...");        
+        _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedShow + "...");
       });
       _$("#vrtx-report-filters-folders-include-exclude:not(:visible)").slideDown(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideDown, function() {
         _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedHide + "...");

@@ -125,7 +125,8 @@ h2 {
 .vrtx-string.title,
 .vrtx-string.name,
 .vrtx-string.areacode,
-.vrtx-string.username {
+.vrtx-string.username,
+.vrtx-string.typeToDisplay {
   margin-top: 0px;
 }
 

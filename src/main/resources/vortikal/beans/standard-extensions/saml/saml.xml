@@ -245,7 +245,6 @@
     <property name="iECookieStore" ref="saml.ieCookieStore" />
   </bean>
 
-<!--
   <bean id="saml.ieCookieRedirectService" class="org.vortikal.web.service.ServiceImpl">
     <property name="order" value="-3"/> 
     <property name="assertions">
@@ -287,7 +286,6 @@
     <property name="ieCookieLogoutTicket" value="${saml.ieCookieLogoutTicket}" />
     <property name="uioAuthSSO" value="${saml.uioAuthSSO}" />    
   </bean>
--->
 
   <bean id="saml.ieCookieStore" class="org.vortikal.security.web.saml.IECookieStore">
     <property name="cache" ref="saml.ieCookieStore.cache" />

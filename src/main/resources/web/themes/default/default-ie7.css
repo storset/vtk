@@ -39,6 +39,7 @@ body#vrtx-permissions .removePermission {
 #resource-title,
 #active-tab,
 #contents,
+.solidExpandedForm,
 .expandedForm {
   max-height: 99999px; /* instead of invalid zoom: 1 */
 }

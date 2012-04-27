@@ -131,10 +131,6 @@
   display: none;
 }
 
-.ui-accordion .vrtx-grouped {
-  margin-top: 10px;
-}
-
 .ui-accordion .vrtx-grouped .header {
   padding: 7px 10px 6px 30px;
   margin-bottom: 0px;

@@ -26,7 +26,7 @@ $(document).ready(function () {
     return false;
   }
   if($('#typeToDisplay').length) {
-    for(var grouped = $(".vrtx-grouped"), i = grouped.length; i--;) {
+    for(var grouped = $(".vrtx-grouped"), i = grouped.length; i--;) { // Because accordion needs one content wrapper
       $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
     }
     $("#editor").accordion({ header: "> div > .header", autoHeight: false });

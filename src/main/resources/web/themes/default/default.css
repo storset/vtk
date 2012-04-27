@@ -2211,11 +2211,13 @@ ul#vrtx-manually-approve-tab-menu li,
 
 div.globalmenu h3,
 form.vrtx-admin-form h3,
-.expandedForm h3 {
+.expandedForm h3,
+.solidExpandedForm h3 {
   margin-top: 0;
 }
 
 div.expandedForm,
+div.solidExpandedForm,
 tr.expandedForm td {
   margin: 10px -20px 4px -20px !important;
   padding: 14px 19px !important;

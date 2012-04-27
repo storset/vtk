@@ -25,11 +25,12 @@ $(document).ready(function () {
   catch (err) {
     return false;
   }
-  for(var grouped = $(".vrtx-grouped"), i = grouped.length; i--;) {
-    $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
-  }
-  $("#editor").accordion({ header: "> div > .header", autoHeight: false });
-
+  if($('#typeToDisplay').length) {
+    for(var grouped = $(".vrtx-grouped"), i = grouped.length; i--;) {
+      $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
+    }
+    $("#editor").accordion({ header: "> div > .header", autoHeight: false });
+  )
   $(document).on('change', '#typeToDisplay', function () {
     hideShowStudy($(this).val());
   });

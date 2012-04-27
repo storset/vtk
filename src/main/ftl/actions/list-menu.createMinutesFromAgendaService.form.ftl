@@ -9,7 +9,7 @@
     <form name="form" action="${command.submitURL?html}" method="post">
       <h3 class="nonul"><@vrtx.msg code="actions.createMinutes" default="Make minutes"/>:</h3>
       <@spring.bind "command.name" /> 
-      <@actionsLib.genOkCancelButtons spring.status.errorMessages />
+      <@actionsLib.genErrorMessages spring.status.errorMessages />
       <div class="vrtx-textfield">
         <input type="text" size="30" name="${spring.status.expression}" value="${spring.status.value?if_exists}" />
       </div>

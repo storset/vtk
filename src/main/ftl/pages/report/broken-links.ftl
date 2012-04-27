@@ -131,7 +131,7 @@
                 <#list brokenLinks as link>
                   <#if link?is_hash>
                     <#if (link.link)?exists>
-                      <#if (report.linkType == "anchor-img" && (link.type == "ANCHOR" || link.type == "IMG"))
+                      <#if (report.linkType == "anchor-img" &&  (link.type == "ANCHOR" || link.type == "IMG" || link.type == "PROPERTY"))
                         || (report.linkType == "anchor" && link.type == "ANCHOR")
                         || (report.linkType == "img"    && (link.type == "IMG" || link.type == "PROPERTY"))
                         || (report.linkType == "other"  && link.type != "ANCHOR" && link.type != "IMG" && link.type != "PROPERTY")>

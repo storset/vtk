@@ -111,7 +111,8 @@ function OpenFile( fileUrl )
     } else {
       window.top.opener.SetUrl( fileUrl ) ;
     }
-    
+
+   window.top.close() ;
    var ua = navigator.userAgent.toLowerCase(); 
    window.top.close() ;
    if(!(/iphone/.test(ua) || /ipad/.test(ua) || /ipod/.test(ua) || /android/.test(ua))) {

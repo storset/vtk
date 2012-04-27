@@ -240,7 +240,7 @@ public class ManuallyApproveResourcesSearcher {
         try {
             return repository.retrieve(token, localPath, true);
         } catch (Exception e) {
-            logger.warn("Could not retrive resource from local repo:" + e.getMessage());
+            logger.warn("Could not retrive resource from local repo: " + e.getMessage());
         }
         return null;
     }

@@ -1,5 +1,7 @@
 package org.vortikal.security.web.saml;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.Cookie;
@@ -29,7 +31,14 @@ public class IERemoveCookieController implements Controller {
         URL currentURL = URL.create(request);
 
         String cookieTicket = request.getParameter(ieCookieLogoutTicket);
-        String[] cookiesToDelete = { uioAuthSSO, VRTXLINK_COOKIE };
+        List<String> cookiesToDelete = new ArrayList<String>();
+
+        cookiesToDelete.add(uioAuthSSO);
+
+        if (SamlAuthenticationHandler.getCookie(request, VRTXLINK_COOKIE) != null) {
+            authLogger.debug("IE Cookie remover, found " + VRTXLINK_COOKIE);
+            cookiesToDelete.add(VRTXLINK_COOKIE);
+        }
 
         if (iECookieStore.getToken(request, UUID.fromString(cookieTicket)) != null) {
             for (String key : cookiesToDelete) {

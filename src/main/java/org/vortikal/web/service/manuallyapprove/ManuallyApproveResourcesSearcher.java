@@ -122,7 +122,7 @@ public class ManuallyApproveResourcesSearcher {
 
                 Path localPath = this.getLocalPath(approved, localURL);
                 if (localPath != null) {
-                    ps = repository.retrieve(token, localPath, false);
+                    ps = this.retrieveResource(repository, token, localPath);
                 } else {
                     URL url = this.getAsURL(approved);
                     if (url != null) {
@@ -154,8 +154,8 @@ public class ManuallyApproveResourcesSearcher {
             boolean multiHostSearch = false;
 
             if (localPath != null) {
-                Resource resource = repository.retrieve(token, localPath, false);
-                clar = this.aggregationResolver.getAggregatedResources(resource);
+                PropertySet ps = this.retrieveResource(repository, token, localPath);
+                clar = this.aggregationResolver.getAggregatedResources(ps);
             } else if (this.multiHostSearcher.isMultiHosSearchEnabled() && locationURL != null) {
                 clar = this.aggregationResolver.getAggregatedResources(locationURL);
                 multiHostSearch = true;
@@ -234,6 +234,15 @@ public class ManuallyApproveResourcesSearcher {
             result = result.subList(0, RESOURCE_LIST_LIMIT);
         }
         return result;
+    }
+
+    private PropertySet retrieveResource(Repository repository, String token, Path localPath) {
+        try {
+            return repository.retrieve(token, localPath, true);
+        } catch (Exception e) {
+            logger.warn("Could not retrive resource from local repo:" + e.getMessage());
+        }
+        return null;
     }
 
     private Path getLocalPath(String location, URL localURL) {

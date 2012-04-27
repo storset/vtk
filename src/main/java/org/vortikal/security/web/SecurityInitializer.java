@@ -321,6 +321,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             List<String> spCookies = new ArrayList<String>();
             spCookies.add(VRTX_AUTH_SP_COOKIE);
             spCookies.add(UIO_AUTH_IDP);
+            spCookies.add(VRTXLINK_COOKIE);
 
             for (String cookie : spCookies) {
                 Cookie c = getCookie(request, cookie);
@@ -329,7 +330,9 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                         logger.debug("Deleting cookie " + cookie);
                     }
                     c = new Cookie(cookie, c.getValue());
+                    if(!cookie.equals(VRTXLINK_COOKIE)) {
                     c.setSecure(true);
+                    }
                     c.setPath("/");
                     if (this.spCookieDomain != null) {
                         c.setDomain(this.spCookieDomain);
@@ -485,7 +488,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             return (String) session.getAttribute(SECURITY_TOKEN_SESSION_ATTR);
         }
         if (session != null) {
-            final String tokenFromSession = (String)session.getAttribute(SECURITY_TOKEN_SESSION_ATTR);
+            final String tokenFromSession = (String) session.getAttribute(SECURITY_TOKEN_SESSION_ATTR);
             if (tokenFromSession != null) {
                 Principal principal = this.tokenManager.getPrincipal(tokenFromSession);
                 if (principal != null) {

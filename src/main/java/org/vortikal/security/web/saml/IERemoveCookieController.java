@@ -6,6 +6,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.web.service.URL;
@@ -15,6 +17,8 @@ public class IERemoveCookieController implements Controller {
     private String spCookieDomain = null;
     private String ieCookieLogoutTicket;
     private IECookieStore iECookieStore;
+
+    private static Log authLogger = LogFactory.getLog("org.vortikal.security.web.AuthLog");
 
     private String uioAuthSSO;
     public static final String VRTXLINK_COOKIE = "VRTXLINK";
@@ -28,6 +32,7 @@ public class IERemoveCookieController implements Controller {
 
         if (iECookieStore.getToken(request, UUID.fromString(cookieTicket)) != null) {
             for (String key : cookiesToDelete) {
+                authLogger.debug("DELETING cookie: " + key);
                 Cookie c = new Cookie(key, key);
                 c.setPath("/");
                 if (this.spCookieDomain != null) {

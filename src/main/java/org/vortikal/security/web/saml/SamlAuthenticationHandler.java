@@ -98,6 +98,8 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
 
     private static Log logger = LogFactory.getLog(SamlAuthenticationHandler.class);
 
+    private static Log authLogger = LogFactory.getLog("org.vortikal.security.web.AuthLog");
+
     private IECookieStore iECookieStore;
 
     private Service redirectToViewService;
@@ -209,6 +211,8 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
             }
             currentURL.setProtocol("https");
             currentURL.addParameter(ieCookieTicket, cookieTicket);
+
+            authLogger.debug("Cookie-setter redirecting to: " + currentURL);
 
             try {
                 currentURL.addParameter(ieReturnURL, URLEncoder.encode(resourceURL.toString(), "UTF-8"));

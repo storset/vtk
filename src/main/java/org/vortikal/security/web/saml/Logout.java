@@ -39,6 +39,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.binding.BasicSAMLMessageContext;
 import org.opensaml.saml2.binding.decoding.HTTPRedirectDeflateDecoder;
@@ -67,6 +69,8 @@ public class Logout extends SamlService {
 
     private Assertion manageAssertion;
 
+    private static Log authLogger = LogFactory.getLog("org.vortikal.security.web.AuthLog");
+
     public void initiateLogout(HttpServletRequest request, HttpServletResponse response) {
 
         URL savedURL = URL.create(request);
@@ -75,6 +79,7 @@ public class Logout extends SamlService {
         }
 
         if (SamlAuthenticationHandler.browserIsIE(request) && manageAssertion.matches(request, null, null)) {
+            authLogger.debug("IE detected, initiating cookie removal");
             Map<String, String> myMap = new HashMap<String, String>();
             myMap.put("true", "true");
             String cookieTicket = iECookieStore.addToken(request, myMap).toString();
@@ -103,6 +108,8 @@ public class Logout extends SamlService {
 
         // verifyLogoutRequestIssuerIsSameAsLoginRequestIssuer(requestIssuer);
         Credential signingCredential = getSigningCredential();
+
+        authLogger.debug("handleLogoutRequest: " + request.getRemoteHost());
 
         UUID responseID = UUID.randomUUID();
         SamlConfiguration samlConfiguration = newSamlConfiguration(request);
@@ -153,6 +160,8 @@ public class Logout extends SamlService {
             throw new InvalidRequestException("Missing request ID attribute in session");
         }
         setRequestIDSessionAttribute(request, url, null);
+
+        authLogger.debug("handleLogoutResponse: " + request.getRemoteHost());
 
         LogoutResponse logoutResponse = getLogoutResponse(request);
         logoutResponse.validate(true);

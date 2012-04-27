@@ -8,6 +8,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -19,6 +21,8 @@ public class IECookieRedirectController implements Controller {
     private String uioAuthIDP;
     private String uioAuthSSO;
     private String ieReturnURL;
+
+    private static Log authLogger = LogFactory.getLog("org.vortikal.security.web.AuthLog");
 
     private IECookieStore iECookieStore;
 
@@ -34,6 +38,8 @@ public class IECookieRedirectController implements Controller {
 
             Map<String, String> cookieMap = iECookieStore.getToken(request, UUID.fromString(cookieTicket));
             if (cookieMap != null) {
+                authLogger.debug("IE cookie setter setting cookies.");
+
                 String spCookie = cookieMap.get(vrtxAuthSP);
                 String idpCookie = cookieMap.get(uioAuthIDP);
                 String ssoCookie = cookieMap.get(uioAuthSSO);

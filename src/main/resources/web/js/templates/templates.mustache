@@ -52,11 +52,11 @@
 
 ### {{! BROWSE }}
 
-<div class="{{ class }}">
+<div class="{{ clazz }}">
   <div class="{{ class }}-label">
     <label for="{{ inputFieldName }}">{{ elemTitle }}</label>
   </div>
-  <div class="{{ class }}-browse">
+  <div class="{{ clazz }}-browse">
     <div class="vrtx-textfield">
       <input type="text" name="{{ inputFieldName }}" id="{{ inputFieldName }}" onblur="{{ onBlur }}" value="" size="{{ size }}" />
     </div>
@@ -71,6 +71,6 @@
 
 ### {{! ADD, REMOVE, MOVE UP, MOVE DOWN }}
 
-<div class="vrtx-button vrtx-{{ class }}-button">
+<div class="vrtx-button vrtx-{{ clazz }}-button">
   <input type="button" value="{{ buttonText }}" />
 </div>

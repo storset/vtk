@@ -65,7 +65,7 @@
 
       $.when(templatesRetrieved, jsonElementsBuilt).done(function() {
         for (var i = 0, len = LIST_OF_JSON_ELEMENTS.length; i < len; i++) {
-          var json = { class: "add", buttonText: '${vrtx.getMsg("editor.add")}' }
+          var json = { clazz: "add", buttonText: '${vrtx.getMsg("editor.add")}' }
           $("#" + LIST_OF_JSON_ELEMENTS[i].name)
             .append($.mustache(TEMPLATES["add-remove-move"], json))
             .find(".vrtx-add-button input").data({'number': i});
@@ -133,9 +133,9 @@
       
       // Move up, move down, remove
 
-      var moveDownButton = $.mustache(TEMPLATES["add-remove-move"], { class: 'move-down', buttonText: '&darr; ${vrtx.getMsg("editor.move-down")}' });
-      var moveUpButton = $.mustache(TEMPLATES["add-remove-move"],   { class: 'move-up',   buttonText: '&uarr; ${vrtx.getMsg("editor.move-up")}'   });
-      var removeButton = $.mustache(TEMPLATES["add-remove-move"],   { class: 'remove',    buttonText: '${vrtx.getMsg("editor.remove")}'           });
+      var moveDownButton = $.mustache(TEMPLATES["add-remove-move"], { clazz: 'move-down', buttonText: '&darr; ${vrtx.getMsg("editor.move-down")}' });
+      var moveUpButton = $.mustache(TEMPLATES["add-remove-move"],   { clazz: 'move-up',   buttonText: '&uarr; ${vrtx.getMsg("editor.move-up")}'   });
+      var removeButton = $.mustache(TEMPLATES["add-remove-move"],   { clazz: 'remove',    buttonText: '${vrtx.getMsg("editor.remove")}'           });
 
       var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>";
       var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
@@ -262,7 +262,7 @@
     }
     
     function addImageRef(elem, inputFieldName) {
-      var json = { class: 'vrtx-image-ref',
+      var json = { clazz: 'vrtx-image-ref',
                    elemTitle: elem.title,
                    inputFieldName: inputFieldName,
                    fckEditorBaseUrl: '${fckeditorBase.url}',
@@ -277,7 +277,7 @@
     }
     
     function addResourceRef(elem, inputFieldName) {
-      var json = { class: 'vrtx-resource-ref',
+      var json = { clazz: 'vrtx-resource-ref',
                    elemTitle: elem.title,
                    inputFieldName: inputFieldName,
                    fckEditorBaseUrl: '${fckeditorBase.url}',
@@ -292,7 +292,7 @@
     }
     
     function addMediaRef(elem, inputFieldName) {
-      var json = { class: 'vrtx-media-ref',
+      var json = { clazz: 'vrtx-media-ref',
                    elemTitle: elem.title,
                    inputFieldName: inputFieldName,
                    fckEditorBaseUrl: '${fckeditorBase.url}',

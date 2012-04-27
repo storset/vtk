@@ -30,7 +30,7 @@ $(document).ready(function () {
       $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
     }
     $("#editor").accordion({ header: "> div > .header", autoHeight: false });
-  )
+  }
   $(document).on('change', '#typeToDisplay', function () {
     hideShowStudy($(this).val());
   });

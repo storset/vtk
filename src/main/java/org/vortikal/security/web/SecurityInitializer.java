@@ -330,8 +330,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                         logger.debug("Deleting cookie " + cookie);
                     }
                     c = new Cookie(cookie, c.getValue());
-                    if(!cookie.equals(VRTXLINK_COOKIE)) {
-                    c.setSecure(true);
+                    if (!cookie.equals(VRTXLINK_COOKIE)) {
+                        c.setSecure(true);
                     }
                     c.setPath("/");
                     if (this.spCookieDomain != null) {
@@ -342,6 +342,12 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                 }
             }
         }
+
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
         return true;
     }
 

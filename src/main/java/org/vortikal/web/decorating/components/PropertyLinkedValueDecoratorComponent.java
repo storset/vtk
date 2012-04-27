@@ -98,34 +98,41 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
             for (Value value : values) {
                 String s = value.getStringValue();
                 valueList.add(s);
-                urlList.add(getUrl(s, serviceURL,requestContext.getRequestURL(),request.getLocale()));
+                urlList.add(getUrl(s, serviceURL, requestContext.getRequestURL(), request.getLocale()));
             }
         } else {
             String value = prop.getValue().getStringValue();
-            urlList.add(getUrl(value, serviceURL,requestContext.getRequestURL(),request.getLocale()));
+            urlList.add(getUrl(value, serviceURL, requestContext.getRequestURL(), request.getLocale()));
             valueList.add(value);
         }
     }
 
     private String getUrl(String value, String serviceUrl, URL requestURL, Locale locale) {
+
         if (value == null) {
             throw new IllegalArgumentException("Value is NULL");
+        }
+
+        String serviceURLpattern = null;
+        value = Matcher.quoteReplacement(value);
+        if (serviceUrl == null) {
+            serviceURLpattern = this.defaultURLpattern.replaceAll("%v", value);
+        } else {
+            serviceURLpattern = serviceUrl.replaceAll("%v", value);
         }
 
         if (nearestContextResolver != null) {
             URL closestContextURL = nearestContextResolver.getClosestContext(requestURL, locale);
             if (closestContextURL != null) {
-                closestContextURL.addParameter("vrtx", "tags");
-                closestContextURL.addParameter("tag", value);
-                return closestContextURL.toString();
+                String contextURL = closestContextURL.toString();
+                contextURL = contextURL.endsWith("/") ? contextURL.substring(0, contextURL.lastIndexOf("/"))
+                        : contextURL;
+                contextURL = contextURL.concat(serviceURLpattern);
+                return contextURL;
             }
         }
 
-        value = Matcher.quoteReplacement(value);
-        if (serviceUrl == null) {
-            return this.defaultURLpattern.replaceAll("%v", value);
-        }
-        return serviceUrl.replaceAll("%v", value);
+        return serviceURLpattern;
     }
 
     public void afterPropertiesSet() throws Exception {
@@ -161,10 +168,10 @@ public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecorato
     protected Map<String, String> getParameterDescriptionsInternal() {
         Map<String, String> map = new HashMap<String, String>();
         map.put(PARAMETER_TITLE, PARAMETER_TITLE_DESC);
-        map.put(PARAMETER_SERVICEURL, "Optional URL to tag service (default is '" + defaultURLpattern + "')");
+        map.put(PARAMETER_SERVICEURL, "Optional reference to service (default is '" + defaultURLpattern + "')");
         return map;
     }
-    
+
     public void setNearestContextResolver(NearestContextResolver nearestContextResolver) {
         this.nearestContextResolver = nearestContextResolver;
     }

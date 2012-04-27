@@ -208,7 +208,9 @@
     </property>
   </bean>
 
-  <bean id="decorating.resourceTagsComponent" class="org.vortikal.web.decorating.components.PropertyLinkedValueDecoratorComponent">
+  <!-- Will be initiated with required set of properties where needed -->
+  <bean id="decorating.abstractResourceTagsComponent" abstract="true"
+    class="org.vortikal.web.decorating.components.PropertyLinkedValueDecoratorComponent">
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="tags" />
     <property name="propertyTypeDefinition" ref="tagsPropDef" />
@@ -221,6 +223,8 @@
       </map>
     </property>
   </bean>
+
+  <bean id="decorating.resourceTagsComponent" parent="decorating.abstractResourceTagsComponent" />
 
   <bean id="decorating.tagCloudComponent" class="org.vortikal.web.decorating.components.TagCloudComponent">
     <property name="namespace" ref="decorating.includeNamespace" />

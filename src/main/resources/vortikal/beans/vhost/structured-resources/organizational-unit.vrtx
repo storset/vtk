@@ -338,7 +338,7 @@ resourcetype organizational-unit {
 
   localization {
     header : (en : "Edit organizational unit", no : "Rediger organisatorisk enhet", nn : "Rediger organisatorisk eining"),
-    areacode : (en : "Area code", no : "Stedkode", nn : "Stadkode"),
+    areacode : (en : "Org. Unit Number", no : "Stedkode", nn : "Stadkode"),
     getExternalUnitInfo : (
       en : "Use information registrated in UiO's payroll- and personalsystem",
       no : "Bruk opplysninger registrert i UiOs lønns- og personalsystem",

@@ -31,7 +31,9 @@ $(document).ready(function () {
       $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
     }
     $("#editor").accordion({ header: "> div > .header", 
-                             autoHeight: false
+                             autoHeight: false,
+                             collapsible: true,
+                             active: false
                            });
   }
   $(document).on('change', '#typeToDisplay', function () {

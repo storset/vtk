@@ -26,7 +26,7 @@
     //-->
     </script>
     
-    <link type="text/css" href="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.8.custom/css/smoothness/jquery-ui-1.8.8.custom.css" rel="stylesheet" />
+    <link type="text/css" href="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.19.custom/css/smoothness/jquery-ui-1.8.19.custom.css" rel="stylesheet" />
   </head>
   <#assign resource = resourceContext.currentResource />
   <#assign header = vrtx.getMsg("publishing.header", "Publishing status on document") />

@@ -22,8 +22,8 @@
     }
   </style>
   
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/jquery-1.6.2.min.js"></script> 
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.8.8.custom/js/jquery-ui-1.8.8.custom.min.js"></script> 
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/jquery.min.js"></script> 
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.8.19.custom/js/jquery-ui-1.8.19.custom.min.js"></script> 
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/admin-enhancements.js"></script> 
 </head>
 <body>

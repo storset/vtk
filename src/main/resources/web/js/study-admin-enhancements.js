@@ -18,15 +18,15 @@ function hideShowStudy(typeToDisplay) {
 }
 
 $(document).ready(function () {
-  try {
-    var typeToDisplay = $('#typeToDisplay').val();
-    hideShowStudy(typeToDisplay);
-  }
-  catch (err) {
-    return false;
-  }
-  // TODO: generalize into more general for editor
-  if($('#typeToDisplay').length) { // Check that it is the correct document
+  var typeToDisplay = $('#typeToDisplay');
+  if(typeToDisplay.length) { // Check that it is the correct document
+    try {
+      hideShowStudy(typeToDisplay.val());
+    }
+    catch (err) {
+      return false;
+    }
+    // TODO: generalize into more general for editor
     for(var grouped = $(".vrtx-grouped"), i = grouped.length; i--;) { // Because accordion needs one content wrapper
       $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
     }

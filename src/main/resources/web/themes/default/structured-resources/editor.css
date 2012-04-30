@@ -135,10 +135,12 @@
   padding: 7px 10px 6px 30px;
   margin: 0px -20px 0 -20px;
   border-radius: 0px;
+  background: none;
+  color: inherit;
 }
 
 .ui-accordion .ui-accordion-content { 
-  padding-left: 30px !important;
+  padding-left: 11px !important;
 }
 
 .ui-accordion.ui-widget {

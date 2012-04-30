@@ -25,7 +25,7 @@ $(document).ready(function () {
   catch (err) {
     return false;
   }
-  if($('#typeToDisplay').length) {
+  if($('#typeToDisplay').length) { // Check that it is the correct document
     for(var grouped = $(".vrtx-grouped"), i = grouped.length; i--;) { // Because accordion needs one content wrapper
       $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
     }

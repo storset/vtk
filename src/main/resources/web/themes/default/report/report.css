@@ -228,6 +228,8 @@ td.vrtx-report-broken-links li {
   clear: both;
 }
 
+/* Responsive width distribution */
+
 #vrtx-report-filters ul {
   margin-right: 10%;
   margin-bottom: 15px;
@@ -245,6 +247,8 @@ td.vrtx-report-broken-links li {
     margin-right: 3%;
   }
 }
+
+/* ^ Responsive width distribution */
 
 #vrtx-report-filters ul.vrtx-report-filter-last {
   margin-right: 0;

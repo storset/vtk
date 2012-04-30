@@ -7,7 +7,6 @@ import java.util.UUID;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,10 +54,10 @@ public class IERemoveCookieController implements Controller {
         }
         currentURL.removeParameter(ieCookieLogoutTicket);
 
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
+        // HttpSession session = request.getSession(false);
+        // if (session != null) {
+        // session.invalidate();
+        // }
 
         response.sendRedirect(currentURL.toString());
 

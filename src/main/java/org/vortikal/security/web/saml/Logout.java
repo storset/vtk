@@ -109,7 +109,7 @@ public class Logout extends SamlService {
         // verifyLogoutRequestIssuerIsSameAsLoginRequestIssuer(requestIssuer);
         Credential signingCredential = getSigningCredential();
 
-        authLogger.debug("handleLogoutRequest: " + request.getRemoteHost());
+        authLogger.debug("handleLogoutRequest: " + request.getRemoteHost() + ":" + URL.create(request));
 
         UUID responseID = UUID.randomUUID();
         SamlConfiguration samlConfiguration = newSamlConfiguration(request);
@@ -161,7 +161,7 @@ public class Logout extends SamlService {
         }
         setRequestIDSessionAttribute(request, url, null);
 
-        authLogger.debug("handleLogoutResponse: " + request.getRemoteHost());
+        authLogger.debug("handleLogoutResponse: " + request.getRemoteHost() + ":" + URL.create(request));
 
         LogoutResponse logoutResponse = getLogoutResponse(request);
         logoutResponse.validate(true);

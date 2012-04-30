@@ -395,6 +395,9 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             List<String> spCookies = new ArrayList<String>();
             spCookies.add(vrtxAuthSP);
             spCookies.add(uioAuthIDP);
+            if (this.cookieLinksEnabled) {
+                spCookies.add(VRTXLINK_COOKIE);
+            }
 
             for (String cookie : spCookies) {
                 Cookie c = getCookie(request, cookie);

@@ -21,8 +21,7 @@ public class IERemoveCookieAssertion implements Assertion {
     @Override
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
 
-        if (getCookie(request, uioAuthSSO) != null && request.getParameter(ieCookieLogoutTicket) != null
-                && SamlAuthenticationHandler.browserIsIE(request)) {
+        if (request.getParameter(ieCookieLogoutTicket) != null && SamlAuthenticationHandler.browserIsIE(request)) {
             return true;
         } else {
             return false;

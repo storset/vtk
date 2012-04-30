@@ -32,14 +32,16 @@ public class IERemoveCookieController implements Controller {
         String cookieTicket = request.getParameter(ieCookieLogoutTicket);
         List<String> cookiesToDelete = new ArrayList<String>();
 
-        cookiesToDelete.add(uioAuthSSO);
-
-        if (SamlAuthenticationHandler.getCookie(request, VRTXLINK_COOKIE) != null) {
-            if (authLogger.isDebugEnabled()) {
-                authLogger.debug("IE Cookie remover, found " + VRTXLINK_COOKIE);
-            }
-            cookiesToDelete.add(VRTXLINK_COOKIE);
+        if (SamlAuthenticationHandler.getCookie(request, uioAuthSSO) != null) {
+            cookiesToDelete.add(uioAuthSSO);
         }
+
+        // if (SamlAuthenticationHandler.getCookie(request, VRTXLINK_COOKIE) != null) {
+        // if (authLogger.isDebugEnabled()) {
+        // authLogger.debug("IE Cookie remover, found " + VRTXLINK_COOKIE);
+        // }
+        // cookiesToDelete.add(VRTXLINK_COOKIE);
+        // }
 
         if (iECookieStore.getToken(request, UUID.fromString(cookieTicket)) != null) {
             for (String key : cookiesToDelete) {
@@ -55,6 +57,7 @@ public class IERemoveCookieController implements Controller {
                 response.addCookie(c);
             }
             iECookieStore.dropToken(request, UUID.fromString(cookieTicket));
+
         }
         currentURL.removeParameter(ieCookieLogoutTicket);
         response.sendRedirect(currentURL.toString());

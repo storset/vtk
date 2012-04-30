@@ -311,9 +311,8 @@ td.vrtx-report-broken-links li {
 
 #vrtx-report-filters #vrtx-report-filters-show-hide-advanced {
   margin-top: 11px;
-  margin-left: -10px;
   display: block;
-  float: left;
+  float: right;
 }
 
 .vrtx-multipleinputfield {

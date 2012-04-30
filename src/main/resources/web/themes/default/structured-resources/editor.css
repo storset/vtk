@@ -132,7 +132,8 @@
 }
 
 .ui-accordion .vrtx-grouped {
-  margin: 0 -20px 20px -20px;
+  margin-left: -20px;
+  margin-right: -20px;
 }
 
 .ui-accordion .vrtx-grouped .header {
@@ -143,9 +144,20 @@
   color: inherit;
 }
 
+.ui-accordion .vrtx-grouped .header.ui-state-hover {
+  background: #ecf3f9;
+}
+
 .ui-accordion .ui-accordion-content { 
   padding-left: 30px !important;
+  padding-top: 0px !important;
 }
+
+/*
+.ui-accordion .ui-accordion-content .vrtx-html {
+  margin-top: 10px;
+}
+*/
 
 .ui-accordion.ui-widget {
   font-size: 1em !important;

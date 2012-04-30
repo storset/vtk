@@ -133,7 +133,8 @@
 
 .ui-accordion .vrtx-grouped .header {
   padding: 7px 10px 6px 30px;
-  margin-bottom: 0px;
+  margin: 0px -20px 0 -20px;
+  border-radius: 0px;
 }
 
 .ui-accordion .ui-accordion-content { 

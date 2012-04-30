@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.search.query;
 
-
 import static org.vortikal.repository.search.query.TermOperator.EQ;
 import static org.vortikal.repository.search.query.TermOperator.NE;
 
@@ -48,6 +47,7 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanFilter;
 import org.apache.lucene.search.CachingWrapperFilter;
 import org.apache.lucene.search.ConstantScoreQuery;
+import org.apache.lucene.search.FieldValueFilter;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.FilterClause;
 import org.apache.lucene.search.MatchAllDocsQuery;
@@ -87,8 +87,6 @@ import org.vortikal.repository.search.query.builders.UriPrefixQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriSetQueryBuilder;
 import org.vortikal.repository.search.query.builders.UriTermQueryBuilder;
 import org.vortikal.repository.search.query.filter.DeletedDocsFilter;
-import org.vortikal.repository.search.query.filter.InversionFilter;
-import org.vortikal.repository.search.query.filter.TermExistsFilter;
 import org.vortikal.repository.search.query.security.QueryAuthorizationFilterFactory;
 
 /**
@@ -127,10 +125,9 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
 
         if (this.hiddenPropDef != null) {
             // Special case caching for common "navigation:hidden !exists" query clause
-            TermExistsFilter te = new TermExistsFilter(
-                    FieldNames.getSearchFieldName(this.hiddenPropDef, false));
-            this.cachedHiddenPropDefNotExistsFilter =
-                    new CachingWrapperFilter(new InversionFilter(te, this.cachedDeletedDocsFilter));
+            FieldValueFilter fv = new FieldValueFilter(
+                    FieldNames.getSearchFieldName(this.hiddenPropDef, false), true);
+            this.cachedHiddenPropDefNotExistsFilter = new CachingWrapperFilter(fv, CachingWrapperFilter.DeletesMode.RECACHE);
         }
     }
     
@@ -311,7 +308,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
                 };
             }
 
-            return new PropertyExistsQueryBuilder(peq, this.cachedDeletedDocsFilter);
+            return new PropertyExistsQueryBuilder(peq);
         }
         
             throw new QueryBuilderException("Unsupported property query type: " 

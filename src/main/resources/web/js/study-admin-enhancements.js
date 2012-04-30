@@ -26,7 +26,7 @@ $(document).ready(function () {
     catch (err) {
       return false;
     }
-    // TODO: generalize into more general for editor
+    // TODO: generalize collapse for editor
     for(var grouped = $(".vrtx-grouped"), i = grouped.length; i--;) { // Because accordion needs one content wrapper
       $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
     }

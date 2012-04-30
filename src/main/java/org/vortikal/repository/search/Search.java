@@ -129,7 +129,7 @@ public final class Search {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.getClass().getName()).append(": [");
+        sb.append(this.getClass().getName()).append("[");
         if (query != null) {
             sb.append("query=").append(query.accept(new DumpQueryTreeVisitor(), null));
         } else {

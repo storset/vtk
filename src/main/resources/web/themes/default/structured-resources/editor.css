@@ -131,16 +131,20 @@
   display: none;
 }
 
+.ui-accordion .vrtx-grouped {
+  margin: 0 -20px 20px -20px;
+}
+
 .ui-accordion .vrtx-grouped .header {
   padding: 7px 10px 6px 30px;
-  margin: 0px -20px 0 -20px;
   border-radius: 0px;
+  margin-bottom: 0px;
   background: none;
   color: inherit;
 }
 
 .ui-accordion .ui-accordion-content { 
-  padding-left: 11px !important;
+  padding-left: 30px !important;
 }
 
 .ui-accordion.ui-widget {

@@ -315,7 +315,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         this.tokenManager.removeToken(securityContext.getToken());
         SecurityContext.setSecurityContext(null);
         if (authLogger.isDebugEnabled()) {
-            authLogger.debug("Logout: principal: '" + principal + "' - method: '<none>' - status: OK");
+            authLogger.debug("removeAuthState_method: Logout: principal: '" + principal
+                    + "' - method: '<none>' - status: OK");
         }
         if (this.rememberAuthMethod) {
             List<String> spCookies = new ArrayList<String>();
@@ -335,7 +336,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                         c.setSecure(true);
                     }
                     c.setPath("/");
-                    if (this.spCookieDomain != null) {
+                    if (this.spCookieDomain != null && !cookie.equals(VRTXLINK_COOKIE)) {
                         c.setDomain(this.spCookieDomain);
                     }
                     c.setMaxAge(0);
@@ -385,8 +386,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         boolean result = handler.logout(principal, request, response);
         String status = result ? "OK" : "FAIL";
         if (authLogger.isDebugEnabled()) {
-            authLogger.debug("Logout: principal: '" + principal + "' - method: '" + handler.getIdentifier()
-                    + "' - status: " + status);
+            authLogger.debug("logout_method: Logout: principal: '" + principal + "' - method: '"
+                    + handler.getIdentifier() + "' - status: " + status);
         }
 
         this.tokenManager.removeToken(securityContext.getToken());
@@ -411,7 +412,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                         c.setSecure(true);
                     }
                     c.setPath("/");
-                    if (this.spCookieDomain != null) {
+                    if (this.spCookieDomain != null && !cookie.equals(VRTXLINK_COOKIE)) {
                         c.setDomain(this.spCookieDomain);
                     }
                     c.setMaxAge(0);

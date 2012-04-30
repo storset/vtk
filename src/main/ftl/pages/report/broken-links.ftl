@@ -173,8 +173,11 @@
               <#if timestamp != "">
                 <@vrtx.date value=timestamp?datetime('yyyyMMdd HH:mm:ss') format="long" />
               </#if>
+              <#if timestamp != "" && linkStatus = 'AWAITING_LINKCHECK'>
+                - 
+              </#if>
               <#if linkStatus = 'AWAITING_LINKCHECK'>
-                (<@vrtx.msg code="report.broken-links.awaiting-linkcheck" />)
+                <@vrtx.msg code="report.broken-links.awaiting-linkcheck" />
               </#if>
             </td>
           </tr>

@@ -229,9 +229,13 @@ td.vrtx-report-broken-links li {
 }
 
 #vrtx-report-filters ul {
-  margin-right: 2.5%;
+  margin-right: 2%;
   margin-bottom: 15px;
   float: left;
+}
+
+#vrtx-report-filters ul.vrtx-report-filter-last {
+  margin-right: 0;
 }
 
 #vrtx-report-filters ul li {

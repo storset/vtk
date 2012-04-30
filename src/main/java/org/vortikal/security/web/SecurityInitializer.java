@@ -85,9 +85,9 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
     public static final String VRTXLINK_COOKIE = "VRTXLINK";
 
-    private static final String VRTX_AUTH_SP_COOKIE = "VRTX_AUTH_SP";
+    private String vrtxAuthSP;
 
-    private static final String UIO_AUTH_IDP = "UIO_AUTH_IDP";
+    private String uioAuthIDP;
 
     private static final String VRTXID = "VRTXID";
 
@@ -319,8 +319,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         }
         if (this.rememberAuthMethod) {
             List<String> spCookies = new ArrayList<String>();
-            spCookies.add(VRTX_AUTH_SP_COOKIE);
-            spCookies.add(UIO_AUTH_IDP);
+            spCookies.add(vrtxAuthSP);
+            spCookies.add(uioAuthIDP);
             spCookies.add(VRTXLINK_COOKIE);
 
             for (String cookie : spCookies) {
@@ -393,8 +393,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
         if (this.rememberAuthMethod) {
             List<String> spCookies = new ArrayList<String>();
-            spCookies.add(VRTX_AUTH_SP_COOKIE);
-            spCookies.add(UIO_AUTH_IDP);
+            spCookies.add(vrtxAuthSP);
+            spCookies.add(uioAuthIDP);
 
             for (String cookie : spCookies) {
                 Cookie c = getCookie(request, cookie);
@@ -551,8 +551,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             categories = Collections.EMPTY_SET;
         if (this.rememberAuthMethod && categories.contains(AUTH_HANDLER_SP_COOKIE_CATEGORY)) {
             List<String> spCookies = new ArrayList<String>();
-            spCookies.add(VRTX_AUTH_SP_COOKIE);
-            spCookies.add(UIO_AUTH_IDP);
+            spCookies.add(vrtxAuthSP);
+            spCookies.add(uioAuthIDP);
 
             for (String cookie : spCookies) {
                 Cookie c = new Cookie(cookie, handler.getIdentifier());
@@ -606,7 +606,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     private AuthenticationChallenge getAuthenticationChallenge(HttpServletRequest request, Service service) {
         AuthenticationChallenge challenge = null;
         if (this.rememberAuthMethod) {
-            Cookie c = getCookie(request, VRTX_AUTH_SP_COOKIE);
+            Cookie c = getCookie(request, vrtxAuthSP);
             if (c != null) {
                 String id = c.getValue();
                 AuthenticationHandler handler = this.authHandlerMap.get(id);
@@ -632,7 +632,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
         if (challenge != null) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Using challenge from cookie " + VRTX_AUTH_SP_COOKIE + ": " + challenge);
+                logger.debug("Using challenge from cookie " + vrtxAuthSP + ": " + challenge);
             }
             return challenge;
         }
@@ -656,6 +656,14 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             }
         }
         return null;
+    }
+
+    public void setVrtxAuthSP(String vrtxAuthSP) {
+        this.vrtxAuthSP = vrtxAuthSP;
+    }
+
+    public void setUioAuthIDP(String uioAuthIDP) {
+        this.uioAuthIDP = uioAuthIDP;
     }
 
 }

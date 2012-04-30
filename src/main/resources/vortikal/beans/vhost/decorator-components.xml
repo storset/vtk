@@ -412,16 +412,13 @@
   <bean id="decorating.eventComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/event-listing.ftl" />
   </bean>
-  
-  <bean id="decorating.collectionListingComponentHelper" class="org.vortikal.web.decorating.components.CollectionListingComponentHelper">
-  </bean>
  
   <bean id="decorating.collectionListingComponent" class="org.vortikal.web.decorating.components.CollectionListingComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="folder" />
     <property name="view" ref="decorating.collectionListingComponent.view" />
     <property name="search" ref="decorating.collectionListingComponent.searchComponent" />
-    <property name="helper" ref="decorating.collectionListingComponentHelper" />
+    <property name="helper" ref="collectionListing.helper" />
     <property name="description" value="Inserts a folder item list component on the page" />
     <property name="examples">
       <map>

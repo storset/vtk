@@ -1,7 +1,9 @@
 package org.vortikal.web.decorating.components;
 
 import java.util.List;
+import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.MultiHostSearcher;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PropertySet;
@@ -11,6 +13,8 @@ import org.vortikal.security.Principal;
 import org.vortikal.web.search.Listing;
 
 public class CollectionListingComponentHelper {
+
+    private Set<String> applicableResourceTypes;
 
     // XXX FIXME!!!
     // Indices of return array must match indices of each property set in each
@@ -33,9 +37,10 @@ public class CollectionListingComponentHelper {
                 boolean authorized = false;
                 String rt = ps.getResourceType();
 
-                // Attempt check only if resource is NOT from solr AND resource type is doc*|ppt*|xls*
+                // Attempt check only if resource is NOT from solr AND resource
+                // type is applicable for editing
                 if (ps.getPropertyByPrefix(null, MultiHostSearcher.MULTIHOST_RESOURCE_PROP_NAME) == null
-                        && (rt.equals("doc") || rt.equals("ppt") || rt.equals("xls"))) {
+                        && this.isApplicableResourceType(rt)) {
                     try {
                         res = repo.retrieve(token, ps.getURI(), true);
                         authorized = checkResourceForEditLink(repo, res, principal);
@@ -50,6 +55,10 @@ public class CollectionListingComponentHelper {
         return edit;
     }
 
+    private boolean isApplicableResourceType(String rt) {
+        return this.applicableResourceTypes.contains(rt);
+    }
+
     public boolean checkResourceForEditLink(Repository repo, Resource res, Principal principal) {
         if (res.getLock() != null && !res.getLock().getPrincipal().equals(principal)) {
             return false;
@@ -59,4 +68,10 @@ public class CollectionListingComponentHelper {
                 || repo.authorize(principal, res.getAcl(), Privilege.READ_WRITE);
 
     }
+
+    @Required
+    public void setApplicableResourceTypes(Set<String> applicableResourceTypes) {
+        this.applicableResourceTypes = applicableResourceTypes;
+    }
+
 }

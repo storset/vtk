@@ -15,6 +15,7 @@
   </bean>
 
   <bean id="messageListing.handler" parent="collectionListing.handler">
+    <property name="helper" ref="messageListing.helper" />
     <property name="searchComponents">
       <list>
         <ref bean="messageListing.searchComponent" />
@@ -33,6 +34,14 @@
       </list>
     </property>
     <property name="searchSorting" ref="messageListing.searchSorting" />
+  </bean>
+
+  <bean id="messageListing.helper" class="org.vortikal.web.decorating.components.CollectionListingComponentHelper">
+    <property name="applicableResourceTypes">
+      <set>
+        <value>structured-message</value>
+      </set>
+    </property>
   </bean>
 
   <bean id="messageListing.feedService" parent="collectionListing.atomService">

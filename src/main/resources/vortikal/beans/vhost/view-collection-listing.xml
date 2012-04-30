@@ -35,7 +35,7 @@
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
     <property name="hideIcon" ref="collection.hideIconPropDef" />
-    <property name="helper" ref="decorating.collectionListingComponentHelper" />
+    <property name="helper" ref="collectionListing.helper" />
     <property name="alternativeRepresentations">
       <map>
         <entry key="application/atom+xml" value-ref="collectionListing.atomService" />
@@ -109,6 +109,16 @@
         <entry key="title" value-ref="SORT_ORDER.ASC" />
         <entry key="name" value-ref="SORT_ORDER.ASC" />
       </map>
+    </property>
+  </bean>
+  
+  <bean id="collectionListing.helper" class="org.vortikal.web.decorating.components.CollectionListingComponentHelper">
+    <property name="applicableResourceTypes">
+      <set>
+        <value>doc</value>
+        <value>ppt</value>
+        <value>xls</value>
+      </set>
     </property>
   </bean>
 

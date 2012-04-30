@@ -140,6 +140,10 @@
   padding-left: 30px !important;
 }
 
+.ui-accordion.ui-widget {
+  font-size: 1em !important;
+}
+
 /* ^ Study enhancements */
 
 /* JSON-boxes - explicit settings */

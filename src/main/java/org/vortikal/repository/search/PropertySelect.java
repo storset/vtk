@@ -42,6 +42,10 @@ public interface PropertySelect {
         public boolean isIncludedProperty(PropertyTypeDefinition propertyDefinition) {
             return true;
         }
+        @Override
+        public String toString() {
+            return "ALL";
+        }
     };
     
     /**
@@ -51,6 +55,10 @@ public interface PropertySelect {
         @Override
         public boolean isIncludedProperty(PropertyTypeDefinition propertyDefinition) {
             return false;
+        }
+        @Override
+        public String toString() {
+            return "NONE";
         }
     };
     

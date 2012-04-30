@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,6 +54,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
+@SuppressWarnings("deprecation")
 public class FileUploadController extends SimpleFormController {
 
     private static Log logger = LogFactory.getLog(FileUploadController.class);
@@ -60,6 +62,9 @@ public class FileUploadController extends SimpleFormController {
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
 
     private int maxUploadSize = 100000000;
+
+    private boolean downcaseNames = false;
+    private Map<String, String> replaceNameChars;
 
     public void setMaxUploadSize(int maxUploadSize) {
         this.maxUploadSize = maxUploadSize;
@@ -82,8 +87,8 @@ public class FileUploadController extends SimpleFormController {
         Service service = requestContext.getService();
         Repository repository = requestContext.getRepository();
 
-        Resource resource = repository
-                .retrieve(requestContext.getSecurityToken(), requestContext.getResourceURI(), false);
+        Resource resource = repository.retrieve(requestContext.getSecurityToken(), requestContext.getResourceURI(),
+                false);
 
         String url = service.constructLink(resource, requestContext.getPrincipal());
 
@@ -106,7 +111,7 @@ public class FileUploadController extends SimpleFormController {
         ServletFileUpload upload = new ServletFileUpload(factory);
 
         List<FileItem> items = new ArrayList<FileItem>();
-        
+
         @SuppressWarnings("unchecked")
         List<FileItem> fileItems = upload.parseRequest(request);
         for (FileItem item : fileItems) {
@@ -119,7 +124,7 @@ public class FileUploadController extends SimpleFormController {
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
         Path uri = RequestContext.getRequestContext().getResourceURI();
-        
+
         // Check for existing files
         for (FileItem uploadItem : items) {
             String name = stripWindowsPath(uploadItem.getName());
@@ -127,7 +132,7 @@ public class FileUploadController extends SimpleFormController {
             if (name == null || name.trim().equals("")) {
                 return new ModelAndView(getSuccessView());
             }
-            Path itemURI = uri.extend(name);
+            Path itemURI = uri.extend(fixFileName(name));
             boolean exists = repository.exists(token, itemURI);
             if (exists) {
                 errors.rejectValue("file", "manage.upload.resource.exists", "A resource with this name already exists");
@@ -146,7 +151,7 @@ public class FileUploadController extends SimpleFormController {
             }
 
             String name = stripWindowsPath(uploadItem.getName());
-            Path itemURI = uri.extend(name);
+            Path itemURI = uri.extend(fixFileName(name));
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Uploaded resource will be: " + itemURI);
@@ -189,6 +194,28 @@ public class FileUploadController extends SimpleFormController {
         }
 
         return fileName;
+    }
+
+    public void setReplaceNameChars(Map<String, String> replaceNameChars) {
+        this.replaceNameChars = replaceNameChars;
+    }
+
+    public void setDowncaseNames(boolean downcaseNames) {
+        this.downcaseNames = downcaseNames;
+    }
+
+    private String fixFileName(String name) {
+        if (this.downcaseNames) {
+            name = name.toLowerCase();
+        }
+
+        if (this.replaceNameChars != null) {
+            for (String regex : this.replaceNameChars.keySet()) {
+                String replacement = this.replaceNameChars.get(regex);
+                name = name.replaceAll(regex, replacement);
+            }
+        }
+        return name;
     }
 
 }

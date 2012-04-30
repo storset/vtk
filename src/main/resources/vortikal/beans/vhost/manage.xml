@@ -850,6 +850,8 @@
     <property name="successView" value="redirectToManage" />
     <property name="commandName" value="uploadForm" />
     <property name="commandClass" value="org.vortikal.web.actions.create.FileUploadCommand" />
+    <property name="downcaseNames" value="true" />
+    <property name="replaceNameChars" ref="createResource.nameReplacementMap" />
     <property name="tempDir" value="${repository.tempDir}" />
   </bean>
 

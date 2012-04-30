@@ -63,35 +63,36 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
-
-
 public class FCKeditorConnector implements Controller {
     private Service viewService;
     private String browseViewName;
     private String uploadStatusViewName;
     private int maxUploadSize = 1000000;
-    
+    private boolean downcaseNames = false;
+    private Map<String, String> replaceNameChars;
 
-    @Required public void setViewService(Service viewService) {
+    @Required
+    public void setViewService(Service viewService) {
         this.viewService = viewService;
     }
-    
-    @Required public void setBrowseViewName(String browseViewName) {
+
+    @Required
+    public void setBrowseViewName(String browseViewName) {
         this.browseViewName = browseViewName;
     }
-    
-    @Required public void setUploadStatusViewName(String uploadStatusViewName) {
+
+    @Required
+    public void setUploadStatusViewName(String uploadStatusViewName) {
         this.uploadStatusViewName = uploadStatusViewName;
     }
-    
+
     public void setMaxUploadSize(int maxUploadSize) {
         if (maxUploadSize <= 0) {
             throw new IllegalArgumentException("Max upload size must be a positive integer");
         }
         this.maxUploadSize = maxUploadSize;
     }
-    
-    
+
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         FCKeditorFileBrowserCommand command = new FCKeditorFileBrowserCommand(request);
@@ -100,7 +101,7 @@ public class FCKeditorConnector implements Controller {
         String token = requestContext.getSecurityToken();
 
         Locale locale = RequestContextUtils.getLocale(request);
-        
+
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("currentFolder", ensureTrailingSlash(command.getCurrentFolder()));
         model.put("command", command.getCommand().name());
@@ -110,71 +111,68 @@ public class FCKeditorConnector implements Controller {
 
         FCKeditorFileBrowserCommand.ResourceType type = command.getResourceType();
         switch (type) {
-            case Image:
-                fileFilter = IMAGE_FILTER;
-                break;
-            case Flash:
-                fileFilter = FLASH_FILTER;
-                break;
-            case Media:
-                fileFilter = MEDIA_FILTER;
-                break;
-            default:
-                fileFilter = FILE_FILTER;
-                break;
+        case Image:
+            fileFilter = IMAGE_FILTER;
+            break;
+        case Flash:
+            fileFilter = FLASH_FILTER;
+            break;
+        case Media:
+            fileFilter = MEDIA_FILTER;
+            break;
+        default:
+            fileFilter = FILE_FILTER;
+            break;
         }
-        
+
         FCKeditorFileBrowserCommand.Command c = command.getCommand();
         switch (c) {
-            case GetFolders:
-                try {
-                    model.put("folders", listResources(token, command, COLLECTION_FILTER, locale));
-                } catch (Exception e) {
-                    model.put("error", 1);
-                    model.put("customMessage", getErrorMessage(e));
-                }
-                break;
-
-            case GetFoldersAndFiles:
-                
-                try {
-                    model.put("folders", listResources(token, command, COLLECTION_FILTER, locale));
-                    model.put("files", listResources(token, command, fileFilter, locale));
-                } catch (Exception e) {
-                    model.put("error", 1);
-                    model.put("customMessage", getErrorMessage(e));
-                }
-                break;
-
-            case CreateFolder:
-                model.put("error", createFolder(command, requestContext));
-                break;
-
-            case FileUpload:
-                return uploadFile(command, requestContext); 
-
-            default:
+        case GetFolders:
+            try {
+                model.put("folders", listResources(token, command, COLLECTION_FILTER, locale));
+            } catch (Exception e) {
                 model.put("error", 1);
-                model.put("customMessage", "Unknown command");
+                model.put("customMessage", getErrorMessage(e));
+            }
+            break;
+
+        case GetFoldersAndFiles:
+
+            try {
+                model.put("folders", listResources(token, command, COLLECTION_FILTER, locale));
+                model.put("files", listResources(token, command, fileFilter, locale));
+            } catch (Exception e) {
+                model.put("error", 1);
+                model.put("customMessage", getErrorMessage(e));
+            }
+            break;
+
+        case CreateFolder:
+            model.put("error", createFolder(command, requestContext));
+            break;
+
+        case FileUpload:
+            return uploadFile(command, requestContext);
+
+        default:
+            model.put("error", 1);
+            model.put("customMessage", "Unknown command");
         }
 
         return new ModelAndView(this.browseViewName, model);
     }
 
-    
     private Map<String, Map<String, Object>> listResources(String token, FCKeditorFileBrowserCommand command,
-                                           Filter filter, Locale locale) throws Exception {
+            Filter filter, Locale locale) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
-        
-        Resource[] children = repository.listChildren(
-            token, command.getCurrentFolder(), true);
 
-        Map<String, Map<String, Object>> result = 
-            new TreeMap<String, Map<String, Object>>(Collator.getInstance(locale));
+        Resource[] children = repository.listChildren(token, command.getCurrentFolder(), true);
 
-        for (Resource r: children) {
+        Map<String, Map<String, Object>> result = new TreeMap<String, Map<String, Object>>(Collator.getInstance(locale));
+
+        for (Resource r : children) {
             if (!filter.isAccepted(r)) {
                 continue;
             }
@@ -185,20 +183,18 @@ public class FCKeditorConnector implements Controller {
             if (!r.isCollection()) {
                 entry.put("contentLength", r.getContentLength());
             }
-            
+
             result.put(r.getURI().toString(), entry);
         }
         return result;
     }
-    
-    
 
     private int createFolder(FCKeditorFileBrowserCommand command, RequestContext requestContext) {
 
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
         Path curFolder = command.getCurrentFolder();
-        Path newFolderURI = curFolder.extend(command.getNewFolderName());
+        Path newFolderURI = curFolder.extend(fixUploadName(command.getNewFolderName()));
         try {
             if (repository.exists(token, newFolderURI)) {
                 return 101;
@@ -211,29 +207,29 @@ public class FCKeditorConnector implements Controller {
             return 0;
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     private ModelAndView uploadFile(FCKeditorFileBrowserCommand command, RequestContext requestContext) {
         Map<String, Object> model = new HashMap<String, Object>();
-        
-        FileItemFactory factory = new DiskFileItemFactory(
-            this.maxUploadSize, new File(System.getProperty("java.io.tmpdir")));
+
+        FileItemFactory factory = new DiskFileItemFactory(this.maxUploadSize, new File(System
+                .getProperty("java.io.tmpdir")));
         ServletFileUpload upload = new ServletFileUpload(factory);
         HttpServletRequest request = requestContext.getServletRequest();
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
-        
+
         FileItem uploadItem = null;
         try {
             List<FileItem> fileItems = upload.parseRequest(request);
-            for (FileItem item: fileItems) {
+            for (FileItem item : fileItems) {
                 if (!item.isFormField()) {
                     uploadItem = item;
                     break;
                 }
             }
             String name = cleanupFileName(uploadItem.getName());
-            Path uri = command.getCurrentFolder().extend(name);
+            Path uri = command.getCurrentFolder().extend(fixUploadName(name));
             boolean existed = false;
             if (repository.exists(token, uri)) {
                 existed = true;
@@ -245,29 +241,27 @@ public class FCKeditorConnector implements Controller {
 
             Resource newResource = repository.retrieve(token, uri, true);
             TypeInfo typeInfo = repository.getTypeInfo(token, uri);
-            
+
             String contentType = uploadItem.getContentType();
             if (contentType == null || MimeHelper.DEFAULT_MIME_TYPE.equals(contentType)) {
                 contentType = MimeHelper.map(newResource.getName());
             }
 
-            Property prop = typeInfo.createProperty(
-                    Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
+            Property prop = typeInfo.createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTTYPE_PROP_NAME);
             prop.setStringValue(contentType);
             newResource.addProperty(prop);
             repository.store(token, newResource);
-            
+
             URL fileURL = this.viewService.constructURL(uri);
 
             model.put("existed", existed);
             model.put("fileName", name);
             model.put("newFileName", fileURL.getPath().getName());
             model.put("error", existed ? 201 : 0);
-            
 
         } catch (AuthorizationException e) {
             model.put("error", 203);
-            
+
         } catch (Exception e) {
             model.put("error", 1);
             model.put("customMessage", e.getMessage());
@@ -275,20 +269,19 @@ public class FCKeditorConnector implements Controller {
 
         return new ModelAndView(this.uploadStatusViewName, model);
     }
-    
-
 
     private String ensureTrailingSlash(Path path) {
-        if (path.isRoot()) return path.toString();
+        if (path.isRoot())
+            return path.toString();
         return path.toString() + "/";
     }
-    
-    private Path newFileName(FCKeditorFileBrowserCommand command,
-                                   RequestContext requestContext, FileItem item) throws Exception {
+
+    private Path newFileName(FCKeditorFileBrowserCommand command, RequestContext requestContext, FileItem item)
+            throws Exception {
 
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
-        String name = item.getName();
+        String name = fixUploadName(cleanupFileName(item.getName()));
         Path base = command.getCurrentFolder();
 
         String extension = "";
@@ -309,9 +302,8 @@ public class FCKeditorConnector implements Controller {
             newURI = base.extend(name + "(" + number + ")" + dot + extension);
             number++;
         }
-        return  newURI;
+        return newURI;
     }
-    
 
     static String cleanupFileName(String fileName) {
         if (fileName == null || fileName.trim().equals("")) {
@@ -322,10 +314,9 @@ public class FCKeditorConnector implements Controller {
             return fileName;
         } else if (pos >= 0) {
             return fileName.substring(pos + 1, fileName.length());
-        } 
+        }
         return fileName;
     }
-
 
     private String getErrorMessage(Exception e) {
         String message = e.getMessage();
@@ -334,12 +325,10 @@ public class FCKeditorConnector implements Controller {
         }
         return message;
     }
-    
 
     private interface Filter {
         public boolean isAccepted(Resource r);
     }
-    
 
     private static final Filter FILE_FILTER = new Filter() {
         public boolean isAccepted(Resource resource) {
@@ -354,24 +343,45 @@ public class FCKeditorConnector implements Controller {
     };
 
     private static final Filter IMAGE_FILTER = new Filter() {
-         public boolean isAccepted(Resource resource) {
-             return !resource.isCollection() &&
-                 resource.getContentType().startsWith("image/");
-         }
+        public boolean isAccepted(Resource resource) {
+            return !resource.isCollection() && resource.getContentType().startsWith("image/");
+        }
     };
-        
+
     private static final Filter MEDIA_FILTER = new Filter() {
         public boolean isAccepted(Resource resource) {
-            return !resource.isCollection() &&
-                (resource.getContentType().startsWith("audio/") 
-                        || resource.getContentType().startsWith("video/"));
+            return !resource.isCollection()
+                    && (resource.getContentType().startsWith("audio/") || resource.getContentType()
+                            .startsWith("video/"));
         }
-   };
-       
-    private static final Filter FLASH_FILTER = new Filter() {
-         public boolean isAccepted(Resource resource) {
-             return !resource.isCollection() &&
-                 resource.getContentType().equalsIgnoreCase("application/x-shockwave-flash");
-         }
     };
+
+    private static final Filter FLASH_FILTER = new Filter() {
+        public boolean isAccepted(Resource resource) {
+            return !resource.isCollection()
+                    && resource.getContentType().equalsIgnoreCase("application/x-shockwave-flash");
+        }
+    };
+
+    public void setReplaceNameChars(Map<String, String> replaceNameChars) {
+        this.replaceNameChars = replaceNameChars;
+    }
+
+    public void setDowncaseNames(boolean downcaseNames) {
+        this.downcaseNames = downcaseNames;
+    }
+
+    private String fixUploadName(String name) {
+        if (this.downcaseNames) {
+            name = name.toLowerCase();
+        }
+
+        if (this.replaceNameChars != null) {
+            for (String regex : this.replaceNameChars.keySet()) {
+                String replacement = this.replaceNameChars.get(regex);
+                name = name.replaceAll(regex, replacement);
+            }
+        }
+        return name;
+    }
 }

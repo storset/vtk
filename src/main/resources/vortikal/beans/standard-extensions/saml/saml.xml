@@ -239,10 +239,7 @@
     <property name="handler" ref="saml.ssoCookieHandler"/>
   </bean>
 
-  <bean name="saml.ssoCookieHandler" class="org.vortikal.security.web.saml.SSOCookieController">
-    <property name="ieCookieTicket" value="${saml.ieCookieTicket}" />    
-    <property name="spCookieDomain" value="${security.spCookieDomain}" />    
-    <property name="iECookieStore" ref="saml.ieCookieStore" />
+  <bean name="saml.ssoCookieHandler" class="org.vortikal.security.web.saml.SSOCookieController">    
   </bean>
 
   <bean id="saml.ieCookieRedirectService" class="org.vortikal.web.service.ServiceImpl">

@@ -9,10 +9,6 @@ import org.vortikal.web.service.URL;
 
 public class SSOCookieController implements Controller {
 
-    private String spCookieDomain = null;
-    private String ieCookieTicket;
-    private IECookieStore iECookieStore;
-
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         StringBuffer url = request.getRequestURL();
@@ -26,19 +22,5 @@ public class SSOCookieController implements Controller {
         response.sendRedirect(currentURL.toString());
 
         return null;
-    }
-
-    public void setSpCookieDomain(String spCookieDomain) {
-        if (spCookieDomain != null && !"".equals(spCookieDomain.trim())) {
-            this.spCookieDomain = spCookieDomain;
-        }
-    }
-
-    public void setIeCookieTicket(String ieCookieTicket) {
-        this.ieCookieTicket = ieCookieTicket;
-    }
-
-    public void setiECookieStore(IECookieStore iECookieStore) {
-        this.iECookieStore = iECookieStore;
     }
 }

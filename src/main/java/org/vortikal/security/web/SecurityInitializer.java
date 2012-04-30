@@ -329,6 +329,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                     if (logger.isDebugEnabled()) {
                         logger.debug("Deleting cookie " + cookie);
                     }
+                    authLogger.debug("Deleting cookie " + cookie);
                     c = new Cookie(cookie, c.getValue());
                     if (!cookie.equals(VRTXLINK_COOKIE)) {
                         c.setSecure(true);

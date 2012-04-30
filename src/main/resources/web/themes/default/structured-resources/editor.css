@@ -136,6 +136,10 @@
   margin-bottom: 0px;
 }
 
+.ui-accordion .ui-accordion-content { 
+  padding-left: 30px !important;
+}
+
 /* ^ Study enhancements */
 
 /* JSON-boxes - explicit settings */

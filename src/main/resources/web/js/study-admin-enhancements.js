@@ -29,7 +29,7 @@ $(document).ready(function () {
     for(var grouped = $(".vrtx-grouped"), i = grouped.length; i--;) { // Because accordion needs one content wrapper
       $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
     }
-    $("#editor").accordion({ header: "> div > .header", autoHeight: false });
+    $("#editor").accordion({ header: "> div > .header", autoHeight: false }); // should have "active: false" and "collapsible: true" but it seems to fail with error msg
   }
   $(document).on('change', '#typeToDisplay', function () {
     hideShowStudy($(this).val());

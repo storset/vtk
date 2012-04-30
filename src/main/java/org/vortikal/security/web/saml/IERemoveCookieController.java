@@ -35,16 +35,20 @@ public class IERemoveCookieController implements Controller {
         cookiesToDelete.add(uioAuthSSO);
 
         if (SamlAuthenticationHandler.getCookie(request, VRTXLINK_COOKIE) != null) {
-            authLogger.debug("IE Cookie remover, found " + VRTXLINK_COOKIE);
+            if (authLogger.isDebugEnabled()) {
+                authLogger.debug("IE Cookie remover, found " + VRTXLINK_COOKIE);
+            }
             cookiesToDelete.add(VRTXLINK_COOKIE);
         }
 
         if (iECookieStore.getToken(request, UUID.fromString(cookieTicket)) != null) {
             for (String key : cookiesToDelete) {
-                authLogger.debug("DELETING cookie: " + key);
+                if (authLogger.isDebugEnabled()) {
+                    authLogger.debug("DELETING cookie: " + key);
+                }
                 Cookie c = new Cookie(key, key);
                 c.setPath("/");
-                if (this.spCookieDomain != null) {
+                if (this.spCookieDomain != null && !key.equals(VRTXLINK_COOKIE)) {
                     c.setDomain(this.spCookieDomain);
                 }
                 c.setMaxAge(0);
@@ -53,12 +57,6 @@ public class IERemoveCookieController implements Controller {
             iECookieStore.dropToken(request, UUID.fromString(cookieTicket));
         }
         currentURL.removeParameter(ieCookieLogoutTicket);
-
-        // HttpSession session = request.getSession(false);
-        // if (session != null) {
-        // session.invalidate();
-        // }
-
         response.sendRedirect(currentURL.toString());
 
         return null;

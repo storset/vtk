@@ -44,7 +44,9 @@ public class IECookieRedirectController implements Controller {
                 returnURL = cookieMap.get(ieReturnURL);
 
                 if (spCookie != null) {
-                    authLogger.debug("IE cookie setter setting: " + vrtxAuthSP + " : " + spCookie);
+                    if (authLogger.isDebugEnabled()) {
+                        authLogger.debug("IE cookie setter setting: " + vrtxAuthSP + " : " + spCookie);
+                    }
 
                     Cookie c = new Cookie(vrtxAuthSP, cookieMap.get(vrtxAuthSP));
                     c.setSecure(true);
@@ -56,7 +58,9 @@ public class IECookieRedirectController implements Controller {
                 }
 
                 if (idpCookie != null) {
-                    authLogger.debug("IE cookie setter setting: " + uioAuthIDP + " : " + idpCookie);
+                    if (authLogger.isDebugEnabled()) {
+                        authLogger.debug("IE cookie setter setting: " + uioAuthIDP + " : " + idpCookie);
+                    }
 
                     Cookie c = new Cookie(uioAuthIDP, cookieMap.get(uioAuthIDP));
                     c.setSecure(true);
@@ -68,7 +72,9 @@ public class IECookieRedirectController implements Controller {
                 }
 
                 if (ssoCookie != null) {
-                    authLogger.debug("IE cookie setter setting: " + uioAuthSSO + " : " + ssoCookie);
+                    if (authLogger.isDebugEnabled()) {
+                        authLogger.debug("IE cookie setter setting: " + uioAuthSSO + " : " + ssoCookie);
+                    }
 
                     Cookie c = new Cookie(uioAuthSSO, cookieMap.get(uioAuthSSO));
                     c.setPath("/");

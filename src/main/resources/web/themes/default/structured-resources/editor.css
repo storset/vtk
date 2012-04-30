@@ -148,6 +148,10 @@
   background: #ecf3f9;
 }
 
+.ui-accordion .vrtx-grouped .header.ui-state-hover.ui-state-active {
+  background: none;
+}
+
 .ui-accordion .ui-accordion-content { 
   padding-left: 30px !important;
   padding-top: 0px !important;

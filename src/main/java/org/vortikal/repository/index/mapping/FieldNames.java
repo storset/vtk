@@ -33,6 +33,7 @@ package org.vortikal.repository.index.mapping;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -70,7 +71,6 @@ public final class FieldNames {
         STORED_BINARY_FIELD_PREFIX + "ACL_INHERITED_FROM";
     
     private static final Set<String> RESERVED_FIELD_NAMES = new HashSet<String>();
-
     static {
         RESERVED_FIELD_NAMES.add(NAME_FIELD_NAME);
         RESERVED_FIELD_NAMES.add(URI_FIELD_NAME);
@@ -121,25 +121,47 @@ public final class FieldNames {
     }
 
     public static String getStoredFieldName(Property property) {
+        return getStoredFieldName(property.getDefinition().getNamespace(), property.getDefinition().getName());
+    }
+
+    /**
+     * Get stored field for property by namespace and name.
+     */
+    public static String getStoredFieldName(Namespace ns, String name) {
         StringBuilder fieldName = new StringBuilder(STORED_BINARY_FIELD_PREFIX);
-        
-        String name = property.getDefinition().getName();
-        String nsPrefix = property.getDefinition().getNamespace().getPrefix();
-        
+        String nsPrefix = ns.getPrefix();
         if (nsPrefix != null) {
-            fieldName.append(nsPrefix);
-            fieldName.append(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
+            fieldName.append(nsPrefix).append(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
         }
-        
         fieldName.append(name);
-        
         return fieldName.toString();
     }
-    
-    public static String getJSONSearchFieldName(Property prop, String jsonAttrKey, boolean lowercase) {
-        StringBuilder fieldName = new StringBuilder(getSearchFieldName(prop, lowercase));
-        fieldName.append(JSON_ATTRIBUTE_SEPARATOR).append(jsonAttrKey);
+
+    /**
+     * Get name of stored field for property by name and namespace prefix.
+     */
+    public static String getStoredFieldName(String nsPrefix, String name) {
+        StringBuilder fieldName = new StringBuilder(STORED_BINARY_FIELD_PREFIX);
+        if (nsPrefix != null) {
+            fieldName.append(nsPrefix).append(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
+        }
+        fieldName.append(name);
         return fieldName.toString();
+    }
+
+    /**
+     * Checks if the stored property field name has the given namespace.
+     * 
+     * @param fieldName
+     * @param ns
+     * @return 
+     */
+    public static boolean isStoredFieldInNamespace(String fieldName, Namespace ns) {
+        if (ns.getPrefix() == null) {
+            return !fieldName.contains(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
+        }
+        
+        return fieldName.startsWith(STORED_BINARY_FIELD_PREFIX + ns.getPrefix() + FIELD_NAMESPACEPREFIX_NAME_SEPARATOR);
     }
     
     public static String getJsonSearchFieldName(PropertyTypeDefinition def, String jsonAttrKey, 
@@ -149,14 +171,6 @@ public final class FieldNames {
         return fieldName.toString();
     }
     
-    protected static String getJSONSearchFieldName(String propName, String propPrefix, 
-                                                        String jsonAttrKey, boolean lowercase) {
-        StringBuilder fieldName = 
-                        new StringBuilder(getSearchFieldName(propName, propPrefix, lowercase));
-        fieldName.append(JSON_ATTRIBUTE_SEPARATOR).append(jsonAttrKey);
-        return fieldName.toString();
-    }
-
     public static String getStoredFieldName(PropertyTypeDefinition def) {
         StringBuilder name = new StringBuilder(STORED_BINARY_FIELD_PREFIX);
         String nsPrefix = def.getNamespace().getPrefix();
@@ -170,7 +184,6 @@ public final class FieldNames {
     }
 
     public static String getPropertyNamespacePrefixFromStoredFieldName(String fieldName) {
-        
         int sfpLength = STORED_BINARY_FIELD_PREFIX.length();
         int pos = fieldName.indexOf(FIELD_NAMESPACEPREFIX_NAME_SEPARATOR, sfpLength);
 
@@ -179,7 +192,6 @@ public final class FieldNames {
         } else {
             return fieldName.substring(sfpLength, pos);
         }
-        
     }
     
     public static String getPropertyNameFromStoredFieldName(String fieldName){

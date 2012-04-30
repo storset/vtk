@@ -53,6 +53,7 @@ class PropertySetIndexIterator extends AbstractDocumentFieldIterator {
         this.mapper = mapper;
     }
 
+    @Override
     protected Object getObjectFromDocument(Document document) throws Exception {
         return this.mapper.getPropertySet(document);
     }

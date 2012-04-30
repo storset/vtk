@@ -32,8 +32,6 @@ package org.vortikal.repository.index.mapping;
 
 import java.util.Locale;
 
-import junit.framework.TestCase;
-
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.resourcetype.IllegalValueTypeException;
@@ -42,7 +40,9 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 
-public class FieldNameMappingTest extends TestCase {
+import junit.framework.TestCase;
+
+public class FieldNamesTest extends TestCase {
 
     private Property getUndefinedProperty(Namespace namespace, String name) {
         PropertyTypeDefinitionImpl propDef = new PropertyTypeDefinitionImpl();
@@ -50,11 +50,13 @@ public class FieldNameMappingTest extends TestCase {
         propDef.setName(name);
         propDef.setValueFormatter(new ValueFormatter() {
 
+            @Override
             public Value stringToValue(String string, String format,
                     Locale locale) {
                 return new Value(string, PropertyType.Type.STRING);
             }
 
+            @Override
             public String valueToString(Value value, String format,
                     Locale locale) throws IllegalValueTypeException {
                 return value.toString();
@@ -80,8 +82,28 @@ public class FieldNameMappingTest extends TestCase {
         assertEquals(FieldNames.LOWERCASE_FIELD_PREFIX + 
                 "lastModified", FieldNames.getSearchFieldName(prop, true));
         
+    }
+    
+    public void testGetJsonSearchFieldName() {
+        Property prop = getUndefinedProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "complex");
+        assertEquals("resource:complex@attr1", FieldNames.getJsonSearchFieldName(prop.getDefinition(), "attr1", false));
+        assertEquals("l_resource:complex@attr1", FieldNames.getJsonSearchFieldName(prop.getDefinition(), "attr1", true));
         
+        prop = getUndefinedProperty(Namespace.DEFAULT_NAMESPACE, "system-job-status");
+        assertEquals("system-job-status@attr1", FieldNames.getJsonSearchFieldName(prop.getDefinition(), "attr1", false));
+        assertEquals("l_system-job-status@attr1", FieldNames.getJsonSearchFieldName(prop.getDefinition(), "attr1", true));
+    }
+    
+    public void testIsStoredFieldInNamespace() {
+        assertTrue(FieldNames.isStoredFieldInNamespace("b_title", Namespace.DEFAULT_NAMESPACE));
+        assertTrue(FieldNames.isStoredFieldInNamespace("b_owner", Namespace.DEFAULT_NAMESPACE));
+        assertFalse(FieldNames.isStoredFieldInNamespace("b_resource:author", Namespace.DEFAULT_NAMESPACE));
         
+        assertTrue(FieldNames.isStoredFieldInNamespace("b_resource:author", Namespace.STRUCTURED_RESOURCE_NAMESPACE));
+        assertFalse(FieldNames.isStoredFieldInNamespace("b_resource:author", Namespace.DEFAULT_NAMESPACE));
+
+        assertFalse(FieldNames.isStoredFieldInNamespace("b_content:keywords", Namespace.STRUCTURED_RESOURCE_NAMESPACE));
+        assertFalse(FieldNames.isStoredFieldInNamespace("b_content:keywords", Namespace.DEFAULT_NAMESPACE));
     }
 
     public void testGetSearchFieldNamePropertyTypeDefinition() {
@@ -186,5 +208,5 @@ public class FieldNameMappingTest extends TestCase {
         assertEquals("foo", name);
         
     }
-
+    
 }

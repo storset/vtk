@@ -55,10 +55,12 @@ public class InvalidDataInconsistency extends RequireOriginalDataConsistencyErro
         super(uri, repositoryPropSet, aclReadPrincipals);
     }
 
+    @Override
     public boolean canRepair() {
         return true;
     }
     
+    @Override
     public String getDescription() {
         return "Invalid data inconsistency, data in index property set at URI '" 
                               + getUri() + "' does not match data in property set in repository.";
@@ -67,6 +69,7 @@ public class InvalidDataInconsistency extends RequireOriginalDataConsistencyErro
     /**
      * Fix by deleting property set in index, and re-adding pristine repository copy
      */
+    @Override
     protected void repair(PropertySetIndex index) throws IndexException {
         
         LOG.info("Repairing invalid data for property set at URI '"
@@ -75,6 +78,7 @@ public class InvalidDataInconsistency extends RequireOriginalDataConsistencyErro
         index.updatePropertySet(super.repositoryPropSet, super.repositoryAclReadPrincipals);
     }
     
+    @Override
     public String toString() {
         return "InvalidDataInconsistency[URI='" + getUri() + "']"; 
     }

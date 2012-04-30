@@ -38,14 +38,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.mutable.MutableInt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.index.IndexException;
 import org.vortikal.repository.index.PropertySetIndex;
 import org.vortikal.repository.index.PropertySetIndexRandomAccessor;
+import org.vortikal.repository.index.PropertySetIndexRandomAccessor.PropertySetInternalData;
 import org.vortikal.repository.index.StorageCorruptionException;
 import org.vortikal.repository.index.mapping.DocumentMappingException;
 import org.vortikal.repository.store.IndexDao;
@@ -135,9 +138,9 @@ public class ConsistencyCheck {
             runConsistencyCheck(randomIndexAccessor, indexUriIterator);
             
             if (this.errors.size() > 0) {
-                LOG.warn("Consistency check completed, " + this.errors.size() + " inconsistencies detected");
+                LOG.warn("Consistency check completed, " + this.errors.size() + " inconsistencies detected.");
             } else {
-                LOG.info("Consistency check completed successfully without any errors detected");
+                LOG.info("Consistency check completed successfully without any errors detected.");
             }
 
         } catch (StorageCorruptionException sce) {
@@ -161,6 +164,8 @@ public class ConsistencyCheck {
         
         PropertySetHandler handler = new PropertySetHandler() {
 
+            private int progressCount = 0;
+            
             @Override
             public void handlePropertySet(PropertySet propertySet, 
                                           Set<Principal> aclReadPrincipals) {
@@ -192,12 +197,18 @@ public class ConsistencyCheck {
                 }
                 // Add to set of valid index property set URIs
                 validURIs.add(currentUri);
+                
+                // Progress logging
+                if (++this.progressCount % 10000 == 0) {
+                    LOG.info("Progress: " + this.progressCount + " property sets checked");
+                }
             }
         };
         
         this.indexDao.orderedPropertySetIteration(handler);
         
         // Need to make a complete pass over index URIs to detect dangling inconsistencies
+        LOG.info("Checking for dangling property sets in index ..");
         while (indexUriIterator.hasNext()) {
             Path currentUri = (Path) indexUriIterator.next();
             if (! validURIs.contains(currentUri)) {
@@ -223,22 +234,20 @@ public class ConsistencyCheck {
         throws IOException, IndexException {
     
         try {
-            PropertySetImpl indexPropSet = 
-                    (PropertySetImpl)randomIndexAccessor.getPropertySetByURI(indexUri);
+            PropertySet indexPropSet = randomIndexAccessor.getPropertySetByURI(indexUri);
+            PropertySetInternalData indexPropSetInternalData = randomIndexAccessor.getPropertySetInternalData(indexUri);
             
-            // If we get here, the index document has been successfully
-            // mapped to a property set instance.
-            int indexUUID = indexPropSet.getID();
+            int indexUUID = indexPropSetInternalData.getResourceId();
             int daoUUID = repoPropSet.getID();
             
             if (indexUUID != daoUUID) {
                 // Invalid UUID (this can also be considered a dangling inconsistency)
                 addError(new InvalidUUIDInconsistency(indexUri, repoPropSet, repoAclReadPrincipals, indexUUID, daoUUID));
                 return;
-            } 
+            }
             
             // Check ACL read principals data
-            Set<String> indexAclReadPrincipalNames = randomIndexAccessor.getAclReadPrincipalNamesByURI(indexUri);
+            Set<String> indexAclReadPrincipalNames = indexPropSetInternalData.getAclReadPrincipalNames();
             if (repoAclReadPrincipals.contains(PrincipalFactory.ALL)) {
                 if (! (indexAclReadPrincipalNames.contains(PrincipalFactory.NAME_ALL) && indexAclReadPrincipalNames.size() == 1)) {
                     addError(new InvalidACLReadPrincipalsInconsistency(indexUri, repoPropSet, repoAclReadPrincipals, indexAclReadPrincipalNames));
@@ -260,13 +269,40 @@ public class ConsistencyCheck {
                 }
             }
             
-            int indexACL = indexPropSet.getAclInheritedFrom();
+            // Check ACL inherited from
+            int indexACL = indexPropSetInternalData.getAclInheritedFromId();
             int daoACL = repoPropSet.getAclInheritedFrom();
             if (indexACL != daoACL) {
                 // Invalid ACL inherited from
                 addError(new InvalidACLInheritedFromInconsistency(indexUri, repoPropSet, repoAclReadPrincipals, indexACL, daoACL));
                 return;
             }
+            
+            // Check resource type
+            if (!repoPropSet.getResourceType().equals(indexPropSet.getResourceType())) {
+                addError(new InvalidResourceTypeInconsistency(indexUri, repoPropSet, repoAclReadPrincipals,
+                                                              indexPropSet.getResourceType(), repoPropSet.getResourceType()));
+                return;
+            }
+            
+            // Verify that all indexed properties exist in repo prop set.
+            // Note that index prop set will typically contain fewer properties due
+            // to no indexing of dead or binary properties.
+            for (Property indexProp: indexPropSet) {
+                Property repoProp = repoPropSet.getProperty(indexProp.getDefinition());
+                if (repoProp != null) {
+                    if (!indexProp.equals(repoProp)) {
+                        addError(new PropertyValueInconsistency(indexUri, repoPropSet, repoAclReadPrincipals,
+                                                                indexProp, repoProp));
+                        return;
+                    }
+                } else {
+                    // Dangling property in index propset
+                    addError(new DanglingPropertyInconsistency(indexUri, repoPropSet, repoAclReadPrincipals, indexProp));
+                    return;
+                }
+            }
+            
             
         } catch (DocumentMappingException dme) {
             // Unmappable inconsistency
@@ -459,5 +495,5 @@ public class ConsistencyCheck {
     public List<AbstractConsistencyError> getErrors() {
         return Collections.unmodifiableList(this.errors);
     }
-
+    
 }

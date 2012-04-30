@@ -82,15 +82,26 @@ public interface PropertySetIndexRandomAccessor {
     public PropertySet getPropertySetByUUID(String uuid) throws IndexException;
     
     /**
-     * XXX: In lack of a better place to put this one .. shoud consider som API-refactoring.
-     * Get ACL read principal names for a property set by URI.
+     * Get internal data stored in index for a property-set.
+     * @return an instance of {@link PropertySetInternalData}.
      */
-    public Set<String> getAclReadPrincipalNamesByURI(Path uri) throws IndexException;
+    public PropertySetInternalData getPropertySetInternalData(Path uri) throws IndexException;
     
     /**
      * This method should be called after usage to free index resources.
      * @throws IndexException
      */
     public void close() throws IndexException;
-    
+
+    /**
+     * Represents "internal" data fields stored for each property set in index.
+     * Typically not retrievable through the regular {@link PropertySet} interface.
+     */
+    public interface PropertySetInternalData {
+        Path getURI();
+        String getResourceType();
+        int getResourceId();
+        Set<String> getAclReadPrincipalNames();
+        int getAclInheritedFromId();
+    }
 }

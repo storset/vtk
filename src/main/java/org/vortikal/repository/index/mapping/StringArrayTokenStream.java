@@ -41,6 +41,7 @@ import org.apache.lucene.analysis.tokenattributes.TermAttribute;
  *
  * TODO Does not support token offset attributes, but that can be easily added if
  * necessary.
+ * TODO fix deprecation of <code>TermAttribute</code> after upgrade to Lucene 3.5.
  * 
  * @author oyviste
  *

@@ -39,6 +39,15 @@ resourcetype program-frontpage {
       [endif]
       ##
     }
+
+     status {
+      ##
+      [def st resource-prop(".", "status")]
+      [if st != null]
+        [val st]
+      [endif]
+      ##
+    }
  
      program-type {
       ##
@@ -141,7 +150,6 @@ resourcetype program-frontpage {
           <div id="vrtx-related-content">
             <div id="relatetd-content-facts">
               <h3>[localized 'facts-header']</h3>
-              <p>[localized 'fs-program-code']: [val code]</p>
               <p>[localized 'study-points']: [val points]</p>
               <p>[localized 'duration']: [val dur]</p>
               [if faculty != null]
@@ -203,7 +211,7 @@ resourcetype program-frontpage {
             [call "comp:introduction"]
             [def thispath resource-prop("./","uri")]
             [if locale = "en"]
-              [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcome, structure, carreer-opportunities, education-exam"}]           
+              [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcome, structure, career-opportunities, education-exam"}]           
             [else]
               [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-laerer-du, oppbyggning, jobb-studiemuligheter, undervisning-eksamen"}]
             [endif]
@@ -262,7 +270,7 @@ resourcetype program-frontpage {
     introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
-    duration : (en : "Duration in years", no : "Antall år", nn : "Antall år"),
+    duration : (en : "Duration", no : "Varighet", nn : "Varighet"),
     study-points : (en : "Study points", no : "Studiepoeng", nn : "Studiepoeng"),
     published : (en : "Published", no : "Publisert", nn : "Publisert"),
     tags : (en : "Tags", no : "Emneord", nn : "Emneord"),

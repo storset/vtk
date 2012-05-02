@@ -34,6 +34,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.vortikal.repository.MultiHostSearcher;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
@@ -132,8 +133,11 @@ public class MessageListingSearchComponent extends CollectionListingSearchCompon
     private int getResourceIndex(ResultSet result, Resource resource) {
         int index = 0;
         for (PropertySet ps : result.getAllResults()) {
-            if (ps.getURI().equals(resource.getURI())) {
-                return index;
+            // Only check local resources
+            if (ps.getPropertyByPrefix(null, MultiHostSearcher.MULTIHOST_RESOURCE_PROP_NAME) == null) {
+                if (ps.getURI().equals(resource.getURI())) {
+                    return index;
+                }
             }
             index++;
         }
@@ -145,14 +149,17 @@ public class MessageListingSearchComponent extends CollectionListingSearchCompon
         List<PropertySet> deletedSet = new ArrayList<PropertySet>();
         List<PropertySet> resources = result.getAllResults();
         for (PropertySet ps : resources) {
-            boolean deleted = false;
-            try {
-                deleted = !repository.exists(token, ps.getURI());
-            } catch (Exception e) {
-                // Ignore
-            }
-            if (deleted) {
-                deletedSet.add(ps);
+            // Only check local resource for existence
+            if (ps.getPropertyByPrefix(null, MultiHostSearcher.MULTIHOST_RESOURCE_PROP_NAME) == null) {
+                boolean deleted = false;
+                try {
+                    deleted = !repository.exists(token, ps.getURI());
+                } catch (Exception e) {
+                    // Ignore
+                }
+                if (deleted) {
+                    deletedSet.add(ps);
+                }
             }
         }
 

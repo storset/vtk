@@ -131,18 +131,18 @@
   display: none;
 }
 
+.ui-accordion .vrtx-string.pris {
+  margin-bottom: 20px;
+}
+
 .ui-accordion .vrtx-grouped {
   margin-left: -20px;
   margin-right: -20px;
   margin-top: 0px;
 }
 
-.ui-accordion .vrtx-string.pris {
-  margin-bottom: 20px;
-}
-
-.ui-accordion .vrtx-grouped .header {
-  padding: 11px 15px 10px 30px;
+.ui-accordion .vrtx-grouped .header.ui-accordion-header {
+  padding: 15px 15px 14px 36px;
   border-radius: 0px;
   margin-bottom: -2px;
   background: #f9f9f9;
@@ -150,16 +150,28 @@
   border-color: #d9d9d9;
 }
 
-.ui-accordion .vrtx-grouped .header.ui-state-hover {
+.ui-accordion .vrtx-grouped .header.ui-accordion-header .ui-icon.ui-icon-triangle-1-s { /* Expanded */
+  background: url(../images/arrow-expanded-big.png) no-repeat center left;
+  height: 14px;
+  width: 16px;
+}
+
+.ui-accordion .vrtx-grouped .header.ui-accordion-header .ui-icon.ui-icon-triangle-1-e { /* Collapsed */
+  background: url(../images/arrow-collapsed-big.png) no-repeat top left;
+  height: 14px;
+  width: 16px;  
+}
+
+.ui-accordion .vrtx-grouped .header.ui-accordion-header.ui-state-hover {
   background: #ecf3f9;
 }
 
-.ui-accordion .vrtx-grouped .header.ui-state-active,
-.ui-accordion .vrtx-grouped .header.ui-state-hover.ui-state-active {
+.ui-accordion .vrtx-grouped .header.ui-accordion-header.ui-state-active,
+.ui-accordion .vrtx-grouped .header.ui-accordion-header.ui-state-hover.ui-state-active {
   background: none;
 }
 
-.ui-accordion .ui-accordion-content { 
+.ui-accordion .vrtx-grouped .ui-accordion-content { 
   padding-left: 30px !important;
   padding-top: 0px !important;
   border: none !important;

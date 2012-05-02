@@ -53,7 +53,7 @@ resourcetype hvordan-soke : fellestekst-document {
     opptakskrav-spesielle (class[vrtx-shared-text]),
     group politiattest-admin (opptakskrav-politiattest, politiattest-fri),
     opptakskrav-politiattest (class[vrtx-shared-text]),
-    studiekode (after nordiske-sokere),
+    studiekode (after typeToDisplay),
     studieplasser (after studiekode),
     pris (after studieplasser),
     group rangering-sokere (rangering-av-sokere, rangering-sokere-fri),
@@ -304,9 +304,6 @@ view {
             [call "comp:metode"]
             [call "comp:internasjonale-sokere"]
             [call "comp:nordiske-sokere"]
-            [call "comp:studiekode"]
-            [call "comp:studieplasser"]
-            [call "comp:pris"]
             <h2>[localized 'opptakskrav-view']</h2>
             [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav"}]
             [call "comp:opptakskrav"]

@@ -75,7 +75,8 @@ resourcetype hvordan-soke : fellestekst-document {
   
      frist-frekvens-admin {
       ##
-      [resource-props "."]    
+      [def document structured-document()]
+      [def frist-frekvens-fri document.properties.frist-frekvens-fri]
         [if frist-frekvens-fri != null && frist-frekvens-fri != ""]
           <div class="frist-frekvens-fri">[val frist-frekvens-fri # unescaped]</div>
         [endif]
@@ -83,15 +84,18 @@ resourcetype hvordan-soke : fellestekst-document {
     }
       metode {
       ##
-      [resource-props "."]    
-        [if metode-fri != null && metode-fri != ""]
+      [def document structured-document()]
+      [def metode-fri document.properties.metode-fri]
+      [if metode-fri != null && metode-fri != ""]
           <div class="metode-fri">[val metode-fri # unescaped]</div>
-        [endif]
+      [endif]
       ##  
     }
      internasjonale-sokere {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def internasjonale-sokere-fri document.properties.internasjonale-sokere-fri]
+        [def opptak-internasjonale-sokere document.properties.opptak-internasjonale-sokere]   
         [if (internasjonale-sokere-fri != null && internasjonale-sokere-fri != "") || (opptak-internasjonale-sokere != null && opptak-internasjonale-sokere != "")]
     	  <h3>[localized 'internasjonale-sokere-view']</h3>  
 	      [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-internasjonale-sokere"}]
@@ -103,7 +107,9 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      nordiske-sokere {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def nordiske-sokere-fri document.properties.nordiske-sokere-fri]
+        [def opptak-nordiske-sokere document.properties.opptak-nordiske-sokere]  
         [if (nordiske-sokere-fri != null && nordiske-sokere-fri != "") || (opptak-nordiske-sokere != null && opptak-nordiske-sokere != "")]
           <h3>[localized 'nordiske-sokere-view']</h3>
           [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-nordiske-sokere"}]
@@ -142,7 +148,8 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      opptakskrav {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def opptakskrav-fri document.properties.opptakskrav-fri]
         [if opptakskrav-fri != null && opptakskrav-fri != ""]
           <div class="opptakskrav-fri">[val opptakskrav-fri # unescaped]</div>
         [endif]
@@ -150,7 +157,9 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      generelle {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def generelle-fri document.properties.generelle-fri]
+        [def opptakskrav-generelle document.properties.opptakskrav-generelle]
         [if (generelle-fri != null && generelle-fri != "") || (opptakskrav-generelle != null && opptakskrav-generelle != "")]
           <h3>[localized 'generelle-view']</h3>
           [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav-generelle"}]
@@ -162,7 +171,9 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      spesielle {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def spesielle-fri document.properties.spesielle-fri]
+        [def opptakskrav-spesielle document.properties.opptakskrav-spesielle]
         [if (spesielle-fri != null && spesielle-fri != "") || (opptakskrav-spesielle != null && opptakskrav-spesielle != "")]
           <h3>[localized 'spesielle-view']</h3>
           [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav-spesielle"}]
@@ -174,7 +185,9 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      politiattest {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def politiattest-fri document.properties.politiattest-fri]
+        [def opptakskrav-politiattest document.properties.opptakskrav-politiattest]
         [if (politiattest-fri != null && politiattest-fri != "") || (opptakskrav-politiattest != null && opptakskrav-politiattest != "")]
           <h3>[localized 'politiattest-view']</h3>
           [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav-politiattest"}]
@@ -186,7 +199,9 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      rangering-sokere {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def rangering-sokere-fri document.properties.rangering-sokere-fri]
+        [def rangering-av-sokere document.properties.rangering-av-sokere]      
         [if (rangering-sokere-fri != null && rangering-sokere-fri != "") || (rangering-av-sokere != null && rangering-av-sokere != "")]
           <h2>[localized 'rangering-sokere-view']</h2>
           [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"rangering-av-sokere"}]
@@ -198,7 +213,8 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      forstevitnemal-kvote {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def forstevitnemal-kvote-fri document.properties.forstevitnemal-kvote-fri]
         [if forstevitnemal-kvote-fri != null && forstevitnemal-kvote-fri != ""]
           <div class="forstevitnemal-kvote-fri">[localized 'forstevitnemal-kvote-view'][val forstevitnemal-kvote-fri # unescaped]</div>
         [endif]
@@ -206,7 +222,8 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      ordinar-kvote-alle-kvalifiserte {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def ordinar-kvote-alle-kvalifiserte-fri document.properties.ordinar-kvote-alle-kvalifiserte-fri]
         [if ordinar-kvote-alle-kvalifiserte-fri != null && ordinar-kvote-alle-kvalifiserte-fri != ""]
           <div class="ordinar-kvote-alle-kvalifiserte-fri">[localized 'ordinar-kvote-alle-kvalifiserte-view'][val ordinar-kvote-alle-kvalifiserte-fri # unescaped]</div>
         [endif]
@@ -214,7 +231,9 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      innpassing-tidl-utdanning-admin {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def innpassing-tidl-utdanning-fri document.properties.innpassing-tidl-utdanning-fri]
+        [def innpassing-tidl-utdanning document.properties.innpassing-tidl-utdanning]
         [if (innpassing-tidl-utdanning-fri != null && innpassing-tidl-utdanning-fri != "") || (innpassing-tidl-utdanning != null && innpassing-tidl-utdanning != "")]
           <h2>[localized 'innpassing-tidl-utdanning-view']</h2>
           [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"innpassing-tidl-utdanning"}]
@@ -226,7 +245,9 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      regelverk-in-additional-column {
       ##
-      [resource-props "."]
+        [def document structured-document()]
+        [def regelverk-fri document.properties.regelverk-fri]
+        [def relatert-innhold-regelverk document.properties.relatert-innhold-regelverk]
         [if (regelverk-fri != null && regelverk-fri != "") || (relatert-innhold-regelverk != null && relatert-innhold-regelverk != "")]
           <h2>[localized 'regelverk-view']</h2>
 	      [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"relatert-innhold-regelverk"}]
@@ -238,7 +259,12 @@ resourcetype hvordan-soke : fellestekst-document {
     } 
     poenggrenser-admin {
      ##
-    [resource-props "."]
+        [def document structured-document()]
+        [def forstevitnemal-kvote-fri document.properties.forstevitnemal-kvote-fri]
+        [def poenggrenser-forstegang-alle-kvalifiserte document.properties.poenggrenser-forstegang-alle-kvalifiserte]
+        [def poenggrenser-ordinar-alle-kvalifiserte document.properties.poenggrenser-ordinar-alle-kvalifiserte]
+        [def ordinar-kvote-alle-kvalifiserte-fri document.properties.ordinar-kvote-alle-kvalifiserte-fri]
+        [def poenggrenser-poengberegning document.properties.poenggrenser-poengberegning]
 	    [if (forstevitnemal-kvote-fri != null && forstevitnemal-kvote-fri != "") || (poenggrenser-forstegang-alle-kvalifiserte != null && poenggrenser-forstegang-alle-kvalifiserte != "") || (poenggrenser-ordinar-alle-kvalifiserte != null && poenggrenser-ordinar-alle-kvalifiserte != "") || (ordinar-kvote-alle-kvalifiserte-fri != null && ordinar-kvote-alle-kvalifiserte-fri != "") || (poenggrenser-poengberegning != null && poenggrenser-poengberegning != "")]
     		<h3>[localized 'poenggrenser'] 
     		[if poenggrenser-aar != null && poenggrenser-aar != ""]
@@ -258,7 +284,7 @@ resourcetype hvordan-soke : fellestekst-document {
 
 view {
     ##
-    <!DOCTYPE html noextract PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <title></title>

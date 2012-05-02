@@ -23,7 +23,6 @@ public class IERemoveCookieController implements Controller {
     private static Log authLogger = LogFactory.getLog("org.vortikal.security.web.AuthLog");
 
     private String uioAuthSSO;
-    public static final String VRTXLINK_COOKIE = "VRTXLINK";
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -36,13 +35,6 @@ public class IERemoveCookieController implements Controller {
             cookiesToDelete.add(uioAuthSSO);
         }
 
-        // if (SamlAuthenticationHandler.getCookie(request, VRTXLINK_COOKIE) != null) {
-        // if (authLogger.isDebugEnabled()) {
-        // authLogger.debug("IE Cookie remover, found " + VRTXLINK_COOKIE);
-        // }
-        // cookiesToDelete.add(VRTXLINK_COOKIE);
-        // }
-
         if (iECookieStore.getToken(request, UUID.fromString(cookieTicket)) != null) {
             for (String key : cookiesToDelete) {
                 if (authLogger.isDebugEnabled()) {
@@ -50,7 +42,7 @@ public class IERemoveCookieController implements Controller {
                 }
                 Cookie c = new Cookie(key, key);
                 c.setPath("/");
-                if (this.spCookieDomain != null && !key.equals(VRTXLINK_COOKIE)) {
+                if (this.spCookieDomain != null) {
                     c.setDomain(this.spCookieDomain);
                 }
                 c.setMaxAge(0);

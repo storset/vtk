@@ -304,6 +304,9 @@ view {
             [call "comp:metode"]
             [call "comp:internasjonale-sokere"]
             [call "comp:nordiske-sokere"]
+            [call "comp:studiekode"]
+            [call "comp:studieplasser"]
+            [call "comp:pris"]
             <h2>[localized 'opptakskrav-view']</h2>
             [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav"}]
             [call "comp:opptakskrav"]

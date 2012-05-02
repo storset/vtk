@@ -36,6 +36,10 @@
         <ref bean="bachelorProgramListing.searchComponent" />
         <ref bean="masterProgramListing.searchComponent" />
         <ref bean="professionProgramListing.searchComponent" />
+        <ref bean="ettoghalvt-aarig-masterProgramListing.searchComponent" />
+        <ref bean="to-aarig-masterProgramListing.searchComponent" />
+        <ref bean="earingsbasert-masterMasterProgramListing.searchComponent" />
+        <ref bean="aarsenhetProgramListing.searchComponent" />
         <ref bean="inactivtProgramListing.SearchComponent" />
       </list>
     </constructor-arg>
@@ -47,6 +51,10 @@
         <ref bean="facultyBachelorProgramListing.searchComponent" />
         <ref bean="facultyMasterProgramListing.searchComponent" />
         <ref bean="facultyProfessionProgramListing.searchComponent" />
+        <ref bean="facultyEttoghalvt-aarig-masterProgramListing.searchComponent" />
+        <ref bean="facultyTo-aarig-masterProgramListing.searchComponent" />
+        <ref bean="facultyerEaringsbasert-masterMasterProgramListing.searchComponent" />
+        <ref bean="facultyAarsenhetProgramListing.searchComponent" />
         <ref bean="inactivtProgramListing.facultySearchComponent" />
       </list>
     </constructor-arg>
@@ -129,13 +137,49 @@
     </property>
   </bean>
 
-  <bean id="masterProgramListing.searchComponent" parent="programListing.searchComponent">
-    <property name="name" value="master" />
+  <bean id="aarsenhetProgramListing.searchComponent" parent="programListing.searchComponent">
+    <property name="name" value="aarsenhet" />
     <property name="queryBuilders">
       <list>
         <bean parent="queryStringParser">
           <property name="queryString"
-            value="type IN program-frontpage AND resource:program-display-degree = master AND resource:status = aktivt" />
+            value="type IN program-frontpage AND resource:program-type = aarsenhet AND resource:status = aktivt" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="to-aarig-masterProgramListing.searchComponent" parent="programListing.searchComponent">
+    <property name="name" value="to-aarig-master" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:program-type = to-aarig-master AND resource:status = aktivt" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="ettoghalvt-aarig-masterProgramListing.searchComponent" parent="programListing.searchComponent">
+    <property name="name" value="ettoghalvt-aarig-master" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:program-type = ettoghalvt-aarig-master AND resource:status = aktivt" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="masterProgramListing.searchComponent" parent="programListing.searchComponent">
+    <property name="name" value="fem-aarig-master" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:program-type = fem-aarig-master AND resource:status = aktivt" />
         </bean>
       </list>
     </property>
@@ -147,7 +191,19 @@
       <list>
         <bean parent="queryStringParser">
           <property name="queryString"
-            value="type IN program-frontpage AND resource:program-display-degree = bachelor AND resource:status = aktivt" />
+            value="type IN program-frontpage AND resource:program-type = bachelor AND resource:status = aktivt" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="earingsbasert-masterMasterProgramListing.searchComponent" parent="programListing.searchComponent">
+    <property name="name" value="erfaringsbasert-master" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:program-type = erfaringsbasert-master AND resource:status = aktivt" />
         </bean>
       </list>
     </property>
@@ -159,19 +215,67 @@
       <list>
         <bean parent="queryStringParser">
           <property name="queryString"
-            value="type IN program-frontpage AND resource:program-display-degree = profession AND resource:status = aktivt" />
+            value="type IN program-frontpage AND resource:program-type = profesjon AND resource:status = aktivt" />
         </bean>
       </list>
     </property>
   </bean>
 
   <bean id="facultyMasterProgramListing.searchComponent" parent="programListing.searchComponent">
-    <property name="name" value="master" />
+    <property name="name" value="fem-aarig-master" />
     <property name="queryBuilders">
       <list>
         <bean parent="queryStringParser">
           <property name="queryString"
-            value="type IN program-frontpage AND resource:program-display-degree = master AND resource:faculty = {$propertyValue:program-listing:faculty} AND resource:status = aktivt" />
+            value="type IN program-frontpage AND resource:program-type = fem-aarig-master AND resource:faculty = {$propertyValue:program-listing:faculty} AND resource:status = aktivt" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="facultyEttoghalvt-aarig-masterProgramListing.searchComponent" parent="programListing.searchComponent">
+    <property name="name" value="ettoghalvt-aarig-master" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:program-type = ettoghalvt-aarig-master AND resource:status = aktivt AND resource:faculty = {$propertyValue:program-listing:faculty}" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="facultyTo-aarig-masterProgramListing.searchComponent" parent="programListing.searchComponent">
+    <property name="name" value="to-aarig-master" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:program-type = to-aarig-master AND resource:faculty = {$propertyValue:program-listing:faculty} AND resource:status = aktivt" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="facultyAarsenhetProgramListing.searchComponent" parent="programListing.searchComponent">
+    <property name="name" value="aarsenhet" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:program-type = aarsenhet AND resource:faculty = {$propertyValue:program-listing:faculty} AND resource:status = aktivt" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="facultyerEaringsbasert-masterMasterProgramListing.searchComponent" parent="programListing.searchComponent">
+    <property name="name" value="erfaringsbasert-master" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:program-type = erfaringsbasert-master AND resource:faculty = {$propertyValue:program-listing:faculty} AND resource:status = aktivt" />
         </bean>
       </list>
     </property>
@@ -183,7 +287,7 @@
       <list>
         <bean parent="queryStringParser">
           <property name="queryString"
-            value="type IN program-frontpage AND resource:program-display-degree = bachelor AND resource:faculty = {$propertyValue:program-listing:faculty} AND resource:status = aktivt" />
+            value="type IN program-frontpage AND resource:program-type = bachelor AND resource:faculty = {$propertyValue:program-listing:faculty} AND resource:status = aktivt" />
         </bean>
       </list>
     </property>
@@ -195,7 +299,7 @@
       <list>
         <bean parent="queryStringParser">
           <property name="queryString"
-            value="type IN program-frontpage AND resource:program-display-degree = profession AND resource:faculty = {$propertyValue:program-listing:faculty} AND resource:status = aktivt" />
+            value="type IN program-frontpage AND resource:program-type = profesjon AND resource:faculty = {$propertyValue:program-listing:faculty} AND resource:status = aktivt" />
         </bean>
       </list>
     </property>

@@ -56,7 +56,7 @@
     <constructor-arg>
       <list>
         <ref bean="programListing.searchComponent" />
-        <ref bean="inactivtProgramListing.facultySearchComponent" />
+        <ref bean="inactivtProgramListing.SearchComponent" />
       </list>
     </constructor-arg>
   </bean>

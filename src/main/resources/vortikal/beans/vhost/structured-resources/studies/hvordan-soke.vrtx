@@ -346,8 +346,8 @@ view {
     
     studieplasser : (en : "Available places (All)", no : "Studieplasser (Alle)", nn : "Studieplassar (Alle)"),
     studieplasser-view : (en : "Available places", no : "Studieplasser", nn : "Studieplassar"),
-    pris : (en : "price (English and Norvegian master)", no : "Pris (Engelsk og norsk master)", nn : "Pris (Engelsk og norsk master)"),
-    pris-view : (en : "price", no : "Pris", nn : "Pris"),
+    pris : (en : "Price (English and Norwegian master)", no : "Pris (Engelsk og norsk master)", nn : "Pris (Engelsk og norsk master)"),
+    pris-view : (en : "Price", no : "Pris", nn : "Pris"),
 
     opptakskrav-view : (en : "Admission requirements", no : "Opptakskrav", nn : "Opptakskrav"),
 

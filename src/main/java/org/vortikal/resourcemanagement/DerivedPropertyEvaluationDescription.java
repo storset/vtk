@@ -38,13 +38,14 @@ import java.util.Map;
 public class DerivedPropertyEvaluationDescription {
 
     public enum EvaluationCondition {
-        EXISTS, TRUNCATE
+        EXISTS, TRUNCATE, TRUNCATED
     }
 
     private static final Map<String, EvaluationCondition> EVALUATION_CONDITION = new HashMap<String, EvaluationCondition>();
     static {
         EVALUATION_CONDITION.put("exists", EvaluationCondition.EXISTS);
         EVALUATION_CONDITION.put("truncate", EvaluationCondition.TRUNCATE);
+        EVALUATION_CONDITION.put("truncated", EvaluationCondition.TRUNCATED);
     }
 
     private List<EvaluationElement> evaluationElements;

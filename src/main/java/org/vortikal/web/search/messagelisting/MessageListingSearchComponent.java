@@ -86,7 +86,7 @@ public class MessageListingSearchComponent extends CollectionListingSearchCompon
         Repository repository = requestContext.getRepository();
         Resource resource = null;
         try {
-            resource = repository.retrieve(token, resourcePath, false);
+            resource = repository.retrieve(token, resourcePath, true);
         } catch (Exception e) {
             // Ignore, resource is unavailable
         }

@@ -10,42 +10,67 @@
 <#macro displayPrograms programListing>
   <#local programs=programListing.files />
   <#if (programs?size > 0) >
-    <div id="${programListing.name}" class="vrtx-programs articleListing.searchComponent ${programListing.name}">
-    
-    <h2>${programListing.name?html}</h2>
-    
+    <#if sort?exists && sort == "alphabetical">
+      <ul id="${programListing.name}" class="vrtx-programs articleListing.searchComponent ${programListing.name}">
+    <#else>
+      <div id="${programListing.name}" class="vrtx-programs articleListing.searchComponent ${programListing.name}">
+        <h2>${programListing.name?html}</h2>
+    </#if>
+
     <#local locale = springMacroRequestContext.getLocale() />
  
     <#list programs as program>
       <#local title = vrtx.propValue(program, 'title') />
       <#local introImg = vrtx.prop(program, 'picture')  />
-      <#local intro = vrtx.prop(program, 'introduction')  />
-      <div class="vrtx-default-article">
-            <#if introImg?has_content && programListing.hasDisplayPropDef(introImg.definition.name) >
-                <#local introImgURI = vrtx.propValue(program, 'picture') />
-                <#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
-                <a class="vrtx-image" href="${programListing.urls[program.URI]?html}">
-                    <img src="${thumbnail?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
-                </a>
-            </#if>
-            <div class="vrtx-title">
-              <a class="vrtx-title summary" href="${programListing.urls[program.URI]?html}">${title?html}</a>
-            </div>
-            <#if intro?has_content && programListing.hasDisplayPropDef(intro.definition.name)>
-              <div class="description introduction"><@vrtx.linkResolveFilter intro.value programListing.urls[program.URI]  requestURL /></div>
-            </#if>
-             <div class="vrtx-read-more">
-              <a href="${programListing.urls[program.URI]?html}" class="more">
-                <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
+
+      <#if sort?exists && sort == "alphabetical">
+        <#local intro = vrtx.prop(program, 'introduction')  />
+        <li>
+          <#if title?exists>
+            <h2><a href="${programListing.urls[program.URI]?html}">${title?html}</a></h2>
+          </#if>
+          <#if intro?has_content && programListing.hasDisplayPropDef(intro.definition.name)>
+            <div class="description introduction"><@vrtx.linkResolveFilter intro.value programListing.urls[program.URI]  requestURL /></div>
+          </#if>
+          <div class="vrtx-program-buttons">
+            <a class="button vrtx-program-read-more" href="${programListing.urls[program.URI]?html}"><span>Mer om programmet</span></a>
+          </div>
+        </li>
+      <#else>
+        <#if (program_index + 1) % 3 == 1>
+          <#local position = "left" />
+          <div class="vrtx-program-row">
+        <#elseif (program_index + 1) % 2 == 0>
+          <#local position = "middle" />
+        <#else>
+          <#local position = "right" />
+        </#if>
+        <div class="vrtx-frontpage-box white-box super-wide-picture third-box-${position}"> 
+          <#if title?exists>
+            <h2><a href="${programListing.urls[program.URI]?html}">${title?html}</a></h2>
+          </#if>
+          <#if introImg?has_content && programListing.hasDisplayPropDef(introImg.definition.name) >
+            <div class="vrtx-frontpage-box-picture">
+              <#local introImgURI = vrtx.propValue(program, 'picture') />
+              <#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
+              <a href="${programListing.urls[program.URI]?html}">
+                <img src="${thumbnail?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
               </a>
             </div>
-      </div>
+          </#if>
+        </div>
+        <#if (position == "right" || program_index + 1 == programs?size)>
+          </div>
+        </#if>
+      </#if>
     </#list>
-    
-   </div>
+   <#if sort?exists && sort == "alphabetical">
+     </ul>
+   <#else>  
+     </div>
+   </#if>
   </#if>
 </#macro>
-
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

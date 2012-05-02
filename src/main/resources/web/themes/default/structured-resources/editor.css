@@ -134,20 +134,23 @@
 .ui-accordion .vrtx-grouped {
   margin-left: -20px;
   margin-right: -20px;
+  margin-top: 0px;
 }
 
 .ui-accordion .vrtx-grouped .header {
   padding: 7px 10px 6px 30px;
   border-radius: 0px;
-  margin-bottom: 0px;
-  background: none;
+  margin-bottom: -2px;
+  background: #f9f9f9;
   color: inherit;
+  border-color: #d9d9d9;
 }
 
 .ui-accordion .vrtx-grouped .header.ui-state-hover {
   background: #ecf3f9;
 }
 
+.ui-accordion .vrtx-grouped .header.ui-state-active,
 .ui-accordion .vrtx-grouped .header.ui-state-hover.ui-state-active {
   background: none;
 }
@@ -155,6 +158,7 @@
 .ui-accordion .ui-accordion-content { 
   padding-left: 30px !important;
   padding-top: 0px !important;
+  border: none !important;
 }
 
 /*

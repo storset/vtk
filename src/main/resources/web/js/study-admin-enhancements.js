@@ -1,7 +1,6 @@
 function hideShowStudy(typeToDisplay) {
   var container = $("#editor");
-  // TODO: possible use container.attr("class", "").addClass(""); instead
-  switch (typeToDisplay) {
+  switch (typeToDisplay) { // TODO: possible use container.attr("class", "").addClass(""); instead
     case "so":
       container.removeClass("nm").removeClass("em").addClass("so");
       break;
@@ -24,13 +23,12 @@ $(document).ready(function () {
       hideShowStudy(typeToDisplay.val());
     }
     catch (err) {
-      return false;
+      vrtxAdmin.error({msg: err});
     }
-    // TODO: generalize collapse for editor
     for(var grouped = $(".vrtx-grouped"), i = grouped.length; i--;) { // Because accordion needs one content wrapper
       $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
     }
-    $("#editor").accordion({ header: "> div > .header", 
+    $("#editor").accordion({ header: "> div > .header",
                              autoHeight: false,
                              collapsible: true,
                              active: false

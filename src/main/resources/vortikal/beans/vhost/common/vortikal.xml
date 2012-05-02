@@ -44,7 +44,9 @@
     <property name="rememberAuthMethod" value="${security.rememberAuthMethod}" />
     <property name="spCookieDomain" value="${security.spCookieDomain}" />
     <property name="spCookieAssertion" ref="securityInitializer.spCookieAssertion" />
-   </bean>
+    <property name="vrtxAuthSP" value="${saml.vrtxAuthSP}" />
+    <property name="uioAuthIDP" value="${saml.uioAuthIDP}" />
+  </bean>
 
   <bean id="securityInitializer.spCookieAssertion" class="org.vortikal.web.service.AndAssertion">
     <property name="assertions">

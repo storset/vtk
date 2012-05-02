@@ -12,6 +12,12 @@
         <h2>${collectionListing.title?html}</h2>
       </#if>
       <#list resources as r>
+
+        <#local locale = springMacroRequestContext.getLocale() />
+        <#if r.contentLocale?has_content>
+          <#local locale = r.contentLocale />
+        </#if>
+
         <#assign uri = vrtx.getUri(r) />
         <div id="vrtx-result-${i}" class="vrtx-resource">
 		  <div class="vrtx-title">
@@ -32,6 +38,14 @@
             <#assign message = vrtx.propValue(r, "listingDisplayedMessage", "", "") />
             <#if message?exists>
               ${message}
+              <#assign isTruncated = vrtx.propValue(r, "isTruncated", "", "") />
+              <#if isTruncated?exists && isTruncated = 'true'>
+                <div class="vrtx-read-more">
+                <a href="${collectionListing.urls[r.URI]?html}" class="more">
+                  <@vrtx.localizeMessage code="viewCollectionListing.readMore" default="" args=[] locale=locale />
+                </a>
+            </div>
+              </#if>
             </#if>
           </div>
         </div>

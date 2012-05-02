@@ -67,10 +67,12 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
   
     }
     
+    @Override
     public boolean exists(Path uri) throws IndexException {
         return (countInstances(uri) > 0);
     }
     
+    @Override
     public int countInstances(Path uri) throws IndexException {
         int count = 0;
         try {
@@ -85,6 +87,7 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
         return count;
     }
     
+    @Override
     public PropertySet getPropertySetByURI(Path uri) throws IndexException {
         PropertySet propSet = null;
 
@@ -101,6 +104,7 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
         return propSet;
     }
 
+    @Override
     public PropertySet getPropertySetByUUID(String uuid) throws IndexException {
         PropertySet propSet = null;
         try {
@@ -116,29 +120,59 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
         return propSet;
     }
     
-    // Select ACL_READ_PRINCIPALS stored field
-    private static final FieldSelector ACL_READ_PRINCIPALS_FIELD_SELECTOR
-        = new FieldSelector() {
-            private static final long serialVersionUID = 7589928184323641722L;
-
-            public FieldSelectorResult accept(String fieldName) {
-                if (FieldNames.STORED_ACL_READ_PRINCIPALS_FIELD_NAME == fieldName) { // Interned string comparison
-                    return FieldSelectorResult.LOAD;
-                }
-                
-                return FieldSelectorResult.NO_LOAD;
-            }
-    };
-
-    public Set<String> getAclReadPrincipalNamesByURI(Path uri) throws IndexException {
+    @Override
+    public PropertySetInternalData getPropertySetInternalData(final Path uri) throws IndexException {
         try {
             this.uriTermDocs.seek(new Term(FieldNames.URI_FIELD_NAME, uri.toString()));
-            
+
             if (this.uriTermDocs.next()) {
-                Document doc = this.reader.document(this.uriTermDocs.doc(), 
-                                        ACL_READ_PRINCIPALS_FIELD_SELECTOR);
+                Document doc = this.reader.document(this.uriTermDocs.doc(), new FieldSelector() {
+                    private static final long serialVersionUID = 1L;
+                    @Override
+                    public FieldSelectorResult accept(String fieldName) {
+                        if (FieldNames.URI_FIELD_NAME == fieldName
+                                || FieldNames.RESOURCETYPE_FIELD_NAME == fieldName
+                                || FieldNames.STORED_ACL_READ_PRINCIPALS_FIELD_NAME == fieldName
+                                || FieldNames.STORED_ACL_INHERITED_FROM_FIELD_NAME == fieldName
+                                || FieldNames.STORED_ID_FIELD_NAME == fieldName) {
+                            return FieldSelectorResult.LOAD;
+                        }
+
+                        return FieldSelectorResult.NO_LOAD;
+                    }
+                });
                 
-                return this.mapper.getACLReadPrincipalNames(doc);
+                final String rt = doc.get(FieldNames.RESOURCETYPE_FIELD_NAME);
+                final int id = this.mapper.getResourceId(doc);
+                final int aclInheritedFrom = this.mapper.getAclInheritedFrom(doc);
+                final Set<String> aclReadPrincipalNames = this.mapper.getACLReadPrincipalNames(doc);
+                
+                return new PropertySetInternalData() {
+                    @Override
+                    public Path getURI() {
+                        return uri;
+                    }
+
+                    @Override
+                    public String getResourceType() {
+                        return rt;
+                    }
+
+                    @Override
+                    public int getResourceId() {
+                        return id;
+                    }
+
+                    @Override
+                    public int getAclInheritedFromId() {
+                        return aclInheritedFrom;
+                    }
+                    
+                    @Override
+                    public Set<String> getAclReadPrincipalNames() {
+                        return aclReadPrincipalNames;
+                    }
+                };
             }
             
             return null;
@@ -146,7 +180,8 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
             throw new IndexException(io);
         }
     }
-
+    
+    @Override
     public void close() throws IndexException {
         try {
             this.uriTermDocs.close();
@@ -154,7 +189,6 @@ class PropertySetIndexRandomAccessorImpl implements PropertySetIndexRandomAccess
         } catch (IOException io) {
             throw new IndexException(io);
         }
-
     }
 
 }

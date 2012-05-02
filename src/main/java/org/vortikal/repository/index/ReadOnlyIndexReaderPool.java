@@ -238,7 +238,7 @@ final class ReadOnlyIndexReaderPool {
             synchronized (item) {
                 if (item.reader != null) {
                     try {
-                        item.reader.decRef();
+                        item.reader.close();
                         item.reader = null;
                     } catch (IOException io) {
                         item.reader = null;

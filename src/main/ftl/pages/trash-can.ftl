@@ -63,9 +63,10 @@
           <@spring.bind "trashcan.trashCanObjects[${tco_index}].selectedForRecovery" />
           <#assign checked = "" />
           <#if spring.status.value?string = 'true' >
-            <#assign checked = "checked" />
+            <input type="checkbox" name="${spring.status.expression}" title="${rr.name?html}" value="true" checked="checked" />
+          <#else>
+            <input type="checkbox" name="${spring.status.expression}" title="${rr.name?html}" value="true" />
           </#if>
-          <input type="checkbox" name="${spring.status.expression}" title="${rr.name?html}" value="true" checked="${checked}" />
           </td>
           <td class="vrtx-trash-can-deleted-by">${rr.deletedBy}</td>
           <td class="vrtx-trash-can-deleted-time"><@printDeletedTime tco.recoverableResource.deletedTime /></td>

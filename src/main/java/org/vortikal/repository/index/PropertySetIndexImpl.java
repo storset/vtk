@@ -341,8 +341,8 @@ public class PropertySetIndexImpl implements PropertySetIndex {
                     + this.indexAccessor.getStorageId();
 
             throw new StorageCorruptionException(
-                    "Possible Lucene index corruption detected (storage path = '" + storagePath
-                            + "'): ", io);
+                    "Possible Lucene index corruption detected (storage path = '" 
+                    + storagePath + "'): ", io);
         }
     }
 

@@ -212,7 +212,9 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
             currentURL.setProtocol("https");
             currentURL.addParameter(ieCookieTicket, cookieTicket);
 
-            authLogger.debug("Cookie-setter redirecting to: " + currentURL);
+            if (authLogger.isDebugEnabled()) {
+                authLogger.debug("Cookie-setter redirecting to: " + currentURL);
+            }
 
             try {
                 currentURL.addParameter(ieReturnURL, URLEncoder.encode(resourceURL.toString(), "UTF-8"));

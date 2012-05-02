@@ -1,7 +1,6 @@
 function hideShowStudy(typeToDisplay) {
   var container = $("#editor");
-  // TODO: possible use container.attr("class", "").addClass(""); instead
-  switch (typeToDisplay) {
+  switch (typeToDisplay) { // TODO: possible use container.attr("class", "").addClass(""); instead
     case "so":
       container.removeClass("nm").removeClass("em").addClass("so");
       break;
@@ -18,18 +17,22 @@ function hideShowStudy(typeToDisplay) {
 }
 
 $(document).ready(function () {
-  try {
-    var typeToDisplay = $('#typeToDisplay').val();
-    hideShowStudy(typeToDisplay);
-  }
-  catch (err) {
-    return false;
-  }
-  if($('#typeToDisplay').length) { // Check that it is the correct document
+  var typeToDisplay = $('#typeToDisplay');
+  if(typeToDisplay.length) { // Check that it is the correct document
+    try {
+      hideShowStudy(typeToDisplay.val());
+    }
+    catch (err) {
+      vrtxAdmin.error({msg: err});
+    }
     for(var grouped = $(".vrtx-grouped"), i = grouped.length; i--;) { // Because accordion needs one content wrapper
       $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
     }
-    $("#editor").accordion({ header: "> div > .header", autoHeight: false }); // should have "active: false" and "collapsible: true" but it seems to fail with error msg
+    $("#editor").accordion({ header: "> div > .header",
+                             autoHeight: false,
+                             collapsible: true,
+                             active: false
+                           });
   }
   $(document).on('change', '#typeToDisplay', function () {
     hideShowStudy($(this).val());

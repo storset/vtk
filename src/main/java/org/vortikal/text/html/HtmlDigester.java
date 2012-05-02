@@ -130,8 +130,8 @@ public class HtmlDigester {
                 return sanitizedTruncated;
             }
 
-            // Try again with a ~10% shorter limit
-            processedLimit -= (limit / 10);
+            // Try again with a ~5% shorter limit
+            processedLimit -= (limit / 20);
 
         }
 

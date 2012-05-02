@@ -56,14 +56,17 @@ public class MissingInconsistency extends RequireOriginalDataConsistencyError {
         super(uri, repositoryPropSet, aclReadPrincipals);
     }
 
+    @Override
     public boolean canRepair() {
         return true;
     }
     
+    @Override
     public String getDescription() {
         return "Property set in repository at URI '" + getUri() + "' does not exist in index.";
     }
     
+    @Override
     public String toString() {
         return "MissingInconsistency[URI='" + getUri() + "']";
     }
@@ -71,6 +74,7 @@ public class MissingInconsistency extends RequireOriginalDataConsistencyError {
     /**
      * Fix by adding missing property set.
      */
+    @Override
     protected void repair(PropertySetIndex index) throws IndexException {
         LOG.info("Repairing missing inconsistency by adding property set at URI '" 
                 + getUri() + "'");

@@ -52,10 +52,12 @@ public class DanglingInconsistency extends AbstractConsistencyError {
         super(uri);
     }
     
+    @Override
     public boolean canRepair() {
         return true;
     }
     
+    @Override
     public String getDescription() {
         return "Dangling inconsistency, an instance with URI '" 
                 + getUri() + "' exists in index, but not in the repository.";
@@ -64,6 +66,7 @@ public class DanglingInconsistency extends AbstractConsistencyError {
     /**
      * Repair by deleting all property sets for the URI.
      */
+    @Override
     protected void repair(PropertySetIndex index) throws IndexException {
         LOG.info("Repairing dangling inconsistency by deleting all index property sets with URI '"
                 + getUri() + "'");
@@ -71,6 +74,7 @@ public class DanglingInconsistency extends AbstractConsistencyError {
         index.deletePropertySet(getUri());
     }
     
+    @Override
     public String toString() {
         return "DanglingInconsistency[URI='" + getUri() + "']";
     }

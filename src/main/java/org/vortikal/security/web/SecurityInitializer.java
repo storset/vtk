@@ -85,9 +85,9 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
     public static final String VRTXLINK_COOKIE = "VRTXLINK";
 
-    private static final String VRTX_AUTH_SP_COOKIE = "VRTX_AUTH_SP";
+    private String vrtxAuthSP;
 
-    private static final String UIO_AUTH_IDP = "UIO_AUTH_IDP";
+    private String uioAuthIDP;
 
     private static final String VRTXID = "VRTXID";
 
@@ -315,12 +315,13 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         this.tokenManager.removeToken(securityContext.getToken());
         SecurityContext.setSecurityContext(null);
         if (authLogger.isDebugEnabled()) {
-            authLogger.debug("Logout: principal: '" + principal + "' - method: '<none>' - status: OK");
+            authLogger.debug("removeAuthState_method: Logout: principal: '" + principal
+                    + "' - method: '<none>' - status: OK");
         }
         if (this.rememberAuthMethod) {
             List<String> spCookies = new ArrayList<String>();
-            spCookies.add(VRTX_AUTH_SP_COOKIE);
-            spCookies.add(UIO_AUTH_IDP);
+            spCookies.add(vrtxAuthSP);
+            spCookies.add(uioAuthIDP);
             spCookies.add(VRTXLINK_COOKIE);
 
             for (String cookie : spCookies) {
@@ -329,12 +330,15 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                     if (logger.isDebugEnabled()) {
                         logger.debug("Deleting cookie " + cookie);
                     }
+                    if (authLogger.isDebugEnabled()) {
+                        authLogger.debug("Deleting cookie " + cookie);
+                    }
                     c = new Cookie(cookie, c.getValue());
                     if (!cookie.equals(VRTXLINK_COOKIE)) {
                         c.setSecure(true);
                     }
                     c.setPath("/");
-                    if (this.spCookieDomain != null) {
+                    if (this.spCookieDomain != null && !cookie.equals(VRTXLINK_COOKIE)) {
                         c.setDomain(this.spCookieDomain);
                     }
                     c.setMaxAge(0);
@@ -384,8 +388,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
         boolean result = handler.logout(principal, request, response);
         String status = result ? "OK" : "FAIL";
         if (authLogger.isDebugEnabled()) {
-            authLogger.debug("Logout: principal: '" + principal + "' - method: '" + handler.getIdentifier()
-                    + "' - status: " + status);
+            authLogger.debug("logout_method: Logout: principal: '" + principal + "' - method: '"
+                    + handler.getIdentifier() + "' - status: " + status);
         }
 
         this.tokenManager.removeToken(securityContext.getToken());
@@ -393,8 +397,11 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
         if (this.rememberAuthMethod) {
             List<String> spCookies = new ArrayList<String>();
-            spCookies.add(VRTX_AUTH_SP_COOKIE);
-            spCookies.add(UIO_AUTH_IDP);
+            spCookies.add(vrtxAuthSP);
+            spCookies.add(uioAuthIDP);
+            if (this.cookieLinksEnabled) {
+                spCookies.add(VRTXLINK_COOKIE);
+            }
 
             for (String cookie : spCookies) {
                 Cookie c = getCookie(request, cookie);
@@ -407,7 +414,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                         c.setSecure(true);
                     }
                     c.setPath("/");
-                    if (this.spCookieDomain != null) {
+                    if (this.spCookieDomain != null && !cookie.equals(VRTXLINK_COOKIE)) {
                         c.setDomain(this.spCookieDomain);
                     }
                     c.setMaxAge(0);
@@ -551,8 +558,8 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             categories = Collections.EMPTY_SET;
         if (this.rememberAuthMethod && categories.contains(AUTH_HANDLER_SP_COOKIE_CATEGORY)) {
             List<String> spCookies = new ArrayList<String>();
-            spCookies.add(VRTX_AUTH_SP_COOKIE);
-            spCookies.add(UIO_AUTH_IDP);
+            spCookies.add(vrtxAuthSP);
+            spCookies.add(uioAuthIDP);
 
             for (String cookie : spCookies) {
                 Cookie c = new Cookie(cookie, handler.getIdentifier());
@@ -606,7 +613,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
     private AuthenticationChallenge getAuthenticationChallenge(HttpServletRequest request, Service service) {
         AuthenticationChallenge challenge = null;
         if (this.rememberAuthMethod) {
-            Cookie c = getCookie(request, VRTX_AUTH_SP_COOKIE);
+            Cookie c = getCookie(request, vrtxAuthSP);
             if (c != null) {
                 String id = c.getValue();
                 AuthenticationHandler handler = this.authHandlerMap.get(id);
@@ -632,7 +639,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
         if (challenge != null) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Using challenge from cookie " + VRTX_AUTH_SP_COOKIE + ": " + challenge);
+                logger.debug("Using challenge from cookie " + vrtxAuthSP + ": " + challenge);
             }
             return challenge;
         }
@@ -656,6 +663,14 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
             }
         }
         return null;
+    }
+
+    public void setVrtxAuthSP(String vrtxAuthSP) {
+        this.vrtxAuthSP = vrtxAuthSP;
+    }
+
+    public void setUioAuthIDP(String uioAuthIDP) {
+        this.uioAuthIDP = uioAuthIDP;
     }
 
 }

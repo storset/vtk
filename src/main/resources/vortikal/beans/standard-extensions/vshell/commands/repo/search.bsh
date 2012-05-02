@@ -25,25 +25,27 @@ void execute(context, args, out) {
     rs = indexSearcher.execute(token, search);
 
     propList = args.get("properties");
+    wildcard = propList != null && propList.contains("*");
 
     for (r: rs.getAllResults()) {
         out.println(r.getURI());
         if (propList != null) {
-            for (propName: propList) {
-                p = propName;
-                prefix = null;
-                
-                if (p.contains(":")) {
-                    prefix = p.substring(0, p.indexOf(":"));
-                    p = p.substring(prefix.length() + 1);
+            if (wildcard) {
+                for (prop: r.getProperties()) {
+                    printProp(prop, out);
                 }
-                prop = r.getPropertyByPrefix(prefix, p);
-                if (prop == null) continue;
-
-                if (prop.getType() == org.vortikal.repository.resourcetype.PropertyType.Type.BINARY) {
-                    out.println("  " + propName + ": [binary]");
-                } else {
-                    out.println("  " + propName + ": " + prop.getValue());
+            } else {
+                for (propName: propList) {
+                    p = propName;
+                    prefix = null;
+                
+                    if (p.contains(":")) {
+                        prefix = p.substring(0, p.indexOf(":"));
+                        p = p.substring(prefix.length() + 1);
+                    }
+                    prop = r.getPropertyByPrefix(prefix, p);
+                    if (prop == null) continue;
+                    printProp(prop, out);
                 }
             }
         }
@@ -52,4 +54,14 @@ void execute(context, args, out) {
     out.println("[Total results fetched: " + rs.getSize() + ", total hits: " + rs.getTotalHits() + "]");
 }
 
-
+void printProp(prop, out) {
+    if (prop.getType() == org.vortikal.repository.resourcetype.PropertyType.Type.BINARY) {
+        out.println("  " + prop.getDefinition().getName() + ": [binary]");
+    } else {
+        if (prop.getDefinition().isMultiple()) {
+            out.println("  " + prop.getDefinition().getName() + ": " + java.util.Arrays.asList(prop.getValues()));
+        } else {
+            out.println("  " + prop.getDefinition().getName() + ": " + prop.getValue());
+        }
+    }
+}

@@ -28,11 +28,11 @@
   </script>
 
   <!-- JQuery UI (used for datepicker) -->
-  <link type="text/css" href="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.8.custom/css/smoothness/jquery-ui-1.8.8.custom.css" rel="stylesheet" />
+  <link type="text/css" href="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.19.custom/css/smoothness/jquery-ui-1.8.19.custom.css" rel="stylesheet" />
   <#if language = "no">
-    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.8.custom/js/jquery.ui.datepicker-no.js"></script>
+    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.19.custom/js/jquery.ui.datepicker-no.js"></script>
   <#elseif language = "nn">
-    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.8.custom/js/jquery.ui.datepicker-nn.js"></script>
+    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.19.custom/js/jquery.ui.datepicker-nn.js"></script>
   </#if>
 
   <#if oldEditor>
@@ -44,13 +44,16 @@
 
 <#macro createEditor content completeEditor=false withoutSubSuper=false simpleHTML=false>
   <script type="text/javascript"><!--
-        $(document).ready(function() {
-    if (CKEDITOR.env.isCompatible) {
-      newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
-	    '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
-	    '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
-    }
-    
+    $(document).ready(function() {
+      if (CKEDITOR.env.isCompatible) {
+        try {
+          newEditor('${content}', ${completeEditor?string}, ${withoutSubSuper?string}, 
+	                '${baseFolder?js_string}', '${fckeditorBase.url?html}', '${fckeditorBase.documentURL?html}', 
+	                '${fckBrowse.url.pathRepresentation}', '<@vrtx.requestLanguage />', cssFileList, ${simpleHTML?string});
+	    } catch (e) {
+	      vrtxAdmin.log({msg: e});
+	    }
+      }
     });
   //-->
   </script>

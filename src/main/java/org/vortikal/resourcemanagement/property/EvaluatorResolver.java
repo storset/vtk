@@ -62,6 +62,8 @@ import org.vortikal.resourcemanagement.service.ExternalServiceInvoker;
 import org.vortikal.text.html.HtmlDigester;
 import org.vortikal.util.text.JSON;
 
+import bsh.This;
+
 public class EvaluatorResolver {
 
     // XXX Reconsider this whole setup. No good implementation.
@@ -274,12 +276,7 @@ public class EvaluatorResolver {
 
             Property prop = getProperty(ctx.getNewResource(), propName);
             if (prop != null) {
-                if (EvaluationCondition.EXISTS.equals(evaluationCondition)) {
-                    return Boolean.valueOf(true);
-                } else if (EvaluationCondition.TRUNCATE.equals(evaluationCondition)) {
-                    return this.getTruncated(prop, prop.getStringValue());
-                }
-                return null;
+                return this.evaluateCondition(propName, prop.getStringValue(), ctx, evaluationCondition);
             } else {
                 JSONObject json;
                 try {
@@ -290,26 +287,39 @@ public class EvaluatorResolver {
                 String expression = "properties." + propName;
                 Object jsonObject = JSON.select(json, expression);
                 if (jsonObject != null) {
-                    if (EvaluationCondition.EXISTS.equals(evaluationCondition)) {
-                        return Boolean.valueOf(true);
-                    } else if (EvaluationCondition.TRUNCATE.equals(evaluationCondition)) {
-                        return this.getTruncated(prop, jsonObject.toString());
-                    }
+                    return this.evaluateCondition(propName, jsonObject.toString(), ctx, evaluationCondition);
                 }
                 return null;
             }
 
         }
 
-        private String getTruncated(Property prop, String value) {
-            if (prop != null && prop.getDefinition().getType().equals(PropertyType.Type.HTML)) {
-                return htmlDigester.truncateHtml(value);
+        private Object evaluateCondition(String propName, String propValue, PropertyEvaluationContext ctx,
+                EvaluationCondition evaluationCondition) {
+            if (EvaluationCondition.EXISTS.equals(evaluationCondition)) {
+                return Boolean.valueOf(true);
+            } else if (EvaluationCondition.TRUNCATE.equals(evaluationCondition)) {
+                return this.getTruncated(ctx, propName, propValue);
+            } else if (EvaluationCondition.TRUNCATED.equals(evaluationCondition)) {
+                Object obj = ctx.getEvaluationAttribute(propName);
+                if (evaluationCondition.equals(obj)) {
+                    return Boolean.TRUE;
+                }
             }
+            return null;
+        }
 
-            // XXX need to check value -> is it html?
-            return htmlDigester.truncateHtml(value);
+        private String getTruncated(PropertyEvaluationContext ctx, String propName, String value) {
 
-            // return null;
+            // XXX Determine prop type before truncating
+
+            String compressed = htmlDigester.compress(value);
+            String truncated = htmlDigester.truncateHtml(compressed);
+            if (truncated != null && (truncated.length() < compressed.length())) {
+                // Mark the property as truncated on the evaluation context
+                ctx.addEvaluationAttribute(propName, EvaluationCondition.TRUNCATED);
+            }
+            return truncated;
         }
     }
 

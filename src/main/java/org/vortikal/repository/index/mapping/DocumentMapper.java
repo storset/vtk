@@ -56,6 +56,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
@@ -84,7 +85,8 @@ public class DocumentMapper implements InitializingBean {
 
     // Fast lookup maps for flat list of resource type prop defs and
     // stored field-name to prop-def map
-    Map<String, PropertyTypeDefinition> storedFieldNamePropDefMap = new HashMap<String, PropertyTypeDefinition>();
+    private Map<String, PropertyTypeDefinition> storedFieldNamePropDefMap 
+                                  = new HashMap<String, PropertyTypeDefinition>();
 
     @Override
     public void afterPropertiesSet() {
@@ -246,37 +248,54 @@ public class DocumentMapper implements InitializingBean {
     public FieldSelector getDocumentFieldSelector(final PropertySelect select) {
         if (select == PropertySelect.ALL) {
             return new FieldSelector() {
-                private static final long serialVersionUID = -8502087584408029619L;
-
+                private static final long serialVersionUID = 1L;
                 @Override
                 public FieldSelectorResult accept(String fieldName) {
                     return FieldSelectorResult.LOAD;
+                }
+            };
+        } else if (select == PropertySelect.NONE) {
+            return new FieldSelector() {
+                private static final long serialVersionUID = 1L;
+                @Override
+                public FieldSelectorResult accept(String fieldName) {
+                    if (FieldNames.URI_FIELD_NAME.equals(fieldName)) {
+                        return FieldSelectorResult.LOAD;
+                    }
+                    if (FieldNames.RESOURCETYPE_FIELD_NAME.equals(fieldName)) {
+                        return FieldSelectorResult.LOAD;
+                    }
+                    
+                    return FieldSelectorResult.NO_LOAD;
                 }
             };
         } else {
             return new FieldSelector() {
-                private static final long serialVersionUID = 3919989917870796613L;
-
+                private static final long serialVersionUID = 1L;
                 @Override
                 public FieldSelectorResult accept(String fieldName) {
-                    PropertyTypeDefinition def = DocumentMapper.this.storedFieldNamePropDefMap.get(fieldName);
-
-                    if (def == null) {
-                        // Reserved field, load it
+                    PropertyTypeDefinition def = storedFieldNamePropDefMap.get(fieldName);
+                    if (def != null) {
+                        if (select.isIncludedProperty(def)) {
+                            return FieldSelectorResult.LOAD;
+                        } else {
+                            return FieldSelectorResult.NO_LOAD;
+                        }
+                    }
+                    
+                    // Check for required reserved fields
+                    if (FieldNames.URI_FIELD_NAME.equals(fieldName)
+                            || FieldNames.RESOURCETYPE_FIELD_NAME.equals(fieldName)) {
                         return FieldSelectorResult.LOAD;
                     }
-
-                    if (!select.isIncludedProperty(def)) {
-                        return FieldSelectorResult.NO_LOAD;
-                    }
-
-                    // Default policy is to load otherwise unknown fields
-                    return FieldSelectorResult.LOAD;
+                    
+                    // Skip others
+                    return FieldSelectorResult.NO_LOAD;
                 }
             };
         }
     }
-
+    
     /**
      * Map from Lucene <code>Document</code> instance to a repository
      * <code>PropertySetImpl</code> instance.
@@ -290,78 +309,17 @@ public class DocumentMapper implements InitializingBean {
      * to load the document before passing it to this method. Only loaded fields
      * will be mapped to properties.
      * 
-     * @param doc
-     *            The {@link org.apache.lucene.document.Document} to map from
-     * @param select
-     *            A {@link PropertySelect} instance determining which properties
-     *            that should be mapped.
+     * @param doc The {@link org.apache.lucene.document.Document} to map from.
      * 
      * @return
      * @throws DocumentMappingException
      */
     @SuppressWarnings("unchecked")
-    public PropertySetImpl getPropertySet(Document doc) throws DocumentMappingException {
-
-        PropertySetImpl propSet = new PropertySetImpl();
-        propSet.setUri(Path.fromString(doc.get(FieldNames.URI_FIELD_NAME)));
-        propSet.setAclInheritedFrom(this.fieldValueMapper.getIntegerFromStoredBinaryField(doc
-                .getFieldable(FieldNames.STORED_ACL_INHERITED_FROM_FIELD_NAME)));
-        propSet.setID(this.fieldValueMapper.getIntegerFromStoredBinaryField(doc
-                .getFieldable(FieldNames.STORED_ID_FIELD_NAME)));
-        propSet.setResourceType(doc.get(FieldNames.RESOURCETYPE_FIELD_NAME));
-
-        // Loop through all stored binary fields and re-create properties with
-        // values. Multi-valued properties are stored as a
-        // _sequence_of_binary_fields_
-        // (with the same name) in the index.
-        // Note that the iteration will _only_ contain _stored_ fields.
-        String currentName = null;
-        List<Fieldable> fields = new ArrayList<Fieldable>();
-        for (Fieldable field: doc.getFields()) {
-
-            String fieldName = field.name();
-
-            if (FieldNames.isReservedField(fieldName))
-                continue;
-
-            if (currentName == null) {
-                currentName = fieldName;
-            }
-
-            if (fieldName == currentName) { // Interned string comparison
-                // Add field for current property
-                fields.add(field);
-            } else {
-                // We have accumulated all fields necessary to create next
-                // property
-                // (fields retrieved from Lucene document are properly ordered)
-                Property prop = getPropertyFromStoredFieldValues(currentName, fields);
-                propSet.addProperty(prop);
-
-                // Prepare for next property
-                fields.clear();
-                currentName = fieldName;
-                fields.add(field);
-            }
-        }
-
-        // Make sure we don't forget the last field
-        if (currentName != null) {
-            Property prop = getPropertyFromStoredFieldValues(currentName, fields);
-            propSet.addProperty(prop);
-        }
-
-        return propSet;
+    public PropertySet getPropertySet(Document doc) throws DocumentMappingException {
+        return new LazyMappedPropertySet(doc, this);
     }
-
-    /**
-     * Re-create a <code>Property</code> from index fields.
-     * 
-     * @param fields
-     * @return
-     * @throws FieldValueMappingException
-     */
-    private Property getPropertyFromStoredFieldValues(String fieldName, List<Fieldable> storedValueFields)
+    
+    Property getPropertyFromStoredFieldValues(String fieldName, List<Fieldable> fieldValues)
             throws FieldValueMappingException {
 
         PropertyTypeDefinition def = this.storedFieldNamePropDefMap.get(fieldName);
@@ -373,28 +331,29 @@ public class DocumentMapper implements InitializingBean {
 
             def = this.resourceTypeTree.getPropertyTypeDefinition(Namespace.getNamespaceFromPrefix(nsPrefix), name);
 
-            logger.warn("Definition for property '" + nsPrefix + FieldNames.FIELD_NAMESPACEPREFIX_NAME_SEPARATOR
+            logger.warn("Definition for property '" 
+                    + nsPrefix + FieldNames.FIELD_NAMESPACEPREFIX_NAME_SEPARATOR
                     + name + "' not found by " + " property manager. Config might have been updated without "
                     + " updating index(es)");
 
         }
-
+        
         Property property = def.createProperty();
 
         if (def.isMultiple()) {
-            Value[] values = this.fieldValueMapper.getValuesFromStoredBinaryFields(storedValueFields, def.getType());
-
+            Value[] values = this.fieldValueMapper.getValuesFromStoredBinaryFields(fieldValues, def.getType());
+            
             property.setValues(values);
         } else {
-            if (storedValueFields.size() != 1) {
+            if (fieldValues.size() != 1) {
                 // Fail hard if multiple stored fields found for single
                 // value property
                 throw new FieldValueMappingException("Single value property '" + def.getNamespace().getPrefix()
                         + FieldNames.FIELD_NAMESPACEPREFIX_NAME_SEPARATOR + def.getName()
-                        + "' has an invalid number of stored values (" + storedValueFields.size() + ") in index.");
+                        + "' has an invalid number of stored values (" + fieldValues.size() + ") in index.");
             }
 
-            Value value = this.fieldValueMapper.getValueFromStoredBinaryField(storedValueFields.get(0), def.getType());
+            Value value = this.fieldValueMapper.getValueFromStoredBinaryField(fieldValues.get(0), def.getType());
 
             property.setValue(value);
         }
@@ -544,13 +503,6 @@ public class DocumentMapper implements InitializingBean {
         return ancestorStrings;
     }
 
-
-    /**
-     * 
-     * @param doc
-     * @return
-     * @throws DocumentMappingException 
-     */
     public Set<String> getACLReadPrincipalNames(Document doc) throws DocumentMappingException {
 
         Fieldable[] fields = doc.getFieldables(FieldNames.STORED_ACL_READ_PRINCIPALS_FIELD_NAME);
@@ -564,6 +516,22 @@ public class DocumentMapper implements InitializingBean {
                   Arrays.asList(this.fieldValueMapper.getStringsFromStoredBinaryFields(fields)));
 
         return retval;
+    }
+    
+    public int getResourceId(Document doc) throws DocumentMappingException {
+        Fieldable field = doc.getFieldable(FieldNames.STORED_ID_FIELD_NAME);
+        if (field == null) {
+            throw new DocumentMappingException("Document is missing field " + FieldNames.STORED_ID_FIELD_NAME);
+        }
+        return this.fieldValueMapper.getIntegerFromStoredBinaryField(field);
+    }
+    
+    public int getAclInheritedFrom(Document doc) throws DocumentMappingException {
+        Fieldable field = doc.getFieldable(FieldNames.STORED_ACL_INHERITED_FROM_FIELD_NAME);
+        if (field == null) {
+            throw new DocumentMappingException("Document is missing field " + FieldNames.STORED_ACL_INHERITED_FROM_FIELD_NAME);
+        }
+        return this.fieldValueMapper.getIntegerFromStoredBinaryField(field);
     }
 
     private String[] getAclReadPrincipalsFieldValues(Set<Principal> aclReadPrincipals) {

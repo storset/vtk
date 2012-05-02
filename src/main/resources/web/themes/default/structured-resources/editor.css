@@ -137,6 +137,10 @@
   margin-top: 0px;
 }
 
+.ui-accordion .vrtx-string.typeToDisplay {
+  margin-bottom: 20px;
+}
+
 .ui-accordion .vrtx-grouped .header {
   padding: 11px 15px 10px 30px;
   border-radius: 0px;
@@ -160,12 +164,6 @@
   padding-top: 0px !important;
   border: none !important;
 }
-
-/*
-.ui-accordion .ui-accordion-content .vrtx-html {
-  margin-top: 10px;
-}
-*/
 
 .ui-accordion.ui-widget {
   font-size: 1em !important;

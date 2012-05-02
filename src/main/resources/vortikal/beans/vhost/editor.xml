@@ -676,7 +676,6 @@
             <ref bean="manuallyApprovedResourcesPropDef" />
             <ref bean="facultyPropDef" />
             <ref bean="programSortPropDef" />
-            <ref bean="displayGradeSortPropDef" />
             <ref bean="articleListing.hideIntroductionPropDef" />
             <ref bean="articleListing.hideIntroductionImagePropDef" />
           </list>

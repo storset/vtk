@@ -16,14 +16,58 @@
 
   <bean id="programListing.handler" class="org.vortikal.web.display.collection.studies.ProgramListingController"
     parent="collectionListing.handler">
-    <property name="searchComponents">
-      <list>
-        <ref bean="masterProgramListing.searchComponent" />
-        <ref bean="bachelorProgramListing.searchComponent" />
-        <ref bean="professionProgramListing.searchComponent" />
-      </list>
+
+    <property name="searchComponentsMap">
+      <map>
+        <entry key="default" value-ref="searchComponents" />
+        <entry key="faculty" value-ref="facultySearchComponents" />
+        <entry key="alphabetical" value-ref="alphabeticalSearchComponents" />
+        <entry key="alphabeticalFaculty" value-ref="alphabeticalFacultySearchComponents" />
+      </map>
     </property>
     <property name="viewName" value="programListing.view" />
+    <property name="facultyPropDef" ref="facultyPropDef" />
+    <property name="sortBy" ref="programSortPropDef" />
+  </bean>
+
+  <bean id="searchComponents" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <ref bean="bachelorProgramListing.searchComponent" />
+        <ref bean="masterProgramListing.searchComponent" />
+        <ref bean="professionProgramListing.searchComponent" />
+        <ref bean="inactivtProgramListing.SearchComponent" />
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean id="facultySearchComponents" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <ref bean="facultyBachelorProgramListing.searchComponent" />
+        <ref bean="facultyMasterProgramListing.searchComponent" />
+        <ref bean="facultyProfessionProgramListing.searchComponent" />
+        <ref bean="inactivtProgramListing.facultySearchComponent" />
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean id="alphabeticalSearchComponents" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <ref bean="programListing.searchComponent" />
+        <ref bean="inactivtProgramListing.facultySearchComponent" />
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean id="alphabeticalFacultySearchComponents" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <ref bean="programListing.facultySearchComponent" />
+        <ref bean="inactivtProgramListing.SearchComponent" />
+      </list>
+    </constructor-arg>
   </bean>
 
   <bean id="programListing.searchComponent" parent="collectionListing.searchComponent">
@@ -32,7 +76,7 @@
     <property name="queryBuilders">
       <list>
         <bean parent="queryStringParser">
-          <property name="queryString" value="type IN program-frontpage" />
+          <property name="queryString" value="type IN program-frontpage AND resource:status = aktivt" />
         </bean>
       </list>
     </property>
@@ -48,14 +92,50 @@
         </bean>
       </list>
     </property>
+    <property name="searchSorting" ref="professionProgramListing.searchSorting" />
   </bean>
-  
+
+  <bean id="inactivtProgramListing.facultySearchComponent" parent="programListing.searchComponent">
+    <property name="name" value="inactive" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:status != aktivt AND resource:faculty = {$propertyValue:program-listing:faculty}" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="inactivtProgramListing.SearchComponent" parent="programListing.searchComponent">
+    <property name="name" value="inactive" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN program-frontpage AND resource:status != aktivt" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="programListing.facultySearchComponent" parent="programListing.searchComponent">
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:faculty = {$propertyValue:program-listing:faculty} AND resource:status = aktivt" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
   <bean id="masterProgramListing.searchComponent" parent="programListing.searchComponent">
     <property name="name" value="master" />
     <property name="queryBuilders">
       <list>
         <bean parent="queryStringParser">
-          <property name="queryString" value="type IN program-frontpage AND resource:program-display-degree = master" />
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:program-display-degree = master AND resource:status = aktivt" />
         </bean>
       </list>
     </property>
@@ -66,7 +146,8 @@
     <property name="queryBuilders">
       <list>
         <bean parent="queryStringParser">
-          <property name="queryString" value="type IN program-frontpage AND resource:program-display-degree = bachelor" />
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:program-display-degree = bachelor AND resource:status = aktivt" />
         </bean>
       </list>
     </property>
@@ -77,8 +158,54 @@
     <property name="queryBuilders">
       <list>
         <bean parent="queryStringParser">
-          <property name="queryString" value="type IN program-frontpage AND resource:program-display-degree = profession" />
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:program-display-degree = profession AND resource:status = aktivt" />
         </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="facultyMasterProgramListing.searchComponent" parent="programListing.searchComponent">
+    <property name="name" value="master" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:program-display-degree = master AND resource:faculty = {$propertyValue:program-listing:faculty} AND resource:status = aktivt" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="facultyBachelorProgramListing.searchComponent" parent="programListing.searchComponent">
+    <property name="name" value="bachelor" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:program-display-degree = bachelor AND resource:faculty = {$propertyValue:program-listing:faculty} AND resource:status = aktivt" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="facultyProfessionProgramListing.searchComponent" parent="programListing.searchComponent">
+    <property name="name" value="profession" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString"
+            value="type IN program-frontpage AND resource:program-display-degree = profession AND resource:faculty = {$propertyValue:program-listing:faculty} AND resource:status = aktivt" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="professionProgramListing.searchSorting" parent="articleListing.searchSorting">
+    <property name="sortOrderPropDefPointers">
+      <list>
+        <value>title</value>
       </list>
     </property>
   </bean>

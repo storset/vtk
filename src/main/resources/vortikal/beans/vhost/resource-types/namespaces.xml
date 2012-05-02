@@ -72,7 +72,7 @@
 
   <bean id="PROGRAM_OPTION_NAMESPACE" class="org.vortikal.repository.Namespace">
     <constructor-arg value="program-option-listing" />
-    <constructor-arg value="http://www.uio.no/resource-types/program" />
+    <constructor-arg value="http://www.uio.no/resource-types/program-option" />
   </bean>
  
 

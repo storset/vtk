@@ -8,22 +8,31 @@
       
   <#if (resources?size > 0)>
     <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
+
       <#if collectionListing.title?exists && collectionListing.offset == 0>
         <h2>${collectionListing.title?html}</h2>
       </#if>
+
+      <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
+
       <#list resources as r>
 
         <#local locale = springMacroRequestContext.getLocale() />
         <#if r.contentLocale?has_content>
           <#local locale = r.contentLocale />
+        <#else>
+          <#local lang = vrtx.propValue(r, 'solr.lang') />
+          <#if lang?exists && lang?has_content>
+            <#local locale = constructor("java.util.Locale", lang) />
+          </#if>
         </#if>
 
         <#assign uri = vrtx.getUri(r) />
         <div id="vrtx-result-${i}" class="vrtx-resource">
 		  <div class="vrtx-title">
-		    <#assign title = vrtx.propValue(r, "title", "", "") />
+		    <#assign title = vrtx.propValue(r, "title") />
 		    <#if !title?has_content>
-		      <#assign title = vrtx.propValue(r, "solr.name", "", "") />
+		      <#assign title = vrtx.propValue(r, "solr.name") />
 		    </#if>
             <a class="vrtx-title" href="${uri?html}">${title?html}</a>
             <#if edit?exists && edit[r_index]>

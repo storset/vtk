@@ -1,0 +1,56 @@
+import org.vortikal.repository.*;
+import java.util.ArrayList;
+
+getDescription() {
+    return "Store an inheritable property on a resource";
+}
+
+getUsage() {
+    return "repo ipropstore <uri:path> <prop:string> <value:string>";
+}
+
+void execute(context, args, out) {
+
+    repo = context.get("context").getBean("repository");
+    token = context.get("context").getBean("writeAllToken");
+    typeTree = context.get("context").getBean("resourceTypeTree");
+
+    uri = args.get("uri");
+
+    if (!repo.exists(token, uri)) {
+        out.println("No such resource");
+        return;
+    }
+
+    prop = args.get("prop");
+    value = args.get("value");
+    if (value == null) {
+        out.println("Must provide a value");
+        return;
+    }
+    prefix = null;
+    if (prop.contains(":")) {
+        prefix = prop.substring(0, prop.indexOf(":"));
+        prop = prop.substring(prefix.length() + 1);
+    }
+    propDef = typeTree.getPropertyDefinitionByPrefix(prefix, prop);
+    if (propDef == null) {
+        out.println("Definition for property " + prefix + ":" + prop + " not found.");
+        return;
+    }
+    if (!propDef.isInheritable()) {
+        out.println("Not an inheritable property: " + propDef);
+        return;
+    }
+
+    r = repo.retrieve(token, uri, false);
+
+    property = propDef.createProperty();
+    property.setStringValue(value);
+    r.addProperty(property);
+
+    inheritableProps = new ArrayList();
+    inheritableProps.add(propDef);
+    storeContext = new InheritablePropertiesStoreContext(inheritableProps);
+    repo.store(token, r, storeContext);
+}

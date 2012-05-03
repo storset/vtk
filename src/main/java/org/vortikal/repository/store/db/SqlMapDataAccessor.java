@@ -67,6 +67,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.repository.store.DataAccessor;
+import org.vortikal.repository.store.db.SqlDaoUtils.PropHolder;
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
@@ -104,7 +105,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         if (resource == null) {
             return null;
         }
-
+        
+        loadInheritedProperties(new ResourceImpl[] { resource });
         loadACLs(new ResourceImpl[] { resource });
 
         if (resource.isCollection()) {
@@ -424,6 +426,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
         ResourceImpl[] result = children.toArray(new ResourceImpl[children.size()]);
         loadChildUrisForChildren(parent, result);
+        loadInheritedProperties(result);
         loadACLs(result);
         loadPropertiesForChildren(parent, result);
 
@@ -848,11 +851,91 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return nearestResourceId;
     }
 
+    private void loadInheritedProperties(ResourceImpl[] resources) {
+        if (resources.length == 0) {
+            return;
+        }
+        Set<Path> paths = new HashSet<Path>();
+        Map<Integer, ResourceImpl> resourceMap = new HashMap<Integer, ResourceImpl>();
+        for (ResourceImpl resource: resources) {
+            resourceMap.put(resource.getID(), resource);
+            Path uri = resource.getURI();
+            for (Path p: uri.getPaths()) {
+                paths.add(p);
+            }
+        }
+        Map<String, Object> parameterMap = new HashMap<String, Object>();
+        parameterMap.put("uris", paths.toArray());
+
+        String sqlMap = getSqlMap("loadInheritedProperties");
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> propertyRows = getSqlMapClientTemplate().queryForList(sqlMap, parameterMap);
+        
+        Map<PropHolder, List<Object>> propValuesMap = new HashMap<PropHolder, List<Object>>();
+
+        Map<Path, Set<PropHolder>> inheritanceMap = new HashMap<Path, Set<PropHolder>>();
+        
+        
+        for (Map<String, Object> propEntry : propertyRows) {
+            PropHolder prop = new PropHolder();
+            prop.propID = propEntry.get("id");
+            prop.namespaceUri = (String) propEntry.get("namespaceUri");
+            prop.name = (String) propEntry.get("name");
+            prop.resourceId = (Integer) propEntry.get("resourceId");
+            prop.binary = (Boolean) propEntry.get("binary");
+            prop.inherited = true;
+            List<Object> values = propValuesMap.get(prop);
+            if (values == null) {
+                values = new ArrayList<Object>(2);
+                prop.values = values;
+                propValuesMap.put(prop, values);
+            }
+            if (prop.binary) {
+                values.add(prop.propID);
+            } else {
+                values.add(propEntry.get("value"));
+            }
+            Path uri = Path.fromString((String) propEntry.get("uri"));
+            Set<PropHolder> set = inheritanceMap.get(uri);
+            if (set == null) {
+                set = new HashSet<PropHolder>();
+            }
+            set.add(prop);
+            inheritanceMap.put(uri, set);
+        }
+        
+        for (ResourceImpl r: resources) {
+            Map<String, Map<String, PropHolder>> effectiveProps = new HashMap<String, Map<String, PropHolder>>();
+            for (Path uri: r.getURI().getPaths()) {
+                Set<PropHolder> set = inheritanceMap.get(uri);
+                if (set != null) {
+                    for (PropHolder prop: set) {
+                        Map<String, PropHolder> nameMap = effectiveProps.get(prop.namespaceUri);
+                        if (nameMap == null) {
+                            nameMap = new HashMap<String, PropHolder>();
+                            effectiveProps.put(prop.namespaceUri, nameMap);
+                        }
+                        nameMap.put(prop.name, prop);
+                    }
+                }
+            }
+            for (String namespaceUri: effectiveProps.keySet()) {
+                Map<String, PropHolder> nameMap = effectiveProps.get(namespaceUri);
+                for (String name: nameMap.keySet()) {
+                    PropHolder prop = nameMap.get(name);
+                    System.out.println("__inherited_prop: " + r.getURI() + ": " + namespaceUri + ":" + name);
+                    r.addProperty(createProperty(prop));
+                }
+            }
+        }
+    }
+    
     private void loadACLs(ResourceImpl[] resources) {
 
-        if (resources.length == 0)
+        if (resources.length == 0) {
             return;
-
+        }
         Set<Integer> resourceIds = new HashSet<Integer>();
         for (int i = 0; i < resources.length; i++) {
 
@@ -1017,7 +1100,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             }
         });
     }
-
+    
     private void populateCustomProperties(ResourceImpl[] resources,
             List<Map<String, Object>> propertyRows) {
 
@@ -1027,10 +1110,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             resourceMap.put(resource.getID(), resource);
         }
 
-        Map<SqlDaoUtils.PropHolder, List<Object>> propValuesMap = new HashMap<SqlDaoUtils.PropHolder, List<Object>>();
+        Map<PropHolder, List<Object>> propValuesMap = new HashMap<PropHolder, List<Object>>();
 
         for (Map<String, Object> propEntry : propertyRows) {
-            SqlDaoUtils.PropHolder prop = new SqlDaoUtils.PropHolder();
+            PropHolder prop = new PropHolder();
             prop.propID = propEntry.get("id");
             prop.namespaceUri = (String) propEntry.get("namespaceUri");
             prop.name = (String) propEntry.get("name");
@@ -1050,7 +1133,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             }
         }
 
-        for (SqlDaoUtils.PropHolder propHolder : propValuesMap.keySet()) {
+        for (PropHolder propHolder : propValuesMap.keySet()) {
 
             ResourceImpl r = resourceMap.get(propHolder.resourceId);
 
@@ -1160,10 +1243,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return prop;
     }
 
-    private Property createProperty(SqlDaoUtils.PropHolder holder) {
+    private Property createProperty(PropHolder holder) {
         Namespace namespace = this.resourceTypeTree.getNamespace(holder.namespaceUri);
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, holder.name);
-
+        if (propDef.isInherited() != holder.inherited) {
+//            throw new DataAccessException("Invalid property: " + namespace + ":" + holder.name);
+        }
         if (holder.binary) {
             BinaryValueReference[] refs = new BinaryValueReference[holder.values.size()];
             for (int i=0; i<refs.length; i++) {

@@ -189,10 +189,11 @@ create table extra_prop_entry
     name varchar (64) not null,
     value varchar (2048) not null,
     binary_content oid,
-    binary_mimetype varchar (64)
+    binary_mimetype varchar (64),
+    is_inherited char(1) default 'N' not null
 );
 
-ALTER TABLE extra_prop_entry
+alter table extra_prop_entry
     add constraint extra_prop_entry_PK
 primary key (extra_prop_entry_id);
 
@@ -208,6 +209,7 @@ alter table extra_prop_entry
 -- ;
 
 create index extra_prop_entry_index1 on extra_prop_entry(resource_id);
+create index extra_prop_entry_index2 on extra_prop_entry(is_inherited);
 
 
 -----------------------------------------------------------------------------

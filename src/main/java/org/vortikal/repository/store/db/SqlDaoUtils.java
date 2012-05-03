@@ -82,6 +82,7 @@ final class SqlDaoUtils {
         int resourceId;
         Object propID = null;
         boolean binary = false;
+        boolean inherited = false;
         List<Object> values;
 
         @Override

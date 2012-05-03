@@ -48,7 +48,24 @@
     <result property="value" column="value" />
     <result property="binary" column="is_binary"
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
+    <result property="inherited" column="is_inherited"
+            typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>
+
+  <resultMap id="UriAndProperty" class="java.util.HashMap">
+    <result property="uri" column="uri" />
+    <result property="id" column="extra_prop_entry_id" javaType="int" />
+    <result property="resourceId" column="resource_id" javaType="int" />
+    <result property="name" column="name" />
+    <result property="namespaceUri" column="name_space" />
+    <result property="value" column="value" />
+    <result property="binary" column="is_binary"
+            typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
+    <result property="inherited" column="is_inherited"
+            typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
+  </resultMap>
+
+
 
 
   <resultMap id="AclEntry" class="java.util.HashMap">
@@ -93,6 +110,8 @@
     <result property="namespace" column="name_space" />
     <result property="value" column="value" />
     <result property="binary" column="is_binary"
+            typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
+    <result property="contextual" column="is_inherited"
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>
   
@@ -422,6 +441,7 @@
       case when binary_content is null then 'N' else 'Y' end as is_binary
     from extra_prop_entry p
     where resource_id = #value#
+    and is_inherited = 'N'
     order by p.extra_prop_entry_id
   </select>
 
@@ -435,9 +455,24 @@
     where p.resource_id in
       (select resource_id from vortex_resource
         where uri like #uriWildcard# escape '@' and depth = #depth#)
+    and p.is_inherited = 'N'
     order by p.resource_id, p.extra_prop_entry_id
   </select>
   
+  <select id="loadInheritedProperties" parameterClass="java.util.Map"
+          resultMap="UriAndProperty">
+    select
+      r.uri,
+      p.*,
+      case when p.binary_content is null then 'N' else 'Y' end as is_binary
+    from vortex_resource r inner join extra_prop_entry p on p.resource_id = r.resource_id
+    where p.is_inherited = 'Y'
+          and r.uri in 
+          <iterate prepend="" property="uris" open="(" close=")" conjunction=","> 
+               #uris[]# 
+          </iterate>
+  </select>
+
   <resultMap id="ByteArray" class="java.util.HashMap">
     <result property="byteArray" column="binary_content"
             typeHandler="org.springframework.orm.ibatis.support.BlobByteArrayTypeHandler" />

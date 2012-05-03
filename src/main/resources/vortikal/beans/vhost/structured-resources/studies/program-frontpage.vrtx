@@ -252,9 +252,9 @@ resourcetype program-frontpage {
 
 	}
 	program-type {
-	  en : ("aarsenhet" = "årsenhet", "bachelor" = "bachelor", "ettoghalvt-aarig-master" = "master - halvannet år", "to-aarig-master" = "master - to år", "fem-aarig-master" = "master - 5 år", "erfaringsbasert-master" = "erfaringsbasert master", "profesjon" = "profesjonsstudium"),
-	  no : ("aarsenhet" = "årsenhet", "bachelor" = "bachelor", "ettoghalvt-aarig-master" = "master - halvannet år", "to-aarig-master" = "master - to år", "fem-aarig-master" = "master - 5 år", "erfaringsbasert-master" = "erfaringsbasert master", "profesjon" = "profesjonsstudium"),
-	  nn : ("aarsenhet" = "årsenhet", "bachelor" = "bachelor", "ettoghalvt-aarig-master" = "master - halvannet år", "to-aarig-master" = "master - to år", "fem-aarig-master" = "master - 5 år", "erfaringsbasert-master" = "erfaringsbasert master", "profesjon" = "profesjonsstudium")
+	  en : ("aarsenhet" = "1-year unit", "bachelor" = "bachelor's Degree programme", "ett-aarig-master" = "1-year Master's Degree programme", "ettoghalvt-aarig-master" = "1 1/2-year Master's Degree programme", "to-aarig-master" = "2-year Master's Degree programme", "fem-aarig-master" = "5-year Master's Degree programme", "erfaringsbasert-master" = "experience-based Master's Degree programme", "profesjon" = "professional course of study"),
+	  no : ("aarsenhet" = "årsenhet", "bachelor" = "bachelor", "ett-aarig-master" = "master - ett år", "ettoghalvt-aarig-master" = "master - halvannet år", "to-aarig-master" = "master - to år", "fem-aarig-master" = "master - 5 år", "erfaringsbasert-master" = "erfaringsbasert master", "profesjon" = "profesjonsstudium"),
+	  nn : ("aarsenhet" = "årseining", "bachelor" = "bachelor", "ett-aarig-master" = "master - ett år", "ettoghalvt-aarig-master" = "master - halvannet år", "to-aarig-master" = "master - to år", "fem-aarig-master" = "master - 5 år", "erfaringsbasert-master" = "erfaringsbasert master", "profesjon" = "profesjonsstudium")
 	}
 	organization {
 	  en : ("true" = "Full time study", "false" = "Part time study"),
@@ -300,13 +300,14 @@ resourcetype program-frontpage {
     nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt"),
     
     program-type : (en : "Program type", no : "Programtype", nn : "Programtype"),
-    aarsenhet : (en : "Årsenhet", no : "Årsenhet", nn : "Årsenhet"),
-    bachelor : (en : "Bachelor", no : "Bachelor", nn : "Bachelor"),
-    ettoghalvt-aarig-master : (en : "master - halvannet år", no : "master - halvannet år", nn : "master - halvannet år"),
-    to-aarig-master : (en : "master - to år", no : "master - to år", nn : "master - to år"),
-    fem-aarig-master : (en : "master - 5 år", no : "master - 5 år", nn : "master - 5 år"), 
-    erfaringsbasert-master : (en : "erfaringsbasert master", no : "erfaringsbasert master", nn : "erfaringsbasert master"), 
-    profesjon : (en : "profesjonsstudium", en : "profesjonsstudium", en : "profesjonsstudium"),   
+    aarsenhet : (en : "1-year unit", no : "årsenhet", nn : "årseining"),
+    bachelor : (en : "bachelor's Degree programme", no : "bachelor", nn : "bachelor"),
+    ett-aarig-master : (en "1-year Master's Degree programme": , no "master - ett år": nn: "master - ett år"),
+    ettoghalvt-aarig-master : (en : "1 1/2-year Master's Degree programme", no : "master - halvannet år", nn : "master - halvannet år"),
+    to-aarig-master : (en : "2-year Master's Degree programme", no : "master - to år", nn : "master - to år"),
+    fem-aarig-master : (en : "5-year Master's Degree programme", no : "master - 5 år", nn : "master - 5 år"), 
+    erfaringsbasert-master : (en : "experience-based Master's Degree programme", no : "erfaringsbasert master", nn : "erfaringsbasert master"), 
+    profesjon : (en : "professional course of study", en : "profesjonsstudium", en : "profesjonsstudium"),   
     
     faculty : (en : "Responsible faculty", no : "Ansvarlig fakultet", nn : "Ansvarlig fakultet"),
     hf : (en : "Faculty of Humanities", no : "Det humanistiske fakultet", nn : "Det humanistiske fakultet"),

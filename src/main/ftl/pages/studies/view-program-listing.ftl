@@ -105,7 +105,6 @@
 
 <#if searchComponents?has_content>
     <#list searchComponents as searchComponent>
-        <!-- title master, bachelore jeje-->
         <@displayPrograms searchComponent />
     </#list>
 </#if>

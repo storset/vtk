@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <bean id="programOptionListing.viewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
@@ -19,17 +19,10 @@
     <property name="searchComponents">
       <list>
         <ref bean="programOptionListing.searchComponent" />
+        <ref bean="inactiveProgramOptionListing.searchComponent" />
       </list>
     </property>
     <property name="viewName" value="programOptionListing.view" />
-  <!--   <property name="supportedDisplayTypes">
-      <set>
-        <value>list</value>
-        <value>gallery</value>
-        <value>table</value>
-      </set>
-    </property>
-     -->
   </bean>
 
   <bean id="programOptionListing.searchComponent" parent="collectionListing.searchComponent">
@@ -38,7 +31,19 @@
     <property name="queryBuilders">
       <list>
         <bean parent="queryStringParser">
-          <property name="queryString" value="type IN programOption" />
+          <property name="queryString" value="type IN program-option-frontpage AND resource:status = aktivt" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="inactiveProgramOptionListing.searchComponent" parent="collectionListing.searchComponent">
+    <property name="name" value="inactiveProgramOptionListing.searchComponent" />
+    <property name="listingUriQueryBuilder" ref="collection.defaultRecursiveListingUriQueryBuilder" />
+    <property name="queryBuilders">
+      <list>
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN program-option-frontpage AND resource:status != aktivt" />
         </bean>
       </list>
     </property>
@@ -53,50 +58,7 @@
   </bean>
 
   <bean id="programOptionListing.view" parent="collectionListing.view">
-    <property name="attributesMap">
-      <map>
-        
-        <!-- CSS's -->
-        <entry key="cssURLs">
-          <map>
-            <entry key="common">
-              <list>
-                <value>${themeBaseURL}/programOption-listing-component.css</value>
-                <value>${themeBaseURL}/view-programOption-listing.css</value>
-              </list>
-            </entry>
-            <entry key="gallery">
-              <list>
-                
-              </list>
-            </entry>
-          </map>
-        </entry>
-        
-        <!-- JS's -->
-        <entry key="jsURLs">
-          <map>
-            <entry key="common">
-              <list>
-                <value>${webResources.baseURL}/jquery/include-jquery.js</value>
-              </list>
-            </entry>
-            <entry key="table">
-              <list>
-                <value>${jsBaseURL}/plugins/tablesort-1.5.min.js</value>
-                <value>${jsBaseURL}/plugins/tablesort-customsort.js</value>
-              </list>
-            </entry>
-            <entry key="gallery">
-              <list>
-                <value>${jsBaseURL}/gallery.js</value>
-              </list>
-            </entry>
-          </map>
-        </entry>
-        
-      </map>
-    </property>
+    <property name="url" value="pages/studies/view-program-option-listing.ftl" />
   </bean>
 
   <bean id="programOptionListing.feedService" parent="collectionListing.atomService">
@@ -113,5 +75,5 @@
   <bean id="programOptionListing.feedHandler" parent="collectionListing.atomHandler">
     <property name="searchComponent" ref="programOptionListing.searchComponent" />
   </bean>
-  
+
 </beans>

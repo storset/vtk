@@ -94,8 +94,8 @@ public class OverridingPropertyTypeDefinitionImpl implements OverridableProperty
     }
 
     @Override
-    public boolean isInherited() {
-        return this.overriddenPropDef.isInherited();
+    public boolean isInheritable() {
+        return this.overriddenPropDef.isInheritable();
     }
     
     @Override

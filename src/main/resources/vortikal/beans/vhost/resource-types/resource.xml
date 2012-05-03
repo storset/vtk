@@ -49,10 +49,22 @@
         <ref bean="brokenLinksCountPropDef" />
         <ref bean="linkStatusPropDef" />
         <ref bean="systemJobStatusPropDef" />
+        
+        <!-- Inheritable testing prop  -->
+        <ref bean="magnusPropDef" />
       </list>
     </property>
   </bean>
   
+  <bean id="magnusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+        parent="abstractPropDef">
+    <property name="name" value="magnus"/>
+    <property name="inheritable" value="true"/>
+    <property name="type" value="STRING"/>
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
   <bean id="commentsEnabledPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="commentsEnabled" />

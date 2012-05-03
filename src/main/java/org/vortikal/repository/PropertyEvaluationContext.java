@@ -76,7 +76,7 @@ public class PropertyEvaluationContext {
     }
 
     public static PropertyEvaluationContext inheritablePropertiesChangeContext(ResourceImpl originalResource,
-            ResourceImpl suppliedResource, Principal principal, Content content, InheritablePropertiesStoreContext storeContext) throws InternalRepositoryException {
+            ResourceImpl suppliedResource, Principal principal, Content content) throws InternalRepositoryException {
         PropertyEvaluationContext ctx = new PropertyEvaluationContext(originalResource,
                 originalResource.isCollection(), principal, content, Type.InheritablePropertiesChange);
         ctx.suppliedResource = suppliedResource;

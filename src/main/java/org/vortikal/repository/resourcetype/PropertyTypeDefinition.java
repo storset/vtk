@@ -84,7 +84,7 @@ public interface PropertyTypeDefinition {
     
     public boolean isMultiple();
     
-    public boolean isInherited();
+    public boolean isInheritable();
 
     public RepositoryAction getProtectionLevel();
     

@@ -48,7 +48,7 @@ public class InheritablePropertiesStoreContext implements StoreContext {
         }
         
         for (PropertyTypeDefinition def: defs) {
-            if (!def.isInherited()) {
+            if (!def.isInheritable()) {
                 throw new IllegalArgumentException("Only inheritable properties can be selected in this context");
             }
         }

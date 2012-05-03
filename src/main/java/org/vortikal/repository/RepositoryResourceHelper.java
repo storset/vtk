@@ -270,7 +270,7 @@ public class RepositoryResourceHelper {
                 continue;
             }
 
-            if (def.isInherited()) {
+            if (def.isInheritable()) {
                 if (ctx.shouldEvaluateInheritableProperty(def)) {
                     logger.debug("Evaluating inherited prop: " + def);
                     evaluateManagedProperty(ctx, def);
@@ -279,7 +279,7 @@ public class RepositoryResourceHelper {
                     ctx.getNewResource().removeProperty(def);
                 }
             } else {
-                evaluateManagedProperty(ctx, def);                
+                evaluateManagedProperty(ctx, def);            
             }
         }
 
@@ -293,7 +293,7 @@ public class RepositoryResourceHelper {
                     continue;
                 }
                 
-                if (def.isInherited()) {
+                if (def.isInheritable()) {
                     if (ctx.shouldEvaluateInheritableProperty(def)) {
                         logger.debug("Evaluating inherited prop from mixinDef: " + def);
                         evaluateManagedProperty(ctx, def);

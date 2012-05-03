@@ -67,6 +67,7 @@ import org.vortikal.repository.content.ContentRepresentationRegistry;
 import org.vortikal.repository.content.InputStreamWrapper;
 import org.vortikal.repository.event.ACLModificationEvent;
 import org.vortikal.repository.event.ContentModificationEvent;
+import org.vortikal.repository.event.InheritablePropertiesModificationEvent;
 import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
 import org.vortikal.repository.event.ResourceModificationEvent;
@@ -82,7 +83,6 @@ import org.vortikal.repository.store.DataAccessor;
 import org.vortikal.repository.store.RevisionStore;
 import org.vortikal.repository.store.Revisions;
 import org.vortikal.repository.store.Revisions.ChecksumWrapper;
-import org.vortikal.repository.systemjob.SystemChangeContext;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
@@ -118,7 +118,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private ResourceTypeTree resourceTypeTree;
     private RepositoryResourceHelper resourceHelper;
     private AuthorizationManager authorizationManager;
-    private PrincipalManager principalManager;
     private Searcher searcher;
     private String id;
     private int maxComments = 1000;
@@ -812,7 +811,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     
     @Transactional
     @Override
-    public Resource store(String token, Resource resource, SystemChangeContext systemChangeContext) throws ResourceNotFoundException, AuthorizationException,
+    public Resource store(String token, Resource resource, StoreContext storeContext) throws ResourceNotFoundException, AuthorizationException,
             ResourceLockedException, AuthenticationException, IllegalOperationException, ReadOnlyException, IOException {
         
         Principal principal = this.tokenManager.getPrincipal(token);
@@ -832,13 +831,24 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
 
         checkLock(original, principal);
-        
-        if (systemChangeContext != null) {
-            // System change store requires root role
-            this.authorizationManager.authorizeRootRoleAction(principal);
-        } else {
-            this.authorizationManager.authorizeReadWrite(uri, principal);
+
+        // Check if specialized store context:
+        // System change
+        if (storeContext != null) {
+            if (storeContext instanceof SystemChangeContext) {
+                return storeSystemChange(uri, resource, original, principal, (SystemChangeContext) storeContext);
+            }
+
+            // Inheritable props store
+            if (storeContext instanceof InheritablePropertiesStoreContext) {
+                return storeInheritableProps(uri, resource, original, principal, (InheritablePropertiesStoreContext) storeContext);
+            }
+            
+            throw new IllegalArgumentException("Unknown store context impl: " + storeContext);
         }
+        
+        // Regular store
+        this.authorizationManager.authorizeReadWrite(uri, principal);
 
         try {
             ResourceImpl originalClone = (ResourceImpl) original.clone();
@@ -846,16 +856,60 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             ResourceImpl suppliedResource = (ResourceImpl) resource;
             ResourceImpl newResource;
             Content content = getContent(original);
-            
-            if (systemChangeContext == null) {
-                newResource = this.resourceHelper.propertiesChange(original, principal, suppliedResource, content);
-            } else {
-                newResource = this.resourceHelper.systemChange(original, principal, suppliedResource, content, systemChangeContext);
-            }
+
+            newResource = this.resourceHelper.propertiesChange(original, principal, suppliedResource, content);
 
             newResource = this.dao.store(newResource);
 
             ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource)newResource.clone(), originalClone);
+            this.context.publishEvent(event);
+
+            return (Resource) newResource.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IOException("Failed to clone object", e);
+        }
+    }
+    
+    private Resource storeSystemChange(Path uri, Resource resource, ResourceImpl original, Principal principal, SystemChangeContext context) throws IOException {
+        // Require root role for system change
+        this.authorizationManager.authorizeRootRoleAction(principal);
+
+        try {
+            ResourceImpl originalClone = (ResourceImpl) original.clone();
+
+            ResourceImpl suppliedResource = (ResourceImpl) resource;
+            ResourceImpl newResource;
+            Content content = getContent(original);
+
+            newResource = this.resourceHelper.systemChange(original, principal, suppliedResource, content, context);
+
+            newResource = this.dao.store(newResource);
+
+            ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource)newResource.clone(), originalClone);
+            this.context.publishEvent(event);
+
+            return (Resource) newResource.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IOException("Failed to clone object", e);
+        }
+    }
+    
+    private Resource storeInheritableProps(Path uri, Resource resource, ResourceImpl original, Principal principal, InheritablePropertiesStoreContext context) throws IOException {
+        // Normal write privilege required
+        this.authorizationManager.authorizeReadWrite(uri, principal);
+
+        try {
+            ResourceImpl originalClone = (ResourceImpl) original.clone();
+
+            ResourceImpl suppliedResource = (ResourceImpl) resource;
+            ResourceImpl newResource;
+            Content content = getContent(original);
+
+            newResource = this.resourceHelper.inheritablePropertiesChange(original, principal, suppliedResource, content, context);
+
+            newResource = this.dao.store(newResource);
+
+            InheritablePropertiesModificationEvent event = new InheritablePropertiesModificationEvent(this, (Resource)newResource.clone(), originalClone);
             this.context.publishEvent(event);
 
             return (Resource) newResource.clone();
@@ -1730,11 +1784,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Required
     public void setAuthorizationManager(AuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
-    }
-
-    @Required
-    public void setPrincipalManager(PrincipalManager principalManager) {
-        this.principalManager = principalManager;
     }
 
     @Override

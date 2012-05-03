@@ -70,6 +70,14 @@ public class ProcessedContentEventDumperOpen extends AbstractRepositoryEventDump
         this.changeLogDAO.addChangeLogEntry(entry, false);
     }
 
+    @Override
+    public void modifiedInheritableProperties(Resource resource, Resource originalResource) {
+        ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
+                Operation.MODIFIED_PROPS,
+                -1, resource.isCollection(), new Date());
+        
+        this.changeLogDAO.addChangeLogEntry(entry, true);
+    }
 
     @Override
     public void contentModified(Resource resource, Resource original) {

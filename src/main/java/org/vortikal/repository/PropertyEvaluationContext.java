@@ -38,13 +38,18 @@ import java.util.Map;
 
 import org.vortikal.repository.resourcetype.Content;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.systemjob.SystemChangeContext;
 import org.vortikal.security.Principal;
 
 public class PropertyEvaluationContext {
 
     public enum Type {
-        Create, ContentChange, PropertiesChange, NameChange, CommentsChange, SystemPropertiesChange
+        Create,
+        ContentChange,
+        NameChange,
+        CommentsChange,
+        PropertiesChange,
+        SystemPropertiesChange,
+        InheritablePropertiesChange
     }
 
     private Type evaluationType;
@@ -56,7 +61,7 @@ public class PropertyEvaluationContext {
     private final Date time = new Date();
     private Principal principal;
     private Map<String, Object> propertyValueMap;
-    private SystemChangeContext systemChangeContext;
+    private StoreContext storeContext;
     
     private List<PropertyTypeDefinition> lateEvaluationPropDefs = new ArrayList<PropertyTypeDefinition>();
 
@@ -70,6 +75,14 @@ public class PropertyEvaluationContext {
         return ctx;
     }
 
+    public static PropertyEvaluationContext inheritablePropertiesChangeContext(ResourceImpl originalResource,
+            ResourceImpl suppliedResource, Principal principal, Content content, InheritablePropertiesStoreContext storeContext) throws InternalRepositoryException {
+        PropertyEvaluationContext ctx = new PropertyEvaluationContext(originalResource,
+                originalResource.isCollection(), principal, content, Type.InheritablePropertiesChange);
+        ctx.suppliedResource = suppliedResource;
+        return ctx;
+    }
+    
     public static PropertyEvaluationContext createResourceContext(ResourceImpl originalResource, boolean collection,
             Principal principal, Content content) throws InternalRepositoryException {
         PropertyEvaluationContext ctx = new PropertyEvaluationContext(originalResource, collection, principal, content,
@@ -177,21 +190,36 @@ public class PropertyEvaluationContext {
     public Object getEvaluationAttribute(String name) {
         return this.contextAttributes.get(name);
     }
+    
+    public boolean shouldEvaluateInheritableProperty(PropertyTypeDefinition def) {
+        if (this.evaluationType != Type.InheritablePropertiesChange) {
+            return false;
+        }
+        if (!(this.storeContext instanceof InheritablePropertiesStoreContext)) {
+            return false;
+        }
+        
+        InheritablePropertiesStoreContext ipsc = (InheritablePropertiesStoreContext)this.storeContext;
+        List<PropertyTypeDefinition> affectedProps = ipsc.getAffectedProperties();
+        return affectedProps.contains(def);
+    }
 
     public boolean isSystemChangeAffectedProperty(PropertyTypeDefinition propDef) {
         if (this.evaluationType != Type.SystemPropertiesChange) {
             return false;
         }
 
-        if (this.systemChangeContext == null) {
+        if (!(this.storeContext instanceof SystemChangeContext)) {
             return false;
         }
         
-        if (propDef == this.systemChangeContext.getSystemJobStatusPropDef()) {
+        SystemChangeContext systemChangeContext  = (SystemChangeContext)storeContext;
+        
+        if (propDef == systemChangeContext.getSystemJobStatusPropDef()) {
             return true;
         }
         
-        List<PropertyTypeDefinition> affectedProperties = this.systemChangeContext.getAffectedProperties();
+        List<PropertyTypeDefinition> affectedProperties = systemChangeContext.getAffectedProperties();
         return affectedProperties == null || affectedProperties.contains(propDef);
     }
     
@@ -203,12 +231,12 @@ public class PropertyEvaluationContext {
         return this.lateEvaluationPropDefs;
     }
     
-    public void setSystemChangeContext(SystemChangeContext systemChangeContext) {
-        this.systemChangeContext = systemChangeContext;
+    public void setStoreContext(StoreContext storeContext) {
+        this.storeContext = storeContext;
     }
     
-    public SystemChangeContext getSystemChangeContext() {
-        return this.systemChangeContext;
+    public StoreContext getStoreContext() {
+        return this.storeContext;
     }
 
 }

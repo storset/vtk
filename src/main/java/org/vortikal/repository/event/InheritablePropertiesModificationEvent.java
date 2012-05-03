@@ -29,46 +29,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.repository.resourcetype.property;
+package org.vortikal.repository.event;
 
-import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertyEvaluationContext;
-import org.vortikal.repository.StoreContext;
-import org.vortikal.repository.SystemChangeContext;
-import org.vortikal.repository.resourcetype.PropertyEvaluator;
-import org.vortikal.repository.resourcetype.Value;
-
-import net.sf.json.JSONObject;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 
 /**
  *
  */
-public class SystemJobStatusEvaluator implements PropertyEvaluator {
+public class InheritablePropertiesModificationEvent extends ResourceModificationEvent {
 
-    @Override
-    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-        
-        if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.SystemPropertiesChange) {
-            // Keep existing value for anything but system change evaluation.
-            return property.isValueInitialized();
-        }
-        
-        StoreContext storeContext = ctx.getStoreContext();
-        if (!(storeContext instanceof SystemChangeContext)) {
-            throw new IllegalArgumentException("Expected system change store context, but was: " + storeContext);
-        }
-        
-        Value updated = updateStatusValue(property.getValue(), (SystemChangeContext)storeContext);
-        property.setValue(updated);
-        return true;
+    public InheritablePropertiesModificationEvent(Repository source, Resource resource, Resource original) {
+        super(source, resource, original);
     }
-    
-    private Value updateStatusValue(Value existing, SystemChangeContext context) {
-        JSONObject json = new JSONObject();
-        if (existing != null) {
-            json = existing.getJSONValue();
-        } 
-        json.put(context.getJobName(), context.getTimestampFormatted());
-        return new Value(json);
-    }
+
 }

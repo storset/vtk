@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.repository.systemjob;
+package org.vortikal.repository;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -39,7 +39,12 @@ import java.util.List;
 import org.apache.commons.lang.time.FastDateFormat;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
-public class SystemChangeContext {
+/**
+ * Store context used for performing system change stores, where only
+ * selected properties are evaluated upon store, and system job status is updated.
+ * 
+ */
+public class SystemChangeContext implements StoreContext {
 
     private final String jobName;
     private final Date time;

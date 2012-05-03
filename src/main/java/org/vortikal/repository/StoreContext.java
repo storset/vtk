@@ -29,18 +29,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.repository.systemjob;
-
-import org.vortikal.repository.SystemChangeContext;
-import org.vortikal.repository.Repository;
+package org.vortikal.repository;
 
 /**
- *
+ * Specialized repository store context (marker).
  */
-public interface PathSelector {
-
-    public void selectWithCallback(Repository repository,
-                                   SystemChangeContext context,
-                                   PathSelectCallback callback) throws Exception;
+public interface StoreContext {
     
 }

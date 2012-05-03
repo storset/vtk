@@ -48,7 +48,6 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.systemjob.SystemChangeContext;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.web.service.RepositoryAssertion;
@@ -86,6 +85,22 @@ public class RepositoryResourceHelper {
         return ctx.getNewResource();
     }
 
+    public ResourceImpl inheritablePropertiesChange(ResourceImpl originalResource, Principal principal,
+            ResourceImpl suppliedResource, Content content, InheritablePropertiesStoreContext storeContext) throws AuthenticationException, AuthorizationException,
+            InternalRepositoryException, IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Evaluate inhertiable properties change: " + originalResource.getURI());
+        }
+
+        PropertyEvaluationContext ctx = PropertyEvaluationContext.propertiesChangeContext(originalResource,
+                suppliedResource, principal, content);
+        ctx.setStoreContext(storeContext);
+        recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
+        lateEvaluation(ctx);
+        checkForDeadAndZombieProperties(ctx);
+        return ctx.getNewResource();
+    }
+    
     public ResourceImpl commentsChange(ResourceImpl originalResource, Principal principal, 
             ResourceImpl suppliedResource, Content content)
             throws AuthenticationException, AuthorizationException, InternalRepositoryException, IOException {
@@ -137,7 +152,7 @@ public class RepositoryResourceHelper {
         
         PropertyEvaluationContext ctx = PropertyEvaluationContext.systemChangeContext(originalResource,
                 suppliedResource, principal, content);
-        ctx.setSystemChangeContext(systemChangeContext);
+        ctx.setStoreContext(systemChangeContext);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
         lateEvaluation(ctx);
         checkForDeadAndZombieProperties(ctx);
@@ -254,8 +269,18 @@ public class RepositoryResourceHelper {
                 ctx.addPropertyTypeDefinitionForLateEvaluation(def);
                 continue;
             }
-            
-            evaluateManagedProperty(ctx, def);
+
+            if (def.isInherited()) {
+                if (ctx.shouldEvaluateInheritableProperty(def)) {
+                    logger.debug("Evaluating inherited prop: " + def);
+                    evaluateManagedProperty(ctx, def);
+                } else {
+                    // Remove it, to make sure it isn't stored on resource
+                    ctx.getNewResource().removeProperty(def);
+                }
+            } else {
+                evaluateManagedProperty(ctx, def);                
+            }
         }
 
         // For all prop defs in mixin types, also do evaluation
@@ -268,7 +293,17 @@ public class RepositoryResourceHelper {
                     continue;
                 }
                 
-                evaluateManagedProperty(ctx, def);
+                if (def.isInherited()) {
+                    if (ctx.shouldEvaluateInheritableProperty(def)) {
+                        logger.debug("Evaluating inherited prop from mixinDef: " + def);
+                        evaluateManagedProperty(ctx, def);
+                    } else {
+                        // Remove it, to make sure it isn't stored on resource
+                        ctx.getNewResource().removeProperty(def);
+                    }
+                } else {
+                    evaluateManagedProperty(ctx, def);
+                }
             }
         }
 

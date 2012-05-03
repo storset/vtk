@@ -38,6 +38,7 @@ import org.springframework.context.ApplicationListener;
 import org.vortikal.repository.ChangeLogEntry.Operation;
 import org.vortikal.repository.event.ACLModificationEvent;
 import org.vortikal.repository.event.ContentModificationEvent;
+import org.vortikal.repository.event.InheritablePropertiesModificationEvent;
 import org.vortikal.repository.event.RepositoryEvent;
 import org.vortikal.repository.event.ResourceCreationEvent;
 import org.vortikal.repository.event.ResourceDeletionEvent;
@@ -86,8 +87,13 @@ public abstract class AbstractRepositoryEventDumper implements ApplicationListen
                     ((ResourceDeletionEvent) event).getResourceId(),
                     ((ResourceDeletionEvent) event).isCollection());
         } else if (event instanceof ResourceModificationEvent) {
-            modified(((ResourceModificationEvent) event).getResource(),
-                     ((ResourceModificationEvent) event).getOriginal());
+            final Resource resource = ((ResourceModificationEvent)event).getResource();
+            final Resource original = ((ResourceModificationEvent)event).getOriginal();
+            if (event instanceof InheritablePropertiesModificationEvent) {
+                modifiedInheritableProperties(resource, original);
+            } else {
+                modified(resource, original);
+            }
         } else if (event instanceof ContentModificationEvent) {
             contentModified(((ContentModificationEvent) event).getResource(),
                             ((ContentModificationEvent) event).getOriginal());
@@ -105,6 +111,8 @@ public abstract class AbstractRepositoryEventDumper implements ApplicationListen
     public abstract void deleted(Path uri, int resourceId, boolean collection);
 
     public abstract void modified(Resource resource, Resource originalResource);
+    
+    public abstract void modifiedInheritableProperties(Resource resource, Resource originalResource);
 
     public abstract void contentModified(Resource resource, Resource original);
 

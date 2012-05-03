@@ -41,8 +41,8 @@ public class ChangeLogEntry {
 
     /** Denotes the types of operations that a changelog entry can reflect. */
     public static enum Operation { 
-        MODIFIED_ACL("modified_acl"), 
-        MODIFIED_CONTENT("modified_content"), 
+        MODIFIED_ACL("modified_acl"),
+        MODIFIED_CONTENT("modified_content"),
         MODIFIED_PROPS("modified_props"),
         CREATED("created"),
         DELETED("deleted"),

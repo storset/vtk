@@ -46,14 +46,24 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.search.context.NearestContextResolver;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.service.URL;
 
+/**
+ * FIXME
+ */
 public class PropertyLinkedValueDecoratorComponent extends ViewRenderingDecoratorComponent {
 
+    /**
+     * FIXME
+     */
+    public interface NearestContextResolver {
+
+        public URL getClosestContext(URL url, Locale locale);
+    }
+    
     private static final String DESCRIPTION = "Display the value(s) of a string property, with link(s) to search";
     private static final String PARAMETER_TITLE = "title";
     private static final String PARAMETER_TITLE_DESC = "Optional title (default is 'Tags')";

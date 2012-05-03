@@ -302,7 +302,7 @@ resourcetype program-frontpage {
     program-type : (en : "Program type", no : "Programtype", nn : "Programtype"),
     aarsenhet : (en : "1-year unit", no : "årsenhet", nn : "årseining"),
     bachelor : (en : "bachelor's Degree programme", no : "bachelor", nn : "bachelor"),
-    ett-aarig-master : (en "1-year Master's Degree programme": , no "master - ett år": nn: "master - ett år"),
+    ett-aarig-master : (en: "1-year Master's Degree programme" , no: "master - ett år", nn: "master - ett år"),
     ettoghalvt-aarig-master : (en : "1 1/2-year Master's Degree programme", no : "master - halvannet år", nn : "master - halvannet år"),
     to-aarig-master : (en : "2-year Master's Degree programme", no : "master - to år", nn : "master - to år"),
     fem-aarig-master : (en : "5-year Master's Degree programme", no : "master - 5 år", nn : "master - 5 år"), 

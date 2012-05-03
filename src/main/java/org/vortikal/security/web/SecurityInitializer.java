@@ -89,10 +89,6 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
 
     private String uioAuthIDP;
 
-    private static final String VRTXID = "VRTXID";
-
-    private static final String VRTXSSLID = "VRTXSSLID";
-
     private static final String AUTH_HANDLER_SP_COOKIE_CATEGORY = "spCookie";
 
     private static Log logger = LogFactory.getLog(SecurityInitializer.class);
@@ -410,7 +406,7 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                         logger.debug("Deleting cookie " + cookie);
                     }
                     c = new Cookie(cookie, c.getValue());
-                    if (!cookie.equals(VRTXID) || !cookie.equals(VRTXLINK_COOKIE)) {
+                    if (!cookie.equals(VRTXLINK_COOKIE)) {
                         c.setSecure(true);
                     }
                     c.setPath("/");

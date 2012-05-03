@@ -20,6 +20,7 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="facultyPropDef" />
+        <ref  bean="programSortPropDef" />
       </list>
     </property>
   </bean>
@@ -47,25 +48,25 @@
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
-                <value>jf</value>
+                <value>jus</value>
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
-                <value>mn</value>
+                <value>matnat</value>
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
-                <value>mf</value>
+                <value>med</value>
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
-                <value>od</value>
+                <value>odont</value>
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>
@@ -110,7 +111,7 @@
           <list>
             <bean class="org.vortikal.repository.resourcetype.Value">
               <constructor-arg type="java.lang.String">
-                <value>grad</value>
+                <value>alphabetical</value>
               </constructor-arg>
               <constructor-arg ref="TYPE_STRING" />
             </bean>
@@ -129,52 +130,6 @@
     </property>
   </bean>
   
-    <bean id="displayGradeSortPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="program-display-grade" />
-    <property name="type" value="STRING" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-    <property name="valueFormatter">
-      <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
-        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.faculty" />
-        <constructor-arg value="STRING" />
-      </bean>
-    </property>
-    <property name="vocabulary">
-      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
-        <property name="values">
-          <list>
-            <bean class="org.vortikal.repository.resourcetype.Value">
-              <constructor-arg type="java.lang.String">
-                <value>master</value>
-              </constructor-arg>
-              <constructor-arg ref="TYPE_STRING" />
-            </bean>
-              <bean class="org.vortikal.repository.resourcetype.Value">
-              <constructor-arg type="java.lang.String">
-                <value>bachelor</value>
-              </constructor-arg>
-              <constructor-arg ref="TYPE_STRING" />
-            </bean>
-              <bean class="org.vortikal.repository.resourcetype.Value">
-              <constructor-arg type="java.lang.String">
-                <value>profession</value>
-              </constructor-arg>
-              <constructor-arg ref="TYPE_STRING" />
-            </bean>
-          </list>
-        </property>
-      </bean>
-    </property>
-    <property name="metadata">
-      <map>
-        <entry key="editingHints">
-          <map>
-            <entry key="radio" value="true" />
-          </map>
-        </entry>
-      </map>
-    </property>
-  </bean>
+   
   
 </beans>

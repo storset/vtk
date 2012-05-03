@@ -258,7 +258,10 @@ public class ManuallyApproveResourcesSearcher {
         }
 
         try {
-            return Path.fromString(location);
+            // Trailing slash
+            String pathString = location.endsWith("/") && !location.equals("/") ? location.substring(0,
+                    location.lastIndexOf("/")) : location;
+            return Path.fromString(pathString);
         } catch (IllegalArgumentException iae) {
             return null;
         }

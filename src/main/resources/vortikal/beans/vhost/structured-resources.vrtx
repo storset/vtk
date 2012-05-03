@@ -16,3 +16,4 @@ include structured-resources/message.vrtx
 include structured-resources/studies/fellestekst-document.vrtx
 include structured-resources/studies/hvordan-soke.vrtx
 include structured-resources/studies/program-frontpage.vrtx
+include structured-resources/studies/program-option-frontpage.vrtx

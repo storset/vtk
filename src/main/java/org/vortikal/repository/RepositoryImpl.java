@@ -814,7 +814,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     public Resource store(String token, Resource resource, StoreContext storeContext) throws ResourceNotFoundException, AuthorizationException,
             ResourceLockedException, AuthenticationException, IllegalOperationException, ReadOnlyException, IOException {
         
-        Principal principal = this.tokenManager.getPrincipal(token);
+        final Principal principal = this.tokenManager.getPrincipal(token);
 
         if (resource == null) {
             throw new IllegalOperationException("Can't store nothingness.");
@@ -823,9 +823,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (!(resource instanceof ResourceImpl)) {
             throw new IllegalOperationException("Can't store unknown implementation of resource..");
         }
-        Path uri = resource.getURI();
+        final Path uri = resource.getURI();
 
-        ResourceImpl original = this.dao.load(uri);
+        final ResourceImpl original = this.dao.load(uri);
         if (original == null) {
             throw new ResourceNotFoundException(uri);
         }

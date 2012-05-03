@@ -270,17 +270,7 @@ public class RepositoryResourceHelper {
                 continue;
             }
 
-            if (def.isInheritable()) {
-                if (ctx.shouldEvaluateInheritableProperty(def)) {
-                    System.out.println("--- Evaluating inherited prop: " + def);
-                    evaluateManagedProperty(ctx, def);
-                } else {
-                    // Remove it, to make sure it isn't stored on resource
-                    ctx.getNewResource().removeProperty(def);
-                }
-            } else {
-                evaluateManagedProperty(ctx, def);            
-            }
+            evaluateManagedProperty(ctx, def);            
         }
 
         // For all prop defs in mixin types, also do evaluation
@@ -293,17 +283,7 @@ public class RepositoryResourceHelper {
                     continue;
                 }
                 
-                if (def.isInheritable()) {
-                    if (ctx.shouldEvaluateInheritableProperty(def)) {
-                        logger.debug("Evaluating inherited prop from mixinDef: " + def);
-                        evaluateManagedProperty(ctx, def);
-                    } else {
-                        // Remove it, to make sure it isn't stored on resource
-                        ctx.getNewResource().removeProperty(def);
-                    }
-                } else {
-                    evaluateManagedProperty(ctx, def);
-                }
+                evaluateManagedProperty(ctx, def);
             }
         }
 
@@ -353,12 +333,19 @@ public class RepositoryResourceHelper {
 
     private Property doEvaluate(PropertyEvaluationContext ctx, PropertyTypeDefinition propDef) throws IOException {
 
+        final Property originalUnchanged = ctx.getOriginalResource().getProperty(propDef);
         if (ctx.getEvaluationType() == Type.SystemPropertiesChange) {
-            Property originalUnchanged = ctx.getOriginalResource().getProperty(propDef);
             if (! ctx.isSystemChangeAffectedProperty(propDef)) {
                 // Not to be affected by system change, return original unchanged.
                 return originalUnchanged;
             }
+        }
+        
+        if (propDef.isInheritable() 
+                && !ctx.shouldEvaluateInheritableProperty(propDef)) {
+            // An inheritable property that should not be changed now,
+            // return unmodified prop (might be null if not exists in original resource)
+            return originalUnchanged;
         }
         
         if (ctx.getEvaluationType() == Type.PropertiesChange || 

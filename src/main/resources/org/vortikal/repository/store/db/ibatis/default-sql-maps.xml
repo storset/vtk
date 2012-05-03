@@ -492,13 +492,15 @@
       (extra_prop_entry_id, resource_id, name_space, name, value
         <isNotEmpty property="binaryContent">
           , binary_content, binary_mimetype
-        </isNotEmpty>)
+        </isNotEmpty>
+        , is_inherited)
     values (<include refid="nextExtraPropEntryId" />, #resourceId#, 
       #namespaceUri#, #name#, #value#
         <isNotEmpty property="binaryContent">
           , #binaryContent,handler=org.springframework.orm.ibatis.support.BlobByteArrayTypeHandler#,
           #binaryMimeType#
-        </isNotEmpty>)
+        </isNotEmpty>
+        , #inherited,handler=org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback#)
   </insert>
   
   <insert id="copyProperties" parameterClass="java.util.Map">
@@ -509,7 +511,8 @@
        name,
        value,
        binary_content,
-       binary_mimetype)
+       binary_mimetype,
+       is_inherited)
     select
       <include refid="nextExtraPropEntryId" />, t.*
       from
@@ -519,7 +522,8 @@
           p.name,
           p.value,
           p.binary_content,
-          p.binary_mimetype
+          p.binary_mimetype,
+          p.is_inherited
         from vortex_resource r inner join extra_prop_entry p 
              on r.prev_resource_id = p.resource_id
         where (r.uri = #destUri# or r.uri like #destUriWildcard# escape '@')
@@ -964,8 +968,8 @@
     p.name_space,
     p.name,
     p.value,
-    p.is_inherited,
-    case when p.binary_content is null then 'N' else 'Y' end as is_binary
+    case when p.binary_content is null then 'N' else 'Y' end as is_binary,
+    p.is_inherited
     from vortex_resource r
     left outer join extra_prop_entry p on r.resource_id = p.resource_id
     where r.uri like '/%'
@@ -978,8 +982,8 @@
            p.name_space,
            p.name,
            p.value,
-           p.is_inherited,
-           case when p.binary_content is null then 'N' else 'Y' end as is_binary
+           case when p.binary_content is null then 'N' else 'Y' end as is_binary,
+           p.is_inherited
            from vortex_resource r
     left outer join extra_prop_entry p  on r.resource_id = p.resource_id
     where r.uri = #uri# or r.uri like #uriWildcard#
@@ -992,8 +996,8 @@
            p.name_space,
            p.name,
            p.value,
-           p.is_inherited,
-           case when p.binary_content is null then 'N' else 'Y' end as is_binary
+           case when p.binary_content is null then 'N' else 'Y' end as is_binary,
+           p.is_inherited
        from vortex_tmp t, vortex_resource r
        left outer join extra_prop_entry p on r.resource_id = p.resource_id
        where r.uri = t.uri AND t.session_id=#value#

@@ -1075,6 +1075,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                         parameters.put("namespaceUri", property.getDefinition().getNamespace().getUri());
                         parameters.put("name", property.getDefinition().getName());
                         parameters.put("resourceId", r.getID());
+                        parameters.put("inherited", property.getDefinition().isInheritable());
 
                         Value[] values;
                         if (property.getDefinition() != null && property.getDefinition().isMultiple()) {

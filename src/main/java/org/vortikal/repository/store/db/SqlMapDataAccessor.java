@@ -924,7 +924,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                 Map<String, PropHolder> nameMap = effectiveProps.get(namespaceUri);
                 for (String name: nameMap.keySet()) {
                     PropHolder prop = nameMap.get(name);
-                    System.out.println("__inherited_prop: " + r.getURI() + ": " + namespaceUri + ":" + name);
                     r.addProperty(createProperty(prop));
                 }
             }

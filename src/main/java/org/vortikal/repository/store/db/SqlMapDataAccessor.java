@@ -1245,7 +1245,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
     private Property createProperty(PropHolder holder) {
         Namespace namespace = this.resourceTypeTree.getNamespace(holder.namespaceUri);
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, holder.name);
-        if (propDef.isInherited() != holder.inherited) {
+        if (propDef.isInheritable() != holder.inherited) {
 //            throw new DataAccessException("Invalid property: " + namespace + ":" + holder.name);
         }
         if (holder.binary) {

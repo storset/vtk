@@ -36,6 +36,7 @@ import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.store.Metadata;
 import org.vortikal.repository.store.PrincipalMetadata;
 import org.vortikal.repository.store.PrincipalMetadataDAO;
 import org.vortikal.repository.store.PrincipalSearch;
@@ -92,7 +93,7 @@ public class PrincipalFactory {
                 PrincipalMetadata metadata = this.principalMetadataDao.getMetadata(principal, preferredLocale);
                 if (metadata != null) {
                     principal.setDescription((String) metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE));
-                    principal.setURL((String) metadata.getValue(PrincipalMetadata.URL_ATTRIBUTE));
+                    principal.setURL((String) metadata.getValue(Metadata.URL_ATTRIBUTE));
                     principal.setMetadata(metadata);
                 }
             } catch (UnsupportedPrincipalDomainException d) {
@@ -129,7 +130,7 @@ public class PrincipalFactory {
                         PrincipalImpl principal = new PrincipalImpl(metadata.getQualifiedName());
                         principal.setType(type);
                         principal.setDescription((String) metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE));
-                        principal.setURL((String) metadata.getValue(PrincipalMetadata.URL_ATTRIBUTE));
+                        principal.setURL((String) metadata.getValue(Metadata.URL_ATTRIBUTE));
                         principal.setMetadata(metadata);
                         retval.add(principal);
                     }
@@ -155,7 +156,7 @@ public class PrincipalFactory {
                 if (descriptionObj != null) {
                     principal.setDescription(descriptionObj.toString());
                 }
-                Object urlObj = metadata.getValue(PrincipalMetadata.URL_ATTRIBUTE);
+                Object urlObj = metadata.getValue(Metadata.URL_ATTRIBUTE);
                 if (urlObj != null) {
                     principal.setURL(urlObj.toString());
                 }
@@ -191,7 +192,7 @@ public class PrincipalFactory {
                     if (descriptionObj != null) {
                         principal.setDescription(descriptionObj.toString());
                     }
-                    Object urlObj = metadata.getValue(PrincipalMetadata.URL_ATTRIBUTE);
+                    Object urlObj = metadata.getValue(Metadata.URL_ATTRIBUTE);
                     if (urlObj != null) {
                         principal.setURL(urlObj.toString());
                     }

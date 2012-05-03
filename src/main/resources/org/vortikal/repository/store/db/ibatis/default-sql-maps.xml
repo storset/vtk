@@ -111,7 +111,7 @@
     <result property="value" column="value" />
     <result property="binary" column="is_binary"
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
-    <result property="contextual" column="is_inherited"
+    <result property="inherited" column="is_inherited"
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>
   
@@ -964,6 +964,7 @@
     p.name_space,
     p.name,
     p.value,
+    p.is_inherited,
     case when p.binary_content is null then 'N' else 'Y' end as is_binary
     from vortex_resource r
     left outer join extra_prop_entry p on r.resource_id = p.resource_id
@@ -977,6 +978,7 @@
            p.name_space,
            p.name,
            p.value,
+           p.is_inherited,
            case when p.binary_content is null then 'N' else 'Y' end as is_binary
            from vortex_resource r
     left outer join extra_prop_entry p  on r.resource_id = p.resource_id
@@ -990,6 +992,7 @@
            p.name_space,
            p.name,
            p.value,
+           p.is_inherited,
            case when p.binary_content is null then 'N' else 'Y' end as is_binary
        from vortex_tmp t, vortex_resource r
        left outer join extra_prop_entry p on r.resource_id = p.resource_id

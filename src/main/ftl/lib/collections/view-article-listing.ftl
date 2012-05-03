@@ -23,11 +23,7 @@
       <#local resources=articles.files />
       <#if (resources?size > 0)>
         <#list resources as r>
-          <#local locale = springMacroRequestContext.getLocale() />
-          <#if r.contentLocale?has_content>
-            <#local locale = r.contentLocale />
-          </#if>
-
+          <#local locale = vrtx.getLocale(r) />
           <#local title = vrtx.propValue(r, 'title') />
           <#local introImg  = vrtx.prop(r, 'picture')  />
           <#local publishedDate  = vrtx.prop(r, 'published-date')  />

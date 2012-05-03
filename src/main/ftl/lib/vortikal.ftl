@@ -19,11 +19,36 @@
 
 <#function getUri resource>
   <#assign uri = resource.URI />
-  <#assign solrUri = vrtx.propValue(resource, "solr.url", "", "") />
+  <#assign solrUri = vrtx.propValue(resource, "solr.url") />
   <#if solrUri?exists && solrUri?has_content>
     <#assign uri = solrUri>
   </#if>
   <#return uri />
+</#function>
+
+<#function getLocale resource>
+
+  <#if resource.contentLocale?has_content>
+    <#return resource.contentLocale />
+  </#if>
+
+  <#assign constructor = "freemarker.template.utility.ObjectConstructor"?new() />
+  <#assign localeProp = vrtx.propValue(resource, 'contentLocale') />
+  <#if localeProp?exists>
+    <#return constructor("java.util.Locale", localeProp) />
+  </#if>
+
+  <#assign solrResource = vrtx.propValue(resource, 'solr.isSolrResource') />
+  <#if solrResource?exists>
+    <#local lang = vrtx.propValue(resource, 'solr.lang') />
+    <#if lang?exists && lang?has_content>
+      <#return constructor("java.util.Locale", lang) />
+    </#if>
+  </#if>
+
+  <#-- Fall back on context locale -->
+  <#return springMacroRequestContext.getLocale() />
+
 </#function>
 
 <#-- XXX: remove this when properties 'introduction' and 'description'

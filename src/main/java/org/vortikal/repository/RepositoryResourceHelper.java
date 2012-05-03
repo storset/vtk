@@ -92,7 +92,7 @@ public class RepositoryResourceHelper {
             logger.debug("Evaluate inhertiable properties change: " + originalResource.getURI());
         }
 
-        PropertyEvaluationContext ctx = PropertyEvaluationContext.propertiesChangeContext(originalResource,
+        PropertyEvaluationContext ctx = PropertyEvaluationContext.inheritablePropertiesChangeContext(originalResource,
                 suppliedResource, principal, content);
         ctx.setStoreContext(storeContext);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
@@ -272,7 +272,7 @@ public class RepositoryResourceHelper {
 
             if (def.isInheritable()) {
                 if (ctx.shouldEvaluateInheritableProperty(def)) {
-                    logger.debug("Evaluating inherited prop: " + def);
+                    System.out.println("--- Evaluating inherited prop: " + def);
                     evaluateManagedProperty(ctx, def);
                 } else {
                     // Remove it, to make sure it isn't stored on resource
@@ -362,7 +362,8 @@ public class RepositoryResourceHelper {
         }
         
         if (ctx.getEvaluationType() == Type.PropertiesChange || 
-            ctx.getEvaluationType() == Type.SystemPropertiesChange) {
+            ctx.getEvaluationType() == Type.SystemPropertiesChange ||
+            ctx.getEvaluationType() == Type.InheritablePropertiesChange) {
             // Check for user change or addition
             Property property = checkForUserAdditionOrChange(ctx, propDef);
             if (property != null) {
@@ -393,40 +394,6 @@ public class RepositoryResourceHelper {
                 return null;
             }
         }
-
-//        if (ctx.getEvaluationType() == Type.SystemPropertiesChange) {
-//            Property property = ctx.getOriginalResource().getProperty(propDef);
-//            if (! ctx.isSystemChangeAffectedProperty(propDef)) {
-//                // Not marked as affected by system change, return original unchanged.
-//                return property;
-//            }
-//            
-//            Property modified = checkForUserAdditionOrChange(ctx, propDef);
-//            if (modified != null) {
-//                property = modified;
-//            } else if (checkForUserDeletion(ctx, propDef)) {
-//                
-//            }
-//            
-//            try {
-//
-//                PropertyEvaluator evaluator = propDef.getPropertyEvaluator();
-//                if (evaluator != null) {
-//                    if (property == null) {
-//                        property = propDef.createProperty();
-//                    }
-//
-//                    boolean evaluated = evaluator.evaluate(property, ctx);
-//                    if (!evaluated) {
-//                        return null;
-//                    }
-//                }
-//
-//            } catch (Throwable t) {
-//                logger.error("An error occured while evaluating a property with system change context", t);
-//            }
-//            return property;
-//        }
 
         Resource newResource = ctx.getNewResource();
 

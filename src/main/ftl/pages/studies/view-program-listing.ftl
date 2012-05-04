@@ -33,8 +33,8 @@
             <div class="description introduction"><@vrtx.linkResolveFilter intro.value programListing.urls[program.URI]  requestURL /></div>
           </#if>
           <div class="vrtx-program-buttons">
-            <a class="button vrtx-program-read-more" href="${programListing.urls[program.URI]?html}"><span>Mer om programmet</span></a>
-            <a class="button vrtx-course-how-search" href="#"><span>Hvordan søke?</span></a>
+            <a class="button vrtx-program-read-more" href="${programListing.urls[program.URI]?html}"><span>${vrtx.getMsg("program-listing.more-about")}</span></a>
+            <a class="button vrtx-course-how-search" href="#"><span>${vrtx.getMsg("program-listing.how-search")}</span></a>
           </div>
         </li>
       <#else>

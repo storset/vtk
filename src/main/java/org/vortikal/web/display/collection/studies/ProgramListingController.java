@@ -35,6 +35,8 @@ public class ProgramListingController extends CollectionListingController {
         } else if (sortProp != null && facultyProp != null) {
             searchComponents = searchComponentsMap.get("alphabeticalFaculty");
         }
+        
+        model.put("sort", sortProp != null ? "default" : "alphabetical");
 
         List<Listing> results = new ArrayList<Listing>();
         for (SearchComponent component : searchComponents) {

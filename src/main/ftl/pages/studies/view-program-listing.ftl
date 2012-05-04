@@ -34,7 +34,7 @@
           </#if>
           <div class="vrtx-program-buttons">
             <a class="button vrtx-program-read-more" href="${programListing.urls[program.URI]?html}"><span>${vrtx.getMsg("program-listing.more-about")}</span></a>
-            <a class="button vrtx-course-how-search" href="#"><span>${vrtx.getMsg("program-listing.how-search")}</span></a>
+            <a class="button vrtx-program-how-search" href="#"><span>${vrtx.getMsg("program-listing.how-search")}</span></a>
           </div>
         </li>
       <#else>
@@ -47,18 +47,18 @@
         <#else>
           <#local position = "right" />
         </#if>
-        <div class="vrtx-frontpage-box white-box super-wide-picture third-box-${position}"> 
-          <#if title?exists>
-            <h3><a href="${programListing.urls[program.URI]?html}">${title?html}</a></h3>
-          </#if>
+        <div class="thirds-${position}"> 
           <#if introImg?has_content && programListing.hasDisplayPropDef(introImg.definition.name) >
-            <div class="vrtx-frontpage-box-picture">
+            <div class="vrtx-program-listing-picture">
               <#local introImgURI = vrtx.propValue(program, 'picture') />
               <#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
               <a href="${programListing.urls[program.URI]?html}">
                 <img src="${thumbnail?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
               </a>
             </div>
+          </#if>
+          <#if title?exists>
+            <h3><a href="${programListing.urls[program.URI]?html}">${title?html}</a></h3>
           </#if>
         </div>
         <#if (position == "right" || idxPlusOne == programs?size)>
@@ -100,15 +100,11 @@
 </#if>
 </head>
 <body id="vrtx-${resource.resourceType}">
-  <div id="vrtx-content" class="vrtx-frontpage-wide">
-    <div id="vrtx-main-content">
-      <h1>${title?html}</h1>
-      <#if searchComponents?has_content>
-        <#list searchComponents as searchComponent>
-          <@displayPrograms searchComponent />
-        </#list>
-      </#if>
-    </div>
-  </div>
+    <h1>${title?html}</h1>
+    <#if searchComponents?has_content>
+      <#list searchComponents as searchComponent>
+        <@displayPrograms searchComponent />
+      </#list>
+    </#if>
 </body>
 </html>

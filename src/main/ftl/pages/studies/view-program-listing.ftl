@@ -11,10 +11,17 @@
   <#local programs=programListing.files />
   <#if (programs?size > 0) >
     <#if sort?exists && sort == "alphabetical">
-      <span id="vrtx-program-search-found">
-        <@vrtx.msg code="program-listing.search-found" default="Found " + programs?size + " programmes" args=[programs?size] />
-      </span>
-      <ul id="${programListing.name}" class="vrtx-programs programListing.searchComponent ${programListing.name}">
+      <#if programListing.name == "inactive">
+        <span id="vrtx-program-search-found">
+          <@vrtx.msg code="program-listing.inactive" />
+        </span>
+        <ul>
+      <#else>
+        <span id="vrtx-program-search-found">
+          <@vrtx.msg code="program-listing.search-found" default="Found " + programs?size + " programmes" args=[programs?size] />
+        </span>
+        <ul id="${programListing.name}" class="vrtx-programs programListing.searchComponent ${programListing.name}">
+      </#if>
     <#else>
       <div id="${programListing.name}" class="vrtx-programs programListing.searchComponent ${programListing.name}">
         <h2>${vrtx.getMsg("program-listing.${programListing.name?html}")}</h2>
@@ -28,21 +35,29 @@
       <#local introImg = vrtx.prop(program, 'picture')  />
 
       <#if sort?exists && sort == "alphabetical">
-        <#local intro = vrtx.prop(program, 'introduction')  />
         <#local type = vrtx.propValue(program, 'program-type')  />
         <#local theme = vrtx.propValue(program, 'theme')  />
-        <li id="vrtx-program-${idxPlusOne}" class="${type} ${theme}">
-          <#if title?exists>
-            <h2><a href="${programListing.urls[program.URI]?html}">${title?html}</a></h2>
-          </#if>
-          <#if intro?has_content && programListing.hasDisplayPropDef(intro.definition.name)>
-            <div class="description introduction"><@vrtx.linkResolveFilter intro.value programListing.urls[program.URI]  requestURL /></div>
-          </#if>
-          <div class="vrtx-program-buttons">
-            <a class="button vrtx-program-read-more" href="${programListing.urls[program.URI]?html}"><span>${vrtx.getMsg("program-listing.more-about")}</span></a>
-            <a class="button vrtx-program-how-search" href="#"><span>${vrtx.getMsg("program-listing.how-search")}</span></a>
-          </div>
-        </li>
+        <#if programListing.name == "inactive">
+          <li id="vrtx-program-inactive-${idxPlusOne}" class="${type} ${theme}">
+            <#if title?exists>
+              <a href="${programListing.urls[program.URI]?html}">${title?html}</a>
+            </#if>
+          </li>
+        <#else>
+          <#local intro = vrtx.prop(program, 'introduction')  />
+          <li id="vrtx-program-${idxPlusOne}" class="${type} ${theme}">
+            <#if title?exists>
+              <h2><a href="${programListing.urls[program.URI]?html}">${title?html}</a></h2>
+            </#if>
+            <#if intro?has_content && programListing.hasDisplayPropDef(intro.definition.name)>
+              <div class="description introduction"><@vrtx.linkResolveFilter intro.value programListing.urls[program.URI]  requestURL /></div>
+            </#if>
+            <div class="vrtx-program-buttons">
+              <a class="button vrtx-program-read-more" href="${programListing.urls[program.URI]?html}"><span>${vrtx.getMsg("program-listing.more-about")}</span></a>
+              <a class="button vrtx-program-how-search" href="#"><span>${vrtx.getMsg("program-listing.how-search")}</span></a>
+            </div>
+          </li>
+        </#if>
       <#else>
         <#if (idxPlusOne % 3 == 1)>
           <#local position = "left" />

@@ -34,6 +34,7 @@
           </#if>
           <div class="vrtx-program-buttons">
             <a class="button vrtx-program-read-more" href="${programListing.urls[program.URI]?html}"><span>Mer om programmet</span></a>
+            <a class="button vrtx-course-how-search" href="#"><span>Hvordan søke?</span></a>
           </div>
         </li>
       <#else>

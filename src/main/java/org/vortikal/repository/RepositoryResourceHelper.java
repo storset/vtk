@@ -341,14 +341,16 @@ public class RepositoryResourceHelper {
             }
         }
         
-        // XXX: FIXME, these criteria are too simple, we bleed inherited props
-        // into new resources on copy/move etc. They should never be copied, unless
-        // they are set directly on the node being copied/moved.
         if (propDef.isInheritable() 
                 && !ctx.shouldEvaluateInheritableProperty(propDef)) {
+            
             // An inheritable property that should not be changed now.
             // Return unmodified prop (might be null if not exists in original resource)
-            return originalUnchanged;
+            if (! ((PropertyImpl) originalUnchanged).isInherited()) {
+                return originalUnchanged;
+            } else {
+                return null;
+            }
         }
         
         if (ctx.getEvaluationType() == Type.PropertiesChange || 

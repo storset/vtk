@@ -49,7 +49,9 @@ void execute(context, args, out) {
             out.println(new String(buf, "utf-8"));
         }
     } else {
-        out.println("Type: " + p.getType());
+        out.print("Type: " + p.getType());
+        if (p.isInherited()) out.print(" [inherited]");
+        out.println();
         out.println(p.getFormattedValue());
     }
 }

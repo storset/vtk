@@ -55,6 +55,7 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertyImpl;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.RecoverableResource;
@@ -884,7 +885,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             prop.name = (String) propEntry.get("name");
             prop.resourceId = (Integer) propEntry.get("resourceId");
             prop.binary = (Boolean) propEntry.get("binary");
-            prop.inherited = true;
+            prop.inheritable = true;
             List<Object> values = propValuesMap.get(prop);
             if (values == null) {
                 values = new ArrayList<Object>(2);
@@ -924,7 +925,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                 Map<String, PropHolder> nameMap = effectiveProps.get(namespaceUri);
                 for (String name: nameMap.keySet()) {
                     PropHolder prop = nameMap.get(name);
-                    r.addProperty(createProperty(prop));
+                    if (r.getID() == prop.resourceId) {
+                        r.addProperty(createProperty(prop));
+                    } else {
+                        r.addProperty(createInheritedProperty(prop));
+                    }
                 }
             }
         }
@@ -1246,9 +1251,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
     private Property createProperty(PropHolder holder) {
         Namespace namespace = this.resourceTypeTree.getNamespace(holder.namespaceUri);
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, holder.name);
-        if (propDef.isInheritable() != holder.inherited) {
-//            throw new DataAccessException("Invalid property: " + namespace + ":" + holder.name);
-        }
         if (holder.binary) {
             BinaryValueReference[] refs = new BinaryValueReference[holder.values.size()];
             for (int i=0; i<refs.length; i++) {
@@ -1262,6 +1264,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             }
             return propDef.createProperty(stringValues);
         }
+    }
+    
+    private Property createInheritedProperty(PropHolder holder) {
+        PropertyImpl impl = (PropertyImpl) createProperty(holder);
+        impl.setInherited(true);
+        return impl;
     }
 
     private Map<String, Object> getResourceAsMap(ResourceImpl r) {

@@ -289,6 +289,7 @@ public class PropertyImpl implements Serializable, Cloneable, Property {
                 clone.values[i] = (Value)this.values[i].clone();
             }
         }
+        clone.inherited = this.inherited;
         
         return clone;
     }
@@ -500,6 +501,14 @@ public class PropertyImpl implements Serializable, Cloneable, Property {
             throw new IllegalOperationException("Property " + this + " not of type BINARY or is BINARY multi-value");
         }
         return this.value.getBinaryValue().getContentType();
+    }
+    
+    private boolean inherited = false;
+    public boolean isInherited() {
+        return this.inherited;
+    }
+    public void setInherited(boolean inherited) {
+        this.inherited = inherited;
     }
 
 }

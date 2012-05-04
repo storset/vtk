@@ -82,7 +82,7 @@ final class SqlDaoUtils {
         int resourceId;
         Object propID = null;
         boolean binary = false;
-        boolean inherited = false;
+        boolean inheritable = false;
         List<Object> values;
 
         @Override
@@ -114,6 +114,7 @@ final class SqlDaoUtils {
             code = 31 * code + (this.namespaceUri == null ? 0 : this.namespaceUri.hashCode());
             return code;
         }
+        
     }
 
 }

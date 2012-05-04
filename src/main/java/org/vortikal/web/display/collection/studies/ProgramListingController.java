@@ -40,7 +40,6 @@ public class ProgramListingController extends CollectionListingController {
 
         List<Listing> results = new ArrayList<Listing>();
         for (SearchComponent component : searchComponents) {
-
             Listing listing = component.execute(request, collection, 1, 500, 0);
             // Add the listing to the results
             if (listing.getFiles().size() > 0) {

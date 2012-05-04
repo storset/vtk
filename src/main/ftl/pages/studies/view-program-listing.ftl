@@ -11,14 +11,14 @@
   <#local programs=programListing.files />
   <#if (programs?size > 0) >
     <#if sort?exists && sort == "alphabetical">
-      <ul id="${programListing.name}" class="vrtx-programs articleListing.searchComponent ${programListing.name}">
+      <ul id="${programListing.name}" class="vrtx-programs programListing.searchComponent ${programListing.name}">
     <#else>
-      <div id="${programListing.name}" class="vrtx-programs articleListing.searchComponent ${programListing.name}">
+      <div id="${programListing.name}" class="vrtx-programs programListing.searchComponent ${programListing.name}">
         <h2>${programListing.name?html}</h2>
     </#if>
 
     <#local locale = springMacroRequestContext.getLocale() />
- 
+
     <#list programs as program>
       <#local title = vrtx.propValue(program, 'title') />
       <#local introImg = vrtx.prop(program, 'picture')  />
@@ -48,7 +48,7 @@
         </#if>
         <div class="vrtx-frontpage-box white-box super-wide-picture third-box-${position}"> 
           <#if title?exists>
-            <h2><a href="${programListing.urls[program.URI]?html}">${title?html}</a></h2>
+            <h3><a href="${programListing.urls[program.URI]?html}">${title?html}</a></h3>
           </#if>
           <#if introImg?has_content && programListing.hasDisplayPropDef(introImg.definition.name) >
             <div class="vrtx-frontpage-box-picture">
@@ -103,7 +103,6 @@
 <body id="vrtx-${resource.resourceType}">
 
 <h1>${title?html}</h1>
-
 <#if searchComponents?has_content>
     <#list searchComponents as searchComponent>
         <@displayPrograms searchComponent />

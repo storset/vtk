@@ -56,7 +56,7 @@
       <#local location  = vrtx.propValue(event, 'location')  />
       <#local intro = vrtx.propValue(event, 'introduction')  />
       <#local introImg = vrtx.prop(event, 'picture')  />
-      <#local caption = vrtx.propValue(event, 'caption')  />    
+      <#local caption = vrtx.propValue(event, 'caption')  />
       <#local uri = vrtx.getUri(event) />
 
       <#if conf.dateIcon>
@@ -159,6 +159,29 @@
     <#local endDateTime = vrtx.propValue(event, 'end-date', 'hours-minutes') />
     <#local intro = vrtx.propValue(event, 'introduction')  />
     <#local uri = vrtx.getUri(event) />
+    <#local introImg = vrtx.prop(event, 'picture')  />
+    <#local caption = vrtx.propValue(event, 'caption')  />
+    
+    <#if conf.showPicture && introImg?has_content>
+      <#local captionFlattened>
+        <@vrtx.flattenHtml value=caption escape=true />
+      </#local>
+      <div class="vrtx-event-component-picture">
+      <#local introImgURI = vrtx.propValue(event, 'picture') />
+      <#if introImgURI?exists>
+        <#local thumbnail =  vrtx.relativeLinkConstructor(introImgURI, 'displayThumbnailService') />
+      <#else>
+        <#local thumbnail = "" />
+      </#if>
+        <a class="vrtx-image" href="${uri?html}">
+        <#if caption != ''>
+          <img src="${thumbnail?html}" alt="${captionFlattened}" />
+        <#else>
+          <img src="${thumbnail?html}" alt="${vrtx.getMsg("article.introductionImageAlt")}" />
+        </#if>
+        </a>
+      </div>
+    </#if>
 
     <div class="vrtx-event-component-title">
       <a class="vrtx-event-component-title summary vrtx-link-check" href="${uri?html}">${title?html}</a>

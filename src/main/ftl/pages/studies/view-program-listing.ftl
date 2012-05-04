@@ -77,7 +77,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-
+  <title>${title?html}</title>
 <#if cssURLs?exists>
   <#list cssURLs as cssURL>
     <link rel="stylesheet" href="${cssURL}" type="text/css" />
@@ -98,19 +98,17 @@
    <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
     </#list>
 </#if>
-
-<title>${title?html}</title>
 </head>
 <body id="vrtx-${resource.resourceType}">
-
-<h1>${title?html}</h1>
-<#if searchComponents?has_content>
-    <#list searchComponents as searchComponent>
-        <@displayPrograms searchComponent />
-    </#list>
-</#if>
-
+  <div id="vrtx-content" class="vrtx-frontpage-wide">
+    <div id="vrtx-main-content">
+      <h1>${title?html}</h1>
+      <#if searchComponents?has_content>
+        <#list searchComponents as searchComponent>
+          <@displayPrograms searchComponent />
+        </#list>
+      </#if>
+    </div>
+  </div>
 </body>
 </html>
-
-

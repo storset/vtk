@@ -27,7 +27,7 @@ public class ProgramListingController extends CollectionListingController {
         Property sortProp = collection.getProperty(sortBy);
         
         boolean faculty = (facultyProp != null) ? true : false;
-        String sort = (sortProp != null) ? sortProp.getStringValue() : "default";
+        String sort =     (sortProp != null) ? sortProp.getStringValue() : "default";
 
         List<SearchComponent> searchComponents;
         

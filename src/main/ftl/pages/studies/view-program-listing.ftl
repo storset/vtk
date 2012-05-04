@@ -14,7 +14,7 @@
       <ul id="${programListing.name}" class="vrtx-programs programListing.searchComponent ${programListing.name}">
     <#else>
       <div id="${programListing.name}" class="vrtx-programs programListing.searchComponent ${programListing.name}">
-        <h2>${programListing.name?html}</h2>
+        <h2>${vrtx.getMsg("program-listing.${programListing.name?html}")}</h2>
     </#if>
 
     <#local locale = springMacroRequestContext.getLocale() />

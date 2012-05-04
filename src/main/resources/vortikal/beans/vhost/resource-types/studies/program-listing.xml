@@ -101,7 +101,7 @@
     <property name="mandatory" value="false" />
     <property name="valueFormatter">
       <bean class="org.vortikal.repository.resourcetype.MessageSourceValueFormatter">
-        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.program-sort" />
+        <constructor-arg value="vortikal.beans.vhost.resource-types.properties.program-listing-sort" />
         <constructor-arg value="STRING" />
       </bean>
     </property>

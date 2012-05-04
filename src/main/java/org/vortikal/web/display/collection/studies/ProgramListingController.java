@@ -25,25 +25,35 @@ public class ProgramListingController extends CollectionListingController {
 
         Property facultyProp = collection.getProperty(facultyPropDef);
         Property sortProp = collection.getProperty(sortBy);
+        
+        boolean faculty = (facultyProp != null) ? true : false;
+        String sort = (sortProp != null) ? sortProp.getStringValue() : "default";
 
-        List<SearchComponent> searchComponents = searchComponentsMap.get("default");
-        if (facultyProp != null) {
-            searchComponents = searchComponentsMap.get("faculty");
-        }
-        if (sortProp != null && facultyProp == null) {
-            searchComponents = searchComponentsMap.get("alphabetical");
-        } else if (sortProp != null && facultyProp != null) {
-            searchComponents = searchComponentsMap.get("alphabeticalFaculty");
+        List<SearchComponent> searchComponents;
+        
+        if("default".equals(sort)) {
+        	if (!faculty) {
+                searchComponents = searchComponentsMap.get("default");
+            } else {
+                searchComponents = searchComponentsMap.get("faculty");
+            }
+        } else {
+            if (!faculty) {
+                searchComponents = searchComponentsMap.get(sort);
+            } else  {
+                searchComponents = searchComponentsMap.get(sort + "Faculty");
+            }
         }
         
-        model.put("sort", sortProp != null ? sortProp.getStringValue() : "default");
+        model.put("sort", sort);
 
         List<Listing> results = new ArrayList<Listing>();
-        for (SearchComponent component : searchComponents) {
-            Listing listing = component.execute(request, collection, 1, 500, 0);
-            // Add the listing to the results
-            if (listing.getFiles().size() > 0) {
-                results.add(listing);
+        if(searchComponents != null) {
+            for (SearchComponent component : searchComponents) {
+                Listing listing = component.execute(request, collection, 1, 500, 0);
+                if (listing.getFiles().size() > 0) { // Add the listing to the results
+                    results.add(listing);
+                }
             }
         }
 

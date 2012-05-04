@@ -23,12 +23,15 @@
     <#local locale = springMacroRequestContext.getLocale() />
 
     <#list programs as program>
+      <#local idxPlusOne = program_index + 1 />
       <#local title = vrtx.propValue(program, 'title') />
       <#local introImg = vrtx.prop(program, 'picture')  />
 
       <#if sort?exists && sort == "alphabetical">
         <#local intro = vrtx.prop(program, 'introduction')  />
-        <li>
+        <#local type = vrtx.propValue(program, 'program-type')  />
+        <#local theme = vrtx.propValue(program, 'theme')  />
+        <li id="vrtx-program-${idxPlusOne}" class="${type} ${theme}">
           <#if title?exists>
             <h2><a href="${programListing.urls[program.URI]?html}">${title?html}</a></h2>
           </#if>
@@ -41,7 +44,6 @@
           </div>
         </li>
       <#else>
-        <#local idxPlusOne = program_index + 1 />
         <#if (idxPlusOne % 3 == 1)>
           <#local position = "left" />
           <div class="vrtx-program-row">
@@ -50,7 +52,7 @@
         <#else>
           <#local position = "right" />
         </#if>
-        <div class="thirds-${position}"> 
+        <div id="vrtx-program-${idxPlusOne}" class="thirds-${position}"> 
           <#if introImg?has_content && programListing.hasDisplayPropDef(introImg.definition.name) >
             <div class="vrtx-program-listing-picture">
               <#local introImgURI = vrtx.propValue(program, 'picture') />

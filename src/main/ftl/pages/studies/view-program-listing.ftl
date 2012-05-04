@@ -39,10 +39,10 @@
         </li>
       <#else>
         <#local idxPlusOne = program_index + 1 />
-        <#if idxPlusOne % 3 == 1>
+        <#if (idxPlusOne % 3 == 1)>
           <#local position = "left" />
           <div class="vrtx-program-row">
-        <#elseif idxPlusOne % 2 == 0>
+        <#elseif (idxPlusOne % 2 == 0)>
           <#local position = "middle" />
         <#else>
           <#local position = "right" />

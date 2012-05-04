@@ -11,6 +11,9 @@
   <#local programs=programListing.files />
   <#if (programs?size > 0) >
     <#if sort?exists && sort == "alphabetical">
+      <span id="vrtx-program-search-found">
+        <@vrtx.msg code="program-listing.search-found" default="Found " + programs?size + " programmes" args=[programs?size] />
+      </span>
       <ul id="${programListing.name}" class="vrtx-programs programListing.searchComponent ${programListing.name}">
     <#else>
       <div id="${programListing.name}" class="vrtx-programs programListing.searchComponent ${programListing.name}">
@@ -100,11 +103,11 @@
 </#if>
 </head>
 <body id="vrtx-${resource.resourceType}">
-    <h1>${title?html}</h1>
-    <#if searchComponents?has_content>
-      <#list searchComponents as searchComponent>
-        <@displayPrograms searchComponent />
-      </#list>
-    </#if>
+  <h1>${title?html}</h1>
+  <#if searchComponents?has_content>
+    <#list searchComponents as searchComponent>
+      <@displayPrograms searchComponent />
+    </#list>
+  </#if>
 </body>
 </html>

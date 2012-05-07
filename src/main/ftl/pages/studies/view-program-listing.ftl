@@ -22,7 +22,7 @@
         </span>
         <ul id="${programListing.name}" class="vrtx-programs programListing.searchComponent ${programListing.name}">
       </#if>
-    <#else>
+    <#else>ls
       <div id="${programListing.name}" class="vrtx-programs programListing.searchComponent ${programListing.name}">
         <h2>${vrtx.getMsg("program-listing.${programListing.name?html}")}</h2>
     </#if>
@@ -96,35 +96,35 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title>${title?html}</title>
-<#if cssURLs?exists>
-  <#list cssURLs as cssURL>
-    <link rel="stylesheet" href="${cssURL}" type="text/css" />
-  </#list>
-</#if>
-<#if printCssURLs?exists>
-  <#list printCssURLs as cssURL>
-    <link rel="stylesheet" href="${cssURL}" media="print" type="text/css" />
-  </#list>
-</#if>
-<#if jsURLs?exists>
-  <#list jsURLs as jsURL>
-    <script type="text/javascript" src="${jsURL}"></script>
-  </#list>
-</#if> 
-<#if alternativeRepresentations?exists && !(hideAlternativeRepresentation?exists && hideAlternativeRepresentation)>
-  <#list alternativeRepresentations as alt>
-   <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
-    </#list>
-</#if>
-</head>
-<body id="vrtx-${resource.resourceType}">
-  <h1>${title?html}</h1>
-  <#if searchComponents?has_content>
-    <#list searchComponents as searchComponent>
-      <@displayPrograms searchComponent />
-    </#list>
-  </#if>
-</body>
+  <head>
+    <title>${title?html}</title>
+    <#if cssURLs?exists>
+      <#list cssURLs as cssURL>
+        <link rel="stylesheet" href="${cssURL}" type="text/css" />
+      </#list>
+     </#if>
+     <#if printCssURLs?exists>
+       <#list printCssURLs as cssURL>
+         <link rel="stylesheet" href="${cssURL}" media="print" type="text/css" />
+       </#list>
+     </#if>
+     <#if jsURLs?exists>
+       <#list jsURLs as jsURL>
+         <script type="text/javascript" src="${jsURL}"></script>
+       </#list>
+     </#if> 
+     <#if alternativeRepresentations?exists && !(hideAlternativeRepresentation?exists && hideAlternativeRepresentation)>
+       <#list alternativeRepresentations as alt>
+         <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
+       </#list>
+    </#if>
+  </head>
+  <body id="vrtx-${resource.resourceType}">
+    <h1>${title?html}</h1>
+    <#if searchComponents?has_content>
+      <#list searchComponents as searchComponent>
+        <@displayPrograms searchComponent />
+      </#list>
+   </#if>
+  </body>
 </html>

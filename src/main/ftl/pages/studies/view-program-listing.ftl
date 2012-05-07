@@ -18,7 +18,7 @@
         <ul>
       <#else>
         <span id="vrtx-program-search-found">
-          <@vrtx.msg code="program-listing.search-found" default="Found " + programs?size + " programmes" args=[programs?size] />
+          <@vrtx.msg code="program-listing.search-found" default="Found " + programs?size + " studies" args=[programs?size] />
         </span>
         <ul id="${programListing.name}" class="vrtx-programs programListing.searchComponent ${programListing.name}">
       </#if>

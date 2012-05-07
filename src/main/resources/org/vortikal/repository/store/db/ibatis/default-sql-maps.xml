@@ -471,6 +471,7 @@
           <iterate prepend="" property="uris" open="(" close=")" conjunction=","> 
                #uris[]# 
           </iterate>
+    order by p.resource_id, p.extra_prop_entry_id
   </select>
 
   <resultMap id="ByteArray" class="java.util.HashMap">

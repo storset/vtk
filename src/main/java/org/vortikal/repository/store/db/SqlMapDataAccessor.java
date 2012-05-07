@@ -33,6 +33,7 @@ package org.vortikal.repository.store.db;
 import java.io.ByteArrayInputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -852,31 +853,39 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return nearestResourceId;
     }
 
+    
+    
+    private int inheritedPropertiesBatch = 200;
+    
     private void loadInheritedProperties(ResourceImpl[] resources) {
         if (resources.length == 0) {
             return;
         }
+        List<Map<String, Object>> propertyRows = new ArrayList<Map<String, Object>>();
+        String sqlMap = getSqlMap("loadInheritedProperties");
+        Map<String, Object> parameterMap = new HashMap<String, Object>();
+        
+        Set<Path> handled = new HashSet<Path>();
         Set<Path> paths = new HashSet<Path>();
-        Map<Integer, ResourceImpl> resourceMap = new HashMap<Integer, ResourceImpl>();
-        for (ResourceImpl resource: resources) {
-            resourceMap.put(resource.getID(), resource);
-            Path uri = resource.getURI();
-            for (Path p: uri.getPaths()) {
-                paths.add(p);
+        for (int n = 0; n < resources.length; n++) {
+            List<Path> list = resources[n].getURI().getPaths();
+            for (Path p: list) {
+                if (handled.add(p)) {
+                    paths.add(p);
+                }
+            }
+            if (n == resources.length - 1 || n % inheritedPropertiesBatch == 0) {
+                parameterMap.put("uris", Arrays.asList(paths.toArray()));
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> rows = getSqlMapClientTemplate().queryForList(sqlMap, parameterMap);
+                propertyRows.addAll(rows);
+                paths.clear();
             }
         }
-        Map<String, Object> parameterMap = new HashMap<String, Object>();
-        parameterMap.put("uris", paths.toArray());
-
-        String sqlMap = getSqlMap("loadInheritedProperties");
-
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> propertyRows = getSqlMapClientTemplate().queryForList(sqlMap, parameterMap);
         
         Map<PropHolder, List<Object>> propValuesMap = new HashMap<PropHolder, List<Object>>();
 
         Map<Path, Set<PropHolder>> inheritanceMap = new HashMap<Path, Set<PropHolder>>();
-        
         
         for (Map<String, Object> propEntry : propertyRows) {
             PropHolder prop = new PropHolder();
@@ -902,6 +911,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             if (set == null) {
                 set = new HashSet<PropHolder>();
             }
+            
             set.add(prop);
             inheritanceMap.put(uri, set);
         }
@@ -934,6 +944,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             }
         }
     }
+    
+    
     
     private void loadACLs(ResourceImpl[] resources) {
 

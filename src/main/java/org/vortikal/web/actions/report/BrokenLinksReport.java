@@ -153,7 +153,6 @@ public class BrokenLinksReport extends DocumentReporter {
         filters.put(FILTER_READ_RESTRICTION_PARAM_NAME, filterReadRestrictionOptions);
         
         result.put("filters", filters);
-        
         result.put("brokenLinkCount", getBrokenLinkCount(token, resource, request, linkType));
         
         return result;

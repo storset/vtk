@@ -22,7 +22,7 @@
         </span>
         <ul id="${programListing.name}" class="vrtx-programs programListing.searchComponent ${programListing.name}">
       </#if>
-    <#else>ls
+    <#else>
       <div id="${programListing.name}" class="vrtx-programs programListing.searchComponent ${programListing.name}">
         <h2>${vrtx.getMsg("program-listing.${programListing.name?html}")}</h2>
     </#if>

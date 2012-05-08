@@ -5,7 +5,7 @@ resourcetype program-frontpage {
     fs-program-code : string,
     status : string,
     program-type : string,
-    theme : string,
+    themes : json (theme:string) multiple,
     duration : string,
     study-points : string,
     full-time : boolean,
@@ -24,7 +24,7 @@ resourcetype program-frontpage {
     status (dropdown),
     program-type (dropdown),
     faculty (dropdown),
-    theme (dropdown),
+    themes:theme (dropdown),
     title (size[large]),
     group facts (fs-program-code, status, program-type, theme, duration, study-points, full-time, faculty, keywords) (after title),
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
@@ -151,6 +151,26 @@ resourcetype program-frontpage {
       ##
     }  
 
+    facts {
+      ##
+      [resource-props "."]
+      [def dur resource-prop(".","duration")]
+      [def points resource-prop(".","study-points")]
+      [def code resource-prop(".","fs-program-code")]
+      [def faculty resource-prop(".","faculty")]
+        <h2>[localized 'facts-header']</h2>
+        [if points != null]
+          <p>[localized 'study-points']: [val points]</p>   
+        [endif]
+        [if dur != null]
+          <p>[localized 'duration']: [val dur]</p>
+        [endif]     
+        [if faculty != null]
+          <p>[localized 'offered-by']:  [localized faculty]</p>
+        [endif]
+     ##
+    }
+
     contact-box(document) {
       ##
       [resource-props "."]
@@ -197,24 +217,10 @@ resourcetype program-frontpage {
       [resource-props "."]
       [def document structured-document()]
       [def locale resource-locale()]  
-      [def dur resource-prop(".","duration")]
-      [def points resource-prop(".","study-points")]
-      [def code resource-prop(".","fs-program-code")]
-      [def faculty resource-prop(".","faculty")]
-      [def theme resource-prop(".","theme")]
-      [if dur != null || points != null || code != null || faculty != null || theme != null]
         <div id="vrtx-additional-content">
           <div id="vrtx-related-content">
-            <div id="relatetd-content-facts">
-              <h3>[localized 'facts-header']</h3>
-              <p>[localized 'study-points']: [val points]</p>
-              <p>[localized 'duration']: [val dur]</p>
-              [if faculty != null]
-                <p>[localized 'offered-by']:  [localized faculty]</p>
-              [endif]
-              [if theme != null]
-                <p>[localized 'theme-view']:  [localized theme]</p>
-              [endif]           
+            <div id="related-content-facts">
+              [call "comp:facts"]
             </div>
             <div id="vrtx-contact">
               [call "comp:contact-box"]
@@ -281,22 +287,19 @@ resourcetype program-frontpage {
   
   vocabulary {
     status {
-     en : ("under-arbeid" = "In progress", "aktivt" = "Active", "inactive" = "Inactive", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
-     no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inactive" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
-     nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inactive" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
+     en : ("under-arbeid" = "In progress", "aktivt" = "Active", "inaktiv" = "Inactive", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
+     no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inaktiv" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
+     nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inaktiv" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
    	}
     faculty {
      en : ("hf" = "Faculty of Humanities", "jus" = "Faculty of Law", "matnat" = "Faculty of Mathematics and Natural Sciences", "med" = "Faculty of Medicine", "odont" = "Faculty of Dentistry", "sv" = "Faculty of Social Sciences", "tf" = "Faculty of Theology", "uv" = "Faculty of Educational Sciences"),
      no : ("hf" = "Det humanistiske fakultet", "jus" = "Det juridiske fakultet", "matnat" = "Det matematisk-naturvitenskapelige fakultet", "med" = "Det medisinske fakultet", "odont" = "Det odontologiske fakultet", "sv" = "Det samfunnsvitenskapelige fakultet", "tf" = "Det teologiske fakultet", "uv" = "Det utdanningsvitenskapelige fakultet"),
      nn : ("hf" = "Det humanistiske fakultet", "jus" = "Det juridiske fakultet", "matnat" = "Det matematisk-naturvitenskapelige fakultet", "med" = "Det medisinske fakultet", "odont" = "Det odontologiske fakultet", "sv" = "Det samfunnsvitenskapelige fakultet", "tf" = "Det teologiske fakultet", "uv" = "Det utdanningsvitenskapelige fakultet")
     }
-    theme {
-     en : ("estetiske-studier-musikkvitenskap" = "Esthetic Studies and Musicology", "helsefag-medisin" = "Health and Medicine", "historie-filosofi-kulturstudier" ="History, Philosophy, and Culture Studies", "informasjonsteknologi" ="Information Technology and Informatics", "jus-okonomi-ledelse-administrasjon" ="Law, Economics, Leadership, and Administration", "lektor-og-adjunktutdanning" ="Teacher Education", "matematikk-naturvitenskap-teknologi" ="Mathematics, Natural Science, and Technology", "mediefag" ="Media Studies", "pedagogiske-fag" ="Education", "religion-teologi" ="Religion and Theology", "samfunnsfag" ="Social Sciences and Psychology", "spraak-litteratur" ="Language and Literature", "engelskspraakligeprogram" ="Master's Degree Programmes"
-),
-     no : ("estetiske-studier-musikkvitenskap"= "Estetiske studier og musikkvitenskap", "helsefag-medisin" = "Helsefag og medisin", "historie-filosofi-kulturstudier" ="Historie, filosofi og kulturstudier", "informasjonsteknologi" ="Informasjonsteknologi og informatikk", "jus-okonomi-ledelse-administrasjon" ="Jus, økonomi, ledelse, administrasjon", "lektor-og-adjunktutdanning" ="Lærerutdanning: Lektor- og adjunktutdanning", "matematikk-naturvitenskap-teknologi" ="Matematikk, naturvitenskap, teknologi", "mediefag" ="Mediefag", "pedagogiske-fag" ="Pedagogiske fag", "religion-teologi" ="Religion og teologi", "samfunnsfag" ="Samfunnsfag og psykologi", "spraak-litteratur" ="Språk og litteratur", "engelskspraakligeprogram" ="Engelskspråklege program"
-),
-     nn : ("estetiske-studier-musikkvitenskap"= "Estetiske studium og musikkvitskap", "helsefag-medisin" = "Helsefag og medisin", "historie-filosofi-kulturstudier" ="Historie, filosofi og kulturstudium", "informasjonsteknologi" ="Informasjonsteknologi og informatikk", "jus-okonomi-ledelse-administrasjon" ="Jus, økonomi, leiing, administrasjon", "lektor-og-adjunktutdanning" ="Lærarutdaning: Lektor- og adjunktutdaning", "matematikk-naturvitenskap-teknologi" ="Matematikk, naturvitskap, teknologi", "mediefag" ="Mediefag", "pedagogiske-fag" ="Pedagogiske fag", "religion-teologi" ="Religion og teologi", "samfunnsfag" ="Samfunnsfag og psykologi", "spraak-litteratur" ="Språk og litteratur", "engelskspraakligeprogram" ="Engelskspråklige program"
-)
+    themes:theme {
+     en : ("estetiske-studier-musikkvitenskap" = "Esthetic Studies and Musicology", "helsefag-medisin" = "Health and Medicine", "historie-filosofi-kulturstudier" = "History, Philosophy, and Culture Studies", "informasjonsteknologi" = "Information Technology and Informatics", "jus-okonomi-ledelse-administrasjon" = "Law, Economics, Leadership, and Administration", "lektor-og-adjunktutdanning" = "Teacher Education", "matematikk-naturvitenskap-teknologi" = "Mathematics, Natural Science, and Technology", "mediefag" = "Media Studies", "pedagogiske-fag" = "Education", "religion-teologi" = "Religion and Theology", "samfunnsfag" = "Social Sciences and Psychology", "spraak-litteratur" = "Language and Literature", "engelskspraakligeprogram" = "Master's Degree Programmes"),
+     no : ("estetiske-studier-musikkvitenskap"= "Estetiske studier og musikkvitenskap", "helsefag-medisin" = "Helsefag og medisin", "historie-filosofi-kulturstudier" = "Historie, filosofi og kulturstudier", "informasjonsteknologi" = "Informasjonsteknologi og informatikk", "jus-okonomi-ledelse-administrasjon" = "Jus, økonomi, ledelse, administrasjon", "lektor-og-adjunktutdanning" = "Lærerutdanning: Lektor- og adjunktutdanning", "matematikk-naturvitenskap-teknologi" = "Matematikk, naturvitenskap, teknologi", "mediefag" = "Mediefag", "pedagogiske-fag" = "Pedagogiske fag", "religion-teologi" = "Religion og teologi", "samfunnsfag" = "Samfunnsfag og psykologi", "spraak-litteratur" = "Språk og litteratur", "engelskspraakligeprogram" = "Engelskspråklege program"),
+     nn : ("estetiske-studier-musikkvitenskap"= "Estetiske studium og musikkvitskap", "helsefag-medisin" = "Helsefag og medisin", "historie-filosofi-kulturstudier" = "Historie, filosofi og kulturstudium", "informasjonsteknologi" = "Informasjonsteknologi og informatikk", "jus-okonomi-ledelse-administrasjon" = "Jus, økonomi, leiing, administrasjon", "lektor-og-adjunktutdanning" = "Lærarutdaning: Lektor- og adjunktutdaning", "matematikk-naturvitenskap-teknologi" = "Matematikk, naturvitskap, teknologi", "mediefag" = "Mediefag", "pedagogiske-fag" = "Pedagogiske fag", "religion-teologi" = "Religion og teologi", "samfunnsfag" = "Samfunnsfag og psykologi", "spraak-litteratur" = "Språk og litteratur", "engelskspraakligeprogram" = "Engelskspråklige program")
 	}
 	program-type {
 	  en : ("aarsenhet" = "1-year unit", "bachelor" = "bachelor's Degree programme", "ett-aarig-master" = "1-year Master's Degree programme", "ettoghalvt-aarig-master" = "1 1/2-year Master's Degree programme", "to-aarig-master" = "2-year Master's Degree programme", "fem-aarig-master" = "5-year Master's Degree programme", "erfaringsbasert-master" = "experience-based Master's Degree programme", "profesjon" = "professional course of study"),
@@ -346,7 +349,7 @@ resourcetype program-frontpage {
     status : (en : "Status", no : "Status", nn : "Status"),
     under-arbeid : (en : "In progress", no : "Under arbeid" ,nn : "Under arbeid"),
     aktivt : (en: "Active", no : "Aktiv", nn : "Aktiv"), 
-    inactive : (en : "Inactive", no : "Inaktiv", nn : "Inaktiv"),
+    inaktiv : (en : "Inactive", no : "Inaktiv", nn : "Inaktiv"),
     under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
     nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt"),
     
@@ -370,6 +373,7 @@ resourcetype program-frontpage {
 	tf : (en : "Faculty of Theology", no : "Det teologiske fakultet", nn : "Det teologiske fakultet"),		      
 	uv : (en : "Faculty of Educational Sciences", no : "Det utdanningsvitenskapelige fakultet", nn : "Det utdanningsvitenskapelige fakultet")     
     
+    themes : (en : "Themes", no : "Temaområder", nn : "Temaområder"),
     theme : (en : "Theme", no : "Temaområde", nn : "Temaområde"),
 	estetiske-studier-musikkvitenskap : (en : "Esthetic Studies and Musicology", no : "Estetiske studier og musikkvitenskap", nn : "Estetiske studium og musikkvitskap"),
 	helsefag-medisin : (en : "Health and Medicine", no : "Helsefag og medisin", nn : "Helsefag og medisin"),

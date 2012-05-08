@@ -15,7 +15,7 @@
         <span id="vrtx-program-search-found">
           <@vrtx.msg code="program-listing.inactive" />
         </span>
-        <ul>
+        <ul class="vrtx-program-inactive">
       <#else>
         <span id="vrtx-program-search-found">
           <@vrtx.msg code="program-listing.search-found" default="Found " + programs?size + " studies" args=[programs?size] />

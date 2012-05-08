@@ -49,6 +49,8 @@
     <property name="uioAuthSSO" value="${saml.uioAuthSSO}" />
     <property name="ieReturnURL" value="${saml.ieReturnURL}" />
       
+    <property name="ieCookieHandlingEnabled" value="${saml.ieCookieHandlingEnabled}" />  
+      
     <property name="manageAssertion" ref="manage.hostNameAssertion" />
 
     <property name="staticHeaders">

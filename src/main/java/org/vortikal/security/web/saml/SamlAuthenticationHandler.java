@@ -102,6 +102,8 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
 
     private IECookieStore iECookieStore;
 
+    private static boolean ieCookieHandlingEnabled;
+
     private Service redirectToViewService;
 
     private Service redirectToAdminService;
@@ -233,7 +235,8 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
 
     public static boolean browserIsIE(HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
-        if (userAgent.contains("MSIE 7.0") || (userAgent.contains("MSIE") && userAgent.contains("Trident"))) {
+        if (ieCookieHandlingEnabled
+                && (userAgent.contains("MSIE 7.0") || (userAgent.contains("MSIE") && userAgent.contains("Trident")))) {
             return true;
         } else {
             return false;
@@ -432,6 +435,10 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
 
     public void setiECookieStore(IECookieStore iECookieStore) {
         this.iECookieStore = iECookieStore;
+    }
+
+    public void setIeCookieHandlingEnabled(boolean ieCookieHandlingEnabled) {
+        this.ieCookieHandlingEnabled = ieCookieHandlingEnabled;
     }
 
     public void setRedirectToViewService(Service redirectToViewService) {

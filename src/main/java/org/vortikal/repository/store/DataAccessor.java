@@ -77,6 +77,14 @@ public interface DataAccessor {
     public ResourceImpl storeACL(ResourceImpl r) throws DataAccessException;
 
     /**
+     * Stores/deletes a lock on a resource.
+     * 
+     * @return The new ResourceImpl
+     */
+    public ResourceImpl storeLock(ResourceImpl r) throws DataAccessException;
+
+    
+    /**
      * Deletes a single resource (and any children)
      * 
      * @param resource

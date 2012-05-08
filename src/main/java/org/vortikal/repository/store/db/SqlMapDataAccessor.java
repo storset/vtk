@@ -177,6 +177,31 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return load(r.getURI());
     }
 
+    @Override
+    public ResourceImpl storeLock(ResourceImpl r) {
+
+        // Delete any old persistent locks
+        String sqlMap = getSqlMap("deleteLockByResourceId");
+        getSqlMapClientTemplate().delete(sqlMap, r.getID());
+
+        Lock lock = r.getLock();
+
+        if (lock != null) {
+
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put("lockToken", lock.getLockToken());
+            parameters.put("timeout", lock.getTimeout());
+            parameters.put("owner", lock.getPrincipal().getQualifiedName());
+            parameters.put("ownerInfo", lock.getOwnerInfo());
+            parameters.put("depth", lock.getDepth().toString());
+            parameters.put("resourceId", r.getID());
+
+            sqlMap = getSqlMap("insertLock");
+            getSqlMapClientTemplate().update(sqlMap, parameters);
+        }
+        return load(r.getURI());
+    }
+
     private void updateACL(ResourceImpl r) {
 
         // XXX: ACL inheritance checking does not belong here!?
@@ -260,7 +285,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             r.setID(id.intValue());
         }
 
-        storeLock(r);
+        //storeLock(r);
         storeProperties(r);
 
         // Re-load and return newly written ResourceImpl
@@ -1038,29 +1063,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             Privilege action = Privilege.forName(privilege);
             
             acl.addEntry(action, p);
-        }
-    }
-
-    private void storeLock(ResourceImpl r) {
-
-        // Delete any old persistent locks
-        String sqlMap = getSqlMap("deleteLockByResourceId");
-        getSqlMapClientTemplate().delete(sqlMap, r.getID());
-
-        Lock lock = r.getLock();
-
-        if (lock != null) {
-
-            Map<String, Object> parameters = new HashMap<String, Object>();
-            parameters.put("lockToken", lock.getLockToken());
-            parameters.put("timeout", lock.getTimeout());
-            parameters.put("owner", lock.getPrincipal().getQualifiedName());
-            parameters.put("ownerInfo", lock.getOwnerInfo());
-            parameters.put("depth", lock.getDepth().toString());
-            parameters.put("resourceId", r.getID());
-
-            sqlMap = getSqlMap("insertLock");
-            getSqlMapClientTemplate().update(sqlMap, parameters);
         }
     }
 

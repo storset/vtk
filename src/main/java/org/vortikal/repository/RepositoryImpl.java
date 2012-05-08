@@ -86,7 +86,6 @@ import org.vortikal.repository.store.Revisions.ChecksumWrapper;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.token.TokenManager;
 import org.vortikal.util.io.StreamUtil;
 
@@ -731,7 +730,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     + (requestedTimeoutSeconds * 1000))));
         }
         
-        ResourceImpl newResource = this.dao.store(r);
+        ResourceImpl newResource = this.dao.storeLock(r);
         try {
             return (Resource)newResource.clone();
         } catch (CloneNotSupportedException c) {
@@ -757,34 +756,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     }
 
     @Transactional
-    public String lockResource(ResourceImpl resource, Principal principal, String ownerInfo, Repository.Depth depth,
-            int desiredTimeoutSeconds, boolean refresh) throws AuthenticationException, AuthorizationException,
-            ResourceLockedException, IOException {
-
-        if (!refresh) {
-            resource.setLock(null);
-        }
-
-        if (resource.getLock() == null) {
-            String lockToken = "opaquelocktoken:" + UUID.randomUUID().toString();
-
-            Date timeout = new Date(System.currentTimeMillis() + this.lockDefaultTimeout);
-
-            if ((desiredTimeoutSeconds * 1000) > this.lockMaxTimeout) {
-                timeout = new Date(System.currentTimeMillis() + this.lockDefaultTimeout);
-            }
-
-            LockImpl lock = new LockImpl(lockToken, principal, ownerInfo, depth, timeout);
-            resource.setLock(lock);
-        } else {
-            resource.setLock(new LockImpl(resource.getLock().getLockToken(), principal, ownerInfo, depth, new Date(
-                    System.currentTimeMillis() + (desiredTimeoutSeconds * 1000))));
-        }
-        this.dao.store(resource);
-        return resource.getLock().getLockToken();
-    }
-
-    @Transactional
     @Override
     public void unlock(String token, Path uri, String lockToken) throws ResourceNotFoundException,
             AuthorizationException, AuthenticationException, ResourceLockedException, ReadOnlyException, IOException {
@@ -798,7 +769,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         if (r.getLock() != null) {
             r.setLock(null);
-            this.dao.store(r);
+            this.dao.storeLock(r);
         }
     }
 
@@ -956,6 +927,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
+            
             newResource = this.dao.store(newResource);
 
             this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));

@@ -190,6 +190,7 @@ create table extra_prop_entry
     value varchar (2048) not null,
     binary_content oid,
     binary_mimetype varchar (64),
+    -- TODO: rename to 'is_inheritable':
     is_inherited char(1) default 'N' not null
 );
 

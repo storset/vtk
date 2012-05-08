@@ -151,7 +151,33 @@ resourcetype program-frontpage {
       ##
     }  
 
-    contact-box(document) {
+    facts {
+      ##
+      [resource-props "."]
+      [def dur resource-prop(".","duration")]
+      [def points resource-prop(".","study-points")]
+      [def code resource-prop(".","fs-program-code")]
+      [def faculty resource-prop(".","faculty")]
+      [def theme resource-prop(".","theme")]
+        <h2>[localized 'facts-header']</h2>
+        [if code != null]
+        [endif]
+        [if points != null]
+          <p>[localized 'study-points']: [val points]</p>   
+        [endif]
+        [if dur != null]
+          <p>[localized 'duration']: [val dur]</p>
+        [endif]     
+        [if faculty != null]
+          <p>[localized 'offered-by']:  [localized faculty]</p>
+        [endif]
+        [if theme != null]
+          <p>[localized 'theme-view']:  [localized theme]</p>
+        [endif]           
+      ##
+    }
+
+    contact-box {
       ##
       [resource-props "."]
       [def title resource-prop(".", "contactTitle")]
@@ -197,24 +223,10 @@ resourcetype program-frontpage {
       [resource-props "."]
       [def document structured-document()]
       [def locale resource-locale()]  
-      [def dur resource-prop(".","duration")]
-      [def points resource-prop(".","study-points")]
-      [def code resource-prop(".","fs-program-code")]
-      [def faculty resource-prop(".","faculty")]
-      [def theme resource-prop(".","theme")]
-      [if dur != null || points != null || code != null || faculty != null || theme != null]
         <div id="vrtx-additional-content">
           <div id="vrtx-related-content">
-            <div id="relatetd-content-facts">
-              <h3>[localized 'facts-header']</h3>
-              <p>[localized 'study-points']: [val points]</p>
-              <p>[localized 'duration']: [val dur]</p>
-              [if faculty != null]
-                <p>[localized 'offered-by']:  [localized faculty]</p>
-              [endif]
-              [if theme != null]
-                <p>[localized 'theme-view']:  [localized theme]</p>
-              [endif]           
+            <div id="vrtx-facts">
+              [call "comp:facts"]
             </div>
             <div id="vrtx-contact">
               [call "comp:contact-box"]

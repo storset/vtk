@@ -346,7 +346,7 @@ public class RepositoryResourceHelper {
             
             // An inheritable property that should not be changed now.
             // Return unmodified prop (might be null if not exists in original resource)
-            if (! ((PropertyImpl) originalUnchanged).isInherited()) {
+            if (originalUnchanged != null && !((PropertyImpl)originalUnchanged).isInherited()) {
                 return originalUnchanged;
             } else {
                 return null;

@@ -13,7 +13,7 @@
 -- 1. Connect to Vortex database as super-user and run all SQL statements in the
 --    PostgreSQL lo contrib file: 'contrib/lo/lo.sql' (location depends on installation).
 
--- 2. Run the following to set up trigger for extra_prop_entry.binary content:
+-- 2. Run the following to set up trigger for extra_prop_entry.binary_content:
 
 alter table extra_prop_entry alter column binary_content TYPE lo;
 

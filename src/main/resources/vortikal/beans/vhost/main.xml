@@ -45,8 +45,6 @@
   <import resource="view-message-listing.xml" />
   <import resource="view-image-listing.xml" />
   <import resource="view-audio-video-listing.xml" />
-  <import resource="resource-types/studies/view-program-listing.xml" />
-    <import resource="resource-types/studies/view-program-option-listing.xml" />
   
   <!-- Beans to override default listing of events and articles -->
   <import resource="view-structured-article-listing.xml" />

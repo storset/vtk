@@ -71,23 +71,6 @@
     <property name="handler" ref="editor.personEditHandler" />
   </bean>
 
-  <bean id="editor.programListingEditService" parent="editor.abstractEditService">
-    <property name="assertions">
-      <list>
-        <ref bean="resourceIsProgramListing" />
-      </list>
-    </property>
-    <property name="handler" ref="editor.programEditHandler" />
-  </bean>
-
-  <bean id="editor.programOptionListingEditService" parent="editor.abstractEditService">
-    <property name="assertions">
-      <list>
-        <ref bean="resourceIsProgramOptionListing" />
-      </list>
-    </property>
-    <property name="handler" ref="editor.programOptionEditHandler" />
-  </bean>
 
   <bean id="editor.projectListingEditService" parent="editor.abstractEditService">
     <property name="assertions">
@@ -456,17 +439,6 @@
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
-  <bean id="editor.programEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
-    <property name="resourceManager" ref="editor.programResourceManager" />
-    <property name="formView" value="editor.editView" />
-    <property name="successView" value="redirectToPreviewCollection" />
-  </bean>
-  
-  <bean id="editor.programOptionEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
-    <property name="resourceManager" ref="editor.programOptionResourceManager" />
-    <property name="formView" value="editor.editView" />
-    <property name="successView" value="redirectToPreviewCollection" />
-  </bean>
 
   <bean id="editor.projectEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.projectResourceManager" />
@@ -486,7 +458,7 @@
     <property name="successView" value="redirectToPreviewCollection" />
   </bean>
 
- <bean id="editor.messageListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
+  <bean id="editor.messageListingEditHandler" class="org.vortikal.edit.editor.ResourceEditController">
     <property name="resourceManager" ref="editor.messageListingResourceManager" />
     <property name="formView" value="editor.editView" />
     <property name="successView" value="redirectToPreviewCollection" />
@@ -654,61 +626,6 @@
     </property>
   </bean>
 
-  <bean id="editor.programResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
-    <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
-    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
-    <property name="editPropertyProvider">
-      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
-        <property name="preContentProperties">
-          <list>
-            <ref bean="userTitlePropDef" />
-            <ref bean="introductionPropDef" />
-            <ref bean="introductionImagePropDef" />
-            <ref bean="introductionImageCaptionPropDef" />
-            <ref bean="navigationTitlePropDef" />
-            <ref bean="importancePropDef" />
-            <ref bean="hiddenPropDef" />
-            <ref bean="displayAggregationPropDef" />
-            <ref bean="aggregationPropDef" />
-            <ref bean="displayManuallyApprovedPropDef" />
-            <ref bean="manuallyApproveFromPropDef" />
-            <ref bean="manuallyApprovedResourcesPropDef" />
-            <ref bean="facultyPropDef" />
-            <ref bean="programSortPropDef" />
-          </list>
-        </property>
-      </bean>
-    </property>
-  </bean>
-
-  <bean id="editor.programOptionResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
-    <property name="htmlParser" ref="decorating.htmlParser" />
-    <property name="contentResourceType" ref="documentResourceTypeDefinition" />
-    <property name="htmlPropsFilter" ref="personResourceManager.htmlPropsFilter" />
-    <property name="editPropertyProvider">
-      <bean class="org.vortikal.edit.editor.ConfigurableEditablePropertyProvider">
-        <property name="preContentProperties">
-          <list>
-            <ref bean="userTitlePropDef" />
-            <ref bean="introductionPropDef" />
-            <ref bean="introductionImagePropDef" />
-            <ref bean="introductionImageCaptionPropDef" />
-            <ref bean="navigationTitlePropDef" />
-            <ref bean="importancePropDef" />
-            <ref bean="hiddenPropDef" />
-            <ref bean="displayAggregationPropDef" />
-            <ref bean="aggregationPropDef" />
-            <ref bean="displayManuallyApprovedPropDef" />
-            <ref bean="manuallyApproveFromPropDef" />
-            <ref bean="manuallyApprovedResourcesPropDef" />
-            <ref bean="articleListing.hideIntroductionPropDef" />
-            <ref bean="articleListing.hideIntroductionImagePropDef" />
-          </list>
-        </property>
-      </bean>
-    </property>
-  </bean>
 
   <bean id="editor.projectResourceManager" class="org.vortikal.edit.editor.ResourceWrapperManager">
     <property name="htmlParser" ref="decorating.htmlParser" />

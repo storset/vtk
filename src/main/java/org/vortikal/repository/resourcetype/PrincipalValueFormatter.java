@@ -34,6 +34,7 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
+import org.vortikal.repository.store.Metadata;
 import org.vortikal.repository.store.PrincipalMetadata;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
@@ -82,7 +83,7 @@ public class PrincipalValueFormatter implements ValueFormatter {
                     locale);
             if (principalDocument != null) {
                 PrincipalMetadata pm = principalDocument.getMetadata();
-                Object urlObj = pm.getValue(PrincipalMetadata.URL_ATTRIBUTE);
+                Object urlObj = pm.getValue(Metadata.URL_ATTRIBUTE);
                 if (urlObj != null) {
                     StringBuilder sb = new StringBuilder("<a href=\"");
                     sb.append(HtmlUtil.escapeHtmlString(urlObj.toString()));

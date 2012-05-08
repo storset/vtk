@@ -45,6 +45,8 @@ import java.util.Set;
  * Generic interface for holding/accessing metadata
  */
 public interface Metadata {
+    
+    public static final String URL_ATTRIBUTE = "url";
 
     /**
      * Get value of attribute with the given name. If the attribute has multiple

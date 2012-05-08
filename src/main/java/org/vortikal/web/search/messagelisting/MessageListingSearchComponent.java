@@ -56,9 +56,6 @@ public class MessageListingSearchComponent extends CollectionListingSearchCompon
             int searchLimit, int offset) {
 
         ResultSet result = super.getResultSet(request, collection, token, sorting, searchLimit, offset);
-        if (result.getSize() == 0) {
-            return result;
-        }
 
         String actionParameter = request.getParameter(ACTION_PARAM);
         if (actionParameter == null) {

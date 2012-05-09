@@ -360,7 +360,7 @@ class PropertySetRowHandler implements RowHandler {
             values.add(row.get("value"));
         }
 
-        for (SqlDaoUtils.PropHolder holder: propMap.keySet()) {
+        for (PropHolder holder: propMap.keySet()) {
             propertySet.addProperty(createProperty(holder));
         }
     }

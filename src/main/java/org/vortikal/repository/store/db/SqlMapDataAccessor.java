@@ -908,66 +908,90 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             }
         }
         
-        Map<PropHolder, List<Object>> propValuesMap = new HashMap<PropHolder, List<Object>>();
-
-        Map<Path, Set<PropHolder>> inheritanceMap = new HashMap<Path, Set<PropHolder>>();
+        final Map<Path, List<PropHolder>> inheritanceMap = new HashMap<Path, List<PropHolder>>();
         
+        final Map<PropHolder, List<Object>> propValuesMap = new HashMap<PropHolder, List<Object>>();
         for (Map<String, Object> propEntry : propertyRows) {
-            PropHolder prop = new PropHolder();
-            prop.propID = propEntry.get("id");
-            prop.namespaceUri = (String) propEntry.get("namespaceUri");
-            prop.name = (String) propEntry.get("name");
-            prop.resourceId = (Integer) propEntry.get("resourceId");
-            prop.binary = (Boolean) propEntry.get("binary");
-            prop.inheritable = true;
-            List<Object> values = propValuesMap.get(prop);
+            PropHolder propHolder = new PropHolder();
+            propHolder.propID = propEntry.get("id");
+            propHolder.namespaceUri = (String) propEntry.get("namespaceUri");
+            propHolder.name = (String) propEntry.get("name");
+            propHolder.resourceId = (Integer) propEntry.get("resourceId");
+            propHolder.binary = (Boolean) propEntry.get("binary");
+            propHolder.inheritable = true;
+            List<Object> values = propValuesMap.get(propHolder);
             if (values == null) {
+                // New Property
                 values = new ArrayList<Object>(2);
-                prop.values = values;
-                propValuesMap.put(prop, values);
+                propHolder.values = values;
+                propValuesMap.put(propHolder, values);
+
+                // Populate inheritance map with canonical PropHolder instance
+                Path uri = Path.fromString((String) propEntry.get("uri"));
+                List<PropHolder> holderList = inheritanceMap.get(uri);
+                if (holderList == null) {
+                    holderList = new ArrayList<PropHolder>();
+                    inheritanceMap.put(uri, holderList);
+                }
+                holderList.add(propHolder);
             }
-            if (prop.binary) {
-                values.add(prop.propID);
+            
+            // Aggregate value
+            if (propHolder.binary) {
+                values.add(propHolder.propID);
             } else {
                 values.add(propEntry.get("value"));
             }
-            Path uri = Path.fromString((String) propEntry.get("uri"));
-            Set<PropHolder> set = inheritanceMap.get(uri);
-            if (set == null) {
-                set = new HashSet<PropHolder>();
-            }
-            
-            set.add(prop);
-            inheritanceMap.put(uri, set);
         }
-        
-        for (ResourceImpl r: resources) {
-            Map<String, Map<String, PropHolder>> effectiveProps = new HashMap<String, Map<String, PropHolder>>();
-            for (Path uri: r.getURI().getPaths()) {
-                Set<PropHolder> set = inheritanceMap.get(uri);
-                if (set != null) {
-                    for (PropHolder prop: set) {
-                        Map<String, PropHolder> nameMap = effectiveProps.get(prop.namespaceUri);
-                        if (nameMap == null) {
-                            nameMap = new HashMap<String, PropHolder>();
-                            effectiveProps.put(prop.namespaceUri, nameMap);
+
+        final Set<String> encountered = new HashSet<String>();
+        for (ResourceImpl r : resources) {
+            List<Path> pathList = r.getURI().getPaths();
+            for (int i = pathList.size() - 1; i >= 0; i--) {
+                Path p = pathList.get(i);
+                List<PropHolder> holderList = inheritanceMap.get(p);
+                if (holderList != null) {
+                    for (PropHolder h : holderList) {
+                        if (encountered.add(h.namespaceUri + ":" + h.name)) {
+                            if (r.getID() == h.resourceId) {
+                                r.addProperty(createProperty(h));
+                            } else {
+                                r.addProperty(createInheritedProperty(h));
+                            }
                         }
-                        nameMap.put(prop.name, prop);
                     }
                 }
             }
-            for (String namespaceUri: effectiveProps.keySet()) {
-                Map<String, PropHolder> nameMap = effectiveProps.get(namespaceUri);
-                for (String name: nameMap.keySet()) {
-                    PropHolder prop = nameMap.get(name);
-                    if (r.getID() == prop.resourceId) {
-                        r.addProperty(createProperty(prop));
-                    } else {
-                        r.addProperty(createInheritedProperty(prop));
-                    }
-                }
-            }
+            encountered.clear();
         }
+
+//        for (ResourceImpl r: resources) {
+//            Map<String, Map<String, PropHolder>> effectiveProps = new HashMap<String, Map<String, PropHolder>>();
+//            for (Path uri: r.getURI().getPaths()) {
+//                Set<PropHolder> set = inheritanceMap.get(uri);
+//                if (set != null) {
+//                    for (PropHolder prop: set) {
+//                        Map<String, PropHolder> nameMap = effectiveProps.get(prop.namespaceUri);
+//                        if (nameMap == null) {
+//                            nameMap = new HashMap<String, PropHolder>();
+//                            effectiveProps.put(prop.namespaceUri, nameMap);
+//                        }
+//                        nameMap.put(prop.name, prop);
+//                    }
+//                }
+//            }
+//            for (String namespaceUri: effectiveProps.keySet()) {
+//                Map<String, PropHolder> nameMap = effectiveProps.get(namespaceUri);
+//                for (String name: nameMap.keySet()) {
+//                    PropHolder prop = nameMap.get(name);
+//                    if (r.getID() == prop.resourceId) {
+//                        r.addProperty(createProperty(prop));
+//                    } else {
+//                        r.addProperty(createInheritedProperty(prop));
+//                    }
+//                }
+//            }
+//        }
     }
     
     

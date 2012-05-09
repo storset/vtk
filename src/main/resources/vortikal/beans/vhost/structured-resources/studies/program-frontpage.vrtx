@@ -110,7 +110,7 @@ resourcetype program-frontpage {
       [def f json-resource(uri)]
       [if f != null]
         [def published resource-prop(uri, "published") ]
-        [if published]      
+        [if published = 'true']      
           [def intro f.properties.introduction]
           <div class="vrtx-introduction">
             [val intro # unescaped]
@@ -126,29 +126,32 @@ resourcetype program-frontpage {
       [def title resource-prop(".", "interviewTitle")]
       [def content resource-prop(".", "interviewContent")]
       [def urlText resource-prop(".", "interviewLinkText")]
-      [def url resource-prop(".", "interviewUrl")]         
-          [if title != null && title != ""]
-            [if url != null && url != ""]
-              <h2><a href="[val url]">[val title]</a></h2>
-            [else]
-              <h2>[val title]</h2>
-            [endif]
+      [def url resource-prop(".", "interviewUrl")] 
+      [if title != null || content != null || urlText != null || url  != null]
+        <div class="vrtx-frontpage-box white-box two-column-feed">         
+        [if title != null && title != ""]
+          [if url != null && url != ""]
+            <h2><a href="[val url]">[val title]</a></h2>
+          [else]
+            <h2>[val title]</h2>
           [endif]
-            [if content != null && content != ""]
-              <div class="vrtx-box-content">
-                [val content # unescaped]
-              </div>
-            [endif]
-            [if urlText != null && urlText != ""]
-              <div class="vrtx-more">
-              [if url != null && url != ""]
-                <span><a href="[val url]">[val urlText]</a></span>
-              [else]
-                <span>[val urlText]</span>
-              [endif]
-              </div>
-            [endif]
-      [endif]
+        [endif]
+        [if content != null && content != ""]
+          <div class="vrtx-box-content">
+            [val content # unescaped]
+          </div>
+        [endif]
+        [if urlText != null && urlText != ""]
+          <div class="vrtx-more">
+          [if url != null && url != ""]
+            <span><a href="[val url]">[val urlText]</a></span>
+          [else]
+            <span>[val urlText]</span>
+          [endif]
+          </div>
+        [endif]
+      [endif] 
+      </div> 
       ##
     }
         
@@ -159,30 +162,32 @@ resourcetype program-frontpage {
          [def document structured-document()]
          [def links document.properties.resource-links]
           [if links != null]
+            <div class="vrtx-frontpage-box white-box">
             [list links link]
               [def theheader link.linkHeader]
               [def thetitle link.linkTitle]
               [def theurl link.linkUrl]
               [def thedescription link.linkDescription]
                 [if theheader != null && theheader != ""]
-                  <h3>[val theheader]</h3>
-                [endif]
-                [if theurl != null && theurl != ""]
-                  <div id="vrtx-resource-link">
-                  <a href='[val theurl]'>
-                  [if thetitle != null && thetitle != ""]
-                    [val thetitle]
-                  [else] 
-                    [val theurl]
+                  [if _index != 1]
+                  </ul>
                   [endif]
-                  </a>
-                  </div>
+                  <h2>[val theheader]</h2><ul>
+                [endif]
+                <li>
+                [if theurl != null && theurl != ""]
+                  <a href='[val theurl]'>[if thetitle != null && thetitle != ""][val thetitle][else][val theurl][endif]</a>
+                [elseif theurl = null || theurl = ""  && thetitle != null && thetitle != ""]
+                  [val thetitle]
                 [endif]
                 [if thedescription != null && thedescription != ""]
-                  [val thedescription]
+                  &nbsp;[val thedescription]
                 [endif]
+                </li>
               [endif]
             [endlist]
+            </ul>
+            </div>
           [endif]
         [endif]
       ##
@@ -255,29 +260,27 @@ resourcetype program-frontpage {
       [def document structured-document()]
       [def locale resource-locale()]  
         <div id="vrtx-additional-content">
-          <div id="vrtx-related-content">
-            <div id="related-content-facts">
-              [call "comp:facts"]
+          <div class="vrtx-frontpage-box grey-box">
+            [call "comp:facts"]
+          </div>
+          <div class="vrtx-frontpage-box">
+            [call "comp:contact-box"]
+          </div>
+          [def thispath resource-prop("./","uri")]
+          [if locale = 'en']
+            [def thispath thispath + '/messages']
+          [else]
+            [def thispath thispath + '/beskjeder']
+          [endif]
+          [def message-folder resource(thispath)] 
+          [if message-folder]          
+          [def thisfeed thispath + '/?vrtx=feed']
+            <div class="vrtx-frontpage-box">
+              [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
             </div>
-            <div id="vrtx-contact">
-              [call "comp:contact-box"]
-            </div>
-            [def thispath resource-prop("./","uri")]
-            [if locale = 'en']
-              [def thispath thispath + '/messages']
-            [else]
-              [def thispath thispath + '/beskjeder']
-            [endif]
-            [def message-folder resource(thispath)] 
-            [if message-folder]          
-            [def thisfeed thispath + '/?vrtx=feed']
-              <div id="vrtx-related-content-messages">
-                [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
-              </div>
-            [endif]
-            <div id="vrtx-related-content-other">
-              [call "comp:related-content"]      
-            </div>
+          [endif]
+          <div class="vrtx-frontpage-box">
+            [call "comp:related-content"]      
           </div>
         </div>
       [endif]
@@ -299,19 +302,23 @@ resourcetype program-frontpage {
           [def locale resource-locale()]  
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
             <h1>[call "comp:title"]([call "comp:program-type"])</h1> 
-            [call "comp:status"]
+            <div class="vrtx-program-status">
+              [call "comp:status"]
+            </div>
             [call "comp:introduction-image"]         
             [call "comp:introduction"]         
             [def thispath resource-prop("./","uri")]
+            <div id="vrtx-program-links">
             [if locale = "en"]
               [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcome, structure, career-opportunities, education-exam"}]           
             [else]
               [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-laerer-du, oppbyggning, jobb-studiemuligheter, undervisning-eksamen"}]
             [endif]
-            </br>
+            </div>
+            [call "comp:interview-box"]
             [call "comp:resource-links"]
             <div class="vrtx-social-components">
-            <!--  [call "resource:email-friend"] -->
+              [call "resource:email-friend"]
               [call "resource:share-at"]
             </div> 
           </div>

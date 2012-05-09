@@ -34,15 +34,21 @@ resourcetype program-option-frontpage {
 
     program-title {
       ##
-      [def thispath resource-prop("../index.html","uri")]
-      [if thispath != null]
+      [def programFolderPath resource-prop("../../","uri")]
+      [if programFolderPath != null]
+      [def thispath programFolderPath + '/index.html']
         [def f json-resource(thispath)]
         [if f != null]
-          [def published resource-prop(thispath, "published") ]
-          [if published]      
+          [def published resource-prop(thispath, "published")]
+          [def publ published.matches("false")]
+          [val publ]
+          [if publ]      
             [def title f.properties.title]
             [def program-type f.properties.program-type]
-            <a href='[val thispath]'>[val title] ([val program-type])</a>
+            <div class="vrtx-program-title-box">
+              <h2>[localized 'program-affiliation']</h2>
+              <a href='[val thispath]'>[val title] ([val program-type])</a>
+            </div>
           [endif]
         [endif]        
       [endif]
@@ -53,7 +59,9 @@ resourcetype program-option-frontpage {
       ##
       [def st resource-prop(".", "status")]
       [if st != null]
-        [val st]
+        <div class="vrtx-program-status">
+          [val st]
+        </div>
       [endif]
       ##
     }
@@ -120,6 +128,7 @@ resourcetype program-option-frontpage {
          [def document structured-document()]
          [def links document.properties.resource-links]
           [if links != null]
+            <div id="vrtx-resource-links">
             [list links link]
               [def theheader link.linkHeader]
               [def thetitle link.linkTitle]
@@ -129,7 +138,6 @@ resourcetype program-option-frontpage {
                   <h3>[val theheader]</h3>
                 [endif]
                 [if theurl != null && theurl != ""]
-                  <div id="vrtx-resource-link">
                   <a href='[val theurl]'>
                   [if thetitle != null && thetitle != ""]
                     [val thetitle]
@@ -137,13 +145,13 @@ resourcetype program-option-frontpage {
                     [val theurl]
                   [endif]
                   </a>
-                  </div>
                 [endif]
                 [if thedescription != null && thedescription != ""]
                   [val thedescription]
                 [endif]
               [endif]
             [endlist]
+            </div>
           [endif]
         [endif]
       ##
@@ -164,18 +172,14 @@ resourcetype program-option-frontpage {
             [endif]
           [endif]
             [if content != null && content != ""]
-              <div class="vrtx-box-content">
                 [val content # unescaped]
-              </div>
             [endif]
             [if urlText != null && urlText != ""]
-              <div class="vrtx-more">
               [if url != null && url != ""]
                 <span><a href="[val url]">[val urlText]</a></span>
               [else]
                 <span>[val urlText]</span>
               [endif]
-              </div>
             [endif]
       [endif]
       ##
@@ -185,7 +189,7 @@ resourcetype program-option-frontpage {
       ##
       [def content resource-prop(".", "related-content")]
       [if content != null]
-        <div class="vrtx-related-content">[val content # unescaped]</div>
+        [val content # unescaped]
       [endif]
       ##
     }
@@ -196,10 +200,10 @@ resourcetype program-option-frontpage {
       [def document structured-document()]
       [def locale resource-locale()]  
         <div id="vrtx-additional-content">
-          <div id="vrtx-related-content">
-            <div id="vrtx-contact">
-              [call "comp:contact-box"]
-            </div>
+          <div class="vrtx-frontpage-box">
+            [call "comp:contact-box"]
+          </div>
+          <div class="vrtx-frontpage-box">
             [def thispath resource-prop("./","uri")]
             [if locale = 'en']
               [def thispath thispath + '/messages']
@@ -209,13 +213,11 @@ resourcetype program-option-frontpage {
             [def message-folder resource(thispath)] 
             [if message-folder]          
             [def thisfeed thispath + '/?vrtx=feed']
-              <div id="vrtx-related-content-messages">
-                [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
-              </div>
+            [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
             [endif]
-            <div id="vrtx-related-content-other">
-              [call "comp:related-content"]      
-            </div>
+          </div>
+          <div class="vrtx-frontpage-box">
+             [call "comp:related-content"]
           </div>
         </div>
       [endif]
@@ -237,26 +239,21 @@ resourcetype program-option-frontpage {
           [def locale resource-locale()]  
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
             <h1>[call "comp:title"]([localized 'program-option'])</h1> 
-            <div class="vrtx-program-title">
-            [call "comp:program-title"]
-            </div>
             [call "comp:status"]
             [call "comp:introduction-image"]         
             [call "comp:introduction"]         
             [def thispath resource-prop("./","uri")]
+            <div id="vrtx-program-links">
              [if locale = "en"]
               [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcome, how-to-apply, structure, abroad, career-opportunities"}]           
             [else]
               [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-laerer-du, hvordan-soke, oppbyggning, utland, jobb-studiemuligheter"}]
             [endif]
-            </br>
-            <div class="vrtx-program-title-box">
-            <h2>[localized 'program-affiliation']</h2>
-            [call "comp:program-title"]
             </div>
+            [call "comp:program-title"]
             [call "comp:resource-links"]
             <div class="vrtx-social-components">
-            <!--  [call "resource:email-friend"] -->
+              [call "resource:email-friend"]
               [call "resource:share-at"]
             </div> 
           </div>

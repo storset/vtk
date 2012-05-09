@@ -349,7 +349,7 @@ class PropertySetRowHandler implements RowHandler {
             holder.namespaceUri = (String)row.get("namespace");
             holder.name = (String)row.get("name");
             holder.resourceId = (Integer)row.get("id");
-            holder.inheritable = (Boolean)row.get("inherited");
+            holder.inheritable = (Boolean)row.get("inheritable");
             
             List<Object> values = propMap.get(holder);
             if (values == null) {
@@ -421,6 +421,9 @@ class PropertySetRowHandler implements RowHandler {
      * 
      * Paths with no inheritable props will map to the empty list (this
      * method will never add mappings with <code>null</code> values).
+     * 
+     * All <code>Property</code> instances created by this method
+     * will have the inherited-flag set to <code>true</code>.
      * 
      * @param uri
      * @return 

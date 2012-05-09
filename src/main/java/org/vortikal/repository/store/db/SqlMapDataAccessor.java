@@ -887,7 +887,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             return;
         }
         List<Map<String, Object>> propertyRows = new ArrayList<Map<String, Object>>();
-        String sqlMap = getSqlMap("loadInheritedProperties");
+        String sqlMap = getSqlMap("loadInheritableProperties");
         Map<String, Object> parameterMap = new HashMap<String, Object>();
         
         Set<Path> handled = new HashSet<Path>();
@@ -1094,7 +1094,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                         parameters.put("namespaceUri", property.getDefinition().getNamespace().getUri());
                         parameters.put("name", property.getDefinition().getName());
                         parameters.put("resourceId", r.getID());
-                        parameters.put("inherited", property.getDefinition().isInheritable());
+                        parameters.put("inheritable", property.getDefinition().isInheritable());
 
                         Value[] values;
                         if (property.getDefinition() != null && property.getDefinition().isMultiple()) {

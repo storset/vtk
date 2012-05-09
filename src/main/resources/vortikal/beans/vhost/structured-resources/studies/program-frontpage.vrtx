@@ -249,7 +249,7 @@ resourcetype program-frontpage {
       ##
       [def content resource-prop(".", "related-content")]
       [if content != null]
-        <div class="vrtx-related-content">[val content # unescaped]</div>
+        [val content # unescaped]
       [endif]
       ##
     }

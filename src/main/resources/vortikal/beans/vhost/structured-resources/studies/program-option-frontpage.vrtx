@@ -128,7 +128,7 @@ resourcetype program-option-frontpage {
          [def document structured-document()]
          [def links document.properties.resource-links]
           [if links != null]
-            <div id="vrtx-resource-links">
+            <div id="vrtx-frontpage-box white-box">
             [list links link]
               [def theheader link.linkHeader]
               [def thetitle link.linkTitle]

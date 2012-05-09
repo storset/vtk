@@ -32,6 +32,23 @@ resourcetype program-option-frontpage {
       ##
     }
 
+    program-title {
+      ##
+      [def thispath resource-prop("../index.html","uri")]
+      [if thispath != null]
+        [def f json-resource(thispath)]
+        [if f != null]
+          [def published resource-prop(thispath, "published") ]
+          [if published]      
+            [def title f.properties.title]
+            [def program-type f.properties.program-type]
+            <a href='[val thispath]'>[val title] ([val program-type])</a>
+          [endif]
+        [endif]        
+      [endif]
+      ##
+    }
+
      status {
       ##
       [def st resource-prop(".", "status")]
@@ -220,6 +237,9 @@ resourcetype program-option-frontpage {
           [def locale resource-locale()]  
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
             <h1>[call "comp:title"]([localized 'program-option'])</h1> 
+            <div class="vrtx-program-title">
+            [call "comp:program-title"]
+            </div>
             [call "comp:status"]
             [call "comp:introduction-image"]         
             [call "comp:introduction"]         
@@ -230,6 +250,10 @@ resourcetype program-option-frontpage {
               [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-laerer-du, hvordan-soke, oppbyggning, utland, jobb-studiemuligheter"}]
             [endif]
             </br>
+            <div class="vrtx-program-title-box">
+            <h2>[localized 'program-affiliation']</h2>
+            [call "comp:program-title"]
+            </div>
             [call "comp:resource-links"]
             <div class="vrtx-social-components">
             <!--  [call "resource:email-friend"] -->
@@ -268,6 +292,7 @@ resourcetype program-option-frontpage {
     contactUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
 
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
+    program-affiliation : (en : "Studieretningen hører til programmet", no : "Studieretningen hører til programmet", nn : "Studieretningen hører til programmet"),
   
     resource-links : (en : "Links", no : "Lenker", nn : "Lenker"),
     linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),

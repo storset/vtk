@@ -12,6 +12,10 @@ resourcetype program-frontpage {
     faculty : string,
     keywords : string,
     picture : image_ref,
+    interviewTitle : string,
+    interviewContent : html,
+    interviewLinkText : string, 
+    interviewUrl : resource_ref, 
     resource-links : json (linkHeader:string, linkTitle:string, linkUrl:string, linkDescription:string) multiple,
     contactTitle : string,
     contactContent : html,
@@ -27,6 +31,7 @@ resourcetype program-frontpage {
     themes:theme (dropdown),
     title (size[large]),
     group facts (fs-program-code, status, program-type, theme, duration, study-points, full-time, faculty, keywords) (after title),
+    group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (before related-content)
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
     group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before related-content)
   }
@@ -114,6 +119,38 @@ resourcetype program-frontpage {
       [endif]        
       ##
      }
+ 
+     interview-box {
+      ##
+      [resource-props "."]
+      [def title resource-prop(".", "interviewTitle")]
+      [def content resource-prop(".", "interviewContent")]
+      [def urlText resource-prop(".", "interviewLinkText")]
+      [def url resource-prop(".", "interviewUrl")]         
+          [if title != null && title != ""]
+            [if url != null && url != ""]
+              <h2><a href="[val url]">[val title]</a></h2>
+            [else]
+              <h2>[val title]</h2>
+            [endif]
+          [endif]
+            [if content != null && content != ""]
+              <div class="vrtx-box-content">
+                [val content # unescaped]
+              </div>
+            [endif]
+            [if urlText != null && urlText != ""]
+              <div class="vrtx-more">
+              [if url != null && url != ""]
+                <span><a href="[val url]">[val urlText]</a></span>
+              [else]
+                <span>[val urlText]</span>
+              [endif]
+              </div>
+            [endif]
+      [endif]
+      ##
+    }
         
     resource-links {
       ##
@@ -171,7 +208,7 @@ resourcetype program-frontpage {
      ##
     }
 
-    contact-box(document) {
+    contact-box {
       ##
       [resource-props "."]
       [def title resource-prop(".", "contactTitle")]
@@ -254,7 +291,7 @@ resourcetype program-frontpage {
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         [call "resource:comments-feed-link"]
-        <title>[call "comp:title"]</title>
+        <title>[call "comp:title"]([call "comp:program-type"])</title>
       </head>
       <body id="vrtx-structured-article">
         <div id="vrtx-content">
@@ -322,23 +359,29 @@ resourcetype program-frontpage {
     duration : (en : "Duration", no : "Varighet", nn : "Varighet"),
     study-points : (en : "Study points", no : "Studiepoeng", nn : "Studiepoeng"),
     facts-header : (en : "Facts about the program", no : "Fakta om programmet", nn : "Fakta om programmet"),
-    messages-header : (en : "Messages", no : "Beskjeder", nn : "Beskjeder"),
     offered-by : (en : "Offered by", no : "Tilbys av", nn : "Tilbys av"),
     theme-view : (en : "Theme", no : "Tema", nn : "Tema"),
     keywords : (en : "Key words", no : "Stikkord", nn : "Stikkord"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
 
+    interview-box : (en : "Interviews with former students", no : "Karriereintervjuer", nn : "Karriereintervjuar"),
+    interviewTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
+    interviewContent : (en : "Content", no : "Innhold", nn : "Innhald"),
+    interviewLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
+    interviewUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
+
     full-time : (en : "Full time study?", no : "Organisering", nn : "Organisering"),
     fulltime : (en : "Full time study", no : "Fulltidsstudium", nn : "Fulltidsstudium"),
     parttime : (en : "Part time study", no : "Deltidsstudium", nn : "Deltidsstudium"),
 
     contact-box : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
-    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
     contactTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
     contactContent : (en : "Content", no : "Innhold", nn : "Innhald"),
     contactLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
     contactUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
+
+    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
   
     resource-links : (en : "Links", no : "Lenker", nn : "Lenker"),
     linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),

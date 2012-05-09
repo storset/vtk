@@ -34,18 +34,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertyImpl;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.store.PropertySetHandler;
+import org.vortikal.repository.store.db.SqlDaoUtils.PropHolder;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
@@ -61,7 +66,6 @@ class PropertySetRowHandler implements RowHandler {
     // Client callback for handling retrieved property set instances 
     protected PropertySetHandler clientHandler;
     
-
     // Need to keep track of current property set ID since many rows from iBATIS
     // can map to a single property set. The iteration from the database is 
     // ordered, so ID change signals a new PropertySet
@@ -72,8 +76,21 @@ class PropertySetRowHandler implements RowHandler {
     private final SqlMapIndexDao indexDao;
     private final PrincipalFactory principalFactory;
     
-    private Map<Integer, Set<Principal>> aclReadPrincipalsCache
-        = new HashMap<Integer, Set<Principal>>();
+    private final Map<Integer, Set<Principal>> aclReadPrincipalsCache
+            = new LinkedHashMap<Integer, Set<Principal>>() {
+        @Override
+        protected boolean removeEldestEntry(Entry<Integer, Set<Principal>> eldest) {
+            return size() > 2000;
+        }
+    };
+    
+    private final Map<Path, List<Property>> inheritablePropertiesCache
+            = new LinkedHashMap<Path, List<Property>>() {
+        @Override
+        protected boolean removeEldestEntry(Entry<Path, List<Property>> eldest) {
+            return size() > 2000;
+        }
+    };
     
     public PropertySetRowHandler(PropertySetHandler clientHandler,
                                  ResourceTypeTree resourceTypeTree,
@@ -141,12 +158,11 @@ class PropertySetRowHandler implements RowHandler {
                         propertySet.getAclInheritedFrom() : propertySet.getID();
                         
         // Try cache first:
-        Set<Principal> aclReadPrincipals = this.aclReadPrincipalsCache.get(
-                                                    aclResourceId);
+        Set<Principal> aclReadPrincipals = this.aclReadPrincipalsCache.get(aclResourceId);
         
         if (aclReadPrincipals == null) {
             // Not found in cache
-            aclReadPrincipals = this.indexDao.getAclReadPrincipals(propertySet);
+            aclReadPrincipals = this.indexDao.loadAclReadPrincipals(propertySet);
             
             if (aclReadPrincipals != null) {
                 this.aclReadPrincipalsCache.put(aclResourceId, Collections.unmodifiableSet(aclReadPrincipals));
@@ -170,7 +186,14 @@ class PropertySetRowHandler implements RowHandler {
         String uri = (String)firstRow.get("uri");
 
         propertySet.setUri(Path.fromString(uri));
+        
+        // Standard props found in vortex_resource table:
         populateStandardProperties(firstRow, propertySet);
+        
+        // Add any inherited properties
+        populateInheritedProperties(propertySet);
+        
+        // Add extra props set directly on node last, to allow override of any inherited props:
         populateExtraProperties(rowBuffer, propertySet);
         
         return propertySet;
@@ -311,47 +334,176 @@ class PropertySetRowHandler implements RowHandler {
         }
     }
     
-    protected void populateExtraProperties(List<Map<String, Object>> rowBuffer, 
+    private void populateExtraProperties(List<Map<String, Object>> rowBuffer, 
                                            PropertySetImpl propertySet) {
         
-        Map<SqlDaoUtils.PropHolder, List<Object>> propMap = 
-                            new HashMap<SqlDaoUtils.PropHolder, List<Object>>();
+        Map<PropHolder, List<Object>> propMap = 
+                            new HashMap<PropHolder, List<Object>>();
         
         for (Map<String, Object> row: rowBuffer) {
-            SqlDaoUtils.PropHolder holder = new SqlDaoUtils.PropHolder();
+            if ((Boolean)row.get("binary")) {
+                // Skip all binary prop rows
+                continue;
+            }
+            PropHolder holder = new PropHolder();
             holder.namespaceUri = (String)row.get("namespace");
             holder.name = (String)row.get("name");
             holder.resourceId = (Integer)row.get("id");
-            holder.binary = (Boolean)row.get("binary");
-        
-            if (holder.name != null) { 
-                List<Object> values = propMap.get(holder);
-                if (values == null) {
-                    values = new ArrayList<Object>(2);
-                    holder.values = values;
-                    propMap.put(holder, values);
-                }
-                values.add(row.get("value"));
+            holder.inheritable = (Boolean)row.get("inherited");
+            
+            List<Object> values = propMap.get(holder);
+            if (values == null) {
+                values = new ArrayList<Object>(2);
+                holder.values = values;
+                propMap.put(holder, values);
             }
+            values.add(row.get("value"));
         }
 
         for (SqlDaoUtils.PropHolder holder: propMap.keySet()) {
-            if (holder.binary) {
-                // Skip binary props for system index
+            propertySet.addProperty(createProperty(holder));
+        }
+    }
+    
+    
+    private void populateInheritedProperties(PropertySetImpl propSet) {
+        // Root node cannot inherit anything
+        if (propSet.getURI().isRoot()) return;
+
+        // Process all ancestors starting with parent and going up towards root
+        final Path parent = propSet.getURI().getParent();
+        final List<Path> paths = parent.getPaths();
+        
+        // Do we have all ancestor paths in cache ?
+        final List<Path> cacheMissPaths = new ArrayList<Path>(2);
+        Map<Path, List<Property>> loadedInheritablePropertiesMap = null;
+        for (Path p: paths) {
+            if (!inheritablePropertiesCache.containsKey(p)) {
+                cacheMissPaths.add(p);
+            }
+        }
+        if (!cacheMissPaths.isEmpty()) {
+            // Do not touch cache before we have resolved everything for current resource
+            // since the cache will expire old entries when updated. Keep newly loaded things in
+            // local variable instead, and update cache with loaded elements when finished resolving.
+            loadedInheritablePropertiesMap = loadInheritablePropertiesMap(cacheMissPaths);
+        }
+
+        // Populate effective set of inherited properties
+        final Set<String> encountered = new HashSet<String>();
+        for (int i=paths.size()-1; i >= 0; i--) {
+            Path p = paths.get(i);
+            List<Property> inheritableProps = inheritablePropertiesCache.get(p);
+            if (inheritableProps == null) {
+                // Was a cache miss, look it up in loaded map
+                inheritableProps = loadedInheritablePropertiesMap.get(p);
+            }
+            
+            for (Property property: inheritableProps) {
+                String namespaceUri = property.getDefinition().getNamespace().getUri();
+                String name = property.getDefinition().getName();
+                if (encountered.add(namespaceUri + ":" + name)) {
+                    // First occurence from bottom to top, add it.
+                    // (it will override anything from ancestors):
+                    propSet.addProperty(property);
+                }
+            }
+        }
+        
+        // Add any loaded inheritable props to cache
+        if (loadedInheritablePropertiesMap != null) {
+            inheritablePropertiesCache.putAll(loadedInheritablePropertiesMap);
+        }
+    }
+    
+    /**
+     * Loads inheritable properties for selected paths from database.
+     * 
+     * Paths with no inheritable props will map to the empty list (this
+     * method will never add mappings with <code>null</code> values).
+     * 
+     * @param uri
+     * @return 
+     */
+    private Map<Path, List<Property>> loadInheritablePropertiesMap(List<Path> paths) {
+
+        // Initialize to empty list of inheritable props per selected path
+        final Map<Path, List<Property>> inheritablePropsMap = new HashMap<Path, List<Property>>();
+        for (Path p : paths) {
+            inheritablePropsMap.put(p, Collections.EMPTY_LIST);
+        }
+        
+        // Load from database
+        final List<Map<String,Object>> rows = indexDao.loadInheritablePropertyRows(paths);
+        if (rows.isEmpty()) {
+            return inheritablePropsMap;
+        }
+        
+        // Aggretate property rows and set up sparse inheritable map for selected paths
+        final Map<Path, Set<PropHolder>> inheritableHolderMap = new HashMap<Path, Set<PropHolder>>();
+        final Map<PropHolder, List<Object>> propValuesMap = new HashMap<PropHolder, List<Object>>();
+        for (Map<String, Object> propEntry : rows) {
+            if ((Boolean)propEntry.get("binary")) {
+                // Skip all binary property rows
                 continue;
             }
             
-            Namespace namespace = this.resourceTypeTree.getNamespace(holder.namespaceUri);
-            PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(
-                    namespace, holder.name);
+            final PropHolder holder = new PropHolder();
+            holder.namespaceUri = (String) propEntry.get("namespaceUri");
+            holder.name = (String) propEntry.get("name");
+            holder.resourceId = (Integer) propEntry.get("resourceId");
+            holder.propID = propEntry.get("id");
+            holder.inheritable = true;
             
-            String[] stringValues = new String[holder.values.size()];
-            for (int i=0; i<stringValues.length; i++) {
-                stringValues[i] = (String)holder.values.get(i);
+            List<Object> values = propValuesMap.get(holder);
+            if (values == null) {
+                // New property
+                values = new ArrayList<Object>(2);
+                holder.values = values;
+                propValuesMap.put(holder, values);
+                
+                // Link current canonical PropHolder instance to inheritable map
+                Path p = Path.fromString((String) propEntry.get("uri"));
+                Set<PropHolder> set = inheritableHolderMap.get(p);
+                if (set == null) {
+                    set = new HashSet<PropHolder>();
+                    inheritableHolderMap.put(p, set);
+                }
+                set.add(holder);
             }
-            Property property = propDef.createProperty(stringValues);
-            propertySet.addProperty(property);
+
+            // Aggregate current property's value (binary values ignored)
+            values.add(propEntry.get("value"));
         }
 
+        for (Map.Entry<Path, Set<PropHolder>> entry: inheritableHolderMap.entrySet()) {
+            Path p = entry.getKey();
+            Set<PropHolder> propHolders = entry.getValue();
+            List<Property> props = new ArrayList<Property>(propHolders.size());
+            for (PropHolder holder : propHolders) {
+                Property prop = createProperty(holder);
+                // All prop instances in cache shall have inherited flag set to 'true'
+                ((PropertyImpl) prop).setInherited(true);
+                props.add(prop);
+            }
+            inheritablePropsMap.put(p, props);
+        }
+        
+        return inheritablePropsMap;
     }
+    
+    private Property createProperty(PropHolder holder) {
+        assert (!holder.binary);
+        
+        Namespace namespace = this.resourceTypeTree.getNamespace(holder.namespaceUri);
+        PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+                namespace, holder.name);
+
+        String[] stringValues = new String[holder.values.size()];
+        for (int i = 0; i < stringValues.length; i++) {
+            stringValues[i] = (String) holder.values.get(i);
+        }
+        return propDef.createProperty(stringValues);
+    }
+    
 }

@@ -30,7 +30,11 @@
  */
 package org.vortikal.repository.store.db;
 
+
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,11 +48,13 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ibatis.SqlMapClientCallback;
 import org.springframework.orm.ibatis.SqlMapClientTemplate;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.store.IndexDao;
 import org.vortikal.repository.store.PropertySetHandler;
+import org.vortikal.repository.store.db.SqlDaoUtils.PropHolder;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
@@ -164,6 +170,14 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
 
     }
     
+    List<Map<String,Object>> loadInheritablePropertyRows(List<Path> paths) {
+        String sqlMap = getSqlMap("loadInheritedProperties");
+        Map<String, Object> parameterMap = new HashMap<String, Object>();
+        parameterMap.put("uris", paths);
+        
+        return getSqlMapClientTemplate().queryForList(sqlMap, parameterMap);
+    }
+    
     /**
      * Fetch a set of principals (normal principals, pseudo-principals and groups) 
      * which are allowed to read or read-processed the resource that the property set
@@ -173,7 +187,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
      *                           inherited could not be found. Otherwise 
      *                           a <code>Set</code> of <code>Principal</code> instances. 
      */
-    protected Set<Principal> getAclReadPrincipals(PropertySet propertySet)
+    Set<Principal> loadAclReadPrincipals(PropertySet propertySet)
             throws org.vortikal.repository.store.DataAccessException {
         
         // Cast to impl
@@ -217,7 +231,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         
         return aclReadPrincipals;
     }
-
+    
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;

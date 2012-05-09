@@ -6,7 +6,7 @@ getDescription() {
 }
 
 getUsage() {
-    return "repo iprop <command:string> <uri:path> <prop:string> [<value:string>]";
+    return "repo iprop <command:string> <uri:path> <prop:string> [<values:string...>]";
 }
 
 void execute(context, args, out) {
@@ -42,13 +42,23 @@ void execute(context, args, out) {
     r = repo.retrieve(token, uri, false);
 
     if ("store".equals(command)) {
-        value = args.get("value");
-        if (value == null) {
-            out.println("Must provide a property value when storing");
+        valueargs = args.get("values");
+        if (valueargs == null || valueargs.size() == 0) {
+            out.println("Must provide at least one property value when storing");
             return;
         }
+
         property = propDef.createProperty();
-        property.setStringValue(value);
+        if (propDef.isMultiple()) {
+           org.vortikal.repository.resourcetype.Value[] vals =
+                   new org.vortikal.repository.resourcetype.Value[valueargs.size()];
+           for (int i=0; i<valueargs.size(); i++) {
+               vals[i] = new org.vortikal.repository.resourcetype.Value((String)valueargs.get(i), org.vortikal.repository.resourcetype.PropertyType.Type.STRING);
+           }
+           property.setValues(vals);
+        } else {
+           property.setStringValue((String)valueargs.get(0));
+        }
         r.addProperty(property);
     } else if ("del".equals(command) || "delete".equals(command)) {
         r.removeProperty(propDef);

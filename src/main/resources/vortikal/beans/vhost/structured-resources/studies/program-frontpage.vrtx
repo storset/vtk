@@ -129,10 +129,10 @@ resourcetype program-frontpage : program-document {
       [def document structured-document()]
       [def locale resource-locale()]  
       <div id="vrtx-additional-content">
-        <div class="vrtx-frontpage-box grey-box">
+        <div class="vrtx-frontpage-box grey-box vrtx-distach-bottom">
           [call "comp:facts"]
         </div>
-        <div class="vrtx-frontpage-box">
+        <div class="vrtx-frontpage-box vrtx-distach-bottom">
           [call "comp:contact-box"]
         </div>
         [def thispath resource-prop("./","uri")]

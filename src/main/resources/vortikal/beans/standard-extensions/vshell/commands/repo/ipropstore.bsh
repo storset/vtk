@@ -6,7 +6,7 @@ getDescription() {
 }
 
 getUsage() {
-    return "repo ipropstore <uri:path> <prop:string> <value:string>";
+    return "repo iprop <command:string> <uri:path> <prop:string> [<value:string>]";
 }
 
 void execute(context, args, out) {
@@ -15,6 +15,7 @@ void execute(context, args, out) {
     token = context.get("context").getBean("writeAllToken");
     typeTree = context.get("context").getBean("resourceTypeTree");
 
+    command = args.get("command");
     uri = args.get("uri");
 
     if (!repo.exists(token, uri)) {
@@ -23,11 +24,6 @@ void execute(context, args, out) {
     }
 
     prop = args.get("prop");
-    value = args.get("value");
-    if (value == null) {
-        out.println("Must provide a value");
-        return;
-    }
     prefix = null;
     if (prop.contains(":")) {
         prefix = prop.substring(0, prop.indexOf(":"));
@@ -45,9 +41,18 @@ void execute(context, args, out) {
 
     r = repo.retrieve(token, uri, false);
 
-    property = propDef.createProperty();
-    property.setStringValue(value);
-    r.addProperty(property);
+    if ("store".equals(command)) {
+        value = args.get("value");
+        if (value == null) {
+            out.println("Must provide a property value when storing");
+            return;
+        }
+        property = propDef.createProperty();
+        property.setStringValue(value);
+        r.addProperty(property);
+    } else if ("del".equals(command) || "delete".equals(command)) {
+        r.removeProperty(propDef);
+    }
 
     inheritableProps = new ArrayList();
     inheritableProps.add(propDef);

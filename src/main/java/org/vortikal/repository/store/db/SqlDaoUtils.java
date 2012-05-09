@@ -75,7 +75,7 @@ final class SqlDaoUtils {
      * to multiple propIDs in database because of de-normalized storage of
      * multi-value properties.
      */
-    public static class PropHolder {
+    public static final class PropHolder {
         String namespaceUri = "";
         String name = "";
         int propTypeId;
@@ -114,7 +114,5 @@ final class SqlDaoUtils {
             code = 31 * code + (this.namespaceUri == null ? 0 : this.namespaceUri.hashCode());
             return code;
         }
-        
     }
-
 }

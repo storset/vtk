@@ -78,7 +78,7 @@ resourcetype program-document {
                 [if number != 1]
                   </ul>
                 [endif]
-                <h2>[val theheader]</h2>
+                <h3>[val theheader]</h3>
                 <ul>
               [else]
                 [if number = 1]

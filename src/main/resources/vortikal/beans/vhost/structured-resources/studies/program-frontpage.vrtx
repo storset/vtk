@@ -148,9 +148,7 @@ resourcetype program-frontpage : program-document {
             [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
           </div>
         [endif]
-        <div class="vrtx-frontpage-box">
-          [call "comp:related-content"]      
-        </div>
+        [call "comp:related-content"]      
       </div>
       ##
     }  

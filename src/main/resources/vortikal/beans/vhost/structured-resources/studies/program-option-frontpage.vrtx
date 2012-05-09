@@ -142,7 +142,6 @@ resourcetype program-option-frontpage : program-document {
   localization {
   
     header : (en : "Edit program frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
-    title : (en : "Title", no : "Tittel", nn : "Tittel"),
     program-option : (en : "Program option", no : "Studieretning", nn : "Studieretning"),
     fs-program-code : (en : "FS program code", no : "FS programkode", nn : "FS programkode"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
@@ -169,5 +168,5 @@ resourcetype program-option-frontpage : program-document {
     inaktiv : (en : "Inactive", no : "Inaktiv", nn : "Inaktiv"),
     under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
     nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt")
-   }
+  }
 }

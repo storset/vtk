@@ -145,6 +145,10 @@ resourcetype program-document {
       [endif]
       ##
     }
-      
+ 
+  }
+  
+  localization {  
+    title : (en : "Title", no : "Tittel", nn : "Tittel")
   }
 }

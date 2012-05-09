@@ -110,16 +110,20 @@ resourcetype program-frontpage : program-document {
       [def points resource-prop(".","study-points")]
       [def code resource-prop(".","fs-program-code")]
       [def faculty resource-prop(".","faculty")]
-      <h2>[localized 'facts-header']</h2>
-      [if points != null]
-        <p>[localized 'study-points']: [val points]</p>   
-      [endif]
-      [if dur != null]
-        <p>[localized 'duration']: [val dur]</p>
-      [endif]     
-      [if faculty != null]
-        <p>[localized 'offered-by']: [localized faculty]</p>
-      [endif]
+      <h2>[localized 'facts']</h2>
+      <table id="vrtx-program-facts">
+        <tbody> 
+          [if points != null]
+            <tr><td>[localized 'study-points']:</td><td><strong>[val points]</strong></td></tr>   
+          [endif]
+          [if dur != null]
+            <tr><td>[localized 'duration']:</td><td><strong>[val dur]</strong></td></tr>
+          [endif]     
+          [if faculty != null]
+            <tr><td>[localized 'offered-by']:</td><td><strong>[localized faculty]</strong></td></tr>
+          [endif]
+        </tbody>
+      </table>
       ##
     }
    
@@ -225,11 +229,10 @@ resourcetype program-frontpage : program-document {
   localization {
   
     header : (en : "Edit program frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
-    title : (en : "Title", no : "Tittel", nn : "Tittel"),
     fs-program-code : (en : "FS program code", no : "FS programkode", nn : "FS programkode"),
     duration : (en : "Duration", no : "Varighet", nn : "Varighet"),
     study-points : (en : "Study points", no : "Studiepoeng", nn : "Studiepoeng"),
-    facts-header : (en : "Facts about the program", no : "Fakta om programmet", nn : "Fakta om programmet"),
+    facts : (en : "Facts about the program", no : "Fakta om programmet", nn : "Fakta om programmet"),
     offered-by : (en : "Offered by", no : "Tilbys av", nn : "Tilbys av"),
     theme-view : (en : "Theme", no : "Tema", nn : "Tema"),
     keywords : (en : "Key words", no : "Stikkord", nn : "Stikkord"),

@@ -334,22 +334,26 @@ public class RepositoryResourceHelper {
     private Property doEvaluate(PropertyEvaluationContext ctx, PropertyTypeDefinition propDef) throws IOException {
 
         final Property originalUnchanged = ctx.getOriginalResource().getProperty(propDef);
-        if (ctx.getEvaluationType() == Type.SystemPropertiesChange) {
-            if (! ctx.isSystemChangeAffectedProperty(propDef)) {
-                // Not to be affected by system change, return original unchanged.
-                return originalUnchanged;
-            }
-        }
         
         if (propDef.isInheritable() 
                 && !ctx.shouldEvaluateInheritableProperty(propDef)) {
             
             // An inheritable property that should not be changed now.
-            // Return unmodified prop (might be null if not exists in original resource)
+            // Keep it only if it is actually set on this resource (not inherited).
             if (originalUnchanged != null && !((PropertyImpl)originalUnchanged).isInherited()) {
                 return originalUnchanged;
             } else {
                 return null;
+            }
+        }
+        
+        // TODO currently we cannot store inheritable properties in
+        // system change context (mutually exclusive modes). Consider if that
+        // should be possible or not.
+        if (ctx.getEvaluationType() == Type.SystemPropertiesChange) {
+            if (! ctx.isSystemChangeAffectedProperty(propDef)) {
+                // Not to be affected by system change, return original unchanged.
+                return originalUnchanged;
             }
         }
         

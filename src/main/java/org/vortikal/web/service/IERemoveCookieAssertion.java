@@ -1,6 +1,5 @@
 package org.vortikal.web.service;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Resource;
@@ -10,7 +9,6 @@ import org.vortikal.security.web.saml.SamlAuthenticationHandler;
 public class IERemoveCookieAssertion implements Assertion {
 
     private String ieCookieLogoutTicket;
-    private String uioAuthSSO;
 
     @Override
     public boolean conflicts(Assertion assertion) {
@@ -42,22 +40,5 @@ public class IERemoveCookieAssertion implements Assertion {
 
     public void setIeCookieLogoutTicket(String ieCookieLogoutTicket) {
         this.ieCookieLogoutTicket = ieCookieLogoutTicket;
-    }
-
-    public void setUioAuthSSO(String uioAuthSSO) {
-        this.uioAuthSSO = uioAuthSSO;
-    }
-
-    private static Cookie getCookie(HttpServletRequest request, String name) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return null;
-        }
-        for (Cookie cookie : cookies) {
-            if (name.equals(cookie.getName())) {
-                return cookie;
-            }
-        }
-        return null;
     }
 }

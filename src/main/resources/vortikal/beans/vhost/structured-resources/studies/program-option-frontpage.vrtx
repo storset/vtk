@@ -1,7 +1,6 @@
-resourcetype program-option-frontpage {
+resourcetype program-option-frontpage : program-document {
 
   properties {
-    title : string overrides title,
     fs-program-option-code : string,
     fs-program-code : string,
     status : string,
@@ -16,21 +15,12 @@ resourcetype program-option-frontpage {
 
   edit-rules {
     status (dropdown),
-   title (size[large]),
+    title (size[large]),
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
     group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before related-content)
   }
   
   view-components {
-
-     title {
-      ##
-      [def v resource-prop(".", "title")]
-      [if v != null]
-        [val v]
-      [endif]
-      ##
-    }
 
     program-title {
       ##
@@ -40,9 +30,7 @@ resourcetype program-option-frontpage {
         [def f json-resource(thispath)]
         [if f != null]
           [def published resource-prop(thispath, "published")]
-          [def publ published.matches("false")]
-          [val publ]
-          [if publ]      
+          [if published.matches("false")]      
             [def title f.properties.title]
             [def program-type f.properties.program-type]
             <div class="vrtx-program-title-box">
@@ -55,56 +43,12 @@ resourcetype program-option-frontpage {
       ##
     }
 
-     status {
-      ##
-      [def st resource-prop(".", "status")]
-      [if st != null]
-        <div class="vrtx-program-status">
-          [val st]
-        </div>
-      [endif]
-      ##
-    }
- 
-    introduction-image {
-      ##
-      [def img-uri resource-prop(".", "picture")]
-      [def caption resource-prop(".", "caption")]
-      [def pixel-width null]
-      [def img null]
-      [def pixel-width null]
-      [def photographer null]
-      [def style null]
-      
-      [if img-uri != null]
-         [def img resource(img-uri)]
-      [endif]
-      [if img != null]
-        [def pixel-width resource-prop(img-uri, "pixelWidth")]
-        [def photographer resource-prop(img-uri, "photographer")]
-       [endif]
-       [if pixel-width != null]
-        [def style concat("width:", pixel-width, "px")]
-     [endif]
-     
-     [if img-uri != null]
-       [if pixel-width != null]  
-        <div class="vrtx-introduction-image" style="[val style]">
-       [else]
-        <div class="vrtx-introduction-image">
-       [endif]
-        <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
-       </div>
-     [endif]
-      ##
-    }  
-    
     introduction {      
       ##
       [def locale resource-locale()]  
       [def thispath resource-prop("./","uri")]
       [if locale = "en"]
-        [def uri  thispath + '/why-choose/index.html']
+        [def uri thispath + '/why-choose/index.html']
       [else]
         [def uri thispath + '/hvorfor-velge/index.html']
       [endif]      
@@ -119,79 +63,6 @@ resourcetype program-option-frontpage {
         [endif]
       [endif]        
       ##
-     }
-        
-    resource-links {
-      ##
-        [resource-props "."]
-        [if resource-links != null]
-         [def document structured-document()]
-         [def links document.properties.resource-links]
-          [if links != null]
-            <div id="vrtx-frontpage-box white-box">
-            [list links link]
-              [def theheader link.linkHeader]
-              [def thetitle link.linkTitle]
-              [def theurl link.linkUrl]
-              [def thedescription link.linkDescription]
-                [if theheader != null && theheader != ""]
-                  <h3>[val theheader]</h3>
-                [endif]
-                [if theurl != null && theurl != ""]
-                  <a href='[val theurl]'>
-                  [if thetitle != null && thetitle != ""]
-                    [val thetitle]
-                  [else] 
-                    [val theurl]
-                  [endif]
-                  </a>
-                [endif]
-                [if thedescription != null && thedescription != ""]
-                  [val thedescription]
-                [endif]
-              [endif]
-            [endlist]
-            </div>
-          [endif]
-        [endif]
-      ##
-    }  
-
-    contact-box {
-      ##
-      [resource-props "."]
-      [def title resource-prop(".", "contactTitle")]
-      [def content resource-prop(".", "contactContent")]
-      [def urlText resource-prop(".", "contactLinkText")]
-      [def url resource-prop(".", "contactUrl")]         
-          [if title != null && title != ""]
-            [if url != null && url != ""]
-              <h2><a href="[val url]">[val title]</a></h2>
-            [else]
-              <h2>[val title]</h2>
-            [endif]
-          [endif]
-            [if content != null && content != ""]
-                [val content # unescaped]
-            [endif]
-            [if urlText != null && urlText != ""]
-              [if url != null && url != ""]
-                <span><a href="[val url]">[val urlText]</a></span>
-              [else]
-                <span>[val urlText]</span>
-              [endif]
-            [endif]
-      [endif]
-      ##
-    }
- 
-   related-content {
-      ##
-      [def content resource-prop(".", "related-content")]
-      [if content != null]
-        [val content # unescaped]
-      [endif]
-      ##
     }
    
     right-column {
@@ -199,28 +70,27 @@ resourcetype program-option-frontpage {
       [resource-props "."]
       [def document structured-document()]
       [def locale resource-locale()]  
-        <div id="vrtx-additional-content">
-          <div class="vrtx-frontpage-box">
-            [call "comp:contact-box"]
-          </div>
-          <div class="vrtx-frontpage-box">
-            [def thispath resource-prop("./","uri")]
-            [if locale = 'en']
-              [def thispath thispath + '/messages']
-            [else]
-              [def thispath thispath + '/beskjeder']
-            [endif]
-            [def message-folder resource(thispath)] 
-            [if message-folder]          
+      <div id="vrtx-additional-content">
+        <div class="vrtx-frontpage-box">
+          [call "comp:contact-box"]
+        </div>
+        <div class="vrtx-frontpage-box">
+          [def thispath resource-prop("./","uri")]
+          [if locale = 'en']
+            [def thispath thispath + '/messages']
+          [else]
+            [def thispath thispath + '/beskjeder']
+          [endif]
+          [def message-folder resource(thispath)] 
+          [if message-folder]          
             [def thisfeed thispath + '/?vrtx=feed']
             [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
-            [endif]
-          </div>
-          <div class="vrtx-frontpage-box">
-             [call "comp:related-content"]
-          </div>
+          [endif]
         </div>
-      [endif]
+        <div class="vrtx-frontpage-box">
+          [call "comp:related-content"]
+        </div>
+      </div>
       ##
     }  
   }
@@ -237,25 +107,23 @@ resourcetype program-option-frontpage {
         <div id="vrtx-content">
         [resources-props "."]
           [def locale resource-locale()]  
-          <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
-            <h1>[call "comp:title"]([localized 'program-option'])</h1> 
-            [call "comp:status"]
-            [call "comp:introduction-image"]         
-            [call "comp:introduction"]         
-            [def thispath resource-prop("./","uri")]
-            <div id="vrtx-program-links">
-             [if locale = "en"]
-              [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcome, how-to-apply, structure, abroad, career-opportunities"}]           
-            [else]
-              [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-laerer-du, hvordan-soke, oppbyggning, utland, jobb-studiemuligheter"}]
-            [endif]
+          <div id="vrtx-main-content">
+            <div id="vrtx-program-option-main" class="vrtx-frontpage-box white-box">
+              <h1>[call "comp:title"]([localized 'program-option'])</h1> 
+              [call "comp:status"]
+              [call "comp:introduction-image"]         
+              [call "comp:introduction"]         
+              [def thispath resource-prop("./","uri")]
+              <div id="vrtx-program-links">
+                [if locale = "en"]
+                  [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcome, how-to-apply, structure, abroad, career-opportunities"}]           
+                [else]
+                  [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-laerer-du, hvordan-soke, oppbyggning, utland, jobb-studiemuligheter"}]
+                [endif]
+              </div>
+              [call "comp:program-title"]
             </div>
-            [call "comp:program-title"]
             [call "comp:resource-links"]
-            <div class="vrtx-social-components">
-              [call "resource:email-friend"]
-              [call "resource:share-at"]
-            </div> 
           </div>
           [call "comp:right-column"]
         </div>

@@ -1,3 +1,5 @@
+-- DO NOT USE, because it breaks copying of resources with binary properties --
+
 -----------------------------------------------------------------------------
 -- VORTEX DDL, extra contrib functions for PostgreSQL
 -----------------------------------------------------------------------------
@@ -15,7 +17,9 @@
 
 -- 2. Run the following to set up trigger for extra_prop_entry.binary_content:
 
-alter table extra_prop_entry alter column binary_content TYPE lo;
 
-create trigger extra_prop_entry_trigger1 
-   before update or delete on extra_prop_entry for each row execute procedure lo_manage(binary_content);
+
+-- alter table extra_prop_entry alter column binary_content TYPE lo;
+
+-- create trigger extra_prop_entry_trigger1 
+--   before update or delete on extra_prop_entry for each row execute procedure lo_manage(binary_content);

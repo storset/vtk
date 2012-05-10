@@ -1,0 +1,165 @@
+resourcetype program-document {
+
+  properties {
+    title-no : string,
+    title-nn : string,
+    title-en : string
+  }
+  
+  view-components {
+  
+    title {
+      ##
+      [def locale resource-locale()]
+      [if locale = "en"]
+	      [def v resource-prop(".", "title-en")]
+	  [elseif locale = "nn"]
+	      [def v resource-prop(".", "title-nn")]
+	  [else]
+	      [def v resource-prop(".", "title-no")]
+	  [endif]
+      [if v != null]
+        [val v]
+      [endif]
+      ##
+    }
+  
+    status {
+      ##
+      [def thestatus resource-prop(".", "status")]
+      [if thestatus != null]
+        <div class="vrtx-program-status">
+          [val thestatus]
+        </div>
+      [endif]
+      ##
+    }
+  
+    introduction-image {
+      ##
+      [def img-uri resource-prop(".", "picture")]
+      [def caption resource-prop(".", "caption")]
+      [def pixel-width null]
+      [def img null]
+      [def pixel-width null]
+      [def photographer null]
+      [def style null]
+      
+      [if img-uri != null]
+         [def img resource(img-uri)]
+      [endif]
+      [if img != null]
+        [def pixel-width resource-prop(img-uri, "pixelWidth")]
+        [def photographer resource-prop(img-uri, "photographer")]
+       [endif]
+       [if pixel-width != null]
+        [def style concat("width:", pixel-width, "px")]
+     [endif]
+     
+     [if img-uri != null]
+       [if pixel-width != null]  
+        <div class="vrtx-introduction-image" style="[val style]">
+       [else]
+        <div class="vrtx-introduction-image">
+       [endif]
+        <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+       </div>
+     [endif]
+      ##
+    }  
+  
+    resource-links {
+      ##
+      [resource-props "."]
+      [if resource-links != null]
+        [def document structured-document()]
+        [def links document.properties.resource-links]
+        [if links != null]
+          <div class="vrtx-frontpage-box white-box">
+            [list links link]
+              [def theheader link.linkHeader]
+              [def thetitle link.linkTitle]
+              [def theurl link.linkUrl]
+              [def thedescription link.linkDescription]
+              [def number _index + 1]
+              
+              [if theheader != null && theheader != ""]
+                [if number != 1]
+                  </ul>
+                [endif]
+                <h3>[val theheader]</h3>
+                <ul>
+              [else]
+                [if number = 1]
+                  <ul>
+                [endif]
+              [endif]
+              <li>
+                [if theurl != null && theurl != ""]
+                  <a href='[val theurl]'>[if thetitle != null && thetitle != ""][val thetitle][else][val theurl][endif]</a>
+                [elseif (theurl = null || theurl = "") && thetitle != null && thetitle != ""]
+                  [val thetitle]
+                [endif]
+                [if thedescription != null && thedescription != ""]
+                &nbsp;[val thedescription]
+                [endif]
+              </li>
+            [endlist]
+            </ul>
+          </div>
+        [endif]
+      [endif]
+      ##
+    }
+    
+    
+    contact-box {
+      ##
+      [resource-props "."]
+      [def title resource-prop(".", "contactTitle")]
+      [def content resource-prop(".", "contactContent")]
+      [def urlText resource-prop(".", "contactLinkText")]
+      [def url resource-prop(".", "contactUrl")]         
+      [if title != null && title != ""]
+        [if url != null && url != ""]
+          <h2><a href="[val url]">[val title]</a></h2>
+        [else]
+          <h2>[val title]</h2>
+        [endif]
+      [endif]
+      [if content != null && content != ""]
+        <div class="vrtx-box-content">
+          [val content # unescaped]
+        </div>
+      [endif]
+      [if urlText != null && urlText != ""]
+        <div class="vrtx-more">
+          [if url != null && url != ""]
+            <span><a href="[val url]">[val urlText]</a></span>
+          [else]
+            <span>[val urlText]</span>
+          [endif]
+        </div>
+      [endif]
+      ##
+    }
+
+    related-content {
+      ##
+      [def content resource-prop(".", "related-content")]
+      [if content != null]
+        <div class="vrtx-frontpage-box">
+          [val content # unescaped]
+        </div>
+      [endif]
+      ##
+    }
+ 
+  }
+  
+  localization {  
+    title-no : (en : "Title (bokmål)", no : "Tittel (bokmål)", nn : "Tittel (bokmål)"),
+    title-nn : (en : "Title (nynorsk)", no : "Tittel (nynorsk)", nn : "Tittel (nynorsk)"),
+    title-en : (en : "Title (english)", no : "Tittel (engelsk)", nn : "Tittel (engelsk)")
+  }
+}

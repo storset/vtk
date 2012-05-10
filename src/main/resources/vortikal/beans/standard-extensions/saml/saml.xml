@@ -49,6 +49,8 @@
     <property name="uioAuthSSO" value="${saml.uioAuthSSO}" />
     <property name="ieReturnURL" value="${saml.ieReturnURL}" />
       
+    <property name="ieCookieHandlingEnabled" value="${saml.ieCookieHandlingEnabled}" />  
+      
     <property name="manageAssertion" ref="manage.hostNameAssertion" />
 
     <property name="staticHeaders">
@@ -269,8 +271,7 @@
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.IERemoveCookieAssertion">
-          <property name="ieCookieLogoutTicket" value="${saml.ieCookieLogoutTicket}"/>
-          <property name="uioAuthSSO" value="${saml.uioAuthSSO}" />         
+          <property name="ieCookieLogoutTicket" value="${saml.ieCookieLogoutTicket}"/>                   
         </bean>
       </list>
     </property>

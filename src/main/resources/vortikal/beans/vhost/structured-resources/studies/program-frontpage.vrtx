@@ -1,17 +1,20 @@
-resourcetype program-frontpage {
+resourcetype program-frontpage : program-document {
 
   properties {
-    title : string overrides title,
     fs-program-code : string,
     status : string,
     program-type : string,
-    theme : string,
+    themes : json (theme:string) multiple,
     duration : string,
     study-points : string,
     full-time : boolean,
     faculty : string,
     keywords : string,
     picture : image_ref,
+    interviewTitle : string,
+    interviewContent : html,
+    interviewLinkText : string, 
+    interviewUrl : resource_ref, 
     resource-links : json (linkHeader:string, linkTitle:string, linkUrl:string, linkDescription:string) multiple,
     contactTitle : string,
     contactContent : html,
@@ -24,74 +27,24 @@ resourcetype program-frontpage {
     status (dropdown),
     program-type (dropdown),
     faculty (dropdown),
-    theme (dropdown),
+    themes:theme (dropdown),
     title (size[large]),
     group facts (fs-program-code, status, program-type, theme, duration, study-points, full-time, faculty, keywords) (after title),
+    group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (before related-content)
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
     group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before related-content)
   }
   
   view-components {
-
-     title {
-      ##
-      [def v resource-prop(".", "title")]
-      [if v != null]
-        [val v]
-      [endif]
-      ##
-    }
-
-     status {
-      ##
-      [def st resource-prop(".", "status")]
-      [if st != null]
-        [val st]
-      [endif]
-      ##
-    }
  
-     program-type {
+    program-type {
       ##
       [def type resource-prop(".", "program-type")]
       [if type != null]
-        [localized type]
+        ([localized type])
       [endif]
       ##
     }
-       
-    introduction-image {
-      ##
-      [def img-uri resource-prop(".", "picture")]
-      [def caption resource-prop(".", "caption")]
-      [def pixel-width null]
-      [def img null]
-      [def pixel-width null]
-      [def photographer null]
-      [def style null]
-      
-      [if img-uri != null]
-         [def img resource(img-uri)]
-      [endif]
-      [if img != null]
-        [def pixel-width resource-prop(img-uri, "pixelWidth")]
-        [def photographer resource-prop(img-uri, "photographer")]
-       [endif]
-       [if pixel-width != null]
-        [def style concat("width:", pixel-width, "px")]
-     [endif]
-     
-     [if img-uri != null]
-       [if pixel-width != null]  
-        <div class="vrtx-introduction-image" style="[val style]">
-       [else]
-        <div class="vrtx-introduction-image">
-       [endif]
-        <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
-       </div>
-     [endif]
-      ##
-    }  
     
     introduction {      
       ##
@@ -105,7 +58,7 @@ resourcetype program-frontpage {
       [def f json-resource(uri)]
       [if f != null]
         [def published resource-prop(uri, "published") ]
-        [if published]      
+        [if published = 'true']      
           [def intro f.properties.introduction]
           <div class="vrtx-introduction">
             [val intro # unescaped]
@@ -113,82 +66,64 @@ resourcetype program-frontpage {
         [endif]
       [endif]        
       ##
-     }
-        
-    resource-links {
-      ##
-        [resource-props "."]
-        [if resource-links != null]
-         [def document structured-document()]
-         [def links document.properties.resource-links]
-          [if links != null]
-            [list links link]
-              [def theheader link.linkHeader]
-              [def thetitle link.linkTitle]
-              [def theurl link.linkUrl]
-              [def thedescription link.linkDescription]
-                [if theheader != null && theheader != ""]
-                  <h3>[val theheader]</h3>
-                [endif]
-                [if theurl != null && theurl != ""]
-                  <div id="vrtx-resource-link">
-                  <a href='[val theurl]'>
-                  [if thetitle != null && thetitle != ""]
-                    [val thetitle]
-                  [else] 
-                    [val theurl]
-                  [endif]
-                  </a>
-                  </div>
-                [endif]
-                [if thedescription != null && thedescription != ""]
-                  [val thedescription]
-                [endif]
-              [endif]
-            [endlist]
-          [endif]
-        [endif]
-      ##
-    }  
-
-    contact-box(document) {
-      ##
-      [resource-props "."]
-      [def title resource-prop(".", "contactTitle")]
-      [def content resource-prop(".", "contactContent")]
-      [def urlText resource-prop(".", "contactLinkText")]
-      [def url resource-prop(".", "contactUrl")]         
-          [if title != null && title != ""]
-            [if url != null && url != ""]
-              <h2><a href="[val url]">[val title]</a></h2>
-            [else]
-              <h2>[val title]</h2>
-            [endif]
-          [endif]
-            [if content != null && content != ""]
-              <div class="vrtx-box-content">
-                [val content # unescaped]
-              </div>
-            [endif]
-            [if urlText != null && urlText != ""]
-              <div class="vrtx-more">
-              [if url != null && url != ""]
-                <span><a href="[val url]">[val urlText]</a></span>
-              [else]
-                <span>[val urlText]</span>
-              [endif]
-              </div>
-            [endif]
-      [endif]
-      ##
     }
  
-   related-content {
+    interview-box {
       ##
-      [def content resource-prop(".", "related-content")]
-      [if content != null]
-        <div class="vrtx-related-content">[val content # unescaped]</div>
-      [endif]
+      [resource-props "."]
+      [def title resource-prop(".", "interviewTitle")]
+      [def content resource-prop(".", "interviewContent")]
+      [def urlText resource-prop(".", "interviewLinkText")]
+      [def url resource-prop(".", "interviewUrl")] 
+      [if title != null || content != null || urlText != null || url  != null]
+        <div class="vrtx-frontpage-box white-box two-column-feed">         
+        [if title != null && title != ""]
+          [if url != null && url != ""]
+            <h2><a href="[val url]">[val title]</a></h2>
+          [else]
+            <h2>[val title]</h2>
+          [endif]
+        [endif]
+        [if content != null && content != ""]
+          <div class="vrtx-box-content">
+            [val content # unescaped]
+          </div>
+        [endif]
+        [if urlText != null && urlText != ""]
+          <div class="vrtx-more">
+          [if url != null && url != ""]
+            <span><a href="[val url]">[val urlText]</a></span>
+          [else]
+            <span>[val urlText]</span>
+          [endif]
+          </div>
+        [endif]
+      [endif] 
+      </div> 
+      ##
+    }
+
+    facts {
+      ##
+      [resource-props "."]
+      [def dur resource-prop(".","duration")]
+      [def points resource-prop(".","study-points")]
+      [def code resource-prop(".","fs-program-code")]
+      [def faculty resource-prop(".","faculty")]
+      <h2>[localized 'facts']</h2>
+      <table id="vrtx-program-facts">
+        <tbody> 
+          [if points != null]
+            <tr><td>[localized 'study-points']:</td><td><strong>[val points]</strong></td></tr>   
+          [endif]
+          [if dur != null]
+            <tr><td>[localized 'duration']:</td><td><strong>[val dur]</strong></td></tr>
+          [endif]     
+          [if faculty != null]
+            <tr><td>[localized 'offered-by']:</td><td><strong>[localized faculty]</strong></td></tr>
+          [endif]
+        </tbody>
+      </table>
       ##
     }
    
@@ -197,47 +132,28 @@ resourcetype program-frontpage {
       [resource-props "."]
       [def document structured-document()]
       [def locale resource-locale()]  
-      [def dur resource-prop(".","duration")]
-      [def points resource-prop(".","study-points")]
-      [def code resource-prop(".","fs-program-code")]
-      [def faculty resource-prop(".","faculty")]
-      [def theme resource-prop(".","theme")]
-      [if dur != null || points != null || code != null || faculty != null || theme != null]
-        <div id="vrtx-additional-content">
-          <div id="vrtx-related-content">
-            <div id="relatetd-content-facts">
-              <h3>[localized 'facts-header']</h3>
-              <p>[localized 'study-points']: [val points]</p>
-              <p>[localized 'duration']: [val dur]</p>
-              [if faculty != null]
-                <p>[localized 'offered-by']:  [localized faculty]</p>
-              [endif]
-              [if theme != null]
-                <p>[localized 'theme-view']:  [localized theme]</p>
-              [endif]           
-            </div>
-            <div id="vrtx-contact">
-              [call "comp:contact-box"]
-            </div>
-            [def thispath resource-prop("./","uri")]
-            [if locale = 'en']
-              [def thispath thispath + '/messages']
-            [else]
-              [def thispath thispath + '/beskjeder']
-            [endif]
-            [def message-folder resource(thispath)] 
-            [if message-folder]          
-            [def thisfeed thispath + '/?vrtx=feed']
-              <div id="vrtx-related-content-messages">
-                [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
-              </div>
-            [endif]
-            <div id="vrtx-related-content-other">
-              [call "comp:related-content"]      
-            </div>
-          </div>
+      <div id="vrtx-additional-content">
+        <div class="vrtx-frontpage-box grey-box vrtx-distach-bottom">
+          [call "comp:facts"]
         </div>
-      [endif]
+        <div class="vrtx-frontpage-box vrtx-distach-bottom">
+          [call "comp:contact-box"]
+        </div>
+        [def thispath resource-prop("./","uri")]
+        [if locale = 'en']
+          [def thispath thispath + '/messages']
+        [else]
+          [def thispath thispath + '/beskjeder']
+        [endif]
+        [def message-folder resource(thispath)] 
+        [if message-folder]          
+          [def thisfeed thispath + '/?vrtx=feed']
+          <div class="vrtx-frontpage-box">
+            [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
+          </div>
+        [endif]
+        [call "comp:related-content"]      
+      </div>
       ##
     }  
   }
@@ -248,29 +164,31 @@ resourcetype program-frontpage {
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         [call "resource:comments-feed-link"]
-        <title>[call "comp:title"]</title>
+        <title>[call "comp:title"] [call "comp:program-type"]</title>
       </head>
-      <body id="vrtx-structured-article">
+      <body id="vrtx-program-frontpage">
         <div id="vrtx-content">
-        [resources-props "."]
+          [resources-props "."]
           [def locale resource-locale()]  
-          <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
-            <h1>[call "comp:title"]([call "comp:program-type"])</h1> 
-            [call "comp:status"]
-            [call "comp:introduction-image"]         
-            [call "comp:introduction"]         
-            [def thispath resource-prop("./","uri")]
-            [if locale = "en"]
-              [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcome, structure, career-opportunities, education-exam"}]           
-            [else]
-              [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-laerer-du, oppbyggning, jobb-studiemuligheter, undervisning-eksamen"}]
-            [endif]
-            </br>
+          <div id="vrtx-main-content">
+            <div id="vrtx-program-frontpage-main" class="vrtx-frontpage-box white-box">
+              <h1>[call "comp:title"]([call "comp:program-type"])</h1> 
+              <div class="vrtx-program-status">
+                [call "comp:status"]
+              </div>
+              [call "comp:introduction-image"]         
+              [call "comp:introduction"]         
+              [def thispath resource-prop("./","uri")]
+              <div id="vrtx-program-links">
+                [if locale = "en"]
+                  [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcome, structure, career-opportunities, education-exam"}]           
+                [else]
+                  [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-laerer-du, oppbyggning, jobb-studiemuligheter, undervisning-eksamen"}]
+                [endif]
+              </div>
+            </div>
+            [call "comp:interview-box"]
             [call "comp:resource-links"]
-            <div class="vrtx-social-components">
-            <!--  [call "resource:email-friend"] -->
-              [call "resource:share-at"]
-            </div> 
           </div>
           [call "comp:right-column"]
         </div>
@@ -281,22 +199,19 @@ resourcetype program-frontpage {
   
   vocabulary {
     status {
-     en : ("under-arbeid" = "In progress", "aktivt" = "Active", "inactive" = "Inactive", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
-     no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inactive" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
-     nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inactive" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
+     en : ("under-arbeid" = "In progress", "aktivt" = "Active", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
+     no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
+     nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
    	}
     faculty {
      en : ("hf" = "Faculty of Humanities", "jus" = "Faculty of Law", "matnat" = "Faculty of Mathematics and Natural Sciences", "med" = "Faculty of Medicine", "odont" = "Faculty of Dentistry", "sv" = "Faculty of Social Sciences", "tf" = "Faculty of Theology", "uv" = "Faculty of Educational Sciences"),
      no : ("hf" = "Det humanistiske fakultet", "jus" = "Det juridiske fakultet", "matnat" = "Det matematisk-naturvitenskapelige fakultet", "med" = "Det medisinske fakultet", "odont" = "Det odontologiske fakultet", "sv" = "Det samfunnsvitenskapelige fakultet", "tf" = "Det teologiske fakultet", "uv" = "Det utdanningsvitenskapelige fakultet"),
      nn : ("hf" = "Det humanistiske fakultet", "jus" = "Det juridiske fakultet", "matnat" = "Det matematisk-naturvitenskapelige fakultet", "med" = "Det medisinske fakultet", "odont" = "Det odontologiske fakultet", "sv" = "Det samfunnsvitenskapelige fakultet", "tf" = "Det teologiske fakultet", "uv" = "Det utdanningsvitenskapelige fakultet")
     }
-    theme {
-     en : ("estetiske-studier-musikkvitenskap" = "Esthetic Studies and Musicology", "helsefag-medisin" = "Health and Medicine", "historie-filosofi-kulturstudier" ="History, Philosophy, and Culture Studies", "informasjonsteknologi" ="Information Technology and Informatics", "jus-okonomi-ledelse-administrasjon" ="Law, Economics, Leadership, and Administration", "lektor-og-adjunktutdanning" ="Teacher Education", "matematikk-naturvitenskap-teknologi" ="Mathematics, Natural Science, and Technology", "mediefag" ="Media Studies", "pedagogiske-fag" ="Education", "religion-teologi" ="Religion and Theology", "samfunnsfag" ="Social Sciences and Psychology", "spraak-litteratur" ="Language and Literature", "engelskspraakligeprogram" ="Master's Degree Programmes"
-),
-     no : ("estetiske-studier-musikkvitenskap"= "Estetiske studier og musikkvitenskap", "helsefag-medisin" = "Helsefag og medisin", "historie-filosofi-kulturstudier" ="Historie, filosofi og kulturstudier", "informasjonsteknologi" ="Informasjonsteknologi og informatikk", "jus-okonomi-ledelse-administrasjon" ="Jus, økonomi, ledelse, administrasjon", "lektor-og-adjunktutdanning" ="Lærerutdanning: Lektor- og adjunktutdanning", "matematikk-naturvitenskap-teknologi" ="Matematikk, naturvitenskap, teknologi", "mediefag" ="Mediefag", "pedagogiske-fag" ="Pedagogiske fag", "religion-teologi" ="Religion og teologi", "samfunnsfag" ="Samfunnsfag og psykologi", "spraak-litteratur" ="Språk og litteratur", "engelskspraakligeprogram" ="Engelskspråklege program"
-),
-     nn : ("estetiske-studier-musikkvitenskap"= "Estetiske studium og musikkvitskap", "helsefag-medisin" = "Helsefag og medisin", "historie-filosofi-kulturstudier" ="Historie, filosofi og kulturstudium", "informasjonsteknologi" ="Informasjonsteknologi og informatikk", "jus-okonomi-ledelse-administrasjon" ="Jus, økonomi, leiing, administrasjon", "lektor-og-adjunktutdanning" ="Lærarutdaning: Lektor- og adjunktutdaning", "matematikk-naturvitenskap-teknologi" ="Matematikk, naturvitskap, teknologi", "mediefag" ="Mediefag", "pedagogiske-fag" ="Pedagogiske fag", "religion-teologi" ="Religion og teologi", "samfunnsfag" ="Samfunnsfag og psykologi", "spraak-litteratur" ="Språk og litteratur", "engelskspraakligeprogram" ="Engelskspråklige program"
-)
+    themes:theme {
+     en : ("estetiske-studier-musikkvitenskap" = "Esthetic Studies and Musicology", "helsefag-medisin" = "Health and Medicine", "historie-filosofi-kulturstudier" = "History, Philosophy, and Culture Studies", "informasjonsteknologi" = "Information Technology and Informatics", "jus-okonomi-ledelse-administrasjon" = "Law, Economics, Leadership, and Administration", "lektor-og-adjunktutdanning" = "Teacher Education", "matematikk-naturvitenskap-teknologi" = "Mathematics, Natural Science, and Technology", "mediefag" = "Media Studies", "pedagogiske-fag" = "Education", "religion-teologi" = "Religion and Theology", "samfunnsfag" = "Social Sciences and Psychology", "spraak-litteratur" = "Language and Literature", "engelskspraakligeprogram" = "Master's Degree Programmes"),
+     no : ("estetiske-studier-musikkvitenskap"= "Estetiske studier og musikkvitenskap", "helsefag-medisin" = "Helsefag og medisin", "historie-filosofi-kulturstudier" = "Historie, filosofi og kulturstudier", "informasjonsteknologi" = "Informasjonsteknologi og informatikk", "jus-okonomi-ledelse-administrasjon" = "Jus, økonomi, ledelse, administrasjon", "lektor-og-adjunktutdanning" = "Lærerutdanning: Lektor- og adjunktutdanning", "matematikk-naturvitenskap-teknologi" = "Matematikk, naturvitenskap, teknologi", "mediefag" = "Mediefag", "pedagogiske-fag" = "Pedagogiske fag", "religion-teologi" = "Religion og teologi", "samfunnsfag" = "Samfunnsfag og psykologi", "spraak-litteratur" = "Språk og litteratur", "engelskspraakligeprogram" = "Engelskspråklege program"),
+     nn : ("estetiske-studier-musikkvitenskap"= "Estetiske studium og musikkvitskap", "helsefag-medisin" = "Helsefag og medisin", "historie-filosofi-kulturstudier" = "Historie, filosofi og kulturstudium", "informasjonsteknologi" = "Informasjonsteknologi og informatikk", "jus-okonomi-ledelse-administrasjon" = "Jus, økonomi, leiing, administrasjon", "lektor-og-adjunktutdanning" = "Lærarutdaning: Lektor- og adjunktutdaning", "matematikk-naturvitenskap-teknologi" = "Matematikk, naturvitskap, teknologi", "mediefag" = "Mediefag", "pedagogiske-fag" = "Pedagogiske fag", "religion-teologi" = "Religion og teologi", "samfunnsfag" = "Samfunnsfag og psykologi", "spraak-litteratur" = "Språk og litteratur", "engelskspraakligeprogram" = "Engelskspråklige program")
 	}
 	program-type {
 	  en : ("aarsenhet" = "1-year unit", "bachelor" = "bachelor's Degree programme", "ett-aarig-master" = "1-year Master's Degree programme", "ettoghalvt-aarig-master" = "1 1/2-year Master's Degree programme", "to-aarig-master" = "2-year Master's Degree programme", "fem-aarig-master" = "5-year Master's Degree programme", "erfaringsbasert-master" = "experience-based Master's Degree programme", "profesjon" = "professional course of study"),
@@ -314,28 +229,33 @@ resourcetype program-frontpage {
   localization {
   
     header : (en : "Edit program frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
-    title : (en : "Title", no : "Tittel", nn : "Tittel"),
     fs-program-code : (en : "FS program code", no : "FS programkode", nn : "FS programkode"),
     duration : (en : "Duration", no : "Varighet", nn : "Varighet"),
     study-points : (en : "Study points", no : "Studiepoeng", nn : "Studiepoeng"),
-    facts-header : (en : "Facts about the program", no : "Fakta om programmet", nn : "Fakta om programmet"),
-    messages-header : (en : "Messages", no : "Beskjeder", nn : "Beskjeder"),
+    facts : (en : "Facts about the program", no : "Fakta om programmet", nn : "Fakta om programmet"),
     offered-by : (en : "Offered by", no : "Tilbys av", nn : "Tilbys av"),
     theme-view : (en : "Theme", no : "Tema", nn : "Tema"),
     keywords : (en : "Key words", no : "Stikkord", nn : "Stikkord"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
 
+    interview-box : (en : "Interviews with former students", no : "Karriereintervjuer", nn : "Karriereintervjuar"),
+    interviewTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
+    interviewContent : (en : "Content", no : "Innhold", nn : "Innhald"),
+    interviewLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
+    interviewUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
+
     full-time : (en : "Full time study?", no : "Organisering", nn : "Organisering"),
     fulltime : (en : "Full time study", no : "Fulltidsstudium", nn : "Fulltidsstudium"),
     parttime : (en : "Part time study", no : "Deltidsstudium", nn : "Deltidsstudium"),
 
     contact-box : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
-    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
     contactTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
     contactContent : (en : "Content", no : "Innhold", nn : "Innhald"),
     contactLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
     contactUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
+
+    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
   
     resource-links : (en : "Links", no : "Lenker", nn : "Lenker"),
     linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
@@ -346,7 +266,7 @@ resourcetype program-frontpage {
     status : (en : "Status", no : "Status", nn : "Status"),
     under-arbeid : (en : "In progress", no : "Under arbeid" ,nn : "Under arbeid"),
     aktivt : (en: "Active", no : "Aktiv", nn : "Aktiv"), 
-    inactive : (en : "Inactive", no : "Inaktiv", nn : "Inaktiv"),
+    inaktiv : (en : "Inactive", no : "Inaktiv", nn : "Inaktiv"),
     under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
     nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt"),
     
@@ -370,6 +290,7 @@ resourcetype program-frontpage {
 	tf : (en : "Faculty of Theology", no : "Det teologiske fakultet", nn : "Det teologiske fakultet"),		      
 	uv : (en : "Faculty of Educational Sciences", no : "Det utdanningsvitenskapelige fakultet", nn : "Det utdanningsvitenskapelige fakultet")     
     
+    themes : (en : "Themes", no : "Temaområder", nn : "Temaområder"),
     theme : (en : "Theme", no : "Temaområde", nn : "Temaområde"),
 	estetiske-studier-musikkvitenskap : (en : "Esthetic Studies and Musicology", no : "Estetiske studier og musikkvitenskap", nn : "Estetiske studium og musikkvitskap"),
 	helsefag-medisin : (en : "Health and Medicine", no : "Helsefag og medisin", nn : "Helsefag og medisin"),

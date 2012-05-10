@@ -32,8 +32,7 @@
   <import resource="msoffice.xml" />
   <import resource="odf.xml" />
   <import resource="json.xml" />
-  <import resource="studies/program-listing.xml" />
-  <import resource="studies/program-option-listing.xml" />
+
 
   <!-- Studinfo -->
   <import resource="emne.xml" />

@@ -1,161 +1,96 @@
-resourcetype program-option-frontpage {
+resourcetype program-option-frontpage : program-document {
 
   properties {
-    title : string overrides title,
     fs-program-option-code : string,
     fs-program-code : string,
     status : string,
     picture : image_ref,
-    introduction : simple_html,
-    related-content : html noextract,
-    tags : string multiple overrides tags,
-    resource-links : json (linkHeader:string, linkTitle:string, linkUrl:string, linkDescription:string) multiple
+    resource-links : json (linkHeader:string, linkTitle:string, linkUrl:string, linkDescription:string) multiple,
+    contactTitle : string,
+    contactContent : html,
+    contactLinkText : string, 
+    contactUrl : resource_ref, 
+    related-content : html
   }
 
   edit-rules {
-    fs-program-code (after title),
-    fs-program-option-code (after fs-program-code),
     status (dropdown),
     title (size[large]),
-    tags tooltip (en : "(Tag1, Tag2, ...)", no : "(Emneord1, Emneord2, ...)", nn : "(Emneord1, Emneord2, ...)"),
-    tags (class[vrtx-autocomplete-tag]),
-    resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker")
+    resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
+    group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before related-content)
   }
   
   view-components {
 
-     title {
+    program-title {
       ##
-      [def v resource-prop(".", "title")]
-      [if v != null]
-        [val v]
-      [endif]
-      ##
-    }
-        
-     status {
-      ##
-      [def st resource-prop(".", "status")]
-      [if st != null]
-        [val st]
-      [endif]
-      ##
-    }
- 
-     introduction-image {
-      ##
-      [def img-uri resource-prop(".", "picture")]
-      [def caption resource-prop(".", "caption")]
-      [def pixel-width null]
-      [def img null]
-      [def pixel-width null]
-      [def photographer null]
-      [def style null]
-      
-      [if img-uri != null]
-         [def img resource(img-uri)]
-      [endif]
-      [if img != null]
-        [def pixel-width resource-prop(img-uri, "pixelWidth")]
-        [def photographer resource-prop(img-uri, "photographer")]
-       [endif]
-       [if pixel-width != null]
-        [def style concat("width:", pixel-width, "px")]
-     [endif]
-     
-     [if img-uri != null]
-       [if pixel-width != null]  
-        <div class="vrtx-introduction-image" style="[val style]">
-       [else]
-        <div class="vrtx-introduction-image">
-       [endif]
-        <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
-       </div>
-     [endif]
-      ##
-    }   
-        
-    introduction {
-      ##
-      [def intro resource-prop(".", "introduction")]
-      [if intro != null]
-        <div class="vrtx-introduction">[val intro # unescaped]</div>
+      [def programFolderPath resource-prop("../../","uri")]
+      [if programFolderPath != null]
+      [def thispath programFolderPath + '/index.html']
+        [def f json-resource(thispath)]
+        [if f != null]
+          [def published resource-prop(thispath, "published")]
+          [if published]      
+            [def title f.properties.title]
+            [def program-type f.properties.program-type]
+            <div class="vrtx-program-title-box">
+              <h2>[localized 'program-affiliation']</h2>
+              <a href='[val thispath]'>[val title] ([val program-type])</a>
+            </div>
+          [endif]
+        [endif]        
       [endif]
       ##
     }
 
-    resource-links {
+    introduction {      
       ##
-        [resource-props "."]
-        [if resource-links != null]
-         [def document structured-document()]
-         [def links document.properties.resource-links]
-          [if links != null]
-            [list links link]
-              [def theheader link.linkHeader]
-              [def thetitle link.linkTitle]
-              [def theurl link.linkUrl]
-              [def thedescription link.linkDescription]
-                [if theheader != null && theheader != ""]
-                  <h3>[val theheader]</h3>
-                [endif]
-                [if theurl != null && theurl != ""]
-                  <div id="vrtx-resource-link">
-                  <a href='[val theurl]'>
-                  [if thetitle != null && thetitle != ""]
-                    [val thetitle]
-                  [else] 
-                    [val theurl]
-                  [endif]
-                  </a>
-                  </div>
-                [endif]
-                [if thedescription != null && thedescription != ""]
-                  [val thedescription]
-                [endif]
-              [endif]
-            [endlist]
-          [endif]
+      [def locale resource-locale()]  
+      [def thispath resource-prop("./","uri")]
+      [if locale = "en"]
+        [def uri thispath + '/why-choose/index.html']
+      [else]
+        [def uri thispath + '/hvorfor-velge/index.html']
+      [endif]      
+      [def f json-resource(uri)]
+      [if f != null]
+        [def published resource-prop(uri, "published") ]
+        [if published]      
+          [def intro f.properties.introduction]
+          <div class="vrtx-introduction">
+            [val intro # unescaped]
+          </div>
         [endif]
+      [endif]        
       ##
-    }  
-       
+    }
+   
     right-column {
       ##
       [resource-props "."]
-        [def locale resource-locale()]  
-        <div id="vrtx-additional-content">
-          <div id="vrtx-related-content">
-           <div id="related-content-contact">
-              <h2>[localized 'contact-header']</h2>
-            </div>
-            [def thispath resource-prop("./","uri")]
-            [if locale = 'en']
-              [def thispath thispath + '/messages']
-            [else]
-              [def thispath thispath + '/beskjeder']
-            [endif]
-            [def message-folder resource(thispath)] 
-            [if message-folder]          
-            [def thisfeed thispath + '/?vrtx=feed']
-              <div id="related-content-messages">
-                [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
-              </div>
-            [endif]
-            <div id="related-content-other">
-              <h2>[localized 'related-content']</h2>
-              [def document structured-document()]
-              [def theRelated-content document.properties.related-content]
-              [if theRelated-content != null]
-                [val theRelated-content # unescaped]
-              [endif]
-            </div>
-          </div>
+      [def document structured-document()]
+      [def locale resource-locale()]  
+      <div id="vrtx-additional-content">
+        <div class="vrtx-frontpage-box vrtx-distach-bottom">
+          [call "comp:contact-box"]
         </div>
-      [endif]
+        <div class="vrtx-frontpage-box">
+          [def thispath resource-prop("./","uri")]
+          [if locale = 'en']
+            [def thispath thispath + '/messages']
+          [else]
+            [def thispath thispath + '/beskjeder']
+          [endif]
+          [def message-folder resource(thispath)] 
+          [if message-folder]          
+            [def thisfeed thispath + '/?vrtx=feed']
+            [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
+          [endif]
+        </div>
+        [call "comp:related-content"]
+      </div>
       ##
     }  
- 
   }
 
   view {
@@ -166,29 +101,27 @@ resourcetype program-option-frontpage {
         [call "resource:comments-feed-link"]
         <title>[call "comp:title"]</title>
       </head>
-      <body id="vrtx-structured-article">
+      <body id="vrtx-program-option">
         <div id="vrtx-content">
-        [resources-props "."]
+          [resources-props "."]
           [def locale resource-locale()]  
-          <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
-            <h1>[call "comp:title"]</h1> 
-            [call "comp:status"]
-            [call "comp:introduction-image"]         
-            [call "comp:introduction"]
-            [def thispath resource-prop("./","uri")]
-            [if locale = "en"]
-              [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcome, how-to-apply, structure, abroad, career-opportunities"}]           
-            [else]
-              [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-laerer-du, hvordan-soke, oppbyggning, utland, jobb-studiemuligheter"}]
-            [endif]
-            </br>
+          <div id="vrtx-main-content">
+            <div id="vrtx-program-option-main" class="vrtx-frontpage-box white-box">
+              <h1>[call "comp:title"]([localized 'program-option'])</h1> 
+              [call "comp:status"]
+              [call "comp:introduction-image"]         
+              [call "comp:introduction"]         
+              [def thispath resource-prop("./","uri")]
+              <div id="vrtx-program-links">
+                [if locale = "en"]
+                  [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcome, how-to-apply, structure, abroad, career-opportunities"}]           
+                [else]
+                  [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-laerer-du, hvordan-soke, oppbyggning, utland, jobb-studiemuligheter"}]
+                [endif]
+              </div>
+              [call "comp:program-title"]
+            </div>
             [call "comp:resource-links"]
-            [call "resource:tags"]
-            <div class="vrtx-social-components">
-            <!--  [call "resource:email-friend"] -->
-              [call "resource:share-at"]
-            </div> 
-            [call "resource:comments"]
           </div>
           [call "comp:right-column"]
         </div>
@@ -199,27 +132,30 @@ resourcetype program-option-frontpage {
   
   vocabulary {
     status {
-     en : ("under-arbeid" = "In progress", "aktivt" = "Active", "inactive" = "Inactive", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
-     no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inactive" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
-     nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inactive" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
+     en : ("under-arbeid" = "In progress", "aktivt" = "Active", "inaktiv" = "Inactive", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
+     no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inaktiv" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
+     nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inaktiv" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
    	}
   }
 
+
   localization {
+  
+    header : (en : "Edit program frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
+    program-option : (en : "Program option", no : "Studieretning", nn : "Studieretning"),
     fs-program-code : (en : "FS program code", no : "FS programkode", nn : "FS programkode"),
-    fs-program-option-code : (en : "FS program option code", no : "FS studieretningskode", nn : "FS studieretningskode"),
-    title : (en : "Title", no : "Tittel", nn : "Tittel"),
-    introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
-    published : (en : "Published", no : "Publisert", nn : "Publisert"),
-    tags : (en : "Tags", no : "Emneord", nn : "Emneord"),
-    relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
-    header : (en : "Edit program option frontpage", no : "Rediger studieretningsforside", nn : "Rediger studieretningsforside"),
-    messages-header : (en : "Messages", no : "Beskjeder", nn : "Beskjeder"),
-    contact-header : (en : "Contact", no : "Kontakt oss", nn : "Kontakt oss"),
-    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
 
+    contact-box : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
+    contactTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
+    contactContent : (en : "Content", no : "Innhold", nn : "Innhald"),
+    contactLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
+    contactUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
+
+    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
+    program-affiliation : (en : "Studieretningen hører til programmet", no : "Studieretningen hører til programmet", nn : "Studieretningen hører til programmet"),
+  
     resource-links : (en : "Links", no : "Lenker", nn : "Lenker"),
     linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
     linkUrl : (en : "Url", no : "Url", nn : "Url"),
@@ -229,8 +165,8 @@ resourcetype program-option-frontpage {
     status : (en : "Status", no : "Status", nn : "Status"),
     under-arbeid : (en : "In progress", no : "Under arbeid" ,nn : "Under arbeid"),
     aktivt : (en: "Active", no : "Aktiv", nn : "Aktiv"), 
-    inactive : (en : "Inactive", no : "Inaktiv", nn : "Inaktiv"),
+    inaktiv : (en : "Inactive", no : "Inaktiv", nn : "Inaktiv"),
     under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
     nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt")
-    }
+  }
 }

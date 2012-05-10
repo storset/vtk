@@ -220,20 +220,20 @@ public class PropertySetImpl implements PropertySet, Cloneable {
         return sb.toString();
     }
     
-    @Override
+//    @Override
     // TODO remove, good enough to differentiate on object instance only
     //      (this method is probably never called in practice).
-    public boolean equals(Object obj) {
-        if (!(obj instanceof PropertySetImpl))
-            return false;
-        PropertySetImpl other = (PropertySetImpl) obj;
-        if (!this.uri.equals(other.uri)) return false;
-        if (!this.resourceType.equals(other.resourceType)) return false;
-        if (!this.propertyMap.equals(other.propertyMap)) return false;
-        if (this.id != other.id) return false;
-        if (this.aclInheritedFrom != other.aclInheritedFrom) return false;
-        return true;
-    }
+//    public boolean equals(Object obj) {
+//        if (!(obj instanceof PropertySetImpl))
+//            return false;
+//        PropertySetImpl other = (PropertySetImpl) obj;
+//        if (!this.uri.equals(other.uri)) return false;
+//        if (!this.resourceType.equals(other.resourceType)) return false;
+//        if (!this.propertyMap.equals(other.propertyMap)) return false;
+//        if (this.id != other.id) return false;
+//        if (this.aclInheritedFrom != other.aclInheritedFrom) return false;
+//        return true;
+//    }
 
     public void setUri(Path uri) {
         this.uri = uri;

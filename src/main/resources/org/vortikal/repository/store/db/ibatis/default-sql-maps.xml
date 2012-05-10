@@ -441,7 +441,6 @@
       case when binary_content is null then 'N' else 'Y' end as is_binary
     from extra_prop_entry p
     where resource_id = #value#
-    and is_inheritable = 'N'
     order by p.extra_prop_entry_id
   </select>
 
@@ -455,7 +454,6 @@
     where p.resource_id in
       (select resource_id from vortex_resource
         where uri like #uriWildcard# escape '@' and depth = #depth#)
-    and p.is_inheritable = 'N'
     order by p.resource_id, p.extra_prop_entry_id
   </select>
   
@@ -793,13 +791,10 @@
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>
 
-
-  <select id="numberOfCommentsByResource"
-          parameterClass="java.util.Map"
-          resultClass="Integer">
+  <select id="numberOfCommentsByResource" resultClass="java.lang.Integer">
     select count(c.id) as num
     from vortex_comment c inner join vortex_resource r on c.resource_id = r.resource_id
-    where r.uri = #uri#
+    where r.uri = #value#
   </select>
 
   <select id="listCommentsByResource"

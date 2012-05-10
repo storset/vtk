@@ -92,9 +92,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
     private boolean optimizedAclCopySupported = false;
 
-    public void setOptimizedAclCopySupported(boolean optimizedAclCopySupported) {
-        this.optimizedAclCopySupported = optimizedAclCopySupported;
-    }
 
     @Override
     public boolean validate() {
@@ -118,6 +115,14 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return resource;
     }
 
+    /**
+     * Loads everthing except:
+     * - ACL
+     * - Inherited properties.
+     * 
+     * @param uri
+     * @return 
+     */
     @SuppressWarnings("unchecked")
     private ResourceImpl loadResourceInternal(Path uri) {
         String sqlMap = getSqlMap("loadResourceByUri");
@@ -882,6 +887,13 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
     
     private int inheritedPropertiesBatch = 200;
     
+    /**
+     * Loads and populates only properties inherited from ancestors
+     * for all resources. Does not overwrite existing properties, allowing
+     * inheritable properties set directly on resources to override inherited ones.
+     * 
+     * @param resources 
+     */
     private void loadInheritedProperties(ResourceImpl[] resources) {
         if (resources.length == 0) {
             return;
@@ -892,23 +904,27 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         
         Set<Path> handled = new HashSet<Path>();
         Set<Path> paths = new HashSet<Path>();
-        for (int n = 0; n < resources.length; n++) {
-            List<Path> list = resources[n].getURI().getPaths();
-            for (Path p: list) {
-                if (handled.add(p)) {
-                    paths.add(p);
+        // Load inheritable properties from all ancestors
+        for (int i = 0; i < resources.length; i++) {
+            Path parent = resources[i].getURI().getParent();
+            if (parent != null) {
+                for (Path p : parent.getPaths()) {
+                    if (handled.add(p)) {
+                        paths.add(p);
+                    }
                 }
             }
-            if (n == resources.length - 1 || n % inheritedPropertiesBatch == 0) {
-                parameterMap.put("uris", Arrays.asList(paths.toArray()));
+            if ((i == resources.length - 1 || i % inheritedPropertiesBatch == 0) && !paths.isEmpty()) {
+                parameterMap.put("uris", new ArrayList<Path>(paths));
                 @SuppressWarnings("unchecked")
                 List<Map<String, Object>> rows = getSqlMapClientTemplate().queryForList(sqlMap, parameterMap);
                 propertyRows.addAll(rows);
                 paths.clear();
             }
         }
-        
-        final Map<Path, List<PropHolder>> inheritanceMap = new HashMap<Path, List<PropHolder>>();
+
+        // Map of all ancestor paths that have inheritable props
+        final Map<Path, List<PropHolder>> inheritableMap = new HashMap<Path, List<PropHolder>>();
         
         final Map<PropHolder, List<Object>> propValuesMap = new HashMap<PropHolder, List<Object>>();
         for (Map<String, Object> propEntry : propertyRows) {
@@ -926,12 +942,12 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                 propHolder.values = values;
                 propValuesMap.put(propHolder, values);
 
-                // Populate inheritance map with canonical PropHolder instance
+                // Populate inheritables map with canonical PropHolder instance
                 Path uri = Path.fromString((String) propEntry.get("uri"));
-                List<PropHolder> holderList = inheritanceMap.get(uri);
+                List<PropHolder> holderList = inheritableMap.get(uri);
                 if (holderList == null) {
                     holderList = new ArrayList<PropHolder>();
-                    inheritanceMap.put(uri, holderList);
+                    inheritableMap.put(uri, holderList);
                 }
                 holderList.add(propHolder);
             }
@@ -943,20 +959,25 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                 values.add(propEntry.get("value"));
             }
         }
-
+        
         final Set<String> encountered = new HashSet<String>();
         for (ResourceImpl r : resources) {
-            List<Path> pathList = r.getURI().getPaths();
+            Path parent = r.getURI().getParent();
+            if (parent == null) {
+                continue; // root resource cannot inherit anything
+            }
+            
+            List<Path> pathList = parent.getPaths();
             for (int i = pathList.size() - 1; i >= 0; i--) {
                 Path p = pathList.get(i);
-                List<PropHolder> holderList = inheritanceMap.get(p);
+                List<PropHolder> holderList = inheritableMap.get(p);
                 if (holderList != null) {
                     for (PropHolder h : holderList) {
                         if (encountered.add(h.namespaceUri + ":" + h.name)) {
-                            if (r.getID() == h.resourceId) {
-                                r.addProperty(createProperty(h));
-                            } else {
-                                r.addProperty(createInheritedProperty(h));
+                            // Add as inherited if property is not directly set on the resource:
+                            Property prop = createInheritedProperty(h);
+                            if (r.getProperty(prop.getDefinition()) == null) {
+                                r.addProperty(prop);
                             }
                         }
                     }
@@ -1400,16 +1421,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         }
     }
 
-    @Required
-    public void setPrincipalFactory(PrincipalFactory principalFactory) {
-        this.principalFactory = principalFactory;
-    }
-
-    @Required
-    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
-        this.resourceTypeTree = resourceTypeTree;
-    }
-    
     @SuppressWarnings("serial")
     private class AclHolder extends HashMap<Privilege, Set<Principal>> {
 
@@ -1421,6 +1432,20 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             }
             set.add(principal);
         }
+    }
+
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
+    }
+
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+    
+    public void setOptimizedAclCopySupported(boolean optimizedAclCopySupported) {
+        this.optimizedAclCopySupported = optimizedAclCopySupported;
     }
 }
 

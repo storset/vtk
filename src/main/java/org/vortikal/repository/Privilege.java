@@ -31,9 +31,7 @@
 package org.vortikal.repository;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -47,27 +45,21 @@ public enum Privilege {
     READ_PROCESSED(RepositoryAction.READ_PROCESSED);
     /* BIND_TEMPLATE(RepositoryAction.CREATE, "bind-template"); */
 
-    private RepositoryAction action;
-    private String name;
+    private final RepositoryAction action;
+    private final String name;
     private Privilege(RepositoryAction action) {
         this.action = action;
         this.name = action.value();
     }
-    private Privilege(RepositoryAction action, String name) {
-        this.action = action;
-        this.name = name;
-    }
 
     private static final Map<String, Privilege> NAME_MAP = new HashMap<String, Privilege>();
     static {
-        Set<Privilege> set = new HashSet<Privilege>();
         for (Privilege p: values()) {
-            set.add(p);
             NAME_MAP.put(p.name, p);
         }
     }
 
-    public static final Privilege forName(String name) {
+    public static Privilege forName(String name) {
         Privilege p = NAME_MAP.get(name);
         if (p == null) {
             throw new IllegalArgumentException("Invalid ACL privilege: '" + name + "'");
@@ -87,6 +79,7 @@ public enum Privilege {
         return this.action;
     }
     
+    @Override
     public String toString() {
         return this.name;
     }

@@ -30,7 +30,7 @@ resourcetype program-option-frontpage : program-document {
         [def f json-resource(thispath)]
         [if f != null]
           [def published resource-prop(thispath, "published")]
-          [if published.matches("false")]      
+          [if published]      
             [def title f.properties.title]
             [def program-type f.properties.program-type]
             <div class="vrtx-program-title-box">

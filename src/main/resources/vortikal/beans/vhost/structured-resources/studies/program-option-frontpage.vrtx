@@ -5,7 +5,7 @@ resourcetype program-option-frontpage : program-document {
     fs-program-code : string,
     status : string,
     picture : image_ref,
-    resource-links : json (linkHeader:string, linkTitle:string, linkUrl:string) multiple,
+    resource-links : json (linkHeader:string, linkTitle:string, linkUrl:string, linkDescription:string) multiple,
     contactTitle : string,
     contactContent : html,
     contactLinkText : string, 

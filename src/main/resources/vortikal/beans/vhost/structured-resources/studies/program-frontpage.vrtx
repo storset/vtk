@@ -41,7 +41,7 @@ resourcetype program-frontpage : program-document {
       ##
       [def type resource-prop(".", "program-type")]
       [if type != null]
-        [localized type]
+        ([localized type])
       [endif]
       ##
     }
@@ -164,7 +164,7 @@ resourcetype program-frontpage : program-document {
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         [call "resource:comments-feed-link"]
-        <title>[call "comp:title"]([call "comp:program-type"])</title>
+        <title>[call "comp:title"] [call "comp:program-type"]</title>
       </head>
       <body id="vrtx-program-frontpage">
         <div id="vrtx-content">
@@ -199,9 +199,9 @@ resourcetype program-frontpage : program-document {
   
   vocabulary {
     status {
-     en : ("under-arbeid" = "In progress", "aktivt" = "Active", "inaktiv" = "Inactive", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
-     no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inaktiv" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
-     nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inaktiv" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
+     en : ("under-arbeid" = "In progress", "aktivt" = "Active", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
+     no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
+     nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
    	}
     faculty {
      en : ("hf" = "Faculty of Humanities", "jus" = "Faculty of Law", "matnat" = "Faculty of Mathematics and Natural Sciences", "med" = "Faculty of Medicine", "odont" = "Faculty of Dentistry", "sv" = "Faculty of Social Sciences", "tf" = "Faculty of Theology", "uv" = "Faculty of Educational Sciences"),

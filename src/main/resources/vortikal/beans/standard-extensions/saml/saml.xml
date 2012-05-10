@@ -271,8 +271,7 @@
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.IERemoveCookieAssertion">
-          <property name="ieCookieLogoutTicket" value="${saml.ieCookieLogoutTicket}"/>
-          <property name="uioAuthSSO" value="${saml.uioAuthSSO}" />         
+          <property name="ieCookieLogoutTicket" value="${saml.ieCookieLogoutTicket}"/>                   
         </bean>
       </list>
     </property>

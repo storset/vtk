@@ -10,8 +10,8 @@ resourcetype oppbygning : fellestekst-document{
     gradsnavn-nn : string,
     gradsnavn-en : string,
     fellestekst-fakultet : string,
+    fellestekst-fakultet-fri: html,
     fellestekst-sentral : string,
-    showAdditionalContent : boolean defaultvalue("true"),
 	related-content : html noextract
   }
   
@@ -20,10 +20,9 @@ resourcetype oppbygning : fellestekst-document{
     group introImageAndCaption (picture, caption) (after introduction) vertical,
     gradsnavn (class[vrtx-shared-text]),
     group grader (gradsnavn, gradsnavn-no, gradsnavn-nn, gradsnavn-en) (before content-study) horizontal,
-    group fellestekster (fellestekst-fakultet, fellestekst-sentral) (after content-study),
+    group fellestekster-fakultet (fellestekst-fakultet, fellestekst-fakultet-fri) (after content-study),
     fellestekst-fakultet (class[vrtx-shared-text]),
-    fellestekst-sentral (class[vrtx-shared-text]),
-    group relatedContent (showAdditionalContent, related-content) (after fellestekster)
+    fellestekst-sentral (class[vrtx-shared-text])
   }
 
 view-components {
@@ -40,24 +39,6 @@ view-components {
       [def intro resource-prop(".", "introduction")]
       [if intro != null]
         <div class="vrtx-introduction">[val intro # unescaped]</div>
-      [endif]
-      ##
-    }
-  related-content-in-additional-column {
-      ##
-      [resource-props "."]
-      [def document structured-document()]
-      [def theshowAdditionalContent document.properties.showAdditionalContent]
-      [def theRelated-content document.properties.related-content]
-
-      [if (theshowAdditionalContent = "true") || (theshowAdditionalContent = null)]
-        [if theRelated-content != null]
-          <div id="vrtx-additional-content">
-            <div id="vrtx-related-content">
-              [val theRelated-content # unescaped]
-            </div>
-          </div>
-        [endif]
       [endif]
       ##
     }
@@ -78,7 +59,7 @@ view-components {
       <h2>[localized 'grader']</h2>
       [endif]
       [if grad-fri != null && grad-fri != ""]
-      	[val grad-fri]
+      	 [localized 'grade-description'] [val grad-fri]
       [endif]
       [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"gradsnavn"}]
       ##
@@ -88,16 +69,12 @@ view-components {
       ##
       [resource-props "."]
       [def document structured-document()]
-      [def theshowAdditionalContent document.properties.showAdditionalContent]
       [def theRelated-content document.properties.related-content]
-      
-      [if (theshowAdditionalContent = "false")]
           [if theRelated-content != null]
             <div id="vrtx-related-content">
               [val theRelated-content # unescaped]
             </div>
           [endif]
-      [endif]
       ##
     }
 
@@ -184,23 +161,17 @@ view-components {
         <div id="vrtx-content">
           [resources-props "."]
         [def document structured-document()]
-        [def theShowAdditionalContent document.properties.showAdditionalContent]
-        [if theShowAdditionalContent = "true" || theShowAdditionalContent = null]
-          <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
-        [else]
-          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
-        [endif] 
+          <div id="vrtx-main-content" class="vrtx-hide-additional-content-true"> 
             <h1>[localized 'oppbygning']</h1>
             [call "comp:introduction"]
             [call "comp:introduction-image"]
             [call "json:field" {"select":"content-study"}]
             [call "comp:gradsnavn"]
             [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"fellestekst-fakultet"}]
+            [call "json:field" {"select":"fellestekst-fakultet-fri"}]
             [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"fellestekst-sentral"}]
+            [call "comp:related-content-in-main-column"]
             [call "comp:vrtx-date-info"]
-          </div>
-          <div id="vrtx-additional-content">
-            [call "comp:related-content-in-additional-column"]
           </div>
         </div>
       </body>
@@ -209,16 +180,13 @@ view-components {
   }
   
   vocabulary {
-	showAdditionalContent {
-      en : ("true" = "Yes", "false" = "No"),
-      no : ("true" = "Ja", "false" = "Nei"),
-      nn : ("true" = "Ja", "false" = "Nei")
-    }
+
   }
   
   localization {
-  	fellestekster : (en : "Local and central info", no : "Lokal og sentral info", nn : "Lokal og sentral info"),
-  	fellestekst-fakultet : (en : "Local info", no : "Fakultær info", nn : "Fakultær info"),
+  	fellestekster-fakultet : (en : "Local info", no : "Lokal info", nn : "Lokal info"),
+  	fellestekst-fakultet-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
+  	fellestekst-fakultet : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
   	fellestekst-sentral : (en : "Sentral info", no : "Sentral info", nn : "Sentral info"),
   	oppbygning : (en : "Structure and accomplishment", no : "Oppbygging og gjennomføring", nn : "Oppbygging og gjennomføring"),
     introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
@@ -230,13 +198,12 @@ view-components {
 	gradsnavn-no : (en : "Bokmål", no : "Bokmål", nn : "Bokmål"),
 	gradsnavn-nn : (en : "Nynorsk", no : "Nynorsk", nn : "Nynorsk"),
 	gradsnavn-en : (en : "English", no : "Engelsk", nn : "Engelsk"),
-    grader : (en : "Grade name", no : "Gradsnavn", nn : "Gradsnamn"),
+    grader : (en : "Diploma and grade", no : "Vitnemål og grad", nn : "Vitnemål og grad"),
+    grade-description: (en : "This programme leads to the following grade: ", no : "Studiet leder fram til graden: ", nn : "Studiet leder fram til graden: "),
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
-    showAdditionalContent : (en : "Show in right-column", no : "Vis i høyrekolonne", nn : "Vis i høgrekolonne"),
     content-study : (en : "Content", no :"Innhold",nn : "Innhold"),
     header : (en : "Edit Structure and accomplishment", no : "Rediger oppbygning og gjennomføring", nn : "Rediger oppbygning og gjennomføring"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
-    relatedContent : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
     lastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra")
     }
 }

@@ -2084,13 +2084,16 @@ VrtxAdmin.prototype.adjustImageAndCaptionContainer = function adjustImageAndCapt
   previewNd.find("img").load(function() {
     var previewNodeImg = _$.single(this);
     var container = previewNd.parent().parent();
-    
-    if(container.attr("id") == "vrtx-resource.picture") { // old
-      var origHeight = 241;
-      var extraMarginHeight = 29;
-    } else if(container.attr("class").indexOf("introImageAndCaption") != -1) { // new
-      var origHeight = 260;
-      var extraMarginHeight = 49;
+    if(typeof container.attr("class") !== "undefined") {
+      if(container.attr("id") == "vrtx-resource.picture") { // old
+        var origHeight = 241;
+        var extraMarginHeight = 29;
+      } else if(container.attr("class").indexOf("introImageAndCaption") != -1) { // new
+        var origHeight = 260;
+        var extraMarginHeight = 49;
+      } else {
+        return;
+      }
     } else {
       return;
     }

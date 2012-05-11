@@ -1891,6 +1891,7 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
     inputFieldParent = inputField.parent();
     
     var isDropdown = inputFieldParent.hasClass("vrtx-multiple-dropdown") ? true : false;
+    isMovable = isDropdown ? false : isMovable; // Turn off move-functionality tmp. if dropdown (not needed yet and needs some flicking of code)
 
     if(inputFieldParent.parent().hasClass("vrtx-resource-ref-browse")) {
       isBrowsable = true;

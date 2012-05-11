@@ -2059,8 +2059,7 @@ function formatMultipleInputFields(name) {
       }
     }
 
-    var result = "";
-    for (var i = 0, len = allFields.length; i < len; i++) {
+    for (var i = 0, len = allFields.length, result = ""; i < len; i++) {
         result += isDropdown ? $.trim($(allFields[i]).find("option:selected").val()) : $.trim(allFields[i].value);
         if (i < (len-1)) {
             result += ",";

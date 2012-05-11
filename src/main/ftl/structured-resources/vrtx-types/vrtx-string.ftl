@@ -28,9 +28,20 @@
         <div class="vrtx-textfield-big">
       <#else>
         <#if multiple && dropdown && valuemap?exists && valuemap?is_hash>
+          <#if value=="" >
+            <#local value=defaultValue />
+          </#if>
           <div class="vrtx-textfield vrtx-multiple-dropdown">
           <script type="text/javascript"><!--
-            var dropdown${inputFieldName} = [<#list valuemap?keys as key>{ key: "${key?html}", value: "${valuemap[key]}" }<#if (key_index < (valuemap?size - 1))>, </#if></#list>];
+            var dropdown${inputFieldName} = [
+              <#list valuemap?keys as key>
+                { 
+                  key: "${key?html}",
+                  value: "${valuemap[key]}"
+                } 
+                <#if (key_index < (valuemap?size - 1))>, </#if>
+              </#list>
+            ];
           // -->
           </script>
         <#else>
@@ -38,7 +49,6 @@
         </#if>
       </#if>
 	    <input size="${inputFieldSize}" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}" />
-	    ${value?html}
 	  </div>
     </#if>
     <#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>

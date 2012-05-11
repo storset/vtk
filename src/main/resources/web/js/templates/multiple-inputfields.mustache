@@ -19,7 +19,7 @@
 
 ###
 
-{{! MULTIPLE INPUTFIELD }}
+{{! MULTIPLE INPUTFIELD AND DROPDOWN }}
 
 <div class="vrtx-multipleinputfield" id="{{ idstr }}row-{{ i }}">
   {{#isDropdown}}
@@ -29,7 +29,11 @@
         $(function() {
           var {{ dropdownArray }}html = "";
           for(var i = 0, {{ dropdownArray }}Len = {{ dropdownArray }}.length; i < {{ dropdownArray }}Len; i++) {
-            {{ dropdownArray }}html += "<option value='" + {{ dropdownArray }}[i].key + "'>" + {{ dropdownArray }}[i].value + "</option>";  
+            if({{ dropdownArray }}[i].key === "{{ value }}") {
+              {{ dropdownArray }}html += "<option value='" + {{ dropdownArray }}[i].key + "' selected='selected'>" + {{ dropdownArray }}[i].value + "</option>";  
+            } else {
+              {{ dropdownArray }}html += "<option value='" + {{ dropdownArray }}[i].key + "'>" + {{ dropdownArray }}[i].value + "</option>"; 
+            }
           }
           $("select[id='{{ idstr }}select-{{ i }}']").append({{ dropdownArray }}html);
         });

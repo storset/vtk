@@ -1889,6 +1889,11 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
     var size = inputField.attr("size");
 
     inputFieldParent = inputField.parent();
+    
+    var dropdown = false;
+    if(inputFieldParent.hasClass("vrtx-multiple")) {
+      dropdown = true;
+    }
 
     if(inputFieldParent.parent().hasClass("vrtx-resource-ref-browse")) {
       isBrowsable = true;

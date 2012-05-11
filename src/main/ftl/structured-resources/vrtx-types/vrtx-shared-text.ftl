@@ -28,8 +28,7 @@
     <#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>
   </div>
 </div>
-  <script type="text/javascript"> 
-  <!--
+  <script type="text/javascript"><!--
             $(document).ready(function () {
                 var h = $("#${inputFieldName}Descriptions").find(".shared-text-description");
                 $(h).hide();
@@ -47,6 +46,6 @@
                     $(d).show();
                 }
             }); 
-  -->
+  // -->
   </script>
 </#macro>

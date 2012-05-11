@@ -54,6 +54,8 @@ public class Login extends SamlService {
 
     private static Log logger = LogFactory.getLog(Login.class);
 
+    private static Log authLogger = LogFactory.getLog("org.vortikal.security.web.AuthLog");
+
     int replayMinutes = 60;
     private StorageService<String, ReplayCacheEntry> replayStorage = new MapBasedStorageService<String, ReplayCacheEntry>();
     private ReplayCache replayCache = new ReplayCache(replayStorage, 60 * 1000 * replayMinutes);
@@ -93,6 +95,7 @@ public class Login extends SamlService {
     }
 
     public boolean isUnsolicitedLoginResponse(HttpServletRequest req) {
+        // XXX: Check for responseID?
         return isLoginResponse(req) && req.getSession(false) == null;
     }
 
@@ -168,9 +171,14 @@ public class Login extends SamlService {
 
         String inResponseToID = samlResponse.getInResponseTo();
         if (!expectedRequestID.toString().equals(inResponseToID)) {
+            authLogger.debug("Request IDs not equal - expectedReqID: " + expectedRequestID + " inresponseToID: "
+                    + inResponseToID);
+
             throw new AuthenticationException("Request ID mismatch");
             // throw new InvalidRequestException("Request ID mismatch");
         }
+        authLogger.debug("Request IDs are equal - expectedReqID: " + expectedRequestID + " inresponseToID: "
+                + inResponseToID);
 
         verifyStatusCodeIsSuccess(samlResponse);
         verifyDestinationAddressIsCorrect(samlResponse);

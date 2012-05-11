@@ -137,11 +137,13 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
 
         if (this.login.isUnsolicitedLoginResponse(request)) {
             this.challenge.prepareUnsolicitedChallenge(request);
+            authLogger.debug("Unsolicitated authentication request: " + request);
             throw new AuthenticationException("Unsolicitated authentication request: " + request);
         }
 
         UserData userData = this.login.login(request);
         if (userData == null) {
+            authLogger.debug("Unable to authenticate request " + request);
             throw new AuthenticationException("Unable to authenticate request " + request);
         }
         String id = userData.getUsername();
@@ -151,6 +153,7 @@ public class SamlAuthenticationHandler implements AuthenticationChallenge, Authe
                 try {
                     listener.onLogin(principal, userData);
                 } catch (Exception e) {
+                    authLogger.debug("Failed to invoke login listener: " + listener);
                     throw new AuthenticationProcessingException("Failed to invoke login listener: " + listener, e);
                 }
             }

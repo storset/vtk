@@ -259,7 +259,10 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                     }
                     if (authLogger.isDebugEnabled()) {
                         authLogger.debug("Auth: request: '" + req.getRequestURI() + "' - method: '"
-                                + handler.getIdentifier() + "' - status: FAIL");
+                                + handler.getIdentifier() + "' - status: FAIL ");
+                        authLogger.debug("Authentication attempt " + req + " rejected by " + "handler " + handler
+                                + " with message " + exception.getMessage() + ", presenting challenge " + challenge
+                                + " to the client");
                     }
                     doChallenge(req, resp, challenge);
                     return false;

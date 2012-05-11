@@ -351,8 +351,8 @@
           <#assign fieldSize=elem.description.edithints['size'] />
         </#if>
       </#if>
+      
       <#assign dropdown = false />
-
       <#if json.edithints?exists && json.edithints['dropdown']?exists >
         <#assign dropdown = true />
       </#if>

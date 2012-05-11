@@ -27,7 +27,7 @@ resourcetype program-frontpage : program-document {
     status (dropdown),
     program-type (dropdown),
     faculty (dropdown),
-    themes:theme (dropdown),
+    themes: theme (dropdown),
     title (size[large]),
     group facts (fs-program-code, status, program-type, theme, duration, study-points, full-time, faculty, keywords) (after title),
     group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (before related-content)

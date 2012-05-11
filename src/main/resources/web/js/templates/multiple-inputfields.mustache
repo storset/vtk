@@ -12,7 +12,7 @@
 
 <div id="vrtx-{{ name }}-add" class="vrtx-button">
   <button onclick="addFormField('{{ name }}', null, '{{ removeName }}', '{{ moveUpName }}','{{ moveDownName }}', 
-                                '{{ browseName }}', '{{ size }}', {{ isBrowsable }}, false, {{ isMovable }}); return false;">
+                                '{{ browseName }}', '{{ size }}', {{ isBrowsable }}, false, {{ isMovable }}, {{ isDropdown }}); return false;">
     {{ buttonText }}
   </button>
 </div>
@@ -22,9 +22,27 @@
 {{! MULTIPLE INPUTFIELD }}
 
 <div class="vrtx-multipleinputfield" id="{{ idstr }}row-{{ i }}">
-  <div class="vrtx-textfield">
-    <input value="{{  value }}" type="text" size="{{ size }}" id="{{ idstr }}{{ i }}" />
-  </div>
+  {{#isDropdown}}
+    <div class="vrtx-dropdown">
+      <select name="{{ idstr }}select-{{ i }}"> </select>
+      <script type="text/javascript"><!--
+        $(function() {
+          var {{ dropdownArray }}html = "";
+          for(var i = 0, {{ dropdownArray }}Len = {{ dropdownArray }}.length; i < {{ dropdownArray }}Len; i++) {
+            {{ dropdownArray }}html += "<option value='" + {{ dropdownArray }}[i].key + "'>" + {{ dropdownArray }}[i].value + "</option>";  
+          }
+          $("select[name='{{ idstr }}select-{{ i }}']").append({{ dropdownArray }}html);
+        });
+      // -->
+      </script>
+    </div>
+  {{/isDropdown}}
+  {{^isDropdown}}
+    <div class="vrtx-textfield">
+      <input value="{{ value }}" type="text" size="{{ size }}" id="{{ idstr }}{{ i }}" />
+    </div>
+  {{/isDropdown}}
+  
   {{{ browseButton }}}
   {{{ removeButton }}}
   {{{ moveUpButton }}}

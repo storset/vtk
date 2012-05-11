@@ -3,15 +3,11 @@
 <div class="vrtx-string ${classes}">
   <label for="${inputFieldName}">${title}</label>
   <div class="inputfield">
-    <#if dropdown && valuemap?exists && valuemap?is_hash>
+    <#if dropdown && valuemap?exists && valuemap?is_hash && !multiple>
       <#if value=="" >
         <#local value=defaultValue />
       </#if>
-      <#if multiple>
-        <select name="${inputFieldName}" id="${inputFieldName}" multiple="multiple" size="${valuemap?size}">
-      <#else>
-        <select name="${inputFieldName}" id="${inputFieldName}">
-      </#if>
+      <select name="${inputFieldName}" id="${inputFieldName}">
         <#list valuemap?keys as key>
           <#if key = "range">
             <#local rangeList = valuemap[key] />
@@ -31,7 +27,7 @@
       <#if inputFieldName == "title">
         <div class="vrtx-textfield-big">
       <#else>
-        <div class="vrtx-textfield">
+        <div class="vrtx-textfield <#if multiple>multiple</#if>">
       </#if>
 	    <input size="${inputFieldSize}" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}" />
 	  </div>

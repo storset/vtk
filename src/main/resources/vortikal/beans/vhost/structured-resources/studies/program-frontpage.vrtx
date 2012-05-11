@@ -35,6 +35,11 @@ resourcetype program-frontpage : program-document {
     group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before related-content)
   }
   
+  scripts {
+    themes multipleinputfields,
+    faculty multipleinputfields
+  }
+  
   view-components {
  
     program-type {

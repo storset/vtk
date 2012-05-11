@@ -27,7 +27,13 @@
       <#if inputFieldName == "title">
         <div class="vrtx-textfield-big">
       <#else>
-        <div class="vrtx-textfield <#if multiple>multiple</#if>">
+        <div class="vrtx-textfield <#if multiple && dropdown>multiple</#if>">
+        <#if dropdown && valuemap?exists && valuemap?is_hash>
+          <script type="text/javascript"><!--
+            var ${inputFieldName} = [<#list valuemap?keys as key>{ key: "${key?html}", option: "${valuemap[key]}" }<#if (key_index < (valuemap?size - 1))>, </#if></#list>];
+          // -->
+          </script>
+        </#if>
       </#if>
 	    <input size="${inputFieldSize}" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}" />
 	  </div>

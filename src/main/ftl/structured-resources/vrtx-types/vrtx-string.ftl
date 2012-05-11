@@ -38,6 +38,7 @@
         </#if>
       </#if>
 	    <input size="${inputFieldSize}" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}" />
+	    ${value?html}
 	  </div>
     </#if>
     <#if "${tooltip}" != ""><div class="tooltip">${tooltip}</div></#if>

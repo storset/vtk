@@ -2049,14 +2049,20 @@ function formatMultipleInputFields(name) {
     if ($("." + name + " input[type=text]:hidden").val() == null) return;
     
     var allFields = $("input[id^='vrtx-" + name + "']");
-    if(!allFields.length) $("select[id^='vrtx-" + name + "']");
-    if(!allFields.length) return;
+    var isDropdown = false;
+    if(!allFields.length) { 
+      allFields = $("select[id^='vrtx-" + name + "']");
+      if(allFields.length) {
+        isDropdown = true;
+      } else {
+        return;
+      }
+    }
 
     var result = "";
-    var allFieldsLength = allFields.length;
-    for (var i = 0; i < allFieldsLength; i++) {
-        result += $.trim(allFields[i].value);
-        if (i < (allFieldsLength-1)) {
+    for (var i = 0, len = allFields.length; i < len; i++) {
+        result += isDropdown ? $.trim($(allFields[i]).find("option:selected").val()) : $.trim(allFields[i].value);
+        if (i < (len-1)) {
             result += ",";
         }
     }

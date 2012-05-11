@@ -240,7 +240,7 @@ public class ManuallyApproveResourcesSearcher {
         try {
             return repository.retrieve(token, localPath, true);
         } catch (Exception e) {
-            logger.warn("Could not retrive resource from local repo:" + e.getMessage());
+            logger.warn("Could not retrive resource from local repo: " + e.getMessage());
         }
         return null;
     }
@@ -258,7 +258,10 @@ public class ManuallyApproveResourcesSearcher {
         }
 
         try {
-            return Path.fromString(location);
+            // Trailing slash
+            String pathString = location.endsWith("/") && !location.equals("/") ? location.substring(0,
+                    location.lastIndexOf("/")) : location;
+            return Path.fromString(pathString);
         } catch (IllegalArgumentException iae) {
             return null;
         }

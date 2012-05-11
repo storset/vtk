@@ -24,14 +24,14 @@
 <div class="vrtx-multipleinputfield" id="{{ idstr }}row-{{ i }}">
   {{#isDropdown}}
     <div class="vrtx-dropdown">
-      <select name="{{ idstr }}select-{{ i }}"> </select>
+      <select id="{{ idstr }}select-{{ i }}"> </select>
       <script type="text/javascript"><!--
         $(function() {
           var {{ dropdownArray }}html = "";
           for(var i = 0, {{ dropdownArray }}Len = {{ dropdownArray }}.length; i < {{ dropdownArray }}Len; i++) {
             {{ dropdownArray }}html += "<option value='" + {{ dropdownArray }}[i].key + "'>" + {{ dropdownArray }}[i].value + "</option>";  
           }
-          $("select[name='{{ idstr }}select-{{ i }}']").append({{ dropdownArray }}html);
+          $("select[id='{{ idstr }}select-{{ i }}']").append({{ dropdownArray }}html);
         });
       // -->
       </script>

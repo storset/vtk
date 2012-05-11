@@ -1890,10 +1890,7 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
 
     inputFieldParent = inputField.parent();
     
-    var isDropdown = false;
-    if(inputFieldParent.hasClass("vrtx-multiple-dropdown")) {
-      isDropdown = true;
-    }
+    var isDropdown = inputFieldParent.hasClass("vrtx-multiple-dropdown") ? true : false;
 
     if(inputFieldParent.parent().hasClass("vrtx-resource-ref-browse")) {
       isBrowsable = true;
@@ -2050,8 +2047,11 @@ function saveMultipleInputFields() {
 
 function formatMultipleInputFields(name) {
     if ($("." + name + " input[type=text]:hidden").val() == null) return;
+    
+    var allFields = $("input[id^='vrtx-" + name + "']");
+    if(!allFields.length) $("select[id^='vrtx-" + name + "']");
+    if(!allFields.length) return;
 
-    var allFields = $.find("input[id^='vrtx-" + name + "']");
     var result = "";
     var allFieldsLength = allFields.length;
     for (var i = 0; i < allFieldsLength; i++) {

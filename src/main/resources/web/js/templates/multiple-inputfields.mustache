@@ -11,7 +11,7 @@
 {{! ADD BUTTON }}
 
 <div id="vrtx-{{ name }}-add" class="vrtx-button">
-  <button onclick="addFormField('{{ name }}', null, '{{ removeName }}', '{{ moveUpName }}','{{ moveDownName }}', 
+  <button onclick="addFormField('{{ name }}', null, '{{ removeName }}', '{{ moveUpName }}','{{ moveDownName }}',
                                 '{{ browseName }}', '{{ size }}', {{ isBrowsable }}, false, {{ isMovable }}, {{ isDropdown }}); return false;">
     {{ buttonText }}
   </button>
@@ -22,25 +22,29 @@
 {{! MULTIPLE INPUTFIELD AND DROPDOWN }}
 
 <div class="vrtx-multipleinputfield" id="{{ idstr }}row-{{ i }}">
+
   {{#isDropdown}}
     <div class="vrtx-dropdown">
       <select id="{{ idstr }}select-{{ i }}"> </select>
+
+      {{! POPULATE DROPDOWN WITH PROP-VALUEMAP JS-ARRAY }}
       <script type="text/javascript"><!--
         $(function() {
-          var {{ dropdownArray }}html = "";
+          var {{ dropdownArray }}Html = "";
           for(var i = 0, {{ dropdownArray }}Len = {{ dropdownArray }}.length; i < {{ dropdownArray }}Len; i++) {
             if({{ dropdownArray }}[i].key === "{{ value }}") {
-              {{ dropdownArray }}html += "<option value='" + {{ dropdownArray }}[i].key + "' selected='selected'>" + {{ dropdownArray }}[i].value + "</option>";  
+              {{ dropdownArray }}Html += "<option value='" + {{ dropdownArray }}[i].key + "' selected='selected'>" + {{ dropdownArray }}[i].value + "</option>";
             } else {
-              {{ dropdownArray }}html += "<option value='" + {{ dropdownArray }}[i].key + "'>" + {{ dropdownArray }}[i].value + "</option>"; 
+              {{ dropdownArray }}Html += "<option value='" + {{ dropdownArray }}[i].key + "'>" + {{ dropdownArray }}[i].value + "</option>";
             }
           }
-          $("select[id='{{ idstr }}select-{{ i }}']").append({{ dropdownArray }}html);
+          $("select[id='{{ idstr }}select-{{ i }}']").append({{ dropdownArray }}Html);
         });
       // -->
       </script>
     </div>
   {{/isDropdown}}
+
   {{^isDropdown}}
     <div class="vrtx-textfield">
       <input value="{{ value }}" type="text" size="{{ size }}" id="{{ idstr }}{{ i }}" />

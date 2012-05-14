@@ -151,7 +151,7 @@ resourcetype program-frontpage : program-document {
           [endif]     
           [if faculty != null]
             <tr>
-              <td>[localized 'offered-by']:</td>
+              <td class="vrtx-program-fact-header">[localized 'offered-by']:</td>
               <td>
                 <strong>
                   [list faculty item][def number _index + 1][if number != 1], [endif][localized item][endlist]

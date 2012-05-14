@@ -340,7 +340,12 @@ td.vrtx-report-broken-links li {
   clear: left;
 }
 
+.vrtx-multipleinputfield .vrtx-dropdown {
+  display: inline-block;
+}
+
 .vrtx-multipleinputfield .vrtx-textfield,
+.vrtx-multipleinputfield .vrtx-dropdown,
 .vrtx-multipleinputfield .vrtx-button {
   margin-right: 20px;
 }

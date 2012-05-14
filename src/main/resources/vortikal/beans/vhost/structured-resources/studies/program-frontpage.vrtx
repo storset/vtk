@@ -209,11 +209,9 @@ resourcetype program-frontpage : program-document {
           [def locale resource-locale()]  
           <div id="vrtx-main-content">
             <div id="vrtx-program-frontpage-main" class="vrtx-frontpage-box white-box">
+              [call "resource:program-language-link"]
               <h1>[call "comp:title"][call "comp:program-type"]</h1> 
-              <div class="vrtx-program-status">
-                [call "resource:program-language-link"]
-                [call "comp:status"]
-              </div>
+              [call "comp:status"]
               [call "comp:introduction-image"]         
               [call "comp:introduction"]         
               [def thispath resource-prop("./","uri")]

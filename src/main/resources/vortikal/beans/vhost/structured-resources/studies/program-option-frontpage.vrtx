@@ -107,8 +107,8 @@ resourcetype program-option-frontpage : program-document {
           [def locale resource-locale()]  
           <div id="vrtx-main-content">
             <div id="vrtx-program-option-main" class="vrtx-frontpage-box white-box">
-              <h1>[call "comp:title"]([localized 'program-option'])</h1> 
               [call "resource:program-option-language-link"]
+              <h1>[call "comp:title"]([localized 'program-option'])</h1> 
               [call "comp:status"]
               [call "comp:introduction-image"]         
               [call "comp:introduction"]         

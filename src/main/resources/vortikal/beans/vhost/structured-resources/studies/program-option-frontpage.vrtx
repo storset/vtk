@@ -33,7 +33,7 @@ resourcetype program-option-frontpage : program-document {
           [if published]      
             [def title f.properties.title]
             [def program-type f.properties.program-type]
-            <div class="vrtx-program-title-box">
+            <div class="vrtx-frontpage-box white-box vrtx-program-title-box">
               <h2>[localized 'program-affiliation']</h2>
               <a href='[val thispath]'>[val title] ([val program-type])</a>
             </div>
@@ -120,8 +120,8 @@ resourcetype program-option-frontpage : program-document {
                   [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-laerer-du, hvordan-soke, oppbyggning, utland, jobb-studiemuligheter"}]
                 [endif]
               </div>
-              [call "comp:program-title"]
             </div>
+            [call "comp:program-title"]
             [call "comp:resource-links"]
           </div>
           [call "comp:right-column"]

@@ -9,9 +9,9 @@ resourcetype oppbygning : fellestekst-document{
     gradsnavn-no : string,
     gradsnavn-nn : string,
     gradsnavn-en : string,
+    vitnemaal: string,
     fellestekst-fakultet : string,
     fellestekst-fakultet-fri: html,
-    fellestekst-sentral : string,
 	related-content : html noextract
   }
   
@@ -19,10 +19,13 @@ resourcetype oppbygning : fellestekst-document{
     caption (size[small]),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
     gradsnavn (class[vrtx-shared-text]),
-    group grader (gradsnavn, gradsnavn-no, gradsnavn-nn, gradsnavn-en) (after content-study) horizontal,
-    group fellestekster-fakultet (fellestekst-fakultet, fellestekst-fakultet-fri) (after content-study),
-    fellestekst-fakultet (class[vrtx-shared-text]),
-    fellestekst-sentral (class[vrtx-shared-text])
+    group grader (gradsnavn, gradsnavn-no, gradsnavn-nn, gradsnavn-en, vitnemaal) (after content-study) horizontal,
+    vitnemaal (class[vrtx-shared-text]),
+    vitnemaal (after gradsnavn-en),
+    gradsnavn-no (after gradsnavn),
+    group fellestekster-fakultet (fellestekst-fakultet, fellestekst-fakultet-fri) (after vitnemaal),
+    related-content (after fellestekster-fakultet),
+    fellestekst-fakultet (class[vrtx-shared-text])
   }
 
 view-components {
@@ -167,9 +170,9 @@ view-components {
             [call "comp:introduction-image"]
             [call "json:field" {"select":"content-study"}]
             [call "comp:gradsnavn"]
+            [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"vitnemaal"}]
             [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"fellestekst-fakultet"}]
             [call "json:field" {"select":"fellestekst-fakultet-fri"}]
-            [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"fellestekst-sentral"}]
             [call "comp:related-content-in-main-column"]
             [call "comp:vrtx-date-info"]
           </div>
@@ -187,18 +190,18 @@ view-components {
   	fellestekster-fakultet : (en : "Local info", no : "Lokal info", nn : "Lokal info"),
   	fellestekst-fakultet-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
   	fellestekst-fakultet : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-  	fellestekst-sentral : (en : "Sentral info", no : "Sentral info", nn : "Sentral info"),
   	oppbygning : (en : "Structure and accomplishment", no : "Oppbygging og gjennomføring", nn : "Oppbygging og gjennomføring"),
     introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),
     caption : (en : "Image caption", no : "Bildetekst", nn : "Bilettekst"),
     photo-prefix : (en : "Photo", no : "Foto", nn : "Photo"),
-	gradsnavn : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-	gradsnavn-no : (en : "Bokmål", no : "Bokmål", nn : "Bokmål"),
-	gradsnavn-nn : (en : "Nynorsk", no : "Nynorsk", nn : "Nynorsk"),
-	gradsnavn-en : (en : "English", no : "Engelsk", nn : "Engelsk"),
+	gradsnavn : (en : "Grade name (shared text)", no : "Gradsnavn (fellestekst)", nn : "Gradsnamn (fellestekst)"),
+	gradsnavn-no : (en : "Grade name (bokmål)", no : "Gradsnavn (bokmål)", nn : "Gradsnamn (bokmål)"),
+	gradsnavn-nn : (en : "Grade name (nynorsk)", no : "Gradsnavn (nynorsk)", nn : "Gradsnamn (nynorsk)"),
+	gradsnavn-en : (en : "Grade name (english)", no : "Gradsnavn (engelsk)", nn : "Gradsnamn (engelsk)"),
     grader : (en : "Diploma and grade", no : "Vitnemål og grad", nn : "Vitnemål og grad"),
+    vitnemaal: (en : "Diploma (shared text)", no : "Vitnemål (fellestekst)", nn : "Vitnemål (fellestekst)"),
     grade-description: (en : "This programme leads to the following grade: ", no : "Studiet leder fram til graden: ", nn : "Studiet leder fram til graden: "),
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
     content-study : (en : "Content", no :"Innhold",nn : "Innhold"),

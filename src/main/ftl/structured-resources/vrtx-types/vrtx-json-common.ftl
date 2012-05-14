@@ -367,7 +367,6 @@
         tooltip=""
         valuemap=json.getValuemap(locale)
         dropdown=dropdown
-        multiple=elem.description.isMultiple()
         />
       <#break>
 

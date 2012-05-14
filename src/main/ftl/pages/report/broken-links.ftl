@@ -197,7 +197,11 @@
         <#list report.filters?keys as filterKey>
           <#local filterOpts = filters[filterKey] />
           <#if (filterOpts?size > 0)>
-            <ul class="vrtx-report-filter" id="vrtx-report-filter-${filterKey}">
+            <#if (filterKey_index == (filters?size - 1))>
+              <ul class="vrtx-report-filter vrtx-report-filter-last" id="vrtx-report-filter-${filterKey}">
+            <#else>
+              <ul class="vrtx-report-filter" id="vrtx-report-filter-${filterKey}">
+            </#if>
               <#list filterOpts as filterOpt>
                 <#local filterID = "vrtx-report-filter-" + filterKey + "-" + filterOpt.name />
                 <#if filterOpt.active>

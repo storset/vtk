@@ -144,10 +144,10 @@ resourcetype program-frontpage : program-document {
       <table id="vrtx-program-facts">
         <tbody> 
           [if points != null]
-            <tr><td>[localized 'study-points']:</td><td><strong>[val points]</strong></td></tr>   
+            <tr><td class="vrtx-program-fact-header">[localized 'study-points']:</td><td><strong>[val points]</strong></td></tr>   
           [endif]
           [if dur != null]
-            <tr><td>[localized 'duration']:</td><td><strong>[val dur]</strong></td></tr>
+            <tr><td class="vrtx-program-fact-header">[localized 'duration']:</td><td><strong>[val dur]</strong></td></tr>
           [endif]     
           [if faculty != null]
             <tr>

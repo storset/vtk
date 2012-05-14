@@ -92,12 +92,14 @@ resourcetype program-document {
               [endif]
               <li>
                 [if theurl != null && theurl != ""]
-                  <a href='[val theurl]'>[if thetitle != null && thetitle != ""][val thetitle][else][val theurl][endif]</a>
+                  <span class="vrtx-program-resource-link">
+                    <a href='[val theurl]'>[if thetitle != null && thetitle != ""][val thetitle][else][val theurl][endif]</a>
+                  </span>
                 [elseif (theurl = null || theurl = "") && thetitle != null && thetitle != ""]
-                  [val thetitle]
+                  <span class="vrtx-program-resource-link">[val thetitle]</span>
                 [endif]
                 [if thedescription != null && thedescription != ""]
-                &nbsp;[val thedescription]
+                <span class="vrtx-program-resource-link-desc">[val thedescription]</span>
                 [endif]
               </li>
             [endlist]

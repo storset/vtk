@@ -27,9 +27,9 @@ resourcetype program-document {
     status {
       ##
       [def thestatus resource-prop(".", "status")]
-      [if thestatus != null]
+      [if thestatus != null && thestatus != "aktivt"]
         <div class="vrtx-program-status">
-          [val thestatus]
+          [localized 'status-inactive']
         </div>
       [endif]
       ##
@@ -160,6 +160,7 @@ resourcetype program-document {
   localization {  
     title-no : (en : "Title (bokmål)", no : "Tittel (bokmål)", nn : "Tittel (bokmål)"),
     title-nn : (en : "Title (nynorsk)", no : "Tittel (nynorsk)", nn : "Tittel (nynorsk)"),
-    title-en : (en : "Title (english)", no : "Tittel (engelsk)", nn : "Tittel (engelsk)")
+    title-en : (en : "Title (english)", no : "Tittel (engelsk)", nn : "Tittel (engelsk)"),
+    status-inactive : (en : "This programme no longer admits students", no : "Programmet tar ikke opp nye studenter", nn : "Programmet tar ikkje opp nye studentar") 
   }
 }

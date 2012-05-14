@@ -35,7 +35,7 @@ resourcetype program-option-frontpage : program-document {
             [def program-type f.properties.program-type]
             <div class="vrtx-frontpage-box white-box vrtx-program-title-box">
               <h2>[localized 'program-affiliation']</h2>
-              <a href='[val thispath]'>[val title] ([val program-type])</a>
+              <h3><a href='[val thispath]'>[val title] ([val program-type])</a></h3>
             </div>
           [endif]
         [endif]        
@@ -143,7 +143,7 @@ resourcetype program-option-frontpage : program-document {
   localization {
   
     header : (en : "Edit program option", no : "Rediger studieretning", nn : "Rediger studieretning"),
-    program-option : (en : "Program option", no : "Studieretning", nn : "Studieretning"),
+    program-option : (en : "program option", no : "studieretning", nn : "studieretning"),
     fs-program-code : (en : "FS program code", no : "FS programkode", nn : "FS programkode"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),

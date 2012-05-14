@@ -4,11 +4,11 @@ resourcetype program-frontpage : program-document {
     fs-program-code : string,
     status : string,
     program-type : string,
-    themes : json (theme:string) multiple,
+    theme : string multiple,
     duration : string,
     study-points : string,
     full-time : boolean,
-    faculty : string,
+    faculty : string multiple,
     keywords : string,
     picture : image_ref,
     interviewTitle : string,
@@ -26,13 +26,19 @@ resourcetype program-frontpage : program-document {
   edit-rules {
     status (dropdown),
     program-type (dropdown),
+    themes (dropdown),
     faculty (dropdown),
-    themes:theme (dropdown),
+    theme (dropdown),
     title (size[large]),
-    group facts (fs-program-code, status, program-type, theme, duration, study-points, full-time, faculty, keywords) (after title),
+    group facts (fs-program-code, status, program-type, theme, duration, study-points, full-time, faculty, keywords) (before picture),
     group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (before related-content)
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
     group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before related-content)
+  }
+  
+  scripts {
+    theme multipleinputfields,
+    faculty multipleinputfields
   }
   
   view-components {
@@ -65,6 +71,30 @@ resourcetype program-frontpage : program-document {
           </div>
         [endif]
       [endif]        
+      ##
+    }
+
+    program-option-list {      
+      ##
+      [def document structured-document()]
+      [def locale resource-locale()]  
+      [def thispath resource-prop("./","uri")]
+      [if locale = 'en']
+        [def thispath thispath + '/program-options']
+      [else]
+        [def thispath thispath + '/studieretninger']
+      [endif]
+      [def folder resource(thispath)] 
+      [if folder]          
+        [def activefeed thispath + '/?vrtx=feed&status=aktive']
+        [def inactivefeed thispath + '/?vrtx=feed&status=inaktive']
+        <div class="vrtx-frontpage-box white-box big-list-elements two-column-feed">
+          [call "include:feed"  {"url":activefeed, "feed-title":true, "max-messages":20, "include-if-empty":false}]
+        </div>
+        <div class="vrtx-frontpage-box white-box big-list-elements two-column-feed inactive">
+          [call "include:feed"  {"url":inactivefeed, "feed-title":false, "max-messages":3, "include-if-empty":false, "all-messages-link":false}]
+        </div>
+      [endif]
       ##
     }
  
@@ -120,7 +150,13 @@ resourcetype program-frontpage : program-document {
             <tr><td>[localized 'duration']:</td><td><strong>[val dur]</strong></td></tr>
           [endif]     
           [if faculty != null]
-            <tr><td>[localized 'offered-by']:</td><td><strong>[localized faculty]</strong></td></tr>
+            <tr><td>[localized 'offered-by']:</td><td><strong>
+            [list faculty item]
+              [def number _index + 1]
+              [if number != 1]&nbsp;,[endif]
+              [localized item]
+            [endlist]
+            </strong></td></tr>
           [endif]
         </tbody>
       </table>
@@ -172,8 +208,9 @@ resourcetype program-frontpage : program-document {
           [def locale resource-locale()]  
           <div id="vrtx-main-content">
             <div id="vrtx-program-frontpage-main" class="vrtx-frontpage-box white-box">
-              <h1>[call "comp:title"]([call "comp:program-type"])</h1> 
+              <h1>[call "comp:title"][call "comp:program-type"]</h1> 
               <div class="vrtx-program-status">
+                [call "resource:program-language-link"]
                 [call "comp:status"]
               </div>
               [call "comp:introduction-image"]         
@@ -187,6 +224,7 @@ resourcetype program-frontpage : program-document {
                 [endif]
               </div>
             </div>
+            [call "comp:program-option-list"]
             [call "comp:interview-box"]
             [call "comp:resource-links"]
           </div>
@@ -208,7 +246,7 @@ resourcetype program-frontpage : program-document {
      no : ("hf" = "Det humanistiske fakultet", "jus" = "Det juridiske fakultet", "matnat" = "Det matematisk-naturvitenskapelige fakultet", "med" = "Det medisinske fakultet", "odont" = "Det odontologiske fakultet", "sv" = "Det samfunnsvitenskapelige fakultet", "tf" = "Det teologiske fakultet", "uv" = "Det utdanningsvitenskapelige fakultet"),
      nn : ("hf" = "Det humanistiske fakultet", "jus" = "Det juridiske fakultet", "matnat" = "Det matematisk-naturvitenskapelige fakultet", "med" = "Det medisinske fakultet", "odont" = "Det odontologiske fakultet", "sv" = "Det samfunnsvitenskapelige fakultet", "tf" = "Det teologiske fakultet", "uv" = "Det utdanningsvitenskapelige fakultet")
     }
-    themes:theme {
+    theme {
      en : ("estetiske-studier-musikkvitenskap" = "Esthetic Studies and Musicology", "helsefag-medisin" = "Health and Medicine", "historie-filosofi-kulturstudier" = "History, Philosophy, and Culture Studies", "informasjonsteknologi" = "Information Technology and Informatics", "jus-okonomi-ledelse-administrasjon" = "Law, Economics, Leadership, and Administration", "lektor-og-adjunktutdanning" = "Teacher Education", "matematikk-naturvitenskap-teknologi" = "Mathematics, Natural Science, and Technology", "mediefag" = "Media Studies", "pedagogiske-fag" = "Education", "religion-teologi" = "Religion and Theology", "samfunnsfag" = "Social Sciences and Psychology", "spraak-litteratur" = "Language and Literature", "engelskspraakligeprogram" = "Master's Degree Programmes"),
      no : ("estetiske-studier-musikkvitenskap"= "Estetiske studier og musikkvitenskap", "helsefag-medisin" = "Helsefag og medisin", "historie-filosofi-kulturstudier" = "Historie, filosofi og kulturstudier", "informasjonsteknologi" = "Informasjonsteknologi og informatikk", "jus-okonomi-ledelse-administrasjon" = "Jus, økonomi, ledelse, administrasjon", "lektor-og-adjunktutdanning" = "Lærerutdanning: Lektor- og adjunktutdanning", "matematikk-naturvitenskap-teknologi" = "Matematikk, naturvitenskap, teknologi", "mediefag" = "Mediefag", "pedagogiske-fag" = "Pedagogiske fag", "religion-teologi" = "Religion og teologi", "samfunnsfag" = "Samfunnsfag og psykologi", "spraak-litteratur" = "Språk og litteratur", "engelskspraakligeprogram" = "Engelskspråklege program"),
      nn : ("estetiske-studier-musikkvitenskap"= "Estetiske studium og musikkvitskap", "helsefag-medisin" = "Helsefag og medisin", "historie-filosofi-kulturstudier" = "Historie, filosofi og kulturstudium", "informasjonsteknologi" = "Informasjonsteknologi og informatikk", "jus-okonomi-ledelse-administrasjon" = "Jus, økonomi, leiing, administrasjon", "lektor-og-adjunktutdanning" = "Lærarutdaning: Lektor- og adjunktutdaning", "matematikk-naturvitenskap-teknologi" = "Matematikk, naturvitskap, teknologi", "mediefag" = "Mediefag", "pedagogiske-fag" = "Pedagogiske fag", "religion-teologi" = "Religion og teologi", "samfunnsfag" = "Samfunnsfag og psykologi", "spraak-litteratur" = "Språk og litteratur", "engelskspraakligeprogram" = "Engelskspråklige program")
@@ -289,8 +327,7 @@ resourcetype program-frontpage : program-document {
 	sv : (en : "Faculty of Social Sciences", no : "Det samfunnsvitenskapelige fakultet", nn : "Det samfunnsvitenskapelige fakultet"), 	      
 	tf : (en : "Faculty of Theology", no : "Det teologiske fakultet", nn : "Det teologiske fakultet"),		      
 	uv : (en : "Faculty of Educational Sciences", no : "Det utdanningsvitenskapelige fakultet", nn : "Det utdanningsvitenskapelige fakultet")     
-    
-    themes : (en : "Themes", no : "Temaområder", nn : "Temaområder"),
+ 
     theme : (en : "Theme", no : "Temaområde", nn : "Temaområde"),
 	estetiske-studier-musikkvitenskap : (en : "Esthetic Studies and Musicology", no : "Estetiske studier og musikkvitenskap", nn : "Estetiske studium og musikkvitskap"),
 	helsefag-medisin : (en : "Health and Medicine", no : "Helsefag og medisin", nn : "Helsefag og medisin"),

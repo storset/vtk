@@ -19,7 +19,7 @@ resourcetype oppbygning : fellestekst-document{
     caption (size[small]),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
     gradsnavn (class[vrtx-shared-text]),
-    group grader (gradsnavn, gradsnavn-no, gradsnavn-nn, gradsnavn-en) (before content-study) horizontal,
+    group grader (gradsnavn, gradsnavn-no, gradsnavn-nn, gradsnavn-en) (after content-study) horizontal,
     group fellestekster-fakultet (fellestekst-fakultet, fellestekst-fakultet-fri) (after content-study),
     fellestekst-fakultet (class[vrtx-shared-text]),
     fellestekst-sentral (class[vrtx-shared-text])

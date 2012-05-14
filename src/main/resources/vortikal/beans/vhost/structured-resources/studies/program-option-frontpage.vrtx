@@ -74,19 +74,19 @@ resourcetype program-option-frontpage : program-document {
         <div class="vrtx-frontpage-box vrtx-distach-bottom">
           [call "comp:contact-box"]
         </div>
-        <div class="vrtx-frontpage-box">
-          [def thispath resource-prop("./","uri")]
-          [if locale = 'en']
-            [def thispath thispath + '/messages']
-          [else]
-            [def thispath thispath + '/beskjeder']
-          [endif]
-          [def message-folder resource(thispath)] 
-          [if message-folder]          
-            [def thisfeed thispath + '/?vrtx=feed']
-            [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
-          [endif]
-        </div>
+        [def thispath resource-prop("./","uri")]
+        [if locale = 'en']
+          [def thispath thispath + '/messages']
+        [else]
+          [def thispath thispath + '/beskjeder']
+        [endif]
+        [def message-folder resource(thispath)] 
+        [if message-folder]          
+          [def thisfeed thispath + '/?vrtx=feed']
+          <div class="vrtx-frontpage-box">
+          [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
+          </div>
+        [endif]
         [call "comp:related-content"]
       </div>
       ##
@@ -108,6 +108,7 @@ resourcetype program-option-frontpage : program-document {
           <div id="vrtx-main-content">
             <div id="vrtx-program-option-main" class="vrtx-frontpage-box white-box">
               <h1>[call "comp:title"]([localized 'program-option'])</h1> 
+              [call "resource:program-option-language-link"]
               [call "comp:status"]
               [call "comp:introduction-image"]         
               [call "comp:introduction"]         
@@ -154,7 +155,7 @@ resourcetype program-option-frontpage : program-document {
     contactUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
 
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
-    program-affiliation : (en : "Studieretningen hører til programmet", no : "Studieretningen hører til programmet", nn : "Studieretningen hører til programmet"),
+    program-affiliation : (en : "The programme option is part of the programme", no : "Studieretningen hører til programmet", nn : "Studieretninga høyrer til studieprogrammet"),
   
     resource-links : (en : "Links", no : "Lenker", nn : "Lenker"),
     linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),

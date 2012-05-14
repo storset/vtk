@@ -1889,6 +1889,9 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
     var size = inputField.attr("size");
 
     inputFieldParent = inputField.parent();
+    
+    var isDropdown = inputFieldParent.hasClass("vrtx-multiple-dropdown") ? true : false;
+    isMovable = isDropdown ? false : isMovable; // Turn off move-functionality tmp. if dropdown (not needed yet and needs some flicking of code)
 
     if(inputFieldParent.parent().hasClass("vrtx-resource-ref-browse")) {
       isBrowsable = true;
@@ -1908,13 +1911,13 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
     var appendHtml = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["add-button"], { name: name, removeName: removeName, moveUpName: moveUpName, 
                                                                                 moveDownName: moveDownName, browseName: browseName,
                                                                                 size: size, isBrowsable: isBrowsable, isMovable: isMovable,
-                                                                                buttonText: addName });
+                                                                                isDropdown: isDropdown, buttonText: addName });
 
     inputFieldParent.removeClass("vrtx-textfield").append(appendHtml);
     
     var addFormFieldFunc = addFormField;
     for (var i = 0; i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]; i++) {
-      addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isBrowsable, true, isMovable);
+      addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isBrowsable, true, isMovable, isDropdown);
     }
       
     autocompleteUsernames(".vrtx-autocomplete-username");
@@ -1951,7 +1954,7 @@ function initMultipleInputFields() {
                                                                    MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED);
 }
 
-function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, init, isMovable) {
+function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, init, isMovable, isDropdown) {
     if (value == null) value = "";
 
     var idstr = "vrtx-" + name + "-",
@@ -1978,7 +1981,8 @@ function addFormField(name, value, removeName, moveUpName, moveDownName, browseN
     var html = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["multiple-inputfield"], { idstr: idstr, i: i, value: value, 
                                                                                    size: size, browseButton: browseButton,
                                                                                    removeButton: removeButton, moveUpButton: moveUpButton,
-                                                                                   moveDownButton: moveDownButton });
+                                                                                   moveDownButton: moveDownButton, isDropdown: isDropdown,
+                                                                                   dropdownArray: "dropdown" + name });
 
     $(html).insertBefore("#vrtx-" + name + "-add");
     
@@ -2044,13 +2048,21 @@ function saveMultipleInputFields() {
 
 function formatMultipleInputFields(name) {
     if ($("." + name + " input[type=text]:hidden").val() == null) return;
+    
+    var allFields = $("input[id^='vrtx-" + name + "']");
+    var isDropdown = false;
+    if(!allFields.length) { 
+      allFields = $("select[id^='vrtx-" + name + "']");
+      if(allFields.length) {
+        isDropdown = true;
+      } else {
+        return;
+      }
+    }
 
-    var allFields = $.find("input[id^='vrtx-" + name + "']");
-    var result = "";
-    var allFieldsLength = allFields.length;
-    for (var i = 0; i < allFieldsLength; i++) {
-        result += $.trim(allFields[i].value);
-        if (i < (allFieldsLength-1)) {
+    for (var i = 0, len = allFields.length, result = ""; i < len; i++) {
+        result += isDropdown ? $.trim($(allFields[i]).find("option:selected").val()) : $.trim(allFields[i].value);
+        if (i < (len-1)) {
             result += ",";
         }
     }
@@ -2084,13 +2096,16 @@ VrtxAdmin.prototype.adjustImageAndCaptionContainer = function adjustImageAndCapt
   previewNd.find("img").load(function() {
     var previewNodeImg = _$.single(this);
     var container = previewNd.parent().parent();
-    
-    if(container.attr("id") == "vrtx-resource.picture") { // old
-      var origHeight = 241;
-      var extraMarginHeight = 29;
-    } else if(container.attr("class").indexOf("introImageAndCaption") != -1) { // new
-      var origHeight = 260;
-      var extraMarginHeight = 49;
+    if(typeof container.attr("class") !== "undefined") {
+      if(container.attr("id") == "vrtx-resource.picture") { // old
+        var origHeight = 241;
+        var extraMarginHeight = 29;
+      } else if(container.attr("class").indexOf("introImageAndCaption") != -1) { // new
+        var origHeight = 260;
+        var extraMarginHeight = 49;
+      } else {
+        return;
+      }
     } else {
       return;
     }

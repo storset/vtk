@@ -1,6 +1,7 @@
 resourcetype program-document {
 
   properties {
+    title : string overrides title,
     title-no : string,
     title-nn : string,
     title-en : string
@@ -10,14 +11,7 @@ resourcetype program-document {
   
     title {
       ##
-      [def locale resource-locale()]
-      [if locale = "en"]
-	      [def v resource-prop(".", "title-en")]
-	  [elseif locale = "nn"]
-	      [def v resource-prop(".", "title-nn")]
-	  [else]
-	      [def v resource-prop(".", "title-no")]
-	  [endif]
+      [def v resource-prop(".", "title")]
       [if v != null]
         [val v]
       [endif]
@@ -160,9 +154,11 @@ resourcetype program-document {
   }
   
   localization {  
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
     title-no : (en : "Title (bokmål)", no : "Tittel (bokmål)", nn : "Tittel (bokmål)"),
     title-nn : (en : "Title (nynorsk)", no : "Tittel (nynorsk)", nn : "Tittel (nynorsk)"),
     title-en : (en : "Title (english)", no : "Tittel (engelsk)", nn : "Tittel (engelsk)"),
     status-inactive : (en : "This programme no longer admits students", no : "Programmet tar ikke opp nye studenter", nn : "Programmet tar ikkje opp nye studentar") 
   }
+  
 }

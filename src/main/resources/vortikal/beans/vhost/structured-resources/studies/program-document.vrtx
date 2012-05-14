@@ -71,7 +71,7 @@ resourcetype program-document {
         [def document structured-document()]
         [def links document.properties.resource-links]
         [if links != null]
-          <div class="vrtx-frontpage-box white-box">
+          <div class="vrtx-frontpage-box white-box vrtx-program-resource-links">
             [list links link]
               [def theheader link.linkHeader]
               [def thetitle link.linkTitle]

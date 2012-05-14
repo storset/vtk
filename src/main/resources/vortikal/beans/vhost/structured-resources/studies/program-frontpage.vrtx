@@ -88,10 +88,10 @@ resourcetype program-frontpage : program-document {
       [if folder]          
         [def activefeed thispath + '/?vrtx=feed&status=aktive']
         [def inactivefeed thispath + '/?vrtx=feed&status=inaktive']
-        <div class="vrtx-frontpage-box white-box big-list-elements two-column-feed">
+        <div class="vrtx-frontpage-box white-box big-list-elements two-column-feed vrtx-program-option-list-box">
           [call "include:feed"  {"url":activefeed, "feed-title":true, "max-messages":20, "include-if-empty":false}]
         </div>
-        <div class="vrtx-frontpage-box white-box big-list-elements two-column-feed inactive">
+        <div class="vrtx-frontpage-box white-box big-list-elements two-column-feed vrtx-program-option-list-box inactive">
           [call "include:feed"  {"url":inactivefeed, "feed-title":false, "max-messages":3, "include-if-empty":false, "all-messages-link":false}]
         </div>
       [endif]

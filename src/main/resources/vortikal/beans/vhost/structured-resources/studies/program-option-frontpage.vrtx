@@ -84,7 +84,7 @@ resourcetype program-option-frontpage : program-document {
         [if message-folder]          
           [def thisfeed thispath + '/?vrtx=feed']
           <div class="vrtx-frontpage-box">
-          [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
+            [call "include:feed" {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
           </div>
         [endif]
         [call "comp:related-content"]

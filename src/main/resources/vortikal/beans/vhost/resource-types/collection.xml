@@ -248,6 +248,12 @@
               <constructor-arg ref="TYPE_STRING" />
             </bean>
           </list>
+          <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg type="java.lang.String">
+                <value>program-option-listing</value>
+              </constructor-arg>
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
         </property>
       </bean>
     </property>

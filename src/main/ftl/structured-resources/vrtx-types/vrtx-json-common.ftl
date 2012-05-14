@@ -54,17 +54,18 @@
             <p>Kunne ikke laste fellestekst</p>
         </#if>
       <#else>
-            <@vrtxString.printPropertyEditView
-        title=localizedTitle
-        inputFieldName=elem.name
-        value=elem.getFormatedValue()
-        classes=classes
-        inputFieldSize=fieldSize
-        tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
-        valuemap=elem.description.getValuemap(locale)
-        dropdown=dropdown
-        defaultValue=   elem.getDefaultValue()
-      />
+        <@vrtxString.printPropertyEditView
+          title=localizedTitle
+          inputFieldName=elem.name
+          value=elem.getFormatedValue()
+          classes=classes
+          inputFieldSize=fieldSize
+          tooltip=form.resource.getLocalizedTooltip(elem.name, locale)
+          valuemap=elem.description.getValuemap(locale)
+          dropdown=dropdown
+          defaultValue=elem.getDefaultValue()
+          multiple=elem.description.isMultiple()
+        />
       </#if>
       <#break>
 
@@ -351,8 +352,8 @@
           <#assign fieldSize=elem.description.edithints['size'] />
         </#if>
       </#if>
+      
       <#assign dropdown = false />
-
       <#if json.edithints?exists && json.edithints['dropdown']?exists >
         <#assign dropdown = true />
       </#if>
@@ -365,7 +366,9 @@
         inputFieldSize=fieldSize
         tooltip=""
         valuemap=json.getValuemap(locale)
-        dropdown=dropdown />
+        dropdown=dropdown
+        multiple=elem.description.isMultiple()
+        />
       <#break>
 
     <#case "simple_html">

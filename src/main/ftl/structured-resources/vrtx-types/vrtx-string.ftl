@@ -1,12 +1,12 @@
 <#ftl strip_whitespace=true>
-<#macro printPropertyEditView title inputFieldName value="" tooltip="" classes="" inputFieldSize=20 valuemap="" dropdown=false defaultValue="">
+<#macro printPropertyEditView title inputFieldName value="" tooltip="" classes="" inputFieldSize=20 valuemap="" dropdown=false multiple=false defaultValue="">
 <div class="vrtx-string ${classes}">
   <label for="${inputFieldName}">${title}</label>
   <div class="inputfield">
-    <#if dropdown && valuemap?exists && valuemap?is_hash>
+    <#if dropdown && valuemap?exists && valuemap?is_hash && !multiple>
       <#if value=="" >
         <#local value=defaultValue />
-      </#if> 
+      </#if>
       <select name="${inputFieldName}" id="${inputFieldName}">
         <#list valuemap?keys as key>
           <#if key = "range">
@@ -27,7 +27,26 @@
       <#if inputFieldName == "title">
         <div class="vrtx-textfield-big">
       <#else>
-        <div class="vrtx-textfield">
+        <#if multiple && dropdown && valuemap?exists && valuemap?is_hash>
+          <#if value=="" >
+            <#local value=defaultValue />
+          </#if>
+          <div class="vrtx-textfield vrtx-multiple-dropdown">
+          <script type="text/javascript"><!--
+            var dropdown${inputFieldName} = [
+              <#list valuemap?keys as key>
+                { 
+                  key: "${key?html}",
+                  value: "${valuemap[key]}"
+                } 
+                <#if (key_index < (valuemap?size - 1))>, </#if>
+              </#list>
+            ];
+          // -->
+          </script>
+        <#else>
+          <div class="vrtx-textfield">
+        </#if>
       </#if>
 	    <input size="${inputFieldSize}" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}" />
 	  </div>

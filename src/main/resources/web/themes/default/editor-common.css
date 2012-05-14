@@ -93,6 +93,10 @@ h2 {
   margin-bottom: 10px;
 }
 
+.vrtx-multipleinputfield .vrtx-dropdown {
+  display: inline-block;
+}
+
 .featured-articles-row .vrtx-textfield,
 .featured-articles-row .vrtx-button,
 .aggregation-row .vrtx-textfield,
@@ -100,6 +104,7 @@ h2 {
 .manually-approve-from-row .vrtx-textfield,
 .manually-approve-from-row .vrtx-button,
 .vrtx-multipleinputfield .vrtx-textfield,
+.vrtx-multipleinputfield .vrtx-dropdown,
 .vrtx-multipleinputfield .vrtx-button {
   margin-right: 20px;
 }
@@ -125,7 +130,8 @@ h2 {
 .vrtx-string.title,
 .vrtx-string.name,
 .vrtx-string.areacode,
-.vrtx-string.username {
+.vrtx-string.username,
+.vrtx-string.typeToDisplay {
   margin-top: 0px;
 }
 

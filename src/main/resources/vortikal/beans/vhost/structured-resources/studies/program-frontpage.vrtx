@@ -150,16 +150,6 @@ resourcetype program-frontpage : program-document {
           [endif]
           [if dur != null]
             <tr><td class="vrtx-program-fact-header">[localized 'duration']:</td><td><strong>[val dur]</strong></td></tr>
-          [endif]     
-          [if faculty != null]
-            <tr>
-              <td class="vrtx-program-fact-header">[localized 'offered-by']:</td>
-              <td>
-                <strong>
-                  [list faculty item][def number _index + 1][if number != 1], [endif][localized item][endlist]
-                </strong>
-              </td>
-            </tr>
           [endif]
         </tbody>
       </table>

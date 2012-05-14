@@ -178,6 +178,13 @@ resourcetype program-frontpage : program-document {
         <div class="vrtx-frontpage-box vrtx-distach-bottom">
           [call "comp:contact-box"]
         </div>
+         [if locale != 'en']
+    	        [def thispath resource-prop("./studiestart","uri")]
+    	        [def studiestart-folder resource(thispath)]
+    	        [if studiestart-folder]
+    	        	[call "include:events"  {"uri":thispath, "all-events-link":true, "feed-title":true, "max-events":2, "events-title": true, "include-if-empty":false}]
+    	        [endif]
+        [endif]
         [def thispath resource-prop("./","uri")]
         [if locale = 'en']
           [def thispath thispath + '/messages']
@@ -191,14 +198,7 @@ resourcetype program-frontpage : program-document {
             [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
           </div>
         [endif]
-        [if locale != 'en']
-    	        [def thispath resource-prop("./studiestart","uri")]
-    	        [def studiestart-folder resource(thispath)]
-    	        [if studiestart-folder]
-    	        	[def thisfeed thispath + '/?vrtx=feed']
-    	        	[call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":1, "include-if-empty":false}]
-    	        [endif]
-        [endif]
+       
         [call "comp:additional-content" {"document":document, "main-content": "false"}]      
       </div>
       ##

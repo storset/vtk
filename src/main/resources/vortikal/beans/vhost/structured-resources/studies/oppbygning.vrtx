@@ -205,7 +205,7 @@ view-components {
     grade-description: (en : "This programme leads to the following grade: ", no : "Studiet leder fram til graden: ", nn : "Studiet leder fram til graden: "),
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
     content-study : (en : "Content", no :"Innhold",nn : "Innhold"),
-    header : (en : "Edit Structure and accomplishment", no : "Rediger oppbygning og gjennomføring", nn : "Rediger oppbygning og gjennomføring"),
+    header : (en : "Edit Structure and accomplishment", no : "Rediger Oppbygning og gjennomføring", nn : "Rediger Oppbygning og gjennomføring"),
     publishedDate : (en : "Published", no :"Publisert", nn:"Publisert"),
     lastModifiedDate : (en : "Last modified", no : "Sist endret", nn : "Sist endra")
     }

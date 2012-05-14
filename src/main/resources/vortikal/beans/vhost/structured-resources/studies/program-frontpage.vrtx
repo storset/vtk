@@ -19,8 +19,7 @@ resourcetype program-frontpage : program-document {
     contactTitle : string,
     contactContent : html,
     contactLinkText : string, 
-    contactUrl : resource_ref, 
-    related-content : html
+    contactUrl : resource_ref
   }
 
   edit-rules {
@@ -30,10 +29,13 @@ resourcetype program-frontpage : program-document {
     faculty (dropdown),
     theme (dropdown),
     title (size[large]),
+    picture (after title-en),
     group facts (fs-program-code, status, program-type, theme, duration, study-points, full-time, faculty, keywords) (before picture),
-    group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (before related-content)
+    group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (before additional-content),
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
-    group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before related-content)
+    keywords tooltip (en : "Comma separated list", no : "Kommaseparert liste", nn : "Kommaseparert liste"), 
+    group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before additional-content),
+    additional-content (after contact-box)
   }
   
   scripts {
@@ -128,8 +130,8 @@ resourcetype program-frontpage : program-document {
           [endif]
           </div>
         [endif]
-      [endif] 
-      </div> 
+      </div>
+      [endif]  
       ##
     }
 
@@ -168,7 +170,7 @@ resourcetype program-frontpage : program-document {
       ##
       [resource-props "."]
       [def document structured-document()]
-      [def locale resource-locale()]  
+      [def locale resource-locale()]
       <div id="vrtx-additional-content">
         <div class="vrtx-frontpage-box grey-box vrtx-distach-bottom">
           [call "comp:facts"]
@@ -189,7 +191,15 @@ resourcetype program-frontpage : program-document {
             [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
           </div>
         [endif]
-        [call "comp:related-content"]      
+        [if locale != 'en']
+    	        [def thispath resource-prop("./studiestart","uri")]
+    	        [def studiestart-folder resource(thispath)]
+    	        [if studiestart-folder]
+    	        	[def thisfeed thispath + '/?vrtx=feed']
+    	        	[call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":1, "include-if-empty":false}]
+    	        [endif]
+        [endif]
+        [call "comp:additional-content" {"document":document, "main-content": "false"}]      
       </div>
       ##
     }  
@@ -219,7 +229,7 @@ resourcetype program-frontpage : program-document {
                 [if locale = "en"]
                   [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcome, structure, career-opportunities, education-exam"}]           
                 [else]
-                  [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-laerer-du, oppbyggning, jobb-studiemuligheter, undervisning-eksamen"}]
+                  [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-lerer-du, oppbygging, jobb-studiemuligheter, undervisning-eksamen"}]
                 [endif]
               </div>
             </div>
@@ -272,7 +282,7 @@ resourcetype program-frontpage : program-document {
     facts : (en : "Facts about the program", no : "Fakta om programmet", nn : "Fakta om programmet"),
     offered-by : (en : "Offered by", no : "Tilbys av", nn : "Tilbys av"),
     theme-view : (en : "Theme", no : "Tema", nn : "Tema"),
-    keywords : (en : "Key words", no : "Stikkord", nn : "Stikkord"),
+    keywords : (en : "Key words for program chooser", no : "Stikkord for programvelger", nn : "Stikkord for programvelger"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
 
@@ -292,7 +302,7 @@ resourcetype program-frontpage : program-document {
     contactLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
     contactUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
 
-    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
+    additional-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
   
     resource-links : (en : "Links", no : "Lenker", nn : "Lenker"),
     linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
@@ -303,7 +313,6 @@ resourcetype program-frontpage : program-document {
     status : (en : "Status", no : "Status", nn : "Status"),
     under-arbeid : (en : "In progress", no : "Under arbeid" ,nn : "Under arbeid"),
     aktivt : (en: "Active", no : "Aktiv", nn : "Aktiv"), 
-    inaktiv : (en : "Inactive", no : "Inaktiv", nn : "Inaktiv"),
     under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
     nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt"),
     

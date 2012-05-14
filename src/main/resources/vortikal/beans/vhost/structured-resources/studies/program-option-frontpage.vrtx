@@ -142,7 +142,7 @@ resourcetype program-option-frontpage : program-document {
 
   localization {
   
-    header : (en : "Edit program frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
+    header : (en : "Edit program option", no : "Rediger studieretning", nn : "Rediger studieretning"),
     program-option : (en : "Program option", no : "Studieretning", nn : "Studieretning"),
     fs-program-code : (en : "FS program code", no : "FS programkode", nn : "FS programkode"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),

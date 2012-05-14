@@ -6,16 +6,16 @@ resourcetype hvordan-soke : fellestekst-document {
     frist-frekvens-fri : html noextract,
     opptak-metode : string, 
     metode-fri : html noextract,
-    opptak-internasjonale-sokere : string, 
+    opptak-metode-internasjonale-sokere : string, 
     internasjonale-sokere-fri : html noextract,
-    opptak-nordiske-sokere : string, 
+    opptak-metode-nordiske-sokere : string, 
     nordiske-sokere-fri : html noextract,
     studiekode: string,
     studieplasser: string,
     pris: string,
-    opptakskrav: string,
+    opptakskrav-generelle-grunnstudier: string,
     opptakskrav-fri: html noextract,
-    opptakskrav-generelle: string,
+    opptakskrav-generelle-master: string,
     generelle-fri: html noextract,
     opptakskrav-spesielle: string,
     spesielle-fri: html noextract,
@@ -41,19 +41,19 @@ resourcetype hvordan-soke : fellestekst-document {
     opptak-frist-frekvens (class[vrtx-shared-text]),
     group metode-admin (opptak-metode, metode-fri), 
     opptak-metode (class[vrtx-shared-text]),
-    group internasjonale-sokere-admin (opptak-internasjonale-sokere, internasjonale-sokere-fri),
-    opptak-internasjonale-sokere (class[vrtx-shared-text]),
-    group nordiske-sokere (opptak-nordiske-sokere, nordiske-sokere-fri),
-    opptak-nordiske-sokere (class[vrtx-shared-text]),
-    group opptakskrav-admin (opptakskrav, opptakskrav-fri),
-    opptakskrav (class[vrtx-shared-text]),
-    group generelle-admin (opptakskrav-generelle, generelle-fri),
-    opptakskrav-generelle (class[vrtx-shared-text]),
+    group internasjonale-sokere-admin (opptak-metode-internasjonale-sokere, internasjonale-sokere-fri),
+    opptak-metode-internasjonale-sokere (class[vrtx-shared-text]),
+    group nordiske-sokere (opptak-metode-nordiske-sokere, nordiske-sokere-fri),
+    opptak-metode-nordiske-sokere (class[vrtx-shared-text]),
+    group opptakskrav-admin (opptakskrav-generelle-grunnstudier, opptakskrav-fri),
+    opptakskrav-generelle-grunnstudier (class[vrtx-shared-text]),
+    group generelle-admin (opptakskrav-generelle-master, generelle-fri),
+    opptakskrav-generelle-master (class[vrtx-shared-text]),
     group spesielle-admin (opptakskrav-spesielle, spesielle-fri),
     opptakskrav-spesielle (class[vrtx-shared-text]),
     group politiattest-admin (opptakskrav-politiattest, politiattest-fri),
     opptakskrav-politiattest (class[vrtx-shared-text]),
-    studiekode (after nordiske-sokere),
+    studiekode (after typeToDisplay),
     studieplasser (after studiekode),
     pris (after studieplasser),
     group rangering-sokere (rangering-av-sokere, rangering-sokere-fri),
@@ -75,7 +75,8 @@ resourcetype hvordan-soke : fellestekst-document {
   
      frist-frekvens-admin {
       ##
-      [resource-props "."]    
+      [def document structured-document()]
+      [def frist-frekvens-fri document.properties.frist-frekvens-fri]
         [if frist-frekvens-fri != null && frist-frekvens-fri != ""]
           <div class="frist-frekvens-fri">[val frist-frekvens-fri # unescaped]</div>
         [endif]
@@ -83,18 +84,21 @@ resourcetype hvordan-soke : fellestekst-document {
     }
       metode {
       ##
-      [resource-props "."]    
-        [if metode-fri != null && metode-fri != ""]
+      [def document structured-document()]
+      [def metode-fri document.properties.metode-fri]
+      [if metode-fri != null && metode-fri != ""]
           <div class="metode-fri">[val metode-fri # unescaped]</div>
-        [endif]
+      [endif]
       ##  
     }
      internasjonale-sokere {
       ##
-      [resource-props "."]    
-        [if (internasjonale-sokere-fri != null && internasjonale-sokere-fri != "") || (opptak-internasjonale-sokere != null && opptak-internasjonale-sokere != "")]
+        [def document structured-document()]
+        [def internasjonale-sokere-fri document.properties.internasjonale-sokere-fri]
+        [def opptak-metode-internasjonale-sokere document.properties.opptak-metode-internasjonale-sokere]   
+        [if (internasjonale-sokere-fri != null && internasjonale-sokere-fri != "") || (opptak-metode-internasjonale-sokere != null && opptak-metode-internasjonale-sokere != "")]
     	  <h3>[localized 'internasjonale-sokere-view']</h3>  
-	      [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-internasjonale-sokere"}]
+	      [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-metode-internasjonale-sokere"}]
 	      [if internasjonale-sokere-fri != null && internasjonale-sokere-fri != ""]
           <div class="internasjonale-sokere-fri">[val internasjonale-sokere-fri # unescaped]</div>
           [endif]
@@ -103,10 +107,12 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      nordiske-sokere {
       ##
-      [resource-props "."]    
-        [if (nordiske-sokere-fri != null && nordiske-sokere-fri != "") || (opptak-nordiske-sokere != null && opptak-nordiske-sokere != "")]
+        [def document structured-document()]
+        [def nordiske-sokere-fri document.properties.nordiske-sokere-fri]
+        [def opptak-metode-nordiske-sokere document.properties.opptak-metode-nordiske-sokere]  
+        [if (nordiske-sokere-fri != null && nordiske-sokere-fri != "") || (opptak-metode-nordiske-sokere != null && opptak-metode-nordiske-sokere != "")]
           <h3>[localized 'nordiske-sokere-view']</h3>
-          [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-nordiske-sokere"}]
+          [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-metode-nordiske-sokere"}]
           [if nordiske-sokere-fri != null && nordiske-sokere-fri != ""]
           <div class="nordiske-sokere-fri">[val nordiske-sokere-fri # unescaped]</div>
           [endif]
@@ -142,7 +148,8 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      opptakskrav {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def opptakskrav-fri document.properties.opptakskrav-fri]
         [if opptakskrav-fri != null && opptakskrav-fri != ""]
           <div class="opptakskrav-fri">[val opptakskrav-fri # unescaped]</div>
         [endif]
@@ -150,10 +157,12 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      generelle {
       ##
-      [resource-props "."]    
-        [if (generelle-fri != null && generelle-fri != "") || (opptakskrav-generelle != null && opptakskrav-generelle != "")]
+        [def document structured-document()]
+        [def generelle-fri document.properties.generelle-fri]
+        [def opptakskrav-generelle-master document.properties.opptakskrav-generelle-master]
+        [if (generelle-fri != null && generelle-fri != "") || (opptakskrav-generelle-master != null && opptakskrav-generelle-master != "")]
           <h3>[localized 'generelle-view']</h3>
-          [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav-generelle"}]
+          [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav-generelle-master"}]
           [if generelle-fri != null && generelle-fri != ""]
           <div class="generelle-fri">[val generelle-fri # unescaped]</div>
           [endif]
@@ -162,7 +171,9 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      spesielle {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def spesielle-fri document.properties.spesielle-fri]
+        [def opptakskrav-spesielle document.properties.opptakskrav-spesielle]
         [if (spesielle-fri != null && spesielle-fri != "") || (opptakskrav-spesielle != null && opptakskrav-spesielle != "")]
           <h3>[localized 'spesielle-view']</h3>
           [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav-spesielle"}]
@@ -174,7 +185,9 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      politiattest {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def politiattest-fri document.properties.politiattest-fri]
+        [def opptakskrav-politiattest document.properties.opptakskrav-politiattest]
         [if (politiattest-fri != null && politiattest-fri != "") || (opptakskrav-politiattest != null && opptakskrav-politiattest != "")]
           <h3>[localized 'politiattest-view']</h3>
           [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav-politiattest"}]
@@ -186,7 +199,9 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      rangering-sokere {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def rangering-sokere-fri document.properties.rangering-sokere-fri]
+        [def rangering-av-sokere document.properties.rangering-av-sokere]      
         [if (rangering-sokere-fri != null && rangering-sokere-fri != "") || (rangering-av-sokere != null && rangering-av-sokere != "")]
           <h2>[localized 'rangering-sokere-view']</h2>
           [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"rangering-av-sokere"}]
@@ -198,7 +213,8 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      forstevitnemal-kvote {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def forstevitnemal-kvote-fri document.properties.forstevitnemal-kvote-fri]
         [if forstevitnemal-kvote-fri != null && forstevitnemal-kvote-fri != ""]
           <div class="forstevitnemal-kvote-fri">[localized 'forstevitnemal-kvote-view'][val forstevitnemal-kvote-fri # unescaped]</div>
         [endif]
@@ -206,7 +222,8 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      ordinar-kvote-alle-kvalifiserte {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def ordinar-kvote-alle-kvalifiserte-fri document.properties.ordinar-kvote-alle-kvalifiserte-fri]
         [if ordinar-kvote-alle-kvalifiserte-fri != null && ordinar-kvote-alle-kvalifiserte-fri != ""]
           <div class="ordinar-kvote-alle-kvalifiserte-fri">[localized 'ordinar-kvote-alle-kvalifiserte-view'][val ordinar-kvote-alle-kvalifiserte-fri # unescaped]</div>
         [endif]
@@ -214,7 +231,9 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      innpassing-tidl-utdanning-admin {
       ##
-      [resource-props "."]    
+        [def document structured-document()]
+        [def innpassing-tidl-utdanning-fri document.properties.innpassing-tidl-utdanning-fri]
+        [def innpassing-tidl-utdanning document.properties.innpassing-tidl-utdanning]
         [if (innpassing-tidl-utdanning-fri != null && innpassing-tidl-utdanning-fri != "") || (innpassing-tidl-utdanning != null && innpassing-tidl-utdanning != "")]
           <h2>[localized 'innpassing-tidl-utdanning-view']</h2>
           [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"innpassing-tidl-utdanning"}]
@@ -226,7 +245,9 @@ resourcetype hvordan-soke : fellestekst-document {
     }
      regelverk-in-additional-column {
       ##
-      [resource-props "."]
+        [def document structured-document()]
+        [def regelverk-fri document.properties.regelverk-fri]
+        [def relatert-innhold-regelverk document.properties.relatert-innhold-regelverk]
         [if (regelverk-fri != null && regelverk-fri != "") || (relatert-innhold-regelverk != null && relatert-innhold-regelverk != "")]
           <h2>[localized 'regelverk-view']</h2>
 	      [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"relatert-innhold-regelverk"}]
@@ -235,20 +256,26 @@ resourcetype hvordan-soke : fellestekst-document {
           [endif]
         [endif]
       ##
-    } 
+    }
     poenggrenser-admin {
      ##
-    [resource-props "."]
+        [def document structured-document()]
+        [def forstevitnemal-kvote-fri document.properties.forstevitnemal-kvote-fri]
+        [def poenggrenser-forstegang-alle-kvalifiserte document.properties.poenggrenser-forstegang-alle-kvalifiserte]
+        [def poenggrenser-ordinar-alle-kvalifiserte document.properties.poenggrenser-ordinar-alle-kvalifiserte]
+        [def ordinar-kvote-alle-kvalifiserte-fri document.properties.ordinar-kvote-alle-kvalifiserte-fri]
+        [def poenggrenser-aar document.properties.poenggrenser-aar]
+        [def poenggrenser-poengberegning document.properties.poenggrenser-poengberegning]
 	    [if (forstevitnemal-kvote-fri != null && forstevitnemal-kvote-fri != "") || (poenggrenser-forstegang-alle-kvalifiserte != null && poenggrenser-forstegang-alle-kvalifiserte != "") || (poenggrenser-ordinar-alle-kvalifiserte != null && poenggrenser-ordinar-alle-kvalifiserte != "") || (ordinar-kvote-alle-kvalifiserte-fri != null && ordinar-kvote-alle-kvalifiserte-fri != "") || (poenggrenser-poengberegning != null && poenggrenser-poengberegning != "")]
-    		<h3>[localized 'poenggrenser'] 
-    		[if poenggrenser-aar != null && poenggrenser-aar != ""]
-    			[val poenggrenser-aar # unescaped]
-    		[endif]
+    		<h3>[localized 'poenggrenser-view'] 
+	    		[val poenggrenser-aar # unescaped]
     		</h3>
-            [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"poenggrenser-forstegang-alle-kvalifiserte"}]
-            [call "comp:forstevitnemal-kvote"]
-            [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"poenggrenser-ordinar-alle-kvalifiserte"}]
-            [call "comp:ordinar-kvote-alle-kvalifiserte"]
+    		<ul>
+            <li>[call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"poenggrenser-forstegang-alle-kvalifiserte"}]</li>
+            <li>[call "comp:forstevitnemal-kvote"]</li>
+            <li>[call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"poenggrenser-ordinar-alle-kvalifiserte"}]</li>
+            <li>[call "comp:ordinar-kvote-alle-kvalifiserte"]</li>
+            </ul>
             [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"poenggrenser-poengberegning"}]
          [endif]
      ##
@@ -258,7 +285,7 @@ resourcetype hvordan-soke : fellestekst-document {
 
 view {
     ##
-    <!DOCTYPE html noextract PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <title></title>
@@ -282,7 +309,7 @@ view {
             [call "comp:studieplasser"]
             [call "comp:pris"]
             <h2>[localized 'opptakskrav-view']</h2>
-            [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav"}]
+            [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav-generelle-grunnstudier"}]
             [call "comp:opptakskrav"]
             [call "comp:generelle"]
             [call "comp:spesielle"]
@@ -310,8 +337,8 @@ view {
   vocabulary{
 	typeToDisplay{
 		en: ("all" = "All", "so" = "SO program", "nm" = "Norwegian master", "em" = "English master"),
-		no: ("all" = "Alle", "so" = "SO-program", "nm" = "Norsk master", "em" = "Engelsk master"),
-		nn: ("all" = "Alle", "so" = "SO-program", "nm" = "Norsk master", "em" = "Engelsk master")
+		no: ("all" = "Alle", "so" = "Grunnstudier", "nm" = "Norsk master", "em" = "Engelsk master"),
+		nn: ("all" = "Alle", "so" = "Grunnstudiar", "nm" = "Norsk master", "em" = "Engelsk master")
 	}
   }
   localization {
@@ -327,38 +354,38 @@ view {
     frist-frekvens-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     opptak-frist-frekvens : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
-    metode-admin : (en : "Admission: metode (SO and Norwegian master)", no : "Opptak: Metode (SO og norsk master)", nn : "Opptak: Metode (SO og norsk master)"),
+    metode-admin : (en : "Admission: metode (SO and Norwegian master)", no : "Opptak: Metode (Grunnstudier og norsk master)", nn : "Opptak: Metode (Grunnstudiar og norsk master)"),
     metode-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     opptak-metode : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
 	internasjonale-sokere-view : (en : "International applicants", no : "Internasjonale søkere", nn : "Internasjonale søkere"),
-    internasjonale-sokere-admin : (en : "Admission: International applicants (English master)", no : "Opptak: Internasjonale søkere (Engelsk master)", nn : "Internasjonale søkjarar (Engelsk master)"),
+    internasjonale-sokere-admin : (en : "Admission: Method, international applicants (English master)", no : "Opptak: Metode, internasjonale søkere (Engelsk master)", nn : "Opptak: Metode, internasjonale søkjarar (Engelsk master)"),
     internasjonale-sokere-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    opptak-internasjonale-sokere : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    opptak-metode-internasjonale-sokere : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
 	nordiske-sokere-view : (en : "Nordic applicants", no : "Nordiske søkere", nn : "Nordiske søkjarar"),
-    nordiske-sokere : (en : "Admission: nordic applicants (English master)", no : "Opptak: Nordiske søkere (Engelsk master)", nn : "Nordiske søkjarar (Engelsk master)"),
+    nordiske-sokere : (en : "Admission: Method, nordic applicants (English master)", no : "Opptak: Metode, nordiske søkere (Engelsk master)", nn : "Opptak: Metode, nordiske søkjarar (Engelsk master)"),
     nordiske-sokere-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    opptak-nordiske-sokere : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    opptak-metode-nordiske-sokere : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
-    studiekode : (en : "Studiekode (SO)", no : "Studiekode (SO)", nn : "Studiekode (SO)"),
+    studiekode : (en : "Study code (SO)", no : "Studiekode (Grunnstudier)", nn : "Studiekode (Grunnstudiar)"),
     studiekode-view : (en : "Code", no : "Studiekode", nn : "Studiekode"),
     
     studieplasser : (en : "Available places (All)", no : "Studieplasser (Alle)", nn : "Studieplassar (Alle)"),
     studieplasser-view : (en : "Available places", no : "Studieplasser", nn : "Studieplassar"),
-    pris : (en : "price (English and Norvegian master)", no : "Pris (Engelsk og norsk master)", nn : "Pris (Engelsk og norsk master)"),
-    pris-view : (en : "price", no : "Pris", nn : "Pris"),
+    pris : (en : "Price (English and Norwegian master)", no : "Pris (Engelsk og norsk master)", nn : "Pris (Engelsk og norsk master)"),
+    pris-view : (en : "Price", no : "Pris", nn : "Pris"),
 
     opptakskrav-view : (en : "Admission requirements", no : "Opptakskrav", nn : "Opptakskrav"),
 
-    opptakskrav-admin : (en : "Admission requirements (SO)", no : "Opptakskrav (SO)", nn : "Opptakskrav (SO)"),
+    opptakskrav-admin : (en : "Admission requirements: General (SO)", no : "Opptakskrav: Generelle (Grunnstudier)", nn : "Opptakskrav: Generelle (Grunnstudiar)"),
     opptakskrav-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    opptakskrav : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    opptakskrav-generelle-grunnstudier : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
 	generelle-view : (en : "Formal admission requirements", no : "Generelle opptakskrav", nn : "Generelle opptakskrav"),
     generelle-admin : (en : "Admission requirements: General (English and Norwegian master)", no : "Opptakskrav: Generelle (Engelsk og norsk master)", nn : "Opptakskrav: generelle (Engelsk og norsk master)"),
     generelle-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    opptakskrav-generelle : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
+    opptakskrav-generelle-master : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
 	spesielle-view : (en : "Special admission requirements", no : "Spesielle opptakskrav", nn : "Spesielle opptakskrav"),
     spesielle-admin : (en : "Admission requirements: Special (All)", no : "Opptakskrav: Spesielle (Alle)", nn : "Opptakkrav: Spesielle (Alle)"),
@@ -371,24 +398,25 @@ view {
     opptakskrav-politiattest : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
 	rangering-sokere-view : (en : "Ranking of applicants", no : "Rangering av søkere", nn : "Rangering av søkjarar"),
-    rangering-sokere : (en : "Ranking of applicants (All)", no : "Rangering av søkere (Alle)", nn : "Rangering av søkarar (Alle)"),					    	   
+    rangering-sokere : (en : "Ranking of applicants (SO)", no : "Rangering av søkere (Grunnstudier)", nn : "Rangering av søkarar (Grunnstudiar)"),					    	   
     rangering-sokere-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     rangering-av-sokere : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),     
 
-    forstevitnemal-kvote : (en : "First certificate quota (All)", no : "Førstevitnemålkvote (Alle)", nn : "Førstevitnemål kvote (Alle)"),					    	   
+    forstevitnemal-kvote : (en : "First certificate quota (SO)", no : "Kvote for førstegangsvitnemål (Grunnstudier)", nn : "Kvote for førstegangsvitnemål (Grunnstudiar)"),					    	   
     forstevitnemal-kvote-fri : (en : "Quota", no : "Kvote", nn : "Kvote"),
     poenggrenser-forstegang-alle-kvalifiserte : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"), 
     forstevitnemal-kvote-view : (en : "First certificate quota: ", no : "Kvote for førstegangsvitnemål: ", nn : "Kvote for førstegangsvitnemål: "), 
 
-    ordinar-kvote-alle-kvalifiserte : (en : "Ordinary quota (All)", no : "Ordinær kvote (Alle)", nn : "Ordinær kvote (Alle)"),					    	   
+    ordinar-kvote-alle-kvalifiserte : (en : "Ordinary quota (SO)", no : "Ordinær kvote (Grunnstudier)", nn : "Ordinær kvote (Grunnstudiar)"),					    	   
     ordinar-kvote-alle-kvalifiserte-fri : (en : "Quota", no : "Kvote", nn : "Kvote"),
     poenggrenser-ordinar-alle-kvalifiserte : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),     				    	   
 	ordinar-kvote-alle-kvalifiserte-view : (en : "Ordinary quota: ", no : "Ordinær kvote: ", nn : "Ordinær kvote: "),
 
-	poenggrenser-aar : (en : "Credit limits: year (All)", no : "Poenggrenser: år (Alle)", nn : "Poenggrenser år (Alle)"),
-    poenggrenser-poengberegning : (en : "Credit limits: credit calculation (All)", no : "Poenggrenser: poengberegning (Alle)", nn : "Poenggrenser poengberegning (Alle)"),					    	   
+	poenggrenser-aar : (en : "Credit limits: year", no : "Poenggrenser: år", nn : "Poenggrenser år"),
+    poenggrenser-poengberegning : (en : "Credit limits: credit calculation", no : "Poenggrenser: poengberegning", nn : "Poenggrenser poengberegning"),					    	   
     poenggrenser-poengberegning-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    poenggrenser : (en : "Credit limits", no : "Poenggrenser", nn : "Poenggrenser"),
+    poenggrenser : (en : "Credit limits (SO)", no : "Poenggrenser (Grunnstudier)", nn : "Poenggrenser (Grunnstudiar)"),
+    poenggrenser-view : (en : "Credit limits ", no : "Poenggrenser i ", nn : "Poenggrenser i "),
      
 	innpassing-tidl-utdanning-view : (en : "Recognition of prior education", no : "Innpassing av tidligere utdanning", nn : "Innpassing av tidlegare utdanning"),					    	   
     innpassing-tidl-utdanning-admin : (en : "Recognition of prior education (All)", no : "Innpassing av tidligere utdanning (Alle)", nn : "Innpassing av tidlegare utdanning (Alle)"),					    	   

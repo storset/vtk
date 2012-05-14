@@ -16,11 +16,11 @@ resourcetype fellestekst-document {
               [def locale resource-locale()]       
               [list liste item]
                   [if (key = item.id)]
-                      [if locale = "no_NO"]
+                      [if locale = "no_NO" && item.description-no != null]
                           [val item.description-no  # unescaped]
-                      [elseif locale = "nn"]
+                      [elseif locale = "nn" &&  item.description-nn != null]
                           [val item.description-nn  # unescaped]
-                      [else]
+                      [elseif item.description-en != null]
                           [val item.description-en  # unescaped]
                       [endif]
                   [endif]
@@ -32,6 +32,5 @@ resourcetype fellestekst-document {
         ##
     }   
   }
-  
   
 }

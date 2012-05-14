@@ -1,0 +1,288 @@
+resourcetype program-document {
+
+  properties {
+    title : string overrides title,
+    title-no : string,
+    title-nn : string,
+    title-en : string,
+    additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract
+  }
+  edit-rules{
+  	group samla (title-no, title-nn, title-en) (after title)
+  }
+  view-components {
+  
+    title {
+      ##
+      [def v resource-prop(".", "title")]
+      [if v != null]
+        [val v]
+      [endif]
+      ##
+    }
+  
+    status {
+      ##
+      [resource-props "."]
+      [def document structured-document()]
+      [def thestatus document.properties.status]
+      [if thestatus != null && thestatus != "aktivt"]
+        <div class="vrtx-program-status">
+          [localized 'status-inactive']
+        </div>
+      [endif]
+      ##
+    }
+  
+    introduction-image {
+      ##
+      [def img-uri resource-prop(".", "picture")]
+      [def caption resource-prop(".", "caption")]
+      [def pixel-width null]
+      [def img null]
+      [def pixel-width null]
+      [def photographer null]
+      [def style null]
+      
+      [if img-uri != null]
+         [def img resource(img-uri)]
+      [endif]
+      [if img != null]
+        [def pixel-width resource-prop(img-uri, "pixelWidth")]
+        [def photographer resource-prop(img-uri, "photographer")]
+       [endif]
+       [if pixel-width != null]
+        [def style concat("width:", pixel-width, "px")]
+     [endif]
+     
+     [if img-uri != null]
+       [if pixel-width != null]  
+        <div class="vrtx-introduction-image" style="[val style]">
+       [else]
+        <div class="vrtx-introduction-image">
+       [endif]
+        <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+       </div>
+     [endif]
+      ##
+    }  
+  
+    resource-links {
+      ##
+      [resource-props "."]
+      [if resource-links != null]
+        [def document structured-document()]
+        [def links document.properties.resource-links]
+        [if links != null]
+          <div class="vrtx-frontpage-box white-box vrtx-program-resource-links">
+            [list links link]
+              [def theheader link.linkHeader]
+              [def thetitle link.linkTitle]
+              [def theurl link.linkUrl]
+              [def thedescription link.linkDescription]
+              [def number _index + 1]
+              
+              [if theheader != null && theheader != ""]
+                [if number != 1]
+                  </ul>
+                [endif]
+                <h3>[val theheader]</h3>
+                <ul>
+              [else]
+                [if number = 1]
+                  <ul>
+                [endif]
+              [endif]
+              <li>
+                [if theurl != null && theurl != ""]
+                  <span class="vrtx-program-resource-link">
+                    <a href='[val theurl]'>[if thetitle != null && thetitle != ""][val thetitle][else][val theurl][endif]</a>
+                  </span>
+                [elseif (theurl = null || theurl = "") && thetitle != null && thetitle != ""]
+                  <span class="vrtx-program-resource-link">[val thetitle]</span>
+                [endif]
+                [if thedescription != null && thedescription != ""]
+                <span class="vrtx-program-resource-link-desc">[val thedescription]</span>
+                [endif]
+              </li>
+            [endlist]
+            </ul>
+          </div>
+        [endif]
+      [endif]
+      ##
+    }
+    
+    
+    contact-box {
+      ##
+      [resource-props "."]
+      [def title resource-prop(".", "contactTitle")]
+      [def content resource-prop(".", "contactContent")]
+      [def urlText resource-prop(".", "contactLinkText")]
+      [def url resource-prop(".", "contactUrl")]         
+      [if title != null && title != ""]
+        [if url != null && url != ""]
+          <h2><a href="[val url]">[val title]</a></h2>
+        [else]
+          <h2>[val title]</h2>
+        [endif]
+      [endif]
+      [if content != null && content != ""]
+        <div class="vrtx-box-content">
+          [val content # unescaped]
+        </div>
+      [endif]
+      [if urlText != null && urlText != ""]
+        <div class="vrtx-more">
+          [if url != null && url != ""]
+            <span><a href="[val url]">[val urlText]</a></span>
+          [else]
+            <span>[val urlText]</span>
+          [endif]
+        </div>
+      [endif]
+      ##
+    }
+
+    related-content {
+      ##
+      [def content resource-prop(".", "related-content")]
+      [if content != null]
+        <div class="vrtx-frontpage-box">
+          [val content # unescaped]
+        </div>
+      [endif]
+      ##
+    }
+    
+   
+	additional-content(document, main-content) {
+      ##
+      [resource-props "."]
+      [def boxes document.properties.additional-content]
+      [if boxes != null]
+          [list boxes box]
+            [def type box.boxType]
+            [def title box.boxTitle]
+            [def picture box.boxPicture]
+            [def content box.boxContent]
+            [def url box.boxUrl]
+            [def urlText box.boxUrlText]
+            [def number _index + 1]
+            [def cssClasses ""]
+            [if urlText != null && urlText != ""]
+            [else]
+              [def cssClasses concat(cssClasses, "vrtx-more-false")]
+            [endif]
+            [if main-content = "true"]
+              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+              [def cssClasses concat(cssClasses, "white-box")]
+            [endif]
+            [if title != null && title != ""]
+            [else]
+              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+              [def cssClasses concat(cssClasses, "vrtx-header-false")]
+            [endif]
+            [if (urlText = "" || urlText = null) && (content = "" || content = null) 
+             && (picture = "" || picture = null) && (title != null && title != "")]
+              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+              [def cssClasses concat(cssClasses, "vrtx-only-title")]
+            [endif]
+            [if type != null && type != ""]
+              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+              [def cssClasses concat(cssClasses, type)]
+            [endif]
+            [if number = 1]
+              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+              [def cssClasses concat(cssClasses, "vrtx-additional-content-first")]           
+            [endif]
+            [if number = _size]
+              [if cssClasses != ""] [def cssClasses concat(cssClasses, " ")] [endif]
+              [def cssClasses concat(cssClasses, "vrtx-additional-content-last")]
+            [endif]    
+
+            [if cssClasses != null && cssClasses != ""]
+              <div class="vrtx-frontpage-box [val cssClasses]" id="vrtx-additional-content-[val number]">
+            [else]
+              <div class="vrtx-frontpage-box" id="vrtx-additional-content-[val number]">
+            [endif]
+              [if title != null && title != ""]
+                [if url != null && url != ""]
+                  <h2><a href="[val url]">[val title]</a></h2>
+                [else]
+                  <h2>[val title]</h2>
+                [endif]
+              [endif]
+              [if picture != null && picture != ""]
+                <div class="vrtx-frontpage-box-picture">
+                  [if url != null && url != ""]
+                    <a href="[val url]">
+                      [if title != null && title != ""]
+                        <img src="[val picture]" alt="[val title]" />
+                      [else]
+                        <img src="[val picture]" alt="[val picture]" />
+                      [endif]
+                    </a>
+                  [else]
+                    [if title != null && title != ""]
+                      <img src="[val picture]" alt="[val title]" />
+                    [else]
+                      <img src="[val picture]" alt="[val picture]" />
+                    [endif]
+                  [endif]
+                </div>
+              [endif]
+              [if content != null && content != ""]
+                <div class="vrtx-box-content">
+                  [val content # unescaped]
+                </div>
+              [endif]
+              [if urlText != null && urlText != ""]
+                <div class="vrtx-more">
+                [if url != null && url != ""]
+                  <span><a href="[val url]">[val urlText]</a></span>
+                [else]
+                  <span>[val urlText]</span>
+                [endif]
+                </div>
+              [endif]
+            </div>
+          [endlist]
+        [endif]
+      [endif]
+      ##
+    }
+    
+    css-link {
+      ##
+      [resource-props "."]
+      [if cssUrl != null && cssUrl != ""]
+         <!-- begin custom frontpage css -->
+         <link rel="stylesheet" href="[val cssUrl]" type="text/css" media="all" />
+         <!-- end custom frontpage css -->
+      [endif]
+      ##  
+    }
+ 
+  }
+  
+  localization {  
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    title-no : (en : "Title (bokmål)", no : "Tittel (bokmål)", nn : "Tittel (bokmål)"),
+    title-nn : (en : "Title (nynorsk)", no : "Tittel (nynorsk)", nn : "Tittel (nynorsk)"),
+    title-en : (en : "Title (english)", no : "Tittel (engelsk)", nn : "Tittel (engelsk)"),
+    status-inactive : (en : "This programme no longer admits students", no : "Programmet tar ikke opp nye studenter", nn : "Programmet tar ikkje opp nye studentar"),
+    additional-content : (en : "Related content (right column)", no : "Relatert innhold (høyrespalte)", nn : "Relatert innhald (høgre spalte)"),
+    boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
+    samla : (en : "Titles for samlet.html", no : "Titler til samlet.html", nn : "Titlar til samlet.html"),
+    boxType : (en : "Special settings", no : "Spesielle innstillinger", nn : "Spesielle innstillinger"),
+    boxCssSizeAndPlacement : (en : "Size and placement", no : "Størrelse og plassering", nn : "Størrelse og plassering"),
+    boxCssColor : (en : "Color", no : "Farge", nn : "Farge"),
+    boxPicture : (en: "Image", no: "Bilde", nn : "Bilete"),
+    boxContent : (en : "Content", no : "Innhold", nn : "Innhald"),
+    boxUrlText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
+    boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse")
+  }
+  
+}

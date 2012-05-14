@@ -59,9 +59,9 @@ resourcetype program-frontpage : program-document {
       [def locale resource-locale()]  
       [def thispath resource-prop("./","uri")]
       [if locale = "en"]
-        [def uri thispath + '/about/index.html']
+        [def uri thispath + '/why-choose/index.html']
       [else]
-        [def uri thispath + '/om/index.html']
+        [def uri thispath + '/hvorfor-velge/index.html']
       [endif]      
       [def f json-resource(uri)]
       [if f != null]
@@ -169,11 +169,11 @@ resourcetype program-frontpage : program-document {
           [call "comp:contact-box"]
         </div>
          [if locale != 'en']
-    	        [def thispath resource-prop("./studiestart","uri")]
-    	        [def studiestart-folder resource(thispath)]
-    	        [if studiestart-folder]
-    	        	[call "include:events"  {"uri":thispath, "all-events-link":true, "feed-title":true, "max-events":2, "events-title": true, "include-if-empty":false}]
-    	        [endif]
+                [def thispath resource-prop("./studiestart","uri")]
+                [def studiestart-folder resource(thispath)]
+                [if studiestart-folder]
+                    [call "include:events"  {"uri":thispath, "all-events-link":true, "feed-title":true, "max-events":2, "events-title": true, "include-if-empty":false}]
+                [endif]
         [endif]
         [def thispath resource-prop("./","uri")]
         [if locale = 'en']
@@ -239,7 +239,7 @@ resourcetype program-frontpage : program-document {
      en : ("under-arbeid" = "In progress", "aktivt" = "Active", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
      no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
      nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
-   	}
+    }
     faculty {
      en : ("hf" = "Faculty of Humanities", "jus" = "Faculty of Law", "matnat" = "Faculty of Mathematics and Natural Sciences", "med" = "Faculty of Medicine", "odont" = "Faculty of Dentistry", "sv" = "Faculty of Social Sciences", "tf" = "Faculty of Theology", "uv" = "Faculty of Educational Sciences"),
      no : ("hf" = "Det humanistiske fakultet", "jus" = "Det juridiske fakultet", "matnat" = "Det matematisk-naturvitenskapelige fakultet", "med" = "Det medisinske fakultet", "odont" = "Det odontologiske fakultet", "sv" = "Det samfunnsvitenskapelige fakultet", "tf" = "Det teologiske fakultet", "uv" = "Det utdanningsvitenskapelige fakultet"),
@@ -249,17 +249,17 @@ resourcetype program-frontpage : program-document {
      en : ("estetiske-studier-musikkvitenskap" = "Esthetic Studies and Musicology", "helsefag-medisin" = "Health and Medicine", "historie-filosofi-kulturstudier" = "History, Philosophy, and Culture Studies", "informasjonsteknologi" = "Information Technology and Informatics", "jus-okonomi-ledelse-administrasjon" = "Law, Economics, Leadership, and Administration", "lektor-og-adjunktutdanning" = "Teacher Education", "matematikk-naturvitenskap-teknologi" = "Mathematics, Natural Science, and Technology", "mediefag" = "Media Studies", "pedagogiske-fag" = "Education", "religion-teologi" = "Religion and Theology", "samfunnsfag" = "Social Sciences and Psychology", "spraak-litteratur" = "Language and Literature", "engelskspraakligeprogram" = "Master's Degree Programmes"),
      no : ("estetiske-studier-musikkvitenskap"= "Estetiske studier og musikkvitenskap", "helsefag-medisin" = "Helsefag og medisin", "historie-filosofi-kulturstudier" = "Historie, filosofi og kulturstudier", "informasjonsteknologi" = "Informasjonsteknologi og informatikk", "jus-okonomi-ledelse-administrasjon" = "Jus, økonomi, ledelse, administrasjon", "lektor-og-adjunktutdanning" = "Lærerutdanning: Lektor- og adjunktutdanning", "matematikk-naturvitenskap-teknologi" = "Matematikk, naturvitenskap, teknologi", "mediefag" = "Mediefag", "pedagogiske-fag" = "Pedagogiske fag", "religion-teologi" = "Religion og teologi", "samfunnsfag" = "Samfunnsfag og psykologi", "spraak-litteratur" = "Språk og litteratur", "engelskspraakligeprogram" = "Engelskspråklege program"),
      nn : ("estetiske-studier-musikkvitenskap"= "Estetiske studium og musikkvitskap", "helsefag-medisin" = "Helsefag og medisin", "historie-filosofi-kulturstudier" = "Historie, filosofi og kulturstudium", "informasjonsteknologi" = "Informasjonsteknologi og informatikk", "jus-okonomi-ledelse-administrasjon" = "Jus, økonomi, leiing, administrasjon", "lektor-og-adjunktutdanning" = "Lærarutdaning: Lektor- og adjunktutdaning", "matematikk-naturvitenskap-teknologi" = "Matematikk, naturvitskap, teknologi", "mediefag" = "Mediefag", "pedagogiske-fag" = "Pedagogiske fag", "religion-teologi" = "Religion og teologi", "samfunnsfag" = "Samfunnsfag og psykologi", "spraak-litteratur" = "Språk og litteratur", "engelskspraakligeprogram" = "Engelskspråklige program")
-	}
-	program-type {
-	  en : ("aarsenhet" = "1-year unit", "bachelor" = "bachelor's Degree programme", "ett-aarig-master" = "1-year Master's Degree programme", "ettoghalvt-aarig-master" = "1 1/2-year Master's Degree programme", "to-aarig-master" = "2-year Master's Degree programme", "fem-aarig-master" = "5-year Master's Degree programme", "erfaringsbasert-master" = "experience-based Master's Degree programme", "profesjon" = "professional course of study"),
-	  no : ("aarsenhet" = "årsenhet", "bachelor" = "bachelor", "ett-aarig-master" = "master - ett år", "ettoghalvt-aarig-master" = "master - halvannet år", "to-aarig-master" = "master - to år", "fem-aarig-master" = "master - 5 år", "erfaringsbasert-master" = "erfaringsbasert master", "profesjon" = "profesjonsstudium"),
-	  nn : ("aarsenhet" = "årseining", "bachelor" = "bachelor", "ett-aarig-master" = "master - ett år", "ettoghalvt-aarig-master" = "master - halvannet år", "to-aarig-master" = "master - to år", "fem-aarig-master" = "master - 5 år", "erfaringsbasert-master" = "erfaringsbasert master", "profesjon" = "profesjonsstudium")
-	}
-	full-time {
-	  en : ("true" = "Full time study", "false" = "Part time study"),
-	  no : ("true" = "Fulltidsstudium", "false" = "Deltidsstudium"),
-	  nn : ("true" = "Fulltidsstudium", "false" = "Deltidsstudium")
-	}	
+    }
+    program-type {
+      en : ("aarsenhet" = "1-year unit", "bachelor" = "bachelor's Degree programme", "ett-aarig-master" = "1-year Master's Degree programme", "ettoghalvt-aarig-master" = "1 1/2-year Master's Degree programme", "to-aarig-master" = "2-year Master's Degree programme", "fem-aarig-master" = "5-year Master's Degree programme", "erfaringsbasert-master" = "experience-based Master's Degree programme", "profesjon" = "professional course of study"),
+      no : ("aarsenhet" = "årsenhet", "bachelor" = "bachelor", "ett-aarig-master" = "master - ett år", "ettoghalvt-aarig-master" = "master - halvannet år", "to-aarig-master" = "master - to år", "fem-aarig-master" = "master - 5 år", "erfaringsbasert-master" = "erfaringsbasert master", "profesjon" = "profesjonsstudium"),
+      nn : ("aarsenhet" = "årseining", "bachelor" = "bachelor", "ett-aarig-master" = "master - ett år", "ettoghalvt-aarig-master" = "master - halvannet år", "to-aarig-master" = "master - to år", "fem-aarig-master" = "master - 5 år", "erfaringsbasert-master" = "erfaringsbasert master", "profesjon" = "profesjonsstudium")
+    }
+    full-time {
+      en : ("true" = "Full time study", "false" = "Part time study"),
+      no : ("true" = "Fulltidsstudium", "false" = "Deltidsstudium"),
+      nn : ("true" = "Fulltidsstudium", "false" = "Deltidsstudium")
+    }   
   }
 
 
@@ -318,27 +318,27 @@ resourcetype program-frontpage : program-document {
     
     faculty : (en : "Responsible faculty", no : "Ansvarlig fakultet", nn : "Ansvarlig fakultet"),
     hf : (en : "Faculty of Humanities", no : "Det humanistiske fakultet", nn : "Det humanistiske fakultet"),
-  	jus : (en : "Faculty of Law", no : "Det juridiske fakultet", nn : "Det juridiske fakultet"),		      
-	matnat : (en : "Faculty of Mathematics and Natural Sciences",no : "Det matematisk-naturvitenskapelige fakultet", nn : "Det matematisk-naturvitenskapelige fakultet"),  
-	med : (en : "Faculty of Medicine", no : "Det medisinske fakultet", nn : "Det medisinske fakultet"),		      
-	odont : (en : "Faculty of Dentistry", no : "Det odontologiske fakultet", nn : "Det odontologiske fakultet"),		      
-	sv : (en : "Faculty of Social Sciences", no : "Det samfunnsvitenskapelige fakultet", nn : "Det samfunnsvitenskapelige fakultet"), 	      
-	tf : (en : "Faculty of Theology", no : "Det teologiske fakultet", nn : "Det teologiske fakultet"),		      
-	uv : (en : "Faculty of Educational Sciences", no : "Det utdanningsvitenskapelige fakultet", nn : "Det utdanningsvitenskapelige fakultet")     
+    jus : (en : "Faculty of Law", no : "Det juridiske fakultet", nn : "Det juridiske fakultet"),              
+    matnat : (en : "Faculty of Mathematics and Natural Sciences",no : "Det matematisk-naturvitenskapelige fakultet", nn : "Det matematisk-naturvitenskapelige fakultet"),  
+    med : (en : "Faculty of Medicine", no : "Det medisinske fakultet", nn : "Det medisinske fakultet"),           
+    odont : (en : "Faculty of Dentistry", no : "Det odontologiske fakultet", nn : "Det odontologiske fakultet"),              
+    sv : (en : "Faculty of Social Sciences", no : "Det samfunnsvitenskapelige fakultet", nn : "Det samfunnsvitenskapelige fakultet"),         
+    tf : (en : "Faculty of Theology", no : "Det teologiske fakultet", nn : "Det teologiske fakultet"),            
+    uv : (en : "Faculty of Educational Sciences", no : "Det utdanningsvitenskapelige fakultet", nn : "Det utdanningsvitenskapelige fakultet")     
  
     theme : (en : "Theme", no : "Temaområde", nn : "Temaområde"),
-	estetiske-studier-musikkvitenskap : (en : "Esthetic Studies and Musicology", no : "Estetiske studier og musikkvitenskap", nn : "Estetiske studium og musikkvitskap"),
-	helsefag-medisin : (en : "Health and Medicine", no : "Helsefag og medisin", nn : "Helsefag og medisin"),
-	historie-filosofi-kulturstudier : (en : "History Philosophy and Culture Studies", no : "Historie filosofi og kulturstudier", nn : "Historie filosofi og kulturstudium"),
-	informasjonsteknologi : (en : "Information Technology and Informatics", no : "Informasjonsteknologi og informatikk", nn : "Informasjonsteknologi og informatikk"),
-	jus-okonomi-ledelse-administrasjon : (en : "Law Economics Leadership and Administration", no : "Jus økonomi ledelse administrasjon", nn : "Jus økonomi leiing administrasjon"),
-	lektor-og-adjunktutdanning : (en : "Teacher Education", no : "Lærerutdanning: Lektor- og adjunktutdanning", nn : "Lærarutdaning: Lektor- og adjunktutdaning"),
-	matematikk-naturvitenskap-teknologi : (en : "Mathematics Natural Science and Technology", no : "Matematikk naturvitenskap teknologi", nn : "Matematikk naturvitskap teknologi"),
-	mediefag : (en : "Media Studies", no : "Mediefag", nn : "Mediefag"),
-	pedagogiske-fag : (en : "Education", no : "Pedagogiske fag", nn : "Pedagogiske fag"),
-	religion-teologi : (en : "Religion and Theology", no : "Religion og teologi", nn : "Religion og teologi"),
-	samfunnsfag : (en : "Social Sciences and Psychology", no : "Samfunnsfag og psykologi", nn : "Samfunnsfag og psykologi"),
-	spraak-litteratur : (en : "Language and Literature", no : "Språk og litteratur", nn : "Språk og litteratur"),
-	engelskspraakligeprogram : (en : "Master's Degree Programmes", no : "Engelskspråklege program", nn : "Engelskspråklige program")
+    estetiske-studier-musikkvitenskap : (en : "Esthetic Studies and Musicology", no : "Estetiske studier og musikkvitenskap", nn : "Estetiske studium og musikkvitskap"),
+    helsefag-medisin : (en : "Health and Medicine", no : "Helsefag og medisin", nn : "Helsefag og medisin"),
+    historie-filosofi-kulturstudier : (en : "History Philosophy and Culture Studies", no : "Historie filosofi og kulturstudier", nn : "Historie filosofi og kulturstudium"),
+    informasjonsteknologi : (en : "Information Technology and Informatics", no : "Informasjonsteknologi og informatikk", nn : "Informasjonsteknologi og informatikk"),
+    jus-okonomi-ledelse-administrasjon : (en : "Law Economics Leadership and Administration", no : "Jus økonomi ledelse administrasjon", nn : "Jus økonomi leiing administrasjon"),
+    lektor-og-adjunktutdanning : (en : "Teacher Education", no : "Lærerutdanning: Lektor- og adjunktutdanning", nn : "Lærarutdaning: Lektor- og adjunktutdaning"),
+    matematikk-naturvitenskap-teknologi : (en : "Mathematics Natural Science and Technology", no : "Matematikk naturvitenskap teknologi", nn : "Matematikk naturvitskap teknologi"),
+    mediefag : (en : "Media Studies", no : "Mediefag", nn : "Mediefag"),
+    pedagogiske-fag : (en : "Education", no : "Pedagogiske fag", nn : "Pedagogiske fag"),
+    religion-teologi : (en : "Religion and Theology", no : "Religion og teologi", nn : "Religion og teologi"),
+    samfunnsfag : (en : "Social Sciences and Psychology", no : "Samfunnsfag og psykologi", nn : "Samfunnsfag og psykologi"),
+    spraak-litteratur : (en : "Language and Literature", no : "Språk og litteratur", nn : "Språk og litteratur"),
+    engelskspraakligeprogram : (en : "Master's Degree Programmes", no : "Engelskspråklege program", nn : "Engelskspråklige program")
   }
 }

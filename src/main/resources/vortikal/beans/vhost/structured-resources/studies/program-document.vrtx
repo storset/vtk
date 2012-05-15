@@ -45,25 +45,25 @@ resourcetype program-document {
       [def style null]
       
       [if img-uri != null]
-         [def img resource(img-uri)]
+        [def img resource(img-uri)]
       [endif]
       [if img != null]
         [def pixel-width resource-prop(img-uri, "pixelWidth")]
         [def photographer resource-prop(img-uri, "photographer")]
-       [endif]
-       [if pixel-width != null]
+      [endif]
+      [if pixel-width != null]
         [def style concat("width:", pixel-width, "px")]
-     [endif]
+      [endif]
      
-     [if img-uri != null]
-       [if pixel-width != null]  
-        <div class="vrtx-introduction-image" style="[val style]">
-       [else]
-        <div class="vrtx-introduction-image">
-       [endif]
-        <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
-       </div>
-     [endif]
+      [if img-uri != null]
+        [if pixel-width != null]  
+          <div class="vrtx-introduction-image" style="[val style]">
+        [else]
+          <div class="vrtx-introduction-image">
+        [endif]
+            <img src="[val img-uri]" alt="[localized 'introduction-image-alt']"/>
+          </div>
+      [endif]
       ##
     }  
   

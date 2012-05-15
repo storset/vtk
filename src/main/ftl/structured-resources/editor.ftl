@@ -20,7 +20,7 @@
   <script type="text/javascript"><!-- 
 
     $(window).load(function() {
-      initDatePicker(datePickerLang);
+      initDatePicker(datePickerLang); // TODO: this would never run if resources hangs
     });
 
     $(document).ready(function() {

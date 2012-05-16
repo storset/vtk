@@ -18,18 +18,19 @@
  *  1.  Config
  *  2.  DOM is fully loaded
  *  3.  DOM is ready
- *  4.  File upload
- *  5.  Keyboard interceptors / rerouters
- *  6.  Collectionlisting interaction
- *  7.  Permissions
- *  8.  Dropdowns
- *  9.  Async functions
- *  10. Async helper functions and AJAX server façade
- *  11. Show and hide properties
- *  12. Multiple inputfields
- *  13. CK browse server integration
- *  14. Utils
- *  15. Override JavaScript / jQuery
+ *  4.  Create service
+ *  5.  File upload service
+ *  6.  Keyboard interceptors / rerouters
+ *  7.  Collectionlisting interaction
+ *  8.  Permissions
+ *  9.  Dropdowns
+ *  10. Async functions
+ *  11. Async helper functions and AJAX server façade
+ *  12. Show and hide properties
+ *  13. Multiple inputfields
+ *  14. CK browse server integration
+ *  15. Utils
+ *  16. Override JavaScript / jQuery
  *
  */
  
@@ -764,6 +765,12 @@ vrtxAdmin._$(document).ready(function () {
 
 });
 
+
+
+/*-------------------------------------------------------------------*\
+    4. Create service
+\*-------------------------------------------------------------------*/
+
 function userTitleKeyUp(titleBind, nameBind, indexBind) {
   var titleField = $("#" + titleBind);
   var nameField = $("#" + nameBind);
@@ -829,8 +836,9 @@ function toggleShowDescription(element, hasTitle) {
 }
 
 
+
 /*-------------------------------------------------------------------*\
-    4. File upload
+    5. File upload service
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
@@ -889,7 +897,7 @@ VrtxAdmin.prototype.supportsReadOnly = function supportsReadOnly(inputfield) {
 
 
 /*-------------------------------------------------------------------*\
-    5. Keyboard interceptors / rerouters
+    6. Keyboard interceptors / rerouters
 \*-------------------------------------------------------------------*/
 
 function interceptEnterKey(idOrClass) {
@@ -916,12 +924,6 @@ VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelect
   });
 };
 
-
-
-/*-------------------------------------------------------------------*\
-    Buttons into links
-\*-------------------------------------------------------------------*/
-
 VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
   var _$ = this._$;
 
@@ -940,7 +942,7 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
 
 
 /*-------------------------------------------------------------------*\
-    Collectionlisting interaction
+    7. Collectionlisting interaction
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInteraction() {
@@ -1131,7 +1133,7 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
 
 
 /*-------------------------------------------------------------------*\
-    7. Permissions  
+    8. Permissions  
 \*-------------------------------------------------------------------*/
 
 function initPermissionForm(selectorClass) {
@@ -1208,7 +1210,7 @@ function autocompleteTags(selector) {
 
 
 /*-------------------------------------------------------------------*\
-    8. Dropdowns    
+    9. Dropdowns    
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.dropdownLanguageMenu = function dropdownLanguageMenu(selector) {
@@ -1335,7 +1337,7 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
 
 
 /*-------------------------------------------------------------------*\
-    9. Async functions  
+    10. Async functions  
 \*-------------------------------------------------------------------*/
 
 /**
@@ -1757,7 +1759,7 @@ VrtxAdmin.prototype.retrieveHTMLTemplates = function retrieveHTMLTemplates(fileN
 
 
 /*-------------------------------------------------------------------*\
-    10. Async helper functions and AJAX server façade   
+    11. Async helper functions and AJAX server façade   
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function appendInputNameValuePairsToDataString(inputFields) { 
@@ -1886,7 +1888,7 @@ VrtxAdmin.prototype.serverFacade = {
 
 
 /*-------------------------------------------------------------------*\
-    11. Show and hide properties
+    12. Show and hide properties
 
     @param radioIds: Multiple id's for radiobuttons binding click events (Array)
     @param conditionHide: Condition to be checked for hiding
@@ -1921,7 +1923,7 @@ function showHideProperty(id, init, show) {
 
 
 /*-------------------------------------------------------------------*\
-    12. Multiple inputfields
+    13. Multiple inputfields
 \*-------------------------------------------------------------------*/
 
 // TODO: simplify
@@ -2127,7 +2129,7 @@ function formatMultipleInputFields(name) {
 
 
 /*-------------------------------------------------------------------*\
-    13. CK browse server integration
+    14. CK browse server integration
 \*-------------------------------------------------------------------*/
 
 var urlobj;
@@ -2229,7 +2231,7 @@ function SetUrl(url) {
 
 
 /*-------------------------------------------------------------------*\
-    14. Utils
+    15. Utils
 \*-------------------------------------------------------------------*/
 
 // Use our own wrap function
@@ -2281,7 +2283,7 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
 
 
 /*-------------------------------------------------------------------*\
-    15. Override JavaScript / jQuery
+    16. Override JavaScript / jQuery
 \*-------------------------------------------------------------------*/ 
     
 /* 

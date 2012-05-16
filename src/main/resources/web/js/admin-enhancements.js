@@ -119,7 +119,7 @@ vrtxAdmin._$.ajaxSetup({
 // Global vars that probably should be put inside vrtxAdmin
 var EDITOR_SAVE_BUTTON_NAME = "";
 var GET_FORM_ASYNCS_IN_PROGRESS = 0;
-var CREATE_DOCUMENT_REPLACE_TITLE = true;
+var CREATE_RESOURCE_REPLACE_TITLE = true;
 var CREATE_DOCUMENT_FILE_NAME = "";
                            
 // funcComplete for postAjaxForm()
@@ -398,7 +398,7 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
-          funcComplete: function(p){ CREATE_DOCUMENT_REPLACE_TITLE = true; $("#initToggleShowDescription").click(); },
+          funcComplete: function(p){ CREATE_RESOURCE_REPLACE_TITLE = true; $("#initToggleShowDescription").click(); },
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({ 
@@ -417,7 +417,7 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
-          funcComplete: function(p){ CREATE_DOCUMENT_REPLACE_TITLE = true; $("#initToggleShowDescription").click(); vrtxAdm.initFileUpload() },
+          funcComplete: function(p){ CREATE_RESOURCE_REPLACE_TITLE = true; $("#initToggleShowDescription").click(); vrtxAdm.initFileUpload() },
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({
@@ -768,7 +768,7 @@ function userTitleKeyUp(titleBind, nameBind, indexBind) {
   var titleField = $("#" + titleBind);
   var nameField = $("#" + nameBind);
   var indexCheckbox = $("#" + indexBind);
-  if ((!indexCheckbox.length || !indexCheckbox.is(":checked")) && CREATE_DOCUMENT_REPLACE_TITLE) {
+  if ((!indexCheckbox.length || !indexCheckbox.is(":checked")) && CREATE_RESOURCE_REPLACE_TITLE) {
     nameField.val(replaceInvalidChar(titleField.val()));
   }
 }
@@ -807,8 +807,8 @@ function isIndexFile(nameBind, indexBind) {
 }
 
 function disableReplaceTitle(nameBind) {
-  if (CREATE_DOCUMENT_REPLACE_TITLE) {
-    CREATE_DOCUMENT_REPLACE_TITLE = false;
+  if (CREATE_RESOURCE_REPLACE_TITLE) {
+    CREATE_RESOURCE_REPLACE_TITLE = false;
   }
   var nameField = $("#" + nameBind);
   nameField.val(replaceInvalidChar(nameField.val()));

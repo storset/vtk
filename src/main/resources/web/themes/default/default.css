@@ -1236,6 +1236,11 @@ p#vrtx-file-upload-info-text {
   clear: left;
 }
 
+#createDocumentService-form .radio-buttons,
+#createCollectionService-form .radio-buttons {
+  margin-bottom: 5px;
+}
+
 .vrtx-admin-form .vrtx-checkbox {
   margin-top: 10px;
 }

@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,6 +52,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.templates.ResourceTemplate;
@@ -204,12 +206,21 @@ public class TemplateBasedCreateController extends SimpleFormController {
         BufferedReader reader = new BufferedReader(new InputStreamReader(repository.getInputStream(token,
                 destinationURI, false)));
 
-        String line;
+        String line, title = createDocumentCommand.getTitle();
+        String ct = repository.retrieve(token, destinationURI, false).getContentType();
+        if (ct.equals("application/json")) {
+            title = title.replaceAll("\"", "\\\\\"");
+        } else if (ct.equals("text/html")) {
+            title = HtmlUtil.escapeHtmlString(title);
+        }
+        title = Matcher.quoteReplacement(title);
+
         while ((line = reader.readLine()) != null) {
-            os.write(line.replaceAll(titlePlaceholder, createDocumentCommand.getTitle()).getBytes());
+            os.write(line.replaceAll(titlePlaceholder, title).getBytes());
         }
 
         Resource r = repository.storeContent(token, destinationURI, new ByteArrayInputStream(os.toByteArray()));
+        r.removeProperty(descriptionPropDef);
         repository.store(token, r);
 
         createDocumentCommand.setDone(true);

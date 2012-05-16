@@ -34,14 +34,11 @@
       <@spring.bind "createCollectionForm" + ".name" />
       <#assign nameBind = spring.status.expression>
       <@actionsLib.genErrorMessages spring.status.errorMessages />
-      <@vrtx.msg code="actions.createCollectionService.title" default="Title" />:
-      <br />
+      <div class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.title" default="Title" /></div>
       <div class="vrtx-textfield" id="vrtx-textfield-collection-title">
         <input type="text" id="${titleBind}" name="${titleBind}" value="${newColTitle}" onkeyup="userTitleKeyUp('${titleBind}', '${nameBind}')" />
       </div>
-      <br />
-      <@vrtx.msg code="actions.createCollectionService.collection-name" default="Folder name" />:
-      <br />
+      <div class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.collection-name" default="Folder name" /></div>
       <div class="vrtx-textfield" id="vrtx-textfield-collection-name">
         <input type="text" id="${nameBind}" name="${nameBind}" value="${newColName}" onkeyup="disableReplaceTitle('${nameBind}')"  />
       </div>

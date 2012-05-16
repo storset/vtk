@@ -1219,6 +1219,27 @@ p#vrtx-file-upload-info-text {
   margin-top: 10px;
 }
 
+#vrtx-textfield-file-name input {
+  margin-right: -35px;
+  padding-right: 35px;
+}
+
+.vrtx-admin-label {
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+
+#vrtx-textfield-file-title,
+#vrtx-textfield-file-name,
+#vrtx-textfield-collection-title,
+#vrtx-textfield-collection-name {
+  clear: left;
+}
+
+.vrtx-admin-form .vrtx-checkbox {
+  margin-top: 10px;
+}
+
 /* ^ Tab forms */
 
 /* Trash can */

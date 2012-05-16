@@ -116,8 +116,11 @@ vrtxAdmin._$.ajaxSetup({
   timeout: 300000 // 5min
 });
 
+// Global vars that probably should be put inside vrtxAdmin
 var EDITOR_SAVE_BUTTON_NAME = "";
 var GET_FORM_ASYNCS_IN_PROGRESS = 0;
+var CREATE_DOCUMENT_REPLACE_TITLE = true;
+var CREATE_DOCUMENT_FILE_NAME = "";
                            
 // funcComplete for postAjaxForm()
 var doReloadFromServer = false; // global var changed by checkStillAdmin() (funcProceedCondition)             
@@ -766,20 +769,17 @@ vrtxAdmin._$(document).ready(function () {
 
 });
 
-var createDocument_replaceTitle = true;
-var createDocument_filename = "";
-
 function userTitleKeyUp(titleBind, nameBind, indexBind) {
-  var titleField = document.getElementById(titleBind);
-  var nameField = document.getElementById(nameBind);
-  var indexCheckbox = document.getElementById(indexBind);
-  if ((indexCheckbox == null || !indexCheckbox.checked) && createDocument_replaceTitle) {
-    nameField.value = replaceInvalidChar(titleField.value);
+  var titleField = $("#" + titleBind);
+  var nameField = $("#" + nameBind);
+  var indexCheckbox = $("#" + indexBind);
+  if ((indexCheckbox.length || !indexCheckbox.is(":checked")) && CREATE_DOCUMENT_REPLACE_TITLE) {
+    nameField.val(replaceInvalidChar(titleField.val()));
   }
 }
 
-function replaceInvalidChar(value) {
-  value = value.toLowerCase();
+function replaceInvalidChar(val) {
+  val = val.toLowerCase();
   var replaceMap = {
     " ": "-",
     "æ": "e",
@@ -792,49 +792,45 @@ function replaceInvalidChar(value) {
 
   for (var key in replaceMap) {
     var replaceThisCharGlobally = new RegExp(key,"g");
-    value = value.replace(replaceThisCharGlobally, replaceMap[key]);
+    val = val.replace(replaceThisCharGlobally, replaceMap[key]);
   }
 
-  return value;
+  return val;
 }
 
 function isIndexFile(nameBind, indexBind) {
-  var indexCheckbox = document.getElementById(indexBind);
-  var nameField = document.getElementById(nameBind);
-  if (indexCheckbox.checked) {
-    nameField.disabled = true
-    createDocument_filename = nameField.value;
-    nameField.value = 'index';
+  var indexCheckbox = $("#" + indexBind);
+  var nameField = $("#" + nameBind);
+  if (indexCheckbox.is(":checked")) {
+    nameField[0].disabled = true;
+    CREATE_DOCUMENT_FILE_NAME = nameField.val();
+    nameField.val('index');
   } else {
-    nameField.value = createDocument_filename;
-    nameField.disabled = false;
+    nameField.val(CREATE_DOCUMENT_FILE_NAME);
+    nameField[0].disabled = false;
   }
 }
 
 function disableReplaceTitle(nameBind) {
-  if (createDocument_replaceTitle) {
-    createDocument_replaceTitle = false;
+  if (CREATE_DOCUMENT_REPLACE_TITLE) {
+    CREATE_DOCUMENT_REPLACE_TITLE = false;
   }
-  var nameField = document.getElementById(nameBind);
-  nameField.value = replaceInvalidChar(nameField.value);
+  var nameField = $("#" + nameBind);
+  nameField.val(replaceInvalidChar(nameField.val()));
 }
 
 function toggleShowDescription(element, hasTitle) {
-  var descriptionElements = document.getElementsByName("radioDescription");
-
-  for(var i = 0; i < descriptionElements.length; i++){
-    descriptionElements[i].style.display = "none";
-  }
+  var descriptionElements = $("div[name='radioDescription']");
+  descriptionElements.hide();
 
   if(hasTitle) {
-    document.getElementById("vrtx-div-file-title").style.display = "";
+    $("#vrtx-div-file-title").show();
   } else {
-    document.getElementById("vrtx-div-file-title").style.display = "none";
+    $("#vrtx-div-file-title").hide();
   }
 
-  var descriptionElement = document.getElementById(element + "_description");
-  if (descriptionElement != null)
-    descriptionElement.style.display = "";
+  var descriptionElement = $("#" + element + "_description");
+  if (descriptionElement.length) descriptionElement.show();
 }
 
 
@@ -845,7 +841,7 @@ function toggleShowDescription(element, hasTitle) {
 VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
 
-  createDocument_replaceTitle = true;
+  CREATE_DOCUMENT_REPLACE_TITLE = true;
 
   var form = _$("form[name=fileUploadService]");
   if(!form.length) return;

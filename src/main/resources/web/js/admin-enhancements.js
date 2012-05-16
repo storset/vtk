@@ -366,8 +366,7 @@ vrtxAdmin._$(document).ready(function () {
     });
     vrtxAdm.completeFormAsync({
         selector: "form#" + resourceMenuLeftServices[i] + "-form input[type=submit]",
-        isReplacing: false,
-        updateSelectors: []
+        isReplacing: false
     });
   }
 
@@ -384,8 +383,7 @@ vrtxAdmin._$(document).ready(function () {
     });
     vrtxAdm.completeFormAsync({
         selector: "form#" + resourceMenuRightServices[i] + "-form input[type=submit]",
-        isReplacing: false,
-        updateSelectors: []
+        isReplacing: false
     });
   }
 
@@ -423,9 +421,7 @@ vrtxAdmin._$(document).ready(function () {
         });
         vrtxAdm.completeFormAsync({
           selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-          isReplacing: false,
-          updateSelectors: ["#contents"],
-          funcComplete: vrtxAdm.collectionListingInteraction
+          isReplacing: false
         });
         vrtxAdm.initFileUpload(); // when error message
       }
@@ -513,8 +509,7 @@ vrtxAdmin._$(document).ready(function () {
         });
         vrtxAdm.completeFormAsync({
           selector: "body#vrtx-about .prop-" + propsAbout[i] + " form input[type=submit]",
-          isReplacing: true,
-          updateSelectors: ["tr.prop-" + propsAbout[i]]
+          isReplacing: true
         });
       }
     }

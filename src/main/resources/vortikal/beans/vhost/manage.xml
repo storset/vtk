@@ -437,21 +437,6 @@
   <bean id="resourceIsLocked" class="org.vortikal.web.service.ResourceIsLockedAssertion">
   </bean>
 
-  <bean id="ownershipService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="aboutResourceService" />
-    <property name="assertions">
-      <list>
-        <ref local="delegateOwnershipPermissionAssertion" />
-        <ref local="manage.postRequestAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="delegate-ownership" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="ownershipHandler" />
-  </bean>
-
   <bean id="aclInheritanceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="permissionsService" />
     <property name="assertions">
@@ -541,49 +526,6 @@
       </list>
     </property>
     <property name="handler" ref="editReadProcessedPermissionsHandler" />
-  </bean>
-
-  <bean id="setContentTypeService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="aboutResourceService" />
-    <property name="assertions">
-      <list>
-        <ref bean="writePermissionAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="edit-content-type" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="setContentTypeController" />
-  </bean>
-
-  <bean id="setContentLanguageService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="aboutResourceService" />
-    <property name="assertions">
-      <list>
-        <ref bean="writePermissionAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="edit-language-type" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="setContentLanguageController" />
-  </bean>
-
-  <bean id="setCharacterEncodingService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="aboutResourceService" />
-    <property name="assertions">
-      <list>
-        <ref bean="writePermissionAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="edit-character-encoding" />
-        </bean>
-        <ref bean="contentTypeMatchesText" />
-      </list>
-    </property>
-    <property name="handler" ref="setCharacterEncodingController" />
   </bean>
 
   <bean id="resourceTypeIsHtml" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
@@ -931,14 +873,6 @@
     </property>
   </bean>
 
-  <bean id="ownershipHandler" class="org.vortikal.web.actions.properties.OwnershipController">
-    <property name="formView" value="admin" />
-    <property name="successView" value="redirect" />
-    <property name="commandName" value="ownershipForm" />
-    <property name="commandClass" value="org.vortikal.web.actions.properties.OwnershipCommand" />
-    <property name="principalFactory" ref="principalFactory" />
-  </bean>
-
   <bean id="aclInheritanceHandler" class="org.vortikal.web.actions.permissions.ToggleAclInheritanceController">
     <property name="viewName" value="redirectToPermissions" />
   </bean>
@@ -993,36 +927,6 @@
 
   <bean id="permissionsHandler" class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
     <property name="viewName" value="permissions" />
-  </bean>
-
-  <bean id="setContentTypeController" class="org.vortikal.web.actions.properties.ContentTypeController">
-    <property name="formView" value="admin" />
-    <property name="successView" value="redirect" />
-    <property name="commandName" value="editContentTypeForm" />
-    <property name="commandClass" value="org.vortikal.web.actions.properties.ContentTypeCommand" />
-  </bean>
-
-  <bean id="setContentLanguageController" class="org.vortikal.web.actions.properties.ContentLanguageController">
-    <property name="formView" value="admin" />
-    <property name="successView" value="redirect" />
-    <property name="commandName" value="editContentLanguageForm" />
-    <property name="commandClass" value="org.vortikal.web.actions.properties.ContentLanguageCommand" />
-    <!-- Using java locale codes to store language -->
-    <property name="possibleLanguages">
-      <list>
-        <value>unknown</value>
-        <value>no_NO</value>
-        <value>en</value>
-        <value>no_NO_NY</value>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="setCharacterEncodingController" class="org.vortikal.web.actions.properties.CharacterEncodingController">
-    <property name="formView" value="admin" />
-    <property name="successView" value="redirect" />
-    <property name="commandName" value="editCharacterEncodingForm" />
-    <property name="commandClass" value="org.vortikal.web.actions.properties.CharacterEncodingCommand" />
   </bean>
 
   <bean id="manageCollectionListingHandler" class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">

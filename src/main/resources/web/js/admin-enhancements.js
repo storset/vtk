@@ -393,8 +393,7 @@ vrtxAdmin._$(document).ready(function () {
     var tabMenuServices = ["fileUploadService", "createDocumentService", "createCollectionService"];
 
     for (i = tabMenuServices.length; i--;) {
-      if(tabMenuServices[i] != "fileUploadService"
-      && tabMenuServices[i] != "createDocumentService") {
+      if(tabMenuServices[i] == "createCollectionService") {
         vrtxAdm.getFormAsync({
           selector: "ul#tabMenuRight a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",
@@ -412,7 +411,7 @@ vrtxAdmin._$(document).ready(function () {
           funcComplete: vrtxAdm.collectionListingInteraction,
           post: true
         });
-      } else { // Half-async for file upload
+      } else { // Half-async for file upload and create document
         vrtxAdm.getFormAsync({
           selector: "ul#tabMenuRight a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",
@@ -781,12 +780,12 @@ function userTitleKeyUp(titleBind, nameBind, indexBind) {
 function replaceInvalidChar(val) {
   val = val.toLowerCase();
   var replaceMap = {
-    " ": "-",
-    "æ": "e",
-    "ø": "o",
-    "å": "a",
-    "%": "",
-    "#": "",
+    " ":   "-",
+    "æ":   "e",
+    "ø":   "o",
+    "å":   "a",
+    "%":   "",
+    "#":   "",
     "\\?": ""
   };
 

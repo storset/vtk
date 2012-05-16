@@ -14,3 +14,6 @@ insert into extra_prop_entry
 -- Drop now obsolete column vortex_resource.content_language:
 -- Not necessary to do right away, can be done later, when functionality is verified correct:
 -- alter table vortex_resource drop column content_language;
+
+-- Convert property 'commentsEnabled' to be inheritable:
+update extra_prop_entry set inheritable 'Y' where name_space is null and name = 'commentsEnabled';

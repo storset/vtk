@@ -36,7 +36,7 @@
       if (theuri) {
         var title = this.title;
         if (title) {
-          linkOrPlainText = "<a class='tree-link' href='" + theuri + "' title='" + title+ "'>" + text + "</a>"
+          linkOrPlainText = "<a class='tree-link' href='" + theuri + "' title='" + title + "'>" + text + "</a>"
         } else {
           linkOrPlainText = "<a href='" + theuri + "'>" + text + "</a>"
         }

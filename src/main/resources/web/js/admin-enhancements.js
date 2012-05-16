@@ -416,7 +416,7 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
-          funcComplete: function(p){ vrtxAdm.initFileUpload() },
+          funcComplete: function(p){ $("#initToggleShowDescription").click(); vrtxAdm.initFileUpload() },
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({
@@ -699,38 +699,38 @@ vrtxAdmin._$(document).ready(function () {
     }
 
     // Add save/help when CK is maximized
-    _$("#app-content").on("click", ".cke_button_maximize.cke_on", function(e) {	
-      var stickyBar = _$("#vrtx-editor-title-submit-buttons");			
+    _$("#app-content").on("click", ".cke_button_maximize.cke_on", function(e) { 
+      var stickyBar = _$("#vrtx-editor-title-submit-buttons");          
       stickyBar.hide();
-    	 
+         
       var ckInject = _$.single(this).closest(".cke_skin_kama")
                                     .find(".cke_toolbar_end:last");
                                
       if(!ckInject.find("#editor-help-menu").length) {  
-      	var shortcuts = stickyBar.find(".submit-extra-buttons");
-      	var save = shortcuts.find("#vrtx-save").html();
-      	var helpMenu = "<div id='editor-help-menu' class='js-on'>" + shortcuts.find("#editor-help-menu").html() + "</div>";
-      	ckInject.append("<div class='ck-injected-save-help'>" + save + helpMenu + "</div>");
-      	
-      	// Fix markup
-      	var saveInjected = ckInject.find(".ck-injected-save-help > a");
-      	if(!saveInjected.hasClass("vrtx-button")) {
-      	  saveInjected.addClass("vrtx-button");
-      	  if(!saveInjected.find("> span").length) {
-      	    saveInjected.wrapInner("<span />");
-      	  }
+        var shortcuts = stickyBar.find(".submit-extra-buttons");
+        var save = shortcuts.find("#vrtx-save").html();
+        var helpMenu = "<div id='editor-help-menu' class='js-on'>" + shortcuts.find("#editor-help-menu").html() + "</div>";
+        ckInject.append("<div class='ck-injected-save-help'>" + save + helpMenu + "</div>");
+        
+        // Fix markup
+        var saveInjected = ckInject.find(".ck-injected-save-help > a");
+        if(!saveInjected.hasClass("vrtx-button")) {
+          saveInjected.addClass("vrtx-button");
+          if(!saveInjected.find("> span").length) {
+            saveInjected.wrapInner("<span />");
+          }
         }
         if(saveInjected.hasClass("vrtx-button")) {
           saveInjected.removeClass("vrtx-focus-button");
-      	}
-      	
+        }
+        
       } else {
         ckInject.find(".ck-injected-save-help").show();
       }
     }); 
 
-    _$("#app-content").on("click", ".cke_button_maximize.cke_off", function(e) {	
-      var stickyBar = _$("#vrtx-editor-title-submit-buttons");			
+    _$("#app-content").on("click", ".cke_button_maximize.cke_off", function(e) {    
+      var stickyBar = _$("#vrtx-editor-title-submit-buttons");          
       stickyBar.show();
       var ckInject = _$.single(this).closest(".cke_skin_kama").find(".ck-injected-save-help").hide();
     }); 
@@ -766,11 +766,76 @@ vrtxAdmin._$(document).ready(function () {
 
 });
 
-/* Used by "createDocumentService" available from "manageCollectionListingService" */
-function changeTemplateName(n) {
-  vrtxAdmin._$("form[name=createDocumentService] input[type=text]").val(n);
+var createDocument_replaceTitle = true;
+var createDocument_filename = "";
+
+function userTitleKeyUp(titleBind, nameBind, indexBind) {
+  var titleField = document.getElementById(titleBind);
+  var nameField = document.getElementById(nameBind);
+  var indexCheckbox = document.getElementById(indexBind);
+  if ((indexCheckbox == null || !indexCheckbox.checked) && createDocument_replaceTitle) {
+    nameField.value = replaceInvalidChar(titleField.value);
+  }
 }
 
+function replaceInvalidChar(value) {
+  value = value.toLowerCase();
+  var replaceMap = {
+    " ": "-",
+    "æ": "e",
+    "ø": "o",
+    "å": "a",
+    "%": "",
+    "#": "",
+    "\\?": ""
+  };
+
+  for (var key in replaceMap) {
+    var replaceThisCharGlobally = new RegExp(key,"g");
+    value = value.replace(replaceThisCharGlobally, replaceMap[key]);
+  }
+
+  return value;
+}
+
+function isIndexFile(nameBind, indexBind) {
+  var indexCheckbox = document.getElementById(indexBind);
+  var nameField = document.getElementById(nameBind);
+  if (indexCheckbox.checked) {
+    nameField.disabled = true
+    createDocument_filename = nameField.value;
+    nameField.value = 'index';
+  } else {
+    nameField.value = createDocument_filename;
+    nameField.disabled = false;
+  }
+}
+
+function disableReplaceTitle(nameBind) {
+  if (createDocument_replaceTitle) {
+    createDocument_replaceTitle = false;
+  }
+  var nameField = document.getElementById(nameBind);
+  nameField.value = replaceInvalidChar(nameField.value);
+}
+
+function toggleShowDescription(element, hasTitle) {
+  var descriptionElements = document.getElementsByName("radioDescription");
+
+  for(var i = 0; i < descriptionElements.length; i++){
+    descriptionElements[i].style.display = "none";
+  }
+
+  if(hasTitle) {
+    document.getElementById("vrtx-div-file-title").style.display = "";
+  } else {
+    document.getElementById("vrtx-div-file-title").style.display = "none";
+  }
+
+  var descriptionElement = document.getElementById(element + "_description");
+  if (descriptionElement != null)
+    descriptionElement.style.display = "";
+}
 
 
 /*-------------------------------------------------------------------*\
@@ -780,15 +845,17 @@ function changeTemplateName(n) {
 VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
 
+  createDocument_replaceTitle = true;
+
   var form = _$("form[name=fileUploadService]");
   if(!form.length) return;
   var inputFile = form.find("#file");
 
   _$("<div class='vrtx-textfield vrtx-file-upload'><input id='fake-file' type='text' /><a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a></div>'")
     .insertAfter(inputFile);
-      
+ 
   inputFile.addClass("js-on");
-      
+
   inputFile.change(function(e) {
     var filePath = _$.single(this).val();
     filePath = filePath.substring(filePath.lastIndexOf("\\")+1);
@@ -1076,7 +1143,7 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
 
 
 /*-------------------------------------------------------------------*\
-    7. Permissions	
+    7. Permissions  
 \*-------------------------------------------------------------------*/
 
 function initPermissionForm(selectorClass) {
@@ -1153,7 +1220,7 @@ function autocompleteTags(selector) {
 
 
 /*-------------------------------------------------------------------*\
-    8. Dropdowns	
+    8. Dropdowns    
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.dropdownLanguageMenu = function dropdownLanguageMenu(selector) {
@@ -1280,7 +1347,7 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
 
 
 /*-------------------------------------------------------------------*\
-    9. Async functions	
+    9. Async functions  
 \*-------------------------------------------------------------------*/
 
 /**
@@ -1702,7 +1769,7 @@ VrtxAdmin.prototype.retrieveHTMLTemplates = function retrieveHTMLTemplates(fileN
 
 
 /*-------------------------------------------------------------------*\
-    10. Async helper functions and AJAX server façade	
+    10. Async helper functions and AJAX server façade   
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function appendInputNameValuePairsToDataString(inputFields) { 
@@ -1866,7 +1933,7 @@ function showHideProperty(id, init, show) {
 
 
 /*-------------------------------------------------------------------*\
-	12. Multiple inputfields
+    12. Multiple inputfields
 \*-------------------------------------------------------------------*/
 
 // TODO: simplify
@@ -1897,7 +1964,7 @@ function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDown
       isBrowsable = true;
       if(inputFieldParent.next().hasClass("vrtx-button")) {
         inputFieldParent.next().hide();
-      }	
+      } 
     }
 
     if (isBrowsable && (typeof browseBase === "undefined" 
@@ -1927,22 +1994,22 @@ function initMultipleInputFields() {
   var wrapper = $("#app-content");
 
   wrapper.on("click", ".vrtx-multipleinputfield button.remove", function(e){
-	removeFormField($(this));
+    removeFormField($(this));
         e.preventDefault();
         e.stopPropagation();
   });
   wrapper.on("click", ".vrtx-multipleinputfield button.moveup", function(e){
-	moveUpFormField($(this));
+    moveUpFormField($(this));
         e.preventDefault();
         e.stopPropagation();
   });
   wrapper.on("click", ".vrtx-multipleinputfield button.movedown", function(e){
-	moveDownFormField($(this));
+    moveDownFormField($(this));
         e.preventDefault();
         e.stopPropagation();
   });
   wrapper.on("click", ".vrtx-multipleinputfield button.browse-resource-ref", function(e){
-	browseServer($(this).parent().parent().find('input').attr('id'), browseBase, browseBaseFolder, browseBasePath, 'File');
+    browseServer($(this).parent().parent().find('input').attr('id'), browseBase, browseBaseFolder, browseBasePath, 'File');
         e.preventDefault();
         e.stopPropagation();
   });
@@ -2072,7 +2139,7 @@ function formatMultipleInputFields(name) {
 
 
 /*-------------------------------------------------------------------*\
-	13. CK browse server integration
+    13. CK browse server integration
 \*-------------------------------------------------------------------*/
 
 var urlobj;
@@ -2174,7 +2241,7 @@ function SetUrl(url) {
 
 
 /*-------------------------------------------------------------------*\
-	14. Utils
+    14. Utils
 \*-------------------------------------------------------------------*/
 
 // Use our own wrap function
@@ -2226,16 +2293,16 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
 
 
 /*-------------------------------------------------------------------*\
-	15. Override JavaScript / jQuery
-\*-------------------------------------------------------------------*/	
-	
+    15. Override JavaScript / jQuery
+\*-------------------------------------------------------------------*/ 
+    
 /* 
-	Override slideUp() / slideDown() to animate rows in a table
-	
-	Credits: 
+    Override slideUp() / slideDown() to animate rows in a table
+    
+    Credits: 
     o http://stackoverflow.com/questions/467336/jquery-how-to-use-slidedown-or-show-function-on-a-table-row/920480#920480
     o http://www.bennadel.com/blog/1624-Ask-Ben-Overriding-Core-jQuery-Methods.htm
-*/	
+*/  
 
 jQuery.fn.prepareTableRowForSliding = function() {
   $tr = this;

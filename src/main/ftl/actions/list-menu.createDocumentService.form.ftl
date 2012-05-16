@@ -23,7 +23,7 @@
         <#if createDocumentForm.name?exists>
           <#assign newDocName = createDocumentForm.name>
         </#if>
-        <#if templates?exists && templates?size &gt; 0>
+        <#if templates?has_content>
           <ul class="radio-buttons">
             <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", descriptions, titles, true />
           </ul>

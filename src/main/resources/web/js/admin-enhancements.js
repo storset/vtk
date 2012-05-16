@@ -773,7 +773,7 @@ function userTitleKeyUp(titleBind, nameBind, indexBind) {
   var titleField = $("#" + titleBind);
   var nameField = $("#" + nameBind);
   var indexCheckbox = $("#" + indexBind);
-  if ((indexCheckbox.length || !indexCheckbox.is(":checked")) && CREATE_DOCUMENT_REPLACE_TITLE) {
+  if ((!indexCheckbox.length || !indexCheckbox.is(":checked")) && CREATE_DOCUMENT_REPLACE_TITLE) {
     nameField.val(replaceInvalidChar(titleField.val()));
   }
 }

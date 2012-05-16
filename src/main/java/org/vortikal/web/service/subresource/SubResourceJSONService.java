@@ -110,7 +110,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             // Generate title
             StringBuilder title = new StringBuilder();
             String name = HtmlUtil.escapeHtmlString(sr.getName());
-            String uriService = URL.encode(permissionsService.constructURL(Path.fromString(sr.getUri())).getPathRepresentation());
+            String uriService = permissionsService.constructURL(Path.fromString(sr.getUri())).getPathRepresentation();
 
             title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + name + "</strong>");
             if (sr.isInheritedAcl()) {
@@ -144,7 +144,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
 
             // Add to JSON-object
             o.put("text", name);
-            o.put("uri", URL.encode(sr.getUri()));
+            o.put("uri", sr.getUri());
             o.put("title", title.toString());
             o.put("listClasses", listClasses);
             o.put("spanClasses", spanClasses);

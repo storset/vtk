@@ -1241,6 +1241,10 @@ p#vrtx-file-upload-info-text {
   margin-bottom: 5px;
 }
 
+#initToggleShowDescription {
+  display: none;
+}
+
 .vrtx-admin-form .vrtx-checkbox {
   margin-top: 10px;
 }

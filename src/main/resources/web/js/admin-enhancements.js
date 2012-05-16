@@ -398,6 +398,7 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
+          funcComplete: function(p){ CREATE_DOCUMENT_REPLACE_TITLE = true; $("#initToggleShowDescription").click(); },
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({ 
@@ -416,7 +417,7 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
-          funcComplete: function(p){ $("#initToggleShowDescription").click(); vrtxAdm.initFileUpload() },
+          funcComplete: function(p){ CREATE_DOCUMENT_REPLACE_TITLE = true; $("#initToggleShowDescription").click(); vrtxAdm.initFileUpload() },
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({
@@ -834,9 +835,6 @@ function toggleShowDescription(element, hasTitle) {
 
 VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
-
-  CREATE_DOCUMENT_REPLACE_TITLE = true;
-
   var form = _$("form[name=fileUploadService]");
   if(!form.length) return;
   var inputFile = form.find("#file");

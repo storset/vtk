@@ -27,7 +27,7 @@
           <ul class="radio-buttons">
             <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", descriptions, titles, true />
           </ul>
-          <button id="initToggleShowDescription" style="none" type="button" onclick="toggleShowDescription('${templates[sourceURIBind]}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button> 
+          <button id="initToggleShowDescription" type="button" onclick="toggleShowDescription('${templates[sourceURIBind]}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button> 
         </#if>
       </#compress>
 
@@ -40,21 +40,25 @@
       <@spring.bind "createDocumentForm" + ".isIndex" /> 
       <#assign isIndexBind = spring.status.expression>
       <@actionsLib.genErrorMessages spring.status.errorMessages />
+
       <div id="vrtx-div-file-title">
-      <div class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.title" default="Title" /></div>
-      <div class="vrtx-textfield" id="vrtx-textfield-file-title">
-        <input type="text" id="${titleBind}" name="${titleBind}" value="${newDocTitle}" onkeyup="userTitleKeyUp('${titleBind}', '${nameBind}', '${isIndexBind}')" />
+        <div class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.title" default="Title" /></div>
+        <div class="vrtx-textfield" id="vrtx-textfield-file-title">
+          <input type="text" id="${titleBind}" name="${titleBind}" value="${newDocTitle}" onkeyup="userTitleKeyUp('${titleBind}', '${nameBind}', '${isIndexBind}')" />
+        </div>
       </div>
-      </div>
+
       <div id="vrtx-div-file-name">
-      <div class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.filename" default="Filename" /></div>
-      <div class="vrtx-textfield" id="vrtx-textfield-file-name">
-        <input type="text" id="${nameBind}" name="${nameBind}" value="${newDocName}" onkeyup="disableReplaceTitle('${nameBind}')" />.html
+        <div class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.filename" default="Filename" /></div>
+        <div class="vrtx-textfield" id="vrtx-textfield-file-name">
+          <input type="text" id="${nameBind}" name="${nameBind}" value="${newDocName}" onkeyup="disableReplaceTitle('${nameBind}')" />.html
+        </div>
       </div>
-      </div>
+
       <div class="vrtx-checkbox">
         <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" onClick="isIndexFile('${nameBind}', '${isIndexBind}')" /> <@vrtx.msg code="actions.createDocumentService.index" default="Is index-file" />(?)
       </div>
+
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createDocumentService.save" "actions.createDocumentService.cancel" />
     </form>
   </div>

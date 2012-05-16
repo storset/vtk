@@ -1257,11 +1257,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                     PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME, string));
         }
 
-        string = (String) resourceMap.get("contentLanguage");
-        if (string != null) {
-            resourceImpl.addProperty(createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME,
-                    string));
-        }
+//        string = (String) resourceMap.get("contentLanguage");
+//        if (string != null) {
+//            resourceImpl.addProperty(createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME,
+//                    string));
+//        }
 
         resourceImpl.addProperty(createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME,
                 resourceMap.get("lastModified")));
@@ -1344,24 +1344,23 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         map.put("uri", r.getURI().toString());
         map.put("resourceType", r.getResourceType());
 
-        // XXX: get list of names from PropertyType.SPECIAL_PROPERTIES:
-        map.put("collection", r.isCollection() ? "Y" : "N");
-        map.put("owner", r.getOwner().getQualifiedName());
-        map.put("creationTime", r.getCreationTime());
-        map.put("createdBy", r.getCreatedBy().getQualifiedName());
-        map.put("contentType", r.getContentType());
-        map.put("characterEncoding", r.getCharacterEncoding());
-        map.put("userSpecifiedCharacterEncoding", r.getUserSpecifiedCharacterEncoding());
-        map.put("guessedCharacterEncoding", r.getGuessedCharacterEncoding());
+        map.put(PropertyType.COLLECTION_PROP_NAME, r.isCollection() ? "Y" : "N");
+        map.put(PropertyType.OWNER_PROP_NAME, r.getOwner().getQualifiedName());
+        map.put(PropertyType.CREATIONTIME_PROP_NAME, r.getCreationTime());
+        map.put(PropertyType.CREATEDBY_PROP_NAME, r.getCreatedBy().getQualifiedName());
+        map.put(PropertyType.CONTENTTYPE_PROP_NAME, r.getContentType());
+        map.put(PropertyType.CHARACTERENCODING_PROP_NAME, r.getCharacterEncoding());
+        map.put(PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME, r.getUserSpecifiedCharacterEncoding());
+        map.put(PropertyType.CHARACTERENCODING_GUESSED_PROP_NAME, r.getGuessedCharacterEncoding());
         // XXX: contentLanguage should be contentLocale:
-        map.put("contentLanguage", r.getContentLanguage());
-        map.put("lastModified", r.getLastModified());
-        map.put("modifiedBy", r.getModifiedBy().getQualifiedName());
-        map.put("contentLastModified", r.getContentLastModified());
-        map.put("contentModifiedBy", r.getContentModifiedBy().getQualifiedName());
-        map.put("propertiesLastModified", r.getPropertiesLastModified());
-        map.put("propertiesModifiedBy", r.getPropertiesModifiedBy().getQualifiedName());
-        map.put("contentLength", new Long(r.getContentLength()));
+//        map.put("contentLanguage", r.getContentLanguage());
+        map.put(PropertyType.LASTMODIFIED_PROP_NAME, r.getLastModified());
+        map.put(PropertyType.MODIFIEDBY_PROP_NAME, r.getModifiedBy().getQualifiedName());
+        map.put(PropertyType.CONTENTLASTMODIFIED_PROP_NAME, r.getContentLastModified());
+        map.put(PropertyType.CONTENTMODIFIEDBY_PROP_NAME, r.getContentModifiedBy().getQualifiedName());
+        map.put(PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME, r.getPropertiesLastModified());
+        map.put(PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME, r.getPropertiesModifiedBy().getQualifiedName());
+        map.put(PropertyType.CONTENTLENGTH_PROP_NAME, new Long(r.getContentLength()));
 
         return map;
     }

@@ -31,15 +31,14 @@
 package org.vortikal.repository;
 
 import org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinition;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 
 public final class TypeInfo {
 
-    PrimaryResourceTypeDefinition resourceTypeDefinition;
-    ResourceTypeTree resourceTypeTree;
+    private PrimaryResourceTypeDefinition resourceTypeDefinition;
+    private ResourceTypeTree resourceTypeTree;
     
     public TypeInfo(ResourceTypeTree resourceTypeTree, String type) {
         this.resourceTypeTree = resourceTypeTree;
@@ -81,7 +80,7 @@ public final class TypeInfo {
         ResourceTypeDefinition type = this.resourceTypeTree.getResourceTypeDefinitionByName(name);
         return isOfType(type);
     }
-    
+
     /**
      * Creates a property with a given name space and name
      *
@@ -93,7 +92,7 @@ public final class TypeInfo {
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
         return propDef.createProperty();
     }
-    
+
     /**
      * Creates a property with a given namespace, name and value. The
      * type is set according to its {@link PropertyTypeDefinition property
@@ -109,6 +108,17 @@ public final class TypeInfo {
     public Property createProperty(Namespace namespace, String name, Object value) throws ValueFormatException {
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, name);
         return propDef.createProperty(value);
+    }
+
+    /**
+     * Gets the {@link PropertyTypeDefinition} for property by namespace and name.
+     * 
+     * @param ns the namspace
+     * @param name the name
+     * @return the <code>PropertyTypeDefinition</code> instance.
+     */
+    public PropertyTypeDefinition getPropertyTypeDefinition(Namespace ns, String name) {
+        return this.resourceTypeTree.getPropertyTypeDefinition(ns, name);
     }
 
 }

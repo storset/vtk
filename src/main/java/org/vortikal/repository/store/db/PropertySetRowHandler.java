@@ -269,13 +269,13 @@ class PropertySetRowHandler implements RowHandler {
         }
         
         // contentLanguage
-        string = (String)row.get("contentLanguage");
-        if (string != null) {
-            propDef = this.resourceTypeTree.getPropertyTypeDefinition(
-                    Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME);
-            prop = propDef.createProperty(string);
-            propertySet.addProperty(prop);
-        }
+//        string = (String)row.get("contentLanguage");
+//        if (string != null) {
+//            propDef = this.resourceTypeTree.getPropertyTypeDefinition(
+//                    Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME);
+//            prop = propDef.createProperty(string);
+//            propertySet.addProperty(prop);
+//        }
         
         // lastModified
         propDef = this.resourceTypeTree.getPropertyTypeDefinition(

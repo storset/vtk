@@ -288,9 +288,12 @@
       <#if prefix?is_string>
         ${prefix}
       </#if>
-      ${value?trim}<#compress>
+      <#compress>
       <#local l=vrtx.resourceLanguage()?string />
-      <#if value?trim != l?trim>, <@vrtx.msg "language.inherits" "inherits"/> ${l?lower_case}
+      <#if .vars['aboutItems'][propName].property.inherited>
+          <@vrtx.msg "resource.property.unset" "Not set"/>, <@vrtx.msg "language.inherits" "inherits"/> ${l?lower_case}
+      <#else>
+          ${l}
       </#if>
       </#compress>
       <#if editURL != "">

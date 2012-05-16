@@ -31,6 +31,7 @@
 
 package org.vortikal.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -41,6 +42,10 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 public class InheritablePropertiesStoreContext implements StoreContext {
     
     private final List<PropertyTypeDefinition> affectedProperties;
+    
+    public InheritablePropertiesStoreContext() {
+        this.affectedProperties = new ArrayList<PropertyTypeDefinition>();
+    }
 
     public InheritablePropertiesStoreContext(List<PropertyTypeDefinition> defs) {
         if (defs == null) {
@@ -54,6 +59,15 @@ public class InheritablePropertiesStoreContext implements StoreContext {
         }
         
         this.affectedProperties = defs;
+    }
+    
+    public void addAffectedProperty(PropertyTypeDefinition def) {
+        if (!def.isInheritable()) {
+            throw new IllegalArgumentException("Only inheritable properties can be set in this context");
+        }
+        if (!this.affectedProperties.contains(def)) {
+            this.affectedProperties.add(def);
+        }
     }
     
     public List<PropertyTypeDefinition> getAffectedProperties() {

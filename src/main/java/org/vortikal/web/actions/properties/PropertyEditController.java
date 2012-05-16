@@ -54,6 +54,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.InheritablePropertiesStoreContext;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -82,7 +83,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
 /**
  * A {@link Property property} edit controller. This class is both a form
  * controller and {@link ReferenceDataProvider}, allowing it to both display and
- * edit a list of properties based on their {@link PropertyTyeDefinition
+ * edit a list of properties based on their {@link PropertyTypeDefinition
  * definitions}.
  * 
  * <p>
@@ -386,8 +387,15 @@ public class PropertyEditController extends SimpleFormController implements Refe
                                 hook.modified(def, resource);
                         }
                     }
+                    
+                    if (def.isInheritable() && (created || removed || modified)) {
+                        InheritablePropertiesStoreContext sc = new InheritablePropertiesStoreContext();
+                        sc.addAffectedProperty(def);
+                        repository.store(token, resource, sc);
+                    } else {
+                        repository.store(token, resource);                        
+                    }
 
-                    repository.store(token, resource);
                 } catch (ConstraintViolationException e) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Error storing resource " + resource + ": constraint violation", e);

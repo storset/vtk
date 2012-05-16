@@ -125,7 +125,7 @@ public final class PropertyType {
             CHARACTERENCODING_PROP_NAME,
             CHARACTERENCODING_USER_SPECIFIED_PROP_NAME,
             CHARACTERENCODING_GUESSED_PROP_NAME,
-            CONTENTLOCALE_PROP_NAME,
+//            CONTENTLOCALE_PROP_NAME,
             LASTMODIFIED_PROP_NAME,
             MODIFIEDBY_PROP_NAME,
             CONTENTLASTMODIFIED_PROP_NAME,
@@ -145,5 +145,4 @@ public final class PropertyType {
         Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
             NUMBER_OF_COMMENTS_PROP_NAME
     )));
-
 }

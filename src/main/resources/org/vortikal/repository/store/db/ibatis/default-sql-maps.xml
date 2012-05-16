@@ -17,7 +17,7 @@
     <result property="propertiesModifiedBy" column="properties_modified_by" />
     <result property="modifiedBy" column="modified_by" />
     <result property="owner" column="resource_owner" />
-    <result property="contentLanguage" column="content_language" />
+<!--    <result property="contentLanguage" column="content_language" />-->
     <result property="contentType" column="content_type" />
     <result property="contentLength" column="content_length" javaType="long" />
     <result property="characterEncoding" column="character_encoding" />
@@ -145,7 +145,7 @@
       content_modified_by = #contentModifiedBy#,
       properties_modified_by = #propertiesModifiedBy#,
       resource_owner = #owner#,
-      content_language = #contentLanguage#,
+<!--      content_language = #contentLanguage#,-->
       content_type = #contentType#,
       character_encoding = #characterEncoding#,
       guessed_character_encoding = #guessedCharacterEncoding#,
@@ -173,7 +173,7 @@
        content_modified_by,
        properties_modified_by,
        resource_owner,
-       content_language,
+<!--       content_language,-->
        content_type,
        character_encoding,
        guessed_character_encoding,
@@ -196,7 +196,7 @@
        #contentModifiedBy#,
        #propertiesModifiedBy#,
        #owner#,
-       #contentLanguage#, 
+<!--       #contentLanguage#, -->
        #contentType#,
        #characterEncoding#,
        #guessedCharacterEncoding#,
@@ -224,7 +224,7 @@
        content_modified_by,
        properties_modified_by,
        resource_owner,
-       content_language,
+<!--       content_language,-->
        content_type,
        character_encoding,
        guessed_character_encoding,
@@ -254,8 +254,8 @@
       <isNotPropertyAvailable property="propertiesModifiedBy">properties_modified_by,</isNotPropertyAvailable>
       <isPropertyAvailable property="owner">#owner#,</isPropertyAvailable>
       <isNotPropertyAvailable property="owner">resource_owner,</isNotPropertyAvailable>
-      <isPropertyAvailable property="contentLanguage">#contentLanguage#,</isPropertyAvailable>
-      <isNotPropertyAvailable property="contentLanguage">content_language,</isNotPropertyAvailable>
+<!--      <isPropertyAvailable property="contentLanguage">#contentLanguage#,</isPropertyAvailable>-->
+<!--      <isNotPropertyAvailable property="contentLanguage">content_language,</isNotPropertyAvailable>-->
       <isPropertyAvailable property="contentType">#contentType#,</isPropertyAvailable>
       <isNotPropertyAvailable property="contentType">content_type,</isNotPropertyAvailable>
       <isPropertyAvailable property="characterEncoding">#characterEncoding#,</isPropertyAvailable>

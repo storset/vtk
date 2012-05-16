@@ -20,7 +20,7 @@
  *  3.  DOM is ready
  *  4.  Create service
  *  5.  File upload service
- *  6.  Keyboard interceptors / rerouters
+ *  6.  Keyboard intercept / reroute, shortcuts and buttonizing
  *  7.  Collectionlisting interaction
  *  8.  Permissions
  *  9.  Dropdowns
@@ -897,7 +897,7 @@ VrtxAdmin.prototype.supportsReadOnly = function supportsReadOnly(inputfield) {
 
 
 /*-------------------------------------------------------------------*\
-    6. Keyboard interceptors / rerouters
+    6. Keyboard intercept / reroute, shortcuts and buttonizing
 \*-------------------------------------------------------------------*/
 
 function interceptEnterKey(idOrClass) {

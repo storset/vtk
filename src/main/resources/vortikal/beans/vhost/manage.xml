@@ -784,7 +784,6 @@
     <property name="principalManager" ref="principalManager" />
     <property name="principalFactory" ref="principalFactory" />
     <property name="localeResolver" ref="manageLocaleResolver" />
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
   
   <bean id="fileUploadHandler" class="org.vortikal.web.actions.create.FileUploadController">
@@ -1600,14 +1599,25 @@
 
   <bean id="aboutView" parent="freemarkerView">
     <property name="url" value="pages/about.ftl" />
-    <property name="referenceDataProviders">
+    <property name="referenceDataProviders" ref="aboutView.referenceDataProviders" />
+  </bean>
+
+  <bean id="aboutView.referenceDataProviders" class="org.vortikal.context.UnionFactoryBean">
+    <property name="elements1">
       <list>
         <ref bean="resourceContextProvider" />
         <ref bean="aboutResourceHandler" />
         <ref bean="resourceDetailProvider" />
       </list>
     </property>
+    <property name="elements2" ref="aboutView.additionalReferenceDataProviders" />
   </bean>
+
+  <bean id="aboutView.additionalReferenceDataProviders" class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.referencedata.CategorizableReferenceDataProvider" />
+    <property name="category" value="aboutView.referenceDataProvider" />
+  </bean>
+
 
   <bean id="manageCollectionListingView" parent="freemarkerView">
     <property name="url" value="pages/manage-collectionlisting.ftl" />

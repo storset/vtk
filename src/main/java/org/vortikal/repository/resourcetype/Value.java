@@ -32,11 +32,11 @@ package org.vortikal.repository.resourcetype;
 
 import java.util.Date;
 
-import net.sf.json.JSONObject;
-
 import org.vortikal.repository.IllegalOperationException;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.security.Principal;
+
+import net.sf.json.JSONObject;
 
 public class Value implements Cloneable, Comparable<Value> {
 
@@ -277,9 +277,9 @@ public class Value implements Cloneable, Comparable<Value> {
         case LONG:
             return new Value(this.longValue);
         case DATE:
-            return new Value((Date) this.dateValue.clone(), true);
+            return new Value(this.dateValue, true);
         case TIMESTAMP:
-            return new Value((Date) this.dateValue.clone(), false);
+            return new Value(this.dateValue, false);
         case PRINCIPAL:
             return new Value(this.principalValue);
         case BINARY:

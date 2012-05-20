@@ -158,6 +158,7 @@ public class PropertyImpl implements Cloneable, Property {
         
         validateValue(value);
         this.value = value;
+        this.inherited = false;
     }
     
     @Override
@@ -168,6 +169,7 @@ public class PropertyImpl implements Cloneable, Property {
         
         validateValues(values);
         this.values = values;
+        this.inherited = false;
     }
     
     @Override

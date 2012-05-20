@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.store.db;
 
-
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;

@@ -121,9 +121,6 @@ public class ProppatchController extends AbstractWebdavController  {
             InheritablePropertiesStoreContext sc = new InheritablePropertiesStoreContext();
             for (Property prop: resource) {
                 PropertyTypeDefinition def = prop.getDefinition();
-                // XXX Check of prop.isInherited() is not bullet proof yet, probably need to reset
-                //     inherited-flag when a new value is set on a PropertyImpl.
-                //     In this case we should be OK, since a new PropertyImpl is created.
                 if (def.isInheritable() && PropertyType.CONTENTLOCALE_PROP_NAME.equals(def.getName()) && !prop.isInherited()) {
                     sc.addAffectedProperty(def);
                 }

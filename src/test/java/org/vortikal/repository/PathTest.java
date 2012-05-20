@@ -118,7 +118,7 @@ public class PathTest extends TestCase {
         assertEquals(3, paths.get(3).getDepth());
 
         assertNull(Path.fromString("/").getParent());
-        assertEquals(Path.fromString("/"), Path.fromString("/a").getParent());
+        assertEquals(Path.ROOT, Path.fromString("/a").getParent());
         assertEquals(Path.fromString("/a"), Path.fromString("/a/b").getParent());
         assertEquals(Path.fromString("/a/b"), Path.fromString("/a/b/c").getParent());
 

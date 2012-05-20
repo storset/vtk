@@ -304,7 +304,6 @@
 </#macro>
 
 <#macro commentsEnabledPropertyDisplay propName name value prefix=false editURL="">
-  <#local result = vrtx.resolveInheritedProperty("commentsEnabled") />
   <tr class="prop-${propName}">
     <td class="key">
       ${name}:
@@ -313,13 +312,11 @@
       <#if prefix?is_string>
         ${prefix}
       </#if>
-      <#if result.localizedValue?exists>
-        ${result.localizedValue?trim}
-      <#else>
-        ${value?trim}
-      </#if>
+      ${value?trim}
       <#compress>
-      <#--if result.inherited>&nbsp;<@vrtx.msg "property.inherited"  "(inherited)" /></#if-->
+      <#if .vars['aboutItems'][propName].property?exists && .vars['aboutItems'][propName].property.inherited>
+         &nbsp;(<@vrtx.msg "resource.property.inherited"  "inherited" />)
+      </#if>
       </#compress>
       <#if editURL != "">
         ${editURL}

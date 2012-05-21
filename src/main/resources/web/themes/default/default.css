@@ -1241,11 +1241,9 @@ p#vrtx-file-upload-info-text {
   margin-bottom: 5px;
 }
 
-.radioDescription {
-  display: none;
-}
-
-#initToggleShowDescription {
+.radioDescription,
+#initToggleShowDescription,
+#vrtx-div-file-title {
   display: none;
 }
 

@@ -23,6 +23,9 @@
         <#if createDocumentForm.name?exists>
           <#assign newDocName = createDocumentForm.name>
         </#if>
+        <#if createDocumentForm.isIndex?exists>
+          <#assign isIndex = createDocumentForm.isIndex>
+        </#if>
         <#if templates?has_content>
           <ul class="radio-buttons">
             <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", descriptions, titles, true />
@@ -63,7 +66,7 @@
       </div>
 
       <div class="vrtx-checkbox" id="vrtx-checkbox-is-index">
-        <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" /> <@vrtx.msg code="actions.createDocumentService.index" default="Is index-file" />(?)
+        <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" <#if isIndex>checked</#if> /> <@vrtx.msg code="actions.createDocumentService.index" default="Is index-file" />(?)
       </div>
 
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createDocumentService.save" "actions.createDocumentService.cancel" />

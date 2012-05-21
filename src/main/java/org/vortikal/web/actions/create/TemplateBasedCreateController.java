@@ -137,14 +137,6 @@ public class TemplateBasedCreateController extends SimpleFormController {
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
 
-        String title = createDocumentCommand.getTitle();
-        Resource source = repository.retrieve(token, Path.fromString(createDocumentCommand.getSourceURI()), false);
-        if ((title == null || "".equals(title.trim())) && source.getTitle().equals(titlePlaceholder)) {
-            errors.rejectValue("title", "manage.create.document.missing.title",
-                    "A title must be provided for the document");
-            return;
-        }
-
         String name;
         if (createDocumentCommand.getIsIndex())
             name = "index";
@@ -207,6 +199,9 @@ public class TemplateBasedCreateController extends SimpleFormController {
                 destinationURI, false)));
 
         String line, title = createDocumentCommand.getTitle();
+        if (title == null)
+            title = "";
+
         String ct = repository.retrieve(token, destinationURI, false).getContentType();
         if (ct.equals("application/json")) {
             title = title.replaceAll("\"", "\\\\\"");

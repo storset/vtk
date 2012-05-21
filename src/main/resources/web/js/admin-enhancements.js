@@ -652,7 +652,7 @@ function createInteraction(bodyId, vrtxAdm, _$) {
   
   // Document
   $(document).on("change, keyup", "#vrtx-textfield-file-title input", function(e) {
-    userTitleKeyUp($(this).attr("name"), $(#vrtx-textfield-file-name input).attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
+    userTitleKeyUp($(this).attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
     e.stopPropagation();
   }); 
   $(document).on("change, keyup", "#vrtx-textfield-file-name input", function(e) {
@@ -660,7 +660,7 @@ function createInteraction(bodyId, vrtxAdm, _$) {
     e.stopPropagation();
   }); 
   $(document).on("click", "#vrtx-checkbox-is-index input", function(e) {
-    isIndexFile($(#vrtx-textfield-file-name input).attr("name"), $(this).attr("name"));
+    isIndexFile($("#vrtx-textfield-file-name input").attr("name"), $(this).attr("name"));
     e.stopPropagation();
   }); 
 }

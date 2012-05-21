@@ -688,7 +688,9 @@ function disableReplaceTitle(nameBind) {
 }
 
 function toggleShowDescription(element, hasTitle) {
-  alert(element + " " + hasTitle);
+  var descriptionElements = $("div.radioDescription:visible");
+  descriptionElements.hide();
+  
   if(hasTitle) {
     $("#vrtx-div-file-title").show();
   } else {
@@ -697,6 +699,7 @@ function toggleShowDescription(element, hasTitle) {
 
   var descriptionElement = $("#" + element.replace(/\./g, "\\.") + "_description");
   if (descriptionElement.length) descriptionElement.show();
+  
 }
 
 

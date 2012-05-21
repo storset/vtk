@@ -322,7 +322,7 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
-          funcComplete: function(p){ CREATE_RESOURCE_REPLACE_TITLE = true; $("#initToggleShowDescription").click(); },
+          funcComplete: function(p){ createFuncComplete(); },
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({ 
@@ -341,7 +341,7 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
-          funcComplete: function(p){ CREATE_RESOURCE_REPLACE_TITLE = true; $("#initToggleShowDescription").click(); vrtxAdm.initFileUpload() },
+          funcComplete: function(p){ createFuncComplete(); vrtxAdm.initFileUpload() },
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({
@@ -664,8 +664,17 @@ function createInteraction(bodyId, vrtxAdm, _$) {
     isIndexFile($("#vrtx-textfield-file-name input").attr("name"), $(this).attr("name"));
     e.stopPropagation();
   });
-  
+}
 
+function createFuncComplete() {
+  CREATE_RESOURCE_REPLACE_TITLE = true;
+  $("#initToggleShowDescription").click(); 
+  
+  // Tooltip
+  if(typeof vortexTips === "undefined") {
+    $("head").append("<script src='/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js' type='text/javascript'></script>");
+  }
+  $(".vrtx-admin-form").vortexTips("abbr", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
 }
 
 function userTitleChange(titleBind, nameBind, indexBind) {

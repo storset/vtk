@@ -686,11 +686,13 @@ function userTitleChange(titleBind, nameBind, indexBind) {
     var nameFieldVal = nameField.val();
     if(nameFieldVal.length) {
       setCaretToPos(nameField[0], (nameFieldVal.length - 1));
+      titleField.focus();
     }
-    titleField.focus();
   }
 }
 
+// Taken from second comment: 
+// http://stackoverflow.com/questions/499126/jquery-set-cursor-position-in-text-area
 function setCaretToPos(input, pos) {
   setSelectionRange(input, pos, pos);
 }
@@ -700,7 +702,6 @@ function setSelectionRange(input, selectionStart, selectionEnd) {
     input.focus();
     input.setSelectionRange(selectionStart, selectionEnd);
   } else if (input.createTextRange) {
-    alert("b");
     var range = input.createTextRange();
     range.collapse(true);
     range.moveEnd('character', selectionEnd);

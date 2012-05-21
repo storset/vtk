@@ -643,7 +643,7 @@ function createInteraction(bodyId, vrtxAdm, _$) {
 
   // Collection
   $(document).on("change, keyup", "#vrtx-textfield-collection-title input", function(e) {
-    userTitleKeyUp($(this).attr("name"), $("#vrtx-textfield-collection-name input").attr("name"));
+    userTitleChange($(this).attr("name"), $("#vrtx-textfield-collection-name input").attr("name"));
     e.stopPropagation();
   }); 
   $(document).on("change, keyup", "#vrtx-textfield-collection-name input", function(e) {
@@ -653,7 +653,7 @@ function createInteraction(bodyId, vrtxAdm, _$) {
   
   // Document
   $(document).on("change, keyup", "#vrtx-textfield-file-title input", function(e) {
-    userTitleKeyUp($(this).attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
+    userTitleChange($(this).attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
     e.stopPropagation();
   }); 
   $(document).on("change, keyup", "#vrtx-textfield-file-name input", function(e) {
@@ -666,7 +666,7 @@ function createInteraction(bodyId, vrtxAdm, _$) {
   }); 
 }
 
-function userTitleKeyUp(titleBind, nameBind, indexBind) {
+function userTitleChange(titleBind, nameBind, indexBind) {
   var titleField = $("#" + titleBind);
   var nameField = $("#" + nameBind);
   var indexCheckbox = $("#" + indexBind);

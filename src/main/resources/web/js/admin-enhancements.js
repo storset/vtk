@@ -640,6 +640,7 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
 \*-------------------------------------------------------------------*/
 
 function createInteraction(bodyId, vrtxAdm, _$) {
+
   // Collection
   $(document).on("change, keyup", "#vrtx-textfield-collection-title input", function(e) {
     userTitleKeyUp($(this).attr("name"), $("#vrtx-textfield-collection-name input").attr("name"));
@@ -725,6 +726,7 @@ function toggleShowDescription(element, hasTitle) {
     $("#vrtx-div-file-title").hide();
   }
 
+  // Escape dot in id for template (e.g. artikkel.html_description)
   var descriptionElement = $("#" + element.replace(/\./g, "\\.") + "_description");
   if (descriptionElement.length) descriptionElement.show();
 }

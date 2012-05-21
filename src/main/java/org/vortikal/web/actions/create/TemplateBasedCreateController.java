@@ -67,6 +67,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
     private String cancelView;
     private PropertyTypeDefinition descriptionPropDef;
     private final String titlePlaceholder = "#title#";
+    private PropertyTypeDefinition[] removePropList;
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -93,7 +94,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
 
         Map<String, Object> model = new HashMap<String, Object>();
         Path uri = requestContext.getResourceURI();
-        List<ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
+        List<ResourceTemplate> l = this.templateManager.getDocumentTemplates(token, uri);
 
         Map<String, String> templates = new LinkedHashMap<String, String>();
         Map<String, String> descriptions = new HashMap<String, String>();
@@ -104,10 +105,10 @@ public class TemplateBasedCreateController extends SimpleFormController {
         Repository repository = requestContext.getRepository();
         for (ResourceTemplate t : l) {
             r = repository.retrieve(token, t.getUri(), false);
-            if ((dp = r.getProperty(descriptionPropDef)) != null)
+            if ((dp = r.getProperty(this.descriptionPropDef)) != null)
                 descriptions.put(t.getUri().toString(), dp.getFormattedValue());
 
-            titles.put(t.getUri().toString(), r.getTitle().equals(titlePlaceholder));
+            titles.put(t.getUri().toString(), r.getTitle().equals(this.titlePlaceholder));
 
             templates.put(t.getUri().toString(), t.getName());
         }
@@ -211,11 +212,14 @@ public class TemplateBasedCreateController extends SimpleFormController {
         title = Matcher.quoteReplacement(title);
 
         while ((line = reader.readLine()) != null) {
-            os.write(line.replaceAll(titlePlaceholder, title).getBytes());
+            os.write(line.replaceAll(this.titlePlaceholder, title).getBytes());
         }
 
         Resource r = repository.storeContent(token, destinationURI, new ByteArrayInputStream(os.toByteArray()));
-        r.removeProperty(descriptionPropDef);
+
+        for (PropertyTypeDefinition ptd : this.removePropList)
+            r.removeProperty(ptd);
+
         repository.store(token, r);
 
         createDocumentCommand.setDone(true);
@@ -232,6 +236,10 @@ public class TemplateBasedCreateController extends SimpleFormController {
 
     public void setReplaceNameChars(Map<String, String> replaceNameChars) {
         this.replaceNameChars = replaceNameChars;
+    }
+
+    public void setRemovePropList(PropertyTypeDefinition[] removePropList) {
+        this.removePropList = removePropList;
     }
 
     public void setCancelView(String cancelView) {

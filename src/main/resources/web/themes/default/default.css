@@ -1241,6 +1241,10 @@ p#vrtx-file-upload-info-text {
   margin-bottom: 5px;
 }
 
+.radioDescription {
+  display: none;
+}
+
 #initToggleShowDescription {
   display: none;
 }

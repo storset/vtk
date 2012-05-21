@@ -165,7 +165,7 @@
     <#if spring.status.value?default("") == value>checked="checked"</#if> <#if (cTN && titles?has_content && titles[value]?exists)>onclick="toggleShowDescription('${options[value]}', ${titles[value]?string})"</#if> ${attributes}
   <@spring.closeTag/><label for="${value}">${options[value]}</label>
   <#if (descriptions?has_content && descriptions[value]?exists)>
-    <div name="radioDescription" id="${options[value]}_description">${descriptions[value]}</div>
+    <div class="radioDescription" id="${options[value]}_description">${descriptions[value]}</div>
   </#if>
   ${post}
   </#list>

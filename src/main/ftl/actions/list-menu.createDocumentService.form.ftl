@@ -29,7 +29,7 @@
           </ul>
           <button id="initToggleShowDescription" type="button" onclick="toggleShowDescription('${templates[sourceURIBind]}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button>
           
-          <#-- If POST is not AJAX -->
+          <#-- If POST is not AJAX (otherwise it would be a funcComplete() in completeAsyncForm()) -->
           <script type="text/javascript"><!--
             $(document).ready(function() {
               toggleShowDescription('${templates[sourceURIBind]}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>);

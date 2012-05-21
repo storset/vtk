@@ -27,7 +27,15 @@
           <ul class="radio-buttons">
             <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", descriptions, titles, true />
           </ul>
-          <button id="initToggleShowDescription" type="button" onclick="toggleShowDescription('${templates[sourceURIBind]}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button> 
+          <button id="initToggleShowDescription" type="button" onclick="toggleShowDescription('${templates[sourceURIBind]}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button>
+          
+          <#-- If POST is not AJAX -->
+          <script type="text/javascript"><!--
+            $(document).ready(function() {
+              toggleShowDescription('${templates[sourceURIBind]}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>);
+            });
+          // -->
+          </script>
         </#if>
       </#compress>
 
@@ -40,7 +48,6 @@
       <@spring.bind "createDocumentForm" + ".isIndex" /> 
       <#assign isIndexBind = spring.status.expression>
       <@actionsLib.genErrorMessages spring.status.errorMessages />
-
       <div id="vrtx-div-file-title">
         <div class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.title" default="Title" /></div>
         <div class="vrtx-textfield" id="vrtx-textfield-file-title">

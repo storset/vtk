@@ -44,14 +44,14 @@
       <div id="vrtx-div-file-title">
         <div class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.title" default="Title" /></div>
         <div class="vrtx-textfield" id="vrtx-textfield-file-title">
-          <input type="text" id="${titleBind}" name="${titleBind}" value="${newDocTitle}" onkeyup="userTitleKeyUp('${titleBind}', '${nameBind}', '${isIndexBind}')" />
+          <input type="text" id="${titleBind}" name="${titleBind}" value="${newDocTitle}" onchange="userTitleKeyUp('${titleBind}', '${nameBind}', '${isIndexBind}')" />
         </div>
       </div>
 
       <div id="vrtx-div-file-name">
         <div class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.filename" default="Filename" /></div>
         <div class="vrtx-textfield" id="vrtx-textfield-file-name">
-          <input type="text" id="${nameBind}" name="${nameBind}" value="${newDocName}" onkeyup="disableReplaceTitle('${nameBind}')" />.html
+          <input type="text" id="${nameBind}" name="${nameBind}" value="${newDocName}" onchange="disableReplaceTitle('${nameBind}')" />.html
         </div>
       </div>
 

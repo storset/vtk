@@ -683,6 +683,29 @@ function userTitleChange(titleBind, nameBind, indexBind) {
   var indexCheckbox = $("#" + indexBind);
   if ((!indexCheckbox.length || !indexCheckbox.is(":checked")) && CREATE_RESOURCE_REPLACE_TITLE) {
     nameField.val(replaceInvalidChar(titleField.val()));
+    var nameFieldVal = nameField.val();
+    if(nameFieldVal.length) {
+      setCaretToPos(nameField[0], (nameFieldVal.length - 1));
+    }
+    titleField.focus();
+  }
+}
+
+function setCaretToPos(input, pos) {
+  setSelectionRange(input, pos, pos);
+}
+
+function setSelectionRange(input, selectionStart, selectionEnd) {
+  if (input.setSelectionRange) {
+    input.focus();
+    input.setSelectionRange(selectionStart, selectionEnd);
+  } else if (input.createTextRange) {
+    alert("b");
+    var range = input.createTextRange();
+    range.collapse(true);
+    range.moveEnd('character', selectionEnd);
+    range.moveStart('character', selectionStart);
+    range.select();
   }
 }
 

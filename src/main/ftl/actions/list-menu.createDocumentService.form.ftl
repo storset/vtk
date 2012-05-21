@@ -51,6 +51,21 @@
       <@spring.bind "createDocumentForm" + ".isIndex" /> 
       <#assign isIndexBind = spring.status.expression>
       <@actionsLib.genErrorMessages spring.status.errorMessages />
+      
+       <script type="text/javascript"><!--
+         $(document).ready(function() {
+           var nameBind = "${nameBind}";
+           var titleBind = "${titleBind}";
+           var titleField = $("#" + titleBind);
+           var nameField = $("#" + nameBind);
+           var nameVal = replaceInvalidChar(titleField.val());
+           nameField.val(nameVal);
+           CREATE_DOCUMENT_FILE_NAME = nameVal;
+           isIndexFile("${nameBind}", "${isIndexBind}");
+         });
+       // -->
+       </script>
+      
       <div id="vrtx-div-file-title">
         <div class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.title" default="Title" /></div>
         <div class="vrtx-textfield" id="vrtx-textfield-file-title">
@@ -66,7 +81,8 @@
       </div>
 
       <div class="vrtx-checkbox" id="vrtx-checkbox-is-index">
-        <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" <#if isIndex>checked</#if> /> <@vrtx.msg code="actions.createDocumentService.index" default="Is index-file" />(?)
+        <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" <#if isIndex>checked="checked"</#if> /> <@vrtx.msg code="actions.createDocumentService.index" default="Is index-file" />
+        <abbr title="<span id='title-wrapper'>Hjelp</span><p>Lorem</p>" class="resource-prop-info"></abbr>
       </div>
 
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createDocumentService.save" "actions.createDocumentService.cancel" />

@@ -1045,6 +1045,17 @@ form#editor .tip ul a {
 
 /* ^ Create dialog */
 
+.resource-prop-info {
+  background: url(images/info-icon-grey.png) no-repeat 0 0;
+  width: 14px;
+  height: 14px;
+  display: block;
+  display: inline-block;
+  margin: 0 0 -2px 3px;
+  cursor: pointer;
+  border: none;
+}
+
 /* ^ Tooltip */
 
 /* ^ 3.2 Resource title */

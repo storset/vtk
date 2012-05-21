@@ -663,7 +663,9 @@ function createInteraction(bodyId, vrtxAdm, _$) {
   $(document).on("click", "#vrtx-checkbox-is-index input", function(e) {
     isIndexFile($("#vrtx-textfield-file-name input").attr("name"), $(this).attr("name"));
     e.stopPropagation();
-  }); 
+  });
+  
+
 }
 
 function userTitleChange(titleBind, nameBind, indexBind) {

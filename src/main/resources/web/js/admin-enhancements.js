@@ -259,6 +259,8 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
   vrtxAdm.adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");
   
+  createInteraction(bodyId, vrtxAdm, _$);
+  
   // Collectionlisting interaction
   vrtxAdm.collectionListingInteraction();
 
@@ -637,6 +639,32 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
     6. Create service
 \*-------------------------------------------------------------------*/
 
+function createInteraction(bodyId, vrtxAdm, _$) {
+  // Collection
+  $(document).on("change, keyup", "#vrtx-textfield-collection-title input", function(e) {
+    userTitleKeyUp($(this).attr("name"), $("#vrtx-textfield-collection-name input").attr("name"));
+    e.stopPropagation();
+  }); 
+  $(document).on("change, keyup", "#vrtx-textfield-collection-name input", function(e) {
+    disableReplaceTitle($(this).attr("name"));
+    e.stopPropagation();
+  }); 
+  
+  // Document
+  $(document).on("change, keyup", "#vrtx-textfield-file-title input", function(e) {
+    userTitleKeyUp($(this).attr("name"), $(#vrtx-textfield-file-name input).attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
+    e.stopPropagation();
+  }); 
+  $(document).on("change, keyup", "#vrtx-textfield-file-name input", function(e) {
+    disableReplaceTitle($(this).attr("name"));
+    e.stopPropagation();
+  }); 
+  $(document).on("click", "#vrtx-checkbox-is-index input", function(e) {
+    isIndexFile($(#vrtx-textfield-file-name input).attr("name"), $(this).attr("name"));
+    e.stopPropagation();
+  }); 
+}
+
 function userTitleKeyUp(titleBind, nameBind, indexBind) {
   var titleField = $("#" + titleBind);
   var nameField = $("#" + nameBind);
@@ -699,9 +727,7 @@ function toggleShowDescription(element, hasTitle) {
 
   var descriptionElement = $("#" + element.replace(/\./g, "\\.") + "_description");
   if (descriptionElement.length) descriptionElement.show();
-  
 }
-
 
 
 /*-------------------------------------------------------------------*\

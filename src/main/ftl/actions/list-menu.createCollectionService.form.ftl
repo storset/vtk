@@ -37,12 +37,12 @@
 
       <div class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.title" default="Title" /></div>
       <div class="vrtx-textfield" id="vrtx-textfield-collection-title">
-        <input type="text" id="${titleBind}" name="${titleBind}" value="${newColTitle}" onkeyup="userTitleKeyUp('${titleBind}', '${nameBind}')" />
+        <input type="text" id="${titleBind}" name="${titleBind}" value="${newColTitle}" />
       </div>
 
       <div class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.collection-name" default="Folder name" /></div>
       <div class="vrtx-textfield" id="vrtx-textfield-collection-name">
-        <input type="text" id="${nameBind}" name="${nameBind}" value="${newColName}" onkeyup="disableReplaceTitle('${nameBind}')"  />
+        <input type="text" id="${nameBind}" name="${nameBind}" value="${newColName}"  />
       </div>
 
       <@spring.bind "createCollectionForm" + ".hidden" />

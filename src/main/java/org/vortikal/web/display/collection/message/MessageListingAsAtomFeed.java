@@ -31,6 +31,8 @@
 package org.vortikal.web.display.collection.message;
 
 import org.apache.abdera.model.Entry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
@@ -38,11 +40,20 @@ import org.vortikal.web.display.collection.CollectionListingAsAtomFeed;
 
 public class MessageListingAsAtomFeed extends CollectionListingAsAtomFeed {
 
+    private final Log logger = LogFactory.getLog(MessageListingAsAtomFeed.class);
+    
     @Override
     protected void setFeedEntrySummary(Entry entry, PropertySet resource) throws Exception {
         Property messageProp = resource.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "listingDisplayedMessage");
         if (messageProp != null) {
-            entry.setSummaryAsXhtml(messageProp.getStringValue());
+            try {
+                entry.setSummaryAsXhtml(messageProp.getStringValue());
+            } catch (Exception e) {
+                logger.warn("Could not set feed entry summary as XHTML" + e.getMessage());
+                
+                // XXX Attempt to set as HTML?
+                entry.setSummaryAsHtml(messageProp.getStringValue());
+            }
         }
     }
 

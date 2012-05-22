@@ -3,9 +3,11 @@
 <#import "/lib/view-utils.ftl" as viewutils />
 
 <#macro displayCollection collectionListing>
-  <#local resources=collectionListing.files />
+
+  <#local resources = collectionListing.files />
+  <#local editLinks = collectionListing.editLinkAuthorized />
+
   <#local i = 1 />
-      
   <#if (resources?size > 0)>
     <div id="${collectionListing.name}" class="vrtx-resources ${collectionListing.name}">
       <#if collectionListing.title?exists && collectionListing.offset == 0>
@@ -21,7 +23,7 @@
 		      <#assign title = vrtx.propValue(r, "solr.name") />
 		    </#if>
             <a class="vrtx-title" href="${uri?html}">${title?html}</a>
-            <#if edit?exists && edit[r_index]>
+            <#if editLinks?exists && editLinks[r_index]>
               <a class="vrtx-message-listing-edit" href="${vrtx.relativeLinkConstructor(uri, 'simpleMessageEditor')}"><@vrtx.msg code="report.collection-structure.edit" /></a>
             </#if> 
 		  </div>

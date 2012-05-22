@@ -56,6 +56,7 @@ public class Listing {
     private List<PropertyTypeDefinition> displayPropDefs = new ArrayList<PropertyTypeDefinition>();
     private int totalHits; /* Regardless of number of files ( files.size() ) */
     private Sorting sorting;
+    private boolean[] editLinkAuthorized = new boolean[0];
 
     public static final String SORTING_PARAM = "sorting";
     public static final String SORTING_PARAM_DELIMITER = ":";
@@ -141,6 +142,14 @@ public class Listing {
 
     public void setSorting(Sorting sorting) {
         this.sorting = sorting;
+    }
+
+    public boolean[] getEditLinkAuthorized() {
+        return editLinkAuthorized;
+    }
+
+    public void setEditLinkAuthorized(boolean[] editLinkAuthorized) {
+        this.editLinkAuthorized = editLinkAuthorized;
     }
 
     public String getRequestSortOrderParams() {

@@ -16,23 +16,22 @@ public class CollectionListingComponentHelper {
 
     private Set<String> applicableResourceTypes;
 
-    // XXX FIXME!!!
-    // Indices of return array must match indices of each property set in each
-    // result set in each listing!!!
-    public boolean[] checkListingsForEditLinks(Repository repo, String token, Principal principal, int maxItems,
-            List<Listing> ll) throws Exception {
-        Resource res;
-        int i = 0;
-        boolean[] edit = new boolean[maxItems];
+    public void checkListingsForEditLinks(Repository repo, String token, Principal principal, List<Listing> listings)
+            throws Exception {
 
         // If not logged in, don't provide any edit-authorizations and stop
         // checks.
         if (principal == null) {
-            return edit;
+            return;
         }
 
-        for (Listing l : ll) {
-            for (PropertySet ps : l.getFiles()) {
+        for (Listing listing : listings) {
+
+            List<PropertySet> psList = listing.getFiles();
+            boolean[] editLinkAuthorized = new boolean[psList.size()];
+
+            int i = 0;
+            for (PropertySet ps : psList) {
 
                 boolean authorized = false;
                 String rt = ps.getResourceType();
@@ -42,17 +41,17 @@ public class CollectionListingComponentHelper {
                 if (ps.getPropertyByPrefix(null, MultiHostSearcher.MULTIHOST_RESOURCE_PROP_NAME) == null
                         && this.isApplicableResourceType(rt)) {
                     try {
-                        res = repo.retrieve(token, ps.getURI(), true);
+                        Resource res = repo.retrieve(token, ps.getURI(), true);
                         authorized = checkResourceForEditLink(repo, res, principal);
                     } catch (Exception exception) {
                     }
                 }
 
-                edit[i++] = authorized;
+                editLinkAuthorized[i++] = authorized;
             }
-        }
 
-        return edit;
+            listing.setEditLinkAuthorized(editLinkAuthorized);
+        }
     }
 
     private boolean isApplicableResourceType(String rt) {

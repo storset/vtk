@@ -20,6 +20,26 @@ resourcetype samlet {
     	[endif]
     	##
 		}
+		
+	include-study-contact{
+		##
+		[def thispath resource-prop("./","uri")]
+		[def locale resource-locale()]
+		[if locale = "en"]
+			[def uri thispath + '/contact/index.html']
+		[else]
+			[def uri thispath + '/kontakt/index.html']
+		[endif]
+		[def test json-resource(uri)]
+		[if test]
+			[def boxes test.properties.contact-supervisor-box]
+			[list boxes box]
+				[val box.description # unescaped]
+				[val box.contactInfo # unescaped]
+			[endlist]
+		[endif]
+		##
+		}
 	}
 	
 	view {
@@ -41,7 +61,7 @@ resourcetype samlet {
              [call "comp:include-study-file" {"file" : "undervisning-eksamen"}]
              [call "comp:include-study-file" {"file" : "utlandet"}]
              [call "comp:include-study-file" {"file" : "jobb-studier"}]
-             [call "comp:include-study-file" {"file" : "kontakt"}]
+             [call "comp:include-study-contact"]
           	</div>
         	</div>
       	</body>

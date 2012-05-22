@@ -96,7 +96,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
         Path uri = requestContext.getResourceURI();
         List<ResourceTemplate> l = this.templateManager.getDocumentTemplates(token, uri);
 
-        Map<String, String> templates = new TreeMap<String, String>();
+        Map<String, String> templates = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
         Map<String, String> reverseTemplates = new HashMap<String, String>();
         Map<String, String> descriptions = new HashMap<String, String>();
         Map<String, Boolean> titles = new HashMap<String, Boolean>();

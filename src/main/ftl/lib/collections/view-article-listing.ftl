@@ -63,11 +63,11 @@
 
             <#if publishedDate?has_content && articles.hasDisplayPropDef(publishedDate.definition.name)>
               <div class="published-date">
-                <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishedDate.getFormattedValue('long', locale)}                
+                <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishedDate.getFormattedValue('long', locale)}
               </div>
             <#elseif publishDate?has_content && articles.hasDisplayPropDef("published-date")>
               <div class="published-date">
-                <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishDate}                
+                <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishDate}
               </div>
             </#if>
 

@@ -190,7 +190,7 @@ view-components {
   	fellestekster-fakultet : (en : "Local info", no : "Lokal info", nn : "Lokal info"),
   	fellestekst-fakultet-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
   	fellestekst-fakultet : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
-  	oppbygning : (en : "Structure and accomplishment", no : "Oppbygging og gjennomføring", nn : "Oppbygging og gjennomføring"),
+  	oppbygning : (en : "Programme structure", no : "Oppbygging og gjennomføring", nn : "Oppbygging og gjennomføring"),
     introduction : (en : "Introduction",no : "Innledning", nn : "Innleiing"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en: "Image", en: "Bilde", en: "Bilete"),

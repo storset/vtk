@@ -99,14 +99,26 @@ public class TemplateBasedCreateController extends SimpleFormController {
         Map<String, String> templates = new LinkedHashMap<String, String>();
         Map<String, String> descriptions = new HashMap<String, String>();
         Map<String, Boolean> titles = new HashMap<String, Boolean>();
+        Map<String, String> names = new HashMap<String, String>();
 
         Property dp;
         Resource r;
         Repository repository = requestContext.getRepository();
         for (ResourceTemplate t : l) {
             r = repository.retrieve(token, t.getUri(), false);
-            if ((dp = r.getProperty(this.descriptionPropDef)) != null)
-                descriptions.put(t.getUri().toString(), dp.getFormattedValue());
+            if ((dp = r.getProperty(this.descriptionPropDef)) != null) {
+                String name = dp.getFormattedValue();
+
+                if (name.contains("|")) {
+                    if (name.indexOf('|') + 1 < name.length())
+                        descriptions.put(t.getUri().toString(), name.substring(name.indexOf('|') + 1));
+
+                    if ((name = name.substring(0, name.indexOf('|'))).length() > 0) {
+                        names.put(t.getUri().toString(), name);
+                    }
+                } else
+                    descriptions.put(t.getUri().toString(), name);
+            }
 
             titles.put(t.getUri().toString(), r.getTitle().equals(this.titlePlaceholder));
 
@@ -115,6 +127,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
         model.put("templates", templates);
         model.put("descriptions", descriptions);
         model.put("titles", titles);
+        model.put("names", names);
         return model;
     }
 

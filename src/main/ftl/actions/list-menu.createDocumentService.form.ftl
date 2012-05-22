@@ -28,7 +28,7 @@
         </#if>
         <#if templates?has_content>
           <ul class="radio-buttons">
-            <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", descriptions, titles, true />
+            <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", descriptions, titles, names, true />
           </ul>
           <button id="initToggleShowDescription" type="button" onclick="toggleShowDescription('${templates[sourceURIBind]}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button>
           

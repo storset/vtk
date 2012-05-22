@@ -1280,16 +1280,16 @@ span.vrtx-help-step-by-step-cmd {
   background: transparent url("images/seperator-grey-gradient-small-darker.png") no-repeat scroll left center;
   height: 23px;
   margin: 0 0 0 23px;
-  padding: 5px 0 0 18px;
+  padding: 7px 0 0 18px;
 }
 
 #vrtx-checkbox-is-index {
-  margin-left: 14px;
+  margin-left: 18px;
 }
 
 #vrtx-textfield-file-type {
   float: left;
-  padding: 5px;
+  padding: 7px 0 0 5px;
 }
 
 #vrtx-checkbox-hide-from-navigation input,

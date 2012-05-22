@@ -764,6 +764,10 @@ function toggleShowDescription(element, hasTitle) {
   }
   
   if(element.indexOf(".") !== -1) {
+    var fileType = $("#vrtx-textfield-file-type");
+    if(!fileType.length) {
+      $("<span id='vrtx-textfield-file-type'></span>").insertAfter("#vrtx-div-file-name");
+    }
     $("#vrtx-textfield-file-type").text("." + element.split(".")[1]);
   }
   

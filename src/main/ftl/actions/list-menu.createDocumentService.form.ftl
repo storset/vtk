@@ -78,12 +78,10 @@
         <div class="vrtx-textfield" id="vrtx-textfield-file-name">
           <input type="text" id="${nameBind}" name="${nameBind}" value="${newDocName}" size="15" />
         </div>
-        
       </div>
-      <span id="vrtx-textfield-file-type">.html</span>
       <div class="vrtx-checkbox" id="vrtx-checkbox-is-index">
         <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" <#if isIndex>checked="checked"</#if> /> <@vrtx.msg code="actions.createDocumentService.index" default="Is index-page" />
-        <abbr title="<span id='title-wrapper'>Hjelp</span><p>Lorem</p>" class="resource-prop-info"></abbr>
+        <abbr title="${vrtx.getMsg("actions.tooltip.isIndexPage")}" class="resource-prop-info"></abbr>
       </div>
 
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createDocumentService.save" "actions.createDocumentService.cancel" />

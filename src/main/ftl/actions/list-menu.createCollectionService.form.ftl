@@ -51,7 +51,7 @@
 
       <div class="vrtx-checkbox" id="vrtx-checkbox-hide-from-navigation">
         <input type="checkbox"  id="${hiddenBind}" name="${hiddenBind}" /> <@vrtx.msg code="actions.createCollectionService.hide" default="Hide from navigation" />
-        <abbr title="<span id='title-wrapper'>Hjelp</span><p>Lorem</p>" class="resource-prop-info"></abbr>
+        <abbr title="${vrtx.getMsg("actions.tooltip.hideFromNavigation")}" class="resource-prop-info"></abbr>
       </div>
 
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createCollectionService.save" "actions.createCollectionService.cancel" />

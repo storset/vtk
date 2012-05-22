@@ -762,7 +762,11 @@ function toggleShowDescription(element, hasTitle) {
   } else {
     $("#vrtx-div-file-title").hide();
   }
-
+  
+  if(element.indexOf(".") !== -1) {
+    $("#vrtx-textfield-file-type").text("." + element.split(".")[1]);
+  }
+  
   // Escape dot in id for template (e.g. artikkel.html_description)
   var descriptionElement = $("#" + element.replace(/\./g, "\\.") + "_description");
   if (descriptionElement.length) descriptionElement.show();

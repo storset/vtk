@@ -90,7 +90,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         Path uri = requestContext.getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
 
-        List<ResourceTemplate> templates = templateManager.getFolderTemplates(token, uri);
+        List<ResourceTemplate> templates = this.templateManager.getFolderTemplates(token, uri);
 
         // Set first available template as the selected
         if (!templates.isEmpty()) {
@@ -108,7 +108,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         Path uri = requestContext.getResourceURI();
         String token = requestContext.getSecurityToken();
 
-        List<ResourceTemplate> templates = templateManager.getFolderTemplates(token, uri);
+        List<ResourceTemplate> templates = this.templateManager.getFolderTemplates(token, uri);
 
         HttpServletRequest servletRequest = requestContext.getServletRequest();
         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
@@ -203,7 +203,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         titleProp.setStringValue(title);
         collection.addProperty(titleProp);
 
-        // hiddenPropDef can only be true or unset.
+        // hiddenPropDef can only be true or not set.
         if (createCollectionCommand.getHidden()) {
             Property hiddenProp = this.hiddenPropDef.createProperty();
             hiddenProp.setBooleanValue(true);

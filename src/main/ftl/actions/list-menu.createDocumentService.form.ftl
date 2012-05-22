@@ -23,11 +23,22 @@
         <#if createDocumentForm.name?exists>
           <#assign newDocName = createDocumentForm.name>
         </#if>
+        <#if createDocumentForm.isIndex?exists>
+          <#assign isIndex = createDocumentForm.isIndex>
+        </#if>
         <#if templates?has_content>
           <ul class="radio-buttons">
             <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", descriptions, titles, true />
           </ul>
-          <button id="initToggleShowDescription" type="button" onclick="toggleShowDescription('${templates[sourceURIBind]}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button> 
+          <button id="initToggleShowDescription" type="button" onclick="toggleShowDescription('${templates[sourceURIBind]}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button>
+          
+          <#-- If POST is not AJAX (otherwise it would be a funcComplete() in completeAsyncForm()) -->
+          <script type="text/javascript"><!--
+            $(document).ready(function() {
+              createFuncComplete();
+            });
+          // -->
+          </script>
         </#if>
       </#compress>
 
@@ -40,23 +51,38 @@
       <@spring.bind "createDocumentForm" + ".isIndex" /> 
       <#assign isIndexBind = spring.status.expression>
       <@actionsLib.genErrorMessages spring.status.errorMessages />
-
+      
+       <script type="text/javascript"><!--
+         $(document).ready(function() {
+           var nameBind = "${nameBind}";
+           var titleBind = "${titleBind}";
+           var titleField = $("#" + titleBind);
+           var nameField = $("#" + nameBind);
+           var nameVal = replaceInvalidChar(titleField.val());
+           nameField.val(nameVal);
+           CREATE_DOCUMENT_FILE_NAME = nameVal;
+           isIndexFile("${nameBind}", "${isIndexBind}");
+         });
+       // -->
+       </script>
+      
       <div id="vrtx-div-file-title">
         <div class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.title" default="Title" /></div>
         <div class="vrtx-textfield" id="vrtx-textfield-file-title">
-          <input type="text" id="${titleBind}" name="${titleBind}" value="${newDocTitle}" onkeyup="userTitleKeyUp('${titleBind}', '${nameBind}', '${isIndexBind}')" />
+          <input type="text" id="${titleBind}" name="${titleBind}" value="${newDocTitle}" />
         </div>
       </div>
 
       <div id="vrtx-div-file-name">
         <div class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.filename" default="Filename" /></div>
         <div class="vrtx-textfield" id="vrtx-textfield-file-name">
-          <input type="text" id="${nameBind}" name="${nameBind}" value="${newDocName}" onkeyup="disableReplaceTitle('${nameBind}')" />.html
+          <input type="text" id="${nameBind}" name="${nameBind}" value="${newDocName}" />.html
         </div>
       </div>
 
-      <div class="vrtx-checkbox">
-        <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" onClick="isIndexFile('${nameBind}', '${isIndexBind}')" /> <@vrtx.msg code="actions.createDocumentService.index" default="Is index-file" />(?)
+      <div class="vrtx-checkbox" id="vrtx-checkbox-is-index">
+        <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" <#if isIndex>checked="checked"</#if> /> <@vrtx.msg code="actions.createDocumentService.index" default="Is index-file" />
+        <abbr title="<span id='title-wrapper'>Hjelp</span><p>Lorem</p>" class="resource-prop-info"></abbr>
       </div>
 
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createDocumentService.save" "actions.createDocumentService.cancel" />

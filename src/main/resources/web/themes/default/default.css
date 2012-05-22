@@ -1045,6 +1045,21 @@ form#editor .tip ul a {
 
 /* ^ Create dialog */
 
+.resource-prop-info {
+  background: url(images/info-icon-grey.png) no-repeat 0 0;
+  width: 14px;
+  height: 14px;
+  display: block;
+  display: inline-block;
+  margin: 0 0 -2px 3px;
+  cursor: pointer;
+  border: none;
+}
+
+.vrtx-admin-form .resource-prop-info {
+  margin-left: 0px;
+}
+
 /* ^ Tooltip */
 
 /* ^ 3.2 Resource title */
@@ -1215,33 +1230,41 @@ span.vrtx-help-step-by-step-cmd {
   font-weight: bold;
 }
 
-p#vrtx-file-upload-info-text {
+.vrtx-admin-form p#vrtx-file-upload-info-text {
   margin-top: 10px;
 }
 
-#vrtx-textfield-file-name input {
+.vrtx-admin-form #vrtx-textfield-file-name input {
   margin-right: -35px;
   padding-right: 35px;
 }
 
-.vrtx-admin-label {
+.vrtx-admin-form .vrtx-admin-label {
   margin-bottom: 5px;
   margin-top: 10px;
 }
 
-#vrtx-textfield-file-title,
-#vrtx-textfield-file-name,
-#vrtx-textfield-collection-title,
-#vrtx-textfield-collection-name {
+.vrtx-admin-form #vrtx-textfield-file-title,
+.vrtx-admin-form #vrtx-textfield-file-name,
+.vrtx-admin-form #vrtx-textfield-collection-title,
+.vrtx-admin-form #vrtx-textfield-collection-name {
   clear: left;
 }
 
 #createDocumentService-form .radio-buttons,
 #createCollectionService-form .radio-buttons {
-  margin-bottom: 5px;
+  background: transparent url("images/line-dotted.gif") repeat-x scroll left bottom;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
 }
 
-#initToggleShowDescription {
+.vrtx-admin-form .radioDescription {
+  margin: 2px 0 8px 18px;
+}
+
+.vrtx-admin-form .radioDescription,
+.vrtx-admin-form #initToggleShowDescription,
+.vrtx-admin-form #vrtx-div-file-title {
   display: none;
 }
 

@@ -259,6 +259,8 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
   vrtxAdm.adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");
   
+  createInteraction(bodyId, vrtxAdm, _$);
+  
   // Collectionlisting interaction
   vrtxAdm.collectionListingInteraction();
 
@@ -320,7 +322,7 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
-          funcComplete: function(p){ CREATE_RESOURCE_REPLACE_TITLE = true; $("#initToggleShowDescription").click(); },
+          funcComplete: function(p){ createFuncComplete(); },
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({ 
@@ -339,7 +341,7 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
-          funcComplete: function(p){ CREATE_RESOURCE_REPLACE_TITLE = true; $("#initToggleShowDescription").click(); vrtxAdm.initFileUpload() },
+          funcComplete: function(p){ createFuncComplete(); vrtxAdm.initFileUpload() },
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({
@@ -637,12 +639,74 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
     6. Create service
 \*-------------------------------------------------------------------*/
 
-function userTitleKeyUp(titleBind, nameBind, indexBind) {
+function createInteraction(bodyId, vrtxAdm, _$) {
+
+  // Collection
+  $(document).on("change, keyup", "#vrtx-textfield-collection-title input", function(e) {
+    userTitleChange($(this).attr("name"), $("#vrtx-textfield-collection-name input").attr("name"));
+    e.stopPropagation();
+  }); 
+  $(document).on("change, keyup", "#vrtx-textfield-collection-name input", function(e) {
+    disableReplaceTitle($(this).attr("name"));
+    e.stopPropagation();
+  }); 
+  
+  // Document
+  $(document).on("change, keyup", "#vrtx-textfield-file-title input", function(e) {
+    userTitleChange($(this).attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
+    e.stopPropagation();
+  }); 
+  $(document).on("change, keyup", "#vrtx-textfield-file-name input", function(e) {
+    disableReplaceTitle($(this).attr("name"));
+    e.stopPropagation();
+  }); 
+  $(document).on("click", "#vrtx-checkbox-is-index input", function(e) {
+    isIndexFile($("#vrtx-textfield-file-name input").attr("name"), $(this).attr("name"));
+    e.stopPropagation();
+  });
+}
+
+function createFuncComplete() {
+  CREATE_RESOURCE_REPLACE_TITLE = true;
+  $("#initToggleShowDescription").click(); 
+  
+  // Tooltip
+  if(typeof vortexTips === "undefined") {
+    $("head").append("<script src='/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js' type='text/javascript'></script>");
+  }
+  $(".vrtx-admin-form").vortexTips("abbr", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
+}
+
+function userTitleChange(titleBind, nameBind, indexBind) {
   var titleField = $("#" + titleBind);
   var nameField = $("#" + nameBind);
   var indexCheckbox = $("#" + indexBind);
   if ((!indexCheckbox.length || !indexCheckbox.is(":checked")) && CREATE_RESOURCE_REPLACE_TITLE) {
     nameField.val(replaceInvalidChar(titleField.val()));
+    var nameFieldVal = nameField.val();
+    if(nameFieldVal.length) {
+      setCaretToPos(nameField[0], (nameFieldVal.length - 1));
+      titleField.focus();
+    }
+  }
+}
+
+// Taken from second comment: 
+// http://stackoverflow.com/questions/499126/jquery-set-cursor-position-in-text-area
+function setCaretToPos(input, pos) {
+  setSelectionRange(input, pos, pos);
+}
+
+function setSelectionRange(input, selectionStart, selectionEnd) {
+  if (input.setSelectionRange) {
+    input.focus();
+    input.setSelectionRange(selectionStart, selectionEnd);
+  } else if (input.createTextRange) {
+    var range = input.createTextRange();
+    range.collapse(true);
+    range.moveEnd('character', selectionEnd);
+    range.moveStart('character', selectionStart);
+    range.select();
   }
 }
 
@@ -688,19 +752,19 @@ function disableReplaceTitle(nameBind) {
 }
 
 function toggleShowDescription(element, hasTitle) {
-  var descriptionElements = $("div[name='radioDescription']");
+  var descriptionElements = $("div.radioDescription:visible");
   descriptionElements.hide();
-
+  
   if(hasTitle) {
     $("#vrtx-div-file-title").show();
   } else {
     $("#vrtx-div-file-title").hide();
   }
 
-  var descriptionElement = $("#" + element + "_description");
+  // Escape dot in id for template (e.g. artikkel.html_description)
+  var descriptionElement = $("#" + element.replace(/\./g, "\\.") + "_description");
   if (descriptionElement.length) descriptionElement.show();
 }
-
 
 
 /*-------------------------------------------------------------------*\

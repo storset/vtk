@@ -25,7 +25,7 @@
         <ul class="radio-buttons">
           <@vrtx.formRadioButtons "createCollectionForm.sourceURI", templates, "<li>", "</li>" />
         </ul>
-          <button id="initToggleShowDescription" type="button" onclick="toggleShowDescription('${templates[sourceURIBind]}', true)"></button> 
+        <button id="initToggleShowDescription" type="button" onclick="toggleShowDescription('${templates[sourceURIBind]}', true)"></button> 
       </#if>
 
       <@spring.bind "createCollectionForm" + ".title" />
@@ -37,20 +37,21 @@
 
       <div class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.title" default="Title" /></div>
       <div class="vrtx-textfield" id="vrtx-textfield-collection-title">
-        <input type="text" id="${titleBind}" name="${titleBind}" value="${newColTitle}" onkeyup="userTitleKeyUp('${titleBind}', '${nameBind}')" />
+        <input type="text" id="${titleBind}" name="${titleBind}" value="${newColTitle}" />
       </div>
 
       <div class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.collection-name" default="Folder name" /></div>
       <div class="vrtx-textfield" id="vrtx-textfield-collection-name">
-        <input type="text" id="${nameBind}" name="${nameBind}" value="${newColName}" onkeyup="disableReplaceTitle('${nameBind}')"  />
+        <input type="text" id="${nameBind}" name="${nameBind}" value="${newColName}"  />
       </div>
 
       <@spring.bind "createCollectionForm" + ".hidden" />
       <#assign hiddenBind = spring.status.expression>
       <@actionsLib.genErrorMessages spring.status.errorMessages />
 
-      <div class="vrtx-checkbox">
-        <input type="checkbox"  id="${hiddenBind}" name="${hiddenBind}" /> <@vrtx.msg code="actions.createCollectionService.hide" default="Hide from navigation" />(?)
+      <div class="vrtx-checkbox" id="vrtx-checkbox-hide-from-navigation">
+        <input type="checkbox"  id="${hiddenBind}" name="${hiddenBind}" /> <@vrtx.msg code="actions.createCollectionService.hide" default="Hide from navigation" />
+        <abbr title="<span id='title-wrapper'>Hjelp</span><p>Lorem</p>" class="resource-prop-info"></abbr>
       </div>
 
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createCollectionService.save" "actions.createCollectionService.cancel" />

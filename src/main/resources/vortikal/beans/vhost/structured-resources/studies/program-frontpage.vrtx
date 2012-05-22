@@ -169,7 +169,8 @@ resourcetype program-frontpage : program-document {
           [call "comp:contact-box"]
         </div>
          [if locale != 'en']
-    	        [def thispath resource-prop("./studiestart","uri")]
+    	        [def thispath resource-prop("./","uri")]
+    	        [def thispath thispath + '/studiestart']
     	        [def studiestart-folder resource(thispath)]
     	        [if studiestart-folder]
     	        	[call "include:events"  {"uri":thispath, "all-events-link":true, "feed-title":true, "max-events":2, "events-title": true, "include-if-empty":false}]

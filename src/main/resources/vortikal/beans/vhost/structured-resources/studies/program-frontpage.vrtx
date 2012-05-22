@@ -25,7 +25,6 @@ resourcetype program-frontpage : program-document {
   edit-rules {
     status (dropdown),
     program-type (dropdown),
-    themes (dropdown),
     faculty (dropdown),
     theme (dropdown),
     title (size[large]),

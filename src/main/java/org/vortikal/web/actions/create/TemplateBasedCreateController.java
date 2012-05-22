@@ -214,6 +214,11 @@ public class TemplateBasedCreateController extends SimpleFormController {
             name = createDocumentCommand.getName();
 
         name = fixDocumentName(name);
+
+        String filetype = sourceURI.toString().substring(sourceURI.toString().lastIndexOf('.'));
+        if (!name.endsWith(filetype))
+            name += filetype;
+
         Path destinationURI = uri.extend(name);
 
         repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);
@@ -279,7 +284,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
 
     private String fixDocumentName(String name) {
         if (this.downcaseNames) {
-            name = name.toLowerCase() + ".html";
+            name = name.toLowerCase();
         }
 
         if (this.replaceNameChars != null) {

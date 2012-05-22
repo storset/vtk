@@ -9,15 +9,15 @@ resourcetype program-option-frontpage : program-document {
     contactTitle : string,
     contactContent : html,
     contactLinkText : string, 
-    contactUrl : resource_ref, 
-    related-content : html
+    contactUrl : resource_ref
   }
 
   edit-rules {
     status (dropdown),
     title (size[large]),
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
-    group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before related-content)
+    group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before related-content),
+    additional-content (after contact-box)
   }
   
   view-components {
@@ -33,9 +33,9 @@ resourcetype program-option-frontpage : program-document {
           [if published]      
             [def title f.properties.title]
             [def program-type f.properties.program-type]
-            <div class="vrtx-program-title-box">
+            <div class="vrtx-frontpage-box white-box vrtx-program-title-box">
               <h2>[localized 'program-affiliation']</h2>
-              <a href='[val thispath]'>[val title] ([val program-type])</a>
+              <h3><a href='[val thispath]'>[val title] ([val program-type])</a></h3>
             </div>
           [endif]
         [endif]        
@@ -84,10 +84,10 @@ resourcetype program-option-frontpage : program-document {
         [if message-folder]          
           [def thisfeed thispath + '/?vrtx=feed']
           <div class="vrtx-frontpage-box">
-          [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
+            [call "include:feed" {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
           </div>
         [endif]
-        [call "comp:related-content"]
+        [call "comp:additional-content" {"document":document, "main-content": "false"}]
       </div>
       ##
     }  
@@ -107,21 +107,21 @@ resourcetype program-option-frontpage : program-document {
           [def locale resource-locale()]  
           <div id="vrtx-main-content">
             <div id="vrtx-program-option-main" class="vrtx-frontpage-box white-box">
-              <h1>[call "comp:title"]([localized 'program-option'])</h1> 
               [call "resource:program-option-language-link"]
+              <h1>[call "comp:title"]([localized 'program-option'])</h1> 
               [call "comp:status"]
               [call "comp:introduction-image"]         
               [call "comp:introduction"]         
               [def thispath resource-prop("./","uri")]
               <div id="vrtx-program-links">
                 [if locale = "en"]
-                  [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcome, how-to-apply, structure, abroad, career-opportunities"}]           
+                  [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcomes, admissions, how-to-apply, structure, abroad, career, teaching-examinations"}]           
                 [else]
-                  [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-laerer-du, hvordan-soke, oppbyggning, utland, jobb-studiemuligheter"}]
+                  [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-lerer-du, opptak, oppbygging, utlandet, jobb-studier, undervisning-eksamen"}]
                 [endif]
               </div>
-              [call "comp:program-title"]
             </div>
+            [call "comp:program-title"]
             [call "comp:resource-links"]
           </div>
           [call "comp:right-column"]
@@ -133,18 +133,19 @@ resourcetype program-option-frontpage : program-document {
   
   vocabulary {
     status {
-     en : ("under-arbeid" = "In progress", "aktivt" = "Active", "inaktiv" = "Inactive", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
-     no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inaktiv" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
-     nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "inaktiv" = "Inaktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
+     en : ("under-arbeid" = "In progress", "aktivt" = "Active", "under-utfasing" = "Being phased out", "nedlagt" = "Closed"),
+     no : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt"),
+     nn : ("under-arbeid" = "Under arbeid", "aktivt" = "Aktiv", "under-utfasing" = "Under utfasing", "nedlagt" = "Nedlagt")
    	}
   }
 
 
   localization {
   
-    header : (en : "Edit program frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
+    header : (en : "Edit Program option frontpage", no : "Rediger Studieretningsforside", nn : "Rediger Studieretningsforside"),
     program-option : (en : "Program option", no : "Studieretning", nn : "Studieretning"),
     fs-program-code : (en : "FS program code", no : "FS programkode", nn : "FS programkode"),
+    fs-program-option-code : (en : "FS program option code", no : "FS studieretningskode", nn : "FS studieretningskode"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
 
@@ -166,7 +167,6 @@ resourcetype program-option-frontpage : program-document {
     status : (en : "Status", no : "Status", nn : "Status"),
     under-arbeid : (en : "In progress", no : "Under arbeid" ,nn : "Under arbeid"),
     aktivt : (en: "Active", no : "Aktiv", nn : "Aktiv"), 
-    inaktiv : (en : "Inactive", no : "Inaktiv", nn : "Inaktiv"),
     under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
     nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt")
   }

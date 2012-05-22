@@ -30,21 +30,29 @@
  */
 package org.vortikal.web.actions.create;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.templates.ResourceTemplate;
@@ -57,6 +65,8 @@ public class TemplateBasedCreateController extends SimpleFormController {
     private boolean downcaseNames = false;
     private Map<String, String> replaceNameChars;
     private String cancelView;
+    private PropertyTypeDefinition descriptionPropDef;
+    private final String titlePlaceholder = "#title#";
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -86,10 +96,24 @@ public class TemplateBasedCreateController extends SimpleFormController {
         List<ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
 
         Map<String, String> templates = new LinkedHashMap<String, String>();
+        Map<String, String> descriptions = new HashMap<String, String>();
+        Map<String, Boolean> titles = new HashMap<String, Boolean>();
+
+        Property dp;
+        Resource r;
+        Repository repository = requestContext.getRepository();
         for (ResourceTemplate t : l) {
+            r = repository.retrieve(token, t.getUri(), false);
+            if ((dp = r.getProperty(descriptionPropDef)) != null)
+                descriptions.put(t.getUri().toString(), dp.getFormattedValue());
+
+            titles.put(t.getUri().toString(), r.getTitle().equals(titlePlaceholder));
+
             templates.put(t.getUri().toString(), t.getName());
         }
         model.put("templates", templates);
+        model.put("descriptions", descriptions);
+        model.put("titles", titles);
         return model;
     }
 
@@ -113,8 +137,21 @@ public class TemplateBasedCreateController extends SimpleFormController {
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
 
-        String name = createDocumentCommand.getName();
-        if (null == name || "".equals(name.trim())) {
+        String title = createDocumentCommand.getTitle();
+        Resource source = repository.retrieve(token, Path.fromString(createDocumentCommand.getSourceURI()), false);
+        if ((title == null || "".equals(title.trim())) && source.getTitle().equals(titlePlaceholder)) {
+            errors.rejectValue("title", "manage.create.document.missing.title",
+                    "A title must be provided for the document");
+            return;
+        }
+
+        String name;
+        if (createDocumentCommand.getIsIndex())
+            name = "index";
+        else
+            name = createDocumentCommand.getName();
+
+        if (name == null || "".equals(name.trim())) {
             errors.rejectValue("name", "manage.create.document.missing.name",
                     "A name must be provided for the document");
             return;
@@ -154,14 +191,41 @@ public class TemplateBasedCreateController extends SimpleFormController {
         // The location of the file that we will be copying
         Path sourceURI = Path.fromString(createDocumentCommand.getSourceURI());
 
-        String name = createDocumentCommand.getName();
+        String name;
+        if (createDocumentCommand.getIsIndex())
+            name = "index";
+        else
+            name = createDocumentCommand.getName();
+
         name = fixDocumentName(name);
         Path destinationURI = uri.extend(name);
 
         repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(repository.getInputStream(token,
+                destinationURI, false)));
+
+        String line, title = createDocumentCommand.getTitle();
+        String ct = repository.retrieve(token, destinationURI, false).getContentType();
+        if (ct.equals("application/json")) {
+            title = title.replaceAll("\"", "\\\\\"");
+        } else if (ct.equals("text/html")) {
+            title = HtmlUtil.escapeHtmlString(title);
+        }
+        title = Matcher.quoteReplacement(title);
+
+        while ((line = reader.readLine()) != null) {
+            os.write(line.replaceAll(titlePlaceholder, title).getBytes());
+        }
+
+        Resource r = repository.storeContent(token, destinationURI, new ByteArrayInputStream(os.toByteArray()));
+        r.removeProperty(descriptionPropDef);
+        repository.store(token, r);
+
         createDocumentCommand.setDone(true);
 
-        model.put("resource", repository.retrieve(token, destinationURI, false));
+        model.put("resource", r);
 
         return new ModelAndView(getSuccessView(), model);
     }
@@ -179,13 +243,17 @@ public class TemplateBasedCreateController extends SimpleFormController {
         this.cancelView = cancelView;
     }
 
+    public void setDescriptionPropDef(PropertyTypeDefinition descriptionPropDef) {
+        this.descriptionPropDef = descriptionPropDef;
+    }
+
     public void setDowncaseNames(boolean downcaseNames) {
         this.downcaseNames = downcaseNames;
     }
 
     private String fixDocumentName(String name) {
         if (this.downcaseNames) {
-            name = name.toLowerCase();
+            name = name.toLowerCase() + ".html";
         }
 
         if (this.replaceNameChars != null) {

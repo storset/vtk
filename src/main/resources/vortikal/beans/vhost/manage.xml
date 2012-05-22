@@ -437,21 +437,6 @@
   <bean id="resourceIsLocked" class="org.vortikal.web.service.ResourceIsLockedAssertion">
   </bean>
 
-  <bean id="ownershipService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="aboutResourceService" />
-    <property name="assertions">
-      <list>
-        <ref local="delegateOwnershipPermissionAssertion" />
-        <ref local="manage.postRequestAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="delegate-ownership" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="ownershipHandler" />
-  </bean>
-
   <bean id="aclInheritanceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="permissionsService" />
     <property name="assertions">
@@ -541,49 +526,6 @@
       </list>
     </property>
     <property name="handler" ref="editReadProcessedPermissionsHandler" />
-  </bean>
-
-  <bean id="setContentTypeService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="aboutResourceService" />
-    <property name="assertions">
-      <list>
-        <ref bean="writePermissionAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="edit-content-type" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="setContentTypeController" />
-  </bean>
-
-  <bean id="setContentLanguageService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="aboutResourceService" />
-    <property name="assertions">
-      <list>
-        <ref bean="writePermissionAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="edit-language-type" />
-        </bean>
-      </list>
-    </property>
-    <property name="handler" ref="setContentLanguageController" />
-  </bean>
-
-  <bean id="setCharacterEncodingService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="aboutResourceService" />
-    <property name="assertions">
-      <list>
-        <ref bean="writePermissionAssertion" />
-        <bean class="org.vortikal.web.service.RequestParameterAssertion">
-          <property name="parameterName" value="action" />
-          <property name="parameterValue" value="edit-character-encoding" />
-        </bean>
-        <ref bean="contentTypeMatchesText" />
-      </list>
-    </property>
-    <property name="handler" ref="setCharacterEncodingController" />
   </bean>
 
   <bean id="resourceTypeIsHtml" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
@@ -842,7 +784,6 @@
     <property name="principalManager" ref="principalManager" />
     <property name="principalFactory" ref="principalFactory" />
     <property name="localeResolver" ref="manageLocaleResolver" />
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
   
   <bean id="fileUploadHandler" class="org.vortikal.web.actions.create.FileUploadController">
@@ -873,6 +814,7 @@
     <property name="commandName" value="createDocumentForm" />
     <property name="commandClass" value="org.vortikal.web.actions.create.CreateDocumentCommand" />
     <property name="downcaseNames" value="true" />
+    <property name="descriptionPropDef" ref="descriptionPropDef" />
     <property name="replaceNameChars" ref="createResource.nameReplacementMap" />
     <property name="templateManager" ref="templates.resourceTemplateManager" />
   </bean>
@@ -912,6 +854,7 @@
     <property name="commandName" value="createCollectionForm" />
     <property name="commandClass" value="org.vortikal.web.actions.create.CreateCollectionCommand" />
     <property name="userTitlePropDef" ref="userTitlePropDef" />
+    <property name="hiddenPropDef" ref="hiddenPropDef" />
     <property name="downcaseCollectionNames" value="true" />
     <property name="templateManager" ref="templates.resourceTemplateManager" />
     <property name="replaceNameChars" ref="createResource.nameReplacementMap" />
@@ -927,14 +870,6 @@
         <property name="replaceNameChars" ref="createResource.nameReplacementMap" />
       </bean>
     </property>
-  </bean>
-
-  <bean id="ownershipHandler" class="org.vortikal.web.actions.properties.OwnershipController">
-    <property name="formView" value="admin" />
-    <property name="successView" value="redirect" />
-    <property name="commandName" value="ownershipForm" />
-    <property name="commandClass" value="org.vortikal.web.actions.properties.OwnershipCommand" />
-    <property name="principalFactory" ref="principalFactory" />
   </bean>
 
   <bean id="aclInheritanceHandler" class="org.vortikal.web.actions.permissions.ToggleAclInheritanceController">
@@ -991,36 +926,6 @@
 
   <bean id="permissionsHandler" class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
     <property name="viewName" value="permissions" />
-  </bean>
-
-  <bean id="setContentTypeController" class="org.vortikal.web.actions.properties.ContentTypeController">
-    <property name="formView" value="admin" />
-    <property name="successView" value="redirect" />
-    <property name="commandName" value="editContentTypeForm" />
-    <property name="commandClass" value="org.vortikal.web.actions.properties.ContentTypeCommand" />
-  </bean>
-
-  <bean id="setContentLanguageController" class="org.vortikal.web.actions.properties.ContentLanguageController">
-    <property name="formView" value="admin" />
-    <property name="successView" value="redirect" />
-    <property name="commandName" value="editContentLanguageForm" />
-    <property name="commandClass" value="org.vortikal.web.actions.properties.ContentLanguageCommand" />
-    <!-- Using java locale codes to store language -->
-    <property name="possibleLanguages">
-      <list>
-        <value>unknown</value>
-        <value>no_NO</value>
-        <value>en</value>
-        <value>no_NO_NY</value>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="setCharacterEncodingController" class="org.vortikal.web.actions.properties.CharacterEncodingController">
-    <property name="formView" value="admin" />
-    <property name="successView" value="redirect" />
-    <property name="commandName" value="editCharacterEncodingForm" />
-    <property name="commandClass" value="org.vortikal.web.actions.properties.CharacterEncodingCommand" />
   </bean>
 
   <bean id="manageCollectionListingHandler" class="org.vortikal.web.display.file.ResourceAwareParameterizableViewController">
@@ -1694,14 +1599,25 @@
 
   <bean id="aboutView" parent="freemarkerView">
     <property name="url" value="pages/about.ftl" />
-    <property name="referenceDataProviders">
+    <property name="referenceDataProviders" ref="aboutView.referenceDataProviders" />
+  </bean>
+
+  <bean id="aboutView.referenceDataProviders" class="org.vortikal.context.UnionFactoryBean">
+    <property name="elements1">
       <list>
         <ref bean="resourceContextProvider" />
         <ref bean="aboutResourceHandler" />
         <ref bean="resourceDetailProvider" />
       </list>
     </property>
+    <property name="elements2" ref="aboutView.additionalReferenceDataProviders" />
   </bean>
+
+  <bean id="aboutView.additionalReferenceDataProviders" class="org.vortikal.context.CategoryResolvingFactoryBean">
+    <property name="clazz" value="org.vortikal.web.referencedata.CategorizableReferenceDataProvider" />
+    <property name="category" value="aboutView.referenceDataProvider" />
+  </bean>
+
 
   <bean id="manageCollectionListingView" parent="freemarkerView">
     <property name="url" value="pages/manage-collectionlisting.ftl" />

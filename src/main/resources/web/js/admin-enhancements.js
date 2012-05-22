@@ -18,18 +18,20 @@
  *  1.  Config
  *  2.  DOM is fully loaded
  *  3.  DOM is ready
- *  4.  File upload
- *  5.  Keyboard interceptors / rerouters
- *  6.  Collectionlisting interaction
- *  7.  Permissions
- *  8.  Dropdowns
- *  9.  Async functions
- *  10. Async helper functions and AJAX server façade
- *  11. Show and hide properties
- *  12. Multiple inputfields
- *  13. CK browse server integration
- *  14. Utils
- *  15. Override JavaScript / jQuery
+ *  4.  Keyboard intercept / reroute, shortcuts and buttonizing
+ *  5.  Dropdowns
+ *  6.  Create service
+ *  7.  File upload service
+ *  8.  Collectionlisting
+ *  9.  Editor
+ *  10. Permissions
+ *  11. Reports
+ *  12. Versioning
+ *  13. Async functions
+ *  14. Async helper functions and AJAX server façade
+ *  15. CK browse server integration
+ *  16. Utils
+ *  17. Override JavaScript / jQuery
  *
  */
  
@@ -116,8 +118,16 @@ vrtxAdmin._$.ajaxSetup({
   timeout: 300000 // 5min
 });
 
-var EDITOR_SAVE_BUTTON_NAME = "";
-var GET_FORM_ASYNCS_IN_PROGRESS = 0;
+// Global vars that probably should be put inside vrtxAdmin
+var EDITOR_SAVE_BUTTON_NAME = "",
+    GET_FORM_ASYNCS_IN_PROGRESS = 0,
+    CREATE_RESOURCE_REPLACE_TITLE = true,
+    CREATE_DOCUMENT_FILE_NAME = "",
+    MULTIPLE_INPUT_FIELD_NAMES = [],
+    COUNTER_FOR_MULTIPLE_INPUT_FIELD = [],
+    LENGTH_FOR_MULTIPLE_INPUT_FIELD = [],
+    MULTIPLE_INPUT_FIELD_TEMPLATES = [],
+    MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED;
                            
 // funcComplete for postAjaxForm()
 var doReloadFromServer = false; // global var changed by checkStillAdmin() (funcProceedCondition)             
@@ -128,7 +138,6 @@ var reloadFromServer = function() {
     return;
   }
 };
-
 
 
 /*-------------------------------------------------------------------*\
@@ -194,99 +203,6 @@ vrtxAdmin._$(document).ready(function () {
   _$("body").on("click", ".dropdown-shortcut-menu li a, .dropdown-shortcut-menu-container li a", function() {
     _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
   });
-  
-  // TODO: Generate HTML with Mustache
-  var brokenLinksFilters = _$("#vrtx-report-filters");
-  if(brokenLinksFilters.length) {
-    brokenLinksFilters.append("<a href='#' id='vrtx-report-filters-show-hide-advanced' onclick='javascript:void(0);'>" + filtersAdvancedShow + "...</a>");
-     var html = "<div id='vrtx-report-filters-folders-include-exclude' class='solidExpandedForm'>"
-                + "<h3>" + filtersAdvancedTitle + "</h3>"
-                + "<div id='vrtx-report-filters-folders-exclude' class='report-filters-folders-exclude'><h4>" + filtersAdvancedExcludeTitle + "</h4>"
-                + "<div class='vrtx-textfield'><input type='text' id='exclude-folders' size='25' /></div></div>"
-                + "<div id='vrtx-report-filters-folders-include' class='report-filters-folders-include'><h4>" + filtersAdvancedIncludeTitle + "</h4>"
-                + "<div class='vrtx-textfield'><input type='text' id='include-folders' size='25' /></div></div>"
-                + "<a class='vrtx-button'><span>" + filtersAdvancedUpdate + "</span></a>"
-              + "</div>";
-    _$(html).insertAfter(brokenLinksFilters);
-
-    var pairs = location.search.split(/\&/);
-    var pairsLen = pairs.length;
-    var includedFolders = "", excludedFolders = "", query = "", pair = "";
-    for(var i = 0; i < pairsLen; i++) { // Add include folders
-      if(pairs[i].match(/^include-path/g)) {
-        pair = decodeURIComponent(pairs[i]);
-        includedFolders += pair.split("=")[1] + ", ";
-        query += "&" + pair;
-      }
-    }
-    for(i = 0; i < pairsLen; i++) { // Add exclude folders
-      if(pairs[i].match(/^exclude-path/g)) {
-        pair = decodeURIComponent(pairs[i]);
-        excludedFolders += pair.split("=")[1] + ", ";
-        query += "&" + pair;
-      }   
-    }
-    
-    var filterLinks = _$("#vrtx-report-filters ul a");
-    i = filterLinks.length;
-    while(i--) {
-      filterLinks[i].href = filterLinks[i].href + query;
-    }
-    
-    // If any included or excluded folders show advanced settings
-    if(includedFolders.length || excludedFolders.length) { 
-      _$("#vrtx-report-filters-folders-include-exclude").slideToggle(0);
-      _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedHide + "...");
-    }
-    
-    _$("#include-folders").val(includedFolders.substring(0, includedFolders.lastIndexOf(",")));
-    _$("#exclude-folders").val(excludedFolders.substring(0, excludedFolders.lastIndexOf(",")));
-    
-    _$("#app-content").on("click", "#vrtx-report-filters #vrtx-report-filters-show-hide-advanced", function(e) { // Show / hide advanced settings
-      _$("#vrtx-report-filters-folders-include-exclude:visible").slideUp(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
-        _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedShow + "...");
-      });
-      _$("#vrtx-report-filters-folders-include-exclude:not(:visible)").slideDown(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideDown, function() {
-        _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedHide + "...");
-      });
-      e.stopPropagation();
-      e.preventDefault();
-    });
-    _$("#app-content").on("click", "#vrtx-report-filters-folders-include-exclude a.vrtx-button", function(e) { // Filter exclude and include folders
-      saveMultipleInputFields(); // Multiple to comma-separated
-      // Build query string
-      var includeFolders = unique($("#include-folders").val().split(",")); // Get included folders and remove duplicates
-      var excludeFolders = unique($("#exclude-folders").val().split(",")); // Get excluded folders and remove duplicates
-      var includeFoldersLen = includeFolders.length, excludeFoldersLen = excludeFolders.length,
-          includeQueryString = "", excludeQueryString = ""; 
-      for(var i = 0; i < includeFoldersLen; i++) {
-        var theIncludeFolder = $.trim(includeFolders[i]);
-        if(theIncludeFolder.length) {
-          includeQueryString += "&include-path=" + encodeURIComponent(theIncludeFolder);
-        }     
-      }
-      for(i = 0; i < excludeFoldersLen; i++) {
-        var theExcludeFolder = $.trim(excludeFolders[i]);
-        if(theExcludeFolder.length) {
-          excludeQueryString += "&exclude-path=" + encodeURIComponent(theExcludeFolder);
-        }
-      }
-      // Update URL in address bar
-      var thehref = location.href;
-      var indexOfIncludeFolder = thehref.indexOf("&include-path"),
-          indexOfExcludeFolder = thehref.indexOf("&exclude-path"),
-          indexOfIncludeORExcludeFolder = (indexOfIncludeFolder !== -1) ? (indexOfExcludeFolder !== -1) 
-                                                                        ? Math.min(indexOfIncludeFolder, indexOfExcludeFolder)
-                                                                        : indexOfIncludeFolder : indexOfExcludeFolder;
-      if(indexOfIncludeORExcludeFolder !== -1) {
-        location.href = thehref.substring(0, indexOfIncludeORExcludeFolder) + includeQueryString + excludeQueryString;
-      } else {
-        location.href = thehref + includeQueryString + excludeQueryString;      
-      }
-      e.stopPropagation();
-      e.preventDefault();
-    });
-  }
 
   _$("body").on("click", document, function(e) {
     _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
@@ -345,7 +261,16 @@ vrtxAdmin._$(document).ready(function () {
   
   // Collectionlisting interaction
   vrtxAdm.collectionListingInteraction();
-  
+
+  // Editor interaction
+  editorInteraction(bodyId, vrtxAdm, _$);
+
+  // Reports interaction
+  reportsInteraction(bodyId, vrtxAdm, _$);
+
+  // Versioning interaction
+  versioningInteraction(bodyId, vrtxAdm, _$);
+
   // Zebra-tables
   vrtxAdm.zebraTables(".resourceInfo");
 
@@ -363,8 +288,7 @@ vrtxAdmin._$(document).ready(function () {
     });
     vrtxAdm.completeFormAsync({
         selector: "form#" + resourceMenuLeftServices[i] + "-form input[type=submit]",
-        isReplacing: false,
-        updateSelectors: []
+        isReplacing: false
     });
   }
 
@@ -381,8 +305,7 @@ vrtxAdmin._$(document).ready(function () {
     });
     vrtxAdm.completeFormAsync({
         selector: "form#" + resourceMenuRightServices[i] + "-form input[type=submit]",
-        isReplacing: false,
-        updateSelectors: []
+        isReplacing: false
     });
   }
 
@@ -390,14 +313,14 @@ vrtxAdmin._$(document).ready(function () {
     var tabMenuServices = ["fileUploadService", "createDocumentService", "createCollectionService"];
 
     for (i = tabMenuServices.length; i--;) {
-      if(tabMenuServices[i] != "fileUploadService"
-      && tabMenuServices[i] != "createDocumentService") {
+      if(tabMenuServices[i] == "createCollectionService") {
         vrtxAdm.getFormAsync({
           selector: "ul#tabMenuRight a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
+          funcComplete: function(p){ CREATE_RESOURCE_REPLACE_TITLE = true; $("#initToggleShowDescription").click(); },
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({ 
@@ -409,21 +332,19 @@ vrtxAdmin._$(document).ready(function () {
           funcComplete: vrtxAdm.collectionListingInteraction,
           post: true
         });
-      } else { // Half-async for file upload
+      } else { // Half-async for file upload and create document
         vrtxAdm.getFormAsync({
           selector: "ul#tabMenuRight a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
-          funcComplete: function(p){ vrtxAdm.initFileUpload() },
+          funcComplete: function(p){ CREATE_RESOURCE_REPLACE_TITLE = true; $("#initToggleShowDescription").click(); vrtxAdm.initFileUpload() },
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({
           selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-          isReplacing: false,
-          updateSelectors: ["#contents"],
-          funcComplete: vrtxAdm.collectionListingInteraction
+          isReplacing: false
         });
         vrtxAdm.initFileUpload(); // when error message
       }
@@ -511,8 +432,7 @@ vrtxAdmin._$(document).ready(function () {
         });
         vrtxAdm.completeFormAsync({
           selector: "body#vrtx-about .prop-" + propsAbout[i] + " form input[type=submit]",
-          isReplacing: true,
-          updateSelectors: ["tr.prop-" + propsAbout[i]]
+          isReplacing: true
         });
       }
     }
@@ -528,230 +448,6 @@ vrtxAdmin._$(document).ready(function () {
       e.preventDefault();
     });
   }
-  
-  _$("#app-content").on("click", "td.vrtx-report-broken-links-web-page a", function(e) {
-    var openedWebpageWithBrokenLinks = openRegular(this.href, 1020, 800, "DisplayWebpageBrokenLinks");
-    e.preventDefault();
-  });
-
-  // Versioning
-  _$("#app-content").on("click", "a.vrtx-revision-view", function(e) {
-    var openedRevision = openRegular(this.href, 1020, 800, "DisplayRevision");
-    e.preventDefault();
-  });
-
-  if(bodyId == "vrtx-revisions") {
-    _$("#contents").on("click", ".vrtx-revisions-delete-form input[type=submit]", function(e) { // Delete revisions
-      var form = _$.single(this).closest("form")
-      var url = form.attr("action");
-      var dataString = form.serialize();
-      vrtxAdm.serverFacade.postHtml(url, dataString, {
-        success: function (results, status, resp) {
-          var tr = form.closest("tr");
-          tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
-          // Check when multiple animations are complete; credits: http://tinyurl.com/83oodnp
-          var animA = tr.find("td").animate({paddingTop: '0px', paddingBottom: '0px'}, 
-                                             vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
-          var animB = tr.slideUp(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
-          _$.when(animA, animB).done(function() {
-            _$("#contents").html(_$(results).find("#contents").html());
-            _$("#app-tabs").html(_$(results).find("#app-tabs").html());
-          });
-        }
-      });
-      e.preventDefault();
-    });
-    _$("#contents").on("click", ".vrtx-revisions-restore-form input[type=submit]", function(e) { // Restore revisions
-      var form = _$.single(this).closest("form")
-      var url = form.attr("action");
-      var dataString = form.serialize();
-      _$("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
-      vrtxAdm.serverFacade.postHtml(url, dataString, {
-        success: function (results, status, resp) {
-          $("#contents").html($(results).find("#contents").html());
-          if(typeof versionsRestoredInfoMsg !== "undefined") {         
-            var revisionNr = url.substring(url.lastIndexOf("=")+1, url.length);
-            var versionsRestoredInfoMsgTmp = versionsRestoredInfoMsg.replace("X", revisionNr);
-            vrtxAdm.displayInfoMsg(versionsRestoredInfoMsgTmp);
-          }
-          scroll(0,0);
-        },
-        error: function (xhr, textStatus) {
-          _$("td.vrtx-revisions-buttons-column input").removeAttr("disabled"); // Unlock buttons
-        }
-      });
-      e.preventDefault();
-    });
-    _$("#contents").on("click", "#vrtx-revisions-make-current-form input[type=submit]", function(e) { // Make working copy into current version
-      var form = _$.single(this).closest("form")
-      var url = form.attr("action");
-      var dataString = form.serialize();
-      vrtxAdm.serverFacade.postHtml(url, dataString, {
-        success: function (results, status, resp) {
-          _$("#contents").html(_$(results).find("#contents").html());
-          _$("#app-tabs").html(_$(results).find("#app-tabs").html());
-          if(typeof versionsMadeCurrentInfoMsg !== "undefined") {
-            vrtxAdm.displayInfoMsg(versionsMadeCurrentInfoMsg);
-          }
-        }
-      });
-      e.preventDefault();
-    });
-  }
-
-  // Save shortcut and AJAX
-  if(_$("form#editor").length) {
-    shortcut.add("Ctrl+S", function() {
-      if(!_$("#TB_window").length) {
-        _$(".vrtx-focus-button:last input").click();
-      }
-    });
-    _$("#app-content").on("click", ".vrtx-focus-button:last input", function(e) {
-      EDITOR_SAVE_BUTTON_NAME = _$.single(this).attr("name");
-      if(typeof CKEDITOR !== "undefined") { 
-        for (instance in CKEDITOR.instances) {
-          CKEDITOR.instances[instance].updateElement();
-        }  
-      }
-      var startTime = new Date();   
-      tb_show(ajaxSaveText + "...", 
-              "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
-              false);
-      if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save) {
-        vrtxImageEditor.save();
-      }
-      if(typeof performSave !== "undefined") {      
-        performSave();
-      }
-      _$("#editor").ajaxSubmit({
-        success: function() {
-          var endTime = new Date() - startTime;
-          var waitMinMs = 800;
-          if(endTime >= waitMinMs) { // Wait minimum 0.8s
-            if(typeof initDatePicker !== "undefined") {
-              initDatePicker(datePickerLang);
-            }
-            tb_remove();
-          } else {
-            setTimeout(function() {
-               if(typeof initDatePicker !== "undefined") {
-                 initDatePicker(datePickerLang);
-               }
-               tb_remove();
-            }, Math.round(waitMinMs - endTime));
-          }
-        },
-        error: function(xhr, statusText, errMsg) {
-          tb_remove();
-          _$("#editor").submit();
-        }
-      });
-      e.preventDefault();
-    });
-  }
-  
-  // Editor
-  if(bodyId == "vrtx-editor") {
-    autocompleteUsernames(".vrtx-autocomplete-username");
-    autocompleteTags(".vrtx-autocomplete-tag");
-
-    // Aggregation and manually approved
-    if(!_$("#resource\\.display-aggregation\\.true").is(":checked")) {
-      _$("#vrtx-resource\\.aggregation").slideUp(0, "linear");
-    }
-
-    if(!_$("#resource\\.display-manually-approved\\.true").is(":checked")) {
-      _$("#vrtx-resource\\.manually-approve-from").slideUp(0, "linear");
-    }
- 
-    $("#app-content").on("click", "#resource\\.display-aggregation\\.true", function() {
-      if(!_$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
-        _$(".aggregation .vrtx-multipleinputfield").remove();
-        _$("#resource\\.aggregation").val("");
-      }
-      _$("#vrtx-resource\\.aggregation").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
-    });
-
-    $("#app-content").on("click", "#resource\\.display-manually-approved\\.true", function() {
-      if(!_$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
-        _$(".manually-approve-from .vrtx-multipleinputfield").remove();
-        _$("#resource\\.manually-approve-from").val("");
-      }
-      _$("#vrtx-resource\\.manually-approve-from").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
-    });
-
-    // Stickybar
-    var titleSubmitButtons = _$("#vrtx-editor-title-submit-buttons");
-    // TODO: also check minimum device height (with high density displays on new devices accounted for)
-    if(titleSubmitButtons.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
-      var titleSubmitButtonsPos = titleSubmitButtons.offset();
-      _$(window).bind("scroll", function() {
-        if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
-          titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons"); 
-          titleSubmitButtons.css("width", _$("#contents").width() + "px");
-          _$("#contents").css("paddingTop", titleSubmitButtons.outerHeight(true) + "px");
-        } else {
-          titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
-          titleSubmitButtons.css("width", "auto");
-          _$("#contents").css("paddingTop", "0px");
-        }
-      });
-    }
-
-    // Add save/help when CK is maximized
-    _$("#app-content").on("click", ".cke_button_maximize.cke_on", function(e) {	
-      var stickyBar = _$("#vrtx-editor-title-submit-buttons");			
-      stickyBar.hide();
-    	 
-      var ckInject = _$.single(this).closest(".cke_skin_kama")
-                                    .find(".cke_toolbar_end:last");
-                               
-      if(!ckInject.find("#editor-help-menu").length) {  
-      	var shortcuts = stickyBar.find(".submit-extra-buttons");
-      	var save = shortcuts.find("#vrtx-save").html();
-      	var helpMenu = "<div id='editor-help-menu' class='js-on'>" + shortcuts.find("#editor-help-menu").html() + "</div>";
-      	ckInject.append("<div class='ck-injected-save-help'>" + save + helpMenu + "</div>");
-      	
-      	// Fix markup
-      	var saveInjected = ckInject.find(".ck-injected-save-help > a");
-      	if(!saveInjected.hasClass("vrtx-button")) {
-      	  saveInjected.addClass("vrtx-button");
-      	  if(!saveInjected.find("> span").length) {
-      	    saveInjected.wrapInner("<span />");
-      	  }
-        }
-        if(saveInjected.hasClass("vrtx-button")) {
-          saveInjected.removeClass("vrtx-focus-button");
-      	}
-      	
-      } else {
-        ckInject.find(".ck-injected-save-help").show();
-      }
-    }); 
-
-    _$("#app-content").on("click", ".cke_button_maximize.cke_off", function(e) {	
-      var stickyBar = _$("#vrtx-editor-title-submit-buttons");			
-      stickyBar.show();
-      var ckInject = _$.single(this).closest(".cke_skin_kama").find(".ck-injected-save-help").hide();
-    }); 
-
-    // Show/hide multiple properties (initalization / config)
-    // TODO: better / easier to understand interface (and remove old "." in CSS-ids / classes)
-    showHide(["#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"], //radioIds
-              "#resource\\.recursive-listing\\.false:checked",                                         //conditionHide
-              'false',                                                                                 //conditionHideEqual
-              ["#vrtx-resource\\.recursive-listing-subfolders"]);                                      //showHideProps
-
-    showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
-              "#resource\\.display-type\\.calendar:checked",
-              null,
-              ["#vrtx-resource\\.event-type-title"]);
-
-    showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
-              "#resource\\.display-type\\.calendar:checked",
-              'calendar',
-              ["#vrtx-resource\\.hide-additional-content"]);
-  }
 
   // Show message in IE6, IE7 and IETrident in compability mode
   if (vrtxAdm.isIE7 || vrtxAdm.isIETridentInComp) {
@@ -766,29 +462,262 @@ vrtxAdmin._$(document).ready(function () {
 
 });
 
-/* Used by "createDocumentService" available from "manageCollectionListingService" */
-function changeTemplateName(n) {
-  vrtxAdmin._$("form[name=createDocumentService] input[type=text]").val(n);
+
+/*-------------------------------------------------------------------*\
+    4. Keyboard intercept / reroute, shortcuts and buttonizing
+\*-------------------------------------------------------------------*/
+
+function interceptEnterKey(idOrClass) {
+  $("#app-content").delegate("form input" + idOrClass, "keypress", function (e) {
+    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+      e.preventDefault(); // cancel the default browser click
+    }
+  });
+}
+
+function interceptEnterKeyAndReroute(txt, btn) {
+  $("#app-content").delegate(txt, "keypress", function (e) {
+    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+      $(btn).click(); // click the associated button
+      e.preventDefault();
+    }
+  });
+}
+
+VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelector) {
+  $("#app-content").on("click", selectors, function(e) {
+    $(reroutedSelector).click();
+    e.preventDefault();
+  });
+};
+
+VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
+  var _$ = this._$;
+
+  var btn = _$('input#logoutAction');
+  if (!btn.length) return;
+  btn.hide();
+  btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">'
+          + btn.attr('value') + '</a>');
+  _$("#app-head-wrapper").on("click", '#logoutAction\\.link', function (e) {
+    btn.click();
+    e.stopPropagation();
+    e.preventDefault();
+  });
+};
+
+
+/*-------------------------------------------------------------------*\
+    5. Dropdowns    
+\*-------------------------------------------------------------------*/
+
+VrtxAdmin.prototype.dropdownLanguageMenu = function dropdownLanguageMenu(selector) {
+  var vrtxAdm = this, _$ = vrtxAdm._$;
+  
+  var languageMenu = _$(selector + " ul");
+  if (!languageMenu.length) return;
+
+  var parent = languageMenu.parent();
+  parent.addClass("js-on");
+
+  // Remove ':' and replace <span> with <a>
+  var header = parent.find(selector + "-header");
+  var headerText = header.text();
+  // outerHtml
+  header.replaceWith("<a href='javascript:void(0);' id='" + selector.substring(1) + "-header'>"
+                     + headerText.substring(0, headerText.length - 1) + "</a>");
+
+  languageMenu.addClass("dropdown-shortcut-menu-container");
+
+  _$("body").on("click", selector + "-header", function (e) {
+    _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
+    _$.single(this).next(".dropdown-shortcut-menu-container").not(":visible").slideDown(vrtxAdm.transitionDropdownSpeed, "swing");
+    e.preventDefault();
+    e.stopPropagation();
+  });
+};
+
+VrtxAdmin.prototype.dropdown = function dropdown(options) {
+  var vrtxAdm = this, _$ = vrtxAdm._$;
+
+  var list = _$(options.selector);
+  if (!list.length) return;
+
+  var numOfListElements = list.find("li").size();
+
+  if (!options.proceedCondition || (options.proceedCondition && options.proceedCondition(numOfListElements))) {
+    list.addClass("dropdown-shortcut-menu");
+    
+    // Move listelements except .first into container
+    var listParent = list.parent();
+    listParent.append("<div class='dropdown-shortcut-menu-container'><ul>" + list.html() + "</ul></div>");
+    
+    var startDropdown = options.start != null ? ":nth-child(-n+" + options.start + ")" : ".first";
+    var dropdownClickArea = options.start != null ? ":nth-child(3)" : ".first";
+    
+    list.find("li").not(startDropdown).remove();
+    list.find("li" + dropdownClickArea).append("<span id='dropdown-shortcut-menu-click-area'></span>");
+ 
+    var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
+    shortcutMenu.find("li" + startDropdown).remove();
+    shortcutMenu.css("left", (list.width()+5) + "px");
+    
+    list.find("li" + dropdownClickArea).addClass("dropdown-init");
+    
+    list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").click(function (e) {
+      _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
+      shortcutMenu.not(":visible").slideDown(vrtxAdm.transitionDropdownSpeed, "swing");   
+      e.stopPropagation();
+      e.preventDefault();
+    });
+
+    list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").hover(function () {
+      var $this = _$.single(this);
+      $this.parent().toggleClass('unhover');
+      $this.prev().toggleClass('hover');
+    }, function () {
+      var $this = _$.single(this);
+      $this.parent().toggleClass('unhover');
+      $this.prev().toggleClass('hover');
+    });
+  }
+};
+
+function closeDropdowns() {
+  var dropdowns = vrtxAdmin._$(".dropdown-shortcut-menu-container:visible");
+  if(dropdowns.length) {
+    dropdowns.slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
+  }
+}
+
+VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
+  var _$ = this._$;
+  var breadcrumbs = _$("#vrtx-breadcrumb > span"), 
+      i = breadcrumbs.length,
+      runnedAtStart = false;
+  while(i--) {
+    var breadcrumb = _$(breadcrumbs[i]);
+    var breadcrumbPos = breadcrumb.position();
+    var breadcrumbPosTop = breadcrumbPos.top;
+    var breadcrumbPosLeft = breadcrumbPos.left;
+    if (!runnedAtStart) {
+      if (lastBreadcrumbPosLeft == breadcrumbPosLeft) {
+        return;     
+      } else {
+        lastBreadcrumbPosLeft = breadcrumbPosLeft;
+      }
+      runnedAtStart = true;
+    }
+    if (breadcrumbPosTop > 0 && breadcrumbPosLeft == 50) {
+      if (!breadcrumb.hasClass("vrtx-breadcrumb-left")) {
+        breadcrumb.addClass("vrtx-breadcrumb-left");
+      }
+      if (breadcrumb.hasClass("vrtx-breadcrumb-active")) {
+        var prevBreadcrumb = breadcrumb.prev();
+        if(prevBreadcrumb.hasClass("vrtx-breadcrumb-before-active")) {
+          prevBreadcrumb.removeClass("vrtx-breadcrumb-before-active");
+        }
+      }
+    } else {
+      if (breadcrumb.hasClass("vrtx-breadcrumb-left")) {
+        breadcrumb.removeClass("vrtx-breadcrumb-left");
+      }
+      if (breadcrumb.hasClass("vrtx-breadcrumb-active")) {
+        var prevBreadcrumb = breadcrumb.prev();
+        if(!prevBreadcrumb.hasClass("vrtx-breadcrumb-before-active")) {
+          prevBreadcrumb.addClass("vrtx-breadcrumb-before-active");
+        }
+      }
+    }
+  }
+};
+
+
+/*-------------------------------------------------------------------*\
+    6. Create service
+\*-------------------------------------------------------------------*/
+
+function userTitleKeyUp(titleBind, nameBind, indexBind) {
+  var titleField = $("#" + titleBind);
+  var nameField = $("#" + nameBind);
+  var indexCheckbox = $("#" + indexBind);
+  if ((!indexCheckbox.length || !indexCheckbox.is(":checked")) && CREATE_RESOURCE_REPLACE_TITLE) {
+    nameField.val(replaceInvalidChar(titleField.val()));
+  }
+}
+
+function replaceInvalidChar(val) {
+  val = val.toLowerCase();
+  var replaceMap = {
+    " ":   "-",
+    "æ":   "e",
+    "ø":   "o",
+    "å":   "a",
+    "%":   "",
+    "#":   "",
+    "\\?": ""
+  };
+
+  for (var key in replaceMap) {
+    var replaceThisCharGlobally = new RegExp(key,"g");
+    val = val.replace(replaceThisCharGlobally, replaceMap[key]);
+  }
+
+  return val;
+}
+
+function isIndexFile(nameBind, indexBind) {
+  var indexCheckbox = $("#" + indexBind);
+  var nameField = $("#" + nameBind);
+  if (indexCheckbox.is(":checked")) {
+    nameField[0].disabled = true;
+    CREATE_DOCUMENT_FILE_NAME = nameField.val();
+    nameField.val('index');
+  } else {
+    nameField.val(CREATE_DOCUMENT_FILE_NAME);
+    nameField[0].disabled = false;
+  }
+}
+
+function disableReplaceTitle(nameBind) {
+  if (CREATE_RESOURCE_REPLACE_TITLE) {
+    CREATE_RESOURCE_REPLACE_TITLE = false;
+  }
+  var nameField = $("#" + nameBind);
+  nameField.val(replaceInvalidChar(nameField.val()));
+}
+
+function toggleShowDescription(element, hasTitle) {
+  var descriptionElements = $("div[name='radioDescription']");
+  descriptionElements.hide();
+
+  if(hasTitle) {
+    $("#vrtx-div-file-title").show();
+  } else {
+    $("#vrtx-div-file-title").hide();
+  }
+
+  var descriptionElement = $("#" + element + "_description");
+  if (descriptionElement.length) descriptionElement.show();
 }
 
 
 
 /*-------------------------------------------------------------------*\
-    4. File upload
+    7. File upload service
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.initFileUpload = function initFileUpload() {
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
-
   var form = _$("form[name=fileUploadService]");
   if(!form.length) return;
   var inputFile = form.find("#file");
 
   _$("<div class='vrtx-textfield vrtx-file-upload'><input id='fake-file' type='text' /><a class='vrtx-button vrtx-file-upload'><span>Browse...</span></a></div>'")
     .insertAfter(inputFile);
-      
+ 
   inputFile.addClass("js-on");
-      
+
   inputFile.change(function(e) {
     var filePath = _$.single(this).val();
     filePath = filePath.substring(filePath.lastIndexOf("\\")+1);
@@ -832,60 +761,8 @@ VrtxAdmin.prototype.supportsReadOnly = function supportsReadOnly(inputfield) {
 };
 
 
-
 /*-------------------------------------------------------------------*\
-    5. Keyboard interceptors / rerouters
-\*-------------------------------------------------------------------*/
-
-function interceptEnterKey(idOrClass) {
-  $("#app-content").delegate("form input" + idOrClass, "keypress", function (e) {
-    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-      e.preventDefault(); // cancel the default browser click
-    }
-  });
-}
-
-function interceptEnterKeyAndReroute(txt, btn) {
-  $("#app-content").delegate(txt, "keypress", function (e) {
-    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-      $(btn).click(); // click the associated button
-      e.preventDefault();
-    }
-  });
-}
-
-VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelector) {
-  $("#app-content").on("click", selectors, function(e) {
-    $(reroutedSelector).click();
-    e.preventDefault();
-  });
-};
-
-
-
-/*-------------------------------------------------------------------*\
-    Buttons into links
-\*-------------------------------------------------------------------*/
-
-VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
-  var _$ = this._$;
-
-  var btn = _$('input#logoutAction');
-  if (!btn.length) return;
-  btn.hide();
-  btn.after('&nbsp;<a id=\"logoutAction.link\" name=\"logoutAction\" href="javascript:void(0);">'
-          + btn.attr('value') + '</a>');
-  _$("#app-head-wrapper").on("click", '#logoutAction\\.link', function (e) {
-    btn.click();
-    e.stopPropagation();
-    e.preventDefault();
-  });
-};
-
-
-
-/*-------------------------------------------------------------------*\
-    Collectionlisting interaction
+    8. Collectionlisting
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInteraction() {
@@ -1074,9 +951,394 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
 };
 
 
+/*-------------------------------------------------------------------*\
+    9. Editor
+\*-------------------------------------------------------------------*/
+
+function editorInteraction(bodyId, vrtxAdm, _$) {
+  if(_$("form#editor").length) { // Save shortcut and AJAX
+    shortcut.add("Ctrl+S", function() {
+      if(!_$("#TB_window").length) {
+        _$(".vrtx-focus-button:last input").click();
+      }
+    });
+    _$("#app-content").on("click", ".vrtx-focus-button:last input", function(e) {
+      EDITOR_SAVE_BUTTON_NAME = _$.single(this).attr("name");
+      if(typeof CKEDITOR !== "undefined") { 
+        for (instance in CKEDITOR.instances) {
+          CKEDITOR.instances[instance].updateElement();
+        }  
+      }
+      var startTime = new Date();   
+      tb_show(ajaxSaveText + "...", 
+              "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
+              false);
+      if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save) {
+        vrtxImageEditor.save();
+      }
+      if(typeof performSave !== "undefined") {      
+        performSave();
+      }
+      _$("#editor").ajaxSubmit({
+        success: function() {
+          var endTime = new Date() - startTime;
+          var waitMinMs = 800;
+          if(endTime >= waitMinMs) { // Wait minimum 0.8s
+            if(typeof initDatePicker !== "undefined") {
+              initDatePicker(datePickerLang);
+            }
+            tb_remove();
+          } else {
+            setTimeout(function() {
+               if(typeof initDatePicker !== "undefined") {
+                 initDatePicker(datePickerLang);
+               }
+               tb_remove();
+            }, Math.round(waitMinMs - endTime));
+          }
+        },
+        error: function(xhr, statusText, errMsg) {
+          tb_remove();
+          _$("#editor").submit();
+        }
+      });
+      e.preventDefault();
+    });
+  }
+  
+  if(bodyId == "vrtx-editor") {
+    autocompleteUsernames(".vrtx-autocomplete-username");
+    autocompleteTags(".vrtx-autocomplete-tag");
+
+    // Aggregation and manually approved
+    if(!_$("#resource\\.display-aggregation\\.true").is(":checked")) {
+      _$("#vrtx-resource\\.aggregation").slideUp(0, "linear");
+    }
+
+    if(!_$("#resource\\.display-manually-approved\\.true").is(":checked")) {
+      _$("#vrtx-resource\\.manually-approve-from").slideUp(0, "linear");
+    }
+ 
+    $("#app-content").on("click", "#resource\\.display-aggregation\\.true", function() {
+      if(!_$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
+        _$(".aggregation .vrtx-multipleinputfield").remove();
+        _$("#resource\\.aggregation").val("");
+      }
+      _$("#vrtx-resource\\.aggregation").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
+    });
+
+    $("#app-content").on("click", "#resource\\.display-manually-approved\\.true", function() {
+      if(!_$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
+        _$(".manually-approve-from .vrtx-multipleinputfield").remove();
+        _$("#resource\\.manually-approve-from").val("");
+      }
+      _$("#vrtx-resource\\.manually-approve-from").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
+    });
+
+    // Stickybar
+    var titleSubmitButtons = _$("#vrtx-editor-title-submit-buttons");
+    // TODO: also check minimum device height (with high density displays on new devices accounted for)
+    if(titleSubmitButtons.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
+      var titleSubmitButtonsPos = titleSubmitButtons.offset();
+      _$(window).bind("scroll", function() {
+        if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
+          titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons"); 
+          titleSubmitButtons.css("width", _$("#contents").width() + "px");
+          _$("#contents").css("paddingTop", titleSubmitButtons.outerHeight(true) + "px");
+        } else {
+          titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
+          titleSubmitButtons.css("width", "auto");
+          _$("#contents").css("paddingTop", "0px");
+        }
+      });
+    }
+
+    // Add save/help when CK is maximized
+    _$("#app-content").on("click", ".cke_button_maximize.cke_on", function(e) { 
+      var stickyBar = _$("#vrtx-editor-title-submit-buttons");          
+      stickyBar.hide();
+         
+      var ckInject = _$.single(this).closest(".cke_skin_kama")
+                                    .find(".cke_toolbar_end:last");
+                               
+      if(!ckInject.find("#editor-help-menu").length) {  
+        var shortcuts = stickyBar.find(".submit-extra-buttons");
+        var save = shortcuts.find("#vrtx-save").html();
+        var helpMenu = "<div id='editor-help-menu' class='js-on'>" + shortcuts.find("#editor-help-menu").html() + "</div>";
+        ckInject.append("<div class='ck-injected-save-help'>" + save + helpMenu + "</div>");
+        
+        // Fix markup
+        var saveInjected = ckInject.find(".ck-injected-save-help > a");
+        if(!saveInjected.hasClass("vrtx-button")) {
+          saveInjected.addClass("vrtx-button");
+          if(!saveInjected.find("> span").length) {
+            saveInjected.wrapInner("<span />");
+          }
+        }
+        if(saveInjected.hasClass("vrtx-button")) {
+          saveInjected.removeClass("vrtx-focus-button");
+        }
+        
+      } else {
+        ckInject.find(".ck-injected-save-help").show();
+      }
+    }); 
+
+    _$("#app-content").on("click", ".cke_button_maximize.cke_off", function(e) {    
+      var stickyBar = _$("#vrtx-editor-title-submit-buttons");          
+      stickyBar.show();
+      var ckInject = _$.single(this).closest(".cke_skin_kama").find(".ck-injected-save-help").hide();
+    }); 
+
+    // Show/hide multiple properties (initalization / config)
+    // TODO: better / easier to understand interface (and remove old "." in CSS-ids / classes)
+    showHide(["#resource\\.recursive-listing\\.false", "#resource\\.recursive-listing\\.unspecified"], // radioIds
+              "#resource\\.recursive-listing\\.false:checked",                                         // conditionHide
+              'false',                                                                                 // conditionHideEqual
+              ["#vrtx-resource\\.recursive-listing-subfolders"]);                                      // showHideProps
+
+    showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
+              "#resource\\.display-type\\.calendar:checked",
+              null,
+              ["#vrtx-resource\\.event-type-title"]);
+
+    showHide(["#resource\\.display-type\\.unspecified", "#resource\\.display-type\\.calendar"],
+              "#resource\\.display-type\\.calendar:checked",
+              'calendar',
+              ["#vrtx-resource\\.hide-additional-content"]);
+  }
+
+}
+
+/* Multiple inputfields */
+
+function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName, isMovable, isBrowsable) { // TODO: simplify
+  var inputField = $("." + name + " input[type=text]");
+  if (inputField.val() == null) return;
+
+  var formFields = inputField.val().split(",");
+
+  COUNTER_FOR_MULTIPLE_INPUT_FIELD[name] = 1; // 1-index
+  LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] = formFields.length;
+  MULTIPLE_INPUT_FIELD_NAMES.push(name);
+
+  var size = inputField.attr("size");
+
+  inputFieldParent = inputField.parent();
+    
+  var isDropdown = inputFieldParent.hasClass("vrtx-multiple-dropdown") ? true : false;
+  isMovable = isDropdown ? false : isMovable; // Turn off move-functionality tmp. if dropdown (not needed yet and needs some flicking of code)
+
+  if(inputFieldParent.parent().hasClass("vrtx-resource-ref-browse")) {
+    isBrowsable = true;
+    if(inputFieldParent.next().hasClass("vrtx-button")) {
+      inputFieldParent.next().hide();
+    } 
+  }
+
+  if (isBrowsable && (typeof browseBase === "undefined" 
+                   || typeof browseBaseFolder === "undefined"
+                   || typeof browseBasePath === "undefined")) {
+    isBrowsable = false; 
+  }
+
+  inputField.hide();
+
+  var appendHtml = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["add-button"], { name: name, removeName: removeName, moveUpName: moveUpName, 
+                                                                              moveDownName: moveDownName, browseName: browseName,
+                                                                              size: size, isBrowsable: isBrowsable, isMovable: isMovable,
+                                                                              isDropdown: isDropdown, buttonText: addName });
+
+  inputFieldParent.removeClass("vrtx-textfield").append(appendHtml);
+    
+  var addFormFieldFunc = addFormField;
+  for (var i = 0; i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]; i++) {
+    addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isBrowsable, true, isMovable, isDropdown);
+  }
+      
+  autocompleteUsernames(".vrtx-autocomplete-username");
+}
+
+function initMultipleInputFields() {
+  var wrapper = $("#app-content");
+
+  wrapper.on("click", ".vrtx-multipleinputfield button.remove", function(e){
+    removeFormField($(this));
+        e.preventDefault();
+        e.stopPropagation();
+  });
+  wrapper.on("click", ".vrtx-multipleinputfield button.moveup", function(e){
+    moveUpFormField($(this));
+        e.preventDefault();
+        e.stopPropagation();
+  });
+  wrapper.on("click", ".vrtx-multipleinputfield button.movedown", function(e){
+    moveDownFormField($(this));
+        e.preventDefault();
+        e.stopPropagation();
+  });
+  wrapper.on("click", ".vrtx-multipleinputfield button.browse-resource-ref", function(e){
+    browseServer($(this).parent().parent().find('input').attr('id'), browseBase, browseBaseFolder, browseBasePath, 'File');
+        e.preventDefault();
+        e.stopPropagation();
+  });
+  
+  // Retrieve HTML templates
+  MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED = $.Deferred();
+  MULTIPLE_INPUT_FIELD_TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("multiple-inputfields",
+                                                                   ["button", "add-button", "multiple-inputfield"],
+                                                                   MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED);
+}
+
+function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, init, isMovable, isDropdown) {
+  if (value == null) value = "";
+
+  var idstr = "vrtx-" + name + "-",
+      i = COUNTER_FOR_MULTIPLE_INPUT_FIELD[name],
+      removeButton = "", moveUpButton = "", moveDownButton = "", browseButton = "";
+
+  if (removeName) {
+    removeButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "remove", name: " " + name, 
+                                                                          idstr: idstr,   buttonText: removeName });
+  }
+  if (isMovable && moveUpName && i > 1) {
+    moveUpButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "moveup", name: "", 
+                                                                            idstr: idstr,   buttonText: "&uarr; " + moveUpName });
+  }
+  if (isMovable && moveDownName && i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]) {
+    moveDownButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "movedown", name: "", 
+                                                                            idstr: idstr,     buttonText: "&darr; " + moveDownName });
+  }
+  if(isBrowsable) {
+    browseButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "browse", name: "-resource-ref", 
+                                                                          idstr: idstr,   buttonText: browseName });
+  }
+    
+  var html = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["multiple-inputfield"], { idstr: idstr, i: i, value: value, 
+                                                                                 size: size, browseButton: browseButton,
+                                                                                 removeButton: removeButton, moveUpButton: moveUpButton,
+                                                                                 moveDownButton: moveDownButton, isDropdown: isDropdown,
+                                                                                 dropdownArray: "dropdown" + name });
+
+  $(html).insertBefore("#vrtx-" + name + "-add");
+    
+  if(!init) {
+    if(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] > 0 && isMovable) {
+      var fields = $("." + name + " div.vrtx-multipleinputfield");
+      if(fields.eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).not("has:button.movedown")) {
+        moveDownButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "movedown", name: "", 
+                                                                                idstr: idstr,     buttonText: "&darr; " + moveDownName });
+        fields.eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).append(moveDownButton);
+      }
+    }
+    LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]++;
+    autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
+  }
+
+  COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]++;   
+}
+
+function removeFormField(that) {
+  var name = $(that).attr("class").replace("remove ", "");
+  $(that).parent().parent().remove();
+
+  LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]--;
+  COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]--;
+
+  var fields = "." + name + " div.vrtx-multipleinputfield";
+
+  if($(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).has("button.movedown")) {
+    $(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).find("button.movedown").parent().remove();
+  }
+
+  if($(fields).eq(0).has("button.moveup")) {
+    $(fields).eq(0).find("button.moveup").parent().remove();
+  }
+}
+
+function moveUpFormField(that) {
+  var thisInput = $(that).parent().parent().find("input");
+  var prevInput = $(that).parent().parent().prev().find("input");
+  var thisText = thisInput.val();
+  var prevText = prevInput.val();
+  $(thisInput).val(prevText);
+  $(prevInput).val(thisText);
+}
+
+function moveDownFormField(that) {
+  var thisInput = $(that).parent().parent().find("input");
+  var nextInput = $(that).parent().parent().next().find("input");
+  var thisText = $(thisInput).val();
+  var nextText = $(nextInput).val();
+  $(thisInput).val(nextText);
+  $(nextInput).val(thisText);
+}
+
+function saveMultipleInputFields() {
+  var MULTIPLE_INPUT_FIELD_NAMES_LENGTH = MULTIPLE_INPUT_FIELD_NAMES.length;
+  var formatMultipleInputFieldsFunc = formatMultipleInputFields;
+  for(var i = 0; i < MULTIPLE_INPUT_FIELD_NAMES_LENGTH; i++){
+    formatMultipleInputFields(MULTIPLE_INPUT_FIELD_NAMES[i]);
+  }
+}
+
+function formatMultipleInputFields(name) {
+  if ($("." + name + " input[type=text]:hidden").val() == null) return;
+    
+  var allFields = $("input[id^='vrtx-" + name + "']");
+  var isDropdown = false;
+  if(!allFields.length) { 
+    allFields = $("select[id^='vrtx-" + name + "']");
+    if(allFields.length) {
+      isDropdown = true;
+    } else {
+      return;
+    }
+  }
+
+  for (var i = 0, len = allFields.length, result = ""; i < len; i++) {
+    result += isDropdown ? $.trim($(allFields[i]).find("option:selected").val()) : $.trim(allFields[i].value);
+    if (i < (len-1)) {
+      result += ",";
+    }
+  }
+  $("." + name + " input[type=text]:hidden").val(result);
+}
+
+/* Show and hide properties
+ *
+ * @param radioIds: Multiple id's for radiobuttons binding click events (Array)
+ * @param conditionHide: Condition to be checked for hiding
+ * @param conditionHideEqual: What it should equal
+ * @param showHideProps: Multiple props / id's / classnames to show / hide (Array)
+ */
+function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
+  var showHidePropertiesFunc = showHideProperties;
+  showHidePropertiesFunc(true, conditionHide, conditionHideEqual, showHideProps); // Init
+  for (var j = 0, len = radioIds.length; j < len; j++) {
+    $(radioIds[j]).click(function () {
+      showHidePropertiesFunc(false, conditionHide, conditionHideEqual, showHideProps);
+    });
+  }
+}
+
+function showHideProperties(init, conditionHide, conditionHideEqual, showHideProps) {
+  for (var conditionHideVal = $(conditionHide).val(), showHidePropertyFunc = showHideProperty, 
+       i = 0, len = showHideProps.length; i < len; i++) {
+    showHidePropertyFunc(showHideProps[i], init, conditionHideVal == conditionHideEqual ? false : true);
+  }
+}
+
+function showHideProperty(id, init, show) {
+  init ? show ? $(id).show() 
+              : $(id).hide()
+       : show ? $(id).slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideDown)
+              : $(id).slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideUp);
+}
+
 
 /*-------------------------------------------------------------------*\
-    7. Permissions	
+    10. Permissions
 \*-------------------------------------------------------------------*/
 
 function initPermissionForm(selectorClass) {
@@ -1153,134 +1415,182 @@ function autocompleteTags(selector) {
 
 
 /*-------------------------------------------------------------------*\
-    8. Dropdowns	
+    11. Reports
 \*-------------------------------------------------------------------*/
 
-VrtxAdmin.prototype.dropdownLanguageMenu = function dropdownLanguageMenu(selector) {
-  var vrtxAdm = this, _$ = vrtxAdm._$;
-  
-  var languageMenu = _$(selector + " ul");
-  if (!languageMenu.length) return;
-
-  var parent = languageMenu.parent();
-  parent.addClass("js-on");
-
-  // Remove ':' and replace <span> with <a>
-  var header = parent.find(selector + "-header");
-  var headerText = header.text();
-  // outerHtml
-  header.replaceWith("<a href='javascript:void(0);' id='" + selector.substring(1) + "-header'>"
-                     + headerText.substring(0, headerText.length - 1) + "</a>");
-
-  languageMenu.addClass("dropdown-shortcut-menu-container");
-
-  _$("body").on("click", selector + "-header", function (e) {
-    _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
-    _$.single(this).next(".dropdown-shortcut-menu-container").not(":visible").slideDown(vrtxAdm.transitionDropdownSpeed, "swing");
+function reportsInteraction(bodyId, vrtxAdm, _$) {
+  _$("#app-content").on("click", "td.vrtx-report-broken-links-web-page a", function(e) {
+    var openedWebpageWithBrokenLinks = openRegular(this.href, 1020, 800, "DisplayWebpageBrokenLinks");
     e.preventDefault();
-    e.stopPropagation();
   });
-};
+  var brokenLinksFilters = _$("#vrtx-report-filters");
+  if(brokenLinksFilters.length) {
+    brokenLinksFilters.append("<a href='#' id='vrtx-report-filters-show-hide-advanced' onclick='javascript:void(0);'>" + filtersAdvancedShow + "...</a>");
+    // TODO: Generate HTML with Mustache
+    var html = "<div id='vrtx-report-filters-folders-include-exclude' class='solidExpandedForm'>"
+               + "<h3>" + filtersAdvancedTitle + "</h3>"
+               + "<div id='vrtx-report-filters-folders-exclude' class='report-filters-folders-exclude'><h4>" + filtersAdvancedExcludeTitle + "</h4>"
+               + "<div class='vrtx-textfield'><input type='text' id='exclude-folders' size='25' /></div></div>"
+               + "<div id='vrtx-report-filters-folders-include' class='report-filters-folders-include'><h4>" + filtersAdvancedIncludeTitle + "</h4>"
+               + "<div class='vrtx-textfield'><input type='text' id='include-folders' size='25' /></div></div>"
+               + "<a class='vrtx-button'><span>" + filtersAdvancedUpdate + "</span></a>"
+            + "</div>";
+    _$(html).insertAfter(brokenLinksFilters);
 
-VrtxAdmin.prototype.dropdown = function dropdown(options) {
-  var vrtxAdm = this, _$ = vrtxAdm._$;
-
-  var list = _$(options.selector);
-  if (!list.length) return;
-
-  var numOfListElements = list.find("li").size();
-
-  if (!options.proceedCondition || (options.proceedCondition && options.proceedCondition(numOfListElements))) {
-    list.addClass("dropdown-shortcut-menu");
+    var pairs = location.search.split(/\&/);
+    var pairsLen = pairs.length;
+    var includedFolders = "", excludedFolders = "", query = "", pair = "";
+    for(var i = 0; i < pairsLen; i++) { // Add include folders
+      if(pairs[i].match(/^include-path/g)) {
+        pair = decodeURIComponent(pairs[i]);
+        includedFolders += pair.split("=")[1] + ", ";
+        query += "&" + pair;
+      }
+    }
+    for(i = 0; i < pairsLen; i++) { // Add exclude folders
+      if(pairs[i].match(/^exclude-path/g)) {
+        pair = decodeURIComponent(pairs[i]);
+        excludedFolders += pair.split("=")[1] + ", ";
+        query += "&" + pair;
+      }   
+    }
     
-    // Move listelements except .first into container
-    var listParent = list.parent();
-    listParent.append("<div class='dropdown-shortcut-menu-container'><ul>" + list.html() + "</ul></div>");
+    var filterLinks = _$("#vrtx-report-filters ul a");
+    i = filterLinks.length;
+    while(i--) {
+      filterLinks[i].href = filterLinks[i].href + query;
+    }
     
-    var startDropdown = options.start != null ? ":nth-child(-n+" + options.start + ")" : ".first";
-    var dropdownClickArea = options.start != null ? ":nth-child(3)" : ".first";
+    // If any included or excluded folders show advanced settings
+    if(includedFolders.length || excludedFolders.length) { 
+      _$("#vrtx-report-filters-folders-include-exclude").slideToggle(0);
+      _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedHide + "...");
+    }
     
-    list.find("li").not(startDropdown).remove();
-    list.find("li" + dropdownClickArea).append("<span id='dropdown-shortcut-menu-click-area'></span>");
- 
-    var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
-    shortcutMenu.find("li" + startDropdown).remove();
-    shortcutMenu.css("left", (list.width()+5) + "px");
+    _$("#include-folders").val(includedFolders.substring(0, includedFolders.lastIndexOf(",")));
+    _$("#exclude-folders").val(excludedFolders.substring(0, excludedFolders.lastIndexOf(",")));
     
-    list.find("li" + dropdownClickArea).addClass("dropdown-init");
-    
-    list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").click(function (e) {
-      _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
-      shortcutMenu.not(":visible").slideDown(vrtxAdm.transitionDropdownSpeed, "swing");   
+    _$("#app-content").on("click", "#vrtx-report-filters #vrtx-report-filters-show-hide-advanced", function(e) { // Show / hide advanced settings
+      _$("#vrtx-report-filters-folders-include-exclude:visible").slideUp(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
+        _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedShow + "...");
+      });
+      _$("#vrtx-report-filters-folders-include-exclude:not(:visible)").slideDown(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideDown, function() {
+        _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedHide + "...");
+      });
       e.stopPropagation();
       e.preventDefault();
     });
-
-    list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").hover(function () {
-      var $this = _$.single(this);
-      $this.parent().toggleClass('unhover');
-      $this.prev().toggleClass('hover');
-    }, function () {
-      var $this = _$.single(this);
-      $this.parent().toggleClass('unhover');
-      $this.prev().toggleClass('hover');
+    _$("#app-content").on("click", "#vrtx-report-filters-folders-include-exclude a.vrtx-button", function(e) { // Filter exclude and include folders
+      saveMultipleInputFields(); // Multiple to comma-separated
+      // Build query string
+      var includeFolders = unique($("#include-folders").val().split(",")); // Get included folders and remove duplicates
+      var excludeFolders = unique($("#exclude-folders").val().split(",")); // Get excluded folders and remove duplicates
+      var includeFoldersLen = includeFolders.length, excludeFoldersLen = excludeFolders.length,
+          includeQueryString = "", excludeQueryString = ""; 
+      for(var i = 0; i < includeFoldersLen; i++) {
+        var theIncludeFolder = $.trim(includeFolders[i]);
+        if(theIncludeFolder.length) {
+          includeQueryString += "&include-path=" + encodeURIComponent(theIncludeFolder);
+        }     
+      }
+      for(i = 0; i < excludeFoldersLen; i++) {
+        var theExcludeFolder = $.trim(excludeFolders[i]);
+        if(theExcludeFolder.length) {
+          excludeQueryString += "&exclude-path=" + encodeURIComponent(theExcludeFolder);
+        }
+      }
+      // Update URL in address bar
+      var thehref = location.href;
+      var indexOfIncludeFolder = thehref.indexOf("&include-path"),
+          indexOfExcludeFolder = thehref.indexOf("&exclude-path"),
+          indexOfIncludeORExcludeFolder = (indexOfIncludeFolder !== -1) ? (indexOfExcludeFolder !== -1) 
+                                                                        ? Math.min(indexOfIncludeFolder, indexOfExcludeFolder)
+                                                                        : indexOfIncludeFolder : indexOfExcludeFolder;
+      if(indexOfIncludeORExcludeFolder !== -1) {
+        location.href = thehref.substring(0, indexOfIncludeORExcludeFolder) + includeQueryString + excludeQueryString;
+      } else {
+        location.href = thehref + includeQueryString + excludeQueryString;      
+      }
+      e.stopPropagation();
+      e.preventDefault();
     });
-  }
-};
-
-function closeDropdowns() {
-  var dropdowns = vrtxAdmin._$(".dropdown-shortcut-menu-container:visible");
-  if(dropdowns.length) {
-    dropdowns.slideUp(vrtxAdmin.transitionDropdownSpeed, "swing");
   }
 }
 
-VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
-  var _$ = this._$;
-  var breadcrumbs = _$("#vrtx-breadcrumb > span"), 
-      i = breadcrumbs.length,
-      runnedAtStart = false;
-  while(i--) {
-    var breadcrumb = _$(breadcrumbs[i]);
-    var breadcrumbPos = breadcrumb.position();
-    var breadcrumbPosTop = breadcrumbPos.top;
-    var breadcrumbPosLeft = breadcrumbPos.left;
-    if (!runnedAtStart) {
-      if (lastBreadcrumbPosLeft == breadcrumbPosLeft) {
-        return;     
-      } else {
-        lastBreadcrumbPosLeft = breadcrumbPosLeft;
-      }
-      runnedAtStart = true;
-    }
-    if (breadcrumbPosTop > 0 && breadcrumbPosLeft == 50) {
-      if (!breadcrumb.hasClass("vrtx-breadcrumb-left")) {
-        breadcrumb.addClass("vrtx-breadcrumb-left");
-      }
-      if (breadcrumb.hasClass("vrtx-breadcrumb-active")) {
-        var prevBreadcrumb = breadcrumb.prev();
-        if(prevBreadcrumb.hasClass("vrtx-breadcrumb-before-active")) {
-          prevBreadcrumb.removeClass("vrtx-breadcrumb-before-active");
-        }
-      }
-    } else {
-      if (breadcrumb.hasClass("vrtx-breadcrumb-left")) {
-        breadcrumb.removeClass("vrtx-breadcrumb-left");
-      }
-      if (breadcrumb.hasClass("vrtx-breadcrumb-active")) {
-        var prevBreadcrumb = breadcrumb.prev();
-        if(!prevBreadcrumb.hasClass("vrtx-breadcrumb-before-active")) {
-          prevBreadcrumb.addClass("vrtx-breadcrumb-before-active");
-        }
-      }
-    }
-  }
-};
 
+/*-------------------------------------------------------------------*\
+    12. Versioning
+\*-------------------------------------------------------------------*/
+
+function versioningInteraction(bodyId, vrtxAdm, _$) {
+  _$("#app-content").on("click", "a.vrtx-revision-view", function(e) {
+    var openedRevision = openRegular(this.href, 1020, 800, "DisplayRevision");
+    e.preventDefault();
+  });
+
+  if(bodyId == "vrtx-revisions") {
+    _$("#contents").on("click", ".vrtx-revisions-delete-form input[type=submit]", function(e) { // Delete revisions
+      var form = _$.single(this).closest("form")
+      var url = form.attr("action");
+      var dataString = form.serialize();
+      vrtxAdm.serverFacade.postHtml(url, dataString, {
+        success: function (results, status, resp) {
+          var tr = form.closest("tr");
+          tr.prepareTableRowForSliding().hide(0).slideDown(0, "linear");
+          // Check when multiple animations are complete; credits: http://tinyurl.com/83oodnp
+          var animA = tr.find("td").animate({paddingTop: '0px', paddingBottom: '0px'}, 
+                                             vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
+          var animB = tr.slideUp(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideUp, _$.noop);
+          _$.when(animA, animB).done(function() {
+            _$("#contents").html(_$(results).find("#contents").html());
+            _$("#app-tabs").html(_$(results).find("#app-tabs").html());
+          });
+        }
+      });
+      e.preventDefault();
+    });
+    _$("#contents").on("click", ".vrtx-revisions-restore-form input[type=submit]", function(e) { // Restore revisions
+      var form = _$.single(this).closest("form")
+      var url = form.attr("action");
+      var dataString = form.serialize();
+      _$("td.vrtx-revisions-buttons-column input").attr("disabled", "disabled"); // Lock buttons
+      vrtxAdm.serverFacade.postHtml(url, dataString, {
+        success: function (results, status, resp) {
+          $("#contents").html($(results).find("#contents").html());
+          if(typeof versionsRestoredInfoMsg !== "undefined") {         
+            var revisionNr = url.substring(url.lastIndexOf("=")+1, url.length);
+            var versionsRestoredInfoMsgTmp = versionsRestoredInfoMsg.replace("X", revisionNr);
+            vrtxAdm.displayInfoMsg(versionsRestoredInfoMsgTmp);
+          }
+          scroll(0,0);
+        },
+        error: function (xhr, textStatus) {
+          _$("td.vrtx-revisions-buttons-column input").removeAttr("disabled"); // Unlock buttons
+        }
+      });
+      e.preventDefault();
+    });
+    _$("#contents").on("click", "#vrtx-revisions-make-current-form input[type=submit]", function(e) { // Make working copy into current version
+      var form = _$.single(this).closest("form")
+      var url = form.attr("action");
+      var dataString = form.serialize();
+      vrtxAdm.serverFacade.postHtml(url, dataString, {
+        success: function (results, status, resp) {
+          _$("#contents").html(_$(results).find("#contents").html());
+          _$("#app-tabs").html(_$(results).find("#app-tabs").html());
+          if(typeof versionsMadeCurrentInfoMsg !== "undefined") {
+            vrtxAdm.displayInfoMsg(versionsMadeCurrentInfoMsg);
+          }
+        }
+      });
+      e.preventDefault();
+    });
+  }
+}
 
 
 /*-------------------------------------------------------------------*\
-    9. Async functions	
+    13. Async functions  
 \*-------------------------------------------------------------------*/
 
 /**
@@ -1700,9 +2010,8 @@ VrtxAdmin.prototype.retrieveHTMLTemplates = function retrieveHTMLTemplates(fileN
 };
 
 
-
 /*-------------------------------------------------------------------*\
-    10. Async helper functions and AJAX server façade	
+    14. Async helper functions and AJAX server façade   
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function appendInputNameValuePairsToDataString(inputFields) { 
@@ -1829,250 +2138,8 @@ VrtxAdmin.prototype.serverFacade = {
 };
 
 
-
 /*-------------------------------------------------------------------*\
-    11. Show and hide properties
-
-    @param radioIds: Multiple id's for radiobuttons binding click events (Array)
-    @param conditionHide: Condition to be checked for hiding
-    @param conditionHideEqual: What it should equal
-    @param showHideProps: Multiple props / id's / classnames to show / hide (Array)
-\*-------------------------------------------------------------------*/
-
-function showHide(radioIds, conditionHide, conditionHideEqual, showHideProps) {
-  var showHidePropertiesFunc = showHideProperties;
-  showHidePropertiesFunc(true, conditionHide, conditionHideEqual, showHideProps); // Init
-  for (var j = 0, len = radioIds.length; j < len; j++) {
-    $(radioIds[j]).click(function () {
-      showHidePropertiesFunc(false, conditionHide, conditionHideEqual, showHideProps);
-    });
-  }
-}
-
-function showHideProperties(init, conditionHide, conditionHideEqual, showHideProps) {
-  for (var conditionHideVal = $(conditionHide).val(), showHidePropertyFunc = showHideProperty, 
-       i = 0, len = showHideProps.length; i < len; i++) {
-    showHidePropertyFunc(showHideProps[i], init, conditionHideVal == conditionHideEqual ? false : true);
-  }
-}
-
-function showHideProperty(id, init, show) {
-  init ? show ? $(id).show() 
-              : $(id).hide()
-       : show ? $(id).slideDown(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideDown)
-              : $(id).slideUp(vrtxAdmin.transitionPropSpeed, vrtxAdmin.transitionEasingSlideUp);
-}
-
-
-
-/*-------------------------------------------------------------------*\
-	12. Multiple inputfields
-\*-------------------------------------------------------------------*/
-
-// TODO: simplify
-var MULTIPLE_INPUT_FIELD_NAMES = [];
-var COUNTER_FOR_MULTIPLE_INPUT_FIELD = [];
-var LENGTH_FOR_MULTIPLE_INPUT_FIELD = [];
-var MULTIPLE_INPUT_FIELD_TEMPLATES = [];
-var MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED;
-
-function loadMultipleInputFields(name, addName, removeName, moveUpName, moveDownName, browseName, isMovable, isBrowsable) {
-    var inputField = $("." + name + " input[type=text]");
-    if (inputField.val() == null) return;
-
-    var formFields = inputField.val().split(",");
-
-    COUNTER_FOR_MULTIPLE_INPUT_FIELD[name] = 1; // 1-index
-    LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] = formFields.length;
-    MULTIPLE_INPUT_FIELD_NAMES.push(name);
-
-    var size = inputField.attr("size");
-
-    inputFieldParent = inputField.parent();
-    
-    var isDropdown = inputFieldParent.hasClass("vrtx-multiple-dropdown") ? true : false;
-    isMovable = isDropdown ? false : isMovable; // Turn off move-functionality tmp. if dropdown (not needed yet and needs some flicking of code)
-
-    if(inputFieldParent.parent().hasClass("vrtx-resource-ref-browse")) {
-      isBrowsable = true;
-      if(inputFieldParent.next().hasClass("vrtx-button")) {
-        inputFieldParent.next().hide();
-      }	
-    }
-
-    if (isBrowsable && (typeof browseBase === "undefined" 
-                     || typeof browseBaseFolder === "undefined"
-                     || typeof browseBasePath === "undefined")) {
-      isBrowsable = false; 
-    }
-
-    inputField.hide();
-
-    var appendHtml = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["add-button"], { name: name, removeName: removeName, moveUpName: moveUpName, 
-                                                                                moveDownName: moveDownName, browseName: browseName,
-                                                                                size: size, isBrowsable: isBrowsable, isMovable: isMovable,
-                                                                                isDropdown: isDropdown, buttonText: addName });
-
-    inputFieldParent.removeClass("vrtx-textfield").append(appendHtml);
-    
-    var addFormFieldFunc = addFormField;
-    for (var i = 0; i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]; i++) {
-      addFormFieldFunc(name, $.trim(formFields[i]), removeName, moveUpName, moveDownName, browseName, size, isBrowsable, true, isMovable, isDropdown);
-    }
-      
-    autocompleteUsernames(".vrtx-autocomplete-username");
-}
-
-function initMultipleInputFields() {
-  var wrapper = $("#app-content");
-
-  wrapper.on("click", ".vrtx-multipleinputfield button.remove", function(e){
-	removeFormField($(this));
-        e.preventDefault();
-        e.stopPropagation();
-  });
-  wrapper.on("click", ".vrtx-multipleinputfield button.moveup", function(e){
-	moveUpFormField($(this));
-        e.preventDefault();
-        e.stopPropagation();
-  });
-  wrapper.on("click", ".vrtx-multipleinputfield button.movedown", function(e){
-	moveDownFormField($(this));
-        e.preventDefault();
-        e.stopPropagation();
-  });
-  wrapper.on("click", ".vrtx-multipleinputfield button.browse-resource-ref", function(e){
-	browseServer($(this).parent().parent().find('input').attr('id'), browseBase, browseBaseFolder, browseBasePath, 'File');
-        e.preventDefault();
-        e.stopPropagation();
-  });
-  
-  // Retrieve HTML templates
-  MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED = $.Deferred();
-  MULTIPLE_INPUT_FIELD_TEMPLATES = vrtxAdmin.retrieveHTMLTemplates("multiple-inputfields",
-                                                                   ["button", "add-button", "multiple-inputfield"],
-                                                                   MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED);
-}
-
-function addFormField(name, value, removeName, moveUpName, moveDownName, browseName, size, isBrowsable, init, isMovable, isDropdown) {
-    if (value == null) value = "";
-
-    var idstr = "vrtx-" + name + "-",
-        i = COUNTER_FOR_MULTIPLE_INPUT_FIELD[name],
-        removeButton = "", moveUpButton = "", moveDownButton = "", browseButton = "";
-
-    if (removeName) {
-      removeButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "remove", name: " " + name, 
-                                                                            idstr: idstr,   buttonText: removeName });
-    }
-    if (isMovable && moveUpName && i > 1) {
-      moveUpButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "moveup", name: "", 
-                                                                            idstr: idstr,   buttonText: "&uarr; " + moveUpName });
-    }
-    if (isMovable && moveDownName && i < LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]) {
-      moveDownButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "movedown", name: "", 
-                                                                              idstr: idstr,     buttonText: "&darr; " + moveDownName });
-    }
-    if(isBrowsable) {
-      browseButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "browse", name: "-resource-ref", 
-                                                                            idstr: idstr,   buttonText: browseName });
-    }
-    
-    var html = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["multiple-inputfield"], { idstr: idstr, i: i, value: value, 
-                                                                                   size: size, browseButton: browseButton,
-                                                                                   removeButton: removeButton, moveUpButton: moveUpButton,
-                                                                                   moveDownButton: moveDownButton, isDropdown: isDropdown,
-                                                                                   dropdownArray: "dropdown" + name });
-
-    $(html).insertBefore("#vrtx-" + name + "-add");
-    
-    if(!init) {
-      if(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] > 0 && isMovable) {
-        var fields = $("." + name + " div.vrtx-multipleinputfield");
-        if(fields.eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).not("has:button.movedown")) {
-          moveDownButton = $.mustache(MULTIPLE_INPUT_FIELD_TEMPLATES["button"], { type: "movedown", name: "", 
-                                                                                  idstr: idstr,     buttonText: "&darr; " + moveDownName });
-          fields.eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).append(moveDownButton);
-        }
-      }
-      LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]++;
-      autocompleteUsername(".vrtx-autocomplete-username", idstr + i);
-    }
-
-    COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]++;   
-}
-
-function removeFormField(that) {
-    var name = $(that).attr("class").replace("remove ", "");
-    $(that).parent().parent().remove();
-
-    LENGTH_FOR_MULTIPLE_INPUT_FIELD[name]--;
-    COUNTER_FOR_MULTIPLE_INPUT_FIELD[name]--;
-
-    var fields = "." + name + " div.vrtx-multipleinputfield";
-
-    if($(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).has("button.movedown")) {
-      $(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).find("button.movedown").parent().remove();
-    }
-
-    if($(fields).eq(0).has("button.moveup")) {
-      $(fields).eq(0).find("button.moveup").parent().remove();
-    }
-}
-
-function moveUpFormField(that) {
-  var thisInput = $(that).parent().parent().find("input");
-  var prevInput = $(that).parent().parent().prev().find("input");
-  var thisText = thisInput.val();
-  var prevText = prevInput.val();
-  $(thisInput).val(prevText);
-  $(prevInput).val(thisText);
-}
-
-function moveDownFormField(that) {
-  var thisInput = $(that).parent().parent().find("input");
-  var nextInput = $(that).parent().parent().next().find("input");
-  var thisText = $(thisInput).val();
-  var nextText = $(nextInput).val();
-  $(thisInput).val(nextText);
-  $(nextInput).val(thisText);
-}
-
-function saveMultipleInputFields() {
-  var MULTIPLE_INPUT_FIELD_NAMES_LENGTH = MULTIPLE_INPUT_FIELD_NAMES.length;
-  var formatMultipleInputFieldsFunc = formatMultipleInputFields;
-  for(var i = 0; i < MULTIPLE_INPUT_FIELD_NAMES_LENGTH; i++){
-    formatMultipleInputFields(MULTIPLE_INPUT_FIELD_NAMES[i]);
-  }
-}
-
-function formatMultipleInputFields(name) {
-    if ($("." + name + " input[type=text]:hidden").val() == null) return;
-    
-    var allFields = $("input[id^='vrtx-" + name + "']");
-    var isDropdown = false;
-    if(!allFields.length) { 
-      allFields = $("select[id^='vrtx-" + name + "']");
-      if(allFields.length) {
-        isDropdown = true;
-      } else {
-        return;
-      }
-    }
-
-    for (var i = 0, len = allFields.length, result = ""; i < len; i++) {
-        result += isDropdown ? $.trim($(allFields[i]).find("option:selected").val()) : $.trim(allFields[i].value);
-        if (i < (len-1)) {
-            result += ",";
-        }
-    }
-    $("." + name + " input[type=text]:hidden").val(result);
-}
-
-
-
-/*-------------------------------------------------------------------*\
-	13. CK browse server integration
+    15. CK browse server integration
 \*-------------------------------------------------------------------*/
 
 var urlobj;
@@ -2172,9 +2239,8 @@ function SetUrl(url) {
 }
 
 
-
 /*-------------------------------------------------------------------*\
-	14. Utils
+    16. Utils
 \*-------------------------------------------------------------------*/
 
 // Use our own wrap function
@@ -2224,18 +2290,17 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
 };
 
 
-
 /*-------------------------------------------------------------------*\
-	15. Override JavaScript / jQuery
-\*-------------------------------------------------------------------*/	
-	
+    17. Override JavaScript / jQuery
+\*-------------------------------------------------------------------*/ 
+    
 /* 
-	Override slideUp() / slideDown() to animate rows in a table
-	
-	Credits: 
+    Override slideUp() / slideDown() to animate rows in a table
+    
+    Credits: 
     o http://stackoverflow.com/questions/467336/jquery-how-to-use-slidedown-or-show-function-on-a-table-row/920480#920480
     o http://www.bennadel.com/blog/1624-Ask-Ben-Overriding-Core-jQuery-Methods.htm
-*/	
+*/  
 
 jQuery.fn.prepareTableRowForSliding = function() {
   $tr = this;

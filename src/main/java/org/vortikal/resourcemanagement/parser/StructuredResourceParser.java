@@ -43,6 +43,8 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
@@ -52,6 +54,7 @@ import org.vortikal.resourcemanagement.ComponentDefinition;
 import org.vortikal.resourcemanagement.DisplayTemplate;
 import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.StructuredResourceManager;
+
 
 @SuppressWarnings("unchecked")
 public class StructuredResourceParser implements InitializingBean {
@@ -65,6 +68,8 @@ public class StructuredResourceParser implements InitializingBean {
     private ScriptDefinitionParser scriptDefinitionParser;
     private ServiceDefinitionParser serviceDefinitionParser;
     private VocabularyDefinitionParser vocabularyDefinitionParser;
+    
+    private static Log logger = LogFactory.getLog(StructuredResourceParser.class);
 
     public void afterPropertiesSet() throws Exception {
         this.parsedResourceDescriptions = new ArrayList<ParsedResourceDescription>();
@@ -79,8 +84,8 @@ public class StructuredResourceParser implements InitializingBean {
     }
 
     private void registerStructuredResources() throws Exception {
-        ResourcetreeParser parser = createParser(null);
-        parseResourceTypeDefinition(parser);
+        ParseUnit parseUnit = createParser(null);
+        parseResourceTypeDefinition(parseUnit);
 
         List<ParsedResourceDescription> tmp = new ArrayList<ParsedResourceDescription>();
         for (ParsedResourceDescription prd : this.parsedResourceDescriptions) {
@@ -106,16 +111,21 @@ public class StructuredResourceParser implements InitializingBean {
         }
     }
 
-    private void parseResourceTypeDefinition(ResourcetreeParser parser) throws Exception {
+    private void parseResourceTypeDefinition(ParseUnit parseUnit) throws Exception {
+        logger.info("Parse: " + parseUnit.description);
+        
+        ResourcetreeParser parser = parseUnit.parser;
         ResourcetreeParser.resources_return resources = parser.resources();
         if (parser.getNumberOfSyntaxErrors() > 0) {
+            
             List<String> messages = parser.getErrorMessages();
             StringBuilder mainMessage = new StringBuilder();
             for (String m : messages) {
-                mainMessage.append(m);
+                mainMessage.append(parseUnit.description + ": " + m);
             }
             throw new IllegalStateException("Unable to parse resource tree description: " + mainMessage.toString());
         }
+        
         CommonTree resourcetree = (CommonTree) resources.getTree();
         List<CommonTree> children = resourcetree.getChildren();
         if (children.size() == 1) {
@@ -133,8 +143,8 @@ public class StructuredResourceParser implements InitializingBean {
             parsedResourceDescriptions.add(new ParsedResourceDescription(srd));
         } else if (ResourcetreeLexer.INCLUDE == definition.getParent().getType()) {
             String includeFileName = definition.getText();
-            ResourcetreeParser parser = createParser(includeFileName);
-            parseResourceTypeDefinition(parser);
+            ParseUnit parseUnit = createParser(includeFileName);
+            parseResourceTypeDefinition(parseUnit);
         }
     }
 
@@ -176,14 +186,13 @@ public class StructuredResourceParser implements InitializingBean {
                     this.vocabularyDefinitionParser.handleVocabulary(srd, descriptionEntry.getChildren());
                     break;
                 default:
-                    throw new IllegalStateException("Unknown token type: " + descriptionEntry.getType());
+                    throw new IllegalStateException(srd.getName() + ": unknown token type: " + descriptionEntry.getText());
                 }
             }
         }
-
         return srd;
     }
-
+    
     private void handleLocalization(StructuredResourceDescription srd, List<CommonTree> propertyDescriptions) {
         if (!hasContent(propertyDescriptions)) {
             return;
@@ -227,28 +236,32 @@ public class StructuredResourceParser implements InitializingBean {
         return tree != null && tree.size() > 0;
     }
 
-    private ResourcetreeParser createParser(String filename) throws IOException {
-        InputStream in = getResourceTypeDefinitionAsStream(filename);
+    private class ParseUnit {
+        ResourcetreeParser parser;
+        String description;
+    }
+    
+    private ParseUnit createParser(String filename) throws IOException {
+        Resource resource = resolveLocation(filename);
+        if (resource == null) {
+            throw new IllegalArgumentException("Unable to resolve location: " + filename);
+        }
+        InputStream in = resource.getInputStream();
         ResourcetreeLexer lexer = new ResourcetreeLexer(new ANTLRInputStream(in, "UTF-8"));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ResourcetreeParser parser = new ResourcetreeParser(tokens);
-        return parser;
+        ParseUnit parseUnit = new ParseUnit();
+        parseUnit.parser = parser;
+        parseUnit.description = resource.getDescription();
+        return parseUnit;
     }
 
-    /**
-     * XXX This is no good, need to properly resolve paths when including
-     * resourcedefinitions, e.g. nested inclusions -> a file includes another
-     * wich includes another and so on and so forth
-     */
-    private InputStream getResourceTypeDefinitionAsStream(String filename) throws IOException {
-        InputStream in = null;
+    private Resource resolveLocation(String filename) throws IOException {
         if (filename != null) {
-            Resource relativeResource = this.defaultResourceTypeDefinitions.createRelative(filename);
-            in = relativeResource.getInputStream();
+            return this.defaultResourceTypeDefinitions.createRelative(filename);
         } else {
-            in = this.defaultResourceTypeDefinitions.getInputStream();
+            return this.defaultResourceTypeDefinitions;
         }
-        return in;
     }
 
     public StructuredResourceDescription getResourceDescription(String name) {

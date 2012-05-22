@@ -19,8 +19,7 @@ resourcetype program-frontpage : program-document {
     contactTitle : string,
     contactContent : html,
     contactLinkText : string, 
-    contactUrl : resource_ref, 
-    related-content : html
+    contactUrl : resource_ref
   }
 
   edit-rules {
@@ -30,10 +29,13 @@ resourcetype program-frontpage : program-document {
     faculty (dropdown),
     theme (dropdown),
     title (size[large]),
+    picture (after title-en),
     group facts (fs-program-code, status, program-type, theme, duration, study-points, full-time, faculty, keywords) (before picture),
-    group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (before related-content)
+    group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (before additional-content),
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
-    group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before related-content)
+    keywords tooltip (en : "Comma separated list", no : "Kommaseparert liste", nn : "Kommaseparert liste"), 
+    group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before additional-content),
+    additional-content (after contact-box)
   }
   
   scripts {
@@ -57,14 +59,14 @@ resourcetype program-frontpage : program-document {
       [def locale resource-locale()]  
       [def thispath resource-prop("./","uri")]
       [if locale = "en"]
-        [def uri  thispath + '/about/index.html']
+        [def uri thispath + '/why-choose/index.html']
       [else]
-        [def uri thispath + '/om/index.html']
+        [def uri thispath + '/hvorfor-velge/index.html']
       [endif]      
       [def f json-resource(uri)]
       [if f != null]
         [def published resource-prop(uri, "published") ]
-        [if published = 'true']      
+        [if published]      
           [def intro f.properties.introduction]
           <div class="vrtx-introduction">
             [val intro # unescaped]
@@ -88,11 +90,11 @@ resourcetype program-frontpage : program-document {
       [if folder]          
         [def activefeed thispath + '/?vrtx=feed&status=aktive']
         [def inactivefeed thispath + '/?vrtx=feed&status=inaktive']
-        <div class="vrtx-frontpage-box white-box big-list-elements two-column-feed">
-          [call "include:feed"  {"url":activefeed, "feed-title":true, "max-messages":20, "include-if-empty":false}]
-        </div>
-        <div class="vrtx-frontpage-box white-box big-list-elements two-column-feed inactive">
-          [call "include:feed"  {"url":inactivefeed, "feed-title":false, "max-messages":3, "include-if-empty":false, "all-messages-link":false}]
+        <div class="vrtx-frontpage-box white-box big-list-elements two-column-feed vrtx-program-option-list">
+          [call "include:feed"  {"url":activefeed, "max-messages":20, "include-if-empty":false}]
+          <div class="vrtx-program-option-list-inactive">
+            [call "include:feed"  {"url":inactivefeed, "feed-title":false, "max-messages":3, "include-if-empty":false, "all-messages-link":false}]
+          </div>
         </div>
       [endif]
       ##
@@ -128,8 +130,8 @@ resourcetype program-frontpage : program-document {
           [endif]
           </div>
         [endif]
-      [endif] 
-      </div> 
+      </div>
+      [endif]  
       ##
     }
 
@@ -144,19 +146,10 @@ resourcetype program-frontpage : program-document {
       <table id="vrtx-program-facts">
         <tbody> 
           [if points != null]
-            <tr><td>[localized 'study-points']:</td><td><strong>[val points]</strong></td></tr>   
+            <tr><td class="vrtx-program-fact-header">[localized 'study-points']:</td><td><strong>[val points]</strong></td></tr>   
           [endif]
           [if dur != null]
-            <tr><td>[localized 'duration']:</td><td><strong>[val dur]</strong></td></tr>
-          [endif]     
-          [if faculty != null]
-            <tr><td>[localized 'offered-by']:</td><td><strong>
-            [list faculty item]
-              [def number _index + 1]
-              [if number != 1]&nbsp;,[endif]
-              [localized item]
-            [endlist]
-            </strong></td></tr>
+            <tr><td class="vrtx-program-fact-header">[localized 'duration']:</td><td><strong>[val dur]</strong></td></tr>
           [endif]
         </tbody>
       </table>
@@ -167,7 +160,7 @@ resourcetype program-frontpage : program-document {
       ##
       [resource-props "."]
       [def document structured-document()]
-      [def locale resource-locale()]  
+      [def locale resource-locale()]
       <div id="vrtx-additional-content">
         <div class="vrtx-frontpage-box grey-box vrtx-distach-bottom">
           [call "comp:facts"]
@@ -175,6 +168,13 @@ resourcetype program-frontpage : program-document {
         <div class="vrtx-frontpage-box vrtx-distach-bottom">
           [call "comp:contact-box"]
         </div>
+         [if locale != 'en']
+    	        [def thispath resource-prop("./studiestart","uri")]
+    	        [def studiestart-folder resource(thispath)]
+    	        [if studiestart-folder]
+    	        	[call "include:events"  {"uri":thispath, "all-events-link":true, "feed-title":true, "max-events":2, "events-title": true, "include-if-empty":false}]
+    	        [endif]
+        [endif]
         [def thispath resource-prop("./","uri")]
         [if locale = 'en']
           [def thispath thispath + '/messages']
@@ -188,7 +188,8 @@ resourcetype program-frontpage : program-document {
             [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
           </div>
         [endif]
-        [call "comp:related-content"]      
+       
+        [call "comp:additional-content" {"document":document, "main-content": "false"}]      
       </div>
       ##
     }  
@@ -208,19 +209,17 @@ resourcetype program-frontpage : program-document {
           [def locale resource-locale()]  
           <div id="vrtx-main-content">
             <div id="vrtx-program-frontpage-main" class="vrtx-frontpage-box white-box">
+              [call "resource:program-language-link"]
               <h1>[call "comp:title"][call "comp:program-type"]</h1> 
-              <div class="vrtx-program-status">
-                [call "resource:program-language-link"]
-                [call "comp:status"]
-              </div>
+              [call "comp:status"]
               [call "comp:introduction-image"]         
               [call "comp:introduction"]         
               [def thispath resource-prop("./","uri")]
               <div id="vrtx-program-links">
                 [if locale = "en"]
-                  [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcome, structure, career-opportunities, education-exam"}]           
+                  [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcomes, admissions, structure, abroad, career, teaching-examinations"}]           
                 [else]
-                  [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-laerer-du, oppbyggning, jobb-studiemuligheter, undervisning-eksamen"}]
+                  [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-lerer-du, opptak, oppbygging, utlandet, jobb-studier, undervisning-eksamen"}]
                 [endif]
               </div>
             </div>
@@ -273,7 +272,7 @@ resourcetype program-frontpage : program-document {
     facts : (en : "Facts about the program", no : "Fakta om programmet", nn : "Fakta om programmet"),
     offered-by : (en : "Offered by", no : "Tilbys av", nn : "Tilbys av"),
     theme-view : (en : "Theme", no : "Tema", nn : "Tema"),
-    keywords : (en : "Key words", no : "Stikkord", nn : "Stikkord"),
+    keywords : (en : "Key words for program chooser", no : "Stikkord for programvelger", nn : "Stikkord for programvelger"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
 
@@ -293,7 +292,7 @@ resourcetype program-frontpage : program-document {
     contactLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
     contactUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
 
-    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
+    additional-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
   
     resource-links : (en : "Links", no : "Lenker", nn : "Lenker"),
     linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
@@ -304,7 +303,6 @@ resourcetype program-frontpage : program-document {
     status : (en : "Status", no : "Status", nn : "Status"),
     under-arbeid : (en : "In progress", no : "Under arbeid" ,nn : "Under arbeid"),
     aktivt : (en: "Active", no : "Aktiv", nn : "Aktiv"), 
-    inaktiv : (en : "Inactive", no : "Inaktiv", nn : "Inaktiv"),
     under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
     nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt"),
     

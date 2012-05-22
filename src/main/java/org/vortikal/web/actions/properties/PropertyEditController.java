@@ -43,11 +43,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.LocaleResolver;
@@ -60,13 +55,11 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.Vocabulary;
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFactoryImpl;
@@ -120,8 +113,7 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * 
  */
 @SuppressWarnings("deprecation")
-public class PropertyEditController extends SimpleFormController implements ReferenceDataProvider, BeanFactoryAware,
-        ReferenceDataProviding, InitializingBean {
+public class PropertyEditController extends SimpleFormController implements ReferenceDataProvider, ReferenceDataProviding {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
@@ -140,11 +132,6 @@ public class PropertyEditController extends SimpleFormController implements Refe
     private PrincipalManager principalManager;
     private PrincipalFactory principalFactory;
     private LocaleResolver localeResolver;
-
-    private BeanFactory beanFactory;
-    private Service urchinService;
-
-    private ResourceTypeTree resourceTypeTree;
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
@@ -509,13 +496,6 @@ public class PropertyEditController extends SimpleFormController implements Refe
             }
         }
 
-        if (urchinService != null && hasUrchinStats(resource) && !resource.isReadRestricted() && resource.isPublished()) {
-            if (request.getParameter("recache") == null)
-                model.put("urchinStats", urchinService.constructURL(resource));
-            else
-                model.put("urchinStats", urchinService.constructURL(resource).addParameter("recache", ""));
-        }
-
         model.put(this.propertyListModelName, propsList);
         model.put(this.propertyMapModelName, propsMap);
     }
@@ -527,16 +507,6 @@ public class PropertyEditController extends SimpleFormController implements Refe
             principal = principalDoc;
         }
         return principal;
-    }
-
-    private boolean hasUrchinStats(Resource resource) {
-        if (resource.isCollection())
-            return true;
-
-        ResourceTypeDefinition def = resourceTypeTree.getResourceTypeDefinitionByName("text");
-
-        return resourceTypeTree.isContainedType(def, resource.getResourceType())
-                && !resource.getResourceType().equals("text");
     }
 
     private boolean isToggleProperty(PropertyTypeDefinition def) {
@@ -670,24 +640,4 @@ public class PropertyEditController extends SimpleFormController implements Refe
     public ReferenceDataProvider[] getReferenceDataProviders() {
         return new ReferenceDataProvider[] { this };
     }
-
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        try {
-            urchinService = (Service) beanFactory.getBean("urchinResourceStats.retrieveService");
-        } catch (NoSuchBeanDefinitionException e) {
-            urchinService = null;
-        }
-    }
-
-    @Required
-    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
-        this.resourceTypeTree = resourceTypeTree;
-    }
-
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,49 +28,33 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.properties;
+package org.vortikal.context;
 
-import org.vortikal.web.actions.UpdateCancelCommand;
+import java.util.ArrayList;
+import java.util.Collection;
 
+import org.springframework.beans.factory.config.AbstractFactoryBean;
 
-
-public class ContentLanguageCommand extends UpdateCancelCommand {
-
-    private String contentLanguage;
-    private String[] possibleLanguages;
-
-    public ContentLanguageCommand(String contentLanguage, String[] possibleLanguages, String submitURL) {
-        super(submitURL);
-        this.contentLanguage = contentLanguage;
-        this.possibleLanguages = possibleLanguages;
-    }
-
+public class UnionFactoryBean<X> extends AbstractFactoryBean<Collection<X>> {
     
-    /**
-     * Gets the value of contentLanguage
-     *
-     * @return the value of contentLanguage
-     */
-    public String getContentLanguage() {
-        return this.contentLanguage;
+    private Collection<X> elements = new ArrayList<X>();
+    
+    @Override
+    protected Collection<X> createInstance() throws Exception {
+        return this.elements;
     }
 
-
-    /**
-     * Sets the value of contentLanguage
-     *
-     * @param contentLanguage Value to assign to this.contentLanguage
-     */
-    public void setContentLanguage(String contentLanguage) {
-        this.contentLanguage = contentLanguage;
+    @Override
+    public Class<?> getObjectType() {
+        return Collection.class;
+    }
+    
+    public void setElements1(Collection<X> elements1) {
+        this.elements.addAll(elements1);
+    }
+    
+    public void setElements2(Collection<X> elements2) {
+        this.elements.addAll(elements2);
     }
 
-	public String[] getPossibleLanguages() {
-		return this.possibleLanguages;
-	}
-	
-	public void setPossibleLanguages(String[] possibleLanguages) {
-		this.possibleLanguages = possibleLanguages;
-	}
 }
-

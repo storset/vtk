@@ -152,10 +152,6 @@
         class="org.vortikal.web.referencedata.provider.ResourceDetailProvider">
     <property name="serviceMap">
       <map>
-        <entry key="ownershipServiceURL" value-ref="ownershipService" />
-        <entry key="setContentTypeServiceURL" value-ref="setContentTypeService" />
-        <entry key="setContentLanguageServiceURL" value-ref="setContentLanguageService" />
-        <entry key="setCharacterEncodingServiceURL" value-ref="setCharacterEncodingService" />
         <entry key="viewURL" value-ref="viewService" />
         <entry key="webdavURL" value-ref="webdavService" />
         <entry key="getSourceURL" value-ref="getSourceService" />

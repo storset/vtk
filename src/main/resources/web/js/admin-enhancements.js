@@ -735,11 +735,13 @@ function isIndexFile(nameBind, indexBind) {
   var nameField = $("#" + nameBind);
   if (indexCheckbox.is(":checked")) {
     nameField[0].disabled = true;
+    $("#vrtx-textfield-file-type").addClass("disabled");
     CREATE_DOCUMENT_FILE_NAME = nameField.val();
     nameField.val('index');
   } else {
     nameField.val(CREATE_DOCUMENT_FILE_NAME);
     nameField[0].disabled = false;
+    $("#vrtx-textfield-file-type").removeClass("disabled");
   }
 }
 

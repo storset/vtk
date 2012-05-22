@@ -1264,8 +1264,14 @@ span.vrtx-help-step-by-step-cmd {
   display: none;
 }
 
-.vrtx-admin-form #vrtx-textfield-file-name input[disabled] {
+.vrtx-admin-form #vrtx-textfield-file-name input[disabled],
+#vrtx-textfield-file-type.disabled {
   color: #555;
+}
+
+#vrtx-textfield-file-type {
+  float: left;
+  padding: 7px 0 0 5px;
 }
 
 #vrtx-textfield-collection-name,
@@ -1285,11 +1291,6 @@ span.vrtx-help-step-by-step-cmd {
 
 #vrtx-checkbox-is-index {
   margin-left: 18px;
-}
-
-#vrtx-textfield-file-type {
-  float: left;
-  padding: 7px 0 0 5px;
 }
 
 #vrtx-checkbox-hide-from-navigation input,

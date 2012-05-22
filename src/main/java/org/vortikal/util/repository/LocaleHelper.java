@@ -37,7 +37,7 @@ import java.util.Locale;
  * <code>language_country_variant</code> into {@link Locale} objects.
  */
 public class LocaleHelper {
-    
+
     public static Locale getLocale(String localeString) {
 
         if (localeString == null || localeString.trim().equals("")) {
@@ -56,16 +56,28 @@ public class LocaleHelper {
 
         String[] locale = localeString.split("_");
         switch (locale.length) {
-            case 3:
-                return new Locale(locale[0], locale[1], locale[2]);
-            case 2:
-                return new Locale(locale[0], locale[1]);
-            case 1:
-                return new Locale(locale[0]);
-            default:
-                return null;
+        case 3:
+            return new Locale(locale[0], locale[1], locale[2]);
+        case 2:
+            return new Locale(locale[0], locale[1]);
+        case 1:
+            return new Locale(locale[0]);
+        default:
+            return null;
         }
     }
-    
-    
+
+    public static Locale getMessageLocalizationLocale(Locale providedResourceLocale) {
+        if (providedResourceLocale == null || "".equals(providedResourceLocale.toString().trim())) {
+            return null;
+        }
+        String localeString = providedResourceLocale.toString().toLowerCase();
+        if (localeString.contains("ny")) {
+            return new Locale("nn");
+        } else if (!localeString.contains("en")) {
+            return new Locale("no");
+        }
+        return providedResourceLocale;
+    }
+
 }

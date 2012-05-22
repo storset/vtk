@@ -184,12 +184,11 @@
  *        string. See org.vortikal.repository.resourcetype.ValueFormatter
  *
 -->
-<#macro date value format>
+<#macro date value format locale=springMacroRequestContext.getLocale()>
   <#compress>
     <#if VRTX_DATE_VALUE_FORMATTER?exists>
       <#local constructor = "freemarker.template.utility.ObjectConstructor"?new() />
       <#local val = constructor("org.vortikal.repository.resourcetype.Value", value, false) />
-      <#local locale = springMacroRequestContext.getLocale() />
       ${VRTX_DATE_VALUE_FORMATTER.valueToString(val, format, locale)}
     <#else>
       Undefined

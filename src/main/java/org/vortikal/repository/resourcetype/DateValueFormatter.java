@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.time.FastDateFormat;
+import org.vortikal.util.repository.LocaleHelper;
 
 public class DateValueFormatter implements ValueFormatter {
 
@@ -55,14 +56,15 @@ public class DateValueFormatter implements ValueFormatter {
         this.recognizedLocales.add("no");
         this.recognizedLocales.add("nn");
         this.recognizedLocales.add("en");
-        
+
         this.namedDateFormats.put("short_en", FastDateFormat.getInstance("MMM d, yyyy", new Locale("en")));
         this.namedDateFormats.put("short_no", FastDateFormat.getInstance("d. MMM. yyyy", new Locale("no")));
         this.namedDateFormats.put("short_nn", FastDateFormat.getInstance("d. MMM. yyyy", new Locale("no")));
         this.namedDateFormats.put("long_en", FastDateFormat.getInstance("MMM d, yyyy hh:mm a", new Locale("en")));
         this.namedDateFormats.put("long_no", FastDateFormat.getInstance("d. MMM. yyyy HH:mm", new Locale("no")));
         this.namedDateFormats.put("long_nn", FastDateFormat.getInstance("d. MMM. yyyy HH:mm", new Locale("no")));
-        this.namedDateFormats.put("longlong_en", FastDateFormat.getInstance("MMM d, yyyy hh:mm:ss a", new Locale("en")));
+        this.namedDateFormats
+                .put("longlong_en", FastDateFormat.getInstance("MMM d, yyyy hh:mm:ss a", new Locale("en")));
         this.namedDateFormats.put("longlong_no", FastDateFormat.getInstance("d. MMM. yyyy HH:mm:ss", new Locale("no")));
         this.namedDateFormats.put("longlong_nn", FastDateFormat.getInstance("d. MMM. yyyy HH:mm:ss", new Locale("no")));
         this.namedDateFormats.put("hours-minutes_en", FastDateFormat.getInstance("hh:mm a", new Locale("en")));
@@ -70,11 +72,15 @@ public class DateValueFormatter implements ValueFormatter {
         this.namedDateFormats.put("hours-minutes_nn", FastDateFormat.getInstance("HH:mm", new Locale("no")));
         this.namedDateFormats.put("iso-8601", FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ssZZ", new Locale("en")));
         this.namedDateFormats.put("iso-8601-short", FastDateFormat.getInstance("yyyy-MM-dd", new Locale("en")));
-        this.namedDateFormats.put("rfc-822", FastDateFormat.getInstance("EEE, dd MMM yyyy HH:mm:ss Z", new Locale("en")));
-        
-        this.namedDateFormats.put("full-month-year-short_no", FastDateFormat.getInstance("d. MMMM yyyy", new Locale("no")));
-        this.namedDateFormats.put("full-month-year-short_nn", FastDateFormat.getInstance("d. MMMM yyyy", new Locale("no")));
-        this.namedDateFormats.put("full-month-year-short_en", FastDateFormat.getInstance("MMMM d, yyyy", new Locale("en")));
+        this.namedDateFormats.put("rfc-822",
+                FastDateFormat.getInstance("EEE, dd MMM yyyy HH:mm:ss Z", new Locale("en")));
+
+        this.namedDateFormats.put("full-month-year-short_no",
+                FastDateFormat.getInstance("d. MMMM yyyy", new Locale("no")));
+        this.namedDateFormats.put("full-month-year-short_nn",
+                FastDateFormat.getInstance("d. MMMM yyyy", new Locale("no")));
+        this.namedDateFormats.put("full-month-year-short_en",
+                FastDateFormat.getInstance("MMMM d, yyyy", new Locale("en")));
         this.namedDateFormats.put("full-month-year_no", FastDateFormat.getInstance("MMMM yyyy", new Locale("no")));
         this.namedDateFormats.put("full-month-year_nn", FastDateFormat.getInstance("MMMM yyyy", new Locale("nn")));
         this.namedDateFormats.put("full-month-year_en", FastDateFormat.getInstance("MMMM yyyy", new Locale("en")));
@@ -101,14 +107,14 @@ public class DateValueFormatter implements ValueFormatter {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        if (this.date && value.getType() == PropertyType.Type.DATE && 
-            format.contains("long") &&  cal.get(Calendar.HOUR_OF_DAY) == 0 && 
-            cal.get(Calendar.MINUTE) == 0) {
+        if (this.date && value.getType() == PropertyType.Type.DATE && format.contains("long")
+                && cal.get(Calendar.HOUR_OF_DAY) == 0 && cal.get(Calendar.MINUTE) == 0) {
             format = format.replace("long", "short");
         }
-        
+
         FastDateFormat f = null;
 
+        locale = LocaleHelper.getMessageLocalizationLocale(locale);
         if (locale == null || !recognizedLocales.contains(locale.getLanguage())) {
             locale = this.defaultLocale;
         }
@@ -135,15 +141,8 @@ public class DateValueFormatter implements ValueFormatter {
 
     }
 
-    private static final String[] FALLBACK_DATE_FORMATS = new String[] {        
-        "dd.MM.yyyy HH:mm:ss",
-        "dd.MM.yyyy HH:mm",
-        "dd.MM.yyyy",
-        "yyyy-MM-dd HH:mm:ss",
-        "yyyy-MM-dd HH:mm",
-        "yyyy-MM-dd"
-    };
-
+    private static final String[] FALLBACK_DATE_FORMATS = new String[] { "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm",
+            "dd.MM.yyyy", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd" };
 
     public Value stringToValue(String string, String format, Locale locale) throws IllegalArgumentException {
         if (format == null) {
@@ -174,10 +173,11 @@ public class DateValueFormatter implements ValueFormatter {
                     SimpleDateFormat fsdf = new SimpleDateFormat(fallbackFormat, Locale.getDefault());
                     date = fsdf.parse(string);
                     return new Value(date, this.date);
-                } catch (ParseException t) { }
+                } catch (ParseException t) {
+                }
             }
-            throw new IllegalArgumentException("Unable to parse to date value from '" + string + 
-                    "' object using string format '" + format + "'", e);
+            throw new IllegalArgumentException("Unable to parse to date value from '" + string
+                    + "' object using string format '" + format + "'", e);
         }
         return new Value(date, this.date);
     }

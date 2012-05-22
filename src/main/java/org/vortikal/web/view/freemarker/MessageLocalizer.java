@@ -33,6 +33,7 @@ package org.vortikal.web.view.freemarker;
 import java.util.Locale;
 
 import org.springframework.web.servlet.support.RequestContext;
+import org.vortikal.util.repository.LocaleHelper;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.StringModel;
@@ -87,12 +88,13 @@ public class MessageLocalizer implements TemplateHashModel {
             }
         }
 
+        Locale messageLocalizationLocale = LocaleHelper.getMessageLocalizationLocale(this.preferredLocale);
         String msg = null;
-        if (this.preferredLocale == null) {
+        if (messageLocalizationLocale == null) {
             msg = this.springRequestContext.getMessage(this.code, argsInternal, this.defaultMessage);
         } else {
             msg = this.springRequestContext.getMessageSource().getMessage(this.code, argsInternal, this.defaultMessage,
-                    this.preferredLocale);
+                    messageLocalizationLocale);
         }
 
         if (msg != null) {

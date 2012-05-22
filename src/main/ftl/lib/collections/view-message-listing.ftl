@@ -25,9 +25,12 @@
               <a class="vrtx-message-listing-edit" href="${vrtx.relativeLinkConstructor(uri, 'simpleMessageEditor')}"><@vrtx.msg code="report.collection-structure.edit" /></a>
             </#if> 
 		  </div>
-          <#local publishDate = vrtx.propValue(r, 'publish-date') />
           <div class="published-date">
-            <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishDate}                
+            <span class="published-date-prefix">
+              <@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale />
+            </span>
+            <#local publishDateProp = vrtx.prop(r, 'publish-date') />
+            <@vrtx.date value=publishDateProp.dateValue format='long' locale=locale />
           </div>
           <div class="description introduction">
             <#assign message = vrtx.propValue(r, "listingDisplayedMessage", "", "") />

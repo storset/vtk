@@ -27,9 +27,9 @@
           <#local title = vrtx.propValue(r, 'title') />
           <#local introImg  = vrtx.prop(r, 'picture')  />
           <#local publishedDate  = vrtx.prop(r, 'published-date')  />
-          <#local publishDate = vrtx.propValue(r, 'publish-date') />
           <#local intro  = vrtx.prop(r, 'introduction')  />
           <#local caption = vrtx.propValue(r, 'caption')  />
+          <#local publishDateProp = vrtx.prop(r, 'publish-date') />
 
           <#-- Flattened caption for alt-tag in image -->
           <#local captionFlattened>
@@ -63,11 +63,17 @@
 
             <#if publishedDate?has_content && articles.hasDisplayPropDef(publishedDate.definition.name)>
               <div class="published-date">
-                <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishedDate.getFormattedValue('long', locale)}
+                <span class="published-date-prefix">
+                  <@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale />
+                </span>
+                ${publishedDate.getFormattedValue('long', locale)}
               </div>
-            <#elseif publishDate?has_content && articles.hasDisplayPropDef("published-date")>
+            <#elseif publishDateProp?has_content && articles.hasDisplayPropDef("published-date")>
               <div class="published-date">
-                <span class="published-date-prefix"><@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale /></span>${publishDate}
+                <span class="published-date-prefix">
+                  <@vrtx.localizeMessage code="viewCollectionListing.publishedDate" default="" args=[] locale=locale />
+                </span>
+                <@vrtx.date value=publishDateProp.dateValue format='long' locale=locale />
               </div>
             </#if>
 

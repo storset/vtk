@@ -67,19 +67,20 @@
        </script>
       
       <div id="vrtx-div-file-title">
-        <div class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.title" default="Title" /></div>
+        <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.title" default="Title" /></h4>
         <div class="vrtx-textfield" id="vrtx-textfield-file-title">
-          <input type="text" id="${titleBind}" name="${titleBind}" value="${newDocTitle}" />
+          <input type="text" id="${titleBind}" name="${titleBind}" value="${newDocTitle}" size="40" />
         </div>
       </div>
 
       <div id="vrtx-div-file-name">
-        <div class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.filename" default="Filename" /></div>
+        <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.filename" default="Filename" /></h4>
         <div class="vrtx-textfield" id="vrtx-textfield-file-name">
-          <input type="text" id="${nameBind}" name="${nameBind}" value="${newDocName}" />.html
+          <input type="text" id="${nameBind}" name="${nameBind}" value="${newDocName}" size="15" />
         </div>
+        
       </div>
-
+      <span id="vrtx-textfield-file-type">.html</span>
       <div class="vrtx-checkbox" id="vrtx-checkbox-is-index">
         <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" <#if isIndex>checked="checked"</#if> /> <@vrtx.msg code="actions.createDocumentService.index" default="Is index-page" />
         <abbr title="<span id='title-wrapper'>Hjelp</span><p>Lorem</p>" class="resource-prop-info"></abbr>

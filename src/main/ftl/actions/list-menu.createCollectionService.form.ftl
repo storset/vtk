@@ -35,14 +35,14 @@
       <#assign nameBind = spring.status.expression>
       <@actionsLib.genErrorMessages spring.status.errorMessages />
 
-      <div class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.title" default="Title" /></div>
+      <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.title" default="Title" /></h4>
       <div class="vrtx-textfield" id="vrtx-textfield-collection-title">
-        <input type="text" id="${titleBind}" name="${titleBind}" value="${newColTitle}" />
+        <input type="text" id="${titleBind}" name="${titleBind}" value="${newColTitle}" size="40" />
       </div>
 
-      <div class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.collection-name" default="Folder name" /></div>
+      <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.collection-name" default="Folder name" /></h4>
       <div class="vrtx-textfield" id="vrtx-textfield-collection-name">
-        <input type="text" id="${nameBind}" name="${nameBind}" value="${newColName}"  />
+        <input type="text" id="${nameBind}" name="${nameBind}" value="${newColName}" size="15"  />
       </div>
 
       <@spring.bind "createCollectionForm" + ".hidden" />

@@ -1268,6 +1268,10 @@ span.vrtx-help-step-by-step-cmd {
   display: none;
 }
 
+.vrtx-admin-form #vrtx-textfield-file-name input[disabled] {
+  color: #555;
+}
+
 .vrtx-admin-form .vrtx-checkbox {
   margin-top: 10px;
 }

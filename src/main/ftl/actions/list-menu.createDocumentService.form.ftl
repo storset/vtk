@@ -81,7 +81,7 @@
       </div>
 
       <div class="vrtx-checkbox" id="vrtx-checkbox-is-index">
-        <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" <#if isIndex>checked="checked"</#if> /> <@vrtx.msg code="actions.createDocumentService.index" default="Is index-file" />
+        <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" <#if isIndex>checked="checked"</#if> /> <@vrtx.msg code="actions.createDocumentService.index" default="Is index-page" />
         <abbr title="<span id='title-wrapper'>Hjelp</span><p>Lorem</p>" class="resource-prop-info"></abbr>
       </div>
 

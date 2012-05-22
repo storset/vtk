@@ -159,13 +159,14 @@
 <#-- FIXME: Only works for CreateDocument -->
 <#macro formRadioButtons path options pre post descriptions=[] titles=[] names=[] cTN=false attributes="">
   <@spring.bind path/>
-  <#list options?keys as value>
+  <#list options?keys as key>
+  <#assign value = options[key]>
   ${pre}
   <input type="radio" name="${spring.status.expression}" id="${value}" value="${value}"
-    <#if spring.status.value?default("") == value>checked="checked"</#if> <#if (cTN && titles?has_content && titles[value]?exists)>onclick="toggleShowDescription('${options[value]}', ${titles[value]?string})"</#if> ${attributes}
-  <@spring.closeTag/><label for="${value}"><#if names?has_content && names[value]?exists>${names[value]}<#else>${options[value]}</#if></label>
+    <#if spring.status.value?default("") == value>checked="checked"</#if> <#if (cTN && titles?has_content && titles[value]?exists)>onclick="toggleShowDescription('${key}', ${titles[value]?string})"</#if> ${attributes}
+  <@spring.closeTag/><label for="${value}"><#if names?has_content && names[value]?exists>${names[value]}<#else>${key}</#if></label>
   <#if (descriptions?has_content && descriptions[value]?exists)>
-    <div class="radioDescription" id="${options[value]}_description">${descriptions[value]}</div>
+    <div class="radioDescription" id="${key}_description">${descriptions[value]}</div>
   </#if>
   ${post}
   </#list>

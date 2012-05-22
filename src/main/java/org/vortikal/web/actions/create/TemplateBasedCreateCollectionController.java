@@ -114,6 +114,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
                 servletRequest);
         Map<String, String> tmp = new LinkedHashMap<String, String>();
+        Map<String, String> reverseTemplates = new HashMap<String, String>();
 
         String standardCollectionName = new MessageLocalizer("property.standardCollectionName", "Standard collection",
                 null, springRequestContext).get(null).toString();
@@ -121,16 +122,20 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         // puts normal folder lexicographically correct
         for (ResourceTemplate t : templates) {
             if (standardCollectionName.compareTo(t.getTitle()) < 1) {
-                tmp.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
+                tmp.put(standardCollectionName, NORMAL_FOLDER_IDENTIFIER);
+                reverseTemplates.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
             }
-            tmp.put(t.getUri().toString(), t.getTitle());
+            tmp.put(t.getTitle(), t.getUri().toString());
+            reverseTemplates.put(t.getUri().toString(), t.getTitle());
         }
 
-        if (!tmp.containsKey(NORMAL_FOLDER_IDENTIFIER) && !tmp.isEmpty()) {
+        if (!tmp.containsKey(standardCollectionName) && !tmp.isEmpty()) {
             // if normal folder is lexicographically last
-            tmp.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
+            tmp.put(standardCollectionName, NORMAL_FOLDER_IDENTIFIER);
+            reverseTemplates.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
         }
 
+        model.put("reverseTemplates", reverseTemplates);
         model.put("templates", tmp);
         return model;
     }

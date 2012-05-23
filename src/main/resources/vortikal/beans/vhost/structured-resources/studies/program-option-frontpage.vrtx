@@ -99,7 +99,7 @@ resourcetype program-option-frontpage : program-document {
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         [call "resource:comments-feed-link"]
-        <title>[call "comp:title"]</title>
+        <title>[call "comp:title"]([localized 'program-option'])</title>
       </head>
       <body id="vrtx-program-option">
         <div id="vrtx-content">

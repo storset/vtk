@@ -1058,6 +1058,7 @@ form#editor .tip ul a {
 
 .vrtx-admin-form .resource-prop-info {
   margin-left: 0px;
+  background: url(images/info-icon-grey-grey-darker-bg.png) no-repeat 0 0;
 }
 
 /* ^ Tooltip */
@@ -1234,11 +1235,6 @@ span.vrtx-help-step-by-step-cmd {
   margin-top: 10px;
 }
 
-.vrtx-admin-form #vrtx-textfield-file-name input {
-  margin-right: -35px;
-  padding-right: 35px;
-}
-
 .vrtx-admin-form .vrtx-admin-label {
   margin-bottom: 5px;
   margin-top: 10px;
@@ -1253,7 +1249,7 @@ span.vrtx-help-step-by-step-cmd {
 
 #createDocumentService-form .radio-buttons,
 #createCollectionService-form .radio-buttons {
-  background: transparent url("images/line-dotted.gif") repeat-x scroll left bottom;
+  background: transparent url("images/line-dotted-tighter.gif") repeat-x scroll left bottom;
   margin-bottom: 15px;
   padding-bottom: 15px;
 }
@@ -1268,8 +1264,40 @@ span.vrtx-help-step-by-step-cmd {
   display: none;
 }
 
-.vrtx-admin-form .vrtx-checkbox {
-  margin-top: 10px;
+.vrtx-admin-form #vrtx-textfield-file-name input[disabled],
+#vrtx-textfield-file-type.disabled {
+  color: #555;
+}
+
+#vrtx-textfield-file-type {
+  float: left;
+  padding: 7px 0 0 5px;
+}
+
+#vrtx-textfield-collection-name,
+#vrtx-textfield-file-name,
+#vrtx-checkbox-hide-from-navigation,
+#vrtx-checkbox-is-index {
+  float: left;
+}
+
+#vrtx-checkbox-hide-from-navigation,
+#vrtx-checkbox-is-index {
+  background: transparent url("images/seperator-grey-gradient-small-darker.png") no-repeat scroll left center;
+  height: 23px;
+  margin: 0 0 0 23px;
+  padding: 7px 0 0 18px;
+}
+
+#vrtx-checkbox-is-index {
+  margin-left: 18px;
+}
+
+#vrtx-checkbox-hide-from-navigation input,
+#vrtx-checkbox-is-index input {
+  display: block;
+  float: left;
+  margin: 1px 6px 0 0;
 }
 
 /* ^ Tab forms */

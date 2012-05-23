@@ -3,7 +3,10 @@
 <#import "/lib/view-utils.ftl" as viewutils />
 
 <#macro displayCollection collectionListing>
+
   <#local resources=collectionListing.files />
+  <#local editLinks = collectionListing.editLinkAuthorized />
+
   <#if (resources?size > 0)>
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/include-jquery.js"></script>
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/open-webdav.js"></script>
@@ -30,7 +33,7 @@
 		    <#assign title = vrtx.propValue(r, "solr.name", "", "") />
 		  </#if>
           <a class="vrtx-title vrtx-title-link" href="${collectionListing.urls[r.URI]?html}">${title?html}</a>
-          <#if edit?exists && edit[r_index]>
+          <#if editLinks?exists && editLinks[r_index]?exists && editLinks[r_index]>
             <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="report.collection-structure.edit" /></a>
           </#if>
 		</div>

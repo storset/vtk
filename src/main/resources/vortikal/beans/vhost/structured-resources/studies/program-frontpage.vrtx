@@ -25,7 +25,6 @@ resourcetype program-frontpage : program-document {
   edit-rules {
     status (dropdown),
     program-type (dropdown),
-    themes (dropdown),
     faculty (dropdown),
     theme (dropdown),
     title (size[large]),
@@ -149,7 +148,7 @@ resourcetype program-frontpage : program-document {
             <tr><td class="vrtx-program-fact-header">[localized 'study-points']:</td><td><strong>[val points]</strong></td></tr>   
           [endif]
           [if dur != null]
-            <tr><td class="vrtx-program-fact-header">[localized 'duration']:</td><td><strong>[val dur]</strong></td></tr>
+            <tr><td class="vrtx-program-fact-header">[localized 'duration']:</td><td><strong>[val dur] [localized 'years']</strong></td></tr>
           [endif]
         </tbody>
       </table>
@@ -269,6 +268,7 @@ resourcetype program-frontpage : program-document {
     header : (en : "Edit program frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
     fs-program-code : (en : "FS program code", no : "FS programkode", nn : "FS programkode"),
     duration : (en : "Duration", no : "Varighet", nn : "Varighet"),
+    years : (en : "years", no : "år", nn : "år"),
     study-points : (en : "Study points", no : "Studiepoeng", nn : "Studiepoeng"),
     facts : (en : "Facts about the program", no : "Fakta om programmet", nn : "Fakta om programmet"),
     offered-by : (en : "Offered by", no : "Tilbys av", nn : "Tilbys av"),

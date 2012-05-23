@@ -31,6 +31,7 @@
 package org.vortikal.web.display.collection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,12 @@ public class CollectionListingController extends AbstractCollectionListingContro
         int limit = pageLimit;
         int totalHits = 0;
 
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Service service = requestContext.getService();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
+        Principal principal = requestContext.getPrincipal();
+
         List<Listing> results = new ArrayList<Listing>();
 
         for (SearchComponent component : this.searchComponents) {
@@ -87,6 +94,10 @@ public class CollectionListingController extends AbstractCollectionListingContro
                 }
             }
 
+            if (this.displayEditLinks) {
+                this.helper.checkListingsForEditLinks(repository, token, principal, Arrays.asList(listing));
+            }
+
             // We have more results to display for this listing
             if (listing.hasMoreResults()) {
                 break;
@@ -97,11 +108,6 @@ public class CollectionListingController extends AbstractCollectionListingContro
             }
 
         }
-        RequestContext requestContext = RequestContext.getRequestContext();
-        Service service = requestContext.getService();
-        Repository repository = requestContext.getRepository();
-        String token = requestContext.getSecurityToken();
-        Principal principal = requestContext.getPrincipal();
 
         URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
 
@@ -110,7 +116,6 @@ public class CollectionListingController extends AbstractCollectionListingContro
         }
 
         if (this.displayEditLinks) {
-            model.put("edit", helper.checkListingsForEditLinks(repository, token, principal, totalHits, results));
             model.put("editCurrentResource", helper.checkResourceForEditLink(repository, collection, principal));
         }
 

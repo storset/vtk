@@ -25,7 +25,7 @@
         <ul class="radio-buttons">
           <@vrtx.formRadioButtons "createCollectionForm.sourceURI", templates, "<li>", "</li>" />
         </ul>
-        <button id="initToggleShowDescription" type="button" onclick="toggleShowDescription('${templates[sourceURIBind]}', true)"></button> 
+        <button id="initToggleShowDescription" type="button" onclick="toggleShowDescription('${reverseTemplates[sourceURIBind]}', true)"></button> 
       </#if>
 
       <@spring.bind "createCollectionForm" + ".title" />
@@ -35,14 +35,14 @@
       <#assign nameBind = spring.status.expression>
       <@actionsLib.genErrorMessages spring.status.errorMessages />
 
-      <div class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.title" default="Title" /></div>
+      <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.title" default="Title" /></h4>
       <div class="vrtx-textfield" id="vrtx-textfield-collection-title">
-        <input type="text" id="${titleBind}" name="${titleBind}" value="${newColTitle}" />
+        <input type="text" id="${titleBind}" name="${titleBind}" value="${newColTitle}" size="40" />
       </div>
 
-      <div class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.collection-name" default="Folder name" /></div>
+      <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.collection-name" default="Folder name" /></h4>
       <div class="vrtx-textfield" id="vrtx-textfield-collection-name">
-        <input type="text" id="${nameBind}" name="${nameBind}" value="${newColName}"  />
+        <input type="text" id="${nameBind}" name="${nameBind}" value="${newColName}" size="15"  />
       </div>
 
       <@spring.bind "createCollectionForm" + ".hidden" />
@@ -51,7 +51,7 @@
 
       <div class="vrtx-checkbox" id="vrtx-checkbox-hide-from-navigation">
         <input type="checkbox"  id="${hiddenBind}" name="${hiddenBind}" /> <@vrtx.msg code="actions.createCollectionService.hide" default="Hide from navigation" />
-        <abbr title="<span id='title-wrapper'>Hjelp</span><p>Lorem</p>" class="resource-prop-info"></abbr>
+        <abbr title="${vrtx.getMsg("actions.tooltip.hideFromNavigation")}" class="resource-prop-info"></abbr>
       </div>
 
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createCollectionService.save" "actions.createCollectionService.cancel" />

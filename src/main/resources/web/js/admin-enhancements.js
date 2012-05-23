@@ -735,11 +735,13 @@ function isIndexFile(nameBind, indexBind) {
   var nameField = $("#" + nameBind);
   if (indexCheckbox.is(":checked")) {
     nameField[0].disabled = true;
+    $("#vrtx-textfield-file-type").addClass("disabled");
     CREATE_DOCUMENT_FILE_NAME = nameField.val();
     nameField.val('index');
   } else {
     nameField.val(CREATE_DOCUMENT_FILE_NAME);
     nameField[0].disabled = false;
+    $("#vrtx-textfield-file-type").removeClass("disabled");
   }
 }
 
@@ -760,7 +762,15 @@ function toggleShowDescription(element, hasTitle) {
   } else {
     $("#vrtx-div-file-title").hide();
   }
-
+  
+  if(element.indexOf(".") !== -1) {
+    var fileType = $("#vrtx-textfield-file-type");
+    if(!fileType.length) {
+      $("<span id='vrtx-textfield-file-type'></span>").insertAfter("#vrtx-div-file-name");
+    }
+    $("#vrtx-textfield-file-type").text("." + element.split(".")[1]);
+  }
+  
   // Escape dot in id for template (e.g. artikkel.html_description)
   var descriptionElement = $("#" + element.replace(/\./g, "\\.") + "_description");
   if (descriptionElement.length) descriptionElement.show();

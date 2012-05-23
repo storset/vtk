@@ -28,9 +28,9 @@
         </#if>
         <#if templates?has_content>
           <ul class="radio-buttons">
-            <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", descriptions, titles, true />
+            <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", descriptions, titles, names, true />
           </ul>
-          <button id="initToggleShowDescription" type="button" onclick="toggleShowDescription('${templates[sourceURIBind]}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button>
+          <button id="initToggleShowDescription" type="button" onclick="toggleShowDescription('${reverseTemplates[sourceURIBind]}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button>
           
           <#-- If POST is not AJAX (otherwise it would be a funcComplete() in completeAsyncForm()) -->
           <script type="text/javascript"><!--
@@ -67,22 +67,21 @@
        </script>
       
       <div id="vrtx-div-file-title">
-        <div class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.title" default="Title" /></div>
+        <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.title" default="Title" /></h4>
         <div class="vrtx-textfield" id="vrtx-textfield-file-title">
-          <input type="text" id="${titleBind}" name="${titleBind}" value="${newDocTitle}" />
+          <input type="text" id="${titleBind}" name="${titleBind}" value="${newDocTitle}" size="40" />
         </div>
       </div>
 
       <div id="vrtx-div-file-name">
-        <div class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.filename" default="Filename" /></div>
+        <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.filename" default="Filename" /></h4>
         <div class="vrtx-textfield" id="vrtx-textfield-file-name">
-          <input type="text" id="${nameBind}" name="${nameBind}" value="${newDocName}" />.html
+          <input type="text" id="${nameBind}" name="${nameBind}" value="${newDocName}" size="15" />
         </div>
       </div>
-
       <div class="vrtx-checkbox" id="vrtx-checkbox-is-index">
-        <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" <#if isIndex>checked="checked"</#if> /> <@vrtx.msg code="actions.createDocumentService.index" default="Is index-file" />
-        <abbr title="<span id='title-wrapper'>Hjelp</span><p>Lorem</p>" class="resource-prop-info"></abbr>
+        <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" <#if isIndex>checked="checked"</#if> /> <@vrtx.msg code="actions.createDocumentService.index" default="Is index-page" />
+        <abbr title="${vrtx.getMsg("actions.tooltip.isIndexPage")}" class="resource-prop-info"></abbr>
       </div>
 
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createDocumentService.save" "actions.createDocumentService.cancel" />

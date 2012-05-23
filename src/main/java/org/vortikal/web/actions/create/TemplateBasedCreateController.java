@@ -34,9 +34,9 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 
 import javax.servlet.http.HttpServletRequest;
@@ -96,25 +96,48 @@ public class TemplateBasedCreateController extends SimpleFormController {
         Path uri = requestContext.getResourceURI();
         List<ResourceTemplate> l = this.templateManager.getDocumentTemplates(token, uri);
 
-        Map<String, String> templates = new LinkedHashMap<String, String>();
+        Map<String, String> templates = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, String> reverseTemplates = new HashMap<String, String>();
         Map<String, String> descriptions = new HashMap<String, String>();
         Map<String, Boolean> titles = new HashMap<String, Boolean>();
+        Map<String, String> names = new HashMap<String, String>();
 
         Property dp;
         Resource r;
+        boolean putName;
         Repository repository = requestContext.getRepository();
         for (ResourceTemplate t : l) {
+            putName = true;
             r = repository.retrieve(token, t.getUri(), false);
-            if ((dp = r.getProperty(this.descriptionPropDef)) != null)
-                descriptions.put(t.getUri().toString(), dp.getFormattedValue());
+            if ((dp = r.getProperty(this.descriptionPropDef)) != null) {
+                String name = dp.getFormattedValue();
+
+                if (name.contains("|")) {
+                    if (name.indexOf('|') + 1 < name.length())
+                        descriptions.put(t.getUri().toString(), name.substring(name.indexOf('|') + 1));
+
+                    if ((name = name.substring(0, name.indexOf('|'))).length() > 0) {
+                        names.put(t.getUri().toString(), name);
+                        templates.put(name, t.getUri().toString());
+                        reverseTemplates.put(t.getUri().toString(), name);
+                        putName = false;
+                    }
+                } else
+                    descriptions.put(t.getUri().toString(), name);
+            }
 
             titles.put(t.getUri().toString(), r.getTitle().equals(this.titlePlaceholder));
 
-            templates.put(t.getUri().toString(), t.getName());
+            if (putName) {
+                templates.put(t.getName(), t.getUri().toString());
+                reverseTemplates.put(t.getUri().toString(), t.getName());
+            }
         }
         model.put("templates", templates);
+        model.put("reverseTemplates", reverseTemplates);
         model.put("descriptions", descriptions);
         model.put("titles", titles);
+        model.put("names", names);
         return model;
     }
 
@@ -191,6 +214,11 @@ public class TemplateBasedCreateController extends SimpleFormController {
             name = createDocumentCommand.getName();
 
         name = fixDocumentName(name);
+
+        String filetype = sourceURI.toString().substring(sourceURI.toString().lastIndexOf('.'));
+        if (!name.endsWith(filetype))
+            name += filetype;
+
         Path destinationURI = uri.extend(name);
 
         repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);
@@ -256,7 +284,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
 
     private String fixDocumentName(String name) {
         if (this.downcaseNames) {
-            name = name.toLowerCase() + ".html";
+            name = name.toLowerCase();
         }
 
         if (this.replaceNameChars != null) {

@@ -84,13 +84,13 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
             throw new DecoratorComponentException("Provided uri is not a valid folder reference: " + uri);
         }
 
-        Repository r = RequestContext.getRequestContext().getRepository();
+        Repository repository = RequestContext.getRequestContext().getRepository();
         String token = SecurityContext.getSecurityContext().getToken();
         Principal principal = SecurityContext.getSecurityContext().getPrincipal();
 
         Resource res;
         try {
-            res = r.retrieve(token, resourcePath, false);
+            res = repository.retrieve(token, resourcePath, false);
         } catch (AuthenticationException e) {
             res = null;
         } catch (AuthorizationException e) {
@@ -132,10 +132,11 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
 
         conf.put("compactView", parameterHasValue(PARAMETER_COMPACT_VIEW, "true", request));
 
-        Listing l = search.execute(request.getServletRequest(), res, 1, maxItems, 0);
+        Listing listing = search.execute(request.getServletRequest(), res, 1, maxItems, 0);
+        this.helper.checkListingsForEditLinks(repository, token, principal, Arrays.asList(listing));
 
-        model.put("edit", helper.checkListingsForEditLinks(r, token, principal, l.getFiles().size(), Arrays.asList(l)));
-        model.put("list", l.getFiles());
+        model.put("editLinks", listing.getEditLinkAuthorized());
+        model.put("list", listing.getFiles());
         model.put("conf", conf);
     }
 

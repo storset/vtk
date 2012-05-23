@@ -64,7 +64,9 @@ view-components {
       [if grad-fri != null && grad-fri != ""]
       	 [localized 'grade-description'] [val grad-fri]
       [endif]
-      [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"gradsnavn"}]
+      [if gradsnavn != null && gradsnavn != ""]
+      	[localized 'grade-description'] [call "comp:vis-fellestekst" {"docType":"oppbygning", "propName":"gradsnavn"}]
+      [endif]
       ##
       }
       

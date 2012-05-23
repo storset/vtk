@@ -15,6 +15,7 @@ resourcetype program-option-frontpage : program-document {
   edit-rules {
     status (dropdown),
     title (size[large]),
+    group samlet (title-no, title-nn, title-en) (after title),
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
     group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before related-content),
     additional-content (after contact-box)

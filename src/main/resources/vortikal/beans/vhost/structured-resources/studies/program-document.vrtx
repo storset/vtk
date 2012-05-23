@@ -7,9 +7,7 @@ resourcetype program-document {
     title-en : string,
     additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract
   }
-  edit-rules{
-  	group samla (title-no, title-nn, title-en) (after title)
-  }
+  
   view-components {
   
     title {
@@ -275,7 +273,7 @@ resourcetype program-document {
     status-inactive : (en : "This programme no longer admits students", no : "Programmet tar ikke opp nye studenter", nn : "Programmet tar ikkje opp nye studentar"),
     additional-content : (en : "Related content (right column)", no : "Relatert innhold (høyrespalte)", nn : "Relatert innhald (høgre spalte)"),
     boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
-    samla : (en : "Titles for samlet.html", no : "Titler til samlet.html", nn : "Titlar til samlet.html"),
+    samlet : (en : "Titles for samlet.html", no : "Titler til samlet.html", nn : "Titlar til samlet.html"),
     boxType : (en : "Special settings", no : "Spesielle innstillinger", nn : "Spesielle innstillinger"),
     boxCssSizeAndPlacement : (en : "Size and placement", no : "Størrelse og plassering", nn : "Størrelse og plassering"),
     boxCssColor : (en : "Color", no : "Farge", nn : "Farge"),

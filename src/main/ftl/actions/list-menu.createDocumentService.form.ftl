@@ -58,13 +58,12 @@
            var titleBind = "${titleBind}";
            var titleField = $("#" + titleBind);
            var nameField = $("#" + nameBind);
-           var nameVal = replaceInvalidChar(titleField.val());
-           if(nameVal.length > 30) {
-             nameField.val(nameVal.substring(0, 30)); 
-           } else {
-             nameField.val(nameFieldVal);
+           var nameFieldVal = replaceInvalidChar(titleField.val());
+           if(nameFieldVal.length > 30) {
+             nameFieldVal = nameFieldVal.substring(0, 30); 
            }
-           CREATE_DOCUMENT_FILE_NAME = nameVal;
+           nameField.val(nameFieldVal);
+           CREATE_DOCUMENT_FILE_NAME = nameFieldVal;
            isIndexFile("${nameBind}", "${isIndexBind}");
          });
        // -->

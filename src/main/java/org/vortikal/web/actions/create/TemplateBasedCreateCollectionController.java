@@ -264,11 +264,19 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             errors.rejectValue("name", "manage.create.collection.invalid.name", "This is an invalid collection name");
             return;
         }
+        
+        if (name.length() > 30) {
+            errors.rejectValue("name", "manage.create.collection.invalid.name.length", "This collection name is too long");
+            return;
+        }
+        
         name = fixCollectionName(name);
+        
         if (name.isEmpty()) {
             errors.rejectValue("name", "manage.create.collection.invalid.name", "This is an invalid collection name");
             return;
         }
+        
         Path newURI;
         try {
             newURI = uri.extend(name);
@@ -277,8 +285,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             return;
         }
 
-        boolean exists = repository.exists(token, newURI);
-        if (exists) {
+        if (repository.exists(token, newURI)) {
             errors.rejectValue("name", "manage.create.collection.exists", "A collection with this name already exists");
             return;
         }

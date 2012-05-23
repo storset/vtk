@@ -684,10 +684,9 @@ function userTitleChange(titleBind, nameBind, indexBind) {
   if ((!indexCheckbox.length || !indexCheckbox.is(":checked")) && CREATE_RESOURCE_REPLACE_TITLE) {
     var nameFieldVal = replaceInvalidChar(titleField.val());
     if(nameFieldVal.length > 30) {
-      nameField.val(nameFieldVal.substring(0, 30)); 
-    } else {
-      nameField.val(nameFieldVal);
+      nameFieldVal = nameFieldVal.substring(0, 30); 
     }
+    nameField.val(nameFieldVal);
   }
 }
 
@@ -733,10 +732,9 @@ function disableReplaceTitle(nameBind) {
   var nameField = $("#" + nameBind);
   var nameFieldVal = replaceInvalidChar(nameField.val());
   if(nameFieldVal.length > 30) {
-    nameField.val(nameFieldVal.substring(0, 30)); 
-  } else {
-    nameField.val(nameFieldVal);
+    nameFieldVal = nameFieldVal.substring(0, 30); 
   }
+  nameField.val(nameFieldVal);
 }
 
 function toggleShowDescription(element, hasTitle) {

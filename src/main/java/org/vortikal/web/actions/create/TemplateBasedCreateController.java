@@ -189,9 +189,16 @@ public class TemplateBasedCreateController extends SimpleFormController {
             errors.rejectValue("name", "manage.create.document.invalid.name", "This is an invalid document name");
             return;
         }
+        
+        // The location of the file that we will be copying
+        Path sourceURI = Path.fromString(createDocumentCommand.getSourceURI());
+        
+        String filetype = sourceURI.toString().substring(sourceURI.toString().lastIndexOf('.'));
+        if (!name.endsWith(filetype))
+            name += filetype;
 
         Path destinationURI = uri.extend(name);
-
+        
         if (repository.exists(token, destinationURI)) {
             errors.rejectValue("name", "manage.create.document.exists", "A resource of this name already exists");
         }

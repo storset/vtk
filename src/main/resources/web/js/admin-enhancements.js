@@ -682,31 +682,12 @@ function userTitleChange(titleBind, nameBind, indexBind) {
   var nameField = $("#" + nameBind);
   var indexCheckbox = $("#" + indexBind);
   if ((!indexCheckbox.length || !indexCheckbox.is(":checked")) && CREATE_RESOURCE_REPLACE_TITLE) {
-    nameField.val(replaceInvalidChar(titleField.val()));
-    var nameFieldVal = nameField.val();
-    if(nameFieldVal.length) {
-      setCaretToPos(nameField[0], (nameFieldVal.length - 1));
-      titleField.focus();
+    var nameFieldVal = replaceInvalidChar(titleField.val());
+    if(nameFieldVal.length > 30) {
+      nameField.val(nameFieldVal.substring(0, 30)); 
+    } else {
+      nameField.val(nameFieldVal);
     }
-  }
-}
-
-// Taken from second comment: 
-// http://stackoverflow.com/questions/499126/jquery-set-cursor-position-in-text-area
-function setCaretToPos(input, pos) {
-  setSelectionRange(input, pos, pos);
-}
-
-function setSelectionRange(input, selectionStart, selectionEnd) {
-  if (input.setSelectionRange) {
-    input.focus();
-    input.setSelectionRange(selectionStart, selectionEnd);
-  } else if (input.createTextRange) {
-    var range = input.createTextRange();
-    range.collapse(true);
-    range.moveEnd('character', selectionEnd);
-    range.moveStart('character', selectionStart);
-    range.select();
   }
 }
 
@@ -750,7 +731,12 @@ function disableReplaceTitle(nameBind) {
     CREATE_RESOURCE_REPLACE_TITLE = false;
   }
   var nameField = $("#" + nameBind);
-  nameField.val(replaceInvalidChar(nameField.val()));
+  var nameFieldVal = replaceInvalidChar(nameField.val());
+  if(nameFieldVal.length > 30) {
+    nameField.val(nameFieldVal.substring(0, 30)); 
+  } else {
+    nameField.val(nameFieldVal);
+  }
 }
 
 function toggleShowDescription(element, hasTitle) {

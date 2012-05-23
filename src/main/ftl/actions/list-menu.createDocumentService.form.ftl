@@ -59,7 +59,11 @@
            var titleField = $("#" + titleBind);
            var nameField = $("#" + nameBind);
            var nameVal = replaceInvalidChar(titleField.val());
-           nameField.val(nameVal);
+           if(nameVal.length > 30) {
+             nameField.val(nameVal.substring(0, 30)); 
+           } else {
+             nameField.val(nameFieldVal);
+           }
            CREATE_DOCUMENT_FILE_NAME = nameVal;
            isIndexFile("${nameBind}", "${isIndexBind}");
          });

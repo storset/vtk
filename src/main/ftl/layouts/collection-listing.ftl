@@ -58,7 +58,7 @@
             </#if>
               <a class="vrtx-icon <@vrtx.iconResolver resourceType contentType />" href="${uri?html}"></a>
               <a class="vrtx-title-link" href="${uri?html}">${title?html}</a>
-            <#if editLinks?exists && editLinks[res_index]>
+            <#if editLinks?exists && editLinks[res_index]?exists && editLinks[res_index]>
               <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="collectionListing.edit" /></a>
             </#if>
             <#if conf.compactView>

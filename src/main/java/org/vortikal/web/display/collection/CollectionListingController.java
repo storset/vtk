@@ -94,6 +94,10 @@ public class CollectionListingController extends AbstractCollectionListingContro
                 }
             }
 
+            if (this.displayEditLinks) {
+                this.helper.checkListingsForEditLinks(repository, token, principal, Arrays.asList(listing));
+            }
+
             // We have more results to display for this listing
             if (listing.hasMoreResults()) {
                 break;
@@ -101,10 +105,6 @@ public class CollectionListingController extends AbstractCollectionListingContro
             // Only include enough results to fill the page:
             if (listing.getFiles().size() > 0) {
                 limit -= listing.getFiles().size();
-            }
-
-            if (this.displayEditLinks) {
-                this.helper.checkListingsForEditLinks(repository, token, principal, Arrays.asList(listing));
             }
 
         }

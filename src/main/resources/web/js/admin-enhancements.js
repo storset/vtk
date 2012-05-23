@@ -674,7 +674,7 @@ function createFuncComplete() {
   if(typeof vortexTips === "undefined") {
     $("head").append("<script src='/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js' type='text/javascript'></script>");
   }
-  $(".vrtx-admin-form").vortexTips("abbr", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
+  $(".vrtx-admin-form").vortexTips("a.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
 }
 
 function userTitleChange(titleBind, nameBind, indexBind) {

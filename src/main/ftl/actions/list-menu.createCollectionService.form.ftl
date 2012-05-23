@@ -51,7 +51,7 @@
 
       <div class="vrtx-checkbox" id="vrtx-checkbox-hide-from-navigation">
         <input type="checkbox"  id="${hiddenBind}" name="${hiddenBind}" />
-        <label for="hidden"><@vrtx.msg code="actions.createCollectionService.hide" default="Hide from navigation" /></label>
+        <label for="hidden"><@vrtx.msg code="property.navigation:hidden" default="Hide from navigation" /></label>
         <a href="/" title="${vrtx.getMsg("actions.tooltip.hideFromNavigation")}" class="resource-prop-info"></a>
       </div>
 

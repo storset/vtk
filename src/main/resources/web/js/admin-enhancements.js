@@ -1745,12 +1745,19 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
         }
         // Another form is already open
         if(existExpandedForm) {
-          if(expandedForm.find("form").length
-           && (expandedForm.find("form").attr("id") === $(form).attr("id"))) {
-            if(GET_FORM_ASYNCS_IN_PROGRESS) {
-              GET_FORM_ASYNCS_IN_PROGRESS--;
+          var expandedFormForm = expandedForm.find("form");
+          // Check if the form is the same as new based on id
+          if(expandedFormForm.length) {
+            var expandedFormFormId = expandedFormForm.attr("id");
+            var newFormId = $(form).attr("id");
+            if(typeof expandedFormFormId !== "undefined" && expandedFormFormId.length &&
+               typeof newFormId !== "undefined" && newFormId.length &&
+               (expandedFormFormId === newFormId)) {
+                 if(GET_FORM_ASYNCS_IN_PROGRESS) {
+                   GET_FORM_ASYNCS_IN_PROGRESS--;
+                 }
+                 return false;
             }
-            return false;
           }
          
           // Get class for original markup

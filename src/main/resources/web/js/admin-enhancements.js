@@ -657,14 +657,20 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
     6. Create service
 \*-------------------------------------------------------------------*/
 
-function createInteraction(bodyId, vrtxAdm, _$) {
+function createInteraction(bodyId, vrtxAdm, _$) {  
+  $(document).on("click", "#vrtx-checkbox-is-index input", function(e) {
+    isIndexFile($("#vrtx-textfield-file-name input").attr("name"), $(this).attr("name"));
+    e.stopPropagation();
+  });
+}
 
+function createFuncComplete() {
   var lastColTitle = "";
   var lastColName = "";
   var lastFileTitle = "";
   var lastFileName = "";
 
-  setInterval(function() {
+  var observeTitleFile = setInterval(function() {
     var colTitle = $("#vrtx-textfield-collection-title:visible input"),
         colTitleVal = colTitle.val();
     if(colTitle.length && colTitleVal !== lastColTitle) {
@@ -692,15 +698,13 @@ function createInteraction(bodyId, vrtxAdm, _$) {
         disableReplaceTitle(fileName.attr("name"));
       }
     }
+    if(!(colTitle.length || colName.length || fileTitle.length || fileName.length)) {
+      clearInterval(observeTitleFile);
+    }
+    // vrtxAdmin.log({msg:"Observing textfields in create forms @ " + new Date() + " .."});
   }, 50);
-  
-  $(document).on("click", "#vrtx-checkbox-is-index input", function(e) {
-    isIndexFile($("#vrtx-textfield-file-name input").attr("name"), $(this).attr("name"));
-    e.stopPropagation();
-  });
-}
 
-function createFuncComplete() {
+
   CREATE_RESOURCE_REPLACE_TITLE = true;
   $("#initChangeTemplate").click(); 
   
@@ -709,7 +713,6 @@ function createFuncComplete() {
     $("head").append("<script src='/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js' type='text/javascript'></script>");
   }
   $(".vrtx-admin-form").vortexTips("a.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
-
 }
 
 function changeTemplate(element, hasTitle) {
@@ -2487,13 +2490,13 @@ function growField(input, val, comfortZone) {
   testSubject.insertAfter(input);  
   testSubject.html(val);
  
-  // vrtxAdmin.log(val);
+  // vrtxAdmin.log({msg: val});
 
   var testerWidth = testSubject.width(),
       newWidth = Math.max(testerWidth + comfortZone, minWidth),
       currentWidth = input.width();
  
-  // vrtxAdmin.log(currentWidth + " " + newWidth);
+  // vrtxAdmin.log({msg:currentWidth + " " + newWidth});
 
   if (newWidth !== currentWidth) {
     input.width(newWidth);

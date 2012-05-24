@@ -50,7 +50,7 @@ resourcetype program-frontpage : program-document {
   
   view-components {
  	
- 	year {
+ 	years {
  	##
  		[def duration resource-prop(".", "duration")]
  		[if duration = '1']

@@ -2509,7 +2509,7 @@ function unique(array) {
           }
        };
        testSubject.insertAfter(input);
-       $(document).on('keyup keydown blur update', this, check);
+       $(document).on('keyup keydown change blur update', this, check);
     });
     return this;
   };

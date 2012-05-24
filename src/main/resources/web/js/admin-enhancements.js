@@ -2493,8 +2493,7 @@ function growField(input, val, comfortZone) {
  
   // vrtxAdmin.log({msg: val});
 
-  var testerWidth = testSubject.width(),
-      newWidth = Math.min(Math.max(testerWidth + comfortZone, minWidth), maxWidth),
+  var newWidth = Math.min(Math.max(testSubject.width() + comfortZone, minWidth), maxWidth),
       currentWidth = input.width();
  
   // vrtxAdmin.log({msg:currentWidth + " " + newWidth});

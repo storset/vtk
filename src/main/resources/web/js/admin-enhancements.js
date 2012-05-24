@@ -695,9 +695,9 @@ function createFuncComplete() {
   $(".vrtx-admin-form").vortexTips("a.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
   
   $("#vrtx-textfield-file-name input, #vrtx-textfield-collection-name input").autoGrowInput({
-    comfortZone: 4,
+    comfortZone: 6,
     minWidth: 35,
-    maxWidth: 300
+    maxWidth: 350
   });
 }
 
@@ -2509,7 +2509,7 @@ function unique(array) {
           }
        };
        testSubject.insertAfter(input);
-       $(document).on('keyup keydown change blur update', this, check);
+       $(document).on('keyup keydown blur update', this, check);
     });
     return this;
   };

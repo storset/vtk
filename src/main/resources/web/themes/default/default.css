@@ -1298,6 +1298,11 @@ span.vrtx-help-step-by-step-cmd {
   margin-left: 18px;
 }
 
+.js .vrtx-admin-form #vrtx-textfield-collection-name input,
+.js .vrtx-admin-form #vrtx-textfield-file-name input {
+  width: 35px;
+}
+
 .vrtx-admin-form #vrtx-checkbox-hide-from-navigation input,
 .vrtx-admin-form #vrtx-checkbox-is-index input {
   display: block;

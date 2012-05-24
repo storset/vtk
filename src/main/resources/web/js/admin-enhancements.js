@@ -335,20 +335,42 @@ vrtxAdmin._$(document).ready(function () {
           post: true
         });
       } else { // Half-async for file upload and create document
-        vrtxAdm.getFormAsync({
-          selector: "ul#tabMenuRight a#" + tabMenuServices[i],
-          selectorClass: "vrtx-admin-form",
-          insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
-          isReplacing: false,
-          nodeType: "div",
-          funcComplete: function(p){ createFuncComplete(); vrtxAdm.initFileUpload() },
-          simultanSliding: true
-        });
-        vrtxAdm.completeFormAsync({
-          selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-          isReplacing: false
-        });
-        vrtxAdm.initFileUpload(); // when error message
+        if(tabMenuServices[i] == "createDocumentService") {
+          vrtxAdm.getFormAsync({
+            selector: "ul#tabMenuRight a#" + tabMenuServices[i],
+            selectorClass: "vrtx-admin-form",
+            insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
+            isReplacing: false,
+            nodeType: "div",
+            funcComplete: function(p){ createFuncComplete(); },
+            simultanSliding: true
+          });
+          vrtxAdm.completeFormAsync({
+            selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
+            isReplacing: false,
+            funcComplete: function() { 
+                             if ($("#vrtx-checkbox-is-index input").is(":checked")) {
+                               $("#vrtx-textfield-file-name input").val(CREATE_DOCUMENT_FILE_NAME);
+                               $("#vrtx-textfield-file-name input")[0].disabled = false;
+                             }
+                           }
+          });
+        } else {
+          vrtxAdm.getFormAsync({
+            selector: "ul#tabMenuRight a#" + tabMenuServices[i],
+            selectorClass: "vrtx-admin-form",
+            insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
+            isReplacing: false,
+            nodeType: "div",
+            funcComplete: function(p){ vrtxAdm.initFileUpload() },
+            simultanSliding: true
+          });
+          vrtxAdm.completeFormAsync({
+            selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
+            isReplacing: false
+          });
+          vrtxAdm.initFileUpload(); // when error message
+        }
       }
     }
   }
@@ -674,7 +696,7 @@ function createFuncComplete() {
   if(typeof vortexTips === "undefined") {
     $("head").append("<script src='/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js' type='text/javascript'></script>");
   }
-  $(".vrtx-admin-form").vortexTips("abbr", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
+  $(".vrtx-admin-form").vortexTips("a.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
 }
 
 function userTitleChange(titleBind, nameBind, indexBind) {
@@ -682,31 +704,11 @@ function userTitleChange(titleBind, nameBind, indexBind) {
   var nameField = $("#" + nameBind);
   var indexCheckbox = $("#" + indexBind);
   if ((!indexCheckbox.length || !indexCheckbox.is(":checked")) && CREATE_RESOURCE_REPLACE_TITLE) {
-    nameField.val(replaceInvalidChar(titleField.val()));
-    var nameFieldVal = nameField.val();
-    if(nameFieldVal.length) {
-      setCaretToPos(nameField[0], (nameFieldVal.length - 1));
-      titleField.focus();
+    var nameFieldVal = replaceInvalidChar(titleField.val());
+    if(nameFieldVal.length > 30) {
+      nameFieldVal = nameFieldVal.substring(0, 30); 
     }
-  }
-}
-
-// Taken from second comment: 
-// http://stackoverflow.com/questions/499126/jquery-set-cursor-position-in-text-area
-function setCaretToPos(input, pos) {
-  setSelectionRange(input, pos, pos);
-}
-
-function setSelectionRange(input, selectionStart, selectionEnd) {
-  if (input.setSelectionRange) {
-    input.focus();
-    input.setSelectionRange(selectionStart, selectionEnd);
-  } else if (input.createTextRange) {
-    var range = input.createTextRange();
-    range.collapse(true);
-    range.moveEnd('character', selectionEnd);
-    range.moveStart('character', selectionStart);
-    range.select();
+    nameField.val(nameFieldVal);
   }
 }
 
@@ -734,8 +736,8 @@ function isIndexFile(nameBind, indexBind) {
   var indexCheckbox = $("#" + indexBind);
   var nameField = $("#" + nameBind);
   if (indexCheckbox.is(":checked")) {
-    nameField[0].disabled = true;
     $("#vrtx-textfield-file-type").addClass("disabled");
+    nameField[0].disabled = true;
     CREATE_DOCUMENT_FILE_NAME = nameField.val();
     nameField.val('index');
   } else {
@@ -750,7 +752,11 @@ function disableReplaceTitle(nameBind) {
     CREATE_RESOURCE_REPLACE_TITLE = false;
   }
   var nameField = $("#" + nameBind);
-  nameField.val(replaceInvalidChar(nameField.val()));
+  var nameFieldVal = replaceInvalidChar(nameField.val());
+  if(nameFieldVal.length > 30) {
+    nameFieldVal = nameFieldVal.substring(0, 30); 
+  }
+  nameField.val(nameFieldVal);
 }
 
 function toggleShowDescription(element, hasTitle) {
@@ -1902,7 +1908,19 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
         });
         e.preventDefault();
       } else {
-        return;
+        /* if(!isReplacing) {
+          _$(".expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
+            if(funcComplete) {
+              funcComplete();
+            }
+            return;
+          });
+        } else { */
+          if(funcComplete) {
+            funcComplete();
+          }
+          return;
+        /* } */
       }
     } else {
       if(isCancelAction || !funcProceedCondition || funcProceedCondition(form)) {

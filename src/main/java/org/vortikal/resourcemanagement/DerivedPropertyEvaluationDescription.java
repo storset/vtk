@@ -37,19 +37,19 @@ import java.util.Map;
 
 public class DerivedPropertyEvaluationDescription {
 
-    public enum EvaluationCondition {
-        EXISTS, TRUNCATE, TRUNCATED
+    public enum Operator {
+        EXISTS, TRUNCATE, TRUNCATED, LOCALIZED
     }
 
-    private static final Map<String, EvaluationCondition> EVALUATION_CONDITION = new HashMap<String, EvaluationCondition>();
+    private static final Map<String, Operator> OPERATORS = new HashMap<String, Operator>();
     static {
-        EVALUATION_CONDITION.put("exists", EvaluationCondition.EXISTS);
-        EVALUATION_CONDITION.put("truncate", EvaluationCondition.TRUNCATE);
-        EVALUATION_CONDITION.put("truncated", EvaluationCondition.TRUNCATED);
+        OPERATORS.put("exists", Operator.EXISTS);
+        OPERATORS.put("truncate", Operator.TRUNCATE);
+        OPERATORS.put("truncated", Operator.TRUNCATED);
+        OPERATORS.put("localized", Operator.LOCALIZED);
     }
 
-    private List<EvaluationElement> evaluationElements;
-    private EvaluationCondition evaluationCondition;
+    private List<EvaluationElement> evaluationElements = new ArrayList<EvaluationElement>();
 
     public void addEvaluationElement(EvaluationElement evaluationElement) {
         if (this.evaluationElements == null) {
@@ -58,30 +58,23 @@ public class DerivedPropertyEvaluationDescription {
         this.evaluationElements.add(evaluationElement);
     }
 
-    public void setEvaluationCondition(EvaluationCondition evaluationCondition) {
-        this.evaluationCondition = evaluationCondition;
-    }
-
     public List<EvaluationElement> getEvaluationElements() {
         return this.evaluationElements;
     }
-
-    public EvaluationCondition getEvaluationCondition() {
-        return this.evaluationCondition;
-    }
-
-    public static EvaluationCondition mapEvalConditionFromDescription(String evalDescription) {
-        return EVALUATION_CONDITION.get(evalDescription);
+    public static Operator getOperator(String name) {
+        return OPERATORS.get(name);
     }
 
     public static class EvaluationElement {
 
         private boolean string;
         private String value;
+        private Operator operator;
 
-        public EvaluationElement(boolean string, String value) {
+        public EvaluationElement(boolean string, String value, Operator operator) {
             this.string = string;
             this.value = value;
+            this.operator = operator;
         }
 
         public boolean isString() {
@@ -91,7 +84,27 @@ public class DerivedPropertyEvaluationDescription {
         public String getValue() {
             return value;
         }
-
+        
+        public Operator getOperator() {
+            return this.operator;
+        }
+        
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            if (this.string) {
+                sb.append("\"").append(this.value).append("\"");
+            } else {
+                sb.append(this.value);
+            }
+            if (this.operator != null) {
+                sb.append("?").append(this.operator);
+            }
+            return sb.toString();
+        }
+    }
+    
+    public String toString() {
+        return this.evaluationElements.toString();
     }
 
 }

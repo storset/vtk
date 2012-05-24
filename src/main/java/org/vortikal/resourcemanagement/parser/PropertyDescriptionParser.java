@@ -40,6 +40,7 @@ import org.vortikal.resourcemanagement.BinaryPropertyDescription;
 import org.vortikal.resourcemanagement.DerivedPropertyDescription;
 import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription;
 import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.EvaluationElement;
+import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.Operator;
 import org.vortikal.resourcemanagement.JSONPropertyAttributeDescription;
 import org.vortikal.resourcemanagement.JSONPropertyDescription;
 import org.vortikal.resourcemanagement.PropertyDescription;
@@ -218,31 +219,21 @@ public class PropertyDescriptionParser {
         }
 
         Tree eval = descEntry.getChild(index + 1);
-
+        
         DerivedPropertyEvaluationDescription evaluationDescription = new DerivedPropertyEvaluationDescription();
-        boolean quote = false;
         for (int i = 0; i < eval.getChildCount(); i++) {
             Tree evalDesc = eval.getChild(i);
-            if (ResourcetreeLexer.DQ == evalDesc.getType()) {
-                quote = !quote;
-                continue;
-            }
             String value = evalDesc.getText();
-            EvaluationElement evaluationElement = new EvaluationElement(quote, value);
-            evaluationDescription.addEvaluationElement(evaluationElement);
-
-            Tree condition = evalDesc.getChild(0);
-            if (condition != null) {
-                // XXX Description contains an explicit condition -> currently
-                // only applicable to one property, so no point in iterating a
-                // list and checking for quotes. This must be reconsidered.
-                // Perhaps a separate
-                // ConditionalDerivedPropertyEvaluationDescription?
-                evaluationDescription.setEvaluationCondition(DerivedPropertyEvaluationDescription
-                        .mapEvalConditionFromDescription(condition.getText()));
+            boolean quote = evalDesc.getType() == ResourcetreeLexer.QTEXT;
+            Operator operator = null;
+            Tree child = evalDesc.getChild(0);
+            if (child != null && child.getType() == ResourcetreeLexer.QUESTION) {
+                String operatorName = evalDesc.getChild(1).getText();
+                operator = DerivedPropertyEvaluationDescription.getOperator(operatorName);
             }
+            EvaluationElement evaluationElement = new EvaluationElement(quote, value, operator);
+            evaluationDescription.addEvaluationElement(evaluationElement);
         }
-
         p.setDependentProperties(dependentFields);
         p.setEvaluationDescription(evaluationDescription);
     }

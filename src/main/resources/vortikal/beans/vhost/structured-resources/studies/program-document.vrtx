@@ -1,15 +1,14 @@
 resourcetype program-document {
 
   properties {
-    title : string overrides title,
-    title-no : string,
-    title-nn : string,
-    title-en : string,
+    name : string,
+    name-no : string,
+    name-nn : string,
+    name-en : string,
+    title : derived (name) eval (name) overrides title,
     additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract
   }
-  edit-rules{
-  	group samla (title-no, title-nn, title-en) (after title)
-  }
+  
   view-components {
   
     title {
@@ -268,14 +267,14 @@ resourcetype program-document {
   }
   
   localization {  
-    title : (en : "Title", no : "Tittel", nn : "Tittel"),
-    title-no : (en : "Title (bokmål)", no : "Tittel (bokmål)", nn : "Tittel (bokmål)"),
-    title-nn : (en : "Title (nynorsk)", no : "Tittel (nynorsk)", nn : "Tittel (nynorsk)"),
-    title-en : (en : "Title (english)", no : "Tittel (engelsk)", nn : "Tittel (engelsk)"),
+    name : (en : "Name", no : "Navn", nn : "Navn"),
+    name-no : (en : "Name (bokmål)", no : "Navn (bokmål)", nn : "Namn (bokmål)"),
+    name-nn : (en : "Name (nynorsk)", no : "Navn (nynorsk)", nn : "Namn (nynorsk)"),
+    name-en : (en : "Name (english)", no : "Navn (engelsk)", nn : "Namn (engelsk)"),
     status-inactive : (en : "This programme no longer admits students", no : "Programmet tar ikke opp nye studenter", nn : "Programmet tar ikkje opp nye studentar"),
     additional-content : (en : "Related content (right column)", no : "Relatert innhold (høyrespalte)", nn : "Relatert innhald (høgre spalte)"),
     boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
-    samla : (en : "Titles for samlet.html", no : "Titler til samlet.html", nn : "Titlar til samlet.html"),
+    samlet : (en : "Translation of program option name for Full description of the programme option", no : "Oversettelse av studieretningsnavn til Samlet studieretningsbeskrivelse", nn : "Oversetting av studieretningsnamn til Samla studieretningsbeskrivelse"),
     boxType : (en : "Special settings", no : "Spesielle innstillinger", nn : "Spesielle innstillinger"),
     boxCssSizeAndPlacement : (en : "Size and placement", no : "Størrelse og plassering", nn : "Størrelse og plassering"),
     boxCssColor : (en : "Color", no : "Farge", nn : "Farge"),

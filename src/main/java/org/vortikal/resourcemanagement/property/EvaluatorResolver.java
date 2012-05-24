@@ -33,17 +33,20 @@ package org.vortikal.resourcemanagement.property;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.servlet.support.RequestContextUtils;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
-import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
@@ -51,8 +54,8 @@ import org.vortikal.repository.resourcetype.property.PropertyEvaluationException
 import org.vortikal.resourcemanagement.BinaryPropertyDescription;
 import org.vortikal.resourcemanagement.DerivedPropertyDescription;
 import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription;
-import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.EvaluationCondition;
 import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.EvaluationElement;
+import org.vortikal.resourcemanagement.DerivedPropertyEvaluationDescription.Operator;
 import org.vortikal.resourcemanagement.JSONPropertyDescription;
 import org.vortikal.resourcemanagement.PropertyDescription;
 import org.vortikal.resourcemanagement.ServiceDefinition;
@@ -61,8 +64,7 @@ import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.service.ExternalServiceInvoker;
 import org.vortikal.text.html.HtmlDigester;
 import org.vortikal.util.text.JSON;
-
-import bsh.This;
+import org.vortikal.web.RequestContext;
 
 public class EvaluatorResolver {
 
@@ -191,11 +193,11 @@ public class EvaluatorResolver {
 
     private class DerivedPropertyEvaluator implements PropertyEvaluator {
 
-        private final DerivedPropertyDescription desc;
+        private final DerivedPropertyDescription propertyDesc;
         private final StructuredResourceDescription resourceDesc;
 
-        private DerivedPropertyEvaluator(DerivedPropertyDescription desc, StructuredResourceDescription resourceDesc) {
-            this.desc = desc;
+        private DerivedPropertyEvaluator(DerivedPropertyDescription propertyDesc, StructuredResourceDescription resourceDesc) {
+            this.propertyDesc = propertyDesc;
             this.resourceDesc = resourceDesc;
         }
 
@@ -208,14 +210,14 @@ public class EvaluatorResolver {
             }
 
             try {
-                Object value = getEvaluatedValue(desc, property, ctx);
+                Object value = getEvaluatedValue(propertyDesc, property, ctx);
                 if (emptyValue(value)) {
                     // Evaluated value returned empty, check any default
                     // value that might exist, than finally check for any
                     // overridden value
                     Property prop = null;
-                    if (desc.hasDefaultProperty()) {
-                        prop = getProperty(ctx.getNewResource(), desc.getDefaultProperty());
+                    if (propertyDesc.hasDefaultProperty()) {
+                        prop = getProperty(ctx.getNewResource(), propertyDesc.getDefaultProperty());
                     }
                     if (prop == null) {
                         prop = getProperty(ctx.getNewResource(), property.getDefinition().getName());
@@ -226,7 +228,7 @@ public class EvaluatorResolver {
                 }
                 if (!emptyValue(value)) {
                     setPropValue(property, value);
-                    invokeService(property, ctx, desc, resourceDesc);
+                    invokeService(property, ctx, propertyDesc, resourceDesc);
                     return true;
                 }
                 return false;
@@ -246,37 +248,31 @@ public class EvaluatorResolver {
                     return map.get(property.getDefinition().getName());
                 }
             }
-
+            
             DerivedPropertyEvaluationDescription evaluationDescription = desc.getEvaluationDescription();
-            EvaluationCondition evaluationCondition = evaluationDescription.getEvaluationCondition();
-            if (evaluationCondition != null) {
-                String propName = evaluationDescription.getEvaluationElements().get(0).getValue();
-                return getEvaluatedConditionalValue(ctx, evaluationCondition, propName);
-            }
-
             StringBuilder value = new StringBuilder();
             for (EvaluationElement evaluationElement : evaluationDescription.getEvaluationElements()) {
-                String propName = evaluationElement.getValue();
+                
+                String v = null;
                 if (evaluationElement.isString()) {
-                    value.append(evaluationElement.getValue());
-                    continue;
+                    v = evaluationElement.getValue();
                 } else {
-                    Property prop = getProperty(ctx.getNewResource(), propName);
-                    if (prop == null) {
-                        continue;
-                    }
-                    value.append(prop.getValue().toString());
+                    v = fieldValue(ctx, evaluationElement.getValue());
                 }
+                Operator operator = evaluationElement.getOperator();
+                if (operator != null) {
+                    Object result = evaluateOperator(evaluationElement.getValue(), v, ctx, operator);
+                    v = result == null ? "null" : result.toString();
+                }
+                value.append(v);
             }
             return value.toString();
         }
 
-        private Object getEvaluatedConditionalValue(PropertyEvaluationContext ctx,
-                EvaluationCondition evaluationCondition, String propName) {
-
+        private String fieldValue(PropertyEvaluationContext ctx, String propName) {
             Property prop = getProperty(ctx.getNewResource(), propName);
             if (prop != null) {
-                return this.evaluateCondition(propName, prop.getStringValue(), ctx, evaluationCondition);
+                return prop.getStringValue();
             } else {
                 JSONObject json;
                 try {
@@ -287,37 +283,39 @@ public class EvaluatorResolver {
                 String expression = "properties." + propName;
                 Object jsonObject = JSON.select(json, expression);
                 if (jsonObject != null) {
-                    return this.evaluateCondition(propName, jsonObject.toString(), ctx, evaluationCondition);
+                    return jsonObject.toString();
                 }
                 return null;
             }
-
         }
 
-        private Object evaluateCondition(String propName, String propValue, PropertyEvaluationContext ctx,
-                EvaluationCondition evaluationCondition) {
-            if (EvaluationCondition.EXISTS.equals(evaluationCondition)) {
-                return Boolean.valueOf(true);
-            } else if (EvaluationCondition.TRUNCATE.equals(evaluationCondition)) {
-                return this.getTruncated(ctx, propName, propValue);
-            } else if (EvaluationCondition.TRUNCATED.equals(evaluationCondition)) {
+
+        private Object evaluateOperator(String propName, String propValue, PropertyEvaluationContext ctx,
+                Operator operator) {
+            switch (operator) {
+            case EXISTS:
+                return Boolean.valueOf(propValue != null);
+            case TRUNCATE:
+                return getTruncated(ctx, propName, propValue);
+            case TRUNCATED:
                 Object obj = ctx.getEvaluationAttribute(propName);
-                if (evaluationCondition.equals(obj)) {
-                    return Boolean.TRUE;
-                }
+                return Boolean.valueOf(operator.equals(obj));
+            case LOCALIZED:
+                RequestContext requestContext = RequestContext.getRequestContext();
+                HttpServletRequest request = requestContext.getServletRequest();
+                Locale locale = RequestContextUtils.getLocale(request);
+                return resourceDesc.getLocalizedMsg(propValue, locale, null);
+            default:
+                return null;
             }
-            return null;
         }
 
         private String getTruncated(PropertyEvaluationContext ctx, String propName, String value) {
-
-            // XXX Determine prop type before truncating
-
             String compressed = htmlDigester.compress(value);
             String truncated = htmlDigester.truncateHtml(compressed);
             if (truncated != null && (truncated.length() < compressed.length())) {
                 // Mark the property as truncated on the evaluation context
-                ctx.addEvaluationAttribute(propName, EvaluationCondition.TRUNCATED);
+                ctx.addEvaluationAttribute(propName, Operator.TRUNCATED);
             }
             return truncated;
         }

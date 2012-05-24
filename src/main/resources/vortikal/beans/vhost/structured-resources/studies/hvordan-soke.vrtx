@@ -336,14 +336,14 @@ view {
 
   vocabulary{
 	typeToDisplay{
-		en: ("all" = "All", "so" = "SO program", "nm" = "Norwegian master", "em" = "English master"),
+		en: ("all" = "All", "so" = "SO programme", "nm" = "Norwegian master", "em" = "English master"),
 		no: ("all" = "Alle", "so" = "Grunnstudier", "nm" = "Norsk master", "em" = "Engelsk master"),
-		nn: ("all" = "Alle", "so" = "Grunnstudiar", "nm" = "Norsk master", "em" = "Engelsk master")
+		nn: ("all" = "Alle", "so" = "Grunnstudium", "nm" = "Norsk master", "em" = "Engelsk master")
 	}
   }
   localization {
   
-  	typeToDisplay : (en : "Program type", no : "Programtype", nn : "Programtype"),
+  	typeToDisplay : (en : "Programme type", no : "Programtype", nn : "Programtype"),
     header : (en : "Edit document", no : "Rediger dokument", nn : "Rediger dokument"),
     opptak: (en : "Admission", no : "Opptak", nn : "Opptak"),
 
@@ -354,11 +354,11 @@ view {
     frist-frekvens-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     opptak-frist-frekvens : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
-    metode-admin : (en : "Admission: metode (SO and Norwegian master)", no : "Opptak: Metode (Grunnstudier og norsk master)", nn : "Opptak: Metode (Grunnstudiar og norsk master)"),
+    metode-admin : (en : "Admission: method (SO and Norwegian master)", no : "Opptak: Metode (Grunnstudier og norsk master)", nn : "Opptak: Metode (Grunnstudium og norsk master)"),
     metode-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     opptak-metode : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
-	internasjonale-sokere-view : (en : "International applicants", no : "Internasjonale søkere", nn : "Internasjonale søkere"),
+	internasjonale-sokere-view : (en : "International applicants", no : "Internasjonale søkere", nn : "Internasjonale søkjarar"),
     internasjonale-sokere-admin : (en : "Admission: Method, international applicants (English master)", no : "Opptak: Metode, internasjonale søkere (Engelsk master)", nn : "Opptak: Metode, internasjonale søkjarar (Engelsk master)"),
     internasjonale-sokere-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     opptak-metode-internasjonale-sokere : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
@@ -368,7 +368,7 @@ view {
     nordiske-sokere-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     opptak-metode-nordiske-sokere : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
-    studiekode : (en : "Study code (SO)", no : "Studiekode (Grunnstudier)", nn : "Studiekode (Grunnstudiar)"),
+    studiekode : (en : "Study code (SO)", no : "Studiekode (Grunnstudier)", nn : "Studiekode (Grunnstudium)"),
     studiekode-view : (en : "Code", no : "Studiekode", nn : "Studiekode"),
     
     studieplasser : (en : "Available places (All)", no : "Studieplasser (Alle)", nn : "Studieplassar (Alle)"),
@@ -378,7 +378,7 @@ view {
 
     opptakskrav-view : (en : "Admission requirements", no : "Opptakskrav", nn : "Opptakskrav"),
 
-    opptakskrav-admin : (en : "Admission requirements: General (SO)", no : "Opptakskrav: Generelle (Grunnstudier)", nn : "Opptakskrav: Generelle (Grunnstudiar)"),
+    opptakskrav-admin : (en : "Admission requirements: General (SO)", no : "Opptakskrav: Generelle (Grunnstudier)", nn : "Opptakskrav: Generelle (Grunnstudium)"),
     opptakskrav-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     opptakskrav-generelle-grunnstudier : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
@@ -398,16 +398,16 @@ view {
     opptakskrav-politiattest : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
 	rangering-sokere-view : (en : "Ranking of applicants", no : "Rangering av søkere", nn : "Rangering av søkjarar"),
-    rangering-sokere : (en : "Ranking of applicants (SO)", no : "Rangering av søkere (Grunnstudier)", nn : "Rangering av søkarar (Grunnstudiar)"),					    	   
+    rangering-sokere : (en : "Ranking of applicants (SO)", no : "Rangering av søkere (Grunnstudier)", nn : "Rangering av søkjarar (Grunnstudium)"),					    	   
     rangering-sokere-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     rangering-av-sokere : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),     
 
-    forstevitnemal-kvote : (en : "First certificate quota (SO)", no : "Kvote for førstegangsvitnemål (Grunnstudier)", nn : "Kvote for førstegangsvitnemål (Grunnstudiar)"),					    	   
+    forstevitnemal-kvote : (en : "First certificate quota (SO)", no : "Kvote for førstegangsvitnemål (Grunnstudier)", nn : "Kvote for førstegongsvitnemål (Grunnstudium)"),					    	   
     forstevitnemal-kvote-fri : (en : "Quota", no : "Kvote", nn : "Kvote"),
     poenggrenser-forstegang-alle-kvalifiserte : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"), 
-    forstevitnemal-kvote-view : (en : "First certificate quota: ", no : "Kvote for førstegangsvitnemål: ", nn : "Kvote for førstegangsvitnemål: "), 
+    forstevitnemal-kvote-view : (en : "First certificate quota: ", no : "Kvote for førstegangsvitnemål: ", nn : "Kvote for førstegongsvitnemål: "), 
 
-    ordinar-kvote-alle-kvalifiserte : (en : "Ordinary quota (SO)", no : "Ordinær kvote (Grunnstudier)", nn : "Ordinær kvote (Grunnstudiar)"),					    	   
+    ordinar-kvote-alle-kvalifiserte : (en : "Ordinary quota (SO)", no : "Ordinær kvote (Grunnstudier)", nn : "Ordinær kvote (Grunnstudium)"),					    	   
     ordinar-kvote-alle-kvalifiserte-fri : (en : "Quota", no : "Kvote", nn : "Kvote"),
     poenggrenser-ordinar-alle-kvalifiserte : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),     				    	   
 	ordinar-kvote-alle-kvalifiserte-view : (en : "Ordinary quota: ", no : "Ordinær kvote: ", nn : "Ordinær kvote: "),
@@ -415,7 +415,7 @@ view {
 	poenggrenser-aar : (en : "Credit limits: year", no : "Poenggrenser: år", nn : "Poenggrenser år"),
     poenggrenser-poengberegning : (en : "Credit limits: credit calculation", no : "Poenggrenser: poengberegning", nn : "Poenggrenser poengberegning"),					    	   
     poenggrenser-poengberegning-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
-    poenggrenser : (en : "Credit limits (SO)", no : "Poenggrenser (Grunnstudier)", nn : "Poenggrenser (Grunnstudiar)"),
+    poenggrenser : (en : "Credit limits (SO)", no : "Poenggrenser (Grunnstudier)", nn : "Poenggrenser (Grunnstudium)"),
     poenggrenser-view : (en : "Credit limits ", no : "Poenggrenser i ", nn : "Poenggrenser i "),
      
 	innpassing-tidl-utdanning-view : (en : "Recognition of prior education", no : "Innpassing av tidligere utdanning", nn : "Innpassing av tidlegare utdanning"),					    	   

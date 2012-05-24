@@ -15,6 +15,7 @@ resourcetype program-option-frontpage : program-document {
   edit-rules {
     status (dropdown),
     title (size[large]),
+    group samlet (title-no, title-nn, title-en) (after title),
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
     group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before related-content),
     additional-content (after contact-box)
@@ -141,14 +142,14 @@ resourcetype program-option-frontpage : program-document {
 
 
   localization {
-  
-    header : (en : "Edit Program option frontpage", no : "Rediger Studieretningsforside", nn : "Rediger Studieretningsforside"),
-    program-option : (en : "Program option", no : "Studieretning", nn : "Studieretning"),
-    fs-program-code : (en : "FS program code", no : "FS programkode", nn : "FS programkode"),
-    fs-program-option-code : (en : "FS program option code", no : "FS studieretningskode", nn : "FS studieretningskode"),
+  	title : (en : "Programme option name", no : "Studieretningsnavn", nn : "Studieretningsnamn"),
+    header : (en : "Edit Programme option frontpage", no : "Rediger Studieretningsforside", nn : "Rediger Studieretningsforside"),
+    program-option : (en : "Programme option", no : "Studieretning", nn : "Studieretning"),
+    fs-program-code : (en : "FS programme code", no : "FS-programkode", nn : "FS-programkode"),
+    fs-program-option-code : (en : "FS programme option code", no : "FS-studieretningskode", nn : "FS-studieretningskode"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
-
+	samlet : (en : "Translation of program names for ", no : "Oversettelse av programnavn til Samlet programbeskrivelse", nn : "Oversetting av programnamn til Samla programbeskrivelse"),
     contact-box : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     contactTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
     contactContent : (en : "Content", no : "Innhold", nn : "Innhald"),

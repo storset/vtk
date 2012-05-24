@@ -763,10 +763,11 @@ function userTitleChange(titleBind, nameBind, indexBind) {
       var indexCheckbox = $("#" + indexBind);
     }
     
-    var nameFieldVal = nameFieldUpdate(nameField, titleField.val());
+    var nameFieldVal = replaceInvalidChar(titleField.val());
     
     if(!indexBind || !indexCheckbox.length || !indexCheckbox.is(":checked")) {
       nameField.val(nameFieldVal);
+      growField(nameField, nameFieldVal, 5);
     } else {
       CREATE_DOCUMENT_FILE_NAME = nameFieldVal;
     }
@@ -779,18 +780,13 @@ function disableReplaceTitle(nameBind) {
   }
   
   var nameField = $("#" + nameBind);
-  var nameFieldVal = nameFieldUpdate(nameField, nameField.val());
+  var nameFieldVal = replaceInvalidChar(nameField.val());
   nameField.val(nameFieldVal);
+  growField(nameField, nameFieldVal, 5);
 
   $("#vrtx-textfield-file-name").removeClass("replaced");
   $("#vrtx-textfield-file-type").removeClass("replaced");
   $("#vrtx-textfield-collection-name").removeClass("replaced");
-}
-
-function nameFieldUpdate(nameField, fromFieldVal) {
-  var nameFieldVal = replaceInvalidChar(fromFieldVal);
-  growField(nameField, nameFieldVal, 5);
-  return nameFieldVal;
 }
 
 function replaceInvalidChar(val) {

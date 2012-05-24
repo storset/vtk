@@ -28,10 +28,10 @@ resourcetype program-frontpage : program-document {
     program-type (dropdown),
     faculty (dropdown),
     theme (dropdown),
-    title (size[large]),
-    group samlet (title-no, title-nn, title-en) (after title) horizontal,
-    picture (after title-en),
-    group facts (fs-program-code, status, program-type, theme, duration, study-points, full-time, faculty, keywords) (before picture),
+    name (size[large]),
+    group samlet (name-no, name-nn, name-en) (after name) horizontal,
+    picture (after facts),
+    group facts (fs-program-code, status, program-type, theme, duration, study-points, full-time, faculty, keywords) (after samlet),
     group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (before additional-content),
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
     keywords tooltip (en : "Comma separated list", no : "Kommaseparert liste", nn : "Kommaseparert liste"), 
@@ -45,7 +45,18 @@ resourcetype program-frontpage : program-document {
   }
   
   view-components {
- 
+ 	
+ 	year {
+ 	##
+ 		[def duration resource-prop(".", "duration")]
+ 		[if duration = '1']
+ 			[localized 'year']
+ 		[else]
+ 			[localized 'years']
+ 		[endif]
+	##
+ 	}
+ 	
     program-type {
       ##
       [def type resource-prop(".", "program-type")]
@@ -150,7 +161,7 @@ resourcetype program-frontpage : program-document {
             <tr><td class="vrtx-program-fact-header">[localized 'study-points']:</td><td><strong>[val points]</strong></td></tr>   
           [endif]
           [if dur != null]
-            <tr><td class="vrtx-program-fact-header">[localized 'duration']:</td><td><strong>[val dur] [localized 'years']</strong></td></tr>
+            <tr><td class="vrtx-program-fact-header">[localized 'duration']:</td><td><strong>[val dur] [call "comp:years"]</strong></td></tr>
           [endif]
         </tbody>
       </table>
@@ -270,6 +281,7 @@ resourcetype program-frontpage : program-document {
     header : (en : "Edit programme frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
     fs-program-code : (en : "FS programme code", no : "FS-programkode", nn : "FS-programkode"),
     duration : (en : "Duration", no : "Studiet varer ", nn : "Varighet"),
+    year : (en : "year", no : "år", nn : "år"),
     years : (en : "years", no : "år", nn : "år"),
     study-points : (en : "Credits", no : "Studiepoeng", nn : "Studiepoeng"),
     facts : (en : "Facts", no : "Fakta om programmet", nn : "Fakta om programmet"),

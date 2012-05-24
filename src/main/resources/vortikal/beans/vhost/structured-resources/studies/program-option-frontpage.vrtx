@@ -15,10 +15,11 @@ resourcetype program-option-frontpage : program-document {
 
   edit-rules {
     status (dropdown),
-    title (size[large]),
-    group samlet (title-no, title-nn, title-en) (after title),
+    name (size[large]),
+    group samlet (name-no, name-nn, name-en) (after name) horizontal,
+    group facts (fs-program-code, fs-program-option-code, status) (after samlet),
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
-    group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before related-content),
+    group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before additional-content),
     additional-content (after contact-box)
   }
   
@@ -146,6 +147,7 @@ resourcetype program-option-frontpage : program-document {
   	title : (en : "Programme option name", no : "Studieretningsnavn", nn : "Studieretningsnamn"),
     header : (en : "Edit Programme option frontpage", no : "Rediger Studieretningsforside", nn : "Rediger Studieretningsforside"),
     program-option : (en : "Programme option", no : "Studieretning", nn : "Studieretning"),
+    facts : (en : "Facts", no : "Fakta om studieretningen", nn : "Fakta om studieretninga"),
     fs-program-code : (en : "FS programme code", no : "FS-programkode", nn : "FS-programkode"),
     fs-program-option-code : (en : "FS programme option code", no : "FS-studieretningskode", nn : "FS-studieretningskode"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),

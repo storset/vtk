@@ -5,7 +5,7 @@ resourcetype program-frontpage : program-document {
     status : string,
     program-type : string,
     theme : string multiple,
-    duration : string,
+    duration : string trim,
     study-points : string,
     full-time : boolean,
     faculty : string multiple,
@@ -53,7 +53,8 @@ resourcetype program-frontpage : program-document {
  	years {
  	##
  		[def duration resource-prop(".", "duration")]
- 		[if duration = '1']
+ 		[def duration duration + "kake"]
+ 		[if duration = "1kake"]
  			[localized 'year']
  		[else]
  			[localized 'years']

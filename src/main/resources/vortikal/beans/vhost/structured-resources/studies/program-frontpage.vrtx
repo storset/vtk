@@ -28,6 +28,7 @@ resourcetype program-frontpage : program-document {
     faculty (dropdown),
     theme (dropdown),
     title (size[large]),
+    group samlet (title-no, title-nn, title-en) (after title) horizontal,
     picture (after title-en),
     group facts (fs-program-code, status, program-type, theme, duration, study-points, full-time, faculty, keywords) (before picture),
     group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (before additional-content),
@@ -251,9 +252,9 @@ resourcetype program-frontpage : program-document {
      nn : ("estetiske-studier-musikkvitenskap"= "Estetiske studium og musikkvitskap", "helsefag-medisin" = "Helsefag og medisin", "historie-filosofi-kulturstudier" = "Historie, filosofi og kulturstudium", "informasjonsteknologi" = "Informasjonsteknologi og informatikk", "jus-okonomi-ledelse-administrasjon" = "Jus, økonomi, leiing, administrasjon", "lektor-og-adjunktutdanning" = "Lærarutdaning: Lektor- og adjunktutdaning", "matematikk-naturvitenskap-teknologi" = "Matematikk, naturvitskap, teknologi", "mediefag" = "Mediefag", "pedagogiske-fag" = "Pedagogiske fag", "religion-teologi" = "Religion og teologi", "samfunnsfag" = "Samfunnsfag og psykologi", "spraak-litteratur" = "Språk og litteratur", "engelskspraakligeprogram" = "Engelskspråklige program")
 	}
 	program-type {
-	  en : ("aarsenhet" = "1-year unit", "bachelor" = "bachelor's Degree programme", "ett-aarig-master" = "1-year Master's Degree programme", "ettoghalvt-aarig-master" = "1 1/2-year Master's Degree programme", "to-aarig-master" = "2-year Master's Degree programme", "fem-aarig-master" = "5-year Master's Degree programme", "erfaringsbasert-master" = "experience-based Master's Degree programme", "profesjon" = "professional course of study"),
-	  no : ("aarsenhet" = "årsenhet", "bachelor" = "bachelor", "ett-aarig-master" = "master - ett år", "ettoghalvt-aarig-master" = "master - halvannet år", "to-aarig-master" = "master - to år", "fem-aarig-master" = "master - 5 år", "erfaringsbasert-master" = "erfaringsbasert master", "profesjon" = "profesjonsstudium"),
-	  nn : ("aarsenhet" = "årseining", "bachelor" = "bachelor", "ett-aarig-master" = "master - ett år", "ettoghalvt-aarig-master" = "master - halvannet år", "to-aarig-master" = "master - to år", "fem-aarig-master" = "master - 5 år", "erfaringsbasert-master" = "erfaringsbasert master", "profesjon" = "profesjonsstudium")
+	  en : ("aarsenhet" = "1-year unit", "bachelor" = "bachelor's", "ettoghalvt-aarig-master" = "master's - 1 1/2-years", "to-aarig-master" = "master's - 2 years", "fem-aarig-master" = "master's - 5 years", "erfaringsbasert-master" = "master's - experience based", "profesjon" = "programme of professional study"),
+	  no : ("aarsenhet" = "årsenhet", "bachelor" = "bachelor", "ettoghalvt-aarig-master" = "master - halvannet år", "to-aarig-master" = "master - to år", "fem-aarig-master" = "master - 5 år", "erfaringsbasert-master" = "master - erfaringsbasert", "profesjon" = "profesjonsstudium"),
+	  nn : ("aarsenhet" = "årseining", "bachelor" = "bachelor", "ettoghalvt-aarig-master" = "master - halvanna år", "to-aarig-master" = "master - to år", "fem-aarig-master" = "master - 5 år", "erfaringsbasert-master" = "master - erfaringsbasert", "profesjon" = "profesjonsstudium")
 	}
 	full-time {
 	  en : ("true" = "Full time study", "false" = "Part time study"),
@@ -264,20 +265,20 @@ resourcetype program-frontpage : program-document {
 
 
   localization {
-  
-    header : (en : "Edit program frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
-    fs-program-code : (en : "FS program code", no : "FS programkode", nn : "FS programkode"),
-    duration : (en : "Duration", no : "Varighet", nn : "Varighet"),
+  	title : (en : "Programme name", no : "Programnavn", nn : "Programnamn"),
+    header : (en : "Edit programme frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
+    fs-program-code : (en : "FS programme code", no : "FS-programkode", nn : "FS-programkode"),
+    duration : (en : "Duration", no : "Studiet varer ", nn : "Varighet"),
     years : (en : "years", no : "år", nn : "år"),
-    study-points : (en : "Study points", no : "Studiepoeng", nn : "Studiepoeng"),
-    facts : (en : "Facts about the program", no : "Fakta om programmet", nn : "Fakta om programmet"),
+    study-points : (en : "Credits", no : "Studiepoeng", nn : "Studiepoeng"),
+    facts : (en : "Facts", no : "Fakta om programmet", nn : "Fakta om programmet"),
     offered-by : (en : "Offered by", no : "Tilbys av", nn : "Tilbys av"),
-    theme-view : (en : "Theme", no : "Tema", nn : "Tema"),
-    keywords : (en : "Key words for program chooser", no : "Stikkord for programvelger", nn : "Stikkord for programvelger"),
+    theme-view : (en : "Field of study", no : "Tema", nn : "Tema"),
+    keywords : (en : "Keywords for programme chooser", no : "Stikkord til programvelger", nn : "Stikkord til programvelger"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
-
-    interview-box : (en : "Interviews with former students", no : "Karriereintervjuer", nn : "Karriereintervjuar"),
+	samlet : (en : "Translation of program names for ", no : "Oversettelse av programnavn til Samlet programbeskrivelse", nn : "Oversetting av programnamn til Samla programbeskrivelse"),
+    interview-box : (en : "Employment opportunities", no : "Karriereintervjuer", nn : "Karriereintervjuar"),
     interviewTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
     interviewContent : (en : "Content", no : "Innhold", nn : "Innhald"),
     interviewLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
@@ -285,7 +286,7 @@ resourcetype program-frontpage : program-document {
 
     full-time : (en : "Full time study?", no : "Organisering", nn : "Organisering"),
     fulltime : (en : "Full time study", no : "Fulltidsstudium", nn : "Fulltidsstudium"),
-    parttime : (en : "Part time study", no : "Deltidsstudium", nn : "Deltidsstudium"),
+    parttime : (en : "Part-time study", no : "Deltidsstudium", nn : "Deltidsstudium"),
 
     contact-box : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
     contactTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
@@ -307,15 +308,14 @@ resourcetype program-frontpage : program-document {
     under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
     nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt"),
     
-    program-type : (en : "Program type", no : "Programtype", nn : "Programtype"),
+    program-type : (en : "Programme type", no : "Programtype", nn : "Programtype"),
     aarsenhet : (en : "1-year unit", no : "årsenhet", nn : "årseining"),
-    bachelor : (en : "bachelor's Degree programme", no : "bachelor", nn : "bachelor"),
-    ett-aarig-master : (en : "1-year Master's Degree programme", no : "master - ett år", nn : "master - ett år"),
-    ettoghalvt-aarig-master : (en : "1 1/2-year Master's Degree programme", no : "master - halvannet år", nn : "master - halvannet år"),
-    to-aarig-master : (en : "2-year Master's Degree programme", no : "master - to år", nn : "master - to år"),
-    fem-aarig-master : (en : "5-year Master's Degree programme", no : "master - 5 år", nn : "master - 5 år"), 
-    erfaringsbasert-master : (en : "experience-based Master's Degree programme", no : "erfaringsbasert master", nn : "erfaringsbasert master"), 
-    profesjon : (en : "professional course of study", en : "profesjonsstudium", en : "profesjonsstudium"),   
+    bachelor : (en : "bachelor's", no : "bachelor", nn : "bachelor"),
+    ettoghalvt-aarig-master : (en : "master's 1 1/2-years", no : "master - halvannet år", nn : "master - halvanna år"),
+    to-aarig-master : (en : "master's 2-years", no : "master - to år", nn : "master - to år"),
+    fem-aarig-master : (en : "master's 5-years", no : "master - 5 år", nn : "master - 5 år"), 
+    erfaringsbasert-master : (en : "master's - experience based", no : "master - erfaringsbasert", nn : "master - erfaringsbasert"), 
+    profesjon : (en : "programme of professional study", en : "profesjonsstudium", en : "profesjonsstudium"),   
     
     faculty : (en : "Responsible faculty", no : "Ansvarlig fakultet", nn : "Ansvarlig fakultet"),
     hf : (en : "Faculty of Humanities", no : "Det humanistiske fakultet", nn : "Det humanistiske fakultet"),

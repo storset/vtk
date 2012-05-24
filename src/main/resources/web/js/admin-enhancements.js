@@ -1703,8 +1703,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     if(location.protocol == "http:" && url.indexOf("https://") != -1) {
       return; // no AJAX when http -> https (tmp. solution)
     }
-    // If there are any getFormAsync() in progress
-    if(GET_FORM_ASYNCS_IN_PROGRESS) { 
+    if(GET_FORM_ASYNCS_IN_PROGRESS) { // If there are any getFormAsync() in progress
       return false;
     }
     GET_FORM_ASYNCS_IN_PROGRESS++;

@@ -1265,7 +1265,7 @@ span.vrtx-help-step-by-step-cmd {
 
 .vrtx-admin-form #vrtx-textfield-file-name input[disabled],
 .vrtx-admin-form #vrtx-textfield-file-type.disabled {
-  color: #888;
+  color: #777 !important;
 }
 
 .vrtx-admin-form #vrtx-textfield-file-name.replaced input,

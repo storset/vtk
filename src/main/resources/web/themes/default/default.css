@@ -1247,8 +1247,8 @@ span.vrtx-help-step-by-step-cmd {
   clear: left;
 }
 
-.vrtx-admin-form.#createDocumentService-form .radio-buttons,
-.vrtx-admin-form.#createCollectionService-form .radio-buttons {
+.vrtx-admin-form #createDocumentService-form .radio-buttons,
+.vrtx-admin-form #createCollectionService-form .radio-buttons {
   background: transparent url("images/line-dotted-tighter.gif") repeat-x scroll left bottom;
   margin-bottom: 15px;
   padding-bottom: 15px;

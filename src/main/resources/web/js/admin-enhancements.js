@@ -349,7 +349,6 @@ vrtxAdmin._$(document).ready(function () {
             selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
             isReplacing: false
           });
-          createFuncComplete();
         } else {
           vrtxAdm.getFormAsync({
             selector: "ul#tabMenuRight a#" + tabMenuServices[i],
@@ -1704,12 +1703,11 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     if(location.protocol == "http:" && url.indexOf("https://") != -1) {
       return; // no AJAX when http -> https (tmp. solution)
     }
-
-    if(GET_FORM_ASYNCS_IN_PROGRESS) { // If there are any getFormAsync() in progress
+    // If there are any getFormAsync() in progress
+    if(GET_FORM_ASYNCS_IN_PROGRESS) { 
       return false;
     }
     GET_FORM_ASYNCS_IN_PROGRESS++;
-
 
     var selector = options.selector,
         selectorClass = options.selectorClass,
@@ -1745,9 +1743,16 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
           }
           return;    
         }
-
         // Another form is already open
         if(existExpandedForm) {
+          if(expandedForm.find("form").length
+           && (expandedForm.find("form").attr("id") === $(form).attr("id"))) {
+            if(GET_FORM_ASYNCS_IN_PROGRESS) {
+              GET_FORM_ASYNCS_IN_PROGRESS--;
+            }
+            return false;
+          }
+         
           // Get class for original markup
           var resultSelectorClasses = expandedForm.attr("class").split(" ");
           var resultSelectorClass = "";
@@ -1851,11 +1856,11 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
     _$(vrtxAdm.wrap(nodeType, "expandedForm nodeType" + nodeType + " " + selectorClass, form))
       .insertAfter(insertAfterOrReplaceClass);
   }
-  if(funcComplete) {
-    funcComplete(selectorClass);
-  }
   if(GET_FORM_ASYNCS_IN_PROGRESS) {
     GET_FORM_ASYNCS_IN_PROGRESS--;
+  }
+  if(funcComplete) {
+    funcComplete(selectorClass);
   }
   if(nodeType == "tr") {
     _$(nodeType + "." + selectorClass).prepareTableRowForSliding();
@@ -1913,19 +1918,10 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
         });
         e.preventDefault();
       } else {
-        /* if(!isReplacing) {
-          _$(".expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
-            if(funcComplete) {
-              funcComplete();
-            }
-            return;
-          });
-        } else { */
-          if(funcComplete) {
-            funcComplete();
-          }
-          return;
-        /* } */
+        if(funcComplete) {
+          funcComplete();
+        }
+        return;
       }
     } else {
       if(isCancelAction || !funcProceedCondition || funcProceedCondition(form)) {

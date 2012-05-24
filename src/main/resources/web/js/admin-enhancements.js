@@ -683,7 +683,7 @@ function createInteraction(bodyId, vrtxAdm, _$) {
         fileTitleVal = fileTitle.val();
     if(fileTitle.length && fileTitleVal !== lastFileTitle) {
       lastFileTitle = fileTitleVal;
-      userTitleChange(fileTitle.attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-indexw input").attr("name"));
+      userTitleChange(fileTitle.attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
     } else {
       var fileName = $("#vrtx-textfield-file-name:visible input"),
           fileNameVal = fileName.val();

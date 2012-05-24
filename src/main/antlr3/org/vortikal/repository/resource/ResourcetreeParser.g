@@ -111,14 +111,19 @@ derived	:	DERIVED LP fieldlist RP EVAL LP evallist RP
 fieldlist
 	:	NAME (COMMA NAME)* ->  NAME+;
 
-evallist:	nameorqtext (PLUS nameorqtext)* -> nameorqtext+
-	|	NAME QUESTION nameorqtext -> ^(NAME nameorqtext);
+evallist:	evalelem (PLUS evalelem)* -> evalelem+;
 
-nameorqtext
-	:	NAME -> NAME
-	|	QTEXT -> DQ QTEXT DQ
-	;
+evalelem
+    : QTEXT (QUESTION NAME)? -> ^(QTEXT (QUESTION NAME)?)
+    | NAME (QUESTION NAME)? -> ^(NAME (QUESTION NAME)?)
+    ;
     
+nameorqtext
+ 	:	NAME
+ 	|	QTEXT -> DQ QTEXT DQ
+ 	;
+
+
 defaultprop
 	:	DEFAULTPROP NAME -> ^(DEFAULTPROP NAME);
 
@@ -240,3 +245,4 @@ namevaluepair
 	;
 
 namelist:	LP NAME (COMMA NAME)* RP -> ^(NAME) ^(NAME)*;
+

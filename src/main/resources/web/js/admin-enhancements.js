@@ -698,12 +698,16 @@ function userTitleChange(titleBind, nameBind, indexBind) {
   var titleField = $("#" + titleBind);
   var nameField = $("#" + nameBind);
   var indexCheckbox = $("#" + indexBind);
-  if ((!indexCheckbox.length || !indexCheckbox.is(":checked")) && CREATE_RESOURCE_REPLACE_TITLE) {
+  if (CREATE_RESOURCE_REPLACE_TITLE) {
     var nameFieldVal = replaceInvalidChar(titleField.val());
     if(nameFieldVal.length > 30) {
       nameFieldVal = nameFieldVal.substring(0, 30); 
     }
-    nameField.val(nameFieldVal);
+    if(!indexCheckbox.length || !indexCheckbox.is(":checked")) {
+      nameField.val(nameFieldVal);
+    } else {
+      CREATE_DOCUMENT_FILE_NAME = nameFieldVal;
+    }
   }
 }
 

@@ -777,6 +777,10 @@ function replaceInvalidChar(val) {
   val = val.toLowerCase();
   var replaceMap = {
     " ":   "-",
+    "&":   "-",
+    ",":   "-",
+    "'":   "-",
+    "\"":  "-",
     "æ":   "e",
     "ø":   "o",
     "å":   "a",

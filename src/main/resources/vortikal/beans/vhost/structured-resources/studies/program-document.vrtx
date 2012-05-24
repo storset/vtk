@@ -274,7 +274,7 @@ resourcetype program-document {
     status-inactive : (en : "This programme no longer admits students", no : "Programmet tar ikke opp nye studenter", nn : "Programmet tar ikkje opp nye studentar"),
     additional-content : (en : "Related content (right column)", no : "Relatert innhold (høyrespalte)", nn : "Relatert innhald (høgre spalte)"),
     boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
-    samlet : (en : "Titles for samlet.html", no : "Titler til samlet.html", nn : "Titlar til samlet.html"),
+    samlet : (en : "Translation of program option name for Full description of the programme option", no : "Oversettelse av studieretningsnavn til Samlet studieretningsbeskrivelse", nn : "Oversetting av studieretningsnamn til Samla studieretningsbeskrivelse"),
     boxType : (en : "Special settings", no : "Spesielle innstillinger", nn : "Spesielle innstillinger"),
     boxCssSizeAndPlacement : (en : "Size and placement", no : "Størrelse og plassering", nn : "Størrelse og plassering"),
     boxCssColor : (en : "Color", no : "Farge", nn : "Farge"),

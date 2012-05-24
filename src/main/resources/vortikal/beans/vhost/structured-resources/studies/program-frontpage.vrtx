@@ -277,7 +277,7 @@ resourcetype program-frontpage : program-document {
     keywords : (en : "Keywords for programme chooser", no : "Stikkord til programvelger", nn : "Stikkord til programvelger"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
-	samlet : (en : "Translation of program names for ", no : "Oversettelse av programnavn til Samlet programbeskrivelse", nn : "Oversetting av programnamn til Samla programbeskrivelse"),
+	samlet : (en : "Translation of program names for Full description of the programme", no : "Oversettelse av programnavn til Samlet programbeskrivelse", nn : "Oversetting av programnamn til Samla programbeskrivelse"),
     interview-box : (en : "Employment opportunities", no : "Karriereintervjuer", nn : "Karriereintervjuar"),
     interviewTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
     interviewContent : (en : "Content", no : "Innhold", nn : "Innhald"),

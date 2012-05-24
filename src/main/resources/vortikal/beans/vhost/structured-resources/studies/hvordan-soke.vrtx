@@ -336,14 +336,14 @@ view {
 
   vocabulary{
 	typeToDisplay{
-		en: ("all" = "All", "so" = "SO program", "nm" = "Norwegian master", "em" = "English master"),
+		en: ("all" = "All", "so" = "SO programme", "nm" = "Norwegian master", "em" = "English master"),
 		no: ("all" = "Alle", "so" = "Grunnstudier", "nm" = "Norsk master", "em" = "Engelsk master"),
 		nn: ("all" = "Alle", "so" = "Grunnstudium", "nm" = "Norsk master", "em" = "Engelsk master")
 	}
   }
   localization {
   
-  	typeToDisplay : (en : "Program type", no : "Programtype", nn : "Programtype"),
+  	typeToDisplay : (en : "Programme type", no : "Programtype", nn : "Programtype"),
     header : (en : "Edit document", no : "Rediger dokument", nn : "Rediger dokument"),
     opptak: (en : "Admission", no : "Opptak", nn : "Opptak"),
 

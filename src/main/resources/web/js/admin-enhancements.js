@@ -701,77 +701,6 @@ function createFuncComplete() {
   });
 }
 
-function userTitleChange(titleBind, nameBind, indexBind) {
-  if (CREATE_RESOURCE_REPLACE_TITLE) {
-    var titleField = $("#" + titleBind);
-    var nameField = $("#" + nameBind);
-    if(indexBind) {
-      var indexCheckbox = $("#" + indexBind);
-    }
-    var nameFieldVal = replaceInvalidChar(titleField.val());
-    if(nameFieldVal.length > 30) {
-      nameFieldVal = nameFieldVal.substring(0, 30); 
-    }
-    if(!indexBind || !indexCheckbox.length || !indexCheckbox.is(":checked")) {
-      nameField.val(nameFieldVal);
-    } else {
-      CREATE_DOCUMENT_FILE_NAME = nameFieldVal;
-    }
-  }
-}
-
-function replaceInvalidChar(val) {
-  val = val.toLowerCase();
-  var replaceMap = {
-    " ":   "-",
-    "æ":   "e",
-    "ø":   "o",
-    "å":   "a",
-    "%":   "",
-    "#":   "",
-    "\\?": ""
-  };
-
-  for (var key in replaceMap) {
-    var replaceThisCharGlobally = new RegExp(key,"g");
-    val = val.replace(replaceThisCharGlobally, replaceMap[key]);
-  }
-
-  return val;
-}
-
-function isIndexFile(nameBind, indexBind) {
-  var indexCheckbox = $("#" + indexBind);
-  var nameField = $("#" + nameBind);
-  if (indexCheckbox.is(":checked")) {
-    $("#vrtx-textfield-file-type").addClass("disabled");
-    nameField[0].disabled = true;
-    CREATE_DOCUMENT_FILE_NAME = nameField.val();
-    nameField.val('index');
-  } else {
-    nameField.val(CREATE_DOCUMENT_FILE_NAME);
-    nameField[0].disabled = false;
-    $("#vrtx-textfield-file-type").removeClass("disabled");
-  }
-}
-
-function disableReplaceTitle(nameBind) {
-  if (CREATE_RESOURCE_REPLACE_TITLE) {
-    CREATE_RESOURCE_REPLACE_TITLE = false;
-  }
-  
-  var nameField = $("#" + nameBind);
-  var nameFieldVal = replaceInvalidChar(nameField.val());
-  if(nameFieldVal.length > 30) {
-    nameFieldVal = nameFieldVal.substring(0, 30); 
-  }
-  nameField.val(nameFieldVal);
-
-  $("#vrtx-textfield-file-name").removeClass("replaced");
-  $("#vrtx-textfield-file-type").removeClass("replaced");
-  $("#vrtx-textfield-collection-name").removeClass("replaced");
-}
-
 function changeTemplate(element, hasTitle) {
   if(hasTitle) {
     $("#vrtx-div-file-title").show();
@@ -794,6 +723,79 @@ function changeTemplate(element, hasTitle) {
     $("#vrtx-textfield-file-type").addClass("replaced");
     $("#vrtx-textfield-collection-name").addClass("replaced");
   }
+}
+
+function isIndexFile(nameBind, indexBind) {
+  var indexCheckbox = $("#" + indexBind);
+  var nameField = $("#" + nameBind);
+  if (indexCheckbox.is(":checked")) {
+    $("#vrtx-textfield-file-type").addClass("disabled");
+    nameField[0].disabled = true;
+    CREATE_DOCUMENT_FILE_NAME = nameField.val();
+    nameField.val('index');
+  } else {
+    nameField.val(CREATE_DOCUMENT_FILE_NAME);
+    nameField[0].disabled = false;
+    $("#vrtx-textfield-file-type").removeClass("disabled");
+  }
+}
+
+function userTitleChange(titleBind, nameBind, indexBind) {
+  if (CREATE_RESOURCE_REPLACE_TITLE) {
+    var titleField = $("#" + titleBind);
+    var nameField = $("#" + nameBind);
+    if(indexBind) {
+      var indexCheckbox = $("#" + indexBind);
+    }
+    
+    var nameFieldVal = nameFieldUpdate(titleField.val());
+    
+    if(!indexBind || !indexCheckbox.length || !indexCheckbox.is(":checked")) {
+      nameField.val(nameFieldVal);
+    } else {
+      CREATE_DOCUMENT_FILE_NAME = nameFieldVal;
+    }
+  }
+}
+
+function disableReplaceTitle(nameBind) {
+  if (CREATE_RESOURCE_REPLACE_TITLE) {
+    CREATE_RESOURCE_REPLACE_TITLE = false;
+  }
+  
+  var nameField = $("#" + nameBind);
+  var nameFieldVal = nameFieldUpdate(nameField.val());
+  nameField.val(nameFieldVal);
+
+  $("#vrtx-textfield-file-name").removeClass("replaced");
+  $("#vrtx-textfield-file-type").removeClass("replaced");
+  $("#vrtx-textfield-collection-name").removeClass("replaced");
+}
+
+function nameFieldUpdate(fromFieldVal) {
+  var nameFieldVal = replaceInvalidChar(fromFieldVal);
+  return (nameFieldVal.length > 30) ? nameFieldVal.substring(0, 30) 
+                                    : nameFieldVal;
+}
+
+function replaceInvalidChar(val) {
+  val = val.toLowerCase();
+  var replaceMap = {
+    " ":   "-",
+    "æ":   "e",
+    "ø":   "o",
+    "å":   "a",
+    "%":   "",
+    "#":   "",
+    "\\?": ""
+  };
+
+  for (var key in replaceMap) {
+    var replaceThisCharGlobally = new RegExp(key,"g");
+    val = val.replace(replaceThisCharGlobally, replaceMap[key]);
+  }
+
+  return val;
 }
 
 

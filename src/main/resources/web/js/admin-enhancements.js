@@ -756,7 +756,7 @@ function disableReplaceTitle(nameBind) {
 
   $("#vrtx-textfield-file-name").removeClass("replaced");
   $("#vrtx-textfield-file-type").removeClass("replaced");
-  $("#vrtx-textfield-title-name").removeClass("replaced");
+  $("#vrtx-textfield-collection-name").removeClass("replaced");
 }
 
 function changeTemplate(element, hasTitle) {
@@ -779,7 +779,7 @@ function changeTemplate(element, hasTitle) {
   if(CREATE_RESOURCE_REPLACE_TITLE) {
     $("#vrtx-textfield-file-name").addClass("replaced");
     $("#vrtx-textfield-file-type").addClass("replaced");
-    $("#vrtx-textfield-title-name").addClass("replaced");
+    $("#vrtx-textfield-collection-name").addClass("replaced");
   }
 }
 

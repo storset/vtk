@@ -2475,6 +2475,7 @@ function unique(array) {
   
 function growField(input, val, comfortZone) {
   var minWidth = 35,
+      maxWidth = 530,
       testSubject = $('<tester/>').css({
         position: 'absolute',
         top: -9999,
@@ -2493,7 +2494,7 @@ function growField(input, val, comfortZone) {
   // vrtxAdmin.log({msg: val});
 
   var testerWidth = testSubject.width(),
-      newWidth = Math.max(testerWidth + comfortZone, minWidth),
+      newWidth = Math.min(Math.max(testerWidth + comfortZone, minWidth), maxWidth);
       currentWidth = input.width();
  
   // vrtxAdmin.log({msg:currentWidth + " " + newWidth});

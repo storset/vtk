@@ -335,20 +335,42 @@ vrtxAdmin._$(document).ready(function () {
           post: true
         });
       } else { // Half-async for file upload and create document
-        vrtxAdm.getFormAsync({
-          selector: "ul#tabMenuRight a#" + tabMenuServices[i],
-          selectorClass: "vrtx-admin-form",
-          insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
-          isReplacing: false,
-          nodeType: "div",
-          funcComplete: function(p){ createFuncComplete(); vrtxAdm.initFileUpload() },
-          simultanSliding: true
-        });
-        vrtxAdm.completeFormAsync({
-          selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-          isReplacing: false
-        });
-        vrtxAdm.initFileUpload(); // when error message
+        if(tabMenuServices[i] == "createDocumentService") {
+          vrtxAdm.getFormAsync({
+            selector: "ul#tabMenuRight a#" + tabMenuServices[i],
+            selectorClass: "vrtx-admin-form",
+            insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
+            isReplacing: false,
+            nodeType: "div",
+            funcComplete: function(p){ createFuncComplete(); },
+            simultanSliding: true
+          });
+          vrtxAdm.completeFormAsync({
+            selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
+            isReplacing: false,
+            funcComplete: function() { 
+                             if ($("#vrtx-checkbox-is-index input").is(":checked")) {
+                               $("#vrtx-textfield-file-name input").val(CREATE_DOCUMENT_FILE_NAME);
+                               $("#vrtx-textfield-file-name input")[0].disabled = false;
+                             }
+                           }
+          });
+        } else {
+          vrtxAdm.getFormAsync({
+            selector: "ul#tabMenuRight a#" + tabMenuServices[i],
+            selectorClass: "vrtx-admin-form",
+            insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
+            isReplacing: false,
+            nodeType: "div",
+            funcComplete: function(p){ vrtxAdm.initFileUpload() },
+            simultanSliding: true
+          });
+          vrtxAdm.completeFormAsync({
+            selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
+            isReplacing: false
+          });
+          vrtxAdm.initFileUpload(); // when error message
+        }
       }
     }
   }
@@ -1886,7 +1908,19 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
         });
         e.preventDefault();
       } else {
-        return;
+        /* if(!isReplacing) {
+          _$(".expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
+            if(funcComplete) {
+              funcComplete();
+            }
+            return;
+          });
+        } else { */
+          if(funcComplete) {
+            funcComplete();
+          }
+          return;
+        /* } */
       }
     } else {
       if(isCancelAction || !funcProceedCondition || funcProceedCondition(form)) {

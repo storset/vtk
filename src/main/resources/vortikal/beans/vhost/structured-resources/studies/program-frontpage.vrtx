@@ -29,12 +29,16 @@ resourcetype program-frontpage : program-document {
     faculty (dropdown),
     theme (dropdown),
     name (size[large]),
+    duration (size[2]),
+    study-points (size[4]),
+    fs-program-code (size[10]),
     group samlet (name-no, name-nn, name-en) (after name) horizontal,
-    picture (after facts),
-    group facts (fs-program-code, status, program-type, theme, duration, study-points, full-time, faculty, keywords) (after samlet),
+    group facts (fs-program-code, status, program-type, theme, duration, study-points, full-time, faculty, keywords, picture) (after samlet),
     group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (before additional-content),
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
-    keywords tooltip (en : "Comma separated list", no : "Kommaseparert liste", nn : "Kommaseparert liste"), 
+    keywords tooltip (en : "Comma separated list", no : "Kommaseparert liste", nn : "Kommaseparert liste"),
+    resource-links (after interview-box),
+    duration tooltip (en : "year(s)", no : "år", nn : "år"),
     group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before additional-content),
     additional-content (after contact-box)
   }
@@ -277,7 +281,7 @@ resourcetype program-frontpage : program-document {
 
 
   localization {
-  	title : (en : "Programme name", no : "Programnavn", nn : "Programnamn"),
+  	name : (en : "Program name", no : "Programnavn", nn : "Programnamn"),
     header : (en : "Edit programme frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
     fs-program-code : (en : "FS programme code", no : "FS-programkode", nn : "FS-programkode"),
     duration : (en : "Duration", no : "Studiet varer ", nn : "Varighet"),
@@ -307,11 +311,11 @@ resourcetype program-frontpage : program-document {
     contactLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
     contactUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
 
-    additional-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
+    additional-content : (en : "Related content (right column)", no : "Relatert innhold (høyre spalte)", nn : "Relatert innhald (høgre spalte)"),
   
     resource-links : (en : "Links", no : "Lenker", nn : "Lenker"),
     linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
-    linkUrl : (en : "Url", no : "Url", nn : "Url"),
+    linkUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadress"),
     linkHeader : (en : "Header", no : "Overskrift", nn : "Overskrift"),
     linkDescription : (en : "Description", no : "Beskrivelse", nn : "Beskrivelse"),
 

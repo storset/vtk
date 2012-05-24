@@ -163,7 +163,7 @@
   <#assign value = options[key]>
   ${pre}
   <input type="radio" name="${spring.status.expression}" id="${value}" value="${value}"
-    <#if spring.status.value?default("") == value>checked="checked"</#if> <#if (cTN && titles?has_content && titles[value]?exists)>onclick="toggleShowDescription('${key}', ${titles[value]?string})"</#if> ${attributes}
+    <#if spring.status.value?default("") == value>checked="checked"</#if> <#if (cTN && titles?has_content && titles[value]?exists)>onclick="changeTemplate('${key}', ${titles[value]?string})"</#if> ${attributes}
   <@spring.closeTag/><label for="${value}"><#if names?has_content && names[value]?exists>${names[value]}<#else>${key}</#if></label>
   <#if (descriptions?has_content && descriptions[value]?exists)>
     <div class="radioDescription" id="${key}_description">${descriptions[value]}</div>

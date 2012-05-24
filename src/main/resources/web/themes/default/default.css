@@ -1258,8 +1258,7 @@ span.vrtx-help-step-by-step-cmd {
   margin: 2px 0 8px 18px;
 }
 
-.vrtx-admin-form .radioDescription,
-.vrtx-admin-form #initToggleShowDescription,
+.vrtx-admin-form #initChangeTemplate,
 .vrtx-admin-form #vrtx-div-file-title {
   display: none;
 }

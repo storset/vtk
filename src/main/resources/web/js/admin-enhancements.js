@@ -347,14 +347,9 @@ vrtxAdmin._$(document).ready(function () {
           });
           vrtxAdm.completeFormAsync({
             selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-            isReplacing: false,
-            funcComplete: function() { 
-                             if ($("#vrtx-checkbox-is-index input").is(":checked")) {
-                               $("#vrtx-textfield-file-name input").val(CREATE_DOCUMENT_FILE_NAME);
-                               $("#vrtx-textfield-file-name input")[0].disabled = false;
-                             }
-                           }
+            isReplacing: false
           });
+          createFuncComplete();
         } else {
           vrtxAdm.getFormAsync({
             selector: "ul#tabMenuRight a#" + tabMenuServices[i],
@@ -690,7 +685,7 @@ function createInteraction(bodyId, vrtxAdm, _$) {
 
 function createFuncComplete() {
   CREATE_RESOURCE_REPLACE_TITLE = true;
-  $("#initToggleShowDescription").click(); 
+  $("#initChangeTemplate").click(); 
   
   // Tooltip
   if(typeof vortexTips === "undefined") {
@@ -759,10 +754,7 @@ function disableReplaceTitle(nameBind) {
   nameField.val(nameFieldVal);
 }
 
-function toggleShowDescription(element, hasTitle) {
-  var descriptionElements = $("div.radioDescription:visible");
-  descriptionElements.hide();
-  
+function changeTemplate(element, hasTitle) {
   if(hasTitle) {
     $("#vrtx-div-file-title").show();
   } else {
@@ -776,10 +768,6 @@ function toggleShowDescription(element, hasTitle) {
     }
     $("#vrtx-textfield-file-type").text("." + element.split(".")[1]);
   }
-  
-  // Escape dot in id for template (e.g. artikkel.html_description)
-  var descriptionElement = $("#" + element.replace(/\./g, "\\.") + "_description");
-  if (descriptionElement.length) descriptionElement.show();
 }
 
 

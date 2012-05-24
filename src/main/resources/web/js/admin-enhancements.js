@@ -666,16 +666,17 @@ function createInteraction(bodyId, vrtxAdm, _$) {
 
   setInterval(function() {
     var colTitle = $("#vrtx-textfield-collection-title:visible input"),
-      colTitleVal = colTitle.val();
+        colTitleVal = colTitle.val();
     if(colTitle.length && colTitleVal !== lastColTitle) {
       lastColTitle = colTitleVal;
       userTitleChange(colTitle.attr("name"), $("#vrtx-textfield-collection-name input").attr("name"), null);
-    }
-    var colName = $("#vrtx-textfield-collection-name:visible input"),
-        colNameVal = colName.val();
-    if(colName.length && colNameVal !== lastColName) {
-      lastColName = colNameVal;
-      disableReplaceTitle($(this).attr("name"));
+    } else {
+      var colName = $("#vrtx-textfield-collection-name:visible input"),
+          colNameVal = colName.val();
+      if(colName.length && colName.is(":focus") && colNameVal !== lastColName) {
+        lastColName = colNameVal;
+        disableReplaceTitle(colName.attr("name"));
+      }
     }
 
     var fileTitle = $("#vrtx-textfield-file-title:visible input"),
@@ -683,12 +684,13 @@ function createInteraction(bodyId, vrtxAdm, _$) {
     if(fileTitle.length && fileTitleVal !== lastFileTitle) {
       lastFileTitle = fileTitleVal;
       userTitleChange(fileTitle.attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-input input"));
-    }
-    var fileName = $("#vrtx-textfield-file-name:visible input"),
-        fileNameVal = fileName.val();
-    if(fileName.length && fileNameVal !== lastFileName) {
-      lastFileName = fileNameVal;
-      disableReplaceTitle(fileName.attr("name"));
+    } else {
+      var fileName = $("#vrtx-textfield-file-name:visible input"),
+          fileNameVal = fileName.val();
+      if(fileName.length && fileName.is(":focus") && fileNameVal !== lastFileName) {
+        lastFileName = fileNameVal;
+        disableReplaceTitle(fileName.attr("name"));
+      }
     }
   }, 50);
   
@@ -738,16 +740,18 @@ function isIndexFile(nameBind, indexBind) {
   var indexCheckbox = $("#" + indexBind);
   var nameField = $("#" + nameBind);
   if (indexCheckbox.is(":checked")) {
-    $("#vrtx-textfield-file-type").addClass("disabled");
-    nameField[0].disabled = true;
     CREATE_DOCUMENT_FILE_NAME = nameField.val();
     nameField.val('index');
-    growField(nameField, nameField.val(), 5);
+    growField(nameField, 'index', 5);
+
+    nameField[0].disabled = true;
+    $("#vrtx-textfield-file-type").addClass("disabled");
   } else {
-    nameField.val(CREATE_DOCUMENT_FILE_NAME);
-    growField(nameField, CREATE_DOCUMENT_FILE_NAME, 5);
     nameField[0].disabled = false;
     $("#vrtx-textfield-file-type").removeClass("disabled");
+
+    nameField.val(CREATE_DOCUMENT_FILE_NAME);
+    growField(nameField, CREATE_DOCUMENT_FILE_NAME, 5);
   }
 }
 
@@ -2471,7 +2475,7 @@ function unique(array) {
 // See related thread: http://stackoverflow.com/questions/931207/is-there-a-jquery-autogrow-plugin-for-text-fields
   
 function growField(input, val, comfortZone) {
-  var minWidth = input.width(),
+  var minWidth = 35,
       testSubject = $('<tester/>').css({
         position: 'absolute',
         top: -9999,
@@ -2487,11 +2491,15 @@ function growField(input, val, comfortZone) {
   testSubject.insertAfter(input);  
   testSubject.html(val);
  
+  // vrtxAdmin.log(val);
+
   var testerWidth = testSubject.width(),
       newWidth = Math.max(testerWidth + comfortZone, minWidth),
-      currentWidth = input.width(),
-      isValidWidthChange = (newWidth < currentWidth && newWidth > minWidth) || (newWidth > currentWidth);
-  if (isValidWidthChange) {
+      currentWidth = input.width();
+ 
+  // vrtxAdmin.log(currentWidth + " " + newWidth);
+
+  if (newWidth !== currentWidth) {
     input.width(newWidth);
   }
 }

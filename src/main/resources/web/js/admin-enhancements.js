@@ -659,25 +659,39 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
 
 function createInteraction(bodyId, vrtxAdm, _$) {
 
-  // Collection
-  $(document).on("change, keyup", "#vrtx-textfield-collection-title input", function(e) {
-    userTitleChange($(this).attr("name"), $("#vrtx-textfield-collection-name input").attr("name"), null);
-    e.stopPropagation();
-  }); 
-  $(document).on("change, keyup", "#vrtx-textfield-collection-name input", function(e) {
-    disableReplaceTitle($(this).attr("name"));
-    e.stopPropagation();
-  }); 
+  var lastColTitle = "";
+  var lastColName = "";
+  var lastFileTitle = "";
+  var lastFileName = "";
+
+  setInterval(function() {
+    var colTitle = $("#vrtx-textfield-collection-title:visible input"),
+      colTitleVal = colTitle.val();
+    if(colTitle.length && colTitleVal !== lastColTitle) {
+      lastColTitle = colTitleVal;
+      userTitleChange(colTitle.attr("name"), $("#vrtx-textfield-collection-name input").attr("name"), null);
+    }
+    var colName = $("#vrtx-textfield-collection-name:visible input"),
+        colNameVal = colName.val();
+    if(colName.length && colNameVal !== lastColName) {
+      lastColName = colNameVal;
+      disableReplaceTitle($(this).attr("name"));
+    }
+
+    var fileTitle = $("#vrtx-textfield-file-title:visible input"),
+        fileTitleVal = fileTitle.val();
+    if(fileTitle.length && fileTitleVal !== lastFileTitle) {
+      lastFileTitle = fileTitleVal;
+      userTitleChange(fileTitle.attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-input input"));
+    }
+    var fileName = $("#vrtx-textfield-file-name:visible input"),
+        fileNameVal = fileName.val();
+    if(fileName.length && fileNameVal !== lastFileName) {
+      lastFileName = fileNameVal;
+      disableReplaceTitle(fileName.attr("name"));
+    }
+  }, 50);
   
-  // Document
-  $(document).on("change, keyup", "#vrtx-textfield-file-title input", function(e) {
-    userTitleChange($(this).attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
-    e.stopPropagation();
-  }); 
-  $(document).on("change, keyup", "#vrtx-textfield-file-name input", function(e) {
-    disableReplaceTitle($(this).attr("name"));
-    e.stopPropagation();
-  }); 
   $(document).on("click", "#vrtx-checkbox-is-index input", function(e) {
     isIndexFile($("#vrtx-textfield-file-name input").attr("name"), $(this).attr("name"));
     e.stopPropagation();
@@ -728,8 +742,10 @@ function isIndexFile(nameBind, indexBind) {
     nameField[0].disabled = true;
     CREATE_DOCUMENT_FILE_NAME = nameField.val();
     nameField.val('index');
+    growField(nameField, nameField.val(), 5);
   } else {
     nameField.val(CREATE_DOCUMENT_FILE_NAME);
+    growField(nameField, CREATE_DOCUMENT_FILE_NAME, 5);
     nameField[0].disabled = false;
     $("#vrtx-textfield-file-type").removeClass("disabled");
   }

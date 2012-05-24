@@ -661,7 +661,7 @@ function createInteraction(bodyId, vrtxAdm, _$) {
 
   // Collection
   $(document).on("change, keyup", "#vrtx-textfield-collection-title input", function(e) {
-    userTitleChange($(this).attr("name"), $("#vrtx-textfield-collection-name input").attr("name"));
+    userTitleChange($(this).attr("name"), $("#vrtx-textfield-collection-name input").attr("name"), null);
     e.stopPropagation();
   }); 
   $(document).on("change, keyup", "#vrtx-textfield-collection-name input", function(e) {
@@ -702,15 +702,17 @@ function createFuncComplete() {
 }
 
 function userTitleChange(titleBind, nameBind, indexBind) {
-  var titleField = $("#" + titleBind);
-  var nameField = $("#" + nameBind);
-  var indexCheckbox = $("#" + indexBind);
   if (CREATE_RESOURCE_REPLACE_TITLE) {
+    var titleField = $("#" + titleBind);
+    var nameField = $("#" + nameBind);
+    if(indexBind) {
+      var indexCheckbox = $("#" + indexBind);
+    }
     var nameFieldVal = replaceInvalidChar(titleField.val());
     if(nameFieldVal.length > 30) {
       nameFieldVal = nameFieldVal.substring(0, 30); 
     }
-    if(!indexCheckbox.length || !indexCheckbox.is(":checked")) {
+    if(!indexBind || !indexCheckbox.length || !indexCheckbox.is(":checked")) {
       nameField.val(nameFieldVal);
     } else {
       CREATE_DOCUMENT_FILE_NAME = nameFieldVal;

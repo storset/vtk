@@ -736,8 +736,8 @@ function isIndexFile(nameBind, indexBind) {
   var indexCheckbox = $("#" + indexBind);
   var nameField = $("#" + nameBind);
   if (indexCheckbox.is(":checked")) {
-    nameField[0].disabled = true;
     $("#vrtx-textfield-file-type").addClass("disabled");
+    nameField[0].disabled = true;
     CREATE_DOCUMENT_FILE_NAME = nameField.val();
     nameField.val('index');
   } else {

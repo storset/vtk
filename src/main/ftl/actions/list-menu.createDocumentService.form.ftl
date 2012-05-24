@@ -55,15 +55,8 @@
        <script type="text/javascript"><!--
          $(document).ready(function() {
            var nameBind = "${nameBind}";
-           var titleBind = "${titleBind}";
-           var titleField = $("#" + titleBind);
            var nameField = $("#" + nameBind);
-           var nameFieldVal = replaceInvalidChar(titleField.val());
-           if(nameFieldVal.length > 30) {
-             nameFieldVal = nameFieldVal.substring(0, 30); 
-           }
-           nameField.val(nameFieldVal);
-           CREATE_DOCUMENT_FILE_NAME = nameFieldVal;
+           CREATE_DOCUMENT_FILE_NAME = nameField.val();
            isIndexFile("${nameBind}", "${isIndexBind}");
          });
        // -->

@@ -19,7 +19,8 @@ resourcetype program-frontpage : program-document {
     contactTitle : string,
     contactContent : html,
     contactLinkText : string, 
-    contactUrl : resource_ref
+    contactUrl : resource_ref,
+    title : derived (name,program-type) eval (name + " (" + program-type?localized +")") overrides title
   }
 
   edit-rules {
@@ -202,7 +203,7 @@ resourcetype program-frontpage : program-document {
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         [call "resource:comments-feed-link"]
-        <title>[call "comp:title"] [call "comp:program-type"]</title>
+        <title>[call "comp:title"]</title>
       </head>
       <body id="vrtx-program-frontpage">
         <div id="vrtx-content">
@@ -211,7 +212,7 @@ resourcetype program-frontpage : program-document {
           <div id="vrtx-main-content">
             <div id="vrtx-program-frontpage-main" class="vrtx-frontpage-box white-box">
               [call "resource:program-language-link"]
-              <h1>[call "comp:title"][call "comp:program-type"]</h1> 
+              <h1>[call "comp:title"]</h1> 
               [call "comp:status"]
               [call "comp:introduction-image"]         
               [call "comp:introduction"]         

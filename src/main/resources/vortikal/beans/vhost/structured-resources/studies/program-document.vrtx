@@ -5,7 +5,6 @@ resourcetype program-document {
     name-no : string,
     name-nn : string,
     name-en : string,
-    title : derived (name) eval (name) overrides title,
     additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract
   }
   

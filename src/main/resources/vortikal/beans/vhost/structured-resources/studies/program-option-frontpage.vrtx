@@ -9,7 +9,8 @@ resourcetype program-option-frontpage : program-document {
     contactTitle : string,
     contactContent : html,
     contactLinkText : string, 
-    contactUrl : resource_ref
+    contactUrl : resource_ref,
+    title : derived (name) eval (name + " (" + "program-option"?localized +")") overrides title
   }
 
   edit-rules {
@@ -100,7 +101,7 @@ resourcetype program-option-frontpage : program-document {
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         [call "resource:comments-feed-link"]
-        <title>[call "comp:title"]([localized 'program-option'])</title>
+        <title>[call "comp:title"]</title>
       </head>
       <body id="vrtx-program-option">
         <div id="vrtx-content">
@@ -109,7 +110,7 @@ resourcetype program-option-frontpage : program-document {
           <div id="vrtx-main-content">
             <div id="vrtx-program-option-main" class="vrtx-frontpage-box white-box">
               [call "resource:program-option-language-link"]
-              <h1>[call "comp:title"]([localized 'program-option'])</h1> 
+              <h1>[call "comp:title"]</h1> 
               [call "comp:status"]
               [call "comp:introduction-image"]         
               [call "comp:introduction"]         

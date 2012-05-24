@@ -746,12 +746,17 @@ function disableReplaceTitle(nameBind) {
   if (CREATE_RESOURCE_REPLACE_TITLE) {
     CREATE_RESOURCE_REPLACE_TITLE = false;
   }
+  
   var nameField = $("#" + nameBind);
   var nameFieldVal = replaceInvalidChar(nameField.val());
   if(nameFieldVal.length > 30) {
     nameFieldVal = nameFieldVal.substring(0, 30); 
   }
   nameField.val(nameFieldVal);
+
+  $("#vrtx-textfield-file-name").removeClass("replaced");
+  $("#vrtx-textfield-file-type").removeClass("replaced");
+  $("#vrtx-textfield-title-name").removeClass("replaced");
 }
 
 function changeTemplate(element, hasTitle) {
@@ -760,13 +765,21 @@ function changeTemplate(element, hasTitle) {
   } else {
     $("#vrtx-div-file-title").hide();
   }
-  
-  if(element.indexOf(".") !== -1) {
-    var fileType = $("#vrtx-textfield-file-type");
-    if(!fileType.length) {
-      $("<span id='vrtx-textfield-file-type'></span>").insertAfter("#vrtx-div-file-name");
+  var checked = $(".radio-buttons input:checked");
+  if(checked.length) {
+    var templateFile = checked.val();
+    if(templateFile.indexOf(".") !== -1) {
+      var fileType = $("#vrtx-textfield-file-type");
+      if(!fileType.length) {
+        $("<span id='vrtx-textfield-file-type'></span>").insertAfter("#vrtx-div-file-name");
+      }
+      $("#vrtx-textfield-file-type").text("." + templateFile.split(".")[1]);
     }
-    $("#vrtx-textfield-file-type").text("." + element.split(".")[1]);
+  }
+  if(CREATE_RESOURCE_REPLACE_TITLE) {
+    $("#vrtx-textfield-file-name").addClass("replaced");
+    $("#vrtx-textfield-file-type").addClass("replaced");
+    $("#vrtx-textfield-title-name").addClass("replaced");
   }
 }
 

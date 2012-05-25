@@ -37,6 +37,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.ResultSet;
@@ -45,6 +48,8 @@ import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public abstract class DocumentReporter extends AbstractReporter {
+
+    private static Log logger = LogFactory.getLog(DocumentReporter.class.getName());
 
     private int pageSize = DEFAULT_SEARCH_LIMIT;
     private Service manageService, reportService;
@@ -61,14 +66,17 @@ public abstract class DocumentReporter extends AbstractReporter {
         if (backURL > 0) {
             String backURLname;
             switch (backURL) {
-              case 1: backURLname = "diagram";
+            case 1:
+                backURLname = "diagram";
                 break;
-              default: backURLname = "BACKURL_SET-BUT_UNKNOWN";
+            default:
+                backURLname = "BACKURL_SET-BUT_UNKNOWN";
                 break;
             }
-            
-            URL backURLConstructed = new URL(reportService.constructURL(resource)).addParameter(REPORT_TYPE_PARAM, backURLname);
-            
+
+            URL backURLConstructed = new URL(reportService.constructURL(resource)).addParameter(REPORT_TYPE_PARAM,
+                    backURLname);
+
             result.put("backURLname", backURLname);
             result.put("backURL", backURLConstructed);
         }
@@ -93,7 +101,6 @@ public abstract class DocumentReporter extends AbstractReporter {
             pos.next = null;
         }
 
-        //result.put("result", rs.getAllResults());
         result.put("from", pos.cursor + 1);
         result.put("to", pos.cursor + Math.min(pageSize, rs.getSize()));
         result.put("total", rs.getTotalHits());
@@ -101,28 +108,35 @@ public abstract class DocumentReporter extends AbstractReporter {
         result.put("prev", pos.prev);
 
         boolean[] isReadRestricted = new boolean[rs.getSize()];
+        boolean[] isInheritedAcl = new boolean[rs.getSize()];
         URL[] viewURLs = new URL[rs.getSize()];
         List<PropertySet> list = new ArrayList<PropertySet>();
-        for (int i = 0; i < rs.getSize(); i++) {            
-            PropertySet p = rs.getResult(i);
+        int i = 0;
+        for (PropertySet propSet : rs.getAllResults()) {
+            Path path = propSet.getURI();
             try {
-                Resource r = this.repository.retrieve(token, p.getURI(), true);
-                p = r; // fresh copy of resource
-                isReadRestricted[i] = r.isReadRestricted();
+                Resource res = this.repository.retrieve(token, path, true);
+                propSet = res; // fresh copy of resource
+                isReadRestricted[i] = res.isReadRestricted();
+                isInheritedAcl[i] = res.isInheritedAcl();
                 if (this.manageService != null) {
-                    viewURLs[i] = this.manageService.constructURL(p.getURI()).setProtocol("http");
+                    viewURLs[i] = this.manageService.constructURL(path).setProtocol("http");
                 }
-                handleResult(r, result);
+                handleResult(res, result);
             } catch (Exception e) {
+                logger.error("Exception while preparing report. Offending resource: " + path + ": " + e.getMessage());
             }
-            list.add(p);
+            i++;
+            list.add(propSet);
         }
         result.put("result", list);
         result.put("isReadRestricted", isReadRestricted);
+        result.put("isInheritedAcl", isInheritedAcl);
         result.put("viewURLs", viewURLs);
         return result;
     }
-    
+
+    // To be overridden where necessary
     protected void handleResult(Resource resource, Map<String, Object> model) {
     }
 
@@ -133,7 +147,7 @@ public abstract class DocumentReporter extends AbstractReporter {
     public void setReportService(Service reportService) {
         this.reportService = reportService;
     }
-    
+
     public Service getReportService() {
         return this.reportService;
     }
@@ -141,7 +155,7 @@ public abstract class DocumentReporter extends AbstractReporter {
     public void setBackURL(int backURL) {
         this.backURL = backURL;
     }
-    
+
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
     }

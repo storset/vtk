@@ -30,7 +30,7 @@
                  default="Listing results " + report.from + " - "
                  +  report.to + " of total " + report.total + " resources" />
       <#if report.prev?exists || report.next?exists>
-        <@displayPaging />  
+        <@displayPaging />
       </#if>
     </p>
     <div class="vrtx-report">
@@ -52,7 +52,7 @@
         <#assign lastModifiedTime = vrtx.propValue(res, 'lastModified') />
         <#assign modifiedBy = vrtx.propValue(res, 'modifiedBy', 'name-link') />
         <#assign aclIsInherited = vrtx.getMsg("report.yes", "Yes")>
-        <#if res.isInheritedAcl() >
+        <#if report.isInheritedAcl[res_index] >
           <#assign aclIsInherited = vrtx.getMsg("report.no", "No")>
         </#if>
         <#assign isReadRestricted = vrtx.getMsg("collectionListing.permissions.readAll") >
@@ -84,7 +84,7 @@
           <#elseif (res_index == 0)>
             <#assign firstLast = " first" />
           <#elseif (res_index == (collectionSize - 1))>
-            <#assign firstLast = " last" />     
+            <#assign firstLast = " last" />
           </#if>
           
           <tr class="${rowType} <@vrtx.iconResolver res.resourceType contentType /> ${isCollection}${firstLast}">
@@ -95,7 +95,7 @@
             <#if report.isReadRestricted[res_index] >
               <td class="vrtx-report-permissions"><span class="restricted">${isReadRestricted?html}</span></td>
             <#else>
-              <td class="vrtx-report-permissions"><span class="allowed-for-all">${isReadRestricted?html}</span></td>         
+              <td class="vrtx-report-permissions"><span class="allowed-for-all">${isReadRestricted?html}</span></td>
             </#if>
             <td class="vrtx-report-published">${publishedStatus?html}</td>
           </tr>

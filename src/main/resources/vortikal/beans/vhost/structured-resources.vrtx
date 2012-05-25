@@ -19,3 +19,5 @@ include structured-resources/studies/program-document.vrtx
 include structured-resources/studies/program-frontpage.vrtx
 include structured-resources/studies/program-option-frontpage.vrtx
 include structured-resources/studies/samlet.vrtx
+include structured-resources/studies/samlet-program.vrtx
+include structured-resources/studies/samlet-retning.vrtx

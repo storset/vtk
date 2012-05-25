@@ -26,7 +26,13 @@ resourcetype program-document {
       [def thestatus document.properties.status]
       [if thestatus != null && thestatus != "aktivt"]
         <div class="vrtx-program-status">
-          [localized 'status-inactive']
+        [if thestatus = "under-arbeid"]
+          [localized 'status-under-arbeid']
+		[elseif thestatus = "nedlagt"]
+          [localized 'status-nedlagt']
+        [else]
+	      [localized 'status-inactive']
+	    [endif]
         </div>
       [endif]
       ##
@@ -269,6 +275,8 @@ resourcetype program-document {
   	name-no : (en : "Bokmål", no : "Bokmål", nn : "Bokmål"),
     name-nn : (en : "Nynorsk", no : "Nynorsk", nn : "Nynorsk"),
     name-en : (en : "English", no : "Engelsk", nn : "Engelsk"),
+    status-under-arbeid : (en : "This is a draft", no : "Dette er en kladd", nn : "Dette er ein kladd"),
+    status-nedlagt : (en : "This programme is closed", no : "Dette programmet er nedlagt", nn : "Dette programmet er nedlagt"),
     status-inactive : (en : "This programme no longer admits students", no : "Programmet tar ikke opp nye studenter", nn : "Programmet tar ikkje opp nye studentar"),
     additional-content : (en : "Related content (right column)", no : "Relatert innhold (høyrespalte)", nn : "Relatert innhald (høgre spalte)"),
     boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),

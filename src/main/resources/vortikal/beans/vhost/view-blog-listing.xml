@@ -87,11 +87,7 @@
         <ref bean="feedParameterSetAssertion" />
       </list>
     </property>
-    <property name="handler" ref="blogListing.feedHandler" />
-  </bean>
-
-  <bean id="blogListing.feedHandler" parent="collectionListing.atomHandler">
-    <property name="searchComponent" ref="${override.listing.prefix}blogListing.searchComponent" />
+    <property name="handler" ref="articleListing.atomHandler" />
   </bean>
 
 </beans>

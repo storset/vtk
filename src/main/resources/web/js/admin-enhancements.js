@@ -1787,7 +1787,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
                  resultSelectorClass = "." + resultSelectorClasses[i];
                  break;
             }  
-          } 
+          }
 
           expandedForm.slideUp(transitionSpeed, transitionEasingSlideUp, function() {
             if(existExpandedFormIsReplaced) {
@@ -1889,7 +1889,7 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
     _$(nodeType + "." + selectorClass).prepareTableRowForSliding();
   }
   _$(nodeType + "." + selectorClass).hide().slideDown(transitionSpeed, transitionEasingSlideDown, function() {
-    _$.single(this).find("input[type=text]:first").focus();
+    _$.single(this).find("input[type=text]:visible:first").focus();
   });
 };
 

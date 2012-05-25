@@ -1,0 +1,67 @@
+resourcetype samlet-retning : samlet {
+	properties {
+		tittel : string,
+		title : derived (tittel) eval (tittel + "samlet-retning"?localized) overrides title
+	}
+	
+	edit-rules{
+		tittel (size[1]),
+		tittel (class[ui-helper-hidden])
+	}
+	
+	view-components {
+
+		program-option-facts {
+			##
+				[def progpath resource-prop("./", "uri")]
+				[def thispath progpath + '/index.html']
+				[def facts json-resource(thispath)]
+				[val facts.properties.name # unescaped]
+			##
+			}
+	}
+	
+	view {
+    	##    
+    	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    	<html xmlns="http://www.w3.org/1999/xhtml">
+      	<head>
+        	<title>[call "comp:title"]</title>
+      	</head>
+      	<body id="vrtx-structured-article">
+        	<div id="vrtx-content">
+          	[resources-props "."]
+        	[def document structured-document()]
+          	<div id="vrtx-main-content" class="vrtx-hide-additional-content-true"> 
+          	<h1>[call "comp:title"]</h1>
+            [def progpath resource-prop("./", "uri")]
+			[def thispath progpath + '/index.html']
+			[def facts json-resource(thispath)]
+			[if facts.resourcetype = "program-option-frontpage"]
+	            [call "comp:program-option-facts"]
+   		        [call "comp:include-study-file" {"file" : "hvorfor-velge"}]
+           		[call "comp:include-study-file" {"file" : "hva-lerer-du"}]
+           		[def thispath resource-prop(".", "uri")]
+				[def facts json-resource(thispath)]
+				[val facts.resourcetype]
+				[call "comp:include-opptak"]
+				[def thispath resource-prop(".", "uri")]
+				[def facts json-resource(thispath)]
+				[val facts.resourcetype]
+           		[call "comp:include-study-file" {"file" : "undervisning-eksamen"}]
+           		[call "comp:include-study-file" {"file" : "utlandet"}]
+           		[call "comp:include-study-file" {"file" : "jobb-studier"}]
+           		[call "comp:include-study-contact"]
+           	[else]
+           		Finner ikke studieretningsforside
+           	[endif]
+          	</div>
+        	</div>
+      	</body>
+    	</html>
+    ##
+  }
+  localization {
+  	samlet-retning : (en: "Full description of the programme option", no: "Samlet studieretningsbeskrivelse", nn: "Samlet studieretningsbeskrivelse")
+  }
+}

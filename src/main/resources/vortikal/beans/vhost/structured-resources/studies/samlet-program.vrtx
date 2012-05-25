@@ -1,0 +1,51 @@
+resourcetype samlet-program : samlet {
+	properties {
+		tittel : string
+	}
+	
+	edit-rules{
+		tittel (size[1]),
+		tittel (class[ui-helper-hidden])
+	}
+	
+	view-components {
+		
+	}
+	
+	view {
+    	##    
+    	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    	<html xmlns="http://www.w3.org/1999/xhtml">
+      	<head>
+        	<title>[localized 'samlet']</title>
+      	</head>
+      	<body id="vrtx-structured-project">
+        	<div id="vrtx-content">
+          	[resources-props "."]
+        	[def document structured-document()]
+          	<div id="vrtx-main-content" class="vrtx-hide-additional-content-true"> 
+            <h1>[localized 'samlet']</h1>
+             [call "comp:include-study-file" {"file" : "hvorfor-velge"}]
+             [call "comp:include-study-file" {"file" : "why-choose"}]
+             [call "comp:include-study-file" {"file" : "hva-lerer-du"}]
+             [call "comp:include-study-file" {"file" : "learning-outcomes"}]
+             [call "comp:include-study-file" {"file" : "opptak"}]
+             [call "comp:include-study-file" {"file" : "admission"}]
+             [call "comp:include-study-file" {"file" : "undervisning-eksamen"}]
+             [call "comp:include-study-file" {"file" : "teaching-examinations"}]
+             [call "comp:include-study-file" {"file" : "utlandet"}]
+             [call "comp:include-study-file" {"file" : "abroad"}]
+             [call "comp:include-study-file" {"file" : "jobb-studier"}]
+             [call "comp:include-study-file" {"file" : "career"}]
+             [call "comp:include-study-contact"]
+          	</div>
+        	</div>
+      	</body>
+    	</html>
+    ##
+  }
+  localization {
+  	tittel : (en: "Welcome to full description", no: "Velkommen til samlet programbeskrivelse", nn: "Hei"),
+  	samlet : (en: "Full description of the programme", no: "Samlet programbeskrivelse", nn: "Samlet programbeskrivelse")
+  }
+}

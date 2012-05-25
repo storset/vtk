@@ -260,6 +260,11 @@ div.caption textarea {
   display: none;
 }
 
+form.vrtx-program-frontpage #additional-content .header,
+form.vrtx-program-option-frontpage #additional-content .header {
+  display: block;
+}
+
 .introImageAndCaption label {
   font-size: 1.15em !important;
   margin-bottom: 10px !important;

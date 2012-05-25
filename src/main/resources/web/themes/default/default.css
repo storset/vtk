@@ -1254,8 +1254,13 @@ span.vrtx-help-step-by-step-cmd {
   padding-bottom: 15px;
 }
 
+.vrtx-admin-form #createDocumentService-form .radio-buttons label {,
+.vrtx-admin-form #createCollectionService-form .radio-buttons label {
+  margin-left: 4px;
+}
+
 .vrtx-admin-form .radioDescription {
-  margin: 2px 0 8px 18px;
+  margin: 2px 0 8px 22px;
 }
 
 .vrtx-admin-form #initChangeTemplate,

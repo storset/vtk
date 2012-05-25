@@ -2012,7 +2012,7 @@ VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selec
     var url = form.attr("action");
     var listElement = link.parent();
 
-    var dataString = '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
+    var dataString = "&csrf-prevention-token=" + form.find("input[name='csrf-prevention-token']").val()
                    + "&" + escape(link.attr("name"));
     
     vrtxAdmin.serverFacade.postHtml(url, dataString, {
@@ -2042,13 +2042,20 @@ VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, u
     var link = _$.single(this);
     var form = link.closest("form");
     var url = form.attr("action");
-    var textfield = link.parent().parent().find("input[type=text]");
+    var parent = link.parent().parent();
+    var textfield = parent.find("input[type=text]");
     var textfieldName = textfield.attr("name");
     var textfieldVal = textfield.val();
-
-    var dataString = textfieldName + '=' + textfieldVal
-                   + '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
+    var dataString = textfieldName + "=" + textfieldVal
+                   + "&csrf-prevention-token=" + form.find("input[name='csrf-prevention-token']").val()
                    + "&" + link.attr("name");
+                   
+    var hiddenAC = parent.find("input#ac_userNames");
+    if(hiddenAC.length) {
+      var hiddenACName = hiddenAC.attr("name");
+      var hiddenACVal = hiddenAC.val();
+      dataString += "&" + hiddenACName + "=" + hiddenACVal;
+    }
 
     vrtxAdmin.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {

@@ -711,8 +711,8 @@ function createFuncComplete() {
   // Tooltip
   if(typeof vortexTips === "undefined") {
     $("head").append("<script src='/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js' type='text/javascript'></script>");
+    $(".vrtx-admin-form").vortexTips("a.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
   }
-  $(".vrtx-admin-form").vortexTips("a.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
 }
 
 function changeTemplate(element, hasTitle) {
@@ -745,7 +745,7 @@ function isIndexFile(nameBind, indexBind) {
   if (indexCheckbox.is(":checked")) {
     CREATE_DOCUMENT_FILE_NAME = nameField.val();
     nameField.val('index');
-    growField(nameField, 'index', 5);
+    growField(nameField, 'index', 5, 35, 530);
 
     nameField[0].disabled = true;
     $("#vrtx-textfield-file-type").addClass("disabled");
@@ -754,7 +754,7 @@ function isIndexFile(nameBind, indexBind) {
     $("#vrtx-textfield-file-type").removeClass("disabled");
 
     nameField.val(CREATE_DOCUMENT_FILE_NAME);
-    growField(nameField, CREATE_DOCUMENT_FILE_NAME, 5);
+    growField(nameField, CREATE_DOCUMENT_FILE_NAME, 5, 35, 530);
   }
 }
 
@@ -770,7 +770,7 @@ function userTitleChange(titleBind, nameBind, indexBind) {
     
     if(!indexBind || !indexCheckbox.length || !indexCheckbox.is(":checked")) {
       nameField.val(nameFieldVal);
-      growField(nameField, nameFieldVal, 5);
+      growField(nameField, nameFieldVal, 5, 35, 530);
     } else {
       CREATE_DOCUMENT_FILE_NAME = nameFieldVal;
     }
@@ -785,7 +785,7 @@ function disableReplaceTitle(nameBind) {
   var nameField = $("#" + nameBind);
   var nameFieldVal = replaceInvalidChar(nameField.val());
   nameField.val(nameFieldVal);
-  growField(nameField, nameFieldVal, 5);
+  growField(nameField, nameFieldVal, 5, 35, 530);
 
   $("#vrtx-textfield-file-name").removeClass("replaced");
   $("#vrtx-textfield-file-type").removeClass("replaced");
@@ -2480,10 +2480,8 @@ function unique(array) {
 // Modified to simplified function ++ for more specific use / event-handling by USIT, 2012
 // See related thread: http://stackoverflow.com/questions/931207/is-there-a-jquery-autogrow-plugin-for-text-fields
   
-function growField(input, val, comfortZone) {
-  var minWidth = 35,
-      maxWidth = 530,
-      testSubject = $('<tester/>').css({
+function growField(input, val, comfortZone, minWidth, maxWidth) {
+  var testSubject = $('<tester/>').css({
         position: 'absolute',
         top: -9999,
         left: -9999,

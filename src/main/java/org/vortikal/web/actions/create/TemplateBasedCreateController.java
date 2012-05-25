@@ -178,11 +178,6 @@ public class TemplateBasedCreateController extends SimpleFormController {
             return;
         }
 
-        if (name.length() > 30) {
-            errors.rejectValue("name", "manage.create.document.invalid.name.length", "This document name is too long");
-            return;
-        }
-
         name = fixDocumentName(name);
 
         if (name.isEmpty()) {

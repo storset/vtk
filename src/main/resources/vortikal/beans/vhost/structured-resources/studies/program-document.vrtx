@@ -5,7 +5,6 @@ resourcetype program-document {
     name-no : string,
     name-nn : string,
     name-en : string,
-    title : derived (name) eval (name) overrides title,
     additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract
   }
   
@@ -267,10 +266,9 @@ resourcetype program-document {
   }
   
   localization {  
-    name : (en : "Name", no : "Navn", nn : "Navn"),
-    name-no : (en : "Name (bokmål)", no : "Navn (bokmål)", nn : "Namn (bokmål)"),
-    name-nn : (en : "Name (nynorsk)", no : "Navn (nynorsk)", nn : "Namn (nynorsk)"),
-    name-en : (en : "Name (english)", no : "Navn (engelsk)", nn : "Namn (engelsk)"),
+  	name-no : (en : "Bokmål", no : "Bokmål", nn : "Bokmål"),
+    name-nn : (en : "Nynorsk", no : "Nynorsk", nn : "Nynorsk"),
+    name-en : (en : "English", no : "Engelsk", nn : "Engelsk"),
     status-inactive : (en : "This programme no longer admits students", no : "Programmet tar ikke opp nye studenter", nn : "Programmet tar ikkje opp nye studentar"),
     additional-content : (en : "Related content (right column)", no : "Relatert innhold (høyrespalte)", nn : "Relatert innhald (høgre spalte)"),
     boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),

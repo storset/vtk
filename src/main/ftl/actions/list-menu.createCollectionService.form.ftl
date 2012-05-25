@@ -25,7 +25,7 @@
         <ul class="radio-buttons">
           <@vrtx.formRadioButtons "createCollectionForm.sourceURI", templates, "<li>", "</li>" />
         </ul>
-        <button id="initToggleShowDescription" type="button" onclick="toggleShowDescription('${reverseTemplates[sourceURIBind]}', true)"></button> 
+        <button id="initChangeTemplate" type="button" onclick="changeTemplate('${reverseTemplates[sourceURIBind]}', true)"></button> 
       </#if>
 
       <@spring.bind "createCollectionForm" + ".title" />

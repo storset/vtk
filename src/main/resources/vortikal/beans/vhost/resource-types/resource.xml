@@ -37,11 +37,10 @@
         <ref bean="modifiedByPropDef" />
         <ref bean="userTitlePropDef" />
         <ref bean="titlePropDef" />
-        <!-- Now inheritable: -->
-        <ref bean="contentLocalePropDef" />
+
+        <ref bean="contentLocalePropDef" /><!-- Inheritable -->
+        <ref bean="commentsEnabledPropDef" /><!-- Inheritable -->
         
-        <!-- Now inheritable: -->
-        <ref bean="commentsEnabledPropDef" />
         <ref bean="numberOfCommentsPropDef" />
         <ref bean="publishDatePropDef" />
         <ref bean="unpublishDatePropDef" />

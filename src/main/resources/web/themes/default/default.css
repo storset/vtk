@@ -1247,8 +1247,8 @@ span.vrtx-help-step-by-step-cmd {
   clear: left;
 }
 
-#createDocumentService-form .radio-buttons,
-#createCollectionService-form .radio-buttons {
+.vrtx-admin-form #createDocumentService-form .radio-buttons,
+.vrtx-admin-form #createCollectionService-form .radio-buttons {
   background: transparent url("images/line-dotted-tighter.gif") repeat-x scroll left bottom;
   margin-bottom: 15px;
   padding-bottom: 15px;
@@ -1258,43 +1258,53 @@ span.vrtx-help-step-by-step-cmd {
   margin: 2px 0 8px 18px;
 }
 
-.vrtx-admin-form .radioDescription,
-.vrtx-admin-form #initToggleShowDescription,
+.vrtx-admin-form #initChangeTemplate,
 .vrtx-admin-form #vrtx-div-file-title {
   display: none;
 }
 
 .vrtx-admin-form #vrtx-textfield-file-name input[disabled],
-#vrtx-textfield-file-type.disabled {
+.vrtx-admin-form #vrtx-textfield-file-type.disabled {
+  color: #777 !important;
+}
+
+.vrtx-admin-form #vrtx-textfield-file-name.replaced input,
+.vrtx-admin-form #vrtx-textfield-collection-name.replaced input,
+.vrtx-admin-form #vrtx-textfield-file-type.replaced {
   color: #555;
 }
 
-#vrtx-textfield-file-type {
+.vrtx-admin-form #vrtx-textfield-file-type {
   float: left;
   padding: 7px 0 0 5px;
 }
 
-#vrtx-textfield-collection-name,
-#vrtx-textfield-file-name,
-#vrtx-checkbox-hide-from-navigation,
-#vrtx-checkbox-is-index {
+.vrtx-admin-form #vrtx-textfield-collection-name,
+.vrtx-admin-form #vrtx-textfield-file-name,
+.vrtx-admin-form #vrtx-checkbox-hide-from-navigation,
+.vrtx-admin-form #vrtx-checkbox-is-index {
   float: left;
 }
 
-#vrtx-checkbox-hide-from-navigation,
-#vrtx-checkbox-is-index {
+.vrtx-admin-form #vrtx-checkbox-hide-from-navigation,
+.vrtx-admin-form #vrtx-checkbox-is-index {
   background: transparent url("images/seperator-grey-gradient-small-darker.png") no-repeat scroll left center;
   height: 23px;
   margin: 0 0 0 23px;
   padding: 7px 0 0 18px;
 }
 
-#vrtx-checkbox-is-index {
+.vrtx-admin-form #vrtx-checkbox-is-index {
   margin-left: 18px;
 }
 
-#vrtx-checkbox-hide-from-navigation input,
-#vrtx-checkbox-is-index input {
+.js .vrtx-admin-form #vrtx-textfield-collection-name input,
+.js .vrtx-admin-form #vrtx-textfield-file-name input {
+  width: 35px;
+}
+
+.vrtx-admin-form #vrtx-checkbox-hide-from-navigation input,
+.vrtx-admin-form #vrtx-checkbox-is-index input {
   display: block;
   float: left;
   margin: 1px 6px 0 0;

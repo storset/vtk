@@ -265,11 +265,6 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             return;
         }
         
-        if (name.length() > 30) {
-            errors.rejectValue("name", "manage.create.collection.invalid.name.length", "This collection name is too long");
-            return;
-        }
-        
         name = fixCollectionName(name);
         
         if (name.isEmpty()) {

@@ -65,10 +65,8 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.web.service.URL;
 
-
-
 public class BrokenLinksReport extends DocumentReporter {
-    
+
     private PropertyTypeDefinition linkStatusPropDef;
     private PropertyTypeDefinition linkCheckPropDef;
     private PropertyTypeDefinition brokenLinksCountPropDef;
@@ -79,41 +77,46 @@ public class BrokenLinksReport extends DocumentReporter {
     private Parser parser;
     private String queryFilterExpression;
 
-    private final static String   REPORT_TYPE_PARAM_NAME = "broken-links";
-    
-    private final static String   FILTER_READ_RESTRICTION_PARAM_NAME = "read-restriction";
-    private final static String   FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE = "all";
-    private final static String[] FILTER_READ_RESTRICTION_PARAM_VALUES = { FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE, "false", "true" };
+    private final static String REPORT_TYPE_PARAM_NAME = "broken-links";
 
-    private final static String   FILTER_LINK_TYPE_PARAM_NAME = "link-type";
-    private final static String   FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE = "anchor-img";
-    
-    private final static String[] FILTER_LINK_TYPE_PARAM_VALUES = { FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE, "img", "anchor", "other" };
+    private final static String FILTER_READ_RESTRICTION_PARAM_NAME = "read-restriction";
+    private final static String FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE = "all";
+    private final static String[] FILTER_READ_RESTRICTION_PARAM_VALUES = { FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE,
+            "false", "true" };
 
-    
-    private final static String   FILTER_PUBLISHED_PARAM_NAME = "published";
-    private final static String   FILTER_PUBLISHED_PARAM_DEFAULT_VALUE = "true";
+    private final static String FILTER_LINK_TYPE_PARAM_NAME = "link-type";
+    private final static String FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE = "anchor-img";
+
+    private final static String[] FILTER_LINK_TYPE_PARAM_VALUES = { FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE, "img",
+            "anchor", "other" };
+
+    private final static String FILTER_PUBLISHED_PARAM_NAME = "published";
+    private final static String FILTER_PUBLISHED_PARAM_DEFAULT_VALUE = "true";
     private final static String[] FILTER_PUBLISHED_PARAM_VALUES = { FILTER_PUBLISHED_PARAM_DEFAULT_VALUE, "false" };
 
-    private final static String   INCLUDE_PATH_PARAM_NAME = "include-path";
-    private final static String   EXCLUDE_PATH_PARAM_NAME = "exclude-path";
- 
-    @Override
-    public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) { 
-        Map<String, Object> result = super.getReportContent(token, resource, request);  
+    private final static String INCLUDE_PATH_PARAM_NAME = "include-path";
+    private final static String EXCLUDE_PATH_PARAM_NAME = "exclude-path";
 
-        URL reportURL = super.getReportService().constructURL(resource).addParameter(REPORT_TYPE_PARAM, REPORT_TYPE_PARAM_NAME);
-        
+    @Override
+    public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
+        Map<String, Object> result = super.getReportContent(token, resource, request);
+
+        URL reportURL = super.getReportService().constructURL(resource)
+                .addParameter(REPORT_TYPE_PARAM, REPORT_TYPE_PARAM_NAME);
+
         Map<String, List<FilterOption>> filters = new LinkedHashMap<String, List<FilterOption>>();
 
         String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
         String published = request.getParameter(FILTER_PUBLISHED_PARAM_NAME);
         String readRestriction = request.getParameter(FILTER_READ_RESTRICTION_PARAM_NAME);
-        
-        if (linkType == null) linkType = FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE;
-        if (published == null) published = FILTER_PUBLISHED_PARAM_DEFAULT_VALUE;
-        if (readRestriction == null) readRestriction = FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE;
-        
+
+        if (linkType == null)
+            linkType = FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE;
+        if (published == null)
+            published = FILTER_PUBLISHED_PARAM_DEFAULT_VALUE;
+        if (readRestriction == null)
+            readRestriction = FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE;
+
         result.put("linkType", linkType);
 
         // TODO: Refactor method and generalize for 1..infinity filters
@@ -125,9 +128,10 @@ public class BrokenLinksReport extends DocumentReporter {
             filterOptionURL.addParameter(FILTER_READ_RESTRICTION_PARAM_NAME, param);
             filterOptionURL.addParameter(FILTER_PUBLISHED_PARAM_NAME, published);
             filterOptionURL.addParameter(FILTER_LINK_TYPE_PARAM_NAME, linkType);
-            filterReadRestrictionOptions.add(new FilterOption(param, filterOptionURL, param.equals(readRestriction) ? true : false));
+            filterReadRestrictionOptions.add(new FilterOption(param, filterOptionURL,
+                    param.equals(readRestriction) ? true : false));
         }
-        
+
         // Generate link type filter
         List<FilterOption> filterLinkTypeOptions = new ArrayList<FilterOption>();
         for (String param : FILTER_LINK_TYPE_PARAM_VALUES) {
@@ -137,29 +141,30 @@ public class BrokenLinksReport extends DocumentReporter {
             filterOptionURL.addParameter(FILTER_READ_RESTRICTION_PARAM_NAME, readRestriction);
             filterLinkTypeOptions.add(new FilterOption(param, filterOptionURL, param.equals(linkType) ? true : false));
         }
-        
+
         // Generate published filter
         List<FilterOption> filterPublishedOptions = new ArrayList<FilterOption>();
         for (String param : FILTER_PUBLISHED_PARAM_VALUES) {
             URL filterOptionURL = new URL(reportURL);
             filterOptionURL.addParameter(FILTER_PUBLISHED_PARAM_NAME, param);
-            filterOptionURL.addParameter(FILTER_READ_RESTRICTION_PARAM_NAME, readRestriction); 
+            filterOptionURL.addParameter(FILTER_READ_RESTRICTION_PARAM_NAME, readRestriction);
             filterOptionURL.addParameter(FILTER_LINK_TYPE_PARAM_NAME, linkType);
-            filterPublishedOptions.add(new FilterOption(param, filterOptionURL, param.equals(published) ? true : false));
+            filterPublishedOptions
+                    .add(new FilterOption(param, filterOptionURL, param.equals(published) ? true : false));
         }
-        
+
         filters.put(FILTER_PUBLISHED_PARAM_NAME, filterPublishedOptions);
         filters.put(FILTER_LINK_TYPE_PARAM_NAME, filterLinkTypeOptions);
         filters.put(FILTER_READ_RESTRICTION_PARAM_NAME, filterReadRestrictionOptions);
-        
+
         result.put("filters", filters);
         result.put("brokenLinkCount", getBrokenLinkCount(token, resource, request, linkType));
-        
+
         return result;
     }
-    
-    private int getBrokenLinkCount(String token, Resource currentResource,
-                                   HttpServletRequest request, final String linkType) {
+
+    private int getBrokenLinkCount(String token, Resource currentResource, HttpServletRequest request,
+            final String linkType) {
         // Set up search
         Search search = getSearch(token, currentResource, request);
         search.setLimit(Integer.MAX_VALUE);
@@ -172,14 +177,14 @@ public class BrokenLinksReport extends DocumentReporter {
         String[] includeTypes;
         String[] excludeTypes = new String[0];
         if (FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE.equals(linkType) || linkType == null) {
-            includeTypes = new String[]{"BROKEN_LINKS_ANCHOR", "BROKEN_LINKS_IMG"};
+            includeTypes = new String[] { "BROKEN_LINKS_ANCHOR", "BROKEN_LINKS_IMG" };
         } else if ("anchor".equals(linkType)) {
-            includeTypes = new String[] {"BROKEN_LINKS_ANCHOR"};
+            includeTypes = new String[] { "BROKEN_LINKS_ANCHOR" };
         } else if ("img".equals(linkType)) {
-            includeTypes = new String[] {"BROKEN_LINKS_IMG"};
+            includeTypes = new String[] { "BROKEN_LINKS_IMG" };
         } else {
-            includeTypes = new String[] {"BROKEN_LINKS"};
-            excludeTypes = new String[] {"BROKEN_LINKS_IMG", "BROKEN_LINKS_ANCHOR"};
+            includeTypes = new String[] { "BROKEN_LINKS" };
+            excludeTypes = new String[] { "BROKEN_LINKS_IMG", "BROKEN_LINKS_ANCHOR" };
         }
 
         // Search callback which sums up broken link counts
@@ -187,21 +192,22 @@ public class BrokenLinksReport extends DocumentReporter {
             int sum = 0;
             final String[] includeTypes;
             final String[] excludeTypes;
-            
+
             Accumulator(String[] includeTypes, String[] excludeTypes) {
                 this.includeTypes = includeTypes;
                 this.excludeTypes = excludeTypes;
             }
-            
+
             @Override
             public boolean matching(PropertySet propertySet) throws Exception {
                 Property prop = propertySet.getProperty(brokenLinksCountPropDef);
-                if (prop == null) return true;
+                if (prop == null)
+                    return true;
                 net.sf.json.JSONObject obj = prop.getJSONValue();
-                for (String includeType: this.includeTypes) {
+                for (String includeType : this.includeTypes) {
                     sum += obj.optInt(includeType);
                 }
-                for (String excludeType: this.excludeTypes) {
+                for (String excludeType : this.excludeTypes) {
                     sum -= obj.optInt(excludeType);
                 }
 
@@ -218,12 +224,14 @@ public class BrokenLinksReport extends DocumentReporter {
     protected Search getSearch(String token, Resource currentResource, HttpServletRequest request) {
         OrQuery linkStatusCriteria = new OrQuery();
         String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
-        
+
         if (FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE.equals(linkType) || linkType == null) {
-            linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_ANCHOR", TermOperator.EQ));
+            linkStatusCriteria
+                    .add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_ANCHOR", TermOperator.EQ));
             linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_IMG", TermOperator.EQ));
         } else if ("anchor".equals(linkType)) {
-            linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_ANCHOR", TermOperator.EQ));
+            linkStatusCriteria
+                    .add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_ANCHOR", TermOperator.EQ));
         } else if ("img".equals(linkType)) {
             linkStatusCriteria.add(new PropertyTermQuery(this.linkStatusPropDef, "BROKEN_LINKS_IMG", TermOperator.EQ));
         } else {
@@ -249,27 +257,28 @@ public class BrokenLinksReport extends DocumentReporter {
                 topLevelQ.add(aclReadForAllQ);
             }
         }
-        
+
         OrQuery uriQuery = new OrQuery();
         uriQuery.add(new UriPrefixQuery(currentResource.getURI().toString()));
-        
+
         String[] includes = request.getParameterValues(INCLUDE_PATH_PARAM_NAME);
         if (includes != null) {
-            for (String s: includes) {
+            for (String s : includes) {
                 uriQuery.add(new UriPrefixQuery(s));
             }
         }
         topLevelQ.add(uriQuery).add(linkStatusCriteria);
-        
+
         String[] excludes = request.getParameterValues(EXCLUDE_PATH_PARAM_NAME);
         if (excludes != null) {
-            for (String s: excludes) {
+            for (String s : excludes) {
                 try {
                     topLevelQ.add(new UriPrefixQuery(s, true));
-                } catch (Throwable t) { }
+                } catch (Throwable t) {
+                }
             }
         }
-        
+
         // Add clauses for any configured default filter query
         Query filterQ = getFilterQuery();
         if (filterQ != null) {
@@ -278,11 +287,11 @@ public class BrokenLinksReport extends DocumentReporter {
 
         // Don't include collections with index files:
         topLevelQ.add(new PropertyExistsQuery(this.indexFilePropDef, true));
-        
+
         Search search = new Search();
         search.setQuery(topLevelQ);
         SortingImpl sorting = new SortingImpl();
-        
+
         if (this.sortPropDef == null) {
             sorting.addSortField(new TypedSortField(PropertySet.URI_IDENTIFIER, this.sortOrder));
         } else {
@@ -300,7 +309,7 @@ public class BrokenLinksReport extends DocumentReporter {
         } else {
             search.setOnlyPublishedResources(true);
         }
-        
+
         return search;
     }
 
@@ -315,7 +324,7 @@ public class BrokenLinksReport extends DocumentReporter {
         if (map == null) {
             map = new HashMap<String, Object>();
             model.put("linkCheck", map);
-        } 
+        }
 
         ContentStream binaryStream = linkCheck.getBinaryStream();
 
@@ -327,31 +336,31 @@ public class BrokenLinksReport extends DocumentReporter {
             throw new RuntimeException(e);
         }
     }
-    
+
     public class FilterOption {
         private String name;
         private URL url;
         private boolean active;
-        
+
         public FilterOption(String name, URL url, boolean active) {
             this.name = name;
             this.url = url;
             this.active = active;
         }
-        
+
         public String getName() {
             return this.name;
         }
-        
+
         public URL getURL() {
             return this.url;
         }
-        
+
         public boolean isActive() {
             return this.active;
         }
     }
-    
+
     private Query getFilterQuery() {
         if (this.queryFilterExpression != null) {
             if (this.parser == null) {
@@ -366,7 +375,7 @@ public class BrokenLinksReport extends DocumentReporter {
     public void setLinkStatusPropDef(PropertyTypeDefinition linkStatusPropDef) {
         this.linkStatusPropDef = linkStatusPropDef;
     }
-    
+
     @Required
     public void setLinkCheckPropDef(PropertyTypeDefinition linkCheckPropDef) {
         this.linkCheckPropDef = linkCheckPropDef;
@@ -376,7 +385,7 @@ public class BrokenLinksReport extends DocumentReporter {
     public void setBrokenLinksCountPropDef(PropertyTypeDefinition def) {
         this.brokenLinksCountPropDef = def;
     }
-    
+
     @Required
     public void setPublishedPropDef(PropertyTypeDefinition publishedPropDef) {
         this.publishedPropDef = publishedPropDef;
@@ -399,7 +408,7 @@ public class BrokenLinksReport extends DocumentReporter {
     public void setParser(Parser parser) {
         this.parser = parser;
     }
-    
+
     public void setQueryFilterExpression(String exp) {
         this.queryFilterExpression = exp;
     }

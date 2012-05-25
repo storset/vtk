@@ -9,16 +9,21 @@ resourcetype program-option-frontpage : program-document {
     contactTitle : string,
     contactContent : html,
     contactLinkText : string, 
-    contactUrl : resource_ref
+    contactUrl : resource_ref,
+    title : derived (name) eval (name + " (" + "program-option"?localized +")") overrides title
   }
 
   edit-rules {
     status (dropdown),
-    title (size[large]),
-    group samlet (title-no, title-nn, title-en) (after title),
+    name (size[large]),
+    fs-program-code (size[10]),
+    fs-program-option-code (size[10]),
+    group samlet (name-no, name-nn, name-en) (after name) horizontal,
+    group facts (fs-program-code, fs-program-option-code, status, picture) (after samlet),
     resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
-    group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before related-content),
-    additional-content (after contact-box)
+    group contact-box (contactTitle, contactContent, contactLinkText, contactUrl) (before additional-content),
+    resource-links (after contact-box),
+    additional-content (after resource-links)
   }
   
   view-components {
@@ -100,7 +105,7 @@ resourcetype program-option-frontpage : program-document {
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         [call "resource:comments-feed-link"]
-        <title>[call "comp:title"]([localized 'program-option'])</title>
+        <title>[call "comp:title"]</title>
       </head>
       <body id="vrtx-program-option">
         <div id="vrtx-content">
@@ -109,7 +114,7 @@ resourcetype program-option-frontpage : program-document {
           <div id="vrtx-main-content">
             <div id="vrtx-program-option-main" class="vrtx-frontpage-box white-box">
               [call "resource:program-option-language-link"]
-              <h1>[call "comp:title"]([localized 'program-option'])</h1> 
+              <h1>[call "comp:title"]</h1> 
               [call "comp:status"]
               [call "comp:introduction-image"]         
               [call "comp:introduction"]         
@@ -142,9 +147,10 @@ resourcetype program-option-frontpage : program-document {
 
 
   localization {
-  	title : (en : "Programme option name", no : "Studieretningsnavn", nn : "Studieretningsnamn"),
+  	name : (en : "Programme option name", no : "Studieretningsnavn", nn : "Studieretningsnamn"),
     header : (en : "Edit Programme option frontpage", no : "Rediger Studieretningsforside", nn : "Rediger Studieretningsforside"),
     program-option : (en : "Programme option", no : "Studieretning", nn : "Studieretning"),
+    facts : (en : "Facts", no : "Fakta om studieretningen", nn : "Fakta om studieretninga"),
     fs-program-code : (en : "FS programme code", no : "FS-programkode", nn : "FS-programkode"),
     fs-program-option-code : (en : "FS programme option code", no : "FS-studieretningskode", nn : "FS-studieretningskode"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
@@ -156,12 +162,12 @@ resourcetype program-option-frontpage : program-document {
     contactLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
     contactUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
 
-    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
+    related-content : (en : "Related content (right column)", no : "Relatert innhold (høyre spalte)", nn : "Relatert innhald (høgre spalte)"),
     program-affiliation : (en : "The programme option is part of the programme", no : "Studieretningen hører til programmet", nn : "Studieretninga høyrer til studieprogrammet"),
   
     resource-links : (en : "Links", no : "Lenker", nn : "Lenker"),
     linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
-    linkUrl : (en : "Url", no : "Url", nn : "Url"),
+    linkUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
     linkHeader : (en : "Header", no : "Overskrift", nn : "Overskrift"),
     linkDescription : (en : "Description", no : "Beskrivelse", nn : "Beskrivelse"),
 

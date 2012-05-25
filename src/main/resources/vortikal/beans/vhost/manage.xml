@@ -842,13 +842,17 @@
   <bean id="createResource.nameReplacementMap" class="java.util.HashMap">
     <constructor-arg>
       <map>
-        <entry key="\s+" value="-" />
-        <entry key="%" value="" />
-        <entry key="æ" value="e" />
-        <entry key="ø" value="o" />
-        <entry key="å" value="a" />
-        <entry key="\?" value="" />
-        <entry key="#" value="" />
+        <entry key="\s+"    value="-" />
+        <entry key="&amp;"  value="-" />
+        <entry key=","      value="-" />
+        <entry key="\'"     value="-" />
+        <entry key="&quot;" value="-" />
+        <entry key="æ"      value="e" />
+        <entry key="ø"      value="o" />
+        <entry key="å"      value="a" />
+        <entry key="%"      value="" />
+        <entry key="#"      value="" />
+        <entry key="\?"     value="" />
       </map>
     </constructor-arg>
   </bean>

@@ -710,8 +710,9 @@ function createFuncComplete() {
   
   // Tooltip
   if(typeof vortexTips === "undefined") {
-    $("head").append("<script src='/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js' type='text/javascript'></script>");
-    $(".vrtx-admin-form").vortexTips("a.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
+    vrtxAdmin.loadScript("/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js", function() {
+      $(".vrtx-admin-form").vortexTips("a.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
+    });
   }
 }
 
@@ -2383,6 +2384,14 @@ VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
       return _$('<div>').append(_$(selector).find(subselector).clone()).html();
     }
   }
+};
+
+VrtxAdmin.prototype.loadScript = function loadScript(url, callback) {
+  $.getScript(url).done(function() {
+    callback();
+  }).fail(function(jqxhr, settings, exception) {
+    vrtxAdmin.log({msg: exception});
+  });
 };
 
 VrtxAdmin.prototype.log = function log(options) {

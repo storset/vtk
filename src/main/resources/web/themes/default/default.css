@@ -1254,7 +1254,7 @@ span.vrtx-help-step-by-step-cmd {
   padding-bottom: 15px;
 }
 
-.vrtx-admin-form #createDocumentService-form .radio-buttons label {,
+.vrtx-admin-form #createDocumentService-form .radio-buttons label,
 .vrtx-admin-form #createCollectionService-form .radio-buttons label {
   margin-left: 4px;
 }

@@ -75,6 +75,7 @@
           <input type="text" id="${nameBind}" name="${nameBind}" value="${newDocName}" size="15" />
         </div>
       </div>
+      <span id="vrtx-textfield-file-type"></span>
       <div class="vrtx-checkbox" id="vrtx-checkbox-is-index">
         <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" <#if isIndex>checked="checked"</#if> />
         <label for="${isIndexBind}"><@vrtx.msg code="actions.createDocumentService.index" default="Is index-page" /></label>

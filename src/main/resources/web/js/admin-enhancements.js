@@ -736,10 +736,9 @@ function changeTemplate(element, hasTitle) {
     var templateFile = checked.val();
     if(templateFile.indexOf(".") !== -1) {
       var fileType = $("#vrtx-textfield-file-type");
-      if(!fileType.length) {
-        $("<span id='vrtx-textfield-file-type'></span>").insertAfter("#vrtx-div-file-name");
+      if(fileType.length) {
+        fileType.text("." + templateFile.split(".")[1]);
       }
-      $("#vrtx-textfield-file-type").text("." + templateFile.split(".")[1]);
     }
   }
   if(CREATE_RESOURCE_REPLACE_TITLE) {

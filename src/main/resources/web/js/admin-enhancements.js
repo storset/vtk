@@ -655,6 +655,8 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
 
 /*-------------------------------------------------------------------*\
     6. Create service
+    
+    TODO: some cleanup, refactoring
 \*-------------------------------------------------------------------*/
 
 function createInteraction(bodyId, vrtxAdm, _$) {  

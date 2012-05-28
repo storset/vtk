@@ -706,6 +706,13 @@ function createFuncComplete() {
 
 
   CREATE_RESOURCE_REPLACE_TITLE = true;
+  
+  // Fix margin left for radio descriptions because radio width variation on different OS-themes
+  var radioDescriptions = $(".radioDescription");
+  if(radioDescriptions.length) {
+    radioDescriptions.css("marginLeft", $(".radio-buttons label:first").position().left + "px");
+  }
+  
   $("#initChangeTemplate").click(); 
   
   // Tooltip

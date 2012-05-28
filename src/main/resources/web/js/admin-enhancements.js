@@ -717,11 +717,20 @@ function createFuncComplete() {
 }
 
 function changeTemplate(element, hasTitle) {
+  var isIndex = $("#isIndex").length && $("#isIndex").is(":checked");
+  var name = $("#name");
+  
   if(hasTitle) {
     $("#vrtx-div-file-title").show();
+    var minWidth = CREATE_RESOURCE_REPLACE_TITLE ? 35 : 100;
+    minWidth = isIndex ? 35 : minWidth;
   } else {
     $("#vrtx-div-file-title").hide();
+    var minWidth = isIndex ? 35 : 100;
   }
+  
+  growField(name, name.val(), 5, minWidth, 530);
+  
   var checked = $(".radio-buttons input:checked");
   if(checked.length) {
     var templateFile = checked.val();
@@ -755,7 +764,7 @@ function isIndexFile(nameBind, indexBind) {
     $("#vrtx-textfield-file-type").removeClass("disabled");
 
     nameField.val(CREATE_DOCUMENT_FILE_NAME);
-    growField(nameField, CREATE_DOCUMENT_FILE_NAME, 5, 35, 530);
+    growField(nameField, CREATE_DOCUMENT_FILE_NAME, 5, (CREATE_RESOURCE_REPLACE_TITLE ? 35 : 100), 530);
   }
 }
 
@@ -786,7 +795,7 @@ function disableReplaceTitle(nameBind) {
   var nameField = $("#" + nameBind);
   var nameFieldVal = replaceInvalidChar(nameField.val());
   nameField.val(nameFieldVal);
-  growField(nameField, nameFieldVal, 5, 35, 530);
+  growField(nameField, nameFieldVal, 5, 100, 530);
 
   $("#vrtx-textfield-file-name").removeClass("replaced");
   $("#vrtx-textfield-file-type").removeClass("replaced");

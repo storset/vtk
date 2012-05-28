@@ -1957,15 +1957,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     } else {
       if(isCancelAction || !funcProceedCondition || funcProceedCondition(form)) {
         var url = form.attr("action");
-
-        // TODO: test with form.serialize()
-        var vrtxAdmAppendInputNameValuePairsToDataString = vrtxAdm.appendInputNameValuePairsToDataString; // cache to function scope
-        var dataString = vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=text]"));
-        dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=file]"));
-        dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=radio]:checked"));
-        dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=checkbox]:checked"));
-        dataString += '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
-                    + "&" + link.attr("name");
+        var dataString = form.serialize() + "&" + link.attr("name");
                       
         vrtxAdmin.serverFacade.postHtml(url, dataString, {
           success: function (results, status, resp) {
@@ -2144,17 +2136,6 @@ VrtxAdmin.prototype.retrieveHTMLTemplates = function retrieveHTMLTemplates(fileN
 /*-------------------------------------------------------------------*\
     14. Async helper functions and AJAX server façade   
 \*-------------------------------------------------------------------*/
-
-VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function appendInputNameValuePairsToDataString(inputFields) { 
-  var dataStringChunk = "", _$ = vrtxAdmin._$;
-  if(typeof inputFields !== "undefined") {
-    for (i = inputFields.length; i--;) {
-      dataStringChunk += '&' + _$(inputFields[i]).attr("name")
-                       + '=' + _$(inputFields[i]).val();
-    }
-  }
-  return dataStringChunk;
-};
 
 VrtxAdmin.prototype.hasErrorContainers = function hasErrorContainers(results, errorContainer) {
   return this._$(results).find("div." + errorContainer).length > 0;

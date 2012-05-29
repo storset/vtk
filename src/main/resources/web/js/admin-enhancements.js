@@ -1175,7 +1175,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
     // TODO: also check minimum device height (with high density displays on new devices accounted for)
     if(titleSubmitButtons.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
       var titleSubmitButtonsPos = titleSubmitButtons.offset();
-      _$(window).bind("scroll", function() {
+      _$(window).on("scroll", function() {
         if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
           titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons"); 
           titleSubmitButtons.css("width", _$("#contents").width() + "px");
@@ -1184,6 +1184,11 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
           titleSubmitButtons.css("width", "auto");
           _$("#contents").css("paddingTop", "0px");
+        }
+      });
+      _$(window).on("resize", function() {
+        if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
+          titleSubmitButtons.css("width", _$("#contents").width() + "px");
         }
       });
     }

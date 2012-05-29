@@ -754,9 +754,9 @@ function changeTemplate(element, hasTitle) {
     }
   }
   if(CREATE_RESOURCE_REPLACE_TITLE) {
-    $("#vrtx-textfield-file-name").addClass("replaced");
-    $("#vrtx-textfield-file-type").addClass("replaced");
-    $("#vrtx-textfield-collection-name").addClass("replaced");
+    $("#vrtx-textfield-file-name").addClass("file-name-from-title");
+    $("#vrtx-textfield-file-type").addClass("file-name-from-title");
+    $("#vrtx-textfield-collection-name").addClass("file-name-from-title");
   }
 }
 
@@ -808,9 +808,9 @@ function disableReplaceTitle(nameBind) {
   nameField.val(nameFieldVal);
   growField(nameField, nameFieldVal, 5, 100, 530);
 
-  $("#vrtx-textfield-file-name").removeClass("replaced");
-  $("#vrtx-textfield-file-type").removeClass("replaced");
-  $("#vrtx-textfield-collection-name").removeClass("replaced");
+  $("#vrtx-textfield-file-name").removeClass("file-name-from-title");
+  $("#vrtx-textfield-file-type").removeClass("file-name-from-title");
+  $("#vrtx-textfield-collection-name").removeClass("file-name-from-title");
 }
 
 function replaceInvalidChar(val) {
@@ -830,7 +830,7 @@ function replaceInvalidChar(val) {
   };
 
   for (var key in replaceMap) {
-    var replaceThisCharGlobally = new RegExp(key,"g");
+    var replaceThisCharGlobally = new RegExp(key, "g");
     val = val.replace(replaceThisCharGlobally, replaceMap[key]);
   }
 

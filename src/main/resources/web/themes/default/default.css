@@ -1274,9 +1274,9 @@ span.vrtx-help-step-by-step-cmd {
   color: #777 !important;
 }
 
-.vrtx-admin-form #vrtx-textfield-file-name.replaced input,
-.vrtx-admin-form #vrtx-textfield-collection-name.replaced input,
-.vrtx-admin-form #vrtx-textfield-file-type.replaced {
+.vrtx-admin-form #vrtx-textfield-file-name.file-name-from-title input,
+.vrtx-admin-form #vrtx-textfield-collection-name.file-name-from-title input,
+.vrtx-admin-form #vrtx-textfield-file-type.file-name-from-title {
   color: #555;
 }
 

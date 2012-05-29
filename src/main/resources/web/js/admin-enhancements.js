@@ -798,18 +798,14 @@ function userTitleChange(titleBind, nameBind, indexBind) {
   }
 }
 
-var LAST_INDEX_REPLACED;
 function disableReplaceTitle(nameBind) {
   if (CREATE_RESOURCE_REPLACE_TITLE) {
     CREATE_RESOURCE_REPLACE_TITLE = false;
   }
-  LAST_INDEX_REPLACED = -1;
   var nameField = $("#" + nameBind);
   var nameFieldVal = replaceInvalidChar(nameField.val());
   nameField.val(nameFieldVal);
-  if(LAST_INDEX_REPLACED !== -1) {
-    setCaretToPos(nameField[0], LAST_INDEX_REPLACED);
-  }
+  //setCaretToPos(nameField[0], LAST_INDEX_REPLACED);
   growField(nameField, nameFieldVal, 5, 100, 530);
   
   $("#vrtx-textfield-file-name").removeClass("file-name-from-title");
@@ -835,16 +831,7 @@ function replaceInvalidChar(val) {
 
   for (var key in replaceMap) {
     var replaceThisCharGlobally = new RegExp(key, "g");
-    var replaceVal = replaceMap[key];
-    if (!CREATE_RESOURCE_REPLACE_TITLE) {
-      var keyLen = key.length;
-      var realKeyStr = key.substring(keyLen-1, keyLen);
-      var lastReplacedKey = val.lastIndexOf(realKeyStr);
-      if(lastReplacedKey !== -1) {
-        LAST_INDEX_REPLACED = lastReplacedKey + replaceVal.length;
-      }
-    }
-    val = val.replace(replaceThisCharGlobally, replaceVal);
+    val = val.replace(replaceThisCharGlobally, replaceMap[key]);
   }
 
   return val;

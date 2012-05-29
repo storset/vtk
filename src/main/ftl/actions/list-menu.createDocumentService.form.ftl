@@ -79,7 +79,7 @@
       <div class="vrtx-checkbox" id="vrtx-checkbox-is-index">
         <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" <#if isIndex>checked="checked"</#if> />
         <label for="${isIndexBind}"><@vrtx.msg code="actions.createDocumentService.index" default="Is index-page" /></label>
-        <a href="/" title="${vrtx.getMsg("actions.tooltip.isIndexPage")}" class="resource-prop-info"></a>
+        <abbr title="${vrtx.getMsg("actions.tooltip.isIndexPage")}" class="resource-prop-info"></abbr>
       </div>
 
       <@actionsLib.genOkCancelButtons "save" "cancelAction" "actions.createDocumentService.save" "actions.createDocumentService.cancel" />

@@ -720,9 +720,12 @@ function createFuncComplete() {
   // Tooltip
   if(typeof vortexTips === "undefined") {
     vrtxAdmin.loadScript("/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js", function() {
-      $(".vrtx-admin-form").vortexTips("a.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
+      $(".vrtx-admin-form").vortexTips("abbr.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
     });
   }
+  
+  $(".vrtx-admin-form input[type='text']").attr("autocomplete", "off");
+  
 }
 
 function changeTemplate(element, hasTitle) {

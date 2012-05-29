@@ -16,7 +16,7 @@ resourcetype samlet {
       		[def test json-resource(tempuri)]
 	    	[if test]
 				[if test.properties.title != null]
-				<h2>[val test.properties.title # unescaped]</h2>
+				<h1>[val test.properties.title # unescaped]</h1>
 				[endif]
 				[if test.properties.introduction != null]
         		<div class="vrtx-introduction">[val test.properties.introduction # unescaped]</div>
@@ -25,7 +25,21 @@ resourcetype samlet {
     		[endif]
     		##
 		}
-	
+		include-oppbygging{
+			##
+				[def thispath resource-prop("./","uri")]
+				[def locale resource-locale()]
+				[if locale = "en"]
+					[def tempuri thispath + '/structure/index.html']
+				[else]
+					[def tempuri thispath + '/oppbygging/index.html']
+				[endif]
+      			[def test resource(tempuri)]
+      			[if test != null]
+					[call "include:file" {"virtual":tempuri, "element":"#vrtx-main-content"}]           
+				[endif]			
+			##
+			}
 		include-opptak{
 			##
 				[def thispath resource-prop("./","uri")]
@@ -52,6 +66,7 @@ resourcetype samlet {
 			[endif]
 			[def test json-resource(uri)]
 			[if test]
+				<h1>[localized 'kontakt']</h1>
 				[def boxes test.properties.contact-supervisor-box]
 				[list boxes box]
 					[val box.description # unescaped]
@@ -62,6 +77,8 @@ resourcetype samlet {
 		}
 	}
 	localization {
+		fs-program-code : (en : "FS programme code", no : "FS-programkode", nn : "FS-programkode"),
+    	fs-program-option-code : (en : "FS programme option code", no : "FS-studieretningskode", nn : "FS-studieretningskode"),
   		kontakt : (en: "Contact", no: "Kontakt", nn: "Kontakt"),
   		oppbygning : (en : "Programme structure", no : "Oppbygging og gjennomføring", nn : "Oppbygging og gjennomføring"),
   		hvordan-soke : (en : "Application deadline and admissions", no : "Søknadsfrist og opptak", nn : "Søknadsfrist og opptak"),

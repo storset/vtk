@@ -16,7 +16,24 @@ resourcetype samlet-retning : samlet {
 				[def progpath resource-prop("./", "uri")]
 				[def thispath progpath + '/index.html']
 				[def facts json-resource(thispath)]
-				[val facts.properties.name # unescaped]
+				[if (facts.properties.name-no != "" && facts.properties.name-no != null) || (facts.properties.name-nn != "" && facts.properties.name-nn != null) || (facts.properties.name-en != "" && facts.properties.name-en != null)]
+					<h2>[localized 'prog-opt-name']</h2>
+					<p>
+					[if facts.properties.name-no != "" && facts.properties.name-no != null]
+						[val facts.properties.name-no # unescaped] ([localized 'prog-opt-no'])<br />
+					[endif]
+					[if facts.properties.name-nn != "" && facts.properties.name-nn != null]
+						[val facts.properties.name-nn # unescaped] ([localized 'prog-opt-nn'])<br />
+					[endif]
+					[if facts.properties.name-en != "" && facts.properties.name-en != null]
+						[val facts.properties.name-en # unescaped] ([localized 'prog-opt-en'])<br />
+					[endif]
+					</p>
+					<h2>[localized 'fs-program-code']</h2>
+					<p>[val facts.properties.fs-program-code # unescaped]</p>
+					<h2>[localized 'fs-program-option-code']</h2>
+					<p>[val facts.properties.fs-program-option-code # unescaped]</p>
+				[endif]
 			##
 			}
 	}
@@ -41,13 +58,8 @@ resourcetype samlet-retning : samlet {
 	            [call "comp:program-option-facts"]
    		        [call "comp:include-study-file" {"file" : "hvorfor-velge"}]
            		[call "comp:include-study-file" {"file" : "hva-lerer-du"}]
-           		[def thispath resource-prop(".", "uri")]
-				[def facts json-resource(thispath)]
-				[val facts.resourcetype]
 				[call "comp:include-opptak"]
-				[def thispath resource-prop(".", "uri")]
-				[def facts json-resource(thispath)]
-				[val facts.resourcetype]
+				[call "comp:include-oppbygging"]
            		[call "comp:include-study-file" {"file" : "undervisning-eksamen"}]
            		[call "comp:include-study-file" {"file" : "utlandet"}]
            		[call "comp:include-study-file" {"file" : "jobb-studier"}]
@@ -62,6 +74,11 @@ resourcetype samlet-retning : samlet {
     ##
   }
   localization {
-  	samlet-retning : (en: "Full description of the programme option", no: "Samlet studieretningsbeskrivelse", nn: "Samlet studieretningsbeskrivelse")
+  	samlet-retning : (en: "Full description of the programme option", no: "Samlet studieretningsbeskrivelse", nn: "Samlet studieretningsbeskrivelse"),
+  	program-affiliation : (en : "The programme option is part of the programme", no : "Studieretningen hører til programmet", nn : "Studieretninga høyrer til studieprogrammet"),
+  	prog-opt-name : (en: "Programme option name", no: "Studieretningsnavn", nn: "Studieretningsnamn"),
+  	prog-opt-no : (en: "bokmål", no: "bokmål", nn: "bokmål"),
+  	prog-opt-nn : (en: "nynorsk", no: "nynorsk", nn: "nynorsk"),
+  	prog-opt-en : (en: "english", no: "engelsk", nn: "engelsk")
   }
 }

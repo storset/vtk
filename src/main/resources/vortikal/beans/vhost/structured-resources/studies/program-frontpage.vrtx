@@ -315,6 +315,9 @@ resourcetype program-frontpage : program-document {
     aktivt : (en: "Active", no : "Aktiv", nn : "Aktiv"), 
     under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
     nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt"),
+    status-under-arbeid : (en : "This is a draft", no : "Dette er en kladd", nn : "Dette er ein kladd"),
+    status-nedlagt : (en : "This programme is closed", no : "Dette programmet er nedlagt", nn : "Dette programmet er nedlagt"),
+    status-inactive : (en : "This programme no longer admits students", no : "Programmet tar ikke opp nye studenter", nn : "Programmet tar ikkje opp nye studentar"),
     
     program-type : (en : "Programme type", no : "Programtype", nn : "Programtype"),
     aarsenhet : (en : "1-year unit", no : "årsenhet", nn : "årseining"),

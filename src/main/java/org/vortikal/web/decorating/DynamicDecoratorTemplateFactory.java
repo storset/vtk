@@ -158,8 +158,10 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
 
         @Override
         public Object eval(Context ctx, Object... args) {
-            RequestContext requestContext = RequestContext.getRequestContext();
-            HttpServletRequest request = requestContext.getServletRequest();
+//            RequestContext requestContext = RequestContext.getRequestContext();
+//            HttpServletRequest request = requestContext.getServletRequest();
+            HttpServletRequest request = (HttpServletRequest) ctx.getAttribute(DynamicDecoratorTemplate.SERVLET_REQUEST_CONTEXT_ATTR);
+
             URL url = URL.create(request);
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("url", url);
@@ -179,8 +181,10 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
 
         @Override
         public Object eval(Context ctx, Object... args) {
-            RequestContext requestContext = RequestContext.getRequestContext();
-            HttpServletRequest request = requestContext.getServletRequest();
+//            RequestContext requestContext = RequestContext.getRequestContext();
+//            HttpServletRequest request = requestContext.getServletRequest();
+            HttpServletRequest request = (HttpServletRequest) ctx.getAttribute(DynamicDecoratorTemplate.SERVLET_REQUEST_CONTEXT_ATTR);
+            
             Object o = args[0];
             if (o == null) {
                 throw new IllegalArgumentException("Argument cannot be NULL");
@@ -198,8 +202,10 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
 
         @Override
         public Object eval(Context ctx, Object... args) {
-            RequestContext requestContext = RequestContext.getRequestContext();
-            HttpServletRequest request = requestContext.getServletRequest();
+//            RequestContext requestContext = RequestContext.getRequestContext();
+//            HttpServletRequest request = requestContext.getServletRequest();
+            HttpServletRequest request = (HttpServletRequest) ctx.getAttribute(DynamicDecoratorTemplate.SERVLET_REQUEST_CONTEXT_ATTR);
+
             Object o = args[0];
             if (o == null) {
                 throw new IllegalArgumentException("Argument cannot be NULL");
@@ -218,8 +224,10 @@ public class DynamicDecoratorTemplateFactory implements TemplateFactory, Initial
 
         @Override
         public Object eval(Context ctx, Object... args) {
-            RequestContext requestContext = RequestContext.getRequestContext();
-            HttpServletRequest request = requestContext.getServletRequest();
+//            RequestContext requestContext = RequestContext.getRequestContext();
+//            HttpServletRequest request = requestContext.getServletRequest();
+            HttpServletRequest request = (HttpServletRequest) ctx.getAttribute(DynamicDecoratorTemplate.SERVLET_REQUEST_CONTEXT_ATTR);
+
             return RequestContextUtils.getLocale(request).toString();
         }
         

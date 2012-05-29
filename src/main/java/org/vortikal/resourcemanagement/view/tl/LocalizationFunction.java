@@ -39,7 +39,7 @@ import org.vortikal.resourcemanagement.view.StructuredResourceDisplayController;
 import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.expr.Function;
-import org.vortikal.web.RequestContext;
+import org.vortikal.web.decorating.DynamicDecoratorTemplate;
 
 public class LocalizationFunction extends Function {
 
@@ -53,8 +53,10 @@ public class LocalizationFunction extends Function {
     @Override
     public Object eval(Context ctx, Object... args) {
         String key = args[0].toString();
-        RequestContext requestContext = RequestContext.getRequestContext();
-        HttpServletRequest request = requestContext.getServletRequest();
+        //RequestContext requestContext = RequestContext.getRequestContext();
+        //HttpServletRequest request = requestContext.getServletRequest();
+        HttpServletRequest request = (HttpServletRequest) ctx.getAttribute(DynamicDecoratorTemplate.SERVLET_REQUEST_CONTEXT_ATTR);
+
         Object o = request.getAttribute(StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
         if (o == null) {
             throw new RuntimeException("Unable to locate resource: no model: " 

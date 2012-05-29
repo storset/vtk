@@ -44,7 +44,7 @@ import org.vortikal.text.tl.DirectiveNodeFactory;
 import org.vortikal.text.tl.DirectiveParseContext;
 import org.vortikal.text.tl.Node;
 import org.vortikal.text.tl.Token;
-import org.vortikal.web.RequestContext;
+import org.vortikal.web.decorating.DynamicDecoratorTemplate;
 
 public class LocalizationNodeFactory implements DirectiveNodeFactory {
 
@@ -65,8 +65,9 @@ public class LocalizationNodeFactory implements DirectiveNodeFactory {
         return new Node() {
             public boolean render(Context ctx, Writer out) throws Exception {
                 String key = code.getValue(ctx).toString();
-                RequestContext requestContext = RequestContext.getRequestContext();
-                HttpServletRequest request = requestContext.getServletRequest();
+                //RequestContext requestContext = RequestContext.getRequestContext();
+                //HttpServletRequest request = requestContext.getServletRequest();
+                HttpServletRequest request = (HttpServletRequest) ctx.getAttribute(DynamicDecoratorTemplate.SERVLET_REQUEST_CONTEXT_ATTR);
                 Object o = request.getAttribute(StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
                 if (o == null) {
                     throw new RuntimeException("Unable to locate resource: no model: " 

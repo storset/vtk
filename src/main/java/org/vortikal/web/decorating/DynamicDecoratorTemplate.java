@@ -67,7 +67,8 @@ public class DynamicDecoratorTemplate implements Template {
     private static final String CR_REQ_ATTR = "__component_resolver__";
     private static final String HTML_REQ_ATTR = "__html_page__";
     private static final String PARAMS_REQ_ATTR = "__template_params__";
-
+    public static final String SERVLET_REQUEST_CONTEXT_ATTR = "HTTP_SERVLET_REQUEST";
+    
     public static class ComponentSupport implements ComponentInvokerNodeFactory.ComponentSupport {
 
         public ComponentResolver getComponentResolver(Context context) {
@@ -154,6 +155,7 @@ public class DynamicDecoratorTemplate implements Template {
             for (String name : this.templateParameters.keySet()) {
                 context.define(name, this.templateParameters.get(name), true);
             }
+            context.setAttribute(SERVLET_REQUEST_CONTEXT_ATTR, this.request);
             context.define(CR_REQ_ATTR, this.componentResolver, true);
             context.define(HTML_REQ_ATTR, html, true);
             this.request.setAttribute(PARAMS_REQ_ATTR, this.templateParameters);

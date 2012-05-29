@@ -49,12 +49,12 @@ import org.vortikal.text.tl.Node;
 import org.vortikal.text.tl.Token;
 import org.vortikal.text.tl.expr.Expression;
 import org.vortikal.text.tl.expr.Function;
-import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.ComponentResolver;
 import org.vortikal.web.decorating.DecoratorComponent;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorRequestImpl;
 import org.vortikal.web.decorating.DecoratorResponseImpl;
+import org.vortikal.web.decorating.DynamicDecoratorTemplate;
 
 public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
 
@@ -145,8 +145,11 @@ public class ComponentInvokerNodeFactory implements DirectiveNodeFactory {
                     return true;
                 }
                 
-                RequestContext requestContext = RequestContext.getRequestContext();
-                HttpServletRequest servletRequest = requestContext.getServletRequest();
+                //RequestContext requestContext = RequestContext.getRequestContext();
+                //HttpServletRequest servletRequest = requestContext.getServletRequest();
+
+                HttpServletRequest servletRequest = (HttpServletRequest) ctx.getAttribute(DynamicDecoratorTemplate.SERVLET_REQUEST_CONTEXT_ATTR);
+                
                 Stack<DecoratorComponent> componentStack = 
                     (Stack<DecoratorComponent>) servletRequest.getAttribute(COMPONENT_STACK_REQ_ATTR);
                 if (componentStack == null) {

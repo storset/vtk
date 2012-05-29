@@ -52,6 +52,7 @@ import org.vortikal.text.tl.ParseResult;
 import org.vortikal.text.tl.Parser;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.decorating.DynamicDecoratorTemplate;
 import org.vortikal.web.decorating.HtmlDecoratorComponent;
 import org.vortikal.web.decorating.components.AbstractDecoratorComponent;
 import org.vortikal.web.decorating.components.DecoratorComponentException;
@@ -134,6 +135,7 @@ implements HtmlDecoratorComponent {
             Object value = request.getRawParameter(param);
             ctx.define(param, value, true);
         }
+        ctx.setAttribute(DynamicDecoratorTemplate.SERVLET_REQUEST_CONTEXT_ATTR, request.getServletRequest());
         return ctx;
     }
 

@@ -184,7 +184,6 @@ public class StructuredResourceDisplayController implements Controller, Initiali
 
         String templateRef = res.getType().getName();
         Template t = this.templateManager.getTemplate(templateRef);
-
         TemplateExecution execution = t.newTemplateExecution(content, request, model, new HashMap<String, Object>());
 
         ComponentResolver resolver = execution.getComponentResolver();
@@ -192,6 +191,7 @@ public class StructuredResourceDisplayController implements Controller, Initiali
         resolver = new DynamicComponentResolver(COMPONENT_NS, resolver, components);
         execution.setComponentResolver(resolver);
         request.setAttribute(COMPONENT_RESOLVER, resolver);
+        
         return execution.render();
     }
 

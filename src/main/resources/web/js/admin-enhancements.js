@@ -835,15 +835,15 @@ function replaceInvalidChar(val) {
 
   for (var key in replaceMap) {
     var replaceThisCharGlobally = new RegExp(key, "g");
-    
-    var realKeyStr = key.substring(key.length-1, key.length);
-    var lastReplacedKey = val.lastIndexOf(realKeyStr);
     var replaceVal = replaceMap[key];
-    
-    if(lastReplacedKey !== -1) {
-      LAST_INDEX_REPLACED = lastReplacedKey + replaceVal.length;
-    } 
-    
+    if (!CREATE_RESOURCE_REPLACE_TITLE) {
+      var keyLen = key.length;
+      var realKeyStr = key.substring(keyLen-1, keyLen);
+      var lastReplacedKey = val.lastIndexOf(realKeyStr);
+      if(lastReplacedKey !== -1) {
+        LAST_INDEX_REPLACED = lastReplacedKey + replaceVal.length;
+      }
+    }
     val = val.replace(replaceThisCharGlobally, replaceVal);
   }
 

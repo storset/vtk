@@ -262,7 +262,10 @@ public class EvaluatorResolver {
                 Operator operator = evaluationElement.getOperator();
                 if (operator != null) {
                     Object result = evaluateOperator(evaluationElement.getValue(), v, ctx, operator);
-                    v = result == null ? "null" : result.toString();
+                    v = result == null ? null : result.toString();
+                }
+                if (v == null) {
+                    return null;
                 }
                 value.append(v);
             }

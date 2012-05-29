@@ -149,6 +149,12 @@ h2 {
   top: 0px;
   z-index: 9999;
   background: transparent url(images/sticky-title-buttons-bg.png) repeat-x bottom left; 
+  margin-left: -19px;
+}
+
+.vrtx-sticky-editor-title-submit-buttons #vrtx-editor-title-submit-buttons-inner-wrapper {
+  padding-left: 19px;
+  padding-right: 19px;
 }
 
 

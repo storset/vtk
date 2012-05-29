@@ -1178,7 +1178,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       _$(window).on("scroll", function() {
         if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
           titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons"); 
-          titleSubmitButtons.css("width", _$("#contents").width() + "px");
+          titleSubmitButtons.css("width", (_$("#main").outerWidth(true) - 2) + "px");
           _$("#contents").css("paddingTop", titleSubmitButtons.outerHeight(true) + "px");
         } else {
           titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
@@ -1188,7 +1188,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       });
       _$(window).on("resize", function() {
         if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
-          titleSubmitButtons.css("width", _$("#contents").width() + "px");
+          titleSubmitButtons.css("width", (_$("#main").outerWidth(true) - 2) + "px");
         }
       });
     }

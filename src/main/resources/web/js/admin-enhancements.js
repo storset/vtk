@@ -798,16 +798,20 @@ function userTitleChange(titleBind, nameBind, indexBind) {
   }
 }
 
+var LAST_INDEX_REPLACED;
 function disableReplaceTitle(nameBind) {
   if (CREATE_RESOURCE_REPLACE_TITLE) {
     CREATE_RESOURCE_REPLACE_TITLE = false;
   }
-  
+  LAST_INDEX_REPLACED = -1;
   var nameField = $("#" + nameBind);
   var nameFieldVal = replaceInvalidChar(nameField.val());
   nameField.val(nameFieldVal);
+  if(LAST_INDEX_REPLACED !== -1) {
+    setCaretToPos(nameField[0], LAST_INDEX_REPLACED);
+  }
   growField(nameField, nameFieldVal, 5, 100, 530);
-
+  
   $("#vrtx-textfield-file-name").removeClass("file-name-from-title");
   $("#vrtx-textfield-file-type").removeClass("file-name-from-title");
   $("#vrtx-textfield-collection-name").removeClass("file-name-from-title");
@@ -831,10 +835,38 @@ function replaceInvalidChar(val) {
 
   for (var key in replaceMap) {
     var replaceThisCharGlobally = new RegExp(key, "g");
-    val = val.replace(replaceThisCharGlobally, replaceMap[key]);
+    
+    var realKeyStr = key.substring(key.length-1, key.length);
+    var lastReplacedKey = val.lastIndexOf(realKeyStr);
+    var replaceVal = replaceMap[key];
+    
+    if(lastReplacedKey !== -1) {
+      LAST_INDEX_REPLACED = lastReplacedKey + replaceVal.length;
+    } 
+    
+    val = val.replace(replaceThisCharGlobally, replaceVal);
   }
 
   return val;
+}
+
+// Taken from second comment: 
+// http://stackoverflow.com/questions/499126/jquery-set-cursor-position-in-text-area
+function setCaretToPos(input, pos) {
+  setSelectionRange(input, pos, pos);
+}
+
+function setSelectionRange(input, selectionStart, selectionEnd) {
+  if (input.setSelectionRange) {
+    input.focus();
+    input.setSelectionRange(selectionStart, selectionEnd);
+  } else if (input.createTextRange) {
+    var range = input.createTextRange();
+    range.collapse(true);
+    range.moveEnd('character', selectionEnd);
+    range.moveStart('character', selectionStart);
+    range.select();
+  }
 }
 
 

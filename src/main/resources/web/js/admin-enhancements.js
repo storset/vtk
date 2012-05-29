@@ -806,12 +806,12 @@ function disableReplaceTitle(nameBind) {
   var nameField = $("#" + nameBind);
   
   var currentCaretPos = getCaretPos(nameField[0]);
-  
-  var nameFieldVal = replaceInvalidChar(nameField.val());
+  var nameFieldValBeforeReplacement = nameField.val();
+  var nameFieldVal = replaceInvalidChar(nameFieldValBeforeReplacement);
   nameField.val(nameFieldVal);
   growField(nameField, nameFieldVal, 5, 100, 530);
   
-  setCaretToPos(nameField[0], currentCaretPos);
+  setCaretToPos(nameField[0], currentCaretPos - (nameFieldValBeforeReplacement.length - nameFieldVal.length));
   
   $("#vrtx-textfield-file-name").removeClass("file-name-from-title");
   $("#vrtx-textfield-file-type").removeClass("file-name-from-title");

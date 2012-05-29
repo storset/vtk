@@ -34,7 +34,7 @@
 
   <#assign constructor = "freemarker.template.utility.ObjectConstructor"?new() />
   <#assign localeProp = vrtx.propValue(resource, 'contentLocale') />
-  <#if localeProp?exists>
+  <#if localeProp?exists && localeProp?has_content>
     <#return constructor("java.util.Locale", localeProp) />
   </#if>
 

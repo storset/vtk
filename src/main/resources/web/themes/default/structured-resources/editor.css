@@ -150,7 +150,7 @@
 }
 
 .ui-accordion .vrtx-grouped .header.ui-accordion-header {
-  padding: 15px 15px 14px 36px;
+  padding: 15px 15px 14px 40px;
   border-radius: 0px;
   margin-bottom: -2px;
   background: #f9f9f9;
@@ -159,7 +159,7 @@
 }
 
 .ui-accordion .vrtx-grouped .header.ui-accordion-header .ui-icon {
-  left: 8px;
+  left: 11px;
   height: 14px;
   width: 16px;
 }

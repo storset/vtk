@@ -802,11 +802,16 @@ function disableReplaceTitle(nameBind) {
   if (CREATE_RESOURCE_REPLACE_TITLE) {
     CREATE_RESOURCE_REPLACE_TITLE = false;
   }
+  
   var nameField = $("#" + nameBind);
+  
+  var currentCaretPos = getCaretPos(nameField[0]);
+  
   var nameFieldVal = replaceInvalidChar(nameField.val());
   nameField.val(nameFieldVal);
-  //setCaretToPos(nameField[0], LAST_INDEX_REPLACED);
   growField(nameField, nameFieldVal, 5, 100, 530);
+  
+  setCaretToPos(nameField[0], currentCaretPos);
   
   $("#vrtx-textfield-file-name").removeClass("file-name-from-title");
   $("#vrtx-textfield-file-type").removeClass("file-name-from-title");
@@ -855,6 +860,19 @@ function setSelectionRange(input, selectionStart, selectionEnd) {
     range.select();
   }
 }
+
+// Taken from fourth comment:
+// http://stackoverflow.com/questions/4928586/get-caret-position-in-html-input
+function getCaretPos(input) {
+  if (input.setSelectionRange) {
+    return input.selectionStart;
+  } else if (document.selection && document.selection.createRange) {
+    var range = document.selection.createRange();
+    var bookmark = range.getBookmark();
+    return bookmark.charCodeAt(2) - 2;
+  }
+}
+
 
 
 /*-------------------------------------------------------------------*\

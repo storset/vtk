@@ -2130,21 +2130,25 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 
 /* 3.7 Messages */
 
-div.message,
-div.infomessage {
+#app-content > div.message,
+#app-content > div.infomessage {
   background-color: #fff;
   border: 1px solid #d9d9d9;
   padding: 12px 14px 11px 14px;
   margin: 0 0 25px 0;
 }
 
-div.infomessage,
-div.errormessage {
+#app-content > div.infomessage,
+#app-content > div.errormessage {
   padding-left: 46px;
 }
 
-div.infomessage {
+#app-content > div.infomessage {
   background: #fff url(images/info.png) no-repeat 14px 8px;
+}
+
+#app-content > div.errormessage {
+  background: #fff url(images/error.gif) no-repeat 14px 8px;
 }
 
 #vrtx-compat-icon {
@@ -2153,10 +2157,6 @@ div.infomessage {
   width: 27px;
   height: 22px;
   margin: -10px 0 0 0;
-}
- 
-div.errormessage {
-  background: #fff url(images/error.gif) no-repeat 14px 8px;
 }
 
 #system-message-wrapper {

@@ -657,8 +657,10 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
     6. Create service
 \*-------------------------------------------------------------------*/
 
-
-
+/* Used by "createDocumentService" available from "manageCollectionListingService" */
+function changeTemplateName(n) {
+  vrtxAdmin._$("form[name=createDocumentService] input[type=text]").val(n);
+}
 
 /*-------------------------------------------------------------------*\
     7. File upload service

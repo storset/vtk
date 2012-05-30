@@ -324,7 +324,7 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
-          funcComplete: function(p){ createFuncComplete(); },
+          /* funcComplete: function(p){ createFuncComplete(); }, */
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({ 
@@ -344,7 +344,7 @@ vrtxAdmin._$(document).ready(function () {
             insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
             isReplacing: false,
             nodeType: "div",
-            funcComplete: function(p){ createFuncComplete(); },
+            /* funcComplete: function(p){ createFuncComplete(); }, */
             simultanSliding: true
           });
           vrtxAdm.completeFormAsync({
@@ -655,223 +655,8 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
 
 /*-------------------------------------------------------------------*\
     6. Create service
-    
-    TODO: some cleanup, refactoring
 \*-------------------------------------------------------------------*/
 
-function createInteraction(bodyId, vrtxAdm, _$) {  
-  $(document).on("click", "#vrtx-checkbox-is-index input", function(e) {
-    isIndexFile($("#vrtx-textfield-file-name input").attr("name"), $(this).attr("name"));
-    e.stopPropagation();
-  });
-}
-
-function createFuncComplete() {
-  var lastColTitle = "";
-  var lastColName = "";
-  var lastFileTitle = "";
-  var lastFileName = "";
-
-  var observeTitleFile = setInterval(function() {
-    var colTitle = $("#vrtx-textfield-collection-title:visible input"),
-        colTitleVal = colTitle.val();
-    if(colTitle.length && colTitleVal !== lastColTitle) {
-      lastColTitle = colTitleVal;
-      userTitleChange(colTitle.attr("name"), $("#vrtx-textfield-collection-name input").attr("name"), null);
-    } else {
-      var colName = $("#vrtx-textfield-collection-name:visible input"),
-          colNameVal = colName.val();
-      if(colName.length && colName.is(":focus") && colNameVal !== lastColName) {
-        lastColName = colNameVal;
-        disableReplaceTitle(colName.attr("name"));
-      }
-    }
-
-    var fileTitle = $("#vrtx-textfield-file-title:visible input"),
-        fileTitleVal = fileTitle.val();
-    if(fileTitle.length && fileTitleVal !== lastFileTitle) {
-      lastFileTitle = fileTitleVal;
-      userTitleChange(fileTitle.attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
-    } else {
-      var fileName = $("#vrtx-textfield-file-name:visible input"),
-          fileNameVal = fileName.val();
-      if(fileName.length && fileName.is(":focus") && fileNameVal !== lastFileName) {
-        lastFileName = fileNameVal;
-        disableReplaceTitle(fileName.attr("name"));
-      }
-    }
-    if(!(colTitle.length || colName.length || fileTitle.length || fileName.length)) {
-      clearInterval(observeTitleFile);
-    }
-    // vrtxAdmin.log({msg:"Observing textfields in create forms @ " + new Date() + " .."});
-  }, 50);
-
-
-  CREATE_RESOURCE_REPLACE_TITLE = true;
-  
-  // Fix margin left for radio descriptions because radio width variation on different OS-themes
-  var radioDescriptions = $(".radioDescription");
-  if(radioDescriptions.length) {
-    radioDescriptions.css("marginLeft", $(".radio-buttons label:first").position().left + "px");
-  }
-  
-  $("#initChangeTemplate").click(); 
-  
-  // Tooltip
-  if(typeof vortexTips === "undefined") {
-    vrtxAdmin.loadScript("/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js", function() {
-      $(".vrtx-admin-form").vortexTips("abbr.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
-    });
-  }
-  
-  $(".vrtx-admin-form input[type='text']").attr("autocomplete", "off");
-  
-}
-
-function changeTemplate(element, hasTitle) {
-  var isIndex = $("#isIndex").length && $("#isIndex").is(":checked");
-  var name = $("#name");
-  
-  if(hasTitle) {
-    $("#vrtx-div-file-title").show();
-    var minWidth = CREATE_RESOURCE_REPLACE_TITLE ? 35 : 100;
-    minWidth = isIndex ? 35 : minWidth;
-  } else {
-    $("#vrtx-div-file-title").hide();
-    var minWidth = isIndex ? 35 : 100;
-  }
-  
-  growField(name, name.val(), 5, minWidth, 530);
-  
-  var checked = $(".radio-buttons input:checked");
-  if(checked.length) {
-    var templateFile = checked.val();
-    if(templateFile.indexOf(".") !== -1) {
-      var fileType = $("#vrtx-textfield-file-type");
-      if(fileType.length) {
-        fileType.text("." + templateFile.split(".")[1]);
-      }
-    }
-  }
-  if(CREATE_RESOURCE_REPLACE_TITLE) {
-    $("#vrtx-textfield-file-name").addClass("file-name-from-title");
-    $("#vrtx-textfield-file-type").addClass("file-name-from-title");
-    $("#vrtx-textfield-collection-name").addClass("file-name-from-title");
-  }
-}
-
-function isIndexFile(nameBind, indexBind) {
-  var indexCheckbox = $("#" + indexBind);
-  var nameField = $("#" + nameBind);
-  if (indexCheckbox.is(":checked")) {
-    CREATE_DOCUMENT_FILE_NAME = nameField.val();
-    nameField.val('index');
-    growField(nameField, 'index', 5, 35, 530);
-
-    nameField[0].disabled = true;
-    $("#vrtx-textfield-file-type").addClass("disabled");
-  } else {
-    nameField[0].disabled = false;
-    $("#vrtx-textfield-file-type").removeClass("disabled");
-
-    nameField.val(CREATE_DOCUMENT_FILE_NAME);
-    growField(nameField, CREATE_DOCUMENT_FILE_NAME, 5, (CREATE_RESOURCE_REPLACE_TITLE ? 35 : 100), 530);
-  }
-}
-
-function userTitleChange(titleBind, nameBind, indexBind) {
-  if (CREATE_RESOURCE_REPLACE_TITLE) {
-    var titleField = $("#" + titleBind);
-    var nameField = $("#" + nameBind);
-    if(indexBind) {
-      var indexCheckbox = $("#" + indexBind);
-    }
-    
-    var nameFieldVal = replaceInvalidChar(titleField.val());
-    
-    if(!indexBind || !indexCheckbox.length || !indexCheckbox.is(":checked")) {
-      nameField.val(nameFieldVal);
-      growField(nameField, nameFieldVal, 5, 35, 530);
-    } else {
-      CREATE_DOCUMENT_FILE_NAME = nameFieldVal;
-    }
-  }
-}
-
-function disableReplaceTitle(nameBind) {
-  if (CREATE_RESOURCE_REPLACE_TITLE) {
-    CREATE_RESOURCE_REPLACE_TITLE = false;
-  }
-  
-  var nameField = $("#" + nameBind);
-  
-  var currentCaretPos = getCaretPos(nameField[0]);
-  var nameFieldValBeforeReplacement = nameField.val();
-  var nameFieldVal = replaceInvalidChar(nameFieldValBeforeReplacement);
-  nameField.val(nameFieldVal);
-  growField(nameField, nameFieldVal, 5, 100, 530);
-  
-  setCaretToPos(nameField[0], currentCaretPos - (nameFieldValBeforeReplacement.length - nameFieldVal.length));
-  
-  $("#vrtx-textfield-file-name").removeClass("file-name-from-title");
-  $("#vrtx-textfield-file-type").removeClass("file-name-from-title");
-  $("#vrtx-textfield-collection-name").removeClass("file-name-from-title");
-}
-
-function replaceInvalidChar(val) {
-  val = val.toLowerCase();
-  var replaceMap = {
-    " ":   "-",
-    "&":   "-",
-    ",":   "-",
-    "'":   "-",
-    "\"":  "-",
-    "æ":   "e",
-    "ø":   "o",
-    "å":   "a",
-    "%":   "",
-    "#":   "",
-    "\\?": ""
-  };
-
-  for (var key in replaceMap) {
-    var replaceThisCharGlobally = new RegExp(key, "g");
-    val = val.replace(replaceThisCharGlobally, replaceMap[key]);
-  }
-
-  return val;
-}
-
-// Taken from second comment: 
-// http://stackoverflow.com/questions/499126/jquery-set-cursor-position-in-text-area
-function setCaretToPos(input, pos) {
-  setSelectionRange(input, pos, pos);
-}
-
-function setSelectionRange(input, selectionStart, selectionEnd) {
-  if (input.setSelectionRange) {
-    input.focus();
-    input.setSelectionRange(selectionStart, selectionEnd);
-  } else if (input.createTextRange) {
-    var range = input.createTextRange();
-    range.collapse(true);
-    range.moveEnd('character', selectionEnd);
-    range.moveStart('character', selectionStart);
-    range.select();
-  }
-}
-
-// Taken from fourth comment:
-// http://stackoverflow.com/questions/4928586/get-caret-position-in-html-input
-function getCaretPos(input) {
-  if (input.setSelectionRange) {
-    return input.selectionStart;
-  } else if (document.selection && document.selection.createRange) {
-    var range = document.selection.createRange();
-    var bookmark = range.getBookmark();
-    return bookmark.charCodeAt(2) - 2;
-  }
-}
 
 
 

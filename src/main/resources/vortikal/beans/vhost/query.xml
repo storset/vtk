@@ -36,12 +36,6 @@
           </property>
         </bean>        
 
-        <bean class="org.vortikal.repository.search.preprocessor.OutputEscapingExpressionEvaluatorWrapper">
-          <property name="wrappedEvaluator">
-            <bean class="org.vortikal.repository.search.preprocessor.PropertyValueExpressionEvaluator" />
-          </property>
-        </bean>        
-
         <bean class="org.vortikal.repository.search.preprocessor.CurrentTimeExpressionEvaluator" />
         
         <bean class="org.vortikal.repository.search.preprocessor.CurrentDateExpressionEvaluator">

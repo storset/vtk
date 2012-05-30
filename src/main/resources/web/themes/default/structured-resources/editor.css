@@ -251,6 +251,10 @@
   display: none !important;
 }
 
+#resource-links .vrtx-textfield input{
+    width: 160px;
+}
+
 /* ^ JSON-boxes - explicit settings */
 
 .vrtx-grouped-horizontal:after,

@@ -23,5 +23,12 @@ resourcetype structured-message {
     </html>
     ##
   }
+
+  localization {
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    message : (en : "Message", no : "Beskjed", nn : "Beskjed"),
+    header : (en : "Edit message", no : "Rediger beskjed", nn : "Rediger beskjed")
+  }
+
 }
   

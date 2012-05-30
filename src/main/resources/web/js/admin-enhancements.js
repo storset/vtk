@@ -12,7 +12,7 @@
  *  TODO: i18n/more specific AJAX error messages
  *  TODO: CPU usage in ready() vs. wait for it in load()
  *  TODO: Add more functions as prototype to vrtxAdmin (with maybe some exceptions)
- *  TODO: Consolidate event-bubbling especially for IE: http://jsfiddle.net/ahVpX/1/
+ *  TODO: Consolidate event-bubbling: http://jsfiddle.net/ahVpX/2/
  *
  *  ToC: 
  *

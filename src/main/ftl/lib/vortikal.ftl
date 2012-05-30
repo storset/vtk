@@ -157,17 +157,12 @@
 -->
 
 <#-- FIXME: Only works for CreateDocument -->
-<#macro formRadioButtons path options pre post descriptions=[] titles=[] names=[] cTN=false attributes="">
+<#macro formRadioButtons path options pre post cTN=false attributes="">
   <@spring.bind path/>
-  <#list options?keys as key>
-  <#assign value = options[key]>
-  ${pre}
+  <#list options?keys as value>${pre}
   <input type="radio" name="${spring.status.expression}" id="${value}" value="${value}"
-    <#if spring.status.value?default("") == value>checked="checked"</#if> <#if (cTN && titles?has_content && titles[value]?exists)>onclick="changeTemplate('${key}', ${titles[value]?string})"</#if> ${attributes}
-  <@spring.closeTag/><label for="${value}"><#if names?has_content && names[value]?exists>${names[value]}<#else>${key}</#if></label>
-  <#if (descriptions?has_content && descriptions[value]?exists)>
-    <div class="radioDescription" id="${key}_description">${descriptions[value]}</div>
-  </#if>
+    <#if spring.status.value?default("") == value>checked="checked"</#if> <#if cTN>onclick="javascript:changeTemplateName('${options[value]}')"</#if> ${attributes}
+  <@spring.closeTag/><label for="${value}">${options[value]}</label>
   ${post}
   </#list>
 </#macro>

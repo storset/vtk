@@ -35,55 +35,35 @@ import org.vortikal.web.actions.UpdateCancelCommand;
 public class CreateCollectionCommand extends UpdateCancelCommand {
 
     private String name = null;
-    private String title = null;
     private String sourceURI = null;
-    private boolean hidden = false;
-
+    
     public CreateCollectionCommand(String submitURL) {
         super(submitURL);
     }
 
+
     /**
      * Gets the value of name
-     * 
+     *
      * @return the value of name
      */
     public String getName() {
         return this.name;
     }
 
+
     /**
      * Sets the value of name
-     * 
-     * @param name
-     *            Value to assign to this.name
+     *
+     * @param name Value to assign to this.name
      */
-    public void setName(String name) {
+    public void setName(String name)  {
         this.name = name.trim();
     }
-
-    /**
-     * Gets the value of title
-     * 
-     * @return the value of title
-     */
-    public String getTitle() {
-        return this.title;
-    }
-
-    /**
-     * Sets the value of title
-     * 
-     * @param title
-     *            Value to assign to this.title
-     */
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
+    
     /**
      * Gets the value of sourceURI
-     * 
+     *
      * @return the value of sourceURI
      */
     public String getSourceURI() {
@@ -92,31 +72,11 @@ public class CreateCollectionCommand extends UpdateCancelCommand {
 
     /**
      * Sets the value of sourceURI
-     * 
-     * @param sourceURI
-     *            Value to assign to this.sourceURI
+     *
+     * @param sourceURI Value to assign to this.sourceURI
      */
-    public void setSourceURI(String sourceURI) {
+    public void setSourceURI(String sourceURI)  {
         this.sourceURI = sourceURI;
     }
-
-    /**
-     * Gets the value of hidden
-     * 
-     * @return the value of hidden
-     */
-    public boolean getHidden() {
-        return this.hidden;
-    }
-
-    /**
-     * Sets the value of hidden
-     * 
-     * @param hidden
-     *            Value to assign to this.hidden
-     */
-    public void setHidden(boolean hidden) {
-        this.hidden = hidden;
-    }
-
+    
 }

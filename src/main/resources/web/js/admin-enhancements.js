@@ -2315,36 +2315,4 @@ function unique(array) {
   return r;
 }
 
-// jQuery autoGrowInput plugin by James Padolsey
-// Modified to simplified function ++ for more specific use / event-handling by USIT, 2012
-// See related thread: http://stackoverflow.com/questions/931207/is-there-a-jquery-autogrow-plugin-for-text-fields
-  
-function growField(input, val, comfortZone, minWidth, maxWidth) {
-  var testSubject = $('<tester/>').css({
-        position: 'absolute',
-        top: -9999,
-        left: -9999,
-        width: 'auto',
-        fontSize: input.css('fontSize'),
-        fontFamily: input.css('fontFamily'),
-        fontWeight: input.css('fontWeight'),
-        letterSpacing: input.css('letterSpacing'),
-        whiteSpace: 'nowrap'
-      });
-
-  testSubject.insertAfter(input);  
-  testSubject.html(val);
- 
-  // vrtxAdmin.log({msg: val});
-
-  var newWidth = Math.min(Math.max(testSubject.width() + comfortZone, minWidth), maxWidth),
-      currentWidth = input.width();
- 
-  // vrtxAdmin.log({msg:currentWidth + " " + newWidth});
-
-  if (newWidth !== currentWidth) {
-    input.width(newWidth);
-  }
-}
-
 /* ^ Vortex Admin enhancements */

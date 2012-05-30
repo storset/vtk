@@ -173,7 +173,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
 
         dest.removeProperty(this.userTitlePropDef);
 
-        if (title == null)
+        if (title == null || "".equals(title))
             title = name.substring(0, 1).toUpperCase() + name.substring(1);
 
         Property titleProp = this.userTitlePropDef.createProperty();
@@ -201,7 +201,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         String token = requestContext.getSecurityToken();
         Resource collection = repository.createCollection(token, newURI);
 
-        if (title == null)
+        if (title == null || "".equals(title))
             title = name.substring(0, 1).toUpperCase() + name.substring(1);
 
         Property titleProp = this.userTitlePropDef.createProperty();
@@ -264,14 +264,14 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             errors.rejectValue("name", "manage.create.collection.invalid.name", "This is an invalid collection name");
             return;
         }
-        
+
         name = fixCollectionName(name);
-        
+
         if (name.isEmpty()) {
             errors.rejectValue("name", "manage.create.collection.invalid.name", "This is an invalid collection name");
             return;
         }
-        
+
         Path newURI;
         try {
             newURI = uri.extend(name);

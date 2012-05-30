@@ -261,7 +261,7 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
   vrtxAdm.adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");
   
-  createInteraction(bodyId, vrtxAdm, _$);
+  // createInteraction(bodyId, vrtxAdm, _$);
   
   // Collectionlisting interaction
   vrtxAdm.collectionListingInteraction();

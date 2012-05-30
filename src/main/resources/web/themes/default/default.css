@@ -1235,7 +1235,7 @@ span.vrtx-help-step-by-step-cmd {
   margin-top: 10px;
 }
 
-/*
+/* For VTK-2820 in v3.8
 
 .vrtx-admin-form .vrtx-admin-label {
   margin-bottom: 5px;

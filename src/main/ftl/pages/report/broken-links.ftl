@@ -12,6 +12,13 @@
     <#if resourceContext.parentURI?exists>
       <#global baseFolder = resourceContext.currentURI?html />
     </#if>
+    <!--[if lt IE 9]>
+      <style type="text/css">
+        #vrtx-report-filters ul {
+          margin-right: 2%;
+        }
+      </style>
+    <![endif]-->
     <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/plugins/mustache.js"></script>
     <script type="text/javascript"><!--
       var filtersAdvancedShow = "<@vrtx.msg code='report.broken-links.filters.advanced.show' />",

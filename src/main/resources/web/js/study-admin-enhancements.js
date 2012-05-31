@@ -31,15 +31,13 @@ $(document).ready(function () {
     $("#editor").accordion({ header: "> div > .header",
                              autoHeight: false,
                              collapsible: true,
-                             active: false,
-                             change: function(event, ui) {
-                               $(".ui-accordion > .vrtx-string").removeClass("last");
-                               $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
-                             }
+                             active: false
                            });
     $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
   }
   $(document).on('change', '#typeToDisplay', function () {
     hideShowStudy($(this).val());
+    $(".ui-accordion > .vrtx-string").removeClass("last");
+    $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
   });
 });

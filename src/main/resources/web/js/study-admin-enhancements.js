@@ -33,6 +33,7 @@ $(document).ready(function () {
                              collapsible: true,
                              active: false
                            });
+    $(".ui-accordion .vrtx-string.last").addClass("last");
   }
   $(document).on('change', '#typeToDisplay', function () {
     hideShowStudy($(this).val());

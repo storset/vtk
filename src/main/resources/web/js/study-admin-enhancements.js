@@ -37,7 +37,7 @@ $(document).ready(function () {
   }
   $(document).on('change', '#typeToDisplay', function () {
     hideShowStudy($(this).val());
-    $(".ui-accordion > .vrtx-string").removeClass("last");
+    $(".ui-accordion > .vrtx-string.last").removeClass("last");
     $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
   });
 });

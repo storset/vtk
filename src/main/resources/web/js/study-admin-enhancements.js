@@ -31,7 +31,11 @@ $(document).ready(function () {
     $("#editor").accordion({ header: "> div > .header",
                              autoHeight: false,
                              collapsible: true,
-                             active: false
+                             active: false,
+                             change: function(event, ui) {
+                               $(".ui-accordion > .vrtx-string").removeClass("last");
+                               $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
+                             }
                            });
     $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
   }

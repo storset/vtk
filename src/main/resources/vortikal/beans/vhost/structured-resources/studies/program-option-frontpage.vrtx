@@ -6,10 +6,6 @@ resourcetype program-option-frontpage : program-document {
     status : string,
     picture : image_ref,
     resource-links : json (linkHeader:string, linkTitle:string, linkUrl:string, linkDescription:string) multiple,
-    contactTitle : string,
-    contactContent : html,
-    contactLinkText : string, 
-    contactUrl : resource_ref,
     title : derived (name) eval (name + " (" + "program-option"?localized +")") overrides title
   }
 
@@ -149,18 +145,13 @@ resourcetype program-option-frontpage : program-document {
   localization {
   	name : (en : "Programme option name", no : "Studieretningsnavn", nn : "Studieretningsnamn"),
     header : (en : "Edit Programme option frontpage", no : "Rediger Studieretningsforside", nn : "Rediger Studieretningsforside"),
-    program-option : (en : "Programme option", no : "Studieretning", nn : "Studieretning"),
+    program-option : (en : "programme option", no : "studieretning", nn : "studieretning"),
     facts : (en : "Facts", no : "Fakta om studieretningen", nn : "Fakta om studieretninga"),
     fs-program-code : (en : "FS programme code", no : "FS-programkode", nn : "FS-programkode"),
     fs-program-option-code : (en : "FS programme option code", no : "FS-studieretningskode", nn : "FS-studieretningskode"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
-	samlet : (en : "Translation of program names for ", no : "Oversettelse av programnavn til Samlet programbeskrivelse", nn : "Oversetting av programnamn til Samla programbeskrivelse"),
-    contact-box : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
-    contactTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
-    contactContent : (en : "Content", no : "Innhold", nn : "Innhald"),
-    contactLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
-    contactUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
+	samlet : (en : "Translation of program names for Full program description", no : "Oversettelse av programnavn til Samlet programbeskrivelse", nn : "Oversetting av programnamn til Samla programbeskrivelse"),
 
     related-content : (en : "Related content (right column)", no : "Relatert innhold (høyre spalte)", nn : "Relatert innhald (høgre spalte)"),
     program-affiliation : (en : "The programme option is part of the programme", no : "Studieretningen hører til programmet", nn : "Studieretninga høyrer til studieprogrammet"),
@@ -169,12 +160,15 @@ resourcetype program-option-frontpage : program-document {
     linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
     linkUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
     linkHeader : (en : "Header", no : "Overskrift", nn : "Overskrift"),
-    linkDescription : (en : "Description", no : "Beskrivelse", nn : "Beskrivelse"),
+    linkDescription : (en : "Description", no : "Beskrivelse", nn : "Beskriving"),
 
     status : (en : "Status", no : "Status", nn : "Status"),
     under-arbeid : (en : "In progress", no : "Under arbeid" ,nn : "Under arbeid"),
     aktivt : (en: "Active", no : "Aktiv", nn : "Aktiv"), 
     under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
-    nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt")
+    nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt"),
+    status-under-arbeid : (en : "This is a draft", no : "Dette er en kladd", nn : "Dette er ein kladd"),
+    status-nedlagt : (en : "This programme option is closed", no : "Denne studieretningen er nedlagt", nn : "Denne studieretninga er nedlagd"),
+    status-inactive : (en : "This programme option no longer admits students", no : "Studieretningen tar ikke opp nye studenter", nn : "Studieretninga tar ikkje opp nye studentar")
   }
 }

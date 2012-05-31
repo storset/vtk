@@ -42,6 +42,7 @@ import org.vortikal.text.tl.Context;
 import org.vortikal.text.tl.Symbol;
 import org.vortikal.text.tl.expr.Function;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.decorating.DynamicDecoratorTemplate;
 
 public class RetrieveHandler extends Function {
 
@@ -59,7 +60,9 @@ public class RetrieveHandler extends Function {
         Repository repository = requestContext.getRepository();
 
         if (ref.equals(".")) {
-            HttpServletRequest request = requestContext.getServletRequest();
+//            HttpServletRequest request = requestContext.getServletRequest();
+            HttpServletRequest request = (HttpServletRequest) ctx.getAttribute(DynamicDecoratorTemplate.SERVLET_REQUEST_CONTEXT_ATTR);
+
             Object o = request.getAttribute(StructuredResourceDisplayController.MVC_MODEL_REQ_ATTR);
             if (o == null) {
                 return null;

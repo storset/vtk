@@ -33,8 +33,11 @@ $(document).ready(function () {
                              collapsible: true,
                              active: false
                            });
+    $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
   }
   $(document).on('change', '#typeToDisplay', function () {
     hideShowStudy($(this).val());
+    $(".ui-accordion > .vrtx-string.last").removeClass("last");
+    $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
   });
 });

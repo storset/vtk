@@ -231,7 +231,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
         if (editCommand.getRemoveGroupAction() != null) {
             acl = removeFromAcl(acl, editCommand.getGroupNames(), Type.GROUP, currentPrincipal, errors);
             boolean losingPrivileges = !hasPrivilege(acl, currentPrincipal, Privilege.ALL);
-
             BindException bex = new BindException(getACLEditCommand(resource, acl, currentPrincipal, true,
                     losingPrivileges, preferredLocale), this.getCommandName());
             bex.addAllErrors(errors);

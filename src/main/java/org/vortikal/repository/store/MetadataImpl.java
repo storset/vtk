@@ -53,11 +53,6 @@ public class MetadataImpl implements Metadata {
         values.add(value);
     }
 
-    public void replaceAttributeValue(String attribute, Object value) {
-        this.attributes.remove(attribute);
-        this.addAttributeValue(attribute, value);
-    }
-
     public void setAttributeValues(String name, List<Object> values) {
         if (values == null) {
             this.attributes.remove(name);

@@ -16,10 +16,6 @@ resourcetype program-frontpage : program-document {
     interviewLinkText : string, 
     interviewUrl : resource_ref, 
     resource-links : json (linkHeader:string, linkTitle:string, linkUrl:string, linkDescription:string) multiple,
-    contactTitle : string,
-    contactContent : html,
-    contactLinkText : string, 
-    contactUrl : resource_ref,
     title : derived (name,program-type) eval (name + " (" + program-type?localized +")") overrides title
   }
 
@@ -35,7 +31,7 @@ resourcetype program-frontpage : program-document {
     group samlet (name-no, name-nn, name-en) (after name) horizontal,
     group facts (fs-program-code, status, program-type, theme, duration, study-points, full-time, faculty, keywords, picture) (after samlet),
     group interview-box (interviewTitle, interviewContent, interviewLinkText, interviewUrl) (before additional-content),
-    resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenker"),
+    resource-links tooltip (en : "Tooltip for links", no : "Tips for lenker", nn : "Tips for lenkjer"),
     keywords tooltip (en : "Comma separated list", no : "Kommaseparert liste", nn : "Kommaseparert liste"),
     resource-links (after interview-box),
     duration tooltip (en : "year(s)", no : "år", nn : "år"),
@@ -108,7 +104,8 @@ resourcetype program-frontpage : program-document {
         [def activefeed thispath + '/?vrtx=feed&status=aktive']
         [def inactivefeed thispath + '/?vrtx=feed&status=inaktive']
         <div class="vrtx-frontpage-box white-box big-list-elements two-column-feed vrtx-program-option-list">
-          [call "include:feed"  {"url":activefeed, "max-messages":20, "include-if-empty":false}]
+          <h2>[localized 'program-option-list-title']</h2>
+          [call "include:feed"  {"url":activefeed, "feed-title":false, "max-messages":20, "include-if-empty":false}]
           <div class="vrtx-program-option-list-inactive">
             [call "include:feed"  {"url":inactivefeed, "feed-title":false, "max-messages":3, "include-if-empty":false, "all-messages-link":false}]
           </div>
@@ -295,27 +292,22 @@ resourcetype program-frontpage : program-document {
     keywords : (en : "Keywords for programme chooser", no : "Stikkord til programvelger", nn : "Stikkord til programvelger"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
+    program-option-list-title : (en : "Programme options", no : "Studieretninger", nn : "Studieretningar"),
 	samlet : (en : "Translation of program names for Full description of the programme", no : "Oversettelse av programnavn til Samlet programbeskrivelse", nn : "Oversetting av programnamn til Samla programbeskrivelse"),
     interview-box : (en : "Employment opportunities", no : "Karriereintervjuer", nn : "Karriereintervjuar"),
     interviewTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
     interviewContent : (en : "Content", no : "Innhold", nn : "Innhald"),
-    interviewLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
+    interviewLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenkjetekst"),
     interviewUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
 
     full-time : (en : "Full time study?", no : "Organisering", nn : "Organisering"),
     fulltime : (en : "Full time study", no : "Fulltidsstudium", nn : "Fulltidsstudium"),
     parttime : (en : "Part-time study", no : "Deltidsstudium", nn : "Deltidsstudium"),
 
-    contact-box : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
-    contactTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
-    contactContent : (en : "Content", no : "Innhold", nn : "Innhald"),
-    contactLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
-    contactUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
-
     additional-content : (en : "Related content (right column)", no : "Relatert innhold (høyre spalte)", nn : "Relatert innhald (høgre spalte)"),
   
-    resource-links : (en : "Links", no : "Lenker", nn : "Lenker"),
-    linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenketittel"),
+    resource-links : (en : "Links", no : "Lenker", nn : "Lenkjer"),
+    linkTitle : (en : "Link title", no : "Lenketittel", nn : "Lenkjetittel"),
     linkUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadress"),
     linkHeader : (en : "Header", no : "Overskrift", nn : "Overskrift"),
     linkDescription : (en : "Description", no : "Beskrivelse", nn : "Beskrivelse"),
@@ -325,6 +317,9 @@ resourcetype program-frontpage : program-document {
     aktivt : (en: "Active", no : "Aktiv", nn : "Aktiv"), 
     under-utfasing : (en : "Being phased out", no : "Under utfasing", nn : "Under utfasing"),
     nedlagt : (en : "Closed", no : "Nedlagt", nn : "Nedlagt"),
+    status-under-arbeid : (en : "This is a draft", no : "Dette er en kladd", nn : "Dette er ein kladd"),
+    status-nedlagt : (en : "This programme is closed", no : "Dette programmet er nedlagt", nn : "Dette programmet er nedlagt"),
+    status-inactive : (en : "This programme no longer admits students", no : "Programmet tar ikke opp nye studenter", nn : "Programmet tar ikkje opp nye studentar"),
     
     program-type : (en : "Programme type", no : "Programtype", nn : "Programtype"),
     aarsenhet : (en : "1-year unit", no : "årsenhet", nn : "årseining"),

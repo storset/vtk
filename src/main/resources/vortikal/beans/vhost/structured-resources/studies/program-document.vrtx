@@ -5,6 +5,10 @@ resourcetype program-document {
     name-no : string,
     name-nn : string,
     name-en : string,
+    contactTitle : string,
+    contactContent : html,
+    contactLinkText : string, 
+    contactUrl : resource_ref,
     additional-content : json (boxTitle : string, boxType : string, boxPicture : image_ref, boxContent : html, boxUrlText : string, boxUrl : resource_ref) multiple noextract
   }
   
@@ -26,7 +30,13 @@ resourcetype program-document {
       [def thestatus document.properties.status]
       [if thestatus != null && thestatus != "aktivt"]
         <div class="vrtx-program-status">
-          [localized 'status-inactive']
+        [if thestatus = "under-arbeid"]
+          [localized 'status-under-arbeid']
+		[elseif thestatus = "nedlagt"]
+          [localized 'status-nedlagt']
+        [else]
+	      [localized 'status-inactive']
+	    [endif]
         </div>
       [endif]
       ##
@@ -269,16 +279,20 @@ resourcetype program-document {
   	name-no : (en : "Bokmål", no : "Bokmål", nn : "Bokmål"),
     name-nn : (en : "Nynorsk", no : "Nynorsk", nn : "Nynorsk"),
     name-en : (en : "English", no : "Engelsk", nn : "Engelsk"),
-    status-inactive : (en : "This programme no longer admits students", no : "Programmet tar ikke opp nye studenter", nn : "Programmet tar ikkje opp nye studentar"),
     additional-content : (en : "Related content (right column)", no : "Relatert innhold (høyrespalte)", nn : "Relatert innhald (høgre spalte)"),
     boxTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
-    samlet : (en : "Translation of program option name for Full description of the programme option", no : "Oversettelse av studieretningsnavn til Samlet studieretningsbeskrivelse", nn : "Oversetting av studieretningsnamn til Samla studieretningsbeskrivelse"),
-    boxType : (en : "Special settings", no : "Spesielle innstillinger", nn : "Spesielle innstillinger"),
+    samlet : (en : "Translation of programme option name for Full description of the programme option", no : "Oversettelse av studieretningsnavn til Samlet studieretningsbeskrivelse", nn : "Oversetting av studieretningsnamn til Samla studieretningsbeskrivelse"),
+    contact-box : (en : "Contact", no : "Kontakt", nn : "Kontakt"),
+    contactTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
+    contactContent : (en : "Content", no : "Innhold", nn : "Innhald"),
+    contactLinkText : (en : "Link text", no : "Lenketekst", nn : "Lenkjetekst"),
+    contactUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
+    boxType : (en : "Special settings", no : "Spesielle innstillinger", nn : "Spesielle innstillingar"),
     boxCssSizeAndPlacement : (en : "Size and placement", no : "Størrelse og plassering", nn : "Størrelse og plassering"),
     boxCssColor : (en : "Color", no : "Farge", nn : "Farge"),
     boxPicture : (en: "Image", no: "Bilde", nn : "Bilete"),
     boxContent : (en : "Content", no : "Innhold", nn : "Innhald"),
-    boxUrlText : (en : "Link text", no : "Lenketekst", nn : "Lenketekst"),
+    boxUrlText : (en : "Link text", no : "Lenketekst", nn : "Lenkjetekst"),
     boxUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse")
   }
   

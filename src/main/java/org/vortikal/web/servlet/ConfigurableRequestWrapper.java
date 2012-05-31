@@ -63,7 +63,8 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
     private URL wrappedURL;
     private boolean anonymous = false;
     private Map<String, Set<String>> headers;
-
+    private Map<String, Object> attributes = new HashMap<String, Object>();
+    
     /**
      * Creates a new request wrapper.
      *
@@ -413,6 +414,31 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
         return this.getClass().getName() + "[" + super.toString() + "]";
     }
     
+
+    @Override
+    public Object getAttribute(String name) {
+        if (this.attributes.containsKey(name)) {
+            return this.attributes.get(name);
+        }
+        return super.getAttribute(name);
+    }
+
+    @Override
+    public Enumeration<?> getAttributeNames() {
+        Set<String> names = new HashSet<String>();
+        Enumeration<?> e = super.getAttributeNames();
+        while (e.hasMoreElements()) {
+            names.add((String) e.nextElement());
+        }
+        names.addAll(this.attributes.keySet());
+        return Collections.enumeration(names);
+    }
+
+    @Override
+    public void setAttribute(String name, Object o) {
+        this.attributes.put(name, o);
+    }
+
     private Cookie[] filterAnonymousCookies() {
         List<Cookie> result = new ArrayList<Cookie>();
         Cookie[] cookies = super.getCookies();

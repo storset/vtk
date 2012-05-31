@@ -157,8 +157,8 @@
       </div>
     </div>
   </div> 
-
-  <form action="${form.submitURL?html}" method="post" id="editor">
+  
+  <form action="${form.submitURL?html}" method="post" id="editor"<#if form.getResource().getType().getName()?exists> class="vrtx-${form.getResource().getType().getName()}"</#if>>
     <#list form.elements as elementBox>
       <#if elementBox.formElements?size &gt; 1>
         <#assign groupClass = "vrtx-grouped" />

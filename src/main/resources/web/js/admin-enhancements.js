@@ -261,7 +261,7 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
   vrtxAdm.adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");
   
-  createInteraction(bodyId, vrtxAdm, _$);
+  // createInteraction(bodyId, vrtxAdm, _$);
   
   // Collectionlisting interaction
   vrtxAdm.collectionListingInteraction();
@@ -324,7 +324,7 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           isReplacing: false,
           nodeType: "div",
-          funcComplete: function(p){ createFuncComplete(); },
+          /* funcComplete: function(p){ createFuncComplete(); }, */
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({ 
@@ -344,7 +344,7 @@ vrtxAdmin._$(document).ready(function () {
             insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
             isReplacing: false,
             nodeType: "div",
-            funcComplete: function(p){ createFuncComplete(); },
+            /* funcComplete: function(p){ createFuncComplete(); }, */
             simultanSliding: true
           });
           vrtxAdm.completeFormAsync({
@@ -657,165 +657,10 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
     6. Create service
 \*-------------------------------------------------------------------*/
 
-function createInteraction(bodyId, vrtxAdm, _$) {  
-  $(document).on("click", "#vrtx-checkbox-is-index input", function(e) {
-    isIndexFile($("#vrtx-textfield-file-name input").attr("name"), $(this).attr("name"));
-    e.stopPropagation();
-  });
+/* Used by "createDocumentService" available from "manageCollectionListingService" */
+function changeTemplateName(n) {
+  vrtxAdmin._$("form[name=createDocumentService] input[type=text]").val(n);
 }
-
-function createFuncComplete() {
-  var lastColTitle = "";
-  var lastColName = "";
-  var lastFileTitle = "";
-  var lastFileName = "";
-
-  var observeTitleFile = setInterval(function() {
-    var colTitle = $("#vrtx-textfield-collection-title:visible input"),
-        colTitleVal = colTitle.val();
-    if(colTitle.length && colTitleVal !== lastColTitle) {
-      lastColTitle = colTitleVal;
-      userTitleChange(colTitle.attr("name"), $("#vrtx-textfield-collection-name input").attr("name"), null);
-    } else {
-      var colName = $("#vrtx-textfield-collection-name:visible input"),
-          colNameVal = colName.val();
-      if(colName.length && colName.is(":focus") && colNameVal !== lastColName) {
-        lastColName = colNameVal;
-        disableReplaceTitle(colName.attr("name"));
-      }
-    }
-
-    var fileTitle = $("#vrtx-textfield-file-title:visible input"),
-        fileTitleVal = fileTitle.val();
-    if(fileTitle.length && fileTitleVal !== lastFileTitle) {
-      lastFileTitle = fileTitleVal;
-      userTitleChange(fileTitle.attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
-    } else {
-      var fileName = $("#vrtx-textfield-file-name:visible input"),
-          fileNameVal = fileName.val();
-      if(fileName.length && fileName.is(":focus") && fileNameVal !== lastFileName) {
-        lastFileName = fileNameVal;
-        disableReplaceTitle(fileName.attr("name"));
-      }
-    }
-    if(!(colTitle.length || colName.length || fileTitle.length || fileName.length)) {
-      clearInterval(observeTitleFile);
-    }
-    // vrtxAdmin.log({msg:"Observing textfields in create forms @ " + new Date() + " .."});
-  }, 50);
-
-
-  CREATE_RESOURCE_REPLACE_TITLE = true;
-  $("#initChangeTemplate").click(); 
-  
-  // Tooltip
-  if(typeof vortexTips === "undefined") {
-    $("head").append("<script src='/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js' type='text/javascript'></script>");
-  }
-  $(".vrtx-admin-form").vortexTips("a.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
-}
-
-function changeTemplate(element, hasTitle) {
-  if(hasTitle) {
-    $("#vrtx-div-file-title").show();
-  } else {
-    $("#vrtx-div-file-title").hide();
-  }
-  var checked = $(".radio-buttons input:checked");
-  if(checked.length) {
-    var templateFile = checked.val();
-    if(templateFile.indexOf(".") !== -1) {
-      var fileType = $("#vrtx-textfield-file-type");
-      if(!fileType.length) {
-        $("<span id='vrtx-textfield-file-type'></span>").insertAfter("#vrtx-div-file-name");
-      }
-      $("#vrtx-textfield-file-type").text("." + templateFile.split(".")[1]);
-    }
-  }
-  if(CREATE_RESOURCE_REPLACE_TITLE) {
-    $("#vrtx-textfield-file-name").addClass("replaced");
-    $("#vrtx-textfield-file-type").addClass("replaced");
-    $("#vrtx-textfield-collection-name").addClass("replaced");
-  }
-}
-
-function isIndexFile(nameBind, indexBind) {
-  var indexCheckbox = $("#" + indexBind);
-  var nameField = $("#" + nameBind);
-  if (indexCheckbox.is(":checked")) {
-    CREATE_DOCUMENT_FILE_NAME = nameField.val();
-    nameField.val('index');
-    growField(nameField, 'index', 5);
-
-    nameField[0].disabled = true;
-    $("#vrtx-textfield-file-type").addClass("disabled");
-  } else {
-    nameField[0].disabled = false;
-    $("#vrtx-textfield-file-type").removeClass("disabled");
-
-    nameField.val(CREATE_DOCUMENT_FILE_NAME);
-    growField(nameField, CREATE_DOCUMENT_FILE_NAME, 5);
-  }
-}
-
-function userTitleChange(titleBind, nameBind, indexBind) {
-  if (CREATE_RESOURCE_REPLACE_TITLE) {
-    var titleField = $("#" + titleBind);
-    var nameField = $("#" + nameBind);
-    if(indexBind) {
-      var indexCheckbox = $("#" + indexBind);
-    }
-    
-    var nameFieldVal = replaceInvalidChar(titleField.val());
-    
-    if(!indexBind || !indexCheckbox.length || !indexCheckbox.is(":checked")) {
-      nameField.val(nameFieldVal);
-      growField(nameField, nameFieldVal, 5);
-    } else {
-      CREATE_DOCUMENT_FILE_NAME = nameFieldVal;
-    }
-  }
-}
-
-function disableReplaceTitle(nameBind) {
-  if (CREATE_RESOURCE_REPLACE_TITLE) {
-    CREATE_RESOURCE_REPLACE_TITLE = false;
-  }
-  
-  var nameField = $("#" + nameBind);
-  var nameFieldVal = replaceInvalidChar(nameField.val());
-  nameField.val(nameFieldVal);
-  growField(nameField, nameFieldVal, 5);
-
-  $("#vrtx-textfield-file-name").removeClass("replaced");
-  $("#vrtx-textfield-file-type").removeClass("replaced");
-  $("#vrtx-textfield-collection-name").removeClass("replaced");
-}
-
-function replaceInvalidChar(val) {
-  val = val.toLowerCase();
-  var replaceMap = {
-    " ":   "-",
-    "&":   "-",
-    ",":   "-",
-    "'":   "-",
-    "\"":  "-",
-    "æ":   "e",
-    "ø":   "o",
-    "å":   "a",
-    "%":   "",
-    "#":   "",
-    "\\?": ""
-  };
-
-  for (var key in replaceMap) {
-    var replaceThisCharGlobally = new RegExp(key,"g");
-    val = val.replace(replaceThisCharGlobally, replaceMap[key]);
-  }
-
-  return val;
-}
-
 
 /*-------------------------------------------------------------------*\
     7. File upload service
@@ -1154,15 +999,20 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
     // TODO: also check minimum device height (with high density displays on new devices accounted for)
     if(titleSubmitButtons.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
       var titleSubmitButtonsPos = titleSubmitButtons.offset();
-      _$(window).bind("scroll", function() {
+      _$(window).on("scroll", function() {
         if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
           titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons"); 
-          titleSubmitButtons.css("width", _$("#contents").width() + "px");
+          titleSubmitButtons.css("width", (_$("#main").outerWidth(true) - 2) + "px");
           _$("#contents").css("paddingTop", titleSubmitButtons.outerHeight(true) + "px");
         } else {
           titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
           titleSubmitButtons.css("width", "auto");
           _$("#contents").css("paddingTop", "0px");
+        }
+      });
+      _$(window).on("resize", function() {
+        if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
+          titleSubmitButtons.css("width", (_$("#main").outerWidth(true) - 2) + "px");
         }
       });
     }
@@ -1786,7 +1636,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
                  resultSelectorClass = "." + resultSelectorClasses[i];
                  break;
             }  
-          } 
+          }
 
           expandedForm.slideUp(transitionSpeed, transitionEasingSlideUp, function() {
             if(existExpandedFormIsReplaced) {
@@ -1888,7 +1738,7 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
     _$(nodeType + "." + selectorClass).prepareTableRowForSliding();
   }
   _$(nodeType + "." + selectorClass).hide().slideDown(transitionSpeed, transitionEasingSlideDown, function() {
-    _$.single(this).find("input[type=text]:first").focus();
+    _$.single(this).find("input[type=text]:visible:first").focus();
   });
 };
 
@@ -1948,15 +1798,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     } else {
       if(isCancelAction || !funcProceedCondition || funcProceedCondition(form)) {
         var url = form.attr("action");
-
-        // TODO: test with form.serialize()
-        var vrtxAdmAppendInputNameValuePairsToDataString = vrtxAdm.appendInputNameValuePairsToDataString; // cache to function scope
-        var dataString = vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=text]"));
-        dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=file]"));
-        dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=radio]:checked"));
-        dataString += vrtxAdmAppendInputNameValuePairsToDataString(form.find("input[type=checkbox]:checked"));
-        dataString += '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
-                    + "&" + link.attr("name");
+        var dataString = form.serialize() + "&" + link.attr("name");
                       
         vrtxAdmin.serverFacade.postHtml(url, dataString, {
           success: function (results, status, resp) {
@@ -2012,7 +1854,7 @@ VrtxAdmin.prototype.removePermissionAsync = function removePermissionAsync(selec
     var url = form.attr("action");
     var listElement = link.parent();
 
-    var dataString = '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
+    var dataString = "&csrf-prevention-token=" + form.find("input[name='csrf-prevention-token']").val()
                    + "&" + escape(link.attr("name"));
     
     vrtxAdmin.serverFacade.postHtml(url, dataString, {
@@ -2042,13 +1884,20 @@ VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, u
     var link = _$.single(this);
     var form = link.closest("form");
     var url = form.attr("action");
-    var textfield = link.parent().parent().find("input[type=text]");
+    var parent = link.parent().parent();
+    var textfield = parent.find("input[type=text]");
     var textfieldName = textfield.attr("name");
     var textfieldVal = textfield.val();
-
-    var dataString = textfieldName + '=' + textfieldVal
-                   + '&csrf-prevention-token=' + form.find("input[name='csrf-prevention-token']").val()
+    var dataString = textfieldName + "=" + textfieldVal
+                   + "&csrf-prevention-token=" + form.find("input[name='csrf-prevention-token']").val()
                    + "&" + link.attr("name");
+                   
+    var hiddenAC = parent.find("input#ac_userNames");
+    if(hiddenAC.length) {
+      var hiddenACName = hiddenAC.attr("name");
+      var hiddenACVal = hiddenAC.val();
+      dataString += "&" + hiddenACName + "=" + hiddenACVal;
+    }
 
     vrtxAdmin.serverFacade.postHtml(url, dataString, {
       success: function (results, status, resp) {
@@ -2128,17 +1977,6 @@ VrtxAdmin.prototype.retrieveHTMLTemplates = function retrieveHTMLTemplates(fileN
 /*-------------------------------------------------------------------*\
     14. Async helper functions and AJAX server façade   
 \*-------------------------------------------------------------------*/
-
-VrtxAdmin.prototype.appendInputNameValuePairsToDataString = function appendInputNameValuePairsToDataString(inputFields) { 
-  var dataStringChunk = "", _$ = vrtxAdmin._$;
-  if(typeof inputFields !== "undefined") {
-    for (i = inputFields.length; i--;) {
-      dataStringChunk += '&' + _$(inputFields[i]).attr("name")
-                       + '=' + _$(inputFields[i]).val();
-    }
-  }
-  return dataStringChunk;
-};
 
 VrtxAdmin.prototype.hasErrorContainers = function hasErrorContainers(results, errorContainer) {
   return this._$(results).find("div." + errorContainer).length > 0;
@@ -2378,6 +2216,14 @@ VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
   }
 };
 
+VrtxAdmin.prototype.loadScript = function loadScript(url, callback) {
+  $.getScript(url).done(function() {
+    callback();
+  }).fail(function(jqxhr, settings, exception) {
+    vrtxAdmin.log({msg: exception});
+  });
+};
+
 VrtxAdmin.prototype.log = function log(options) {
   if(vrtxAdmin.hasConsoleLog) {
     var msgMid = options.args ? " -> " + options.args.callee.name : "";
@@ -2467,40 +2313,6 @@ function unique(array) {
   for(i=0; i<l;i+=1) o[array[i]] = array[i];
   for(i in o) r.push(o[i]);
   return r;
-}
-
-// jQuery autoGrowInput plugin by James Padolsey
-// Modified to simplified function ++ for more specific use / event-handling by USIT, 2012
-// See related thread: http://stackoverflow.com/questions/931207/is-there-a-jquery-autogrow-plugin-for-text-fields
-  
-function growField(input, val, comfortZone) {
-  var minWidth = 35,
-      maxWidth = 530,
-      testSubject = $('<tester/>').css({
-        position: 'absolute',
-        top: -9999,
-        left: -9999,
-        width: 'auto',
-        fontSize: input.css('fontSize'),
-        fontFamily: input.css('fontFamily'),
-        fontWeight: input.css('fontWeight'),
-        letterSpacing: input.css('letterSpacing'),
-        whiteSpace: 'nowrap'
-      });
-
-  testSubject.insertAfter(input);  
-  testSubject.html(val);
- 
-  // vrtxAdmin.log({msg: val});
-
-  var newWidth = Math.min(Math.max(testSubject.width() + comfortZone, minWidth), maxWidth),
-      currentWidth = input.width();
- 
-  // vrtxAdmin.log({msg:currentWidth + " " + newWidth});
-
-  if (newWidth !== currentWidth) {
-    input.width(newWidth);
-  }
 }
 
 /* ^ Vortex Admin enhancements */

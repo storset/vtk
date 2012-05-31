@@ -149,6 +149,12 @@ h2 {
   top: 0px;
   z-index: 9999;
   background: transparent url(images/sticky-title-buttons-bg.png) repeat-x bottom left; 
+  margin-left: -19px;
+}
+
+.vrtx-sticky-editor-title-submit-buttons #vrtx-editor-title-submit-buttons-inner-wrapper {
+  padding-left: 19px;
+  padding-right: 19px;
 }
 
 
@@ -258,6 +264,11 @@ div.caption textarea {
 .introImageAndCaption .header,
 #additional-content .header {
   display: none;
+}
+
+form.vrtx-program-frontpage #additional-content .header,
+form.vrtx-program-option-frontpage #additional-content .header {
+  display: block;
 }
 
 .introImageAndCaption label {

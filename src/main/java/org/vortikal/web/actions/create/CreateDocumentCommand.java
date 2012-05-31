@@ -36,9 +36,7 @@ import org.vortikal.web.actions.UpdateCancelCommand;
 public class CreateDocumentCommand extends UpdateCancelCommand {
 
     private String name = null;
-    private String title = null;
     private String sourceURI = null;
-    private boolean isIndex = false;
     
     
     public CreateDocumentCommand(String submitURL) {
@@ -52,14 +50,6 @@ public class CreateDocumentCommand extends UpdateCancelCommand {
     public void setName(String name)  {
         this.name = name;
     }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public void setTitle(String title)  {
-        this.title = title;
-    }
     
     public String getSourceURI() {
         return this.sourceURI;
@@ -68,24 +58,4 @@ public class CreateDocumentCommand extends UpdateCancelCommand {
     public void setSourceURI(String sourceURI)  {
         this.sourceURI = sourceURI;
     }
-
-    /**
-     * Gets the value of isIndex
-     * 
-     * @return the value of isIndex
-     */
-    public boolean getIsIndex() {
-        return this.isIndex;
-    }
-
-    /**
-     * Sets the value of isIndex
-     * 
-     * @param isIndex
-     *            Value to assign to this.isIndex
-     */
-    public void setIsIndex(boolean isIndex) {
-        this.isIndex = isIndex;
-    }
 }
-

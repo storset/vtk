@@ -46,12 +46,12 @@
 	  <tr class="vrtx-person-${personNr}">
         <td class="vrtx-person-listing-name">
           <#if src?has_content>
-            <a class="vrtx-image" href="${person.URI?html}"><img src="${thumbnail?html}" alt="${imageAlt}" /></a>
+            <a class="vrtx-image" href="${personListing.urls[person.URI]?html}"><img src="${thumbnail?html}" alt="${imageAlt}" /></a>
           </#if>
           <#if surname?has_content >
-            <a href="${person.URI?html}">${surname}<#if firstName?has_content && surname?has_content>, </#if>${firstName?html}</a>
+            <a href="${personListing.urls[person.URI]?html}">${surname}<#if firstName?has_content && surname?has_content>, </#if>${firstName?html}</a>
           <#else>
-            <a href="${person.URI?html}">${title?html}</a>
+            <a href="${personListing.urls[person.URI]?html}">${title?html}</a>
           </#if>
           <span>${position?html}</span>
         </td>

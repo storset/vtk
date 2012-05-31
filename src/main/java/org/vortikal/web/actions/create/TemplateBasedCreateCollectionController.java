@@ -43,8 +43,8 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
@@ -53,14 +53,13 @@ import org.vortikal.web.templates.ResourceTemplate;
 import org.vortikal.web.templates.ResourceTemplateManager;
 import org.vortikal.web.view.freemarker.MessageLocalizer;
 
-@SuppressWarnings("deprecation")
 public class TemplateBasedCreateCollectionController extends SimpleFormController {
 
     private static final String NORMAL_FOLDER_IDENTIFIER = "NORMAL_FOLDER";
 
     private ResourceTemplateManager templateManager;
+
     private PropertyTypeDefinition userTitlePropDef;
-    private PropertyTypeDefinition hiddenPropDef;
     private boolean downcaseCollectionNames = false;
     private Map<String, String> replaceNameChars;
 
@@ -90,7 +89,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         Path uri = requestContext.getResourceURI();
         String token = SecurityContext.getSecurityContext().getToken();
 
-        List<ResourceTemplate> templates = this.templateManager.getFolderTemplates(token, uri);
+        List<ResourceTemplate> templates = templateManager.getFolderTemplates(token, uri);
 
         // Set first available template as the selected
         if (!templates.isEmpty()) {
@@ -100,7 +99,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         return command;
     }
 
-    @SuppressWarnings( { "unchecked" })
+    @SuppressWarnings("rawtypes")
     protected Map referenceData(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Map<String, Object> model = new HashMap<String, Object>();
@@ -108,13 +107,12 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         Path uri = requestContext.getResourceURI();
         String token = requestContext.getSecurityToken();
 
-        List<ResourceTemplate> templates = this.templateManager.getFolderTemplates(token, uri);
+        List<ResourceTemplate> templates = templateManager.getFolderTemplates(token, uri);
 
         HttpServletRequest servletRequest = requestContext.getServletRequest();
         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
                 servletRequest);
         Map<String, String> tmp = new LinkedHashMap<String, String>();
-        Map<String, String> reverseTemplates = new HashMap<String, String>();
 
         String standardCollectionName = new MessageLocalizer("property.standardCollectionName", "Standard collection",
                 null, springRequestContext).get(null).toString();
@@ -122,20 +120,20 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         // puts normal folder lexicographically correct
         for (ResourceTemplate t : templates) {
             if (standardCollectionName.compareTo(t.getTitle()) < 1) {
-                tmp.put(standardCollectionName, NORMAL_FOLDER_IDENTIFIER);
-                reverseTemplates.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
+                tmp.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
             }
-            tmp.put(t.getTitle(), t.getUri().toString());
-            reverseTemplates.put(t.getUri().toString(), t.getTitle());
+            tmp.put(t.getUri().toString(), t.getTitle());
         }
 
-        if (!tmp.containsKey(standardCollectionName) && !tmp.isEmpty()) {
-            // if normal folder is lexicographically last
-            tmp.put(standardCollectionName, NORMAL_FOLDER_IDENTIFIER);
-            reverseTemplates.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
+        if (!tmp.containsKey(NORMAL_FOLDER_IDENTIFIER) && !tmp.isEmpty()) { // if
+                                                                            // normal
+                                                                            // folder
+                                                                            // is
+                                                                            // lexicographically
+                                                                            // last
+            tmp.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
         }
 
-        model.put("reverseTemplates", reverseTemplates);
         model.put("templates", tmp);
         return model;
     }
@@ -161,8 +159,8 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         }
         Path sourceURI = Path.fromString(source);
 
-        String title = createFolderCommand.getTitle();
-        String name = fixCollectionName(createFolderCommand.getName());
+        String title = createFolderCommand.getName();
+        String name = fixCollectionName(title);
 
         // Setting the destination to the current folder/uri
         Path destinationURI = uri.extend(name);
@@ -173,20 +171,12 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
 
         dest.removeProperty(this.userTitlePropDef);
 
-        if (title == null)
-            title = name.substring(0, 1).toUpperCase() + name.substring(1);
-
-        Property titleProp = this.userTitlePropDef.createProperty();
-        titleProp.setStringValue(title);
-        dest.addProperty(titleProp);
-
-        // hiddenPropDef can only be true or unset.
-        if (createFolderCommand.getHidden()) {
-            Property hiddenProp = this.hiddenPropDef.createProperty();
-            hiddenProp.setBooleanValue(true);
-            dest.addProperty(hiddenProp);
+        if (!title.equals(name)) {
+            title = title.substring(0, 1).toUpperCase() + title.substring(1);
+            Property titleProp = this.userTitlePropDef.createProperty();
+            titleProp.setStringValue(title);
+            dest.addProperty(titleProp);
         }
-
         repository.store(token, dest);
         createFolderCommand.setDone(true);
     }
@@ -194,32 +184,20 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
     private void createNewFolder(Object command, Path uri, RequestContext requestContext) throws Exception {
         CreateCollectionCommand createCollectionCommand = (CreateCollectionCommand) command;
 
-        String title = createCollectionCommand.getTitle();
-        String name = fixCollectionName(createCollectionCommand.getName());
+        String title = createCollectionCommand.getName();
+        String name = fixCollectionName(title);
         Path newURI = uri.extend(name);
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
         Resource collection = repository.createCollection(token, newURI);
 
-        if (title == null)
-            title = name.substring(0, 1).toUpperCase() + name.substring(1);
-
-        Property titleProp = this.userTitlePropDef.createProperty();
-        titleProp.setStringValue(title);
-        collection.addProperty(titleProp);
-
-        // hiddenPropDef can only be true or not set.
-        if (createCollectionCommand.getHidden()) {
-            Property hiddenProp = this.hiddenPropDef.createProperty();
-            hiddenProp.setBooleanValue(true);
-            collection.addProperty(hiddenProp);
+        if (!title.equals(name)) {
+            title = title.substring(0, 1).toUpperCase() + title.substring(1);
+            Property titleProp = this.userTitlePropDef.createProperty();
+            titleProp.setStringValue(title);
+            collection.addProperty(titleProp);
+            repository.store(token, collection);
         }
-
-        repository.store(token, collection);
-    }
-
-    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
-        this.hiddenPropDef = hiddenPropDef;
     }
 
     public void setTemplateManager(ResourceTemplateManager templateManager) {
@@ -264,14 +242,11 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             errors.rejectValue("name", "manage.create.collection.invalid.name", "This is an invalid collection name");
             return;
         }
-        
         name = fixCollectionName(name);
-        
         if (name.isEmpty()) {
             errors.rejectValue("name", "manage.create.collection.invalid.name", "This is an invalid collection name");
             return;
         }
-        
         Path newURI;
         try {
             newURI = uri.extend(name);
@@ -280,7 +255,8 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             return;
         }
 
-        if (repository.exists(token, newURI)) {
+        boolean exists = repository.exists(token, newURI);
+        if (exists) {
             errors.rejectValue("name", "manage.create.collection.exists", "A collection with this name already exists");
             return;
         }

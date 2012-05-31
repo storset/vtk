@@ -45,7 +45,7 @@ body {
   padding: 0;
   background-color: #f8f8f8;
   color: #363534;
-  font: normal 81.25%/1.3 Arial, sans-serif;
+  font: normal 81.25%/1.3 Arial, Helvetica, sans-serif;
   text-align: center;
   min-width: 1014px;
 }
@@ -1235,6 +1235,8 @@ span.vrtx-help-step-by-step-cmd {
   margin-top: 10px;
 }
 
+/* For VTK-2820 in v3.8
+
 .vrtx-admin-form .vrtx-admin-label {
   margin-bottom: 5px;
   margin-top: 10px;
@@ -1252,10 +1254,16 @@ span.vrtx-help-step-by-step-cmd {
   background: transparent url("images/line-dotted-tighter.gif") repeat-x scroll left bottom;
   margin-bottom: 15px;
   padding-bottom: 15px;
+  position: relative;
+}
+
+.vrtx-admin-form #createDocumentService-form .radio-buttons input,
+.vrtx-admin-form #createCollectionService-form .radio-buttons input {
+  margin-right: 4px;
 }
 
 .vrtx-admin-form .radioDescription {
-  margin: 2px 0 8px 18px;
+  margin: 2px 0 8px 22px;
 }
 
 .vrtx-admin-form #initChangeTemplate,
@@ -1268,9 +1276,9 @@ span.vrtx-help-step-by-step-cmd {
   color: #777 !important;
 }
 
-.vrtx-admin-form #vrtx-textfield-file-name.replaced input,
-.vrtx-admin-form #vrtx-textfield-collection-name.replaced input,
-.vrtx-admin-form #vrtx-textfield-file-type.replaced {
+.vrtx-admin-form #vrtx-textfield-file-name.file-name-from-title input,
+.vrtx-admin-form #vrtx-textfield-collection-name.file-name-from-title input,
+.vrtx-admin-form #vrtx-textfield-file-type.file-name-from-title {
   color: #555;
 }
 
@@ -1309,6 +1317,7 @@ span.vrtx-help-step-by-step-cmd {
   float: left;
   margin: 1px 6px 0 0;
 }
+*/
 
 /* ^ Tab forms */
 
@@ -2121,21 +2130,25 @@ table.resourceInfo.revisions tr:nth-child(even) td {
 
 /* 3.7 Messages */
 
-div.message,
-div.infomessage {
+#app-content > div.message,
+#app-content > div.infomessage {
   background-color: #fff;
   border: 1px solid #d9d9d9;
   padding: 12px 14px 11px 14px;
   margin: 0 0 25px 0;
 }
 
-div.infomessage,
-div.errormessage {
+#app-content > div.infomessage,
+#app-content > div.errormessage {
   padding-left: 46px;
 }
 
-div.infomessage {
+#app-content > div.infomessage {
   background: #fff url(images/info.png) no-repeat 14px 8px;
+}
+
+#app-content > div.errormessage {
+  background: #fff url(images/error.gif) no-repeat 14px 8px;
 }
 
 #vrtx-compat-icon {
@@ -2144,10 +2157,6 @@ div.infomessage {
   width: 27px;
   height: 22px;
   margin: -10px 0 0 0;
-}
- 
-div.errormessage {
-  background: #fff url(images/error.gif) no-repeat 14px 8px;
 }
 
 #system-message-wrapper {
@@ -2362,8 +2371,19 @@ div.vrtx-admin-form {
   margin-left: 7px;
 }
 
-/* Datepicker */
+/* jQuery UI datepicker, accordion etc. */
+
 .ui-widget {
+  font-size: 1em !important;
+}
+
+.ui-widget,
+.ui-widget input, .ui-widget select,
+.ui-widget textarea, .ui-widget button {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.ui-widget.ui-datepicker {
   font-size: 0.9em !important;
 }
 

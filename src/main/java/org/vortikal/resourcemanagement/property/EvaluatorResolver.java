@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
@@ -71,6 +72,7 @@ public class EvaluatorResolver {
     // XXX Reconsider this whole setup. No good implementation.
     private ExternalServiceInvoker serviceInvoker;
     private HtmlDigester htmlDigester;
+    private LocaleResolver localeResolver;
 
 
     public PropertyEvaluator createPropertyEvaluator(PropertyDescription desc,
@@ -306,8 +308,8 @@ public class EvaluatorResolver {
                 return Boolean.valueOf(operator.equals(obj));
             case LOCALIZED:
                 RequestContext requestContext = RequestContext.getRequestContext();
-                HttpServletRequest request = requestContext.getServletRequest(); 
-                Locale locale = RequestContextUtils.getLocale(request);
+                HttpServletRequest request = requestContext.getServletRequest();                
+                Locale locale = localeResolver.resolveLocale(request);
                 return resourceDesc.getLocalizedMsg(propValue, locale, null);
             default:
                 return null;
@@ -430,10 +432,10 @@ public class EvaluatorResolver {
     public void setHtmlDigester(HtmlDigester htmlDigester) {
         this.htmlDigester = htmlDigester;
     }
-    /*
+    
     @Required
     public void setLocaleResolver(LocaleResolver localeResolver) {
         this.localeResolver = localeResolver;
     }
-    */
+
 }

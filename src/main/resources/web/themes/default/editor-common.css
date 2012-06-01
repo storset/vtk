@@ -111,10 +111,6 @@ h2 {
 
 /* Sticky title and editor save/cancel buttons */
 
-#vrtx-editor-title-submit-buttons {
-  padding-bottom: 20px;
-}
-
 .property-item.userTitle,
 .vrtx-string.title,
 .vrtx-string.name,
@@ -122,6 +118,11 @@ h2 {
 .vrtx-string.username,
 .vrtx-string.typeToDisplay {
   margin-top: 0px;
+}
+
+#vrtx-editor #editor {
+  padding-top: 20px;
+  background: transparent url("images/line-dotted.gif") repeat-x left top;
 }
 
 #vrtx-editor-title-submit-buttons-inner-wrapper {
@@ -135,6 +136,7 @@ h2 {
 
 #vrtx-editor-title-submit-buttons h2 {
   margin: 0;
+  background: none;
 }
 
 .submit-extra-buttons {
@@ -148,8 +150,14 @@ h2 {
   position: fixed;
   top: 0px;
   z-index: 9999;
-  background: transparent url(images/sticky-title-buttons-bg.png) repeat-x bottom left; 
   margin-left: -19px;
+  -webkit-box-shadow:  0px 7px 14px -8px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow:  0px 7px 14px -8px rgba(0, 0, 0, 0.5);
+  box-shadow:  0px 7px 14px -8px rgba(0, 0, 0, 0.5); 
+}
+
+.vrtx-sticky-editor-title-submit-buttons.ie9below {
+  /* TODO */
 }
 
 .vrtx-sticky-editor-title-submit-buttons #vrtx-editor-title-submit-buttons-inner-wrapper {

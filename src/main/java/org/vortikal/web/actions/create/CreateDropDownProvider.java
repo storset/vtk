@@ -48,7 +48,6 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.web.service.provider.ListResourceItem;
 
 public class CreateDropDownProvider {
 
@@ -56,7 +55,7 @@ public class CreateDropDownProvider {
     private Repository repository;
     private final int maxLimit = 500;
 
-    public List<ListResourceItem> buildSearchAndPopulateListResourceItems(String uri, String token) {
+    public List<Resource> buildSearchAndPopulateResources(String uri, String token) {
         AndQuery mainQuery = new AndQuery();
         if (uri.equals("")) {
             mainQuery.add(new UriDepthQuery(0));
@@ -70,45 +69,35 @@ public class CreateDropDownProvider {
         search.setLimit(maxLimit);
         ResultSet rs = searcher.execute(token, search);
 
-        List<ListResourceItem> items = populateListResourceItems(token, rs);
-        return items;
-    }
-
-    private List<ListResourceItem> populateListResourceItems(String token, ResultSet rs) {
         List<PropertySet> results = rs.getAllResults();
-        List<ListResourceItem> items = new ArrayList<ListResourceItem>();
+        List<Resource> items = new ArrayList<Resource>();
 
         for (PropertySet result : results) {
-            String rURI = result.getURI().toString();
-            String rName = result.getName();
-            String rTitle = "";
-            boolean rIsCollection = false;
-            boolean rHasChildren = false;
-
             try {
                 Resource r = this.repository.retrieve(token, result.getURI(), true);
-                if (r != null) {
-                    rTitle = r.getTitle();
-                    rIsCollection = r.isCollection();
-                    if (r.getChildURIs() != null) {
-                        if (!r.getChildURIs().isEmpty()) {
-                            AndQuery mainQuery = new AndQuery();
-                            mainQuery.add(new UriPrefixQuery(rURI));
-                            mainQuery.add(new UriDepthQuery(result.getURI().getDepth() + 1));
-                            mainQuery.add(new TypeTermQuery("collection", TermOperator.IN));
-                            Search search = new Search();
-                            search.setQuery(mainQuery);
-                            search.setLimit(1);
-                            if (searcher.execute(token, search).getTotalHits() > 0)
-                                rHasChildren = true;
-                        }
-                    }
-                }
+                items.add(r);
             } catch (Exception e) {
             }
-            items.add(new ListResourceItem(rURI, rName, rTitle, rIsCollection, rHasChildren));
         }
         return items;
+    }
+    
+    public boolean hasChildren(Resource r, String token) {
+    	if (r.getChildURIs() != null) {
+            if (!r.getChildURIs().isEmpty()) {
+                AndQuery mainQuery = new AndQuery();
+                mainQuery.add(new UriPrefixQuery(r.getURI().toString()));
+                mainQuery.add(new UriDepthQuery(r.getURI().getDepth() + 1));
+                mainQuery.add(new TypeTermQuery("collection", TermOperator.IN));
+                Search search = new Search();
+                search.setQuery(mainQuery);
+                search.setLimit(1);
+                if (searcher.execute(token, search).getTotalHits() > 0) {
+                	return true;
+                }
+            }
+        }
+    	return false;
     }
 
     public String getLocalizedTitle(HttpServletRequest request, String key, Object[] params) {

@@ -765,6 +765,10 @@ function changeTemplate(element, hasTitle) {
   
   growField(name, name.val(), 5, minWidth, 530);
   
+  var focusedTextField = $(".vrtx-admin-form input[type='text']:visible:first");
+  focusedTextField.focus();
+  setCaretToPos(focusedTextField[0], focusedTextField.val().length);
+  
   if(CREATE_RESOURCE_REPLACE_TITLE) {
     $("#vrtx-textfield-file-name").addClass("file-name-from-title");
     $("#vrtx-textfield-file-type").addClass("file-name-from-title");

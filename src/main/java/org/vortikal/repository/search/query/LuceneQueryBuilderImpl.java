@@ -30,6 +30,7 @@
  */
 package org.vortikal.repository.search.query;
 
+import org.apache.lucene.document.Fieldable;
 import static org.vortikal.repository.search.query.TermOperator.EQ;
 import static org.vortikal.repository.search.query.TermOperator.NE;
 
@@ -322,7 +323,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         @Override
         public FieldSelectorResult accept(String fieldName) {
             if (FieldNames.STORED_ID_FIELD_NAME == fieldName) { // Interned string comparison OK
-                return FieldSelectorResult.LOAD;
+                return FieldSelectorResult.LOAD_AND_BREAK;
             } 
                 
             return FieldSelectorResult.NO_LOAD;
@@ -338,7 +339,7 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
                                                 uri.toString()));
             
             if (td.next()) {
-                Field field= reader.document(td.doc(), ID_FIELD_SELECTOR).getField(
+                Fieldable field= reader.document(td.doc(), ID_FIELD_SELECTOR).getFieldable(
                                             FieldNames.STORED_ID_FIELD_NAME);
                 
                 return this.fieldValueMapper.getIntegerFromStoredBinaryField(field);

@@ -48,7 +48,7 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.web.actions.report.subresource.SubResource;
+import org.vortikal.web.report.subresource.SubResource;
 
 public class CreateDropDownProvider {
 

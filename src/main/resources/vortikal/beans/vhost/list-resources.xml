@@ -2,27 +2,26 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-  <bean id="subresource.retrieveService" class="org.vortikal.web.service.ServiceImpl">
+  <bean id="listResources.retrieveService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
     <property name="order" value="-9999" />
     <property name="assertions">
       <list>
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="service" />
-          <property name="parameterValue" value="subresource-retrieve" />
+          <property name="parameterValue" value="list-resources-retrieve" />
         </bean>
       </list>
     </property>
-    <property name="handler" ref="subresource.handler" />
+    <property name="handler" ref="listResources.handler" />
   </bean>
 
-  <bean id="subresource.handler" class="org.vortikal.web.service.subresource.SubResourceJSONService">
-    <property name="provider" ref="subresource.provider" />
+  <bean id="listResources.handler" class="org.vortikal.web.service.ListResourcesService">
+    <property name="provider" ref="listResources.provider" />
     <property name="permissionsService" ref="permissionsService" />
   </bean>
   
-  <!-- TODO: move to vortikal.repository? -->
-  <bean id="subresource.provider" class="org.vortikal.web.actions.report.subresource.SubResourcePermissionsProvider">
+  <bean id="listResources.provider" class="org.vortikal.web.service.provider.ListResourcesProvider">
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="repository" ref="repository" />
   </bean>

@@ -28,24 +28,24 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.report;
+package org.vortikal.web.report;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Resource;
 
-public class CollectionStructureReporter extends AbstractReporter {
+public interface Reporter {
 
-	public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request) {
-	    
-	    Map<String, Object> result = new HashMap<String, Object>();
-	    
-		result.put("uri", currentResource.getURI().toString());
+    public static final String REPORT_TYPE_PARAM = "report-type";
+    
+    public boolean isEnabled();
 
-		return result;
-	}
-	
+    public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request);
+
+    public String getName();
+
+    public String getViewName();
+
 }

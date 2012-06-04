@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.service.subresource;
+package org.vortikal.web.service;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -47,14 +47,12 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.actions.report.subresource.SubResourcePermissions;
-import org.vortikal.web.actions.report.subresource.SubResourcePermissionsProvider;
-import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
+import org.vortikal.web.report.subresource.SubResourcePermissions;
+import org.vortikal.web.service.provider.ListResourcesProvider;
 
-public class SubResourceJSONService implements Controller, InitializingBean {
+public class ListResourcesService implements Controller, InitializingBean {
     
-    private SubResourcePermissionsProvider provider;
+    private ListResourcesProvider provider;
     private Service permissionsService;
       
     @Override
@@ -114,12 +112,12 @@ public class SubResourceJSONService implements Controller, InitializingBean {
 
             title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + name + "</strong>");
             if (sr.isInheritedAcl()) {
-              title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.inherited-permissions", null) + " (<a href=&quot;" + uriService
-                         + "&quot;>" + provider.getLocalizedTitle(request, "report.collection-structure.edit", null)
+              title.append(" " + provider.getLocalizedTitle(request, "report.list-resources.inherited-permissions", null) + " (<a href=&quot;" + uriService
+                         + "&quot;>" + provider.getLocalizedTitle(request, "report.list-resources.edit", null)
                          + "</a>)</span><span class=&quot;inherited-permissions&quot;>");
             } else {
-              title.append(" " + provider.getLocalizedTitle(request, "report.collection-structure.own-permissions", null) + " (<a href=&quot;" + uriService
-                         + "&quot;>" + provider.getLocalizedTitle(request, "report.collection-structure.edit", null) + "</a>)</span>");
+              title.append(" " + provider.getLocalizedTitle(request, "report.list-resources.own-permissions", null) + " (<a href=&quot;" + uriService
+                         + "&quot;>" + provider.getLocalizedTitle(request, "report.list-resources.edit", null) + "</a>)</span>");
               listClasses = "not-inherited";
             }
             
@@ -134,7 +132,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
             title.append("<tr><td>" + provider.getLocalizedTitle(request, "permissions.privilege.read-write", null) + ":</td><td>" + write + "</td></tr>");
             
             String admin = sr.getAdmin().isEmpty() ? notAssigned : sr.getAdmin();
-            title.append("<tr><td>" + provider.getLocalizedTitle(request, "report.collection-structure.admin-permission", null) + ":</td><td>" + admin + "</td></tr>");
+            title.append("<tr><td>" + provider.getLocalizedTitle(request, "report.list-resources.admin-permission", null) + ":</td><td>" + admin + "</td></tr>");
             
             title.append("</tbody></table>");
             
@@ -167,7 +165,7 @@ public class SubResourceJSONService implements Controller, InitializingBean {
     }
 
     @Required
-    public void setProvider(SubResourcePermissionsProvider provider) {
+    public void setProvider(ListResourcesProvider provider) {
         this.provider = provider;
     }
     

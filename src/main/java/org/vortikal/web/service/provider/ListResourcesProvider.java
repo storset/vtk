@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.report.subresource;
+package org.vortikal.web.service.provider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,14 +56,15 @@ import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
+import org.vortikal.web.report.subresource.SubResourcePermissions;
 
-public class SubResourcePermissionsProvider {
+public class ListResourcesProvider {
 
     private Searcher searcher;
     private Repository repository;
     private final int maxLimit = 500;
 
-    private static Log logger = LogFactory.getLog(SubResourcePermissionsProvider.class);
+    private static Log logger = LogFactory.getLog(ListResourcesProvider.class);
 
 
     public List<SubResourcePermissions> buildSearchAndPopulateSubresources(String uri, String token,

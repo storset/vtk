@@ -76,7 +76,7 @@
   
   <import resource="link-check.xml" />
   
-  <import resource="subresource.xml" />
+  <import resource="list-resources.xml" />
   
   <import resource="tags/tags.xml" />
 

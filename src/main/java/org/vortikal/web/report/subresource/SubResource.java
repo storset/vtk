@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, University of Oslo, Norway
+/* Copyright (c) 2011, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,24 +28,40 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.report;
+package org.vortikal.web.report.subresource;
 
-import java.util.Map;
+public class SubResource {
+    private String uri;
+    private String name;
+    private String title;
+    private boolean collection;
+    private boolean hasChildren;
 
-import javax.servlet.http.HttpServletRequest;
+    public SubResource(String uri, String name, String title, boolean collection, boolean hasChildren) {
+        this.uri = uri;
+        this.name = name;
+        this.title = title;
+        this.collection = collection;
+        this.hasChildren = hasChildren;
+    }
 
-import org.vortikal.repository.Resource;
+    public String getUri() {
+        return this.uri;
+    }
 
-public interface Reporter {
+    public String getName() {
+        return this.name;
+    }
 
-    public static final String REPORT_TYPE_PARAM = "report-type";
-    
-    public boolean isEnabled();
+    public String getTitle() {
+        return this.title;
+    }
 
-    public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request);
+    public boolean isCollection() {
+        return this.collection;
+    }
 
-    public String getName();
-
-    public String getViewName();
-
+    public boolean hasChildren() {
+        return this.hasChildren;
+    }
 }

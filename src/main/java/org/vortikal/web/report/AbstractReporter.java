@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, University of Oslo, Norway
+/* Copyright (c) 2010, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,40 +28,56 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.report.subresource;
+package org.vortikal.web.report;
 
-public class SubResource {
-    private String uri;
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.search.Searcher;
+
+public abstract class AbstractReporter implements Reporter {
+    
+    public static final int DEFAULT_SEARCH_LIMIT = 100;
+
     private String name;
-    private String title;
-    private boolean collection;
-    private boolean hasChildren;
-
-    public SubResource(String uri, String name, String title, boolean collection, boolean hasChildren) {
-        this.uri = uri;
-        this.name = name;
-        this.title = title;
-        this.collection = collection;
-        this.hasChildren = hasChildren;
-    }
-
-    public String getUri() {
-        return this.uri;
-    }
+    private String viewName;
+    protected Searcher searcher;
+    protected Repository repository;
+    private boolean enabled = true;
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
-    public String getTitle() {
-        return this.title;
+    @Required
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public boolean isCollection() {
-        return this.collection;
+    public String getViewName() {
+        return viewName;
     }
 
-    public boolean hasChildren() {
-        return this.hasChildren;
+    @Required
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
+
+    @Required
+    public void setSearcher(Searcher searcher) {
+        this.searcher = searcher;
+    }
+
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+    
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+    
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

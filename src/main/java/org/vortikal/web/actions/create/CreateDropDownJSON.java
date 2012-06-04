@@ -48,7 +48,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.actions.report.subresource.SubResource;
+import org.vortikal.web.report.subresource.SubResource;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 

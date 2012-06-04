@@ -35,11 +35,11 @@
   </bean>
 
   <bean id="abstractReportHandler" abstract="true"
-    class="org.vortikal.web.actions.report.ReportHandler" parent="repositoryAware">
+    class="org.vortikal.web.report.ReportHandler" parent="repositoryAware">
     <property name="viewName" value="report" />
     <property name="primaryReporters">
       <list>
-        <ref bean="collectionStructureReporter" />
+        <ref bean="listResourcesReporter" />
         <ref bean="diagramReport" />
         <ref bean="myDocumentsReporter" />
         <ref bean="brokenLinksReport" />
@@ -83,22 +83,22 @@
   <!-- Default report handler -->
   <bean id="reportHandler" parent="abstractReportHandler" />
 
-  <bean id="reporter" abstract="true" class="org.vortikal.web.actions.report.AbstractReporter" parent="repositoryAware">
+  <bean id="reporter" abstract="true" class="org.vortikal.web.report.AbstractReporter" parent="repositoryAware">
     <property name="searcher" ref="systemIndexSearcher" />
   </bean>
 
-  <bean id="collectionStructureReporter" class="org.vortikal.web.actions.report.CollectionStructureReporter"
+  <bean id="listResourcesReporter" class="org.vortikal.web.report.ListResourcesReporter"
     parent="reporter">
-    <property name="name" value="collection-structure" />
-    <property name="viewName" value="collectionStructure" />
+    <property name="name" value="list-resources" />
+    <property name="viewName" value="listResources" />
   </bean>
 
-  <bean id="diagramReport" class="org.vortikal.web.actions.report.DiagramReport" parent="reporter">
+  <bean id="diagramReport" class="org.vortikal.web.report.DiagramReport" parent="reporter">
     <property name="name" value="diagram" />
     <property name="viewName" value="diagramReport" />
   </bean>
 
-  <bean id="brokenLinksReport" class="org.vortikal.web.actions.report.BrokenLinksReport" parent="reporter">
+  <bean id="brokenLinksReport" class="org.vortikal.web.report.BrokenLinksReport" parent="reporter">
     <property name="name" value="broken-links" />
     <property name="manageService" ref="manageService" />
     <property name="reportService" ref="reportService" />
@@ -118,21 +118,21 @@
     <property name="enabled" value="${report.brokenLinks.enabled}" />
   </bean>
 
-  <bean id="myDocumentsReporter" class="org.vortikal.web.actions.report.MyDocumentsReporter" parent="documentReporter">
+  <bean id="myDocumentsReporter" class="org.vortikal.web.report.MyDocumentsReporter" parent="documentReporter">
     <property name="name" value="my-documents" />
     <property name="createdByPropDef" ref="createdByPropDef" />
     <property name="sortPropDef" ref="creationTimePropDef" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="documentReporter" abstract="true" class="org.vortikal.web.actions.report.DocumentReporter" parent="reporter">
+  <bean id="documentReporter" abstract="true" class="org.vortikal.web.report.DocumentReporter" parent="reporter">
     <property name="manageService" ref="manageService" />
     <property name="reportService" ref="reportService" />
     <property name="backURL" value="0" />
     <property name="viewName" value="documentReport" />
   </bean>
 
-  <bean id="lastModifiedReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="lastModifiedReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="last-modified" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -140,7 +140,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="webpageReporter" class="org.vortikal.web.actions.report.WebpageReporter" parent="documentReporter">
+  <bean id="webpageReporter" class="org.vortikal.web.report.WebpageReporter" parent="documentReporter">
     <property name="name" value="webpageReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -148,7 +148,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="otherReporter" class="org.vortikal.web.actions.report.OtherReporter" parent="documentReporter">
+  <bean id="otherReporter" class="org.vortikal.web.report.OtherReporter" parent="documentReporter">
     <property name="name" value="otherReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -156,7 +156,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="webOtherReporter" class="org.vortikal.web.actions.report.WebOtherReporter" parent="documentReporter">
+  <bean id="webOtherReporter" class="org.vortikal.web.report.WebOtherReporter" parent="documentReporter">
     <property name="name" value="webOtherReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -164,7 +164,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="imageReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="imageReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="imageReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -173,7 +173,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="audioReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="audioReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="audioReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -182,7 +182,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="videoReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="videoReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="videoReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -191,7 +191,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="pdfReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="pdfReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="pdfReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -200,7 +200,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="docReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="docReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="docReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -209,7 +209,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="pptReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="pptReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="pptReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -218,7 +218,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="xlsReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="xlsReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="xlsReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -227,7 +227,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="textReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="textReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="textReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -237,7 +237,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="frontpageReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="frontpageReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="frontpageReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -247,7 +247,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="folderReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="folderReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="folderReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -256,7 +256,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="fileReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="fileReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="fileReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -265,7 +265,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="structured-articleReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="structured-articleReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="structured-articleReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -274,7 +274,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="structured-eventReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="structured-eventReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="structured-eventReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -283,7 +283,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="personReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="personReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="personReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -292,7 +292,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="structured-projectReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="structured-projectReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="structured-projectReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -301,7 +301,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="research-groupReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="research-groupReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="research-groupReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -310,7 +310,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="organizational-unitReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="organizational-unitReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="organizational-unitReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -319,7 +319,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="contact-supervisorReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="contact-supervisorReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="contact-supervisorReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -328,7 +328,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="managed-xmlReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="managed-xmlReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="managed-xmlReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -337,7 +337,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="htmlReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="htmlReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="htmlReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -346,7 +346,7 @@
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>
 
-  <bean id="phpReporter" class="org.vortikal.web.actions.report.LastModifiedReporter" parent="documentReporter">
+  <bean id="phpReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
     <property name="name" value="phpReporter" />
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
@@ -359,7 +359,7 @@
     <property name="views">
       <map>
         <entry key="report" value-ref="reportView" />
-        <entry key="collectionStructure" value-ref="collectionStructureView" />
+        <entry key="listResources" value-ref="listResourcesView" />
         <entry key="documentReport" value-ref="documentReportView" />
         <entry key="diagramReport" value-ref="diagramReportView" />
         <entry key="brokenLinksReport" value-ref="brokenLinksReportView" />
@@ -385,8 +385,8 @@
     </property>
   </bean>
 
-  <bean id="collectionStructureView" parent="freemarkerView">
-    <property name="url" value="pages/report/collection-structure-report.ftl" />
+  <bean id="listResourcesView" parent="freemarkerView">
+    <property name="url" value="pages/report/list-resources.ftl" />
     <property name="attributesMap">
       <map>
         <entry key="cssURLs">

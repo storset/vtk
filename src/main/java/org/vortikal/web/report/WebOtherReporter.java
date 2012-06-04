@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.report;
+package org.vortikal.web.report;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -45,7 +45,7 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 
-public class WebpageReporter extends DocumentReporter {
+public class WebOtherReporter extends DocumentReporter {
 
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition sortPropDef;
@@ -54,14 +54,20 @@ public class WebpageReporter extends DocumentReporter {
     @Override
     protected Search getSearch(String token, Resource currentResource, HttpServletRequest request) {
         AndQuery q = new AndQuery();
+        OrQuery orq = new OrQuery();
+        
+        orq.add(new TypeTermQuery("json-resource", TermOperator.IN));
+        orq.add(new TypeTermQuery("apt-resource", TermOperator.IN));
+        q.add(orq);
 
-        OrQuery query = new OrQuery();
-        query.add(new TypeTermQuery("apt-resource", TermOperator.IN));
-        query.add(new TypeTermQuery("php", TermOperator.IN));
-        query.add(new TypeTermQuery("html", TermOperator.IN));
-        query.add(new TypeTermQuery("managed-xml", TermOperator.IN));
-        query.add(new TypeTermQuery("json-resource", TermOperator.IN));
-        q.add(query);
+        q.add(new TypeTermQuery("structured-article", TermOperator.NI));
+        q.add(new TypeTermQuery("structured-event", TermOperator.NI));
+        q.add(new TypeTermQuery("person", TermOperator.NI));
+        q.add(new TypeTermQuery("structured-project", TermOperator.NI));
+        q.add(new TypeTermQuery("research-group", TermOperator.NI));
+        q.add(new TypeTermQuery("organizational-unit", TermOperator.NI));
+        q.add(new TypeTermQuery("contact-supervisor", TermOperator.NI));
+        q.add(new TypeTermQuery("frontpage", TermOperator.NI));
 
         /* In current resource but not in /vrtx. */
         q.add(new UriPrefixQuery(currentResource.getURI().toString(), false));

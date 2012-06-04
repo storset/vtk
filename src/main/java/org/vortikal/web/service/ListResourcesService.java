@@ -44,10 +44,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.repository.Path;
+import org.vortikal.repository.Resource;
 import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.service.provider.ListResourceItem;
 import org.vortikal.web.service.provider.ListResourcesProvider;
 
 public class ListResourcesService implements Controller, InitializingBean {
@@ -69,8 +68,8 @@ public class ListResourcesService implements Controller, InitializingBean {
         }
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
-        List<ListResourceItem> items = provider.buildSearchAndPopulateListResourceItems(uri, token, request);
-        writeResults(items, request, response);
+        List<Resource> resources = provider.buildSearchAndPopulateResources(uri, token, request);
+        writeResults(resources, request, response);
         return null;
     }
 
@@ -84,22 +83,22 @@ public class ListResourcesService implements Controller, InitializingBean {
         }
     }
     
-    private void writeResults(List<ListResourceItem> items, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    private void writeResults(List<Resource> resources, HttpServletRequest request, HttpServletResponse response) throws Exception {
         JSONArray list = new JSONArray();
-        for (ListResourceItem item : items) {
+        for (Resource r : resources) {
             JSONObject o = new JSONObject();
 
             String listClasses = "";
             String spanClasses = "";
             
             // Add classes
-            if (item.isCollection()) {
+            if (r.isCollection()) {
               spanClasses = "folder";
-              o.put("hasChildren", item.hasChildren());
+              o.put("hasChildren", r.getChildURIs() != null ? !r.getChildURIs().isEmpty() : false);
             } else {
               spanClasses = "file";
             }
-            if (item.isReadRestricted()) {
+            if (r.isReadRestricted()) {
               spanClasses += " restricted";
             } else {
               spanClasses += " allowed-for-all";
@@ -107,11 +106,11 @@ public class ListResourcesService implements Controller, InitializingBean {
             
             // Generate title
             StringBuilder title = new StringBuilder();
-            String name = HtmlUtil.escapeHtmlString(item.getName());
-            String uriService = permissionsService.constructURL(Path.fromString(item.getUri())).getPathRepresentation();
+            String name = HtmlUtil.escapeHtmlString(r.getName());
+            String uriService = permissionsService.constructURL(r.getURI()).getPathRepresentation();
 
             title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + name + "</strong>");
-            if (item.isInheritedAcl()) {
+            if (r.isInheritedAcl()) {
               title.append(" " + provider.getLocalizedTitle(request, "report.list-resources.inherited-permissions", null) + " (<a href=&quot;" + uriService
                          + "&quot;>" + provider.getLocalizedTitle(request, "report.list-resources.edit", null)
                          + "</a>)</span><span class=&quot;inherited-permissions&quot;>");
@@ -125,24 +124,26 @@ public class ListResourcesService implements Controller, InitializingBean {
             String notAssigned = provider.getLocalizedTitle(request, "permissions.not.assigned", null).toLowerCase();
             title.append("<table><tbody>");
             
-            String read = item.getRead().isEmpty() ? notAssigned : item.getRead();
+            String[] aclFormatted = provider.getAclFormatted(r, request);
+
+            String read = aclFormatted[0].isEmpty() ? notAssigned : aclFormatted[0];
             title.append("<tr><td>" + provider.getLocalizedTitle(request, "permissions.privilege.read", null) + ":</td><td>" + read + "</td></tr>");
             
-            String write = item.getWrite().isEmpty() ? notAssigned : item.getWrite();
+            String write = aclFormatted[1].isEmpty() ? notAssigned : aclFormatted[1];
             title.append("<tr><td>" + provider.getLocalizedTitle(request, "permissions.privilege.read-write", null) + ":</td><td>" + write + "</td></tr>");
             
-            String admin = item.getAdmin().isEmpty() ? notAssigned : item.getAdmin();
+            String admin = aclFormatted[2].isEmpty() ? notAssigned : aclFormatted[2];
             title.append("<tr><td>" + provider.getLocalizedTitle(request, "report.list-resources.admin-permission", null) + ":</td><td>" + admin + "</td></tr>");
             
             title.append("</tbody></table>");
             
-            if (item.isInheritedAcl()) {
+            if (r.isInheritedAcl()) {
               title.append("</span>"); 
             }
 
             // Add to JSON-object
             o.put("text", name);
-            o.put("uri", item.getUri());
+            o.put("uri", r.getURI().toString());
             o.put("title", title.toString());
             o.put("listClasses", listClasses);
             o.put("spanClasses", spanClasses);

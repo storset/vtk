@@ -39,13 +39,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
-import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
@@ -53,7 +51,6 @@ import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
@@ -66,7 +63,7 @@ public class ListResourcesProvider {
     private static Log logger = LogFactory.getLog(ListResourcesProvider.class);
 
 
-    public List<ListResourceItem> buildSearchAndPopulateListResourceItems(String uri, String token,
+    public List<Resource> buildSearchAndPopulateResources(String uri, String token,
             HttpServletRequest request) {
 
         // MainQuery (depth + 1 from uri and all resources)
@@ -84,102 +81,83 @@ public class ListResourcesProvider {
         
         ResultSet rs = searcher.execute(token, search);
 
-        List<ListResourceItem> items = populateListResourceItems(token, rs, request);
-        return items;
+        List<Resource> resources = populateListResources(token, rs, request);
+        return resources;
     }
 
 
-    private List<ListResourceItem> populateListResourceItems(String token, ResultSet rs, HttpServletRequest request) {
+    private List<Resource> populateListResources(String token, ResultSet rs, HttpServletRequest request) {
         List<PropertySet> results = rs.getAllResults();
-        List<ListResourceItem> items = new ArrayList<ListResourceItem>();
+        List<Resource> resources = new ArrayList<Resource>();
 
         for (PropertySet result : results) {
-            String rURI = result.getURI().toString();
-            String rName = result.getName();
-            String rTitle = "";
-            boolean rIsCollection = false;
-            boolean rIsReadRestricted = false;
-            boolean rIsInheritedAcl = false;
-            boolean rHasChildren = false;
-            String rRead = "";
-            String rReadWrite = "";
-            String rAdmin = "";
-
             try {
                 Resource r = this.repository.retrieve(token, result.getURI(), true);
                 if (r != null) {
-                    rTitle = r.getTitle();
-                    rIsCollection = r.isCollection();
-                    rIsReadRestricted = r.isReadRestricted();
-                    rIsInheritedAcl = r.isInheritedAcl();
-                    if(r.getChildURIs() != null) {
-                      rHasChildren = !r.getChildURIs().isEmpty();
-                    }
-                    Acl acl = r.getAcl();
-                    for (Privilege action : Privilege.values()) {
-                        String actionName = action.getName();
-                        Principal[] privilegedUsers = acl.listPrivilegedUsers(action);
-                        Principal[] privilegedGroups = acl.listPrivilegedGroups(action);
-                        Principal[] privilegedPseudoPrincipals = acl.listPrivilegedPseudoPrincipals(action);
-                        StringBuilder combined = new StringBuilder();
-                        int i = 0;
-                        int len = privilegedPseudoPrincipals.length + privilegedUsers.length + privilegedGroups.length;
-                        boolean all = false;
-
-                        for (Principal p : privilegedPseudoPrincipals) {
-                            String pseudo = this.getLocalizedTitle(request, "pseudoPrincipal." + p.getName(), null);
-                            if (p.getName() == PrincipalFactory.NAME_ALL) {
-                                all = true;
-                                combined.append(pseudo);
-                            }
-                            if ((len == 1 || i == len - 1) && !all) {
-                                combined.append(pseudo);
-                            } else if (!all) {
-                                combined.append(pseudo + ", ");
-                            }
-                            i++;
-                        }
-                        if (!all) {
-                            for (Principal p : privilegedUsers) {
-                                if (len == 1 || i == len - 1) {
-                                    combined.append(p.getDescription());
-                                } else {
-                                    combined.append(p.getDescription() + ", ");
-                                }
-                                i++;
-                            }
-                            for (Principal p : privilegedGroups) {
-                                if (len == 1 || i == len - 1) {
-                                    combined.append(p.getDescription());
-                                } else {
-                                    combined.append(p.getDescription() + ", ");
-                                }
-                                i++;
-                            }
-                        }
-                        if (actionName == "read") {
-                            rRead = combined.toString();
-                        } else if (actionName == "read-write") {
-                            rReadWrite = combined.toString();
-                        } else if (actionName == "all") {
-                            rAdmin = combined.toString();
-                        }
-                    }
-
+                  resources.add(r);
                 }
-            } catch (ResourceNotFoundException e) {
-                logger.error("ResourceNotFoundException " + e.getMessage());
-            } catch (AuthorizationException e) {
-                logger.error("AuthorizationException " + e.getMessage());
-            } catch (AuthenticationException e) {
-                logger.error("AuthenticationException " + e.getMessage());
             } catch (Exception e) {
                 logger.error("Exception " + e.getMessage());
             }
-            items.add(new ListResourceItem(rURI, rName, rTitle, rIsCollection, rHasChildren,
-                    rIsReadRestricted, rIsInheritedAcl, rRead, rReadWrite, rAdmin));
+            
         }
-        return items;
+        return resources;
+    }
+    
+    public String[] getAclFormatted(Resource r, HttpServletRequest request) {
+    	String[] aclFormatted = {"", "", ""}; // READ, READ_WRITE, ALL
+    	
+    	Acl acl = r.getAcl();
+        for (Privilege action : Privilege.values()) {
+            String actionName = action.getName();
+            Principal[] privilegedUsers = acl.listPrivilegedUsers(action);
+            Principal[] privilegedGroups = acl.listPrivilegedGroups(action);
+            Principal[] privilegedPseudoPrincipals = acl.listPrivilegedPseudoPrincipals(action);
+            StringBuilder combined = new StringBuilder();
+            int i = 0;
+            int len = privilegedPseudoPrincipals.length + privilegedUsers.length + privilegedGroups.length;
+            boolean all = false;
+
+            for (Principal p : privilegedPseudoPrincipals) {
+                String pseudo = this.getLocalizedTitle(request, "pseudoPrincipal." + p.getName(), null);
+                if (p.getName() == PrincipalFactory.NAME_ALL) {
+                    all = true;
+                    combined.append(pseudo);
+                }
+                if ((len == 1 || i == len - 1) && !all) {
+                    combined.append(pseudo);
+                } else if (!all) {
+                    combined.append(pseudo + ", ");
+                }
+                i++;
+            }
+            if (!all) {
+                for (Principal p : privilegedUsers) {
+                    if (len == 1 || i == len - 1) {
+                        combined.append(p.getDescription());
+                    } else {
+                        combined.append(p.getDescription() + ", ");
+                    }
+                    i++;
+                }
+                for (Principal p : privilegedGroups) {
+                    if (len == 1 || i == len - 1) {
+                        combined.append(p.getDescription());
+                    } else {
+                        combined.append(p.getDescription() + ", ");
+                    }
+                    i++;
+                }
+            }
+            if (actionName == "read") {
+            	aclFormatted[0] = combined.toString();
+            } else if (actionName == "read-write") {
+            	aclFormatted[1] = combined.toString();
+            } else if (actionName == "all") {
+            	aclFormatted[2] = combined.toString();
+            }
+        }
+        return aclFormatted;
     }
 
 

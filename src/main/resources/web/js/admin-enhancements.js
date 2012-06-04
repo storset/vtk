@@ -662,6 +662,12 @@ function createInteraction(bodyId, vrtxAdm, _$) {
     isIndexFile($("#vrtx-textfield-file-name input").attr("name"), $(this).attr("name"));
     e.stopPropagation();
   });
+  $(document).on("click", ".radio-buttons input", function(e) {
+    var focusedTextField = $(".vrtx-admin-form input[type='text']:visible:first");
+    if(!focusedTextField.val().length) { // Only focus when empty
+      focusedTextField.focus();
+    }
+  });    
 }
 
 function createFuncComplete() {
@@ -765,11 +771,6 @@ function changeTemplate(element, hasTitle) {
   
   growField(name, name.val(), 5, minWidth, 530);
   
-  var focusedTextField = $(".vrtx-admin-form input[type='text']:visible:first");
-  if(!focusedTextField.val().length) { // Only focus when empty
-    focusedTextField.focus();
-  }
-
   if(CREATE_RESOURCE_REPLACE_TITLE) {
     $("#vrtx-textfield-file-name").addClass("file-name-from-title");
     $("#vrtx-textfield-file-type").addClass("file-name-from-title");

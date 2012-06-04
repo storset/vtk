@@ -840,18 +840,19 @@ function disableReplaceTitle(nameBind) {
 function replaceInvalidChar(val) {
   val = val.toLowerCase();
   var replaceMap = {
-    " ":    "-",
-    "&":    "-",
-    ",":    "",
-    "'":    "-",
-    "\"":   "-",
-    "\\/":  "-",
-    "æ":    "e",
-    "ø":    "o",
-    "å":    "a",
-    "%":    "",
-    "#":    "",
-    "\\?":  ""
+    " ":     "-",
+    "&":     "-",
+    "'":     "-",
+    "\"":    "-",
+    "\\/":   "-",
+    "\\\\":  "-",
+    "æ":     "e",
+    "ø":     "o",
+    "å":     "a",
+    ",":     "",
+    "%":     "",
+    "#":     "",
+    "\\?":   ""
   };
 
   for (var key in replaceMap) {

@@ -48,7 +48,7 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.web.report.subresource.SubResource;
+import org.vortikal.web.service.provider.ListResourceItem;
 
 public class CreateDropDownProvider {
 
@@ -56,7 +56,7 @@ public class CreateDropDownProvider {
     private Repository repository;
     private final int maxLimit = 500;
 
-    public List<SubResource> buildSearchAndPopulateSubresources(String uri, String token) {
+    public List<ListResourceItem> buildSearchAndPopulateListResourceItems(String uri, String token) {
         AndQuery mainQuery = new AndQuery();
         if (uri.equals("")) {
             mainQuery.add(new UriDepthQuery(0));
@@ -70,13 +70,13 @@ public class CreateDropDownProvider {
         search.setLimit(maxLimit);
         ResultSet rs = searcher.execute(token, search);
 
-        List<SubResource> subresources = populateSubResource(token, rs);
-        return subresources;
+        List<ListResourceItem> items = populateListResourceItems(token, rs);
+        return items;
     }
 
-    private List<SubResource> populateSubResource(String token, ResultSet rs) {
+    private List<ListResourceItem> populateListResourceItems(String token, ResultSet rs) {
         List<PropertySet> results = rs.getAllResults();
-        List<SubResource> subresources = new ArrayList<SubResource>();
+        List<ListResourceItem> items = new ArrayList<ListResourceItem>();
 
         for (PropertySet result : results) {
             String rURI = result.getURI().toString();
@@ -106,9 +106,9 @@ public class CreateDropDownProvider {
                 }
             } catch (Exception e) {
             }
-            subresources.add(new SubResource(rURI, rName, rTitle, rIsCollection, rHasChildren));
+            items.add(new ListResourceItem(rURI, rName, rTitle, rIsCollection, rHasChildren));
         }
-        return subresources;
+        return items;
     }
 
     public String getLocalizedTitle(HttpServletRequest request, String key, Object[] params) {

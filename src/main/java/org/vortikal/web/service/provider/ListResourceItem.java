@@ -28,23 +28,42 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.report.subresource;
+package org.vortikal.web.service.provider;
 
-public class SubResource {
+public class ListResourceItem {
     private String uri;
     private String name;
     private String title;
     private boolean collection;
     private boolean hasChildren;
+    private boolean readRestricted = false;
+    private boolean inheritedAcl = true;
+    private String read;
+    private String write;
+    private String admin;
 
-    public SubResource(String uri, String name, String title, boolean collection, boolean hasChildren) {
+    public ListResourceItem(String uri, String name, String title, boolean collection, boolean hasChildren) {
         this.uri = uri;
         this.name = name;
         this.title = title;
         this.collection = collection;
         this.hasChildren = hasChildren;
     }
-
+    
+    public ListResourceItem(String uri, String name, String title, boolean collection, boolean hasChildren,
+            boolean readRestricted, boolean inheritedAcl, String read, String write, String admin) {
+        this.uri = uri;
+        this.name = name;
+        this.title = title;
+        this.collection = collection;
+        this.hasChildren = hasChildren;
+        this.readRestricted = readRestricted;
+        this.inheritedAcl = inheritedAcl;
+        this.read = read;
+        this.write = write;
+        this.admin = admin;
+    }
+    
     public String getUri() {
         return this.uri;
     }
@@ -64,4 +83,25 @@ public class SubResource {
     public boolean hasChildren() {
         return this.hasChildren;
     }
+
+    public boolean isReadRestricted() {
+        return this.readRestricted;
+    }
+
+    public boolean isInheritedAcl() {
+        return this.inheritedAcl;
+    }
+
+    public String getRead() {
+        return this.read;
+    }
+
+    public String getWrite() {
+        return this.write;
+    }
+
+    public String getAdmin() {
+        return this.admin;
+    }
+
 }

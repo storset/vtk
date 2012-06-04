@@ -56,7 +56,6 @@ import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
-import org.vortikal.web.report.subresource.SubResourcePermissions;
 
 public class ListResourcesProvider {
 
@@ -67,7 +66,7 @@ public class ListResourcesProvider {
     private static Log logger = LogFactory.getLog(ListResourcesProvider.class);
 
 
-    public List<SubResourcePermissions> buildSearchAndPopulateSubresources(String uri, String token,
+    public List<ListResourceItem> buildSearchAndPopulateListResourceItems(String uri, String token,
             HttpServletRequest request) {
 
         // MainQuery (depth + 1 from uri and all resources)
@@ -85,14 +84,14 @@ public class ListResourcesProvider {
         
         ResultSet rs = searcher.execute(token, search);
 
-        List<SubResourcePermissions> subresources = populateSubResources(token, rs, request);
-        return subresources;
+        List<ListResourceItem> items = populateListResourceItems(token, rs, request);
+        return items;
     }
 
 
-    private List<SubResourcePermissions> populateSubResources(String token, ResultSet rs, HttpServletRequest request) {
+    private List<ListResourceItem> populateListResourceItems(String token, ResultSet rs, HttpServletRequest request) {
         List<PropertySet> results = rs.getAllResults();
-        List<SubResourcePermissions> subresources = new ArrayList<SubResourcePermissions>();
+        List<ListResourceItem> items = new ArrayList<ListResourceItem>();
 
         for (PropertySet result : results) {
             String rURI = result.getURI().toString();
@@ -177,10 +176,10 @@ public class ListResourcesProvider {
             } catch (Exception e) {
                 logger.error("Exception " + e.getMessage());
             }
-            subresources.add(new SubResourcePermissions(rURI, rName, rTitle, rIsCollection, rHasChildren,
+            items.add(new ListResourceItem(rURI, rName, rTitle, rIsCollection, rHasChildren,
                     rIsReadRestricted, rIsInheritedAcl, rRead, rReadWrite, rAdmin));
         }
-        return subresources;
+        return items;
     }
 
 

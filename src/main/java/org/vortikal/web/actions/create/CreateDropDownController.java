@@ -48,11 +48,11 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.report.subresource.SubResource;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
+import org.vortikal.web.service.provider.ListResourceItem;
 
-public class CreateDropDownJSON implements Controller {
+public class CreateDropDownController implements Controller {
 
     private CreateDropDownProvider provider;
     private Service service;
@@ -72,8 +72,8 @@ public class CreateDropDownJSON implements Controller {
         }
 
         String token = RequestContext.getRequestContext().getSecurityToken();
-        List<SubResource> subresources = provider.buildSearchAndPopulateSubresources(uri, token);
-        writeResults(subresources, request, response, token);
+        List<ListResourceItem> items = provider.buildSearchAndPopulateListResourceItems(uri, token);
+        writeResults(items, request, response, token);
         return null;
     }
 
@@ -87,7 +87,7 @@ public class CreateDropDownJSON implements Controller {
         }
     }
 
-    private void writeResults(List<SubResource> subresources, HttpServletRequest request, HttpServletResponse response,
+    private void writeResults(List<ListResourceItem> items, HttpServletRequest request, HttpServletResponse response,
             String token) throws Exception {
         JSONArray list = new JSONArray();
 
@@ -97,10 +97,10 @@ public class CreateDropDownJSON implements Controller {
         else
             buttonText = "manage.place-here";
 
-        for (SubResource sr : subresources) {
+        for (ListResourceItem item : items) {
             JSONObject o = new JSONObject();
 
-            Path pURI = Path.fromString(sr.getUri());
+            Path pURI = Path.fromString(item.getUri());
             Resource resource = this.repository.retrieve(token, pURI, true);
             Principal principal = RequestContext.getRequestContext().getPrincipal();
 
@@ -118,9 +118,9 @@ public class CreateDropDownJSON implements Controller {
                 return;
             }
 
-            o.put("hasChildren", sr.hasChildren());
-            o.put("text", pURI.isRoot() ? repository.getId() : sr.getName());
-            o.put("uri", sr.getUri());
+            o.put("hasChildren", item.hasChildren());
+            o.put("text", pURI.isRoot() ? repository.getId() : item.getName());
+            o.put("uri", item.getUri());
             o.put("spanClasses", "folder");
             o.put("title", title);
 

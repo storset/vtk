@@ -151,7 +151,7 @@
  * @param path the name of the field to bind to
  * @param options a map (value=label) of all the available options
  * @param separator the html tag or other character list that should be used to
- *        separate each option.  Typically '&nbsp;' or '<br>'
+ *        separate each option. Typically '&nbsp;', '<br>' or in most cases '<li>'
  * @param attributes any additional attributes for the element (such as class
  *        or CSS styles or size
 -->
@@ -160,15 +160,16 @@
 <#macro formRadioButtons path options pre post descriptions=[] titles=[] names=[] cTN=false attributes="">
   <@spring.bind path/>
   <#list options?keys as key>
-  <#assign value = options[key]>
-  ${pre}
-  <input type="radio" name="${spring.status.expression}" id="${value}" value="${value}"
-    <#if spring.status.value?default("") == value>checked="checked"</#if> <#if (cTN && titles?has_content && titles[value]?exists)>onclick="changeTemplate('${key}', ${titles[value]?string})"</#if> ${attributes}
-  <@spring.closeTag/><label for="${value}"><#if names?has_content && names[value]?exists>${names[value]}<#else>${key}</#if></label>
-  <#if (descriptions?has_content && descriptions[value]?exists)>
-    <div class="radioDescription" id="${key}_description">${descriptions[value]}</div>
-  </#if>
-  ${post}
+    <#assign value = options[key]>
+    ${pre}
+    <input type="radio" name="${spring.status.expression}" id="${value}" value="${value}"
+      <#if spring.status.value?default("") == value>checked="checked"</#if> 
+      <#if (cTN && titles?has_content && titles[value]?exists)>onclick="changeTemplate('${key}', ${titles[value]?string})"</#if> ${attributes} <@spring.closeTag/>
+    <label for="${value}"><#if names?has_content && names[value]?exists>${names[value]}<#else>${key}</#if></label>
+    <#if (descriptions?has_content && descriptions[value]?exists)>
+      <div class="radioDescription" id="${key}_description">${descriptions[value]}</div>
+    </#if>
+    ${post}
   </#list>
 </#macro>
 

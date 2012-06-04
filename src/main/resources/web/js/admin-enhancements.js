@@ -60,6 +60,7 @@ function VrtxAdmin() {
   this.ua = navigator.userAgent.toLowerCase();
   this.isIE = this._$.browser.msie;
   this.browserVersion = this._$.browser.version;
+  this.isIE8 = this.isIE && this.browserVersion <= 8;
   this.isIE7 = this.isIE && this.browserVersion <= 7;
   this.isIE6 = this.isIE && this.browserVersion <= 6;
   this.isIE5OrHigher = this.isIE && this.browserVersion >= 5;
@@ -1262,15 +1263,22 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
     // TODO: also check minimum device height (with high density displays on new devices accounted for)
     if(titleSubmitButtons.length && !vrtxAdm.isIPhone) { // Turn off for iPhone. 
       var titleSubmitButtonsPos = titleSubmitButtons.offset();
+      if(vrtxAdm.isIE8) {
+        titleSubmitButtons.append("<span id='sticky-bg-ie8-below'></span>");
+      }
       _$(window).on("scroll", function() {
         if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
-          titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons"); 
+          if(!titleSubmitButtons.hasClass("vrtx-sticky-editor-title-submit-buttons")) {
+            titleSubmitButtons.addClass("vrtx-sticky-editor-title-submit-buttons");
+            _$("#contents").css("paddingTop", titleSubmitButtons.outerHeight(true) + "px");
+          }
           titleSubmitButtons.css("width", (_$("#main").outerWidth(true) - 2) + "px");
-          _$("#contents").css("paddingTop", titleSubmitButtons.outerHeight(true) + "px");
         } else {
-          titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
-          titleSubmitButtons.css("width", "auto");
-          _$("#contents").css("paddingTop", "0px");
+          if(titleSubmitButtons.hasClass("vrtx-sticky-editor-title-submit-buttons")) {
+            titleSubmitButtons.removeClass("vrtx-sticky-editor-title-submit-buttons");
+            titleSubmitButtons.css("width", "auto");
+            _$("#contents").css("paddingTop", "0px");
+          }
         }
       });
       _$(window).on("resize", function() {

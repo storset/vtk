@@ -30,7 +30,7 @@
           <ul class="radio-buttons">
             <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", descriptions, titles, names, true />
           </ul>
-          <button id="initChangeTemplate" type="button" onclick="changeTemplate('${reverseTemplates[sourceURIBind]}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button>
+          <button id="initChangeTemplate" type="button" onclick="changeTemplate('${reverseTemplates[sourceURIBind]?html}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button>
           
           <#-- If POST is not AJAX (otherwise it would be a funcComplete() in completeAsyncForm()) -->
           <script type="text/javascript"><!--
@@ -61,24 +61,24 @@
          });
        // -->
        </script>
-      
+       
       <div id="vrtx-div-file-title">
         <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.title" default="Title" /></h4>
         <div class="vrtx-textfield" id="vrtx-textfield-file-title">
-          <input type="text" id="${titleBind}" name="${titleBind}" value="${newDocTitle}" size="40" />
+          <input type="text" id="${titleBind?html}" name="${titleBind?html}" value="${newDocTitle?html}" size="40" />
         </div>
       </div>
 
       <div id="vrtx-div-file-name">
         <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createDocumentService.filename" default="Filename" /></h4>
         <div class="vrtx-textfield" id="vrtx-textfield-file-name">
-          <input type="text" id="${nameBind}" name="${nameBind}" value="${newDocName}" size="15" />
+          <input type="text" id="${nameBind?html}" name="${nameBind?html}" value="${newDocName?html}" size="15" />
         </div>
       </div>
       <span id="vrtx-textfield-file-type"></span>
       <div class="vrtx-checkbox" id="vrtx-checkbox-is-index">
         <input type="checkbox"  id="${isIndexBind}" name="${isIndexBind}" <#if isIndex>checked="checked"</#if> />
-        <label for="${isIndexBind}"><@vrtx.msg code="actions.createDocumentService.index" default="Is index-page" /></label>
+        <label for="${isIndexBind?html}"><@vrtx.msg code="actions.createDocumentService.index" default="Is index-page" /></label>
         <abbr title="${vrtx.getMsg("actions.tooltip.isIndexPage")}" class="resource-prop-info"></abbr>
       </div>
 

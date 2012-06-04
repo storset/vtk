@@ -25,7 +25,7 @@
         <ul class="radio-buttons">
           <@vrtx.formRadioButtons "createCollectionForm.sourceURI", templates, "<li>", "</li>" />
         </ul>
-        <button id="initChangeTemplate" type="button" onclick="changeTemplate('${reverseTemplates[sourceURIBind]}', true)"></button> 
+        <button id="initChangeTemplate" type="button" onclick="changeTemplate('${reverseTemplates[sourceURIBind]?html}', true)"></button> 
       </#if>
 
       <@spring.bind "createCollectionForm" + ".title" />
@@ -37,12 +37,12 @@
 
       <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.title" default="Title" /></h4>
       <div class="vrtx-textfield" id="vrtx-textfield-collection-title">
-        <input type="text" id="${titleBind}" name="${titleBind}" value="${newColTitle}" size="40" />
+        <input type="text" id="${titleBind?html}" name="${titleBind?html}" value="${newColTitle?html}" size="40" />
       </div>
 
       <h4 class="vrtx-admin-label"><@vrtx.msg code="actions.createCollectionService.collection-name" default="Folder name" /></h4>
       <div class="vrtx-textfield" id="vrtx-textfield-collection-name">
-        <input type="text" id="${nameBind}" name="${nameBind}" value="${newColName}" size="15"  />
+        <input type="text" id="${nameBind?html}" name="${nameBind?html}" value="${newColName?html}" size="15"  />
       </div>
 
       <@spring.bind "createCollectionForm" + ".hidden" />
@@ -50,7 +50,7 @@
       <@actionsLib.genErrorMessages spring.status.errorMessages />
 
       <div class="vrtx-checkbox" id="vrtx-checkbox-hide-from-navigation">
-        <input type="checkbox"  id="${hiddenBind}" name="${hiddenBind}" />
+        <input type="checkbox"  id="${hiddenBind?html}" name="${hiddenBind?html}" />
         <label for="hidden"><@vrtx.msg code="property.navigation:hidden" default="Hide from navigation" /></label>
         <abbr title="${vrtx.getMsg("actions.tooltip.hideFromNavigation")}" class="resource-prop-info"></abbr>
       </div>

@@ -260,12 +260,12 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
             return;
         }
 
+        name = fixCollectionName(name);
+
         if (name.contains("/")) {
             errors.rejectValue("name", "manage.create.collection.invalid.name", "This is an invalid collection name");
             return;
         }
-
-        name = fixCollectionName(name);
 
         if (name.isEmpty()) {
             errors.rejectValue("name", "manage.create.collection.invalid.name", "This is an invalid collection name");

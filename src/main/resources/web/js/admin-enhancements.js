@@ -841,7 +841,7 @@ function replaceInvalidChar(val) {
   var replaceMap = {
     " ":    "-",
     "&":    "-",
-    ",":    "-",
+    ",":    "",
     "'":    "-",
     "\"":   "-",
     "\\/":  "-",

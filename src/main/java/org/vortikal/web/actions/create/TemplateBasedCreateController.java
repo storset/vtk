@@ -30,21 +30,29 @@
  */
 package org.vortikal.web.actions.create;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.templates.ResourceTemplate;
@@ -57,6 +65,9 @@ public class TemplateBasedCreateController extends SimpleFormController {
     private boolean downcaseNames = false;
     private Map<String, String> replaceNameChars;
     private String cancelView;
+    private PropertyTypeDefinition descriptionPropDef;
+    private final String titlePlaceholder = "#title#";
+    private PropertyTypeDefinition[] removePropList;
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -83,13 +94,50 @@ public class TemplateBasedCreateController extends SimpleFormController {
 
         Map<String, Object> model = new HashMap<String, Object>();
         Path uri = requestContext.getResourceURI();
-        List<ResourceTemplate> l = templateManager.getDocumentTemplates(token, uri);
+        List<ResourceTemplate> l = this.templateManager.getDocumentTemplates(token, uri);
 
-        Map<String, String> templates = new LinkedHashMap<String, String>();
+        Map<String, String> templates = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, String> reverseTemplates = new HashMap<String, String>();
+        Map<String, String> descriptions = new HashMap<String, String>();
+        Map<String, Boolean> titles = new HashMap<String, Boolean>();
+        Map<String, String> names = new HashMap<String, String>();
+
+        Property dp;
+        Resource r;
+        boolean putName;
+        Repository repository = requestContext.getRepository();
         for (ResourceTemplate t : l) {
-            templates.put(t.getUri().toString(), t.getName());
+            putName = true;
+            r = repository.retrieve(token, t.getUri(), false);
+            if ((dp = r.getProperty(this.descriptionPropDef)) != null) {
+                String name = dp.getFormattedValue();
+
+                if (name.contains("|")) {
+                    if (name.indexOf('|') + 1 < name.length())
+                        descriptions.put(t.getUri().toString(), name.substring(name.indexOf('|') + 1));
+
+                    if ((name = name.substring(0, name.indexOf('|'))).length() > 0) {
+                        names.put(t.getUri().toString(), name);
+                        templates.put(name, t.getUri().toString());
+                        reverseTemplates.put(t.getUri().toString(), name);
+                        putName = false;
+                    }
+                } else
+                    descriptions.put(t.getUri().toString(), name);
+            }
+
+            titles.put(t.getUri().toString(), r.getTitle().equals(this.titlePlaceholder));
+
+            if (putName) {
+                templates.put(t.getName(), t.getUri().toString());
+                reverseTemplates.put(t.getUri().toString(), t.getName());
+            }
         }
         model.put("templates", templates);
+        model.put("reverseTemplates", reverseTemplates);
+        model.put("descriptions", descriptions);
+        model.put("titles", titles);
+        model.put("names", names);
         return model;
     }
 
@@ -113,8 +161,13 @@ public class TemplateBasedCreateController extends SimpleFormController {
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
 
-        String name = createDocumentCommand.getName();
-        if (null == name || "".equals(name.trim())) {
+        String name;
+        if (createDocumentCommand.getIsIndex())
+            name = "index";
+        else
+            name = createDocumentCommand.getName();
+
+        if (name == null || "".equals(name.trim())) {
             errors.rejectValue("name", "manage.create.document.missing.name",
                     "A name must be provided for the document");
             return;
@@ -124,12 +177,20 @@ public class TemplateBasedCreateController extends SimpleFormController {
             errors.rejectValue("name", "manage.create.document.invalid.name", "This is an invalid document name");
             return;
         }
+
         name = fixDocumentName(name);
 
         if (name.isEmpty()) {
             errors.rejectValue("name", "manage.create.document.invalid.name", "This is an invalid document name");
             return;
         }
+
+        // The location of the file that we will be copying
+        Path sourceURI = Path.fromString(createDocumentCommand.getSourceURI());
+
+        String filetype = sourceURI.toString().substring(sourceURI.toString().lastIndexOf('.'));
+        if (!name.endsWith(filetype))
+            name += filetype;
 
         Path destinationURI = uri.extend(name);
 
@@ -154,14 +215,52 @@ public class TemplateBasedCreateController extends SimpleFormController {
         // The location of the file that we will be copying
         Path sourceURI = Path.fromString(createDocumentCommand.getSourceURI());
 
-        String name = createDocumentCommand.getName();
+        String name;
+        if (createDocumentCommand.getIsIndex())
+            name = "index";
+        else
+            name = createDocumentCommand.getName();
+
         name = fixDocumentName(name);
+
+        String filetype = sourceURI.toString().substring(sourceURI.toString().lastIndexOf('.'));
+        if (!name.endsWith(filetype))
+            name += filetype;
+
         Path destinationURI = uri.extend(name);
 
         repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(repository.getInputStream(token,
+                destinationURI, false)));
+
+        String line, title = createDocumentCommand.getTitle();
+        if (title == null)
+            title = "";
+
+        String contentType = repository.retrieve(token, destinationURI, false).getContentType();
+        if (contentType.equals("application/json")) {
+            title = title.replaceAll("\"", "\\\\\"");
+        } else if (contentType.equals("text/html")) {
+            title = HtmlUtil.escapeHtmlString(title);
+        }
+        title = Matcher.quoteReplacement(title);
+
+        while ((line = reader.readLine()) != null) {
+            os.write(line.replaceAll(this.titlePlaceholder, title).getBytes());
+        }
+
+        Resource r = repository.storeContent(token, destinationURI, new ByteArrayInputStream(os.toByteArray()));
+
+        for (PropertyTypeDefinition ptd : this.removePropList)
+            r.removeProperty(ptd);
+
+        repository.store(token, r);
+
         createDocumentCommand.setDone(true);
 
-        model.put("resource", repository.retrieve(token, destinationURI, false));
+        model.put("resource", r);
 
         return new ModelAndView(getSuccessView(), model);
     }
@@ -175,8 +274,16 @@ public class TemplateBasedCreateController extends SimpleFormController {
         this.replaceNameChars = replaceNameChars;
     }
 
+    public void setRemovePropList(PropertyTypeDefinition[] removePropList) {
+        this.removePropList = removePropList;
+    }
+
     public void setCancelView(String cancelView) {
         this.cancelView = cancelView;
+    }
+
+    public void setDescriptionPropDef(PropertyTypeDefinition descriptionPropDef) {
+        this.descriptionPropDef = descriptionPropDef;
     }
 
     public void setDowncaseNames(boolean downcaseNames) {

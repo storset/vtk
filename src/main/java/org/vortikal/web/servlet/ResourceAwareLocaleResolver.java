@@ -76,6 +76,10 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
         }
     }
     
+    public Locale resolveResourceLocale(Resource resource) {
+        return resource.getContentLocale() != null ? resource.getContentLocale() : this.defaultLocale;
+    }
+    
 //    public Locale resolveResourceLocaleOld(Path uri) {
 //        RequestContext requestContext = RequestContext.getRequestContext();
 //        Locale locale = this.defaultLocale;

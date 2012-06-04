@@ -814,6 +814,12 @@
     <property name="commandName" value="createDocumentForm" />
     <property name="commandClass" value="org.vortikal.web.actions.create.CreateDocumentCommand" />
     <property name="downcaseNames" value="true" />
+    <property name="descriptionPropDef" ref="descriptionPropDef" />
+    <property name="removePropList">
+      <list>
+        <ref bean="descriptionPropDef" />
+      </list>
+    </property>
     <property name="replaceNameChars" ref="createResource.nameReplacementMap" />
     <property name="templateManager" ref="templates.resourceTemplateManager" />
   </bean>
@@ -857,6 +863,7 @@
     <property name="commandName" value="createCollectionForm" />
     <property name="commandClass" value="org.vortikal.web.actions.create.CreateCollectionCommand" />
     <property name="userTitlePropDef" ref="userTitlePropDef" />
+    <property name="hiddenPropDef" ref="hiddenPropDef" />
     <property name="downcaseCollectionNames" value="true" />
     <property name="templateManager" ref="templates.resourceTemplateManager" />
     <property name="replaceNameChars" ref="createResource.nameReplacementMap" />

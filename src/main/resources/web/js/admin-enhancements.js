@@ -727,7 +727,31 @@ function createFuncComplete() {
 }
 
 function changeTemplate(element, hasTitle) {
-  var isIndex = $("#isIndex").length && $("#isIndex").is(":checked");
+  var checked = $(".radio-buttons input:checked");
+  if(checked.length) {
+    var templateFile = checked.val();
+    if(templateFile.indexOf(".") !== -1) {
+      var fileType = $("#vrtx-textfield-file-type");
+      if(fileType.length) {
+        var fileTypeEnding = templateFile.split(".")[1];
+        fileType.text("." + fileTypeEnding);
+      }
+    }
+  }
+  var idx = $("#isIndex");
+  var isIndex = idx.length;
+  if(isIndex && fileTypeEnding !== "html") {
+    isIndex = false;
+    idx.parent().hide();
+    if(idx.is(":checked")) {
+      idx.removeAttr("checked");
+      isIndexFile($("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
+    }
+  } else if(isIndex) {
+    idx.parent().show();
+    isIndex = idx.is(":checked");
+  }
+
   var name = $("#name");
   
   if(hasTitle) {
@@ -741,16 +765,6 @@ function changeTemplate(element, hasTitle) {
   
   growField(name, name.val(), 5, minWidth, 530);
   
-  var checked = $(".radio-buttons input:checked");
-  if(checked.length) {
-    var templateFile = checked.val();
-    if(templateFile.indexOf(".") !== -1) {
-      var fileType = $("#vrtx-textfield-file-type");
-      if(fileType.length) {
-        fileType.text("." + templateFile.split(".")[1]);
-      }
-    }
-  }
   if(CREATE_RESOURCE_REPLACE_TITLE) {
     $("#vrtx-textfield-file-name").addClass("file-name-from-title");
     $("#vrtx-textfield-file-type").addClass("file-name-from-title");
@@ -819,17 +833,18 @@ function disableReplaceTitle(nameBind) {
 function replaceInvalidChar(val) {
   val = val.toLowerCase();
   var replaceMap = {
-    " ":   "-",
-    "&":   "-",
-    ",":   "-",
-    "'":   "-",
-    "\"":  "-",
-    "æ":   "e",
-    "ø":   "o",
-    "å":   "a",
-    "%":   "",
-    "#":   "",
-    "\\?": ""
+    " ":    "-",
+    "&":    "-",
+    ",":    "-",
+    "'":    "-",
+    "\"":   "-",
+    "\\/":  "-",
+    "æ":    "e",
+    "ø":    "o",
+    "å":    "a",
+    "%":    "",
+    "#":    "",
+    "\\?":  ""
   };
 
   for (var key in replaceMap) {

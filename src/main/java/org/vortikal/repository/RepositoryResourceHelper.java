@@ -232,7 +232,10 @@ public class RepositoryResourceHelper {
 
             if (rts == null) {
                 // Dead property, no resource type connected to it.
-                newResource.addProperty(suppliedProp);
+                // Preserve only if not inheritable (a tad paranoid, inheritable should never be set for dead props.)
+                if (!propDef.isInheritable()) {
+                    newResource.addProperty(suppliedProp);
+                }
             } else if (newResource.getProperty(propDef) == null) {
 
                 // If it hasn't been set for the new resource, check if zombie
@@ -243,8 +246,8 @@ public class RepositoryResourceHelper {
                         break;
                     }
                 }
-                if (zombie) {
-                    // Zombie property, preserve
+                if (zombie && !propDef.isInheritable()) {
+                    // Zombie property, preserve only if not inheritable.
                     newResource.addProperty(suppliedProp);
                 }
             }

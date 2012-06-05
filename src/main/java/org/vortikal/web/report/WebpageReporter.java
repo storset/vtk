@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.report;
+package org.vortikal.web.report;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,44 +40,39 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.SortFieldDirection;
 import org.vortikal.repository.search.SortingImpl;
 import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.PropertyTermQuery;
+import org.vortikal.repository.search.query.OrQuery;
 import org.vortikal.repository.search.query.TermOperator;
+import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
-import org.vortikal.security.Principal;
-import org.vortikal.security.SecurityContext;
 
-public class MyDocumentsReporter extends DocumentReporter {
+public class WebpageReporter extends DocumentReporter {
 
-    private PropertyTypeDefinition createdByPropDef;
+    private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition sortPropDef;
     private SortFieldDirection sortOrder;
 
     @Override
     protected Search getSearch(String token, Resource currentResource, HttpServletRequest request) {
+        AndQuery q = new AndQuery();
 
-        Principal currentUser = SecurityContext.getSecurityContext().getPrincipal();
-        if (currentUser == null) {
-            throw new IllegalStateException("Current user cannot be null");
-        }
+        OrQuery query = new OrQuery();
+        query.add(new TypeTermQuery("apt-resource", TermOperator.IN));
+        query.add(new TypeTermQuery("php", TermOperator.IN));
+        query.add(new TypeTermQuery("html", TermOperator.IN));
+        query.add(new TypeTermQuery("managed-xml", TermOperator.IN));
+        query.add(new TypeTermQuery("json-resource", TermOperator.IN));
+        q.add(query);
 
-        AndQuery query = new AndQuery();
-        query.add(new UriPrefixQuery(currentResource.getURI().toString()));
-        query.add(new PropertyTermQuery(this.createdByPropDef, currentUser.getQualifiedName(), TermOperator.EQ));
+        /* In current resource but not in /vrtx. */
+        q.add(new UriPrefixQuery(currentResource.getURI().toString(), false));
+        q.add(new UriPrefixQuery("/vrtx", true));
 
         Search search = new Search();
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
-        
         search.setSorting(sorting);
-        search.setQuery(query);
-        search.setLimit(DEFAULT_SEARCH_LIMIT);
-        
+        search.setQuery(q);
         return search;
-    }
-
-    @Required
-    public void setCreatedByPropDef(PropertyTypeDefinition createdByPropDef) {
-        this.createdByPropDef = createdByPropDef;
     }
 
     @Required
@@ -90,4 +85,11 @@ public class MyDocumentsReporter extends DocumentReporter {
         this.sortOrder = sortOrder;
     }
 
+    public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
+        this.titlePropDef = titlePropDef;
+    }
+
+    public PropertyTypeDefinition getTitlePropDef() {
+        return titlePropDef;
+    }
 }

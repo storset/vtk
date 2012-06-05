@@ -120,10 +120,13 @@ public class TemplateBasedCreateController extends SimpleFormController {
                         names.put(t.getUri().toString(), name);
                         templates.put(name, t.getUri().toString());
                         reverseTemplates.put(t.getUri().toString(), name);
-                        putName = false;
                     }
-                } else
-                    descriptions.put(t.getUri().toString(), name);
+                } else {
+                    templates.put(name, t.getUri().toString());
+                    reverseTemplates.put(t.getUri().toString(), name);
+                }
+                
+                putName = false;
             }
 
             titles.put(t.getUri().toString(), r.getTitle().equals(this.titlePlaceholder));
@@ -173,12 +176,12 @@ public class TemplateBasedCreateController extends SimpleFormController {
             return;
         }
 
+        name = fixDocumentName(name);
+
         if (name.indexOf("/") >= 0) {
             errors.rejectValue("name", "manage.create.document.invalid.name", "This is an invalid document name");
             return;
         }
-
-        name = fixDocumentName(name);
 
         if (name.isEmpty()) {
             errors.rejectValue("name", "manage.create.document.invalid.name", "This is an invalid document name");
@@ -191,6 +194,12 @@ public class TemplateBasedCreateController extends SimpleFormController {
         String filetype = sourceURI.toString().substring(sourceURI.toString().lastIndexOf('.'));
         if (!name.endsWith(filetype))
             name += filetype;
+        
+        // Indexpages can only be html files
+        if (createDocumentCommand.getIsIndex() && !filetype.equals(".html")){
+            errors.rejectValue("name", "manage.create.index.invalid.filetype", "This is an invalid filetype for an indexpage");
+            return;
+        }
 
         Path destinationURI = uri.extend(name);
 
@@ -241,6 +250,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
 
         String contentType = repository.retrieve(token, destinationURI, false).getContentType();
         if (contentType.equals("application/json")) {
+            title = Matcher.quoteReplacement(title);
             title = title.replaceAll("\"", "\\\\\"");
         } else if (contentType.equals("text/html")) {
             title = HtmlUtil.escapeHtmlString(title);

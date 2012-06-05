@@ -152,7 +152,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
   if (complete) {
     config.filebrowserImageBrowseUrl = imageBrowseUrl;
     config.filebrowserFlashBrowseUrl = flashBrowseUrl;
-    config.extraPlugins = 'mediaembed,studytable,studyreferencecomponent';
+    config.extraPlugins = 'mediaembed,studyreferencecomponent,htmlbuttons';
     config.stylesSet = divContainerStylesSet;
     // XHTML
     if (name == "resource.content" && simple) {

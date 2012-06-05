@@ -34,7 +34,7 @@
 		  </#if>
           <a class="vrtx-title vrtx-title-link" href="${collectionListing.urls[r.URI]?html}">${title?html}</a>
           <#if editLinks?exists && editLinks[r_index]?exists && editLinks[r_index]>
-            <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="report.collection-structure.edit" /></a>
+            <a class="vrtx-resource-open-webdav" href="${vrtx.linkConstructor(uri, 'webdavService')}"><@vrtx.msg code="report.list-resources.edit" /></a>
           </#if>
 		</div>
 

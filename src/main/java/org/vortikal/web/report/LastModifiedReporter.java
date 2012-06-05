@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.report;
+package org.vortikal.web.report;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,42 +44,34 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 
-public class OtherReporter extends DocumentReporter {
+public class LastModifiedReporter extends DocumentReporter {
 
     private PropertyTypeDefinition titlePropDef;
     private PropertyTypeDefinition sortPropDef;
     private SortFieldDirection sortOrder;
+    private String type;
+    private boolean termIN = true;
 
     @Override
-    protected Search getSearch(String token, Resource currentResource, HttpServletRequest request) {
-        AndQuery q = new AndQuery();
+    protected Search getSearch(String token, Resource resource, HttpServletRequest request) {
+        AndQuery query = new AndQuery();
 
-        q.add(new TypeTermQuery("file", TermOperator.IN));
+        if (termIN)
+            query.add(new TypeTermQuery(type, TermOperator.IN));
+        else
+            query.add(new TypeTermQuery(type, TermOperator.EQ));
 
-        q.add(new TypeTermQuery("image", TermOperator.NI));
-        q.add(new TypeTermQuery("audio", TermOperator.NI));
-        q.add(new TypeTermQuery("video", TermOperator.NI));
-        q.add(new TypeTermQuery("pdf", TermOperator.NI));
-        q.add(new TypeTermQuery("doc", TermOperator.NI));
-        q.add(new TypeTermQuery("ppt", TermOperator.NI));
-        q.add(new TypeTermQuery("xls", TermOperator.NI));
-        q.add(new TypeTermQuery("text", TermOperator.NE));
-
-        q.add(new TypeTermQuery("apt-resource", TermOperator.NI));
-        q.add(new TypeTermQuery("php", TermOperator.NI));
-        q.add(new TypeTermQuery("html", TermOperator.NI));
-        q.add(new TypeTermQuery("managed-xml", TermOperator.NI));
-        q.add(new TypeTermQuery("json-resource", TermOperator.NI));
-        
-        /* In current resource but not in /vrtx. */
-        q.add(new UriPrefixQuery(currentResource.getURI().toString(), false));
-        q.add(new UriPrefixQuery("/vrtx", true));
+        query.add(new UriPrefixQuery(resource.getURI().toString(), false));
+        query.add(new UriPrefixQuery("/vrtx", true));
 
         Search search = new Search();
         SortingImpl sorting = new SortingImpl();
         sorting.addSortField(new PropertySortField(this.sortPropDef, this.sortOrder));
+
         search.setSorting(sorting);
-        search.setQuery(q);
+        search.setQuery(query);
+        search.setLimit(DEFAULT_SEARCH_LIMIT);
+
         return search;
     }
 
@@ -93,6 +85,15 @@ public class OtherReporter extends DocumentReporter {
         this.sortOrder = sortOrder;
     }
 
+    @Required
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setTermIN(boolean termIN) {
+        this.termIN = termIN;
+    }
+
     public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
         this.titlePropDef = titlePropDef;
     }
@@ -100,4 +101,5 @@ public class OtherReporter extends DocumentReporter {
     public PropertyTypeDefinition getTitlePropDef() {
         return titlePropDef;
     }
+
 }

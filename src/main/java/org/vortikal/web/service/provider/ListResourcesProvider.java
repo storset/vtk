@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.create;
+package org.vortikal.web.service.provider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,72 +38,121 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.search.PropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Searcher;
 import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriDepthQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.security.Principal;
+import org.vortikal.security.PrincipalFactory;
 
-public class CreateDropDownProvider {
+public class ListResourcesProvider {
 
     private Searcher searcher;
     private Repository repository;
     private final int maxLimit = 500;
-    
-    private static Log logger = LogFactory.getLog(CreateDropDownProvider.class);
 
-    public List<Resource> buildSearchAndPopulateResources(String uri, String token) {
+    private static Log logger = LogFactory.getLog(ListResourcesProvider.class);
+
+    public List<Resource> buildSearchAndPopulateResources(String uri, String token,
+            HttpServletRequest request) {
+
+        // MainQuery (depth + 1 from uri and all resources)
+        Path url = Path.fromString(uri);
+        int depth = url.getDepth() + 1;
+        
         AndQuery mainQuery = new AndQuery();
-        if (uri.equals("")) {
-            mainQuery.add(new UriDepthQuery(0));
-        } else {
-            mainQuery.add(new UriPrefixQuery(uri));
-            mainQuery.add(new UriDepthQuery(Path.fromString(uri).getDepth() + 1));
-        }
-        mainQuery.add(new TypeTermQuery("collection", TermOperator.IN));
+        mainQuery.add(new UriPrefixQuery(url.toString()));
+        mainQuery.add(new UriDepthQuery(depth));
+        
         Search search = new Search();
         search.setQuery(mainQuery);
         search.setLimit(maxLimit);
+        search.setPropertySelect(PropertySelect.ALL);
+        
         ResultSet rs = searcher.execute(token, search);
 
         List<PropertySet> results = rs.getAllResults();
-        List<Resource> items = new ArrayList<Resource>();
+        List<Resource> resources = new ArrayList<Resource>();
 
         for (PropertySet result : results) {
             try {
                 Resource r = this.repository.retrieve(token, result.getURI(), true);
-                items.add(r);
+                if (r != null) {
+                  resources.add(r);
+                }
             } catch (Exception e) {
-            	logger.error("Exception " + e.getMessage());
+                logger.error("Exception " + e.getMessage());
             }
+            
         }
-        return items;
+        return resources;
     }
     
-    public boolean hasChildren(Resource r, String token) {
-    	if (r.getChildURIs() != null) {
-            if (!r.getChildURIs().isEmpty()) {
-                AndQuery mainQuery = new AndQuery();
-                mainQuery.add(new UriPrefixQuery(r.getURI().toString()));
-                mainQuery.add(new UriDepthQuery(r.getURI().getDepth() + 1));
-                mainQuery.add(new TypeTermQuery("collection", TermOperator.IN));
-                Search search = new Search();
-                search.setQuery(mainQuery);
-                search.setLimit(1);
-                if (searcher.execute(token, search).getTotalHits() > 0) {
-                	return true;
+    public String[] getAclFormatted(Resource r, HttpServletRequest request) {
+    	String[] aclFormatted = {"", "", ""}; // READ, READ_WRITE, ALL
+    	
+    	Acl acl = r.getAcl();
+        for (Privilege action : Privilege.values()) {
+            String actionName = action.getName();
+            Principal[] privilegedUsers = acl.listPrivilegedUsers(action);
+            Principal[] privilegedGroups = acl.listPrivilegedGroups(action);
+            Principal[] privilegedPseudoPrincipals = acl.listPrivilegedPseudoPrincipals(action);
+            StringBuilder combined = new StringBuilder();
+            int i = 0;
+            int len = privilegedPseudoPrincipals.length + privilegedUsers.length + privilegedGroups.length;
+            boolean all = false;
+
+            for (Principal p : privilegedPseudoPrincipals) {
+                String pseudo = this.getLocalizedTitle(request, "pseudoPrincipal." + p.getName(), null);
+                if (p.getName() == PrincipalFactory.NAME_ALL) {
+                    all = true;
+                    combined.append(pseudo);
+                }
+                if ((len == 1 || i == len - 1) && !all) {
+                    combined.append(pseudo);
+                } else if (!all) {
+                    combined.append(pseudo + ", ");
+                }
+                i++;
+            }
+            if (!all) {
+                for (Principal p : privilegedUsers) {
+                    if (len == 1 || i == len - 1) {
+                        combined.append(p.getDescription());
+                    } else {
+                        combined.append(p.getDescription() + ", ");
+                    }
+                    i++;
+                }
+                for (Principal p : privilegedGroups) {
+                    if (len == 1 || i == len - 1) {
+                        combined.append(p.getDescription());
+                    } else {
+                        combined.append(p.getDescription() + ", ");
+                    }
+                    i++;
                 }
             }
+            if (actionName == "read") {
+            	aclFormatted[0] = combined.toString();
+            } else if (actionName == "read-write") {
+            	aclFormatted[1] = combined.toString();
+            } else if (actionName == "all") {
+            	aclFormatted[2] = combined.toString();
+            }
         }
-    	return false;
+        return aclFormatted;
     }
+
 
     public String getLocalizedTitle(HttpServletRequest request, String key, Object[] params) {
         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
@@ -114,10 +163,12 @@ public class CreateDropDownProvider {
         return springRequestContext.getMessage(key);
     }
 
+
     @Required
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }
+
 
     @Required
     public void setRepository(Repository repository) {

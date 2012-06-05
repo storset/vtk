@@ -28,24 +28,56 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.actions.report;
+package org.vortikal.web.report;
 
-import java.util.Map;
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Repository;
+import org.vortikal.repository.search.Searcher;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.vortikal.repository.Resource;
-
-public interface Reporter {
-
-    public static final String REPORT_TYPE_PARAM = "report-type";
+public abstract class AbstractReporter implements Reporter {
     
-    public boolean isEnabled();
+    public static final int DEFAULT_SEARCH_LIMIT = 100;
 
-    public Map<String, Object> getReportContent(String token, Resource currentResource, HttpServletRequest request);
+    private String name;
+    private String viewName;
+    protected Searcher searcher;
+    protected Repository repository;
+    private boolean enabled = true;
 
-    public String getName();
+    public String getName() {
+        return name;
+    }
 
-    public String getViewName();
+    @Required
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    public String getViewName() {
+        return viewName;
+    }
+
+    @Required
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
+
+    @Required
+    public void setSearcher(Searcher searcher) {
+        this.searcher = searcher;
+    }
+
+    @Required
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+    
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+    
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 }

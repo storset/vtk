@@ -345,7 +345,7 @@ view {
   
   	typeToDisplay : (en : "Programme type", no : "Programtype", nn : "Programtype"),
     header : (en : "Edit document", no : "Rediger dokument", nn : "Rediger dokument"),
-    opptak: (en : "How to apply?", no : "Hvordan søke", nn : "Korleis søkje"),
+    opptak: (en : "How to apply?", no : "Hvordan søke?", nn : "Korleis søkje?"),
 
 	title : (en : "Application deadline and admissions", no : "Søknadsfrist og opptak", nn : "Søknadsfrist og opptak"),
 

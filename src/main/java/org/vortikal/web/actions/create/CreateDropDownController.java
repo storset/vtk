@@ -43,16 +43,14 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.actions.report.subresource.SubResource;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.ServiceUnlinkableException;
 
-public class CreateDropDownJSON implements Controller {
+public class CreateDropDownController implements Controller {
 
     private CreateDropDownProvider provider;
     private Service service;
@@ -72,8 +70,8 @@ public class CreateDropDownJSON implements Controller {
         }
 
         String token = RequestContext.getRequestContext().getSecurityToken();
-        List<SubResource> subresources = provider.buildSearchAndPopulateSubresources(uri, token);
-        writeResults(subresources, request, response, token);
+        List<Resource> resources = provider.buildSearchAndPopulateResources(uri, token);
+        writeResults(resources, request, response, token);
         return null;
     }
 
@@ -87,7 +85,7 @@ public class CreateDropDownJSON implements Controller {
         }
     }
 
-    private void writeResults(List<SubResource> subresources, HttpServletRequest request, HttpServletResponse response,
+    private void writeResults(List<Resource> resources, HttpServletRequest request, HttpServletResponse response,
             String token) throws Exception {
         JSONArray list = new JSONArray();
 
@@ -97,16 +95,14 @@ public class CreateDropDownJSON implements Controller {
         else
             buttonText = "manage.place-here";
 
-        for (SubResource sr : subresources) {
+        for (Resource r : resources) {
             JSONObject o = new JSONObject();
 
-            Path pURI = Path.fromString(sr.getUri());
-            Resource resource = this.repository.retrieve(token, pURI, true);
             Principal principal = RequestContext.getRequestContext().getPrincipal();
 
             String title;
             try {
-                String url = service.constructURL(resource, principal).getPathRepresentation();
+                String url = service.constructURL(r, principal).getPathRepresentation();
 
                 title = "<a target=&quot;_top&quot; class=&quot;vrtx-button-small&quot; href=&quot;" + url + "&quot;>"
                         + "<span>" + provider.getLocalizedTitle(request, buttonText, null) + "</span>" + "</a>";
@@ -118,9 +114,9 @@ public class CreateDropDownJSON implements Controller {
                 return;
             }
 
-            o.put("hasChildren", sr.hasChildren());
-            o.put("text", pURI.isRoot() ? repository.getId() : sr.getName());
-            o.put("uri", sr.getUri());
+            o.put("hasChildren", provider.hasChildren(r, token));
+            o.put("text", r.getURI().isRoot() ? repository.getId() : r.getName());
+            o.put("uri", r.getURI().toString());
             o.put("spanClasses", "folder");
             o.put("title", title);
 

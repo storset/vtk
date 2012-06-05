@@ -35,6 +35,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
@@ -54,6 +56,8 @@ public class CreateDropDownProvider {
     private Searcher searcher;
     private Repository repository;
     private final int maxLimit = 500;
+    
+    private static Log logger = LogFactory.getLog(CreateDropDownProvider.class);
 
     public List<Resource> buildSearchAndPopulateResources(String uri, String token) {
         AndQuery mainQuery = new AndQuery();
@@ -77,6 +81,7 @@ public class CreateDropDownProvider {
                 Resource r = this.repository.retrieve(token, result.getURI(), true);
                 items.add(r);
             } catch (Exception e) {
+            	logger.error("Exception " + e.getMessage());
             }
         }
         return items;

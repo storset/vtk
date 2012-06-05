@@ -62,7 +62,6 @@ public class ListResourcesProvider {
 
     private static Log logger = LogFactory.getLog(ListResourcesProvider.class);
 
-
     public List<Resource> buildSearchAndPopulateResources(String uri, String token,
             HttpServletRequest request) {
 
@@ -81,12 +80,6 @@ public class ListResourcesProvider {
         
         ResultSet rs = searcher.execute(token, search);
 
-        List<Resource> resources = populateListResources(token, rs, request);
-        return resources;
-    }
-
-
-    private List<Resource> populateListResources(String token, ResultSet rs, HttpServletRequest request) {
         List<PropertySet> results = rs.getAllResults();
         List<Resource> resources = new ArrayList<Resource>();
 

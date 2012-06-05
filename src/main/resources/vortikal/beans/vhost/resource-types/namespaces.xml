@@ -75,4 +75,14 @@
     <constructor-arg value="http://www.uio.no/resource-types/program-option" />
   </bean>
 
+  <bean id="PROGRAM_CONTEXT_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="program-context" />
+    <constructor-arg value="http://www.uio.no/resource-types/program-context" />
+  </bean>
+
+  <bean id="PROGRAM_OPTION_CONTEXT_NAMESPACE" class="org.vortikal.repository.Namespace">
+    <constructor-arg value="program-option-context" />
+    <constructor-arg value="http://www.uio.no/resource-types/program-option-context" />
+  </bean>
+  
 </beans>

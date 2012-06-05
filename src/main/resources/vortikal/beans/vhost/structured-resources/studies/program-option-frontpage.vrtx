@@ -117,9 +117,9 @@ resourcetype program-option-frontpage : program-document {
               [def thispath resource-prop("./","uri")]
               <div id="vrtx-program-links">
                 [if locale = "en"]
-                  [call "include:uri-menu" {"uri":thispath, "include-children":"why-choose, learning-outcomes, admissions, how-to-apply, structure, abroad, career, teaching-examinations"}]           
+                  [call "include:uri-menu" {"uri":thispath, "authenticated" : "true", "include-children":"why-choose, learning-outcomes, admission, how-to-apply, structure, abroad, career, teaching-examinations"}]           
                 [else]
-                  [call "include:uri-menu" {"uri":thispath, "include-children":"hvorfor-velge, hva-lerer-du, opptak, oppbygging, utlandet, jobb-studier, undervisning-eksamen"}]
+                  [call "include:uri-menu" {"uri":thispath, "authenticated" : "true", "include-children":"hvorfor-velge, hva-lerer-du, opptak, oppbygging, utlandet, jobb-studier, undervisning-eksamen"}]
                 [endif]
               </div>
             </div>
@@ -151,7 +151,7 @@ resourcetype program-option-frontpage : program-document {
     fs-program-option-code : (en : "FS programme option code", no : "FS-studieretningskode", nn : "FS-studieretningskode"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
-	samlet : (en : "Translation of program names for Full program description", no : "Oversettelse av programnavn til Samlet programbeskrivelse", nn : "Oversetting av programnamn til Samla programbeskrivelse"),
+	samlet : (en : "Translation of program names for Full program option description", no : "Oversettelse av programnavn til Samlet studieretningsbeskrivelse", nn : "Oversetting av programnamn til Samla studieretningsbeskrivelse"),
 
     related-content : (en : "Related content (right column)", no : "Relatert innhold (høyre spalte)", nn : "Relatert innhald (høgre spalte)"),
     program-affiliation : (en : "The programme option is part of the programme", no : "Studieretningen hører til programmet", nn : "Studieretninga høyrer til studieprogrammet"),

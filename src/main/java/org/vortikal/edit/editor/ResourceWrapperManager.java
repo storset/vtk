@@ -35,12 +35,14 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.InheritablePropertiesStoreContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.TypeInfo;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.text.html.HtmlPage;
@@ -55,6 +57,8 @@ public class ResourceWrapperManager {
     private EditablePropertyProvider editPropertyProvider = new ResourceTypeEditablePropertyProvider();
     private ResourceTypeDefinition contentResourceType;
     private final static String defaultCharacterEncoding = "utf-8";
+    private boolean allowInheritablePropertiesStore = false;
+    
 
     public HtmlPageParser getHtmlParser() {
         return this.htmlParser;
@@ -138,7 +142,31 @@ public class ResourceWrapperManager {
         Repository repository = requestContext.getRepository();
         
         if (wrapper.isPropChange()) {
-            resource = repository.store(token, resource);
+            if (this.allowInheritablePropertiesStore) {
+                InheritablePropertiesStoreContext sc = new InheritablePropertiesStoreContext();
+
+                for (PropertyTypeDefinition def : wrapper.getPreContentProperties()) {
+                    if (def.isInheritable()) {
+                        sc.addAffectedProperty(def);
+                    }
+                }
+
+                for (PropertyTypeDefinition def : wrapper.getPostContentProperties()) {
+                    if (def.isInheritable()) {
+                        sc.addAffectedProperty(def);
+                    }
+                }
+
+                if (! sc.getAffectedProperties().isEmpty()) {
+                    resource = repository.store(token, resource, sc);
+                } else {
+                    resource = repository.store(token, resource);
+                }
+                
+            } else {
+                
+                resource = repository.store(token, resource);                
+            }
         }
 
         if (wrapper.isContentChange()) {
@@ -195,6 +223,10 @@ public class ResourceWrapperManager {
 
     public void setEditPropertyProvider(EditablePropertyProvider editPropertyProvider) {
         this.editPropertyProvider = editPropertyProvider;
+    }
+    
+    public void setAllowInheritablePropertiesStore(boolean allow) {
+        this.allowInheritablePropertiesStore = allow;
     }
 
 }

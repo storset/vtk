@@ -1,3 +1,4 @@
+
 resourcetype hvordan-soke : fellestekst-document {
 
   properties {
@@ -82,7 +83,7 @@ resourcetype hvordan-soke : fellestekst-document {
         [endif]
       ##  
     }
-      metode {
+    metode {
       ##
       [def document structured-document()]
       [def metode-fri document.properties.metode-fri]
@@ -150,8 +151,13 @@ resourcetype hvordan-soke : fellestekst-document {
       ##
         [def document structured-document()]
         [def opptakskrav-fri document.properties.opptakskrav-fri]
-        [if opptakskrav-fri != null && opptakskrav-fri != ""]
-          <div class="opptakskrav-fri">[val opptakskrav-fri # unescaped]</div>
+        [def opptakskrav-generelle-grunnstudier document.properties.opptakskrav-generelle-grunnstudier]
+        [if (opptakskrav-fri != null && opptakskrav-fri != "") || (opptakskrav-generelle-grunnstudier != null && opptakskrav-generelle-grunnstudier != "")]
+          <h2>[localized 'opptakskrav-view']</h2>
+          [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav-generelle-grunnstudier"}]
+          [if opptakskrav-fri != null && opptakskrav-fri != ""]
+          	<div class="opptakskrav-fri">[val opptakskrav-fri # unescaped]</div>
+          [endif]
         [endif]
       ##  
     }
@@ -164,7 +170,7 @@ resourcetype hvordan-soke : fellestekst-document {
           <h3>[localized 'generelle-view']</h3>
           [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav-generelle-master"}]
           [if generelle-fri != null && generelle-fri != ""]
-          <div class="generelle-fri">[val generelle-fri # unescaped]</div>
+            <div class="generelle-fri">[val generelle-fri # unescaped]</div>
           [endif]
         [endif]
       ##  
@@ -308,8 +314,7 @@ view {
             [call "comp:studiekode"]
             [call "comp:studieplasser"]
             [call "comp:pris"]
-            <h2>[localized 'opptakskrav-view']</h2>
-            [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav-generelle-grunnstudier"}]
+            
             [call "comp:opptakskrav"]
             [call "comp:generelle"]
             [call "comp:spesielle"]

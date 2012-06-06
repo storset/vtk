@@ -1,6 +1,6 @@
 
 -- Add column is_inheritable on table extra_prop_entry:
-alter table extra_prop_entry add(is_inheritable char(1) default 'N' not null);
+alter table extra_prop_entry add is_inheritable char(1) default 'N' not null;
 
 -- Add index for new column is_inheritable on table extra_prop_entry:
 create index extra_prop_entry_index2 on extra_prop_entry(is_inheritable);

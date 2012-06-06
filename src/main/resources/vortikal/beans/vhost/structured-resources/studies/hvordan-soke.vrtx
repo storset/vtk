@@ -156,7 +156,7 @@ resourcetype hvordan-soke : fellestekst-document {
           <h2>[localized 'opptakskrav-view']</h2>
           [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav-generelle-grunnstudier"}]
           [if opptakskrav-fri != null && opptakskrav-fri != ""]
-          	<div class="opptakskrav-fri">[val opptakskrav-fri # unescaped]</div>
+            <div class="opptakskrav-fri">[val opptakskrav-fri # unescaped]</div>
           [endif]
         [endif]
       ##  

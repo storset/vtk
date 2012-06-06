@@ -290,7 +290,8 @@
       </#if>
       <#compress>
       <#local l=vrtx.resourceLanguage()?string />
-      <#if .vars['aboutItems'][propName].property.inherited>
+      
+      <#if .vars['aboutItems'][propName].property?exists && .vars['aboutItems'][propName].property.inherited>
           <@vrtx.msg "resource.property.unset" "Not set"/>, <@vrtx.msg "language.inherits" "inherits"/> ${l?lower_case}
       <#else>
           ${l}

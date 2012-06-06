@@ -33,11 +33,11 @@ resourcetype program-option-frontpage : program-document {
         [if f != null]
           [def published resource-prop(thispath, "published")]
           [if published]      
-            [def title f.properties.title]
+            [def title f.properties.name]
             [def program-type f.properties.program-type]
             <div class="vrtx-frontpage-box white-box vrtx-program-title-box">
               <h2>[localized 'program-affiliation']</h2>
-              <h3><a href='[val thispath]'>[val title] ([val program-type])</a></h3>
+              <h3><a href='[val thispath]'>[val title] ([localized program-type])</a></h3>
             </div>
           [endif]
         [endif]        

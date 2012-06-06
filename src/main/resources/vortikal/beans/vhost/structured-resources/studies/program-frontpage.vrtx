@@ -322,13 +322,6 @@ resourcetype program-frontpage : program-document {
     status-inactive : (en : "This programme no longer admits students", no : "Programmet tar ikke opp nye studenter", nn : "Programmet tar ikkje opp nye studentar"),
     
     program-type : (en : "Programme type", no : "Programtype", nn : "Programtype"),
-    aarsenhet : (en : "1-year unit", no : "årsenhet", nn : "årseining"),
-    bachelor : (en : "bachelor's", no : "bachelor", nn : "bachelor"),
-    ettoghalvt-aarig-master : (en : "master's 1 1/2-years", no : "master - halvannet år", nn : "master - halvanna år"),
-    to-aarig-master : (en : "master's 2-years", no : "master - to år", nn : "master - to år"),
-    fem-aarig-master : (en : "master's 5-years", no : "master - 5 år", nn : "master - 5 år"), 
-    erfaringsbasert-master : (en : "master's - experience based", no : "master - erfaringsbasert", nn : "master - erfaringsbasert"), 
-    profesjon : (en : "programme of professional study", en : "profesjonsstudium", en : "profesjonsstudium"),   
     
     faculty : (en : "Responsible faculty", no : "Ansvarlig fakultet", nn : "Ansvarlig fakultet"),
     hf : (en : "Faculty of Humanities", no : "Det humanistiske fakultet", nn : "Det humanistiske fakultet"),

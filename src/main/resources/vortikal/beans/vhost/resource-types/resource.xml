@@ -37,8 +37,10 @@
         <ref bean="modifiedByPropDef" />
         <ref bean="userTitlePropDef" />
         <ref bean="titlePropDef" />
-        <ref bean="contentLocalePropDef" />
-        <ref bean="commentsEnabledPropDef" />
+
+        <ref bean="contentLocalePropDef" /><!-- Inheritable -->
+        <ref bean="commentsEnabledPropDef" /><!-- Inheritable -->
+        
         <ref bean="numberOfCommentsPropDef" />
         <ref bean="publishDatePropDef" />
         <ref bean="unpublishDatePropDef" />
@@ -49,6 +51,7 @@
         <ref bean="brokenLinksCountPropDef" />
         <ref bean="linkStatusPropDef" />
         <ref bean="systemJobStatusPropDef" />
+        
       </list>
     </property>
   </bean>
@@ -56,6 +59,7 @@
   <bean id="commentsEnabledPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="commentsEnabled" />
+    <property name="inheritable" value="true" />
     <property name="type" value="BOOLEAN" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
@@ -233,10 +237,11 @@
     <property name="name" value="contentLocale" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
+    <property name="inheritable" value="true" />
     <!-- should have a constraint -->
     <property name="vocabulary">
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
-        <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.properties.content-locale" />
+          <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.properties.content-locale" />
         <property name="values">
           <list>
             <bean class="org.vortikal.repository.resourcetype.Value">

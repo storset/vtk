@@ -31,6 +31,7 @@
 package org.vortikal.repository.resourcetype;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -114,38 +115,34 @@ public final class PropertyType {
     public static final String PROPERTIESMODIFIEDBY_PROP_NAME = "propertiesModifiedBy";
     public static final String CONTENTLENGTH_PROP_NAME = "contentLength";
     
-    public static final String[] SPECIAL_PROPERTIES = { 
-        COLLECTION_PROP_NAME,
-        OWNER_PROP_NAME, 
-        CREATIONTIME_PROP_NAME,
-        CREATEDBY_PROP_NAME,
-        CONTENTTYPE_PROP_NAME,
-        CHARACTERENCODING_PROP_NAME,
-        CHARACTERENCODING_USER_SPECIFIED_PROP_NAME,
-        CHARACTERENCODING_GUESSED_PROP_NAME,
-        CONTENTLOCALE_PROP_NAME, 
-        LASTMODIFIED_PROP_NAME,
-        MODIFIEDBY_PROP_NAME,
-        CONTENTLASTMODIFIED_PROP_NAME,
-        CONTENTMODIFIEDBY_PROP_NAME,
-        PROPERTIESLASTMODIFIED_PROP_NAME,
-        PROPERTIESMODIFIEDBY_PROP_NAME, 
-        CONTENTLENGTH_PROP_NAME
-    };
-    
     public static final Set<String> SPECIAL_PROPERTIES_SET =
-        new HashSet<String>(Arrays.asList(SPECIAL_PROPERTIES));
-
-    public static final String[] NOT_REPRODUCABLE_CONTENT_PROPERTIES = {
-        CONTENTLASTMODIFIED_PROP_NAME,
-        CONTENTMODIFIEDBY_PROP_NAME,
-    };
+        Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+            COLLECTION_PROP_NAME,
+            OWNER_PROP_NAME,
+            CREATIONTIME_PROP_NAME,
+            CREATEDBY_PROP_NAME,
+            CONTENTTYPE_PROP_NAME,
+            CHARACTERENCODING_PROP_NAME,
+            CHARACTERENCODING_USER_SPECIFIED_PROP_NAME,
+            CHARACTERENCODING_GUESSED_PROP_NAME,
+//            CONTENTLOCALE_PROP_NAME,
+            LASTMODIFIED_PROP_NAME,
+            MODIFIEDBY_PROP_NAME,
+            CONTENTLASTMODIFIED_PROP_NAME,
+            CONTENTMODIFIEDBY_PROP_NAME,
+            PROPERTIESLASTMODIFIED_PROP_NAME,
+            PROPERTIESMODIFIEDBY_PROP_NAME,
+            CONTENTLENGTH_PROP_NAME
+    )));
 
     public static final Set<String> NOT_REPRODUCABLE_CONTENT_PROPERTIES_SET = 
-        new HashSet<String>(Arrays.asList(NOT_REPRODUCABLE_CONTENT_PROPERTIES));
+        Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+            CONTENTLASTMODIFIED_PROP_NAME,
+            CONTENTMODIFIEDBY_PROP_NAME
+    )));
     
-    public static final String[] UNCOPYABLE_PROPERTIES = {
-        NUMBER_OF_COMMENTS_PROP_NAME
-    };
-
+    public static final Set<String> UNCOPYABLE_PROPERTIES = 
+        Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+            NUMBER_OF_COMMENTS_PROP_NAME
+    )));
 }

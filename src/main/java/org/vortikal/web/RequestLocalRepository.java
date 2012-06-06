@@ -54,11 +54,12 @@ import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.ResourceOverwriteException;
 import org.vortikal.repository.Revision;
+import org.vortikal.repository.StoreContext;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.repository.systemjob.SystemChangeContext;
+import org.vortikal.repository.SystemChangeContext;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 
@@ -180,7 +181,7 @@ public class RequestLocalRepository implements Repository {
     }
 
     @Override
-    public Resource store(String token, Resource resource, SystemChangeContext systemChangeContext) 
+    public Resource store(String token, Resource resource, StoreContext storeContext) 
             throws Exception {
         
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
@@ -188,7 +189,7 @@ public class RequestLocalRepository implements Repository {
             ctx.clear();
         }
         
-        return this.repository.store(token, resource, systemChangeContext);
+        return this.repository.store(token, resource, storeContext);
     }
 
     @Override

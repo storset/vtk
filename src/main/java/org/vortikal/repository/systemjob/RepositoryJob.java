@@ -31,6 +31,7 @@
 
 package org.vortikal.repository.systemjob;
 
+import org.vortikal.repository.SystemChangeContext;
 import java.util.ArrayList;
 import java.util.List;
 

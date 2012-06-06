@@ -48,7 +48,6 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
-import org.vortikal.repository.systemjob.SystemChangeContext;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.web.service.RepositoryAssertion;
@@ -86,6 +85,22 @@ public class RepositoryResourceHelper {
         return ctx.getNewResource();
     }
 
+    public ResourceImpl inheritablePropertiesChange(ResourceImpl originalResource, Principal principal,
+            ResourceImpl suppliedResource, Content content, InheritablePropertiesStoreContext storeContext) throws AuthenticationException, AuthorizationException,
+            InternalRepositoryException, IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Evaluate inhertiable properties change: " + originalResource.getURI());
+        }
+
+        PropertyEvaluationContext ctx = PropertyEvaluationContext.inheritablePropertiesChangeContext(originalResource,
+                suppliedResource, principal, content);
+        ctx.setStoreContext(storeContext);
+        recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
+        lateEvaluation(ctx);
+        checkForDeadAndZombieProperties(ctx);
+        return ctx.getNewResource();
+    }
+    
     public ResourceImpl commentsChange(ResourceImpl originalResource, Principal principal, 
             ResourceImpl suppliedResource, Content content)
             throws AuthenticationException, AuthorizationException, InternalRepositoryException, IOException {
@@ -137,7 +152,7 @@ public class RepositoryResourceHelper {
         
         PropertyEvaluationContext ctx = PropertyEvaluationContext.systemChangeContext(originalResource,
                 suppliedResource, principal, content);
-        ctx.setSystemChangeContext(systemChangeContext);
+        ctx.setStoreContext(systemChangeContext);
         recursiveTreeEvaluation(ctx, this.resourceTypeTree.getRoot());
         lateEvaluation(ctx);
         checkForDeadAndZombieProperties(ctx);
@@ -217,7 +232,10 @@ public class RepositoryResourceHelper {
 
             if (rts == null) {
                 // Dead property, no resource type connected to it.
-                newResource.addProperty(suppliedProp);
+                // Preserve only if not inheritable (a tad paranoid, inheritable should never be set for dead props.)
+                if (!propDef.isInheritable()) {
+                    newResource.addProperty(suppliedProp);
+                }
             } else if (newResource.getProperty(propDef) == null) {
 
                 // If it hasn't been set for the new resource, check if zombie
@@ -228,8 +246,8 @@ public class RepositoryResourceHelper {
                         break;
                     }
                 }
-                if (zombie) {
-                    // Zombie property, preserve
+                if (zombie && !propDef.isInheritable()) {
+                    // Zombie property, preserve only if not inheritable.
                     newResource.addProperty(suppliedProp);
                 }
             }
@@ -254,8 +272,8 @@ public class RepositoryResourceHelper {
                 ctx.addPropertyTypeDefinitionForLateEvaluation(def);
                 continue;
             }
-            
-            evaluateManagedProperty(ctx, def);
+
+            evaluateManagedProperty(ctx, def);            
         }
 
         // For all prop defs in mixin types, also do evaluation
@@ -318,8 +336,24 @@ public class RepositoryResourceHelper {
 
     private Property doEvaluate(PropertyEvaluationContext ctx, PropertyTypeDefinition propDef) throws IOException {
 
+        final Property originalUnchanged = ctx.getOriginalResource().getProperty(propDef);
+        
+        if (propDef.isInheritable() 
+                && !ctx.shouldEvaluateInheritableProperty(propDef)) {
+            
+            // An inheritable property that should not be changed now.
+            // Keep it only if it is actually set on this resource (not inherited).
+            if (originalUnchanged != null && !((PropertyImpl)originalUnchanged).isInherited()) {
+                return originalUnchanged;
+            } else {
+                return null;
+            }
+        }
+        
+        // TODO currently we cannot store inheritable properties in
+        // system change context (mutually exclusive modes). Consider if that
+        // should be possible or not.
         if (ctx.getEvaluationType() == Type.SystemPropertiesChange) {
-            Property originalUnchanged = ctx.getOriginalResource().getProperty(propDef);
             if (! ctx.isSystemChangeAffectedProperty(propDef)) {
                 // Not to be affected by system change, return original unchanged.
                 return originalUnchanged;
@@ -327,7 +361,8 @@ public class RepositoryResourceHelper {
         }
         
         if (ctx.getEvaluationType() == Type.PropertiesChange || 
-            ctx.getEvaluationType() == Type.SystemPropertiesChange) {
+            ctx.getEvaluationType() == Type.SystemPropertiesChange ||
+            ctx.getEvaluationType() == Type.InheritablePropertiesChange) {
             // Check for user change or addition
             Property property = checkForUserAdditionOrChange(ctx, propDef);
             if (property != null) {
@@ -358,40 +393,6 @@ public class RepositoryResourceHelper {
                 return null;
             }
         }
-
-//        if (ctx.getEvaluationType() == Type.SystemPropertiesChange) {
-//            Property property = ctx.getOriginalResource().getProperty(propDef);
-//            if (! ctx.isSystemChangeAffectedProperty(propDef)) {
-//                // Not marked as affected by system change, return original unchanged.
-//                return property;
-//            }
-//            
-//            Property modified = checkForUserAdditionOrChange(ctx, propDef);
-//            if (modified != null) {
-//                property = modified;
-//            } else if (checkForUserDeletion(ctx, propDef)) {
-//                
-//            }
-//            
-//            try {
-//
-//                PropertyEvaluator evaluator = propDef.getPropertyEvaluator();
-//                if (evaluator != null) {
-//                    if (property == null) {
-//                        property = propDef.createProperty();
-//                    }
-//
-//                    boolean evaluated = evaluator.evaluate(property, ctx);
-//                    if (!evaluated) {
-//                        return null;
-//                    }
-//                }
-//
-//            } catch (Throwable t) {
-//                logger.error("An error occured while evaluating a property with system change context", t);
-//            }
-//            return property;
-//        }
 
         Resource newResource = ctx.getNewResource();
 

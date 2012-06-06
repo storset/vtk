@@ -37,7 +37,6 @@ import java.util.List;
 import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.repository.systemjob.SystemChangeContext;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 
@@ -161,8 +160,8 @@ public interface Repository {
      *            identifies the client's authenticated session
      * @param resource
      *            modified resource to store
-     * @param systemChangeContext
-     *            system change context used when executing property evaluation
+     * @param storeContext
+     *            specialized store context (store mode)
      * @exception ResourceNotFoundException
      *                if the URI does not identify an existing resource
      * @exception AuthorizationException
@@ -177,7 +176,7 @@ public interface Repository {
      * @exception Exception
      *                if an I/O error occurs
      */
-    public Resource store(String token, Resource resource, SystemChangeContext systemChangeContext) throws ResourceNotFoundException, AuthorizationException,
+    public Resource store(String token, Resource resource, StoreContext storeContext) throws ResourceNotFoundException, AuthorizationException,
             AuthenticationException, ResourceLockedException, IllegalOperationException, ReadOnlyException, Exception;
     
 

@@ -164,6 +164,14 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
 
     }
     
+    List<Map<String,Object>> loadInheritablePropertyRows(List<Path> paths) {
+        String sqlMap = getSqlMap("loadInheritableProperties");
+        Map<String, Object> parameterMap = new HashMap<String, Object>();
+        parameterMap.put("uris", paths);
+        
+        return getSqlMapClientTemplate().queryForList(sqlMap, parameterMap);
+    }
+    
     /**
      * Fetch a set of principals (normal principals, pseudo-principals and groups) 
      * which are allowed to read or read-processed the resource that the property set
@@ -173,7 +181,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
      *                           inherited could not be found. Otherwise 
      *                           a <code>Set</code> of <code>Principal</code> instances. 
      */
-    protected Set<Principal> getAclReadPrincipals(PropertySet propertySet)
+    Set<Principal> loadAclReadPrincipals(PropertySet propertySet)
             throws org.vortikal.repository.store.DataAccessException {
         
         // Cast to impl
@@ -217,7 +225,7 @@ public class SqlMapIndexDao extends AbstractSqlMapDataAccessor implements IndexD
         
         return aclReadPrincipals;
     }
-
+    
     @Required
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;

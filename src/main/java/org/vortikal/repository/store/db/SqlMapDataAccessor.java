@@ -55,6 +55,7 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertyImpl;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
 import org.vortikal.repository.RecoverableResource;
@@ -67,6 +68,7 @@ import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.store.DataAccessException;
 import org.vortikal.repository.store.DataAccessor;
+import org.vortikal.repository.store.db.SqlDaoUtils.PropHolder;
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
@@ -89,9 +91,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
     private boolean optimizedAclCopySupported = false;
 
-    public void setOptimizedAclCopySupported(boolean optimizedAclCopySupported) {
-        this.optimizedAclCopySupported = optimizedAclCopySupported;
-    }
 
     @Override
     public boolean validate() {
@@ -104,7 +103,8 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         if (resource == null) {
             return null;
         }
-
+        
+        loadInheritedProperties(new ResourceImpl[] { resource });
         loadACLs(new ResourceImpl[] { resource });
 
         if (resource.isCollection()) {
@@ -114,6 +114,14 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return resource;
     }
 
+    /**
+     * Loads everthing except:
+     * - ACL
+     * - Inherited properties.
+     * 
+     * @param uri
+     * @return 
+     */
     @SuppressWarnings("unchecked")
     private ResourceImpl loadResourceInternal(Path uri) {
         String sqlMap = getSqlMap("loadResourceByUri");
@@ -170,6 +178,31 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         updateACL(r);
         
         // Re-load and return newly written ResourceImpl
+        return load(r.getURI());
+    }
+
+    @Override
+    public ResourceImpl storeLock(ResourceImpl r) {
+
+        // Delete any old persistent locks
+        String sqlMap = getSqlMap("deleteLockByResourceId");
+        getSqlMapClientTemplate().delete(sqlMap, r.getID());
+
+        Lock lock = r.getLock();
+
+        if (lock != null) {
+
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put("lockToken", lock.getLockToken());
+            parameters.put("timeout", lock.getTimeout());
+            parameters.put("owner", lock.getPrincipal().getQualifiedName());
+            parameters.put("ownerInfo", lock.getOwnerInfo());
+            parameters.put("depth", lock.getDepth().toString());
+            parameters.put("resourceId", r.getID());
+
+            sqlMap = getSqlMap("insertLock");
+            getSqlMapClientTemplate().update(sqlMap, parameters);
+        }
         return load(r.getURI());
     }
 
@@ -256,7 +289,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             r.setID(id.intValue());
         }
 
-        storeLock(r);
+        //storeLock(r);
         storeProperties(r);
 
         // Re-load and return newly written ResourceImpl
@@ -424,6 +457,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
 
         ResourceImpl[] result = children.toArray(new ResourceImpl[children.size()]);
         loadChildUrisForChildren(parent, result);
+        loadInheritedProperties(result);
         loadACLs(result);
         loadPropertiesForChildren(parent, result);
 
@@ -848,11 +882,128 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return nearestResourceId;
     }
 
+    
+    
+    private int inheritedPropertiesBatch = 200;
+    
+    /**
+     * Loads and populates only properties inherited from ancestors
+     * for all resources. Does not overwrite existing properties, allowing
+     * inheritable properties set directly on resources to override inherited ones.
+     * 
+     * @param resources 
+     */
+    private void loadInheritedProperties(ResourceImpl[] resources) {
+        if (resources.length == 0) {
+            return;
+        }
+        List<Map<String, Object>> propertyRows = new ArrayList<Map<String, Object>>();
+        String sqlMap = getSqlMap("loadInheritableProperties");
+        Map<String, Object> parameterMap = new HashMap<String, Object>();
+        
+        Set<Path> handled = new HashSet<Path>();
+        Set<Path> paths = new HashSet<Path>();
+        // Load inheritable properties from all ancestors
+        for (int i = 0; i < resources.length; i++) {
+            Path parent = resources[i].getURI().getParent();
+            if (parent != null) {
+                for (Path p : parent.getPaths()) {
+                    if (handled.add(p)) {
+                        paths.add(p);
+                    }
+                }
+            }
+            if ((i == resources.length - 1 || i % inheritedPropertiesBatch == 0) && !paths.isEmpty()) {
+                parameterMap.put("uris", new ArrayList<Path>(paths));
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> rows = getSqlMapClientTemplate().queryForList(sqlMap, parameterMap);
+                propertyRows.addAll(rows);
+                paths.clear();
+            }
+        }
+
+        // Aggregate all properties in resultset rows, and also link paths to PropHolder instances
+        // Map linking path to list of PropHolder instances
+        final Map<Path, List<PropHolder>> inheritableMap = new HashMap<Path, List<PropHolder>>();
+        // Map for PropHolder value aggregation
+        final Map<PropHolder, List<Object>> holderValues = new HashMap<PropHolder, List<Object>>();
+        for (Map<String, Object> propEntry : propertyRows) {
+            PropHolder propHolder = new PropHolder();
+            propHolder.propID = propEntry.get("id");
+            propHolder.namespaceUri = (String) propEntry.get("namespaceUri");
+            propHolder.name = (String) propEntry.get("name");
+            propHolder.resourceId = (Integer) propEntry.get("resourceId");
+            propHolder.binary = (Boolean) propEntry.get("binary");
+            propHolder.inheritable = true;
+            List<Object> values = holderValues.get(propHolder);
+            if (values == null) {
+                // New Property
+                values = new ArrayList<Object>(2);
+                propHolder.values = values;
+                holderValues.put(propHolder, values);
+
+                // Populate inheritables map with canonical PropHolder instance
+                Path uri = Path.fromString((String) propEntry.get("uri"));
+                List<PropHolder> holderList = inheritableMap.get(uri);
+                if (holderList == null) {
+                    holderList = new ArrayList<PropHolder>();
+                    inheritableMap.put(uri, holderList);
+                }
+                holderList.add(propHolder);
+            }
+            
+            // Aggregate value
+            if (propHolder.binary) {
+                values.add(propHolder.propID);
+            } else {
+                values.add(propEntry.get("value"));
+            }
+        }
+        
+        // Create Property instances from PropHolders in inheritableMap
+        final Map<Path, List<Property>> inheritableProperties
+                = new HashMap<Path, List<Property>>(inheritableMap.size(), 1.0f);
+        for (Map.Entry<Path, List<PropHolder>> entry: inheritableMap.entrySet()) {
+            List<PropHolder> holderList = entry.getValue();
+            List<Property> propList = new ArrayList<Property>(holderList.size());
+            for (PropHolder ph: holderList) {
+                propList.add(createInheritedProperty(ph));
+            }
+            inheritableProperties.put(entry.getKey(), propList);
+        }
+
+        // Populate loaded resources with inheritable props, handling override from bottom up in paths
+        final Set<PropertyTypeDefinition> encountered = new HashSet<PropertyTypeDefinition>();
+        for (ResourceImpl r : resources) {
+            Path parent = r.getURI().getParent();
+            if (parent == null) {
+                continue; // root resource cannot inherit anything
+            }
+            
+            List<Path> pathList = parent.getPaths();
+            for (int i = pathList.size() - 1; i >= 0; i--) {
+                Path p = pathList.get(i);
+                List<Property> propList = inheritableProperties.get(p);
+                if (propList != null) {
+                    for (Property prop : propList) {
+                        if (encountered.add(prop.getDefinition())) {
+                            if (r.getProperty(prop.getDefinition()) == null) {
+                                r.addProperty(prop);
+                            }
+                        }
+                    }
+                }
+            }
+            encountered.clear();
+        }
+    }
+    
+    
     private void loadACLs(ResourceImpl[] resources) {
 
-        if (resources.length == 0)
+        if (resources.length == 0) {
             return;
-
+        }
         Set<Integer> resourceIds = new HashSet<Integer>();
         for (int i = 0; i < resources.length; i++) {
 
@@ -942,29 +1093,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         }
     }
 
-    private void storeLock(ResourceImpl r) {
-
-        // Delete any old persistent locks
-        String sqlMap = getSqlMap("deleteLockByResourceId");
-        getSqlMapClientTemplate().delete(sqlMap, r.getID());
-
-        Lock lock = r.getLock();
-
-        if (lock != null) {
-
-            Map<String, Object> parameters = new HashMap<String, Object>();
-            parameters.put("lockToken", lock.getLockToken());
-            parameters.put("timeout", lock.getTimeout());
-            parameters.put("owner", lock.getPrincipal().getQualifiedName());
-            parameters.put("ownerInfo", lock.getOwnerInfo());
-            parameters.put("depth", lock.getDepth().toString());
-            parameters.put("resourceId", r.getID());
-
-            sqlMap = getSqlMap("insertLock");
-            getSqlMapClientTemplate().update(sqlMap, parameters);
-        }
-    }
-
     private void storeProperties(final ResourceImpl r) {
         
         for (Property p : r) {
@@ -993,6 +1121,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                         parameters.put("namespaceUri", property.getDefinition().getNamespace().getUri());
                         parameters.put("name", property.getDefinition().getName());
                         parameters.put("resourceId", r.getID());
+                        parameters.put("inheritable", property.getDefinition().isInheritable());
 
                         Value[] values;
                         if (property.getDefinition() != null && property.getDefinition().isMultiple()) {
@@ -1017,7 +1146,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             }
         });
     }
-
+    
     private void populateCustomProperties(ResourceImpl[] resources,
             List<Map<String, Object>> propertyRows) {
 
@@ -1027,10 +1156,10 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             resourceMap.put(resource.getID(), resource);
         }
 
-        Map<SqlDaoUtils.PropHolder, List<Object>> propValuesMap = new HashMap<SqlDaoUtils.PropHolder, List<Object>>();
+        Map<PropHolder, List<Object>> propValuesMap = new HashMap<PropHolder, List<Object>>();
 
         for (Map<String, Object> propEntry : propertyRows) {
-            SqlDaoUtils.PropHolder prop = new SqlDaoUtils.PropHolder();
+            PropHolder prop = new PropHolder();
             prop.propID = propEntry.get("id");
             prop.namespaceUri = (String) propEntry.get("namespaceUri");
             prop.name = (String) propEntry.get("name");
@@ -1050,7 +1179,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             }
         }
 
-        for (SqlDaoUtils.PropHolder propHolder : propValuesMap.keySet()) {
+        for (PropHolder propHolder : propValuesMap.keySet()) {
 
             ResourceImpl r = resourceMap.get(propHolder.resourceId);
 
@@ -1110,11 +1239,11 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
                     PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME, string));
         }
 
-        string = (String) resourceMap.get("contentLanguage");
-        if (string != null) {
-            resourceImpl.addProperty(createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME,
-                    string));
-        }
+//        string = (String) resourceMap.get("contentLanguage");
+//        if (string != null) {
+//            resourceImpl.addProperty(createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME,
+//                    string));
+//        }
 
         resourceImpl.addProperty(createProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME,
                 resourceMap.get("lastModified")));
@@ -1160,10 +1289,9 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         return prop;
     }
 
-    private Property createProperty(SqlDaoUtils.PropHolder holder) {
+    private Property createProperty(PropHolder holder) {
         Namespace namespace = this.resourceTypeTree.getNamespace(holder.namespaceUri);
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyTypeDefinition(namespace, holder.name);
-
         if (holder.binary) {
             BinaryValueReference[] refs = new BinaryValueReference[holder.values.size()];
             for (int i=0; i<refs.length; i++) {
@@ -1178,40 +1306,42 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             return propDef.createProperty(stringValues);
         }
     }
+    
+    private Property createInheritedProperty(PropHolder holder) {
+        PropertyImpl impl = (PropertyImpl) createProperty(holder);
+        impl.setInherited(true);
+        return impl;
+    }
 
     private Map<String, Object> getResourceAsMap(ResourceImpl r) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        String parentURI = null;
-        if (r.getURI().getParent() != null) {
-            parentURI = r.getURI().getParent().toString();
-        }
-        map.put("parent", parentURI);
-        // XXX: use Integer (not int) as aclInheritedFrom field:
-        map.put("aclInheritedFrom", r.getAclInheritedFrom() == PropertySetImpl.NULL_RESOURCE_ID ? null : new Integer(r
-                .getAclInheritedFrom()));
-        map.put("uri", r.getURI().toString());
-        map.put("resourceType", r.getResourceType());
+        Map<String, Object> resourceMap = new HashMap<String, Object>(32, 1.0f);
+        Path parentPath = r.getURI().getParent();
+        Integer aclInheritedFrom = r.getAclInheritedFrom() != PropertySetImpl.NULL_RESOURCE_ID ? r.getAclInheritedFrom() : null;
+        
+        resourceMap.put("parent", parentPath != null ? parentPath.toString() : null);
+        resourceMap.put("aclInheritedFrom", aclInheritedFrom);
+        resourceMap.put("uri", r.getURI().toString());
+        resourceMap.put("resourceType", r.getResourceType());
 
-        // XXX: get list of names from PropertyType.SPECIAL_PROPERTIES:
-        map.put("collection", r.isCollection() ? "Y" : "N");
-        map.put("owner", r.getOwner().getQualifiedName());
-        map.put("creationTime", r.getCreationTime());
-        map.put("createdBy", r.getCreatedBy().getQualifiedName());
-        map.put("contentType", r.getContentType());
-        map.put("characterEncoding", r.getCharacterEncoding());
-        map.put("userSpecifiedCharacterEncoding", r.getUserSpecifiedCharacterEncoding());
-        map.put("guessedCharacterEncoding", r.getGuessedCharacterEncoding());
+        resourceMap.put(PropertyType.COLLECTION_PROP_NAME, r.isCollection() ? "Y" : "N");
+        resourceMap.put(PropertyType.OWNER_PROP_NAME, r.getOwner().getQualifiedName());
+        resourceMap.put(PropertyType.CREATIONTIME_PROP_NAME, r.getCreationTime());
+        resourceMap.put(PropertyType.CREATEDBY_PROP_NAME, r.getCreatedBy().getQualifiedName());
+        resourceMap.put(PropertyType.CONTENTTYPE_PROP_NAME, r.getContentType());
+        resourceMap.put(PropertyType.CHARACTERENCODING_PROP_NAME, r.getCharacterEncoding());
+        resourceMap.put(PropertyType.CHARACTERENCODING_USER_SPECIFIED_PROP_NAME, r.getUserSpecifiedCharacterEncoding());
+        resourceMap.put(PropertyType.CHARACTERENCODING_GUESSED_PROP_NAME, r.getGuessedCharacterEncoding());
         // XXX: contentLanguage should be contentLocale:
-        map.put("contentLanguage", r.getContentLanguage());
-        map.put("lastModified", r.getLastModified());
-        map.put("modifiedBy", r.getModifiedBy().getQualifiedName());
-        map.put("contentLastModified", r.getContentLastModified());
-        map.put("contentModifiedBy", r.getContentModifiedBy().getQualifiedName());
-        map.put("propertiesLastModified", r.getPropertiesLastModified());
-        map.put("propertiesModifiedBy", r.getPropertiesModifiedBy().getQualifiedName());
-        map.put("contentLength", new Long(r.getContentLength()));
+//        map.put("contentLanguage", r.getContentLanguage());
+        resourceMap.put(PropertyType.LASTMODIFIED_PROP_NAME, r.getLastModified());
+        resourceMap.put(PropertyType.MODIFIEDBY_PROP_NAME, r.getModifiedBy().getQualifiedName());
+        resourceMap.put(PropertyType.CONTENTLASTMODIFIED_PROP_NAME, r.getContentLastModified());
+        resourceMap.put(PropertyType.CONTENTMODIFIEDBY_PROP_NAME, r.getContentModifiedBy().getQualifiedName());
+        resourceMap.put(PropertyType.PROPERTIESLASTMODIFIED_PROP_NAME, r.getPropertiesLastModified());
+        resourceMap.put(PropertyType.PROPERTIESMODIFIEDBY_PROP_NAME, r.getPropertiesModifiedBy().getQualifiedName());
+        resourceMap.put(PropertyType.CONTENTLENGTH_PROP_NAME, new Long(r.getContentLength()));
 
-        return map;
+        return resourceMap;
     }
 
     @Override
@@ -1269,16 +1399,6 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
         }
     }
 
-    @Required
-    public void setPrincipalFactory(PrincipalFactory principalFactory) {
-        this.principalFactory = principalFactory;
-    }
-
-    @Required
-    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
-        this.resourceTypeTree = resourceTypeTree;
-    }
-    
     @SuppressWarnings("serial")
     private class AclHolder extends HashMap<Privilege, Set<Principal>> {
 
@@ -1290,6 +1410,20 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
             }
             set.add(principal);
         }
+    }
+
+    @Required
+    public void setPrincipalFactory(PrincipalFactory principalFactory) {
+        this.principalFactory = principalFactory;
+    }
+
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+    
+    public void setOptimizedAclCopySupported(boolean optimizedAclCopySupported) {
+        this.optimizedAclCopySupported = optimizedAclCopySupported;
     }
 }
 

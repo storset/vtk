@@ -62,6 +62,7 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
     private Type type = PropertyType.Type.STRING;
     private boolean multiple = false;
     private boolean mandatory = false;
+    private boolean inheritable = false;
     private RepositoryAction protectionLevel = PropertyType.PROTECTION_LEVEL_ACL_WRITE;
     private Value defaultValue;
     private Value[] allowedValues;
@@ -230,6 +231,14 @@ public class PropertyTypeDefinitionImpl implements PropertyTypeDefinition, Initi
 
     public boolean isMultiple() {
         return this.multiple;
+    }
+    
+    public boolean isInheritable() {
+        return this.inheritable;
+    }
+    
+    public void setInheritable(boolean inheritable) {
+        this.inheritable = inheritable;
     }
 
     public void setDefaultValue(Value defaultValue) {

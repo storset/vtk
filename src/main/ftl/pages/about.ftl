@@ -288,9 +288,12 @@
       <#if prefix?is_string>
         ${prefix}
       </#if>
-      ${value?trim}<#compress>
+      <#compress>
       <#local l=vrtx.resourceLanguage()?string />
-      <#if value?trim != l?trim>, <@vrtx.msg "language.inherits" "inherits"/> ${l?lower_case}
+      <#if .vars['aboutItems'][propName].property.inherited>
+          <@vrtx.msg "resource.property.unset" "Not set"/>, <@vrtx.msg "language.inherits" "inherits"/> ${l?lower_case}
+      <#else>
+          ${l}
       </#if>
       </#compress>
       <#if editURL != "">
@@ -301,7 +304,6 @@
 </#macro>
 
 <#macro commentsEnabledPropertyDisplay propName name value prefix=false editURL="">
-  <#local result = vrtx.resolveInheritedProperty("commentsEnabled") />
   <tr class="prop-${propName}">
     <td class="key">
       ${name}:
@@ -310,13 +312,11 @@
       <#if prefix?is_string>
         ${prefix}
       </#if>
-      <#if result.localizedValue?exists>
-        ${result.localizedValue?trim}
-      <#else>
-        ${value?trim}
-      </#if>
+      ${value?trim}
       <#compress>
-      <#--if result.inherited>&nbsp;<@vrtx.msg "property.inherited"  "(inherited)" /></#if-->
+      <#if .vars['aboutItems'][propName].property?exists && .vars['aboutItems'][propName].property.inherited>
+         &nbsp;(<@vrtx.msg "resource.property.inherited"  "inherited" />)
+      </#if>
       </#compress>
       <#if editURL != "">
         ${editURL}

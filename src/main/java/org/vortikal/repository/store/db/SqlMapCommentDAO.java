@@ -53,15 +53,14 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
         this.principalFactory = principalFactory;
     }
 
+    @Override
     public int getNumberOfComments(Resource resource) throws RuntimeException {
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("uri", resource.getURI().toString());
-
         String sqlMap = getSqlMap("numberOfCommentsByResource");
-        Integer n =  (Integer) getSqlMapClientTemplate().queryForObject(sqlMap, parameters);
-        return n.intValue();
+
+        return (Integer) getSqlMapClientTemplate().queryForObject(sqlMap, resource.getURI().toString());
     }
     
+    @Override
     public List<Comment> listCommentsByResource(Resource resource,
             boolean deep, int max) throws RuntimeException {
         String sqlMap = deep ?
@@ -96,16 +95,19 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
         return comments;
     }
 
+    @Override
     public void deleteComment(Comment comment) {
         String sqlMap = getSqlMap("deleteComment");
         getSqlMapClientTemplate().delete(sqlMap, Integer.valueOf(comment.getID()));
     }
     
+    @Override
     public void deleteAllComments(Resource resource) {
         String sqlMap = getSqlMap("deleteAllComments");
         getSqlMapClientTemplate().delete(sqlMap, resource);
     }
 
+    @Override
     public Comment createComment(Comment comment) {
         String sqlMap = getSqlMap("insertComment");
         getSqlMapClientTemplate().insert(sqlMap, comment);
@@ -115,6 +117,7 @@ public class SqlMapCommentDAO extends AbstractSqlMapDataAccessor implements Comm
         return comment;
     }
     
+    @Override
     public Comment updateComment(Comment comment) {
         String sqlMap = getSqlMap("updateComment");
         getSqlMapClientTemplate().update(sqlMap, comment);

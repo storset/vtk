@@ -350,6 +350,23 @@ public class Cache implements DataAccessor, InitializingBean {
         
         return writtenResource;
     }
+    
+    @Override
+    public ResourceImpl storeLock(ResourceImpl r) throws DataAccessException {
+        ResourceImpl writtenResource = this.wrappedAccessor.storeLock(r); // Persist
+        // We don't do hierarchical locking:
+//        if (r.isCollection()) {
+//            this.items.remove(r.getURI(), true); 
+//        }
+
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("cache size : " + this.items.size());
+        }
+        
+        enterResource(writtenResource);
+        
+        return writtenResource;
+    }
 
     @Override
     public ResourceImpl store(final ResourceImpl resource) throws DataAccessException {

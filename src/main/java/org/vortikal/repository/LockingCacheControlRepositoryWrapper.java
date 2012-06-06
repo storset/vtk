@@ -49,7 +49,6 @@ import org.vortikal.repository.search.QueryException;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.store.Cache;
-import org.vortikal.repository.systemjob.SystemChangeContext;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 
@@ -453,14 +452,25 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     }
 
     @Override
-    public Resource store(String token, Resource resource, SystemChangeContext systemChangeContext) throws ResourceNotFoundException, AuthorizationException, AuthenticationException, ResourceLockedException, IllegalOperationException, ReadOnlyException, Exception {
+    public Resource store(String token, Resource resource, StoreContext storeContext) throws ResourceNotFoundException, AuthorizationException, AuthenticationException, ResourceLockedException, IllegalOperationException, ReadOnlyException, Exception {
         // Synchronize on:
-        // - URI
+        // - URI if NOT inheritable properties store
+        // - URI and all descendants if inheritable store
+        List<Path> lockUris = new ArrayList<Path>();
+        lockUris.add(resource.getURI());
+        if (storeContext instanceof InheritablePropertiesStoreContext) {
+            // XXX overkill to lock all descendants ?
+            lockUris.addAll(getCachedDescendants(resource.getURI()));
+        }
         
-        final List<Path> locked = this.lockManager.lock(resource.getURI(), true);
+        final List<Path> locked = this.lockManager.lock(lockUris, true);
         
         try {
-            return this.wrappedRepository.store(token, resource, systemChangeContext); // Tx
+            Resource r = this.wrappedRepository.store(token, resource, storeContext); // Tx
+            if (storeContext instanceof InheritablePropertiesStoreContext) {
+                flushFromCache(resource.getURI(), true, "store");
+            }
+            return r;
         } finally {
             this.lockManager.unlock(locked, true);
         }

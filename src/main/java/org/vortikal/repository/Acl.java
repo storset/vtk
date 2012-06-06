@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, University of Oslo, Norway
+/* Copyright (c) 2006-2012, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,8 @@ package org.vortikal.repository;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +43,12 @@ import java.util.Set;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
 
+/**
+ * Class representing a resource ACL as a set of privileges, where each
+ * privilege is mapped to a set of principals.
+ * 
+ * Objects of this class are immutable.
+ */
 public final class Acl {
     
     public static final Acl EMPTY_ACL = new Acl(Collections.<Privilege, Set<Principal>>emptyMap());
@@ -49,8 +56,7 @@ public final class Acl {
     /**
      * map: [Privilege --> Set(Principal)]
      */
-    private Map<Privilege, Set<Principal>> actionSets = 
-        new HashMap<Privilege, Set<Principal>>();
+    private final Map<Privilege, Set<Principal>> actionSets;
     
     public Acl(Map<Privilege, Set<Principal>> actionSets) {
         if (actionSets == null) {
@@ -258,7 +264,7 @@ public final class Acl {
 
 
     public Privilege[] getPrivilegeSet(Principal principal) {
-        Set<Privilege> actions = new HashSet<Privilege>();
+        Set<Privilege> actions = EnumSet.noneOf(Privilege.class);
         
         for (Map.Entry<Privilege, Set<Principal>> entry: this.actionSets.entrySet()) {
             Privilege action = entry.getKey();
@@ -270,58 +276,24 @@ public final class Acl {
         return actions.toArray(new Privilege[actions.size()]);
     }
 
-    
-    public boolean equals(Object o) {
-        if (!(o instanceof Acl)) {
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
             return false;
         }
-
-        Acl acl = (Acl) o;
-
-        if (acl == this) {
-            return true;
-        }
-
-        Set<Privilege> actions = this.actionSets.keySet();
-
-        if (actions.size() != acl.actionSets.keySet().size()) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
-
-        for (Privilege action: actions) {
-            if (!acl.actionSets.containsKey(action)) {
-                return false;
-            }
-
-            Set<Principal> myPrincipals = this.actionSets.get(action);
-            Set<Principal> otherPrincipals = acl.actionSets.get(action);
-
-            if (myPrincipals.size() != otherPrincipals.size()) {
-                return false;
-            }
-
-            for (Principal p: myPrincipals) {
-                if (!otherPrincipals.contains(p)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        final Acl other = (Acl) obj;
+        return this.actionSets.equals(other.actionSets);
     }
 
+    @Override
     public int hashCode() {
-        int hashCode = super.hashCode();
-
-        Set<Privilege> actions = this.actionSets.keySet();
-
-        for (Privilege action: actions) {
-            for (Principal p: this.actionSets.get(action)) {
-                hashCode += p.hashCode() + action.hashCode();
-            }
-        }
-        return hashCode;
+        return this.actionSets.hashCode();
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
@@ -350,7 +322,7 @@ public final class Acl {
     }
     
     private Map<Privilege, Set<Principal>> copyActionSets(Map<Privilege, Set<Principal>> actionSets) {
-        Map<Privilege, Set<Principal>> copy = new HashMap<Privilege, Set<Principal>>();
+        Map<Privilege, Set<Principal>> copy = new EnumMap<Privilege, Set<Principal>>(Privilege.class);
         for (Privilege privilege: actionSets.keySet()) {
             if (privilege == null) {
                 throw new IllegalArgumentException("Privileges cannot be NULL");

@@ -29,46 +29,49 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.vortikal.repository.resourcetype.property;
+package org.vortikal.repository;
 
-import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertyEvaluationContext;
-import org.vortikal.repository.StoreContext;
-import org.vortikal.repository.SystemChangeContext;
-import org.vortikal.repository.resourcetype.PropertyEvaluator;
-import org.vortikal.repository.resourcetype.Value;
+import java.util.ArrayList;
+import java.util.List;
 
-import net.sf.json.JSONObject;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 
 /**
- *
+ * Store context used for storing inheritable properties on a resource.
  */
-public class SystemJobStatusEvaluator implements PropertyEvaluator {
+public class InheritablePropertiesStoreContext implements StoreContext {
+    
+    private final List<PropertyTypeDefinition> affectedProperties;
+    
+    public InheritablePropertiesStoreContext() {
+        this.affectedProperties = new ArrayList<PropertyTypeDefinition>();
+    }
 
-    @Override
-    public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
-        
-        if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.SystemPropertiesChange) {
-            // Keep existing value for anything but system change evaluation.
-            return property.isValueInitialized();
+    public InheritablePropertiesStoreContext(List<PropertyTypeDefinition> defs) {
+        if (defs == null) {
+            throw new IllegalArgumentException("defs cannot be null");
         }
         
-        StoreContext storeContext = ctx.getStoreContext();
-        if (!(storeContext instanceof SystemChangeContext)) {
-            throw new IllegalArgumentException("Expected system change store context, but was: " + storeContext);
+        for (PropertyTypeDefinition def: defs) {
+            if (!def.isInheritable()) {
+                throw new IllegalArgumentException("Only inheritable properties can be selected in this context");
+            }
         }
         
-        Value updated = updateStatusValue(property.getValue(), (SystemChangeContext)storeContext);
-        property.setValue(updated);
-        return true;
+        this.affectedProperties = defs;
     }
     
-    private Value updateStatusValue(Value existing, SystemChangeContext context) {
-        JSONObject json = new JSONObject();
-        if (existing != null) {
-            json = existing.getJSONValue();
-        } 
-        json.put(context.getJobName(), context.getTimestampFormatted());
-        return new Value(json);
+    public void addAffectedProperty(PropertyTypeDefinition def) {
+        if (!def.isInheritable()) {
+            throw new IllegalArgumentException("Only inheritable properties can be set in this context");
+        }
+        if (!this.affectedProperties.contains(def)) {
+            this.affectedProperties.add(def);
+        }
     }
+    
+    public List<PropertyTypeDefinition> getAffectedProperties() {
+        return this.affectedProperties;
+    }
+    
 }

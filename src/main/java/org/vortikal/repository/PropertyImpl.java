@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumMap;
@@ -39,8 +38,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
-import net.sf.json.JSONObject;
 
 import org.vortikal.repository.resourcetype.ConstraintViolationException;
 import org.vortikal.repository.resourcetype.PropertyType;
@@ -52,6 +49,8 @@ import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.repository.resourcetype.ValueSeparator;
 import org.vortikal.security.Principal;
 
+import net.sf.json.JSONObject;
+
 
 /**
  * This class represents meta information about resources. A resource
@@ -62,7 +61,7 @@ import org.vortikal.security.Principal;
  * 
  * XXX: Fail in all getters if value not initialized ?
  */
-public class PropertyImpl implements Serializable, Cloneable, Property {
+public class PropertyImpl implements Cloneable, Property {
 
     private static final long serialVersionUID = 3762531209208410417L;
 
@@ -106,6 +105,41 @@ public class PropertyImpl implements Serializable, Cloneable, Property {
     private PropertyTypeDefinition propertyTypeDefinition;
     private Value value;
     private Value[] values;
+    private boolean inherited = false;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PropertyImpl other = (PropertyImpl) obj;
+        if (this.propertyTypeDefinition != other.propertyTypeDefinition && (this.propertyTypeDefinition == null || !this.propertyTypeDefinition.equals(other.propertyTypeDefinition))) {
+            return false;
+        }
+        if (this.value != other.value && (this.value == null || !this.value.equals(other.value))) {
+            return false;
+        }
+        if (!Arrays.deepEquals(this.values, other.values)) {
+            return false;
+        }
+        if (this.inherited != other.inherited) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 13 * hash + (this.propertyTypeDefinition != null ? this.propertyTypeDefinition.hashCode() : 0);
+        hash = 13 * hash + (this.value != null ? this.value.hashCode() : 0);
+        hash = 13 * hash + Arrays.deepHashCode(this.values);
+        hash = 13 * hash + (this.inherited ? 1 : 0);
+        return hash;
+    }
     
     @Override
     public Value getValue() {
@@ -124,6 +158,7 @@ public class PropertyImpl implements Serializable, Cloneable, Property {
         
         validateValue(value);
         this.value = value;
+        this.inherited = false;
     }
     
     @Override
@@ -134,6 +169,7 @@ public class PropertyImpl implements Serializable, Cloneable, Property {
         
         validateValues(values);
         this.values = values;
+        this.inherited = false;
     }
     
     @Override
@@ -289,50 +325,11 @@ public class PropertyImpl implements Serializable, Cloneable, Property {
                 clone.values[i] = (Value)this.values[i].clone();
             }
         }
+        clone.inherited = this.inherited;
         
         return clone;
     }
 
-    // XXX has equals, but no hashCode
-    //     We're probably getting away with that because we always look up these by namespace and name explicitly.
-    @Override
-    public boolean equals(Object obj) {
-        if ((obj == null) || !(obj instanceof Property)) return false;
-        
-        Property otherProp = (Property) obj;
-        
-        if (! this.getDefinition().getName().equals(otherProp.getDefinition().getName()) || 
-            ! this.getDefinition().getNamespace().equals(otherProp.getDefinition().getNamespace())) {
-            return false;
-        }
-        
-        if (this.propertyTypeDefinition.isMultiple()) {
-            
-            // Other prop must also be multiple, otherwise not equal
-            if (otherProp.getDefinition() == null ||
-                ! otherProp.getDefinition().isMultiple()) {
-                return false;
-            }
-            
-            Value[] otherValues = otherProp.getValues();
-            
-            // Other prop's value list must be equal
-            if (this.values.length != otherValues.length) return false;
-            
-            for (int i=0; i<this.values.length; i++) {
-                if (! this.values[i].equals(otherValues[i])) return false;
-            }
-            
-            return true;
-        }
-        // This property is not multiple (or lacks def), other prop cannot be multiple
-        if (otherProp.getDefinition() != null && otherProp.getDefinition().isMultiple()) {
-            return false;
-        }
-        
-        return this.value.equals(otherProp.getValue());
-    }
-    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -500,6 +497,15 @@ public class PropertyImpl implements Serializable, Cloneable, Property {
             throw new IllegalOperationException("Property " + this + " not of type BINARY or is BINARY multi-value");
         }
         return this.value.getBinaryValue().getContentType();
+    }
+    
+    @Override
+    public boolean isInherited() {
+        return this.inherited;
+    }
+    
+    public void setInherited(boolean inherited) {
+        this.inherited = inherited;
     }
 
 }

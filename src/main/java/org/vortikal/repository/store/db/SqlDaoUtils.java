@@ -75,13 +75,14 @@ final class SqlDaoUtils {
      * to multiple propIDs in database because of de-normalized storage of
      * multi-value properties.
      */
-    public static class PropHolder {
+    public static final class PropHolder {
         String namespaceUri = "";
         String name = "";
         int propTypeId;
         int resourceId;
         Object propID = null;
         boolean binary = false;
+        boolean inheritable = false;
         List<Object> values;
 
         @Override
@@ -114,5 +115,4 @@ final class SqlDaoUtils {
             return code;
         }
     }
-
 }

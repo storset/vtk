@@ -91,6 +91,17 @@ public interface Property extends Cloneable {
     public PropertyTypeDefinition getDefinition();
     
     public boolean isValueInitialized();
+
+    /**
+     * Returns
+     * <code>true</code> if it the property is
+     * inherited from an ancestor resource, which means it is not directly set on the
+     * resource from which it was retrieved.
+     *
+     * @return
+     * <code>true</code> if property is inherited from an ancestor resource.
+     */
+    public boolean isInherited();
     
     public Object clone() throws CloneNotSupportedException;
 
@@ -100,7 +111,7 @@ public interface Property extends Cloneable {
     
     public Type getType();
     
-    public void setBinaryValue(byte[] binary, String contentType) throws ValueFormatException;
+    public void setBinaryValue(byte[] contentBytes, String contentType) throws ValueFormatException;
 
     public ContentStream getBinaryStream() throws IllegalOperationException;
     

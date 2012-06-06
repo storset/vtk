@@ -86,6 +86,12 @@ public class ProcessedContentEventDumper extends AbstractRepositoryEventDumper {
     }
 
     @Override
+    public void modifiedInheritableProperties(Resource resource, Resource originalResource) {
+        // XXX recurse or not for this dumper ?
+        modified(resource,originalResource);
+    }
+
+    @Override
     public void modified(Resource resource, Resource originalResource) {
         ChangeLogEntry entry = changeLogEntry(this.loggerId, this.loggerType, resource.getURI(), 
                 Operation.MODIFIED_PROPS,

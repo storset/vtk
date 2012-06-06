@@ -38,7 +38,6 @@
     <property name="id" value="${repositoryID}" />
     <property name="tokenManager" ref="tokenManager" />
     <property name="authorizationManager" ref="authorizationManager" />
-    <property name="principalManager" ref="principalManager" />
     <property name="dao" ref="${repositoryBackend}" />
     <property name="revisionStore" ref="${repository.revisionStore}" />
     <property name="commentDAO" ref="${repository.commentDao}" />

@@ -192,7 +192,8 @@ create table extra_prop_entry
     name varchar2 (64) not null,
     value varchar2 (2048) not null,
     binary_content BLOB,
-    binary_mimetype varchar2 (64)
+    binary_mimetype varchar2 (64),
+    is_inheritable char(1) default 'N' not null
 );
 
 alter table extra_prop_entry
@@ -212,6 +213,7 @@ alter table extra_prop_entry
 -- ;
 
 create index extra_prop_entry_index1 on extra_prop_entry(resource_id);
+create index extra_prop_entry_index2 on extra_prop_entry(is_inheritable);
 
 -----------------------------------------------------------------------------
 -- changelog_entry

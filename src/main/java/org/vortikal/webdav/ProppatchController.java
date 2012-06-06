@@ -52,6 +52,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.IllegalOperationException;
+import org.vortikal.repository.InheritablePropertiesStoreContext;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -115,7 +116,21 @@ public class ProppatchController extends AbstractWebdavController  {
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("storing modified Resource");
             }
-            resource = repository.store(token, resource);
+            
+            // Allow to store contentLocale with inheritable-store-context:
+            InheritablePropertiesStoreContext sc = new InheritablePropertiesStoreContext();
+            for (Property prop: resource) {
+                PropertyTypeDefinition def = prop.getDefinition();
+                if (def.isInheritable() && PropertyType.CONTENTLOCALE_PROP_NAME.equals(def.getName()) && !prop.isInherited()) {
+                    sc.addAffectedProperty(def);
+                }
+            }
+
+            if (sc.getAffectedProperties().isEmpty()) {
+                resource = repository.store(token, resource);
+            } else {
+                resource = repository.store(token, resource, sc);
+            }
 
             XMLOutputter xmlOutputter = new XMLOutputter(format);
             String xml = xmlOutputter.outputString(doc);

@@ -71,6 +71,13 @@ public class ChangeHistoryEventDumper extends AbstractRepositoryEventDumper {
     }
 
     @Override
+    public void modifiedInheritableProperties(Resource resource, Resource originalResource) {
+        // XXX should probably flag modification of inheritable properties in log, but
+        //     for now, just delegate to regular modified(Resource,Resource)
+        modified(resource, originalResource);
+    }
+    
+    @Override
     public void modified(Resource resource, Resource originalResource) {
         Principal changer = SecurityContext.getSecurityContext().getPrincipal();
         boolean security = false;

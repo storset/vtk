@@ -215,7 +215,6 @@
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="name" value="commentsEnabled" />
     <property name="value" value="true" />
-    <property name="checkInherited" value="true" />
     <property name="token" ref="trustedToken" />
   </bean>
 

@@ -17,7 +17,7 @@
     <result property="propertiesModifiedBy" column="properties_modified_by" />
     <result property="modifiedBy" column="modified_by" />
     <result property="owner" column="resource_owner" />
-    <result property="contentLanguage" column="content_language" />
+<!--    <result property="contentLanguage" column="content_language" />-->
     <result property="contentType" column="content_type" />
     <result property="contentLength" column="content_length" javaType="long" />
     <result property="characterEncoding" column="character_encoding" />
@@ -48,7 +48,24 @@
     <result property="value" column="value" />
     <result property="binary" column="is_binary"
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
+    <result property="inheritable" column="is_inheritable"
+            typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>
+
+  <resultMap id="UriAndProperty" class="java.util.HashMap">
+    <result property="uri" column="uri" />
+    <result property="id" column="extra_prop_entry_id" javaType="int" />
+    <result property="resourceId" column="resource_id" javaType="int" />
+    <result property="name" column="name" />
+    <result property="namespaceUri" column="name_space" />
+    <result property="value" column="value" />
+    <result property="binary" column="is_binary"
+            typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
+    <result property="inheritable" column="is_inheritable"
+            typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
+  </resultMap>
+
+
 
 
   <resultMap id="AclEntry" class="java.util.HashMap">
@@ -94,6 +111,8 @@
     <result property="value" column="value" />
     <result property="binary" column="is_binary"
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
+    <result property="inheritable" column="is_inheritable"
+            typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>
   
   <!-- ChangeLog entry result mapping -->
@@ -126,7 +145,7 @@
       content_modified_by = #contentModifiedBy#,
       properties_modified_by = #propertiesModifiedBy#,
       resource_owner = #owner#,
-      content_language = #contentLanguage#,
+<!--      content_language = #contentLanguage#,-->
       content_type = #contentType#,
       character_encoding = #characterEncoding#,
       guessed_character_encoding = #guessedCharacterEncoding#,
@@ -154,7 +173,7 @@
        content_modified_by,
        properties_modified_by,
        resource_owner,
-       content_language,
+<!--       content_language,-->
        content_type,
        character_encoding,
        guessed_character_encoding,
@@ -177,7 +196,7 @@
        #contentModifiedBy#,
        #propertiesModifiedBy#,
        #owner#,
-       #contentLanguage#, 
+<!--       #contentLanguage#, -->
        #contentType#,
        #characterEncoding#,
        #guessedCharacterEncoding#,
@@ -205,7 +224,7 @@
        content_modified_by,
        properties_modified_by,
        resource_owner,
-       content_language,
+<!--       content_language,-->
        content_type,
        character_encoding,
        guessed_character_encoding,
@@ -235,8 +254,8 @@
       <isNotPropertyAvailable property="propertiesModifiedBy">properties_modified_by,</isNotPropertyAvailable>
       <isPropertyAvailable property="owner">#owner#,</isPropertyAvailable>
       <isNotPropertyAvailable property="owner">resource_owner,</isNotPropertyAvailable>
-      <isPropertyAvailable property="contentLanguage">#contentLanguage#,</isPropertyAvailable>
-      <isNotPropertyAvailable property="contentLanguage">content_language,</isNotPropertyAvailable>
+<!--      <isPropertyAvailable property="contentLanguage">#contentLanguage#,</isPropertyAvailable>-->
+<!--      <isNotPropertyAvailable property="contentLanguage">content_language,</isNotPropertyAvailable>-->
       <isPropertyAvailable property="contentType">#contentType#,</isPropertyAvailable>
       <isNotPropertyAvailable property="contentType">content_type,</isNotPropertyAvailable>
       <isPropertyAvailable property="characterEncoding">#characterEncoding#,</isPropertyAvailable>
@@ -438,6 +457,21 @@
     order by p.resource_id, p.extra_prop_entry_id
   </select>
   
+  <select id="loadInheritableProperties" parameterClass="java.util.Map"
+          resultMap="UriAndProperty">
+    select
+      r.uri,
+      p.*,
+      case when p.binary_content is null then 'N' else 'Y' end as is_binary
+    from vortex_resource r inner join extra_prop_entry p on p.resource_id = r.resource_id
+    where p.is_inheritable = 'Y'
+          and r.uri in 
+          <iterate prepend="" property="uris" open="(" close=")" conjunction=","> 
+               #uris[]# 
+          </iterate>
+    order by p.resource_id, p.extra_prop_entry_id
+  </select>
+
   <resultMap id="ByteArray" class="java.util.HashMap">
     <result property="byteArray" column="binary_content"
             typeHandler="org.springframework.orm.ibatis.support.BlobByteArrayTypeHandler" />
@@ -457,13 +491,15 @@
       (extra_prop_entry_id, resource_id, name_space, name, value
         <isNotEmpty property="binaryContent">
           , binary_content, binary_mimetype
-        </isNotEmpty>)
+        </isNotEmpty>
+        , is_inheritable)
     values (<include refid="nextExtraPropEntryId" />, #resourceId#, 
       #namespaceUri#, #name#, #value#
         <isNotEmpty property="binaryContent">
           , #binaryContent,handler=org.springframework.orm.ibatis.support.BlobByteArrayTypeHandler#,
           #binaryMimeType#
-        </isNotEmpty>)
+        </isNotEmpty>
+        , #inheritable,handler=org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback#)
   </insert>
   
   <insert id="copyProperties" parameterClass="java.util.Map">
@@ -474,7 +510,8 @@
        name,
        value,
        binary_content,
-       binary_mimetype)
+       binary_mimetype,
+       is_inheritable)
     select
       <include refid="nextExtraPropEntryId" />, t.*
       from
@@ -484,7 +521,8 @@
           p.name,
           p.value,
           p.binary_content,
-          p.binary_mimetype
+          p.binary_mimetype,
+          p.is_inheritable
         from vortex_resource r inner join extra_prop_entry p 
              on r.prev_resource_id = p.resource_id
         where (r.uri = #destUri# or r.uri like #destUriWildcard# escape '@')
@@ -748,18 +786,15 @@
     <result property="author" column="author"/>
     <result property="title" column="title"/>
 
-    <result property="content" column="content" typeHandler="org.springframework.orm.ibatis.support.ClobStringTypeHandler" />
+    <result property="content" column="content" javaType="java.lang.String" />
     <result property="approved" column="approved"
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>
 
-
-  <select id="numberOfCommentsByResource"
-          parameterClass="java.util.Map"
-          resultClass="Integer">
+  <select id="numberOfCommentsByResource" resultClass="java.lang.Integer">
     select count(c.id) as num
     from vortex_comment c inner join vortex_resource r on c.resource_id = r.resource_id
-    where r.uri = #uri#
+    where r.uri = #value#
   </select>
 
   <select id="listCommentsByResource"
@@ -810,7 +845,7 @@
     insert into vortex_comment 
       (id, resource_id, author, time, title, content, approved)
     select <include refid="nextVortexCommentId" />, r.resource_id, 
-           #author.qualifiedName#, #time#, #title#, #content,handler=org.springframework.orm.ibatis.support.ClobStringTypeHandler#,
+           #author.qualifiedName#, #time#, #title#, #content#,
            #approved,handler=org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback#
     from vortex_resource r where r.uri = #URI,handler=org.vortikal.repository.store.db.ibatis.PathTypeHandlerCallback#
   </insert>
@@ -929,6 +964,7 @@
     p.name_space,
     p.name,
     p.value,
+    p.is_inheritable,
     case when p.binary_content is null then 'N' else 'Y' end as is_binary
     from vortex_resource r
     left outer join extra_prop_entry p on r.resource_id = p.resource_id
@@ -942,6 +978,7 @@
            p.name_space,
            p.name,
            p.value,
+           p.is_inheritable,
            case when p.binary_content is null then 'N' else 'Y' end as is_binary
            from vortex_resource r
     left outer join extra_prop_entry p  on r.resource_id = p.resource_id
@@ -955,6 +992,7 @@
            p.name_space,
            p.name,
            p.value,
+           p.is_inheritable,
            case when p.binary_content is null then 'N' else 'Y' end as is_binary
        from vortex_tmp t, vortex_resource r
        left outer join extra_prop_entry p on r.resource_id = p.resource_id

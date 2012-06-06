@@ -817,6 +817,9 @@ public class ResourceTypeTreeImpl implements ResourceTypeTree, InitializingBean,
                         sb.append("(overriding)");
                     }
                 }
+                if (definition.isInheritable()) {
+                    sb.append(" (inheritable)");
+                }
                 sb.append("\n");
             }
         }

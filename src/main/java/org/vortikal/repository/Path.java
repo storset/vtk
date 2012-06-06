@@ -249,10 +249,11 @@ public final class Path implements Comparable<Path>, Serializable {
         if (isRoot())
             return null;
 
-        if (getDepth() == 1)
+        int lastSlashIdx = this.path.lastIndexOf('/');
+        if (lastSlashIdx == 0)
             return ROOT;
 
-        return instance(this.path.substring(0, this.path.lastIndexOf('/')));
+        return instance(this.path.substring(0, lastSlashIdx));
     }
 
     /**

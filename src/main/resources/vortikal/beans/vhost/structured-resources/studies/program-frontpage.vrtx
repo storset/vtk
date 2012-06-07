@@ -46,46 +46,24 @@ resourcetype program-frontpage : program-document {
   
   view-components {
  	
- 	years {
- 	##
- 		[def duration resource-prop(".", "duration")]
- 		[def duration duration + "kake"]
- 		[if duration = "1kake"]
- 			[localized 'year']
- 		[else]
- 			[localized 'years']
- 		[endif]
-	##
- 	}
- 	
+    years {
+      ##
+      [def duration resource-prop(".", "duration")]
+      [def duration duration + "kake"]
+      [if duration = "1kake"]
+        [localized 'year']
+      [else]
+        [localized 'years']
+      [endif]
+      ##
+    }
+
     program-type {
       ##
       [def type resource-prop(".", "program-type")]
       [if type != null]
         ([localized type])
       [endif]
-      ##
-    }
-    
-    introduction {      
-      ##
-      [def locale resource-locale()]  
-      [def thispath resource-prop("./","uri")]
-      [if locale = "en"]
-        [def uri thispath + '/why-choose/index.html']
-      [else]
-        [def uri thispath + '/hvorfor-velge/index.html']
-      [endif]      
-      [def f json-resource(uri)]
-      [if f != null]
-        [def published resource-prop(uri, "published") ]
-        [if published]      
-          [def intro f.properties.introduction]
-          <div class="vrtx-introduction">
-            [val intro # unescaped]
-          </div>
-        [endif]
-      [endif]        
       ##
     }
 
@@ -279,7 +257,7 @@ resourcetype program-frontpage : program-document {
 
 
   localization {
-  	name : (en : "Program name", no : "Programnavn", nn : "Programnamn"),
+    name : (en : "Program name", no : "Programnavn", nn : "Programnamn"),
     header : (en : "Edit programme frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
     fs-program-code : (en : "FS programme code", no : "FS-programkode", nn : "FS-programkode"),
     duration : (en : "Duration", no : "Studiet varer ", nn : "Varighet"),
@@ -327,7 +305,7 @@ resourcetype program-frontpage : program-document {
     hf : (en : "Faculty of Humanities", no : "Det humanistiske fakultet", nn : "Det humanistiske fakultet"),
   	jus : (en : "Faculty of Law", no : "Det juridiske fakultet", nn : "Det juridiske fakultet"),		      
 	matnat : (en : "Faculty of Mathematics and Natural Sciences",no : "Det matematisk-naturvitenskapelige fakultet", nn : "Det matematisk-naturvitenskapelige fakultet"),  
-	med : (en : "Faculty of Medicine", no : "Det medisinske fakultet", nn : "Det medisinske fakultet"),		      
+	med : (en : "Faculty of Medicine", no : "Det medisinske fakultet", nn : "Det medisinske fakultet"),
 	odont : (en : "Faculty of Dentistry", no : "Det odontologiske fakultet", nn : "Det odontologiske fakultet"),		      
 	sv : (en : "Faculty of Social Sciences", no : "Det samfunnsvitenskapelige fakultet", nn : "Det samfunnsvitenskapelige fakultet"), 	      
 	tf : (en : "Faculty of Theology", no : "Det teologiske fakultet", nn : "Det teologiske fakultet"),		      

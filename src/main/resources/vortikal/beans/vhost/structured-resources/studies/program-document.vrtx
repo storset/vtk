@@ -41,6 +41,31 @@ resourcetype program-document {
       [endif]
       ##
     }
+    
+
+    introduction {      
+      ##
+      [def locale resource-locale()]  
+      [def thispath resource-prop("./","uri")]
+      [if locale = "en"]
+        [def uri thispath + '/why-choose/index.html']
+      [else]
+        [def uri thispath + '/hvorfor-velge/index.html']
+      [endif]
+      [def f json-resource(uri)]
+      [if f != null]
+        [def published resource-prop(uri, "published") ]
+        [if published]      
+          [def intro f.properties.introduction]
+          [if intro != null && intro != ""]
+            <div class="vrtx-introduction">
+              [val intro # unescaped]
+            </div>
+          [endif]
+        [endif]
+      [endif]        
+      ##
+    }
   
     introduction-image {
       ##

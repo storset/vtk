@@ -19,7 +19,7 @@
   <bean id="evaluatorResolver" class="org.vortikal.resourcemanagement.property.EvaluatorResolver">
     <property name="serviceInvoker" ref="externalServiceInvoker" />
     <property name="htmlDigester" ref="htmlDigester" />
-    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
+    <property name="defaultLocale" value="${view.defaultLocale}" />
   </bean>
 
   <bean id="externalServiceInvoker" class="org.vortikal.resourcemanagement.service.ExternalServiceInvoker" />

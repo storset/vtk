@@ -36,13 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
-import net.sf.json.JSONObject;
-
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.support.RequestContextUtils;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
@@ -65,14 +59,15 @@ import org.vortikal.resourcemanagement.StructuredResourceDescription;
 import org.vortikal.resourcemanagement.service.ExternalServiceInvoker;
 import org.vortikal.text.html.HtmlDigester;
 import org.vortikal.util.text.JSON;
-import org.vortikal.web.RequestContext;
+
+import net.sf.json.JSONObject;
 
 public class EvaluatorResolver {
 
     // XXX Reconsider this whole setup. No good implementation.
     private ExternalServiceInvoker serviceInvoker;
     private HtmlDigester htmlDigester;
-    private LocaleResolver localeResolver;
+    private Locale defaultLocale;
 
 
     public PropertyEvaluator createPropertyEvaluator(PropertyDescription desc,
@@ -112,11 +107,13 @@ public class EvaluatorResolver {
             this.propertyDesc = desc;
         }
 
+        @Override
         public String toString() {
             return getClass().getName() + ": " + propertyDesc.getName();
         }
 
         @SuppressWarnings("unchecked")
+        @Override
         public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
             Object value = null;
@@ -204,6 +201,7 @@ public class EvaluatorResolver {
             this.resourceDesc = resourceDesc;
         }
 
+        @Override
         public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
             if (ctx.getEvaluationType() != PropertyEvaluationContext.Type.ContentChange
@@ -256,7 +254,7 @@ public class EvaluatorResolver {
             StringBuilder value = new StringBuilder();
             for (EvaluationElement evaluationElement : evaluationDescription.getEvaluationElements()) {
                 
-                String v = null;
+                String v;
                 if (evaluationElement.isString()) {
                     v = evaluationElement.getValue();
                 } else {
@@ -307,9 +305,16 @@ public class EvaluatorResolver {
                 Object obj = ctx.getEvaluationAttribute(propName);
                 return Boolean.valueOf(operator.equals(obj));
             case LOCALIZED:
-                RequestContext requestContext = RequestContext.getRequestContext();
-                HttpServletRequest request = requestContext.getServletRequest();                
-                Locale locale = localeResolver.resolveLocale(request);
+                // Fetch locale from original resource, since prop is inheritable and is
+                // probably not available in ctx.getNewResource().
+                Locale locale = ctx.getOriginalResource().getContentLocale();
+                if (locale == null) {
+                    locale = EvaluatorResolver.this.defaultLocale;
+                }
+//                RequestContext requestContext = RequestContext.getRequestContext();
+//                HttpServletRequest request = requestContext.getServletRequest();
+//                Locale locale = localeResolver.resolveLocale(request);
+                
                 return resourceDesc.getLocalizedMsg(propValue, locale, null);
             default:
                 return null;
@@ -335,11 +340,13 @@ public class EvaluatorResolver {
             this.propertyDesc = desc;
         }
 
+        @Override
         public String toString() {
             return getClass().getName() + ": " + propertyDesc.getName();
         }
 
         @SuppressWarnings("unchecked")
+        @Override
         public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
 
             if (property.isValueInitialized()
@@ -434,8 +441,8 @@ public class EvaluatorResolver {
     }
     
     @Required
-    public void setLocaleResolver(LocaleResolver localeResolver) {
-        this.localeResolver = localeResolver;
+    public void setDefaultLocale(Locale defaultLocale) {
+        this.defaultLocale = defaultLocale;
     }
 
 }

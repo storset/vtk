@@ -241,7 +241,7 @@
     <!-- should have a constraint -->
     <property name="vocabulary">
       <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
-          <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.properties.content-locale" />
+        <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.properties.content-locale" />
         <property name="values">
           <list>
             <bean class="org.vortikal.repository.resourcetype.Value">

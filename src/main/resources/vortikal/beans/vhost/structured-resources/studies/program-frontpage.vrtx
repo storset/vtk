@@ -260,7 +260,7 @@ resourcetype program-frontpage : program-document {
     name : (en : "Program name", no : "Programnavn", nn : "Programnamn"),
     header : (en : "Edit programme frontpage", no : "Rediger programforside", nn : "Rediger programforside"),
     fs-program-code : (en : "FS programme code", no : "FS-programkode", nn : "FS-programkode"),
-    duration : (en : "Duration", no : "Studiet varer ", nn : "Varighet"),
+    duration : (en : "Duration", no : "Studiet varer", nn : "Varighet"),
     year : (en : "year", no : "år", nn : "år"),
     years : (en : "years", no : "år", nn : "år"),
     study-points : (en : "Credits", no : "Studiepoeng", nn : "Studiepoeng"),

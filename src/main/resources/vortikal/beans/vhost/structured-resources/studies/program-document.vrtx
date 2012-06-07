@@ -41,7 +41,6 @@ resourcetype program-document {
       [endif]
       ##
     }
-    
 
     introduction {      
       ##
@@ -145,8 +144,7 @@ resourcetype program-document {
       [endif]
       ##
     }
-    
-    
+
     contact-box {
       ##
       [resource-props "."]
@@ -188,9 +186,8 @@ resourcetype program-document {
       [endif]
       ##
     }
-    
-   
-	additional-content(document, main-content) {
+
+    additional-content(document, main-content) {
       ##
       [resource-props "."]
       [def boxes document.properties.additional-content]

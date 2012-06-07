@@ -7,7 +7,8 @@ create index extra_prop_entry_index2 on extra_prop_entry(is_inheritable);
 
 -- Convert column vortex_resoruce.content_language to inheritable property
 -- stored in extra_prop_entry:
-insert into extra_prop_entry
+insert into extra_prop_entry(extra_prop_entry_id, resource_id, prop_type_id,
+                             name_space, name, value, binary_content, binary_mimetype, is_inheritable)
   select nextval('extra_prop_entry_seq_pk'), resource_id, 0, null, 'contentLocale', content_language, null, null, 'Y' from vortex_resource
   where content_language is not null;
 

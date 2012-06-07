@@ -3,11 +3,14 @@
 alter table extra_prop_entry add(is_inheritable char(1) default 'N' not null);
 
 -- Add index for new column is_inheritable on table extra_prop_entry:
+-- Drop first, since we have had an historic index with the same name before (for prop_type_id fk constraint):
+drop index extra_prop_entry_index2;
 create index extra_prop_entry_index2 on extra_prop_entry(is_inheritable);
 
 -- Convert column vortex_resoruce.content_language to inheritable property
 -- stored in extra_prop_entry:
-insert into extra_prop_entry
+insert into extra_prop_entry(extra_prop_entry_id, resource_id, prop_type_id,
+                             name_space, name, value, binary_content, binary_mimetype, is_inheritable)
   select extra_prop_entry_seq_pk.nextval, resource_id, 0, null, 'contentLocale', content_language, null, null, 'Y' from vortex_resource
   where content_language is not null;
 

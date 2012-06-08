@@ -516,6 +516,15 @@
   
 </#function>
 
+<#function fixRelativeMediaFile uri uriOrPath>
+  <#attempt>
+  <#if !uri?starts_with("/") && !uri?starts_with("http://") && !uri?starts_with("https://")>
+     <#return uriOrPath.getParent().expand(uri).toString()>
+  </#if>
+  <#recover></#recover>
+  <#return uri />
+</#function>
+
 
 <#function propResource resource propName prefix="">
   <#local prop = resource.getPropertyByPrefix(prefix, propName)?default("") />

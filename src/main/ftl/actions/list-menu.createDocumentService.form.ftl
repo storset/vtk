@@ -28,9 +28,9 @@
         </#if>
         <#if templates?has_content>
           <ul class="radio-buttons">
-            <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", descriptions, titles, names, true />
+            <@vrtx.formRadioButtons "createDocumentForm.sourceURI", templates, "<li>", "</li>", descriptions, titles, true />
           </ul>
-          <button id="initChangeTemplate" type="button" onclick="changeTemplate('${reverseTemplates[sourceURIBind]?html}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button>
+          <button id="initChangeTemplate" type="button" onclick="changeTemplate('${sourceURIBind?html}', <#if (titles?has_content && titles[sourceURIBind]?exists)>${titles[sourceURIBind]?string}<#else>false</#if>)"></button>
           
           <#-- If POST is not AJAX (otherwise it would be a funcComplete() in completeAsyncForm()) -->
           <script type="text/javascript"><!--

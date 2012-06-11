@@ -43,10 +43,9 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.templates.ResourceTemplate;
@@ -87,20 +86,13 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
 
         CreateCollectionCommand command = new CreateCollectionCommand(url);
 
-        Path uri = requestContext.getResourceURI();
-        String token = SecurityContext.getSecurityContext().getToken();
-
-        List<ResourceTemplate> templates = this.templateManager.getFolderTemplates(token, uri);
-
-        // Set first available template as the selected
-        if (!templates.isEmpty()) {
-            command.setSourceURI(NORMAL_FOLDER_IDENTIFIER);
-        }
+        // Set normal folder template as the selected
+        command.setSourceURI(NORMAL_FOLDER_IDENTIFIER);
 
         return command;
     }
 
-    @SuppressWarnings( { "unchecked" })
+    @SuppressWarnings({ "rawtypes" })
     protected Map referenceData(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Map<String, Object> model = new HashMap<String, Object>();
@@ -114,28 +106,17 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
                 servletRequest);
         Map<String, String> tmp = new LinkedHashMap<String, String>();
-        Map<String, String> reverseTemplates = new HashMap<String, String>();
 
         String standardCollectionName = new MessageLocalizer("property.standardCollectionName", "Standard collection",
                 null, springRequestContext).get(null).toString();
 
-        // puts normal folder lexicographically correct
+        // List normal folder first
+        tmp.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
+
         for (ResourceTemplate t : templates) {
-            if (standardCollectionName.compareTo(t.getTitle()) < 1) {
-                tmp.put(standardCollectionName, NORMAL_FOLDER_IDENTIFIER);
-                reverseTemplates.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
-            }
-            tmp.put(t.getTitle(), t.getUri().toString());
-            reverseTemplates.put(t.getUri().toString(), t.getTitle());
+            tmp.put(t.getUri().toString(), t.getTitle());
         }
 
-        if (!tmp.containsKey(standardCollectionName) && !tmp.isEmpty()) {
-            // if normal folder is lexicographically last
-            tmp.put(standardCollectionName, NORMAL_FOLDER_IDENTIFIER);
-            reverseTemplates.put(NORMAL_FOLDER_IDENTIFIER, standardCollectionName);
-        }
-
-        model.put("reverseTemplates", reverseTemplates);
         model.put("templates", tmp);
         return model;
     }

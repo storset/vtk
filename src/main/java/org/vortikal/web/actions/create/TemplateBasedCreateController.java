@@ -34,6 +34,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -49,8 +50,8 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.web.RequestContext;
@@ -61,13 +62,14 @@ import org.vortikal.web.templates.ResourceTemplateManager;
 @SuppressWarnings("deprecation")
 public class TemplateBasedCreateController extends SimpleFormController {
 
+    private final String titlePlaceholder = "#title#";
+
     private ResourceTemplateManager templateManager;
     private boolean downcaseNames = false;
     private Map<String, String> replaceNameChars;
     private String cancelView;
-    private PropertyTypeDefinition descriptionPropDef;
-    private final String titlePlaceholder = "#title#";
     private PropertyTypeDefinition[] removePropList;
+    private PropertyTypeDefinition descriptionPropDef;
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -81,10 +83,42 @@ public class TemplateBasedCreateController extends SimpleFormController {
         CreateDocumentCommand command = new CreateDocumentCommand(url);
 
         List<ResourceTemplate> l = this.templateManager.getDocumentTemplates(token, uri);
-        // Set first available template as the selected
+        // Set first available template
         if (!l.isEmpty()) {
-            command.setSourceURI(l.get(0).getUri().toString());
+            boolean hasDefault = false;
+            String name;
+            String[] split;
+            Resource r;
+            Property dp;
+            Repository repo = RequestContext.getRequestContext().getRepository();
+            for (ResourceTemplate t : l) {
+                try {
+                    r = repo.retrieve(token, t.getUri(), false);
+
+                    if ((dp = r.getProperty(this.descriptionPropDef)) != null) {
+                        name = dp.getFormattedValue();
+
+                        if (name.contains("|")) {
+                            // Need to escape | for split
+                            split = name.split("\\|");
+
+                            // Default
+                            if (split.length >= 3 && "default".equals(split[2])) {
+                                command.setSourceURI(t.getUri().toString());
+                                hasDefault = true;
+                                break;
+                            }
+                        }
+                    }
+                } catch (Exception ignore) {
+                }
+            }
+
+            // If no default template
+            if (!hasDefault)
+                command.setSourceURI(l.get(0).getUri().toString());
         }
+
         return command;
     }
 
@@ -96,51 +130,62 @@ public class TemplateBasedCreateController extends SimpleFormController {
         Path uri = requestContext.getResourceURI();
         List<ResourceTemplate> l = this.templateManager.getDocumentTemplates(token, uri);
 
-        Map<String, String> templates = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
-        Map<String, String> reverseTemplates = new HashMap<String, String>();
+        Map<String, String> sortmap = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, String> templates = new LinkedHashMap<String, String>();
         Map<String, String> descriptions = new HashMap<String, String>();
         Map<String, Boolean> titles = new HashMap<String, Boolean>();
-        Map<String, String> names = new HashMap<String, String>();
 
-        Property dp;
+        String name;
+        String[] split;
         Resource r;
-        boolean putName;
-        Repository repository = requestContext.getRepository();
+        Property dp;
+        Repository repo = RequestContext.getRequestContext().getRepository();
         for (ResourceTemplate t : l) {
-            putName = true;
-            r = repository.retrieve(token, t.getUri(), false);
-            if ((dp = r.getProperty(this.descriptionPropDef)) != null) {
-                String name = dp.getFormattedValue();
+            try {
+                r = repo.retrieve(token, t.getUri(), false);
 
-                if (name.contains("|")) {
-                    if (name.indexOf('|') + 1 < name.length())
-                        descriptions.put(t.getUri().toString(), name.substring(name.indexOf('|') + 1));
+                if ((dp = r.getProperty(this.descriptionPropDef)) != null) {
+                    name = dp.getFormattedValue();
 
-                    if ((name = name.substring(0, name.indexOf('|'))).length() > 0) {
-                        names.put(t.getUri().toString(), name);
-                        templates.put(name, t.getUri().toString());
-                        reverseTemplates.put(t.getUri().toString(), name);
-                    }
-                } else {
-                    templates.put(name, t.getUri().toString());
-                    reverseTemplates.put(t.getUri().toString(), name);
-                }
-                
-                putName = false;
+                    if (name.contains("|")) {
+                        // Need to escape | for split
+                        split = name.split("\\|");
+
+                        // Name
+                        if (split.length >= 1 && !"".equals(split[0]))
+                            name = split[0];
+                        else
+                            name = t.getName();
+
+                        // Description
+                        if (split.length >= 2 && !"".equals(split[1]))
+                            descriptions.put(t.getUri().toString(), split[1]);
+
+                        // Default or not
+                        if (split.length >= 3 && "default".equals(split[2]))
+                            templates.put(t.getUri().toString(), name);
+                        else
+                            sortmap.put(t.getUri().toString(), name);
+
+                    } else
+                        sortmap.put(t.getUri().toString(), name);
+
+                } else
+                    sortmap.put(t.getUri().toString(), t.getName());
+
+            } catch (Exception ignore) {
+                sortmap.put(t.getUri().toString(), t.getName());
             }
 
-            titles.put(t.getUri().toString(), r.getTitle().equals(this.titlePlaceholder));
-
-            if (putName) {
-                templates.put(t.getName(), t.getUri().toString());
-                reverseTemplates.put(t.getUri().toString(), t.getName());
-            }
+            // Title field
+            titles.put(t.getUri().toString(), t.getTitle().equals(this.titlePlaceholder));
         }
+        // Merge default templates and sorted templates
+        templates.putAll(sortmap);
+
         model.put("templates", templates);
-        model.put("reverseTemplates", reverseTemplates);
         model.put("descriptions", descriptions);
         model.put("titles", titles);
-        model.put("names", names);
         return model;
     }
 
@@ -194,10 +239,11 @@ public class TemplateBasedCreateController extends SimpleFormController {
         String filetype = sourceURI.toString().substring(sourceURI.toString().lastIndexOf('.'));
         if (!name.endsWith(filetype))
             name += filetype;
-        
+
         // Indexpages can only be html files
-        if (createDocumentCommand.getIsIndex() && !filetype.equals(".html")){
-            errors.rejectValue("name", "manage.create.index.invalid.filetype", "This is an invalid filetype for an indexpage");
+        if (createDocumentCommand.getIsIndex() && !filetype.equals(".html")) {
+            errors.rejectValue("name", "manage.create.index.invalid.filetype",
+                    "This is an invalid filetype for an indexpage");
             return;
         }
 
@@ -288,12 +334,12 @@ public class TemplateBasedCreateController extends SimpleFormController {
         this.removePropList = removePropList;
     }
 
-    public void setCancelView(String cancelView) {
-        this.cancelView = cancelView;
-    }
-
     public void setDescriptionPropDef(PropertyTypeDefinition descriptionPropDef) {
         this.descriptionPropDef = descriptionPropDef;
+    }
+
+    public void setCancelView(String cancelView) {
+        this.cancelView = cancelView;
     }
 
     public void setDowncaseNames(boolean downcaseNames) {

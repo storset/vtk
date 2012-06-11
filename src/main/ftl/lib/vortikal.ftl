@@ -157,17 +157,16 @@
 -->
 
 <#-- FIXME: Only works for CreateDocument -->
-<#macro formRadioButtons path options pre post descriptions=[] titles=[] names=[] cTN=false attributes="">
+<#macro formRadioButtons path options pre post descriptions=[] titles=[] cTN=false attributes="">
   <@spring.bind path/>
   <#list options?keys as key>
-    <#assign value = options[key]>
     ${pre}
-    <input type="radio" name="${spring.status.expression}" id="${value}" value="${value}"
-      <#if spring.status.value?default("") == value>checked="checked"</#if> 
-      <#if (cTN && titles?has_content && titles[value]?exists)>onclick="changeTemplate('${key}', ${titles[value]?string})"</#if> ${attributes} <@spring.closeTag/>
-    <label for="${value}"><#if names?has_content && names[value]?exists>${names[value]}<#else>${key}</#if></label>
-    <#if (descriptions?has_content && descriptions[value]?exists)>
-      <div class="radioDescription" id="${key}_description">${descriptions[value]}</div>
+    <input type="radio" name="${spring.status.expression}" id="${key}" value="${key}"
+      <#if spring.status.value?default("") == key>checked="checked"</#if> 
+      <#if (cTN && titles?has_content && titles[key]?exists)>onclick="changeTemplate('${key}', ${titles[key]?string})"</#if> ${attributes} <@spring.closeTag/>
+    <label for="${key}">${options[key]}</label>
+    <#if (descriptions?has_content && descriptions[key]?exists)>
+      <div class="radioDescription" id="${key}_description">${descriptions[key]}</div>
     </#if>
     ${post}
   </#list>

@@ -108,7 +108,8 @@ public class ProppatchController extends AbstractWebdavController  {
             /* Make sure the request is valid: */
             validateRequestBody(requestBody);
 
-            Document doc = doPropertyUpdate(resource, typeInfo, requestBody, principal);
+            InheritablePropertiesStoreContext sc = new InheritablePropertiesStoreContext();
+            Document doc = doPropertyUpdate(resource, requestBody, principal, typeInfo, sc);
             Format format = Format.getPrettyFormat();
             format.setEncoding("utf-8");
 
@@ -117,18 +118,10 @@ public class ProppatchController extends AbstractWebdavController  {
                 this.logger.debug("storing modified Resource");
             }
             
-            // Allow to store contentLocale with inheritable-store-context:
-            InheritablePropertiesStoreContext sc = new InheritablePropertiesStoreContext();
-            for (Property prop: resource) {
-                PropertyTypeDefinition def = prop.getDefinition();
-                if (def.isInheritable() && PropertyType.CONTENTLOCALE_PROP_NAME.equals(def.getName()) && !prop.isInherited()) {
-                    sc.addAffectedProperty(def);
-                }
-            }
-
             if (sc.getAffectedProperties().isEmpty()) {
                 resource = repository.store(token, resource);
             } else {
+                // One or more inheritable props are to be stored/removed
                 resource = repository.store(token, resource, sc);
             }
 
@@ -321,8 +314,8 @@ public class ProppatchController extends AbstractWebdavController  {
      * @exception InvalidRequestException if an error occurs
      */
     @SuppressWarnings("rawtypes")
-    protected Document doPropertyUpdate(Resource resource, TypeInfo typeInfo, Document requestBody, 
-            Principal principal)
+    protected Document doPropertyUpdate(Resource resource, Document requestBody, 
+            Principal principal, TypeInfo typeInfo, InheritablePropertiesStoreContext sc)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException,
         InvalidRequestException {
@@ -349,14 +342,14 @@ public class ProppatchController extends AbstractWebdavController  {
             String action = actionElement.getName();
 
             if (action.equals("set")) {
-                setProperties(propstat, resource, typeInfo, 
+                setProperties(propstat, resource,
                               actionElement.getChild(
-                                  "prop", WebdavConstants.DAV_NAMESPACE).getChildren());
+                                  "prop", WebdavConstants.DAV_NAMESPACE).getChildren(), typeInfo, sc);
                 
             } else if (action.equals("remove")) {
                 removeProperties(propstat, resource,
                                  actionElement.getChild(
-                                     "prop", WebdavConstants.DAV_NAMESPACE).getChildren());
+                                     "prop", WebdavConstants.DAV_NAMESPACE).getChildren(), typeInfo, sc);
 
             } else {
                 throw new InvalidRequestException(
@@ -378,8 +371,9 @@ public class ProppatchController extends AbstractWebdavController  {
     @SuppressWarnings("rawtypes")
     protected void setProperties(Element propstat,
                                  Resource resource,
+                                 List propElements,
                                  TypeInfo typeInfo,
-                                 List propElements)
+                                 InheritablePropertiesStoreContext sc)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException {
 
@@ -387,7 +381,7 @@ public class ProppatchController extends AbstractWebdavController  {
         for (Iterator elementIterator = propElements.iterator();
              elementIterator.hasNext();) {
             Element propElement = (Element) elementIterator.next();
-            setProperty(resultPropElement, resource, typeInfo, propElement);
+            setProperty(resultPropElement, resource, propElement, typeInfo, sc);
         }
         propstat.addContent(resultPropElement);
 
@@ -405,7 +399,8 @@ public class ProppatchController extends AbstractWebdavController  {
      * property, or a custom one, although at present only standard
      * DAV properties are supported.
      */
-    protected void setProperty(Element resultElement, Resource resource, TypeInfo typeInfo, Element propertyElement)
+    protected void setProperty(Element resultElement, Resource resource, Element propertyElement,
+            TypeInfo typeInfo, InheritablePropertiesStoreContext sc)
         throws ResourceNotFoundException, AuthorizationException,
         AuthenticationException, IllegalOperationException {
 
@@ -426,10 +421,12 @@ public class ProppatchController extends AbstractWebdavController  {
                     this.logger.debug("setting property 'getcontentlanguage' to '"
                                  + propertyElement.getText() + "'");
                 }
-                Property prop = typeInfo.createProperty(Namespace.DEFAULT_NAMESPACE, 
-                        PropertyType.CONTENTLOCALE_PROP_NAME);
+                PropertyTypeDefinition propDef = typeInfo.getPropertyTypeDefinition(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTLOCALE_PROP_NAME);
+                Property prop = propDef.createProperty();
                 prop.setStringValue(propertyElement.getText());
                 resource.addProperty(prop);
+                // Add to inheritable property store context to get proper persistence in backend
+                sc.addAffectedProperty(propDef);
                 
             } else if (propertyName.equals("getcontenttype")) {
                 if (this.logger.isDebugEnabled()) {
@@ -499,12 +496,12 @@ public class ProppatchController extends AbstractWebdavController  {
     
     @SuppressWarnings("rawtypes")
     protected void removeProperties(Element propstat, Resource resource, 
-            List propElements) {
+            List propElements, TypeInfo typeInfo, InheritablePropertiesStoreContext sc) {
         Element resultPropElement = new Element("prop", WebdavConstants.DAV_NAMESPACE);
         for (Iterator elementIterator = propElements.iterator();
              elementIterator.hasNext();) {
             Element theProperty = (Element) elementIterator.next();
-            removeProperty(resultPropElement, resource, theProperty);
+            removeProperty(resultPropElement, resource, theProperty, typeInfo, sc);
         }
         propstat.addContent(resultPropElement);
 
@@ -514,7 +511,8 @@ public class ProppatchController extends AbstractWebdavController  {
     }
     
 
-    protected void removeProperty(Element resultElement, Resource resource, Element propElement) {
+    protected void removeProperty(Element resultElement, Resource resource, Element propElement,
+            TypeInfo typeInfo, InheritablePropertiesStoreContext sc) {
         if (propElement.getNamespace().equals(WebdavConstants.DAV_NAMESPACE)) {
             return; 
         }

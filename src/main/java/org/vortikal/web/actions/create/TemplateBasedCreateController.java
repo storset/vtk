@@ -139,6 +139,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
         String[] split;
         Resource r;
         Property dp;
+        boolean noDefault = true;
         Repository repo = RequestContext.getRequestContext().getRepository();
         for (ResourceTemplate t : l) {
             try {
@@ -162,8 +163,10 @@ public class TemplateBasedCreateController extends SimpleFormController {
                             descriptions.put(t.getUri().toString(), split[1]);
 
                         // Default or not
-                        if (split.length >= 3 && "default".equals(split[2]))
+                        if (noDefault && split.length >= 3 && "default".equals(split[2])) {
                             templates.put(t.getUri().toString(), name);
+                            noDefault = false;
+                        }
                         else
                             sortmap.put(t.getUri().toString(), name);
 

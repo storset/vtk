@@ -73,7 +73,7 @@ resourcetype program-frontpage : program-document {
       [def locale resource-locale()]  
       [def thispath resource-prop("./","uri")]
       [if locale = 'en']
-        [def thispath thispath + '/program-options']
+        [def thispath thispath + '/programme-options']
       [else]
         [def thispath thispath + '/studieretninger']
       [endif]

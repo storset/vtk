@@ -95,7 +95,7 @@ resourcetype program-option-frontpage : program-document {
               [def thispath resource-prop("./","uri")]
               <div id="vrtx-program-links">
                 [if locale = "en"]
-                  [call "include:uri-menu" {"uri":thispath, "authenticated":"true", "include-children":"why-choose, learning-outcomes, admission, how-to-apply, structure, abroad, career, teaching-examinations"}]           
+                  [call "include:uri-menu" {"uri":thispath, "authenticated":"true", "include-children":"why-choose, learning-outcomes, admission, structure, abroad, career, teaching-examinations"}]           
                 [else]
                   [call "include:uri-menu" {"uri":thispath, "authenticated":"true", "include-children":"hvorfor-velge, hva-lerer-du, opptak, oppbygging, utlandet, jobb-studier, undervisning-eksamen"}]
                 [endif]

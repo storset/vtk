@@ -368,7 +368,7 @@ view {
     header : (en : "Edit document", no : "Rediger dokument", nn : "Rediger dokument"),
     opptak: (en : "How to apply?", no : "Hvordan søke?", nn : "Korleis søkje?"),
 
-	title : (en : "Application deadline and admissions", no : "Søknadsfrist og opptak", nn : "Søknadsfrist og opptak"),
+	title : (en : "Admission", no : "Søknadsfrist og opptak", nn : "Søknadsfrist og opptak"),
 
 	frist-frekvens-view : (en : "Frist og frekvens", no : "Frist og frekvens", nn : "Frist og frekvens"),
     frist-frekvens-admin : (en : "Admission: Application deadline and frequency (All)", no : "Opptak: Frist og frekvens (Alle)", nn : "Opptak: Frist og frekvens (Alle)"),

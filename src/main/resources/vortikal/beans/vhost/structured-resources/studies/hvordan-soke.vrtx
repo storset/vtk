@@ -368,7 +368,7 @@ view {
     header : (en : "Edit document", no : "Rediger dokument", nn : "Rediger dokument"),
     opptak: (en : "How to apply?", no : "Hvordan søke?", nn : "Korleis søkje?"),
 
-	title : (en : "Application deadline and admissions", no : "Søknadsfrist og opptak", nn : "Søknadsfrist og opptak"),
+	title : (en : "Admission", no : "Søknadsfrist og opptak", nn : "Søknadsfrist og opptak"),
 
 	frist-frekvens-view : (en : "Frist og frekvens", no : "Frist og frekvens", nn : "Frist og frekvens"),
     frist-frekvens-admin : (en : "Admission: Application deadline and frequency (All)", no : "Opptak: Frist og frekvens (Alle)", nn : "Opptak: Frist og frekvens (Alle)"),
@@ -419,7 +419,7 @@ view {
     opptakskrav-politiattest : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),
 
 	rangering-sokere-view : (en : "Ranking of applicants", no : "Rangering av søkere", nn : "Rangering av søkjarar"),
-    rangering-sokere : (en : "Ranking of applicants (SO)", no : "Rangering av søkere (Grunnstudier)", nn : "Rangering av søkjarar (Grunnstudium)"),					    	   
+    rangering-sokere : (en : "Ranking of applicants (All)", no : "Rangering av søkere (Alle)", nn : "Rangering av søkjarar (Alle)"),					    	   
     rangering-sokere-fri : (en : "Optional text", no : "Valgfri tekst", nn : "Valfri tekst"),
     rangering-av-sokere : (en : "Shared text", no : "Fellestekst", nn : "Fellestekst"),     
 

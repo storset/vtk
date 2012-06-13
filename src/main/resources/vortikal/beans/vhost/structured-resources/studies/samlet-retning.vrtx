@@ -57,12 +57,17 @@ resourcetype samlet-retning : samlet {
 			[if facts.resourcetype = "program-option-frontpage"]
 	            [call "comp:program-option-facts"]
    		        [call "comp:include-study-file" {"file" : "hvorfor-velge"}]
+   		        [call "comp:include-study-file" {"file" : "why-choose"}]
            		[call "comp:include-study-file" {"file" : "hva-lerer-du"}]
+           		[call "comp:include-study-file" {"file" : "learning-outcomes"}]
 				[call "comp:include-opptak"]
 				[call "comp:include-oppbygging"]
            		[call "comp:include-study-file" {"file" : "undervisning-eksamen"}]
+           		[call "comp:include-study-file" {"file" : "teaching-examinations"}]
            		[call "comp:include-study-file" {"file" : "utlandet"}]
+           		[call "comp:include-study-file" {"file" : "abroad"}]
            		[call "comp:include-study-file" {"file" : "jobb-studier"}]
+           		[call "comp:include-study-file" {"file" : "career"}]
            		[call "comp:include-study-contact"]
            	[else]
            		Finner ikke studieretningsforside
@@ -74,11 +79,6 @@ resourcetype samlet-retning : samlet {
     ##
   }
   localization {
-  	samlet-retning : (en: "Full description of the programme option", no: "Samlet studieretningsbeskrivelse", nn: "Samlet studieretningsbeskrivelse"),
-  	program-affiliation : (en : "The programme option is part of the programme", no : "Studieretningen hører til programmet", nn : "Studieretninga høyrer til studieprogrammet"),
-  	prog-opt-name : (en: "Programme option name", no: "Studieretningsnavn", nn: "Studieretningsnamn"),
-  	prog-opt-no : (en: "bokmål", no: "bokmål", nn: "bokmål"),
-  	prog-opt-nn : (en: "nynorsk", no: "nynorsk", nn: "nynorsk"),
-  	prog-opt-en : (en: "english", no: "engelsk", nn: "engelsk")
+  	program-affiliation : (en : "The programme option is part of the programme", no : "Studieretningen hører til programmet", nn : "Studieretninga høyrer til studieprogrammet")
   }
 }

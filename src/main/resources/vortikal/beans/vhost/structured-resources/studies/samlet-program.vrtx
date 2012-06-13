@@ -9,7 +9,48 @@ resourcetype samlet-program : samlet {
 	}
 	
 	view-components {
-		
+		programkode {
+		##
+			[def progpath resource-prop("./", "uri")]
+			[def thispath progpath + '/index.html']
+			[def facts json-resource(thispath)]
+			[if facts.properties.fs-program-code != "" && facts.properties.fs-program-code != null]
+				[val facts.properties.fs-program-code # unescaped]
+			[endif]
+		## 
+		}
+		program-facts {
+			##
+				[def progpath resource-prop("./", "uri")]
+				[def thispath progpath + '/index.html']
+				[def facts json-resource(thispath)]
+				[if (facts.properties.name-no != "" && facts.properties.name-no != null) || (facts.properties.name-nn != "" && facts.properties.name-nn != null) || (facts.properties.name-en != "" && facts.properties.name-en != null)]
+					[if facts.properties.name != "" && facts.properties.name != null]
+						[def progType facts.properties.program-type]
+						<h1>[val facts.properties.name # unescaped] ([localized progType])</h1>
+					[endif]
+					[if facts.properties.duration != "" && facts.properties.duration != null]
+						<p><strong>[localized 'duration']:</strong> [val facts.properties.duration # unescaped] [localized 'aar']</p>
+					[endif]
+					[if facts.properties.faculty != "" && facts.properties.faculty != null]
+						[def faculty facts.properties.faculty.get(0)]
+						<p><strong>[localized 'faculty']:</strong> [localized faculty]</p>
+					[endif]
+					<h2>[localized 'prog-name']</h2>
+					<p>
+					[if facts.properties.name-no != "" && facts.properties.name-no != null]
+						[val facts.properties.name-no # unescaped] ([localized 'prog-opt-no'])<br />
+					[endif]
+					[if facts.properties.name-nn != "" && facts.properties.name-nn != null]
+						[val facts.properties.name-nn # unescaped] ([localized 'prog-opt-nn'])<br />
+					[endif]
+					[if facts.properties.name-en != "" && facts.properties.name-en != null]
+						[val facts.properties.name-en # unescaped] ([localized 'prog-opt-en'])<br />
+					[endif]
+					</p>
+				[endif]
+			##
+			}
 	}
 	
 	view {
@@ -23,8 +64,9 @@ resourcetype samlet-program : samlet {
         	<div id="vrtx-content">
           	[resources-props "."]
         	[def document structured-document()]
-          	<div id="vrtx-main-content" class="vrtx-hide-additional-content-true"> 
-            <h1>[localized 'samlet']</h1>
+          	<div id="vrtx-main-content" class="vrtx-hide-additional-content-true">
+          	<div>[localized 'samlet']<span class="programkode">[call "comp:programkode"]</span></div>    
+             [call "comp:program-facts"]
              [call "comp:include-study-file" {"file" : "hvorfor-velge"}]
              [call "comp:include-study-file" {"file" : "why-choose"}]
              [call "comp:include-study-file" {"file" : "hva-lerer-du"}]

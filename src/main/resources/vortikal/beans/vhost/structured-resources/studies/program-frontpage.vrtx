@@ -134,6 +134,7 @@ resourcetype program-frontpage : program-document {
       [def points resource-prop(".","study-points")]
       [def code resource-prop(".","fs-program-code")]
       [def faculty resource-prop(".","faculty")]
+      [def org resource-prop(".","full-time")]
       <h2>[localized 'facts']</h2>
       <table id="vrtx-program-facts">
         <tbody> 
@@ -142,6 +143,9 @@ resourcetype program-frontpage : program-document {
           [endif]
           [if dur != null]
             <tr><td class="vrtx-program-fact-header">[localized 'duration']:</td><td><strong>[val dur] [call "comp:years"]</strong></td></tr>
+          [endif]
+          [if org != true]
+          	<tr><td class="vrtx-program-fact-header">[localized 'organization']:</td><td><strong>[localized 'parttime']</strong></td></tr>
           [endif]
         </tbody>
       </table>
@@ -279,6 +283,7 @@ resourcetype program-frontpage : program-document {
     interviewUrl : (en : "Webaddress", no : "Webadresse", nn : "Webadresse"),
 
     full-time : (en : "Full time study?", no : "Organisering", nn : "Organisering"),
+    organization : (en : "Full time study?", no : "Organisering", nn : "Organisering"),
     fulltime : (en : "Full time study", no : "Fulltidsstudium", nn : "Fulltidsstudium"),
     parttime : (en : "Part-time study", no : "Deltidsstudium", nn : "Deltidsstudium"),
 

@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.i18n.AbstractLocaleResolver;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -46,15 +47,16 @@ import org.vortikal.web.RequestContext;
  * Resolves locale for resources. If no locale is set on resource, then
  * a configurable default Locale is returned.
  */
-public class ResourceAwareLocaleResolver implements LocaleResolver {
+public class ResourceAwareLocaleResolver extends AbstractLocaleResolver {
 
-//    protected static final String LOCALE_CACHE_REQUEST_ATTRIBUTE_NAME = ResourceAwareLocaleResolver.class.getName()
-//            + ".RequestAttribute";
-
-    private Locale defaultLocale;
     private String trustedToken;
     private Repository repository;
 
+    /**
+     * @see LocaleResolver#resolveLocale(javax.servlet.http.HttpServletRequest) 
+     * @param request
+     * @return 
+     */
     @Override
     public Locale resolveLocale(HttpServletRequest request) {
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -62,6 +64,12 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
         return resolveResourceLocale(uri);
     }
 
+    /**
+     * Resolve locale for resource at URI. If no locale is set, the default
+     * locale is returned.
+     * @param uri
+     * @return 
+     */
     public Locale resolveResourceLocale(Path uri) {
         Locale locale = null;
         try {
@@ -70,14 +78,21 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
         } catch (Exception e) {}
 
         if (locale == null) {
-            return this.defaultLocale;
+            return getDefaultLocale();
         } else {
             return locale;
         }
     }
     
+    /**
+     * Resolve locale for resource. If resource has no locale set, the default
+     * locale is returned.
+     * @param resource
+     * @return 
+     */
     public Locale resolveResourceLocale(Resource resource) {
-        return resource.getContentLocale() != null ? resource.getContentLocale() : this.defaultLocale;
+        Locale locale = resource.getContentLocale();
+        return locale != null ? locale : getDefaultLocale();
     }
     
 //    public Locale resolveResourceLocaleOld(Path uri) {
@@ -143,15 +158,6 @@ public class ResourceAwareLocaleResolver implements LocaleResolver {
                 "This locale resolver does not support explicitly setting the request locale");
     }
     
-    /**
-     * Set the default locale that this resolver will return if the request does
-     * not contain a cookie. If the default locale is not set, the accept header
-     * locale of the client is returned.
-     */
-    public void setDefaultLocale(Locale defaultLocale) {
-        this.defaultLocale = defaultLocale;
-    }
-
     public void setTrustedToken(String trustedToken) {
         this.trustedToken = trustedToken;
     }

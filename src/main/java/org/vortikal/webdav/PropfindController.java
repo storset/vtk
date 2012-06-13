@@ -351,7 +351,6 @@ public class PropfindController extends AbstractWebdavController {
         if (!(depth.equals("1") || depth.equals("infinity"))) {
             return descendants;
         }
-        
 
         Resource[] resourceArray = new Resource[0];
 
@@ -359,8 +358,10 @@ public class PropfindController extends AbstractWebdavController {
 
             /* List immediate children: */
 
-            resourceArray = repository.listChildren(token, uri, false);          
-            this.logger.debug("Number of children: " + resourceArray.length);
+            resourceArray = repository.listChildren(token, uri, false);
+            if (this.logger.isDebugEnabled()) {
+                this.logger.debug("Number of children: " + resourceArray.length);
+            }
 
         } else if (depth.equals("infinity")) {
 

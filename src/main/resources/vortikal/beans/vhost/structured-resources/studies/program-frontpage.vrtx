@@ -136,6 +136,7 @@ resourcetype program-frontpage : program-document {
       [def faculty resource-prop(".","faculty")]
       [def org resource-prop(".","full-time")]
       <h2>[localized 'facts']</h2>
+      [def org org + 'check'] 
       <table id="vrtx-program-facts">
         <tbody> 
           [if points != null]
@@ -144,7 +145,7 @@ resourcetype program-frontpage : program-document {
           [if dur != null]
             <tr><td class="vrtx-program-fact-header">[localized 'duration']:</td><td><strong>[val dur] [call "comp:years"]</strong></td></tr>
           [endif]
-          [if org != true]
+          [if org = 'falsecheck']
           	<tr><td class="vrtx-program-fact-header">[localized 'organization']:</td><td><strong>[localized 'parttime']</strong></td></tr>
           [endif]
         </tbody>

@@ -786,7 +786,7 @@
     <result property="author" column="author"/>
     <result property="title" column="title"/>
 
-    <result property="content" column="content" javaType="java.lang.String" />
+    <result property="content" column="content" typeHandler="org.springframework.orm.ibatis.support.ClobStringTypeHandler" />
     <result property="approved" column="approved"
             typeHandler="org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback"/>
   </resultMap>
@@ -845,7 +845,8 @@
     insert into vortex_comment 
       (id, resource_id, author, time, title, content, approved)
     select <include refid="nextVortexCommentId" />, r.resource_id, 
-           #author.qualifiedName#, #time#, #title#, #content#,
+           #author.qualifiedName#, #time#, #title#,
+           #content,handler=org.springframework.orm.ibatis.support.ClobStringTypeHandler#,
            #approved,handler=org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback#
     from vortex_resource r where r.uri = #URI,handler=org.vortikal.repository.store.db.ibatis.PathTypeHandlerCallback#
   </insert>

@@ -856,7 +856,7 @@
       set author = #author#,
           time = #time#,
           title = #title#,
-          content = #content#,
+          content = #content,handler=org.springframework.orm.ibatis.support.ClobStringTypeHandler#,
           approved = #approved,handler=org.vortikal.repository.store.db.ibatis.BooleanCharTypeHandlerCallback#
       where id = #ID#
   </update>

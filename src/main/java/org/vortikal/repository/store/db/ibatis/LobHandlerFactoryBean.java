@@ -37,8 +37,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.FactoryBeanNotInitializedException;
 
@@ -56,18 +54,14 @@ public class LobHandlerFactoryBean implements FactoryBean<LobHandler>, Initializ
 
     private String sqlDialect;
     private LobHandler lobHandler;
-    private Log logger = LogFactory.getLog(getClass());
     
     @Override
     public void afterPropertiesSet() throws Exception {
         if ("oracle".equals(this.sqlDialect)) {
-            logger.info("--- Using OracleLobHandler");
             this.lobHandler = new OracleLobHandler();
         } else if ("postgresql".equals(this.sqlDialect)) {
-            logger.info("--- Using PGLobHandler");
             this.lobHandler = new PGLobHandler();
         } else {
-            logger.info("--- Using DefaultLobHandler");
             this.lobHandler = new DefaultLobHandler();
         }
     }
@@ -77,7 +71,6 @@ public class LobHandlerFactoryBean implements FactoryBean<LobHandler>, Initializ
         if (this.lobHandler == null) {
             throw new FactoryBeanNotInitializedException();
         }
-        logger.info("--- getObject() init ok");
         return this.lobHandler;
     }
 

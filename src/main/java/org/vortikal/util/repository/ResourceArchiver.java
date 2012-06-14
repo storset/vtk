@@ -59,6 +59,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Comment;
+import org.vortikal.repository.InheritablePropertiesStoreContext;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
@@ -73,8 +74,8 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.resourcetype.ValueFormatter;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.Principal.Type;
+import org.vortikal.security.PrincipalFactory;
 
 public class ResourceArchiver {
 
@@ -102,12 +103,15 @@ public class ResourceArchiver {
     }
 
     private static final EventListener NULL_LISTENER = new EventListener() {
+        @Override
         public void expanded(Path uri) {
         }
 
+        @Override
         public void archived(Path uri) {
         }
 
+        @Override
         public void warn(Path uri, String msg) {
             logger.warn(uri + ": " + msg);
         }
@@ -365,6 +369,11 @@ public class ResourceArchiver {
     private void addProperties(Resource r, PrintWriter out) throws Exception {
         int propCounter = 0;
         for (Property property : r) {
+            if (property.isInherited()) {
+                // Skip inherited properties
+                continue;
+            }
+            
             PropertyTypeDefinition propDef = property.getDefinition();
             Namespace namespace = propDef.getNamespace();
 
@@ -539,14 +548,14 @@ public class ResourceArchiver {
             int subStringIndex = baseResourceToArchivePath.isRoot() ? baseResourceToArchivePath.toString().length()
                     : baseResourceToArchivePath.toString().length() + 1;
             String archivedCommentParentPath = archivedResourcePath.toString().substring(subStringIndex);
-            sb.append("X-vrtx-comment-parent: " + archivedCommentParentPath + "\n");
-            sb.append("X-vrtx-comment-author: " + comment.getAuthor() + "\n");
+            sb.append("X-vrtx-comment-parent: ").append(archivedCommentParentPath).append("\n");
+            sb.append("X-vrtx-comment-author: ").append(comment.getAuthor()).append("\n");
             String title = comment.getTitle();
             if (title != null && !"".equals(title.trim())) {
-                sb.append("X-vrtx-comment-title: " + comment.getTitle() + "\n");
+                sb.append("X-vrtx-comment-title: ").append(comment.getTitle()).append("\n");
             }
-            sb.append("X-vrtx-comment-time: " + comment.getTime() + "\n");
-            sb.append("X-vrtx-comment-content: " + comment.getContent());
+            sb.append("X-vrtx-comment-time: ").append(comment.getTime()).append("\n");
+            sb.append("X-vrtx-comment-content: ").append(comment.getContent());
             jo.write(sb.toString().getBytes());
         }
     }
@@ -565,11 +574,13 @@ public class ResourceArchiver {
         Acl acl = Acl.EMPTY_ACL;
         boolean aclModified = false;
 
+        InheritablePropertiesStoreContext sc = new InheritablePropertiesStoreContext();
+        
         for (Object key : attributes.keySet()) {
 
             String name = key.toString();
             if (name.startsWith("X-vrtx-prop-")) {
-                if (setProperty(resource, name, attributes, decode, listener)) {
+                if (setProperty(resource, name, attributes, decode, sc, listener)) {
                     propsModified = true;
                 }
             } else if (name.startsWith("X-vrtx-acl-")) {
@@ -578,7 +589,11 @@ public class ResourceArchiver {
             }
         }
         if (propsModified) {
-            this.repository.store(token, resource);
+            if (!sc.getAffectedProperties().isEmpty()) {
+                this.repository.store(token, resource, sc);
+            } else {
+                this.repository.store(token, resource);
+            }
         }
 
         if (!aclModified) {
@@ -589,7 +604,7 @@ public class ResourceArchiver {
     }
 
     private boolean setProperty(Resource resource, String name, Attributes attributes, boolean decode,
-            EventListener listener) throws Exception {
+            InheritablePropertiesStoreContext sc, EventListener listener) throws Exception {
         String valueString = attributes.getValue(name);
         if (decode) {
             valueString = decodeValue(valueString);
@@ -626,6 +641,12 @@ public class ResourceArchiver {
         } else {
             prop.setValue(valueFormatter.stringToValue(rawValue.trim(), format, null));
         }
+        
+        if (propDef.isInheritable()) {
+            // Make sure inheritable props are re-created as well
+            sc.addAffectedProperty(propDef);
+        }
+        
         return true;
     }
 
@@ -647,8 +668,6 @@ public class ResourceArchiver {
             idx = i + 1;
         }
 
-        String name = null;
-
         if (!valueString.substring(idx).startsWith("name:")) {
             return null;
         }
@@ -657,7 +676,7 @@ public class ResourceArchiver {
         while (valueString.charAt(nameEndIdx) != ' ') {
             nameEndIdx++;
         }
-        name = valueString.substring(idx, nameEndIdx);
+        String name = valueString.substring(idx, nameEndIdx);
         return this.resourceTypeTree.getPropertyDefinitionByPrefix(prefix, name);
     }
 
@@ -774,37 +793,46 @@ public class ResourceArchiver {
             this.in = in;
         }
 
+        @Override
         public int available() throws IOException {
             return this.in.available();
         }
 
+        @Override
         public void close() throws IOException {
         }
 
+        @Override
         public void mark(int readLimit) {
             this.in.mark(readLimit);
         }
 
+        @Override
         public void reset() throws IOException {
             this.in.reset();
         }
 
+        @Override
         public boolean markSupported() {
             return false;
         }
 
+        @Override
         public int read() throws IOException {
             return this.in.read();
         }
 
+        @Override
         public int read(byte[] b) throws IOException {
             return this.in.read(b);
         }
 
+        @Override
         public int read(byte[] b, int off, int len) throws IOException {
             return this.in.read(b, off, len);
         }
 
+        @Override
         public long skip(long n) throws IOException {
             return this.in.skip(n);
         }
@@ -876,11 +904,10 @@ public class ResourceArchiver {
                     if (ignored.toString().equals("")) {
                         ignored.append("Ignoring the following resources:");
                     }
-                    ignored.append("\n  " + ignorableResource);
+                    ignored.append("\n  ").append(ignorableResource);
                 }
             }
             logger.info(ignored);
         }
     }
-
 }

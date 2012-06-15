@@ -89,7 +89,6 @@ resourcetype program-option-frontpage : program-document {
             <div id="vrtx-program-option-main" class="vrtx-frontpage-box white-box">
               [call "resource:program-option-language-link"]
               <h1>[call "comp:title"]</h1> 
-              [call "comp:status"]
               [call "comp:introduction-image"]         
               [call "comp:introduction"]         
               [def thispath resource-prop("./","uri")]

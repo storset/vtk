@@ -56,12 +56,18 @@ public class LastModifiedReporter extends DocumentReporter {
     protected Search getSearch(String token, Resource resource, HttpServletRequest request) {
         AndQuery query = new AndQuery();
 
-        if (termIN)
+        if (termIN) {
             query.add(new TypeTermQuery(type, TermOperator.IN));
-        else
+            System.err.println("\n\ntermIN == true\n\n");
+        } else {
             query.add(new TypeTermQuery(type, TermOperator.EQ));
+            System.err.println("\n\ntermIN == false\n\n");
+        }
 
-        query.add(new UriPrefixQuery(resource.getURI().toString(), false));
+        /* In current resource but not in /vrtx. */
+        UriPrefixQuery upq = new UriPrefixQuery(resource.getURI().toString(), false);
+        upq.setIncludeSelf(false);
+        query.add(upq);
         query.add(new UriPrefixQuery("/vrtx", true));
 
         Search search = new Search();

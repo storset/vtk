@@ -70,9 +70,11 @@ public class OtherReporter extends DocumentReporter {
         q.add(new TypeTermQuery("html", TermOperator.NI));
         q.add(new TypeTermQuery("managed-xml", TermOperator.NI));
         q.add(new TypeTermQuery("json-resource", TermOperator.NI));
-        
+
         /* In current resource but not in /vrtx. */
-        q.add(new UriPrefixQuery(currentResource.getURI().toString(), false));
+        UriPrefixQuery upq = new UriPrefixQuery(currentResource.getURI().toString(), false);
+        upq.setIncludeSelf(false);
+        q.add(upq);
         q.add(new UriPrefixQuery("/vrtx", true));
 
         Search search = new Search();

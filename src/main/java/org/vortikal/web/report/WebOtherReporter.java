@@ -70,7 +70,9 @@ public class WebOtherReporter extends DocumentReporter {
         q.add(new TypeTermQuery("frontpage", TermOperator.NI));
 
         /* In current resource but not in /vrtx. */
-        q.add(new UriPrefixQuery(currentResource.getURI().toString(), false));
+        UriPrefixQuery upq = new UriPrefixQuery(currentResource.getURI().toString(), false);
+        upq.setIncludeSelf(false);
+        q.add(upq);
         q.add(new UriPrefixQuery("/vrtx", true));
 
         Search search = new Search();

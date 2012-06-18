@@ -1707,12 +1707,16 @@ function reportsInteraction(bodyId, vrtxAdm, _$) {
     _$("#exclude-folders").val(excludedFolders.substring(0, excludedFolders.lastIndexOf(",")));
     
     _$("#app-content").on("click", "#vrtx-report-filters #vrtx-report-filters-show-hide-advanced", function(e) { // Show / hide advanced settings
-      _$("#vrtx-report-filters-folders-include-exclude:visible").slideUp(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
-        _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedShow + "...");
-      });
-      _$("#vrtx-report-filters-folders-include-exclude:not(:visible)").slideDown(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideDown, function() {
-        _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedHide + "...");
-      });
+      var container = _$("#vrtx-report-filters-folders-include-exclude");
+      if(container.is(":visible")) {
+        container.slideUp(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideUp, function() {
+          _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedShow + "...");
+        });
+      } else {
+        container.slideDown(vrtxAdm.transitionSpeed, vrtxAdmin.transitionEasingSlideDown, function() {
+          _$("#vrtx-report-filters-show-hide-advanced").text(filtersAdvancedHide + "...");
+        });
+      }
       e.stopPropagation();
       e.preventDefault();
     });

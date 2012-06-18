@@ -66,6 +66,7 @@ function VrtxAdmin() {
   this.isIE5OrHigher = this.isIE && this.browserVersion >= 5;
   this.isIETridentInComp = this.isIE7 && /trident/.test(this.ua);
   this.isOpera = this._$.browser.opera;
+  this.isSafari = this._$.browser.safari;
   this.isIPhone = /iphone/.test(this.ua);
   this.isIPad = /ipad/.test(this.ua);
   this.isAndroid = /android/.test(this.ua); // http://www.gtrifonov.com/2011/04/15/google-android-user-agent-strings-2/
@@ -147,7 +148,7 @@ var reloadFromServer = function() {
                                             
 vrtxAdmin._$(window).load(function() {
   var _$ = vrtxAdmin._$;
-
+  
   // More compact when no left resource menu and no buttons in right resource menu
   // Should never occur in IE because of "Show in file explorer" in root-folder 
   var resourceMenuRight = _$("#resourceMenuRight"); 
@@ -680,37 +681,42 @@ function createFuncComplete() {
   var lastColName = "";
   var lastFileTitle = "";
   var lastFileName = "";
+  var inProgress = false; // in case code is not finished after 50ms
 
   var observeTitleFile = setInterval(function() {
-    var colTitle = $("#vrtx-textfield-collection-title:visible input"),
-        colTitleVal = colTitle.val();
-    if(colTitle.length && colTitleVal !== lastColTitle) {
-      lastColTitle = colTitleVal;
-      userTitleChange(colTitle.attr("name"), $("#vrtx-textfield-collection-name input").attr("name"), null);
-    } else {
-      var colName = $("#vrtx-textfield-collection-name:visible input"),
-        colNameVal = colName.val();
-      if(colName.length && colName.is(":focus") && colNameVal !== lastColName) {
-        lastColName = colNameVal;
-        disableReplaceTitle(colName.attr("name"));
+    if(!inProgress) {
+      inProgress = true;
+      var colTitle = $("#vrtx-textfield-collection-title:visible input"),
+          colTitleVal = colTitle.val();
+      if(colTitle.length && colTitleVal !== lastColTitle) {
+        lastColTitle = colTitleVal;
+        userTitleChange(colTitle.attr("name"), $("#vrtx-textfield-collection-name input").attr("name"), null);
+      } else {
+        var colName = $("#vrtx-textfield-collection-name:visible input"),
+            colNameVal = colName.val();
+        if(colName.length && colName.is(":focus") && colNameVal !== lastColName) {
+          lastColName = colNameVal;
+          disableReplaceTitle(colName.attr("name"));
+        }
       }
-    }
 
-    var fileTitle = $("#vrtx-textfield-file-title:visible input"),
-        fileTitleVal = fileTitle.val();
-    if(fileTitle.length && fileTitleVal !== lastFileTitle) {
-      lastFileTitle = fileTitleVal;
-      userTitleChange(fileTitle.attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
-    } else {
-      var fileName = $("#vrtx-textfield-file-name:visible input"),
-          fileNameVal = fileName.val();
-      if(fileName.length && fileName.is(":focus") && fileNameVal !== lastFileName) {
-        lastFileName = fileNameVal;
-        disableReplaceTitle(fileName.attr("name"));
+      var fileTitle = $("#vrtx-textfield-file-title:visible input"),
+          fileTitleVal = fileTitle.val();
+      if(fileTitle.length && fileTitleVal !== lastFileTitle) {
+        lastFileTitle = fileTitleVal;
+        userTitleChange(fileTitle.attr("name"), $("#vrtx-textfield-file-name input").attr("name"), $("#vrtx-checkbox-is-index input").attr("name"));
+      } else {
+        var fileName = $("#vrtx-textfield-file-name:visible input"),
+            fileNameVal = fileName.val();
+        if(fileName.length && fileName.is(":focus") && fileNameVal !== lastFileName) {
+          lastFileName = fileNameVal;
+          disableReplaceTitle(fileName.attr("name"));
+        }
       }
-    }
-    if(!(colTitle.length || colName.length || fileTitle.length || fileName.length)) {
-      clearInterval(observeTitleFile);
+      if(!(colTitle.length || colName.length || fileTitle.length || fileName.length)) {
+        clearInterval(observeTitleFile);
+      }
+      inProgress = false;
     }
     // vrtxAdmin.log({msg:"Observing textfields in create forms @ " + new Date() + " .."});
   }, 50);
@@ -828,13 +834,18 @@ function disableReplaceTitle(nameBind) {
   
   var nameField = $("#" + nameBind);
   
-  var currentCaretPos = getCaretPos(nameField[0]);
+  if(!vrtxAdmin.isSafari) {
+    var currentCaretPos = getCaretPos(nameField[0]);
+  }
+  
   var nameFieldValBeforeReplacement = nameField.val();
   var nameFieldVal = replaceInvalidChar(nameFieldValBeforeReplacement);
   nameField.val(nameFieldVal);
   growField(nameField, nameFieldVal, 5, 100, 530);
   
-  setCaretToPos(nameField[0], currentCaretPos - (nameFieldValBeforeReplacement.length - nameFieldVal.length));
+  if(!vrtxAdmin.isSafari) {
+    setCaretToPos(nameField[0], currentCaretPos - (nameFieldValBeforeReplacement.length - nameFieldVal.length));
+  }
   
   $("#vrtx-textfield-file-name").removeClass("file-name-from-title");
   $("#vrtx-textfield-file-type").removeClass("file-name-from-title");
@@ -875,7 +886,6 @@ function setCaretToPos(input, pos) {
 
 function setSelectionRange(input, selectionStart, selectionEnd) {
   if (input.setSelectionRange) {
-    input.focus();
     input.setSelectionRange(selectionStart, selectionEnd);
   } else if (input.createTextRange) {
     var range = input.createTextRange();

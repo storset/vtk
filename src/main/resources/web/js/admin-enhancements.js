@@ -739,7 +739,9 @@ function createFuncComplete() {
     });
   }
   
-  $(".vrtx-admin-form input[type='text']").attr("autocomplete", "off");
+  var textFields = $(".vrtx-admin-form input[type='text']");
+  textFields.attr("autocomplete", "off");
+  textFields.attr("autocorrect", "off");
   
 }
 
@@ -834,18 +836,14 @@ function disableReplaceTitle(nameBind) {
   
   var nameField = $("#" + nameBind);
   
-  if(!vrtxAdmin.isSafari) {
-    var currentCaretPos = getCaretPos(nameField[0]);
-  }
-  
+  var currentCaretPos = getCaretPos(nameField[0]);
+
   var nameFieldValBeforeReplacement = nameField.val();
   var nameFieldVal = replaceInvalidChar(nameFieldValBeforeReplacement);
   nameField.val(nameFieldVal);
   growField(nameField, nameFieldVal, 5, 100, 530);
   
-  if(!vrtxAdmin.isSafari) {
-    setCaretToPos(nameField[0], currentCaretPos - (nameFieldValBeforeReplacement.length - nameFieldVal.length));
-  }
+  setCaretToPos(nameField[0], currentCaretPos - (nameFieldValBeforeReplacement.length - nameFieldVal.length));
   
   $("#vrtx-textfield-file-name").removeClass("file-name-from-title");
   $("#vrtx-textfield-file-type").removeClass("file-name-from-title");
@@ -878,22 +876,28 @@ function replaceInvalidChar(val) {
   return val;
 }
 
-// Taken from second comment: 
+// Taken from second comment (and jquery.autocomplete.js): 
 // http://stackoverflow.com/questions/499126/jquery-set-cursor-position-in-text-area
 function setCaretToPos(input, pos) {
   setSelectionRange(input, pos, pos);
 }
 
-function setSelectionRange(input, selectionStart, selectionEnd) {
-  if (input.setSelectionRange) {
-    input.setSelectionRange(selectionStart, selectionEnd);
-  } else if (input.createTextRange) {
-    var range = input.createTextRange();
-    range.collapse(true);
-    range.moveEnd('character', selectionEnd);
-    range.moveStart('character', selectionStart);
-    range.select();
+function setSelectionRange(field, start, end) {
+  if (field.createTextRange) {
+    var selRange = field.createTextRange();
+    selRange.collapse(true);
+    selRange.moveStart("character", start);
+    selRange.moveEnd("character", end);
+    selRange.select();
+  } else if (field.setSelectionRange) {
+    field.setSelectionRange(start, end);
+  } else {
+    if (field.selectionStart) {
+      field.selectionStart = start;
+      field.selectionEnd = end;
+    }
   }
+  field.focus();
 }
 
 // Taken from fourth comment:

@@ -21,11 +21,17 @@
         <#if createCollectionForm.name?exists>
           <#assign newColName = createCollectionForm.name>
         </#if>
-      <#if templates?exists && templates?size &gt; 0>
+      <#if templates?has_content>
         <ul class="radio-buttons">
           <@vrtx.formRadioButtons "createCollectionForm.sourceURI", templates, "<li>", "</li>" />
         </ul>
-        <button id="initChangeTemplate" type="button" onclick="changeTemplate('${sourceURIBind?html}', true)"></button> 
+        <button id="initChangeTemplate" type="button" onclick="changeTemplate('${sourceURIBind?html}', true)"></button>
+        
+        <#-- If POST is not AJAX (otherwise it would be a funcComplete() in completeAsyncForm()) -->
+        <script type="text/javascript"><!--
+          $(document).ready(createFuncComplete);
+        // -->
+        </script>
       </#if>
 
       <@spring.bind "createCollectionForm" + ".title" />

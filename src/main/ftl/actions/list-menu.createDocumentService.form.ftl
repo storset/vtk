@@ -34,9 +34,7 @@
           
           <#-- If POST is not AJAX (otherwise it would be a funcComplete() in completeAsyncForm()) -->
           <script type="text/javascript"><!--
-            $(document).ready(function() {
-              createFuncComplete();
-            });
+            $(document).ready(createFuncComplete);
           // -->
           </script>
         </#if>

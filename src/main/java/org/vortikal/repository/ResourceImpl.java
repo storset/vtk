@@ -267,7 +267,9 @@ public class ResourceImpl extends PropertySetImpl implements Resource {
         ResourceImpl resource = new ResourceImpl(newUri);
         resource.setResourceType(getResourceType());
         for (Property prop : this) {
-            resource.addProperty(prop);
+            if (!prop.isInherited()) {
+                resource.addProperty(prop);
+            }
         }
         resource.setAcl(Acl.EMPTY_ACL);
         return resource;

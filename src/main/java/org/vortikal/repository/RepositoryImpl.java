@@ -692,7 +692,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (r == null) {
             throw new ResourceNotFoundException(uri);
         }
-
+        
         if (lockToken != null) {
             if (r.getLock() == null) {
                 throw new IllegalOperationException("Invalid lock refresh request: lock token '" + lockToken

@@ -235,6 +235,8 @@ public class RepositoryResourceHelper {
                 // Preserve only if not inheritable (a tad paranoid, inheritable should never be set for dead props.)
                 if (!propDef.isInheritable()) {
                     newResource.addProperty(suppliedProp);
+                } else {
+                    newResource.removeProperty(propDef);
                 }
             } else if (newResource.getProperty(propDef) == null) {
 
@@ -246,9 +248,13 @@ public class RepositoryResourceHelper {
                         break;
                     }
                 }
-                if (zombie && !propDef.isInheritable()) {
-                    // Zombie property, preserve only if not inheritable.
-                    newResource.addProperty(suppliedProp);
+                if (zombie) {
+                    // Zombie property, preserve only if not inheritable, otherwise remove.
+                    if (!propDef.isInheritable()) {
+                        newResource.addProperty(suppliedProp);                        
+                    } else {
+                        newResource.removeProperty(propDef);
+                    }
                 }
             }
         }

@@ -353,20 +353,24 @@ vrtxAdmin._$(document).ready(function () {
             isReplacing: false
           });
         } else {
-          vrtxAdm.getFormAsync({
-            selector: "ul#tabMenuRight a#" + tabMenuServices[i],
-            selectorClass: "vrtx-admin-form",
-            insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
-            isReplacing: false,
-            nodeType: "div",
-            funcComplete: function(p){ vrtxAdm.initFileUpload() },
-            simultanSliding: true
-          });
-          vrtxAdm.completeFormAsync({
-            selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-            isReplacing: false
-          });
-          vrtxAdm.initFileUpload(); // when error message
+          if(vrtxAdm.isIPhone || vrtxAdm.isIPad) { // TODO: feature detection
+            $("ul#tabMenuRight li." + tabMenuServices[i]).remove();
+          } else {
+            vrtxAdm.getFormAsync({
+              selector: "ul#tabMenuRight a#" + tabMenuServices[i],
+              selectorClass: "vrtx-admin-form",
+              insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
+              isReplacing: false,
+              nodeType: "div",
+              funcComplete: function(p){ vrtxAdm.initFileUpload() },
+              simultanSliding: true
+            });
+            vrtxAdm.completeFormAsync({
+              selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
+              isReplacing: false
+            });
+            vrtxAdm.initFileUpload(); // when error message
+          }
         }
       }
     }

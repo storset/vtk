@@ -682,6 +682,20 @@ function createFuncComplete() {
   var lastFileTitle = "";
   var lastFileName = "";
   var inProgress = false; // in case code is not finished after 50ms
+  
+  if(vrtxAdmin.isIPad || vrtxAdmin.isIPhone) {
+    var iOSReplaceTimer, isDueForReplacement = false;
+    $(document).on("keydown paste", "#vrtx-textfield-collection-name:visible input, #vrtx-textfield-file-name:visible input", function(e) {
+      clearTimeout(iOSReplaceTimer);
+      var elm = $(this);
+      iOSReplaceTimer = setTimeout(function() {
+        if(isDueForReplacement) {
+          disableReplaceTitle(elm.attr("name"));
+          isDueForReplacement = false;   
+        }
+      }, 250);
+    });
+  }
 
   var observeTitleFile = setInterval(function() {
     if(!inProgress) {
@@ -695,8 +709,12 @@ function createFuncComplete() {
         var colName = $("#vrtx-textfield-collection-name:visible input"),
             colNameVal = colName.val();
         if(colName.length && colName.is(":focus") && colNameVal !== lastColName) {
-          lastColName = colNameVal;
-          disableReplaceTitle(colName.attr("name"));
+          lastColName = colNameVal;        
+          if(vrtxAdmin.isIPad || vrtxAdmin.isIPhone) {
+            isDueForReplacement = true;
+          } else {
+            disableReplaceTitle(colName.attr("name"));
+          }
         }
       }
 
@@ -710,7 +728,12 @@ function createFuncComplete() {
             fileNameVal = fileName.val();
         if(fileName.length && fileName.is(":focus") && fileNameVal !== lastFileName) {
           lastFileName = fileNameVal;
-          disableReplaceTitle(fileName.attr("name"));
+          
+          if(vrtxAdmin.isIPad || vrtxAdmin.isIPhone) {
+            isDueForReplacement = true;
+          } else {
+            disableReplaceTitle(fileName.attr("name"));
+          }
         }
       }
       if(!(colTitle.length || colName.length || fileTitle.length || fileName.length)) {

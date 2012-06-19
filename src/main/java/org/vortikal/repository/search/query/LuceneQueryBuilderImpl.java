@@ -104,10 +104,8 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     private FieldValueMapper fieldValueMapper;
     private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
     private PropertyTypeDefinition publishedPropDef;
-    private PropertyTypeDefinition hiddenPropDef;
 
     private Filter onlyPublishedFilter;
-    private Filter cachedHiddenPropDefNotExistsFilter;
     private Filter cachedDeletedDocsFilter;
 
     @Override
@@ -124,12 +122,6 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         this.cachedDeletedDocsFilter = new CachingWrapperFilter(new DeletedDocsFilter(), 
                                            CachingWrapperFilter.DeletesMode.RECACHE);
 
-        if (this.hiddenPropDef != null) {
-            // Special case caching for common "navigation:hidden !exists" query clause
-            FieldValueFilter fv = new FieldValueFilter(
-                    FieldNames.getSearchFieldName(this.hiddenPropDef, false), true);
-            this.cachedHiddenPropDefNotExistsFilter = new CachingWrapperFilter(fv, CachingWrapperFilter.DeletesMode.RECACHE);
-        }
     }
     
     /* (non-Javadoc)
@@ -296,24 +288,11 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         if (query instanceof PropertyExistsQuery) {
 
             PropertyExistsQuery peq = (PropertyExistsQuery)query;
-            if (peq.getPropertyDefinition() == this.hiddenPropDef  // XXX "Resource type def config pointer init racing" ..
-                   && peq.isInverted()
-                   && peq.getComplexValueAttributeSpecifier() == null) {
-
-                // Special case optimization by caching of filter for common "navigation:hidden !exists" query.
-                return new QueryBuilder() {
-                    @Override
-                    public org.apache.lucene.search.Query buildQuery() throws QueryBuilderException {
-                        return new ConstantScoreQuery(LuceneQueryBuilderImpl.this.cachedHiddenPropDefNotExistsFilter);
-                    }
-                };
-            }
 
             return new PropertyExistsQueryBuilder(peq);
         }
         
-            throw new QueryBuilderException("Unsupported property query type: " 
-                                        + query.getClass().getName());
+        throw new QueryBuilderException("Unsupported property query type: " + query.getClass().getName());
     }
     
     // Lucene FieldSelector for only loading ID field
@@ -446,10 +425,6 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     @Required
     public void setPublishedPropDef(PropertyTypeDefinition publishedPropDef) {
         this.publishedPropDef = publishedPropDef;
-    }
-
-    public void setHiddenPropDef(PropertyTypeDefinition hiddenPropDef) {
-        this.hiddenPropDef = hiddenPropDef;
     }
 
 }

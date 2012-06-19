@@ -56,21 +56,21 @@ resourcetype samlet-retning : samlet {
 			[def facts json-resource(thispath)]
 			[if facts.resourcetype = "program-option-frontpage"]
 	            [call "comp:program-option-facts"]
-   		        [call "comp:include-study-file" {"file" : "hvorfor-velge"}]
-   		        [call "comp:include-study-file" {"file" : "why-choose"}]
-           		[call "comp:include-study-file" {"file" : "hva-lerer-du"}]
-           		[call "comp:include-study-file" {"file" : "learning-outcomes"}]
-				[call "comp:include-opptak"]
-				[call "comp:include-oppbygging"]
-           		[call "comp:include-study-file" {"file" : "undervisning-eksamen"}]
-           		[call "comp:include-study-file" {"file" : "teaching-examinations"}]
-           		[call "comp:include-study-file" {"file" : "utlandet"}]
-           		[call "comp:include-study-file" {"file" : "abroad"}]
-           		[call "comp:include-study-file" {"file" : "jobb-studier"}]
-           		[call "comp:include-study-file" {"file" : "career"}]
-           		[call "comp:include-study-contact"]
+   		        <div class="samlet-element">[call "comp:include-study-file" {"file" : "hvorfor-velge"}]</div>
+   		        <div class="samlet-element">[call "comp:include-study-file" {"file" : "why-choose"}]</div>
+           		<div class="samlet-element">[call "comp:include-study-file" {"file" : "hva-lerer-du"}]</div>
+           		<div class="samlet-element">[call "comp:include-study-file" {"file" : "learning-outcomes"}]</div>
+				<div class="samlet-element">[call "comp:include-opptak"]</div>
+				<div class="samlet-element">[call "comp:include-oppbygging"]</div>
+           		<div class="samlet-element">[call "comp:include-study-file" {"file" : "undervisning-eksamen"}]</div>
+           		<div class="samlet-element">[call "comp:include-study-file" {"file" : "teaching-examinations"}]</div>
+           		<div class="samlet-element">[call "comp:include-study-file" {"file" : "utlandet"}]</div>
+           		<div class="samlet-element">[call "comp:include-study-file" {"file" : "abroad"}]</div>
+           		<div class="samlet-element">[call "comp:include-study-file" {"file" : "jobb-studier"}]</div>
+           		<div class="samlet-element">[call "comp:include-study-file" {"file" : "career"}]</div>
+           		<div class="samlet-element">[call "comp:include-study-contact"]</div>
            	[else]
-           		Finner ikke studieretningsforside
+           		[localized 'notfound']
            	[endif]
           	</div>
         	</div>
@@ -79,6 +79,7 @@ resourcetype samlet-retning : samlet {
     ##
   }
   localization {
-  	program-affiliation : (en : "The programme option is part of the programme", no : "Studieretningen hører til programmet", nn : "Studieretninga høyrer til studieprogrammet")
+  	program-affiliation : (en : "The programme option is part of the programme", no : "Studieretningen hører til programmet", nn : "Studieretninga høyrer til studieprogrammet"),
+  	notfound : (en : "Can't find program option frontpage", no : "Finner ikke studieretningsforside", nn : "Finn ikkje studieretningsforside")
   }
 }

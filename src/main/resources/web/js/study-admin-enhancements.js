@@ -16,6 +16,12 @@ function hideShowStudy(typeToDisplay) {
   }
 }
 
+function replaceTag(selector, tag, replaceTag) {
+  selector.find(tag).replaceWith(function() {
+    return "<" + replaceTag + ">" + $(this).text() + "</" + replaceTag + ">";
+  });
+}
+
 $(document).ready(function () {
   var typeToDisplay = $('#typeToDisplay');
   if(typeToDisplay.length) { // Check that it is the correct document
@@ -40,4 +46,14 @@ $(document).ready(function () {
     $(".ui-accordion > .vrtx-string.last").removeClass("last");
     $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
   });
+  
+  var samletElm = $(".samlet-element");
+  if(samletElm.length) {
+    replaceTag(samletElm, "h6", "strong");
+    replaceTag(samletElm, "h5", "h6");  
+    replaceTag(samletElm, "h4", "h5");
+    replaceTag(samletElm, "h3", "h4");
+    replaceTag(samletElm, "h2", "h3");
+    replaceTag(samletElm, "h1", "h2");
+  }
 });

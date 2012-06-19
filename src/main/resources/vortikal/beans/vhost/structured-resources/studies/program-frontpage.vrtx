@@ -83,9 +83,9 @@ resourcetype program-frontpage : program-document {
         [def inactivefeed thispath + '/?vrtx=feed&status=inaktive']
         <div class="vrtx-frontpage-box white-box big-list-elements vrtx-program-option-list">
           <h2><a href="[val thispath]">[localized 'program-option-list-title']</a></h2>
-          [call "include:feed"  {"url":activefeed, "feed-title":false, "max-messages":20, "include-if-empty":false}]
+          [call "include:feed"  {"url":activefeed, "feed-title":false, "max-messages":100, "include-if-empty":false}]
           <div class="vrtx-program-option-list-inactive">
-            [call "include:feed"  {"url":inactivefeed, "feed-title":false, "max-messages":3, "include-if-empty":false, "all-messages-link":false}]
+            [call "include:feed"  {"url":inactivefeed, "feed-title":false, "max-messages":100, "include-if-empty":false, "all-messages-link":false}]
           </div>
         </div>
       [endif]

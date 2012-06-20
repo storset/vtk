@@ -33,6 +33,7 @@ package org.vortikal.web.actions.create;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -130,7 +131,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
         Path uri = requestContext.getResourceURI();
         List<ResourceTemplate> l = this.templateManager.getDocumentTemplates(token, uri);
 
-        Map<String, String> sortmap = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, List<String>> sortmap = new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
         Map<String, String> templates = new LinkedHashMap<String, String>();
         Map<String, String> descriptions = new HashMap<String, String>();
         Map<String, Boolean> titles = new HashMap<String, Boolean>();
@@ -139,9 +140,10 @@ public class TemplateBasedCreateController extends SimpleFormController {
         String[] split;
         Resource r;
         Property dp;
-        boolean noDefault = true;
+        boolean noDefault = true, put;
         Repository repo = RequestContext.getRequestContext().getRepository();
         for (ResourceTemplate t : l) {
+            put = false;
             try {
                 r = repo.retrieve(token, t.getUri(), false);
 
@@ -166,25 +168,37 @@ public class TemplateBasedCreateController extends SimpleFormController {
                         if (noDefault && split.length >= 3 && "default".equals(split[2])) {
                             templates.put(t.getUri().toString(), name);
                             noDefault = false;
+                            put = true;
                         }
-                        else
-                            sortmap.put(t.getUri().toString(), name);
-
-                    } else
-                        sortmap.put(t.getUri().toString(), name);
+                    }
 
                 } else
-                    sortmap.put(t.getUri().toString(), t.getName());
+                    name = t.getName();
 
             } catch (Exception ignore) {
-                sortmap.put(t.getUri().toString(), t.getName());
+                name = t.getName();
+            }
+
+            if (!put) {
+                if (sortmap.containsKey(name)) {
+                    List<String> list = sortmap.get(name);
+                    list.add(t.getUri().toString());
+                } else {
+                    ArrayList<String> list = new ArrayList<String>();
+                    list.add(t.getUri().toString());
+                    sortmap.put(name, list);
+                }
             }
 
             // Title field
             titles.put(t.getUri().toString(), t.getTitle().equals(this.titlePlaceholder));
         }
         // Merge default templates and sorted templates
-        templates.putAll(sortmap);
+        for (String key : sortmap.keySet()) {
+            List<String> list = sortmap.get(key);
+            for (String value : list)
+                templates.put(value, key);
+        }
 
         model.put("templates", templates);
         model.put("descriptions", descriptions);

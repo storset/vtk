@@ -223,7 +223,7 @@ vrtxAdmin._$(document).ready(function () {
   });
   
   // Ignore all AJAX errors on tab change
-  _$("#app-tabs, #vrtx-breadcrumb-wrapper").on("click", "li a", function(e) {
+  _$("#app-tabs, #vrtx-breadcrumb-wrapper").on("click", "a", function(e) {
     vrtxAdm.ignoreAjaxErrors = true;
   });
   

@@ -225,7 +225,7 @@
 
   <table id="vrtx-resourceInfoContent" class="resourceInfo">
     <!-- title -->
-    <@propList.editOrDisplayPropertyItem item=aboutItems['userTitle'] defaultItem=aboutItems['title'] />
+    <@propList.editOrDisplayPropertyItem item=aboutItems['userTitle'] defaultItem=aboutItems['title'] inputSize=40 />
 
     <!-- content:keywords -->
     <@propList.editOrDisplayProperty modelName='aboutItems' propertyName = 'content:keywords' inputSize=40 />

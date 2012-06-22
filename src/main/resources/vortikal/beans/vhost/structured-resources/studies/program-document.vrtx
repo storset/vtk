@@ -107,21 +107,30 @@ resourcetype program-document {
         [def links document.properties.resource-links]
         [if links != null]
           <div class="vrtx-frontpage-box white-box vrtx-program-resource-links">
+            [def theclass "left"]
             [list links link]
               [def theheader link.linkHeader]
               [def thetitle link.linkTitle]
               [def theurl link.linkUrl]
               [def thedescription link.linkDescription]
               [def number _index + 1]
-              
+
               [if theheader != null && theheader != ""]
                 [if number != 1]
                   </ul>
+                  </div>
+                  [if theclass = "left"]
+                    [def theclass "right"]
+                  [else]
+                    [def theclass "left"]
+                  [endif]
                 [endif]
+                <div class="[val theclass]">
                 <h3>[val theheader]</h3>
                 <ul>
               [else]
                 [if number = 1]
+                  <div class="[val theclass]">
                   <ul>
                 [endif]
               [endif]
@@ -139,6 +148,7 @@ resourcetype program-document {
               </li>
             [endlist]
             </ul>
+            </div>
           </div>
         [endif]
       [endif]

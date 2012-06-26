@@ -36,8 +36,10 @@ import java.util.regex.Pattern;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
+import org.vortikal.repository.Resource;
+import org.vortikal.security.SecurityContext;
+import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.convert.CopyAction;
 
 public class CopyHelper {
@@ -46,10 +48,11 @@ public class CopyHelper {
     private CopyAction copyAction;
     private CopyThenStoreAction copyThenStoreAction;
 
-    public Path copyResource (Path uri, Path destUri, Repository repository, String token, Resource src, InputStream is) throws Exception {
+    public Path copyResource(Path uri, Path destUri, Repository repository, String token, Resource src, InputStream is)
+            throws Exception {
         int number = 1;
         while (repository.exists(token, destUri)) {
-            destUri = appendCopySuffix(destUri, number);
+            destUri = appendCopySuffix(destUri, number, uri);
             number++;
         }
         if (this.copyThenStoreAction != null && src != null && is != null) {
@@ -62,19 +65,28 @@ public class CopyHelper {
         return destUri;
     }
 
-    protected Path appendCopySuffix(Path newUri, int number) {
+    protected Path appendCopySuffix(Path newUri, int number, Path src) {
         String extension = "";
         String dot = "";
         String name = newUri.getName();
 
-        if (name.endsWith(".")) {
-            name = name.substring(0, name.lastIndexOf("."));
-
-        } else if (name.contains(".")) {
-            extension = name.substring(name.lastIndexOf(".") + 1, name.length());
-            dot = ".";
-            name = name.substring(0, name.lastIndexOf("."));
+        Repository repo = RequestContext.getRequestContext().getRepository();
+        String token = SecurityContext.getSecurityContext().getToken();
+        boolean isCollection = false;
+        try {
+            if (src != null)
+                isCollection = repo.retrieve(token, src, false).isCollection();
+        } catch (Exception e) {
         }
+
+        if (!isCollection)
+            if (name.endsWith(".")) {
+                name = name.substring(0, name.lastIndexOf("."));
+            } else if (name.contains(".")) {
+                extension = name.substring(name.lastIndexOf(".") + 1, name.length());
+                dot = ".";
+                name = name.substring(0, name.lastIndexOf("."));
+            }
 
         Matcher matcher = COPY_SUFFIX_PATTERN.matcher(name);
         if (matcher.find()) {
@@ -88,13 +100,14 @@ public class CopyHelper {
         }
 
         name = name + "(" + number + ")" + dot + extension;
+
         return newUri.getParent().extend(name);
     }
-    
+
     public void setCopyAction(CopyAction copyAction) {
         this.copyAction = copyAction;
     }
-    
+
     public void setCopyThenStoreAction(CopyThenStoreAction copyThenStoreAction) {
         this.copyThenStoreAction = copyThenStoreAction;
     }

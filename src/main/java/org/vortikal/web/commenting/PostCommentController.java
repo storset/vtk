@@ -38,6 +38,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+
+import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.PolicyFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -128,8 +132,12 @@ public class PostCommentController extends SimpleFormController {
             errors.rejectValue("text", "commenting.post.text.missing",
                     "You must type something in the comment field");
         }
+        
+        String sanitizedText = sanitizeContent(commentText);
 
-        String parsedText = parseContent(commentText);
+        // TODO Should only use OWASP library for parsing/cleaning content (avoid two stages doing essentially the same thing).
+        
+        String parsedText = parseContent(sanitizedText);
         if (StringUtils.isBlank(parsedText)) {
             errors.rejectValue("text", "commenting.post.text.missing",
                     "You must type something in the comment field");
@@ -172,7 +180,17 @@ public class PostCommentController extends SimpleFormController {
         String text = commentCommand.getParsedText();
         repository.addComment(token, resource, title, text);
     }
-
+    
+    /**
+     * XXX Unfinished (just quick integration of owasp library)
+     */
+    protected String sanitizeContent(String text) throws Exception {
+        logger.debug("Text before sanitizing: '" + text + "'");
+        PolicyFactory policy = new HtmlPolicyBuilder().allowElements("a").allowUrlProtocols("https").allowAttributes("href").onElements("a").requireRelNofollowOnLinks().toFactory();
+        String sanitizedText = policy.sanitize(text);
+        logger.debug("After sanitizing: '" + sanitizedText + "'");
+        return sanitizedText;
+    }
 
     protected String parseContent(String text) throws Exception {
         if (this.parser != null) {

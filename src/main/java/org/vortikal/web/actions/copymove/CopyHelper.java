@@ -38,8 +38,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
-import org.vortikal.web.RequestContext;
 import org.vortikal.web.actions.convert.CopyAction;
 
 public class CopyHelper {
@@ -52,7 +50,7 @@ public class CopyHelper {
             throws Exception {
         int number = 1;
         while (repository.exists(token, destUri)) {
-            destUri = appendCopySuffix(destUri, number, uri);
+            destUri = appendCopySuffix(destUri, number, src);
             number++;
         }
         if (this.copyThenStoreAction != null && src != null && is != null) {
@@ -65,21 +63,16 @@ public class CopyHelper {
         return destUri;
     }
 
-    protected Path appendCopySuffix(Path newUri, int number, Path src) {
+    protected Path appendCopySuffix(Path newUri, int number) {
+        return appendCopySuffix(newUri, number, null);
+    }
+
+    protected Path appendCopySuffix(Path newUri, int number, Resource src) {
         String extension = "";
         String dot = "";
         String name = newUri.getName();
 
-        Repository repo = RequestContext.getRequestContext().getRepository();
-        String token = SecurityContext.getSecurityContext().getToken();
-        boolean isCollection = false;
-        try {
-            if (src != null)
-                isCollection = repo.retrieve(token, src, false).isCollection();
-        } catch (Exception e) {
-        }
-
-        if (!isCollection)
+        if (src == null || !src.isCollection())
             if (name.endsWith(".")) {
                 name = name.substring(0, name.lastIndexOf("."));
             } else if (name.contains(".")) {

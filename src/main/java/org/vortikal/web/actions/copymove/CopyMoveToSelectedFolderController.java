@@ -46,6 +46,7 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.repository.ResourceOverwriteException;
 import org.vortikal.web.Message;
@@ -138,7 +139,8 @@ public class CopyMoveToSelectedFolderController implements Controller {
 
                 } else {
                     Path destUri = newResourceUri;
-                    newResourceUri = this.copyHelper.copyResource(fileUri, destUri, repository, token, null, null);
+                    Resource src = repository.retrieve(token, fileUri, false);
+                    newResourceUri = this.copyHelper.copyResource(fileUri, destUri, repository, token, src, null);
                 }
 
             } catch (AuthorizationException ae) {

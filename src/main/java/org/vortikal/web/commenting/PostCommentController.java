@@ -182,11 +182,15 @@ public class PostCommentController extends SimpleFormController {
     }
     
     /**
-     * XXX Unfinished (just quick integration of owasp library)
+     * Initial integration of owasp library
      */
     protected String sanitizeContent(String text) throws Exception {
         logger.debug("Text before sanitizing: '" + text + "'");
-        PolicyFactory policy = new HtmlPolicyBuilder().allowElements("a").allowUrlProtocols("https").allowAttributes("href").onElements("a").requireRelNofollowOnLinks().toFactory();
+        PolicyFactory policy = new HtmlPolicyBuilder()
+        	.allowStandardUrlProtocols()
+        	.allowAttributes("href").onElements("a")
+        	.allowElements("a", "p", "ul", "li", "ol", "em", "strong", "cite", "code", "strike", "u")
+        	.toFactory();
         String sanitizedText = policy.sanitize(text);
         logger.debug("After sanitizing: '" + sanitizedText + "'");
         return sanitizedText;

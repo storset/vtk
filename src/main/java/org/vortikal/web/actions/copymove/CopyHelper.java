@@ -72,14 +72,16 @@ public class CopyHelper {
         String dot = "";
         String name = newUri.getName();
 
-        if (src == null || !src.isCollection())
+        if (src == null || !src.isCollection()) {
             if (name.endsWith(".")) {
                 name = name.substring(0, name.lastIndexOf("."));
-            } else if (name.contains(".")) {
+            }
+            if (name.contains(".")) {
                 extension = name.substring(name.lastIndexOf(".") + 1, name.length());
                 dot = ".";
                 name = name.substring(0, name.lastIndexOf("."));
             }
+        }
 
         Matcher matcher = COPY_SUFFIX_PATTERN.matcher(name);
         if (matcher.find()) {

@@ -29,6 +29,21 @@
     <property name="handler" ref="reportHandler" />
   </bean>
 
+  <bean id="brokenLinksToTsvReportService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="assertions">
+      <list>
+        <ref bean="reports.viewPermissionAssertion" />
+        <ref bean="resourceInCollection" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="export-report" />
+          <property name="parameterValue" value="broken-links-to-tsv" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="brokenLinksToTsvReportHandler" />
+  </bean>
+
   <bean id="reports.viewPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="permission" ref="ACTION_READ_WRITE" />
     <property name="considerLocks" value="false" />
@@ -82,6 +97,11 @@
 
   <!-- Default report handler -->
   <bean id="reportHandler" parent="abstractReportHandler" />
+
+  <bean id="brokenLinksToTsvReportHandler" class="org.vortikal.web.report.BrokenLinksToTsvController">
+    <property name="brokenLinksReporter" ref="brokenLinksReport" />
+    <property name="webHostName" value="${webHostName}" />
+  </bean>
 
   <bean id="reporter" abstract="true" class="org.vortikal.web.report.AbstractReporter" parent="repositoryAware">
     <property name="searcher" ref="systemIndexSearcher" />

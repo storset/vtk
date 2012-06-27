@@ -91,7 +91,7 @@ public class BrokenLinksToTsvController implements Controller {
             String uri = ps.getURI().toString();
             JSONObject obj = (JSONObject) map.get(uri);
             if (obj != null)
-                tsv.append(title + "\t" + uri + "\t" + obj.get("index") + "\n");
+                tsv.append(title.replaceAll("[\\n\\r\\t]", "") + "\t" + uri + "\t" + obj.get("index") + "\n");
         }
 
         response.setStatus(HttpServletResponse.SC_OK);

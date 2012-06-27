@@ -153,14 +153,29 @@ resourcetype hvordan-soke : fellestekst-document {
         [endif]
       ##  
     }
+ 
+     opptakskrav {
+      ##
+      [def document structured-document()]
+      [def opptakskrav-fri document.properties.opptakskrav-fri]
+      [def opptakskrav-generelle-grunnstudier document.properties.opptakskrav-generelle-grunnstudier]
+      [def opptakskrav-generelle-master document.properties.opptakskrav-generelle-master]
+      [def generelle-fri document.properties.generelle-fri]
+      [def spesielle-fri document.properties.spesielle-fri]
+      [def opptakskrav-spesielle document.properties.opptakskrav-spesielle]
+        [if (opptakskrav-fri != null && opptakskrav-fri != "") || (opptakskrav-generelle-grunnstudier != null && opptakskrav-generelle-grunnstudier != "") || (generelle-fri != null && generelle-fri != "") || (opptakskrav-generelle-master != null && opptakskrav-generelle-master != "") || (spesielle-fri != null && spesielle-fri != "") || (opptakskrav-spesielle != null && opptakskrav-spesielle != "")]       
+          <h2>[localized 'opptakskrav-view']</h2>
+        [endif]
+      ##  
+    }
+ 
     
-    opptakskrav {
+    opptakskrav-grunnstudier {
       ##
       [def document structured-document()]
       [def opptakskrav-fri document.properties.opptakskrav-fri]
       [def opptakskrav-generelle-grunnstudier document.properties.opptakskrav-generelle-grunnstudier]
         [if (opptakskrav-fri != null && opptakskrav-fri != "") || (opptakskrav-generelle-grunnstudier != null && opptakskrav-generelle-grunnstudier != "")]
-          <h2>[localized 'opptakskrav-view']</h2>
           [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav-generelle-grunnstudier"}]
           [if opptakskrav-fri != null && opptakskrav-fri != ""]
             <div class="opptakskrav-fri">[val opptakskrav-fri # unescaped]</div>
@@ -169,7 +184,7 @@ resourcetype hvordan-soke : fellestekst-document {
       ##  
     }
     
-    generelle {
+    opptakskrav-master {
       ##
       [def document structured-document()]
       [def generelle-fri document.properties.generelle-fri]
@@ -330,9 +345,9 @@ view {
             [call "comp:studiekode"]
             [call "comp:studieplasser"]
             [call "comp:pris"]
-            
             [call "comp:opptakskrav"]
-            [call "comp:generelle"]
+            [call "comp:opptakskrav-grunnstudier"]
+            [call "comp:opptakskrav-master"]
             [call "comp:spesielle"]
             [call "comp:politiattest"]
             [call "comp:rangering-sokere"]

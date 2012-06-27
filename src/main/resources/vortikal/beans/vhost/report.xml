@@ -30,7 +30,7 @@
   </bean>
 
   <bean id="brokenLinksToTsvReportService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="manageService" />
+    <property name="parent" ref="reportService" />
     <property name="assertions">
       <list>
         <ref bean="reports.viewPermissionAssertion" />

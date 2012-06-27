@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.report;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -69,11 +68,9 @@ public class BrokenLinksToTsvController implements Controller {
 
         Map<String, Object> result = this.brokenLinksReporter.getReportContent(token, resource, request);
 
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-
         String filename = this.webHostName;
-        filename += resource.getTitle().equals("/") ? "" : "_" + resource.getTitle();
-        filename += "_" + df.format(new Date());
+        filename += resource.getName().equals("/") ? "" : "_" + resource.getName();
+        filename += "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         filename += "_BrokenLinks";
 
         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(

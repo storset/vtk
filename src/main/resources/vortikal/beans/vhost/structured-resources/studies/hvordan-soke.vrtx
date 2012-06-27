@@ -176,7 +176,6 @@ resourcetype hvordan-soke : fellestekst-document {
       [def opptakskrav-fri document.properties.opptakskrav-fri]
       [def opptakskrav-generelle-grunnstudier document.properties.opptakskrav-generelle-grunnstudier]
         [if (opptakskrav-fri != null && opptakskrav-fri != "") || (opptakskrav-generelle-grunnstudier != null && opptakskrav-generelle-grunnstudier != "")]
-          <h3>[localized 'generelle-view']</h3>
           [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptakskrav-generelle-grunnstudier"}]
           [if opptakskrav-fri != null && opptakskrav-fri != ""]
             <div class="opptakskrav-fri">[val opptakskrav-fri # unescaped]</div>

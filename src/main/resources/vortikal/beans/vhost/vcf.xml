@@ -44,8 +44,4 @@
     <property name="maxImageWidth" value="${resourcetype.image.thumbnail.width}" />
   </bean>
 
-  <bean id="resourceTypeIsPerson" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
-    <property name="resourceType" value="person" />
-  </bean>
-
 </beans>

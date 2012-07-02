@@ -30,13 +30,13 @@
   <bean id="previewPersonService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="structuredResources.previewService" />
     <property name="assertions">
-      <list>
-        <bean class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
-          <property name="resourceType" value="person" />
-        </bean>
-      </list>
+      <ref bean="resourceTypeIsPerson" />
     </property>
     <property name="handlerInterceptors" ref="invalidUidServiceInterceptor" />
+  </bean>
+
+  <bean id="resourceTypeIsPerson" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceType" value="person" />
   </bean>
 
   <bean id="invalidUidServiceInterceptor" class="org.vortikal.web.ReferenceDataProvidingHandlerInterceptor">

@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Comment;
+import org.vortikal.repository.Lock;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
@@ -131,7 +132,8 @@ public class CommentsProvider implements ReferenceDataProvider {
             repository.isAuthorized(resource, RepositoryAction.ADD_COMMENT, principal, false);
         model.put("commentsAllowed", commentsAllowed);
         
-        boolean locked = resource.getLock() != null;
+        Lock lock = resource.getLock();
+        boolean locked = lock != null && (principal == null || !principal.equals(lock.getPrincipal()));
         model.put("commentsLocked", commentsAllowed && locked);
         
         model.put("commentsEnabled", false);

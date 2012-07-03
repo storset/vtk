@@ -64,7 +64,7 @@ public class JSONBackedMapResource implements Map<Object, Object>,
     }   
 
     public Map<?, ?> getMap() {
-        return this.map;
+        return Collections.unmodifiableMap(this.map);
     }
     
     @Required

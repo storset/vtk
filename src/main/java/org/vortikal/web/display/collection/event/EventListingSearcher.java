@@ -52,7 +52,6 @@ public class EventListingSearcher {
 
     private SearchComponent upcomingEventsSearch;
     private SearchComponent previousEventsSearch;
-    private SearchComponent groupedByDayEventSearchComponent;
     private SearchComponent furtherUpcomingSearchComponent;
     private SearchComponent specificDateEventSearchComponent;
     private int daysAhead;
@@ -70,18 +69,17 @@ public class EventListingSearcher {
     public List<GroupedEvents> searchGroupedByDayEvents(HttpServletRequest request, Resource collection)
             throws Exception {
         List<GroupedEvents> groupedByDayEvents = new ArrayList<GroupedEvents>();
-        Listing result = this.groupedByDayEventSearchComponent.execute(request, collection, 1, 100, 0);
+        Listing result = this.upcomingEventsSearch.execute(request, collection, 1, 100, 0);
         if (result.size() > 0) {
             List<PropertySet> allEvents = result.getFiles();
-            for (int i = 0; i <= this.daysAhead; i++) {
+            for (int i = 0; i < this.daysAhead; i++) {
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.DAY_OF_MONTH, i);
                 cal.set(Calendar.HOUR_OF_DAY, 0);
                 cal.set(Calendar.MINUTE, 0);
                 cal.set(Calendar.SECOND, 0);
                 cal.set(Calendar.MILLISECOND, 0);
-                Listing subListing = new Listing(result.getResource(), result.getTitle(), result.getName(), result
-                        .getOffset());
+                Listing subListing = new Listing(result.getResource(), null, result.getName(), result.getOffset());
                 subListing.setDisplayPropDefs(result.getDisplayPropDefs());
                 List<PropertySet> events = new ArrayList<PropertySet>();
                 Map<String, URL> urls = new HashMap<String, URL>();
@@ -152,11 +150,6 @@ public class EventListingSearcher {
     @Required
     public void setPreviousEventsSearch(SearchComponent previousEventsSearch) {
         this.previousEventsSearch = previousEventsSearch;
-    }
-
-    @Required
-    public void setGroupedByDayEventSearchComponent(SearchComponent groupedByDayEventSearchComponent) {
-        this.groupedByDayEventSearchComponent = groupedByDayEventSearchComponent;
     }
 
     @Required

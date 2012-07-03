@@ -22,7 +22,8 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="eventListing.calendarHandler" class="org.vortikal.web.display.collection.event.EventCalendarListingController" parent="eventListing.handler">
+  <bean id="eventListing.calendarHandler" class="org.vortikal.web.display.collection.event.EventCalendarListingController"
+    parent="eventListing.handler">
     <property name="viewName" value="eventListingCalendar.view" />
     <property name="helper" ref="eventListingHelper" />
     <property name="daysAhead" value="${event.listing.days.ahead}" />
@@ -109,31 +110,6 @@
 
   <bean id="viewParameterEquals" class="org.vortikal.web.service.RequestParameterAssertion" abstract="true">
     <property name="parameterName" value="view" />
-  </bean>
-
-  <bean id="eventListing.groupedByDayEventSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
-    <property name="name" value="eventListing.groupedByDayEventSearchComponent" />
-    <property name="queryBuilders">
-      <list>
-        <bean parent="queryStringParser">
-          <property name="queryString" value="type IN event" />
-        </bean>
-        <bean class="org.vortikal.web.search.ParameterizedQueryStringProcessor" parent="queryStringParser">
-          <property name="replacements">
-            <map>
-              <entry key="[1]" value="${event.listing.days.ahead}" />
-            </map>
-          </property>
-          <property name="queryString"
-            value="(start-date &gt;= {$currentDate} AND start-date &lt; {$currentDate+[1]d})
-            OR (end-date &gt;= {$currentDate} AND end-date &lt; {$currentDate+[1]d})
-            OR (start-date &lt;= {$currentDate} AND end-date &gt;= {$currentDate+[1]d})" />
-        </bean>
-      </list>
-    </property>
-    <property name="titleLocalizationKey">
-      <null />
-    </property>
   </bean>
 
   <bean id="eventListing.furtherUpcomingSearchComponent" parent="eventListing.upcomingEventsSearchComponent">

@@ -53,31 +53,6 @@
     </property>
   </bean>
 
-  <bean id="structured.eventListing.groupedByDayEventSearchComponent" parent="structured.eventListing.upcomingEventsSearchComponent">
-    <property name="name" value="structured.eventListing.groupedByDayEventSearchComponent" />
-    <property name="queryBuilders">
-      <list>
-        <bean parent="queryStringParser">
-          <property name="queryString" value="type IN structured-event" />
-        </bean>
-        <bean class="org.vortikal.web.search.ParameterizedQueryStringProcessor" parent="queryStringParser">
-          <property name="replacements">
-            <map>
-              <entry key="[1]" value="${event.listing.days.ahead}" />
-            </map>
-          </property>
-          <property name="queryString"
-            value="(resource:start-date &gt;= {$currentDate} AND resource:start-date &lt; {$currentDate+[1]d})
-            OR (resource:end-date &gt;= {$currentDate} AND resource:end-date &lt; {$currentDate+[1]d})
-            OR (resource:start-date &lt;= {$currentDate} AND resource:end-date &gt;= {$currentDate+[1]d})" />
-        </bean>
-      </list>
-    </property>
-    <property name="titleLocalizationKey">
-      <null />
-    </property>
-  </bean>
-
   <bean id="structured.eventListing.furtherUpcomingSearchComponent" parent="structured.eventListing.upcomingEventsSearchComponent">
     <property name="name" value="structured.eventListing.furtherUpcomingSearchComponent" />
     <property name="queryBuilders">

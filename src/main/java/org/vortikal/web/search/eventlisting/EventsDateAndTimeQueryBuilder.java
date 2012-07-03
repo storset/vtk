@@ -67,23 +67,24 @@ public class EventsDateAndTimeQueryBuilder implements QueryBuilder {
 
         long now = Calendar.getInstance().getTimeInMillis();
         long today = this.getToday();
+        long oneHourEarlier = this.getOneHourEarlier();
 
         // If inverted, search for previous events, otherwise check for upcoming
         if (this.isInverted()) {
 
             // End time is passed, but not if end time is a given date (no time
             // supplied)
-            AndQuery endedAnd = new AndQuery();
-            endedAnd.add(new PropertyTermQuery(endPropDef, String.valueOf(now), TermOperator.LT));
-            endedAnd.add(new PropertyTermQuery(endPropDef, String.valueOf(today), TermOperator.NE));
+            AndQuery ended = new AndQuery();
+            ended.add(new PropertyTermQuery(endPropDef, String.valueOf(now), TermOperator.LT));
+            ended.add(new PropertyTermQuery(endPropDef, String.valueOf(today), TermOperator.NE));
 
-            // No end time given, and start day is pass today
+            // No end time given, and start time is past one hour ago
             AndQuery passed = new AndQuery();
-            passed.add(new PropertyTermQuery(startPropDef, String.valueOf(today), TermOperator.LT));
+            passed.add(new PropertyTermQuery(startPropDef, String.valueOf(oneHourEarlier), TermOperator.LT));
             passed.add(new PropertyExistsQuery(endPropDef, true));
 
             OrQuery previous = new OrQuery();
-            previous.add(endedAnd);
+            previous.add(ended);
             previous.add(passed);
             return previous;
         }
@@ -92,12 +93,12 @@ public class EventsDateAndTimeQueryBuilder implements QueryBuilder {
         Query notYetStarted = new PropertyTermQuery(startPropDef, String.valueOf(now), TermOperator.GT);
 
         // Start time is now/passed, but there is no end time -> regarded as
-        // upcoming for today
-        AndQuery todayOnly = new AndQuery();
-        todayOnly.add(new PropertyTermQuery(startPropDef, String.valueOf(today), TermOperator.GE));
-        todayOnly.add(new PropertyExistsQuery(endPropDef, true));
+        // upcoming for one hour from start time
+        AndQuery noEndDate = new AndQuery();
+        noEndDate.add(new PropertyTermQuery(startPropDef, String.valueOf(oneHourEarlier), TermOperator.GE));
+        noEndDate.add(new PropertyExistsQuery(endPropDef, true));
 
-        // Start time is passed, but end time is yet not or is today
+        // Start time is passed, but end time is not yet passed
         AndQuery notYetEnded = new AndQuery();
         notYetEnded.add(new PropertyTermQuery(startPropDef, String.valueOf(now), TermOperator.LT));
         OrQuery endTimeOr = new OrQuery();
@@ -107,7 +108,7 @@ public class EventsDateAndTimeQueryBuilder implements QueryBuilder {
 
         OrQuery upcoming = new OrQuery();
         upcoming.add(notYetStarted);
-        upcoming.add(todayOnly);
+        upcoming.add(noEndDate);
         upcoming.add(notYetEnded);
         return upcoming;
     }
@@ -118,6 +119,12 @@ public class EventsDateAndTimeQueryBuilder implements QueryBuilder {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
+        return calendar.getTimeInMillis();
+    }
+
+    private long getOneHourEarlier() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR_OF_DAY, -1);
         return calendar.getTimeInMillis();
     }
 

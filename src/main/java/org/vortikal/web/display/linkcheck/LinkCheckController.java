@@ -39,6 +39,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -47,9 +50,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.linkcheck.LinkChecker.LinkCheckResult;
 import org.vortikal.web.service.URL;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 public class LinkCheckController implements Controller {
 

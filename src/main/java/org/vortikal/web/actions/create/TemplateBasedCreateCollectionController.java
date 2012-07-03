@@ -149,7 +149,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         Path destinationURI = uri.extend(name);
 
         // Copy folder-template to destination (implicit rename)
-        repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);
+        repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, true);
         Resource dest = repository.retrieve(token, destinationURI, false);
 
         dest.removeProperty(this.userTitlePropDef);

@@ -62,9 +62,6 @@
   <!-- Portal.xml - søkedokumentet -->
   <import resource="portal.xml" />
 
-  <!-- Romskjema -->
-  <import resource="deprecated/romskjema.xml" />
-
   <!-- MUV -->
   <import resource="muv-artikkel.xml" />
 

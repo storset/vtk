@@ -470,6 +470,7 @@
         <value>title</value>
         <value>publishDate</value>
         <value>description</value>
+        <value>categories</value>
       </list>
     </property>
     <property name="description" value="Inserts a feed (RSS, Atom) component on the page" />

@@ -80,6 +80,7 @@
       </list>
     </property>
     <property name="cache" ref="ehCache.MULTI_HOST_INDEX_SEARCH_CACHE" />
+    <property name="resourceTypeTree" ref="resourceTypeTree"/>
   </bean>
 
   <bean id="collection.listingUriQueryBuilder" class="org.vortikal.web.search.ListingUriQueryBuilder">

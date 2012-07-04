@@ -13,6 +13,7 @@
       </list>
     </property>
     <property name="searchSorting" ref="structured.eventListing.upcoming.searchSorting" />
+    <property name="configurablePropertySelectPointers" ref="event.configurablePropertySelectPointersList" />
   </bean>
 
   <bean id="structured.eventListing.upcomingEventsQueryBuilder" parent="eventListing.upcomingEventsQueryBuilder">
@@ -43,6 +44,7 @@
       </list>
     </property>
     <property name="searchSorting" ref="structured.eventListing.previous.searchSorting" />
+    <property name="configurablePropertySelectPointers" ref="event.configurablePropertySelectPointersList" />
   </bean>
 
   <bean id="structured.eventListing.previous.searchSorting" parent="eventListing.previous.searchSorting">
@@ -73,6 +75,7 @@
     <property name="titleLocalizationKey">
       <null />
     </property>
+    <property name="configurablePropertySelectPointers" ref="event.configurablePropertySelectPointersList" />
   </bean>
 
   <bean id="structured.eventListing.specificDateEventSearchComponent" parent="structured.eventListing.upcomingEventsSearchComponent">
@@ -94,6 +97,7 @@
     <property name="titleLocalizationKey">
       <null />
     </property>
+    <property name="configurablePropertySelectPointers" ref="event.configurablePropertySelectPointersList" />
   </bean>
 
   <bean id="structured.eventListing.currentMonthSearchComponent" parent="structured.eventListing.specificDateEventSearchComponent">
@@ -112,6 +116,7 @@
         </bean>
       </list>
     </property>
+    <property name="configurablePropertySelectPointers" ref="event.configurablePropertySelectPointersList" />
   </bean>
 
   <bean id="structured.eventListing.startDatePropDefPointer" class="java.lang.String">
@@ -133,6 +138,25 @@
         <ref bean="resourceContextProvider" />
       </list>
     </property>
+  </bean>
+
+  <bean id="event.configurablePropertySelectPointersList" class="java.util.ArrayList">
+    <constructor-arg>
+        <list>
+          <value>title</value>
+          <value>resource:introduction</value>
+          <value>resource:picture</value>
+          <value>resource:caption</value>
+          <value>resource:location</value>
+          <value>resource:end-date</value>
+          <value>resource:start-date</value>
+          <value>resource:mapurl</value>
+          <value>resource:hasBodyContent</value>
+          <value>numberOfComments</value>
+          <value>lastModified</value>
+          <value>contentLocale</value>
+        </list>
+    </constructor-arg>
   </bean>
 
 </beans>

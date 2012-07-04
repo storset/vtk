@@ -55,8 +55,6 @@
 
   <bean id="articleListing.searchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="articleListing.defaultArticles" />
-    <property name="viewService" ref="webService" />
-    <property name="resourceManager" ref="resourceManager" />
     <property name="listableProperties">
       <list>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
@@ -146,6 +144,7 @@
       </list>
     </property>
     <property name="searchSorting" ref="articleListing.searchSorting" />
+    <property name="resourceTypeTree" ref="resourceTypeTree"/>
   </bean>
 
   <bean id="articleListing.viewResolver" parent="decoratorViewResolver">

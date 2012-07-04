@@ -23,8 +23,7 @@
     </property>
   </bean>
 
-  <bean id="messageListing.searchComponent" class="org.vortikal.web.search.messagelisting.MessageListingSearchComponent"
-        parent="collectionListing.searchComponent">
+  <bean id="messageListing.searchComponent" class="org.vortikal.web.search.messagelisting.MessageListingSearchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="messageListing.defaultListing" />
     <property name="queryBuilders">
       <list>
@@ -34,6 +33,15 @@
       </list>
     </property>
     <property name="searchSorting" ref="messageListing.searchSorting" />
+    <property name="configurablePropertySelectPointers">
+      <list>
+        <value>title</value>
+        <value>publish-date</value>
+        <value>resource:isTruncated</value>
+        <value>resource:listingDisplayedMessage</value>
+        <value>contentLocale</value>
+      </list>
+    </property>
   </bean>
 
   <bean id="messageListing.helper" class="org.vortikal.web.decorating.components.CollectionListingComponentHelper">

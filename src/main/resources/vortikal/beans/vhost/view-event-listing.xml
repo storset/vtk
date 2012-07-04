@@ -73,8 +73,6 @@
   <bean id="eventListing.upcomingEventsSearchComponent" parent="collectionListing.searchComponent">
     <property name="name" value="eventListing.upcomingEventsSearchComponent" />
     <property name="titleLocalizationKey" value="eventListing.upcomingEvents" />
-    <property name="viewService" ref="webService" />
-    <property name="resourceManager" ref="resourceManager" />
     <property name="listableProperties" ref="eventListing.listableProperties" />
     <property name="listingUriQueryBuilder" ref="eventListing.listingUriQueryBuilder" />
     <property name="queryBuilders">

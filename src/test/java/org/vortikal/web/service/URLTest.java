@@ -109,7 +109,13 @@ public class URLTest extends TestCase {
         url = URL.parse("http://foo.bar:8080/baz/?xyz=abc#ref");
         assertEquals(Path.fromString("/baz"), url.getPath());
         assertEquals("ref", url.getRef());
-        
+
+        url = URL.parse("http://example.com/foo////");
+        assertEquals("http://example.com/foo/", url.toString());
+        url = URL.parse("http://example.com/foo/.");
+        assertEquals("http://example.com/foo/", url.toString());
+        url = URL.parse("http://example.com/foo/./.");
+        assertEquals("http://example.com/foo/", url.toString());
         
         url = URL.parse("rtmp://foo");
         assertEquals(Integer.valueOf(80), url.getPort());
@@ -128,7 +134,7 @@ public class URLTest extends TestCase {
         assertEquals(Path.ROOT, url.getPath());
         assertTrue(url.isCollection());
         assertEquals("rtmp://foo:9322/", url.toString());
-        
+
         // real rtmp URL
         String rtmpUrl = "rtmp://stream-prod01.uio.no/vod/mp4:uio/intermedia/rektor/rektor_jub.mp4";
         url = URL.parse(rtmpUrl);
@@ -148,6 +154,11 @@ public class URLTest extends TestCase {
         assertEquals("val%203", param2[0]);
     }
 
+    public void testCharacterEncoding() {
+        URL x1 = URL.parse("http://example.com/%c3%b8");
+        URL x2 = URL.parse("http://example.com/%f8", "iso-8859-1");
+        assertEquals(x1.getPath(), x2.getPath());
+    }
     
     public void testEncode() {
         assertEquals("%21", URL.encode("!"));
@@ -215,10 +226,14 @@ public class URLTest extends TestCase {
         assertEquals("http://a/", url.relativeURL("../../").toString());
         assertEquals("http://a/g", url.relativeURL("../../g").toString());
         assertEquals("http://a/b/c/d?q#f", url.relativeURL("").toString());
-        
+    
         
         assertEquals("http://a/", URL.parse("http://a/b/").relativeURL("../..").toString());
         
+        assertEquals("http://a/b/c/d/e", URL.parse("http://a/b/").relativeURL("c/d/e").toString());
+        assertEquals("http://a/b/c/d/e", URL.parse("http://a/b/").relativeURL("c//d/e").toString());
+        assertEquals("http://a/b/c/d/e/", URL.parse("http://a/b/").relativeURL("c///////d/////e//").toString());
+
         url = URL.parse("http://a/b/");
         assertEquals("http://a/b/?x=y", url.relativeURL("./?x=y").toString());
 

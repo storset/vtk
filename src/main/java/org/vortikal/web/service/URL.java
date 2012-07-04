@@ -656,13 +656,24 @@ public class URL implements Serializable {
 
     /**
      * Parses a URL from a string representation. Also attempts to decode the
-     * URL.
+     * URL using UTF-8.
      * 
-     * @param url
-     *            the string representation
+     * @param url the string representation
      * @return the parsed URL
      */
     public static URL parse(String url) {
+        return parse(url, "utf-8");
+    }
+    
+    /**
+     * Parses a URL from a string representation. Also attempts to decode the
+     * URL using a supplied encoding.
+     * 
+     * @param url the string representation
+     * @param encoding the character encoding to use
+     * @return the parsed URL
+     */
+    public static URL parse(String url, String encoding) {
         if (url == null) {
             throw new IllegalArgumentException("Argument is NULL");
         }
@@ -767,14 +778,18 @@ public class URL implements Serializable {
             p = Path.ROOT;
             collection = true;
         } else {
-            int length = path.length();
-            if (path.charAt(length - 1) == '/') {
+            while (path.length() > 2 && path.charAt(path.length() - 2) == '/' 
+                    && path.charAt(path.length() - 1) == '.') {
+                path.delete(path.length() - 2, path.length());
                 collection = true;
-                if (length > 1) {
-                    path.delete(length - 1, length);
-                }
             }
-
+            while (path.length() > 1 && path.charAt(path.length() - 1) == '/') {
+                path.delete(path.length() - 1, path.length());
+                collection = true;
+            }
+            if (path.length() == 1 && path.charAt(0) == '/') {
+                collection = true;
+            }
             try {
                 p = Path.fromString(path.toString());
             } catch (Exception e) {
@@ -784,7 +799,8 @@ public class URL implements Serializable {
         Path resultPath = Path.ROOT;
         List<String> elements = p.getElements();
         for (int i = 1; i < elements.size(); i++) {
-            String decoded = decode(elements.get(i));
+            try {
+            String decoded = decode(elements.get(i), encoding);
             if (i == elements.size() - 1) {
                 // Special case: remove last element if it is '%20'
                 if ("".equals(decoded.trim())) {
@@ -792,6 +808,9 @@ public class URL implements Serializable {
                 }
             }
             resultPath = resultPath.expand(decoded);
+            } catch (UnsupportedEncodingException e) {
+                throw new IllegalArgumentException(e);
+            }
         }
 
         Integer portNumber = null;
@@ -803,6 +822,7 @@ public class URL implements Serializable {
             }
         }
         URL resultURL = new URL(protocol.toString(), host.toString(), resultPath);
+        resultURL.setCharacterEncoding(encoding);
         if (portNumber != null) {
             resultURL.setPort(portNumber);
         } else {
@@ -816,7 +836,11 @@ public class URL implements Serializable {
             for (Map.Entry<String, String[]> entry : splitQueryString(query.toString()).entrySet()) {
                 for (String value : entry.getValue()) {
                     // FIXME strictly speaking, keys need decoding as well..
-                    resultURL.addParameter(entry.getKey(), decode(value));
+                    try {
+                    resultURL.addParameter(entry.getKey(), decode(value, encoding));
+                    } catch (UnsupportedEncodingException e) {
+                        throw new IllegalArgumentException(e);
+                    }
                 }
             }
         }
@@ -1170,6 +1194,9 @@ public class URL implements Serializable {
             if (c == '/' || i == length - 1) {
                 if (c != '/') {
                     segment.append(c);
+                }
+                if (c == '/' && segment.length() == 0) {
+                    continue;
                 }
                 if ("..".equals(segment.toString())) {
                     cur = cur.getParent();

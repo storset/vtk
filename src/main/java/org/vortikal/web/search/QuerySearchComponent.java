@@ -44,8 +44,10 @@ import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.ResourceWrapper;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Sorting;
 import org.vortikal.repository.search.SortingImpl;
@@ -60,11 +62,13 @@ public abstract class QuerySearchComponent implements SearchComponent {
     private ResourceWrapperManager resourceManager;
     private List<PropertyDisplayConfig> listableProperties;
     private SearchSorting searchSorting;
+    private List<String> configurablePropertySelectPointers;
+    private ResourceTypeTree resourceTypeTree;
 
     protected Service viewService;
 
     protected abstract ResultSet getResultSet(HttpServletRequest request, Resource collection, String token,
-            Sorting sorting, int searchLimit, int baseOffset);
+            Sorting sorting, int searchLimit, int baseOffset, ConfigurablePropertySelect propertySelect);
 
     public Listing execute(HttpServletRequest request, Resource collection, int page, int pageLimit, int baseOffset)
             throws Exception {
@@ -83,7 +87,20 @@ public abstract class QuerySearchComponent implements SearchComponent {
             sorting = new SortingImpl(this.searchSorting.getSortFields(collection));
         }
 
-        ResultSet result = this.getResultSet(request, collection, token, sorting, searchLimit, offset);
+        ConfigurablePropertySelect propertySelect = null;
+        if (this.configurablePropertySelectPointers != null && this.resourceTypeTree != null) {
+            for (String propPointer : this.configurablePropertySelectPointers) {
+                PropertyTypeDefinition ptd = this.resourceTypeTree.getPropertyDefinitionByPointer(propPointer);
+                if (ptd != null) {
+                    if (propertySelect == null) {
+                        propertySelect = new ConfigurablePropertySelect();
+                    }
+                    propertySelect.addPropertyDefinition(ptd);
+                }
+            }
+        }
+
+        ResultSet result = this.getResultSet(request, collection, token, sorting, searchLimit, offset, propertySelect);
 
         boolean more = result.getSize() == pageLimit + 1;
         int num = result.getSize();
@@ -170,6 +187,14 @@ public abstract class QuerySearchComponent implements SearchComponent {
 
     public String getTitleLocalizationKey() {
         return titleLocalizationKey;
+    }
+
+    public void setConfigurablePropertySelectPointers(List<String> configurablePropertySelectPointers) {
+        this.configurablePropertySelectPointers = configurablePropertySelectPointers;
+    }
+
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
     }
 
 }

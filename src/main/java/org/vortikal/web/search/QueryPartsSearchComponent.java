@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Sorting;
@@ -49,7 +50,7 @@ public class QueryPartsSearchComponent extends QuerySearchComponent {
 
     @Override
     protected ResultSet getResultSet(HttpServletRequest request, Resource collection, String token, Sorting sorting,
-            int searchLimit, int offset) {
+            int searchLimit, int offset, ConfigurablePropertySelect propertySelect) {
 
         Query query = this.getQuery(collection, request);
 
@@ -58,6 +59,9 @@ public class QueryPartsSearchComponent extends QuerySearchComponent {
         search.setLimit(searchLimit);
         search.setCursor(offset);
         search.setSorting(sorting);
+        if (propertySelect != null) {
+            search.setPropertySelect(propertySelect);
+        }
 
         Repository repository = RequestContext.getRequestContext().getRepository();
         return repository.search(token, search);

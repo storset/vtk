@@ -39,6 +39,7 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.ResultSetImpl;
 import org.vortikal.repository.search.Sorting;
@@ -53,9 +54,9 @@ public class MessageListingSearchComponent extends CollectionListingSearchCompon
 
     @Override
     protected ResultSet getResultSet(HttpServletRequest request, Resource collection, String token, Sorting sorting,
-            int searchLimit, int offset) {
+            int searchLimit, int offset, ConfigurablePropertySelect propertySelect) {
 
-        ResultSet result = super.getResultSet(request, collection, token, sorting, searchLimit, offset);
+        ResultSet result = super.getResultSet(request, collection, token, sorting, searchLimit, offset, propertySelect);
 
         String actionParameter = request.getParameter(ACTION_PARAM);
         if (actionParameter == null) {

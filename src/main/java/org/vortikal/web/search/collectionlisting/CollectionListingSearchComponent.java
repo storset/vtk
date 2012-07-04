@@ -47,6 +47,7 @@ import org.vortikal.repository.MultiHostSearcher;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.search.ConfigurablePropertySelect;
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.repository.search.Sorting;
@@ -74,7 +75,7 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
 
     @Override
     protected ResultSet getResultSet(HttpServletRequest request, Resource collection, String token, Sorting sorting,
-            int searchLimit, int offset) {
+            int searchLimit, int offset, ConfigurablePropertySelect propertySelect) {
 
         // Check cache for aggregation set containing ref to other hosts
         CollectionListingCacheKey cacheKey = this.getCacheKey(request, collection, token);
@@ -111,7 +112,7 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             cache.put(new Element(cacheKey, clar));
 
             CollectionListingConditions clc = new CollectionListingConditions(token, uriQuery, additionalQueries, clar,
-                    searchLimit, offset, sorting, null);
+                    searchLimit, offset, sorting, null, propertySelect);
             try {
                 result = this.multiHostSearcher.collectionListing(clc);
                 if (result != null) {
@@ -131,6 +132,9 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             search.setLimit(searchLimit);
             search.setCursor(offset);
             search.setSorting(sorting);
+            if (propertySelect != null) {
+                search.setPropertySelect(propertySelect);
+            }
 
             Repository repository = RequestContext.getRequestContext().getRepository();
             result = repository.search(token, search);

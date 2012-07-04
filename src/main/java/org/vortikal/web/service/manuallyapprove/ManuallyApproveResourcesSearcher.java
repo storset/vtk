@@ -170,7 +170,7 @@ public class ManuallyApproveResourcesSearcher {
                 // accordingly
 
                 CollectionListingConditions clc = new CollectionListingConditions(token, null, queries, clar,
-                        searchLimit, 0, sorting, locationURL);
+                        searchLimit, 0, sorting, locationURL, null);
                 rs = this.multiHostSearcher.collectionListing(clc);
 
                 if (rs != null && rs.getSize() > 0) {

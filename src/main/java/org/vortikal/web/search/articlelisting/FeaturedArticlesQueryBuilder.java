@@ -44,9 +44,9 @@ import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriSetQuery;
-import org.vortikal.web.search.QueryBuilder;
+import org.vortikal.web.search.SearchComponentQueryBuilder;
 
-public class FeaturedArticlesQueryBuilder implements QueryBuilder {
+public class FeaturedArticlesQueryBuilder implements SearchComponentQueryBuilder {
 
     private PropertyTypeDefinition featuredArticlesPropDef;
     private boolean invert;

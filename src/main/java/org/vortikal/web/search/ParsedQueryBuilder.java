@@ -37,7 +37,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.search.QueryParser;
 import org.vortikal.repository.search.query.Query;
 
-public class ParsedQueryBuilder implements QueryBuilder {
+public class ParsedQueryBuilder implements SearchComponentQueryBuilder {
 
     protected String queryString;
     protected QueryParser queryParser;

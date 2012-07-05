@@ -41,7 +41,7 @@ import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.web.tags.TagsHelper;
 
-public class ResourceTypeQueryBuilder implements QueryBuilder {
+public class ResourceTypeQueryBuilder implements SearchComponentQueryBuilder {
 
     private ResourceTypeTree resourceTypeTree;
 

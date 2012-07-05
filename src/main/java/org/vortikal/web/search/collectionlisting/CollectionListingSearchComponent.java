@@ -60,7 +60,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
 import org.vortikal.web.search.ListingUriQueryBuilder;
-import org.vortikal.web.search.QueryBuilder;
+import org.vortikal.web.search.SearchComponentQueryBuilder;
 import org.vortikal.web.search.QueryPartsSearchComponent;
 import org.vortikal.web.service.URL;
 
@@ -154,7 +154,7 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
     private List<Query> getAdditionalQueries(Resource collection, HttpServletRequest request) {
         if (this.queryBuilders != null) {
             List<Query> result = new ArrayList<Query>();
-            for (QueryBuilder queryBuilder : this.queryBuilders) {
+            for (SearchComponentQueryBuilder queryBuilder : this.queryBuilders) {
                 Query q = queryBuilder.build(collection, request);
                 if (q != null) {
                     result.add(q);

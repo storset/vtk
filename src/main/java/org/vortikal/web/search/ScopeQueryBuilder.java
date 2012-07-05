@@ -42,7 +42,7 @@ import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.UriPrefixQuery;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 
-public class ScopeQueryBuilder implements QueryBuilder {
+public class ScopeQueryBuilder implements SearchComponentQueryBuilder {
 
     private AggregationResolver aggregationResolver;
 

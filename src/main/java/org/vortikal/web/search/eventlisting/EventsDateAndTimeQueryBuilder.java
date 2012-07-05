@@ -44,9 +44,9 @@ import org.vortikal.repository.search.query.PropertyExistsQuery;
 import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
-import org.vortikal.web.search.QueryBuilder;
+import org.vortikal.web.search.SearchComponentQueryBuilder;
 
-public class EventsDateAndTimeQueryBuilder implements QueryBuilder {
+public class EventsDateAndTimeQueryBuilder implements SearchComponentQueryBuilder {
 
     private boolean inverted;
     private ResourceTypeTree resourceTypeTree;

@@ -46,7 +46,7 @@ import org.vortikal.web.RequestContext;
 
 public class QueryPartsSearchComponent extends QuerySearchComponent {
 
-    protected List<QueryBuilder> queryBuilders;
+    protected List<SearchComponentQueryBuilder> queryBuilders;
 
     @Override
     protected ResultSet getResultSet(HttpServletRequest request, Resource collection, String token, Sorting sorting,
@@ -75,7 +75,7 @@ public class QueryPartsSearchComponent extends QuerySearchComponent {
 
         AndQuery query = new AndQuery();
 
-        for (QueryBuilder builder : this.queryBuilders) {
+        for (SearchComponentQueryBuilder builder : this.queryBuilders) {
             Query q = builder.build(collection, request);
             if (q != null) {
                 query.add(q);
@@ -85,7 +85,7 @@ public class QueryPartsSearchComponent extends QuerySearchComponent {
         return query;
     }
 
-    public void setQueryBuilders(List<QueryBuilder> queryBuilders) {
+    public void setQueryBuilders(List<SearchComponentQueryBuilder> queryBuilders) {
         this.queryBuilders = queryBuilders;
     }
 

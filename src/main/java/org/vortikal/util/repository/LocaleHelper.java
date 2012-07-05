@@ -1,4 +1,4 @@
-/* Copyright (c) 2004, University of Oslo, Norway
+/* Copyright (c) 2004, 2012 University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -33,11 +33,14 @@ package org.vortikal.util.repository;
 import java.util.Locale;
 
 /**
- * Utility method for converting locale strings of the format
- * <code>language_country_variant</code> into {@link Locale} objects.
+ * Utility methods for handling locales
  */
 public class LocaleHelper {
 
+    /**
+     * Converting locale strings of the format
+     * <code>language_country_variant</code> into {@link Locale} objects.
+     */
     public static Locale getLocale(String localeString) {
 
         if (localeString == null || localeString.trim().equals("")) {

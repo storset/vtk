@@ -127,8 +127,10 @@ public class TagsController implements Controller {
         int totalHits = 0;
 
         Listing listing = this.searchComponent.execute(request, scope, page, limit, 0);
+        List<String> sortFieldParams = null;
         if (listing != null) {
             totalHits = listing.getTotalHits();
+            sortFieldParams = listing.getSortFieldParams();
         }
 
         if (resourceTypes != null && resourceTypes.size() == 1) {
@@ -137,7 +139,6 @@ public class TagsController implements Controller {
 
         Service service = org.vortikal.web.RequestContext.getRequestContext().getService();
         URL baseURL = service.constructURL(scope.getURI());
-        List<String> sortFieldParams = listing.getSortFieldParams();
         this.processUrl(baseURL, tag, resourceTypes, sortFieldParams);
 
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL, page);

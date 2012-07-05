@@ -19,13 +19,12 @@ import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Resource;
 import org.vortikal.repository.Repository.Depth;
+import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.util.io.StreamUtil;
-import org.vortikal.util.text.JSON;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -101,6 +100,7 @@ public class SimpleStructuredEditor implements Controller {
         response.sendRedirect(url.toString());
     }
 
+    @SuppressWarnings("unchecked")
     private void updateDocument(HttpServletRequest request, String token, Repository repository, Path uri)
             throws Exception, UnsupportedEncodingException {
 

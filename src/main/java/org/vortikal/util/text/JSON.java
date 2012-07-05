@@ -30,10 +30,8 @@
  */
 package org.vortikal.util.text;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,10 +42,7 @@ import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
-import org.vortikal.repository.Path;
-import org.vortikal.repository.Repository;
 import org.vortikal.util.io.StreamUtil;
-import org.vortikal.web.RequestContext;
 
 public final class JSON {
     

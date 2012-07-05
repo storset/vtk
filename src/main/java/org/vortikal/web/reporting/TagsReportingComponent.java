@@ -72,26 +72,29 @@ public class TagsReportingComponent {
     private Ehcache cache;
 
     public static final class TagFrequency implements Serializable {
+
+        private static final long serialVersionUID = -8618894865163460399L;
         private final String tag;
         private int frequency;
+
         private TagFrequency(String tag, int frequency) {
             this.tag = tag;
             this.frequency = frequency;
         }
-        
+
         public String getTag() {
             return this.tag;
         }
-        
+
         public int getFrequency() {
             return this.frequency;
         }
-        
+
         @Override
         public String toString() {
             return tag + ":" + frequency;
         }
-        
+
         private void increment() {
             ++this.frequency;
         }
@@ -101,13 +104,13 @@ public class TagsReportingComponent {
     private class TagFrequencyCollector implements Searcher.MatchCallback {
 
         private final Map<String, TagFrequency> tagFreqMap = new HashMap<String, TagFrequency>();
-        
+
         @Override
         public boolean matching(PropertySet propertySet) throws Exception {
             Property tags = propertySet.getProperty(tagsPropDef);
             if (tags != null) {
                 if (tagsPropDef.isMultiple()) {
-                    for (Value value: tags.getValues()) {
+                    for (Value value : tags.getValues()) {
                         incrementTag(value.getStringValue());
                     }
                 } else {
@@ -127,16 +130,15 @@ public class TagsReportingComponent {
                 tf.increment();
             }
         }
-        
+
         List<TagFrequency> getTagFreqList() {
             return new ArrayList<TagFrequency>(this.tagFreqMap.values());
         }
     }
-    
 
     /**
-     * Get list of TagFrequency instances for the given report criteria.
-     * The list will always be sorted by frequency in descending order.
+     * Get list of TagFrequency instances for the given report criteria. The
+     * list will always be sorted by frequency in descending order.
      * 
      * @param scopeUri
      * @param resourceTypeDefs
@@ -144,28 +146,31 @@ public class TagsReportingComponent {
      * @param tagOccurenceMin
      * @param token
      * @return
-     * @throws QueryException 
+     * @throws QueryException
      */
-    public List<TagFrequency> getTags(Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs, 
-                                    int limit, int tagOccurenceMin, String token) throws QueryException {
+    @SuppressWarnings("unchecked")
+    public List<TagFrequency> getTags(Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs, int limit,
+            int tagOccurenceMin, String token) throws QueryException {
 
         Set<String> rtNames = resourceTypeNames(resourceTypeDefs);
         final CacheKey cacheKey = new CacheKey(scopeUri, rtNames, limit, tagOccurenceMin, token);
         if (this.cache != null) {
             Element elem = this.cache.get(cacheKey);
             if (elem != null) {
-                return (List<TagFrequency>)elem.getValue();
+                return (List<TagFrequency>) elem.getValue();
             }
         }
-        
+
         OrQuery pathScopeQuery = null;
         if (scopeUri != null && !scopeUri.isRoot()) {
-            if (pathScopeQuery == null) pathScopeQuery = new OrQuery();
-            
+            if (pathScopeQuery == null) {
+                pathScopeQuery = new OrQuery();
+            }
+
             pathScopeQuery.add(new UriPrefixQuery(scopeUri.toString()));
 
-            // If we have an aggregation resolver available, then include whatever URIs
-            // the scope URI might aggregate from.
+            // If we have an aggregation resolver available, then include
+            // whatever URIs the scope URI might aggregate from.
             if (this.aggregationResolver != null) {
                 Set<Path> aggregationPaths = this.aggregationResolver.getAggregationPaths(scopeUri);
                 if (aggregationPaths != null) {
@@ -175,17 +180,18 @@ public class TagsReportingComponent {
                 }
             }
         }
-        
+
         OrQuery typeScopeQuery = null;
         if (rtNames != null && !rtNames.isEmpty()) {
-            if (typeScopeQuery == null) typeScopeQuery = new OrQuery();
-            
-            for (String rtName: rtNames) {
+            if (typeScopeQuery == null)
+                typeScopeQuery = new OrQuery();
+
+            for (String rtName : rtNames) {
                 // Consider TermOperator.IN to get hierarchical type support
                 typeScopeQuery.add(new TypeTermQuery(rtName, TermOperator.EQ));
             }
         }
-        
+
         Query masterScopeQuery = pathScopeQuery;
         if (typeScopeQuery != null) {
             if (masterScopeQuery != null) {
@@ -197,7 +203,7 @@ public class TagsReportingComponent {
                 masterScopeQuery = typeScopeQuery;
             }
         }
-        
+
         // Set up index search
         Search search = new Search();
         search.setQuery(masterScopeQuery);
@@ -207,12 +213,12 @@ public class TagsReportingComponent {
         ConfigurablePropertySelect propSelect = new ConfigurablePropertySelect();
         propSelect.addPropertyDefinition(tagsPropDef);
         search.setPropertySelect(propSelect);
-        
+
         TagFrequencyCollector tfc = new TagFrequencyCollector();
         // Execute index iteration and collect/aggregate tag frequencies
         this.searcher.iterateMatching(token, search, tfc);
         List<TagFrequency> tagFreqs = tfc.getTagFreqList();
-        
+
         // Case insensitive value consolidation
         if (this.caseInsensitive) {
             tagFreqs = consolidateCaseVariations(tagFreqs);
@@ -222,7 +228,7 @@ public class TagsReportingComponent {
         if (tagOccurenceMin > -1) {
             tagFreqs = filterBelowMinFreq(tagFreqs, tagOccurenceMin);
         }
-        
+
         // Sort by highest frequency descending
         Collections.sort(tagFreqs, new Comparator<TagFrequency>() {
             @Override
@@ -230,25 +236,26 @@ public class TagsReportingComponent {
                 return o1.frequency < o2.frequency ? 1 : (o1.frequency == o2.frequency ? 0 : -1);
             }
         });
-        
+
         // Apply any limit
         if (limit > -1) {
             limit = Math.min(limit, tagFreqs.size());
             tagFreqs = tagFreqs.subList(0, limit);
         }
-        
+
         tagFreqs = Collections.unmodifiableList(tagFreqs);
 
         // Populate cache
         if (this.cache != null) {
             this.cache.put(new Element(cacheKey, tagFreqs));
         }
-        
+
         return tagFreqs;
     }
-    
+
     private Set<String> resourceTypeNames(List<ResourceTypeDefinition> defs) {
-        if (defs == null) return null;
+        if (defs == null)
+            return null;
         Set<String> defNames = new HashSet<String>();
         for (ResourceTypeDefinition def : defs) {
             defNames.add(def.getName());
@@ -256,10 +263,10 @@ public class TagsReportingComponent {
 
         return defNames;
     }
-    
+
     private List<TagFrequency> consolidateCaseVariations(List<TagFrequency> tagFreqs) {
         Map<String, List<TagFrequency>> m = new HashMap<String, List<TagFrequency>>(tagFreqs.size() + 50);
-        for (TagFrequency tf: tagFreqs) {
+        for (TagFrequency tf : tagFreqs) {
             final String key = tf.tag.toLowerCase();
             List<TagFrequency> variations = m.get(key);
             if (variations == null) {
@@ -268,13 +275,13 @@ public class TagsReportingComponent {
             }
             variations.add(tf);
         }
-        
+
         List<TagFrequency> retVal = new ArrayList<TagFrequency>();
-        for (List<TagFrequency> variations: m.values()) {
+        for (List<TagFrequency> variations : m.values()) {
             int sum = 0;
             int maxFreq = -1;
             String mostCommonVariant = null;
-            for (TagFrequency variant: variations) {
+            for (TagFrequency variant : variations) {
                 sum += variant.frequency;
                 if (variant.frequency > maxFreq) {
                     maxFreq = variant.frequency;
@@ -285,7 +292,7 @@ public class TagsReportingComponent {
         }
         return retVal;
     }
-    
+
     private List<TagFrequency> filterBelowMinFreq(List<TagFrequency> tagFreqs, int minFreq) {
         for (Iterator<TagFrequency> it = tagFreqs.iterator(); it.hasNext();) {
             TagFrequency tf = it.next();
@@ -295,8 +302,10 @@ public class TagsReportingComponent {
         }
         return tagFreqs;
     }
-    
+
     private static final class CacheKey implements Serializable {
+
+        private static final long serialVersionUID = -8898229960525592912L;
         private final Path scopeUri;
         private final Set<String> resourceTypes;
         private final int limit;
@@ -326,7 +335,8 @@ public class TagsReportingComponent {
             if (this.scopeUri != other.scopeUri && (this.scopeUri == null || !this.scopeUri.equals(other.scopeUri))) {
                 return false;
             }
-            if (this.resourceTypes != other.resourceTypes && (this.resourceTypes == null || !this.resourceTypes.equals(other.resourceTypes))) {
+            if (this.resourceTypes != other.resourceTypes
+                    && (this.resourceTypes == null || !this.resourceTypes.equals(other.resourceTypes))) {
                 return false;
             }
             if (this.limit != other.limit) {
@@ -359,7 +369,7 @@ public class TagsReportingComponent {
     public void setSearcher(Searcher searcher) {
         this.searcher = searcher;
     }
-    
+
     public void setAggregationResolver(AggregationResolver aggregationResolver) {
         this.aggregationResolver = aggregationResolver;
     }

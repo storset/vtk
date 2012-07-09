@@ -65,7 +65,10 @@ public class FeedComponent extends AbstractFeedComponent {
             + "local feeds, you get authenticated retrieval of the resource if you skip the protocol/host part";
 
     private static final String PARAMETER_FEED_TITLE = "feed-title";
-    private static final String PARAMETER_FEED_TITLE_DESC = "Set to 'false' if you don't want to show feed title";
+    private static final String PARAMETER_FEED_TITLE_DESC = "Deprecated: NO LONGER USED. Kept to avoid breaking existing component references. (Set to 'false' if you don't want to show feed title)";
+
+    private static final String PARAMETER_DISPLAY_FEED_TITLE = "display-feed-title";
+    private static final String PARAMETER_DISPLAY_FEED_TITLE_DESC = "Set to 'false' if you don't want to show feed title";
 
     private static final String PARAMETER_OVERRIDE_FEED_TITLE = "override-feed-title";
     private static final String PARAMETER_OVERRIDE_FEED_TITLE_DESC = "Optional string overriding the feed title";
@@ -109,7 +112,8 @@ public class FeedComponent extends AbstractFeedComponent {
             throw new DecoratorComponentException("Component parameter 'url' is required");
         }
 
-        if (!prameterHasValue(PARAMETER_FEED_TITLE, "false", request)) {
+        if (!(prameterHasValue(PARAMETER_DISPLAY_FEED_TITLE, "false", request) || prameterHasValue(
+                PARAMETER_FEED_TITLE, "false", request))) {
             conf.put("feedTitle", true);
         }
 
@@ -273,6 +277,7 @@ public class FeedComponent extends AbstractFeedComponent {
         map.put(PARAMETER_URL, PARAMETER_URL_DESC);
         map.put(PARAMETER_MAX_MESSAGES, PARAMETER_MAX_MESSAGES_DESC);
         map.put(PARAMETER_FEED_TITLE, PARAMETER_FEED_TITLE_DESC);
+        map.put(PARAMETER_DISPLAY_FEED_TITLE, PARAMETER_DISPLAY_FEED_TITLE_DESC);
         map.put(PARAMETER_OVERRIDE_FEED_TITLE, PARAMETER_OVERRIDE_FEED_TITLE_DESC);
         map.put(PARAMETER_FEED_DESCRIPTION, PARAMETER_FEED_DESCRIPTION_DESC);
         map.put(PARAMETER_ITEM_DESCRIPTION, PARAMETER_ITEM_DESCRIPTION_DESC);

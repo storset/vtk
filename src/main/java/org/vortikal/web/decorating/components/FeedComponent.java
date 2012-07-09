@@ -65,7 +65,7 @@ public class FeedComponent extends AbstractFeedComponent {
             + "local feeds, you get authenticated retrieval of the resource if you skip the protocol/host part";
 
     private static final String PARAMETER_FEED_TITLE = "feed-title";
-    private static final String PARAMETER_FEED_TITLE_DESC = "Deprecated: NO LONGER USED. Kept to avoid breaking existing component references. (Set to 'false' if you don't want to show feed title)";
+    private static final String PARAMETER_FEED_TITLE_DESC = "Deprecated (use 'diplay-feed-title' instead). Kept to avoid breaking existing component references. (Set to 'false' if you don't want to show feed title)";
 
     private static final String PARAMETER_DISPLAY_FEED_TITLE = "display-feed-title";
     private static final String PARAMETER_DISPLAY_FEED_TITLE_DESC = "Set to 'false' if you don't want to show feed title";

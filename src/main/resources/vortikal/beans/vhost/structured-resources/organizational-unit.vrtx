@@ -362,19 +362,19 @@ resourcetype organizational-unit {
     employees : (en : "Staff", no : "Ansatte", nn : "Ansatte"),
     employeesLink : (en : "All employees in", no : "Alle ansatte i", nn : "Alle ansatte i"),
     displayEmployees : (
-      en : "Show employees registrated in UiO's payroll- and personnel system (requires valid area code)",
+      en : "Display staff members registered in UiO's payroll- and personnel system (requires valid area code)",
       no : "Vis ansatte registrert i UiOs lønns- og personalsystem (krever gyldig stedkode)",
       nn : "Vis tilsette registrerte i lønns- og personalsystemet til UiO (krev gyldig stedkode)"),
     selectedEmployees : (
-      en : "Employees to display at the top of the list",
+      en : "Staff members to display at the top of list",
       no : "Ansatte som skal vises øverst i listen",
       nn : "Ansatte som skal visast øverst i lista"),
     numberOfEmployeesToDisplay : (
-      en : "Number of employees to show",
+      en : "Number of staff members to display",
       no : "Antall ansatte som skal vises",
       nn : "Antall ansatte som skal visast"),
     urlToEmployeesList : (
-      en : "Web address to list over all employees",
+      en : "Web address to list of complete staff",
       no : "Webadresse til liste over alle ansatte",
       nn : "Webadresse til liste over alle ansatte"),
     content : (en: "Content", no: "Innhold", nn : "Innhald"),

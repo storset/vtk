@@ -112,9 +112,7 @@ public class ThumbnailEvaluator implements PropertyEvaluator {
             }
 
             ScaledImage thumbnail = imageService.scaleImage(image, imageFormat, width, ImageService.HEIGHT_ANY);
-
-            // TODO lossy-compression -> jpeg
-            String thumbnailFormat = !imageFormat.equalsIgnoreCase("png") ? "png" : imageFormat;
+            String thumbnailFormat = !imageFormat.equalsIgnoreCase("jpeg") ? "jpeg" : imageFormat;
 
             property.setBinaryValue(thumbnail.getImageBytes(thumbnailFormat), "image/" + thumbnailFormat);
             return true;

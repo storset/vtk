@@ -113,7 +113,7 @@
     <!-- For opensaml -->
     <repository>
       <id>shibboleth</id>
-      <url>https://shibboleth.net/nexus/content/repositories/releases/</url>
+      <url>https://build.shibboleth.net/nexus/content/groups/public/</url>
     </repository>
 
     <repository>

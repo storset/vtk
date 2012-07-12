@@ -7,7 +7,7 @@
   <#if (conf.type = "psd" && psd?has_content)>
     <div class="vrtx-event-component vrtx-event-component-psd">
     <#assign include = "true">
-  <#elseif (conf.type = "res" && res?has_content)>
+  <#elseif (conf.type = "list-once" && events?has_content)>
     <div class="vrtx-event-component vrtx-event-component-res">
     <#assign include = "true">
   <#elseif conf.includeIfEmpty>
@@ -18,15 +18,15 @@
     <#if (conf.eventsTitle && include = "true")>
       <h2><a href="${conf.uri?html}">${eventsTitle?html}</a></h2>
     </#if>
-    <#if (conf.type = "psd" && psd?has_content)>
-      <#assign psdSize = psd?size />
-      <#list psd as event>
-        <@displayPsd event.ps event.date event.showTime event_index+1 psdSize />
+    <#if (conf.type = "groupedByDayEvents" && groupedByDayEvents?has_content)>
+      <#assign groupedByDayEventsSize = groupedByDayEvents?size />
+      <#list groupedByDayEvents as event>
+        <@displayGroupedByDayEvents event.propertySet event.date event.showTime event_index+1 groupedByDayEventsSize />
       </#list>
-    <#elseif (conf.type = "res" && res?has_content)>
-      <#assign resSize = res.files?size />
-      <#list res.files as event>
-        <@displayRes event event_index+1 resSize />
+    <#elseif (conf.type = "list-once" && events?has_content)>
+      <#assign eventsSize = events.files?size />
+      <#list events.files as event>
+        <@displayEvent event event_index+1 eventsSize />
       </#list>
     <#elseif (include = "true")>
       <#if conf.emptyMsg?exists>
@@ -46,7 +46,7 @@
   </#if>
 </#if>
 
-<#macro displayPsd event startdate showTime nr last>
+<#macro displayGroupedByDayEvents event startdate showTime nr last>
   <#if nr == last>
     <div class="vrtx-event-component-item vrtx-event-component-item-${nr} last">
   <#else>
@@ -144,7 +144,7 @@
     </div>
 </#macro>
 
-<#macro displayRes event nr last>
+<#macro displayEvent event nr last>
 <#if nr == last>
   <div class="vrtx-event-component-item vrtx-event-component-item-${nr} last">
 <#else>

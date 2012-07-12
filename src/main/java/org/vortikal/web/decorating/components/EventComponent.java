@@ -107,8 +107,9 @@ public class EventComponent extends AbstractEventComponent {
         Map<String, Object> conf = new HashMap<String, Object>();
 
         String uri = request.getStringParameter(PARAMETER_URI);
-        if (uri == null)
+        if (uri == null) {
             throw new DecoratorComponentException("Component parameter 'uri' is required");
+        }
 
         Path resourcePath = this.getResourcePath(uri);
         if (resourcePath == null) {
@@ -116,41 +117,37 @@ public class EventComponent extends AbstractEventComponent {
         }
 
         conf.put("includeIfEmpty", !parameterHasValue(PARAMETER_INCLUDE_IF_EMPTY, "false", request));
-
         conf.put("eventDescription", parameterHasValue(PARAMETER_EVENT_DESCRIPTION, "true", request));
-
         conf.put("allEventsLink", parameterHasValue(PARAMETER_ALL_EVENTS_LINK, "true", request));
 
         int maxEvents = 5;
         try {
-            if ((maxEvents = Integer.parseInt(request.getStringParameter(PARAMETER_MAX_EVENTS))) <= 0)
+            if ((maxEvents = Integer.parseInt(request.getStringParameter(PARAMETER_MAX_EVENTS))) <= 0) {
                 maxEvents = 5;
+            }
         } catch (Exception e) {
         }
         conf.put("maxEvents", maxEvents);
 
         boolean dateIcon;
         boolean listOnlyOnce = parameterHasValue(PARAMETER_LIST_ONLY_ONCE, "true", request);
-        if (listOnlyOnce)
+        if (listOnlyOnce) {
             dateIcon = false;
-        else
+        } else {
             dateIcon = !parameterHasValue(PARAMETER_DATE_ICON, "false", request);
+        }
 
         conf.put("dateIcon", dateIcon);
-
         conf.put("listOnlyOnce", listOnlyOnce);
-
         conf.put("showLocation", !parameterHasValue(PARAMETER_SHOW_LOCATION, "false", request));
-
         conf.put("showPicture", parameterHasValue(PARAMETER_SHOW_PICTURE, "true", request));
-
         conf.put("showEndTime", !parameterHasValue(PARAMETER_SHOW_END_TIME, "false", request) && listOnlyOnce);
-
         conf.put("addToCalendar", parameterHasValue(PARAMETER_ADD_TO_CALENDAR, "true", request));
 
         String emptyMsg = request.getStringParameter(PARAMETER_EVENTS_EMPTY_MSG);
-        if (emptyMsg != null)
+        if (emptyMsg != null) {
             conf.put("emptyMsg", emptyMsg);
+        }
 
         boolean eventsTitle = parameterHasValue(PARAMETER_EVENTS_TITLE, "true", request);
         conf.put("eventsTitle", eventsTitle);
@@ -160,14 +157,12 @@ public class EventComponent extends AbstractEventComponent {
         RequestContext rc = RequestContext.getRequestContext();
         Repository repo = rc.getRepository();
         String token = rc.getSecurityToken();
-        Resource resource;
+        Resource resource = null;
         try {
             resource = repo.retrieve(token, resourcePath, false);
             conf.put("uri", viewService.constructURL(resource));
         } catch (AuthenticationException e) {
-            resource = null;
         } catch (AuthorizationException e) {
-            resource = null;
         } catch (ResourceNotFoundException e) {
             throw new DecoratorComponentException(uri + " does not exist");
         } catch (Exception e) {
@@ -176,18 +171,19 @@ public class EventComponent extends AbstractEventComponent {
 
         conf.put("auth", resource != null);
         if (resource == null) {
-            conf.put("type", "noAuth");
-            model.put("conf", conf);
             return;
         }
 
-        if (!resource.isCollection())
+        if (!resource.isCollection()) {
             throw new DecoratorComponentException(uri + " is not a folder");
+        }
 
-        if (eventsTitle)
+        if (eventsTitle) {
             model.put("eventsTitle", resource.getTitle());
+        }
 
-        Listing res = search.execute(RequestContext.getRequestContext().getServletRequest(), resource, 1, maxEvents, 0);
+        Listing events = search.execute(RequestContext.getRequestContext().getServletRequest(), resource, 1, maxEvents,
+                0);
 
         /*
          * If events will just be listed once we can use the search result,
@@ -195,8 +191,10 @@ public class EventComponent extends AbstractEventComponent {
          * for itself.
          */
         if (listOnlyOnce) {
-            model.put("res", res);
-            conf.put("type", "res");
+            conf.put("type", "list-once");
+            if (events.size() > 0) {
+                model.put("events", events);
+            }
         } else {
             model.put("today", new Date());
             Calendar tomorrow = Calendar.getInstance();
@@ -204,20 +202,23 @@ public class EventComponent extends AbstractEventComponent {
             model.put("tomorrow", tomorrow.getTime());
 
             List<PropertySetTmp> psList = new ArrayList<PropertySetTmp>();
-            for (PropertySet ps : res.getFiles()) {
+            for (PropertySet ps : events.getFiles()) {
 
                 Property sprop = ps.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "start-date");
-                if (sprop == null)
+                if (sprop == null) {
                     sprop = ps.getProperty(Namespace.DEFAULT_NAMESPACE, "start-date");
+                }
 
                 Property eprop = ps.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "end-date");
-                if (eprop == null)
+                if (eprop == null) {
                     eprop = ps.getProperty(Namespace.DEFAULT_NAMESPACE, "end-date");
+                }
 
-                if (eprop == null)
+                if (eprop == null) {
                     psList.add(new PropertySetTmp(ps, sprop.getDateValue()));
-                else
+                } else {
                     psList.add(new PropertySetTmp(ps, sprop.getDateValue(), eprop.getDateValue()));
+                }
             }
 
             /* Set midnight to 00:00. */
@@ -228,13 +229,13 @@ public class EventComponent extends AbstractEventComponent {
             midnight.set(Calendar.MILLISECOND, 0);
 
             PropertySetTmp pst;
-            List<PropertySetDate> psd = new ArrayList<PropertySetDate>();
-            while (psd.size() < maxEvents && 0 < psList.size()) {
+            List<PropertySetDate> groupedByDayEvents = new ArrayList<PropertySetDate>();
+            while (groupedByDayEvents.size() < maxEvents && 0 < psList.size()) {
                 for (int i = 0; i < psList.size(); i++) {
                     pst = psList.get(i);
 
                     /* Used to set sprop and showTime in PropertySetData. */
-                    smidnight = pst.getSDate();
+                    smidnight = pst.getStartDate();
                     smidnight.set(Calendar.HOUR_OF_DAY, 00);
                     smidnight.set(Calendar.MINUTE, 00);
                     smidnight.set(Calendar.SECOND, 00);
@@ -244,13 +245,15 @@ public class EventComponent extends AbstractEventComponent {
                      * Only lists up from today and after. Because an event can
                      * start earlier than today and end later.
                      */
-                    if (pst.getSDate().getTimeInMillis() >= midnight.getTimeInMillis())
-                        psd.add(new PropertySetDate(pst.getPs(), pst.getSDate(), smidnight.getTimeInMillis() != pst
-                                .getSDate().getTimeInMillis()));
+                    if (pst.getStartDate().getTimeInMillis() >= midnight.getTimeInMillis()) {
+                        groupedByDayEvents.add(new PropertySetDate(pst.getPropertySet(), pst.getStartDate(), smidnight
+                                .getTimeInMillis() != pst.getStartDate().getTimeInMillis()));
+                    }
 
                     /* If we got enough events listed. */
-                    if (psd.size() == maxEvents)
+                    if (groupedByDayEvents.size() == maxEvents) {
                         break;
+                    }
 
                     /* Set midnight to the next day, relative to current event. */
                     smidnight.add(Calendar.DATE, 1);
@@ -259,64 +262,69 @@ public class EventComponent extends AbstractEventComponent {
                      * If it does not last longer than this day, remove it and
                      * decrement i. Else set the start-date value to next day.
                      */
-                    if (pst.getEDate() == null || smidnight.getTimeInMillis() > pst.getEDate().getTimeInMillis())
+                    if (pst.getEndDate() == null || smidnight.getTimeInMillis() > pst.getEndDate().getTimeInMillis()) {
                         psList.remove(i--);
-                    else
-                        pst.setSDate(smidnight);
+                    } else {
+                        pst.setStartDate(smidnight);
+                    }
 
                     /* If we cannot check the next PropertySet. */
-                    if ((i + 1) >= psList.size())
+                    if ((i + 1) >= psList.size()) {
                         break;
+                    }
 
                     /* If the next event starts after the current day. */
-                    if (psList.get(i + 1).getSDate().getTimeInMillis() >= smidnight.getTimeInMillis())
+                    if (psList.get(i + 1).getStartDate().getTimeInMillis() >= smidnight.getTimeInMillis()) {
                         break;
+                    }
+
                 }
             }
 
-            model.put("psd", psd);
-            conf.put("type", "psd");
+            model.put("groupedByDayEvents", groupedByDayEvents);
+            conf.put("type", "groupedByDayEvents");
         }
 
         model.put("conf", conf);
 
     }
 
-    /* Class to keep date and PropertySet so sdate can be incremented */
+    /* Class to keep date and PropertySet so start date can be incremented */
     public class PropertySetTmp {
-        private PropertySet ps;
-        private Calendar sdate;
-        private Calendar edate;
 
-        public PropertySetTmp(PropertySet ps, Date sdate) {
-            this.ps = ps;
-            this.sdate = Calendar.getInstance();
-            this.sdate.setTimeInMillis(sdate.getTime());
-            this.edate = null;
+        private PropertySet propertySet;
+        private Calendar startDate;
+        private Calendar endDate;
+
+        public PropertySetTmp(PropertySet propertySet, Date sdate) {
+            this.propertySet = propertySet;
+            this.startDate = Calendar.getInstance();
+            this.startDate.setTimeInMillis(sdate.getTime());
+            this.endDate = null;
         }
 
         public PropertySetTmp(PropertySet ps, Date sdate, Date edate) {
-            this.ps = ps;
-            this.sdate = Calendar.getInstance();
-            this.edate = Calendar.getInstance();
-            this.sdate.setTimeInMillis(sdate.getTime());
-            this.edate.setTimeInMillis(edate.getTime());
+            this.propertySet = ps;
+            this.startDate = Calendar.getInstance();
+            this.endDate = Calendar.getInstance();
+            this.startDate.setTimeInMillis(sdate.getTime());
+            this.endDate.setTimeInMillis(edate.getTime());
         }
 
-        public PropertySet getPs() {
-            return ps;
+        public PropertySet getPropertySet() {
+            return propertySet;
         }
 
-        public Calendar getSDate() {
-            return sdate;
+        public Calendar getStartDate() {
+            return startDate;
         }
 
-        public Calendar getEDate() {
-            return edate;
+        public Calendar getEndDate() {
+            return endDate;
         }
 
-        public void setSDate(Calendar sdate) {
-            this.sdate = sdate;
+        public void setStartDate(Calendar startDate) {
+            this.startDate = startDate;
         }
     }
 
@@ -325,18 +333,19 @@ public class EventComponent extends AbstractEventComponent {
      * if not listOnlyOnce is set.
      */
     public class PropertySetDate {
-        private PropertySet ps;
+
+        private PropertySet propertySet;
         private Date date;
         private boolean showTime;
 
-        public PropertySetDate(PropertySet ps, Calendar date, boolean showTime) {
-            this.ps = ps;
+        public PropertySetDate(PropertySet propertySet, Calendar date, boolean showTime) {
+            this.propertySet = propertySet;
             this.date = date.getTime();
             this.showTime = showTime;
         }
 
-        public PropertySet getPs() {
-            return ps;
+        public PropertySet getPropertySet() {
+            return propertySet;
         }
 
         public Date getDate() {

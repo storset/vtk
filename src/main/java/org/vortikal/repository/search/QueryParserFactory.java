@@ -31,7 +31,9 @@
 package org.vortikal.repository.search;
 
 
-
+/**
+ * Factory for instantiating JavaCC-based {@link QueryParser} instance.
+ */
 public interface QueryParserFactory {
 
     public QueryParser getParser();

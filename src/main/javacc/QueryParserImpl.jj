@@ -43,6 +43,7 @@ import org.vortikal.repository.search.query.ACLReadForAllQuery;
 * <p>Try the parser out with:
 * <p>java -cp target/classes org.vortikal.repository.search.QueryParserImpl "((pre:post=c AND s:s=s) OR ff=2211)"
 */
+@SuppressWarnings({"all", "warnings", "unchecked"})
 public class QueryParserImpl implements QueryParser {
 
     private ResourceTypeTree resourceTypeTree;
@@ -54,6 +55,7 @@ public class QueryParserImpl implements QueryParser {
         this.resourceTypeTree = resourceTypeTree;
     }
 
+    @Override
     public Query parse(String query) {
         ReInit(new StringReader(query));
         try {

@@ -6,17 +6,21 @@
   <version>1.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>The Vortikal Web Framework</name>
-  <url>http://www.usit.uio.no/it/vortex/</url>
+  <url>http://www.uio.no/tjenester/it/web/vortex/</url>
   <modelVersion>4.0.0</modelVersion>
+  <prerequisites>
+    <maven>2.2.1</maven>
+  </prerequisites>
   <description>
-    The Vortikal Web Framework is an open source web publishing solution. It consists of two
-    principal parts, a file repository for storing files and folders and a web framework allowing
-    functionality to be added in a resource centric way. On top of this framework it provides both web based
-    and webdav content management solutions.
+    The Vortikal Web Framework is an open source web publishing solution. It
+    consists of two principal parts, a file repository for storing files and
+    folders and a web framework allowing functionality to be added in a resource
+    centric way. On top of this framework it provides both web based and webdav
+    content management solutions.
   </description>
   <organization>
     <name>Vortex Project</name>
-    <url>http://www.usit.uio.no/it/vortex</url>
+    <url>http://www.uio.no/tjenester/it/web/vortex/</url>
   </organization>
   <issueManagement>
     <system>JIRA</system>
@@ -79,6 +83,7 @@
       <url>/LICENSE.txt</url>
     </license>
   </licenses>
+  
   <distributionManagement>
     <site>
       <id>webdav-site</id>
@@ -90,12 +95,14 @@
       <url>scp://xml.uio.no/site/opt/apache2.2/virtual/xml.uio.no/htdocs/vortex/maven2</url>
     </repository>
   </distributionManagement>
+  
   <pluginRepositories>
     <pluginRepository>
       <id>xml.uio.no</id>
       <url>http://xml.uio.no/vortex/maven2</url>
     </pluginRepository>
   </pluginRepositories>
+  
   <repositories>
     <repository>
       <id>xml.uio.no</id>
@@ -116,11 +123,11 @@
       <url>https://build.shibboleth.net/nexus/content/groups/public/</url>
     </repository>
 
+    <!-- Java HTML sanitizer repo -->
     <repository>
       <id>owasp-java-html-sanitizer</id>
       <url>http://owasp-java-html-sanitizer.googlecode.com/svn/maven</url>
     </repository>
-
   </repositories>
 
   <properties>
@@ -137,6 +144,8 @@
           <exclude>war/</exclude>
           <!-- Exclude any CK-editor-symlink for runtime editing of web resources: -->
           <exclude>web/ckeditor-build</exclude>
+          <!-- Filtered specifically later: -->
+          <exclude>vortikal/beans/version.properties</exclude>
         </excludes>
       </resource>
       <resource>
@@ -148,16 +157,23 @@
       </resource>
       <resource>
         <directory>src/main/sql/</directory>
-        <targetPath>vortikal/sql/</targetPath>
         <includes>
           <include>*-schema.sql</include>
         </includes>
+        <targetPath>vortikal/sql/</targetPath>
       </resource>
       <resource>
         <directory>src/main/ext/CKEditor/ckeditor-build</directory>
         <targetPath>web/ckeditor-build</targetPath>
       </resource>
+      <resource>
+        <directory>src/main/resources/vortikal/beans</directory>
+        <includes><include>version.properties</include></includes>
+        <targetPath>org/vortikal/util</targetPath>
+        <filtering>true</filtering>
+      </resource>
     </resources>
+    
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>
@@ -167,7 +183,7 @@
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-plugin</artifactId>
-        <version>6.1.22</version>
+        <version>6.1.26</version>
         <configuration>
           <contextPath>/</contextPath>
           <connectors>
@@ -193,21 +209,21 @@
               <name>log4j.configuration</name>
               <value>log4j.vortex.xml</value>
             </systemProperty>
-            <!--
-              See URL: http://forum.java.sun.com/thread.jspa?threadID=592490&messageID=3100651
-            -->
-            <systemProperty>
-              <name>javax.xml.parsers.SAXParserFactory</name>
-              <value>com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</value>
-            </systemProperty>
+            <!-- Explicitly use Xalan as default XML transformer library -->
             <systemProperty>
               <name>javax.xml.transform.TransformerFactory</name>
               <value>org.apache.xalan.processor.TransformerFactoryImpl</value>
             </systemProperty>
-            <systemProperty>
-              <name>javax.xml.parsers.DocumentBuilderFactory</name>
-              <value>org.apache.xerces.jaxp.DocumentBuilderFactoryImpl</value>
-            </systemProperty>
+
+            <!-- These overrides appear not be required: -->
+            <!-- <systemProperty> -->
+            <!--   <name>javax.xml.parsers.SAXParserFactory</name> -->
+            <!--   <value>com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</value> -->
+            <!-- </systemProperty> -->
+            <!-- <systemProperty> -->
+            <!--   <name>javax.xml.parsers.DocumentBuilderFactory</name> -->
+            <!--   <value>org.apache.xerces.jaxp.DocumentBuilderFactoryImpl</value> -->
+            <!-- </systemProperty> -->
           </systemProperties>
         </configuration>
         <dependencies>
@@ -215,30 +231,73 @@
           <dependency>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jetty-ajp</artifactId>
-            <version>6.1.22</version>
+            <version>6.1.26</version>
             <scope>runtime</scope>
           </dependency>
         </dependencies>
       </plugin>
+
+      <!-- Build info: Provide local hostname as property ${hostname} using a Groovy script. -->
       <plugin>
-        <groupId>no.uio.usit.mvn.plugins</groupId>
-        <artifactId>maven-framework-version-plugin</artifactId>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
         <version>1.0</version>
         <executions>
           <execution>
-            <id>touch</id>
-            <configuration>
-              <outputDirectory>classes/org/vortikal/util/</outputDirectory>
-            </configuration>
+            <id>add-hostname-property</id>
+            <phase>initialize</phase>
             <goals>
-              <goal>touch</goal>
+              <goal>execute</goal>
             </goals>
+            <configuration>
+              <source>
+                project.properties["hostname"] = java.net.InetAddress.getLocalHost().getHostName();
+              </source>
+            </configuration>
+          </execution>
+          <!-- Show summary of build info during when building: -->
+          <execution>
+            <id>show-build-info</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <source>
+                log.info("Build information - " + project.name);
+                log.info("Version: " + project.version);
+                log.info("Revision: " + project.properties["buildNumber"]);
+                log.info("Branch: " + project.properties["scmBranch"]);
+              </source>
+            </configuration>
           </execution>
         </executions>
       </plugin>
+      <!-- Build info: provide various bits of build info as properties. -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <phase>initialize</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <doCheck>false</doCheck>
+          <doUpdate>false</doUpdate>
+          <timestampFormat>{0,date,yyyy-MM-dd'T'HH:mm:ss'Z'}</timestampFormat>
+          <revisionOnScmFailure>?</revisionOnScmFailure>
+        </configuration>
+      </plugin>
+
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>javacc-maven-plugin</artifactId>
+        <version>2.6</version>
         <executions>
           <execution>
             <id>javacc</id>
@@ -251,37 +310,12 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>fix-generated-sources</id>
-            <phase>compile</phase>
-            <configuration>
-              <tasks>
-                <replace token='@SuppressWarnings("all") public class' value='public class'
-                  dir='target/generated-sources/javacc/org/vortikal/repository/search/' includes='*.java' />
-                <replace token='public class' value='@SuppressWarnings("all") public class'
-                  dir='target/generated-sources/javacc/org/vortikal/repository/search/' includes='*.java' />
-                <replace token='@SuppressWarnings("all") public class' value='public class'
-                  dir='target/generated-sources/antlr3/org/vortikal/repository/resource/' includes='*.java' />
-                <replace token='public class' value='@SuppressWarnings("all") public class'
-                  dir='target/generated-sources/antlr3/org/vortikal/repository/resource/' includes='*.java' />
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
 
       <!-- http://antlr.org/antlr3-maven-plugin/ -->
       <plugin>
         <groupId>org.antlr</groupId>
         <artifactId>antlr3-maven-plugin</artifactId>
-        <version>3.2</version>
+        <version>3.4</version>
         <executions>
           <execution>
             <goals>
@@ -293,6 +327,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
+        <version>2.2</version>
         <configuration>
           <webResources>
             <resource>
@@ -303,7 +338,9 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
+        <version>2.3.2</version>
         <configuration>
           <tagBase>svn+ssh://svn.uio.no/svnroot/vortikal/tags</tagBase>
         </configuration>
@@ -311,6 +348,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.5.1</version>
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
@@ -320,6 +358,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
+        <version>3.1</version>
         <configuration>
           <outputEncoding>utf-8</outputEncoding>
         </configuration>
@@ -327,6 +366,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.9</version>
         <configuration>
           <downloadSources>true</downloadSources>
           <projectnatures>
@@ -340,6 +380,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.12</version>
         <configuration>
           <skip>${test.skip}</skip>
           <forkMode>pertest</forkMode>
@@ -719,6 +760,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-changes-plugin</artifactId>
+        <version>2.7.1</version>
         <reportSets>
           <reportSet>
             <reports>
@@ -730,28 +772,45 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>2.12</version>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>changelog-maven-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changelog-plugin</artifactId>
+        <version>2.2</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <configLocation>src/main/checkstyle/checkstyle.xml</configLocation>
-        </configuration>
+        <version>2.9.1</version>
+        <!-- FIXME: checkstyle config is invalid with recent CheckStyle versions: -->
+        <!-- <configuration> -->
+        <!--   <configLocation>src/main/checkstyle/checkstyle.xml</configLocation> -->
+        <!-- </configuration> -->
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.8.1</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.5.1</version>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jxr-maven-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.3</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <!-- Disable dependency location checking (takes too long): -->
+          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+        </configuration>
       </plugin>
     </plugins>
   </reporting>

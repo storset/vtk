@@ -37,6 +37,7 @@ public class QueryParserFactoryImpl implements QueryParserFactory {
 
     private ResourceTypeTree resourceTypeTree;
 
+    @Override
     public QueryParser getParser() {
         // Generated from QueryParserImpl.jj:
         return new QueryParserImpl(this.resourceTypeTree);

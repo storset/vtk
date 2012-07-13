@@ -44,21 +44,20 @@ public class Version {
 
     public static final String BUILD_DATE_PARSE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
-    /* Retrieved from the FRAMEWORK_VERSION file in the class path: */
+    /* Retrieved from the 'version.properties' file on the class path: */
     private static Date buildDate = new Date(0);
     private static String buildHost = "unknown";
+    private static String buildRevision = "unknown";
+    private static String buildBranch = "unknown";
     private static String frameworkVersion = "unknown";
     private static String buildVendor = "unknown";
     private static String vendorURL = "unknown";
     private static String frameworkTitle = "Vortikal Web Application Framework";
 
-
-
     static {
-        
         Package p = Version.class.getPackage();
         String versionFileLocation =
-            p.getName().replace('.', '/') + "/" + "FRAMEWORK_VERSION";
+            p.getName().replace('.', '/') + "/" + "version.properties";
 
         ClassLoader classLoader = Version.class.getClassLoader();
         InputStream is = classLoader.getResourceAsStream(versionFileLocation);
@@ -74,6 +73,14 @@ public class Version {
         
         if (props.containsKey("framework.version")) {
             frameworkVersion = props.getProperty("framework.version");
+        }
+        
+        if (props.containsKey("build.revision")) {
+            buildRevision = props.getProperty("build.revision");
+        }
+        
+        if (props.containsKey("build.branch")) {
+            buildBranch = props.getProperty("build.branch");
         }
         
         if (props.containsKey("build.date")) {
@@ -119,7 +126,7 @@ public class Version {
      * @return the current version, or <code>"unknown"</code> if no
      * version information is available.
      */
-    public static final String getVersion() {
+    public static String getVersion() {
         return frameworkVersion;
     }
 
@@ -131,7 +138,7 @@ public class Version {
      * <code>1970-01-01T01:00:00</code> if no such information is
      * available.
      */
-    public static final Date getBuildDate() {
+    public static Date getBuildDate() {
         return buildDate;
     }
     
@@ -142,7 +149,7 @@ public class Version {
      * @return the host name, or <code>"unknown"</code> if no such
      * information is available.
      */
-    public static final String getBuildHost() {
+    public static String getBuildHost() {
         return buildHost;
     }
 
@@ -150,7 +157,7 @@ public class Version {
     /**
      * Gets the build vendor.
      */
-    public static final String getBuildVendor() {
+    public static String getBuildVendor() {
         return buildVendor;
     }
 
@@ -158,7 +165,7 @@ public class Version {
     /**
      * Gets the vendor URL.
      */
-    public static final String getVendorURL() {
+    public static String getVendorURL() {
         return vendorURL;
     }
 
@@ -166,10 +173,22 @@ public class Version {
     /**
      * Gets the title of the framework.
      */
-    public static final String getFrameworkTitle() {
+    public static String getFrameworkTitle() {
         return frameworkTitle;
     }
-    
 
+    /**
+     * Gets the SCM build/revision identifier (number or string depending on SCM).
+     */
+    public static String getBuildRevision() {
+        return buildRevision;
+    }
+
+    /**
+     * Gets the name of the SCM branch from which the build was done.
+     */
+    public static String getBuildBranch() {
+        return buildBranch;
+    }
     
 }

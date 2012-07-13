@@ -35,7 +35,7 @@ import org.vortikal.repository.search.QueryException;
 
 /**
  * Wrap another {@link ExpressionEvaluator} and apply escaping to output of
- * {@link ExpressionValuator#evaluate(String)} according to syntax in 
+ * {@link ExpressionEvaluator#evaluate(java.lang.String)} according to syntax in 
  * QueryParserImpl.jj. Mostly useful for wrapping evaluators that
  * generate term values for a query.
  *
@@ -45,10 +45,12 @@ public class OutputEscapingExpressionEvaluatorWrapper implements
 
     private ExpressionEvaluator wrappedEvaluator;
     
+    @Override
     public String evaluate(String token) throws QueryException {
         return escapeStringValue(this.wrappedEvaluator.evaluate(token));
     }
 
+    @Override
     public boolean matches(String token) {
         return this.wrappedEvaluator.matches(token);
     }

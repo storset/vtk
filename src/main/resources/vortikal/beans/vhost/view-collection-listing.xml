@@ -113,7 +113,7 @@
     </property>
   </bean>
   
-  <bean id="collectionListing.helper" class="org.vortikal.web.decorating.components.CollectionListingComponentHelper">
+  <bean id="collectionListing.helper" class="org.vortikal.web.decorating.components.CollectionListingHelper">
     <property name="applicableResourceTypes">
       <set>
         <value>doc</value>

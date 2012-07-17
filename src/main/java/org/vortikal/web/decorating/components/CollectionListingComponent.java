@@ -55,7 +55,7 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
     private static final int MAX_ITEMS = 10;
 
     private SearchComponent search;
-    private CollectionListingComponentHelper helper;
+    private CollectionListingHelper helper;
 
     private final static String PARAMETER_URI = "uri";
     private final static String PARAMETER_URI_DESCRIPTION = "Uri to the folder. This is a required parameter";
@@ -180,7 +180,7 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
     }
 
     @Required
-    public void setHelper(CollectionListingComponentHelper helper) {
+    public void setHelper(CollectionListingHelper helper) {
         this.helper = helper;
     }
 

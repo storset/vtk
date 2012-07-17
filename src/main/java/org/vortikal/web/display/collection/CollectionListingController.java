@@ -45,7 +45,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.decorating.components.CollectionListingComponentHelper;
+import org.vortikal.web.decorating.components.CollectionListingHelper;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.display.listing.ListingPagingLink;
 import org.vortikal.web.search.Listing;
@@ -57,7 +57,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
 
     protected List<SearchComponent> searchComponents;
     protected PropertyTypeDefinition hideIcon;
-    protected CollectionListingComponentHelper helper;
+    protected CollectionListingHelper helper;
     private boolean displayEditLinks;
 
     @Override
@@ -148,7 +148,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
     }
 
     @Required
-    public void setHelper(CollectionListingComponentHelper helper) {
+    public void setHelper(CollectionListingHelper helper) {
         this.helper = helper;
     }
 

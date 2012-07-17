@@ -44,7 +44,7 @@
     </property>
   </bean>
 
-  <bean id="messageListing.helper" class="org.vortikal.web.decorating.components.CollectionListingComponentHelper">
+  <bean id="messageListing.helper" class="org.vortikal.web.decorating.components.CollectionListingHelper">
     <property name="applicableResourceTypes">
       <set>
         <value>structured-message</value>

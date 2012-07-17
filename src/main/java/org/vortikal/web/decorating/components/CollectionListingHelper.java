@@ -12,7 +12,7 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 import org.vortikal.web.search.Listing;
 
-public class CollectionListingComponentHelper {
+public class CollectionListingHelper {
 
     private Set<String> applicableResourceTypes;
 

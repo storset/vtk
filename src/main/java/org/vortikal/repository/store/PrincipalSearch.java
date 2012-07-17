@@ -38,9 +38,11 @@ import org.vortikal.security.Principal;
  * Defines a basic principal search.
  */
 public interface PrincipalSearch {
+    
+    public static final int MULTIPLE_IDS_LIMIT_PER_QUERY = 50;
 
     public static enum SearchType {
-        SIMPLE_NAME_PREFIX, FULL_USER_SEARCH, LISTING_BY_FILTER, SEARCH_BY_UID
+        SIMPLE_NAME_PREFIX, FULL_USER_SEARCH, LISTING_BY_FILTER, SEARCH_BY_UID, MULTIPLE_IDS_SEARCH
     }
 
     /**

@@ -32,6 +32,7 @@
 package org.vortikal.repository.store;
 
 import java.util.Locale;
+import java.util.Set;
 
 import org.vortikal.security.Principal;
 import org.vortikal.security.Principal.Type;
@@ -43,8 +44,9 @@ public class PrincipalSearchImpl implements PrincipalSearch {
 
     protected String searchString;
     protected Principal.Type principalType;
-    protected SearchType searchType;
-    protected Locale preferredLocale;
+    private SearchType searchType;
+    private Locale preferredLocale;
+    private Set<String> uids;
 
     public PrincipalSearchImpl(String searchString) {
         this(Principal.Type.USER, searchString, null, null);
@@ -65,6 +67,13 @@ public class PrincipalSearchImpl implements PrincipalSearch {
         this.searchType = searchType;
     }
 
+    public PrincipalSearchImpl(Set<String> uids, Locale preferredLocale) {
+        this.principalType = Principal.Type.USER;
+        this.searchType = SearchType.MULTIPLE_IDS_SEARCH;
+        this.preferredLocale = preferredLocale;
+        this.uids = uids;
+    }
+
     @Override
     public Type getPrincipalType() {
         return this.principalType;
@@ -83,6 +92,10 @@ public class PrincipalSearchImpl implements PrincipalSearch {
     @Override
     public Locale getPreferredLocale() {
         return this.preferredLocale;
+    }
+
+    public Set<String> getUids() {
+        return uids;
     }
 
     @Override

@@ -127,8 +127,12 @@ var studyHtmlBody = "\
 </table>";
 
 var lang = CKEDITOR.config.language;
-if(lang == "en") 
-   htmlBody = htmlBody.replace(/studiepoeng/g, "Credits");       
+var studyButtonTitle = 'Sett inn studietabell';
+
+if(lang == "en") {
+   studyHtmlBody = studyHtmlBody.replace(/studiepoeng/g, "Credits");       
+   studyButtonTitle = 'Insert study table';
+}
 
 CKEDITOR.config.htmlbuttons =  [
 	{
@@ -139,8 +143,8 @@ CKEDITOR.config.htmlbuttons =  [
 	},
 	{
 		name:'Studytable',
-		icon:'studytable.png',
+		icon:'icon_tabellhatt.png',
 		html:studyHtmlBody,
-		title:'A table'
+		title:studyButtonTitle
 	}
 ];

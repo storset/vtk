@@ -20,9 +20,9 @@ var completeToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Re
                         'JustifyCenter', 'JustifyRight', 'TextColor',
                         'Maximize']];
                         
-var studyToolbar = [['Studytable', 'Studyreferencecomponent', '-', 'Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
-                        'RemoveFormat', '-', 'Link', 'Unlink', 'Anchor',
-                        'Image', 'CreateDiv', 'MediaEmbed', 'Table',
+var studyToolbar = [['Source', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo', '-', 'Replace',
+                        'RemoveFormat', '-', 'Link', 'Unlink', 'Studyreferencecomponent', 'Anchor',
+                        'Image', 'CreateDiv', 'MediaEmbed', 'Table', 'Studytable',
                         'HorizontalRule', 'SpecialChar'
                     ], ['Format', 'Bold', 'Italic', 
                         'Subscript', 'Superscript', 'NumberedList',

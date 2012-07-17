@@ -9,7 +9,7 @@ CKEDITOR.plugins.add( 'studyreferencecomponent',
 		{
 			label: editor.lang.studyreferencecomponent.title,
 			command: pluginName,
-			icon: this.path + 'images/icon.png'
+			icon: this.path + 'images/icon_lenkehatt.png'
 		} );
  
 		CKEDITOR.dialog.add( pluginName, function( editor )

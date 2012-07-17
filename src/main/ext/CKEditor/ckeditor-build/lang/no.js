@@ -759,6 +759,7 @@ CKEDITOR.lang['no'] =
 
 	studytable :
 	{
+		buttontext	: 'Sett inn studietabell',
 		title		: 'Studieløptype',
 		common	 	: 'Felles',
 		specialization	: 'Fordypning',

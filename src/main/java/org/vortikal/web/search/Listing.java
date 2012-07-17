@@ -31,6 +31,7 @@
 package org.vortikal.web.search;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,15 +70,15 @@ public class Listing {
     }
 
     public ResourceWrapper getResource() {
-        return resource;
+        return this.resource;
     }
 
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public int getOffset() {
@@ -89,7 +90,7 @@ public class Listing {
     }
 
     public List<PropertySet> getFiles() {
-        return files;
+        return Collections.unmodifiableList(this.files);
     }
 
     public int size() {
@@ -101,7 +102,7 @@ public class Listing {
     }
 
     public Map<String, URL> getUrls() {
-        return urls;
+        return Collections.unmodifiableMap(this.urls);
     }
 
     public void setDisplayPropDefs(List<PropertyTypeDefinition> displayPropDefs) {
@@ -109,7 +110,7 @@ public class Listing {
     }
 
     public List<PropertyTypeDefinition> getDisplayPropDefs() {
-        return displayPropDefs;
+        return this.displayPropDefs;
     }
 
     public void setMore(boolean more) {
@@ -129,7 +130,7 @@ public class Listing {
     }
 
     public int getTotalHits() {
-        return totalHits;
+        return this.totalHits;
     }
 
     public boolean hasDisplayPropDef(String propDefName) {
@@ -145,7 +146,7 @@ public class Listing {
     }
 
     public boolean[] getEditLinkAuthorized() {
-        return editLinkAuthorized;
+        return this.editLinkAuthorized;
     }
 
     public void setEditLinkAuthorized(boolean[] editLinkAuthorized) {

@@ -58,7 +58,7 @@ public class DiagramReport extends AbstractReporter {
     @Override
     public Map<String, Object> getReportContent(String token, Resource resource, HttpServletRequest request) {
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put("reportname", this.getName());
+        result.put(REPORT_NAME, this.getName());
 
         /* Create base URL. */
         Principal p = SecurityContext.getSecurityContext().getPrincipal();

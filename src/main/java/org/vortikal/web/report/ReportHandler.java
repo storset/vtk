@@ -65,8 +65,6 @@ public class ReportHandler implements Controller {
     // "primaryReportes"
     protected List<Reporter> hiddenReporters;
 
-    private static final String REPORT_TYPE_PARAM = "report-type";
-
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -83,7 +81,7 @@ public class ReportHandler implements Controller {
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("serviceURL", serviceURL);
 
-        String reportType = request.getParameter(REPORT_TYPE_PARAM);
+        String reportType = request.getParameter(AbstractReporter.REPORT_TYPE_PARAM);
         if (reportType != null && !"".equals(reportType.trim())) {
             Reporter reporter = getReporter(reportType);
             if (reporter != null) {
@@ -102,9 +100,11 @@ public class ReportHandler implements Controller {
         if (reportList != null) {
             List<ReporterObject> reporterObjects = new ArrayList<ReporterObject>();
             for (Reporter reporter : reportList) {
-                if (!reporter.isEnabled()) continue;
+                if (!reporter.isEnabled()) {
+                    continue;
+                }
                 URL reporterURL = new URL(serviceURL);
-                reporterURL.addParameter(REPORT_TYPE_PARAM, reporter.getName());
+                reporterURL.addParameter(AbstractReporter.REPORT_TYPE_PARAM, reporter.getName());
                 reporterObjects.add(new ReporterObject(reporter.getName(), reporterURL));
             }
             model.put(modelKey, reporterObjects);

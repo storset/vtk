@@ -111,10 +111,10 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             // Keep aggregation set in cache
             cache.put(new Element(cacheKey, clar));
 
-            CollectionListingConditions clc = new CollectionListingConditions(token, uriQuery, additionalQueries, clar,
-                    searchLimit, offset, sorting, null, propertySelect);
+            CollectionListingSearchProperties collectionListingSearchProps = new CollectionListingSearchProperties(
+                    token, uriQuery, additionalQueries, clar, searchLimit, offset, sorting, null, propertySelect);
             try {
-                result = this.multiHostSearcher.collectionListing(clc);
+                result = this.multiHostSearcher.collectionListing(collectionListingSearchProps);
                 if (result != null) {
                     successfulMultiHostSearch = true;
                 }

@@ -32,7 +32,7 @@ package org.vortikal.repository;
 
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.web.search.collectionlisting.CollectionListingConditions;
+import org.vortikal.web.search.collectionlisting.CollectionListingSearchProperties;
 import org.vortikal.web.service.URL;
 
 public interface MultiHostSearchComponent {
@@ -41,6 +41,6 @@ public interface MultiHostSearchComponent {
 
     public PropertySet retrieve(String token, URL url);
 
-    public ResultSet collectionListing(CollectionListingConditions clc);
+    public ResultSet collectionListing(CollectionListingSearchProperties collectionListingSearchProps);
 
 }

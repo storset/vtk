@@ -32,7 +32,7 @@ package org.vortikal.repository;
 
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
-import org.vortikal.web.search.collectionlisting.CollectionListingConditions;
+import org.vortikal.web.search.collectionlisting.CollectionListingSearchProperties;
 import org.vortikal.web.service.URL;
 
 public class MultiHostSearcher {
@@ -58,9 +58,9 @@ public class MultiHostSearcher {
         return null;
     }
 
-    public ResultSet collectionListing(CollectionListingConditions clc) {
+    public ResultSet collectionListing(CollectionListingSearchProperties collectionListingSearchProps) {
         if (this.multiHostSearchComponent != null) {
-            return this.multiHostSearchComponent.collectionListing(clc);
+            return this.multiHostSearchComponent.collectionListing(collectionListingSearchProps);
         }
         return null;
     }

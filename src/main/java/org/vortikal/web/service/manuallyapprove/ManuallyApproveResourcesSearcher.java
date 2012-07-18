@@ -65,7 +65,7 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
-import org.vortikal.web.search.collectionlisting.CollectionListingConditions;
+import org.vortikal.web.search.collectionlisting.CollectionListingSearchProperties;
 import org.vortikal.web.search.collectionlisting.CollectionListingSearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -169,9 +169,9 @@ public class ManuallyApproveResourcesSearcher {
                 // and we have proper configuration to meet demands -> search
                 // accordingly
 
-                CollectionListingConditions clc = new CollectionListingConditions(token, null, queries, clar,
-                        searchLimit, 0, sorting, locationURL, null);
-                rs = this.multiHostSearcher.collectionListing(clc);
+                CollectionListingSearchProperties collectionListingSearchProps = new CollectionListingSearchProperties(
+                        token, null, queries, clar, searchLimit, 0, sorting, locationURL, null);
+                rs = this.multiHostSearcher.collectionListing(collectionListingSearchProps);
 
                 if (rs != null && rs.getSize() > 0) {
                     resourceSet.put(location, rs.getAllResults());

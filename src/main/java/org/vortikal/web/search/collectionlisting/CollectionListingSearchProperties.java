@@ -38,7 +38,7 @@ import org.vortikal.repository.search.query.Query;
 import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
 import org.vortikal.web.service.URL;
 
-public class CollectionListingConditions {
+public class CollectionListingSearchProperties {
 
     private String token;
     private Query uriQuery;
@@ -50,9 +50,10 @@ public class CollectionListingConditions {
     private URL url;
     private ConfigurablePropertySelect propertySelect;
 
-    public CollectionListingConditions(String token, Query uriQuery, List<Query> additionalQueries,
+    public CollectionListingSearchProperties(String token, Query uriQuery, List<Query> additionalQueries,
             CollectionListingAggregatedResources collectionListingAggregatedResources, int limit, int offset,
             Sorting sorting, URL url, ConfigurablePropertySelect propertySelect) {
+
         this.token = token;
         this.uriQuery = uriQuery;
         this.additionalQueries = additionalQueries;
@@ -62,6 +63,7 @@ public class CollectionListingConditions {
         this.sorting = sorting;
         this.url = url;
         this.propertySelect = propertySelect;
+
     }
 
     public String getToken() {

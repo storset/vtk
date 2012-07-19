@@ -166,9 +166,9 @@ overrides
 
 editruledef
 	:	NAME (position)? ( LP EDITHINT (COMMA EDITHINT)* RP)?
-		-> ^(NAME ^(position)? ^(EDITHINT)*)
+		-> ^(NAME (position)? (EDITHINT)*)
 	|	GROUP NAME namelist (position)? (ORIENTATION)?
-		-> ^(GROUP ^(NAME namelist) ^(position)? ^(ORIENTATION)?)
+		-> ^(GROUP ^(NAME namelist) (position)? (ORIENTATION)?)
 	|	NAME TOOLTIP LP (namevaluepair (COMMA namevaluepair)*) RP
 		-> ^(NAME ^(TOOLTIP (namevaluepair)*))
 	|	NAME COLON NAME LP EDITHINT RP
@@ -229,7 +229,7 @@ scriptdef:	NAME SHOWHIDE SCRIPTTRIGGER namelist
 services:	SERVICES LCB
 		  (servicedef (COMMA servicedef)*)*
 		RCB
-		-> ^(SERVICES ^(servicedef)*)
+		-> ^(SERVICES (servicedef)*)
 	;
 
 servicedef

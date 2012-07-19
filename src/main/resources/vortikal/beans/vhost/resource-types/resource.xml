@@ -51,7 +51,7 @@
         <ref bean="brokenLinksCountPropDef" />
         <ref bean="linkStatusPropDef" />
         <ref bean="systemJobStatusPropDef" />
-        
+        <ref bean="sslMixedModePropDef" />
       </list>
     </property>
   </bean>
@@ -378,4 +378,20 @@
     </property>
   </bean>
   
+
+  <bean id="sslMixedModePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="sslMixedMode" />
+    <property name="type" value="STRING" />
+    <property name="multiple" value="true" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="sslMixedModeEvaluator" />
+  </bean>
+
+  <bean id="sslMixedModeEvaluator" class="org.vortikal.repository.resourcetype.property.MixedContentEvaluator">
+    <property name="resourceManager" ref="structuredResources.resourceManager" />
+    <property name="ssiDirectivesPropDef" ref="containsSSIDirectivesPropDef" />
+  </bean>
+
 </beans>

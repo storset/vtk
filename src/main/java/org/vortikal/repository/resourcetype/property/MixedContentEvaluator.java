@@ -1,0 +1,293 @@
+/* Copyright (c) 2012, University of Oslo, Norway
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ *  * Neither the name of the University of Oslo nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *      
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.vortikal.repository.resourcetype.property;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import net.sf.json.JSONNull;
+
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertyEvaluationContext;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.LatePropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.resourcemanagement.PropertyDescription;
+import org.vortikal.resourcemanagement.StructuredResource;
+import org.vortikal.resourcemanagement.StructuredResourceDescription;
+import org.vortikal.resourcemanagement.StructuredResourceManager;
+import org.vortikal.text.html.TagsoupParserFactory;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+public class MixedContentEvaluator implements LatePropertyEvaluator {
+
+    private StructuredResourceManager resourceManager;
+    private PropertyTypeDefinition ssiDirectivesPropDef;
+    
+    @Override
+    public boolean evaluate(Property property, PropertyEvaluationContext ctx)
+            throws PropertyEvaluationException {
+    
+        try {
+
+            Report report = new Report();
+            Resource r = ctx.getNewResource();
+            if (r.getProperty(this.ssiDirectivesPropDef) != null) {
+                report.unsafeElement("ssi");
+            }
+
+            for (Property p: r) {
+                if (p.getType() == PropertyType.Type.IMAGE_REF) {
+                    String href = p.getStringValue();
+                    if (checkLink(href)) {
+                        report.includedContent("property", href);
+                    }
+                } else if (p.getType() == PropertyType.Type.HTML) {
+                    InputStream is = new ByteArrayInputStream(p.getStringValue().getBytes());
+                    checkHtml(is, report);
+                }
+            }
+            
+            checkContent(ctx, report);
+            if (!report.hasWarnings()) {
+                return false;
+            }
+            Value[] values = new Value[report.warnings.size()];
+            int i = 0;
+            for (String err: report.warnings) {
+                values[i++] = new Value(err, PropertyType.Type.STRING);
+            }
+            property.setValues(values);
+            return true;
+        } catch (Exception e) {
+            
+            return false;
+        }
+    }
+
+    private static class Report {
+        private static final int MAX_WARNINGS = 10;
+        private Set<String> warnings = new HashSet<String>();
+        public boolean includedContent(String name, String href) {
+            if (this.warnings.size() < MAX_WARNINGS) {
+                this.warnings.add(name + ":" + href);
+            }
+            return this.warnings.size() < MAX_WARNINGS;
+        }
+        
+        public boolean unsafeAttribute(String name) {
+            if (this.warnings.size() < MAX_WARNINGS) {
+                this.warnings.add("attr:" + name);
+            }
+            return this.warnings.size() < MAX_WARNINGS;
+        }
+        
+        public boolean unsafeElement(String name) {
+            if (this.warnings.size() < MAX_WARNINGS) {
+                this.warnings.add("element:" + name);
+            }
+            return this.warnings.size() < MAX_WARNINGS;
+        }
+        
+        public boolean hasWarnings() {
+            return !this.warnings.isEmpty();
+        }
+    }
+    
+    private void checkContent(PropertyEvaluationContext ctx, Report report) {
+        try {
+            Resource resource = ctx.getNewResource();
+            if (ctx.getContent() != null) {
+                if ("application/json".equals(resource.getContentType())) {
+                    StructuredResourceDescription desc = this.resourceManager.get(resource.getResourceType());
+                    if (desc != null) {
+
+                        StructuredResource res = desc.buildResource(ctx.getContent().getContentInputStream());
+
+                        for (PropertyDescription pdesc : desc.getAllPropertyDescriptions()) {
+                            if (pdesc.isNoExtract()) {
+                                Object p = res.getProperty(pdesc.getName());
+                                if (p == null) {
+                                    continue;
+                                }
+                                if ("json".equals(pdesc.getType())) {
+                                    checkJSON(p, report);
+                                } else {
+                                    InputStream is = new ByteArrayInputStream(p.toString().getBytes());
+                                    checkHtml(is, report);
+                                }
+                            }
+                        }
+                    }
+                } else if ("text/html".equals(resource.getContentType())) {
+                    checkHtml(ctx.getContent().getContentInputStream(), report);
+                }
+            }
+        } catch (Throwable t) { }
+    }
+    
+    private static boolean checkLink(String value) {
+        if (value == null) {
+            return false;
+        }
+        value = value.toLowerCase();
+        return (value.startsWith("http://") 
+                || value.startsWith("javascript:") 
+                || value.startsWith("data:"));
+    }
+    
+    private void checkJSON(Object object, Report report) throws Exception {
+        if (object instanceof List) {
+            List<?> list = (List<?>) object;
+            for (Object o: list) {
+                checkJSON(o, report);
+            }
+            
+        } else if (object instanceof Map) {
+            Map<?, ?> map = (Map<?, ?>) object;
+            for (Object k: map.keySet()) {
+                Object o = map.get(k);
+                checkJSON(o, report);
+            }
+        } else if (!(object instanceof JSONNull)) {
+            InputStream is = new ByteArrayInputStream(object.toString().getBytes());
+            checkHtml(is, report);
+        }
+    }
+    
+    @SuppressWarnings("serial")
+    private static class StopException extends RuntimeException {} 
+    
+    private void checkHtml(InputStream is, Report report) throws Exception {
+
+        org.ccil.cowan.tagsoup.Parser parser = TagsoupParserFactory.newParser(true);
+        parser.setFeature(org.ccil.cowan.tagsoup.Parser.namespacesFeature, true);
+        parser.setFeature(org.ccil.cowan.tagsoup.Parser.ignoreBogonsFeature, false);
+        parser.setContentHandler(new HtmlHandler(report));
+
+        InputSource input = new InputSource(is);
+
+        try {
+            parser.parse(input);
+        } catch (StopException t) { 
+        } finally {
+            is.close();
+        }
+    }
+
+    private static class HtmlHandler extends DefaultHandler {
+        private final Report report;
+
+        public HtmlHandler(Report report) {
+            this.report = report;
+        }
+        
+        @Override
+        public void startElement(String namespaceUri, String localName, String qName,
+                Attributes attrs) throws SAXException {
+            if (localName == null) {
+                return;
+            }
+            localName = localName.toLowerCase();
+            
+            if ("script".equals(localName) || "style".equals(localName)) {
+                this.report.unsafeElement(localName);
+                return;
+            }
+
+            if ("img".equals(localName) || "iframe".equals(localName)
+                    || "frame".equals(localName) || "embed".equals(localName)) {
+                String attr = attrs.getValue("src");
+                if (checkLink(attr)) {
+                    this.report.includedContent(localName, attr);
+                    return;
+                }
+            }
+            
+            if ("link".equals(localName) || "base".equals(localName)) {
+                String attr = attrs.getValue("href");
+                if (checkLink(attr)) {
+                    this.report.includedContent(localName, attr);
+                    return;
+                }
+            }
+            
+            if ("object".equals(localName)) {
+                String attr = attrs.getValue("data");
+                if (checkLink(attr)) {
+                    this.report.includedContent(localName, attr);
+                    return;
+                }
+            }
+            
+            if ("applet".equals(localName)) {
+                String attr = attrs.getValue("code");
+                if (checkLink(attr)) {
+                    this.report.includedContent(localName, attr);
+                    return;
+                }
+            }
+            
+            if ("esi:include".equals(qName)) {
+                this.report.unsafeElement(qName);
+                return;
+            }
+            
+            for (int i = 0; i < attrs.getLength(); i++) {
+                String attrName = attrs.getQName(i).toLowerCase();
+                if (attrName.startsWith("on") || attrName.equals("style")) {
+                    this.report.unsafeAttribute(attrName);
+                    return;
+                }
+            }
+        }
+    }
+
+    @Required
+    public void setResourceManager(StructuredResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
+    }
+
+    @Required
+    public void setSsiDirectivesPropDef(PropertyTypeDefinition ssiDirectivesPropDef) {
+        this.ssiDirectivesPropDef = ssiDirectivesPropDef;
+    }
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <!-- RESOURCE LISTING DEFINITIONS -->
+  <import resource="view-collection-listing.xml" />
+  <import resource="view-article-listing.xml" />
+  <import resource="view-event-listing.xml" />
+  <import resource="view-event-calendar-listing.xml" />
+  <import resource="view-blog-listing.xml" />
+  <import resource="view-person-listing.xml" />
+  <import resource="view-project-listing.xml" />
+  <import resource="view-research-group-listing.xml" />
+  <import resource="view-message-listing.xml" />
+  <import resource="view-image-listing.xml" />
+  <import resource="view-audio-video-listing.xml" />
+  <import resource="view-feed-listing.xml" />
+
+  <!-- Beans to override default listing of events and articles -->
+  <import resource="view-structured-article-listing.xml" />
+  <import resource="view-structured-event-listing.xml" />
+
+</beans>

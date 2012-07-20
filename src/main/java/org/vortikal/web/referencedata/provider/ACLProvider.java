@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -49,7 +50,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
+import org.vortikal.util.repository.DocumentPrincipalMetadataRetriever;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
@@ -95,8 +96,8 @@ public class ACLProvider implements ReferenceDataProvider {
     private Map<Privilege, Service> aclEditServices;
     private Map<Privilege, List<String>> permissionShortcuts;
     private Map<String, List<String>> permissionShortcutsConfig;
-    private PrincipalFactory principalFactory;
     private LocaleResolver localeResolver;
+    private DocumentPrincipalMetadataRetriever documentPrincipalMetadataRetriever;
 
     public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
 
@@ -194,8 +195,21 @@ public class ACLProvider implements ReferenceDataProvider {
             // Search for potential person documents relating to any of the user
             // principals
             Locale preferredLocale = this.localeResolver.resolveLocale(request);
-            List<Principal> principals = this.principalFactory.resolvePrincipalDocuments(new ArrayList<Principal>(
-                    Arrays.asList(userPrincipals)), preferredLocale);
+            Set<Principal> principalDocuments = null;
+            if (this.documentPrincipalMetadataRetriever.isDocumentSearchConfigured()) {
+                principalDocuments = this.documentPrincipalMetadataRetriever.getPrincipalDocuments(
+                        Arrays.asList(userPrincipals), preferredLocale);
+            }
+
+            List<Principal> principals = new ArrayList<Principal>(principalDocuments);
+            if (principalDocuments != null && principalDocuments.size() > 0) {
+                for (Principal p : userPrincipals) {
+                    if (!principals.contains(p)) {
+                        principals.add(p);
+                    }
+                }
+            }
+
             Collections.sort(principals, Principal.PRINCIPAL_NAME_COMPARATOR);
 
             Principal[] userPrincipalsWithDocs = new Principal[principals.size()];
@@ -239,13 +253,14 @@ public class ACLProvider implements ReferenceDataProvider {
     }
 
     @Required
-    public void setPrincipalFactory(PrincipalFactory principalFactory) {
-        this.principalFactory = principalFactory;
+    public void setLocaleResolver(LocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
     }
 
     @Required
-    public void setLocaleResolver(LocaleResolver localeResolver) {
-        this.localeResolver = localeResolver;
+    public void setDocumentPrincipalMetadataRetriever(
+            DocumentPrincipalMetadataRetriever documentPrincipalMetadataRetriever) {
+        this.documentPrincipalMetadataRetriever = documentPrincipalMetadataRetriever;
     }
 
 }

@@ -33,6 +33,7 @@ package org.vortikal.web.actions.permissions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -59,6 +60,7 @@ import org.vortikal.security.Principal.Type;
 import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
 import org.vortikal.security.roles.RoleManager;
+import org.vortikal.util.repository.DocumentPrincipalMetadataRetriever;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
@@ -70,6 +72,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
     private PrincipalFactory principalFactory;
     private RoleManager roleManager;
     private LocaleResolver localeResolver;
+    private DocumentPrincipalMetadataRetriever documentPrincipalMetadataRetriever;
 
     private Map<Privilege, List<String>> permissionShortcuts;
     private List<String> shortcuts = null;
@@ -157,10 +160,22 @@ public class ACLEditController extends SimpleFormController implements Initializ
                 .listPrivilegedGroups(this.privilege)));
 
         Principal[] privilegedPrincipals = acl.listPrivilegedUsers(this.privilege);
-        List<Principal> authorizedUsers = this.principalFactory.resolvePrincipalDocuments(new ArrayList<Principal>(
-                Arrays.asList(privilegedPrincipals)), preferredLocale);
-        Collections.sort(authorizedUsers, Principal.PRINCIPAL_NAME_COMPARATOR);
+        Set<Principal> principalDocuments = null;
+        if (this.documentPrincipalMetadataRetriever.isDocumentSearchConfigured()) {
+            principalDocuments = this.documentPrincipalMetadataRetriever.getPrincipalDocuments(
+                    Arrays.asList(privilegedPrincipals), preferredLocale);
+        }
 
+        List<Principal> authorizedUsers = new ArrayList<Principal>(principalDocuments);
+        if (principalDocuments != null && principalDocuments.size() > 0) {
+            for (Principal p : privilegedPrincipals) {
+                if (!authorizedUsers.contains(p)) {
+                    authorizedUsers.add(p);
+                }
+            }
+        }
+
+        Collections.sort(authorizedUsers, Principal.PRINCIPAL_NAME_COMPARATOR);
         authorizedUsers.addAll(Arrays.asList(acl.listPrivilegedPseudoPrincipals(this.privilege)));
 
         if (this.shortcuts != null) {
@@ -449,10 +464,21 @@ public class ACLEditController extends SimpleFormController implements Initializ
      * @return the modified ACL
      */
     private Acl addToAcl(Acl acl, List<String> values, Type type, Locale preferredLocale) throws Exception {
+
+        Set<Principal> principalDocuments = null;
+        if (this.documentPrincipalMetadataRetriever.isDocumentSearchConfigured()) {
+            principalDocuments = this.documentPrincipalMetadataRetriever.getPrincipalDocumentsByUid(
+                    new HashSet<String>(values), preferredLocale);
+        }
+
         for (String value : values) {
             Principal principal = null;
-            if (type == Type.USER) {
-                principal = this.principalFactory.getPrincipalDocument(value, preferredLocale);
+            if (type == Type.USER && principalDocuments != null) {
+                for (Principal pd : principalDocuments) {
+                    if (value.equals(pd.getName())) {
+                        principal = pd;
+                    }
+                }
             }
             if (principal == null) {
                 principal = principalFactory.getPrincipal(value, ACLEditValidationHelper.typePseudoUser(type, value));
@@ -497,6 +523,12 @@ public class ACLEditController extends SimpleFormController implements Initializ
     @Required
     public void setPermissionShortcutsConfig(Map<String, List<String>> permissionShortcutsConfig) {
         this.permissionShortcutsConfig = permissionShortcutsConfig;
+    }
+
+    @Required
+    public void setDocumentPrincipalMetadataRetriever(
+            DocumentPrincipalMetadataRetriever documentPrincipalMetadataRetriever) {
+        this.documentPrincipalMetadataRetriever = documentPrincipalMetadataRetriever;
     }
 
 }

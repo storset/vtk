@@ -32,19 +32,29 @@ package org.vortikal.web.report;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.security.Principal;
 import org.vortikal.security.SecurityContext;
+import org.vortikal.util.repository.DocumentPrincipalMetadataRetriever;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
@@ -53,6 +63,8 @@ public class ReportHandler implements Controller {
 
     private Repository repository;
     private String viewName;
+    private DocumentPrincipalMetadataRetriever documentPrincipalMetadataRetriever;
+    private LocaleResolver localeResolver;
 
     // Primary reports, i.e. most visible and "important" reports
     protected List<Reporter> primaryReporters;
@@ -85,7 +97,15 @@ public class ReportHandler implements Controller {
         if (reportType != null && !"".equals(reportType.trim())) {
             Reporter reporter = getReporter(reportType);
             if (reporter != null) {
-                model.put("report", reporter.getReportContent(token, resource, request));
+                Map<String, Object> report = reporter.getReportContent(token, resource, request);
+
+                if (reporter.isResolvePrincipalLink()) {
+                    Locale locale = this.localeResolver.resolveLocale(request);
+                    Map<String, Principal> principalDocuments = this.getPrincipalDocuments(report, locale);
+                    model.put("principalDocuments", principalDocuments);
+                }
+
+                model.put("report", report);
                 return new ModelAndView(reporter.getViewName(), model);
             }
         }
@@ -94,6 +114,29 @@ public class ReportHandler implements Controller {
         this.addReports(this.reporters, "reporters", model, serviceURL);
 
         return new ModelAndView(this.viewName, model);
+    }
+
+    private Map<String, Principal> getPrincipalDocuments(Map<String, Object> report, Locale locale) {
+
+        Object reportResourceList = report.get("result");
+        if (reportResourceList != null && reportResourceList instanceof List<?>) {
+            List<?> reportResources = (ArrayList<?>) reportResourceList;
+            Set<String> uids = new HashSet<String>();
+            for (Object obj : reportResources) {
+                if (obj instanceof PropertySet) {
+                    PropertySet ps = (PropertySet) obj;
+                    Property modifiedBy = ps
+                            .getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME);
+                    if (modifiedBy != null) {
+                        uids.add(modifiedBy.getPrincipalValue().getName());
+                    }
+                }
+            }
+            if (uids.size() > 0) {
+                return this.documentPrincipalMetadataRetriever.getPrincipalDocumentsMapByUid(uids, locale);
+            }
+        }
+        return null;
     }
 
     private void addReports(List<Reporter> reportList, String modelKey, Map<String, Object> model, URL serviceURL) {
@@ -169,6 +212,17 @@ public class ReportHandler implements Controller {
 
     public void setHiddenReporters(List<Reporter> hiddenReporters) {
         this.hiddenReporters = hiddenReporters;
+    }
+
+    @Required
+    public void setDocumentPrincipalMetadataRetriever(
+            DocumentPrincipalMetadataRetriever documentPrincipalMetadataRetriever) {
+        this.documentPrincipalMetadataRetriever = documentPrincipalMetadataRetriever;
+    }
+
+    @Required
+    public void setLocaleResolver(LocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
     }
 
 }

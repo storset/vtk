@@ -52,6 +52,8 @@
   <bean id="abstractReportHandler" abstract="true"
     class="org.vortikal.web.report.ReportHandler" parent="repositoryAware">
     <property name="viewName" value="report" />
+    <property name="localeResolver" ref="manageLocaleResolver" />
+    <property name="documentPrincipalMetadataRetriever" ref="documentPrincipalMetadataRetriever" />
     <property name="primaryReporters">
       <list>
         <ref bean="listResourcesReporter" />
@@ -150,6 +152,7 @@
     <property name="reportService" ref="reportService" />
     <property name="backURL" value="0" />
     <property name="viewName" value="documentReport" />
+    <property name="resolvePrincipalLink" value="true" />
   </bean>
 
   <bean id="lastModifiedReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">

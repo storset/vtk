@@ -1,20 +1,28 @@
 package org.vortikal.web.decorating.components;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.MultiHostSearcher;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Privilege;
+import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.security.Principal;
+import org.vortikal.util.repository.DocumentPrincipalMetadataRetriever;
 import org.vortikal.web.search.Listing;
 
 public class CollectionListingHelper {
 
     private Set<String> applicableResourceTypes;
+    private DocumentPrincipalMetadataRetriever documentPrincipalMetadataRetriever;
 
     public void checkListingsForEditLinks(Repository repo, String token, Principal principal, List<Listing> listings)
             throws Exception {
@@ -54,6 +62,19 @@ public class CollectionListingHelper {
         }
     }
 
+    public Map<String, Principal> getExistingPrincipalDocuments(List<PropertySet> propertySets, Locale preferredLocale) {
+
+        Set<String> uids = new HashSet<String>();
+        for (PropertySet ps : propertySets) {
+            Property modifiedBy = ps.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.MODIFIEDBY_PROP_NAME);
+            if (modifiedBy != null) {
+                uids.add(modifiedBy.getPrincipalValue().getName());
+            }
+        }
+
+        return this.documentPrincipalMetadataRetriever.getPrincipalDocumentsMapByUid(uids, preferredLocale);
+    }
+
     private boolean isApplicableResourceType(String rt) {
         return this.applicableResourceTypes.contains(rt);
     }
@@ -71,6 +92,12 @@ public class CollectionListingHelper {
     @Required
     public void setApplicableResourceTypes(Set<String> applicableResourceTypes) {
         this.applicableResourceTypes = applicableResourceTypes;
+    }
+
+    @Required
+    public void setDocumentPrincipalMetadataRetriever(
+            DocumentPrincipalMetadataRetriever documentPrincipalMetadataRetriever) {
+        this.documentPrincipalMetadataRetriever = documentPrincipalMetadataRetriever;
     }
 
 }

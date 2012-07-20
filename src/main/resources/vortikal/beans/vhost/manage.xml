@@ -782,7 +782,7 @@
     <property name="dateFormat" value="dd.MM.yyyy HH:mm:ss" />
     <property name="valueFactory" ref="valueFactory" />
     <property name="principalManager" ref="principalManager" />
-    <property name="principalFactory" ref="principalFactory" />
+    <property name="documentPrincipalMetadataRetriever" ref="documentPrincipalMetadataRetriever" />
     <property name="localeResolver" ref="manageLocaleResolver" />
   </bean>
   
@@ -903,6 +903,7 @@
     <property name="permissionShortcutsConfig" ref="permissionShortcutsProvider.config" />
     <property name="roleManager" ref="roleManager" />
     <property name="localeResolver" ref="manageLocaleResolver" />
+    <property name="documentPrincipalMetadataRetriever" ref="documentPrincipalMetadataRetriever" />
   </bean>
 
   <bean id="editReadPermissionsHandler" parent="abstractPermissionsHandler">
@@ -1701,8 +1702,8 @@
     </property>
     <property name="permissionShortcuts" ref="permissionShortcuts" />
     <property name="permissionShortcutsConfig" ref="permissionShortcutsProvider.config" />
-    <property name="principalFactory" ref="principalFactory" />
     <property name="localeResolver" ref="manageLocaleResolver" />
+    <property name="documentPrincipalMetadataRetriever" ref="documentPrincipalMetadataRetriever" />
   </bean>
 
   <bean id="manageCollectionlistingProvider" class="org.vortikal.web.referencedata.provider.CollectionListingProvider">

@@ -53,9 +53,8 @@ public class PrincipalFactory {
 
     public static Principal ALL = new PrincipalImpl(NAME_ALL);
 
-    // These daos will only be used if configured.
+    // Will only be used if configured.
     private PrincipalMetadataDAO principalMetadataDao;
-    private PrincipalMetadataDAO personDocumentPrincipalMetadataDao;
 
     public Principal getPrincipal(String id, Type type) throws InvalidPrincipalException {
         return this.getPrincipal(id, type, true);
@@ -145,71 +144,6 @@ public class PrincipalFactory {
         return retval;
     }
 
-    // Search for a person document if configuration allows
-    public Principal getPrincipalDocument(String id, Locale preferredLocale) {
-        if (this.personDocumentPrincipalMetadataDao != null) {
-            PrincipalImpl principal = new PrincipalImpl(id, Type.USER);
-            PrincipalMetadata metadata = this.personDocumentPrincipalMetadataDao
-                    .getMetadata(principal, preferredLocale);
-            if (metadata != null) {
-                Object descriptionObj = metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE);
-                if (descriptionObj != null) {
-                    principal.setDescription(descriptionObj.toString());
-                }
-                Object urlObj = metadata.getValue(Metadata.URL_ATTRIBUTE);
-                if (urlObj != null) {
-                    principal.setURL(urlObj.toString());
-                }
-                principal.setMetadata(metadata);
-                return principal;
-            }
-        }
-        // Not configured to search for documents, or no document for principal
-        // found
-        return null;
-    }
-
-    // For the supplied list of principals, resolve/swap those for which there
-    // exists a person document
-    public List<Principal> resolvePrincipalDocuments(List<Principal> principals, Locale preferredLocale) {
-        if (this.personDocumentPrincipalMetadataDao != null) {
-
-            StringBuilder sb = new StringBuilder();
-            for (Principal principal : principals) {
-                if (sb.length() != 0) {
-                    sb.append(";");
-                }
-                sb.append(principal.getName());
-            }
-
-            PrincipalSearchImpl ps = new PrincipalSearchImpl(Type.USER, sb.toString(), preferredLocale);
-            List<PrincipalMetadata> metadataList = this.personDocumentPrincipalMetadataDao.search(ps, preferredLocale);
-
-            if (metadataList != null && metadataList.size() > 0) {
-                for (PrincipalMetadata metadata : metadataList) {
-                    PrincipalImpl principal = new PrincipalImpl(metadata.getUid(), Type.USER);
-                    Object descriptionObj = metadata.getValue(PrincipalMetadata.DESCRIPTION_ATTRIBUTE);
-                    if (descriptionObj != null) {
-                        principal.setDescription(descriptionObj.toString());
-                    }
-                    Object urlObj = metadata.getValue(Metadata.URL_ATTRIBUTE);
-                    if (urlObj != null) {
-                        principal.setURL(urlObj.toString());
-                    }
-                    principal.setMetadata(metadata);
-
-                    // Replace original principal with document
-                    if (principals.contains(principal)) {
-                        principals.remove(principal);
-                        principals.add(principal);
-                    }
-
-                }
-            }
-        }
-        return principals;
-    }
-
     private Principal getPseudoPrincipal(String name) throws InvalidPrincipalException {
         if (NAME_ALL.equals(name))
             return ALL;
@@ -218,10 +152,6 @@ public class PrincipalFactory {
 
     public void setPrincipalMetadataDao(PrincipalMetadataDAO principalMetadataDao) {
         this.principalMetadataDao = principalMetadataDao;
-    }
-
-    public void setPersonDocumentPrincipalMetadataDao(PrincipalMetadataDAO personDocumentPrincipalMetadataDao) {
-        this.personDocumentPrincipalMetadataDao = personDocumentPrincipalMetadataDao;
     }
 
 }

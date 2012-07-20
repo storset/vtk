@@ -32,11 +32,14 @@ package org.vortikal.web.actions.properties;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -65,8 +68,8 @@ import org.vortikal.repository.resourcetype.ValueFactory;
 import org.vortikal.repository.resourcetype.ValueFactoryImpl;
 import org.vortikal.repository.resourcetype.ValueFormatException;
 import org.vortikal.security.Principal;
-import org.vortikal.security.PrincipalFactory;
 import org.vortikal.security.PrincipalManager;
+import org.vortikal.util.repository.DocumentPrincipalMetadataRetriever;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.referencedata.ReferenceDataProviding;
@@ -113,7 +116,8 @@ import org.vortikal.web.service.ServiceUnlinkableException;
  * 
  */
 @SuppressWarnings("deprecation")
-public class PropertyEditController extends SimpleFormController implements ReferenceDataProvider, ReferenceDataProviding {
+public class PropertyEditController extends SimpleFormController implements ReferenceDataProvider,
+        ReferenceDataProviding {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
@@ -130,8 +134,8 @@ public class PropertyEditController extends SimpleFormController implements Refe
     private String propertyMapModelName;
 
     private PrincipalManager principalManager;
-    private PrincipalFactory principalFactory;
     private LocaleResolver localeResolver;
+    private DocumentPrincipalMetadataRetriever documentPrincipalMetadataRetriever;
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
@@ -374,13 +378,13 @@ public class PropertyEditController extends SimpleFormController implements Refe
                                 hook.modified(def, resource);
                         }
                     }
-                    
+
                     if (def.isInheritable() && (created || removed || modified)) {
                         InheritablePropertiesStoreContext sc = new InheritablePropertiesStoreContext();
                         sc.addAffectedProperty(def);
                         repository.store(token, resource, sc);
                     } else {
-                        repository.store(token, resource);                        
+                        repository.store(token, resource);
                     }
 
                 } catch (ConstraintViolationException e) {
@@ -414,27 +418,42 @@ public class PropertyEditController extends SimpleFormController implements Refe
         List<PropertyItem> propsList = new ArrayList<PropertyItem>();
         Map<String, PropertyItem> propsMap = new HashMap<String, PropertyItem>();
 
-        Locale preferredLocale = this.localeResolver.resolveLocale(request);
-
         Principal modifiedBy = resource.getModifiedBy();
-        modifiedBy = this.resolvePrincipal(modifiedBy, preferredLocale);
-        model.put("modifiedBy", modifiedBy);
-
         Principal createdBy = resource.getCreatedBy();
-        if (createdBy.equals(modifiedBy)) {
-            model.put("createdBy", modifiedBy);
-        } else {
-            createdBy = this.resolvePrincipal(createdBy, preferredLocale);
-            model.put("createdBy", createdBy);
+        Principal owner = resource.getOwner();
+
+        if (this.documentPrincipalMetadataRetriever != null
+                && this.documentPrincipalMetadataRetriever.isDocumentSearchConfigured()) {
+
+            Locale preferredLocale = null;
+            if (this.localeResolver != null) {
+                preferredLocale = this.localeResolver.resolveLocale(request);
+            }
+
+            Set<String> uids = new HashSet<String>(Arrays.asList(modifiedBy.getName(), createdBy.getName(),
+                    owner.getName()));
+            Set<Principal> principalDocuments = this.documentPrincipalMetadataRetriever.getPrincipalDocumentsByUid(
+                    uids, preferredLocale);
+
+            if (principalDocuments != null) {
+                for (Principal pd : principalDocuments) {
+                    if (modifiedBy.equals(pd)) {
+                        modifiedBy = pd;
+                    }
+                    if (createdBy.equals(pd)) {
+                        createdBy = pd;
+                    }
+                    if (owner.equals(pd)) {
+                        owner = pd;
+                    }
+                }
+            }
+
         }
 
-        Principal owner = resource.getOwner();
-        if (owner.equals(modifiedBy)) {
-            model.put("owner", modifiedBy);
-        } else {
-            owner = this.resolvePrincipal(owner, preferredLocale);
-            model.put("owner", owner);
-        }
+        model.put("modifiedBy", modifiedBy);
+        model.put("createdBy", createdBy);
+        model.put("owner", modifiedBy);
 
         for (PropertyTypeDefinition def : this.propertyTypeDefinitions) {
 
@@ -498,15 +517,6 @@ public class PropertyEditController extends SimpleFormController implements Refe
 
         model.put(this.propertyListModelName, propsList);
         model.put(this.propertyMapModelName, propsMap);
-    }
-
-    private Principal resolvePrincipal(Principal principal, Locale preferredLocale) {
-        Principal principalDoc = this.principalFactory.getPrincipalDocument(principal.getQualifiedName(),
-                preferredLocale);
-        if (principalDoc != null) {
-            principal = principalDoc;
-        }
-        return principal;
     }
 
     private boolean isToggleProperty(PropertyTypeDefinition def) {
@@ -604,11 +614,6 @@ public class PropertyEditController extends SimpleFormController implements Refe
     }
 
     @Required
-    public void setPrincipalFactory(PrincipalFactory principalFactory) {
-        this.principalFactory = principalFactory;
-    }
-
-    @Required
     public void setLocaleResolver(LocaleResolver localeResolver) {
         this.localeResolver = localeResolver;
     }
@@ -635,6 +640,11 @@ public class PropertyEditController extends SimpleFormController implements Refe
     @Required
     public void setDateFormat(String dateFormat) {
         this.dateFormat = dateFormat;
+    }
+
+    public void setDocumentPrincipalMetadataRetriever(
+            DocumentPrincipalMetadataRetriever documentPrincipalMetadataRetriever) {
+        this.documentPrincipalMetadataRetriever = documentPrincipalMetadataRetriever;
     }
 
     public ReferenceDataProvider[] getReferenceDataProviders() {

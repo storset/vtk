@@ -30,7 +30,6 @@
         <#list list as res >
           <#assign title = vrtx.propValue(res, 'title') />
           <#assign lastModifiedTime = vrtx.propValue(res, 'lastModified') />
-          <#assign modifiedBy = vrtx.propValue(res, 'modifiedBy', 'document-link') />
           <#assign uri = vrtx.getUri(res) />
 
           <#assign contentType = vrtx.propValue(res, 'contentType') />
@@ -66,7 +65,20 @@
             </#if>
             </td>
           <#if !conf.compactView>
-            <td class="vrtx-collection-listing-last-modified-by">${modifiedBy}</td>
+            <td class="vrtx-collection-listing-last-modified-by">
+              <#assign modifiedBy = vrtx.prop(res, 'modifiedBy').principalValue />
+              <#if principalDocuments?exists && principalDocuments[modifiedBy.name]?exists>
+                <#assign principal = principalDocuments[modifiedBy.name] />
+                <#if principal.URL?exists>
+                  <a href="${principal.URL}">${principal.description}</a>
+                <#else>
+                  ${principal.description}
+                </#if>
+              <#else>
+                <#assign modifiedByNameLink = vrtx.propValue(res, 'modifiedBy', 'link') />
+                ${modifiedByNameLink}
+              </#if>
+            </td>
             <td class="vrtx-collection-listing-last-modified last-col">${lastModifiedTime?html}</td>
           </#if>
           </tr>

@@ -34,8 +34,6 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.repository.store.Metadata;
-import org.vortikal.repository.store.PrincipalMetadata;
 import org.vortikal.security.InvalidPrincipalException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
@@ -45,11 +43,13 @@ import org.vortikal.text.html.HtmlUtil;
  * Value formatter for {@link Principal} values.
  * <p>
  * Principals can be formatted to string in the following formats:
- * <ul><li>default: {@link Principal#getName()}
+ * <ul>
+ * <li>default: {@link Principal#getName()}
  * <li>'name': {@link Principal#getDescription()}
- * <li>'link' and {@link Principal} has url: &lt;a href="{@link Principal#getURL()}">{@link Principal#getDescription()}&lt;/a>
- * <li>'name-link' and {@link Principal} has url: &lt;a href="{@link Principal#getURL()}">{@link Principal#getName()}&lt;/a>
- * <li>'document-link' and {@link Principal} has url to a person document, if it exists: &lt;a href="{@link Principal#getURL()}">{@link Principal#getDescription()}&lt;/a>
+ * <li>'link' and {@link Principal} has url: &lt;a href="
+ * {@link Principal#getURL()}">{@link Principal#getDescription()}&lt;/a>
+ * <li>'name-link' and {@link Principal} has url: &lt;a href="
+ * {@link Principal#getURL()}">{@link Principal#getName()}&lt;/a>
  */
 public class PrincipalValueFormatter implements ValueFormatter {
 
@@ -57,16 +57,12 @@ public class PrincipalValueFormatter implements ValueFormatter {
     public static final String NAME_FORMAT = "name";
     public static final String LINK_FORMAT = "link";
     public static final String NAME_LINK_FORMAT = "name-link";
-    public static final String DOCUMENT_LINK_FORMAT = "document-link";
-
     private PrincipalFactory principalFactory;
 
     /*
      * Defaults to return the principal description. Also supports the "name",
-     * "link", "name-link" and "document-link" formats, the "link" and
-     * "name-link" latter returning an html <a> tag if the principal has a url,
-     * and the "document-link" returning an html <a> tag if the principal has an
-     * existing document (defaults to "link" format if not).
+     * "link" and "name-link" formats, the "link" and "name-link" latter
+     * returning an html <a> tag if the principal has a url
      */
     public String valueToString(Value value, String format, Locale locale) throws IllegalValueTypeException {
 
@@ -75,28 +71,6 @@ public class PrincipalValueFormatter implements ValueFormatter {
         }
 
         Principal principal = value.getPrincipalValue();
-
-        // Will only yield results id principal factory is configured for
-        // document search
-        if (DOCUMENT_LINK_FORMAT.equals(format)) {
-            Principal principalDocument = this.principalFactory.getPrincipalDocument(principal.getQualifiedName(),
-                    locale);
-            if (principalDocument != null) {
-                PrincipalMetadata pm = principalDocument.getMetadata();
-                Object urlObj = pm.getValue(Metadata.URL_ATTRIBUTE);
-                if (urlObj != null) {
-                    StringBuilder sb = new StringBuilder("<a href=\"");
-                    sb.append(HtmlUtil.escapeHtmlString(urlObj.toString()));
-                    sb.append("\">");
-                    sb.append(principal.getDescription());
-                    sb.append("</a>");
-                    return sb.toString();
-                }
-            }
-            // If no document is found, fall back to LINK_FORMAT
-            format = LINK_FORMAT;
-        }
-
         String url = principal.getURL();
         if (LINK_FORMAT.equals(format) && url != null) {
             return "<a href=\"" + HtmlUtil.escapeHtmlString(url) + "\">" + principal.getDescription() + "</a>";

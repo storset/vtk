@@ -48,7 +48,17 @@
               <@vrtx.msg code="viewCollectionListing.lastModified"
                          args=[vrtx.propValue(r, displayPropDef.name, "long")] />
             </#assign>
-            <#assign val = val + " " + vrtx.propValue(r, 'modifiedBy', 'document-link') />
+            <#assign modifiedBy = vrtx.prop(r, 'modifiedBy').principalValue />
+            <#if principalDocuments?exists && principalDocuments[modifiedBy.name]?exists>
+              <#assign principal = principalDocuments[modifiedBy.name] />
+              <#if principal.URL?exists>
+                <#assign val = val + " <a href='${principal.URL}'>${principal.description}</a>" />
+              <#else>
+                <#assign val = val + " ${principal.description}" />
+              </#if>
+            <#else>
+              <#assign val = val + " " + vrtx.propValue(r, 'modifiedBy', 'link') />
+            </#if>
           <#else>
             <#assign val = vrtx.propValue(r, displayPropDef.name, "long") /> <#-- Default to 'long' format -->
           </#if>

@@ -36,6 +36,7 @@
     <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
     <property name="hideIcon" ref="collection.hideIconPropDef" />
     <property name="helper" ref="collectionListing.helper" />
+    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
     <property name="alternativeRepresentations">
       <map>
         <entry key="application/atom+xml" value-ref="collectionListing.atomService" />
@@ -50,6 +51,7 @@
       </list>
     </property>
     <property name="displayEditLinks" value="true" />
+    <property name="resolvePrincipalLink" value="true" />
   </bean>
 
   <bean id="collectionListing.searchComponent" class="org.vortikal.web.search.collectionlisting.CollectionListingSearchComponent">
@@ -121,6 +123,7 @@
         <value>xls</value>
       </set>
     </property>
+    <property name="documentPrincipalMetadataRetriever" ref="documentPrincipalMetadataRetriever" />
   </bean>
 
   <bean id="collectionListing.viewResolver" parent="decoratorViewResolver">

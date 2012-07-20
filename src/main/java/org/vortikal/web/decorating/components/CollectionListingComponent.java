@@ -33,6 +33,7 @@ package org.vortikal.web.decorating.components;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -49,6 +50,7 @@ import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
+import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
 public class CollectionListingComponent extends ViewRenderingDecoratorComponent {
 
@@ -56,6 +58,7 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
 
     private SearchComponent search;
     private CollectionListingHelper helper;
+    private ResourceAwareLocaleResolver localeResolver;
 
     private final static String PARAMETER_URI = "uri";
     private final static String PARAMETER_URI_DESCRIPTION = "Uri to the folder. This is a required parameter";
@@ -135,6 +138,11 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
         Listing listing = search.execute(request.getServletRequest(), res, 1, maxItems, 0);
         this.helper.checkListingsForEditLinks(repository, token, principal, Arrays.asList(listing));
 
+        Locale preferredLocale = this.localeResolver.resolveResourceLocale(res);
+        Map<String, Principal> principalDocuments = this.helper.getExistingPrincipalDocuments(listing.getFiles(),
+                preferredLocale);
+        model.put("principalDocuments", principalDocuments);
+
         model.put("editLinks", listing.getEditLinkAuthorized());
         model.put("list", listing.getFiles());
         model.put("conf", conf);
@@ -182,6 +190,11 @@ public class CollectionListingComponent extends ViewRenderingDecoratorComponent 
     @Required
     public void setHelper(CollectionListingHelper helper) {
         this.helper = helper;
+    }
+
+    @Required
+    public void setLocaleResolver(ResourceAwareLocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
     }
 
     protected String getDescriptionInternal() {

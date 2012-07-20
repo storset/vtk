@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,13 +53,16 @@ import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
+import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
 public class CollectionListingController extends AbstractCollectionListingController {
 
     protected List<SearchComponent> searchComponents;
     protected PropertyTypeDefinition hideIcon;
     protected CollectionListingHelper helper;
+    private ResourceAwareLocaleResolver localeResolver;
     private boolean displayEditLinks;
+    private boolean resolvePrincipalLink;
 
     @Override
     public void runSearch(HttpServletRequest request, Resource collection, Map<String, Object> model, int pageLimit)
@@ -96,6 +100,13 @@ public class CollectionListingController extends AbstractCollectionListingContro
 
             if (this.displayEditLinks) {
                 this.helper.checkListingsForEditLinks(repository, token, principal, Arrays.asList(listing));
+            }
+
+            if (this.resolvePrincipalLink) {
+                Locale preferredLocale = this.localeResolver.resolveResourceLocale(collection);
+                Map<String, Principal> principalDocuments = this.helper.getExistingPrincipalDocuments(
+                        listing.getFiles(), preferredLocale);
+                model.put("principalDocuments", principalDocuments);
             }
 
             // We have more results to display for this listing
@@ -162,8 +173,17 @@ public class CollectionListingController extends AbstractCollectionListingContro
         this.hideIcon = hideIcon;
     }
 
+    @Required
+    public void setLocaleResolver(ResourceAwareLocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
+    }
+
     public void setDisplayEditLinks(boolean displayEditLinks) {
         this.displayEditLinks = displayEditLinks;
+    }
+
+    public void setResolvePrincipalLink(boolean resolvePrincipalLink) {
+        this.resolvePrincipalLink = resolvePrincipalLink;
     }
 
 }

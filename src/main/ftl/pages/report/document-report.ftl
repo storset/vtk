@@ -50,7 +50,7 @@
       <#assign collectionSize = report.result?size />
       <#list report.result as res >
         <#assign lastModifiedTime = vrtx.propValue(res, 'lastModified') />
-        <#assign modifiedBy = vrtx.propValue(res, 'modifiedBy', 'name-link') />
+        
         <#assign aclIsInherited = vrtx.getMsg("report.yes", "Yes")>
         <#if report.isInheritedAcl[res_index] >
           <#assign aclIsInherited = vrtx.getMsg("report.no", "No")>
@@ -90,7 +90,20 @@
           <tr class="${rowType} <@vrtx.iconResolver res.resourceType contentType /> ${isCollection}${firstLast}">
             <td class="vrtx-report-name"><a href="${url?html}">${title?html}</a></td>
             <td class="vrtx-report-last-modified">${lastModifiedTime?html}</td>
-            <td class="vrtx-report-last-modified-by">${modifiedBy}</td>
+            <td class="vrtx-report-last-modified-by">
+              <#assign modifiedBy = vrtx.prop(res, 'modifiedBy').principalValue />
+              <#if principalDocuments?? && principalDocuments[modifiedBy.name]??>
+                <#assign principal = principalDocuments[modifiedBy.name] />
+                <#if principal.URL??>
+                  <a href="${principal.URL}">${principal.description}</a>
+                <#else>
+                  ${principal.description}
+                </#if>
+              <#else>
+                <#assign modifiedByNameLink = vrtx.propValue(res, 'modifiedBy', 'link') />
+                ${modifiedByNameLink}
+              </#if>
+            </td>
             <td class="vrtx-report-permission-set">${aclIsInherited?html}</td>
             <#if report.isReadRestricted[res_index] >
               <td class="vrtx-report-permissions"><span class="restricted">${isReadRestricted?html}</span></td>

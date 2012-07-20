@@ -419,6 +419,7 @@
     <property name="view" ref="decorating.collectionListingComponent.view" />
     <property name="search" ref="decorating.collectionListingComponent.searchComponent" />
     <property name="helper" ref="collectionListing.helper" />
+    <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
     <property name="description" value="Inserts a folder item list component on the page" />
     <property name="examples">
       <map>

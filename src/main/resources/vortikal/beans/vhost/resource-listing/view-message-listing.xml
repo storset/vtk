@@ -50,6 +50,7 @@
         <value>structured-message</value>
       </set>
     </property>
+    <property name="documentPrincipalMetadataRetriever" ref="documentPrincipalMetadataRetriever" />
   </bean>
 
   <bean id="messageListing.feedService" parent="collectionListing.atomService">

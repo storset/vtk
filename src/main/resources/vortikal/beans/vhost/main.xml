@@ -18,6 +18,8 @@
   <import resource="common/vortikal.xml" />
 
   <import resource="resource-types/main.xml" />
+  <import resource="resource-listing/main.xml" />
+  
   <import resource="actions.xml" />
   <import resource="repository.xml" />
   <import resource="query.xml" />
@@ -33,22 +35,6 @@
   <import resource="article.xml" />
   <import resource="structured-resources-management.xml" />
   <import resource="structured-resources.xml" />
-  <import resource="view-feed-listing.xml" />
-  <import resource="view-collection-listing.xml" />
-  <import resource="view-article-listing.xml" />
-  <import resource="view-event-listing.xml" />
-  <import resource="view-event-calendar-listing.xml"/>
-  <import resource="view-blog-listing.xml" />
-  <import resource="view-person-listing.xml" />
-  <import resource="view-project-listing.xml" />
-  <import resource="view-research-group-listing.xml" />
-  <import resource="view-message-listing.xml" />
-  <import resource="view-image-listing.xml" />
-  <import resource="view-audio-video-listing.xml" />
-  
-  <!-- Beans to override default listing of events and articles -->
-  <import resource="view-structured-article-listing.xml" />
-  <import resource="view-structured-event-listing.xml" />
   
   <import resource="manage.xml" />
   <import resource="visual-profile-aspect.xml" />

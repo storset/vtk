@@ -35,7 +35,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.search.Searcher;
 
 public abstract class AbstractReporter implements Reporter {
-    
+
     public static final int DEFAULT_SEARCH_LIMIT = 100;
     public static final String REPORT_TYPE_PARAM = "report-type";
     public static final String REPORT_NAME = "reportname";
@@ -45,6 +45,7 @@ public abstract class AbstractReporter implements Reporter {
     protected Searcher searcher;
     protected Repository repository;
     private boolean enabled = true;
+    private boolean resolvePrincipalLink;
 
     public String getName() {
         return name;
@@ -73,13 +74,23 @@ public abstract class AbstractReporter implements Reporter {
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-    
+
     @Override
     public boolean isEnabled() {
         return this.enabled;
     }
-    
+
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    public void setResolvePrincipalLink(boolean resolvePrincipalLink) {
+        this.resolvePrincipalLink = resolvePrincipalLink;
+    }
+
+    @Override
+    public boolean isResolvePrincipalLink() {
+        return resolvePrincipalLink;
+    }
+
 }

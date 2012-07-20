@@ -31,4 +31,6 @@
     <property name="queryParser" ref="searchParser" />
   </bean>
 
+  <bean id="documentPrincipalMetadataRetriever" class="org.vortikal.util.repository.DocumentPrincipalMetadataRetriever" />
+
 </beans>

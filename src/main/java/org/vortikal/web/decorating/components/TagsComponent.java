@@ -88,6 +88,14 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
             + "from the result. Each attribute in the format [prefix]:[name]:[sortdirection]. Prefix is optional. "
             + "For example: resource:surname:asc";
 
+    private static final String PARAMETER_DISPLAY_SCOPE = TagsHelper.DISPLAY_SCOPE_PARAMETER;
+    private static final String PARAMETER_DISPLAY_SCOPE_DESC = "Whether or not to display the current scope in the page title when linking "
+            + "to a single tag. Default is 'false'";
+
+    private static final String PARAMETER_OVERRIDE_RESOURCE_TYPE_TITLE = TagsHelper.OVERRIDE_RESOURCE_TYPE_TITLE_PARAMETER;
+    private static final String PARAMETER_OVERRIDE_RESOURCE_TYPE_TITLE_DESC = "User provided resource type title to use in page title when "
+            + "linking to a single tag.";
+
     private RepositoryTagElementsDataProvider tagElementsProvider;
     private ResourceTypeTree resourceTypeTree;
 
@@ -105,6 +113,8 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
         map.put(PARAMETER_SERVICE_URL, PARAMETER_SERVICE_URL_DESC);
         map.put(PARAMETER_RESOURCE_TYPE, PARAMETER_RESOURCE_TYPE_DESC);
         map.put(PARAMETER_SORT_SELECTED_TAG_BY, PARAMETER_SORT_SELECTED_TAG_BY_DESC);
+        map.put(PARAMETER_DISPLAY_SCOPE, PARAMETER_DISPLAY_SCOPE_DESC);
+        map.put(PARAMETER_OVERRIDE_RESOURCE_TYPE_TITLE, PARAMETER_OVERRIDE_RESOURCE_TYPE_TITLE_DESC);
 
         return map;
     }
@@ -169,10 +179,19 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
             }
         }
 
+        Object displayScopeParam = request.getRawParameter(PARAMETER_DISPLAY_SCOPE);
+        boolean displayScope = Boolean.TRUE.toString().equals(displayScopeParam.toString());
+
+        String overrideResTypeTitle = null;
+        Object overrideResTypeTitleParam = request.getRawParameter(PARAMETER_OVERRIDE_RESOURCE_TYPE_TITLE);
+        if (overrideResTypeTitleParam != null) {
+            overrideResTypeTitle = overrideResTypeTitleParam.toString();
+        }
+
         // Legacy exception handling, should be refactored.
         try {
-            List<TagElement> tagElements = tagElementsProvider.getTagElements(scopeUri, resourceTypeDefs,
-                    urlSortingParmas, token, 1, 1, limit, 1);
+            List<TagElement> tagElements = tagElementsProvider.getTagElements(scopeUri, token, 1, 1, limit, 1,
+                    resourceTypeDefs, urlSortingParmas, overrideResTypeTitle, displayScope);
 
             // Populate model
             int numberOfTagsInEachColumn;

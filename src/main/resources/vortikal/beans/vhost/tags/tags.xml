@@ -30,6 +30,9 @@
     <property name="assertions">
       <list>
         <ref bean="feedViewParameterAssertion" />
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="tag" />
+        </bean>
       </list>
     </property>
     <property name="handler" ref="tags.atomHandler" />
@@ -54,7 +57,6 @@
     </property>
     <property name="tagsHelper" ref="tagsHelper" />
     <property name="servesWebRoot" value="${servesWebRoot}" />
-    <property name="hostName" value="${repositoryID}" />
   </bean>
 
   <bean id="tags.tagElementsProvider" class="org.vortikal.web.tags.RepositoryTagElementsDataProvider">
@@ -173,10 +175,7 @@
     </property>
   </bean>
 
-  <bean id="tagsHelper" class="org.vortikal.web.tags.TagsHelper" parent="repositoryAware">
-    <property name="repositoryID" value="${repositoryID}" />
-    <property name="includeScopeInTitle" value="${tagService.includeScopeInTitle}" />
-  </bean>
+  <bean id="tagsHelper" class="org.vortikal.web.tags.TagsHelper" />
 
   <bean id="tags.tagsParameterAssertion" parent="vrtxParameterEquals">
     <property name="parameterValue" value="tags" />

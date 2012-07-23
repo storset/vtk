@@ -54,7 +54,7 @@ public class TagsViewServiceNameProvider implements ServiceNameProvider {
             }
         }
 
-        return this.tagsHelper.getTitle(request, resource, tag);
+        return this.tagsHelper.getTitle(request, resource, tag, false);
 
     }
 

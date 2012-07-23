@@ -69,31 +69,37 @@ public class TagsController implements Controller {
     private ResourceTypeTree resourceTypeTree;
     private TagsHelper tagsHelper;
     private boolean servesWebRoot;
-    private String hostName;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        String token = requestContext.getSecurityToken();
-
-        String tag = request.getParameter(TagsHelper.TAG_PARAMETER);
-        Resource scope = this.tagsHelper.getScope(token, request);
 
         Map<String, Object> model = new HashMap<String, Object>();
 
-        List<ResourceTypeDefinition> resourceTypes = getResourceTypes(request);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+
+        Resource resource = this.tagsHelper.getScope(token, request);
+        String tag = request.getParameter(TagsHelper.TAG_PARAMETER);
+        List<ResourceTypeDefinition> resourceTypes = this.getResourceTypes(request);
+        boolean displayScope = this.tagsHelper.getDisplayScope(request);
+        String overrideResourceTypeTitle = request.getParameter(TagsHelper.OVERRIDE_RESOURCE_TYPE_TITLE_PARAMETER);
 
         /* List all known tags for the current collection */
         if (!StringUtils.isBlank(tag)) {
-            handleSingleTag(request, tag, scope, model, resourceTypes);
+            model.put(TagsHelper.TAG_PARAMETER, tag);
+            handleSingleTag(request, tag, resource, model, resourceTypes, displayScope, overrideResourceTypeTitle);
         } else {
-            handleAllTags(token, request, scope, model, resourceTypes);
+            handleAllTags(token, request, resource, model, resourceTypes, overrideResourceTypeTitle, displayScope);
         }
 
+        // Resolve Title
+        String title = this.tagsHelper.getTitle(request, resource, tag, false);
+        model.put("title", title);
+
         // Add scope up url if scope is not root
-        if (this.servesWebRoot && !scope.getURI().equals(Path.ROOT)) {
+        if (this.servesWebRoot && !resource.getURI().equals(Path.ROOT)) {
             Map<String, String> scopeUp = new HashMap<String, String>();
             Service service = org.vortikal.web.RequestContext.getRequestContext().getService();
-            URL url = service.constructURL(scope.getURI());
+            URL url = service.constructURL(resource.getURI());
             url.setPath(Path.ROOT);
             List<String> sortFieldParams = null;
             if (!StringUtils.isBlank(tag)) {
@@ -103,21 +109,19 @@ public class TagsController implements Controller {
                     sortFieldParams = listing.getSortFieldParams();
                 }
             }
-            this.processUrl(url, tag, resourceTypes, sortFieldParams);
-            String title = this.tagsHelper.getTitle(request, scope, tag, this.hostName, true);
+            this.processUrl(url, tag, resourceTypes, sortFieldParams, displayScope, overrideResourceTypeTitle);
+            String scopeUpTitle = this.tagsHelper.getTitle(request, resource, tag, true);
             scopeUp.put("url", url.toString());
-            scopeUp.put("title", title);
+            scopeUp.put("title", scopeUpTitle);
             model.put(TagsHelper.SCOPE_UP_MODEL_KEY, scopeUp);
         }
 
         return new ModelAndView(this.viewName, model);
     }
 
-    private void handleSingleTag(HttpServletRequest request, String tag, Resource scope, Map<String, Object> model,
-            List<ResourceTypeDefinition> resourceTypes) throws Exception {
-
-        model.put(TagsHelper.SCOPE_PARAMETER, scope);
-        model.put(TagsHelper.TAG_PARAMETER, tag);
+    private void handleSingleTag(HttpServletRequest request, String tag, Resource resource, Map<String, Object> model,
+            List<ResourceTypeDefinition> resourceTypes, boolean displayScope, String overrideResourceTypeTitle)
+            throws Exception {
 
         // Setting the default page limit
         int pageLimit = this.defaultPageLimit;
@@ -126,7 +130,7 @@ public class TagsController implements Controller {
         int limit = pageLimit;
         int totalHits = 0;
 
-        Listing listing = this.searchComponent.execute(request, scope, page, limit, 0);
+        Listing listing = this.searchComponent.execute(request, resource, page, limit, 0);
         List<String> sortFieldParams = null;
         if (listing != null) {
             totalHits = listing.getTotalHits();
@@ -138,8 +142,8 @@ public class TagsController implements Controller {
         }
 
         Service service = org.vortikal.web.RequestContext.getRequestContext().getService();
-        URL baseURL = service.constructURL(scope.getURI());
-        this.processUrl(baseURL, tag, resourceTypes, sortFieldParams);
+        URL baseURL = service.constructURL(resource.getURI());
+        this.processUrl(baseURL, tag, resourceTypes, sortFieldParams, displayScope, overrideResourceTypeTitle);
 
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL, page);
 
@@ -152,13 +156,13 @@ public class TagsController implements Controller {
             for (String contentType : this.alternativeRepresentations.keySet()) {
                 try {
                     Service altService = this.alternativeRepresentations.get(contentType);
-                    URL url = altService.constructURL(scope.getURI());
-                    this.processUrl(url, tag, resourceTypes, sortFieldParams);
+                    URL url = altService.constructURL(resource.getURI());
+                    this.processUrl(url, tag, resourceTypes, sortFieldParams, displayScope, overrideResourceTypeTitle);
                     String title = altService.getName();
-                    org.springframework.web.servlet.support.RequestContext rc = 
-                        new org.springframework.web.servlet.support.RequestContext(request);
-                    title = rc
-                            .getMessage(altService.getName(), new Object[] { scope.getTitle() }, altService.getName());
+                    org.springframework.web.servlet.support.RequestContext rc = new org.springframework.web.servlet.support.RequestContext(
+                            request);
+                    title = rc.getMessage(altService.getName(), new Object[] { resource.getTitle() },
+                            altService.getName());
 
                     Map<String, Object> m = new HashMap<String, Object>();
                     m.put("title", title);
@@ -172,14 +176,13 @@ public class TagsController implements Controller {
             }
         }
 
-        String title = this.tagsHelper.getTitle(request, scope, tag);
-        model.put("title", title);
-
     }
 
     private void processUrl(URL url, String tag, List<ResourceTypeDefinition> resourceTypes,
-            List<String> sortFieldParams) {
+            List<String> sortFieldParams, boolean displayScope, String overrideResourceTypeTitle) {
+
         if (!StringUtils.isBlank(tag)) {
+            url.removeParameter(TagsHelper.TAG_PARAMETER);
             url.addParameter(TagsHelper.TAG_PARAMETER, tag);
         }
         if (sortFieldParams != null && sortFieldParams.size() > 0) {
@@ -192,21 +195,24 @@ public class TagsController implements Controller {
                 url.addParameter(TagsHelper.RESOURCE_TYPE_PARAMETER, resourceTypeDefinition.getName());
             }
         }
+        if (displayScope) {
+            url.addParameter(TagsHelper.DISPLAY_SCOPE_PARAMETER, Boolean.TRUE.toString());
+        }
+        if (!StringUtils.isBlank(overrideResourceTypeTitle)) {
+            url.addParameter(TagsHelper.OVERRIDE_RESOURCE_TYPE_TITLE_PARAMETER, overrideResourceTypeTitle);
+        }
+
     }
 
-    private void handleAllTags(String token, HttpServletRequest request, Resource scope, Map<String, Object> model,
-            List<ResourceTypeDefinition> resourceTypes) {
+    private void handleAllTags(String token, HttpServletRequest request, Resource resource, Map<String, Object> model,
+            List<ResourceTypeDefinition> resourceTypes, String overrideResourceTypeTitle, boolean displayScope) {
 
-        model.put(TagsHelper.SCOPE_PARAMETER, scope);
+        Path scopeUri = resource.getURI();
 
-        Path scopeUri = scope.getURI();
-
-        List<TagElement> tagElements = this.tagElementsProvider.getTagElements(scopeUri, resourceTypes, token, 1, 1,
-                Integer.MAX_VALUE, 1);
+        List<TagElement> tagElements = this.tagElementsProvider.getTagElements(scopeUri, token, 1, 1,
+                Integer.MAX_VALUE, 1, resourceTypes, null, overrideResourceTypeTitle, displayScope);
 
         model.put("tagElements", tagElements);
-        String title = this.tagsHelper.getTitle(request, scope, null);
-        model.put("title", title);
     }
 
     private List<ResourceTypeDefinition> getResourceTypes(HttpServletRequest request) {
@@ -262,10 +268,6 @@ public class TagsController implements Controller {
 
     public void setServesWebRoot(boolean servesWebRoot) {
         this.servesWebRoot = servesWebRoot;
-    }
-
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
     }
 
 }

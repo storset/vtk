@@ -70,7 +70,7 @@ public class TagsAsFeedController extends AtomFeedController {
         RequestContext rc = RequestContext.getRequestContext();
         Service service = rc.getService();
         String feedTitle = service.getLocalizedName(scope, request);
-        Feed feed = populateFeed(scope, feedTitle);
+        Feed feed = populateFeed(scope, feedTitle, false);
 
         Listing searchResult = searchComponent.execute(request, scope, 1, this.entryCountLimit, 0);
 

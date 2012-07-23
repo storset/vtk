@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
@@ -68,42 +69,30 @@ public class RepositoryTagElementsDataProvider {
         this.tagService = tagService;
     }
 
-    public List<TagElement> getTagElements(Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs,
-            List<String> urlSortingParmas, String token, int magnitudeMin, int magnitudeMax, int limit,
+    public List<TagElement> getTagElements(Path scopeUri, String token, int magnitudeMin, int magnitudeMax, int limit,
             int tagOccurenceMin) throws QueryException, IllegalArgumentException {
-        return getTagElementsInternal(scopeUri, resourceTypeDefs, urlSortingParmas, token, magnitudeMin, magnitudeMax,
-                limit, tagOccurenceMin);
-    }
-
-    public List<TagElement> getTagElements(Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs, String token,
-            int magnitudeMin, int magnitudeMax, int limit, int tagOccurenceMin) throws QueryException,
-            IllegalArgumentException {
-        return getTagElementsInternal(scopeUri, resourceTypeDefs, null, token, magnitudeMin, magnitudeMax, limit,
-                tagOccurenceMin);
+        return this.getTagElements(scopeUri, token, magnitudeMin, magnitudeMax, limit, tagOccurenceMin, null, null,
+                null, false);
     }
 
     public List<TagElement> getTagElements(Path scopeUri, String token, int magnitudeMin, int magnitudeMax, int limit,
-            int tagOccurenceMin) throws QueryException, IllegalArgumentException {
-        return getTagElementsInternal(scopeUri, null, null, token, magnitudeMin, magnitudeMax, limit, tagOccurenceMin);
-    }
-
-    private List<TagElement> getTagElementsInternal(Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs,
-            List<String> urlSortingParams, String token, int magnitudeMin, int magnitudeMax, int limit,
-            int tagOccurenceMin) throws QueryException, IllegalArgumentException {
+            int tagOccurenceMin, List<ResourceTypeDefinition> resourceTypeDefs, List<String> urlSortingParams,
+            String overrideResourceTypeTitle, boolean displayScope) throws QueryException, IllegalArgumentException {
 
         // Do data report query
-        List<TagFrequency> result = this.tagsReporter.getTags(scopeUri, resourceTypeDefs, limit,
-                tagOccurenceMin, token);
+        List<TagFrequency> result = this.tagsReporter
+                .getTags(scopeUri, resourceTypeDefs, limit, tagOccurenceMin, token);
 
         // Generate list of tag elements
-        List<TagElement> tagElements = generateTagElementList(scopeUri, resourceTypeDefs, urlSortingParams, result,
-                magnitudeMax, magnitudeMin);
+        List<TagElement> tagElements = generateTagElementList(scopeUri, resourceTypeDefs, urlSortingParams,
+                overrideResourceTypeTitle, displayScope, result, magnitudeMax, magnitudeMin);
 
         return tagElements;
     }
 
     private List<TagElement> generateTagElementList(Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs,
-            List<String> urlSortingParmas, List<TagFrequency> freqList, int magnitudeMax, int magnitudeMin) {
+            List<String> urlSortingParmas, String overrideResourceTypeTitle, boolean displayScope,
+            List<TagFrequency> freqList, int magnitudeMax, int magnitudeMin) {
 
         // Makes a list with TagElement instances
         List<TagElement> tagElements = new ArrayList<TagElement>(freqList.size());
@@ -115,10 +104,10 @@ public class RepositoryTagElementsDataProvider {
 
             for (TagFrequency tf : freqList) {
                 String tagName = tf.getTag();
-                URL link = getUrl(tagName, scopeUri, resourceTypeDefs, urlSortingParmas);
+                URL link = this.getUrl(tagName, scopeUri, resourceTypeDefs, urlSortingParmas,
+                        overrideResourceTypeTitle, displayScope);
 
-                int magnitude = getNormalizedMagnitude(tf.getFrequency(), maxFreq, minFreq, magnitudeMin,
-                        magnitudeMax);
+                int magnitude = getNormalizedMagnitude(tf.getFrequency(), maxFreq, minFreq, magnitudeMin, magnitudeMax);
 
                 tagElements.add(new TagElement(magnitude, link, tagName, tf.getFrequency()));
             }
@@ -144,7 +133,8 @@ public class RepositoryTagElementsDataProvider {
     }
 
     private URL getUrl(String tagName, Path scopeUri, List<ResourceTypeDefinition> resourceTypeDefs,
-            List<String> urlSortingParmas) {
+            List<String> urlSortingParmas, String overrideResourceTypeTitle, boolean displayScope) {
+
         URL url = this.tagService.constructURL(scopeUri);
         if (scopeUri.isRoot() && !this.servesRoot) {
             scopeUri = RequestContext.getRequestContext().getCurrentCollection();
@@ -162,6 +152,13 @@ public class RepositoryTagElementsDataProvider {
                 url.addParameter(Listing.SORTING_PARAM, urlSortingParam);
             }
         }
+        if (!StringUtils.isBlank(overrideResourceTypeTitle)) {
+            url.addParameter(TagsHelper.OVERRIDE_RESOURCE_TYPE_TITLE_PARAMETER, overrideResourceTypeTitle);
+        }
+        if (displayScope) {
+            url.addParameter(TagsHelper.DISPLAY_SCOPE_PARAMETER, Boolean.TRUE.toString());
+        }
+
         return url;
     }
 }

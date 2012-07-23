@@ -30,13 +30,14 @@
  */
 package org.vortikal.web.tags;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 
@@ -47,16 +48,15 @@ public final class TagsHelper {
     public static final String RESOURCE_TYPE_PARAMETER = "resource-type";
     public static final String RESOURCE_TYPE_MODEL_KEY = "resourceType";
     public static final String SCOPE_UP_MODEL_KEY = "scopeUp";
-
-    private Repository repository;
-    private String repositoryID;
-    private boolean includeScopeInTitle;
+    public static final String DISPLAY_SCOPE_PARAMETER = "display-scope";
+    public static final String OVERRIDE_RESOURCE_TYPE_TITLE_PARAMETER = "override-resource-type-title";
 
     public Resource getScope(String token, HttpServletRequest request) throws Exception {
         Path requestedScope = this.getScopePath(request);
         Resource scopedResource = null;
         try {
-            scopedResource = this.repository.retrieve(token, requestedScope, true);
+            scopedResource = org.vortikal.web.RequestContext.getRequestContext().getRepository()
+                    .retrieve(token, requestedScope, true);
         } catch (ResourceNotFoundException e) {
             throw new IllegalArgumentException("Scope resource doesn't exist: " + requestedScope);
         }
@@ -80,22 +80,28 @@ public final class TagsHelper {
         throw new IllegalArgumentException("Scope parameter must be empty, '.' or a valid path");
     }
 
-    public String getTitle(HttpServletRequest request, Resource scope, String tag) {
-        return this.getTitle(request, scope, tag, null, false);
-    }
+    public String getTitle(HttpServletRequest request, Resource resource, String tag, boolean scopeUp) {
 
-    public String getTitle(HttpServletRequest request, Resource scope, String tag, String scopeTitle, boolean scopeUp) {
-        RequestContext rc = new RequestContext(request);
-        if (StringUtils.isBlank(tag)) {
-            return getTitle(rc, scope, scopeTitle);
-        }
-        if (scopeTitle == null) {
-            scopeTitle = scope.getURI().isRoot() ? this.repositoryID : scope.getTitle();
-        }
-        String titleKey = (this.includeScopeInTitle || scopeUp) ? "tags.scopedTitle" : "tags.title";
+        String repositoryID = org.vortikal.web.RequestContext.getRequestContext().getRepository().getId();
+        String scopeTitle = (scopeUp && !resource.getURI().isRoot()) ? repositoryID : resource.getTitle();
+        String overrideResourceTypeTitle = request.getParameter(OVERRIDE_RESOURCE_TYPE_TITLE_PARAMETER);
         String[] resourceParams = request.getParameterValues(RESOURCE_TYPE_PARAMETER);
-        if (resourceParams != null && resourceParams.length == 1) {
-            String tmpKey = titleKey + "." + resourceParams[0];
+        boolean displayScope = this.getDisplayScope(request);
+
+        StringBuilder keyBuilder = new StringBuilder("tags.title");
+        if (StringUtils.isBlank(tag)) {
+            keyBuilder.append(".noTag");
+        }
+        if (scopeUp || displayScope) {
+            keyBuilder.append(".scoped");
+        }
+        String titleKey = keyBuilder.toString();
+
+        RequestContext rc = new RequestContext(request);
+        if (!StringUtils.isBlank(overrideResourceTypeTitle)) {
+            titleKey = titleKey.concat(".overridenTitle");
+        } else if (resourceParams != null && resourceParams.length == 1) {
+            String tmpKey = titleKey.concat(".").concat(resourceParams[0]);
             try {
                 rc.getMessage(tmpKey);
                 titleKey = tmpKey;
@@ -103,30 +109,38 @@ public final class TagsHelper {
                 // key doesn't exist, ignore it
             }
         }
-        return (this.includeScopeInTitle || scopeUp) ? rc.getMessage(titleKey, new Object[] { scopeTitle, tag }) : rc
-                .getMessage(titleKey, new Object[] { tag });
+
+        Object[] localizationParams = this.getLocalizationParams(tag, scopeUp, displayScope, scopeTitle,
+                overrideResourceTypeTitle);
+
+        return rc.getMessage(titleKey, localizationParams);
+
     }
 
-    private String getTitle(RequestContext rc, Resource scope, String scopeTitle) {
-        if (!scope.getURI().isRoot()) {
-            String titleParam = StringUtils.isBlank(scopeTitle) ? scope.getTitle() : scopeTitle;
-            return rc.getMessage("tags.serviceTitle", new Object[] { titleParam });
+    private Object[] getLocalizationParams(String tag, boolean scopeUp, boolean displayScope, String scopeTitle,
+            String overrideResourceTypeTitle) {
+
+        List<Object> params = new ArrayList<Object>();
+        if (!StringUtils.isBlank(overrideResourceTypeTitle)) {
+            params.add(overrideResourceTypeTitle);
         }
-        return rc.getMessage("tags.noTagTitle");
+        if (scopeUp || displayScope) {
+            params.add(scopeTitle);
+        }
+        if (!StringUtils.isBlank(tag)) {
+            params.add(tag);
+        }
+
+        return params.toArray();
     }
 
-    @Required
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    @Required
-    public void setRepositoryID(String repositoryID) {
-        this.repositoryID = repositoryID;
-    }
-
-    public void setIncludeScopeInTitle(boolean includeSopeInTitle) {
-        this.includeScopeInTitle = includeSopeInTitle;
+    public final boolean getDisplayScope(HttpServletRequest request) {
+        boolean displayScope = false;
+        String displayScopeInTitle = request.getParameter(TagsHelper.DISPLAY_SCOPE_PARAMETER);
+        if ("true".equals(displayScopeInTitle)) {
+            displayScope = true;
+        }
+        return displayScope;
     }
 
 }

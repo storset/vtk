@@ -759,7 +759,6 @@ CKEDITOR.lang['en'] =
 
 	studytable :
 	{
-		buttontext	: 'Insert study table',
 		title		: 'Course combination',
 		common 		: 'Common',
 		specialization	: 'Specialization',

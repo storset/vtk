@@ -1,10 +1,12 @@
+import org.vortikal.repository.search.*;
+
 getDescription() {
     return "Searches the repository";
 }
 
 
 getUsage() {
-    return "repo search [-limit:number] <query:string> [-properties:string...]";
+    return "repo search [-limit:number] [-sort:string] <query:string> [-properties:string...]";
 }
 
 void execute(context, args, out) {
@@ -13,10 +15,13 @@ void execute(context, args, out) {
     token = context.get("context").getBean("writeAllToken");
     indexSearcher = context.get("context").getBean("systemIndexSearcher");
     queryParserFactory = context.get("context").getBean("queryParserFactory");
+    rtt = context.get("context").getBean("resourceTypeTree");
 
     queryExp = args.get("query");
 
     limit = args.get("limit");
+    sortArg = args.get("sort");
+    directionArg = args.get("direction");
 
     parser = queryParserFactory.getParser();
     try {
@@ -28,9 +33,49 @@ void execute(context, args, out) {
     search = new org.vortikal.repository.search.Search();
     search.setQuery(query);
     if (limit != null && limit >= 0) {
-        out.println("limit: " + limit);
         search.setLimit(limit);
     }
+    if (sortArg != null) {
+        sorting = new SortingImpl();
+        direction = null;
+        if (sortArg.trim().contains(" ")) {
+            dir = sortArg.substring(sortArg.indexOf(" ") + 1);
+            sortArg = sortArg.substring(0, sortArg.length() - dir.length() - 1);
+            direction = "asc".equals(dir) ? SortFieldDirection.ASC : SortFieldDirection.DESC;
+        }
+
+        sf = null;
+        if ("type".equals(sortArg) || "name".equals(sortArg) || "uri".equals(sortArg)) {
+            if (direction != null) {
+                sf = new TypedSortField(sortArg, direction);
+            } else {
+                sf = new TypedSortField(sortArg);
+            }
+        } else {
+            prefix = null;
+            name = null;
+            if (sortArg.contains(":")) {
+                prefix = sortArg.substring(0, sortArg.indexOf(":"));
+                name = sortArg.substring(prefix.length() + 1);
+            } else {
+                prefix = null;
+                name = sortArg;
+            }
+            propDef = rtt.getPropertyDefinitionByPrefix(prefix, name);
+            if (propDef != null) {
+                if (direction != null) {
+                    sf = new PropertySortField(propDef, direction);
+                } else {
+                    sf = new PropertySortField(propDef);
+                }
+            }
+        }
+        if (sf != null) {
+            sorting.addSortField(sf);
+            search.setSorting(sorting);
+        }
+    }
+
 
     rs = indexSearcher.execute(token, search);
 

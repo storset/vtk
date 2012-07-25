@@ -41,12 +41,13 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
+import org.vortikal.repository.search.query.AndQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriSetQuery;
-import org.vortikal.web.search.SearchComponentQueryBuilder;
+import org.vortikal.web.search.ParsedQueryBuilder;
 
-public class FeaturedArticlesQueryBuilder implements SearchComponentQueryBuilder {
+public class FeaturedArticlesQueryBuilder extends ParsedQueryBuilder {
 
     private PropertyTypeDefinition featuredArticlesPropDef;
     private boolean invert;
@@ -59,24 +60,37 @@ public class FeaturedArticlesQueryBuilder implements SearchComponentQueryBuilder
             return null;
         }
 
-        Set<String> set = new HashSet<String>();
+        Set<String> validUris = new HashSet<String>();
         for (Value value : featuredArtilesProp.getValues()) {
             try {
                 String stringValue = value.getStringValue();
                 Path.fromString(stringValue);
-                set.add(stringValue);
+                validUris.add(stringValue);
             } catch (IllegalArgumentException iae) {
                 // Just continue...
             }
         }
-        if (set.size() > 0) {
-            if (!invert) {
-                return new UriSetQuery(set, TermOperator.NI);
-            } else {
-                return new UriSetQuery(set);
-            }
+
+        // Only continue if you have at least one valid uri
+        if (validUris.size() < 1) {
+            return null;
         }
-        return null;
+
+        AndQuery resultQuery = new AndQuery();
+        Query uriSetQuery = null;
+        if (!invert) {
+            return new UriSetQuery(validUris, TermOperator.NI);
+        } else {
+            uriSetQuery = new UriSetQuery(validUris);
+            Query resourceQuery = super.build(collection, request);
+            if (resourceQuery == null) {
+                return null;
+            }
+            resultQuery.add(resourceQuery);
+            resultQuery.add(uriSetQuery);
+            return resultQuery;
+        }
+
     }
 
     @Required

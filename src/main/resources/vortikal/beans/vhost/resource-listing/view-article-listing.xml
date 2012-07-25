@@ -76,7 +76,7 @@
       <list>
         <ref bean="articleListing.excludeFeaturedArticlesQueryBuilder" />
         <bean parent="queryStringParser">
-          <property name="queryString" value="(type IN article AND published-date &lt;= {$currentTime})" />
+          <property name="queryString" ref="${override.listing.prefix}articleListing.articleResourceTypeQueryString" />
         </bean>
       </list>
     </property>
@@ -89,8 +89,13 @@
   </bean>
 
   <bean id="articleListing.excludeFeaturedArticlesQueryBuilder"
-    class="org.vortikal.web.search.articlelisting.FeaturedArticlesQueryBuilder">
+    class="org.vortikal.web.search.articlelisting.FeaturedArticlesQueryBuilder" parent="queryStringParser">
     <property name="featuredArticlesPropDef" ref="articleListing.featuredArticlesPropDef" />
+    <property name="queryString" ref="${override.listing.prefix}articleListing.articleResourceTypeQueryString" />
+  </bean>
+
+  <bean id="articleListing.articleResourceTypeQueryString" class="java.lang.String">
+    <constructor-arg value="(type IN article AND published-date &lt;= {$currentTime})"/>
   </bean>
 
   <bean id="articleListing.featuredArticlesQueryBuilder" parent="articleListing.excludeFeaturedArticlesQueryBuilder">
@@ -138,9 +143,6 @@
     <property name="queryBuilders">
       <list>
         <ref bean="articleListing.featuredArticlesQueryBuilder" />
-        <bean parent="queryStringParser">
-          <property name="queryString" value="(type IN article AND published-date &lt;= {$currentTime})" />
-        </bean>
       </list>
     </property>
     <property name="searchSorting" ref="articleListing.searchSorting" />

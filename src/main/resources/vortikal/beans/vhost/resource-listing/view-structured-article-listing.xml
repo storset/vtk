@@ -4,15 +4,6 @@
 
   <bean id="structured.articleListing.searchComponent" parent="articleListing.searchComponent">
     <property name="name" value="structured.articleListing.defaultArticles" />
-    <property name="queryBuilders">
-      <list>
-        <ref bean="articleListing.excludeFeaturedArticlesQueryBuilder" />
-        <bean parent="queryStringParser">
-          <property name="queryString" value="type IN structured-article" />
-        </bean>
-      </list>
-
-    </property>
     <property name="searchSorting" ref="structured.articleListing.searchSorting" />
     <property name="configurablePropertySelectPointers" ref="article.configurablePropertySelectPointersList" />
   </bean>
@@ -28,14 +19,6 @@
   <!-- Fetch specifically specified articles, aka 'featured articles' -->
   <bean id="structured.articleListing.featuredArticlesSearchComponent" parent="articleListing.featuredArticlesSearchComponent">
     <property name="name" value="structured.articleListing.featuredArticles" />
-    <property name="queryBuilders">
-      <list>
-        <ref bean="articleListing.featuredArticlesQueryBuilder" />
-        <bean parent="queryStringParser">
-          <property name="queryString" value="type IN structured-article" />
-        </bean>
-      </list>
-    </property>
     <property name="searchSorting" ref="structured.articleListing.searchSorting" />
     <property name="configurablePropertySelectPointers" ref="article.configurablePropertySelectPointersList" />
   </bean>
@@ -47,6 +30,10 @@
         <ref bean="resourceContextProvider" />
       </list>
     </property>
+  </bean>
+
+  <bean id="structured.articleListing.articleResourceTypeQueryString" class="java.lang.String">
+    <constructor-arg value="type IN structured-article"/>
   </bean>
 
   <bean id="article.configurablePropertySelectPointersList" class="java.util.ArrayList">

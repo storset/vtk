@@ -6,7 +6,7 @@ getDescription() {
 }
 
 getUsage() {
-    return "repo iprop <command:string> <uri:path> <prop:string> [<values:string...>]";
+    return "repo iprop <command:string> <uri:path> <prop:string> [values:string...]";
 }
 
 void execute(context, args, out) {

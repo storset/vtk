@@ -9,7 +9,7 @@ getDescription() {
 }
 
 getUsage() {
-    return "repo evaluate <query:string> [<logfile:string>]";
+    return "repo evaluate [-logfile:string] <query:string> [-properties:string...]";
 }
 
 void execute(context, args, out) {
@@ -26,6 +26,8 @@ void execute(context, args, out) {
     contentStore = beanContext.getBean("repository.fsContentStore");
     contentRegistry = beanContext.getBean("contentRepresentationRegistry");
 
+    out.println("qry: " + args.get("query"));
+
     query = parser.parse(args.get("query"));
 
     log = out;
@@ -40,12 +42,12 @@ void execute(context, args, out) {
         out.println("Log file: " + logFile);
     }
 
+    propList = args.get("properties");
+
     before = System.currentTimeMillis();
     search = new org.vortikal.repository.search.Search();
     search.setQuery(query);
     search.setLimit(Integer.MAX_VALUE);
-
-    //log.println("-- query: " + results.getSize() + " results, " + duration + " ms");
 
     before = System.currentTimeMillis();
 
@@ -76,6 +78,36 @@ void execute(context, args, out) {
                 prop = orig.getProperty(Namespace.DEFAULT_NAMESPACE, PropertyType.CONTENTMODIFIEDBY_PROP_NAME);
                 if (prop != null) evaluated.addProperty((Property) prop.clone());
 
+                if (propList != null) {
+                    storableProps = new ArrayList();
+                    for (propName: propList) {
+                        p = propName;
+                        prefix = null;
+                        if (p.contains(":")) {
+                            prefix = p.substring(0, p.indexOf(":"));
+                            p = p.substring(prefix.length() + 1);
+                        }
+                        p2 = evaluated.getPropertyByPrefix(prefix, p);
+                        if (p2 != null) {
+                            storableProps.add(p2);
+                        }
+                    }
+
+                    try {
+                        for (origProp: orig.getProperties()) {
+                            evaluated.removeProperty(origProp.getDefinition());
+                            evaluated.addProperty((Property) origProp.clone());
+                        }
+                        for (p2: storableProps) {
+                            evaluated.removeProperty(p2.getDefinition());
+                            evaluated.addProperty(p2);
+                        }
+                    } catch (t) {
+                        out.print(t.getMessage());
+                        return;
+                    }
+                }
+
 
                 for (Property prop: evaluated.getProperties()) {
                     ns = prop.getDefinition().getNamespace();
@@ -87,6 +119,7 @@ void execute(context, args, out) {
                     if (prop.getDefinition() != null) {
                         if (old == null) {
                             curVal = multi ? Arrays.asList(prop.getValues()) : prop.getValue();
+                            log.println("  + " + prefix + name + ": '" + curVal + "'");
                         } else if (!old.equals(prop)) {
 
                             prevVal = old.getDefinition().isMultiple() ? Arrays.asList(old.getValues()) : old.getValue();
@@ -96,6 +129,7 @@ void execute(context, args, out) {
                         }
                     }
                 }
+
 
 
                 // store directly to DAO layer:

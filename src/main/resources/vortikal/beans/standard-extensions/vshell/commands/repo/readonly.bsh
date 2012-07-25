@@ -3,7 +3,7 @@ getDescription() {
 }
 
 getUsage() {
-    return "repo readonly [<value:boolean>]";
+    return "repo readonly [value:boolean]";
 }
 
 void execute(context, args, out) {

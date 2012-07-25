@@ -3,7 +3,7 @@ getDescription() {
 }
 
 getUsage() {
-    return "repo prop <uri:path> <prop:string> [<display-binary:boolean>]";
+    return "repo prop <uri:path> <prop:string> [display-binary:boolean]";
 }
 
 void execute(context, args, out) {

@@ -130,38 +130,45 @@ public class VShell extends AbstractConsole {
             addCommand(c);
         }
     }
+
     
     private void addCommand(VCommand c) {
-        
         String usage = c.getUsage();
         List<String> tokens = tokenize(usage);
-        List<PathNode> parsedTokens = new ArrayList<PathNode>();
-        for (int i = 0; i < tokens.size(); i++) {
-            String token = tokens.get(i);
-            
-            if ((token.startsWith("[<") && token.endsWith(">]")) 
-                    || (token.startsWith("<") && token.endsWith(">"))) {
-                ParamNode p = parseParamNode(token);
-                PathNode last = parsedTokens.get(parsedTokens.size() - 1);
-                if (!(last instanceof CommandNode)) {
-                    throw new RuntimeException("Cannot add a parameter to an intermediate node");
+
+        List<String> intermediate = new ArrayList<String>();
+        List<ParamNode> args = new ArrayList<ParamNode>();
+        
+        for (String s: tokens) {
+            if (s.startsWith("<") || s.startsWith("[")) {
+                try {
+                    args.add(parseParamNode(s));
+                } catch (Throwable t) {
+                    throw new IllegalStateException(usage + ": " + t.getMessage(), t);
                 }
-                ((CommandNode) last).addParamNode(p);
-            } else if (i < tokens.size() - 1 && !tokens.get(i + 1).contains("<")){
-                // Intermediate path node
-                parsedTokens.add(new PathNode(token));
             } else {
-                // "Leaf" command node
-                parsedTokens.add(new CommandNode(token, c));
+                intermediate.add(s);
             }
         }
-        Set<PathNode> ctx = toplevelNodes;
+        
+        if (intermediate.size() == 0) {
+            throw new IllegalStateException("No command specified: " + usage);
+        }
 
-        for (PathNode n : parsedTokens) {
+        String command = intermediate.remove(intermediate.size() - 1);
+        CommandNode cmd = new CommandNode(command, c);
+        for (ParamNode p: args) {
+            cmd.addParamNode(p);
+        }
+        
+        Set<PathNode> ctx = toplevelNodes;
+        for (String s: intermediate) {
+            PathNode n = new PathNode(s);
             PathNode existing = null;
             for (PathNode n2 : ctx) {
                 if (n2.getName().equals(n.getName())) {
                     existing = n2;
+                    break;
                 }
             }
             if (existing != null) {
@@ -172,13 +179,24 @@ public class VShell extends AbstractConsole {
                 ctx = n.children;
             }
         }
+        ctx.add(cmd);
     }
+    
+    
     
     private ParamNode parseParamNode(String str) {
         boolean optional = false;
-        if (str.startsWith("[<") && str.endsWith(">]")) {
+        boolean named = false;
+        
+        if (str.startsWith("[-") && str.endsWith("]")) {
+            str = str.substring(2, str.length() - 1);
             optional = true;
-            str = str.substring(2, str.length() - 2);
+            named = true;
+            
+        } else if (str.startsWith("[") && str.endsWith("]")) {
+                optional = true;
+                str = str.substring(1, str.length() - 1);
+            
         } else if (str.startsWith("<") && str.endsWith(">")) {
             str = str.substring(1, str.length() - 1);
             
@@ -194,7 +212,7 @@ public class VShell extends AbstractConsole {
             type = type.substring(0, type.length() - 4);
             rest = true;
         }
-        return new ParamNode(name.trim(), type.trim(), optional, rest);
+        return new ParamNode(name.trim(), type.trim(), optional, named, rest);
     }
     
 
@@ -224,36 +242,62 @@ public class VShell extends AbstractConsole {
         Map<String, Object> result = new HashMap<String, Object>();
         List<ParamNode> argList = commandNode.getParamNodes();
         int paramIdx = 0;
+
         for (ParamNode arg : argList) {
-            if (paramIdx == args.size()) {
-                if (!arg.isOptional()) {
-                    out.println("Error: missing argument '" + arg.name + "'");
+            if (arg.named) {
+                if (paramIdx > args.size() - 1) {
+                    continue;
+                }
+                if (!args.get(paramIdx).equals("-" + arg.name)) {
+                    continue;
+                }
+                paramIdx++;
+                if (paramIdx > args.size() - 1) {
+                    out.println("Error: no value given for argument '" + arg.name + "'");
                     return null;
                 }
-                result.put(arg.name, null);
-                break;
             }
-            if (arg.isRest()) {
+            
+            if (arg.rest) {
+                if (args.size() < paramIdx + 1 && !arg.optional) {
+                    out.println("Error: missing argument(s) '" + arg.name + "'");
+                    return null;
+                }
                 List<Object> multiple = new ArrayList<Object>();
                 for (int i = paramIdx; i < args.size(); i++) {
                     try {
-                        multiple.add(getTypedArg(args.get(i), arg.getType()));
+                        multiple.add(getTypedArg(args.get(i), arg.type));
                     } catch (Throwable t) {
-                        out.println("Illegal value of argument: " + arg.name + ": " + t.getMessage());
+                        out.println("Illegal value of argument '" + arg.name + "': " + t.getMessage());
                         return null;
                     }
                 }
                 result.put(arg.name, multiple);
                 return result;
             }
+            
+            if (args.size() < paramIdx + 1 && !arg.optional && !arg.rest) {
+                out.println("Error: missing argument '" + arg.name + "'");
+                return null;
+            }
+            
             try {
-                Object val = getTypedArg(args.get(paramIdx++), arg.getType());
+                Object val = getTypedArg(args.get(paramIdx++), arg.type);
                 result.put(arg.name, val);
             } catch (Throwable t) {
-                out.println("Illegal value of argument: " + arg.name + ": " + t.getMessage());
+                out.println("Illegal value of argument '" + arg.name + "': " + t.getMessage());
+                out.println("(optional: " + arg.optional + ")");
                 return null;
             }
         }
+        if (paramIdx < args.size()) {
+            for (int i = paramIdx; i < args.size(); i++) {
+                out.print(args.get(i) + " ");
+            }
+            out.println();
+            return null;
+        }
+        
         return result;
     }
     
@@ -283,7 +327,7 @@ public class VShell extends AbstractConsole {
     }
     
 
-    private List<String> tokenize(String command) {
+    public List<String> tokenize(String command) {
         List<String> result = new ArrayList<String>();
         StreamTokenizer st = new StreamTokenizer(new StringReader(command));
         st.resetSyntax();
@@ -336,7 +380,7 @@ public class VShell extends AbstractConsole {
         }
 
         public String getUsage() {
-            return "help [<command:string...>]";
+            return "help [command:string]";
         }
 
         public void execute(VShellContext c, Map<String, Object> args,
@@ -385,7 +429,6 @@ public class VShell extends AbstractConsole {
 
     }
 
-    
     private class PathNode {
 
         private String name;
@@ -397,6 +440,11 @@ public class VShell extends AbstractConsole {
 
         public String getName() {
             return this.name;
+        }
+        
+        @Override
+        public String toString() {
+            return "node:" + this.name;
         }
     }
 
@@ -415,11 +463,24 @@ public class VShell extends AbstractConsole {
         }
         
         public void addParamNode(ParamNode node) {
+            
+            for (ParamNode n: this.paramNodes) {
+                if (n.rest || (n.optional && !n.named && !node.optional)) {
+                    throw new IllegalArgumentException(
+                            "Argument '" + node.name 
+                            + "' cannot be placed after '" + n.name + "'");
+                }
+            }
             this.paramNodes.add(node);
         }
         
         public List<ParamNode> getParamNodes() {
             return this.paramNodes;
+        }
+        
+        @Override
+        public String toString() {
+            return "command:" + this.command + ":" + this.paramNodes;
         }
     }
     
@@ -428,24 +489,20 @@ public class VShell extends AbstractConsole {
         private String type = "string";
         private boolean rest = false;
         private boolean optional = false;
+        private boolean named = false;
         
-        public ParamNode(String name, String type, boolean optional, boolean rest) {
+        public ParamNode(String name, String type, boolean optional, boolean named, boolean rest) {
             this.name = name;
             this.type = type;
             this.optional = optional;
+            this.named = named;
             this.rest = rest;
         }
         
-        public String getType() {
-            return this.type;
-        }
-        
-        public boolean isOptional() {
-            return this.optional;
-        }
 
-        public boolean isRest() {
-            return this.rest;
+        @Override
+        public String toString() {
+            return "param:" + this.name;
         }
     }
 }

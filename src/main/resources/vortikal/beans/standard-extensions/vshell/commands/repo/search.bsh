@@ -4,7 +4,7 @@ getDescription() {
 
 
 getUsage() {
-    return "repo search <query:string> [<properties:string...>]";
+    return "repo search [-limit:number] <query:string> [-properties:string...]";
 }
 
 void execute(context, args, out) {
@@ -16,11 +16,21 @@ void execute(context, args, out) {
 
     queryExp = args.get("query");
 
-    parser = queryParserFactory.getParser();
-    query = parser.parse(queryExp);
+    limit = args.get("limit");
 
+    parser = queryParserFactory.getParser();
+    try {
+        query = parser.parse(queryExp);
+    } catch (t) {
+        out.println(t.getMessage());
+        return;
+    }
     search = new org.vortikal.repository.search.Search();
     search.setQuery(query);
+    if (limit != null && limit >= 0) {
+        out.println("limit: " + limit);
+        search.setLimit(limit);
+    }
 
     rs = indexSearcher.execute(token, search);
 

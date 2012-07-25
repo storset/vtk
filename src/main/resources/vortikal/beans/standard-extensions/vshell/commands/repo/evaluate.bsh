@@ -26,8 +26,6 @@ void execute(context, args, out) {
     contentStore = beanContext.getBean("repository.fsContentStore");
     contentRegistry = beanContext.getBean("contentRepresentationRegistry");
 
-    out.println("qry: " + args.get("query"));
-
     query = parser.parse(args.get("query"));
 
     log = out;

@@ -1527,7 +1527,6 @@ function removeFormField(that) {
   if($(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).has("button.movedown")) {
     $(fields).eq(LENGTH_FOR_MULTIPLE_INPUT_FIELD[name] - 1).find("button.movedown").parent().remove();
   }
-
   if($(fields).eq(0).has("button.moveup")) {
     $(fields).eq(0).find("button.moveup").parent().remove();
   }
@@ -1560,26 +1559,29 @@ function saveMultipleInputFields() {
 }
 
 function formatMultipleInputFields(name) {
-  if ($("." + name + " input[type=text]:hidden").val() == null) return;
-    
-  var allFields = $("input[id^='vrtx-" + name + "']");
+  var multipleTxt = $("." + name + " input[type=text]:hidden");
+  if (multipleTxt.val() == null) return;
+
+  var allFields = $("input[type=text][id^='vrtx-" + name + "']");
   var isDropdown = false;
-  if(!allFields.length) { 
+  if(!allFields.length) {
     allFields = $("select[id^='vrtx-" + name + "']");
     if(allFields.length) {
       isDropdown = true;
     } else {
+      multipleTxt.val("");
       return;
     }
   }
-
+  
   for (var i = 0, len = allFields.length, result = ""; i < len; i++) {
     result += isDropdown ? $.trim($(allFields[i]).find("option:selected").val()) : $.trim(allFields[i].value);
     if (i < (len-1)) {
       result += ",";
     }
   }
-  $("." + name + " input[type=text]:hidden").val(result);
+  
+  multipleTxt.val(result);
 }
 
 /* Show and hide properties

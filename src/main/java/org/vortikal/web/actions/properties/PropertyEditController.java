@@ -453,7 +453,7 @@ public class PropertyEditController extends SimpleFormController implements Refe
 
         model.put("modifiedBy", modifiedBy);
         model.put("createdBy", createdBy);
-        model.put("owner", modifiedBy);
+        model.put("owner", owner);
 
         for (PropertyTypeDefinition def : this.propertyTypeDefinitions) {
 

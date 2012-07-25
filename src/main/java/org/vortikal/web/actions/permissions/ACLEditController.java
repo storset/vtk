@@ -166,13 +166,16 @@ public class ACLEditController extends SimpleFormController implements Initializ
                     Arrays.asList(privilegedPrincipals), preferredLocale);
         }
 
-        List<Principal> authorizedUsers = new ArrayList<Principal>(principalDocuments);
+        List<Principal> authorizedUsers = new ArrayList<Principal>();
         if (principalDocuments != null && principalDocuments.size() > 0) {
+            authorizedUsers.addAll(principalDocuments);
             for (Principal p : privilegedPrincipals) {
                 if (!authorizedUsers.contains(p)) {
                     authorizedUsers.add(p);
                 }
             }
+        } else {
+            authorizedUsers.addAll(Arrays.asList(privilegedPrincipals));
         }
 
         Collections.sort(authorizedUsers, Principal.PRINCIPAL_NAME_COMPARATOR);

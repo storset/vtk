@@ -201,13 +201,16 @@ public class ACLProvider implements ReferenceDataProvider {
                         Arrays.asList(userPrincipals), preferredLocale);
             }
 
-            List<Principal> principals = new ArrayList<Principal>(principalDocuments);
+            List<Principal> principals = new ArrayList<Principal>();
             if (principalDocuments != null && principalDocuments.size() > 0) {
+                principals.addAll(principalDocuments);
                 for (Principal p : userPrincipals) {
                     if (!principals.contains(p)) {
                         principals.add(p);
                     }
                 }
+            } else {
+                principals.addAll(Arrays.asList(userPrincipals));
             }
 
             Collections.sort(principals, Principal.PRINCIPAL_NAME_COMPARATOR);

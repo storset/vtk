@@ -252,6 +252,7 @@
 
   <bean id="displayIndexFileService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
+    <property name="order" value="-1" />
     <property name="assertions">
       <list>
         <ref bean="hasIndexFileAssertion" />

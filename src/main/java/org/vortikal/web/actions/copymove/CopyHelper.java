@@ -53,7 +53,7 @@ public class CopyHelper {
             destUri = appendCopySuffix(destUri, number, src);
             number++;
         }
-        if (this.copyThenStoreAction != null && src != null && is != null) {
+        if (this.copyThenStoreAction != null && src != null) {
             this.copyThenStoreAction.process(destUri, src, is);
         } else if (this.copyAction != null) {
             this.copyAction.process(uri, destUri, null);

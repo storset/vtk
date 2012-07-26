@@ -66,8 +66,10 @@ public class CopyThenStoreAction {
         }
         repository.store(token, newRsrc);
         
-        // Store updated content
-        repository.storeContent(token, copyUri, stream);
+        // Store updated content if changed
+        if(stream != null) {
+          repository.storeContent(token, copyUri, stream);
+        }
     }
 
     @Required

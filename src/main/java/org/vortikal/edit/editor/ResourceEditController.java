@@ -123,7 +123,9 @@ public class ResourceEditController extends SimpleFormController {
             InputStream is = saveImageHelper.saveImage(resource, repository, token, resource.getURI(),
                     wrapper.getCropX(), wrapper.getCropY(), wrapper.getCropWidth(),
                     wrapper.getCropHeight(), wrapper.getNewWidth(), wrapper.getNewHeight());
-            repository.storeContent(token, wrapper.getURI(), is);  
+            if(is != null) {
+              repository.storeContent(token, wrapper.getURI(), is);
+            }
         }
 
         if (!wrapper.isView()) {

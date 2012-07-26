@@ -71,6 +71,8 @@ VrtxImageEditor.prototype.init = function init(imageEditorElm, imageURL, imageSu
     if(!editor.canvasSupported) {
       $(editor.canvas).replaceWith("<img src='" + editor.url + "' alt='preview image' />");
       editor.displayDimensions(editor.rw, editor.rh);
+      editor.rw = editor.lastWidth = editor.cropWidth = 0;
+      editor.rh = editor.lastHeight = editor.cropHeight = 0;
       $("#resource-width").attr("disabled", "disabled");
       $("#resource-height").attr("disabled", "disabled");
     } else {

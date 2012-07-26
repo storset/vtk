@@ -170,7 +170,7 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
         Map<URL, Set<Path>> aggregationSet = clar.getAggregationSet();
         Set<URL> manuallyApprovedSet = clar.getManuallyApproved();
 
-        if (!this.multiHostSearcher.isMultiHosSearchEnabled()) {
+        if (!this.multiHostSearcher.isMultiHostSearchEnabled()) {
             return false;
         }
         if ((aggregationSet == null || aggregationSet.isEmpty())

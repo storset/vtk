@@ -65,7 +65,7 @@ public class MultiHostSearcher {
         return null;
     }
 
-    public boolean isMultiHosSearchEnabled() {
+    public boolean isMultiHostSearchEnabled() {
         return this.multiHostSearchComponent != null;
     }
 

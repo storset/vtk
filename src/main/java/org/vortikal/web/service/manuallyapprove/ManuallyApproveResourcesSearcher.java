@@ -156,7 +156,7 @@ public class ManuallyApproveResourcesSearcher {
             if (localPath != null) {
                 PropertySet ps = this.retrieveResource(repository, token, localPath);
                 clar = this.aggregationResolver.getAggregatedResources(ps);
-            } else if (this.multiHostSearcher.isMultiHosSearchEnabled() && locationURL != null) {
+            } else if (this.multiHostSearcher.isMultiHostSearchEnabled() && locationURL != null) {
                 clar = this.aggregationResolver.getAggregatedResources(locationURL);
                 multiHostSearch = true;
             }

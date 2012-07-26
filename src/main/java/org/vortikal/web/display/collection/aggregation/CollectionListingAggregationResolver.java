@@ -267,7 +267,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
             }
             if (path != null) {
                 resource = this.repository.retrieve(token, path, false);
-            } else if (this.multiHostSearcher.isMultiHosSearchEnabled()) {
+            } else if (this.multiHostSearcher.isMultiHostSearchEnabled()) {
                 resource = multiHostSearcher.retrieve(token, url);
             }
 

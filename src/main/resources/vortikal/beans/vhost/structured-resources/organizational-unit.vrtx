@@ -131,7 +131,7 @@ resourcetype organizational-unit {
         
             [if areacode != null && areacode != ""]
               <span class="vrtx-organizational-unit-areacode">
-                <span class="vrtx-label">[localized 'areacode']:</span> [val areacode]
+                <span class="vrtx-label">[localized 'areacode']:</span> <span class="areacode">[val areacode]</span>
               </span>
             [endif]
           </div>

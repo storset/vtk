@@ -35,24 +35,33 @@ import org.vortikal.web.service.URL;
 public class Link implements java.io.Serializable {
 
     private static final long serialVersionUID = 1L;
-    
-    private URL url; 
+
+    private URL url;
     private String title;
-    
+
     public URL getUrl() {
         return url;
     }
-    
+
     public void setUrl(URL url) {
         this.url = url;
     }
-    
+
     public String getTitle() {
         return title;
     }
-    
+
     public void setTitle(String title) {
         this.title = title;
     }
-    
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Link [");
+        sb.append("title: ").append(this.title);
+        sb.append(", url: ").append(this.url);
+        sb.append("]");
+        return sb.toString();
+    }
+
 }

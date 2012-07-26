@@ -112,6 +112,7 @@ h2 {
 /* Sticky title and editor save/cancel buttons */
 
 .property-item.userTitle,
+.property-item.htmlTitle,
 .vrtx-string.title,
 .vrtx-string.name,
 .vrtx-string.areacode,

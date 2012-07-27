@@ -38,14 +38,14 @@ import java.util.Map;
 public class DerivedPropertyEvaluationDescription {
 
     public enum Operator {
-        EXISTS, TRUNCATE, TRUNCATED, LOCALIZED
+        EXISTS, TRUNCATE, ISTRUNCATED, LOCALIZED
     }
 
     private static final Map<String, Operator> OPERATORS = new HashMap<String, Operator>();
     static {
         OPERATORS.put("exists", Operator.EXISTS);
         OPERATORS.put("truncate", Operator.TRUNCATE);
-        OPERATORS.put("truncated", Operator.TRUNCATED);
+        OPERATORS.put("istruncated", Operator.ISTRUNCATED);
         OPERATORS.put("localized", Operator.LOCALIZED);
     }
 

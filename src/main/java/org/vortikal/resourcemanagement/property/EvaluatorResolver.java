@@ -301,7 +301,7 @@ public class EvaluatorResolver {
                 return Boolean.valueOf(propValue != null);
             case TRUNCATE:
                 return getTruncated(ctx, propName, propValue);
-            case TRUNCATED:
+            case ISTRUNCATED:
                 Object obj = ctx.getEvaluationAttribute(propName);
                 return Boolean.valueOf(operator.equals(obj));
             case LOCALIZED:
@@ -326,7 +326,7 @@ public class EvaluatorResolver {
             String truncated = htmlDigester.truncateHtml(compressed);
             if (truncated != null && (truncated.length() < compressed.length())) {
                 // Mark the property as truncated on the evaluation context
-                ctx.addEvaluationAttribute(propName, Operator.TRUNCATED);
+                ctx.addEvaluationAttribute(propName, Operator.ISTRUNCATED);
             }
             return truncated;
         }

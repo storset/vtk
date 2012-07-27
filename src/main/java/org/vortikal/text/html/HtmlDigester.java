@@ -53,7 +53,7 @@ public class HtmlDigester {
     private static final Pattern TAG_PATTERN = Pattern.compile("<.*?>");
 
     private static final int DEFAULT_TRUNCATE_LIMIT = 1000;
-    private static final String DEFAUL_TAIL = "...";
+    private static final String DEFAULT_TAIL = "...";
 
     /**
      * Compress the html
@@ -78,7 +78,7 @@ public class HtmlDigester {
             throw new IllegalArgumentException("Must supply html to truncate");
         }
 
-        if (limit < 0 || limit < DEFAUL_TAIL.length()) {
+        if (limit < 0 || limit < DEFAULT_TAIL.length()) {
             throw new IllegalArgumentException("Limit is too small");
         }
 
@@ -106,7 +106,7 @@ public class HtmlDigester {
             int removedTagsLength = this.getRemoveTagsLength(removed);
             int truncationLimit = processedLimit - (removedTagsLength / 2);
             // Leave room for the tail
-            truncationLimit -= DEFAUL_TAIL.length();
+            truncationLimit -= DEFAULT_TAIL.length();
 
             // We were too greedy, we ended up removing everything. Go with half
             // the original limit and hope
@@ -122,7 +122,7 @@ public class HtmlDigester {
             }
 
             // Add the tail
-            truncated = this.addTail(truncated, DEFAUL_TAIL);
+            truncated = this.addTail(truncated, DEFAULT_TAIL);
 
             String sanitizedTruncated = this.sanitizeTruncated(truncated);
 

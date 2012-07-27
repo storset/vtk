@@ -4,7 +4,7 @@ resourcetype structured-message {
     title : string required overrides title,
     message : html noextract,
     listingDisplayedMessage : derived (message) eval (message?truncate),
-    isTruncated : derived (message) eval (message?truncated)
+    isTruncated : derived (message) eval (message?istruncated)
   }
 
   view {

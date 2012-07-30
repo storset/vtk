@@ -137,7 +137,7 @@ public final class TagsHelper {
     public final boolean getDisplayScope(HttpServletRequest request) {
         boolean displayScope = false;
         String displayScopeInTitle = request.getParameter(TagsHelper.DISPLAY_SCOPE_PARAMETER);
-        if ("true".equals(displayScopeInTitle)) {
+        if (Boolean.TRUE.toString().equals(displayScopeInTitle)) {
             displayScope = true;
         }
         return displayScope;

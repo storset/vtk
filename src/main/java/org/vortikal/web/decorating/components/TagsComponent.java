@@ -137,12 +137,14 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
 
         try {
 
-            if (request.getStringParameter(PARAMETER_RESULT_SETS) != null)
+            if (request.getStringParameter(PARAMETER_RESULT_SETS) != null) {
                 resultSet = Integer.parseInt(request.getStringParameter(PARAMETER_RESULT_SETS));
+            }
 
             if (request.getStringParameter(PARAMETER_SHOW_OCCURENCE) != null
-                    && request.getStringParameter(PARAMETER_SHOW_OCCURENCE).equals("true"))
+                    && request.getStringParameter(PARAMETER_SHOW_OCCURENCE).equals("true")) {
                 showOccurence = true;
+            }
 
             if (request.getStringParameter(PARAMETER_TAG_LIMIT) != null) {
                 limit = Integer.parseInt(request.getStringParameter(PARAMETER_TAG_LIMIT));
@@ -180,7 +182,8 @@ public class TagsComponent extends ViewRenderingDecoratorComponent implements In
         }
 
         Object displayScopeParam = request.getRawParameter(PARAMETER_DISPLAY_SCOPE);
-        boolean displayScope = Boolean.TRUE.toString().equals(displayScopeParam.toString());
+        boolean displayScope = displayScopeParam != null
+                && Boolean.TRUE.toString().equals(displayScopeParam.toString());
 
         String overrideResTypeTitle = null;
         Object overrideResTypeTitleParam = request.getRawParameter(PARAMETER_OVERRIDE_RESOURCE_TYPE_TITLE);

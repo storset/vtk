@@ -76,7 +76,7 @@ public class ListResourceTitleComponent extends ViewRenderingDecoratorComponent 
                 }
             }
         }
-        model.put("realtedDocuments", relatedDocuments);
+        model.put("relatedDocuments", relatedDocuments);
         model.put("viewName", this.getName());
     }
 

@@ -89,8 +89,13 @@
         <value>resource:phone</value>
         <value>resource:mobile</value>
         <value>resource:email</value>
-        <value>title</value>
         <value>resource:picture</value>
+        <value>resource:postalAddress</value>
+        <value>resource:visitingAddress</value>
+        <value>resource:alternativeVisitingAddress</value>
+        <value>resource:room</value>
+        <value>resource:availableHours</value>
+        <value>title</value>
         <value>tags</value>
         <value>lastModified</value>
         <value>contentLocale</value>

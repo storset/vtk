@@ -5,8 +5,8 @@
   <import resource="person-tags.xml" />
 
   <bean id="tags.viewService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="viewService" />
-    <property name="order" value="-1" />
+    <property name="parent" ref="collectionListing.viewService" />
+    <property name="order" value="-2" />
     <property name="assertions">
       <list>
         <ref bean="tags.tagsParameterAssertion" />

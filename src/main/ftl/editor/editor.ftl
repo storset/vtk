@@ -55,7 +55,7 @@
         vrtxAdm.mapShortcut("#vrtx-save-shortcut", "#saveButton");
         vrtxAdm.mapShortcut("#vrtx-cancel-shortcut", "#cancel");
         _$("#editor").on("click", "#cancel", function(e) {
-          performSave();
+          NEED_TO_CONFIRM = false;
         });
         _$("#editor").on("click", "#saveAndViewButton, #saveCopyButton", function(e) {
           performSave();

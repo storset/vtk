@@ -3,7 +3,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <groupId>vortikal</groupId>
   <artifactId>vortikal</artifactId>
-  <version>1.2</version>
+  <version>1.3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>The Vortikal Web Framework</name>
   <url>http://www.uio.no/tjenester/it/web/vortex/</url>

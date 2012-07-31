@@ -37,7 +37,7 @@
       _$("#editor").on("click", "#cancel", function(e) {
         NEED_TO_CONFIRM = false;
       });
-      _$("#editor").on("click", "#saveAndViewButton, #cancelAction, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", function(e) {
+      _$("#editor").on("click", "#saveAndViewButton, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", function(e) {
         var ok = performSave();
         if(!ok) return false;
       });

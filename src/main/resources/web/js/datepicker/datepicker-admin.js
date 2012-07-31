@@ -23,15 +23,33 @@ function initDatePicker(language) {
   }
 
   // Specific for start and end date
-  if (!$("#start-date-date").length || !$("#end-date-date").length) {
+  var startDateElm = $("#start-date-date");
+  var startDateHhElm = $("#start-date-hours");
+  var startDateMmElm = $("#start-date-minutes");
+  var endDateElm = $("#end-date-date");
+  var endDateHhElm = $("#end-date-hours");
+  var endDateMmElm = $("#end-date-minutes");
+  
+  if (!startDateElm.length || !endDateElm.length) {
     return;
   }
-  var startDate = $("#start-date-date").datepicker('getDate');
+  var startDate = startDateElm.datepicker('getDate');
   if (startDate != null) {
-    setDefaultEndDate();
+    setDefaultEndDate(startDateElm, endDateElm);
   }
-  $("#start-date-date").change(function () {
-    setDefaultEndDate();
+  
+  $("#editor").on("change", "#start-date-date, #end-date-date", function () {
+    setDefaultEndDate(startDateElm, endDateElm);
+    preventInverseTimeline(startDateElm, startDateHhElm, startDateMmElm, endDateElm, endDateHhElm, endDateMmElm);
+  });
+
+  $("#editor").on("change", "#start-date-hours, #start-date-minutes", function () {
+    verifyTime(startDateHhElm, startDateMmElm);
+    preventInverseTimeline(startDateElm, startDateHhElm, startDateMmElm, endDateElm, endDateHhElm, endDateMmElm);
+  });
+  $("#editor").on("change", "#end-date-hours, #end-date-minutes", function () {
+    verifyTime(endDateHhElm, endDateMmElm);
+    preventInverseTimeline(startDateElm, startDateHhElm, startDateMmElm, endDateElm, endDateHhElm, endDateMmElm);
   });
 }
 
@@ -59,11 +77,63 @@ function displayDateAsMultipleInputFields(name) {
   });
 }
 
-function setDefaultEndDate() {
-  var endDate = $("#end-date-date").val();
-  var startDate = $("#start-date-date").datepicker('getDate');
+function setDefaultEndDate(startDateElm, endDateElm) {
+  var endDate = endDateElm.val();
+  var startDate = startDateElm.datepicker('getDate');
   if (endDate == "") {
-    $("#end-date-date").datepicker('option', 'defaultDate', startDate);
+    endDateElm.datepicker('option', 'defaultDate', startDate);
+  }
+}
+
+function verifyTime(hh, mm) {
+  var hhVal = hh.val();
+  var mmVal = mm.val();
+  if(hhVal.length || mmVal.length) { // Don't trust Date/Systemtime blank filling (and we want it more robust)
+    var newHhVal = parseInt(hhVal); // Correct hours
+    if(isNaN(newHhVal)) {
+      newHhVal = "00";
+    } else {
+      newHhVal = (newHhVal > 23) ? "00" : newHhVal;
+      newHhVal = ((newHhVal < 10 && !newHhVal.length) ? "0" : "") + newHhVal;
+    }
+    
+    var newMmVal = parseInt(mmVal); // Correct minutes
+    if(isNaN(newMmVal)) {
+      newMmVal = "00";
+    } else {
+      newMmVal = (newMmVal > 59) ? "00" : newMmVal;
+      newMmVal = ((newMmVal < 10 && !newMmVal.length) ? "0" : "") + newMmVal;
+    }
+    
+    if((newHhVal == "00" || newHhVal == "0") && (newMmVal == "00" || newMmVal == "0")) { // If all zeroes => remove time
+      hh.val("");
+      mm.val("");
+    } else {
+      if(hhVal != newHhVal) hh.val(newHhVal);
+      if(mmVal != newMmVal) mm.val(newMmVal);
+    }
+  }
+}
+
+function preventInverseTimeline(startDateElm, startDateHhElm, startDateMmElm, endDateElm, endDateHhElm, endDateMmElm) {
+  var startDateVal = startDateElm.val();
+  var startDateHhVal = startDateHhElm.val();
+  var startDateMmVal = startDateMmElm.val();
+  var endDateVal = endDateElm.val();
+  var endDateHhVal = endDateHhElm.val();
+  var endDateMmVal = endDateMmElm.val();
+  
+  var start = new Date(startDateVal);
+  var end = new Date(endDateVal);
+  
+  if(end <= start) {
+    endDateElm.val(startDateVal);
+    if(endDateHhVal <= startDateHhVal) {
+      endDateHhElm.val(startDateHhVal);
+      if(endDateMmVal < startDateMmVal) {
+        endDateMmElm.val(startDateMmVal);
+      }
+    }
   }
 }
 

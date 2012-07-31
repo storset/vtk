@@ -613,7 +613,6 @@ public class PropertyEditController extends SimpleFormController implements Refe
         this.principalManager = principalManager;
     }
 
-    @Required
     public void setLocaleResolver(LocaleResolver localeResolver) {
         this.localeResolver = localeResolver;
     }

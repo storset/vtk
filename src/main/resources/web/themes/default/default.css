@@ -901,7 +901,8 @@ div.dropdown-shortcut-menu-container form .vrtx-button button {
 #resourceMenuRight .manage\.unlockFormService h3 {
   background: url(images/lock.png) no-repeat 100% 1px;
   padding-right: 18px;
-  /* display: inline-block; */
+  display: inline-block;
+  margin-bottom: 2px;
 }
 
 
@@ -1361,7 +1362,7 @@ span.vrtx-help-step-by-step-cmd {
 #directory-listing tr td {
   font-size: 1.15em;
   border-top: 1px solid #f0f0f0;
-  padding: 5px 15px 4px 0;
+  padding: 5px 0 4px 15px;
   overflow: hidden;
 }
 
@@ -1372,7 +1373,7 @@ span.vrtx-help-step-by-step-cmd {
 
 #directory-listing tr th {
   background: url(images/line-dotted.gif) repeat-x bottom left;
-  padding: 0 15px 8px 0;
+  padding: 0 0 8px 15px;
   text-align: left;
   white-space: nowrap;  
 }

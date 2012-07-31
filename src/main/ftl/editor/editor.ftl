@@ -100,6 +100,7 @@
       function performSave() {
         saveMultipleInputFields();
         NEED_TO_CONFIRM = false;
+        return true;
       } 
  
       <#if isCollection> // i18n

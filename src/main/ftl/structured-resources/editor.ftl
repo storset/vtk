@@ -35,7 +35,8 @@
       vrtxAdm.mapShortcut("#vrtx-delete-working-copy-shortcut", "#deleteWorkingCopyAction");
       vrtxAdm.mapShortcut("#vrtx-save-as-working-copy-shortcut", "#saveWorkingCopyAction");
       _$("#editor").on("click", "#saveAndViewButton, #cancelAction, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", function(e) {
-        performSave();
+        var ok = performSave();
+        if(!ok) return false;
       });
       
       // Multiple fields interaction
@@ -48,6 +49,9 @@
     window.onbeforeunload = unsavedChangesInEditorMessage;
 
     function performSave() {
+      var ok = validTextLengthsInEditor();
+      if(!ok) return false;
+      
       saveDateAndTimeFields(); // js/datepicker/datepicker-admin.js
       if (typeof MULTIPLE_INPUT_FIELD_NAMES !== "undefined") {
         saveMultipleInputFields();
@@ -59,6 +63,8 @@
         boxUrlTextField.val(vrtxAdmin._$.trim(boxUrlTextField.val()));
       }
       NEED_TO_CONFIRM = false;  
+      
+      return true;
     }
 
     // i18n

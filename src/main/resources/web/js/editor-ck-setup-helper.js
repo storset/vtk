@@ -270,6 +270,44 @@ function storeInitPropValues() {
    
 }
 
+// TODO: i18n
+function validTextLengthsInEditor() {
+  var MAX_LENGTH = 2048;
+
+  var contents = $("#contents");
+  
+  // String textfields
+  var currentStateOfInputFields = contents.find(".vrtx-string");
+  var textLen = currentStateOfInputFields.length;
+  for (var i = 0; i < textLen; i++) {
+    var strElm = $(currentStateOfInputFields[i]);
+    if (strElm.find("input").val().length > 2048) {
+      if(typeof tooLongFieldPre !== "undefined" && typeof tooLongFieldPost !== "undefined") {
+        vrtxAdmin.displayErrorMsg(tooLongFieldPre + strElm.find("label").text() + tooLongFieldPost);
+      }
+      return false;
+    }
+  }
+  
+  // Simple html textareas (CK)
+  var currentStateOfTextFields = contents.find(".vrtx-simple-html");
+  for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
+    if (typeof CKEDITOR !== "undefined") {
+      var txtAreaElm = $(currentStateOfTextFields[i]);
+      var txtArea = txtAreaElm.find("textarea");
+      var ckInstance = getCkInstance(txtArea[0].name);
+      if (ckInstance && ckInstance.getData().length > 2048) { // && guard
+        if(typeof tooLongFieldPre !== "undefined" && typeof tooLongFieldPost !== "undefined") {
+          vrtxAdmin.displayErrorMsg(tooLongFieldPre + txtAreaElm.find("label").text() + tooLongFieldPost);
+        }
+        return false;
+      }
+    }
+  }
+  
+  return true;
+}
+
 function unsavedChangesInEditor() {
   if (!NEED_TO_CONFIRM) return false;
   
@@ -337,10 +375,9 @@ function unsavedChangesInEditor() {
   var currentStateOfTextFields = contents.find("textarea");
   for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
     if (typeof CKEDITOR !== "undefined") {
-      if (getCkInstance(currentStateOfTextFields[i].name)) {
-        if (getCkInstance(currentStateOfTextFields[i].name).checkDirty()) {
-          return true  // unsaved textarea
-        }
+      var ckInstance = getCkInstance(currentStateOfTextFields[i].name);
+      if (ckInstance && ckInstance.checkDirty()) {
+        return true  // unsaved textarea
       }
     }
   }

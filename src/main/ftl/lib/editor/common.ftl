@@ -24,6 +24,8 @@
 
   <script type="text/javascript"><!--
     var datePickerLang = "${language}";
+    var tooLongFieldPre = "<@vrtx.msg code='editor.too-long-field-pre' />";
+    var tooLongFieldPost = "<@vrtx.msg code='editor.too-long-field-post' />";
   // -->
   </script>
 

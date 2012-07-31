@@ -670,7 +670,7 @@ function createInteraction(bodyId, vrtxAdm, _$) {
   });
   $(document).on("click", ".radio-buttons input", function(e) {
     var focusedTextField = $(".vrtx-admin-form input[type='text']:visible:first");
-    if(!focusedTextField.val().length) { // Only focus when empty
+    if(focusedTextField.length && !focusedTextField.val().length) { // Only focus when empty
       focusedTextField.focus();
     }
   });    
@@ -1242,7 +1242,14 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
         vrtxImageEditor.save();
       }
       if(typeof performSave !== "undefined") {      
-        performSave();
+        var ok = performSave();
+        if(!ok) {
+          if(typeof initDatePicker !== "undefined") {
+            initDatePicker(datePickerLang);
+          }
+          tb_remove();
+          return false;
+        }
       }
       _$("#editor").ajaxSubmit({
         success: function() {

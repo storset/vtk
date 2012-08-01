@@ -294,7 +294,7 @@ function validTextLengthsInEditor(isOldEditor) {
     }
   }
   
-  // Simple html textareas (CK)
+  // Textareas that are not content-fields (CK)
   var currentTextAreas = isOldEditor ? contents.find(CK_OLD) : contents.find(CK_NEW);
   for (i = 0, len = currentTextAreas.length; i < len; i++) {
     if (typeof CKEDITOR !== "undefined") {

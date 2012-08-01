@@ -271,12 +271,20 @@ function storeInitPropValues() {
 }
 
 function validTextLengthsInEditor(isOldEditor) {
-  var MAX_LENGTH = 1000; // Back-end limits it to 2048
+  var MAX_LENGTH = 1000, // Back-end limits it to 2048
+  
+      // New starts on textfield 
+      INPUT_NEW = ".vrtx-textfield",
+      INPUT_OLD = "input[type=text]",
+      
+      // Old starts on wrapper (because of slightly different semantic/markup build-up)
+      CK_NEW = ".vrtx-simple-html, .vrtx-simple-html-small", // aka. textareas
+      CK_OLD = "textarea:not(#resource\\.content)";
 
   var contents = $("#contents");
   
   // String textfields
-  var currentInputFields = isOldEditor ? contents.find("input[type=text]") : contents.find(".vrtx-string");
+  var currentInputFields = isOldEditor ? contents.find(INPUT_OLD) : contents.find(INPUT_NEW);
   for (var i = 0, textLen = currentInputFields.length; i < textLen; i++) {
     var strElm = $(currentInputFields[i]);
     var condition = isOldEditor ? strElm.val().length > MAX_LENGTH : strElm.find("input").val().length > MAX_LENGTH;
@@ -290,7 +298,7 @@ function validTextLengthsInEditor(isOldEditor) {
   }
   
   // Simple html textareas (CK)
-  var currentTextAreas = isOldEditor ? contents.find("textarea:not(#resource\\.content)") : contents.find(".vrtx-simple-html, .vrtx-simple-html-small");
+  var currentTextAreas = isOldEditor ? contents.find(CK_OLD) : contents.find(CK_NEW);
   for (i = 0, len = currentTextAreas.length; i < len; i++) {
     if (typeof CKEDITOR !== "undefined") {
       var txtAreaElm = $(currentTextAreas[i]);

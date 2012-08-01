@@ -272,12 +272,9 @@ function storeInitPropValues() {
 
 function validTextLengthsInEditor(isOldEditor) {
   var MAX_LENGTH = 1000, // Back-end limits it to 2048
-  
-      // New starts on textfield 
+      // NEW starts on textfield and OLD starts on wrapper (because of slightly different semantic/markup build-up)
       INPUT_NEW = ".vrtx-textfield",
       INPUT_OLD = "input[type=text]",
-      
-      // Old starts on wrapper (because of slightly different semantic/markup build-up)
       CK_NEW = ".vrtx-simple-html, .vrtx-simple-html-small", // aka. textareas
       CK_OLD = "textarea:not(#resource\\.content)";
 

@@ -290,7 +290,7 @@ function validTextLengthsInEditor(isOldEditor) {
   }
   
   // Simple html textareas (CK)
-  var currentTextAreas = isOldEditor ? contents.find("textarea:not(#resource\\.content)") : contents.find(".vrtx-simple-html");
+  var currentTextAreas = isOldEditor ? contents.find("textarea:not(#resource\\.content)") : contents.find(".vrtx-simple-html, .vrtx-simple-html-small");
   for (i = 0, len = currentTextAreas.length; i < len; i++) {
     if (typeof CKEDITOR !== "undefined") {
       var txtAreaElm = $(currentTextAreas[i]);

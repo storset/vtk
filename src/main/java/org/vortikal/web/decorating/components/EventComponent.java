@@ -91,7 +91,7 @@ public class EventComponent extends AbstractEventComponent {
     private static final String PARAMETER_ADD_TO_CALENDAR_DESC = "Set to 'true' if you want add to calendar function. Default is 'false'.";
 
     private static final String PARAMETER_EVENTS_TITLE = "events-title";
-    private static final String PARAMETER_EVENTS_TITLE_DESC = "Set to true if you want to display title of the vents folder. Default is 'false'";
+    private static final String PARAMETER_EVENTS_TITLE_DESC = "Set to true if you want to display title of the events folder. Default is 'false'";
 
     private static final String PARAMETER_EVENTS_EMPTY_MSG = "if-empty-message";
     private static final String PARAMETER_EVENTS_EMPTY_MSG_DESC = "Sets message to be shown if there are no events.";

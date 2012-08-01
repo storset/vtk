@@ -99,8 +99,8 @@ public abstract class AtomFeedController implements Controller {
     protected abstract Property getPublishDate(PropertySet resource);
 
     // To be overridden where necessary
-    protected Date getLastModified(PropertySet collection) {
-        return collection.getProperty(lastModifiedPropDef).getDateValue();
+    protected Date getLastModified(PropertySet resource) {
+        return resource.getProperty(lastModifiedPropDef).getDateValue();
     }
 
     // To be overridden where necessary

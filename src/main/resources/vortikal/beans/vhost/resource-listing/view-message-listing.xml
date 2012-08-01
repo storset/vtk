@@ -39,6 +39,7 @@
         <value>publish-date</value>
         <value>resource:isTruncated</value>
         <value>resource:listingDisplayedMessage</value>
+        <value>lastModified</value>
         <value>contentLocale</value>
       </list>
     </property>

@@ -271,16 +271,15 @@ function storeInitPropValues() {
 }
 
 function validTextLengthsInEditor(isOldEditor) {
-  var MAX_LENGTH = 2048;
+  var MAX_LENGTH = 1000; // Back-end limits it to 2048
 
   var contents = $("#contents");
   
   // String textfields
-  var currentStateOfInputFields = isOldEditor ? contents.find("input[type=text]") : contents.find(".vrtx-string");
-  var textLen = currentStateOfInputFields.length;
-  for (var i = 0; i < textLen; i++) {
-    var strElm = $(currentStateOfInputFields[i]);
-    var condition = isOldEditor ? strElm.val().length > 2048 : strElm.find("input").val().length > 2048;
+  var currentInputFields = isOldEditor ? contents.find("input[type=text]") : contents.find(".vrtx-string");
+  for (var i = 0, textLen = currentInputFields.length; i < textLen; i++) {
+    var strElm = $(currentInputFields[i]);
+    var condition = isOldEditor ? strElm.val().length > MAX_LENGTH : strElm.find("input").val().length > MAX_LENGTH;
     if(condition) {
       if(typeof tooLongFieldPre !== "undefined" && typeof tooLongFieldPost !== "undefined") {
         $("html").scrollTop(0);
@@ -291,13 +290,13 @@ function validTextLengthsInEditor(isOldEditor) {
   }
   
   // Simple html textareas (CK)
-  var currentStateOfTextFields = isOldEditor ? contents.find("textarea:not(#resource\\.content)") : contents.find(".vrtx-simple-html");
-  for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
+  var currentTextAreas = isOldEditor ? contents.find("textarea:not(#resource\\.content)") : contents.find(".vrtx-simple-html");
+  for (i = 0, len = currentTextAreas.length; i < len; i++) {
     if (typeof CKEDITOR !== "undefined") {
-      var txtAreaElm = $(currentStateOfTextFields[i]);
+      var txtAreaElm = $(currentTextAreas[i]);
       var txtArea = isOldEditor ? txtAreaElm : txtAreaElm.find("textarea");
       var ckInstance = getCkInstance(txtArea[0].name);
-      if (ckInstance && ckInstance.getData().length > 2048) { // && guard
+      if (ckInstance && ckInstance.getData().length > MAX_LENGTH) { // && guard
         if(typeof tooLongFieldPre !== "undefined" && typeof tooLongFieldPost !== "undefined") {
           $("html").scrollTop(0);
           vrtxAdmin.displayErrorMsg(tooLongFieldPre + (isOldEditor ? txtAreaElm.closest(".property-item").find(".property-label:first").text() : txtAreaElm.find("label").text()) + tooLongFieldPost);

@@ -4,7 +4,7 @@
 
 <#if conf.auth>
   <#assign include = "false">
-  <#if (conf.type = "psd" && psd?has_content)>
+  <#if (conf.type = "groupedByDayEvents" && groupedByDayEvents?has_content)>
     <div class="vrtx-event-component vrtx-event-component-psd">
     <#assign include = "true">
   <#elseif (conf.type = "list-once" && events?has_content)>

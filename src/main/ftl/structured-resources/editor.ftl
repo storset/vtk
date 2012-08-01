@@ -52,7 +52,7 @@
     window.onbeforeunload = unsavedChangesInEditorMessage;
 
     function performSave() {
-      var ok = validTextLengthsInEditor();
+      var ok = validTextLengthsInEditor(false);
       if(!ok) return false;
       
       saveDateAndTimeFields(); // js/datepicker/datepicker-admin.js

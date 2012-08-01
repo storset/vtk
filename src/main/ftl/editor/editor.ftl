@@ -58,7 +58,8 @@
           NEED_TO_CONFIRM = false;
         });
         _$("#editor").on("click", "#saveAndViewButton, #saveCopyButton", function(e) {
-          performSave();
+          var ok = performSave();
+          if(!ok) return false;
           if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save && !vrtxImageEditor.savedImage) {
             vrtxImageEditor.save(_$.single(this).attr("id"));
             e.preventDefault();
@@ -98,6 +99,9 @@
       window.onbeforeunload = unsavedChangesInEditorMessage;
       
       function performSave() {
+        var ok = validTextLengthsInEditor(true);
+        if(!ok) return false;
+      
         saveMultipleInputFields();
         NEED_TO_CONFIRM = false;
         return true;

@@ -270,35 +270,37 @@ function storeInitPropValues() {
    
 }
 
-// TODO: i18n
-function validTextLengthsInEditor() {
+function validTextLengthsInEditor(isOldEditor) {
   var MAX_LENGTH = 2048;
 
   var contents = $("#contents");
   
   // String textfields
-  var currentStateOfInputFields = contents.find(".vrtx-string");
+  var currentStateOfInputFields = isOldEditor ? contents.find("input[type=text]") : contents.find(".vrtx-string");
   var textLen = currentStateOfInputFields.length;
   for (var i = 0; i < textLen; i++) {
     var strElm = $(currentStateOfInputFields[i]);
-    if (strElm.find("input").val().length > 2048) {
+    var condition = isOldEditor ? strElm.val().length > 2048 : strElm.find("input").val().length > 2048;
+    if(condition) {
       if(typeof tooLongFieldPre !== "undefined" && typeof tooLongFieldPost !== "undefined") {
-        vrtxAdmin.displayErrorMsg(tooLongFieldPre + strElm.find("label").text() + tooLongFieldPost);
+        $("html").scrollTop(0);
+        vrtxAdmin.displayErrorMsg(tooLongFieldPre + (isOldEditor ? strElm.closest(".property-item").find(".property-label:first").text() : strElm.find("label").text()) + tooLongFieldPost);
       }
-      return false;
+      return false;  
     }
   }
   
   // Simple html textareas (CK)
-  var currentStateOfTextFields = contents.find(".vrtx-simple-html");
+  var currentStateOfTextFields = isOldEditor ? contents.find("textarea:not(#resource\\.content)") : contents.find(".vrtx-simple-html");
   for (i = 0, len = currentStateOfTextFields.length; i < len; i++) {
     if (typeof CKEDITOR !== "undefined") {
       var txtAreaElm = $(currentStateOfTextFields[i]);
-      var txtArea = txtAreaElm.find("textarea");
+      var txtArea = isOldEditor ? txtAreaElm : txtAreaElm.find("textarea");
       var ckInstance = getCkInstance(txtArea[0].name);
       if (ckInstance && ckInstance.getData().length > 2048) { // && guard
         if(typeof tooLongFieldPre !== "undefined" && typeof tooLongFieldPost !== "undefined") {
-          vrtxAdmin.displayErrorMsg(tooLongFieldPre + txtAreaElm.find("label").text() + tooLongFieldPost);
+          $("html").scrollTop(0);
+          vrtxAdmin.displayErrorMsg(tooLongFieldPre + (isOldEditor ? txtAreaElm.closest(".property-item").find(".property-label:first").text() : txtAreaElm.find("label").text()) + tooLongFieldPost);
         }
         return false;
       }

@@ -25,7 +25,7 @@
 
 
   <bean id="repository.systemjob.thumbnail" class="org.vortikal.repository.systemjob.ThumbnailGeneratorJob" parent="repository.systemjob">
-    <property name="triggerExpression" value="${repository.publisher.interval}" />
+    <property name="triggerExpression" value="${repository.thumbnail.generator.interval}" />
     <property name="id" value="thumbnail-generator" />
     <property name="pathSelector">
       <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" parent="repository.systemjob.indexPathSelector">

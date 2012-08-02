@@ -67,7 +67,7 @@ resourcetype program-frontpage : program-document {
       ##
     }
 
-    program-option-list {      
+    program-options {
       ##
       [def document structured-document()]
       [def locale resource-locale()]  
@@ -81,10 +81,10 @@ resourcetype program-frontpage : program-document {
       [if folder]          
         [def activefeed thispath + '/?vrtx=feed&status=aktive']
         [def inactivefeed thispath + '/?vrtx=feed&status=inaktive']
-        <div class="vrtx-frontpage-box white-box big-list-elements vrtx-program-option-list">
-          <h2><a href="[val thispath]">[localized 'program-option-list-title']</a></h2>
+        <div class="vrtx-frontpage-box white-box vrtx-program-options">
+          <h2><a href="[val thispath]">[localized 'program-options-title']</a></h2>
           [call "include:feed"  {"url":activefeed, "feed-title":false, "max-messages":100, "include-if-empty":false}]
-          <div class="vrtx-program-option-list-inactive">
+          <div class="vrtx-program-options-inactive">
             [call "include:feed"  {"url":inactivefeed, "feed-title":false, "max-messages":100, "include-if-empty":false, "all-messages-link":false}]
           </div>
         </div>
@@ -220,7 +220,7 @@ resourcetype program-frontpage : program-document {
                 [endif]
               </div>
             </div>
-            [call "comp:program-option-list"]
+            [call "comp:program-options"]
             [call "comp:interview-box"]
             [call "comp:resource-links"]
           </div>
@@ -274,8 +274,8 @@ resourcetype program-frontpage : program-document {
     keywords : (en : "Keywords for programme chooser", no : "Stikkord til programvelger", nn : "Stikkord til programvelger"),
     picture : (en: "Image", no: "Bilde", nn : "Bilete"),
     introduction-image-alt : (en : "Image", no : "Bilde", nn : "Bilete"),
-    program-option-list-title : (en : "Programme options", no : "Studieretninger", nn : "Studieretningar"),
-	samlet : (en : "Translation of program names for Full description of the programme", no : "Oversettelse av programnavn til Samlet programbeskrivelse", nn : "Oversetting av programnamn til Samla programbeskrivelse"),
+    program-options-title : (en : "Programme options", no : "Studieretninger", nn : "Studieretningar"),
+    samlet : (en : "Translation of program names for Full description of the programme", no : "Oversettelse av programnavn til Samlet programbeskrivelse", nn : "Oversetting av programnamn til Samla programbeskrivelse"),
     interview-box : (en : "Employment opportunities", no : "Karriereintervjuer", nn : "Karriereintervjuar"),
     interviewTitle : (en : "Title", no : "Tittel", nn : "Tittel"),
     interviewContent : (en : "Content", no : "Innhold", nn : "Innhald"),

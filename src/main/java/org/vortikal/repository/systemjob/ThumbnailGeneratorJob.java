@@ -127,8 +127,8 @@ public class ThumbnailGeneratorJob extends RepositoryJob {
                     if (!scaleUp && image.getWidth() <= width) {
                         if (logger.isDebugEnabled()) {
                             logger.debug("Will not create a thumbnail: configured NOT to scale up");
-                            setThumbnailGeneratorStatus(repository, token, resource, "CONFIGURED_NOT_TO_SCALE_UP");
                         }
+                        setThumbnailGeneratorStatus(repository, token, resource, "CONFIGURED_NOT_TO_SCALE_UP");
                         return;
                     }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <!-- Periodic system jobs -->
 
@@ -22,22 +22,62 @@
     <property name="parser" ref="searchParser" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
   </bean>
-  
+
+
+  <bean id="repository.systemjob.thumbnail" class="org.vortikal.repository.systemjob.ThumbnailGeneratorJob" parent="repository.systemjob">
+    <property name="triggerExpression" value="${repository.publisher.interval}" />
+    <property name="id" value="thumbnail-generator" />
+    <property name="pathSelector">
+      <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" parent="repository.systemjob.indexPathSelector">
+        <property name="limit" value="10" />
+        <property name="queryString">
+          <value>
+            type IN image AND thumbnail-status = GENERATE_TUMBNAIL
+          </value>
+        </property>
+      </bean>
+    </property>
+    <property name="affectedPropDefPointers">
+      <list>
+        <value>thumbnail</value>
+        <value>thumbnail-status</value>
+      </list>
+    </property>
+    <property name="thumbnailPropDef" ref="thumbnailPropDef" />
+    <property name="imageService">
+      <bean class="org.vortikal.graphics.ImageServiceImpl" />
+    </property>
+    <property name="width" value="${resourcetype.image.thumbnail.width}" />
+    <property name="maxSourceImageFileSize" value="${resourcetype.image.thumbnail.maxSourceImageFileSize}" />
+    <property name="maxSourceImageRawMemoryUsage" value="${resourcetype.image.thumbnail.maxSourceImageRawMemoryUsage}" />
+    <property name="scaleUp" value="false" />
+    <property name="supportedFormats">
+      <set>
+        <value>jpeg</value>
+        <value>jpg</value>
+        <value>gif</value>
+        <value>png</value>
+        <value>bmp</value>
+        <value>pjpeg</value><!-- Microsoft -->
+      </set>
+    </property>
+    <property name="thumbnailStatusPropDef" ref="thumbnailStatusPropDef" />
+  </bean>
+
+
   <!-- Resource publisher periodic job -->
-  <bean id="repository.systemjob.publisher" class="org.vortikal.repository.systemjob.InvokeStoreJob"
-        parent="repository.systemjob">
+  <bean id="repository.systemjob.publisher" class="org.vortikal.repository.systemjob.InvokeStoreJob" parent="repository.systemjob">
     <property name="triggerExpression" value="${repository.publisher.interval}" />
     <property name="id" value="published-status" />
     <property name="pathSelector">
-      <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector"
-            parent="repository.systemjob.indexPathSelector">
+      <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" parent="repository.systemjob.indexPathSelector">
         <property name="queryString">
           <value>
             type IN json-resource AND (
-                  (published = false AND publish-date &lt; {$currentTime} 
-                   AND (unpublish-date !exists OR unpublish-date &gt; {$currentTime}))
-               OR
-                   (published = true AND unpublish-date &lt; {$currentTime})
+            (published = false AND publish-date &lt; {$currentTime}
+            AND (unpublish-date !exists OR unpublish-date &gt; {$currentTime}))
+            OR
+            (published = true AND unpublish-date &lt; {$currentTime})
             )
           </value>
         </property>
@@ -51,10 +91,9 @@
   </bean>
 
   <!-- Broken link check job for recently modified resources -->
-  <bean id="repository.systemjob.linkcheck.recent" class="org.vortikal.repository.systemjob.LinkCheckJob"
-        parent="repository.systemjob">
+  <bean id="repository.systemjob.linkcheck.recent" class="org.vortikal.repository.systemjob.LinkCheckJob" parent="repository.systemjob">
     <property name="triggerExpression" value="${systemjob.linkcheck.recent.trigger}" />
-    <property name="enabled" value="${systemjob.linkcheck.recent.enabled}"/>
+    <property name="enabled" value="${systemjob.linkcheck.recent.enabled}" />
     <property name="id" value="linkcheck-recent" />
 
     <property name="linksPropDef" ref="linksPropDef" />
@@ -75,8 +114,7 @@
       </list>
     </property>
     <property name="pathSelector">
-      <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector"
-              parent="repository.systemjob.indexPathSelector">
+      <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" parent="repository.systemjob.indexPathSelector">
         <property name="queryString">
           <value>
             ${systemjob.linkcheck.queryFilterExpression}
@@ -94,10 +132,9 @@
 
   <!-- Broken link check job (regular intervals) -->
 
-  <bean id="repository.systemjob.linkcheck" class="org.vortikal.repository.systemjob.LinkCheckJob"
-        parent="repository.systemjob">
+  <bean id="repository.systemjob.linkcheck" class="org.vortikal.repository.systemjob.LinkCheckJob" parent="repository.systemjob">
     <property name="triggerExpression" value="${systemjob.linkcheck.trigger}" />
-    <property name="enabled" value="${systemjob.linkcheck.enabled}"/>
+    <property name="enabled" value="${systemjob.linkcheck.enabled}" />
     <property name="id" value="linkcheck" />
 
     <property name="linksPropDef" ref="linksPropDef" />
@@ -120,8 +157,7 @@
       <bean class="org.vortikal.repository.systemjob.AggregatingPathSelector">
         <constructor-arg>
           <list>
-           <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" 
-                  parent="repository.systemjob.indexPathSelector">
+            <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" parent="repository.systemjob.indexPathSelector">
               <property name="queryString">
                 <value>
                   ${systemjob.linkcheck.queryFilterExpression}
@@ -139,15 +175,15 @@
       </bean>
     </property>
   </bean>
-  
 
-  <bean id="repository.systemjob.linkcheck.blacklist" class="org.vortikal.util.repository.JSONBackedListResource" parent="repositoryAware">
+
+  <bean id="repository.systemjob.linkcheck.blacklist" class="org.vortikal.util.repository.JSONBackedListResource"
+    parent="repositoryAware">
     <property name="uri" value="${systemjob.linkcheck.blacklist}" />
     <property name="token" ref="trustedToken" />
   </bean>
 
-  <bean id="repository.systemjob.linkcheck.blacklist.refreshTrigger"
-        class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
+  <bean id="repository.systemjob.linkcheck.blacklist.refreshTrigger" class="org.vortikal.util.repository.MethodInvokingRepositoryEventTrigger">
     <property name="repository" ref="repository" />
     <property name="uri" value="${systemjob.linkcheck.blacklist}" />
     <property name="multipleInvocations">

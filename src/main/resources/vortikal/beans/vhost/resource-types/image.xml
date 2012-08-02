@@ -21,6 +21,7 @@
         <ref bean="thumbnailPropDef" />
         <ref bean="photographerPropDef"/>
         <ref bean="imageHtmlDescriptionPropDef" />
+        <ref bean="thumbnailStatusPropDef" />
       </list>
     </property>
   </bean>
@@ -114,15 +115,15 @@
   <bean id="thumbnailPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="thumbnail" />
     <property name="type" value="BINARY" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
-    <property name="propertyEvaluator" ref="thumbnailEvaluator" />
   </bean>
 
   <bean id="thumbnailEvaluator" class="org.vortikal.repository.resourcetype.property.ThumbnailEvaluator">
     <property name="imageService">
         <bean class="org.vortikal.graphics.ImageServiceImpl" />
     </property>
+
     <property name="width" value="${resourcetype.image.thumbnail.width}" />
     <property name="maxSourceImageFileSize" value="${resourcetype.image.thumbnail.maxSourceImageFileSize}" />
     <property name="maxSourceImageRawMemoryUsage" value="${resourcetype.image.thumbnail.maxSourceImageRawMemoryUsage}" />
@@ -142,5 +143,16 @@
   <bean id="resourceTypeIsImage" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceTypeDefinition" ref="imageResourceTypeDefinition" />
   </bean>
+
+  <bean id="thumbnailStatusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="thumbnail-status" />
+    <property name="type" value="STRING" />
+    <property name="multiple" value="true" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="thumbnailStatusEvaluator" />
+  </bean>
+
+  <bean id="thumbnailStatusEvaluator" class="org.vortikal.repository.resourcetype.property.ThumbnailStatusPropertyEvaluator"></bean>
 
 </beans>

@@ -111,7 +111,9 @@ public class ThumbnailGeneratorJob extends RepositoryJob {
                     }
 
                     BufferedImage image = ImageIO.read(repository.getInputStream(token, path, true));
-
+                    if (image == null) {
+                        return;
+                    }
                     Property contentType = resource.getProperty(Namespace.DEFAULT_NAMESPACE,
                             PropertyType.CONTENTTYPE_PROP_NAME);
 

@@ -650,8 +650,8 @@
     <property name="httpIncludeCache" ref="decorating.includeComponent.httpIncludeCache" />
     <property name="htmlParser" ref="decorating.htmlParser" />
     <property name="uriPreProcessor" ref="uriPreProcessor" />
-    <property name="esiLocations" value="${decorating.esiLocations}" />
-    <property name="inlineEsiLocations" value="${decorating.inlineEsiLocations}" />
+    <property name="esiLocations" value="${decorating.includeComponent.esiLocations}" />
+    <property name="inlineEsiLocations" value="${decorating.includeComponent.inlineEsiLocations}" />
     <property name="description" value="Includes the contents of another document in the page" />
     <property name="examples">
       <map>

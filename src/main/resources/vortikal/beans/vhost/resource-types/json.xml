@@ -61,6 +61,7 @@
     <property name="mixinTypeDefinitions">
       <list>
         <ref bean="structuredResourceMixinResourceTypeDef" />
+        <ref bean="ssiMixinResourceTypeDef" />
       </list>
     </property>
   </bean>

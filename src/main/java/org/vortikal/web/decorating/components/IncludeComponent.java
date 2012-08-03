@@ -37,6 +37,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -113,17 +114,51 @@ implements ServletContextAware {
     @Required public void setHtmlParser(HtmlPageParser htmlParser) {
         this.htmlParser = htmlParser;
     }
-
-
+    
+    private Pattern esiLocations = null;
+    public void setEsiLocations(String esiLocations) {
+        if (esiLocations == null || esiLocations.trim().equals("")) {
+            return;
+        }
+        this.esiLocations = Pattern.compile(esiLocations);
+    }
+    
+    private Pattern inlineEsiLocations = null;
+    public void setInlineEsiLocations(String inlineEsiLocations) {
+        if (inlineEsiLocations == null || inlineEsiLocations.trim().equals("")) {
+            return;
+        }
+        this.inlineEsiLocations = Pattern.compile(inlineEsiLocations);
+    }
+    
+    
+    
     public void render(DecoratorRequest request, DecoratorResponse response)
     throws Exception {
 
         String esi = request.getStringParameter("esi");
         
-        if (esi != null) {
+        if (esi != null && this.esiLocations != null) {
+            StringBuffer requestURL = request.getServletRequest().getRequestURL();
+            
+            if (!this.esiLocations.matcher(requestURL).matches()) {
+                throw new DecoratorComponentException("ESI  not enabled in this location");
+            }
+            
             if (!esi.startsWith("/")) {
                 throw new DecoratorComponentException("Invalid ESI URL: must start with '/'");
             }
+            
+            if (this.inlineEsiLocations != null && this.inlineEsiLocations.matcher(requestURL).matches()) {
+                try {
+                    esi = URL.decode(esi);
+                    handleVirtualInclude(esi, request, response);
+                    return;
+                } catch (Throwable t) {
+                    throw new DecoratorComponentException("ESI include: " + t.getMessage(), t);
+                }
+            }
+            
             Writer writer = response.getWriter();
             writer.write("<esi:include src=\"" + HtmlUtil.escapeHtmlString(esi) + "\" />");
             writer.flush();

@@ -82,16 +82,19 @@ public class CollectionListingController extends AbstractCollectionListingContro
         List<Listing> results = new ArrayList<Listing>();
 
         for (SearchComponent component : this.searchComponents) {
+
             Listing listing = component.execute(request, collection, page, limit, 0);
             totalHits += listing.getTotalHits();
+            int numberOfFiles = listing.getFiles().size();
+
             // Add the listing to the results
-            if (listing.getFiles().size() > 0) {
+            if (numberOfFiles > 0) {
                 results.add(listing);
             }
             // Check previous result (by redoing the previous search),
             // to see if we need to adjust the offset.
             // XXX: is there a better way?
-            if (listing.getFiles().size() == 0 && offset > 0) {
+            if (numberOfFiles == 0 && offset > 0) {
                 Listing prevListing = component.execute(request, collection, page - 1, limit, 0);
                 if (prevListing.getFiles().size() > 0 && !prevListing.hasMoreResults()) {
                     offset -= prevListing.getFiles().size();
@@ -102,7 +105,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
                 this.helper.checkListingsForEditLinks(repository, token, principal, Arrays.asList(listing));
             }
 
-            if (this.resolvePrincipalLink) {
+            if (this.resolvePrincipalLink && numberOfFiles > 0) {
                 Locale preferredLocale = this.localeResolver.resolveResourceLocale(collection);
                 Map<String, Principal> principalDocuments = this.helper.getExistingPrincipalDocuments(
                         listing.getFiles(), preferredLocale);
@@ -114,7 +117,7 @@ public class CollectionListingController extends AbstractCollectionListingContro
                 break;
             }
             // Only include enough results to fill the page:
-            if (listing.getFiles().size() > 0) {
+            if (numberOfFiles > 0) {
                 limit -= listing.getFiles().size();
             }
 

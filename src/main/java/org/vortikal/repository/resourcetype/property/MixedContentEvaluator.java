@@ -33,12 +33,15 @@ package org.vortikal.repository.resourcetype.property;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import net.sf.json.JSONNull;
 
+import org.jdom.Document;
+import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
@@ -159,6 +162,10 @@ public class MixedContentEvaluator implements LatePropertyEvaluator {
                     }
                 } else if ("text/html".equals(resource.getContentType())) {
                     checkHtml(ctx.getContent().getContentInputStream(), report);
+                    
+                } else if ("text/xml".equals(resource.getContentType())) {
+                    Document doc = (Document)ctx.getContent().getContentRepresentation(Document.class);
+                    checkXml(doc, report);
                 }
             }
         } catch (Throwable t) { }
@@ -212,6 +219,39 @@ public class MixedContentEvaluator implements LatePropertyEvaluator {
             is.close();
         }
     }
+    
+    private void checkXml(Document doc,
+            Report report) throws Exception {
+
+        Iterator<?> nodeIterator = doc.getDescendants();
+        while (nodeIterator.hasNext()) {
+            Object next = nodeIterator.next();
+            if (! (next instanceof Element)) {
+                continue;
+            }
+            Element element = (Element) next;
+            Element parent = element.getParentElement();
+
+            String href = null;
+
+            if (parent != null) {
+                if ("bilde-referanse".equals(parent.getName()) 
+                        && ("src".equals(element.getName())
+                            || "lenkeadresse".equals(element.getName()))) {
+                        href = element.getTextTrim();
+                } else if ("bilde".equals(parent.getName())
+                        && "webadresse".equals(element.getName())) {
+                    href = element.getTextTrim();
+                }
+            }
+            if (checkLink(href)) {
+                if (!report.includedContent("xml:img:", href)) {
+                    break;
+                }
+            }
+        }
+    }
+    
 
     private static class HtmlHandler extends DefaultHandler {
         private final Report report;

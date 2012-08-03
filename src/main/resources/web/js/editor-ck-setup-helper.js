@@ -293,7 +293,7 @@ function validTextLengthsInEditor(isOldEditor) {
       var str = (strInput.length && typeof strInput.val() !== "undefined") ? str = strInput.val() : "";
     }
     if(str.length > MAX_LENGTH) {
-      validTextLengthsInEditorErrorFunc(strElm);
+      validTextLengthsInEditorErrorFunc(elm, isOldEditor);
       return false;  
     }
   }
@@ -307,7 +307,7 @@ function validTextLengthsInEditor(isOldEditor) {
       if(txtArea.length && typeof txtArea[0].name !== "undefined") {
         var ckInstance = getCkInstance(txtArea[0].name);
         if (ckInstance && ckInstance.getData().length > MAX_LENGTH) { // && guard
-          validTextLengthsInEditorErrorFunc(strElm);
+          validTextLengthsInEditorErrorFunc(elm, isOldEditor);
           return false;
         }
       }

@@ -170,7 +170,7 @@
     parent="abstractPropDef">
     <property name="name" value="thumbnail" />
     <property name="type" value="BINARY" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <property name="propertyEvaluator" ref="videoPosterImageEvaluator" />
   </bean>

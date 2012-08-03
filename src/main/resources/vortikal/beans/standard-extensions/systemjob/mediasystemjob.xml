@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <!-- Video poster image periodic job -->
+  <bean id="repository.systemjob.videoPosterImage" class="org.vortikal.repository.systemjob.VideoPosterImageJob" parent="repository.systemjob">
+    <property name="triggerExpression" value="${repository.publisher.interval}" />
+    <property name="id" value="video-poster-image-generator" />
+    <property name="pathSelector">
+      <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" parent="repository.systemjob.indexPathSelector">
+        <property name="queryString">
+          <value>
+            type IN video
+          </value>
+        </property>
+      </bean>
+    </property>
+    <property name="affectedPropDefPointers">
+      <list>
+        <value>thumbnail</value>
+      </list>
+    </property>
+    <property name="imagePropDef" ref="generatedPosterImagePropDef" />
+    <property name="service" value="http://localhost:6666" />
+    <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />
+    <property name="serviceParameters">
+      <map>
+        <entry key="action" value="thumbnail" />
+        <entry key="filetype" value="video" />
+        <entry key="time" value="1" />
+      </map>
+    </property>
+  </bean>
+
+</beans>

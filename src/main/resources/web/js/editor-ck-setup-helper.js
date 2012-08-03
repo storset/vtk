@@ -280,16 +280,20 @@ function validTextLengthsInEditor(isOldEditor) {
 
   var contents = $("#contents");
   
+  var validTextLengthsInEditorErrorFunc = validTextLengthsInEditorError; // Perf.
+  
   // String textfields
   var currentInputFields = isOldEditor ? contents.find(INPUT_OLD) : contents.find(INPUT_NEW);
   for (var i = 0, textLen = currentInputFields.length; i < textLen; i++) {
     var strElm = $(currentInputFields[i]);
-    var condition = isOldEditor ? strElm.val().length > MAX_LENGTH : strElm.find("input").val().length > MAX_LENGTH;
-    if(condition) {
-      if(typeof tooLongFieldPre !== "undefined" && typeof tooLongFieldPost !== "undefined") {
-        $("html").scrollTop(0);
-        vrtxAdmin.displayErrorMsg(tooLongFieldPre + (isOldEditor ? strElm.closest(".property-item").find(".property-label:first").text() : strElm.find("label").text()) + tooLongFieldPost);
-      }
+    if(isOldEditor) {
+      var str = (typeof strElm.val() !== "undefined") ? str = strElm.val() : "";
+    } else {
+      var strInput = strElm.find("input");
+      var str = (strInput.length && typeof strInput.val() !== "undefined") ? str = strInput.val() : "";
+    }
+    if(str.length > MAX_LENGTH) {
+      validTextLengthsInEditorErrorFunc(strElm);
       return false;  
     }
   }
@@ -300,18 +304,35 @@ function validTextLengthsInEditor(isOldEditor) {
     if (typeof CKEDITOR !== "undefined") {
       var txtAreaElm = $(currentTextAreas[i]);
       var txtArea = isOldEditor ? txtAreaElm : txtAreaElm.find("textarea");
-      var ckInstance = getCkInstance(txtArea[0].name);
-      if (ckInstance && ckInstance.getData().length > MAX_LENGTH) { // && guard
-        if(typeof tooLongFieldPre !== "undefined" && typeof tooLongFieldPost !== "undefined") {
-          $("html").scrollTop(0);
-          vrtxAdmin.displayErrorMsg(tooLongFieldPre + (isOldEditor ? txtAreaElm.closest(".property-item").find(".property-label:first").text() : txtAreaElm.find("label").text()) + tooLongFieldPost);
+      if(txtArea.length && typeof txtArea[0].name !== "undefined") {
+        var ckInstance = getCkInstance(txtArea[0].name);
+        if (ckInstance && ckInstance.getData().length > MAX_LENGTH) { // && guard
+          validTextLengthsInEditorErrorFunc(strElm);
+          return false;
         }
-        return false;
       }
     }
   }
   
   return true;
+}
+
+function validTextLengthsInEditorError(elm) {
+  if(typeof tooLongFieldPre !== "undefined" && typeof tooLongFieldPost !== "undefined") {
+    $("html").scrollTop(0);
+    var lbl = "";
+    if(isOldEditor) {
+      var elmPropWrapper = elm.closest(".property-item");
+      if(elmPropWrapper.length) {
+        var lbl = elmPropWrapper.find(".property-label:first");
+      }
+    } else {
+      var lbl = elm.find("label");
+    }
+    if(lbl.length) {
+      vrtxAdmin.displayErrorMsg(tooLongFieldPre + lbl.text() + tooLongFieldPost);
+    }
+  }
 }
 
 function unsavedChangesInEditor() {

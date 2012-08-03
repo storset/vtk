@@ -317,7 +317,7 @@ function validTextLengthsInEditor(isOldEditor) {
   return true;
 }
 
-function validTextLengthsInEditorError(elm) {
+function validTextLengthsInEditorError(elm, isOldEditor) {
   if(typeof tooLongFieldPre !== "undefined" && typeof tooLongFieldPost !== "undefined") {
     $("html").scrollTop(0);
     var lbl = "";

@@ -145,9 +145,9 @@
   </bean>
 
   <bean id="thumbnailStatusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="thumbnail-status" />
+    <property name="name" value="media-system-job-status" />
     <property name="type" value="STRING" />
-    <property name="multiple" value="true" />
+    <property name="multiple" value="false" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <property name="propertyEvaluator" ref="thumbnailStatusEvaluator" />

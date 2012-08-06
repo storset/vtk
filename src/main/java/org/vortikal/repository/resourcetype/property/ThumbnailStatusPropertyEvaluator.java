@@ -16,8 +16,7 @@ public class ThumbnailStatusPropertyEvaluator implements LatePropertyEvaluator {
             return true;
         }
 
-        property.setValues(new Value[] { new Value("GENERATE_TUMBNAIL",
-                org.vortikal.repository.resourcetype.PropertyType.Type.STRING) });
+        property.setValue(new Value("GENERATE_TUMBNAIL", org.vortikal.repository.resourcetype.PropertyType.Type.STRING));
 
         return true;
     }

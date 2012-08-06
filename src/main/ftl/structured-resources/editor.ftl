@@ -53,9 +53,7 @@
 
     function performSave() {
       var ok = validTextLengthsInEditor(false);
-      if(!ok) {
-        return false;
-      } 
+      if(!ok) return false; 
       saveDateAndTimeFields(); // js/datepicker/datepicker-admin.js
       if (typeof MULTIPLE_INPUT_FIELD_NAMES !== "undefined") {
         saveMultipleInputFields();

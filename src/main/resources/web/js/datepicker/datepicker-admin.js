@@ -112,9 +112,9 @@ function saveDateAndTimeFields() {
     dateFields[i].value = "";
 
     if (date[0] && date[0].value.toString().length) {
-      dateFields[i].value = date[0].value
+      dateFields[i].value = date[0].value;
       if (hours[0] && hours[0].value.toString().length) {
-        dateFields[i].value += " " + hours[0].value
+        dateFields[i].value += " " + hours[0].value;
         if (minutes[0].value && minutes[0].value.toString().length) {
          dateFields[i].value += ":" + minutes[0].value;
         }

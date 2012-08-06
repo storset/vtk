@@ -1253,9 +1253,15 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           var endTime = new Date() - startTime;
           var waitMinMs = 800;
           if(endTime >= waitMinMs) { // Wait minimum 0.8s
+            if(typeof initDatePicker !== "undefined") {
+              initDatePicker(datePickerLang);
+            }
             tb_remove();
           } else {
             setTimeout(function() {
+               if(typeof initDatePicker !== "undefined") {
+                 initDatePicker(datePickerLang);
+               }
                tb_remove();
             }, Math.round(waitMinMs - endTime));
           }

@@ -23,33 +23,15 @@ function initDatePicker(language) {
   }
 
   // Specific for start and end date
-  var startDateElm = $("#start-date-date");
-  var startDateHhElm = $("#start-date-hours");
-  var startDateMmElm = $("#start-date-minutes");
-  var endDateElm = $("#end-date-date");
-  var endDateHhElm = $("#end-date-hours");
-  var endDateMmElm = $("#end-date-minutes");
-  
-  if (!startDateElm.length || !endDateElm.length) {
+  if (!$("#start-date-date").length || !$("#end-date-date").length) {
     return;
   }
-  var startDate = startDateElm.datepicker('getDate');
+  var startDate = $("#start-date-date").datepicker('getDate');
   if (startDate != null) {
-    setDefaultEndDate(startDateElm, endDateElm);
+    setDefaultEndDate();
   }
-  
-  $("#editor").on("change", "#start-date-date, #end-date-date", function () {
-    setDefaultEndDate(startDateElm, endDateElm);
-    preventInverseTimeline(startDateElm, startDateHhElm, startDateMmElm, endDateElm, endDateHhElm, endDateMmElm);
-  });
-
-  $("#editor").on("change", "#start-date-hours, #start-date-minutes", function () {
-    verifyTime(startDateHhElm, startDateMmElm);
-    preventInverseTimeline(startDateElm, startDateHhElm, startDateMmElm, endDateElm, endDateHhElm, endDateMmElm);
-  });
-  $("#editor").on("change", "#end-date-hours, #end-date-minutes", function () {
-    verifyTime(endDateHhElm, endDateMmElm);
-    preventInverseTimeline(startDateElm, startDateHhElm, startDateMmElm, endDateElm, endDateHhElm, endDateMmElm);
+  $("#start-date-date").change(function () {
+    setDefaultEndDate();
   });
 }
 
@@ -67,9 +49,9 @@ function displayDateAsMultipleInputFields(name) {
     date = new String(a[0].value).split(" ");
   }
 
-  dateField = "<div class='vrtx-textfield vrtx-date'><input type='text' size='12' id='" + name + "-date' name='" + name + "-date' value='" + date[0] + "' /></div>";
-  hoursField = "<div class='vrtx-textfield vrtx-hours'><input type='text' size='2' id='" + name + "-hours' name='" + name + "-hours' value='" + hours + "' /></div>";
-  minutesField = "<div class='vrtx-textfield vrtx-minutes'><input type='text' size='2' id='" + name + "-minutes' name='" + name + "-minutes' value='" + minutes + "' /></div>";
+  dateField = "<div class='vrtx-textfield vrtx-date'><input type='text' size='12' id='" + name + "-date' name='" + name + "-date' value='" + date[0] + "' class='date' /></div>";
+  hoursField = "<div class='vrtx-textfield vrtx-hours'><input type='text' size='2' id='" + name + "-hours' name='" + name + "-hours' value='" + hours + "' class='hours' /></div>";
+  minutesField = "<div class='vrtx-textfield vrtx-minutes'><input type='text' size='2' id='" + name + "-minutes' name='" + name + "-minutes' value='" + minutes + "' class='minutes' /></div>";
   a.parent().hide();
   a.parent().after(dateField + hoursField + "<span class='vrtx-time-seperator'>:</span>" + minutesField);
   $("#" + fieldName + "-date").datepicker({
@@ -77,63 +59,11 @@ function displayDateAsMultipleInputFields(name) {
   });
 }
 
-function setDefaultEndDate(startDateElm, endDateElm) {
-  var endDate = endDateElm.val();
-  var startDate = startDateElm.datepicker('getDate');
+function setDefaultEndDate() {
+  var endDate = $("#end-date-date").val();
+  var startDate = $("#start-date-date").datepicker('getDate');
   if (endDate == "") {
-    endDateElm.datepicker('option', 'defaultDate', startDate);
-  }
-}
-
-function verifyTime(hh, mm) {
-  var hhVal = hh.val();
-  var mmVal = mm.val();
-  if(hhVal.length || mmVal.length) { // Don't trust Date/Systemtime blank filling (and we want it more robust)
-    var newHhVal = parseInt(hhVal); // Correct hours
-    if(isNaN(newHhVal)) {
-      newHhVal = "00";
-    } else {
-      newHhVal = (newHhVal > 23) ? "00" : newHhVal;
-      newHhVal = ((newHhVal < 10 && !newHhVal.length) ? "0" : "") + newHhVal;
-    }
-    
-    var newMmVal = parseInt(mmVal); // Correct minutes
-    if(isNaN(newMmVal)) {
-      newMmVal = "00";
-    } else {
-      newMmVal = (newMmVal > 59) ? "00" : newMmVal;
-      newMmVal = ((newMmVal < 10 && !newMmVal.length) ? "0" : "") + newMmVal;
-    }
-    
-    if((newHhVal == "00" || newHhVal == "0") && (newMmVal == "00" || newMmVal == "0")) { // If all zeroes => remove time
-      hh.val("");
-      mm.val("");
-    } else {
-      if(hhVal != newHhVal) hh.val(newHhVal);
-      if(mmVal != newMmVal) mm.val(newMmVal);
-    }
-  }
-}
-
-function preventInverseTimeline(startDateElm, startDateHhElm, startDateMmElm, endDateElm, endDateHhElm, endDateMmElm) {
-  var startDateVal = startDateElm.val();
-  var startDateHhVal = startDateHhElm.val();
-  var startDateMmVal = startDateMmElm.val();
-  var endDateVal = endDateElm.val();
-  var endDateHhVal = endDateHhElm.val();
-  var endDateMmVal = endDateMmElm.val();
-  
-  var start = new Date(startDateVal);
-  var end = new Date(endDateVal);
-  
-  if(end <= start) {
-    endDateElm.val(startDateVal);
-    if(endDateHhVal <= startDateHhVal) {
-      endDateHhElm.val(startDateHhVal);
-      if(endDateMmVal < startDateMmVal) {
-        endDateMmElm.val(startDateMmVal);
-      }
-    }
+    $("#end-date-date").datepicker('option', 'defaultDate', startDate);
   }
 }
 
@@ -182,13 +112,21 @@ function saveDateAndTimeFields() {
     dateFields[i].value = "";
 
     if (date[0] && date[0].value.toString().length) {
-      dateFields[i].value = date[0].value;
+      dateFields[i].value = date[0].value
       if (hours[0] && hours[0].value.toString().length) {
-        dateFields[i].value += " " + hours[0].value;
+        dateFields[i].value += " " + hours[0].value
         if (minutes[0].value && minutes[0].value.toString().length) {
          dateFields[i].value += ":" + minutes[0].value;
         }
       }
+    }
+
+    // Hack fix for editor.. .must be removed!!!
+    if (typeof UNSAVED_CHANGES_CONFIRMATION !== "undefined") {
+       $("#" + fieldName + "-hours").parent().remove();
+       $("#" + fieldName + "-minutes").parent().remove();
+       $("#" + fieldName + "-date").parent().remove();
+       $(".vrtx-time-seperator").remove();
     }
   }
 }

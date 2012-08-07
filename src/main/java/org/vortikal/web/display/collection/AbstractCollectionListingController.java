@@ -116,7 +116,14 @@ public abstract class AbstractCollectionListingController implements ListingCont
                         while (requestParameters.hasMoreElements()) {
                             String requestParameter = requestParameters.nextElement();
                             String parameterValue = request.getParameter(requestParameter);
-                            url.addParameter(requestParameter, parameterValue);
+
+                            String urlParameterValue = url.getParameter(requestParameter);
+                            if (urlParameterValue == null) {
+                                url.addParameter(requestParameter, parameterValue);
+                            } else if ("".equals(urlParameterValue.trim())) {
+                                url.setParameter(requestParameter, parameterValue);
+                            }
+
                         }
                     }
 

@@ -34,9 +34,13 @@
       vrtxAdm.mapShortcut("#vrtx-make-public-version-shortcut", "#makePublicVersionAction");
       vrtxAdm.mapShortcut("#vrtx-delete-working-copy-shortcut", "#deleteWorkingCopyAction");
       vrtxAdm.mapShortcut("#vrtx-save-as-working-copy-shortcut", "#saveWorkingCopyAction");
+      
+      // Cancel action
       _$("#editor").on("click", "#cancelAction", function(e) {
         NEED_TO_CONFIRM = false;
       });
+      
+      // Save and versioning
       _$("#editor").on("click", "#saveAndViewButton, #saveWorkingCopyAction, #makePublicVersionAction, #deleteWorkingCopyAction", function(e) {
         var ok = performSave();
         if(!ok) return false;

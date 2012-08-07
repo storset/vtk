@@ -70,11 +70,8 @@
           if(recievedData.indexOf) {
             if(recievedData.indexOf("collapsedsize") != -1) {
               $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
-                if (parent) {
-                  // Pass our height to parent since it is typically cross domain (and can't access it directly)
-                  if(hasPostMessage) {
-                    parent.postMessage("collapsedsize", vrtxAdminOrigin);
-                  }
+                if (parent && hasPostMessage) { // Pass our height to parent since it is typically cross domain (and can't access it directly)
+                  parent.postMessage("collapsedsize", vrtxAdminOrigin);
                 }
               });
             } else {

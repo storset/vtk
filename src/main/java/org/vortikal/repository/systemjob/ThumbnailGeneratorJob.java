@@ -197,8 +197,8 @@ public class ThumbnailGeneratorJob extends RepositoryJob {
             private void setThumbnailGeneratorStatus(final Repository repository, final String token,
                     Resource resource, String status) {
                 Property statusProp = thumbnailStatusPropDef.createProperty();
-                statusProp.setValues(new Value[] { new Value(status,
-                        org.vortikal.repository.resourcetype.PropertyType.Type.STRING) });
+                statusProp.setValue( new Value(status,
+                        org.vortikal.repository.resourcetype.PropertyType.Type.STRING));
                 resource.addProperty(statusProp);
                 try {
                     repository.store(token, resource, context);

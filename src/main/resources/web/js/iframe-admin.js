@@ -8,6 +8,7 @@
 
 $(document).ready(function () {
   $(window).on("message", function(e) {
+    if(e.originalEvent) e = e.originalEvent;
     var recievedData = e.data;
 
     // TODO: need to check e.origin and e.source

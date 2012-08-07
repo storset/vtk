@@ -77,6 +77,7 @@
         // Multiple fields interaction
         initMultipleInputFields();
         
+        // Load HTML/Mustache templates for multiple inputfields
         $.when(MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED).done(function() {
           if(_$("#resource\\.featured-articles").length) {
             loadMultipleInputFields("featured-articles",'${vrtx.getMsg("editor.add")}',
@@ -111,7 +112,7 @@
         return true;
       } 
  
-      <#if isCollection> // i18n
+      <#if isCollection> // Save text for async. saving
         var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
       <#elseif isImage>
         var ajaxSaveText = "<@vrtx.msg code='editor.save-image-ajax-loading-title' />";   

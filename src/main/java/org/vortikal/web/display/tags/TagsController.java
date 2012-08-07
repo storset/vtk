@@ -30,7 +30,6 @@
  */
 package org.vortikal.web.display.tags;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,11 +45,11 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.display.listing.ListingPagingLink;
+import org.vortikal.web.referencedata.Link;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 import org.vortikal.web.service.Service;
@@ -66,9 +65,7 @@ public class TagsController implements Controller {
     private SearchComponent searchComponent;
     private Map<String, Service> alternativeRepresentations;
     private RepositoryTagElementsDataProvider tagElementsProvider;
-    private ResourceTypeTree resourceTypeTree;
     private TagsHelper tagsHelper;
-    private boolean servesWebRoot;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -79,7 +76,7 @@ public class TagsController implements Controller {
 
         Resource resource = this.tagsHelper.getScope(token, request);
         String tag = request.getParameter(TagsHelper.TAG_PARAMETER);
-        List<ResourceTypeDefinition> resourceTypes = this.getResourceTypes(request);
+        List<ResourceTypeDefinition> resourceTypes = this.tagsHelper.getResourceTypes(request);
         boolean displayScope = this.tagsHelper.getDisplayScope(request);
         String overrideResourceTypeTitle = request.getParameter(TagsHelper.OVERRIDE_RESOURCE_TYPE_TITLE_PARAMETER);
 
@@ -95,26 +92,10 @@ public class TagsController implements Controller {
         String title = this.tagsHelper.getTitle(request, resource, tag, false);
         model.put("title", title);
 
-        // Add scope up url if scope is not root
-        if (this.servesWebRoot && !resource.getURI().equals(Path.ROOT)) {
-            Map<String, String> scopeUp = new HashMap<String, String>();
-            Service service = org.vortikal.web.RequestContext.getRequestContext().getService();
-            URL url = service.constructURL(resource.getURI());
-            url.setPath(Path.ROOT);
-            List<String> sortFieldParams = null;
-            if (!StringUtils.isBlank(tag)) {
-                Object searchResult = model.get("listing");
-                if (searchResult != null && searchResult instanceof Listing) {
-                    Listing listing = (Listing) searchResult;
-                    sortFieldParams = listing.getSortFieldParams();
-                }
-            }
-            this.processUrl(url, tag, resourceTypes, sortFieldParams, displayScope, overrideResourceTypeTitle);
-            String scopeUpTitle = this.tagsHelper.getTitle(request, resource, tag, true);
-            scopeUp.put("url", url.toString());
-            scopeUp.put("title", scopeUpTitle);
-            model.put(TagsHelper.SCOPE_UP_MODEL_KEY, scopeUp);
-        }
+        // Add scope up url
+        Link scopeUpLink = this.tagsHelper.getScopeUpUrl(request, resource, model, tag, resourceTypes, displayScope,
+                overrideResourceTypeTitle, true);
+        model.put(TagsHelper.SCOPE_UP_MODEL_KEY, scopeUpLink);
 
         return new ModelAndView(this.viewName, model);
     }
@@ -143,7 +124,8 @@ public class TagsController implements Controller {
 
         Service service = org.vortikal.web.RequestContext.getRequestContext().getService();
         URL baseURL = service.constructURL(resource.getURI());
-        this.processUrl(baseURL, tag, resourceTypes, sortFieldParams, displayScope, overrideResourceTypeTitle);
+        this.tagsHelper.processUrl(baseURL, tag, resourceTypes, sortFieldParams, displayScope,
+                overrideResourceTypeTitle);
 
         List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(totalHits, pageLimit, baseURL, page);
 
@@ -157,7 +139,8 @@ public class TagsController implements Controller {
                 try {
                     Service altService = this.alternativeRepresentations.get(contentType);
                     URL url = altService.constructURL(resource.getURI());
-                    this.processUrl(url, tag, resourceTypes, sortFieldParams, displayScope, overrideResourceTypeTitle);
+                    this.tagsHelper.processUrl(url, tag, resourceTypes, sortFieldParams, displayScope,
+                            overrideResourceTypeTitle);
                     String title = altService.getName();
                     org.springframework.web.servlet.support.RequestContext rc = new org.springframework.web.servlet.support.RequestContext(
                             request);
@@ -178,32 +161,6 @@ public class TagsController implements Controller {
 
     }
 
-    private void processUrl(URL url, String tag, List<ResourceTypeDefinition> resourceTypes,
-            List<String> sortFieldParams, boolean displayScope, String overrideResourceTypeTitle) {
-
-        if (!StringUtils.isBlank(tag)) {
-            url.removeParameter(TagsHelper.TAG_PARAMETER);
-            url.addParameter(TagsHelper.TAG_PARAMETER, tag);
-        }
-        if (sortFieldParams != null && sortFieldParams.size() > 0) {
-            for (String param : sortFieldParams) {
-                url.addParameter(Listing.SORTING_PARAM, param);
-            }
-        }
-        if (resourceTypes != null && !url.getParameterNames().contains(TagsHelper.RESOURCE_TYPE_PARAMETER)) {
-            for (ResourceTypeDefinition resourceTypeDefinition : resourceTypes) {
-                url.addParameter(TagsHelper.RESOURCE_TYPE_PARAMETER, resourceTypeDefinition.getName());
-            }
-        }
-        if (displayScope) {
-            url.addParameter(TagsHelper.DISPLAY_SCOPE_PARAMETER, Boolean.TRUE.toString());
-        }
-        if (!StringUtils.isBlank(overrideResourceTypeTitle)) {
-            url.addParameter(TagsHelper.OVERRIDE_RESOURCE_TYPE_TITLE_PARAMETER, overrideResourceTypeTitle);
-        }
-
-    }
-
     private void handleAllTags(String token, HttpServletRequest request, Resource resource, Map<String, Object> model,
             List<ResourceTypeDefinition> resourceTypes, String overrideResourceTypeTitle, boolean displayScope) {
 
@@ -213,24 +170,6 @@ public class TagsController implements Controller {
                 Integer.MAX_VALUE, 1, resourceTypes, null, overrideResourceTypeTitle, displayScope);
 
         model.put("tagElements", tagElements);
-    }
-
-    private List<ResourceTypeDefinition> getResourceTypes(HttpServletRequest request) {
-        String[] resourcePrams = request.getParameterValues(TagsHelper.RESOURCE_TYPE_PARAMETER);
-        if (resourcePrams != null) {
-            List<ResourceTypeDefinition> resourceTypes = new ArrayList<ResourceTypeDefinition>();
-            for (String resourceType : resourcePrams) {
-                try {
-                    ResourceTypeDefinition resourceTypeDef = this.resourceTypeTree
-                            .getResourceTypeDefinitionByName(resourceType);
-                    resourceTypes.add(resourceTypeDef);
-                } catch (IllegalArgumentException iae) {
-                    // invalid resource type name, ignore it
-                }
-            }
-            return resourceTypes;
-        }
-        return null;
     }
 
     public void setDefaultPageLimit(int defaultPageLimit) {
@@ -257,17 +196,9 @@ public class TagsController implements Controller {
         this.tagElementsProvider = tagElementsProvider;
     }
 
-    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
-        this.resourceTypeTree = resourceTypeTree;
-    }
-
     @Required
     public void setTagsHelper(TagsHelper tagsHelper) {
         this.tagsHelper = tagsHelper;
-    }
-
-    public void setServesWebRoot(boolean servesWebRoot) {
-        this.servesWebRoot = servesWebRoot;
     }
 
 }

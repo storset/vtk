@@ -32,14 +32,22 @@ package org.vortikal.web.tags;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.support.RequestContext;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.ResourceTypeDefinition;
+import org.vortikal.web.referencedata.Link;
+import org.vortikal.web.search.Listing;
+import org.vortikal.web.service.Service;
+import org.vortikal.web.service.URL;
 
 public final class TagsHelper {
 
@@ -50,6 +58,9 @@ public final class TagsHelper {
     public static final String SCOPE_UP_MODEL_KEY = "scopeUp";
     public static final String DISPLAY_SCOPE_PARAMETER = "display-scope";
     public static final String OVERRIDE_RESOURCE_TYPE_TITLE_PARAMETER = "override-resource-type-title";
+
+    private ResourceTypeTree resourceTypeTree;
+    private boolean servesWebRoot;
 
     public Resource getScope(String token, HttpServletRequest request) throws Exception {
         Path requestedScope = this.getScopePath(request);
@@ -141,6 +152,85 @@ public final class TagsHelper {
             displayScope = true;
         }
         return displayScope;
+    }
+
+    public List<ResourceTypeDefinition> getResourceTypes(HttpServletRequest request) {
+        String[] resourcePrams = request.getParameterValues(TagsHelper.RESOURCE_TYPE_PARAMETER);
+        if (resourcePrams != null) {
+            List<ResourceTypeDefinition> resourceTypes = new ArrayList<ResourceTypeDefinition>();
+            for (String resourceType : resourcePrams) {
+                try {
+                    ResourceTypeDefinition resourceTypeDef = this.resourceTypeTree
+                            .getResourceTypeDefinitionByName(resourceType);
+                    resourceTypes.add(resourceTypeDef);
+                } catch (IllegalArgumentException iae) {
+                    // invalid resource type name, ignore it
+                }
+            }
+            return resourceTypes;
+        }
+        return null;
+    }
+
+    public Link getScopeUpUrl(HttpServletRequest request, Resource resource, Map<String, Object> model, String tag,
+            List<ResourceTypeDefinition> resourceTypes, boolean displayScope, String overrideResourceTypeTitle, boolean sort) {
+
+        if (this.servesWebRoot && !resource.getURI().equals(Path.ROOT)) {
+            Link scopeUpLink = new Link();
+            Service service = org.vortikal.web.RequestContext.getRequestContext().getService();
+            URL url = service.constructURL(resource.getURI());
+            url.setPath(Path.ROOT);
+            List<String> sortFieldParams = null;
+            if (!StringUtils.isBlank(tag) && sort) {
+                Object searchResult = model.get("listing");
+                if (searchResult != null && searchResult instanceof Listing) {
+                    Listing listing = (Listing) searchResult;
+                    sortFieldParams = listing.getSortFieldParams();
+                }
+            }
+            this.processUrl(url, tag, resourceTypes, sortFieldParams, displayScope, overrideResourceTypeTitle);
+            String scopeUpTitle = this.getTitle(request, resource, tag, true);
+            scopeUpLink.setUrl(url);
+            scopeUpLink.setTitle(scopeUpTitle);
+            return scopeUpLink;
+        }
+
+        return null;
+    }
+
+    public void processUrl(URL url, String tag, List<ResourceTypeDefinition> resourceTypes,
+            List<String> sortFieldParams, boolean displayScope, String overrideResourceTypeTitle) {
+
+        if (!StringUtils.isBlank(tag)) {
+            url.removeParameter(TagsHelper.TAG_PARAMETER);
+            url.addParameter(TagsHelper.TAG_PARAMETER, tag);
+        }
+        if (sortFieldParams != null && sortFieldParams.size() > 0) {
+            for (String param : sortFieldParams) {
+                url.addParameter(Listing.SORTING_PARAM, param);
+            }
+        }
+        if (resourceTypes != null && !url.getParameterNames().contains(TagsHelper.RESOURCE_TYPE_PARAMETER)) {
+            for (ResourceTypeDefinition resourceTypeDefinition : resourceTypes) {
+                url.addParameter(TagsHelper.RESOURCE_TYPE_PARAMETER, resourceTypeDefinition.getName());
+            }
+        }
+        if (displayScope) {
+            url.addParameter(TagsHelper.DISPLAY_SCOPE_PARAMETER, Boolean.TRUE.toString());
+        }
+        if (!StringUtils.isBlank(overrideResourceTypeTitle)) {
+            url.addParameter(TagsHelper.OVERRIDE_RESOURCE_TYPE_TITLE_PARAMETER, overrideResourceTypeTitle);
+        }
+
+    }
+
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+
+    public void setServesWebRoot(boolean servesWebRoot) {
+        this.servesWebRoot = servesWebRoot;
     }
 
 }

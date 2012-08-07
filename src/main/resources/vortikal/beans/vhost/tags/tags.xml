@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <import resource="person-tags.xml" />
 
@@ -49,14 +49,12 @@
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
     <property name="searchComponent" ref="tags.searchComponent" />
     <property name="tagElementsProvider" ref="tags.tagElementsProvider" />
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="alternativeRepresentations">
       <map>
         <entry key="application/atom+xml" value-ref="tags.atomService" />
       </map>
     </property>
     <property name="tagsHelper" ref="tagsHelper" />
-    <property name="servesWebRoot" value="${servesWebRoot}" />
   </bean>
 
   <bean id="tags.tagElementsProvider" class="org.vortikal.web.tags.RepositoryTagElementsDataProvider">
@@ -67,17 +65,17 @@
 
   <bean id="tagsReporter" class="org.vortikal.web.reporting.TagsReportingComponent">
     <description>Reporting usage of tags</description>
-    <property name="tagsPropDef" ref="tagsPropDef"/>
+    <property name="tagsPropDef" ref="tagsPropDef" />
     <property name="searcher" ref="systemIndexSearcher" />
     <property name="aggregationResolver" ref="aggregationResolver" />
     <property name="cache">
       <bean class="org.springframework.cache.ehcache.EhCacheFactoryBean">
         <property name="cacheManager" ref="ehCacheManager" />
-        <property name="cacheName" value="org.vortikal.TAGS_REPORTER_CACHE"/>
+        <property name="cacheName" value="org.vortikal.TAGS_REPORTER_CACHE" />
         <property name="maxElementsInMemory" value="50" />
         <property name="maxElementsOnDisk" value="2000" />
-        <property name="eternal" value="false"/>
-        <property name="overflowToDisk" value="true"/>
+        <property name="eternal" value="false" />
+        <property name="overflowToDisk" value="true" />
         <property name="timeToIdle" value="0" />
         <property name="timeToLive" value="45" />
       </bean>
@@ -175,7 +173,10 @@
     </property>
   </bean>
 
-  <bean id="tagsHelper" class="org.vortikal.web.tags.TagsHelper" />
+  <bean id="tagsHelper" class="org.vortikal.web.tags.TagsHelper">
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="servesWebRoot" value="${servesWebRoot}" />
+  </bean>
 
   <bean id="tags.tagsParameterAssertion" parent="vrtxParameterEquals">
     <property name="parameterValue" value="tags" />

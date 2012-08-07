@@ -24,13 +24,13 @@
     </#if>
   </title>
   
-  <#if cssURLs?exists>
+  <#if cssURLs??>
     <#list cssURLs as cssUrl>
        <link href="${cssUrl}" type="text/css" rel="stylesheet" />
     </#list>
   </#if>
   
-  <#if alternativeRepresentations?exists>
+  <#if alternativeRepresentations??>
     <#list alternativeRepresentations as alt>
       <link rel="alternate" type="${alt.contentType?html}" title="${alt.title?html}" href="${alt.url?html}" />
     </#list>
@@ -48,17 +48,19 @@
     </#if>
   </h1>
   
-  <#if tagElements?exists>
+  <#if tagElements??>
     <@tags.displayTagElements tagElements />
   <#else>
-    <#if listing?exists && listing.hasContent() >
+    <#if listing?? && listing?has_content >
       <@tags.displayTagListing listing />
+    <#elseif searchComponents??>
+      <@tags.displayTagListing searchComponents />
     <#else>
       <p>${vrtx.getMsg("tags.notFound")} <span class="italic">${tag?html}</span>.</p>
     </#if>
   </#if>
 
-  <#if scopeUp?exists>
+  <#if scopeUp??>
     <div class="vrtx-tags-scope-up">
       <ul>
         <li><a href="${scopeUp.url}">${scopeUp.title}</a></li>

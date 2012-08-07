@@ -1,7 +1,7 @@
 resourcetype samlet-retning : samlet {
 	properties {
 		tittel : string,
-		title : derived (tittel) eval (tittel + "samlet-retning"?localized) overrides title
+		title : derived (tittel) eval ("samlet-retning"?localized) overrides title
 	}
 	
 	edit-rules{
@@ -80,6 +80,7 @@ resourcetype samlet-retning : samlet {
   }
   localization {
   	program-affiliation : (en : "The programme option is part of the programme", no : "Studieretningen hører til programmet", nn : "Studieretninga høyrer til studieprogrammet"),
+  	samlet-retning : (en: "Full description of the programme option", no: "Samlet studieretningsbeskrivelse", nn: "Samlet studieretningsbeskrivelse"),
   	notfound : (en : "Can't find program option frontpage", no : "Finner ikke studieretningsforside", nn : "Finn ikkje studieretningsforside")
   }
 }

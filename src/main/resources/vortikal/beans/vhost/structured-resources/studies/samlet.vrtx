@@ -89,8 +89,6 @@ resourcetype samlet {
     	fem-aarig-master : (en : "master's 5-years", no : "master - 5 år", nn : "master - 5 år"), 
     	erfaringsbasert-master : (en : "master's - experience based", no : "master - erfaringsbasert", nn : "master - erfaringsbasert"), 
     	profesjon : (en : "programme of professional study", en : "profesjonsstudium", en : "profesjonsstudium"),
-	  	samlet-retning : (en: "Full description of the programme option", no: "Samlet studieretningsbeskrivelse", nn: "Samlet studieretningsbeskrivelse"),
-  		samlet-program : (en: "Full description of the programme", no: "Samlet programbeskrivelse", nn: "Samla programbeskrivelse"),
 		fs-program-code : (en : "FS programme code", no : "FS-programkode", nn : "FS-programkode"),
     	fs-program-option-code : (en : "FS programme option code", no : "FS-studieretningskode", nn : "FS-studieretningskode"),
   		kontakt : (en: "Contact", no: "Kontakt", nn: "Kontakt"),

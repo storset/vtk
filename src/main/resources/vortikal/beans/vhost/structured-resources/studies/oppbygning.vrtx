@@ -12,10 +12,14 @@ resourcetype oppbygning : fellestekst-document{
     vitnemaal: string,
     fellestekst-fakultet : string,
     fellestekst-fakultet-fri: html,
-	related-content : html noextract
+	related-content : html noextract,
+    tittel : string,
+    title : derived (tittel) eval ("oppbygning"?localized) overrides title
   }
   
   edit-rules {
+    tittel (size[1]),
+    tittel (class[ui-helper-hidden])
     caption (size[small]),
     group introImageAndCaption (picture, caption) (after introduction) vertical,
     gradsnavn (class[vrtx-shared-text]),

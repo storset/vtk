@@ -1,6 +1,7 @@
 resourcetype samlet-program : samlet {
 	properties {
-		tittel : string
+		tittel : string,
+		title : derived (tittel) eval ("samlet-program"?localized) overrides title
 	}
 	
 	edit-rules{
@@ -100,6 +101,7 @@ resourcetype samlet-program : samlet {
     parttime : (en : "Part-time study", no : "Deltidsstudium", nn : "Deltidsstudium"),
   	tittel : (en: "Welcome to full description", no: "Velkommen til samlet programbeskrivelse", nn: "Hei"),
   	samlet : (en: "Full description of the programme", no: "Samlet programbeskrivelse", nn: "Samlet programbeskrivelse"),
-  	notfound : (en : "Can't find program frontpage", no : "Finner ikke programforside", nn : "Finn ikkje programforside")
+  	notfound : (en : "Can't find program frontpage", no : "Finner ikke programforside", nn : "Finn ikkje programforside"),
+  	samlet-program : (en: "Full description of the programme", no: "Samlet programbeskrivelse", nn: "Samla programbeskrivelse")
   }
 }

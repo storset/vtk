@@ -61,7 +61,7 @@
           }
         });
         
-        $(window).on("message", function receiveMessage(e) {
+        $(window).on("message", function(e) {
           var recievedData = e.data;
           
           // TODO: Need to check e.origin and e.source

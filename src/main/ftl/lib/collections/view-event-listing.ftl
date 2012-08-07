@@ -2,15 +2,17 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
 
-<#macro displayEvents collection hideNumberOfComments=false displayMoreURLs=false >
+<#macro displayEvents collection hideNumberOfComments=false displayMoreURLs=false considerDisplayType=true >
+
   <#local displayType = vrtx.propValue(collection, 'display-type', '', 'el') />
-  <#if !displayType?has_content && searchComponents?has_content>
+  <#if considerDisplayType && displayType = 'calendar'>
+    <@displayCalendar collection hideNumberOfComments displayMoreURLs />
+  <#elseif searchComponents?has_content>
     <#list searchComponents as searchComponent>
       <@displayStandard searchComponent hideNumberOfComments displayMoreURLs />
     </#list>
-  <#elseif displayType = 'calendar'>
-    <@displayCalendar collection hideNumberOfComments displayMoreURLs />
   </#if>
+
 </#macro>
 
 <#macro displayStandard collectionListing hideNumberOfComments displayMoreURLs showTitle=true>
@@ -100,7 +102,7 @@
                 && (vrtx.parseInt(currentMonth) == vrtx.parseInt(todayMonth)) >
                 <span class="vrtx-daily-events-date-day vrtx-daily-events-date-today">${todayLocalized}</span>
               <#elseif (vrtx.parseInt(currentDay) == vrtx.parseInt(tomorrowDay)) 
-                    && (vrtx.parseInt(currentMonth) == vrtx.parseInt(tomorrowMonth)) > 
+                    && (vrtx.parseInt(currentMonth) == vrtx.parseInt(tomorrowMonth)) >
                 <span class="vrtx-daily-events-date-day vrtx-daily-events-date-tomorrow">${tomorrowLocalized}</span>
               <#else>
                 <span class="vrtx-daily-events-date-day">${currentDay}</span>

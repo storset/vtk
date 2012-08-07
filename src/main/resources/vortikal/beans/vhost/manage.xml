@@ -1091,7 +1091,7 @@
         <entry key="jsURLs">
           <list>
             <value>${jquery.baseURL}/jquery.min.js</value>
-            <value>${jquery.baseURL}/plugins/ui/jquery-ui-1.8.19.custom/js/jquery-ui-1.8.19.custom.min.js</value>>
+            <value>${jquery.baseURL}/plugins/ui/jquery-ui-1.8.19.custom/js/jquery-ui-1.8.19.custom.min.js</value>
             <value>${jquery.baseURL}/plugins/jquery.form.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>

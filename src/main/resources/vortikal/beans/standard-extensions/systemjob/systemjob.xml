@@ -32,7 +32,7 @@
         <property name="limit" value="10" />
         <property name="queryString">
           <value>
-            type IN image AND media-system-job-status = GENERATE_TUMBNAIL
+            type IN image AND media-system-job-status = GENERATE_THUMBNAIL
           </value>
         </property>
       </bean>

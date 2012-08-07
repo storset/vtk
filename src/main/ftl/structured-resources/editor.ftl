@@ -80,7 +80,7 @@
                        </#if>];   
    
     if (vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7) {
-     cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
+      cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
     }
     
   //-->

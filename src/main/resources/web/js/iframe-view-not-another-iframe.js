@@ -21,8 +21,7 @@ $(document).ready(function () {
     if(parent && hasPostMessage) { // Pass our height to parent since it is typically cross domain (and can't access it directly)
       parent.postMessage(setHeight, vrtxAdminOrigin);
     }
-    var links = $("a");
-    for (var i = 0, len = links.length; i < len; i++) {
+    for (var i = 0, links = $("a"), len = links.length; i < len; i++) {
       $(links[i]).attr("target", "_top");
     }
   });

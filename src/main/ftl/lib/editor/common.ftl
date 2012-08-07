@@ -20,12 +20,17 @@
   <script type='text/javascript' src='${webResources?html}/js/autocomplete/autocomplete-permissions.js'></script>
 </#macro>
 
-<#macro addDatePickerScripts language oldEditor=false>
+<#macro addCommonScripts language oldEditor=false>
 
   <script type="text/javascript"><!--
     var datePickerLang = "${language}";
     var tooLongFieldPre = "<@vrtx.msg code='editor.too-long-field-pre' />";
     var tooLongFieldPost = "<@vrtx.msg code='editor.too-long-field-post' />";
+         
+    // IE CSS
+    if (vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7 && typeof cssFileList !== "undefined") {
+      cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
+    }
   // -->
   </script>
 

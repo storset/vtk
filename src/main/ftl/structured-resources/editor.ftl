@@ -73,7 +73,7 @@
       return true;
     }
 
-    // i18n
+    // Async. save i18n 
     var ajaxSaveText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
 
     // Div container display in IE
@@ -82,15 +82,11 @@
                            "${cssURL?html}" <#if cssURL_has_next>,</#if>
                          </#list>
                        </#if>];   
-   
-    if (vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7) {
-      cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
-    }
     
   //-->
   </script>
 
-  <@editor.addDatePickerScripts language />
+  <@editor.addCommonScripts language />
 
   <#global baseFolder = "/" />
   <#if resourceContext.parentURI?exists>

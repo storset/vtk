@@ -111,8 +111,9 @@
         NEED_TO_CONFIRM = false;
         return true;
       } 
- 
-      <#if isCollection> // Save text for async. saving
+      
+      // Async. save i18n
+      <#if isCollection>
         var ajaxSaveText = "<@vrtx.msg code='editor.save-folder-ajax-loading-title' />";
       <#elseif isImage>
         var ajaxSaveText = "<@vrtx.msg code='editor.save-image-ajax-loading-title' />";   
@@ -124,6 +125,7 @@
         var ajaxSaveText = "<@vrtx.msg code='editor.save-doc-ajax-loading-title' />";
       </#if>
       
+      // Manually approve i18n
       var approveGeneratingPage = "<@vrtx.msg code='editor.manually-approve.generating-page' />",
           approvePrev = "<@vrtx.msg code='imageListing.previous' />",
           approveNext = "<@vrtx.msg code='imageListing.next' />",
@@ -146,16 +148,12 @@
                            </#list>
                          </#if>]; 
      
-      if (vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7) {
-        cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
-      }
-     
     //-->
     </script>
     
     <script type="text/javascript" src="${jsBaseURL?html}/collectionlisting/manually-approve.js"></script>
 
-    <@editor.addDatePickerScripts language true />
+    <@editor.addCommonScripts language true />
 
     <#if isImage>
       <!--[if lte IE 8]>

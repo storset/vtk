@@ -182,13 +182,10 @@
       <div id="vrtx-editor-title-submit-buttons-inner-wrapper">
         <h2>${header}</h2>
         
-        <#assign test23 = vrtx.getProp(resource, "sslMixedMode") />
-        <h3>${test23}</h3>
-        
         <div class="submitButtons submit-extra-buttons">
             <a class="vrtx-button" id="vrtx-save-view-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.saveAndView")}</span></a>
           <#if supportedImageEditor>
-            <a class="vrtx-button" id="vrtx-save-copy-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.saveCopy")}</span></a>
+            <a class="vrtx-button" id="vrhttx-save-copy-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.saveCopy")}</span></a>
           </#if>
           <span id="vrtx-save">
             <a class="vrtx-focus-button" id="vrtx-save-shortcut" href="javascript:void(0)"><span>${vrtx.getMsg("editor.save")}</span></a>

@@ -57,15 +57,14 @@
             // Pass our height to parent since it is typically cross domain (and can't access it directly)
             if(hasPostMessage) {
               parent.postMessage("fullsize", vrtxAdminOrigin);
-            } else { // use the hash stuff in plugin from jQuery "Cowboy"
-              var parent_url = decodeURIComponent(document.location.hash.replace(/^#/,''));
-              $.postMessage({fullsize: true}, parent_url, parent);  
             }
           }
         });
         
-        $.receiveMessage(function(e) {
+        $(window).on("message", function receiveMessage(e) {
           var recievedData = e.data;
+          
+          // TODO: Need to check e.origin and e.source
           
           if(recievedData.indexOf) {
             if(recievedData.indexOf("collapsedsize") != -1) {
@@ -74,9 +73,6 @@
                   // Pass our height to parent since it is typically cross domain (and can't access it directly)
                   if(hasPostMessage) {
                     parent.postMessage("collapsedsize", vrtxAdminOrigin);
-                  } else { // use the hash stuff in plugin from jQuery "Cowboy"
-                    var parent_url = decodeURIComponent(document.location.hash.replace(/^#/,''));
-                    $.postMessage({collapsedsize: true}, parent_url, parent); 
                   }
                 }
               });

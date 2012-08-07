@@ -84,9 +84,6 @@ function notifyExpandedDropdown(isVisible) {
   if(parent && !isVisible) {
     if(hasPostMessage) {
       parent.postMessage("expandedsize", vrtxAdminOrigin);
-    } else { // use the hash stuff in plugin from jQuery "Cowboy"
-      var parentUrl = decodeURIComponent(document.location.hash.replace(/^#/, ''));
-      $.postMessage({expandedsize: true}, parentUrl, parent);
     }
   }
 }
@@ -95,9 +92,6 @@ function notifyCollapsedDropdown(isVisible) {
   if(parent && isVisible) {
     if(hasPostMessage) {
       parent.postMessage("collapsedsize", vrtxAdminOrigin);
-    } else { // use the hash stuff in plugin from jQuery "Cowboy"
-      var parentUrl = decodeURIComponent(document.location.hash.replace(/^#/, ''));
-      $.postMessage({collapsedsize: true}, parentUrl, parent);
     }
   }
 }

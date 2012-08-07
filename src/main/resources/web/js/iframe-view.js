@@ -27,7 +27,6 @@ $(document).ready(function () {
 });
 
 function resize(iframe) {
-
   var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
   var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
 
@@ -42,11 +41,8 @@ function resize(iframe) {
       }
     }
     iframe.style.height = setHeight + "px";
-    if (parent) { // Pass our height to parent since it is typically cross domain (and can't access it directly)
-      if(hasPostMessage) {
-        parent.postMessage(setHeight, vrtxAdminOrigin);
-      } else { // Use the hash stuff in plugin from jQuery "Cowboy" 
-      }
+    if (parent && hasPostMessage) { // Pass our height to parent since it is typically cross domain (and can't access it directly)
+      parent.postMessage(setHeight, vrtxAdminOrigin);
     }
   } catch(e){
     if(typeof console !== "undefined" && console.log) {

@@ -374,11 +374,6 @@ function tb_postMessageClose() {
     $("ul.manage-create").css("position", "static"); // reset position to original
     if (hasPostMessage) {
       parent.postMessage("originalsize", vrtxAdminOrigin);
-    } else { // use the hash stuff in plugin from jQuery "Cowboy"
-      var parent_url = decodeURIComponent(document.location.hash.replace(/^#/, ''));
-      $.postMessage({
-        originalsize: true
-      }, parent_url, parent);
     }
   }
 }

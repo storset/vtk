@@ -69,6 +69,8 @@ public class ThumbnailGeneratorJob extends RepositoryJob {
 
     private PropertyTypeDefinition thumbnailPropDef;
     private PropertyTypeDefinition thumbnailStatusPropDef;
+    private PropertyTypeDefinition imageHeightPropDef;
+    private PropertyTypeDefinition imageWidthPropDef;
 
     private PathSelector pathSelector;
     private final Log logger = LogFactory.getLog(getClass());
@@ -169,6 +171,14 @@ public class ThumbnailGeneratorJob extends RepositoryJob {
                     Property property = thumbnailPropDef.createProperty();
                     property.setBinaryValue(thumbnail.getImageBytes(thumbnailFormat), "image/" + thumbnailFormat);
                     resource.addProperty(property);
+                    
+                    Property imageHeightProp = imageHeightPropDef.createProperty();
+                    imageHeightProp.setIntValue(dim.height);
+                    resource.addProperty(imageHeightProp);
+                    
+                    Property imageWidthProp = imageWidthPropDef.createProperty();
+                    imageWidthProp.setIntValue(dim.width);
+                    resource.addProperty(imageWidthProp);
 
                     if (resource.getLock() == null) {
                         resource.removeProperty(thumbnailStatusPropDef);
@@ -305,6 +315,14 @@ public class ThumbnailGeneratorJob extends RepositoryJob {
 
     public void setThumbnailStatusPropDef(PropertyTypeDefinition thumbnailStatusPropDef) {
         this.thumbnailStatusPropDef = thumbnailStatusPropDef;
+    }
+    
+    public void setImageHeightPropDef(PropertyTypeDefinition imageHeightPropDef) {
+        this.imageHeightPropDef = imageHeightPropDef;
+    }
+
+    public void setImageWidthPropDef(PropertyTypeDefinition imageWidthPropDef) {
+        this.imageWidthPropDef = imageWidthPropDef;
     }
 
 }

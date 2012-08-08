@@ -95,11 +95,6 @@
     <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
-    <property name="propertyEvaluator" ref="imageHeightEvaluator" />
-  </bean>
-
-  <bean id="imageHeightEvaluator" class="org.vortikal.repository.resourcetype.property.ImageDimensionEvaluator">
-    <property name="evaluateHeight" value="true" />
   </bean>
 
   <bean id="imageWidthPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
@@ -107,11 +102,6 @@
     <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
-    <property name="propertyEvaluator" ref="imageWidthEvaluator" />
-  </bean>
-
-  <bean id="imageWidthEvaluator" class="org.vortikal.repository.resourcetype.property.ImageDimensionEvaluator">
-    <property name="evaluateHeight" value="false" />
   </bean>
 
   <bean id="thumbnailEvaluator" class="org.vortikal.repository.resourcetype.property.ThumbnailEvaluator">

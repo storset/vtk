@@ -62,6 +62,8 @@
       </set>
     </property>
     <property name="thumbnailStatusPropDef" ref="mediaMetadataStatusPropDef" />
+    <property name="imageHeightPropDef" ref="imageHeightPropDef" />
+    <property name="imageWidthPropDef" ref="imageWidthPropDef" />
   </bean>
 
 
@@ -75,7 +77,8 @@
           <value>
             type IN json-resource AND (
             (published = false AND publish-date &lt; {$currentTime}
-            AND (unpublish-date !exists OR unpublish-date &gt; {$currentTime}))
+            AND (unpublish-date
+            !exists OR unpublish-date &gt; {$currentTime}))
             OR
             (published = true AND unpublish-date &lt; {$currentTime})
             )

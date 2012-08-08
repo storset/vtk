@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="tags.eventViewService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="tags.viewService" />
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.OrAssertion">
+          <property name="assertions">
+            <list>
+              <bean class="org.vortikal.web.service.RequestParameterAssertion">
+                <property name="parameterName" value="resource-type" />
+                <property name="parameterValue" value="structured-event" />
+              </bean>
+              <bean class="org.vortikal.web.service.RequestParameterAssertion">
+                <property name="parameterName" value="resource-type" />
+                <property name="parameterValue" value="event" />
+              </bean>
+            </list>
+          </property>
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterExistsAssertion">
+          <property name="parameterName" value="tag" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="tags.eventListing.handler" />
+  </bean>
+
+  <bean id="tags.eventListing.handler" class="org.vortikal.web.display.collection.event.TagsEventListingController"
+    parent="eventListing.handler">
+    <property name="viewName" value="tags.tags" />
+    <property name="tagsHelper" ref="tagsHelper" />
+    <property name="searcher" ref="tags.eventListing.eventListingSearcher" />
+    <property name="alternativeRepresentations">
+      <map>
+        <entry key="application/atom+xml" value-ref="tags.eventListing.atomService" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="tags.eventListing.eventListingSearcher" parent="eventListing.eventListingSearcher">
+    <property name="upcomingEventsSearch" ref="${override.listing.prefix}tags.eventListing.upcomingEventsSearchComponent" />
+    <property name="previousEventsSearch" ref="${override.listing.prefix}tags.eventListing.previousEventsSearchComponent" />
+  </bean>
+
+  <bean id="tags.eventListing.upcomingEventsSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
+    <property name="name" value="tags.eventListing.upcomingEventsSearchComponent" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="eventListing.upcomingEventsQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN event" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyValueQueryBuilder">
+          <property name="parameterName" value="tag" />
+          <property name="propertyTypeDefinition" ref="tagsPropDef" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="tags.eventListing.previousEventsSearchComponent" parent="eventListing.previousEventsSearchComponent">
+    <property name="name" value="tags.eventListing.previousEventsSearchComponent" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="eventListing.previousEventsQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN event" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyValueQueryBuilder">
+          <property name="parameterName" value="tag" />
+          <property name="propertyTypeDefinition" ref="tagsPropDef" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="structured.tags.eventListing.upcomingEventsSearchComponent" parent="structured.eventListing.upcomingEventsSearchComponent">
+    <property name="name" value="structured.tags.eventListing.upcomingEventsSearchComponent" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="structured.eventListing.upcomingEventsQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN structured-event" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyValueQueryBuilder">
+          <property name="parameterName" value="tag" />
+          <property name="propertyTypeDefinition" ref="tagsPropDef" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="structured.tags.eventListing.previousEventsSearchComponent" parent="structured.eventListing.previousEventsSearchComponent">
+    <property name="name" value="structured.tags.eventListing.previousEventsSearchComponent" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="structured.eventListing.prevoiusEventsQueryBuilder" />
+        <bean parent="queryStringParser">
+          <property name="queryString" value="type IN structured-event" />
+        </bean>
+        <bean class="org.vortikal.web.search.PropertyValueQueryBuilder">
+          <property name="parameterName" value="tag" />
+          <property name="propertyTypeDefinition" ref="tagsPropDef" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <!-- ## Feed service setup ## -->
+
+  <bean id="tags.eventListing.atomService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="tags.eventViewService" />
+    <property name="assertions">
+      <list>
+        <ref bean="feedViewParameterAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="tags.eventListing.atomHandler" />
+    <property name="serviceNameProvider" ref="tags.viewService.serviceNameProvider" />
+  </bean>
+  
+  <bean id="tags.eventListing.atomHandler" parent="eventListing.atomHandler">
+    <property name="searcher" ref="tags.eventListing.eventListingSearcher" />
+  </bean>
+
+</beans>

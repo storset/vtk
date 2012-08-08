@@ -1,7 +1,7 @@
 <#ftl strip_whitespace=true>
 
 <#import "/lib/view-utils.ftl" as viewutils />
-<#import "/lib/collections/view-collection-listing.ftl" as coll />
+<#import "/lib/collections/view-event-listing.ftl" as events />
 <#import "/lib/collections/view-project-listing.ftl" as projects />
 <#import "/lib/collections/view-person-listing.ftl" as persons />
 
@@ -22,15 +22,15 @@
 <#macro displayTagListing listing>
   
   <div class="tagged-resources vrtx-resources">
-    <#if resourceType?exists>
+    <#if resourceType??>
       <#if resourceType = 'person'>
         <@persons.displayPersons listing />
       <#elseif resourceType = 'structured-project'>
         <@projects.displayProjects listing />
+      <#elseif resourceType = 'event' || resourceType = 'structured-event'>
+        <@events.displayEvents
+          collection=collection hideNumberOfComments=hideNumberOfComments displayMoreURLs=true considerDisplayType=false />
       <#else>
-        
-        <#-- TODO handle article and event listings -->
-        
         <@displayCommonTagListing listing />
       </#if>
     <#else>
@@ -39,11 +39,11 @@
   </div>
   
   <div class="vrtx-paging-feed-wrapper">
-  	<#if pageThroughUrls?exists >
+  	<#if pageThroughUrls?? >
 		<@viewutils.displayPageThroughUrls pageThroughUrls page />
 	</#if>
     
-    <#if alternativeRepresentations?exists>
+    <#if alternativeRepresentations??>
       <#list alternativeRepresentations as alt>
         <#if alt.contentType = 'application/atom+xml'>
           <div class="vrtx-feed-link">

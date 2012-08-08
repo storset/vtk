@@ -30,28 +30,28 @@
  */
 package org.vortikal.repository.systemjob;
 
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Map.Entry;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.SystemChangeContext;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
-import org.vortikal.util.io.StreamUtil;
 
-public class VideoPosterImageJob extends AbstractExternalVortexMediaServiceJob {
+public class MediaMetadataJob extends AbstractExternalVortexMediaServiceJob {
 
-    private PropertyTypeDefinition imagePropDef;
+    private PropertyTypeDefinition mediaMetadataStatusPropDef;
+    private GenerateMediaInfo generateMediaInfo;
 
     @Required
-    public void setImagePropDef(PropertyTypeDefinition imagePropDef) {
-        this.imagePropDef = imagePropDef;
+    public void setMediaMetadataStatusPropDef(PropertyTypeDefinition mediaMetadataStatusPropDef) {
+        this.mediaMetadataStatusPropDef = mediaMetadataStatusPropDef;
+    }
+
+    @Required
+    public void setGenerateMediaInfo(GenerateMediaInfo generateMediaInfo) {
+        this.generateMediaInfo = generateMediaInfo;
     }
 
     @Override
@@ -86,28 +86,18 @@ public class VideoPosterImageJob extends AbstractExternalVortexMediaServiceJob {
                     }
                     Resource resource = repository.retrieve(token, path, false);
 
-                    boolean first = true;
-                    String parameters = "";
-                    for (Entry e : serviceParameters.entrySet()) {
-                        if (first)
-                            first = false;
-                        else
-                            parameters += "&";
-                        parameters += e.getKey() + "=" + e.getValue();
+                    if (resource.getResourceType().equals("image")) {
+                        generateMediaInfo.generateImageMetadata(path, resource);
+                    } else if (resource.getResourceType().equals("video")) {
+                        generateMediaInfo.generateVideoInfo(path, resource);
+                    } else if (resource.getResourceType().equals("audio")) {
+                        generateMediaInfo.generateAudioMetadata(path, resource);
+                    } else {
+                        // TODO: Change mediaMetadataStatus to something and stop remove?
                     }
 
-                    URL url = new URL(service + repositoryDataDirectory + path.toString() + "?" + parameters);
-                    System.out.println("\n\n##\n" + url.toString() + "\n##\n\n");
-                    URLConnection conn = url.openConnection();
-
-                    Property property = imagePropDef.createProperty();
-
-                    property.setBinaryValue(StreamUtil.readInputStream(conn.getInputStream()), conn.getContentType());
-                    resource.addProperty(property);
-
                     if (resource.getLock() == null) {
-                        // TODO:
-                        // resource.removeProperty(thumbnailStatusPropDef);
+                        resource.removeProperty(mediaMetadataStatusPropDef);
                         repository.store(token, resource);
                         logger.info("Created thumbnail for " + resource);
                     } else {

@@ -75,5 +75,6 @@
   <import resource="mixins/additional-content-mixin.xml" />
   <import resource="mixins/ssi.xml" />
   <import resource="mixins/visual-profile.xml" />
+  <import resource="mixins/media-mixin.xml" />
 
 </beans>

@@ -2,15 +2,15 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-  <!-- Video poster image periodic job -->
-  <bean id="repository.systemjob.videoPosterImage" class="org.vortikal.repository.systemjob.VideoPosterImageJob" parent="repository.systemjob">
+  <!-- Media periodic job -->
+  <bean id="repository.systemjob.mediaMetadataJob" class="org.vortikal.repository.systemjob.MediaMetadataJob" parent="repository.systemjob" depends-on="resourceTypeTree">
     <property name="triggerExpression" value="${repository.publisher.interval}" />
-    <property name="id" value="video-poster-image-generator" />
+    <property name="id" value="media-metadata-generator" />
     <property name="pathSelector">
       <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" parent="repository.systemjob.indexPathSelector">
         <property name="queryString">
           <value>
-            type IN video
+            (type IN video OR type IN audio OR type IN image) AND media-metadata-status = GENERATE
           </value>
         </property>
       </bean>
@@ -20,7 +20,8 @@
         <value>thumbnail</value>
       </list>
     </property>
-    <property name="imagePropDef" ref="generatedPosterImagePropDef" />
+    <property name="mediaMetadataStatusPropDef" ref="mediaMetadataStatusPropDef" />
+    <property name="generateMediaInfo" ref="repository.systemjob.generateMediaInfo" />
     <property name="service" value="http://localhost:6666" />
     <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />
     <property name="serviceParameters">
@@ -29,6 +30,75 @@
         <entry key="filetype" value="video" />
         <entry key="time" value="1" />
       </map>
+    </property>
+  </bean>
+  
+  <bean id="repository.systemjob.generateMediaInfo" class="org.vortikal.repository.systemjob.GenerateMediaInfo">
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="service" value="http://localhost:6666" />
+    <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />
+    <property name="thumbnailPropDef" ref="thumbnailPropDef" />
+    <property name="posterImagePropDef" ref="generatedPosterImagePropDef" />
+    <!-- Image -->
+    <property name="imageThumbnailParameters">
+      <map>
+        <entry key="action" value="thumbnail" />
+        <entry key="filetype" value="image" />
+        <entry key="width" value="${resourcetype.image.thumbnail.width}" />
+      </map>
+    </property>
+    <property name="imageMetadataParameters">
+      <map>
+        <entry key="action" value="metadata" />
+        <entry key="filetype" value="image" />
+      </map>
+    </property>
+    <property name="imageMetadataAffectedPropDefPointers">
+      <list>
+        <value>pixelHeight</value>
+        <value>pixelWidth</value>
+      </list>
+    </property>
+    <!-- Video -->
+    <property name="videoThumbnailParameters">
+      <map>
+        <entry key="action" value="thumbnail" />
+        <entry key="filetype" value="video" />
+        <entry key="width" value="${resourcetype.image.thumbnail.width}" />
+        <entry key="time" value="1" />
+      </map>
+    </property>
+    <property name="videoMetadataParameters">
+      <map>
+        <entry key="action" value="metadata" />
+        <entry key="filetype" value="video" />
+      </map>
+    </property>
+    <property name="videoPosterImageParameters">
+      <map>
+        <entry key="action" value="thumbnail" />
+        <entry key="filetype" value="video" />
+        <entry key="time" value="1" />
+      </map>
+    </property>
+    <property name="videoMetadataAffectedPropDefPointers">
+      <list>
+        <value>duration</value>
+        <value>pixelHeight</value>
+        <value>pixelWidth</value>
+      </list>
+    </property>
+    <!-- Audio -->
+    <property name="audioMetadataParameters">
+      <map>
+        <entry key="action" value="metadata" />
+        <entry key="filetype" value="audio" />
+      </map>
+    </property>
+    <property name="audioMetadataAffectedPropDefPointers">
+      <list>
+        <value>duration</value>
+      </list>
     </property>
   </bean>
 

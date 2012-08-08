@@ -23,6 +23,11 @@
         <ref bean="videoHtmlDescriptionPropDef" />
       </list>
     </property>
+    <property name="mixinTypeDefinitions">
+      <list>
+        <ref bean="mediaMixinResourceTypeDef" />
+      </list>
+    </property>
   </bean>
   
   <bean id="contentTypeMatchesVideo" class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
@@ -167,7 +172,7 @@
 
   <bean id="generatedPosterImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
-    <property name="name" value="thumbnail" />
+    <property name="name" value="generated-poster-image" />
     <property name="type" value="BINARY" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
@@ -183,7 +188,7 @@
   <bean id="videoHeightPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="pixelHeight" />
     <property name="type" value="INT" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <property name="propertyEvaluator" ref="videoHeightEvaluator" />
   </bean>
@@ -191,7 +196,7 @@
   <bean id="videoWidthPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="pixelWidth" />
     <property name="type" value="INT" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <property name="propertyEvaluator" ref="videoWidthEvaluator" />
   </bean>

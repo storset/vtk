@@ -32,7 +32,7 @@
         <property name="limit" value="10" />
         <property name="queryString">
           <value>
-            type IN image AND media-system-job-status = GENERATE_THUMBNAIL
+            type IN image AND media-metadata-status = GENERATE
           </value>
         </property>
       </bean>
@@ -40,7 +40,7 @@
     <property name="affectedPropDefPointers">
       <list>
         <value>thumbnail</value>
-        <value>media-system-job-status</value>
+        <value>media-metadata-status</value>
       </list>
     </property>
     <property name="thumbnailPropDef" ref="thumbnailPropDef" />

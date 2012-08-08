@@ -18,10 +18,13 @@
       <list>
         <ref bean="imageHeightPropDef" />
         <ref bean="imageWidthPropDef" />
-        <ref bean="thumbnailPropDef" />
         <ref bean="photographerPropDef"/>
         <ref bean="imageHtmlDescriptionPropDef" />
-        <ref bean="thumbnailStatusPropDef" />
+      </list>
+    </property>
+    <property name="mixinTypeDefinitions">
+      <list>
+        <ref bean="mediaMixinResourceTypeDef" />
       </list>
     </property>
   </bean>
@@ -90,7 +93,7 @@
   <bean id="imageHeightPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="pixelHeight" />
     <property name="type" value="INT" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <property name="propertyEvaluator" ref="imageHeightEvaluator" />
   </bean>
@@ -102,20 +105,13 @@
   <bean id="imageWidthPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="pixelWidth" />
     <property name="type" value="INT" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <property name="propertyEvaluator" ref="imageWidthEvaluator" />
   </bean>
 
   <bean id="imageWidthEvaluator" class="org.vortikal.repository.resourcetype.property.ImageDimensionEvaluator">
     <property name="evaluateHeight" value="false" />
-  </bean>
-
-  <bean id="thumbnailPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="thumbnail" />
-    <property name="type" value="BINARY" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
   </bean>
 
   <bean id="thumbnailEvaluator" class="org.vortikal.repository.resourcetype.property.ThumbnailEvaluator">
@@ -143,15 +139,6 @@
     <property name="resourceTypeDefinition" ref="imageResourceTypeDefinition" />
   </bean>
 
-  <bean id="thumbnailStatusPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="media-system-job-status" />
-    <property name="type" value="STRING" />
-    <property name="multiple" value="false" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-    <property name="propertyEvaluator" ref="thumbnailStatusEvaluator" />
-  </bean>
-
-  <bean id="thumbnailStatusEvaluator" class="org.vortikal.repository.resourcetype.property.ThumbnailStatusPropertyEvaluator"></bean>
+  <bean id="mediaMetadataStatusEvaluator" class="org.vortikal.repository.resourcetype.property.MediaMetadataStatusPropertyEvaluator"></bean>
 
 </beans>

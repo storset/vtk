@@ -6,7 +6,7 @@ import org.vortikal.repository.PropertyEvaluationContext.Type;
 import org.vortikal.repository.resourcetype.LatePropertyEvaluator;
 import org.vortikal.repository.resourcetype.Value;
 
-public class ThumbnailStatusPropertyEvaluator implements LatePropertyEvaluator {
+public class MediaMetadataStatusPropertyEvaluator implements LatePropertyEvaluator {
 
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {
@@ -16,7 +16,7 @@ public class ThumbnailStatusPropertyEvaluator implements LatePropertyEvaluator {
             return true;
         }
 
-        property.setValue(new Value("GENERATE_THUMBNAIL", org.vortikal.repository.resourcetype.PropertyType.Type.STRING));
+        property.setValue(new Value("GENERATE", org.vortikal.repository.resourcetype.PropertyType.Type.STRING));
 
         return true;
     }

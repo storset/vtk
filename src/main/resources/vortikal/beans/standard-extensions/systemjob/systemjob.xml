@@ -61,7 +61,7 @@
         <value>pjpeg</value><!-- Microsoft -->
       </set>
     </property>
-    <property name="thumbnailStatusPropDef" ref="thumbnailStatusPropDef" />
+    <property name="thumbnailStatusPropDef" ref="mediaMetadataStatusPropDef" />
   </bean>
 
 

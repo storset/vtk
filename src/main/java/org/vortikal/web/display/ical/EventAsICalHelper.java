@@ -1,4 +1,4 @@
-/* Copyright (c) 2008, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,61 +30,58 @@
  */
 package org.vortikal.web.display.ical;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
-import org.vortikal.repository.Repository;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.HtmlValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.util.net.NetUtils;
-import org.vortikal.web.RequestContext;
 
-public class ICalController implements Controller {
+public final class EventAsICalHelper {
 
     private PropertyTypeDefinition startDatePropDef;
     private PropertyTypeDefinition endDatePropDef;
     private PropertyTypeDefinition locationPropDef;
     private PropertyTypeDefinition introductionPropDef;
+    private PropertyTypeDefinition titlePropDef;
 
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public String getAsICal(List<PropertySet> events) {
 
-        RequestContext requestContext = RequestContext.getRequestContext();
-        Repository repository = requestContext.getRepository();
-        String token = requestContext.getSecurityToken();
-        Path uri = requestContext.getResourceURI();
-
-        Resource event = repository.retrieve(token, uri, true);
-
-        String iCal = createICal(event);
-        if (iCal == null) {
+        if (events == null || events.size() < 1) {
             return null;
         }
 
-        response.setContentType("text/calendar;charset=utf-8");
-        String iCalfileName = getICalFileName(event);
-        response.setHeader("Content-Disposition", "filename=" + iCalfileName + ".ics");
-        ServletOutputStream out = response.getOutputStream();
-        out.print(iCal);
-        out.close();
+        StringBuilder ical = new StringBuilder();
+        ical.append("BEGIN:VCALENDAR\n");
+        ical.append("VERSION:2.0\n");
+        ical.append("METHOD:PUBLISH\n");
+        ical.append("PRODID:-//UiO//Vortikal//NONSGML v1.0//NO\n");
 
-        return null;
+        for (PropertySet event : events) {
+            String iCalEntry = this.createICalEntryFromEvent(event);
+            ical.append(iCalEntry);
+        }
+
+        ical.append("END:VCALENDAR");
+
+        return ical.toString();
     }
 
-    private String getICalFileName(Resource event) {
+    // XXX Better naming?
+    public String getICalFileName(Resource event) {
         String name = event.getName();
         if (name.contains(".")) {
             name = name.substring(0, name.indexOf("."));
@@ -92,7 +89,15 @@ public class ICalController implements Controller {
         return name;
     }
 
-    private String createICal(Resource event) {
+    public void printResponse(HttpServletResponse response, String iCal, String iCalfileName) throws IOException {
+        response.setContentType("text/calendar;charset=utf-8");
+        response.setHeader("Content-Disposition", "filename=" + iCalfileName + ".ics");
+        ServletOutputStream out = response.getOutputStream();
+        out.print(iCal);
+        out.close();
+    }
+
+    private String createICalEntryFromEvent(PropertySet event) {
 
         // Spec: http://www.ietf.org/rfc/rfc2445.txt
         // PRODID (4.7.3) & UID (4.8.4.7) added as recommended by spec. DTEND is
@@ -100,47 +105,43 @@ public class ICalController implements Controller {
         // If DTEND not present, DTSTART will count for both start & end, as
         // stated in spec (4.6.1).
 
-        Property startDate = getProperty(event, startDatePropDef);
         // We don't create anything unless we have the startdate
+        Property startDate = this.getProperty(event, this.startDatePropDef);
         if (startDate == null) {
             return null;
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("BEGIN:VCALENDAR\n");
-        sb.append("VERSION:2.0\n");
-        sb.append("METHOD:PUBLISH\n");
-        sb.append("PRODID:-//UiO//Vortikal//NONSGML v1.0//NO\n");
-        sb.append("BEGIN:VEVENT\n");
-        sb.append("DTSTAMP:" + getDtstamp() + "\n");
-        sb.append("UID:" + getUiD(Calendar.getInstance().getTime()) + "\n");
-        sb.append("DTSTART:" + getICalDate(startDate.getDateValue()) + "Z\n");
+        StringBuilder iCalEntry = new StringBuilder();
+        iCalEntry.append("BEGIN:VEVENT\n");
+        iCalEntry.append("DTSTAMP:" + this.getDtstamp() + "\n");
+        iCalEntry.append("UID:" + this.getUiD(Calendar.getInstance().getTime()) + "\n");
+        iCalEntry.append("DTSTART:" + this.getICalDate(startDate.getDateValue()) + "Z\n");
 
-        Property endDate = getProperty(event, endDatePropDef);
+        Property endDate = this.getProperty(event, this.endDatePropDef);
         if (endDate != null) {
-            sb.append("DTEND:" + getICalDate(endDate.getDateValue()) + "Z\n");
+            iCalEntry.append("DTEND:" + this.getICalDate(endDate.getDateValue()) + "Z\n");
         }
 
-        Property location = getProperty(event, locationPropDef);
+        Property location = this.getProperty(event, this.locationPropDef);
         if (location != null) {
-            sb.append("LOCATION:" + location.getStringValue() + "\n");
+            iCalEntry.append("LOCATION:" + location.getStringValue() + "\n");
         }
 
-        Property description = getProperty(event, introductionPropDef);
+        Property description = this.getProperty(event, this.introductionPropDef);
         if (description != null && StringUtils.isNotBlank(description.getStringValue())) {
-            sb.append("DESCRIPTION:" + getDescription(description) + "\n");
+            iCalEntry.append("DESCRIPTION:" + this.getDescription(description) + "\n");
         }
 
-        sb.append("SUMMARY:" + event.getTitle() + "\n");
-        sb.append("END:VEVENT\n");
-        sb.append("END:VCALENDAR");
-        return sb.toString();
+        String summary = event.getProperty(this.titlePropDef).getStringValue();
+        iCalEntry.append("SUMMARY:" + summary + "\n");
+        iCalEntry.append("END:VEVENT\n");
+        return iCalEntry.toString();
     }
 
-    private Property getProperty(Resource event, PropertyTypeDefinition propDef) {
-        Property prop = event.getProperty(propDef);
+    private Property getProperty(PropertySet event, PropertyTypeDefinition propDef) {
+        Property prop = event.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propDef.getName());
         if (prop == null) {
-            prop = event.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, propDef.getName());
+            prop = event.getProperty(propDef);
         }
         return prop;
     }
@@ -191,6 +192,11 @@ public class ICalController implements Controller {
     @Required
     public void setIntroductionPropDef(PropertyTypeDefinition introductionPropDef) {
         this.introductionPropDef = introductionPropDef;
+    }
+
+    @Required
+    public void setTitlePropDef(PropertyTypeDefinition titlePropDef) {
+        this.titlePropDef = titlePropDef;
     }
 
 }

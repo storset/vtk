@@ -219,7 +219,10 @@
 	            <div class="vrtx-feed-link">
 	              <a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
 	            </div>
-	            <#break />
+	          <#elseif alt.contentType = 'text/calendar'>
+	            <div class="vrtx-event-listing-ical-link">
+                <a id="vrtx-ical-link" href="${alt.url?html}"><@vrtx.msg code="eventListing.ical.add" /></a>
+              </div>
 	          </#if>
 	        </#list>
 	    </#if>

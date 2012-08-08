@@ -25,12 +25,13 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.PropertySetImpl;
+import org.vortikal.repository.RepositoryResourceSetUpHelper;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceImpl;
 import org.vortikal.repository.resourcetype.DateValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyType.Type;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.StringValueFormatter;
 import org.vortikal.testing.mocktypes.MockResourceTypeTree;
 import org.vortikal.web.AbstractControllerTest;
@@ -56,12 +57,12 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
         controller.setAbdera(new Abdera());
         controller.setViewService(mockViewService);
         controller.setSearchComponent(new MockSearchComponent());
-        controller.setCreationTimePropDef(getPropDef(Namespace.DEFAULT_NAMESPACE,
-                PropertyType.CREATIONTIME_PROP_NAME, Type.HTML, new DateValueFormatter()));
-        controller.setTitlePropDef(getPropDef(Namespace.DEFAULT_NAMESPACE,
+        controller.setCreationTimePropDef(RepositoryResourceSetUpHelper.getPropertyTypeDefinition(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME, Type.HTML, new DateValueFormatter()));
+        controller.setTitlePropDef(RepositoryResourceSetUpHelper.getPropertyTypeDefinition(Namespace.DEFAULT_NAMESPACE,
                 PropertyType.TITLE_PROP_NAME, Type.STRING, new StringValueFormatter()));
-        controller.setLastModifiedPropDef(getPropDef(Namespace.DEFAULT_NAMESPACE,
-                PropertyType.LASTMODIFIED_PROP_NAME, Type.DATE, new DateValueFormatter()));
+        controller.setLastModifiedPropDef(RepositoryResourceSetUpHelper.getPropertyTypeDefinition(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME, Type.DATE, new DateValueFormatter()));
         controller.setResourceTypeTree(new MockResourceTypeTree());
 
     }
@@ -115,8 +116,6 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
             }
         });
 
-        
-        
         ModelAndView result = controller.handleRequest(mockRequest, mockResponse);
 
         assertNull("An unexpected model&view was returned", result);
@@ -161,18 +160,18 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
     private Resource getCollection() {
         ResourceImpl collection = new ResourceImpl(requestPath);
 
-        PropertyTypeDefinitionImpl propDef = getPropDef(Namespace.DEFAULT_NAMESPACE, PropertyType.TITLE_PROP_NAME,
-                Type.STRING, new StringValueFormatter());
+        PropertyTypeDefinition propDef = RepositoryResourceSetUpHelper.getPropertyTypeDefinition(
+                Namespace.DEFAULT_NAMESPACE, PropertyType.TITLE_PROP_NAME, Type.STRING, new StringValueFormatter());
         Property title = propDef.createProperty("feedtest");
         collection.addProperty(title);
 
-        propDef = getPropDef(Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME, Type.DATE,
-                new DateValueFormatter());
+        propDef = RepositoryResourceSetUpHelper.getPropertyTypeDefinition(Namespace.DEFAULT_NAMESPACE,
+                PropertyType.CREATIONTIME_PROP_NAME, Type.DATE, new DateValueFormatter());
         Property creationTimeProp = propDef.createProperty(Calendar.getInstance().getTime());
         collection.addProperty(creationTimeProp);
-        
-        propDef = getPropDef(Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME, Type.DATE,
-                new DateValueFormatter());
+
+        propDef = RepositoryResourceSetUpHelper.getPropertyTypeDefinition(Namespace.DEFAULT_NAMESPACE,
+                PropertyType.LASTMODIFIED_PROP_NAME, Type.DATE, new DateValueFormatter());
         Property lastModifiedProp = propDef.createProperty(Calendar.getInstance().getTime());
         collection.addProperty(lastModifiedProp);
 
@@ -213,16 +212,18 @@ public class CollectionListingAsAtomFeedTest extends AbstractControllerTest {
                 }
             });
 
-            PropertyTypeDefinitionImpl creationTimePropDef = getPropDef(Namespace.DEFAULT_NAMESPACE,
-                    PropertyType.CREATIONTIME_PROP_NAME, Type.DATE, new DateValueFormatter());
+            PropertyTypeDefinition creationTimePropDef = RepositoryResourceSetUpHelper.getPropertyTypeDefinition(
+                    Namespace.DEFAULT_NAMESPACE, PropertyType.CREATIONTIME_PROP_NAME, Type.DATE,
+                    new DateValueFormatter());
             propSet.addProperty(creationTimePropDef.createProperty(Calendar.getInstance().getTime()));
 
-            PropertyTypeDefinitionImpl titlePropDef = getPropDef(Namespace.DEFAULT_NAMESPACE,
-                    PropertyType.TITLE_PROP_NAME, Type.STRING, new StringValueFormatter());
+            PropertyTypeDefinition titlePropDef = RepositoryResourceSetUpHelper.getPropertyTypeDefinition(
+                    Namespace.DEFAULT_NAMESPACE, PropertyType.TITLE_PROP_NAME, Type.STRING, new StringValueFormatter());
             propSet.addProperty(titlePropDef.createProperty(uri));
 
-            PropertyTypeDefinitionImpl lastModifiedPropDef = getPropDef(Namespace.DEFAULT_NAMESPACE,
-                    PropertyType.LASTMODIFIED_PROP_NAME, Type.DATE, new DateValueFormatter());
+            PropertyTypeDefinition lastModifiedPropDef = RepositoryResourceSetUpHelper.getPropertyTypeDefinition(
+                    Namespace.DEFAULT_NAMESPACE, PropertyType.LASTMODIFIED_PROP_NAME, Type.DATE,
+                    new DateValueFormatter());
             propSet.addProperty(lastModifiedPropDef.createProperty(Calendar.getInstance().getTime()));
 
             return propSet;

@@ -36,6 +36,7 @@
     <property name="alternativeRepresentations">
       <map>
         <entry key="application/atom+xml" value-ref="eventListing.atomService" />
+        <entry key="text/calendar" value-ref="eventListing.iCalService" />
       </map>
     </property>
     <property name="includeRequestParametersInAlternativeRepresentation" value="true" />
@@ -49,7 +50,8 @@
     <property name="daysAhead" value="${event.listing.days.ahead}" />
   </bean>
 
-  <bean id="eventListing.atomHandler" class="org.vortikal.web.display.collection.event.EventListingAsFeedController" parent="viewAsFeedHandler">
+  <bean id="eventListing.atomHandler" class="org.vortikal.web.display.collection.event.EventListingAsFeedController"
+    parent="viewAsFeedHandler">
     <property name="helper" ref="eventListingHelper" />
     <property name="searcher" ref="eventListing.eventListingSearcher" />
     <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />

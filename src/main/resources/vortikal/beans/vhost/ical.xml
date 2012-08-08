@@ -2,7 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-  <bean id="icalService" class="org.vortikal.web.service.ServiceImpl">
+  <!-- ## ICal of single event ## -->
+  <bean id="event.iCalService" class="org.vortikal.web.service.ServiceImpl">
   <property name="parent" ref="webService" />
     <property name="order" value="-999" />
     <property name="assertions">
@@ -12,7 +13,6 @@
             <list>
               <ref bean="isEventAssertion" />
               <ref bean="resourceTypeIsStructuredEvent" />
-              <ref bean="resourceIsEventListing" />
             </list>
           </property>
         </bean>
@@ -22,18 +22,44 @@
         </bean>
       </list>
     </property>
-    <property name="handler" ref="icalHandler" />
+    <property name="handler" ref="event.iCalHandler" />
   </bean>
   
-  <bean id="icalHandler" class="org.vortikal.web.display.ical.ICalController">
-    <property name="startDatePropDef" ref="startDatePropDef" />
-    <property name="endDatePropDef" ref="endDatePropDef" />
-    <property name="locationPropDef" ref="locationPropDef" />
-    <property name="introductionPropDef" ref="introductionPropDef" />
+  <bean id="event.iCalHandler" class="org.vortikal.web.display.ical.EventAsICalController">
+    <property name="iCalHelper" ref="event.iCalHelper" />
+  </bean>
+
+  <!-- ## ICal of entire event listing, contains only upcoming events from time of import ## -->
+  <bean id="eventListing.iCalService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="webService" />
+    <property name="order" value="-999" />
+    <property name="assertions">
+      <list>
+        <ref bean="resourceIsEventListing" />
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="ical" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="eventListing.iCalHandler" />
+  </bean>
+
+  <bean id="eventListing.iCalHandler" class="org.vortikal.web.display.ical.EventListingAsICalController">
+    <property name="searcher" ref="eventListing.eventListingSearcher" />
+    <property name="iCalHelper" ref="event.iCalHelper" />
   </bean>
 
   <bean id="resourceTypeIsStructuredEvent" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
     <property name="resourceType" value="structured-event" />
+  </bean>
+
+  <bean id="event.iCalHelper" class="org.vortikal.web.display.ical.EventAsICalHelper">
+    <property name="startDatePropDef" ref="startDatePropDef" />
+    <property name="endDatePropDef" ref="endDatePropDef" />
+    <property name="locationPropDef" ref="locationPropDef" />
+    <property name="introductionPropDef" ref="introductionPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
   </bean>
 
 </beans>

@@ -95,7 +95,6 @@ resourcetype organizational-unit {
               </span>
             [endif]
             
-          
             [if (phone != null && phone != "") || (fax != null && fax != "")]
               <span class="vrtx-organizational-unit-phone-fax">
                 [if phone != null && phone != ""]

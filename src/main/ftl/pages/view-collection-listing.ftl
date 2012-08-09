@@ -221,8 +221,8 @@
 	            </div>
 	          <#elseif alt.contentType = 'text/calendar'>
 	            <div class="vrtx-event-listing-ical-link">
-                <a id="vrtx-ical-link" href="${alt.url?html}"><@vrtx.msg code="eventListing.ical.add" /></a>
-              </div>
+                  <a id="vrtx-ical-link" href="${alt.url?html}"><@vrtx.msg code="eventListing.ical.add" /></a>
+                </div>
 	          </#if>
 	        </#list>
 	    </#if>

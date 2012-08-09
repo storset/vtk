@@ -131,7 +131,7 @@ public class ArticleListingController extends AbstractCollectionListingControlle
         model.put(MODEL_KEY_SEARCH_COMPONENTS, results);
         model.put(MODEL_KEY_PAGE, userDisplayPage);
         model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
-        model.put("hideNumberOfComments", getHideNumberOfComments(collection));
+        model.put(MODEL_KEY_HIDE_NUMBER_OF_COMMENTS, getHideNumberOfComments(collection));
         model.put("listingView", getListingView(collection));
     }
     

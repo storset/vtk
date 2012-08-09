@@ -218,9 +218,9 @@
              <div id="vrtx-subscribe">
                <a id="vrtx-subscribe-link" href="javascript:void(0);"><@vrtx.msg code="eventListing.subscribe" /></a>
                <div id="vrtx-subscribe-wrapper">
-                 <div class="vrtx-subscribe-inner-wrapper">
-                    <div class="vrtx-subscribe-top">
-                      <div class="vrtx-subscribe-title"><@vrtx.msg code="eventListing.subscribe" /></div>
+                 <div id="vrtx-subscribe-inner-wrapper">
+                    <div id="vrtx-subscribe-top">
+                      <div id="vrtx-subscribe-title"><@vrtx.msg code="eventListing.subscribe" /></div>
                       <span><a id="vrtx-close-subscribe" href="javascript:void(0);"><@vrtx.msg code="decorating.shareAtComponent.close" /></a></span>
                     </div>
                     <ul>

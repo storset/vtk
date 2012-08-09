@@ -214,17 +214,36 @@
 		</#if>
         <#-- XXX: display first link with content type = atom: -->
         <#if alternativeRepresentations?exists && !(hideAlternativeRepresentation?exists && hideAlternativeRepresentation)>
-	        <#list alternativeRepresentations as alt>
-	          <#if alt.contentType = 'application/atom+xml'>
-	            <div class="vrtx-feed-link">
-	              <a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
-	            </div>
-	          <#elseif alt.contentType = 'text/calendar'>
-	            <div class="vrtx-event-listing-ical-link">
-                  <a id="vrtx-ical-link" href="${alt.url?html}"><@vrtx.msg code="eventListing.ical.add" /></a>
+           <#if (alternativeRepresentations?size > 1)>
+             <div id="vrtx-subscribe">
+               <a id="vrtx-subscribe-link" href="javascript:void(0);"><@vrtx.msg code="eventListing.subscribe" /></a>
+               <div id="vrtx-subscribe-wrapper">
+                 <div class="vrtx-subscribe-inner-wrapper">
+                    <div class="vrtx-subscribe-top">
+                      <div class="vrtx-subscribe-title"><@vrtx.msg code="eventListing.subscribe" /></div>
+                      <span><a id="vrtx-close-subscribe" href="javascript:void(0);"><@vrtx.msg code="decorating.shareAtComponent.close" /></a></span>
+                    </div>
+                    <ul>
+                      <#list alternativeRepresentations as alt>
+	                    <#if alt.contentType = 'application/atom+xml'>
+                          <li><a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a></li>
+	                    <#elseif alt.contentType = 'text/calendar'>
+                          <li><a id="vrtx-ical-link" href="${alt.url?html}"><@vrtx.msg code="eventListing.ical.add" /></a></li>
+	                    </#if>
+	                  </#list>
+                    </ul>
+                  </div>
                 </div>
-	          </#if>
-	        </#list>
+              </div>
+	       <#else>
+	         <#list alternativeRepresentations as alt>
+	           <#if alt.contentType = 'application/atom+xml'>
+	             <div class="vrtx-feed-link">
+	               <a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
+	             </div>
+	           </#if> 
+	         </#list>      
+	       </#if>
 	    </#if>
      </div>
      <#if collection.resourceType != 'image-listing'

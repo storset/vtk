@@ -265,7 +265,7 @@
     <property name="url" value="layouts/share-at.ftl" />
     <property name="attributes">
       <map>
-        <entry key="url" value="${jsBaseURL}/social/share.js" />
+        <entry key="url" value="${jsBaseURL}/share-subscribe.js" />
       </map>
     </property>
     <property name="referenceDataProviders">

@@ -207,7 +207,32 @@
      </#if>
      <@projects.projectListingViewServiceURL />
      <@master.masterListingViewServiceURL />
-	 <div class="vrtx-paging-feed-wrapper">
+     <#if !isEventCalendarListing>
+	   <@pagingSubscribeServices />
+	 </#if>
+     <#if (collection.resourceType != 'image-listing'
+       && collection.resourceType != 'person-listing'
+       && !isEventCalendarListing
+       && !isBlogListing)>
+       <#if additionalContent?has_content>
+           </div><#-- end vrtx-main-content -->
+           <div id="vrtx-additional-content">
+             <div id="vrtx-related-content"> 
+               <@vrtx.invokeComponentRefs additionalContent />
+             </div>
+           </div>
+         </div><#-- end vrtx-content -->
+       </#if>
+     </#if>
+     <#if isEventCalendarListing>
+       </div>
+     </#if>
+    <!--startindex-->
+  </body>
+</html>
+
+<#macro pagingSubscribeServices>
+  <div class="vrtx-paging-feed-wrapper">
 		<#-- Previous/next URLs: -->
 		<#if pageThroughUrls?exists >
 			<@viewutils.displayPageThroughUrls pageThroughUrls page />
@@ -245,23 +270,6 @@
 	         </#list>      
 	       </#if>
 	    </#if>
-     </div>
-     <#if collection.resourceType != 'image-listing'
-          && collection.resourceType != 'person-listing' && !isEventCalendarListing && !isBlogListing>
-       <#if additionalContent?has_content>
-           </div><#-- end vrtx-main-content -->
-           <div id="vrtx-additional-content">
-             <div id="vrtx-related-content"> 
-               <@vrtx.invokeComponentRefs additionalContent />
-             </div>
-           </div>
-         </div><#-- end vrtx-content -->
-       </#if>
-     </#if>
-     <#if isEventCalendarListing>
-       </div>
-     </#if>
-    <!--startindex-->
-  </body>
-</html>
+  </div>
+</#macro>
 

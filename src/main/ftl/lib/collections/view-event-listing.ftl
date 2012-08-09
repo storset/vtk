@@ -1,6 +1,7 @@
 <#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
+<#import "/pages/view-collection-listing.ftl" as collutils />
 
 <#macro displayEvents collection hideNumberOfComments=false displayMoreURLs=false considerDisplayType=true >
 
@@ -146,6 +147,8 @@
     </div>
 
     </#if>
+    
+    <@collutils.pagingSubscribeServices />
   </div>
 
   <div id="vrtx-additional-content">

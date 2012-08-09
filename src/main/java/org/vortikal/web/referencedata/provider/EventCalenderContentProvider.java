@@ -109,7 +109,7 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
             PropertyTypeDefinition endDatePropDef = this.resourceTypeTree
                     .getPropertyDefinitionByPointer(this.endDatePropDefPointer);
 
-            Calendar cal = this.helper.getCurentMonth();
+            Calendar cal = this.helper.getCurrentMonth();
 
             String dateString = request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE);
             if (dateString != null) {

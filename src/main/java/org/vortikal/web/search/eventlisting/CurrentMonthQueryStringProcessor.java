@@ -50,7 +50,7 @@ public class CurrentMonthQueryStringProcessor extends ParameterizedQueryStringPr
 
         String query = this.queryString;
         Date date = this.helper.getSpecificSearchDate(request);
-        Calendar currentMonth = this.helper.getCurentMonth();
+        Calendar currentMonth = this.helper.getCurrentMonth();
         if (date != null) {
             currentMonth.setTime(date);
             currentMonth.set(Calendar.DAY_OF_MONTH, 1);

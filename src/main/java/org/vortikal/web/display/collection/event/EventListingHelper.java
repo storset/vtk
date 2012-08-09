@@ -70,6 +70,7 @@ public final class EventListingHelper implements InitializingBean {
     public static final String REQUEST_PARAMETER_VIEW = "view";
     public static final String VIEW_TYPE_ALL_UPCOMING = "allupcoming";
     public static final String VIEW_TYPE_ALL_PREVIOUS = "allprevious";
+    public static final String DISPLAY_LISTING_ICAL_LINK = "displayEventListingICalLink";
 
     public enum SpecificDateSearchType {
         Day, Month, Year;
@@ -78,7 +79,7 @@ public final class EventListingHelper implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         this.dateformats = new HashMap<Pattern, DateTimeFormatter>();
-        
+
         this.dateformats.put(DATE_PATTERN, DateTimeFormat.forPattern("yyyy-MM-dd"));
         this.dateformats.put(MONTH_PATTERN, DateTimeFormat.forPattern("yyyy-MM"));
         this.dateformats.put(YEAR_PATTERN, DateTimeFormat.forPattern("yyyy"));
@@ -166,8 +167,7 @@ public final class EventListingHelper implements InitializingBean {
         return null;
     }
 
-    private String getRequestedDateAsLocalizedString(Resource collection,
-            SpecificDateSearchType searchType, Date date) {
+    private String getRequestedDateAsLocalizedString(Resource collection, SpecificDateSearchType searchType, Date date) {
         Calendar requestedCal = Calendar.getInstance();
         requestedCal.setTime(date);
         if (searchType != SpecificDateSearchType.Year) {
@@ -180,8 +180,8 @@ public final class EventListingHelper implements InitializingBean {
         }
         return String.valueOf(requestedCal.get(Calendar.YEAR));
     }
-    
-    public Calendar getCurentMonth() {
+
+    public Calendar getCurrentMonth() {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_MONTH, 1);
         cal.set(Calendar.HOUR_OF_DAY, 0);

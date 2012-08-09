@@ -77,6 +77,10 @@ public class EventCalendarListingController extends EventListingController {
         model.put("tomorrow", tomorrow.getTime());
         model.put("today", new Date());
 
+        if (groupedByDayEvents.size() > 0 || furtherUpcoming.getTotalHits() > 0) {
+            model.put(EventListingHelper.DISPLAY_LISTING_ICAL_LINK, true);
+        }
+
     }
 
     @Required

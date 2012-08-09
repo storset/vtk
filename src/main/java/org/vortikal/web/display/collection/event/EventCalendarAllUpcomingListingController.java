@@ -42,7 +42,12 @@ public class EventCalendarAllUpcomingListingController extends EventCalendarAllL
     @Override
     protected Listing getSearchResult(HttpServletRequest request, Resource collection, Map<String, Object> model,
             int page, int pageLimit) throws Exception {
-       return this.searcher.searchUpcoming(request, collection, page, pageLimit, 0);
-    }
 
+        Listing result = this.searcher.searchUpcoming(request, collection, page, pageLimit, 0);
+        if (result.getTotalHits() > 0) {
+            model.put(EventListingHelper.DISPLAY_LISTING_ICAL_LINK, true);
+        }
+
+        return result;
+    }
 }

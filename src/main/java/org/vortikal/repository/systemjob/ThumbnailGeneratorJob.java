@@ -171,14 +171,16 @@ public class ThumbnailGeneratorJob extends RepositoryJob {
                     Property property = thumbnailPropDef.createProperty();
                     property.setBinaryValue(thumbnail.getImageBytes(thumbnailFormat), "image/" + thumbnailFormat);
                     resource.addProperty(property);
-                    
-                    Property imageHeightProp = imageHeightPropDef.createProperty();
-                    imageHeightProp.setIntValue(dim.height);
-                    resource.addProperty(imageHeightProp);
-                    
-                    Property imageWidthProp = imageWidthPropDef.createProperty();
-                    imageWidthProp.setIntValue(dim.width);
-                    resource.addProperty(imageWidthProp);
+
+                    if (dim != null) {
+                        Property imageHeightProp = imageHeightPropDef.createProperty();
+                        imageHeightProp.setIntValue(dim.height);
+                        resource.addProperty(imageHeightProp);
+
+                        Property imageWidthProp = imageWidthPropDef.createProperty();
+                        imageWidthProp.setIntValue(dim.width);
+                        resource.addProperty(imageWidthProp);
+                    }
 
                     if (resource.getLock() == null) {
                         resource.removeProperty(thumbnailStatusPropDef);
@@ -207,8 +209,7 @@ public class ThumbnailGeneratorJob extends RepositoryJob {
             private void setThumbnailGeneratorStatus(final Repository repository, final String token,
                     Resource resource, String status) {
                 Property statusProp = thumbnailStatusPropDef.createProperty();
-                statusProp.setValue( new Value(status,
-                        org.vortikal.repository.resourcetype.PropertyType.Type.STRING));
+                statusProp.setValue(new Value(status, org.vortikal.repository.resourcetype.PropertyType.Type.STRING));
                 resource.addProperty(statusProp);
                 try {
                     repository.store(token, resource, context);
@@ -316,7 +317,7 @@ public class ThumbnailGeneratorJob extends RepositoryJob {
     public void setThumbnailStatusPropDef(PropertyTypeDefinition thumbnailStatusPropDef) {
         this.thumbnailStatusPropDef = thumbnailStatusPropDef;
     }
-    
+
     public void setImageHeightPropDef(PropertyTypeDefinition imageHeightPropDef) {
         this.imageHeightPropDef = imageHeightPropDef;
     }

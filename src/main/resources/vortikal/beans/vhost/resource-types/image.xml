@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <!-- Image resource -->
 
-  <bean id="imageResourceTypeDefinition"
-        class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
-    <property name="name" value="image"/>
+  <bean id="imageResourceTypeDefinition" class="org.vortikal.repository.resourcetype.PrimaryResourceTypeDefinitionImpl">
+    <property name="name" value="image" />
     <property name="namespace" ref="DEFAULT_NAMESPACE" />
     <property name="parentTypeDefinition" ref="fileResourceTypeDefinition" />
     <property name="assertions">
@@ -16,9 +15,7 @@
     </property>
     <property name="propertyTypeDefinitions">
       <list>
-        <ref bean="imageHeightPropDef" />
-        <ref bean="imageWidthPropDef" />
-        <ref bean="photographerPropDef"/>
+        <ref bean="photographerPropDef" />
         <ref bean="imageHtmlDescriptionPropDef" />
       </list>
     </property>
@@ -29,8 +26,9 @@
     </property>
   </bean>
 
-  <bean id="imageHtmlDescriptionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="image-description" /> 
+  <bean id="imageHtmlDescriptionPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
+    parent="abstractPropDef">
+    <property name="name" value="image-description" />
     <property name="type" value="HTML" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
@@ -87,41 +85,6 @@
           </list>
         </entry>
       </map>
-    </property>
-  </bean>
-
-  <bean id="imageHeightPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="pixelHeight" />
-    <property name="type" value="INT" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-  </bean>
-
-  <bean id="imageWidthPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="pixelWidth" />
-    <property name="type" value="INT" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-  </bean>
-
-  <bean id="thumbnailEvaluator" class="org.vortikal.repository.resourcetype.property.ThumbnailEvaluator">
-    <property name="imageService">
-        <bean class="org.vortikal.graphics.ImageServiceImpl" />
-    </property>
-
-    <property name="width" value="${resourcetype.image.thumbnail.width}" />
-    <property name="maxSourceImageFileSize" value="${resourcetype.image.thumbnail.maxSourceImageFileSize}" />
-    <property name="maxSourceImageRawMemoryUsage" value="${resourcetype.image.thumbnail.maxSourceImageRawMemoryUsage}" />
-    <property name="scaleUp" value="false" />
-    <property name="supportedFormats">
-      <set>
-        <value>jpeg</value>
-        <value>jpg</value>
-        <value>gif</value>
-        <value>png</value>
-        <value>bmp</value>
-        <value>pjpeg</value><!-- Microsoft -->
-      </set>
     </property>
   </bean>
 

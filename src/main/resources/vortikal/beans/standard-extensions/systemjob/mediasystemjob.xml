@@ -18,19 +18,14 @@
     <property name="affectedPropDefPointers">
       <list>
         <value>thumbnail</value>
+        <value>duration</value>
+        <value>pixelHeight</value>
+        <value>pixelWidth</value>
+        <value>media-metadata-status</value>
       </list>
     </property>
     <property name="mediaMetadataStatusPropDef" ref="mediaMetadataStatusPropDef" />
     <property name="generateMediaInfo" ref="repository.systemjob.generateMediaInfo" />
-    <property name="service" value="http://localhost:6666" />
-    <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />
-    <property name="serviceParameters">
-      <map>
-        <entry key="action" value="thumbnail" />
-        <entry key="filetype" value="video" />
-        <entry key="time" value="1" />
-      </map>
-    </property>
   </bean>
   
   <bean id="repository.systemjob.generateMediaInfo" class="org.vortikal.repository.systemjob.GenerateMediaInfo">

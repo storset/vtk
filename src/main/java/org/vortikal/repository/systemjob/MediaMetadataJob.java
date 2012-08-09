@@ -30,6 +30,9 @@
  */
 package org.vortikal.repository.systemjob;
 
+import java.io.IOException;
+import java.net.UnknownServiceException;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
@@ -93,12 +96,13 @@ public class MediaMetadataJob extends AbstractExternalVortexMediaServiceJob {
                     } else if (resource.getResourceType().equals("audio")) {
                         generateMediaInfo.generateAudioMetadata(path, resource);
                     } else {
-                        // TODO: Change mediaMetadataStatus to something and stop remove?
+                        // TODO: Change mediaMetadataStatus to something and
+                        // stop remove?
                     }
 
                     if (resource.getLock() == null) {
                         resource.removeProperty(mediaMetadataStatusPropDef);
-                        repository.store(token, resource);
+                        repository.store(token, resource, context);
                         logger.info("Created thumbnail for " + resource);
                     } else {
                         logger.warn("Resource " + resource + " currently locked, will not invoke store.");
@@ -108,6 +112,12 @@ public class MediaMetadataJob extends AbstractExternalVortexMediaServiceJob {
                     // moved)
                     logger.warn("A resource (" + path
                             + ") that was to be affected by a systemjob was no longer available: " + rnfe.getMessage());
+                } catch (UnknownServiceException use) {
+                    // If the protocol does not support output.
+                    logger.warn("UnknownServiceException: " + use.getMessage());
+                } catch (IOException ioe) {
+                    // If an I/O error occurs while creating the output stream or opening connection.
+                    logger.warn("IOException: " + ioe.getMessage());
                 } catch (Exception e) {
                     if (continueOnException) {
                         logger.warn("Exception when invoking store for resource " + path, e);

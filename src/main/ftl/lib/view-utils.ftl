@@ -233,7 +233,7 @@
 </#macro>
 
 <#macro displayShareSubNestedList titleI18n>
-  <div id="vrtx-share-component">
+  <div id="vrtx-share-subscribe-component">
     <a href="javascript:void(0)" id="vrtx-share-subscribe-link">${titleI18n}</a>
     <div id="vrtx-share-subscribe-wrapper">
       <div class="vrtx-share-subscribe-wrapper-inner">

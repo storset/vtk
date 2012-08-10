@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.decorating.components;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -51,32 +52,60 @@ import org.vortikal.web.search.SearchSorting;
 public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
     private static final int LIMIT = 5; // default limit
-    private static final int MAX_FADE_EFFECT = 999; //ms
+    private static final int MAX_FADE_EFFECT = 999; // ms
+
+    private static final String PARAMETER_URI = "uri";
+    private static final String PARAMETER_URI_DESC = "URI of the image folder to include pictures from. " +
+    		"Must not end with '/' unless it is the root-folder.";
+    
+    private static final String PARAMETER_TYPE = "type";
+    private static final String PARAMETER_TYPE_DESC = "How to the display the component. Default is 'list'. " +
+    		"'gallery' will display an embedded gallery.";
+    
+    private static final String PARAMETER_LIMIT = "limit";
+    private static final String PARAMETER_LIMIT_DESC = "Maximum number of images to show in list. Default is 5.";
+    
+    private static final String PARAMETER_FADE_EFFECT = "fade-effect";
+    private static final String PARAMETER_FADE_EFFECT_DESC = "Milliseconds of fade effect for choosen image. " +
+    		"Default is 0 or off, and max is 999 ms.";
+    
+    private static final String PARAMETER_HIDE_THUMBNAILS = "hide-thumbnails";
+    private static final String PARAMETER_HIDE_THUMBNAILS_DESC = "Optional parameter used when parameter 'type' is set to 'gallery'. " +
+    		"When set to 'true', will hide thumbnails in gallery view. Default is 'false'.";
+    
+    private static final String PARAMETER_EXCLUDE_SCRIPTS = "exclude-scripts";
+    private static final String PARAMETER_EXCLUDE_SCRIPTS_DESC = "Use to exclude multiple inclusion of scripts for gallery display. " +
+    		"Set to 'true' when including more than one image gallery on same page. Default is 'false'.";
 
     private SearchSorting searchSorting;
 
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
-        String path = request.getStringParameter("uri");
+        String path = request.getStringParameter(PARAMETER_URI);
         if (path == null || "".equals(path.trim()) || !isValidPath(path)) {
             return;
         }
 
-        String requestLimit = request.getStringParameter("limit");
+        String requestLimit = request.getStringParameter(PARAMETER_LIMIT);
         int searchLimit = getSearchLimit(requestLimit);
-        
-        String type = request.getStringParameter("type");
-        if(type != null && type.equals("gallery")) {
+
+        String type = request.getStringParameter(PARAMETER_TYPE);
+        if (type != null && type.equals("gallery")) {
             model.put("type", "gallery");
         } else {
             model.put("type", "list");
         }
-        
-        String fadeFx = request.getStringParameter("fade-effect");
+
+        String fadeFx = request.getStringParameter(PARAMETER_FADE_EFFECT);
         int fadeEffect = getFadeEffect(fadeFx);
 
-        String excludeScripts = request.getStringParameter("exclude-scripts");
+        String hideThumbnails = request.getStringParameter(PARAMETER_HIDE_THUMBNAILS);
+        if ("true".equals(hideThumbnails)) {
+            model.put("hideThumbnails", true);
+        }
+
+        String excludeScripts = request.getStringParameter("");
         if (excludeScripts != null && "true".equalsIgnoreCase(excludeScripts.trim())) {
             model.put("excludeScripts", excludeScripts);
         }
@@ -123,10 +152,11 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
             if (lim > 0) {
                 return lim;
             }
-        } catch (NumberFormatException nfe) {}
+        } catch (NumberFormatException nfe) {
+        }
         return LIMIT;
     }
-    
+
     private int getFadeEffect(String fadeEffect) {
         try {
             int fadeFx = Integer.parseInt(fadeEffect);
@@ -141,5 +171,20 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
     @Required
     public void setSearchSorting(SearchSorting searchSorting) {
         this.searchSorting = searchSorting;
+    }
+
+    protected String getDescriptionInternal() {
+        return "Inserts an image list or gallery, depending on parameter setup.";
+    }
+
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new LinkedHashMap<String, String>();
+        map.put(PARAMETER_EXCLUDE_SCRIPTS, PARAMETER_EXCLUDE_SCRIPTS_DESC);
+        map.put(PARAMETER_HIDE_THUMBNAILS, PARAMETER_HIDE_THUMBNAILS_DESC);
+        map.put(PARAMETER_FADE_EFFECT, PARAMETER_FADE_EFFECT_DESC);
+        map.put(PARAMETER_LIMIT, PARAMETER_LIMIT_DESC);
+        map.put(PARAMETER_TYPE, PARAMETER_TYPE_DESC);
+        map.put(PARAMETER_URI, PARAMETER_URI_DESC);
+        return map;
     }
 }

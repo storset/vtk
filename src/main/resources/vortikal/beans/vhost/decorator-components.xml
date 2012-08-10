@@ -689,18 +689,7 @@
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="image-listing" />
     <property name="view" ref="decorating.imageListing.view" />
-    <property name="parameterDescriptions">
-      <map>
-        <entry key="uri"
-          value="URI of the image folder to include pictures from. Must not end with '/' unless it is the root-folder." />
-        <entry key="limit" value="Maximum number of images to show in list. Default is 5." />
-        <entry key="type"
-          value="How to the display the component. Default is 'list'. 'gallery' will display an embedded gallery." />
-        <entry key="fade-effect" value="Milliseconds of fade effect for choosen image. Default is 0 or off, and max is 999 ms" />
-      </map>
-    </property>
     <property name="searchSorting" ref="collectionListing.searchSorting" />
-    <property name="description" value="Inserts a simple image list." />
     <property name="examples">
       <map>
         <entry key="uri=[/about/images] type=[gallery] fade-effect=[200]" value="" />

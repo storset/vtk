@@ -9,27 +9,20 @@
   -
   -->
 <#import "/lib/vortikal.ftl" as vrtx />
+<#import "/lib/view-utils.ftl" as viewutils />
 
-<!-- begin share-at js -->
+<!-- begin share js -->
 <script type="text/javascript" src="${url?html}"></script>
-<!-- end share-at js -->
-
-<div id="vrtx-share-component">
-  <a href="#vrtx-share-link" id="vrtx-share-link" class="vrtx-share-link" name="vrtx-share-link">
-  <@vrtx.msg code="decorating.shareAtComponent.title" default="Share at" />...</a>
-    <div id="vrtx-send-share">
-      <div class="vrtx-send-inner">
-        <div class="vrtx-share-top">
-          <div class="vrtx-share-title"><@vrtx.msg code="decorating.shareAtComponent.title" default="Share at" />...</div>
-          <span><a href="#vrtx-share-link" class="vrtx-close-toolbox-send-share">
-          <@vrtx.msg code="decorating.shareAtComponent.close" default="Close" /></a></span>
-        </div>
-        <ul>
-        <#list socialWebsites as socialWebsite>
-          <li><a href="${socialWebsite.url}" target="_blank" class="${socialWebsite.name?lower_case}">
-          <@vrtx.msg code="decorating.shareAtComponent.${socialWebsite.name?lower_case}" default="${socialWebsite.name}" /></a></li>
-        </#list>
-        </ul>
-     </div>
-    </div>
-</div>
+<!-- end share js -->
+  
+<#assign title = vrtx.getMsg("decorating.shareAtComponent.title") + "..." />
+  
+<@viewutils.displayShareSubNestedList title>
+  <#list socialWebsites as socialWebsite>
+    <li>
+      <a href="${socialWebsite.url}" target="_blank" class="${socialWebsite.name?lower_case}">
+        <@vrtx.msg code="decorating.shareAtComponent.${socialWebsite.name?lower_case}" default="${socialWebsite.name}" />
+      </a>
+    </li>
+  </#list>   
+</@viewutils.displayShareSubNestedList>

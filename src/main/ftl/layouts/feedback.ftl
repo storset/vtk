@@ -9,7 +9,6 @@
 <#import "/lib/vortikal.ftl" as vrtx/>
 
 <#if emailLink?exists && emailLink.url?exists>
-
   <#assign link = emailLink.url />
   
    <!-- begin feedback js -->

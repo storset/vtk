@@ -1,12 +1,12 @@
 /* Share and subscribe box */
 
 $(document).ready(function() {
-  $("body").on("click", "a.vrtx-close-toolbox-send-share, a#vrtx-close-subscribe", function(e) {
-    $("#vrtx-send-share:visible, #vrtx-subscribe-wrapper:visible").hide();
+  $("body").on("click", "a.vrtx-share-subscribe-close-link", function(e) {
+    $("#vrtx-share-subscribe-wrapper:visible").hide();
     e.preventDefault();
   });
-  $("body").on("click", "a.vrtx-share-link, a#vrtx-subscribe-link", function(e) {
-    $("#vrtx-send-share:hidden, #vrtx-subscribe-wrapper:hidden").slideDown("fast");
+  $("body").on("click", "a#vrtx-share-subscibe-link", function(e) {
+    $("#vrtx-share-subscribe-wrapper:hidden").slideDown("fast");
     e.preventDefault();
   });
 });

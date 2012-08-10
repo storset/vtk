@@ -241,26 +241,16 @@
       <#-- XXX: Display first link with content type = atom: -->
       <#if alternativeRepresentations?exists && !(hideAlternativeRepresentation?exists && hideAlternativeRepresentation)>
         <#if (alternativeRepresentations?size > 1)>
-          <div id="vrtx-subscribe">
-            <a id="vrtx-subscribe-link" href="javascript:void(0);"><@vrtx.msg code="eventListing.subscribe" /></a>
-            <div id="vrtx-subscribe-wrapper">
-              <div id="vrtx-subscribe-inner-wrapper">
-                <div id="vrtx-subscribe-top">
-                  <div id="vrtx-subscribe-title"><@vrtx.msg code="eventListing.subscribe" /></div>
-                  <span><a id="vrtx-close-subscribe" href="javascript:void(0);"><@vrtx.msg code="decorating.shareAtComponent.close" /></a></span>
-                </div>
-                <ul>
-                  <#list alternativeRepresentations as alt>
-	                <#if alt.contentType = 'application/atom+xml'>
-                      <li><a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a></li>
-	                <#elseif alt.contentType = 'text/calendar' && (displayEventListingICalLink?? && displayEventListingICalLink)>
-                      <li><a id="vrtx-ical-link" href="${alt.url?html}"><@vrtx.msg code="eventListing.ical.add" /></a></li>
-	                </#if>
-	              </#list>
-                </ul>
-              </div>
-            </div>
-          </div>
+          <#local title = vrtx.getMsg("eventListing.subscribe") />
+          <@viewutils.displayShareSubNestedList title>
+            <#list alternativeRepresentations as alt>
+	          <#if alt.contentType = 'application/atom+xml'>
+                <li><a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a></li>
+	          <#elseif alt.contentType = 'text/calendar' && (displayEventListingICalLink?? && displayEventListingICalLink)>
+                <li><a id="vrtx-ical-link" href="${alt.url?html}"><@vrtx.msg code="eventListing.ical.add" /></a></li>
+	          </#if>
+	        </#list>
+	      </@viewutils.displayShareSubNestedList>
 	    <#else>
 	      <#list alternativeRepresentations as alt>
 	        <#if alt.contentType = 'application/atom+xml'>

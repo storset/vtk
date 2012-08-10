@@ -261,7 +261,7 @@
               </div>
             </div>
           </div>
-	    <#else>
+	    <#elseif (alternativeRepresentations?size > 0)>
 	      <#list alternativeRepresentations as alt>
 	        <#if alt.contentType = 'application/atom+xml'>
 	          <div class="vrtx-feed-link">

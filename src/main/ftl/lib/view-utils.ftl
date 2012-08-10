@@ -232,15 +232,15 @@
   </#if>
 </#macro>
 
-<#macro displayShareSubNestedList titleI18n>
-  <div id="vrtx-share-subscribe-component">
-    <a href="javascript:void(0)" id="vrtx-share-subscribe-link">${titleI18n}</a>
-    <div id="vrtx-share-subscribe-wrapper">
-      <div class="vrtx-share-subscribe-wrapper-inner">
-        <div class="vrtx-share-subscribe-top">
-          <div class="vrtx-share-subscribe-title">${titleI18n}</div>
+<#macro displayShareSubNestedList titleI18n type>
+  <div id="vrtx-${type}-component">
+    <a href="javascript:void(0)" id="vrtx-${type}-link">${titleI18n}</a>
+    <div id="vrtx-${type}-wrapper">
+      <div class="vrtx-${type}-wrapper-inner">
+        <div class="vrtx-${type}-top">
+          <div class="vrtx-${type}-title">${titleI18n}</div>
           <span>
-            <a href="javascript:void(0)" class="vrtx-share-subscribe-close-link">
+            <a href="javascript:void(0)" class="vrtx-${type}-close-link">
               <@vrtx.msg code="decorating.shareAtComponent.close" default="Close" />
             </a>
           </span>

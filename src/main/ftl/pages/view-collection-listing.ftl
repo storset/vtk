@@ -242,7 +242,7 @@
       <#if alternativeRepresentations?exists && !(hideAlternativeRepresentation?exists && hideAlternativeRepresentation)>
         <#if (alternativeRepresentations?size > 1)>
           <#local title = vrtx.getMsg("eventListing.subscribe") />
-          <@viewutils.displayShareSubNestedList title>
+          <@viewutils.displayShareSubNestedList title "subscribe">
             <#list alternativeRepresentations as alt>
 	          <#if alt.contentType = 'application/atom+xml'>
                 <li><a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a></li>

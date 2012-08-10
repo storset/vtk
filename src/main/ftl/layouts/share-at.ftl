@@ -17,7 +17,7 @@
   
 <#assign title = vrtx.getMsg("decorating.shareAtComponent.title") + "..." />
   
-<@viewutils.displayShareSubNestedList title>
+<@viewutils.displayShareSubNestedList title "share">
   <#list socialWebsites as socialWebsite>
     <li>
       <a href="${socialWebsite.url}" target="_blank" class="${socialWebsite.name?lower_case}">

@@ -18,7 +18,7 @@
     <span class="vrtx-image-listing-include-title"><a href="${folderUrl}?display=gallery">${folderTitle}</a></span>
     <#if type?exists && type = 'gallery'>
       <@gallery.galleryJSInit maxWidth fadeEffect />
-      <ul class="vrtx-image-listing-include-thumbs-pure-css">
+      <ul class="vrtx-image-listing-include-thumbs-pure-css" <#if hideThumbnails?? && hideThumbnails>style="display: none"</#if>>
     <#else>
       <ul class="vrtx-image-listing-include-thumbs">
     </#if>

@@ -9,7 +9,7 @@ $(document).ready(function() {
     $("#vrtx-subscribe-wrapper").hide();
     e.preventDefault();
   });
-  $("body").on("click", "a#vrtx-share-link, function(e) {
+  $("body").on("click", "a#vrtx-share-link", function(e) {
     $("#vrtx-share-wrapper:hidden").slideDown("fast");
     e.preventDefault();
   });  

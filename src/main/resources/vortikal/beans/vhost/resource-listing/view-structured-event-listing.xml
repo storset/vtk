@@ -138,6 +138,16 @@
         <ref bean="resourceContextProvider" />
       </list>
     </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="jsURLs">
+          <list>
+            <value>${webResources.baseURL}/jquery/include-jquery.js</value>
+            <value>${webResources.baseURL}/js/share-subscribe.js</value>
+          </list>
+        </entry>
+      </map>
+    </property>
   </bean>
 
   <bean id="event.configurablePropertySelectPointersList" class="java.util.ArrayList">

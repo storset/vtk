@@ -178,16 +178,17 @@
     </property>
   </bean>
 
-  <bean id="eventListing.view" parent="freemarkerView">
-    <property name="url" value="pages/view-collection-listing.ftl" />
+  <bean id="eventListing.view" parent="collectionListing.view">
     <property name="attributesMap">
       <map>
         <entry key="jsURLs">
           <list>
+            <value>${webResources.baseURL}/jquery/include-jquery.js</value>
             <value>${webResources.baseURL}/js/share-subscribe.js</value>
           </list>
         </entry>
       </map>
     </property>
   </bean>
+  
 </beans>

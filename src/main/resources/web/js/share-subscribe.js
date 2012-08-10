@@ -5,7 +5,7 @@ $(document).ready(function() {
     $("#vrtx-share-wrapper:visible, #vrtx-subscribe-wrapper:visible").hide();
     e.preventDefault();
   });
-  $("body").on("click", "a#vrtx-share-link", function(e) {
+  $("body").on("click", "a#vrtx-share-link, a#vrtx-subscribe-link", function(e) {
     $("#vrtx-share-wrapper:hidden, #vrtx-subscribe-wrapper:hidden").slideDown("fast");
     e.preventDefault();
   });

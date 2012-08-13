@@ -16,7 +16,7 @@
     
     <#assign language = vrtx.getMsg("eventListing.calendar.lang", "en") />
     
-    <@editor.addDatePickerScripts language />
+    <@editor.addCommonScripts language />
 
     <script type="text/javascript">
     <!--

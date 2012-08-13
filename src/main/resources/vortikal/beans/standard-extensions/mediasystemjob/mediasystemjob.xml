@@ -29,6 +29,8 @@
   </bean>
   
   <bean id="repository.systemjob.generateMediaInfo" class="org.vortikal.repository.systemjob.GenerateMediaInfo">
+    <property name="username" value="${vms.username}" />
+    <property name="password" value="${vms.password}" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="service" value="http://localhost:6666" />
     <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />

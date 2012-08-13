@@ -19,6 +19,9 @@ import org.vortikal.util.io.StreamUtil;
 
 public class GenerateMediaInfo {
 
+    private String username;
+    private String password;
+
     private String service;
     private String repositoryDataDirectory;
     private ResourceTypeTree resourceTypeTree;
@@ -75,7 +78,7 @@ public class GenerateMediaInfo {
 
         URL url = new URL(service + repositoryDataDirectory + path.toString() + "?" + parameters);
         URLConnection conn = url.openConnection();
-        String val = (new StringBuffer("vms").append(":").append("vortex")).toString();
+        String val = (new StringBuffer(username).append(":").append(password)).toString();
         byte[] base = val.getBytes();
         String authorizationString = "Basic " + new String(new Base64().encode(base));
         conn.setRequestProperty ("Authorization", authorizationString);
@@ -107,6 +110,16 @@ public class GenerateMediaInfo {
             resource.addProperty(property);
         }
 
+    }
+
+    @Required
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Required
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Required

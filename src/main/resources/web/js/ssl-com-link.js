@@ -33,9 +33,9 @@ SSLComLink.prototype.postDataToParent = function postDataToParent(data) {
   }
 };
 
-SSLComLink.prototype.postDataToChild = function postDataToChild(iframeElm, data) {
+SSLComLink.prototype.postDataToChild = function postDataToChild(childElm, data) {
   if(this.hasPostMessage) {
-    iframeElm.contentWindow.postMessage(data, this.vrtxAdminOrigin);
+    childElm.contentWindow.postMessage(data, this.vrtxAdminOrigin);
   }
 };
 

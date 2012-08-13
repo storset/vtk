@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -74,6 +75,10 @@ public class GenerateMediaInfo {
 
         URL url = new URL(service + repositoryDataDirectory + path.toString() + "?" + parameters);
         URLConnection conn = url.openConnection();
+        String val = (new StringBuffer("vms").append(":").append("vortex")).toString();
+        byte[] base = val.getBytes();
+        String authorizationString = "Basic " + new String(new Base64().encode(base));
+        conn.setRequestProperty ("Authorization", authorizationString);
         // conn.setConnectTimeout();
         // conn.setReadTimeout();
 

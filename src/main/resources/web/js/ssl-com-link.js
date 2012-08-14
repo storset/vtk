@@ -76,7 +76,7 @@ SSLComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHandler(
         receivedData = JSON.parse(receivedData);
       } catch(e) {}
     }
-    if(receivedData && typeof receivedData === "object" && receivedData.cmd && typeof receivedData.cmd === "string") {
+    if(typeof receivedData === "object" && typeof receivedData.cmd === "string") {
       if(receivedData.num) { // Run command on number
         if(!isNaN(receivedData.num)) {
           sslCL.predefinedCommands.cmdNum(receivedData.cmd, receivedData.num, sslCL, source);

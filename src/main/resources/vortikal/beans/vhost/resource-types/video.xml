@@ -16,10 +16,7 @@
     <property name="propertyTypeDefinitions">
       <list>
         <ref bean="posterImagePropDef" />
-        <ref bean="durationPropDef" />
         <ref bean="generatedPosterImagePropDef" />
-        <ref bean="videoWidthPropDef" />
-        <ref bean="videoHeightPropDef" />
         <ref bean="videoHtmlDescriptionPropDef" />
       </list>
     </property>
@@ -158,56 +155,12 @@
     <property name="mandatory" value="false" />
   </bean>
 
-  <bean id="durationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="duration" />
-    <property name="type" value="INT" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="propertyEvaluator" ref="videoDurationEvaluator" />
-  </bean>
-
-  <bean id="videoDurationEvaluator" class="org.vortikal.repository.resourcetype.property.JSONPropertyFieldEvaluratorImpl">
-    <property name="clazz" value="org.vortikal.repository.store.VideoMetadata" />
-    <property name="key" value="duration" />
-  </bean>
-
   <bean id="generatedPosterImagePropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl"
     parent="abstractPropDef">
     <property name="name" value="generated-poster-image" />
     <property name="type" value="BINARY" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
-    <property name="propertyEvaluator" ref="videoPosterImageEvaluator" />
   </bean>
 
-  <bean id="videoPosterImageEvaluator" class="org.vortikal.repository.resourcetype.property.JSONPropertyFieldEvaluratorImpl">
-    <property name="clazz" value="org.vortikal.repository.store.VideoMetadata" />
-    <property name="key" value="poster-image" />
-    <property name="binaryMimeType" value="image/jpeg" />
-  </bean>
-
-  <bean id="videoHeightPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="pixelHeight" />
-    <property name="type" value="INT" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-    <property name="propertyEvaluator" ref="videoHeightEvaluator" />
-  </bean>
-
-  <bean id="videoWidthPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="pixelWidth" />
-    <property name="type" value="INT" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="mandatory" value="false" />
-    <property name="propertyEvaluator" ref="videoWidthEvaluator" />
-  </bean>
-
-  <bean id="videoHeightEvaluator" class="org.vortikal.repository.resourcetype.property.JSONPropertyFieldEvaluratorImpl">
-    <property name="clazz" value="org.vortikal.repository.store.VideoMetadata" />
-    <property name="key" value="height" />
-  </bean>
-
-  <bean id="videoWidthEvaluator" class="org.vortikal.repository.resourcetype.property.JSONPropertyFieldEvaluratorImpl">
-    <property name="clazz" value="org.vortikal.repository.store.VideoMetadata" />
-    <property name="key" value="width" />
-  </bean>
 </beans>

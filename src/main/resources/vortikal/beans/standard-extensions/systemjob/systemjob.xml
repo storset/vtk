@@ -58,12 +58,12 @@
         <value>gif</value>
         <value>png</value>
         <value>bmp</value>
-        <value>pjpeg</value><!-- Microsoft -->
+        <value>pjpeg</value>
       </set>
     </property>
     <property name="thumbnailStatusPropDef" ref="mediaMetadataStatusPropDef" />
-    <property name="imageHeightPropDef" ref="imageHeightPropDef" />
-    <property name="imageWidthPropDef" ref="imageWidthPropDef" />
+    <property name="imageHeightPropDef" ref="mediaHeightPropDef" />
+    <property name="imageWidthPropDef" ref="mediaWidthPropDef" />
   </bean>
 
 

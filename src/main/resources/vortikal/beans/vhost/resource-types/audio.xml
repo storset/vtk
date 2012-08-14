@@ -18,8 +18,12 @@
         <ref bean="audioTrackPropDef" />
         <ref bean="audioGenrePropDef" />
         <ref bean="audioOverriddenTitlePropDef" />
-        <ref bean="audioDurationPropDef" />
         <ref bean="audioHtmlDescriptionPropDef" />
+      </list>
+    </property>
+    <property name="mixinTypeDefinitions">
+      <list>
+        <ref bean="mediaMixinResourceTypeDef" />
       </list>
     </property>
   </bean>
@@ -30,26 +34,11 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
   </bean>
-  
-
-  <bean id="audioDurationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
-    <property name="name" value="duration" />
-    <property name="type" value="INT" />
-    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
-    <property name="propertyEvaluator" ref="audioDurationEvaluator" />
-  </bean>
-
-  <bean id="audioDurationEvaluator" class="org.vortikal.repository.resourcetype.property.JSONPropertyFieldEvaluratorImpl">
-    <property name="clazz" value="org.vortikal.repository.store.AudioMetadata" />
-    <property name="key" value="duration" />
-  </bean>
-
 
   <bean id="contentTypeMatchesAudio" 
         class="org.vortikal.web.service.ResourceContentTypeRegexpAssertion">
     <property name="pattern" value="audio/(.+)" />
   </bean>
-
 
   <bean id="audioAuthorPropDef"
         class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
@@ -58,6 +47,7 @@
     <property name="mandatory" value="false" />
     <property name="propertyEvaluator" ref="audioAuthorPropertyEvaluator" />
   </bean>
+
   <bean id="audioAuthorPropertyEvaluator"
         class="org.vortikal.repository.resourcetype.property.AudioFilePropertyEvaluator">
     <property name="audioFileProperty" value="${resourcetype.audio.audiofileProperty.author}" />

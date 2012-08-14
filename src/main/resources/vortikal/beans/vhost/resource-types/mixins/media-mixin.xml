@@ -10,8 +10,9 @@
       <list>
         <ref bean="thumbnailPropDef" />
         <ref bean="mediaMetadataStatusPropDef" />
-        <ref bean="imageHeightPropDef" />
-        <ref bean="imageWidthPropDef" />
+        <ref bean="mediaHeightPropDef" />
+        <ref bean="mediaWidthPropDef" />
+        <ref bean="mediaDurationPropDef" />
       </list>
     </property>
   </bean>  
@@ -32,15 +33,22 @@
     <property name="propertyEvaluator" ref="mediaMetadataStatusEvaluator" />
   </bean>
   
-    <bean id="imageHeightPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <bean id="mediaHeightPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="pixelHeight" />
     <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
   </bean>
 
-  <bean id="imageWidthPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+  <bean id="mediaWidthPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="pixelWidth" />
+    <property name="type" value="INT" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
+    <property name="mandatory" value="false" />
+  </bean>
+
+  <bean id="mediaDurationPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="duration" />
     <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />

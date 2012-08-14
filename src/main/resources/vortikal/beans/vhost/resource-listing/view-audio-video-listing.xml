@@ -38,7 +38,7 @@
     <property name="listableProperties">
       <list>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
-          <property name="displayProperty" ref="audioDurationPropDef" />
+          <property name="displayProperty" ref="mediaDurationPropDef" />
         </bean>
         <bean class="org.vortikal.web.search.PropertyDisplayConfig">
           <property name="displayProperty" ref="posterImagePropDef" />

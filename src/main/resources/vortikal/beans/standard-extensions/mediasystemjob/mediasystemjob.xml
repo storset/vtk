@@ -18,6 +18,7 @@
     <property name="affectedPropDefPointers">
       <list>
         <value>thumbnail</value>
+        <value>generated-poster-image</value>
         <value>duration</value>
         <value>pixelHeight</value>
         <value>pixelWidth</value>

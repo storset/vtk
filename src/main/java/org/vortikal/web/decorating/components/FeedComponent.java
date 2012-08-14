@@ -112,32 +112,32 @@ public class FeedComponent extends AbstractFeedComponent {
             throw new DecoratorComponentException("Component parameter 'url' is required");
         }
 
-        if (!(prameterHasValue(PARAMETER_DISPLAY_FEED_TITLE, "false", request) || prameterHasValue(
+        if (!(parameterHasValue(PARAMETER_DISPLAY_FEED_TITLE, "false", request) || parameterHasValue(
                 PARAMETER_FEED_TITLE, "false", request))) {
             conf.put("feedTitle", true);
         }
 
-        if (prameterHasValue(PARAMETER_FEED_DESCRIPTION, "true", request)) {
+        if (parameterHasValue(PARAMETER_FEED_DESCRIPTION, "true", request)) {
             conf.put("feedDescription", true);
         }
 
-        if (prameterHasValue(PARAMETER_ITEM_DESCRIPTION, "true", request)) {
+        if (parameterHasValue(PARAMETER_ITEM_DESCRIPTION, "true", request)) {
             conf.put("itemDescription", true);
         }
 
-        if (prameterHasValue(PARAMETER_ITEM_PICTURE, "true", request)) {
+        if (parameterHasValue(PARAMETER_ITEM_PICTURE, "true", request)) {
             conf.put("itemPicture", true);
         }
 
-        if (prameterHasValue(PARAMETER_DISPLAY_CATEGORIES, "true", request)) {
+        if (parameterHasValue(PARAMETER_DISPLAY_CATEGORIES, "true", request)) {
             conf.put("displayCategories", true);
         }
 
-        if (!prameterHasValue(PARAMETER_ALL_MESSAGES_LINK, "false", request)) {
+        if (!parameterHasValue(PARAMETER_ALL_MESSAGES_LINK, "false", request)) {
             conf.put("bottomLinkToAllMessages", true);
         }
 
-        conf.put("includeIfEmpty", !prameterHasValue(PARAMETER_INCLUDE_IF_EMPTY, "false", request));
+        conf.put("includeIfEmpty", !parameterHasValue(PARAMETER_INCLUDE_IF_EMPTY, "false", request));
 
         String overrideFeedTitle = request.getStringParameter(PARAMETER_OVERRIDE_FEED_TITLE);
         if (overrideFeedTitle != null && overrideFeedTitle.length() > 0) {
@@ -240,7 +240,7 @@ public class FeedComponent extends AbstractFeedComponent {
 
         @SuppressWarnings("unchecked")
         List<SyndEntry> entries = (List<SyndEntry>) feed.getEntries();
-        boolean filter = !prameterHasValue(PARAMETER_ALLOW_MARKUP, "true", request);
+        boolean filter = !parameterHasValue(PARAMETER_ALLOW_MARKUP, "true", request);
         for (SyndEntry entry : entries) {
 
             HtmlFragment description = getDescription(entry, baseURL, requestURL, filter);

@@ -84,7 +84,7 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
         return repository.retrieve(token, feedURL.getPath(), true);
     }
 
-    boolean prameterHasValue(String param, String includeParamValue, DecoratorRequest request) {
+    boolean parameterHasValue(String param, String includeParamValue, DecoratorRequest request) {
         String itemDescriptionString = request.getStringParameter(param);
         if (itemDescriptionString != null && includeParamValue.equalsIgnoreCase(itemDescriptionString)) {
             return true;

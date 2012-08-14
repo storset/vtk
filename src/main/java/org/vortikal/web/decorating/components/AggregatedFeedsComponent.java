@@ -82,15 +82,15 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
             conf.put("feedTitleValue", feedTitle.trim());
         }
 
-        if (prameterHasValue(PARAMETER_ITEM_PICTURE, "true", request)) {
+        if (parameterHasValue(PARAMETER_ITEM_PICTURE, "true", request)) {
             conf.put("itemPicture", true);
         }
 
-        if (!prameterHasValue(Parameter.DISPLAY_CHANNEL.getId(), "false", request)) {
+        if (!parameterHasValue(Parameter.DISPLAY_CHANNEL.getId(), "false", request)) {
             conf.put("displayChannel", true);
         }
 
-        if (prameterHasValue(Parameter.ITEM_DESCRIPTION.getId(), "true", request)) {
+        if (parameterHasValue(Parameter.ITEM_DESCRIPTION.getId(), "true", request)) {
             conf.put("itemDescription", true);
         }
 
@@ -253,7 +253,7 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
             }
             @SuppressWarnings("unchecked")
             List<SyndEntry> tmpEntries = tmpFeed.getEntries();
-            boolean filter = !prameterHasValue(PARAMETER_ALLOW_MARKUP, "true", request);
+            boolean filter = !parameterHasValue(PARAMETER_ALLOW_MARKUP, "true", request);
             for (SyndEntry entry : tmpEntries) {
                 feedMapping.put(entry, tmpFeed);
                 HtmlFragment description = getDescription(entry, baseURL, requestURL, filter);

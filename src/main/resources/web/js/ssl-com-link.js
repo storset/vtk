@@ -1,6 +1,9 @@
 /*
  *  SSL communication - lightweight library
- *  by USIT/2012 - Licenced under GPL v3.0 
+ *  by USIT/2012 - Licenced under GPL v3.0
+ *
+ *  TODO: origin checks and token/uid
+ *
  */
 
 function SSLComLink() {

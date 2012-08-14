@@ -208,7 +208,7 @@
      <@projects.projectListingViewServiceURL />
      <@master.masterListingViewServiceURL />
      <#if !isEventCalendarListing>
-	   <@pagingSubscribeServices />
+	   <@viewutils.pagingSubscribeServices />
 	 </#if>
      <#if (collection.resourceType != 'image-listing'
        && collection.resourceType != 'person-listing'
@@ -230,37 +230,3 @@
     <!--startindex-->
   </body>
 </html>
-
-<#macro pagingSubscribeServices>
-  <#if pageThroughUrls?exists || (alternativeRepresentations?exists && !(hideAlternativeRepresentation?exists && hideAlternativeRepresentation))>
-    <div class="vrtx-paging-feed-wrapper">
-	  <#-- Previous/next URLs: -->
-	  <#if pageThroughUrls?exists >
-	    <@viewutils.displayPageThroughUrls pageThroughUrls page />
-	  </#if>
-      <#-- XXX: Display first link with content type = atom: -->
-      <#if alternativeRepresentations?exists && !(hideAlternativeRepresentation?exists && hideAlternativeRepresentation)>
-        <#if (alternativeRepresentations?size > 1)>
-          <#local title = vrtx.getMsg("eventListing.subscribe") />
-          <@viewutils.displayShareSubNestedList title "subscribe">
-            <#list alternativeRepresentations as alt>
-	          <#if alt.contentType = 'application/atom+xml'>
-                <li><a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a></li>
-	          <#elseif alt.contentType = 'text/calendar' && (displayEventListingICalLink?? && displayEventListingICalLink)>
-                <li><a id="vrtx-ical-link" href="${alt.url?html}"><@vrtx.msg code="eventListing.ical.add" /></a></li>
-	          </#if>
-	        </#list>
-	      </@viewutils.displayShareSubNestedList>
-	    <#else>
-	      <#list alternativeRepresentations as alt>
-	        <#if alt.contentType = 'application/atom+xml'>
-	          <div class="vrtx-feed-link">
-	            <a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a>
-	          </div>
-	        </#if> 
-	      </#list>      
-	    </#if>
-	  </#if> 
-    </div>
-  </#if>
-</#macro>

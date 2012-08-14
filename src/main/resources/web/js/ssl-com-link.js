@@ -23,23 +23,23 @@ function SSLComLink() {
 
 /* POST BACK */
 SSLComLink.prototype.postCmd = function postCmd(c, source) {
-  this.postData({cmd: c}, source);
+  this.postData(JSON.stringify({cmd: c}), source);
 };
 SSLComLink.prototype.postCmdAndNum = function postCmdAndNum(c, n, source) {
-  this.postData({cmd: c, num: n}, source);
+  this.postData(JSON.stringify({cmd: c, num: n}), source);
 };
 SSLComLink.prototype.postData = function postData(data, source) {
-  if(this.hasPostMessage) {
+  if(this.hasPostMessage && source != "") {
     source.postMessage(data, this.origin);
   }
 };
 
 /* POST TO PARENT */
 SSLComLink.prototype.postCmdToParent = function postCmdToParent(c) {
-  this.postDataToParent({cmd: c});
+  this.postDataToParent(JSON.stringify({cmd: c}));
 };
 SSLComLink.prototype.postCmdAndNumToParent = function postCmdAndNumToParent(c, n) {
-  this.postDataToParent({cmd: c, num: n});
+  this.postDataToParent(JSON.stringify({cmd: c, num: n}));
 };
 SSLComLink.prototype.postDataToParent = function postDataToParent(data) {
   if(this.currWin.parent && this.hasPostMessage) {
@@ -49,10 +49,10 @@ SSLComLink.prototype.postDataToParent = function postDataToParent(data) {
 
 /* POST TO IFRAME */
 SSLComLink.prototype.postCmdToIframe = function postCmdToParent(iframeElm, c) {
-  this.postDataToIframe(iframeElm, {cmd: c});
+  this.postDataToIframe(iframeElm, JSON.stringify({cmd: c}));
 };
 SSLComLink.prototype.postCmdAndNumToIframe = function postCmdAndNumToParent(iframeElm, c, n) {
-  this.postDataToIframe(iframeElm, {cmd: c, num: n});
+  this.postDataToIframe(iframeElm, JSON.stringify({cmd: c, num: n}));
 };
 SSLComLink.prototype.postDataToIframe = function postDataToIframe(iframeElm, data) {
   if(iframeElm && iframeElm.contentWindow && this.hasPostMessage) {
@@ -68,6 +68,11 @@ SSLComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHandler(
     var receivedData = e.data;
     var source = e.source;
     if(typeof source === "undefined") source = "";
+    if(typeof receivedData === "string") { // Parse stringified JSON
+      try {
+        receivedData = JSON.parse(receivedData);
+      } catch(e) {}
+    }
     if(receivedData && typeof receivedData === "object" && receivedData.cmd && typeof receivedData.cmd === "string") {
       if(receivedData.num) { // Run command on number
         if(!isNaN(receivedData.num)) {

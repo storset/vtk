@@ -1,11 +1,9 @@
 /*
  *  SSL communication - lightweight library
- *
+ *  by USIT/2012 - Licenced under GPL v3.0 
  */
 
-function SSLComLink(winObj) {
-
-  // Class-like singleton pattern (p.145 JavaScript Patterns)
+function SSLComLink() {
   var instance; // cached instance
   VrtxAdmin = function VrtxAdmin() { // rewrite constructor
     return instance;
@@ -13,38 +11,86 @@ function SSLComLink(winObj) {
   VrtxAdmin.prototype = this; // carry over properties
   instance = new VrtxAdmin(); // instance
   instance.constructor = VrtxAdmin; // reset construction pointer
-  //--
 
-  // Cache jQuery instance internally
-  this._$ = $;
-  
-  this.winObj = winObj;
-  this.hasPostMessage = this.winObj['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
-  this.vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
+  this._$ = $; // Cache jQuery instance internally
+  this.currWin = window;
+  this.hasPostMessage = this.currWin['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
+  this.origin = "*";
+  this.predefinedCommands = {
+    cmd: function(c, that, source) {
+      switch(c) {
+        default:
+      }
+    },
+    cmdNum: function(c, n, that, source) {
+      switch(c) {
+        default:
+      }
+    }
+  }
   
   return instance;
 };
 
-var SSLComLink = new SSLComLink(window);
+var sslComLink;
+$(document).ready(function() {
+  sslComLink = new SSLComLink();
+  sslComLink.setUpReceiveDataHandler(); 
+});
 
-SSLComLink.prototype.postDataToParent = function postDataToParent(data) {
-  if(this.winObj.parent && this.hasPostMessage) {
-    this.winObj.parent.postMessage(data, this.vrtxAdminOrigin);
-  }
+/* POST BACK */
+SSLComLink.prototype.postCmd = function postCmd(c, source) {
+  this.postData({cmd: c}, source);
 };
-
-SSLComLink.prototype.postDataToChild = function postDataToChild(childElm, data) {
+SSLComLink.prototype.postCmdAndNum = function postCmdAndNum(c, n, source) {
+  this.postData({cmd: c, num: n}, source);
+};
+SSLComLink.prototype.postData = function postData(data, source) {
   if(this.hasPostMessage) {
-    childElm.contentWindow.postMessage(data, this.vrtxAdminOrigin);
+    source.postMessage(data, this.origin);
   }
 };
 
-SSLComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHandler(callback) {
-  $(this.winObj).on("message", function(e) {
+/* POST TO PARENT */
+SSLComLink.prototype.postCmdToParent = function postCmdToParent(c) {
+  this.postDataToParent({cmd: c});
+};
+SSLComLink.prototype.postCmdAndNumToParent = function postCmdAndNumToParent(c, n) {
+  this.postDataToParent({cmd: c, num: n});
+};
+SSLComLink.prototype.postDataToParent = function postDataToParent(data) {
+  if(this.currWin.parent && this.hasPostMessage) {
+    this.currWin.parent.postMessage(data, this.origin);
+  }
+};
+
+/* POST TO IFRAME */
+SSLComLink.prototype.postCmdToIframe = function postCmdToParent(iframeElm, c) {
+  this.postDataToIframe(iframeElm, {cmd: c});
+};
+SSLComLink.prototype.postCmdAndNumToIframe = function postCmdAndNumToParent(iframeElm, c, n) {
+  this.postDataToIframe(iframeElm, {cmd: c, num: n});
+};
+SSLComLink.prototype.postDataToIframe = function postDataToIframe(iframeElm, data) {
+  if(iframeElm && iframeElm.contentWindow && this.hasPostMessage) {
+    iframeElm.contentWindow.postMessage(data, this.origin);
+  }
+};
+
+SSLComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHandler() {
+  var sslCL = this;
+  this._$(this.currWin).on("message", function(e) {
     if(e.originalEvent) e = e.originalEvent;
-    var receivedData = e.data; 
-    if(receivedData) {
-      callback(receivedData);
+    var receivedData = e.data;
+    var source = e.source;
+    if(receivedData && typeof receivedData === "object" && receivedData.cmd && typeof receivedData.cmd === "string") {
+      if(receivedData.num) { // Run command on number
+        if(!isNaN(receivedData.num)) {
+          sslCL.predefinedCommands.cmdNum(receivedData.cmd, receivedData.num, sslCL, source);
+        }
+      } else { // Run command
+        sslCL.predefinedCommands.cmd(receivedData.cmd, sslCL, source);
+      }
     }
   });
 };

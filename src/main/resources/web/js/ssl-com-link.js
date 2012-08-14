@@ -16,27 +16,10 @@ function SSLComLink() {
   this.currWin = window;
   this.hasPostMessage = this.currWin['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
   this.origin = "*";
-  this.predefinedCommands = {
-    cmd: function(c, that, source) {
-      switch(c) {
-        default:
-      }
-    },
-    cmdNum: function(c, n, that, source) {
-      switch(c) {
-        default:
-      }
-    }
-  }
+  this.predefinedCommands = {};
   
   return instance;
 };
-
-var sslComLink;
-$(document).ready(function() {
-  sslComLink = new SSLComLink();
-  sslComLink.setUpReceiveDataHandler(); 
-});
 
 /* POST BACK */
 SSLComLink.prototype.postCmd = function postCmd(c, source) {
@@ -77,8 +60,9 @@ SSLComLink.prototype.postDataToIframe = function postDataToIframe(iframeElm, dat
   }
 };
 
-SSLComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHandler() {
+SSLComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHandler(cmds) {
   var sslCL = this;
+  sslCL.predefinedCommands = cmds;
   this._$(this.currWin).on("message", function(e) {
     if(e.originalEvent) e = e.originalEvent;
     var receivedData = e.data;

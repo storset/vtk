@@ -37,12 +37,10 @@ $(document).ready(function () {
       switch(c) {
         case "move-dropdown":
           try {
-            var createDropdownOriginalTop = n.top;  
-            var createDropdownOriginalLeft = n.left;
             $("ul.manage-create").css({
               "position": "absolute", 
-              "top": createDropdownOriginalTop + "px",
-              "left": createDropdownOriginalLeft + "px"
+              "top": n.top + "px",
+              "left": n.left + "px"
             });
           } catch(e){
             if(typeof console !== "undefined" && console.log) {

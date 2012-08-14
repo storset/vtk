@@ -89,6 +89,7 @@
             }
             previewIframe.style.height = newHeight + "px";
           }
+          
           break;
         default:
       }

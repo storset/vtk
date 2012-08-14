@@ -214,6 +214,7 @@
         <entry key="jsURLs">
           <list>
            <value>${webResources.baseURL}/jquery/jquery.min.js"></value>
+           <value>${webResources.baseURL}/js/ssl-com-link.js"></value>
            <value>${webResources.baseURL}/js/admin-enhancements-iframe.js"></value>
            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
           </list>

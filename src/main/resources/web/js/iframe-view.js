@@ -23,26 +23,25 @@ $(document).ready(function () {
 });
 
 function resize(iframe) {
-  var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
-  var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
-
-  try {
-    var setHeight = 350; // Set inline style to equal the body height of the iframed content, when body content is at least 350px height
-    if(typeof iframe.contentWindow.document === "undefined") { // When login redirect fails
-      setHeight = 700;
-    } else {
-      var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45; 
-      if (computedHeight > setHeight) {
-        setHeight = computedHeight;
+  $(document).ready(function() {
+    var sslComLink = new SSLComLink();
+    sslComLink.setUpReceiveDataHandler({});
+    try {
+      var setHeight = 350; // Set inline style to equal the body height of the iframed content, when body content is at least 350px height
+      if(typeof iframe.contentWindow.document === "undefined") { // When login redirect fails
+        setHeight = 700;
+      } else {
+        var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45; 
+        if (computedHeight > setHeight) {
+          setHeight = computedHeight;
+        }
+      }
+      iframe.style.height = setHeight + "px";
+      sslComLink.postCmdAndNumToParent("preview-height", setHeight);
+    } catch(e){
+      if(typeof console !== "undefined" && console.log) {
+        console.log("Error in getting iframe height or trying to post it to parent: " + e.message);
       }
     }
-    iframe.style.height = setHeight + "px";
-    if (parent && hasPostMessage) { // Pass our height to parent since it is typically cross domain (and can't access it directly)
-      parent.postMessage(setHeight, vrtxAdminOrigin);
-    }
-  } catch(e){
-    if(typeof console !== "undefined" && console.log) {
-      console.log("Error in getting iframe height or trying to post it to parent: " + e.message);
-    }
-  }
+  });
 }

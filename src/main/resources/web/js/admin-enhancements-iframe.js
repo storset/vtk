@@ -8,12 +8,11 @@
     readyState === "complete" || "DOMContentLoaded"-event (++)
 \*-------------------------------------------------------------------*/
 
-var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
-var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
+var sslComLink;
 
 $(document).ready(function () {   
   dropdown({selector: "ul.manage-create"});
-  
+
   // Slide up when choose something in dropdown
   $(".dropdown-shortcut-menu li a").click(function() {
     $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing");
@@ -21,13 +20,51 @@ $(document).ready(function () {
   $(".dropdown-shortcut-menu-container li a").click(function() {
     $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing");
   });
+  
+  sslComLink = new SSLComLink();
+  sslComLink.setUpReceiveDataHandler({
+    cmd: function(c, that, source) {
+      switch(c) {
+        case "collapsedsize":
+          $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
+            that.postCmd("collapsedsize", source);
+          });
+          break;
+        default:
+      }
+    },
+    cmdNums: function(c, n, that, source) {
+      switch(c) {
+        case "move-dropdown":
+          try {
+            var createDropdownOriginalTop = n.top;  
+            var createDropdownOriginalLeft = n.left;
+            $("ul.manage-create").css({
+              "position": "absolute", 
+              "top": createDropdownOriginalTop + "px",
+              "left": createDropdownOriginalLeft + "px"
+            });
+          } catch(e){
+            if(typeof console !== "undefined" && console.log) {
+              console.log("Error parsing original position for create-iframe: " + e.message);
+            }
+          }
+          break;
+        default:
+      }
+    }
+  });
+  
   $(document).click(function() {
     $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
-      notifyCollapsedDropdown(true);
+      sslComLink.postCmdToParent("collapsedsize");
     });
   });
+  
+  $(".thickbox").click(function() { 
+    sslComLink.postCmdToParent("fullsize");
+  });
 });
-
 
 /*-------------------------------------------------------------------*\
     Dropdown (TODO: not dupe the one from admin-enhancements.js)
@@ -60,9 +97,13 @@ function dropdown(options) {
     
     list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").click(function (e) { 
       var isVisible = shortcutMenu.is(":visible"); 
-      notifyExpandedDropdown(isVisible);
+      if(!isVisible) {
+        sslComLink.postCmdToParent("expandedsize");
+      }
       shortcutMenu.slideToggle(100, "swing", function() {
-        notifyCollapsedDropdown(isVisible);
+        if(isVisible) {
+          sslComLink.postCmdToParent("collapsedsize");
+        }
       });
       e.stopPropagation();
       e.preventDefault();
@@ -77,22 +118,6 @@ function dropdown(options) {
       $this.parent().toggleClass('unhover');
       $this.prev().toggleClass('hover');
     });
-  }
-}
-
-function notifyExpandedDropdown(isVisible) {
-  if(parent && !isVisible) {
-    if(hasPostMessage) {
-      parent.postMessage("expandedsize", vrtxAdminOrigin);
-    }
-  }
-}
-
-function notifyCollapsedDropdown(isVisible) {
-  if(parent && isVisible) {
-    if(hasPostMessage) {
-      parent.postMessage("collapsedsize", vrtxAdminOrigin);
-    }
   }
 }
 

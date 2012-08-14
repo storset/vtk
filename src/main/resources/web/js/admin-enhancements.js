@@ -213,12 +213,8 @@ vrtxAdmin._$(document).ready(function () {
     _$(".tip:visible").fadeOut(vrtxAdm.transitionDropdownSpeed, "swing");
     // Communicate this to create-iframe if exists
     var previewCreateIframe = _$("#create-iframe");
-    if(previewCreateIframe.length) { 
-      var hasPostMessage = window['postMessage'] && (!(vrtxAdm.isOpera && vrtxAdm.browserVersion < 9.65));
-      var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
-      if(hasPostMessage) {
-        previewCreateIframe[0].contentWindow.postMessage("collapsedsize", vrtxAdminOrigin);
-      }
+    if(previewCreateIframe.length && typeof sslComLink !== "undefined") { 
+      sslComLink.postCmdToIframe(previewCreateIframe[0], "collapsedsize");
     }
   });
   

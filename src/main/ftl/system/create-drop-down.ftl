@@ -45,58 +45,6 @@
         <script type="text/javascript" src="${jsURL}"></script>
       </#list>
     </#if>
-  
-    <script type="text/javascript"><!--
-      var hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
-      var vrtxAdminOrigin = "*"; // TODO: TEMP Need real origin of adm
-    
-      // Notice parent about user actions
-      $(document).ready(function () {
-        $(".thickbox").click(function() { 
-          if (parent) {
-            // Pass our height to parent since it is typically cross domain (and can't access it directly)
-            if(hasPostMessage) {
-              parent.postMessage("fullsize", vrtxAdminOrigin);
-            }
-          }
-        });
-        
-        $(window).on("message", function(e) {
-          if(e.originalEvent) e = e.originalEvent;
-          var recievedData = e.data;
-          
-          // TODO: Need to check e.origin and e.source
-          
-          if(recievedData.indexOf) {
-            if(recievedData.indexOf("collapsedsize") != -1) {
-              $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
-                if (parent && hasPostMessage) { // Pass our height to parent since it is typically cross domain (and can't access it directly)
-                  parent.postMessage("collapsedsize", vrtxAdminOrigin);
-                }
-              });
-            } else {
-              try {
-                if(recievedData.replace) {
-                  var createDropdownOriginalTop = Number(recievedData.replace(/.*top=(\d+)(?:&|.*$)/, '$1' ));  
-                  var createDropdownOriginalLeft = Number(recievedData.replace(/.*left=(\d+)(?:&|$)/, '$1' ));
-                }  
-                $("ul.manage-create").css({
-                    "position": "absolute", 
-                    "top": createDropdownOriginalTop + "px",
-                    "left": createDropdownOriginalLeft + "px"
-                  });
-              } catch(e){
-                if(typeof console !== "undefined" && console.log) {
-                  console.log("Error parsing original position for create-iframe: " + e.message);
-                }
-              }
-            }
-          }
-        });    
-        
-      });
-    // -->
-    </script>
   </head>
   <body>
 </#if>

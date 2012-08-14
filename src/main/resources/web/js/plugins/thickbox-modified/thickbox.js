@@ -370,6 +370,6 @@ function tb_postMessageClose() {
   // Also check that it is the right dialog in Vortex admin (contains "ul.manage-create")
   if(parent && $("ul.manage-create").length && typeof sslComLink !== "undefined") {
     $("ul.manage-create").css("position", "static"); // reset position to original
-    sslComLink.postCmdToParent("originalsize");
+    sslComLink.postCmdToParent("create-dropdown-original-size");
   }
 }

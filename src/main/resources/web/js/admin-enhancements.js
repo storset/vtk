@@ -214,7 +214,7 @@ vrtxAdmin._$(document).ready(function () {
     // Communicate this to create-iframe if exists
     var previewCreateIframe = _$("#create-iframe");
     if(previewCreateIframe.length && typeof sslComLink !== "undefined") { 
-      sslComLink.postCmdToIframe(previewCreateIframe[0], "collapsedsize");
+      sslComLink.postCmdToIframe(previewCreateIframe[0], "create-dropdown-collapsed");
     }
   });
   
@@ -222,7 +222,7 @@ vrtxAdmin._$(document).ready(function () {
   _$("#app-tabs, #vrtx-breadcrumb-wrapper").on("click", "a", function(e) {
     vrtxAdm.ignoreAjaxErrors = true;
   });
-  
+
   // Remove active tab if it has no children
   var activeTab = _$("#active-tab");
   if (!activeTab.find(" > *").length) {

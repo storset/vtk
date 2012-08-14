@@ -8,7 +8,7 @@
   sslComLink.setUpReceiveDataHandler({
     cmd: function(c, that, source) {
       switch(c) {
-        case "fullsize":
+        case "create-dropdown-full-size":
           var previewCreateIframe = $("#create-iframe");
           if (previewCreateIframe) {
             var originalWidth = 150; // Hack for width when english i18n
@@ -32,13 +32,13 @@
             // Post back to iframe the original iframe offset position
             var isPreviewCreateIframePosValid = !isNaN(previewCreateIframePosTop) && !isNaN(previewCreateIframePosLeft);
             if(isPreviewCreateIframePosValid) {
-              that.postCmdAndNum("move-dropdown", { top: Math.ceil(previewCreateIframePosTop), 
-                                                   left: Math.ceil(previewCreateIframePosLeft)}, source);
+              that.postCmdAndNum("create-dropdown-move-dropdown", { top: Math.ceil(previewCreateIframePosTop),
+                                                                   left: Math.ceil(previewCreateIframePosLeft)}, source);
             }
           }
             
           break;
-        case "originalsize":
+        case "create-dropdown-original-size":
           var previewCreateIframe = $("#create-iframe");
           if (previewCreateIframe) {
             var originalWidth = 150; // Hack for width when english i18n
@@ -54,14 +54,14 @@
           }  
             
           break;
-        case "collapsedsize":
+        case "create-dropdown-collapsed":
           var previewCreateIframe = $("#create-iframe");
           if (previewCreateIframe) {
             previewCreateIframe.css("height", 40 + "px");
           }
             
           break;
-        case "expandedsize":
+        case "create-dropdown-expanded":
           var previewCreateIframe = $("#create-iframe");
           if (previewCreateIframe) {
             previewCreateIframe.css("height", 135 + "px");

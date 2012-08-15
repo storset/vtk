@@ -152,6 +152,7 @@ implements ServletContextAware {
             if (this.inlineEsiLocations != null && this.inlineEsiLocations.matcher(requestURL).matches()) {
                 try {
                     esi = URL.decode(esi);
+                    esi = HtmlUtil.unescapeHtmlString(esi);
                     handleVirtualInclude(esi, request, response);
                     return;
                 } catch (Throwable t) {

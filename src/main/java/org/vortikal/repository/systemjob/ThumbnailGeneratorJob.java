@@ -141,10 +141,15 @@ public class ThumbnailGeneratorJob extends RepositoryJob {
                         }
                     }
 
-                    BufferedImage image = ImageIO.read(repository.getInputStream(token, path, true));
-                    if (image == null) {
+                    BufferedImage image = null;
+                    try {
+                        image = ImageIO.read(repository.getInputStream(token, path, true));
+                    } catch (Throwable t) {
+                        logger.info("Failed to read image " + path, t);
+                        setThumbnailGeneratorStatus(repository, token, resource, "CORRUPT");
                         return;
                     }
+                    
                     Property contentType = resource.getProperty(Namespace.DEFAULT_NAMESPACE,
                             PropertyType.CONTENTTYPE_PROP_NAME);
 
@@ -152,14 +157,14 @@ public class ThumbnailGeneratorJob extends RepositoryJob {
                     String imageFormat = mimetype.substring(mimetype.lastIndexOf("/") + 1);
 
                     if (!supportedFormats.contains(imageFormat.toLowerCase())) {
-                        logger.info("Unable to create thumbnail, unsupported format: " + imageFormat);
+                        logger.info("Unable to create thumbnail of image " + path + ": unsupported format: " + imageFormat);
                         setThumbnailGeneratorStatus(repository, token, resource, "UNSUPPORTED_FORMAT");
                         return;
                     }
 
                     if (!scaleUp && image.getWidth() <= width) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Will not create a thumbnail: configured NOT to scale up");
+                            logger.debug("Will not create thumbnail for image " + path + ": configured NOT to scale up");
                         }
                         setThumbnailGeneratorStatus(repository, token, resource, "CONFIGURED_NOT_TO_SCALE_UP");
                         return;

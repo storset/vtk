@@ -79,6 +79,8 @@ public class LinksEvaluator implements LatePropertyEvaluator {
             if (property.isValueInitialized()
                     && ctx.getEvaluationType() != Type.ContentChange && ctx.getEvaluationType() != Type.Create) {
                 // Preserve existing content links, since this is not content change.
+                evaluateContent = false;
+                
                 InputStream stream = property.getBinaryStream().getStream();
                 String jsonString = StreamUtil.streamToString(stream, "utf-8");
                 JSONArray arr = JSONArray.fromObject(jsonString);
@@ -93,12 +95,11 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                     LinkSource source = LinkSource.valueOf(obj.getString("source"));
                     if (source == LinkSource.CONTENT) {
                         Link link = new Link(url, LinkType.valueOf(type), source);
-                        if (!collector.add(link)) {
+                        if (!collector.link(link)) {
                             break;
                         }
                     }
                 }
-                evaluateContent = false;
             }
         } catch (Throwable t) {
             // Some error in old property value, ignore and start fresh
@@ -110,12 +111,12 @@ public class LinksEvaluator implements LatePropertyEvaluator {
             for (Property p: resource) {
                 if (p.getType() == PropertyType.Type.IMAGE_REF) {
                     Link link = new Link(p.getStringValue(), LinkType.PROPERTY, LinkSource.PROPERTIES);
-                    if (!collector.add(link)) {
+                    if (!collector.link(link)) {
                         break;
                     }
                 } else if (p.getType() == PropertyType.Type.HTML) {
                     InputStream is = new ByteArrayInputStream(p.getStringValue().getBytes());
-                    extractLinksHtml(is, collector, LinkSource.PROPERTIES);
+                    extractFromHtml(is, collector, LinkSource.PROPERTIES);
                 }
             }
 
@@ -136,16 +137,16 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                                     unwrapJSON(p, collector);
                                 } else {
                                     InputStream is = new ByteArrayInputStream(p.toString().getBytes());
-                                    extractLinksHtml(is, collector, LinkSource.CONTENT);
+                                    extractFromHtml(is, collector, LinkSource.CONTENT);
                                 }
                             }
                         }
                     }
                 } else if ("text/html".equals(resource.getContentType())) {
-                    extractLinksHtml(ctx.getContent().getContentInputStream(), collector, LinkSource.CONTENT);
+                    extractFromHtml(ctx.getContent().getContentInputStream(), collector, LinkSource.CONTENT);
                 } else if ("text/xml".equals(resource.getContentType())) {
                     Document doc = (Document)ctx.getContent().getContentRepresentation(Document.class);
-                    extractLinksXml(doc, collector, LinkSource.CONTENT);
+                    extractFromXml(doc, collector, LinkSource.CONTENT);
                 }
             }
 
@@ -230,7 +231,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
     private static class LinkCollector {
         private List<Link> links = new ArrayList<Link>();
 
-        public boolean add(Link link) {
+        public boolean link(Link link) {
             if (this.links.size() >= MAX_LINKS) {
                 return false;
             }
@@ -259,7 +260,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
     
     // TODO Handlers/link parsing strategies should be pluggable, keyed on content type.
         
-    private void extractLinksHtml(InputStream is,
+    private void extractFromHtml(InputStream is,
                                   LinkCollector collector,
                                   LinkSource source)
         throws Exception {
@@ -277,7 +278,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
         }
     }
     
-    private void extractLinksXml(Document doc,
+    private void extractFromXml(Document doc,
                                  LinkCollector collector,
                                  LinkSource source) throws Exception {
         
@@ -315,7 +316,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                         || "bilde-referanse".equals(parent.getName())) {
                     type = LinkType.IMG;
                 }
-                if (!collector.add(new Link(href, type, source))) {
+                if (!collector.link(new Link(href, type, source))) {
                     break;
                 }
             }
@@ -372,7 +373,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
                     }
                     
                     if (type != null && attrValue != null) {
-                        if (!this.listener.add(new Link(attrValue, type, this.linkSource))) {
+                        if (!this.listener.link(new Link(attrValue, type, this.linkSource))) {
                             throw new StopException();
                         }
                     }
@@ -396,7 +397,7 @@ public class LinksEvaluator implements LatePropertyEvaluator {
             }
         } else if (!(object instanceof JSONNull)) {
             InputStream is = new ByteArrayInputStream(object.toString().getBytes());
-            extractLinksHtml(is, collector, LinkSource.CONTENT);
+            extractFromHtml(is, collector, LinkSource.CONTENT);
         }
     }
     

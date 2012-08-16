@@ -21,7 +21,7 @@ $(document).ready(function () {
     document.body.style.height = setHeight + "px"; 
     
     // Pass our height to parent since it is typically cross domain (and can't access it directly)
-    sslComLink.postCmdAndNumToParent("preview-height", setHeight);
+    sslComLink.postCmdToParent("preview-height:" + setHeight);
     
     for (var i = 0, links = $("a"), len = links.length; i < len; i++) {
       $(links[i]).attr("target", "_top");

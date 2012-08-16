@@ -38,7 +38,7 @@ function resize(iframe) {
         }
       }
       iframe.style.height = setHeight + "px";
-      sslComLink.postCmdAndNumToParent("preview-height", setHeight);
+      sslComLink.postCmdToParent("preview-height:" + setHeight);
     } catch(e){
       if(typeof console !== "undefined" && console.log) {
         console.log("Error in getting iframe height or trying to post it to parent: " + e.message);

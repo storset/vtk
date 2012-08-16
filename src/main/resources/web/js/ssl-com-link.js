@@ -2,7 +2,7 @@
  *  SSL communication - lightweight library
  *  by USIT/2012 - Licenced under GPL v3.0
  *
- *  TODO: origin checks and token/uid
+ *  TODO: origin checks
  *
  */
 
@@ -23,41 +23,21 @@ function SSLComLink() {
 };
 
 /* POST BACK */
-SSLComLink.prototype.postCmd = function postCmd(c, source) {
-  this.postData(JSON.stringify({cmd: c}), source);
-};
-SSLComLink.prototype.postCmdAndNum = function postCmdAndNum(c, n, source) {
-  this.postData(JSON.stringify({cmd: c, num: n}), source);
-};
-SSLComLink.prototype.postData = function postData(data, source) {
+SSLComLink.prototype.postCmd = function postCmd(cmdParams, source) {
   if(this.hasPostMessage && source != "") {
-    source.postMessage(data, this.origin);
+    source.postMessage(cmdParams, this.origin);
   }
 };
-
 /* POST TO PARENT */
-SSLComLink.prototype.postCmdToParent = function postCmdToParent(c) {
-  this.postDataToParent(JSON.stringify({cmd: c}));
-};
-SSLComLink.prototype.postCmdAndNumToParent = function postCmdAndNumToParent(c, n) {
-  this.postDataToParent(JSON.stringify({cmd: c, num: n}));
-};
-SSLComLink.prototype.postDataToParent = function postDataToParent(data) {
-  if(parent && this.hasPostMessage) {
-    parent.postMessage(data, this.origin);
+SSLComLink.prototype.postCmdToParent = function postCmdToParent(cmdParams) {
+  if(this.hasPostMessage && parent) {
+    parent.postMessage(cmdParams, this.origin);
   }
 };
-
 /* POST TO IFRAME */
-SSLComLink.prototype.postCmdToIframe = function postCmdToParent(iframeElm, c) {
-  this.postDataToIframe(iframeElm, JSON.stringify({cmd: c}));
-};
-SSLComLink.prototype.postCmdAndNumToIframe = function postCmdAndNumToParent(iframeElm, c, n) {
-  this.postDataToIframe(iframeElm, JSON.stringify({cmd: c, num: n}));
-};
-SSLComLink.prototype.postDataToIframe = function postDataToIframe(iframeElm, data) {
-  if(iframeElm && iframeElm.contentWindow && this.hasPostMessage) {
-    iframeElm.contentWindow.postMessage(data, this.origin);
+SSLComLink.prototype.postCmdToIframe = function postCmdToParent(iframeElm, cmdParams) {
+  if(this.hasPostMessage && iframeElm && iframeElm.contentWindow ) {
+    iframeElm.contentWindow.postMessage(cmdParams, this.origin);
   }
 };
 
@@ -69,21 +49,9 @@ SSLComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHandler(
     var receivedData = e.data;
     var source = e.source;
     if(typeof source === "undefined") source = "";
-    if(typeof receivedData === "string") { // Parse stringified JSON
-      try {
-        receivedData = JSON.parse(receivedData);
-      } catch(e) {}
-    }
-    if(typeof receivedData === "object" && typeof receivedData.cmd === "string") {
-      if(receivedData.num) { // Run command on number
-        if(!isNaN(receivedData.num)) {
-          self.predefinedCommands.cmdNum(receivedData.cmd, receivedData.num, source);
-        } else if(typeof receivedData.num === "object") {
-          self.predefinedCommands.cmdNums(receivedData.cmd, receivedData.num, source);
-        }
-      } else { // Run command
-        self.predefinedCommands.cmd(receivedData.cmd, source);
-      }
+    if(typeof receivedData === "string") {
+      var cmdParams = receivedData.split(":");
+      self.predefinedCommands(cmdParams, source);
     }
   });
 };

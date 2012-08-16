@@ -5,34 +5,31 @@
  
 
 var sslComLink = new SSLComLink();
-sslComLink.setUpReceiveDataHandler({
-  cmd: function(c, source) {
-    switch(c) {
-      case "create-dropdown-collapsed":
-        $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
-          sslComLink.postCmd("create-dropdown-collapsed", source);
-        });
-        break;
-      default:
-    }
-  },
-  cmdNums: function(c, n, source) {
-    switch(c) {
-      case "create-dropdown-move-dropdown":
-        try {
+sslComLink.setUpReceiveDataHandler(function(cmdParams, source) {
+  switch(cmdParams[0]) {
+    case "create-dropdown-collapsed":
+      $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
+        sslComLink.postCmd("create-dropdown-collapsed", source);
+      });
+       
+      break;
+    case "create-dropdown-move-dropdown":
+      try {
+        if(cmdParams.length === 3) {
           $("ul.manage-create").css({
             "position": "absolute", 
-            "top": n.top + "px",
-            "left": n.left + "px"
+            "top": cmdParams[1] + "px",
+            "left": cmdParams[2] + "px"
           });
-        } catch(e){
-          if(typeof console !== "undefined" && console.log) {
-            console.log("Error parsing original position for create-iframe: " + e.message);
-          }
         }
-        break;
-      default:
-    }
+      } catch(e){
+        if(typeof console !== "undefined" && console.log) {
+          console.log("Error parsing original position for create-iframe: " + e.message);
+        }
+      }
+        
+      break;
+    default:
   }
 });
 

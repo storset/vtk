@@ -4,7 +4,7 @@
  */
  
 
-var crossDocComLink = new crossDocComLink();
+var crossDocComLink = new CrossDocComLink();
 crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
   switch(cmdParams[0]) {
     case "create-dropdown-collapsed":

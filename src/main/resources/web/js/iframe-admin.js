@@ -30,7 +30,7 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
         // Post back to iframe the original iframe offset position
         var isPreviewCreateIframePosValid = !isNaN(previewCreateIframePosTop) && !isNaN(previewCreateIframePosLeft);
         if(isPreviewCreateIframePosValid) {
-          crossDocComLink.postCmd("create-dropdown-move-dropdown:" + Math.ceil(previewCreateIframePosTop) + ":" + Math.ceil(previewCreateIframePosLeft), source);
+          crossDocComLink.postCmd("create-dropdown-move-dropdown|" + Math.ceil(previewCreateIframePosTop) + "|" + Math.ceil(previewCreateIframePosLeft), source);
         }
       }
             
@@ -83,6 +83,15 @@ crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
       }
         
       break;
+    // Token/UID here?
+    /*
+    case "redirect": 
+      if(cmdParams.length === 2) {
+        location.href = cmdParams[1];
+      }
+      
+      break;
+    */
     default:
   }
 });

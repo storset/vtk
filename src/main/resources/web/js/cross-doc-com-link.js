@@ -51,7 +51,7 @@ CrossDocComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHan
     var source = e.source;
     if(typeof source === "undefined") source = "";
     if(typeof receivedData === "string" && self.predefinedCommands) {
-      var cmdParams = receivedData.split(":");
+      var cmdParams = receivedData.split("|");
       self.predefinedCommands(cmdParams, source);
     }
   });

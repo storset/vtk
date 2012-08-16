@@ -43,7 +43,7 @@ function resize(iframe) {
     }
     try {
       iframe.style.height = setHeight + "px";
-      crossDocComLink.postCmdToParent("preview-height:" + setHeight);
+      crossDocComLink.postCmdToParent("preview-height|" + setHeight);
     } catch(e) {
       if(typeof console !== "undefined" && console.log) {
         console.log("Error in posting iframe height to parent: " + e.message);

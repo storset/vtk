@@ -484,7 +484,6 @@ vrtxAdmin._$(document).ready(function () {
 
 });
 
-
 /*-------------------------------------------------------------------*\
     4. Keyboard intercept / reroute, shortcuts and buttonizing
 \*-------------------------------------------------------------------*/
@@ -1897,7 +1896,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
       vrtxAdm = this,         // use prototypal hierarchy 
       _$ = vrtxAdm._$;
       
-  _$("#app-content").on("click", options.selector, function (e) {
+  _$("body").on("click", options.selector, function (e) {
     var url = _$.single(this).attr("href") || _$.single(this).closest("form").attr("action");
     if(location.protocol == "http:" && url.indexOf("https://") != -1) {
       return; // no AJAX when http -> https (tmp. solution)
@@ -2083,7 +2082,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
       vrtxAdm = this,
       _$ = vrtxAdm._$;   
       
-  _$("#app-content").on("click", options.selector, function (e) {
+  _$("body").on("click", options.selector, function (e) {
   
     var selector = options.selector,
         isReplacing = options.isReplacing,
@@ -2128,7 +2127,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
                 form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
                   for(var i = updateSelectors.length; i--;) {
                     var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
-                    _$("#app-content " + updateSelectors[i]).replaceWith(outer);
+                    _$("body " + updateSelectors[i]).replaceWith(outer);
                   }
                   if (funcComplete) {
                     funcComplete();
@@ -2137,7 +2136,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
               } else {
                 for(var i = updateSelectors.length; i--;) {
                   var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
-                  _$("#app-content " + updateSelectors[i]).replaceWith(outer);
+                  _$("body " + updateSelectors[i]).replaceWith(outer);
                 }
                 if (funcComplete) {
                   funcComplete();

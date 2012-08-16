@@ -24,7 +24,23 @@
   
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/jquery.min.js"></script> 
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.8.19.custom/js/jquery-ui-1.8.19.custom.min.js"></script> 
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/cross-doc-com-link.js"></script>
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/admin-enhancements.js"></script> 
+  <script type="text/javascript"><!--
+    var crossDocComLink = new CrossDocComLink();
+    crossDocComLink.setUpReceiveDataHandler();
+    
+    $(document).ready(function() {
+      vrtxAdmin.completeFormAsync({
+        selector: "form[name=unlockForm] input[type=submit]",
+        isReplacing: false,
+        updateSelectors: ["#titleContainer"],
+        funcComplete: function() { crossDocComLink.postCmdToParent("redirect|.?vrtx=admin") },
+        post: true
+      });
+    });
+  // -->
+  </script>
 </head>
 <body>
 

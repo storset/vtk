@@ -17,7 +17,7 @@ function CrossDocComLink() {
 
   this.hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
   this.origin = "*";
-  this.predefinedCommands = {};
+  this.predefinedCommands;
   
   return instance;
 };
@@ -43,13 +43,13 @@ CrossDocComLink.prototype.postCmdToIframe = function postCmdToParent(iframeElm, 
 
 CrossDocComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHandler(cmds) {
   var self = this;
-  self.predefinedCommands = cmds;
+  self.predefinedCommands = (typeof cmds === "function") ? cmds : null;
   $(window).on("message", function(e) {
     if(e.originalEvent) e = e.originalEvent;
     var receivedData = e.data;
     var source = e.source;
     if(typeof source === "undefined") source = "";
-    if(typeof receivedData === "string") {
+    if(typeof receivedData === "string" && self.predefinedCommands) {
       var cmdParams = receivedData.split(":");
       self.predefinedCommands(cmdParams, source);
     }

@@ -9,7 +9,7 @@
  */
  
 var crossDocComLink = new CrossDocComLink();
-crossDocComLink.setUpReceiveDataHandler({});
+crossDocComLink.setUpReceiveDataHandler();
  
 $(document).ready(function () {
   $(window).load(function (e) {  // Set inline style to equal the body height of the iframed content,                     

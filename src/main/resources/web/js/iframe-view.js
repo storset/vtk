@@ -7,7 +7,6 @@
  */
  
 var crossDocComLink = new CrossDocComLink();
-crossDocComLink.setUpReceiveDataHandler();
  
 $(document).ready(function () {
   if ($.browser.msie) {

@@ -89,10 +89,10 @@ public class ImageServiceImpl implements ImageService {
                 }
             }
 
-            BufferedImage tmp = new BufferedImage(w, h, type);
+            BufferedImage tmp = new BufferedImage(Math.max(w, 1), Math.max(h, 1), type);
             Graphics2D g2 = tmp.createGraphics();
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            g2.drawImage(ret, 0, 0, w, h, null);
+            g2.drawImage(ret, 0, 0, Math.max(w, 1), Math.max(h, 1), null);
             g2.dispose();
 
             ret = tmp;

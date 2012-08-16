@@ -196,7 +196,8 @@ public final class HtmlPage {
             throw new IllegalArgumentException("Illegal attribute name: " + name);
         }
         if (value == null) {
-            throw new IllegalArgumentException("Illegal attribute value: NULL");
+            throw new IllegalArgumentException(
+                    "Illegal value for attribute '" + name + "': NULL");
         }
         return new HtmlAttributeImpl(name, value, false);
     }

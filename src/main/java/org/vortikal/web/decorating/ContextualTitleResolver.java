@@ -48,12 +48,12 @@ public class ContextualTitleResolver {
     private String token = null;
 
     public String resolve(Resource resource) {
-        RepositoryTraversal traversal = RequestContext.rootTraversal(this.repository, this.token, resource.getURI());
         final String repoID = this.repository.getId();
         if (!this.config.containsKey(repoID)) {
             return resource.getTitle();
         }
         final StringBuilder mapping = new StringBuilder();
+        RepositoryTraversal traversal = RequestContext.rootTraversal(this.repository, this.token, resource.getURI());
         traversal.traverse(new TraversalCallback() {
             @Override
             public boolean callback(Resource resource) {

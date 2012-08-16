@@ -22,7 +22,7 @@ function CrossDocComLink() {
   return instance;
 };
 
-/* POST BACK */
+/* POST BACK TO SOURCE */
 CrossDocComLink.prototype.postCmd = function postCmd(cmdParams, source) {
   if(this.hasPostMessage && source != "") {
     source.postMessage(cmdParams, this.origin);

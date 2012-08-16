@@ -29,7 +29,7 @@
     <property name="id" value="thumbnail-generator" />
     <property name="pathSelector">
       <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" parent="repository.systemjob.indexPathSelector">
-        <property name="limit" value="10" />
+        <property name="limit" value="${repository.thumbnail.generator.batch}" />
         <property name="queryString">
           <value>
             type IN image AND media-metadata-status = GENERATE
@@ -41,6 +41,8 @@
       <list>
         <value>thumbnail</value>
         <value>media-metadata-status</value>
+        <value>pixelWidth</value>
+        <value>pixelHeight</value>
       </list>
     </property>
     <property name="thumbnailPropDef" ref="thumbnailPropDef" />

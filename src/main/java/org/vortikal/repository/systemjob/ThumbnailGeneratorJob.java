@@ -119,23 +119,29 @@ public class ThumbnailGeneratorJob extends RepositoryJob {
 
                     // Check max source content length constraint
                     if (resource.getContentLength() >= maxSourceImageFileSize) {
-                        logger.info("Unable to create thumbnail, image size exceeds maximum limit: "
-                                + resource.getContentLength());
+                        logger.info("Image size exceeds maximum limit: " + path);
                         setThumbnailGeneratorStatus(repository, token, resource, "IMAGE_SIZE_EXCEEDS_LIMIT");
                         return;
                     }
 
                     // Check max source image memory usage constraint
-                    Dimension dim = getImageDimension(repository.getInputStream(token, path, true));
+                    Dimension dim = null;
+                    try {
+                        dim = getImageDimension(repository.getInputStream(token, path, true));
+                    } catch (Throwable t) {
+                        logger.info("Failed to read image " + path, t);
+                        setThumbnailGeneratorStatus(repository, token, resource, "CORRUPT");
+                        return;
+                        
+                    }
                     if (dim != null) {
                         long estimatedMemoryUsage = estimateMemoryUsage(dim);
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Estimated memory usage for image of " + dim.width + "x" + dim.height + " = "
+                            logger.debug("Estimated memory usage for image " + path + " of " + dim.width + "x" + dim.height + " = "
                                     + estimatedMemoryUsage + " bytes");
                         }
                         if (estimatedMemoryUsage > maxSourceImageRawMemoryUsage) {
-                            logger.warn("Memory usage estimate for source image of dimension " + dim.width + "x"
-                                    + dim.height + " exceeds limit of " + maxSourceImageRawMemoryUsage + " bytes.");
+                            logger.info("Estimated memory usage of image exceeds limit: " + path);
                             setThumbnailGeneratorStatus(repository, token, resource, "MEMORY_USAGE_EXCEEDS_LIMIT");
                             return;
                         }
@@ -157,14 +163,14 @@ public class ThumbnailGeneratorJob extends RepositoryJob {
                     String imageFormat = mimetype.substring(mimetype.lastIndexOf("/") + 1);
 
                     if (!supportedFormats.contains(imageFormat.toLowerCase())) {
-                        logger.info("Unable to create thumbnail of image " + path + ": unsupported format: " + imageFormat);
+                        logger.info("Unsupported format of image " + path + ": " + imageFormat);
                         setThumbnailGeneratorStatus(repository, token, resource, "UNSUPPORTED_FORMAT");
                         return;
                     }
 
                     if (!scaleUp && image.getWidth() <= width) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Will not create thumbnail for image " + path + ": configured NOT to scale up");
+                            logger.debug("Will not create thumbnail for image " + path + ": configured not to scale up");
                         }
                         setThumbnailGeneratorStatus(repository, token, resource, "CONFIGURED_NOT_TO_SCALE_UP");
                         return;

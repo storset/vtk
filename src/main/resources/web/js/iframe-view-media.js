@@ -7,6 +7,10 @@
  *  
  *  TODO: refactor with iframe-view.js (much of same code used here without another iframe)
  */
+ 
+var sslComLink = new SSLComLink();
+sslComLink.setUpReceiveDataHandler({});
+ 
 $(document).ready(function () {
   $(window).load(function (e) {  // Set inline style to equal the body height of the iframed content,                     
     var setHeight = 350;         // when body content is at least 350px height
@@ -17,8 +21,6 @@ $(document).ready(function () {
     document.body.style.height = setHeight + "px"; 
     
     // Pass our height to parent since it is typically cross domain (and can't access it directly)
-    var sslComLink = new SSLComLink();
-    sslComLink.setUpReceiveDataHandler({});
     sslComLink.postCmdAndNumToParent("preview-height", setHeight);
     
     for (var i = 0, links = $("a"), len = links.length; i < len; i++) {

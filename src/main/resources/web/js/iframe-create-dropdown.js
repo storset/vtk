@@ -1,14 +1,40 @@
 /*
- *  Vortex Admin enhancements inside iframe (Create dialog)
+ *  Create iframe
  *
  */
+ 
 
-/*-------------------------------------------------------------------*\
-    DOM is ready
-    readyState === "complete" || "DOMContentLoaded"-event (++)
-\*-------------------------------------------------------------------*/
-
-var sslComLink;
+var sslComLink = new SSLComLink();
+sslComLink.setUpReceiveDataHandler({
+  cmd: function(c, source) {
+    switch(c) {
+      case "create-dropdown-collapsed":
+        $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
+          sslComLink.postCmd("create-dropdown-collapsed", source);
+        });
+        break;
+      default:
+    }
+  },
+  cmdNums: function(c, n, source) {
+    switch(c) {
+      case "create-dropdown-move-dropdown":
+        try {
+          $("ul.manage-create").css({
+            "position": "absolute", 
+            "top": n.top + "px",
+            "left": n.left + "px"
+          });
+        } catch(e){
+          if(typeof console !== "undefined" && console.log) {
+            console.log("Error parsing original position for create-iframe: " + e.message);
+          }
+        }
+        break;
+      default:
+    }
+  }
+});
 
 $(document).ready(function () {   
   dropdown({selector: "ul.manage-create"});
@@ -20,46 +46,14 @@ $(document).ready(function () {
   $(".dropdown-shortcut-menu-container li a").click(function() {
     $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing");
   });
-  
-  sslComLink = new SSLComLink();
-  sslComLink.setUpReceiveDataHandler({
-    cmd: function(c, that, source) {
-      switch(c) {
-        case "create-dropdown-collapsed":
-          $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
-            that.postCmd("create-dropdown-collapsed", source);
-          });
-          break;
-        default:
-      }
-    },
-    cmdNums: function(c, n, that, source) {
-      switch(c) {
-        case "create-dropdown-move-dropdown":
-          try {
-            $("ul.manage-create").css({
-              "position": "absolute", 
-              "top": n.top + "px",
-              "left": n.left + "px"
-            });
-          } catch(e){
-            if(typeof console !== "undefined" && console.log) {
-              console.log("Error parsing original position for create-iframe: " + e.message);
-            }
-          }
-          break;
-        default:
-      }
-    }
-  });
-  
+
   $(document).click(function() {
     $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
       sslComLink.postCmdToParent("create-dropdown-collapsed");
     });
   });
   
-  $(".thickbox").click(function() { 
+  $("a.thickbox").click(function() { 
     sslComLink.postCmdToParent("create-dropdown-full-size");
   });
 });
@@ -119,4 +113,4 @@ function dropdown(options) {
   }
 }
 
-/* ^ Vortex Admin enhancements inside iframe (Create dialog) */
+/* ^ Create iframe */

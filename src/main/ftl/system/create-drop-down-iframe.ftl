@@ -5,8 +5,6 @@
 <#assign preview = resourceContext.currentServiceName?lower_case?contains("preview") />
 
 <#if preview>
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/iframe-admin.js"></script>
-
   <iframe id="create-iframe" src="${create.url?html}#${resourceContext.currentServiceURL?html}" marginwidth="0" marginheight="0" frameborder="0">
     [Your browser does not support iframes]
   </iframe>

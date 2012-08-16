@@ -6,6 +6,9 @@
  *  Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage.
  */
  
+var sslComLink = new SSLComLink();
+sslComLink.setUpReceiveDataHandler({});
+ 
 $(document).ready(function () {
   if ($.browser.msie) {
     // iframe load event not firing in IE8 / IE9 when page w. iframe is inside another iframe
@@ -24,8 +27,6 @@ $(document).ready(function () {
 
 function resize(iframe) {
   $(document).ready(function() {
-    var sslComLink = new SSLComLink();
-    sslComLink.setUpReceiveDataHandler({});
     try {
       var setHeight = 350; // Set inline style to equal the body height of the iframed content, when body content is at least 350px height
       if(typeof iframe.contentWindow.document === "undefined") { // When login redirect fails

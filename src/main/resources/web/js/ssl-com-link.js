@@ -15,9 +15,7 @@ function SSLComLink() {
   instance = new VrtxAdmin(); // instance
   instance.constructor = VrtxAdmin; // reset construction pointer
 
-  this._$ = $; // Cache jQuery instance internally
-  this.currWin = window;
-  this.hasPostMessage = this.currWin['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
+  this.hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
   this.origin = "*";
   this.predefinedCommands = {};
   
@@ -45,8 +43,8 @@ SSLComLink.prototype.postCmdAndNumToParent = function postCmdAndNumToParent(c, n
   this.postDataToParent(JSON.stringify({cmd: c, num: n}));
 };
 SSLComLink.prototype.postDataToParent = function postDataToParent(data) {
-  if(this.currWin.parent && this.hasPostMessage) {
-    this.currWin.parent.postMessage(data, this.origin);
+  if(parent && this.hasPostMessage) {
+    parent.postMessage(data, this.origin);
   }
 };
 
@@ -64,9 +62,9 @@ SSLComLink.prototype.postDataToIframe = function postDataToIframe(iframeElm, dat
 };
 
 SSLComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHandler(cmds) {
-  var sslCL = this;
-  sslCL.predefinedCommands = cmds;
-  this._$(this.currWin).on("message", function(e) {
+  var self = this;
+  self.predefinedCommands = cmds;
+  $(window).on("message", function(e) {
     if(e.originalEvent) e = e.originalEvent;
     var receivedData = e.data;
     var source = e.source;
@@ -79,12 +77,12 @@ SSLComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHandler(
     if(typeof receivedData === "object" && typeof receivedData.cmd === "string") {
       if(receivedData.num) { // Run command on number
         if(!isNaN(receivedData.num)) {
-          sslCL.predefinedCommands.cmdNum(receivedData.cmd, receivedData.num, sslCL, source);
+          self.predefinedCommands.cmdNum(receivedData.cmd, receivedData.num, source);
         } else if(typeof receivedData.num === "object") {
-          sslCL.predefinedCommands.cmdNums(receivedData.cmd, receivedData.num, sslCL, source);
+          self.predefinedCommands.cmdNums(receivedData.cmd, receivedData.num, source);
         }
       } else { // Run command
-        sslCL.predefinedCommands.cmd(receivedData.cmd, sslCL, source);
+        self.predefinedCommands.cmd(receivedData.cmd, source);
       }
     }
   });

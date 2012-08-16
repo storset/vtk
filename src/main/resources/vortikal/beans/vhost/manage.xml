@@ -1093,7 +1093,7 @@
             <value>${jquery.baseURL}/jquery.min.js</value>
             <value>${jquery.baseURL}/plugins/ui/jquery-ui-1.8.19.custom/js/jquery-ui-1.8.19.custom.min.js</value>
             <value>${jquery.baseURL}/plugins/jquery.form.js</value>
-            <value>${jsBaseURL}/ssl-com-link.js</value>
+            <value>${jsBaseURL}/cross-doc-com-link.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
           </list>
@@ -1663,7 +1663,7 @@
           <list>
             <value>${jquery.baseURL}/jquery.min.js</value>
             <value>${jquery.baseURL}/plugins/ui/jquery-ui-1.8.19.custom/js/jquery-ui-1.8.19.custom.min.js</value>
-            <value>${jsBaseURL}/ssl-com-link.js</value>
+            <value>${jsBaseURL}/cross-doc-com-link.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/iframe-admin.js</value>
             <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
@@ -1679,7 +1679,7 @@
         <entry key="jsURLs">
           <list>
             <value>${jquery.baseURL}/jquery.min.js</value>
-            <value>${jsBaseURL}/ssl-com-link.js</value>
+            <value>${jsBaseURL}/cross-doc-com-link.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/iframe-admin-alone.js</value>
             <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>

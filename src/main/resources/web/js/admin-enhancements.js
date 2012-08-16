@@ -213,8 +213,8 @@ vrtxAdmin._$(document).ready(function () {
     _$(".tip:visible").fadeOut(vrtxAdm.transitionDropdownSpeed, "swing");
     // Communicate this to create-iframe if exists
     var previewCreateIframe = _$("#create-iframe");
-    if(previewCreateIframe.length && typeof sslComLink !== "undefined") { 
-      sslComLink.postCmdToIframe(previewCreateIframe[0], "create-dropdown-collapsed");
+    if(previewCreateIframe.length && typeof crossDocComLink !== "undefined") { 
+      crossDocComLink.postCmdToIframe(previewCreateIframe[0], "create-dropdown-collapsed");
     }
   });
   

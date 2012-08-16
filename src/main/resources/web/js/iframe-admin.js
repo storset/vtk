@@ -3,8 +3,8 @@
  *
  */
 
-var sslComLink = new SSLComLink();
-sslComLink.setUpReceiveDataHandler(function(cmdParams, source) {
+var crossDocComLink = new CrossDocComLink();
+crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
   switch(cmdParams[0]) {
     case "create-dropdown-full-size":
       var previewCreateIframe = $("#create-iframe");
@@ -30,7 +30,7 @@ sslComLink.setUpReceiveDataHandler(function(cmdParams, source) {
         // Post back to iframe the original iframe offset position
         var isPreviewCreateIframePosValid = !isNaN(previewCreateIframePosTop) && !isNaN(previewCreateIframePosLeft);
         if(isPreviewCreateIframePosValid) {
-          sslComLink.postCmd("create-dropdown-move-dropdown:" + Math.ceil(previewCreateIframePosTop) + ":" + Math.ceil(previewCreateIframePosLeft), source);
+          crossDocComLink.postCmd("create-dropdown-move-dropdown:" + Math.ceil(previewCreateIframePosTop) + ":" + Math.ceil(previewCreateIframePosLeft), source);
         }
       }
             

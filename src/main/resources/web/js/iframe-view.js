@@ -6,8 +6,8 @@
  *  Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage.
  */
  
-var sslComLink = new SSLComLink();
-sslComLink.setUpReceiveDataHandler({});
+var crossDocComLink = new CrossDocComLink();
+crossDocComLink.setUpReceiveDataHandler({});
  
 $(document).ready(function () {
   if ($.browser.msie) {
@@ -38,7 +38,7 @@ function resize(iframe) {
         }
       }
       iframe.style.height = setHeight + "px";
-      sslComLink.postCmdToParent("preview-height:" + setHeight);
+      crossDocComLink.postCmdToParent("preview-height:" + setHeight);
     } catch(e){
       if(typeof console !== "undefined" && console.log) {
         console.log("Error in getting iframe height or trying to post it to parent: " + e.message);

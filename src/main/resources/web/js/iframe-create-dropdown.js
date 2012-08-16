@@ -4,12 +4,12 @@
  */
  
 
-var sslComLink = new SSLComLink();
-sslComLink.setUpReceiveDataHandler(function(cmdParams, source) {
+var crossDocComLink = new crossDocComLink();
+crossDocComLink.setUpReceiveDataHandler(function(cmdParams, source) {
   switch(cmdParams[0]) {
     case "create-dropdown-collapsed":
       $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
-        sslComLink.postCmd("create-dropdown-collapsed", source);
+        crossDocComLink.postCmd("create-dropdown-collapsed", source);
       });
        
       break;
@@ -46,12 +46,12 @@ $(document).ready(function () {
 
   $(document).click(function() {
     $(".dropdown-shortcut-menu-container:visible").slideUp(100, "swing", function() {
-      sslComLink.postCmdToParent("create-dropdown-collapsed");
+      crossDocComLink.postCmdToParent("create-dropdown-collapsed");
     });
   });
   
   $("a.thickbox").click(function() { 
-    sslComLink.postCmdToParent("create-dropdown-full-size");
+    crossDocComLink.postCmdToParent("create-dropdown-full-size");
   });
 });
 
@@ -87,11 +87,11 @@ function dropdown(options) {
     list.find("li.dropdown-init #dropdown-shortcut-menu-click-area").click(function (e) { 
       var isVisible = shortcutMenu.is(":visible"); 
       if(!isVisible) {
-        sslComLink.postCmdToParent("create-dropdown-expanded");
+        crossDocComLink.postCmdToParent("create-dropdown-expanded");
       }
       shortcutMenu.slideToggle(100, "swing", function() {
         if(isVisible) {
-          sslComLink.postCmdToParent("create-dropdown-collapsed");
+          crossDocComLink.postCmdToParent("create-dropdown-collapsed");
         }
       });
       e.stopPropagation();

@@ -368,8 +368,8 @@ function tb_getPageSize() {
 function tb_postMessageClose() {
   // Pass our height to parent since it is typically cross domain (and can't access it directly)
   // Also check that it is the right dialog in Vortex admin (contains "ul.manage-create")
-  if(parent && $("ul.manage-create").length && typeof sslComLink !== "undefined") {
+  if(parent && $("ul.manage-create").length && typeof crossDocComLink !== "undefined") {
     $("ul.manage-create").css("position", "static"); // reset position to original
-    sslComLink.postCmdToParent("create-dropdown-original-size");
+    crossDocComLink.postCmdToParent("create-dropdown-original-size");
   }
 }

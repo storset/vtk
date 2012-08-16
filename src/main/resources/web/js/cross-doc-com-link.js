@@ -1,12 +1,12 @@
 /*
- *  SSL communication - lightweight library
+ *  Cross-document communication lightweight library
  *  by USIT/2012 - Licenced under GPL v3.0
  *
  *  TODO: origin checks
  *
  */
 
-function SSLComLink() {
+function CrossDocComLink() {
   var instance; // cached instance
   VrtxAdmin = function VrtxAdmin() { // rewrite constructor
     return instance;
@@ -23,25 +23,25 @@ function SSLComLink() {
 };
 
 /* POST BACK */
-SSLComLink.prototype.postCmd = function postCmd(cmdParams, source) {
+CrossDocComLink.prototype.postCmd = function postCmd(cmdParams, source) {
   if(this.hasPostMessage && source != "") {
     source.postMessage(cmdParams, this.origin);
   }
 };
 /* POST TO PARENT */
-SSLComLink.prototype.postCmdToParent = function postCmdToParent(cmdParams) {
+CrossDocComLink.prototype.postCmdToParent = function postCmdToParent(cmdParams) {
   if(this.hasPostMessage && parent) {
     parent.postMessage(cmdParams, this.origin);
   }
 };
 /* POST TO IFRAME */
-SSLComLink.prototype.postCmdToIframe = function postCmdToParent(iframeElm, cmdParams) {
+CrossDocComLink.prototype.postCmdToIframe = function postCmdToParent(iframeElm, cmdParams) {
   if(this.hasPostMessage && iframeElm && iframeElm.contentWindow ) {
     iframeElm.contentWindow.postMessage(cmdParams, this.origin);
   }
 };
 
-SSLComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHandler(cmds) {
+CrossDocComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHandler(cmds) {
   var self = this;
   self.predefinedCommands = cmds;
   $(window).on("message", function(e) {
@@ -56,4 +56,4 @@ SSLComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHandler(
   });
 };
 
-/* ^ SSL communication - lightweight library */
+/* ^ Cross-document communication lightweight library */

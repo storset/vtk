@@ -3,10 +3,10 @@ package org.vortikal.repository.resourcetype.property;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.PropertyEvaluationContext.Type;
-import org.vortikal.repository.resourcetype.LatePropertyEvaluator;
+import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.Value;
 
-public class MediaMetadataStatusPropertyEvaluator implements LatePropertyEvaluator {
+public class MediaMetadataStatusPropertyEvaluator implements PropertyEvaluator {
 
     @Override
     public boolean evaluate(Property property, PropertyEvaluationContext ctx) throws PropertyEvaluationException {

@@ -18,7 +18,7 @@
 // -->
 </script>
 
-<#if !resourceContext.currentServiceName?lower_case?contains("preview")>
+<#if pingURL?? && !resourceContext.currentServiceName?lower_case?contains("preview")>
   <@ping.ping url=pingURL['url'] interval=300/> 
 </#if>
 

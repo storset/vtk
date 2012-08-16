@@ -12,6 +12,8 @@
   -   resourceContext
   -
   -->
+<#compress>
+
 <#import "/lib/vortikal.ftl" as vrtx />
 
 <#if !manageLink?exists || !manageLink.url?exists>
@@ -25,5 +27,11 @@
 
   <#-- Display nothing -->
 <#else>
-  <a id="vrtx-manage-url" class="vrtx-manage-url" href="${manageLink.url?html}">${manageLink.title}</a>
+  <#if .vars['display-only-url']?exists && .vars['display-only-url'] = 'true'>
+    ${manageLink.url?replace("http://", "https://")?html}
+  <#else>
+    <a id="vrtx-manage-url" class="vrtx-manage-url" href="${manageLink.url?html}">${manageLink.title}</a>
+  </#if>
 </#if>
+
+</#compress>

@@ -1227,14 +1227,32 @@
     </property>
   </bean>
 
-  <!-- resource bar in iframe <bean id="manage.resourceBarService" class="org.vortikal.web.service.ServiceImpl"> <property 
-    name="parent" ref="manageService" /> <property name="order" value="-200" /> <property name="assertions"> <list> <bean class="org.vortikal.web.service.RequestParameterAssertion"> 
-    <property name="parameterName" value="mode" /> <property name="parameterValue" value="show-resource-bar" /> </bean> </list> 
-    </property> <property name="handler" ref="manage.resourceBarHandler" /> <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" 
-    /> </bean> <bean name="manage.resourceBarHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController"> 
-    <property name="viewName" value="manage.resourceBarIframeView" /> </bean> <bean id="manage.resourceBar.viewResolver" class="org.vortikal.web.decorating.MappingViewResolver"> 
-    <property name="views"> <map> <entry key="manage.resourceBarIframeView" value-ref="manage.resourceBarIframeView" /> </map> 
-    </property> </bean> -->
+  <bean id="manage.resourceBarService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-99999" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion"> 
+          <property name="parameterName" value="display" />
+          <property name="parameterValue" value="resource-bar" />
+        </bean>
+      </list> 
+    </property>
+    <property name="handler" ref="manage.resourceBarHandler" />
+    <property name="authenticationChallenge" ref="${webAuthenticationChallenge}" />
+  </bean>
+  
+  <bean name="manage.resourceBarHandler" class="org.springframework.web.servlet.mvc.ParameterizableViewController"> 
+    <property name="viewName" value="manage.resourceBarIframeView" />
+  </bean>
+  
+  <bean id="manage.resourceBar.viewResolver" class="org.vortikal.web.decorating.MappingViewResolver"> 
+    <property name="views">
+      <map>
+        <entry key="manage.resourceBarIframeView" value-ref="manage.resourceBarIframeView" />
+      </map> 
+    </property>
+  </bean>
 
   <bean id="manage.resourceBarComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />
@@ -1273,11 +1291,34 @@
     </property>
   </bean>
 
-
-  <!-- resource bar in iframe <bean id="manage.resourceBarIframeView" parent="freemarkerView"> <property name="url" value="system/resource-bar-iframe.ftl" 
-    /> <property name="referenceDataProviders"> <list> <ref bean="resourceContextProvider" /> <ref bean="resourceMenuLeftProvider" 
-    /> <ref bean="resourceMenuRightProvider" /> </list> </property> <property name="attributesMap"> <map> <entry key="repositoryID" 
-    value="${repositoryID}" /> </map> </property> </bean> -->
+  <bean id="manage.resourceBarIframeView" parent="freemarkerView">
+    <property name="url" value="system/resource-bar-iframe.ftl" />
+    <property name="referenceDataProviders">
+      <list> 
+        <ref bean="resourceContextProvider" />
+        <ref bean="resourceMenuLeftProvider" />
+        <ref bean="resourceMenuRightProvider" />
+        <ref bean="manage.refreshLockURLProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
+          <property name="modelName" value="writePermission" />
+          <property name="permission" ref="ACTION_WRITE" />
+          <property name="anonymous" value="false" />
+          <property name="considerLocks" value="true" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
+          <property name="modelName" value="unlockPermission" />
+          <property name="permission" ref="ACTION_UNLOCK" />
+          <property name="anonymous" value="false" />
+          <property name="considerLocks" value="false" />
+        </bean>
+      </list>
+    </property>
+    <property name="attributesMap">
+      <map>
+        <entry key="repositoryID" value="${repositoryID}" />
+      </map>
+    </property>
+  </bean>
 
   <bean id="manage.infoMessageComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
     <property name="namespace" ref="decorating.manageNamespace" />

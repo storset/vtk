@@ -155,6 +155,11 @@ public class ThumbnailGeneratorJob extends RepositoryJob {
                         setThumbnailGeneratorStatus(repository, token, resource, "CORRUPT");
                         return;
                     }
+                    if (image == null) {
+                        logger.info("Failed to read image " + path);
+                        setThumbnailGeneratorStatus(repository, token, resource, "CORRUPT");
+                        return;
+                    }
                     
                     Property contentType = resource.getProperty(Namespace.DEFAULT_NAMESPACE,
                             PropertyType.CONTENTTYPE_PROP_NAME);

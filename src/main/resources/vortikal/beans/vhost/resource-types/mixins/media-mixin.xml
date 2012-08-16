@@ -31,9 +31,43 @@
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />
     <property name="mandatory" value="false" />
     <property name="propertyEvaluator" ref="mediaMetadataStatusEvaluator" />
+    <property name="vocabulary">
+      <bean class="org.vortikal.repository.resourcetype.ValueVocabulary">
+      <property name="messageSourceBaseName" value="vortikal.beans.vhost.resource-types.properties.commentsEnabled" />
+        <property name="type" value="STRING" />
+        <property name="values">
+          <list>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg value="GENERATE" />
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg value="IMAGE_SIZE_EXCEEDS_LIMIT" />
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg value="MEMORY_USAGE_EXCEEDS_LIMIT" />
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg value="UNSUPPORTED_FORMAT" />
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg value="CONFIGURED_NOT_TO_SCALE_UP" />
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+            <bean class="org.vortikal.repository.resourcetype.Value">
+              <constructor-arg value="CORRUPT" />
+              <constructor-arg ref="TYPE_STRING" />
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>
   </bean>
-  
-    <bean id="mediaHeightPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+
+  <bean id="mediaHeightPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="pixelHeight" />
     <property name="type" value="INT" />
     <property name="protectionLevel" ref="PROTECTION_LEVEL_ACL_WRITE" />

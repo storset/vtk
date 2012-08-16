@@ -208,13 +208,13 @@ public class SecurityInitializer implements InitializingBean, ApplicationContext
                                 + " for request " + req);
                     }
                     Principal principal = this.principalFactory.getPrincipal(result.getUID(), Principal.Type.USER);
-                    boolean valid = this.principalManager.validatePrincipal(principal);
-                    if (!valid) {
-                        logger.warn("Unknown principal: " + principal + " returned by authentication handler "
-                                + handler + ". " + "Not setting security context.");
-
-                        throw new IllegalStateException("Invalid principal: " + principal);
-                    }
+                    // boolean valid = this.principalManager.validatePrincipal(principal);
+                    // if (!valid) {
+                    // logger.warn("Unknown principal: " + principal + " returned by authentication handler "
+                    // + handler + ". " + "Not setting security context.");
+                    //
+                    // throw new IllegalStateException("Invalid principal: " + principal);
+                    // }
 
                     if (logger.isDebugEnabled()) {
                         logger.debug("Successfully authenticated principal: " + principal

@@ -1,4 +1,8 @@
-/* Share and subscribe box */
+/* Share and subscribe box 
+ *
+ * TODO: this is not optimal, and the animation should be on wrapper..
+ *
+ */
 
 $(document).ready(function() {
   $("body").on("click", "a#vrtx-share-close-link", function(e) {

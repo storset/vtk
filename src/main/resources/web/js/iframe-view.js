@@ -27,21 +27,26 @@ $(document).ready(function () {
 
 function resize(iframe) {
   $(document).ready(function() {
+    var setHeight = 700; // If iframe.contentWindow.document is undefined / restricted
     try {
-      var setHeight = 350; // Set inline style to equal the body height of the iframed content, when body content is at least 350px height
-      if(typeof iframe.contentWindow.document === "undefined") { // When login redirect fails
-        setHeight = 700;
-      } else {
+      if(typeof iframe.contentWindow.document !== "undefined") {
         var computedHeight = Math.ceil(iframe.contentWindow.document.body.offsetHeight) + 45; 
+        setHeight = 350;  // Set inline style to equal the body height of the iframed content, when body content is at least 350px height
         if (computedHeight > setHeight) {
           setHeight = computedHeight;
         }
       }
+    } catch(e) {
+      if(typeof console !== "undefined" && console.log) {
+        console.log("Error in getting iframe height: " + e.message);
+      }
+    }
+    try {
       iframe.style.height = setHeight + "px";
       crossDocComLink.postCmdToParent("preview-height:" + setHeight);
-    } catch(e){
+    } catch(e) {
       if(typeof console !== "undefined" && console.log) {
-        console.log("Error in getting iframe height or trying to post it to parent: " + e.message);
+        console.log("Error in posting iframe height to parent: " + e.message);
       }
     }
   });

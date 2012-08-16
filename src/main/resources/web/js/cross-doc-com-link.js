@@ -44,6 +44,7 @@ CrossDocComLink.prototype.postCmdToIframe = function postCmdToParent(iframeElm, 
 CrossDocComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHandler(cmds) {
   var self = this;
   self.predefinedCommands = (typeof cmds === "function") ? cmds : null;
+  
   $(window).on("message", function(e) {
     if(e.originalEvent) e = e.originalEvent;
     var receivedData = e.data;

@@ -54,6 +54,7 @@ import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.text.html.HtmlPage;
 import org.vortikal.text.html.HtmlPageParser;
 import org.vortikal.text.html.HtmlText;
+import org.vortikal.text.html.HtmlUtil;
 
 
 /**
@@ -284,7 +285,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
                 c.render(request, response);
                 result = response.getContentAsString();
             } catch (Throwable t) {
-                result = c.getNamespace() + ":" + c.getName() + ": " + t.getMessage();
+                result = c.getNamespace() + ":" + c.getName() + ": " + HtmlUtil.escapeHtmlString(t.getMessage());
             }
             return result;
         }

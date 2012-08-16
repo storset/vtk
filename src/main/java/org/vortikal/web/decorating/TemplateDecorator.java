@@ -147,7 +147,9 @@ public class TemplateDecorator implements Decorator {
             htmlContent = parseHtml(content, null);
             HtmlPage p = htmlContent.getHtmlContent();
             for (HtmlPageFilter f: this.postFilters) {
-                p.filter(f);
+                if (f.match(p)) {
+                    p.filter(f);
+                }
             }
             content = new HtmlPageContentImpl(
                     content.getOriginalCharacterEncoding(), p);

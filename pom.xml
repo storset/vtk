@@ -144,8 +144,6 @@
           <exclude>war/</exclude>
           <!-- Exclude any CK-editor-symlink for runtime editing of web resources: -->
           <exclude>web/ckeditor-build</exclude>
-          <!-- Filtered specifically later: -->
-          <exclude>vortikal/beans/version.properties</exclude>
         </excludes>
       </resource>
       <resource>

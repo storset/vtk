@@ -250,14 +250,14 @@ public class RequestLocalRepository implements Repository {
     }
 
     @Override
-    public void copy(String token, Path srcUri, Path destUri, Depth depth, boolean overwrite, boolean preserveACL)
+    public void copy(String token, Path srcUri, Path destUri, boolean overwrite, boolean preserveACL)
             throws Exception {
 
         RepositoryContext ctx = RepositoryContext.getRepositoryContext();
         if (ctx != null) {
             ctx.clear();
         }
-        this.repository.copy(token, srcUri, destUri, depth, overwrite, preserveACL);
+        this.repository.copy(token, srcUri, destUri, overwrite, preserveACL);
     }
 
     @Override

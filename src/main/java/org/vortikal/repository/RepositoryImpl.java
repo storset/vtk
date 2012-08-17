@@ -406,7 +406,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     @Transactional
     @Override
-    public void copy(String token, Path srcUri, Path destUri, Repository.Depth depth, boolean overwrite,
+    public void copy(String token, Path srcUri, Path destUri, boolean overwrite,
             boolean preserveACL) throws IllegalOperationException, AuthorizationException, AuthenticationException,
             FailedDependencyException, ResourceOverwriteException, ResourceLockedException, ResourceNotFoundException,
             ReadOnlyException, IOException {

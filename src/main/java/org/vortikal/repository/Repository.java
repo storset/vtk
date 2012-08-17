@@ -359,10 +359,6 @@ public interface Repository {
      *            identifies the resource to copy from
      * @param destUri
      *            identifies the resource to copy to
-     * @param depth
-     *            determines if all or none of the internal member resources of
-     *            a collection should be copied (legal values are <code>0</code>
-     *            or <code>infinity</code>)
      * @param overwrite
      *            determines if the operation should overwrite existing
      *            resources
@@ -394,7 +390,7 @@ public interface Repository {
      * @exception Exception
      *                if an I/O error occurs
      */
-    public void copy(String token, Path srcUri, Path destUri, Depth depth, boolean overwrite, boolean preserveACL)
+    public void copy(String token, Path srcUri, Path destUri, boolean overwrite, boolean preserveACL)
             throws IllegalOperationException, AuthorizationException, AuthenticationException,
             FailedDependencyException, ResourceOverwriteException, ResourceLockedException, ResourceNotFoundException,
             ReadOnlyException, Exception;

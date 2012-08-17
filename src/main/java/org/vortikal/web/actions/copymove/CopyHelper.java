@@ -36,7 +36,6 @@ import java.util.regex.Pattern;
 
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.actions.convert.CopyAction;
 
@@ -58,7 +57,7 @@ public class CopyHelper {
         } else if (this.copyAction != null) {
             this.copyAction.process(uri, destUri, null);
         } else {
-            repository.copy(token, uri, destUri, Depth.INF, false, false);
+            repository.copy(token, uri, destUri, false, false);
         }
         return destUri;
     }

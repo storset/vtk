@@ -51,7 +51,6 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.text.html.HtmlUtil;
@@ -301,7 +300,7 @@ public class TemplateBasedCreateController extends SimpleFormController {
 
         Path destinationURI = uri.extend(name);
 
-        repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, false);
+        repository.copy(token, sourceURI, destinationURI, false, false);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(repository.getInputStream(token,

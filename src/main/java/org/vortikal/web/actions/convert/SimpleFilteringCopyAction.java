@@ -37,7 +37,6 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 
@@ -49,7 +48,7 @@ public class SimpleFilteringCopyAction implements CopyAction, InitializingBean {
     public void process(Path originalUri, Path copyUri, Map<String, Object> properties) throws Exception {
         String token = SecurityContext.getSecurityContext().getToken();
 
-        this.repository.copy(token, originalUri, copyUri, Depth.ZERO, false, true);
+        this.repository.copy(token, originalUri, copyUri, false, true);
 
         if (this.filter != null) {
             try {

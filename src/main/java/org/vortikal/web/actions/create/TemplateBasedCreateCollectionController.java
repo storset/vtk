@@ -43,7 +43,6 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
@@ -149,7 +148,7 @@ public class TemplateBasedCreateCollectionController extends SimpleFormControlle
         Path destinationURI = uri.extend(name);
 
         // Copy folder-template to destination (implicit rename)
-        repository.copy(token, sourceURI, destinationURI, Depth.ZERO, false, true);
+        repository.copy(token, sourceURI, destinationURI, false, true);
         Resource dest = repository.retrieve(token, destinationURI, false);
 
         dest.removeProperty(this.userTitlePropDef);

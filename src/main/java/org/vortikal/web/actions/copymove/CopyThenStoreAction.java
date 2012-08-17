@@ -38,7 +38,6 @@ import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 
@@ -55,7 +54,7 @@ public class CopyThenStoreAction {
         String token = requestContext.getSecurityToken();
         
         // Copy resource
-        repository.copy(token, src.getURI(), copyUri, Depth.INF, false, true);
+        repository.copy(token, src.getURI(), copyUri, false, true);
         
         // Store updated preserved properties
         Resource newRsrc = repository.retrieve(token, copyUri, true);

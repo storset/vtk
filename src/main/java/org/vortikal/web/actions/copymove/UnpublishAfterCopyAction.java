@@ -35,7 +35,6 @@ import java.util.Map;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
-import org.vortikal.repository.Repository.Depth;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.TypeInfo;
 import org.vortikal.web.RequestContext;
@@ -54,7 +53,7 @@ public class UnpublishAfterCopyAction implements CopyAction {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
-        repository.copy(token, originalUri, copyUri, Depth.INF, false, false);
+        repository.copy(token, originalUri, copyUri, false, false);
         Resource result = repository.retrieve(token, copyUri, true);
 
         TypeInfo typeInfo = repository.getTypeInfo(result);

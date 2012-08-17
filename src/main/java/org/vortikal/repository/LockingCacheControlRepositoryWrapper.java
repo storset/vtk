@@ -79,7 +79,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     }
 
     @Override
-    public void copy(String token, Path srcUri, Path destUri, Depth depth, boolean overwrite, boolean preserveACL)
+    public void copy(String token, Path srcUri, Path destUri, boolean overwrite, boolean preserveACL)
             throws IllegalOperationException, AuthorizationException, AuthenticationException,
             FailedDependencyException, ResourceOverwriteException, ResourceLockedException, ResourceNotFoundException,
             ReadOnlyException, Exception {
@@ -100,7 +100,7 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         final List<Path> locked = this.lockManager.lock(lockUris, true);
         
         try {
-            this.wrappedRepository.copy(token, srcUri, destUri, depth, overwrite, preserveACL); // Tx
+            this.wrappedRepository.copy(token, srcUri, destUri, overwrite, preserveACL); // Tx
 
             // Purge destination URI and destination parent URI from cache
             flushFromCache(destUri, true, "copy");

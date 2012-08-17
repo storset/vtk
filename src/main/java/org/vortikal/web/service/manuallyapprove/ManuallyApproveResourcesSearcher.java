@@ -65,8 +65,8 @@ import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
 import org.vortikal.web.display.collection.aggregation.CollectionListingAggregatedResources;
-import org.vortikal.web.search.collectionlisting.CollectionListingSearchProperties;
 import org.vortikal.web.search.collectionlisting.CollectionListingSearchComponent;
+import org.vortikal.web.search.collectionlisting.CollectionListingSearchProperties;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
@@ -74,7 +74,7 @@ public class ManuallyApproveResourcesSearcher {
 
     private static Log logger = LogFactory.getLog(ManuallyApproveResourcesSearcher.class.getName());
 
-    private static final int RESOURCE_LIST_LIMIT = 1000;
+    public static final int RESOURCE_LIST_LIMIT = 1000;
 
     private Map<String, String> listingResourceTypeMappingPointers;
     private AggregationResolver aggregationResolver;

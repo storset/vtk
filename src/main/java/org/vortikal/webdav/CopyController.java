@@ -93,6 +93,7 @@ public class CopyController extends AbstractWebdavController {
                 depthString = "infinity";
             }
             depthString = depthString.trim();
+            // XXX: Depth is ignored
             if (depthString.equals("0")) {
                 depth = Depth.ZERO;
             } else if (depthString.equals("1")) {
@@ -124,12 +125,12 @@ public class CopyController extends AbstractWebdavController {
             }
 
             if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Copying " + uri + " to " + destURI + ", depth = "
-                             + depthString + ", overwrite = " + overwrite
-                             + ", preserveACL = " + preserveACL
-                             + ", existed = " + existed);
+                this.logger.debug("Copying " + uri + " to " + destURI 
+                        + ", overwrite = " + overwrite
+                        + ", preserveACL = " + preserveACL
+                        + ", existed = " + existed);
             }
-            repository.copy(token, uri, destURI, depth, overwrite, preserveACL);
+            repository.copy(token, uri, destURI, overwrite, preserveACL);
             if (this.logger.isDebugEnabled()) {
                 this.logger.debug("Copying " + uri + " to " + destURI + " succeeded");
             }

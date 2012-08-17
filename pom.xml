@@ -167,8 +167,7 @@
         <targetPath>web/ckeditor-build</targetPath>
       </resource>
       <resource>
-        <directory>src/main/resources/vortikal/beans</directory>
-        <includes><include>version.properties</include></includes>
+        <directory>src/main/version</directory>
         <targetPath>org/vortikal/util</targetPath>
         <filtering>true</filtering>
       </resource>

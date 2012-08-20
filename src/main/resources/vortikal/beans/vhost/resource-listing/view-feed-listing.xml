@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-  <bean id="viewAsFeedHandler" class="org.vortikal.web.display.AtomFeedController" abstract="true"
-    depends-on="resourceTypetree">
+  <bean id="viewAsFeedHandler" class="org.vortikal.web.display.AtomFeedController" abstract="true" depends-on="resourceTypetree">
     <property name="viewService" ref="viewService" />
     <property name="abdera" ref="abdera" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
@@ -11,50 +10,23 @@
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="lastModifiedPropDef" ref="lastModifiedPropDef" />
     <property name="creationTimePropDef" ref="creationTimePropDef" />
-    
-    <property name="structuredAuthorPropDefPointer" ref="structured.authorPropDefPointer" />
-    <property name="structuredIntroductionPropDefPointer" ref="structured.introductionPropDefPointer" />
-    <property name="structuredPicturePropDefPointer" ref="structured.picturePropDefPointer" />
-    <property name="structuredMediaPropDefPointer" ref="structured.mediaPropDefPointer" />
-    
-    <property name="authorPropDefPointer" ref="authorPropDefPointer" />
-    <property name="introductionPropDefPointer" ref="introductionPropDefPointer" />
-    <property name="picturePropDefPointer" ref="picturePropDefPointer" />
-    <property name="mediaPropDefPointer" ref="mediaPropDefPointer" />
-    
+
+    <property name="authorPropDefPointer" value="resource:author" />
+    <property name="introductionPropDefPointer" value="resource:introduction" />
+    <property name="picturePropDefPointer" value="resource:picture" />
+    <property name="mediaPropDefPointer" value="resource:media" />
+
+    <property name="introductionAsXHTMLSummaryResourceTypes">
+      <list>
+        <value>article</value>
+        <value>event</value>
+        <value>structured-article</value>
+        <value>structured-event</value>
+        <value>structured-project</value>
+      </list>
+    </property>
+
     <property name="htmlUtil" ref="htmlUtil" />
-  </bean>
-
-  <bean id="authorPropDefPointer" class="java.lang.String">
-    <constructor-arg value="author" />
-  </bean>
-  
-  <bean id="structured.authorPropDefPointer" class="java.lang.String">
-    <constructor-arg value="resource:author" />
-  </bean>
-
-  <bean id="introductionPropDefPointer" class="java.lang.String">
-    <constructor-arg value="introduction" />
-  </bean>
-
-  <bean id="structured.introductionPropDefPointer" class="java.lang.String">
-    <constructor-arg value="resource:introduction" />
-  </bean>
-
-  <bean id="picturePropDefPointer" class="java.lang.String">
-    <constructor-arg value="picture" />
-  </bean>
-
-  <bean id="structured.picturePropDefPointer" class="java.lang.String">
-    <constructor-arg value="resource:picture" />
-  </bean>
-
-  <bean id="mediaPropDefPointer" class="java.lang.String">
-    <constructor-arg value="media" />
-  </bean>
-
-  <bean id="structured.mediaPropDefPointer" class="java.lang.String">
-    <constructor-arg value="resource:media" />
   </bean>
 
 </beans>

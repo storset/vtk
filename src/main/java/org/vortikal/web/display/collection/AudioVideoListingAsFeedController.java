@@ -93,7 +93,7 @@ public class AudioVideoListingAsFeedController extends CollectionListingAsAtomFe
                 entry.setUpdated(updated.getDateValue());
             }
 
-            Property author = getAuthor(result);
+            Property author = this.getProperty(result, "resource:author");
             if (author != null) {
                 ValueFormatter vf = author.getDefinition().getValueFormatter();
                 if (author.getDefinition().isMultiple()) {

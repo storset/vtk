@@ -35,7 +35,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
@@ -43,7 +42,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
-import org.vortikal.text.html.HtmlFragment;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.AtomFeedController;
 import org.vortikal.web.search.Listing;
@@ -81,14 +79,6 @@ public class ArticleListingAsFeedController extends AtomFeedController {
             }
         }
         return feed;
-    }
-
-    @Override
-    protected void setFeedEntrySummary(Entry entry, PropertySet resource) throws Exception {
-        HtmlFragment summary = prepareSummary(resource);
-        if (summary != null) {
-            entry.setSummaryAsXhtml(summary.getStringRepresentation());
-        }
     }
 
     @Override

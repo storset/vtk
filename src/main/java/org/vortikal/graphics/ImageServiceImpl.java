@@ -75,9 +75,6 @@ public class ImageServiceImpl implements ImageService {
 
         int i = 0;
         do {
-            if (++i >= 10) {
-                break;
-            }
             if (w > targetWidth) {
                 w /= 2;
                 if (w < targetWidth) {
@@ -99,6 +96,9 @@ public class ImageServiceImpl implements ImageService {
             g2.dispose();
 
             ret = tmp;
+            if (++i >= 10) {
+                break;
+            }
         } while (w != targetWidth || h != targetHeight);
 
         return ret;

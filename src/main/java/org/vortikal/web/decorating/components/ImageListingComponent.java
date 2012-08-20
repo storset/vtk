@@ -82,12 +82,13 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
             throws Exception {
 
         String path = request.getStringParameter(PARAMETER_URI);
+        if (path == null || "".equals(path.trim())) {
+            return;
+        }
     	if (path.length() > 1 && path.endsWith("/")) { // Remove trailing slash if not root
     		path = path.substring(0, path.length() - 1);
     	}
-        if (path == null || "".equals(path.trim()) || !isValidPath(path)) {
-            return;
-        }
+    	if (!isValidPath(path)) return;
 
         String requestLimit = request.getStringParameter(PARAMETER_LIMIT);
         int searchLimit = getSearchLimit(requestLimit);

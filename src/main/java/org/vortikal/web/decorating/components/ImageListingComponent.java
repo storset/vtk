@@ -55,8 +55,7 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
     private static final int MAX_FADE_EFFECT = 999; // ms
 
     private static final String PARAMETER_URI = "uri";
-    private static final String PARAMETER_URI_DESC = "URI of the image folder to include pictures from. " +
-    		"Must not end with '/' unless it is the root-folder.";
+    private static final String PARAMETER_URI_DESC = "URI of the image folder to include pictures from.";
     
     private static final String PARAMETER_TYPE = "type";
     private static final String PARAMETER_TYPE_DESC = "How to the display the component. Default is 'list'. " +
@@ -138,6 +137,9 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
     }
 
     private boolean isValidPath(String url) {
+    	if (url.length() > 1 && url.endsWith("/")) { // Remove trailing slash if not root
+            url = url.substring(0, url.length() - 1);
+    	}
         try {
             Path.fromString(url);
             return true;

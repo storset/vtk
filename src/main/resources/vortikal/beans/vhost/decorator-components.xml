@@ -91,13 +91,11 @@
     <property name="exposedParameters">
       <set>
         <value>display-only-if-auth</value>
-        <value>display-only-url</value>
       </set>
     </property>
     <property name="parameterDescriptions">
       <map>
         <entry key="display-only-if-auth" value="If set to 'true', do not display anything unless the user is logged in." />
-        <entry key="display-only-url" value="If set to 'true', display only the url." />
       </map>
     </property>
   </bean>

@@ -1,5 +1,5 @@
 /*
- *  Cross-document communication lightweight library
+ *  Cross-document communication (lightweight library)
  *  by USIT/2012 - Licenced under GPL v3.0
  *
  *  TODO: origin checks
@@ -8,12 +8,12 @@
 
 function CrossDocComLink() {
   var instance; // cached instance
-  VrtxAdmin = function VrtxAdmin() { // rewrite constructor
+  CrossDocComLink = function CrossDocComLink() { // rewrite constructor
     return instance;
   };
-  VrtxAdmin.prototype = this; // carry over properties
-  instance = new VrtxAdmin(); // instance
-  instance.constructor = VrtxAdmin; // reset construction pointer
+  CrossDocComLink.prototype = this; // carry over properties
+  instance = new CrossDocComLink(); // instance
+  instance.constructor = CrossDocComLink; // reset construction pointer
 
   this.hasPostMessage = window['postMessage'] && (!($.browser.opera && $.browser.version < 9.65));
   this.origin = "*";
@@ -57,4 +57,4 @@ CrossDocComLink.prototype.setUpReceiveDataHandler = function setUpReceiveDataHan
   });
 };
 
-/* ^ Cross-document communication lightweight library */
+/* ^ Cross-document communication (lightweight library) */

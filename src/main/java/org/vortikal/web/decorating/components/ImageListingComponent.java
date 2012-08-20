@@ -81,14 +81,16 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
-        String path = request.getStringParameter(PARAMETER_URI);
-        if (path == null || "".equals(path.trim())) {
-            return;
-        }
-    	if (path.length() > 1 && path.endsWith("/")) { // Remove trailing slash if not root
-    		path = path.substring(0, path.length() - 1);
-    	}
-    	if (!isValidPath(path)) return;
+		String path = request.getStringParameter(PARAMETER_URI);
+		if (path == null || "".equals(path.trim())) {
+			return;
+		}
+		if (path.length() > 1 && path.endsWith("/")) { // Remove trailing slash if not root
+			path = path.substring(0, path.length() - 1);
+		}
+		if (!isValidPath(path)) {
+			return;
+		}
 
         String requestLimit = request.getStringParameter(PARAMETER_LIMIT);
         int searchLimit = getSearchLimit(requestLimit);

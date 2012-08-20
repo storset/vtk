@@ -1,5 +1,6 @@
 package org.vortikal.repository.systemjob;
 
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -22,11 +23,14 @@ public class GenerateMediaInfo {
     private String username;
     private String password;
 
-    private String service;
+    private String protocol;
+    private String host;
+    private int port;
     private String repositoryDataDirectory;
     private ResourceTypeTree resourceTypeTree;
     private PropertyTypeDefinition thumbnailPropDef;
     private PropertyTypeDefinition posterImagePropDef;
+    private PropertyTypeDefinition durationPropDef;
 
     /* Image */
     private Map<String, String> imageThumbnailParameters;
@@ -52,9 +56,13 @@ public class GenerateMediaInfo {
 
     /* Video */
     public void generateVideoInfo(Path path, Resource resource) throws Exception {
-        generateImage(resource, generateConnection(path, videoThumbnailParameters), thumbnailPropDef);
-        generateMetadata(resource, generateConnection(path, videoMetadataParameters),
+        int time = generateMetadata(resource, generateConnection(path, videoMetadataParameters),
                 videoMetadataAffectedPropDefPointers);
+
+        videoPosterImageParameters.put("time", "" + time / 2);
+        videoThumbnailParameters.put("time", "" + time / 2);
+
+        generateImage(resource, generateConnection(path, videoThumbnailParameters), thumbnailPropDef);
         generateImage(resource, generateConnection(path, videoPosterImageParameters), posterImagePropDef);
     }
 
@@ -76,12 +84,14 @@ public class GenerateMediaInfo {
             parameters += e.getKey() + "=" + e.getValue();
         }
 
-        URL url = new URL(service + repositoryDataDirectory + path.toString() + "?" + parameters);
+        URL url = new URI(protocol, null, host, port, repositoryDataDirectory + path.toString(), parameters, null)
+                .toURL();
         URLConnection conn = url.openConnection();
         String val = (new StringBuffer(username).append(":").append(password)).toString();
         byte[] base = val.getBytes();
         String authorizationString = "Basic " + new String(new Base64().encode(base));
-        conn.setRequestProperty ("Authorization", authorizationString);
+        conn.setRequestProperty("Authorization", authorizationString);
+        // XXX:
         // conn.setConnectTimeout();
         // conn.setReadTimeout();
 
@@ -90,6 +100,9 @@ public class GenerateMediaInfo {
     }
 
     private void generateImage(Resource resource, URLConnection conn, PropertyTypeDefinition propDef) throws Exception {
+        // XXX:
+        if (!conn.getContentType().equals("image/jpeg"))
+            throw new Exception("Invalid content type");
 
         Property property = propDef.createProperty();
         property.setBinaryValue(StreamUtil.readInputStream(conn.getInputStream()), conn.getContentType());
@@ -97,19 +110,29 @@ public class GenerateMediaInfo {
 
     }
 
-    private void generateMetadata(Resource resource, URLConnection conn, List<String> metadataAffectedPropDefPointers)
+    private int generateMetadata(Resource resource, URLConnection conn, List<String> metadataAffectedPropDefPointers)
             throws Exception {
+        // XXX:
+        if (!conn.getContentType().equals("application/json"))
+            throw new Exception("Invalid content type");
 
         JSONObject json = JSONObject.fromObject(StreamUtil.streamToString(conn.getInputStream()));
 
+        int duration = 0, value;
         Property property;
         for (String propDefPointer : metadataAffectedPropDefPointers) {
             PropertyTypeDefinition propDef = resourceTypeTree.getPropertyDefinitionByPointer(propDefPointer);
+            value = Integer.parseInt((String) json.get(propDef.getName()));
+
+            if (propDef.equals(durationPropDef))
+                duration = value;
+
             property = propDef.createProperty();
-            property.setIntValue(Integer.parseInt((String) json.get(propDef.getName())));
+            property.setIntValue(value);
             resource.addProperty(property);
         }
 
+        return duration;
     }
 
     @Required
@@ -127,9 +150,18 @@ public class GenerateMediaInfo {
         this.resourceTypeTree = resourceTypeTree;
     }
 
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
     @Required
-    public void setService(String service) {
-        this.service = service;
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    @Required
+    public void setPort(int port) {
+        this.port = port;
     }
 
     @Required
@@ -145,6 +177,11 @@ public class GenerateMediaInfo {
     @Required
     public void setPosterImagePropDef(PropertyTypeDefinition posterImagePropDef) {
         this.posterImagePropDef = posterImagePropDef;
+    }
+
+    @Required
+    public void setDurationPropDef(PropertyTypeDefinition durationPropDef) {
+        this.durationPropDef = durationPropDef;
     }
 
     /* Image */

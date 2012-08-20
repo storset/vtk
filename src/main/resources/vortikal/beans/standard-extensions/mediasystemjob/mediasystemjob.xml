@@ -33,10 +33,13 @@
     <property name="username" value="${vms.username}" />
     <property name="password" value="${vms.password}" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="service" value="http://localhost:6666" />
+    <property name="protocol" value="http" />
+    <property name="host" value="localhost" />
+    <property name="port" value="6666" />
     <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />
     <property name="thumbnailPropDef" ref="thumbnailPropDef" />
     <property name="posterImagePropDef" ref="generatedPosterImagePropDef" />
+    <property name="durationPropDef" ref="mediaDurationPropDef" />
     <!-- Image -->
     <property name="imageThumbnailParameters">
       <map>
@@ -63,7 +66,6 @@
         <entry key="action" value="thumbnail" />
         <entry key="filetype" value="video" />
         <entry key="width" value="${resourcetype.image.thumbnail.width}" />
-        <entry key="time" value="1" />
       </map>
     </property>
     <property name="videoMetadataParameters">
@@ -76,7 +78,6 @@
       <map>
         <entry key="action" value="thumbnail" />
         <entry key="filetype" value="video" />
-        <entry key="time" value="1" />
       </map>
     </property>
     <property name="videoMetadataAffectedPropDefPointers">

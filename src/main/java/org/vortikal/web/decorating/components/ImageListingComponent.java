@@ -82,6 +82,9 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
             throws Exception {
 
         String path = request.getStringParameter(PARAMETER_URI);
+    	if (path.length() > 1 && path.endsWith("/")) { // Remove trailing slash if not root
+    		path = path.substring(0, path.length() - 1);
+    	}
         if (path == null || "".equals(path.trim()) || !isValidPath(path)) {
             return;
         }
@@ -135,11 +138,8 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         model.put("fadeEffect", fadeEffect);
 
     }
-
+    
     private boolean isValidPath(String url) {
-    	if (url.length() > 1 && url.endsWith("/")) { // Remove trailing slash if not root
-            url = url.substring(0, url.length() - 1);
-    	}
         try {
             Path.fromString(url);
             return true;

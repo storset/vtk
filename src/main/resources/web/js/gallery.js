@@ -2,7 +2,7 @@
  * Vortex Simple Gallery jQuery plugin
  * w/ paging, centered thumbnail navigation and crossfade effect (dimensions from server)
  *
- * Copyright (C) 2010  Øyvind Hatland - University Of Oslo / USIT
+ * Copyright (C) 2010 Øyvind Hatland - University Of Oslo / USIT
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

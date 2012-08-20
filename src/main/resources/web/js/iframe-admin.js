@@ -1,5 +1,5 @@
 /*  Need to use postMessage for iframe resizing since cross domain is typical case now.
- *  Not essential functionality. Only works in browsers which support postMessage
+ *  Not essential functionality. Only works in browsers which support postMessage.
  *
  */
 

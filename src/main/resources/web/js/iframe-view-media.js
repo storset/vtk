@@ -4,8 +4,6 @@
  *  Changed to only process specific frame and pass height to parent with postMessage.
  *  Should work as before with regard to document.body (served from the view domain). 
  *  Resizing the outer iframe (served from the admin domain) only works on browsers which support postMessage.
- *  
- *  TODO: refactor with iframe-view.js (much of same code used here without another iframe)
  */
  
 var crossDocComLink = new CrossDocComLink();

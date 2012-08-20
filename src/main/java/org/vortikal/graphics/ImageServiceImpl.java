@@ -65,7 +65,6 @@ public class ImageServiceImpl implements ImageService {
         return new Dimension(originalImage.getWidth(), originalImage.getHeight());
     }
 
-    // Algorithm courtesy of Chris Campbell from the Java2D team at sun
     public BufferedImage getScaledInstance(BufferedImage img, int targetWidth, int targetHeight) {
 
         int type = (img.getTransparency() == Transparency.OPAQUE) ? BufferedImage.TYPE_INT_RGB
@@ -74,7 +73,11 @@ public class ImageServiceImpl implements ImageService {
         int w = img.getWidth();
         int h = img.getHeight();
 
+        int i = 0;
         do {
+            if (++i >= 10) {
+                break;
+            }
             if (w > targetWidth) {
                 w /= 2;
                 if (w < targetWidth) {

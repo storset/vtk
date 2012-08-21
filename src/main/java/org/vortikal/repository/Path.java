@@ -105,6 +105,19 @@ public final class Path implements Comparable<Path>, Serializable {
     }
 
     /**
+     * @see #fromString(String)
+     * 
+     * Handles trailing slash if provided path string contains any
+     * 
+     */
+    public static Path fromStringWithTrailingSlash(String path) {
+        if (!"/".equals(path) && path.endsWith("/")) {
+            path = path.replaceAll("/*$", "");
+        }
+        return fromString(path);
+    }
+
+    /**
      * Gets the string representation of this path. This is the same string used
      * to construct this path.
      */

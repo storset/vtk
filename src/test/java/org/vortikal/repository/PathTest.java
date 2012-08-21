@@ -176,6 +176,31 @@ public class PathTest extends TestCase {
         assertNull(p.expand("../../../../"));
     }
 
+    public void testFromStringWithTrailingSlash() {
+
+        Path actual = Path.fromStringWithTrailingSlash("/test/path/");
+        Path expected = Path.fromString("/test/path");
+        assertEquals(expected, actual);
+
+        actual = Path.fromStringWithTrailingSlash("/test/path//");
+        assertEquals(expected, actual);
+
+        actual = Path.fromStringWithTrailingSlash("/test/path/////");
+        assertEquals(expected, actual);
+
+        actual = Path.fromStringWithTrailingSlash("/");
+        expected = Path.ROOT;
+        assertEquals(expected, actual);
+
+        try {
+            actual = Path.fromStringWithTrailingSlash("fail");
+            fail("Invalid path was not treated as such");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+    }
+
     private void assertInvalid(String path) {
         try {
             Path.fromString(path);
@@ -191,8 +216,6 @@ public class PathTest extends TestCase {
             sb.append(str);
         }
         return sb.toString();
-    }
-    
-    
+    }    
 
 }

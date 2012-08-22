@@ -391,7 +391,7 @@
 
   <bean id="sslMixedModeEvaluator" class="org.vortikal.repository.resourcetype.property.MixedContentEvaluator">
     <property name="resourceManager" ref="structuredResources.resourceManager" />
-    <property name="ssiDirectivesPropDef" ref="containsSSIDirectivesPropDef" />
+    <property name="ssiDirectivesPropDef" ref="ssiDirectivesPropDef" />
   </bean>
 
 </beans>

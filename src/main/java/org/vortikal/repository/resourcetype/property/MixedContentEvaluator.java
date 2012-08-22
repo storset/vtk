@@ -32,14 +32,18 @@ package org.vortikal.repository.resourcetype.property;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.CharBuffer;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
+import java.util.regex.Pattern;
 
 import net.sf.json.JSONNull;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Required;
@@ -73,8 +77,14 @@ public class MixedContentEvaluator implements LatePropertyEvaluator {
 
             Report report = new Report();
             Resource r = ctx.getNewResource();
-            if (r.getProperty(this.ssiDirectivesPropDef) != null) {
-                report.unsafeElement("ssi");
+            Property ssiProp = r.getProperty(this.ssiDirectivesPropDef);
+            if (ssiProp != null) {
+                for (Value v: ssiProp.getValues()) {
+                    String s = v.getStringValue();
+                    if (s.indexOf("include") != -1 && s.indexOf("http://") != -1) {
+                        report.unsafeElement("ssi:" + s);
+                    }
+                }
             }
 
             for (Property p: r) {
@@ -181,6 +191,15 @@ public class MixedContentEvaluator implements LatePropertyEvaluator {
                 || value.startsWith("data:"));
     }
     
+    private static final Pattern STYLE_PATTERN = Pattern.compile("(url\\(http:|@import)");
+    private static boolean checkStyle(CharSequence value) {
+        if (value == null) {
+            return false;
+        }
+        boolean match = STYLE_PATTERN.matcher(value).find();
+        return match;
+    }
+    
     private void checkJSON(Object object, Report report) throws Exception {
         if (object instanceof List) {
             List<?> list = (List<?>) object;
@@ -255,11 +274,33 @@ public class MixedContentEvaluator implements LatePropertyEvaluator {
 
     private static class HtmlHandler extends DefaultHandler {
         private final Report report;
+        private Stack<String> elemStack = new Stack<String>();
 
         public HtmlHandler(Report report) {
             this.report = report;
         }
+
         
+        @Override
+        public void characters(char[] ch, int start, int length)
+                throws SAXException {
+            if ("style".equals(elemStack.peek())) {
+                CharBuffer buf = CharBuffer.wrap(ch, start, length);
+                if (checkStyle(buf)) {
+                    this.report.unsafeElement("style");
+                }
+            }
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName)
+                throws SAXException {
+            if (localName == null) {
+                return;
+            }
+            this.elemStack.pop();
+        }
+
         @Override
         public void startElement(String namespaceUri, String localName, String qName,
                 Attributes attrs) throws SAXException {
@@ -267,8 +308,9 @@ public class MixedContentEvaluator implements LatePropertyEvaluator {
                 return;
             }
             localName = localName.toLowerCase();
+            this.elemStack.push(localName);
             
-            if ("script".equals(localName) || "style".equals(localName)) {
+            if ("script".equals(localName)) {
                 this.report.unsafeElement(localName);
                 return;
             }
@@ -313,9 +355,14 @@ public class MixedContentEvaluator implements LatePropertyEvaluator {
             
             for (int i = 0; i < attrs.getLength(); i++) {
                 String attrName = attrs.getQName(i).toLowerCase();
-                if (attrName.startsWith("on") || attrName.equals("style")) {
+                if (attrName.startsWith("on")) {
                     this.report.unsafeAttribute(attrName);
                     return;
+                } else if (attrName.equals("style")) {
+                    String attrValue = attrs.getValue(i);
+                    if (checkStyle(attrValue)) {
+                        this.report.unsafeAttribute("style:" + StringUtils.abbreviate(attrValue, 100));
+                    }
                 }
             }
         }

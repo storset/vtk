@@ -40,12 +40,15 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.display.collection.event.EventListingHelper;
 import org.vortikal.web.display.collection.event.EventListingSearcher;
+import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 import org.vortikal.web.search.Listing;
 
 public class EventListingAsICalController implements Controller {
 
     private EventListingSearcher searcher;
+    private EventListingHelper helper;
     private EventAsICalHelper iCalHelper;
 
     @Override
@@ -56,7 +59,13 @@ public class EventListingAsICalController implements Controller {
         String token = SecurityContext.getSecurityContext().getToken();
         Resource currentResource = repository.retrieve(token, requestContext.getCurrentCollection(), true);
 
-        Listing events = this.searcher.searchUpcoming(request, currentResource, 1, 100, 0);
+        Listing events = null;
+        SpecificDateSearchType specificDateSearchType = this.helper.getSpecificDateSearchType(request);
+        if (specificDateSearchType == null) {
+            events = this.searcher.searchUpcoming(request, currentResource, 1, 100, 0);
+        } else {
+            events = this.searcher.searchSpecificDate(request, currentResource, 100, 1);
+        }
 
         String iCal = this.iCalHelper.getAsICal(events.getFiles());
         if (iCal == null) {
@@ -72,6 +81,11 @@ public class EventListingAsICalController implements Controller {
     @Required
     public void setSearcher(EventListingSearcher searcher) {
         this.searcher = searcher;
+    }
+
+    @Required
+    public void setHelper(EventListingHelper helper) {
+        this.helper = helper;
     }
 
     @Required

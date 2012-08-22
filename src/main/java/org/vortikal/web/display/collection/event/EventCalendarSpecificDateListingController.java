@@ -72,15 +72,16 @@ public class EventCalendarSpecificDateListingController extends EventCalendarLis
 
                 Service service = RequestContext.getRequestContext().getService();
                 URL baseURL = service.constructURL(RequestContext.getRequestContext().getResourceURI());
-                baseURL.setParameter(EventListingHelper.REQUEST_PARAMETER_DATE, request
-                        .getParameter(EventListingHelper.REQUEST_PARAMETER_DATE));
+                baseURL.setParameter(EventListingHelper.REQUEST_PARAMETER_DATE,
+                        request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE));
 
-                List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(specificDateEvents.getTotalHits(), pageLimit,
-                        baseURL, page);
+                List<ListingPagingLink> urls = ListingPager.generatePageThroughUrls(specificDateEvents.getTotalHits(),
+                        pageLimit, baseURL, page);
                 model.put(MODEL_KEY_PAGE_THROUGH_URLS, urls);
+                model.put(EventListingHelper.DISPLAY_LISTING_ICAL_LINK, true);
             } else {
-                model.put("noPlannedEventsMsg", this.helper.getEventTypeTitle(request, collection,
-                        "eventListing.noPlannedEvents", false));
+                model.put("noPlannedEventsMsg",
+                        this.helper.getEventTypeTitle(request, collection, "eventListing.noPlannedEvents", false));
             }
         } else {
             // invalid date given in request, run default search

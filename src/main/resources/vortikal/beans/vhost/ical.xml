@@ -47,6 +47,7 @@
 
   <bean id="eventListing.iCalHandler" class="org.vortikal.web.display.ical.EventListingAsICalController">
     <property name="searcher" ref="eventListing.eventListingSearcher" />
+    <property name="helper" ref="eventListingHelper" />
     <property name="iCalHelper" ref="event.iCalHelper" />
   </bean>
 

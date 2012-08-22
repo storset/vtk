@@ -172,21 +172,7 @@ resourcetype program-frontpage : program-document {
     	   [if studiestart-folder]
     	     [call "include:events"  {"uri":thispath, "all-events-link":true, "feed-title":true, "max-events":2, "events-title": true, "include-if-empty":false}]
     	   [endif]
-        [endif]
-        [def thispath resource-prop("./","uri")]
-        [if locale = 'en']
-          [def thispath thispath + '/messages']
-        [else]
-          [def thispath thispath + '/beskjeder']
-        [endif]
-        [def message-folder resource(thispath)] 
-        [if message-folder]          
-          [def thisfeed thispath + '/?vrtx=feed']
-          <div class="vrtx-frontpage-box">
-            [call "include:feed"  {"url":thisfeed, "feed-title":true, "max-messages":3, "include-if-empty":false}]
-          </div>
-        [endif]
-       
+        [endif]      
         [call "comp:additional-content" {"document":document, "main-content": "false"}]      
       </div>
       ##

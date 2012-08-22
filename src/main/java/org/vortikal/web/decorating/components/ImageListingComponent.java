@@ -56,41 +56,41 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
     private static final String PARAMETER_URI = "uri";
     private static final String PARAMETER_URI_DESC = "URI of the image folder to include pictures from.";
-    
+
     private static final String PARAMETER_TYPE = "type";
-    private static final String PARAMETER_TYPE_DESC = "How to the display the component. Default is 'list'. " +
-    		"'gallery' will display an embedded gallery.";
-    
+    private static final String PARAMETER_TYPE_DESC = "How to the display the component. Default is 'list'. "
+            + "'gallery' will display an embedded gallery.";
+
     private static final String PARAMETER_LIMIT = "limit";
     private static final String PARAMETER_LIMIT_DESC = "Maximum number of images to show in list. Default is 5.";
-    
+
     private static final String PARAMETER_FADE_EFFECT = "fade-effect";
-    private static final String PARAMETER_FADE_EFFECT_DESC = "Milliseconds of fade effect for choosen image. " +
-    		"Default is 0 or off, and max is 999 ms.";
-    
+    private static final String PARAMETER_FADE_EFFECT_DESC = "Milliseconds of fade effect for choosen image. "
+            + "Default is 0 or off, and max is 999 ms.";
+
     private static final String PARAMETER_HIDE_THUMBNAILS = "hide-thumbnails";
-    private static final String PARAMETER_HIDE_THUMBNAILS_DESC = "Optional parameter used when parameter 'type' is set to 'gallery'. " +
-    		"When set to 'true', will hide thumbnails in gallery view. Default is 'false'.";
-    
+    private static final String PARAMETER_HIDE_THUMBNAILS_DESC = "Optional parameter used when parameter 'type' is set to 'gallery'. "
+            + "When set to 'true', will hide thumbnails in gallery view. Default is 'false'.";
+
     private static final String PARAMETER_EXCLUDE_SCRIPTS = "exclude-scripts";
-    private static final String PARAMETER_EXCLUDE_SCRIPTS_DESC = "Use to exclude multiple inclusion of scripts for gallery display. " +
-    		"Set to 'true' when including more than one image gallery on same page. Default is 'false'.";
+    private static final String PARAMETER_EXCLUDE_SCRIPTS_DESC = "Use to exclude multiple inclusion of scripts for gallery display. "
+            + "Set to 'true' when including more than one image gallery on same page. Default is 'false'.";
 
     private SearchSorting searchSorting;
 
     protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
             throws Exception {
 
-		String path = request.getStringParameter(PARAMETER_URI);
-		if (path == null || "".equals(path.trim())) {
-			return;
-		}
-		if (path.length() > 1 && path.endsWith("/")) { // Remove trailing slash if not root
-			path = path.substring(0, path.length() - 1);
-		}
-		if (!isValidPath(path)) {
-			return;
-		}
+        String pathUriParameter = request.getStringParameter(PARAMETER_URI);
+        if (pathUriParameter == null || "".equals(pathUriParameter.trim())) {
+            return;
+        }
+
+        Path path = this.getValidPath(pathUriParameter);
+        if (path == null) {
+            // Invalid path parameter
+            return;
+        }
 
         String requestLimit = request.getStringParameter(PARAMETER_LIMIT);
         int searchLimit = getSearchLimit(requestLimit);
@@ -118,14 +118,14 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
         String token = requestContext.isViewUnauthenticated() ? null : requestContext.getSecurityToken(); // VTK-2460
-        Resource requestedResource = repository.retrieve(token, Path.fromString(path), false);
+        Resource requestedResource = repository.retrieve(token, path, false);
 
         if (!requestedResource.isCollection()) {
             return;
         }
 
         AndQuery mainQuery = new AndQuery();
-        mainQuery.add(new UriPrefixQuery(path));
+        mainQuery.add(new UriPrefixQuery(pathUriParameter));
         mainQuery.add(new TypeTermQuery("image", TermOperator.IN));
 
         Search search = new Search();
@@ -137,18 +137,18 @@ public class ImageListingComponent extends ViewRenderingDecoratorComponent {
 
         model.put("images", rs.getAllResults());
         model.put("folderTitle", requestedResource.getTitle());
-        model.put("folderUrl", path);
+        model.put("folderUrl", pathUriParameter);
         model.put("fadeEffect", fadeEffect);
 
     }
-    
-    private boolean isValidPath(String url) {
+
+    private Path getValidPath(String pathUriParameter) {
         try {
-            Path.fromString(url);
-            return true;
+            return Path.fromStringWithTrailingSlash(pathUriParameter);
         } catch (IllegalArgumentException iae) {
+            // Invalid pathUriParameter
         }
-        return false;
+        return null;
     }
 
     private int getSearchLimit(String requestLimit) {

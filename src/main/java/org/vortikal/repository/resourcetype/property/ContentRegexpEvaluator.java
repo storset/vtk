@@ -31,6 +31,8 @@
 package org.vortikal.repository.resourcetype.property;
 
 import java.nio.charset.Charset;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,6 +41,7 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertyEvaluationContext;
 import org.vortikal.repository.resourcetype.PropertyEvaluator;
 import org.vortikal.repository.resourcetype.PropertyType;
+import org.vortikal.repository.resourcetype.Value;
 
 /**
  * Evaluator that performs a regular expression match on the resource
@@ -63,6 +66,7 @@ public class ContentRegexpEvaluator implements PropertyEvaluator {
     private String pattern;
     private Pattern compiledPattern;
     private long maxLength = -1;
+    private String evaluation = null;
     
     private int flags = Pattern.CASE_INSENSITIVE | Pattern.DOTALL;
 
@@ -79,6 +83,10 @@ public class ContentRegexpEvaluator implements PropertyEvaluator {
         this.maxLength = maxLength;
     }
     
+    public void setEvaluation(String evaluation) {
+        this.evaluation = evaluation;
+    }
+    
     public void afterPropertiesSet() {
         if (this.pattern == null) {
             throw new BeanInitializationException(
@@ -92,21 +100,66 @@ public class ContentRegexpEvaluator implements PropertyEvaluator {
         if (this.maxLength > 0 && ctx.getNewResource().getContentLength() > this.maxLength) {
             return false;
         }
-        if (property.getDefinition().getType() != PropertyType.Type.BOOLEAN) {
-            throw new PropertyEvaluationException("Type of property " + property
-                                                  + " is not boolean, cannot evaluate ");
+        
+        if (property.getDefinition().getType() == PropertyType.Type.BOOLEAN) {
+            if (ctx.getContent() == null) {
+                return false;
+            }
+            try {
+                byte[] buffer = (byte[]) ctx.getContent().getContentRepresentation(byte[].class);
+                String contentString = new String(buffer, this.characterEncoding);
+                Matcher matcher = this.compiledPattern.matcher(contentString);
+                if (!matcher.find()) {
+                    return false;
+                }
+                property.setBooleanValue(true);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
         }
-        if (ctx.getContent() == null) {
-            return false;
+        
+        if (property.getDefinition().getType() != PropertyType.Type.STRING) {
+            throw new IllegalStateException("Can only evaluate to BOOLEAN or STRING types");
         }
+        if (this.evaluation == null) {
+            throw new IllegalStateException("For STRING types, an evaluation expression is required");
+        }
+        
         try {
             byte[] buffer = (byte[]) ctx.getContent().getContentRepresentation(byte[].class);
             String contentString = new String(buffer, this.characterEncoding);
             Matcher matcher = this.compiledPattern.matcher(contentString);
-            boolean match = matcher.find();
-            if (!match) return false;
-            property.setBooleanValue(match);
+            
+            Set<Value> values = new HashSet<Value>();
+            
+            while (matcher.find()) {
+                StringBuilder s = new StringBuilder(this.evaluation);
+
+                for (int i = 0; i < matcher.groupCount(); i++) {
+                    String var = "$" + (i + 1);
+                    int pos = -1;
+                    while ((pos = s.indexOf(var)) != -1) {
+                        int end = pos + var.length();
+                        String sub = matcher.group(i + 1);
+                        if (sub == null) sub = "";
+                        s.replace(pos, end, sub);
+                    }
+                }
+                values.add(new Value(s.toString(), PropertyType.Type.STRING));
+            }
+            
+            if (values.isEmpty()) {
+                return false;
+            }
+
+            if (!property.getDefinition().isMultiple()) {
+                property.setValue(values.iterator().next());
+                return true;
+            }
+            property.setValues(values.toArray(new Value[values.size()]));
             return true;
+            
         } catch (Exception e) {
             return false;
         }

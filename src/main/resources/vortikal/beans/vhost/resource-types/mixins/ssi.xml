@@ -16,10 +16,30 @@
   <bean id="ssiPropertyDefinitions" class="org.springframework.beans.factory.config.ListFactoryBean">
     <property name="sourceList">
       <list>
+        <ref bean="ssiDirectivesPropDef" />
         <ref bean="containsSSIDirectivesPropDef" />
       </list>
     </property>
   </bean>
+
+  <bean id="ssiDirectivesPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
+    <property name="name" value="ssiDirectives" />
+    <property name="type" value="STRING" />
+    <property name="multiple" value="true" />
+    <property name="protectionLevel" ref="PROTECTION_LEVEL_UNEDITABLE" />
+    <property name="mandatory" value="false" />
+    <property name="propertyEvaluator" ref="ssiDirectivesEvaluator" />
+  </bean>
+
+
+  <bean id="ssiDirectivesEvaluator" class="org.vortikal.repository.resourcetype.property.ContentRegexpEvaluator">
+    <property name="pattern">
+      <value>(&lt;!--\s*(#include\s+\w+\s*="[^"]+"\s*)--&gt;)|(\$\{(\w+:\w+\s+[^\}]+)\})</value>
+    </property>
+    <property name="evaluation" value="$2$4" />
+    <property name="maxLength" value="1000000" />
+  </bean>
+
 
   <bean id="containsSSIDirectivesPropDef" class="org.vortikal.repository.resourcetype.PropertyTypeDefinitionImpl" parent="abstractPropDef">
     <property name="name" value="containsSSIDirectives" />
@@ -36,10 +56,10 @@
         </property>
       </bean>
     </property>
-    <property name="propertyEvaluator" ref="ssiDirectivesEvaluator" />
+    <property name="propertyEvaluator" ref="containsSsiDirectivesEvaluator" />
   </bean>
 
-  <bean id="ssiDirectivesEvaluator" class="org.vortikal.repository.resourcetype.property.ContentRegexpEvaluator">
+  <bean id="containsSsiDirectivesEvaluator" class="org.vortikal.repository.resourcetype.property.ContentRegexpEvaluator">
     <property name="pattern">
       <value>(&lt;!--\s*#include\s+\w+\s*="[^"]+"\s*--&gt;)|(\$\{[^\}]+\})</value>
     </property>

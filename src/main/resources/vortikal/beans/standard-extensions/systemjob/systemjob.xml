@@ -24,12 +24,11 @@
   </bean>
 
 
-  <bean id="repository.systemjob.thumbnail" class="org.vortikal.repository.systemjob.ThumbnailGeneratorJob" parent="repository.systemjob">
-    <property name="triggerExpression" value="${repository.thumbnail.generator.interval}" />
-    <property name="id" value="thumbnail-generator" />
+  <bean id="repository.systemjob.mediaMetadataJob" class="org.vortikal.repository.systemjob.MediaMetadataJob" parent="repository.systemjob" depends-on="resourceTypeTree">
+    <property name="triggerExpression" value="${repository.publisher.interval}" />
+    <property name="id" value="media-metadata-generator" />
     <property name="pathSelector">
       <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" parent="repository.systemjob.indexPathSelector">
-        <property name="limit" value="${repository.thumbnail.generator.batch}" />
         <property name="queryString">
           <value>
             type IN image AND media-metadata-status = GENERATE
@@ -40,11 +39,16 @@
     <property name="affectedPropDefPointers">
       <list>
         <value>thumbnail</value>
-        <value>media-metadata-status</value>
-        <value>pixelWidth</value>
         <value>pixelHeight</value>
+        <value>pixelWidth</value>
+        <value>media-metadata-status</value>
       </list>
     </property>
+    <property name="generateMediaInfo" ref="repository.systemjob.inProcessMetadataProvider" />
+  </bean>
+
+
+  <bean id="repository.systemjob.inProcessMetadataProvider" class="org.vortikal.repository.systemjob.InProcessMetadataProvider">
     <property name="thumbnailPropDef" ref="thumbnailPropDef" />
     <property name="imageService">
       <bean class="org.vortikal.graphics.ImageServiceImpl" />
@@ -60,10 +64,10 @@
         <value>gif</value>
         <value>png</value>
         <value>bmp</value>
-        <value>pjpeg</value>
+        <value>pjpeg</value><!-- Microsoft -->
       </set>
     </property>
-    <property name="thumbnailStatusPropDef" ref="mediaMetadataStatusPropDef" />
+    <property name="mediaMetadataStatusPropDef" ref="mediaMetadataStatusPropDef" />
     <property name="imageHeightPropDef" ref="mediaHeightPropDef" />
     <property name="imageWidthPropDef" ref="mediaWidthPropDef" />
   </bean>

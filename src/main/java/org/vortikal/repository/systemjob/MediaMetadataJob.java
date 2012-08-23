@@ -30,31 +30,20 @@
  */
 package org.vortikal.repository.systemjob;
 
-import java.io.IOException;
-import java.net.UnknownServiceException;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceNotFoundException;
 import org.vortikal.repository.SystemChangeContext;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.SecurityContext;
 
 public class MediaMetadataJob extends AbstractExternalVortexMediaServiceJob {
 
-    private PropertyTypeDefinition mediaMetadataStatusPropDef;
-    private GenerateMediaInfo generateMediaInfo;
+    private MediaMetadataProvider generateMediaInfo;
 
     @Required
-    public void setMediaMetadataStatusPropDef(PropertyTypeDefinition mediaMetadataStatusPropDef) {
-        this.mediaMetadataStatusPropDef = mediaMetadataStatusPropDef;
-    }
-
-    @Required
-    public void setGenerateMediaInfo(GenerateMediaInfo generateMediaInfo) {
+    public void setGenerateMediaInfo(MediaMetadataProvider generateMediaInfo) {
         this.generateMediaInfo = generateMediaInfo;
     }
 
@@ -90,41 +79,12 @@ public class MediaMetadataJob extends AbstractExternalVortexMediaServiceJob {
                     }
                     Resource resource = repository.retrieve(token, path, false);
 
-                    boolean removeMediaMetadataStatusProp = true;
-                    if (resource.getResourceType().equals("image")) {
-                        generateMediaInfo.generateImageMetadata(path, resource);
-                    } else if (resource.getResourceType().equals("video")) {
-                        generateMediaInfo.generateVideoInfo(path, resource);
-                    } else if (resource.getResourceType().equals("audio")) {
-                        generateMediaInfo.generateAudioMetadata(path, resource);
-                    } else {
-                        Property mediaMetadataStatusProp = resource.getProperty(mediaMetadataStatusPropDef);
-                        mediaMetadataStatusProp.setStringValue("UNRECOGNIZABLE-MEDIA");
-                        removeMediaMetadataStatusProp = false;
-                    }
-
-                    if (resource.getLock() == null && removeMediaMetadataStatusProp) {
-                        resource.removeProperty(mediaMetadataStatusPropDef);
-                        repository.store(token, resource, context);
-                        logger.info("Created metadata for " + resource);
-                    } else if (resource.getLock() == null && !removeMediaMetadataStatusProp) {
-                        repository.store(token, resource, context);
-                        logger.warn("Unrecognizable media for " + resource);
-                    } else {
-                        logger.warn("Resource " + resource + " currently locked, will not invoke store.");
-                    }
+                    generateMediaInfo.generateMetadata(repository, context, token, path, resource);
                 } catch (ResourceNotFoundException rnfe) {
                     // Resource is no longer there after search (deleted or
                     // moved)
                     logger.warn("A resource (" + path
                             + ") that was to be affected by a systemjob was no longer available: " + rnfe.getMessage());
-                } catch (UnknownServiceException use) {
-                    // If the protocol does not support output.
-                    logger.warn("UnknownServiceException: " + use.getMessage());
-                } catch (IOException ioe) {
-                    // If an I/O error occurs while creating the output stream
-                    // or opening connection.
-                    logger.warn("IOException: " + ioe.getMessage());
                 } catch (Exception e) {
                     if (continueOnException) {
                         logger.warn("Exception when invoking store for resource " + path, e);

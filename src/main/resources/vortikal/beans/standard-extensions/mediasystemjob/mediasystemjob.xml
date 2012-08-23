@@ -25,21 +25,26 @@
         <value>media-metadata-status</value>
       </list>
     </property>
-    <property name="mediaMetadataStatusPropDef" ref="mediaMetadataStatusPropDef" />
-    <property name="generateMediaInfo" ref="repository.systemjob.generateMediaInfo" />
+    <property name="generateMediaInfo" ref="repository.systemjob.remoteMetadataProvider" />
   </bean>
   
-  <bean id="repository.systemjob.generateMediaInfo" class="org.vortikal.repository.systemjob.GenerateMediaInfo">
+  <bean id="repository.systemjob.remoteMetadataProvider" class="org.vortikal.repository.systemjob.RemoteMetadataProvider">
     <property name="username" value="${vms.username}" />
     <property name="password" value="${vms.password}" />
     <property name="resourceTypeTree" ref="resourceTypeTree" />
     <property name="protocol" value="http" />
     <property name="host" value="localhost" />
     <property name="port" value="6666" />
+    <property name="thumbnailSize" value="${resourcetype.image.thumbnail.width}" />
     <property name="repositoryDataDirectory" value="${repositoryDataDirectory}" />
     <property name="thumbnailPropDef" ref="thumbnailPropDef" />
     <property name="posterImagePropDef" ref="generatedPosterImagePropDef" />
-    <property name="durationPropDef" ref="mediaDurationPropDef" />
+    <property name="mediaWidthPropDef" ref="mediaWidthPropDef" />
+    <property name="mediaHeightPropDef" ref="mediaHeightPropDef" />
+    <property name="mediaMetadataStatusPropDef" ref="mediaMetadataStatusPropDef" />
+    <property name="maxSourceImageFileSize" value="${resourcetype.image.thumbnail.maxSourceImageFileSize}" />
+    <property name="maxSourceImageRawMemoryUsage" value="${resourcetype.image.thumbnail.maxSourceImageRawMemoryUsage}" />
+    <property name="scaleUp" value="false" />
     <!-- Image -->
     <property name="imageThumbnailParameters">
       <map>

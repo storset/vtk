@@ -66,7 +66,7 @@ public class DocumentPrincipalMetadataRetriever {
     public Set<Principal> getPrincipalDocumentsByUid(Set<String> uids, Locale preferredLocale) {
 
         Set<Principal> result = new HashSet<Principal>();
-        if (this.personDocumentPrincipalMetadataDao != null && uids.size() > 0) {
+        if (this.personDocumentPrincipalMetadataDao != null && uids != null && !uids.isEmpty()) {
 
             PrincipalSearchImpl ps = new PrincipalSearchImpl(uids, preferredLocale);
             List<PrincipalMetadata> principalDocuments = this.personDocumentPrincipalMetadataDao.search(ps,

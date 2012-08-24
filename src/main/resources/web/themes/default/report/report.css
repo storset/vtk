@@ -231,10 +231,14 @@ td.vrtx-report-broken-links li {
 /* Responsive width distribution */
 
 #vrtx-report-filters ul {
-  margin-right: 10%;
-  margin-bottom: 15px;
+  /* margin-right: 10%; */
+  margin-right: 15px;
+  padding: 7px 10px 7px 0px;
+  background: url(../images/seperator-grey-gradient.png) no-repeat center right;
   float: left;
 }
+
+/*
 
 @media screen and (min-width: 1100px) and (max-width: 1200px) {
   #vrtx-report-filters ul {
@@ -247,6 +251,8 @@ td.vrtx-report-broken-links li {
     margin-right: 2%;
   }
 }
+
+*/
 
 /* ^ Responsive width distribution */
 
@@ -272,16 +278,17 @@ td.vrtx-report-broken-links li {
 
 #vrtx-report-filters ul li.active-filter,
 #vrtx-report-filters ul li.active-filter:hover {
-  background: url(../images/report-filter-active-left.png) no-repeat 0 0;
+  background: url(../images/report-filter-hover-left.png) no-repeat 0 0;
 }
 
 #vrtx-report-filters ul li.active-filter span,
 #vrtx-report-filters ul li.active-filter:hover span {
-  background: url(../images/report-filter-active-right.png) no-repeat top right;
+  background: url(../images/report-filter-hover-right.png) no-repeat top right;
   display: inline-block;
-  color: #fff;
+  /* color: #fff; */
 }
 
+/*
 #vrtx-report-filters ul li:hover {
   background: url(../images/report-filter-hover-left.png) no-repeat 0 0;
 }
@@ -291,6 +298,7 @@ td.vrtx-report-broken-links li {
   color: #363534;
   text-decoration: none;
 }
+*/
 
 /* Remove "Other:" */
 #vrtx-report-filters ul li#vrtx-report-filter-link-type-other {
@@ -330,7 +338,7 @@ td.vrtx-report-broken-links li {
 }
 
 #vrtx-report-filters #vrtx-report-filters-show-hide-advanced {
-  margin-top: 11px;
+  margin-top: 18px;
   display: block;
   float: right;
 }

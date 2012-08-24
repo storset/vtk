@@ -4,10 +4,11 @@
 
   <!-- Media periodic job -->
   <bean id="repository.systemjob.mediaMetadataJob" class="org.vortikal.repository.systemjob.MediaMetadataJob" parent="repository.systemjob" depends-on="resourceTypeTree">
-    <property name="triggerExpression" value="${repository.publisher.interval}" />
+    <property name="triggerExpression" value="${repository.media.generator.interval}" />
     <property name="id" value="media-metadata-generator" />
     <property name="pathSelector">
       <bean class="org.vortikal.repository.systemjob.IndexQueryPathSelector" parent="repository.systemjob.indexPathSelector">
+        <property name="limit" value="${repository.media.generator.batch}" />
         <property name="queryString">
           <value>
             (type IN video OR type IN audio OR type IN image) AND media-metadata-status = GENERATE
@@ -25,7 +26,7 @@
         <value>media-metadata-status</value>
       </list>
     </property>
-    <property name="generateMediaInfo" ref="repository.systemjob.remoteMetadataProvider" />
+    <property name="mediaMetadataProvider" ref="repository.systemjob.remoteMetadataProvider" />
   </bean>
   
   <bean id="repository.systemjob.remoteMetadataProvider" class="org.vortikal.repository.systemjob.RemoteMetadataProvider">

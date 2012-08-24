@@ -40,11 +40,11 @@ import org.vortikal.security.SecurityContext;
 
 public class MediaMetadataJob extends AbstractExternalVortexMediaServiceJob {
 
-    private MediaMetadataProvider generateMediaInfo;
+    private MediaMetadataProvider mediaMetadataProvider;
 
     @Required
-    public void setGenerateMediaInfo(MediaMetadataProvider generateMediaInfo) {
-        this.generateMediaInfo = generateMediaInfo;
+    public void setMediaMetadataProvider(MediaMetadataProvider mediaMetadataProvider) {
+        this.mediaMetadataProvider = mediaMetadataProvider;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class MediaMetadataJob extends AbstractExternalVortexMediaServiceJob {
                     }
                     Resource resource = repository.retrieve(token, path, false);
 
-                    generateMediaInfo.generateMetadata(repository, context, token, path, resource);
+                    mediaMetadataProvider.generateMetadata(repository, context, token, path, resource);
                 } catch (ResourceNotFoundException rnfe) {
                     // Resource is no longer there after search (deleted or
                     // moved)

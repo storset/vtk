@@ -388,6 +388,7 @@ span.cke_skin_kama .cke_wrapper {
   margin-bottom: 10px !important;
 }
 
+/*
 .cke_skin_kama .cke_rcombo a,
 .cke_skin_kama .cke_rcombo a:active,
 .cke_skin_kama .cke_rcombo a:hover {
@@ -398,6 +399,7 @@ span.cke_skin_kama .cke_wrapper {
   border-bottom: none !important;
   padding: 1px !important;
 }
+*/
 
 /* Override CK for injected save/help */
 
@@ -411,7 +413,6 @@ span.cke_skin_kama .cke_wrapper {
   cursor: pointer !important;
   text-decoration: none !important;
   margin-left: 20px !important;
- 
 }
 
 .cke_skin_kama .vrtx-button span,

@@ -101,7 +101,6 @@
                 ${modifiedByNameLink}
               </#if>
             </td>
-            <td class="vrtx-report-permission-set">${aclIsInherited?html}</td>
             <#if report.isReadRestricted[res_index] >
               <td class="vrtx-report-permissions"><span class="restricted">${isReadRestricted?html}</span></td>
             <#else>

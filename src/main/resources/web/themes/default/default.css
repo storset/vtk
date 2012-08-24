@@ -1403,11 +1403,7 @@ span.vrtx-help-step-by-step-cmd {
 }
 
 #directory-listing th#vrtx-report-modified-by {
-  width: 12%;
-}
-
-#directory-listing th#vrtx-report-permission-set {
-  width: 12%;
+  width: 22%;
 }
 
 #directory-listing th.published,

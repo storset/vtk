@@ -359,13 +359,17 @@ public abstract class AtomFeedController implements Controller {
 
     protected Property getProperty(PropertySet resource, String propDefPointer) {
         PropertyTypeDefinition propDef = this.resourceTypeTree.getPropertyDefinitionByPointer(propDefPointer);
-        if (propDef == null && propDefPointer.contains(":")) {
-            String defaultPropDefPointer = propDefPointer.substring(propDefPointer.indexOf(":"),
-                    propDefPointer.length());
-            propDef = this.resourceTypeTree.getPropertyDefinitionByPointer(defaultPropDefPointer);
-        }
         if (propDef != null) {
-            return resource.getProperty(propDef);
+            Property prop = resource.getProperty(propDef);
+            if (prop == null && propDefPointer.contains(":")) {
+                String defaultPropDefPointer = propDefPointer.substring(propDefPointer.indexOf(":") + 1,
+                        propDefPointer.length());
+                propDef = this.resourceTypeTree.getPropertyDefinitionByPointer(defaultPropDefPointer);
+                if (propDef != null) {
+                    prop = resource.getProperty(propDef);
+                }
+            }
+            return prop;
         }
 
         return null;

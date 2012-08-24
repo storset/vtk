@@ -29,9 +29,6 @@
                  args=[report.from, report.to, report.total]
                  default="Listing results " + report.from + " - "
                  +  report.to + " of total " + report.total + " resources" />
-      <#if report.prev?exists || report.next?exists>
-        <@displayPaging />
-      </#if>
     </p>
     <div class="vrtx-report">
     <table id="directory-listing" class="report-document-listing">

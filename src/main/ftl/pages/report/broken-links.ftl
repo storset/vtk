@@ -80,9 +80,6 @@
                  args=[report.from, report.to, report.total, report.brokenLinkCount]
                  default="Listing results " + report.from + "–"
                  + report.to + " of total " + report.total + " of web pages with " + report.brokenLinkCount + " broken" /> ${linkTypeLocalization?lower_case}
-      <#if report.prev?exists || report.next?exists>
-        <@displayPaging />  
-      </#if>
     </p>
     <div class="vrtx-report">
       <table id="directory-listing" class="report-broken-links">

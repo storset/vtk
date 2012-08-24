@@ -81,7 +81,7 @@ public class MixedContentEvaluator implements LatePropertyEvaluator {
             if (ssiProp != null) {
                 for (Value v: ssiProp.getValues()) {
                     String s = v.getStringValue();
-                    if (s.indexOf("include") != -1 && s.indexOf("http://") != -1) {
+                    if (s.indexOf("include") != -1) {
                         report.unsafeElement("ssi:" + s);
                     }
                 }

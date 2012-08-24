@@ -32,6 +32,7 @@ package org.vortikal.repository.systemjob;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
@@ -108,6 +109,11 @@ public class RemoteMetadataProvider implements MediaMetadataProvider {
             } else if (resource.getResourceType().equals("audio")) {
                 remove = generateAudioMetadata(repository, context, token, path, resource);
             }
+        } catch (ConnectionException ce) {
+            logger.warn("ConnectionException: " + ce.getMessage());
+        } catch (SocketTimeoutException ste) {
+            setMediaMetadataStatus(repository, context, token, resource, "MEMORY_USAGE_EXCEEDS_LIMIT");
+            logger.warn("SocketTimeoutException: " + ste.getMessage());
         } catch (UnknownServiceException use) {
             // If the protocol does not support output.
             logger.warn("UnknownServiceException: " + use.getMessage());
@@ -115,8 +121,6 @@ public class RemoteMetadataProvider implements MediaMetadataProvider {
             // If an I/O error occurs while creating the output stream
             // or opening connection.
             logger.warn("IOException: " + ioe.getMessage());
-        } catch (ConnectionException ce) {
-            logger.warn("ConnectionException: " + ce.getMessage());
         }
 
         if (remove)
@@ -234,6 +238,10 @@ public class RemoteMetadataProvider implements MediaMetadataProvider {
                 || (responseCode == HttpURLConnection.HTTP_NOT_FOUND)) {
             setMediaMetadataStatus(repository, context, token, resource, "CORRUPT");
             throw new ConnectionException("Service returned error when requesting " + url.toExternalForm()
+                    + ". Status code: " + responseCode);
+        } else if (responseCode == HttpURLConnection.HTTP_GATEWAY_TIMEOUT) {
+            setMediaMetadataStatus(repository, context, token, resource, "MEMORY_USAGE_EXCEEDS_LIMIT");
+            throw new ConnectionException("Service timed out when requesting " + url.toExternalForm()
                     + ". Status code: " + responseCode);
         }
 

@@ -2124,6 +2124,14 @@ table.resourceInfo.revisions tr:nth-child(even) td {
   padding: 0 0 0 12px;
 }
 
+.vrtx-report-paging .next {
+  margin-left: 0px !important;
+}
+
+.vrtx-report-paging .prev {
+  margin-right: 20px !important;
+}
+
 /* ^ 3.6 Permissions / About / Publishing / View / Plaintext-edit / Visual profile / Versioning */
 
 /* 3.7 Messages */

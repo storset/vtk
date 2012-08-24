@@ -123,6 +123,7 @@ vrtxAdmin._$.ajaxSetup({
 // Global vars that probably should be put inside vrtxAdmin
 var EDITOR_SAVE_BUTTON_NAME = "",
     GET_FORM_ASYNCS_IN_PROGRESS = 0,
+    GET_STAT_ASYNC_IN_PROGRESS = false,
     CREATE_RESOURCE_REPLACE_TITLE = true,
     CREATE_DOCUMENT_FILE_NAME = "",
     MULTIPLE_INPUT_FIELD_NAMES = [],
@@ -2246,13 +2247,18 @@ VrtxAdmin.prototype.getHtmlAsTextAsync = function getHtmlAsTextAsync(url, insert
       vrtxAdm = this,
       _$ = vrtxAdm._$;
 
+  if(GET_STAT_ASYNC_IN_PROGRESS) {
+    return;
+  }
+  GET_STAT_ASYNC_IN_PROGRESS = true;
+
   var wrapper = _$(wrapperSelector);
   if(wrapper.length) {
     wrapper.html("<span id='urchin-loading'></span>");
   } else {
     _$("<div id='" + wrapperSelector.substring(1) + "'><span id='urchin-loading'></span></div>").insertAfter(insertAfterSelector);
   }
-  
+
   vrtxAdmin.serverFacade.getText(url, {
     success : function (results, status, resp) {
       var trimmedResults = _$.trim(results);
@@ -2266,6 +2272,7 @@ VrtxAdmin.prototype.getHtmlAsTextAsync = function getHtmlAsTextAsync(url, insert
       } else {
         wrapper.remove();
       }
+      GET_STAT_ASYNC_IN_PROGRESS = false;
     }
   });
 };

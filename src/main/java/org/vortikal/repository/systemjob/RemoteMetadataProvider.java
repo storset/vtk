@@ -115,8 +115,8 @@ public class RemoteMetadataProvider implements MediaMetadataProvider {
             // If an I/O error occurs while creating the output stream
             // or opening connection.
             logger.warn("IOException: " + ioe.getMessage());
-        } catch (StatusCodeException sce) {
-            logger.warn("StatusCodeException: " + sce.getMessage());
+        } catch (ConnectionException ce) {
+            logger.warn("ConnectionException: " + ce.getMessage());
         }
 
         if (remove)
@@ -227,13 +227,13 @@ public class RemoteMetadataProvider implements MediaMetadataProvider {
         int responseCode = ((HttpURLConnection) conn).getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
             setMediaMetadataStatus(repository, context, token, resource, "UNSUPPORTED_FORMAT");
-            throw new StatusCodeException("Media format for request " + url.toExternalForm()
+            throw new ConnectionException("Media format for request " + url.toExternalForm()
                     + " is not supported. Status code: " + responseCode);
         } else if ((responseCode == HttpURLConnection.HTTP_UNSUPPORTED_TYPE)
                 || (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR)
                 || (responseCode == HttpURLConnection.HTTP_NOT_FOUND)) {
             setMediaMetadataStatus(repository, context, token, resource, "CORRUPT");
-            throw new StatusCodeException("Service returned error when requesting " + url.toExternalForm()
+            throw new ConnectionException("Service returned error when requesting " + url.toExternalForm()
                     + ". Status code: " + responseCode);
         }
 
@@ -246,7 +246,7 @@ public class RemoteMetadataProvider implements MediaMetadataProvider {
 
         if (!conn.getContentType().equals("image/jpeg")) {
             setMediaMetadataStatus(repository, context, token, resource, "CORRUPT");
-            throw new Exception("Content type of URLConnection is not of image/jpeg.");
+            throw new ConnectionException("Content type of URLConnection is not of image/jpeg.");
         }
 
         Property property = propDef.createProperty();
@@ -261,7 +261,7 @@ public class RemoteMetadataProvider implements MediaMetadataProvider {
 
         if (!conn.getContentType().equals("application/json")) {
             setMediaMetadataStatus(repository, context, token, resource, "CORRUPT");
-            throw new Exception("Content type of URLConnection is not of application/json.");
+            throw new ConnectionException("Content type of URLConnection is not of application/json.");
         }
 
         JSONObject json = JSONObject.fromObject(StreamUtil.streamToString(conn.getInputStream()));
@@ -461,10 +461,10 @@ public class RemoteMetadataProvider implements MediaMetadataProvider {
         this.maxSourceImageRawMemoryUsage = maxSourceImageRawMemoryUsage;
     }
 
-    private static class StatusCodeException extends Exception {
+    private static class ConnectionException extends Exception {
         private static final long serialVersionUID = 1L;
 
-        public StatusCodeException(String msg) {
+        public ConnectionException(String msg) {
             super(msg);
         }
     }

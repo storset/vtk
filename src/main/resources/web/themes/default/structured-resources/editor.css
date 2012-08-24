@@ -188,19 +188,6 @@
 
 /* ^ Study enhancements */
 
-/* Event - explicit settings */
-
-.vrtx-textfield.vrtx-date input {
-  width: 67px;
-}
-
-.vrtx-textfield.vrtx-hours input,
-.vrtx-textfield.vrtx-minutes input {
-  width: 17px;
-}
-
-/* ^ Event - explicit settings */
-
 /* JSON-boxes - explicit settings */
 
 .vrtx-json #main-content .vrtx-json-element,

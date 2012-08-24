@@ -270,6 +270,19 @@ div.description textarea {
   width: 497px !important;
 }
 
+/* Event - explicit settings */
+
+.vrtx-textfield.vrtx-date input {
+  width: 67px;
+}
+
+.vrtx-textfield.vrtx-hours input,
+.vrtx-textfield.vrtx-minutes input {
+  width: 17px;
+}
+
+/* ^ Event - explicit settings */
+
 /* Image and caption */
 
 div.caption textarea {

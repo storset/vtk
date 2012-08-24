@@ -240,7 +240,7 @@
     </#if>
     <#if report.brokenLinksToTsvReportService?exists>
       <a id="vrtx-report-broken-links-tsv" href="${report.brokenLinksToTsvReportService?html}">
-        <@vrtx.msg code="report.${report.reportname}.tsv" default="Download tab-seperated file" />
+        <@vrtx.msg code="report.${report.reportname}.tsv-file" default="Download as tab-separated file" />
       </a>
     </#if>
   </#macro>

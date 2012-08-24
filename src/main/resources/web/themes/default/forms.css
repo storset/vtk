@@ -205,7 +205,7 @@ input[type=text]:focus {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/textfield-right.gif) no-repeat top right;
   height: 23px;
   margin: -1px -5px 0 0;
-  padding: 4px 0 0 0;
+  padding: 4px 8px 0 0;
   display: block;
   display: inline-block;
 }

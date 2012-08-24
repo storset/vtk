@@ -189,7 +189,7 @@
         </tbody>
       </table>
     </div>
-    <#if report.prev?exists || report.next?exists>
+    <#if report.prev?exists || report.next?exists || report.brokenLinksToTsvReportService?exists>
       <p id="vrtx-report-paging-bottom">
         <@displayPaging />
       </p>
@@ -228,14 +228,21 @@
   </#macro>
 
   <#macro displayPaging>
-    <span class="vrtx-report-paging">
-      <#if report.prev?exists>
-        <a href="${report.prev?html}" class="prev">
-        <@vrtx.msg code="report.prev-page" default="Previous page" /></a><#if report.next?exists><a href="${report.next?html}" class="next"><@vrtx.msg code="report.next-page" default="Next page" /></a></#if>
-      <#elseif report.next?exists>
-        <a href="${report.next?html}" class="next"><@vrtx.msg code="report.next-page" default="Next page" /></a>
-      </#if>
-    </span>
+    <#if report.prev?exists || report.next?exists>
+      <span class="vrtx-report-paging">
+        <#if report.prev?exists>
+          <a href="${report.prev?html}" class="prev">
+          <@vrtx.msg code="report.prev-page" default="Previous page" /></a><#if report.next?exists><a href="${report.next?html}" class="next"><@vrtx.msg code="report.next-page" default="Next page" /></a></#if>
+        <#elseif report.next?exists>
+          <a href="${report.next?html}" class="next"><@vrtx.msg code="report.next-page" default="Next page" /></a>
+        </#if>
+      </span>
+    </#if>
+    <#if report.brokenLinksToTsvReportService?exists>
+      <a id="vrtx-report-broken-links-tsv" href="${report.brokenLinksToTsvReportService?html}">
+        <@vrtx.msg code="report.${report.reportname}.tsv" default="Download tab-seperated file" />
+      </a>
+    </#if>
   </#macro>
   
   </body>

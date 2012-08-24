@@ -63,6 +63,7 @@ import org.vortikal.repository.search.query.PropertyTermQuery;
 import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class BrokenLinksReport extends DocumentReporter {
@@ -76,6 +77,7 @@ public class BrokenLinksReport extends DocumentReporter {
     private SortFieldDirection sortOrder;
     private Parser parser;
     private String queryFilterExpression;
+    private Service brokenLinksToTsvReportService;
 
     private final static String REPORT_TYPE_PARAM_NAME = "broken-links";
 
@@ -84,7 +86,7 @@ public class BrokenLinksReport extends DocumentReporter {
     private final static String[] FILTER_READ_RESTRICTION_PARAM_VALUES = { FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE,
             "false", "true" };
 
-    private final static String FILTER_LINK_TYPE_PARAM_NAME = "link-type";
+	private final static String FILTER_LINK_TYPE_PARAM_NAME = "link-type";
     private final static String FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE = "anchor-img";
 
     private final static String[] FILTER_LINK_TYPE_PARAM_VALUES = { FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE, "img",
@@ -159,6 +161,7 @@ public class BrokenLinksReport extends DocumentReporter {
 
         result.put("filters", filters);
         result.put("brokenLinkCount", getBrokenLinkCount(token, resource, request, linkType));
+        result.put("brokenLinksToTsvReportService", this.brokenLinksToTsvReportService.constructURL(resource));
 
         return result;
     }
@@ -412,5 +415,9 @@ public class BrokenLinksReport extends DocumentReporter {
     public void setQueryFilterExpression(String exp) {
         this.queryFilterExpression = exp;
     }
+    
+    public void setBrokenLinksToTsvReportService(Service brokenLinksToTsvReportService) {
+		this.brokenLinksToTsvReportService = brokenLinksToTsvReportService;
+	}
 
 }

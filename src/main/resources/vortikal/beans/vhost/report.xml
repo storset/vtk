@@ -138,6 +138,7 @@
     <property name="queryFilterExpression" value="${systemjob.linkcheck.queryFilterExpression}"/>
     <property name="backURL" value="2" />
     <property name="enabled" value="${report.brokenLinks.enabled}" />
+    <property name="brokenLinksToTsvReportService" ref="brokenLinksToTsvReportService" />
   </bean>
 
   <bean id="myDocumentsReporter" class="org.vortikal.web.report.MyDocumentsReporter" parent="documentReporter">

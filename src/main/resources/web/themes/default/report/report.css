@@ -108,6 +108,13 @@ div.vrtx-permission-tree span.folder a {
   margin-top: 10px;
 }
 
+#vrtx-report-broken-links-tsv {
+  display: inline-block;
+  float: right;
+  padding-left: 22px;
+  background: url(../images/report-broken-links-tsv-export.png) no-repeat center left;
+}
+
 div.vrtx-report-diagram {
   clear: left;
   background: url(../images/line-dotted.gif) repeat-x bottom left;

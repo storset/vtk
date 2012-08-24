@@ -461,11 +461,16 @@ vrtxAdmin._$(document).ready(function () {
     }
     // Urchin stats
     _$("#app-content").on("click", "#vrtx-resource-visit-tab-menu a", function(e) {
+      if(GET_STAT_ASYNC_IN_PROGRESS) {
+        return;
+      }
+      GET_STAT_ASYNC_IN_PROGRESS = true;
       _$("#vrtx-resource-visit-wrapper").append("<span id='urchin-loading'></span>");
       _$("#vrtx-resource-visit-chart, #vrtx-resource-visit-stats, #vrtx-resource-visit-info").remove();
       vrtxAdm.serverFacade.getHtml(this.href, {
-        success: function (results, status, resp) { // fix these 
+        success: function (results, status, resp) {
           _$("#vrtx-resource-visit-wrapper").html("<div id='vrtx-resource-visit'>" + _$(results).html() + "</div>");
+          GET_STAT_ASYNC_IN_PROGRESS = false;
         }
       });
       e.preventDefault();

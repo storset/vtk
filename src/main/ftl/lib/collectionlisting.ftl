@@ -195,7 +195,7 @@
                 <#break>
 
               <#case "last-modified">
-                ${vrtx.getPropValue(child, "lastModified", "longlong")}
+                ${vrtx.getPropValue(child, "lastModified", "short")}
                 <#break>
               <#case "locked">
                 <#if child.lock?exists>

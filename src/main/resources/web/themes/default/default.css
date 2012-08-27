@@ -1383,12 +1383,18 @@ span.vrtx-help-step-by-step-cmd {
 }
 
 #directory-listing th.checkbox {
-  width: 5%;
+  width: 2%;
 }
 
-#directory-listing th.permissions,
-#directory-listing th#vrtx-report-permissions,
+#directory-listing th.permissions {
+  width: 15%;
+}
+
 #directory-listing th#vrtx-trash-can\.deletedBy {
+  width: 19%;
+}
+
+#directory-listing th#vrtx-report-permissions {
   width: 15%;
 }
 
@@ -1396,7 +1402,10 @@ span.vrtx-help-step-by-step-cmd {
   width: 15%;
 }
 
-#directory-listing th.last-modified,
+#directory-listing th.last-modified {
+  width: 13%;
+}
+
 #directory-listing th#vrtx-report-last-checked,
 #directory-listing th#vrtx-report-last-modified {
   width: 19%;
@@ -1420,6 +1429,7 @@ span.vrtx-help-step-by-step-cmd {
 }
 
 #directory-listing td.permissions,
+#directory-listing td.published,
 #directory-listing td.resource-type,
 #directory-listing td.last-modified,
 #directory-listing td.vrtx-trash-can-deleted-by,

@@ -462,7 +462,7 @@ vrtxAdmin._$(document).ready(function () {
     // Urchin stats
     _$("#app-content").on("click", "#vrtx-resource-visit-tab-menu a", function(e) {
       if(GET_STAT_ASYNC_IN_PROGRESS) {
-        return;
+        return false;
       }
       GET_STAT_ASYNC_IN_PROGRESS = true;
       _$("#vrtx-resource-visit-wrapper").append("<span id='urchin-loading'></span>");
@@ -2253,7 +2253,7 @@ VrtxAdmin.prototype.getHtmlAsTextAsync = function getHtmlAsTextAsync(url, insert
       _$ = vrtxAdm._$;
 
   if(GET_STAT_ASYNC_IN_PROGRESS) {
-    return;
+    return false;
   }
   GET_STAT_ASYNC_IN_PROGRESS = true;
 

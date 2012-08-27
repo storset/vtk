@@ -76,44 +76,10 @@
     </property>
   </bean>
 
-
   <bean id="decorating.contextualTitleComponent" class="org.vortikal.web.decorating.components.ContextualTitleComponent">
     <property name="titleResolver" ref="decorating.contextualTitleResolver" />
     <property name="namespace" ref="decorating.resourceNamespace" />
     <property name="name" value="contextual-title" />
-  </bean>
-
-  <bean id="decorating.manageURLComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
-    <property name="namespace" ref="decorating.resourceNamespace" />
-    <property name="name" value="manage-url" />
-    <property name="description" value="Inserts the admin URL of the current document" />
-    <property name="view" ref="decorating.manageURLComponent.view" />
-    <property name="exposedParameters">
-      <set>
-        <value>display-only-if-auth</value>
-      </set>
-    </property>
-    <property name="parameterDescriptions">
-      <map>
-        <entry key="display-only-if-auth" value="If set to 'true', do not display anything unless the user is logged in." />
-      </map>
-    </property>
-  </bean>
-
-  <bean id="decorating.manageURLComponent.view" parent="freemarkerView">
-    <property name="url" value="layouts/manage-link.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="decorating.manageURLComponent.urlProvider" />
-        <ref bean="resourceContextProvider" />
-      </list>
-    </property>
-  </bean>
-
-  <bean id="decorating.manageURLComponent.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
-    <property name="modelName" value="manageLink" />
-    <property name="urlName" value="url" />
-    <property name="service" ref="manageService" />
   </bean>
 
   <bean id="decorating.defaultCssComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
@@ -173,6 +139,72 @@
       </list>
     </property>
   </bean>
+  
+  <!--  DEPRECATED / TO BE PHASED OUT -->
+
+  <bean id="decorating.authenticationComponent" class="org.vortikal.web.decorating.components.AuthenticationComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="login" />
+    <property name="view" ref="decorating.authenticationComponent.view" />
+    <property name="defaultLoginService" ref="loginService" />
+    <property name="alternativeLoginServices">
+      <map>
+        <entry key="admin" value-ref="manageService" />
+      </map>
+    </property>
+    <property name="logoutService" ref="logoutService" />
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="destination-service" value="Destination service. Default destination is view, the other possible value is 'admin'." />
+      </map>
+    </property>
+    <property name="description" value="Displays a login or logout URL" />
+    <property name="examples">
+      <map>
+        <entry key="" value="" />
+        <entry key="destination-service=[admin]" value="" />
+      </map>
+    </property>
+  </bean>
+
+  <bean name="decorating.authenticationComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/login-logout.ftl" />
+  </bean>
+
+  <bean id="decorating.manageURLComponent" class="org.vortikal.web.decorating.components.ViewRenderingDecoratorComponent">
+    <property name="namespace" ref="decorating.resourceNamespace" />
+    <property name="name" value="manage-url" />
+    <property name="description" value="Inserts the admin URL of the current document" />
+    <property name="view" ref="decorating.manageURLComponent.view" />
+    <property name="exposedParameters">
+      <set>
+        <value>display-only-if-auth</value>
+      </set>
+    </property>
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="display-only-if-auth" value="If set to 'true', do not display anything unless the user is logged in." />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="decorating.manageURLComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/manage-link.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="decorating.manageURLComponent.urlProvider" />
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="decorating.manageURLComponent.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+    <property name="modelName" value="manageLink" />
+    <property name="urlName" value="url" />
+    <property name="service" ref="manageService" />
+  </bean>
+
+  <!-- ^  DEPRECATED / TO BE PHASED OUT -->
 
   <bean id="decorating.includeMediaComponent" class="org.vortikal.web.decorating.components.IncludeMediaPlayerComponent"
     parent="decorating.resourceMediaComponent">
@@ -613,36 +645,6 @@
   <bean name="decorating.subFolderMenuComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/subfolder-menu.ftl" />
   </bean>
-
-  <bean id="decorating.authenticationComponent" class="org.vortikal.web.decorating.components.AuthenticationComponent">
-    <property name="namespace" ref="decorating.includeNamespace" />
-    <property name="name" value="login" />
-    <property name="view" ref="decorating.authenticationComponent.view" />
-    <property name="defaultLoginService" ref="loginService" />
-    <property name="alternativeLoginServices">
-      <map>
-        <entry key="admin" value-ref="manageService" />
-      </map>
-    </property>
-    <property name="logoutService" ref="logoutService" />
-    <property name="parameterDescriptions">
-      <map>
-        <entry key="destination-service" value="Destination service. Default destination is view, the other possible value is 'admin'." />
-      </map>
-    </property>
-    <property name="description" value="Displays a login or logout URL" />
-    <property name="examples">
-      <map>
-        <entry key="" value="" />
-        <entry key="destination-service=[admin]" value="" />
-      </map>
-    </property>
-  </bean>
-
-  <bean name="decorating.authenticationComponent.view" parent="freemarkerView">
-    <property name="url" value="layouts/login-logout.ftl" />
-  </bean>
-
 
   <bean id="decorating.includeComponent" class="org.vortikal.web.decorating.components.IncludeComponent">
     <property name="namespace" ref="decorating.includeNamespace" />

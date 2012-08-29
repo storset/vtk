@@ -2385,8 +2385,75 @@ div.vrtx-admin-form {
 
 /* jQuery UI datepicker, accordion etc. */
 
+.ui-widget-overlay {
+  background: #000;
+  opacity: 0.4;
+  -moz-opacity: 0.4; 
+  -webkit-opacity: 0.4;
+  filter: alpha(opacity=0.4); 
+}
+
+.ui-dialog {
+  background: none repeat scroll 0 0 #FFFFFF;
+  border: 2px solid #848484;
+  box-shadow: 1px 1px 5px 2px #848484;
+  border-radius: 7px 7px 7px 7px;
+  color: #000000;
+  z-index: 102;
+  position: fixed;
+  padding: 20px;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+  background: url("images/line-dotted.gif") repeat-x scroll left bottom transparent;
+  border: none;
+  padding: 0 0 15px 0;
+}
+
+.ui-dialog .ui-dialog-titlebar-close,
+.ui-dialog .ui-dialog-titlebar-close span {
+  width: 20px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+  right: 3px;
+  top: 3px;
+}
+
+.ui-dialog .ui-dialog-titlebar-close.ui-state-hover {
+  border: none;
+  background: none;
+}
+
+.ui-dialog .ui-dialog-titlebar-close span {
+  background: url(images/thickbox-close.png) no-repeat center center;
+}
+
+.ui-dialog .ui-dialog-buttonpane,
+.ui-dialog .ui-dialog-content {
+  margin: 0;
+  border: none;
+}
+
+.ui-dialog .ui-dialog-content {
+  padding: 15px 0;
+  min-height: 0 !important;
+}
+
+.ui-dialog .ui-dialog-buttonpane {
+  padding: 0;
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+  float: left;
+}
+
 .ui-widget {
   font-size: 1em !important;
+  text-align: left;
 }
 
 .ui-widget,

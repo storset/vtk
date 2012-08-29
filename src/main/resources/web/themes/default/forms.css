@@ -3,7 +3,7 @@
  *
  */
 
-form, fieldset, input, button {
+form, fieldset, input, button, .ui-dialog .ui-dialog-buttonpane button {
   margin: 0;
   padding: 0;
 }
@@ -31,7 +31,8 @@ input[type=password],
 input[type=reset],
 input[type=submit],
 input[type=text],
-button {
+button,
+.ui-dialog .ui-dialog-buttonpane button {
   border: 1px solid transparent;
   background: transparent;
   font-family: inherit;
@@ -53,6 +54,7 @@ input[type=text]:focus {
 /* Buttons */
 
 .vrtx-button,
+.ui-dialog .ui-dialog-buttonpane button,
 .vrtx-focus-button,
 .vrtx-button-small {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/dropdown-left.gif) no-repeat 0 0;
@@ -65,6 +67,10 @@ input[type=text]:focus {
   text-decoration: none !important;
 }
 
+.ui-dialog .ui-dialog-buttonpane button {
+  height: 29px;
+}
+
 .vrtx-focus-button {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-left.gif) no-repeat 0 0;
 }
@@ -74,6 +80,7 @@ input[type=text]:focus {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-left.gif) no-repeat 0 0;
 }
 
+.ui-dialog .ui-dialog-buttonpane button span,
 .vrtx-button span,
 .vrtx-button input,
 .vrtx-button button,
@@ -122,6 +129,7 @@ input[type=text]:focus {
   padding: 0 11px 0 10px;
 }
 
+.ui-dialog .ui-dialog-buttonpane button:hover,
 .vrtx-button:hover,
 .vrtx-button.hover {
   background-image: url(images/dropdown-left-rollover.gif);
@@ -137,6 +145,7 @@ input[type=text]:focus {
   background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-left-rollover.gif);
 }
 
+.ui-dialog .ui-dialog-buttonpane button:hover span,
 .vrtx-button:hover span,
 .vrtx-button:hover input,
 .vrtx-button:hover button,
@@ -186,7 +195,8 @@ input[type=text]:focus {
 .submitButtons .vrtx-button,
 .submitButtons .vrtx-focus-button,
 #submitButtons .vrtx-button,
-#submitButtons .vrtx-focus-button {
+#submitButtons .vrtx-focus-button,
+.ui-dialog .ui-dialog-buttonpane button {
   margin: 0 10px 0 0;
 }
 
@@ -231,6 +241,7 @@ input[type=text]:focus {
 /* Mozilla hacks */
 
 form::-moz-focus-inner,
+.ui-dialog .ui-dialog-buttonpane button::-moz-focus-inner,
 form button::-moz-focus-inner {
   border: none;
   padding: 0;
@@ -240,6 +251,7 @@ form button::-moz-focus-inner {
    Credits: http://perishablepress.com/press/2009/06/28/css-hacks-for-different-versions-of-firefox/ */
 .vrtx-button input,
 .vrtx-button button,
+.ui-dialog .ui-dialog-buttonpane button,
 .vrtx-focus-button input,
 .vrtx-focus-button button, x:-moz-any-link, x:only-child {
   padding-bottom: 1px;

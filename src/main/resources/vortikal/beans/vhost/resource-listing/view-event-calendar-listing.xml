@@ -193,9 +193,9 @@
         <entry key="jsURLs">
           <list>
             <value>${webResources.baseURL}/jquery/include-jquery.js</value>
-            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-1.8.19.custom/js/jquery-ui-1.8.19.custom.min.js</value>
-            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-1.8.19.custom/js/jquery.ui.datepicker-no.js</value>
-            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-1.8.19.custom/js/jquery.ui.datepicker-nn.js</value>
+            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery-ui-${jquery.ui.version}.custom.min.js</value>
+            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery.ui.datepicker-no.js</value>
+            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery.ui.datepicker-nn.js</value>
             <value>${webResources.baseURL}/js/datepicker/datepicker-event-listing.js</value>
             <value>${webResources.baseURL}/js/view-dropdown.js</value>
           </list>

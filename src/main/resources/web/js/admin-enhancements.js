@@ -533,6 +533,26 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
   });
 };
 
+VrtxAdmin.prototype.openMsgDialog = function openMsgDialog(msg) {
+   var selector = "#dialog-message";
+   if(!$(selector).length) {
+     $("body").append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
+     $(selector).dialog({
+	   modal: true,
+	   autoOpen: false,
+	   resizable: false,
+	   buttons: {
+	     Ok: function() {
+	       $(this).dialog("close");
+	     }
+	   }
+     });
+   } else {
+     $(selector + "-content").html("<p>" + msg + "</p>");
+   }
+   $(selector).dialog("open");
+};
+
 
 /*-------------------------------------------------------------------*\
     5. Dropdowns    
@@ -1122,7 +1142,8 @@ VrtxAdmin.prototype.placeCopyMoveButtonInActiveTab = function placeCopyMoveButto
   li.html("<a id='" + options.service + "' href='javascript:void(0);'>" + btn.attr('title') + "</a>");
   $("#" + options.service).click(function (e) {
     if (!_$("form[name=" + options.formName + "] td input[type=checkbox]:checked").length) {
-      alert(options.msg);
+      //alert(options.msg);
+      vrtxAdmin.openMsgDialog(options.msg);
     } else {
       _$("#" + options.btnId).click();
     }
@@ -1142,7 +1163,8 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
   $('#deleteResourceService').click(function (e) {
     var boxes = _$('form[name=collectionListingForm] td input[type=checkbox]:checked');
     if (!boxes.length) {
-      alert(deleteUncheckedMessage);
+      //alert(deleteUncheckedMessage);
+      vrtxAdmin.openMsgDialog(deleteUncheckedMessage);
     } else {
       var list = "";
       var boxesSize = boxes.size();
@@ -1175,7 +1197,8 @@ VrtxAdmin.prototype.placeRecoverButtonInActiveTab = function placeRecoverButtonI
   _$('#recoverResourceService').click(function (e) {
     var boxes = _$('form.trashcan td input[type=checkbox]:checked');
     if (!boxes.length) {
-      alert(recoverUncheckedMessage); //TODO i18n from somewhere
+      //alert(recoverUncheckedMessage);
+      vrtxAdmin.openMsgDialog(recoverUncheckedMessage);
     } else {
       _$('.recoverResource').click();
     }
@@ -1196,7 +1219,8 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
     var boxes = _$('form.trashcan td input[type=checkbox]:checked');
     
     if (!boxes.length) {
-      alert(deletePermanentlyUncheckedMessage);
+      //alert(deletePermanentlyUncheckedMessage);
+      vrtxAdmin.openMsgDialog(deletePermanentlyUncheckedMessage);
     } else {
       var list = "";
       var boxesSize = boxesSizeTmp = boxes.size();

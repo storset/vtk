@@ -35,11 +35,10 @@
   </script>
 
   <!-- JQuery UI (used for datepicker) -->
-  <link type="text/css" href="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.19.custom/css/smoothness/jquery-ui-1.8.19.custom.css" rel="stylesheet" />
   <#if language = "no">
-    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.19.custom/js/jquery.ui.datepicker-no.js"></script>
+    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery.ui.datepicker-no.js"></script>
   <#elseif language = "nn">
-    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-1.8.19.custom/js/jquery.ui.datepicker-nn.js"></script>
+    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery.ui.datepicker-nn.js"></script>
   </#if>
 
   <#if oldEditor>

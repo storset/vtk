@@ -2406,6 +2406,12 @@ div.vrtx-admin-form {
   padding: 0 0 15px 0;
 }
 
+.ui-dialog .ui-dialog-titlebar .ui-dialog-title {
+  font-size: 1.538em;
+  font-weight: normal;
+  margin: 0;
+}
+
 .ui-dialog .ui-dialog-titlebar-close,
 .ui-dialog .ui-dialog-titlebar-close span {
   width: 20px;

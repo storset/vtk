@@ -533,18 +533,22 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
   });
 };
 
-VrtxAdmin.prototype.openMsgDialog = function openMsgDialog(msg) {
-  this.openDialog(msg, false, null, null);
+VrtxAdmin.prototype.openMsgDialog = function openMsgDialog(msg, title) {
+  this.openDialog(msg, title, false, null, null);
 };
 
-VrtxAdmin.prototype.openConfirmDialog = function openConfirmDialog(msg, funcOkComplete, funcCancelComplete, options) {
-  this.openDialog(msg, true, funcOkComplete, funcCancelComplete, options);
+VrtxAdmin.prototype.openConfirmDialog = function openConfirmDialog(msg, title, funcOkComplete, funcCancelComplete, options) {
+  this.openDialog(msg, title, true, funcOkComplete, funcCancelComplete, options);
 };
 
-VrtxAdmin.prototype.openDialog = function openDialog(msg, hasCancel, funcOkComplete, funcCancelComplete, options) {
+VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasCancel, funcOkComplete, funcCancelComplete, options) {
   var selector = !hasCancel ? "#dialog-message" : "#dialog-message-confirm";
   if(!$(selector).length) {
-    $("body").append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
+    if(title) {
+      $("body").append("<div id='" + selector.substring(1) + "' title='" + title + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
+    } else {
+      $("body").append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
+    }
     if(!hasCancel) {
       this.defineDialog(selector, {
 	    Ok: function() {
@@ -571,6 +575,9 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, hasCancel, funcOkCompl
 	  });
 	}
   } else {
+    if(title) {
+      $(selector).attr("title", title); 
+    }
     $(selector + "-content").html("<p>" + msg + "</p>");
   }
   $(selector).dialog("open");
@@ -1175,7 +1182,7 @@ VrtxAdmin.prototype.placeCopyMoveButtonInActiveTab = function placeCopyMoveButto
   $("#" + options.service).click(function (e) {
     if (!_$("form[name=" + options.formName + "] td input[type=checkbox]:checked").length) {
       //alert(options.msg);
-      vrtxAdmin.openMsgDialog(options.msg);
+      vrtxAdmin.openMsgDialog(options.msg, "Are you sure?");
     } else {
       _$("#" + options.btnId).click();
     }
@@ -1196,7 +1203,7 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
     var boxes = _$('form[name=collectionListingForm] td input[type=checkbox]:checked');
     if (!boxes.length) {
       //alert(deleteUncheckedMessage);
-      vrtxAdmin.openMsgDialog(deleteUncheckedMessage);
+      vrtxAdmin.openMsgDialog(deleteUncheckedMessage, "Are you sure?");
     } else {
       var list = "";
       var boxesSize = boxes.size();
@@ -1209,7 +1216,7 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
       if (boxesSize > 10) {
         list += "... " + confirmDeleteAnd + " " + (boxesSize - 10) + " " + confirmDeleteMore;
       }
-      vrtxAdmin.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '\n\n' + list, function() {
+      vrtxAdmin.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '\n\n' + list, "Are you sure?", function() {
         _$('#collectionListing\\.action\\.delete-resources').click();
       }, null, null);
     }
@@ -1230,7 +1237,7 @@ VrtxAdmin.prototype.placeRecoverButtonInActiveTab = function placeRecoverButtonI
     var boxes = _$('form.trashcan td input[type=checkbox]:checked');
     if (!boxes.length) {
       //alert(recoverUncheckedMessage);
-      vrtxAdmin.openMsgDialog(recoverUncheckedMessage);
+      vrtxAdmin.openMsgDialog(recoverUncheckedMessage, "Are you sure?");
     } else {
       _$('.recoverResource').click();
     }
@@ -1252,7 +1259,7 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
     
     if (!boxes.length) {
       //alert(deletePermanentlyUncheckedMessage);
-      vrtxAdmin.openMsgDialog(deletePermanentlyUncheckedMessage);
+      vrtxAdmin.openMsgDialog(deletePermanentlyUncheckedMessage, "Are you sure?");
     } else {
       var list = "";
       var boxesSize = boxesSizeTmp = boxes.size();
@@ -1264,7 +1271,7 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
       if (boxesSize > 10) {
         list += "... " + confirmDeletePermanentlyAnd + " " + (boxesSize - 10) + " " + confirmDeletePermanentlyMore;
       }
-      vrtxAdmin.openConfirmDialog(confirmDeletePermanently.replace("(1)", boxesSize) + '\n\n' + list, function() {
+      vrtxAdmin.openConfirmDialog(confirmDeletePermanently.replace("(1)", boxesSize) + '\n\n' + list, "Are you sure?", function() {
         _$('.deleteResourcePermanent').click();
       }, null, null);
     }
@@ -1719,7 +1726,7 @@ function checkStillAdmin(options) {
       msg = removeAdminPermissionsMsg;
     }
     doReloadFromServer = true;
-    vrtxAdmin.openConfirmDialog(msg, vrtxAdmin.completeFormAsyncPost, function() {
+    vrtxAdmin.openConfirmDialog(msg, "Are you sure?", vrtxAdmin.completeFormAsyncPost, function() {
       doReloadFromServer = false;
     }, options);
   } else {

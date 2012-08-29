@@ -39,7 +39,15 @@
     <@viewutils.displayDropdown type title titleLink false>
       <#list options?keys as opt>
         <#if (opt_index > 0)>
-          <li>
+          <#assign classes = "" />
+          <#if (opt_index == 1)>
+            <#assign classes = classes + "vrtx-dropdown-first" />
+          </#if>
+          <#if (opt_index == (options?size - 1))>
+            <#if classes != ""><#assign classes = classes + " " /></#if>
+            <#assign classes = classes + "vrtx-dropdown-last" />
+          </#if>
+          <li<#if classes != ""> class="${classes}"</#if>>
             <#assign url = options[opt] />
             <#if opt = "logout">
               <form action="${url?html}" method="post" class="vrtx-dropdown-form">

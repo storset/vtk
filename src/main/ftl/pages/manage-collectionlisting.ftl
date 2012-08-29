@@ -36,6 +36,12 @@
     var confirmDelete = '${vrtx.getMsg("tabMenuRight.deleteResourcesMessage")}';         
     var confirmDeleteAnd = '${vrtx.getMsg("tabMenuRight.deleteResourcesAnd")}';
     var confirmDeleteMore = '${vrtx.getMsg("tabMenuRight.deleteResourcesMore")}';
+    var confirmDeleteTitle = '${vrtx.getMsg("tabMenuRight.deleteConfirmTitle")}';
+    
+    var copyTitle = '${copyTitle}';
+    var moveTitle = '${moveTitle}';
+    var deleteTitle = '${deleteTitle}';
+    
     var multipleFilesInfoText = '<strong>${vrtx.getMsg("tabMenuRight.fileUploadMultipleInfo.line1")}</strong><br />'
                               + '${vrtx.getMsg("tabMenuRight.fileUploadMultipleInfo.line2")}';
     var fileUploadMoreFilesTailMessage = '${vrtx.getMsg("tabMenuRight.fileUploadMoreFilesTailMessage")}';

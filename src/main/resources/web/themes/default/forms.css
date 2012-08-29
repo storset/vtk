@@ -71,6 +71,7 @@ input[type=text]:focus {
   height: 29px;
 }
 
+.ui-dialog .ui-dialog-buttonpane button:first-child,
 .vrtx-focus-button {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-left.gif) no-repeat 0 0;
 }
@@ -108,6 +109,7 @@ input[type=text]:focus {
   padding: 0 15px 0 14px;
 }
 
+.ui-dialog .ui-dialog-buttonpane button:first-child span,
 .vrtx-focus-button span,
 .vrtx-focus-button input,
 .vrtx-focus-button button {
@@ -135,6 +137,7 @@ input[type=text]:focus {
   background-image: url(images/dropdown-left-rollover.gif);
 }
 
+.ui-dialog .ui-dialog-buttonpane button:first-child:hover,
 .vrtx-focus-button:hover,
 .vrtx-focus-button.hover {
   background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-left-rollover.gif);
@@ -168,6 +171,7 @@ input[type=text]:focus {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-closed-right-rollover.gif) no-repeat top right;
 }
 
+.ui-dialog .ui-dialog-buttonpane button:first-child:hover span,
 .vrtx-focus-button:hover span,
 .vrtx-focus-button:hover input,
 .vrtx-focus-button:hover button,

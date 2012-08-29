@@ -18,7 +18,7 @@
  *  1.  Config
  *  2.  DOM is fully loaded
  *  3.  DOM is ready
- *  4.  Keyboard intercept / reroute, shortcuts and buttonizing
+ *  4.  General interaction / dialogs
  *  5.  Dropdowns
  *  6.  Create service
  *  7.  File upload service
@@ -491,7 +491,7 @@ vrtxAdmin._$(document).ready(function () {
 });
 
 /*-------------------------------------------------------------------*\
-    4. Keyboard intercept / reroute, shortcuts, buttonizing, dialogs
+    4. General interaction / dialogs
 \*-------------------------------------------------------------------*/
 
 function interceptEnterKey(idOrClass) {

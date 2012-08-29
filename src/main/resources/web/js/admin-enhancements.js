@@ -491,7 +491,7 @@ vrtxAdmin._$(document).ready(function () {
 });
 
 /*-------------------------------------------------------------------*\
-    4. Keyboard intercept / reroute, shortcuts and buttonizing
+    4. Keyboard intercept / reroute, shortcuts, buttonizing, dialogs
 \*-------------------------------------------------------------------*/
 
 function interceptEnterKey(idOrClass) {
@@ -534,23 +534,52 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
 };
 
 VrtxAdmin.prototype.openMsgDialog = function openMsgDialog(msg) {
-   var selector = "#dialog-message";
-   if(!$(selector).length) {
-     $("body").append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
-     $(selector).dialog({
-	   modal: true,
-	   autoOpen: false,
-	   resizable: false,
-	   buttons: {
-	     Ok: function() {
-	       $(this).dialog("close");
-	     }
-	   }
-     });
-   } else {
-     $(selector + "-content").html("<p>" + msg + "</p>");
-   }
-   $(selector).dialog("open");
+  this.openDialog(msg, false, null);
+};
+
+VrtxAdmin.prototype.openConfirmDialog = function openConfirmDialog(msg, funcComplete) {
+  this.openDialog(msg, true, funcComplete);
+};
+
+VrtxAdmin.prototype.openDialog = function openDialog(msg, hasCancel, funcComplete) {
+  var selector = !hasCancel ? "#dialog-message" : "#dialog-message-confirm";
+  if(!$(selector).length) {
+    $("body").append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
+    if(!hasCancel) {
+      this.defineDialog(selector, {
+	    Ok: function() {
+	      $(this).dialog("close");
+	      if(funcComplete) {
+	        funcComplete();
+	      }
+	    }
+	  });    
+    } else {
+      this.defineDialog(selector, {
+	    Ok: function() {
+	      $(this).dialog("close");
+	      if(funcComplete) {
+	        funcComplete();
+	      }
+	    },
+		Cancel: function() {
+		  $(this).dialog( "close" );
+		}
+	  });
+	}
+  } else {
+    $(selector + "-content").html("<p>" + msg + "</p>");
+  }
+  $(selector).dialog("open");
+};
+
+VrtxAdmin.prototype.defineDialog = function defineDialog(selector, buttons) {
+  $(selector).dialog({
+    modal: true,
+	autoOpen: false,
+	resizable: false,
+	buttons: buttons
+  });
 };
 
 
@@ -1177,9 +1206,9 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
       if (boxesSize > 10) {
         list += "... " + confirmDeleteAnd + " " + (boxesSize - 10) + " " + confirmDeleteMore;
       }
-      if (confirm(confirmDelete.replace("(1)", boxesSize) + '\n\n' + list)) {
+      vrtxAdmin.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '\n\n' + list, function() {
         _$('#collectionListing\\.action\\.delete-resources').click();
-      }
+      });
     }
     e.preventDefault();
   });
@@ -1232,9 +1261,9 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
       if (boxesSize > 10) {
         list += "... " + confirmDeletePermanentlyAnd + " " + (boxesSize - 10) + " " + confirmDeletePermanentlyMore;
       }
-      if (confirm(confirmDeletePermanently.replace("(1)", boxesSize) + '\n\n' + list)) {
+      vrtxAdmin.openConfirmDialog(confirmDeletePermanently.replace("(1)", boxesSize) + '\n\n' + list, function() {
         _$('.deleteResourcePermanent').click();
-      }
+      });
     }
     e.preventDefault();
   });

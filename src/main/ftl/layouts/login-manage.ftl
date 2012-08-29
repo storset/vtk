@@ -20,8 +20,21 @@
   <#-- Rest of options => dropdown list -->
   <#if (options?size > 1)>
     <!-- begin view dropdown js -->
-    <div><script type="text/javascript" src="${jsUrl?html}"></script></div>
+    <script type="text/javascript" src="${jsUrl?html}"></script>
     <!-- end view dropdown js -->
+    <script type="text/javascript"><!--
+      $(function() {
+        $(".vrtx-dropdown-form").addClass("hidden");
+        $(".vrtx-dropdown-form-link").addClass("visible");
+        $(document).off("click", ".vrtx-dropdown-form-link")
+                    .on("click", ".vrtx-dropdown-form-link", function(e) {
+          $(this).prev(".vrtx-dropdown-form").submit();
+          e.stopPropagation();
+          e.preventDefault();
+        });
+      });
+    // -->
+    </script>
   
     <@viewutils.displayDropdown type title titleLink false>
       <#list options?keys as opt>
@@ -38,19 +51,6 @@
               <a href="javascript:void(0);" class="vrtx-${type}-${opt?html} vrtx-dropdown-form-link">
                 <@vrtx.msg code="decoration.${type}.${opt?html}" />
               </a>
-              <script type="text/javascript"><!--
-                $(function() {
-                  $(".vrtx-dropdown-form").addClass("hidden");
-                  $(".vrtx-dropdown-form-link").addClass("visible");
-                  $(document).off("click", ".vrtx-dropdown-form-link")
-                              .on("click", ".vrtx-dropdown-form-link", function(e) {
-                    $(this).prev(".vrtx-dropdown-form").submit();
-                    e.stopPropagation();
-                    e.preventDefault();
-                  });
-                });
-              // -->
-              </script>
             <#else>
               <a href="${url?html}" class="vrtx-${type}-${opt?html}">
                 <@vrtx.msg code="decoration.${type}.${opt?html}" />

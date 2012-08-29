@@ -534,14 +534,14 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
 };
 
 VrtxAdmin.prototype.openMsgDialog = function openMsgDialog(msg) {
-  this.openDialog(msg, false, null);
+  this.openDialog(msg, false, null, null);
 };
 
-VrtxAdmin.prototype.openConfirmDialog = function openConfirmDialog(msg, funcComplete) {
-  this.openDialog(msg, true, funcComplete);
+VrtxAdmin.prototype.openConfirmDialog = function openConfirmDialog(msg, funcOkComplete, funcCancelComplete, options) {
+  this.openDialog(msg, true, funcOkComplete, funcCancelComplete, options);
 };
 
-VrtxAdmin.prototype.openDialog = function openDialog(msg, hasCancel, funcComplete) {
+VrtxAdmin.prototype.openDialog = function openDialog(msg, hasCancel, funcOkComplete, funcCancelComplete, options) {
   var selector = !hasCancel ? "#dialog-message" : "#dialog-message-confirm";
   if(!$(selector).length) {
     $("body").append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
@@ -549,8 +549,8 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, hasCancel, funcComplet
       this.defineDialog(selector, {
 	    Ok: function() {
 	      $(this).dialog("close");
-	      if(funcComplete) {
-	        funcComplete();
+	      if(funcOkComplete) {
+	        funcOkComplete(options);
 	      }
 	    }
 	  });    
@@ -558,12 +558,15 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, hasCancel, funcComplet
       this.defineDialog(selector, {
 	    Ok: function() {
 	      $(this).dialog("close");
-	      if(funcComplete) {
-	        funcComplete();
+	      if(funcOkComplete) {
+	        funcOkComplete(options);
 	      }
 	    },
 		Cancel: function() {
-		  $(this).dialog( "close" );
+		  $(this).dialog("close");
+		  if(funcCancelComplete) {
+	        funcCancelComplete();
+	      }
 		}
 	  });
 	}
@@ -1208,7 +1211,7 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
       }
       vrtxAdmin.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '\n\n' + list, function() {
         _$('#collectionListing\\.action\\.delete-resources').click();
-      });
+      }, null, null);
     }
     e.preventDefault();
   });
@@ -1263,7 +1266,7 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
       }
       vrtxAdmin.openConfirmDialog(confirmDeletePermanently.replace("(1)", boxesSize) + '\n\n' + list, function() {
         _$('.deleteResourcePermanent').click();
-      });
+      }, null, null);
     }
     e.preventDefault();
   });
@@ -1707,22 +1710,21 @@ function toggleConfigCustomPermissions(selectorClass) {
   });
 }
 
-function checkStillAdmin(selector) {
-  var stillAdmin = selector.find(".still-admin").text();
+function checkStillAdmin(options) {
+  var stillAdmin = options.form.find(".still-admin").text();
   doReloadFromServer = false;
   if(stillAdmin == "false") {
     var msg = "Are you sure you want to remove all admin permissions for yourself?";
     if(typeof removeAdminPermissionsMsg !== "undefined") {
       msg = removeAdminPermissionsMsg;
     }
-    var confirmRemoveAllAdmin = confirm(msg);
-    if(!confirmRemoveAllAdmin) {
-      return false;
-    } else {
-      doReloadFromServer = true;
-    }
+    doReloadFromServer = true;
+    vrtxAdmin.openConfirmDialog(msg, vrtxAdmin.completeFormAsyncPost, function() {
+      doReloadFromServer = false;
+    }, options);
+  } else {
+    vrtxAdmin.completeFormAsyncPost(options);
   }
-  return true; 
 }
 
 function autocompleteUsernames(selector) {
@@ -2127,7 +2129,7 @@ VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass,
  *                updateSelectors: one or more selectors for markup that should update after POST (Array)
  *                errorContainer: selector for error container
  *                errorContainerInsertAfter: selector for where error container should be inserted after
- *                funcProceedCondition: must return true to continue
+ *                funcProceedCondition: function that proceedes with completeFormAsyncPost(options)
  *                funcComplete: callback function to run when AJAX is completed
  *                transitionSpeed: transition speed in ms
  *                transitionEasing: transition easing algorithm
@@ -2143,22 +2145,15 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
       
   _$("body").on("click", options.selector, function (e) {
   
-    var selector = options.selector,
-        isReplacing = options.isReplacing,
-        updateSelectors = options.updateSelectors,
-        errorContainer = options.errorContainer,
-        errorContainerInsertAfter = options.errorContainerInsertAfter,
+    var isReplacing = options.isReplacing,
         funcProceedCondition = options.funcProceedCondition,
         funcComplete = options.funcComplete,
         transitionSpeed = options.transitionSpeed || vrtxAdm.transitionSpeed,
         transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
         transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
-        post = options.post || false;
-
-    var link = _$.single(this);
-    var form = link.closest("form");
-    
-    var isCancelAction = link.attr("name").toLowerCase().indexOf("cancel") != -1;
+        post = options.post || false,
+        link = _$.single(this),
+        isCancelAction = link.attr("name").toLowerCase().indexOf("cancel") != -1;
     
     if(!post) {
       if(isCancelAction && !isReplacing) {
@@ -2173,42 +2168,63 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
         return;
       }
     } else {
-      if(isCancelAction || !funcProceedCondition || funcProceedCondition(form)) {
-        var url = form.attr("action");
-        var dataString = form.serialize() + "&" + link.attr("name");
-                      
-        vrtxAdmin.serverFacade.postHtml(url, dataString, {
-          success: function (results, status, resp) {
-            if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
-              vrtxAdm.displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
-            } else {
-              if (isReplacing) {
-                form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
-                  for(var i = updateSelectors.length; i--;) {
-                    var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
-                    _$("body " + updateSelectors[i]).replaceWith(outer);
-                  }
-                  if (funcComplete) {
-                    funcComplete();
-                  }
-                });
-              } else {
-                for(var i = updateSelectors.length; i--;) {
-                  var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
-                  _$("body " + updateSelectors[i]).replaceWith(outer);
-                }
-                if (funcComplete) {
-                  funcComplete();
-                }
-                form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
-                  _$.single(this).remove();
-                });            
-              }
-            }
-          }
-        });
+      options.form = link.closest("form");;
+      options.link = link;
+      if(funcProceedCondition && !isCancelAction) {
+        funcProceedCondition(options);
+      } else {
+        vrtxAdm.completeFormAsyncPost(options);
       }
       e.preventDefault();
+    }
+  });
+};
+
+VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(options) {
+    var vrtxAdm = vrtxAdmin,
+        _$ = vrtxAdm._$,
+        selector = options.selector,
+        isReplacing = options.isReplacing,
+        updateSelectors = options.updateSelectors,
+        errorContainer = options.errorContainer,
+        errorContainerInsertAfter = options.errorContainerInsertAfter,
+        funcComplete = options.funcComplete,
+        transitionSpeed = options.transitionSpeed || vrtxAdm.transitionSpeed,
+        transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
+        transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
+        form = options.form,
+        link = options.link,
+        url = form.attr("action"),
+        dataString = form.serialize() + "&" + link.attr("name");
+                      
+  vrtxAdmin.serverFacade.postHtml(url, dataString, {
+    success: function (results, status, resp) {
+      if (vrtxAdm.hasErrorContainers(results, errorContainer)) {
+        vrtxAdm.displayErrorContainers(results, form, errorContainerInsertAfter, errorContainer);
+      } else {
+        if (isReplacing) {
+          form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
+            for (var i = updateSelectors.length; i--;) {
+              var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
+              _$("body " + updateSelectors[i]).replaceWith(outer);
+            }
+            if (funcComplete) {
+              funcComplete();
+            }
+          });
+        } else {
+          for (var i = updateSelectors.length; i--;) {
+            var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
+            _$("body " + updateSelectors[i]).replaceWith(outer);
+          }
+          if (funcComplete) {
+            funcComplete();
+          }
+          form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
+            _$.single(this).remove();
+          });
+        }
+      }
     }
   });
 };

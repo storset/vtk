@@ -140,6 +140,42 @@
     </property>
   </bean>
   
+  <!--  NEW COMPONENT TO REPLACE DEPRECATED / PHASED OUT  -->
+  
+  <bean id="decorating.loginManageComponent" class="org.vortikal.web.decorating.components.LoginManageComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="login-manage" />
+    <property name="description" value="Displays an authentication and manage component" />
+    <property name="view" ref="decorating.loginManageComponent.view" />
+    <property name="defaultLoginService" ref="loginService" />
+    <property name="alternativeLoginServices">
+      <map>
+        <entry key="admin" value-ref="manageService" />
+      </map>
+    </property>
+    <property name="logoutService" ref="logoutService" />
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="display-only-if-auth" value="If set to 'true', do not display anything unless the user is logged in." />
+        <entry key="display-auth-user" value="If set to 'true', displays the full user name when logged in." />
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="decorating.loginManageComponent.view" parent="freemarkerView">
+    <property name="url" value="layouts/login-manage.ftl" />
+    <property name="attributes">
+      <map>
+        <entry key="jsUrl" value="${jsBaseURL}/view-dropdown.js" />
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+      </list>
+    </property>
+  </bean>
+
   <!--  DEPRECATED / TO BE PHASED OUT -->
 
   <bean id="decorating.authenticationComponent" class="org.vortikal.web.decorating.components.AuthenticationComponent">
@@ -297,7 +333,7 @@
     <property name="url" value="layouts/share-at.ftl" />
     <property name="attributes">
       <map>
-        <entry key="url" value="${jsBaseURL}/share-subscribe.js" />
+        <entry key="jsUrl" value="${jsBaseURL}/view-dropdown.js" />
       </map>
     </property>
     <property name="referenceDataProviders">

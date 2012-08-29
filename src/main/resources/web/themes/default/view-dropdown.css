@@ -1,0 +1,112 @@
+@charset "UTF-8";
+
+/* 
+ * Dropdowns on view
+ *
+ */
+
+.vrtx-dropdown-component {
+  position: relative;
+  float: left;
+}
+
+.vrtx-dropdown-component a {
+  text-decoration: none !important;
+}
+
+.vrtx-dropdown-component a:hover {
+  text-decoration: underline !important;
+}
+
+.vrtx-dropdown-component .vrtx-dropdown-link {
+  padding-right: 30px;
+  background: transparent url(images/dropdown-toggle-white-bg.png) no-repeat scroll top right;
+}
+
+.vrtx-dropdown-wrapper {
+  position: absolute;
+  right: 0px;
+  top: 1.5em;
+  text-align: left;
+  overflow: hidden;
+  display: none;
+  z-index: 999;
+  padding-top: 5px;
+  background: transparent url(images/dropdown-white-bg.png) no-repeat scroll top right;
+}
+
+.vrtx-dropdown-component-not-toggled .vrtx-dropdown-wrapper {
+  min-width: 150px;
+}
+
+.vrtx-dropdown-wrapper-inner {
+  background-color: #fff;
+  overflow: auto;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+}
+
+.vrtx-dropdown-wrapper .vrtx-dropdown-top {
+  width: 100%;
+  float: left;
+  color: #fff;
+  background: #383838 none repeat scroll 0 0;
+}
+
+.vrtx-dropdown-wrapper .vrtx-dropdown-top .vrtx-dropdown-title {
+  display: block;
+  float: left;
+  padding: 5px 11px 7px 11px; 
+  margin: 0;
+  font-size: 1em;
+}
+
+.vrtx-dropdown-wrapper .vrtx-dropdown-top span {
+  float: right;
+  font-size: 1em;
+  margin: 6px 11px 0 0;
+  text-align: right;
+  display: block;
+}
+
+.vrtx-dropdown-wrapper .vrtx-dropdown-top span a {
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.77em;
+}
+
+.vrtx-dropdown-wrapper ul {
+  width: 100%;
+  float: left;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.vrtx-dropdown-wrapper li {
+  width: 100%;
+  float: left;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: none !important;
+}
+
+.vrtx-dropdown-wrapper li .vrtx-dropdown-form.hidden,
+.vrtx-dropdown-wrapper li .vrtx-dropdown-form-link {
+  display: none;
+}
+
+.vrtx-dropdown-wrapper li .vrtx-dropdown-form-link.visible {
+  display: block;
+}
+
+.vrtx-dropdown-wrapper li a {
+  display: block;
+  white-space: nowrap;
+  list-style-type: none !important;
+  background: none !important;
+  padding: 0 !important;
+  padding: 6px 11px 4px 11px !important;
+  border-bottom: 1px solid #ccc;
+}
+
+/* ^ Dropdowns on view */

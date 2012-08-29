@@ -11,13 +11,13 @@
 <#import "/lib/vortikal.ftl" as vrtx />
 <#import "/lib/view-utils.ftl" as viewutils />
 
-<!-- begin share js -->
-<script type="text/javascript" src="${url?html}"></script>
-<!-- end share js -->
+<!-- begin view dropdown js -->
+<script type="text/javascript" src="${jsUrl?html}"></script>
+<!-- end view dropdown js -->
   
 <#assign title = vrtx.getMsg("decorating.shareAtComponent.title") + "..." />
   
-<@viewutils.displayShareSubNestedList title "share">
+<@viewutils.displayDropdown "share" title>
   <#list socialWebsites as socialWebsite>
     <li>
       <a href="${socialWebsite.url}" target="_blank" class="${socialWebsite.name?lower_case}">
@@ -25,4 +25,4 @@
       </a>
     </li>
   </#list>   
-</@viewutils.displayShareSubNestedList>
+</@viewutils.displayDropdown>

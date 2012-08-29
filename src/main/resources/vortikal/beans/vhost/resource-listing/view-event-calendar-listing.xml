@@ -187,6 +187,7 @@
             <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-tabs-customized/css/ui-lightness/jquery-ui-1.7.2.custom.css</value>
             <value>${themeBaseURL}/view-collectionlisting.css</value>
             <value>${themeBaseURL}/view-event-calendar-listing.css</value>
+            <value>${themeBaseURL}/view-dropdown.css</value>
           </list>
         </entry>
         <entry key="jsURLs">
@@ -196,7 +197,7 @@
             <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-1.8.19.custom/js/jquery.ui.datepicker-no.js</value>
             <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-1.8.19.custom/js/jquery.ui.datepicker-nn.js</value>
             <value>${webResources.baseURL}/js/datepicker/datepicker-event-listing.js</value>
-            <value>${webResources.baseURL}/js/share-subscribe.js</value>
+            <value>${webResources.baseURL}/js/view-dropdown.js</value>
           </list>
         </entry>
       </map>

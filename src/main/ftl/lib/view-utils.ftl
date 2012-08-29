@@ -232,15 +232,27 @@
   </#if>
 </#macro>
 
-<#macro displayShareSubNestedList titleI18n type>
-  <div id="vrtx-${type}-component">
-    <a href="javascript:void(0)" id="vrtx-${type}-link">${titleI18n}</a>
-    <div id="vrtx-${type}-wrapper">
-      <div id="vrtx-${type}-wrapper-inner">
-        <div id="vrtx-${type}-top">
-          <div id="vrtx-${type}-title">${titleI18n}</div>
-          <span><a href="javascript:void(0)" id="vrtx-${type}-close-link"><@vrtx.msg code="decorating.shareAtComponent.close" default="Close" /></a></span>
-        </div>
+<#macro displayDropdown type title titleLink='' displayDropdownTitleClose=true>
+  <div class="vrtx-${type}-component vrtx-dropdown-component <#if !displayDropdownTitleClose>vrtx-dropdown-component-toggled<#else>vrtx-dropdown-component-not-toggled</#if>">
+    <#if titleLink != ''>
+      <a href="${titleLink?html}" class="vrtx-${type}-title-link vrtx-dropdown-title-link">${title?html}</a>
+      <a href="javascript:void(0)" class="vrtx-${type}-link vrtx-dropdown-link"></a>
+    <#else>
+      <a href="javascript:void(0)" class="vrtx-${type}-link vrtx-dropdown-link">${title?html}</a>  
+    </#if>
+    <div class="vrtx-${type}-wrapper vrtx-dropdown-wrapper">
+      <span></span>
+      <div class="vrtx-${type}-wrapper-inner vrtx-dropdown-wrapper-inner">
+        <#if displayDropdownTitleClose>
+          <div class="vrtx-${type}-top vrtx-dropdown-top">
+            <div class="vrtx-${type}-title vrtx-dropdown-title">${title?html}</div>
+            <span>
+              <a href="javascript:void(0)" class="vrtx-${type}-close-link vrtx-dropdown-close-link">
+                <@vrtx.msg code="decorating.shareAtComponent.close" default="Close" />
+              </a>
+            </span>
+          </div>
+        </#if>
         <ul>
           <#nested>
         </ul>
@@ -260,7 +272,7 @@
       <#if alternativeRepresentations?exists && !(hideAlternativeRepresentation?exists && hideAlternativeRepresentation)>
         <#if (alternativeRepresentations?size > 1)>
           <#local title = vrtx.getMsg("eventListing.subscribe") />
-          <@viewutils.displayShareSubNestedList title "subscribe">
+          <@viewutils.displayDropdown "subscribe" title>
             <#list alternativeRepresentations as alt>
             <#if alt.contentType = 'application/atom+xml'>
                 <li><a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a></li>
@@ -268,7 +280,7 @@
                 <li><a id="vrtx-ical-link" href="${alt.url?html}"><@vrtx.msg code="eventListing.ical.add" /></a></li>
             </#if>
           </#list>
-        </@viewutils.displayShareSubNestedList>
+        </@viewutils.displayDropdown>
       <#else>
         <#list alternativeRepresentations as alt>
           <#if alt.contentType = 'application/atom+xml'>

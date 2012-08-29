@@ -1721,12 +1721,8 @@ function checkStillAdmin(options) {
   var stillAdmin = options.form.find(".still-admin").text();
   doReloadFromServer = false;
   if(stillAdmin == "false") {
-    var msg = "Are you sure you want to remove all admin permissions for yourself?";
-    if(typeof removeAdminPermissionsMsg !== "undefined") {
-      msg = removeAdminPermissionsMsg;
-    }
     doReloadFromServer = true;
-    vrtxAdmin.openConfirmDialog(msg, "Are you sure?", vrtxAdmin.completeFormAsyncPost, function() {
+    vrtxAdmin.openConfirmDialog(removeAdminPermissionsMsg, removeAdminPermissionsTitle, vrtxAdmin.completeFormAsyncPost, function() {
       doReloadFromServer = false;
     }, options);
   } else {

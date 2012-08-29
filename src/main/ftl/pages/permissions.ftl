@@ -38,6 +38,7 @@
       
       <script type="text/javascript"><!--
         var removeAdminPermissionsMsg = '<@vrtx.msg code="permissions.all.confirm.remove.yourself" default="Are you sure you want to remove all admin permissions for yourself?" />';
+        var removeAdminPermissionsTitle = '<@vrtx.msg code="permissions.all.confirm.remove.yourself.title" default="Confirm remove" />';
       // -->
       </script>
 

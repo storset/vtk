@@ -542,7 +542,7 @@ VrtxAdmin.prototype.openConfirmDialog = function openConfirmDialog(msg, title, f
 };
 
 VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasCancel, funcOkComplete, funcCancelComplete, options) {
-  var selector = !hasCancel ? "#dialog-message" : "#dialog-message-confirm";
+  var selector = !hasCancel ? "#dialog-message" : "#dialog-confirm";
   if(!$(selector).length) {
     if(title) {
       $("body").append("<div id='" + selector.substring(1) + "' title='" + title + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
@@ -576,7 +576,7 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasCancel, func
 	}
   } else {
     if(title) {
-      $("#ui-dialog-title-dialog-message").html(title); 
+      $("#ui-dialog-title-" + selector.substring(1)).html(title); 
     }
     $(selector + "-content").html("<p>" + msg + "</p>");
   }

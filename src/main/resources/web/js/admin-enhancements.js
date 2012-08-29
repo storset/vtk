@@ -1203,18 +1203,19 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
       //alert(deleteUncheckedMessage);
       vrtxAdmin.openMsgDialog(deleteUncheckedMessage, deleteTitle);
     } else {
-      var list = "";
+      var list = "<ul>";
       var boxesSize = boxes.size();
       var boxesSize = boxesSizeTmp = boxes.size();
       boxesSizeTmp = boxesSizeTmp > 10 ? 10 : boxesSizeTmp;
       for (var i = 0; i < boxesSizeTmp; i++) {
         var name = boxes[i].name.split("/");
-        list += name[name.length-1] + '<br />';
+        list += "<li>" + name[name.length-1] + "</li>";
       }
+      list += "</ul>"; 
       if (boxesSize > 10) {
         list += "... " + confirmDeleteAnd + " " + (boxesSize - 10) + " " + confirmDeleteMore;
       }
-      vrtxAdmin.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '<br /><br />' + list, confirmDeleteTitle, function() {
+      vrtxAdmin.openConfirmDialog(confirmDelete.replace("(1)", boxesSize) + '<br />' + list, confirmDeleteTitle, function() {
         _$('#collectionListing\\.action\\.delete-resources').click();
       }, null, null);
     }
@@ -1259,18 +1260,18 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
       //alert(deletePermanentlyUncheckedMessage);
       vrtxAdmin.openMsgDialog(deletePermanentlyUncheckedMessage, deletePermTitle);
     } else {
-      var list = "";
+      var list = "<ul>";
       var boxesSize = boxesSizeTmp = boxes.size();
       boxesSizeTmp = boxesSizeTmp > 10 ? 10 : boxesSizeTmp;
-      list = ""
       for (var i = 0; i < boxesSizeTmp; i++) {
         var name = boxes[i].title.split("/");
-        list += name[name.length-1] + '<br />';
+        list += "<li>" + name[name.length-1] + "</li>";
       }
+      list += "</ul>"; 
       if (boxesSize > 10) {
         list += "... " + confirmDeletePermanentlyAnd + " " + (boxesSize - 10) + " " + confirmDeletePermanentlyMore;
       }
-      vrtxAdmin.openConfirmDialog(confirmDeletePermanently.replace("(1)", boxesSize) + '<br /><br />' + list, confirmDeletePermTitle, function() {
+      vrtxAdmin.openConfirmDialog(confirmDeletePermanently.replace("(1)", boxesSize) + '<br />' + list, confirmDeletePermTitle, function() {
         _$('.deleteResourcePermanent').click();
       }, null, null);
     }

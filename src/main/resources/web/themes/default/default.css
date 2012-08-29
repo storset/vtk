@@ -2445,6 +2445,11 @@ div.vrtx-admin-form {
   min-height: 0 !important;
 }
 
+.ui-dialog .ui-dialog-content ul {
+  margin: 10px 0 10px 25px;
+  padding: 0;
+}
+
 .ui-dialog .ui-dialog-buttonpane {
   padding: 0;
 }

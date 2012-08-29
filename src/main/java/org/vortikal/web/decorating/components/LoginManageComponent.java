@@ -63,14 +63,14 @@ public class LoginManageComponent extends ViewRenderingDecoratorComponent {
 		Path uri = requestContext.getResourceURI();
 		Principal principal = requestContext.getPrincipal();
 		String token = requestContext.getSecurityToken();
-		model.put("principal", principal);
-
 		Resource resource = repository.retrieve(token, uri, true);
 
 		// VTK-2460
 		if (requestContext.isViewUnauthenticated()) {
 			principal = null;
 		}
+		
+		model.put("principal", principal);
 
 		String displayOnlyIfAuthReq = request.getStringParameter("display-only-if-auth");
 		String displayAuthUserReq = request.getStringParameter("display-auth-user");
@@ -83,7 +83,7 @@ public class LoginManageComponent extends ViewRenderingDecoratorComponent {
 			if (principal == null && !displayOnlyIfAuth) { // Not logged in (unauthenticated)
 				options.put("login", this.defaultLoginService.constructURL(resource, principal));
 				this.putAdminURL(options, resource);
-			} else { // Logged in (authenticated)
+			} else if(principal != null) { // Logged in (authenticated)
 				if (displayAuthUser) {
 					options.put("principal-desc", null);
 				}

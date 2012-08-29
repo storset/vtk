@@ -1378,12 +1378,8 @@ span.vrtx-help-step-by-step-cmd {
   white-space: nowrap;  
 }
 
-#directory-listing .checkbox {
-  padding-right: 30px;
-}
-
 #directory-listing th.checkbox {
-  width: 2%;
+  width: 3%;
 }
 
 #directory-listing th.permissions {

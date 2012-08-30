@@ -23,6 +23,11 @@
   background: transparent url(images/dropdown-toggle-white-bg.png) no-repeat scroll top right;
 }
 
+.vrtx-dropdown-component .vrtx-dropdown-link.active,
+.vrtx-dropdown-component .vrtx-dropdown-link:hover {
+  background-image: url(images/dropdown-toggle-white-bg-hover.png);
+}
+
 .vrtx-dropdown-wrapper {
   position: absolute;
   right: 0px;

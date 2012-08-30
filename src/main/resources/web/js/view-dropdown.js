@@ -8,6 +8,12 @@
 $(document).ready(function() {
   $(document).off("click", ".vrtx-dropdown-component-toggled a.vrtx-dropdown-link")
               .on("click", ".vrtx-dropdown-component-toggled a.vrtx-dropdown-link", function(e) {
+    var link = $(this);
+    if(link.hasClass("active")) {
+      link.removeClass("active");
+    } else {
+      link.addClass("active");
+    }
     $(this).next(".vrtx-dropdown-wrapper").slideToggle("fast");
     e.stopPropagation();
     e.preventDefault();
@@ -15,7 +21,6 @@ $(document).ready(function() {
   $(document).off("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-link")
               .on("click", ".vrtx-dropdown-component-not-toggled a.vrtx-dropdown-link", function(e) {
     $(this).next(".vrtx-dropdown-wrapper").slideDown("fast");
-    console.log(e);
     e.stopPropagation();
     e.preventDefault();
   });

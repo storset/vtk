@@ -23,7 +23,7 @@
   </style>
   
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/jquery.min.js"></script> 
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery-ui-1.8.23.custom.min.js"></script> 
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/ui/jquery-ui-1.8.23.custom/js/jquery-ui-1.8.23.custom.min.js"></script> 
   <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/cross-doc-com-link.js"></script>
   <script type="text/javascript"><!--
     var crossDocComLink = new CrossDocComLink();

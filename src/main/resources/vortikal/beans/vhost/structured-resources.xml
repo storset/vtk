@@ -431,7 +431,7 @@
               <entry key="webResources" value="${webResources.baseURL}" />
               <entry key="fckEditorAreaCSSURL" value-ref="editor.fckEditorAreaCSSURL" />
               <entry key="themeBaseURL" value="${themeBaseURL}" />
-              
+              <entry key="jQueryUiVersion" value="${jquery.ui.version}" />
             </map>
           </property>
         </bean>

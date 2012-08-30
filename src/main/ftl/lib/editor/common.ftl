@@ -36,9 +36,9 @@
 
   <!-- JQuery UI (used for datepicker) -->
   <#if language = "no">
-    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery.ui.datepicker-no.js"></script>
+    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-${jQueryUiVersion}.custom/js/jquery.ui.datepicker-no.js"></script>
   <#elseif language = "nn">
-    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery.ui.datepicker-nn.js"></script>
+    <script type="text/javascript" src="${webResources?html}/jquery/plugins/ui/jquery-ui-${jQueryUiVersion}.custom/js/jquery.ui.datepicker-nn.js"></script>
   </#if>
 
   <#if oldEditor>

@@ -181,11 +181,6 @@
   <bean id="eventListing.view" parent="collectionListing.view">
     <property name="attributesMap">
       <map>
-        <entry key="cssURLs">
-          <list>
-            <value>${themeBaseURL}/view-dropdown.css</value>
-          </list>
-        </entry>
         <entry key="jsURLs">
           <list>
             <value>${webResources.baseURL}/jquery/include-jquery.js</value>

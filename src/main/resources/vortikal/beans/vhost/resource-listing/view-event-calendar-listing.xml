@@ -187,7 +187,6 @@
             <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-tabs-customized/css/ui-lightness/jquery-ui-1.7.2.custom.css</value>
             <value>${themeBaseURL}/view-collectionlisting.css</value>
             <value>${themeBaseURL}/view-event-calendar-listing.css</value>
-            <value>${themeBaseURL}/view-dropdown.css</value>
           </list>
         </entry>
         <entry key="jsURLs">

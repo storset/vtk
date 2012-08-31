@@ -11,6 +11,15 @@
     <#if opt = "principal-desc">
       <#assign title = principal.description />
       <#assign titleLink = "" />
+   <#elseif opt = "login">   
+      <#assign title = vrtx.getMsg("decoration.${type}.${opt?html}") />
+      <#assign titleLink = options[opt] />
+      <#-- Add "authTarget=http" -->
+      <#if titleLink?contains("?")>
+        <#assign titleLink = titleLink + "&amp;authTarget=http" />
+      <#else>
+        <#assign titleLink = titleLink + "?authTarget=http" />
+      </#if>
     <#else>
       <#assign title = vrtx.getMsg("decoration.${type}.${opt?html}") />
       <#assign titleLink = options[opt] />

@@ -559,20 +559,21 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasCancel, func
 	    }
 	  });    
     } else {
-      this.defineDialog(selector, {
-	    Ok: function() {
-	      $(this).dialog("close");
+      var l10nButtons = {};
+      l10nButtons["Ok"] = function() {
+	    $(this).dialog("close");
 	      if(funcOkComplete) {
 	        funcOkComplete(options);
 	      }
-	    },
-		Cancel: function() {
-		  $(this).dialog("close");
-		  if(funcCancelComplete) {
-	        funcCancelComplete();
-	      }
-		}
-	  });
+	  };
+	  var Cancel = (typeof cancelI18n != "undefined") ? cancelI18n : "Cancel";
+      l10nButtons[Cancel] = function() {
+		$(this).dialog("close");
+		if(funcCancelComplete) {
+	      funcCancelComplete();
+	    }
+      };
+      this.defineDialog(selector, l10nButtons);
 	}
   } else {
     if(title) {

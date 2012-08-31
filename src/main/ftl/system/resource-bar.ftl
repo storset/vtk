@@ -15,6 +15,7 @@
       var outdatedBrowserText = '${vrtx.getMsg("msg.browser.msie.msie6")}';
     }
   }
+  var cancelI18n = '${vrtx.getMsg("editor.cancel")}';
 // -->
 </script>
 

@@ -253,6 +253,7 @@
 
     <#list propDefs as propDef>
       <#local name = propDef.name />
+      <#local multiple = propDef.isMultiple() />
       
       <#-- HACKS 2012 start -->
       <#-- Wrap hide properties -->
@@ -510,7 +511,7 @@
           <#if name = 'recursive-listing-subfolders'>
             <label>${vrtx.getMsg("editor.recursive-listing.featured-articles")}</label>
           </#if>
-          <div class="vrtx-textfield">
+          <div class="vrtx-textfield<#if multiple> vrtx-multiple-textfield</#if>">
             <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
           </div>
 

@@ -45,7 +45,7 @@
           // -->
           </script>
         <#else>
-          <div class="vrtx-textfield">
+          <div class="vrtx-textfield<#if multiple> vrtx-multiple-textfield</#if>">
         </#if>
       </#if>
 	    <input size="${inputFieldSize}" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}" />

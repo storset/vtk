@@ -41,6 +41,8 @@ button,
   font-weight: inherit;
 }
 
+.ui-dialog .ui-dialog-buttonpane button:focus,
+button:focus,
 input[type=button]:focus,
 input[type=file]:focus ,
 input[type=image]:focus ,
@@ -65,10 +67,6 @@ input[type=text]:focus {
   margin: 0;
   cursor: pointer;
   text-decoration: none !important;
-}
-
-.ui-dialog .ui-dialog-buttonpane button {
-  height: 29px;
 }
 
 .ui-dialog .ui-dialog-buttonpane button:first-child,
@@ -202,6 +200,13 @@ input[type=text]:focus {
 #submitButtons .vrtx-focus-button,
 .ui-dialog .ui-dialog-buttonpane button {
   margin: 0 10px 0 0;
+}
+
+.ui-dialog .ui-dialog-buttonpane button.ui-corner-all {
+  -moz-border-radius: 0px;
+  -webkit-border-radius: 0px;
+  -khtml-border-radius: 0px;
+  border-radius: 0px;
 }
 
 /* ^ Buttons */

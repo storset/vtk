@@ -550,7 +550,7 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasCancel, func
     } else {
       $("body").append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
     }
-    elm = $(selector);
+    elm = $(selector); // Re-query DOM after appending html
     var l10nButtons = {};
     l10nButtons["Ok"] = function() {
 	  $(this).dialog("close");

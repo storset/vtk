@@ -549,32 +549,28 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasCancel, func
     } else {
       $("body").append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
     }
-    if(!hasCancel) {
-      this.defineDialog(selector, {
-	    Ok: function() {
-	      $(this).dialog("close");
-	      if(funcOkComplete) {
-	        funcOkComplete(options);
-	      }
+    var l10nButtons = {};
+    l10nButtons["Ok"] = function() {
+	  $(this).dialog("close");
+	    if(funcOkComplete) {
+	      funcOkComplete(options);
 	    }
-	  });    
-    } else {
-      var l10nButtons = {};
-      l10nButtons["Ok"] = function() {
-	    $(this).dialog("close");
-	      if(funcOkComplete) {
-	        funcOkComplete(options);
-	      }
-	  };
-	  var Cancel = (typeof cancelI18n != "undefined") ? cancelI18n : "Cancel";
+    };
+	if(hasCancel) {
+      var Cancel = (typeof cancelI18n != "undefined") ? cancelI18n : "Cancel";
       l10nButtons[Cancel] = function() {
-		$(this).dialog("close");
-		if(funcCancelComplete) {
+      $(this).dialog("close");
+	    if(funcCancelComplete) {
 	      funcCancelComplete();
 	    }
       };
-      this.defineDialog(selector, l10nButtons);
-	}
+    }
+    $(selector).dialog({
+      modal: true,
+	  autoOpen: false,
+	  resizable: false,
+	  buttons: l10nButtons
+    });
   } else {
     if(title) {
       $("#ui-dialog-title-" + selector.substring(1)).html(title); 
@@ -582,15 +578,6 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasCancel, func
     $(selector + "-content").html("<p>" + msg + "</p>");
   }
   $(selector).dialog("open");
-};
-
-VrtxAdmin.prototype.defineDialog = function defineDialog(selector, buttons) {
-  $(selector).dialog({
-    modal: true,
-	autoOpen: false,
-	resizable: false,
-	buttons: buttons
-  });
 };
 
 

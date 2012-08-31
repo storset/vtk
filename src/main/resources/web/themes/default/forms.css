@@ -69,6 +69,10 @@ input[type=text]:focus {
   text-decoration: none !important;
 }
 
+.ui-dialog .ui-dialog-buttonpane button {
+  height: 28px;
+}
+
 .ui-dialog .ui-dialog-buttonpane button:first-child,
 .vrtx-focus-button {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-left.gif) no-repeat 0 0;

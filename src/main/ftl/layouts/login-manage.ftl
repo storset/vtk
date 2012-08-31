@@ -14,6 +14,7 @@
    <#else>
       <#assign title = vrtx.getMsg("decoration.${type}.${opt?html}") />
       <#assign titleLink = options[opt] />
+      <#-- TODO: serverside -->
       <#if ((opt = "login" || opt = "admin" || opt="admin-collection") && !resourceContext.currentServiceURL?starts_with("https://"))>   
         <#if titleLink?contains("?")>
           <#assign titleLink = titleLink + "&authTarget=http" />
@@ -69,6 +70,7 @@
                 <@vrtx.msg code="decoration.${type}.${opt?html}" />
               </a>
             <#else>
+              <#-- TODO: serverside -->
               <#if ((opt = "login" || opt = "admin" || opt="admin-collection") && !resourceContext.currentServiceURL?starts_with("https://"))>   
                 <#if url?contains("?")>
                   <#assign url = url + "&authTarget=http" />

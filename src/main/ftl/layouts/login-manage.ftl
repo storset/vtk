@@ -16,7 +16,7 @@
       <#assign titleLink = options[opt] />
       <#-- Add "authTarget=http" -->
       <#if titleLink?contains("?")>
-        <#assign titleLink = titleLink + "&amp;authTarget=http" />
+        <#assign titleLink = titleLink + "&authTarget=http" />
       <#else>
         <#assign titleLink = titleLink + "?authTarget=http" />
       </#if>

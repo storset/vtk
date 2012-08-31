@@ -91,7 +91,7 @@ public class LoginManageComponent extends ViewRenderingDecoratorComponent {
 				if (displayAuthUser) {
 					options.put("principal-desc", null);
 				}
-				this.putAdminURL(options, resource, request);
+				this.putAdminURL(options, resource, null);
 				options.put("logout", this.logoutService.constructURL(resource, principal));
 			}
 		} catch (Exception e) {}
@@ -104,7 +104,7 @@ public class LoginManageComponent extends ViewRenderingDecoratorComponent {
 		if (adminService != null) {
 			if (resource.isCollection()) {
 				URL adminCollectionURL = adminService.constructURL(resource.getURI());
-				if(!request.getServletRequest().isSecure()) {
+				if(request != null && !request.getServletRequest().isSecure()) {
 					adminCollectionURL.addParameter("authTarget", "http");
 				}
 				options.put("admin-collection", adminCollectionURL);

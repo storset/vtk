@@ -241,16 +241,14 @@
       <a href="javascript:void(0)" class="vrtx-${type}-link vrtx-dropdown-link">${title?html}</a>  
     </#if>
     <div class="vrtx-${type}-wrapper vrtx-dropdown-wrapper">
-      <span></span>
       <div class="vrtx-${type}-wrapper-inner vrtx-dropdown-wrapper-inner">
         <#if displayDropdownTitleClose>
           <div class="vrtx-${type}-top vrtx-dropdown-top">
-            <div class="vrtx-${type}-title vrtx-dropdown-title">${title?html}</div>
-            <span>
+            <div class="vrtx-${type}-title vrtx-dropdown-title">${title?html}
               <a href="javascript:void(0)" class="vrtx-${type}-close-link vrtx-dropdown-close-link">
                 <@vrtx.msg code="decorating.shareAtComponent.close" default="Close" />
               </a>
-            </span>
+            </div>
           </div>
         </#if>
         <ul>

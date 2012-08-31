@@ -33,7 +33,6 @@
   right: 0px;
   top: 1.5em;
   text-align: left;
-  overflow: hidden;
   display: none;
   z-index: 999;
   padding-top: 5px;
@@ -46,50 +45,39 @@
 
 .vrtx-dropdown-wrapper-inner {
   background-color: #fff;
-  overflow: auto;
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
 }
 
 .vrtx-dropdown-wrapper .vrtx-dropdown-top {
-  width: 100%;
-  float: left;
   color: #fff;
   background: #383838 none repeat scroll 0 0;
 }
 
 .vrtx-dropdown-wrapper .vrtx-dropdown-top .vrtx-dropdown-title {
   display: block;
-  float: left;
   padding: 5px 11px 7px 11px; 
   margin: 0;
   font-size: 1em;
+  position: relative;
 }
 
-.vrtx-dropdown-wrapper .vrtx-dropdown-top span {
-  float: right;
+.vrtx-dropdown-wrapper .vrtx-dropdown-top .vrtx-dropdown-title a {
   font-size: 1em;
-  margin: 6px 11px 0 0;
-  text-align: right;
-  display: block;
-}
-
-.vrtx-dropdown-wrapper .vrtx-dropdown-top span a {
+  position: absolute;
+  top: 5px;
+  right: 11px;
   color: #fff;
   font-weight: bold;
   font-size: 0.77em;
 }
 
 .vrtx-dropdown-wrapper ul {
-  width: 100%;
-  float: left;
   padding: 0 !important;
   margin: 0 !important;
 }
 
 .vrtx-dropdown-wrapper li {
-  width: 100%;
-  float: left;
   padding: 0 !important;
   margin: 0 !important;
   background: none !important;

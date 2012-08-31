@@ -274,7 +274,7 @@ function validTextLengthsInEditor(isOldEditor) {
   var MAX_LENGTH = 1500, // Back-end limits it to 2048
       // NEW starts on wrapper and OLD starts on field (because of slightly different semantic/markup build-up)
       INPUT_NEW = ".vrtx-string, .vrtx-resource-ref, .vrtx-image-ref, .vrtx-media-ref",
-      INPUT_OLD = "input[type=text]",
+      INPUT_OLD = "input[type=text]:visible", // RT# 1045040 (skip aggregate and manually approve hidden input-fields)
       CK_NEW = ".vrtx-simple-html, .vrtx-simple-html-small", // aka. textareas
       CK_OLD = "textarea:not(#resource\\.content)";
 

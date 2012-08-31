@@ -30,9 +30,6 @@
  */
 package org.vortikal.web.actions.create;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -43,7 +40,6 @@ import java.util.regex.Matcher;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -54,6 +50,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.text.html.HtmlUtil;
+import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.templates.ResourceTemplate;
@@ -302,11 +299,9 @@ public class TemplateBasedCreateController extends SimpleFormController {
 
         repository.copy(token, sourceURI, destinationURI, false, false);
 
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(repository.getInputStream(token,
-                destinationURI, false)));
+        String stream = StreamUtil.streamToString(repository.getInputStream(token, destinationURI, false));
 
-        String line, title = createDocumentCommand.getTitle();
+        String title = createDocumentCommand.getTitle();
         if (title == null)
             title = "";
 
@@ -319,11 +314,8 @@ public class TemplateBasedCreateController extends SimpleFormController {
         }
         title = Matcher.quoteReplacement(title);
 
-        while ((line = reader.readLine()) != null) {
-            os.write(line.replaceAll(this.titlePlaceholder, title).getBytes());
-        }
-
-        Resource r = repository.storeContent(token, destinationURI, new ByteArrayInputStream(os.toByteArray()));
+        Resource r = repository.storeContent(token, destinationURI,
+                StreamUtil.stringToStream(stream.replaceAll(this.titlePlaceholder, title)));
 
         for (PropertyTypeDefinition ptd : this.removePropList)
             r.removeProperty(ptd);

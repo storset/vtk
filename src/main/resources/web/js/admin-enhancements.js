@@ -543,12 +543,14 @@ VrtxAdmin.prototype.openConfirmDialog = function openConfirmDialog(msg, title, f
 
 VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasCancel, funcOkComplete, funcCancelComplete, options) {
   var selector = !hasCancel ? "#dialog-message" : "#dialog-confirm";
-  if(!$(selector).length) {
+  var elm = $(selector);
+  if(!elm.length) {
     if(title) {
       $("body").append("<div id='" + selector.substring(1) + "' title='" + title + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
     } else {
       $("body").append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
     }
+    elm = $(selector);
     var l10nButtons = {};
     l10nButtons["Ok"] = function() {
 	  $(this).dialog("close");
@@ -565,7 +567,7 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasCancel, func
 	    }
       };
     }
-    $(selector).dialog({
+    elm.dialog({
       modal: true,
 	  autoOpen: false,
 	  resizable: false,
@@ -573,11 +575,11 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasCancel, func
     });
   } else {
     if(title) {
-      $("#ui-dialog-title-" + selector.substring(1)).html(title); 
+      elm.find("#ui-dialog-title-" + selector.substring(1)).html(title); 
     }
-    $(selector + "-content").html("<p>" + msg + "</p>");
+    elm.find(selector + "-content").html("<p>" + msg + "</p>");
   }
-  $(selector).dialog("open");
+  elm.dialog("open");
 };
 
 

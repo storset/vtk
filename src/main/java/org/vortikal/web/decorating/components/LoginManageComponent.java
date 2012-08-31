@@ -82,35 +82,33 @@ public class LoginManageComponent extends ViewRenderingDecoratorComponent {
 		try {
 			if (principal == null && !displayOnlyIfAuth) { // Not logged in (unauthenticated)
 				URL loginURL = this.defaultLoginService.constructURL(resource, principal);
-				if(!request.getServletRequest().isSecure()) {
-					loginURL.addParameter("authTarget", "http");
-				}
+			    loginURL.addParameter("authTarget", "http");
 				options.put("login", loginURL);
-				this.putAdminURL(options, resource, request);
+				this.putAdminURL(options, resource, false);
 			} else if(principal != null) { // Logged in (authenticated)
 				if (displayAuthUser) {
 					options.put("principal-desc", null);
 				}
-				this.putAdminURL(options, resource, null);
-				options.put("logout", this.logoutService.constructURL(resource, principal));
+				this.putAdminURL(options, resource, true);
+				options.put("logout", this.logoutService.constructURL(resource, principal), true);
 			}
 		} catch (Exception e) {}
 		
 		model.put("options", options);
 	}
 	
-	private void putAdminURL(Map<String, URL> options, Resource resource, DecoratorRequest request) throws Exception {
+	private void putAdminURL(Map<String, URL> options, Resource resource, boolean hasPrincipal) throws Exception {
 		Service adminService = this.alternativeLoginServices.get("admin");
 		if (adminService != null) {
 			if (resource.isCollection()) {
 				URL adminCollectionURL = adminService.constructURL(resource.getURI());
-				if(request != null && !request.getServletRequest().isSecure()) {
+				if(!hasPrincipal) {
 					adminCollectionURL.addParameter("authTarget", "http");
 				}
 				options.put("admin-collection", adminCollectionURL);
 			} else {
 				URL adminURL = adminService.constructURL(resource.getURI());
-				if(!request.getServletRequest().isSecure()) {
+				if(!hasPrincipal) {
 					adminURL.addParameter("authTarget", "http");
 				}
 				options.put("admin", adminURL);

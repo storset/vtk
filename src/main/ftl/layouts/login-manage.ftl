@@ -11,20 +11,20 @@
     <#if opt = "principal-desc">
       <#assign title = principal.description />
       <#assign titleLink = "" />
-   <#elseif opt = "login">   
+   <#else>
       <#assign title = vrtx.getMsg("decoration.${type}.${opt?html}") />
       <#assign titleLink = options[opt] />
-      <#-- Add "authTarget=http" -->
-      <#if titleLink?contains("?")>
-        <#assign titleLink = titleLink + "&authTarget=http" />
-      <#else>
-        <#assign titleLink = titleLink + "?authTarget=http" />
+      <#if ((opt = "login" || opt = "admin" || opt="admin-collection") && !resourceContext.currentServiceURL?starts_with("https://"))>   
+        <#if titleLink?contains("?")>
+          <#assign titleLink = titleLink + "&authTarget=http" />
+        <#else>
+          <#assign titleLink = titleLink + "?authTarget=http" />
+        </#if>
       </#if>
-    <#else>
-      <#assign title = vrtx.getMsg("decoration.${type}.${opt?html}") />
-      <#assign titleLink = options[opt] />
     </#if>
   </#list>
+  
+       
   
   <#-- Rest of options => dropdown list -->
   <#if (options?size > 1)>
@@ -69,12 +69,11 @@
                 <@vrtx.msg code="decoration.${type}.${opt?html}" />
               </a>
             <#else>
-              <#-- Add "authTarget=http" -->
-              <#if opt = "admin" || opt="admin-collection">   
+              <#if ((opt = "login" || opt = "admin" || opt="admin-collection") && !resourceContext.currentServiceURL?starts_with("https://"))>   
                 <#if url?contains("?")>
                   <#assign url = url + "&authTarget=http" />
                 <#else>
-                  <#assign url = url + "?authTarget=http" + previewUnpublishedParameter + "=" + "true" + "&" + previewRefreshParameter + "=" + dateStr + "&authTarget=http" />
+                  <#assign url = url + "?authTarget=http" />
                 </#if>
               </#if>
               <a href="${url?html}" class="vrtx-${type}-${opt?html}">

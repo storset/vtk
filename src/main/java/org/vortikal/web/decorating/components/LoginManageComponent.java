@@ -90,7 +90,7 @@ public class LoginManageComponent extends ViewRenderingDecoratorComponent {
 					options.put("principal-desc", null);
 				}
 				this.putAdminURL(options, resource, true);
-				options.put("logout", this.logoutService.constructURL(resource, principal), true);
+				options.put("logout", this.logoutService.constructURL(resource, principal));
 			}
 		} catch (Exception e) {}
 		

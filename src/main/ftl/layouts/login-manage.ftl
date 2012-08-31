@@ -69,6 +69,14 @@
                 <@vrtx.msg code="decoration.${type}.${opt?html}" />
               </a>
             <#else>
+              <#-- Add "authTarget=http" -->
+              <#if opt = "admin" || opt="admin-collection">   
+                <#if url?contains("?")>
+                  <#assign url = url + "&authTarget=http" />
+                <#else>
+                  <#assign url = url + "?authTarget=http" + previewUnpublishedParameter + "=" + "true" + "&" + previewRefreshParameter + "=" + dateStr + "&authTarget=http" />
+                </#if>
+              </#if>
               <a href="${url?html}" class="vrtx-${type}-${opt?html}">
                 <@vrtx.msg code="decoration.${type}.${opt?html}" />
               </a>

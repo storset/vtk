@@ -552,14 +552,14 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasCancel, func
     var l10nButtons = {};
     l10nButtons["Ok"] = function() {
 	  $(this).dialog("close");
-	    if(funcOkComplete) {
-	      funcOkComplete(options);
-	    }
+	  if(funcOkComplete) {
+	    funcOkComplete(options);
+	  }
     };
 	if(hasCancel) {
       var Cancel = (typeof cancelI18n != "undefined") ? cancelI18n : "Cancel";
       l10nButtons[Cancel] = function() {
-      $(this).dialog("close");
+        $(this).dialog("close");
 	    if(funcCancelComplete) {
 	      funcCancelComplete();
 	    }

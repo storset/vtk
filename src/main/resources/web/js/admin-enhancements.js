@@ -505,8 +505,13 @@ function interceptEnterKey(idOrClass) {
 function interceptEnterKeyAndReroute(txt, btn) {
   $("#app-content").delegate(txt, "keypress", function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-      $(btn).click(); // click the associated button
-      e.preventDefault();
+      if ($(this).hasClass("blockSubmit")) {
+        $(this).removeClass("blockSubmit");
+        e.preventDefault();
+      } else {
+        $(btn).click(); // click the associated button
+        e.preventDefault();
+      }
     }
   });
 }

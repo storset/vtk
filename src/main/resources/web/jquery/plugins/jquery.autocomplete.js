@@ -12,12 +12,13 @@
  */
 
 /*
- * Extensions by Vortex
+ * Extensions added by USIT for Vortex
  * 
  * Added RIGHTARROW & SPACE as selectionkeys
  * Added parameter "resultsBeforeScroll"
  *   -> defines minimum nr of hits before scrollbar is added to dropdown
- * 
+ * Added class when submit is blocked for use externally (removed when intercepted in reroute-function in admin-enhancements and toggled off)
+ *   -> Does not interfere with anything else
  */
 
 ;
@@ -102,7 +103,7 @@
         return false;
       }
     });
-
+    
     // only opera doesn't trigger keydown multiple times while pressed, others
     // don't work with keypress at all
     $input.bind(($.browser.opera ? "keypress" : "keydown") + ".autocomplete", function(event) {
@@ -154,6 +155,9 @@
         // handling
         event.preventDefault();
         blockSubmit = true;
+        if(!$input.hasClass("blockSubmit")) {
+          $input.addClass("blockSubmit");
+        }
         return false;
       }
       break;

@@ -505,7 +505,7 @@ function interceptEnterKey(idOrClass) {
 function interceptEnterKeyAndReroute(txt, btn) {
   $("#app-content").delegate(txt, "keypress", function (e) {
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-      if ($(this).hasClass("blockSubmit")) {
+      if ($(this).hasClass("blockSubmit")) { // submit/rerouting can be blocked elsewhere on textfield
         $(this).removeClass("blockSubmit");
         e.preventDefault();
       } else {

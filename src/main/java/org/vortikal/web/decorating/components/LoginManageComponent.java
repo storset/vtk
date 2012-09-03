@@ -52,6 +52,8 @@ public class LoginManageComponent extends ViewRenderingDecoratorComponent {
 	private Service defaultLoginService;
 	private Map<String, Service> alternativeLoginServices;
 	private Service logoutService;
+	private boolean displayOnlyIfAuth;
+	private boolean displayAuthUser;
 
 	protected void processModel(Map<String, Object> model,
 			DecoratorRequest request, DecoratorResponse response)
@@ -71,11 +73,6 @@ public class LoginManageComponent extends ViewRenderingDecoratorComponent {
 		}
 		
 		model.put("principal", principal);
-
-		String displayOnlyIfAuthReq = request.getStringParameter("display-only-if-auth");
-		String displayAuthUserReq = request.getStringParameter("display-auth-user");
-		boolean displayOnlyIfAuth = displayOnlyIfAuthReq != null && "true".equals(displayOnlyIfAuthReq);
-		boolean displayAuthUser = displayAuthUserReq != null && "true".equals(displayAuthUserReq);
 
 		Map<String, URL> options = new LinkedHashMap<String, URL>();
 
@@ -149,6 +146,16 @@ public class LoginManageComponent extends ViewRenderingDecoratorComponent {
 	protected Map<String, String> getParameterDescriptionsInternal() {
 		Map<String, String> map = new HashMap<String, String>();
 		return map;
+	}
+	
+	@Required
+	public void setDisplayOnlyIfAuth(boolean displayOnlyIfAuth) {
+		this.displayOnlyIfAuth = displayOnlyIfAuth;
+	}
+	
+	@Required
+	public void setDisplayAuthUser(boolean displayAuthUser) {
+		this.displayAuthUser = displayAuthUser;
 	}
 
 }

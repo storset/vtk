@@ -145,7 +145,7 @@
   <bean id="decorating.loginManageComponent" class="org.vortikal.web.decorating.components.LoginManageComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="name" value="login-manage" />
-    <property name="description" value="Displays an authentication and manage component" />
+    <property name="description" value="Displays login and manage component" />
     <property name="view" ref="decorating.loginManageComponent.view" />
     <property name="defaultLoginService" ref="loginService" />
     <property name="alternativeLoginServices">
@@ -154,12 +154,24 @@
       </map>
     </property>
     <property name="logoutService" ref="logoutService" />
-    <property name="parameterDescriptions">
+    <property name="displayOnlyIfAuth" value="false" />
+    <property name="displayAuthUser" value="false" />
+  </bean>
+  
+  <bean id="decorating.loginManageUserOptsComponent" class="org.vortikal.web.decorating.components.LoginManageComponent">
+    <property name="namespace" ref="decorating.includeNamespace" />
+    <property name="name" value="login-manage-user-options" />
+    <property name="description" value="Displays manage component with user specific options" />
+    <property name="view" ref="decorating.loginManageComponent.view" />
+    <property name="defaultLoginService" ref="loginService" />
+    <property name="alternativeLoginServices">
       <map>
-        <entry key="display-only-if-auth" value="If set to 'true', do not display anything unless the user is logged in." />
-        <entry key="display-auth-user" value="If set to 'true', displays the full user name when logged in." />
+        <entry key="admin" value-ref="manageService" />
       </map>
     </property>
+    <property name="logoutService" ref="logoutService" />
+    <property name="displayOnlyIfAuth" value="true" />
+    <property name="displayAuthUser" value="true" />
   </bean>
   
   <bean id="decorating.loginManageComponent.view" parent="freemarkerView">

@@ -8,13 +8,11 @@
 $(document).ready(function() {
   $(document).off("click", ".vrtx-dropdown-component-toggled a.vrtx-dropdown-link")
               .on("click", ".vrtx-dropdown-component-toggled a.vrtx-dropdown-link", function(e) {
-    var link = $(this);
-    if(link.hasClass("active")) {
-      link.removeClass("active");
+    if($.browser.msie && $.browser.version <= 7) {
+      $(this).toggleClass("active").next(".vrtx-dropdown-wrapper").animate({"height": toggle, "overflow": "visible"},"fast");
     } else {
-      link.addClass("active");
+      $(this).toggleClass("active").next(".vrtx-dropdown-wrapper").slideToggle("fast");
     }
-    $(this).next(".vrtx-dropdown-wrapper").slideToggle("fast");
     e.stopPropagation();
     e.preventDefault();
   });

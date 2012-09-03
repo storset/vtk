@@ -374,6 +374,7 @@
       <map>
         <entry key="jsBaseURL" value="${jsBaseURL}" />
         <entry key="webResources" value="${webResources.baseURL}" />
+        <entry key="jQueryUiVersion" value="${jquery.ui.version}" />
       </map>
     </property>
   </bean>

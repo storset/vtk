@@ -511,8 +511,8 @@
           <#if name = 'recursive-listing-subfolders'>
             <label>${vrtx.getMsg("editor.recursive-listing.featured-articles")}</label>
           </#if>
-          <div class="vrtx-textfield<#if multiple> vrtx-multiple-textfield</#if>">
-            <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" />
+          <div class="vrtx-textfield">
+            <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" <#if multiple>class="vrtx-multiple"</#if> />
           </div>
 
           <#if name = 'recursive-listing-subfolders'>

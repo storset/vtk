@@ -1,6 +1,6 @@
 <#ftl strip_whitespace=true>
 <#macro printPropertyEditView title inputFieldName value="" tooltip="" classes="" inputFieldSize=20 valuemap="" dropdown=false multiple=false defaultValue="">
-<div class="vrtx-string ${classes}">
+<div class="vrtx-string ${classes}<#if multiple> vrtx-multiple</#if>">
   <label for="${inputFieldName}">${title}</label>
   <div class="inputfield">
     <#if dropdown && valuemap?exists && valuemap?is_hash && !multiple>
@@ -45,7 +45,7 @@
           // -->
           </script>
         <#else>
-          <div class="vrtx-textfield<#if multiple> vrtx-multiple-textfield</#if>">
+          <div class="vrtx-textfield">
         </#if>
       </#if>
 	    <input size="${inputFieldSize}" type="text" name="${inputFieldName}" id="${inputFieldName}" value="${value?html}" />

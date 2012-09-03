@@ -64,6 +64,7 @@ public class WebOtherReporter extends DocumentReporter {
         q.add(new TypeTermQuery("structured-event", TermOperator.NI));
         q.add(new TypeTermQuery("person", TermOperator.NI));
         q.add(new TypeTermQuery("structured-project", TermOperator.NI));
+        q.add(new TypeTermQuery("structured-master", TermOperator.NI));
         q.add(new TypeTermQuery("research-group", TermOperator.NI));
         q.add(new TypeTermQuery("organizational-unit", TermOperator.NI));
         q.add(new TypeTermQuery("contact-supervisor", TermOperator.NI));

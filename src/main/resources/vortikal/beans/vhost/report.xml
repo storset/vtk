@@ -87,6 +87,7 @@
         <ref bean="structured-eventReporter" />
         <ref bean="personReporter" />
         <ref bean="structured-projectReporter" />
+        <ref bean="structured-masterReporter" />
         <ref bean="research-groupReporter" />
         <ref bean="organizational-unitReporter" />
         <ref bean="contact-supervisorReporter" />
@@ -321,6 +322,15 @@
     <property name="sortPropDef" ref="lastModifiedPropDef" />
     <property name="titlePropDef" ref="titlePropDef" />
     <property name="type" value="structured-project" />
+    <property name="backURL" value="1" />
+    <property name="sortOrder" ref="SORT_ORDER.DESC" />
+  </bean>
+
+  <bean id="structured-masterReporter" class="org.vortikal.web.report.LastModifiedReporter" parent="documentReporter">
+    <property name="name" value="structured-masterReporter" />
+    <property name="sortPropDef" ref="lastModifiedPropDef" />
+    <property name="titlePropDef" ref="titlePropDef" />
+    <property name="type" value="structured-master" />
     <property name="backURL" value="1" />
     <property name="sortOrder" ref="SORT_ORDER.DESC" />
   </bean>

@@ -141,8 +141,8 @@ public class DiagramReport extends AbstractReporter {
              * This list can be appended to add file types. Do it before other.
              */
             String[] types = { "structured-article", "structured-event", "person", "structured-project",
-                    "research-group", "organizational-unit", "contact-supervisor", "frontpage", "managed-xml", "html",
-                    "php", "webOther" };
+                    "structured-master", "research-group", "organizational-unit", "contact-supervisor", "frontpage",
+                    "managed-xml", "html", "php", "webOther" };
             int typeCount[] = new int[types.length];
             URL typeURL[] = new URL[types.length];
 

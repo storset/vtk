@@ -112,6 +112,7 @@ public class RemoteMetadataProvider implements MediaMetadataProvider {
         } catch (ConnectionException ce) {
             logger.warn("ConnectionException: " + ce.getMessage());
         } catch (SocketTimeoutException ste) {
+            // Service likely used too much time processing request.
             setMediaMetadataStatus(repository, context, token, resource, "MEMORY_USAGE_EXCEEDS_LIMIT");
             logger.warn("SocketTimeoutException: " + ste.getMessage());
         } catch (UnknownServiceException use) {
@@ -166,11 +167,13 @@ public class RemoteMetadataProvider implements MediaMetadataProvider {
     /* Video */
     public boolean generateVideoInfo(final Repository repository, final SystemChangeContext context, String token,
             Path path, Resource resource) throws Exception {
-        boolean remove = true;
 
         URLConnection conn = generateConnection(repository, context, token, resource, path, videoMetadataParameters);
         Map<String, Integer> ret = generateMetadata(repository, context, token, resource, conn,
                 videoMetadataAffectedPropDefPointers);
+
+        conn = generateConnection(repository, context, token, resource, path, videoPosterImageParameters);
+        generateImage(repository, context, token, resource, conn, posterImagePropDef);
 
         int width = ret.get(mediaWidthPropDef.getName());
         int height = ret.get(mediaHeightPropDef.getName());
@@ -187,12 +190,10 @@ public class RemoteMetadataProvider implements MediaMetadataProvider {
         } else {
             logger.info("Extracted image is smaller than or equal to thumbnail size. Not scaling up.: " + path);
             setMediaMetadataStatus(repository, context, token, resource, "CONFIGURED_NOT_TO_SCALE_UP");
-            remove = false;
+            return false;
         }
-        conn = generateConnection(repository, context, token, resource, path, videoPosterImageParameters);
-        generateImage(repository, context, token, resource, conn, posterImagePropDef);
 
-        return remove;
+        return true;
     }
 
     /* Audio */

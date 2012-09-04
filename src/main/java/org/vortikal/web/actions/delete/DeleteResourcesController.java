@@ -48,10 +48,8 @@ import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.ResourceLockedException;
-import org.vortikal.repository.ResourceOverwriteException;
 import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.actions.copymove.CopyMoveToSelectedFolderController;
 
 public class DeleteResourcesController implements Controller {
 
@@ -71,7 +69,7 @@ public class DeleteResourcesController implements Controller {
             recoverable = false;
         }
         
-        // Map of files that for some reason failed on copy/move. Separated by a
+        // Map of files that for some reason failed on delete. Separated by a
         // key (String) that specifies type of failure and identifies list of
         // paths to resources that failed.
         Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
@@ -82,19 +80,13 @@ public class DeleteResourcesController implements Controller {
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
             Path uri = null;
-            try {
-                uri = Path.fromString(name);
-            } catch (IllegalArgumentException iae) {
-                // Not a path, ignore it, try next one
-                continue;
-            }
 
             try {
+            	uri = Path.fromString(name);
             	if (repository.exists(token, uri)) {
             		repository.delete(token, uri, recoverable);
             	} else {
             		this.addToFailures(failures, uri, msgKey, "nonExisting");
-            		continue;
             	}
             } catch (AuthorizationException ae) {
                 this.addToFailures(failures, uri, msgKey, "unAuthorized");

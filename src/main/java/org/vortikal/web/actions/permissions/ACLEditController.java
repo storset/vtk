@@ -73,6 +73,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
     private RoleManager roleManager;
     private LocaleResolver localeResolver;
     private DocumentPrincipalMetadataRetriever documentPrincipalMetadataRetriever;
+    private Repository repository;
 
     private Map<Privilege, List<String>> permissionShortcuts;
     private List<String> shortcuts = null;
@@ -108,9 +109,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Path uri = requestContext.getResourceURI();
-        Repository repository = requestContext.getRepository();
         String token = requestContext.getSecurityToken();
-        Resource resource = repository.retrieve(token, uri, false);
+        Resource resource = this.repository.retrieve(token, uri, false);
         Locale preferredLocale = this.localeResolver.resolveLocale(request);
         return getACLEditCommand(resource, resource.getAcl(), requestContext.getPrincipal(), false, false,
                 preferredLocale);
@@ -248,7 +248,8 @@ public class ACLEditController extends SimpleFormController implements Initializ
         // Doing remove or add actions
         if (editCommand.getRemoveGroupAction() != null) {
             acl = removeFromAcl(acl, editCommand.getGroupNames(), Type.GROUP, currentPrincipal, errors);
-            boolean losingPrivileges = !hasPrivilege(acl, currentPrincipal, Privilege.ALL);
+            boolean losingPrivileges = !this.repository.authorize(currentPrincipal, acl, Privilege.ALL);
+
             BindException bex = new BindException(getACLEditCommand(resource, acl, currentPrincipal, true,
                     losingPrivileges, preferredLocale), this.getCommandName());
             bex.addAllErrors(errors);
@@ -256,7 +257,7 @@ public class ACLEditController extends SimpleFormController implements Initializ
 
         } else if (editCommand.getRemoveUserAction() != null) {
             acl = removeFromAcl(acl, editCommand.getUserNames(), Type.USER, currentPrincipal, errors);
-            boolean losingPrivileges = !hasPrivilege(acl, currentPrincipal, Privilege.ALL);
+            boolean losingPrivileges = !this.repository.authorize(currentPrincipal, acl, Privilege.ALL);
             BindException bex = new BindException(getACLEditCommand(resource, acl, currentPrincipal, true,
                     losingPrivileges, preferredLocale), this.getCommandName());
             bex.addAllErrors(errors);
@@ -434,23 +435,6 @@ public class ACLEditController extends SimpleFormController implements Initializ
         return result;
     }
 
-    private boolean hasPrivilege(Acl acl, Principal principal, Privilege privilege) {
-        if (acl.containsEntry(privilege, principal)) {
-            return true;
-        }
-        Set<Principal> memberGroups = this.principalManager.getMemberGroups(principal);
-        Principal[] privilegedGroups = acl.listPrivilegedGroups(Privilege.ALL);
-
-        for (Principal privilegedGroup : privilegedGroups) {
-            for (Principal memberGroup : memberGroups) {
-                if (memberGroup.equals(privilegedGroup)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     private Acl addToAcl(Acl acl, String[] values, Type type) throws Exception {
         return addToAcl(acl, Arrays.asList(values), type, null);
     }
@@ -533,5 +517,10 @@ public class ACLEditController extends SimpleFormController implements Initializ
             DocumentPrincipalMetadataRetriever documentPrincipalMetadataRetriever) {
         this.documentPrincipalMetadataRetriever = documentPrincipalMetadataRetriever;
     }
+
+    @Required
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
 
 }

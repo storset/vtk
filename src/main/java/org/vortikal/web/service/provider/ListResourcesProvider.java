@@ -35,72 +35,60 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Acl;
+import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
-import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.search.PropertySelect;
-import org.vortikal.repository.search.ResultSet;
-import org.vortikal.repository.search.Search;
-import org.vortikal.repository.search.Searcher;
-import org.vortikal.repository.search.query.AndQuery;
-import org.vortikal.repository.search.query.UriDepthQuery;
-import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.repository.ResourceNotFoundException;
+import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
 import org.vortikal.security.PrincipalFactory;
+import org.vortikal.util.repository.ResourceSorter;
+import org.vortikal.util.repository.ResourceSorter.Order;
 
 public class ListResourcesProvider {
 
-    private Searcher searcher;
     private Repository repository;
-    private final int maxLimit = 500;
+    private org.springframework.web.servlet.support.RequestContext springRequestContext;
 
-    private static Log logger = LogFactory.getLog(ListResourcesProvider.class);
-
-    public List<Resource> buildSearchAndPopulateResources(String uri, String token,
+    public List<Resource> buildSearchAndPopulateResources(Path uri, String token,
             HttpServletRequest request) {
+    	
+    	this.springRequestContext = new org.springframework.web.servlet.support.RequestContext(request);
 
-        // MainQuery (depth + 1 from uri and all resources)
-        Path url = Path.fromString(uri);
-        int depth = url.getDepth() + 1;
+        Resource[] resourcesArr = null;
         
-        AndQuery mainQuery = new AndQuery();
-        mainQuery.add(new UriPrefixQuery(url.toString()));
-        mainQuery.add(new UriDepthQuery(depth));
+        try {
+        	resourcesArr = this.repository.listChildren(token, uri, false);
+		} catch (ResourceNotFoundException e1) {
+		} catch (AuthorizationException e1) {
+		} catch (AuthenticationException e1) {
+		} catch (Exception e1) { }
         
-        Search search = new Search();
-        search.setQuery(mainQuery);
-        search.setLimit(maxLimit);
-        search.setPropertySelect(PropertySelect.ALL);
         
-        ResultSet rs = searcher.execute(token, search);
-
-        List<PropertySet> results = rs.getAllResults();
         List<Resource> resources = new ArrayList<Resource>();
-
-        for (PropertySet result : results) {
-            try {
-                Resource r = this.repository.retrieve(token, result.getURI(), true);
-                if (r != null) {
-                  resources.add(r);
-                }
-            } catch (Exception e) {
-                logger.error("Exception " + e.getMessage());
-            }
-            
+        
+        if(resourcesArr != null) {
+        	// Sort by name
+        	ResourceSorter.sort(resourcesArr, Order.BY_NAME, false, springRequestContext);
+        	for(Resource r : resourcesArr) {
+        		resources.add(r);
+        	}
         }
+
         return resources;
     }
     
-    public String[] getAclFormatted(Resource r, HttpServletRequest request) {
+    public boolean authorizedToRead(Acl acl, Principal principal) {
+    	return repository.authorize(principal, acl, Privilege.READ);
+    }
+    
+    public String[] getAclFormatted(Acl acl, HttpServletRequest request) {
     	String[] aclFormatted = {"", "", ""}; // READ, READ_WRITE, ALL
-    	
-    	Acl acl = r.getAcl();
+ 
         for (Privilege action : Privilege.values()) {
             String actionName = action.getName();
             Principal[] privilegedUsers = acl.listPrivilegedUsers(action);
@@ -155,18 +143,10 @@ public class ListResourcesProvider {
 
 
     public String getLocalizedTitle(HttpServletRequest request, String key, Object[] params) {
-        org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
-                request);
         if (params != null) {
-            return springRequestContext.getMessage(key, params);
+            return this.springRequestContext.getMessage(key, params);
         }
-        return springRequestContext.getMessage(key);
-    }
-
-
-    @Required
-    public void setSearcher(Searcher searcher) {
-        this.searcher = searcher;
+        return this.springRequestContext.getMessage(key);
     }
 
 

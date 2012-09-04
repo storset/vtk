@@ -22,7 +22,6 @@
   </bean>
   
   <bean id="listResources.provider" class="org.vortikal.web.service.provider.ListResourcesProvider">
-    <property name="searcher" ref="systemIndexSearcher" />
     <property name="repository" ref="repository" />
   </bean>
 

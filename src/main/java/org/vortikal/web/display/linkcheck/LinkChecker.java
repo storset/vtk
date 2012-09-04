@@ -166,8 +166,9 @@ public class LinkChecker {
             urlConnection = createHeadRequest(url, referrer);
             urlConnection.connect();
             int responseCode = urlConnection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM 
-                    || responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
+            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
+                    || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
+                    || responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
                 responseCode = checkMoved(urlConnection, responseCode, referrer);
             }
             if (responseCode == HttpURLConnection.HTTP_NOT_FOUND 

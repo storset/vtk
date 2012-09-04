@@ -22,6 +22,7 @@
     <property name="manuallyApproveFromPropDef" ref="manuallyApproveFromPropDef" />
     <property name="manuallyApprovedResourcesPropDef" ref="manuallyApprovedResourcesPropDef" />
     <property name="aggregationPropDef" ref="aggregationPropDef" />
+    <property name="multiHostSearcher" ref="multiHostSearcher" />
   </bean>
 
   <bean id="editor.collection.manuallyApproveResourcesSearcher" class="org.vortikal.web.service.manuallyapprove.ManuallyApproveResourcesSearcher">

@@ -44,8 +44,10 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.vortikal.repository.MultiHostSearcher;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
@@ -64,6 +66,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
     private PropertyTypeDefinition manuallyApproveFromPropDef;
     private PropertyTypeDefinition manuallyApprovedResourcesPropDef;
     private PropertyTypeDefinition aggregationPropDef;
+    private MultiHostSearcher multiHostSearcher;
 
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -131,6 +134,11 @@ public class ManuallyApproveResourcesHandler implements Controller {
             }
         }
 
+        // Nothing to do here...
+        if (locations.size() == 0 && alreadyApproved.size() == 0) {
+            return null;
+        }
+
         // That's it... we now have a set of resources to manually approve from,
         // along with a set of resources that are already manually approved...
         // Let's search!
@@ -168,7 +176,13 @@ public class ManuallyApproveResourcesHandler implements Controller {
     private boolean isValid(String location, Path currentCollectionPath, Repository repository, String token) {
 
         try {
-            URL.parse(location);
+            URL url = URL.parse(location);
+            if (this.multiHostSearcher.isMultiHostSearchEnabled()) {
+                PropertySet ps = this.multiHostSearcher.retrieve(token, url);
+                if (ps == null) {
+                    return false;
+                }
+            }
             return true;
         } catch (Exception e) {
             // Not a url, but might be a local path. Ignore and continue.
@@ -176,10 +190,7 @@ public class ManuallyApproveResourcesHandler implements Controller {
 
         try {
 
-            // Make sure path is valid (be lenient on trailing slash)
-            location = location.endsWith("/") && !location.equals("/") ? location.substring(0, location.length() - 1)
-                    : location;
-            Path locationPath = Path.fromString(location);
+            Path locationPath = Path.fromStringWithTrailingSlash(location);
 
             // Do not allow manual approval from self
             if (currentCollectionPath.equals(locationPath)) {
@@ -215,6 +226,11 @@ public class ManuallyApproveResourcesHandler implements Controller {
     @Required
     public void setAggregationPropDef(PropertyTypeDefinition aggregationPropDef) {
         this.aggregationPropDef = aggregationPropDef;
+    }
+
+    @Required
+    public void setMultiHostSearcher(MultiHostSearcher multiHostSearcher) {
+        this.multiHostSearcher = multiHostSearcher;
     }
 
 }

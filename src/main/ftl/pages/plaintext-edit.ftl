@@ -22,7 +22,7 @@
 <head>
   <title>Plain text edit</title>
   <script type="text/javascript" src="${md5jsURL?html}"></script>
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/js/plugins/shortcut.js"></script> 
+  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.hotkeys.js"></script> 
   <script type="text/javascript"><!--
     var ajaxSaveText = "<@vrtx.msg code='editor.save-plaintext-edit-ajax-loading-title' />";
 

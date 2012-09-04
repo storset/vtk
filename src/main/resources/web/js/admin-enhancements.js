@@ -1281,10 +1281,12 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
 
 function editorInteraction(bodyId, vrtxAdm, _$) {
   if(_$("form#editor").length) { // Save shortcut and AJAX
-    shortcut.add("Ctrl+S", function() {
+    $(document).bind('keydown', 'ctrl+s', function(e) {
       if(!_$("#TB_window").length) {
         _$(".vrtx-focus-button:last input").click();
       }
+      e.preventDefault();
+      return false;
     });
     _$("#app-content").on("click", ".vrtx-focus-button:last input", function(e) {
       EDITOR_SAVE_BUTTON_NAME = _$.single(this).attr("name");

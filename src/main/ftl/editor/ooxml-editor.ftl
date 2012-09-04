@@ -9,7 +9,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>OoXml Editor</title>
-    <script type="text/javascript" src="${jsBaseURL?html}/plugins/shortcut.js"></script>
+    <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.hotkeys.js"></script>
     <script type="text/javascript"><!--
       $(function() {
          var agent = navigator.userAgent.toLowerCase();         
@@ -31,8 +31,11 @@
              e.stopPropagation();
              e.preventDefault();
            });
-           shortcut.add("Ctrl+O",function() {
+           
+           $(document).bind('keydown', 'ctrl+o', function(e) {
              $("#vrtx-open-webdav").click();
+             e.preventDefault();
+             return false;
            });
          }
       });

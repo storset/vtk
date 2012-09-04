@@ -41,6 +41,10 @@ button,
   font-weight: inherit;
 }
 
+.ui-dialog .ui-dialog-buttonpane button {
+  margin-right: -20px;
+}
+
 .ui-dialog .ui-dialog-buttonpane button:focus,
 button:focus,
 input[type=button]:focus,

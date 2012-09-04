@@ -241,6 +241,13 @@ var UNSAVED_CHANGES_CONFIRMATION;
 
 $(window).load(function () {
   storeInitPropValues();
+  if (typeof CKEDITOR !== "undefined") {
+    CKEDITOR.on('instanceReady', function() {
+      $(".cke_contents iframe").contents().find("body").bind('keydown', 'ctrl+s', function(e) {
+        ctrlSEventHandler($, e);
+      });
+    });
+  }
 });
 
 /* Store initial values of inputfields */

@@ -66,6 +66,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
     private PropertyTypeDefinition displayManuallyApprovedPropDef;
     private PropertyTypeDefinition manuallyApprovedPropDef;
     private Service viewService;
+    private URL localHostURL;
 
     /**
      * Limit the number of folders to aggregate from
@@ -262,7 +263,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
 
             PropertySet resource = null;
             Path path = null;
-            if (this.getLocalHostUrl().getHost().equals(url.getHost())) {
+            if (this.localHostURL.getHost().equals(url.getHost())) {
                 path = url.getPath();
             }
             if (path != null) {
@@ -289,14 +290,10 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         if (solrUrlProp != null) {
             currentCollectionURL = URL.parse(solrUrlProp.getStringValue());
         } else {
-            currentCollectionURL = this.getLocalHostUrl();
+            currentCollectionURL = this.localHostURL;
             currentCollectionURL.setPath(collection.getURI());
         }
         return currentCollectionURL;
-    }
-
-    private URL getLocalHostUrl() {
-        return this.viewService.constructURL(Path.ROOT);
     }
 
     @Override
@@ -308,7 +305,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         try {
             Resource collection = this.repository.retrieve(token, pathToResource, false);
             CollectionListingAggregatedResources clar = this.getAggregatedResources(collection);
-            return clar.getHostAggregationSet(this.getLocalHostUrl());
+            return clar.getHostAggregationSet(this.localHostURL);
         } catch (Exception e) {
             return null;
         }
@@ -347,6 +344,7 @@ public class CollectionListingAggregationResolver implements AggregationResolver
     @Required
     public void setViewService(Service viewService) {
         this.viewService = viewService;
+        this.localHostURL = this.viewService.constructURL(Path.ROOT);
     }
 
     public void setLimit(int limit) {

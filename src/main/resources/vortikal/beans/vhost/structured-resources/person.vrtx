@@ -23,7 +23,6 @@ resourcetype person {
     pressPhoto : image_ref,
     content : html noextract,
     getExternalScientificInformation : boolean,
-    externalScientificInformation : binary external:externalPublicationsService,
     selectedPublications : html noextract,
     getRelatedProjects : boolean,
     projects : json (projectName:string, projectUrl:string) multiple,
@@ -58,8 +57,7 @@ resourcetype person {
   }
   
   services {
-    getExternalPersonInfo userMetadataLdapService requires(username),
-    getExternalScientificInformation externalPublicationsService requires(username)
+    getExternalPersonInfo userMetadataLdapService requires(username)
   }
 
   view-components {
@@ -236,19 +234,14 @@ resourcetype person {
 
     scientific-info {
       ##
-        [resource-props "."]
-        [def externalPublications resource-prop(".", "externalScientificInformation")]
         [def document structured-document()]
-        [def publications document.properties.selectedPublications]
-        [if (publications != null && publications != "") || (externalPublications != null && externalPublications != "")]
-          [if (publications != null && publications != "") && (externalPublications != null && externalPublications != "")]
-            [call "person:publications"]
-          [else]
-            [if (publications != null && publications != "")]
-              [val publications # unescaped]
-            [else]
-              [call "person:publications"]
-            [endif]
+        [def getExternalPublications document.properties.getExternalScientificInformation]
+        [if getExternalPublications = "true"]
+          [call "person:publications"]
+        [else]
+          [def selectedPublications document.properties.selectedPublications]
+          [if (selectedPublications != null && selectedPublications != "")]
+            [val selectedPublications # unescaped]
           [endif]
         [endif]
       ##

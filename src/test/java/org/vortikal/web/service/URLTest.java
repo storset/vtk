@@ -198,10 +198,8 @@ public class URLTest extends TestCase {
         assertEquals("2+2=3", url.getParameter("xyz"));
         url = URL.parse("http://foo.bar/%2520");
         assertEquals("/%20", url.getPath().toString());
-
-        // FIXME FAILS until URL class properly URL-decodes query param keys as well as values:
-//        url = URL.parse("http://foo.bar/?a%20key=a%20value");
-//        assertEquals("a value", url.getParameter("a key"));
+        url = URL.parse("http://foo.bar/?a%20key=a%20value");
+        assertEquals("a value", url.getParameter("a key"));
     }
     
     public void testRelative() {
@@ -226,7 +224,8 @@ public class URLTest extends TestCase {
         assertEquals("http://a/", url.relativeURL("../../").toString());
         assertEquals("http://a/g", url.relativeURL("../../g").toString());
         assertEquals("http://a/b/c/d?q#f", url.relativeURL("").toString());
-    
+
+        assertEquals("/b/c/abc(def)", url.relativeURL("abc%28def%29").getPath().toString());
         
         assertEquals("http://a/", URL.parse("http://a/b/").relativeURL("../..").toString());
         

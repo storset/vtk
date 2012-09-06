@@ -835,9 +835,8 @@ public class URL implements Serializable {
         if (query.length() > 0) {
             for (Map.Entry<String, String[]> entry : splitQueryString(query.toString()).entrySet()) {
                 for (String value : entry.getValue()) {
-                    // FIXME strictly speaking, keys need decoding as well..
                     try {
-                    resultURL.addParameter(entry.getKey(), decode(value, encoding));
+                        resultURL.addParameter(decode(entry.getKey()), decode(value, encoding));
                     } catch (UnsupportedEncodingException e) {
                         throw new IllegalArgumentException(e);
                     }
@@ -956,10 +955,10 @@ public class URL implements Serializable {
             for (String s : query.keySet()) {
                 String[] v = query.get(s);
                 if (v == null) {
-                    url.addParameter(s, null);
+                    url.addParameter(decode(s), null);
                 } else {
                     for (String val : v) {
-                        url.addParameter(s, val);
+                        url.addParameter(decode(s), decode(val));
                     }
                 }
             }

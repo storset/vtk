@@ -474,7 +474,7 @@ vrtxAdmin._$(document).ready(function () {
         liElm.removeClass("last").addClass("active").addClass("active-last");
         liElm.prev().removeClass("active").removeClass("active-first").addClass("first");
       }
-
+      
       _$("#vrtx-resource-visit-wrapper").append("<span id='urchin-loading'></span>");
       _$("#vrtx-resource-visit-chart-stats-info").remove();
       vrtxAdm.serverFacade.getHtml(this.href, {
@@ -483,7 +483,8 @@ vrtxAdmin._$(document).ready(function () {
           _$("#vrtx-resource-visit").append("<div id='vrtx-resource-visit-chart-stats-info'>" + _$(results).find("#vrtx-resource-visit-chart-stats-info").html() + "</div>");
           GET_STAT_ASYNC_IN_PROGRESS = false;
         }
-      });
+      });  
+          
       e.preventDefault();
     });
   }
@@ -2321,48 +2322,6 @@ VrtxAdmin.prototype.addPermissionAsync = function addPermissionAsync(selector, u
       }
     });
     e.preventDefault();
-  });
-};
-
-/**
- * Retrieve HTML async as text
- * 
- * @param url: url that retrieves HTML-text
- * @param insertAfterSelector: where to insert the HTML
- * @param wrapperSelector: wrapper for the HTML
- */
-VrtxAdmin.prototype.getHtmlAsTextAsync = function getHtmlAsTextAsync(url, insertAfterSelector, wrapperSelector) {
-  var args = arguments,
-      vrtxAdm = this,
-      _$ = vrtxAdm._$;
-
-  if(GET_STAT_ASYNC_IN_PROGRESS) {
-    return false;
-  }
-  GET_STAT_ASYNC_IN_PROGRESS = true;
-
-  var wrapper = _$(wrapperSelector);
-  if(wrapper.length) {
-    wrapper.html("<span id='urchin-loading'></span>");
-  } else {
-    _$("<div id='" + wrapperSelector.substring(1) + "'><span id='urchin-loading'></span></div>").insertAfter(insertAfterSelector);
-  }
-
-  vrtxAdmin.serverFacade.getText(url, {
-    success : function (results, status, resp) {
-      var trimmedResults = _$.trim(results);
-      var wrapper = _$(wrapperSelector);
-      if(trimmedResults.length) { // if there is text
-        if(wrapper.length) {
-          wrapper.html(trimmedResults);
-        } else {
-          _$(trimmedResults).insertAfter(insertAfterSelector);
-        }
-      } else {
-        wrapper.remove();
-      }
-      GET_STAT_ASYNC_IN_PROGRESS = false;
-    }
   });
 };
 

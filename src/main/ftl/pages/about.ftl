@@ -203,8 +203,13 @@
     <![endif]-->
     <script type="text/javascript"><!--
       $(function() {
-        vrtxAdmin.getHtmlAsTextAsync("${urchinStats}", "#resourceVisitHeader", "#vrtx-resource-visit-wrapper");
-      }); 
+        $("<div id='vrtx-resource-visit-wrapper'><span id='urchin-loading'></span></div>").insertAfter("#resourceVisitHeader"); 
+        vrtxAdmin.serverFacade.getText("${urchinStats}", {
+          success: function (results, status, resp) {
+            $("#vrtx-resource-visit-wrapper").html(results);
+          }
+        }); 
+      });
     // -->
     </script>
   </#if>

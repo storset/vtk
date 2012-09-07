@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <bean id="articleListing.viewService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="collectionListing.viewService" />
@@ -32,7 +32,7 @@
     <property name="listingViewPropDef" ref="articleListing.listingViewPropDef" />
     <property name="hideNumberOfComments" ref="hideNumberOfCommentsPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
-    <property name="viewName" value="${override.listing.prefix}articleListing.view" />
+    <property name="viewName" value="articleListing.view" />
     <property name="searcher" ref="articleListingSearcher" />
     <property name="alternativeRepresentations">
       <map>
@@ -48,8 +48,8 @@
   </bean>
 
   <bean id="articleListingSearcher" class="org.vortikal.web.display.collection.article.ArticleListingSearcher">
-    <property name="defaultSearch" ref="${override.listing.prefix}articleListing.searchComponent" />
-    <property name="featuredArticlesSearch" ref="${override.listing.prefix}articleListing.featuredArticlesSearchComponent" />
+    <property name="defaultSearch" ref="articleListing.searchComponent" />
+    <property name="featuredArticlesSearch" ref="articleListing.featuredArticlesSearchComponent" />
     <property name="featuredArticlesPropDef" ref="articleListing.featuredArticlesPropDef" />
   </bean>
 
@@ -76,47 +76,27 @@
       <list>
         <ref bean="articleListing.excludeFeaturedArticlesQueryBuilder" />
         <bean parent="queryStringParser">
-          <property name="queryString" ref="${override.listing.prefix}articleListing.articleResourceTypeQueryString" />
+          <property name="queryString" ref="${override.listing.prefix}articleListing.resourceTypeQueryString" />
         </bean>
       </list>
     </property>
     <property name="searchSorting" ref="articleListing.searchSorting" />
+    <property name="configurablePropertySelectPointers" ref="${override.listing.prefix}article.configurablePropertySelectPointersList" />
   </bean>
-  
+
   <bean id="articleListing.listingUriQueryBuilder" parent="collection.defaultRecursiveListingUriQueryBuilder">
     <property name="recursivePropDef" ref="articleListing.recursiveListingPropDef" />
     <property name="subfolderPropDef" ref="articleListing.recursiveListingSubfoldersPropDef" />
   </bean>
 
-  <bean id="articleListing.excludeFeaturedArticlesQueryBuilder"
-    class="org.vortikal.web.search.articlelisting.FeaturedArticlesQueryBuilder" parent="queryStringParser">
+  <bean id="articleListing.excludeFeaturedArticlesQueryBuilder" class="org.vortikal.web.search.articlelisting.FeaturedArticlesQueryBuilder"
+    parent="queryStringParser">
     <property name="featuredArticlesPropDef" ref="articleListing.featuredArticlesPropDef" />
-    <property name="queryString" ref="${override.listing.prefix}articleListing.articleResourceTypeQueryString" />
-  </bean>
-
-  <bean id="articleListing.articleResourceTypeQueryString" class="java.lang.String">
-    <constructor-arg value="(type IN article AND published-date &lt;= {$currentTime})"/>
+    <property name="queryString" ref="${override.listing.prefix}articleListing.resourceTypeQueryString" />
   </bean>
 
   <bean id="articleListing.featuredArticlesQueryBuilder" parent="articleListing.excludeFeaturedArticlesQueryBuilder">
     <property name="invert" value="true" />
-  </bean>
-
-  <bean id="articleListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
-    <property name="sortPropDef" ref="articleListing.sortingPropDef" />
-    <property name="sortOrderPropDefPointers">
-      <list>
-        <value>published-date</value>
-      </list>
-    </property>
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
-    <property name="sortOrderMapping">
-      <map>
-        <entry key="title" value-ref="SORT_ORDER.ASC" />
-        <entry key="name" value-ref="SORT_ORDER.ASC" />
-      </map>
-    </property>
   </bean>
 
   <!-- Fetch specifically specified articles, aka 'featured articles' -->
@@ -146,17 +126,56 @@
       </list>
     </property>
     <property name="searchSorting" ref="articleListing.searchSorting" />
-    <property name="resourceTypeTree" ref="resourceTypeTree"/>
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="configurablePropertySelectPointers" ref="${override.listing.prefix}article.configurablePropertySelectPointersList" />
+  </bean>
+
+
+  <bean id="articleListing.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
+    <property name="sortPropDef" ref="articleListing.sortingPropDef" />
+    <property name="sortOrderPropDefPointers">
+      <ref bean="${override.listing.prefix}articleListing.sortPropDefPointers" />
+    </property>
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="defaultSortOrder" ref="SORT_ORDER.DESC" />
+    <property name="sortOrderMapping">
+      <map>
+        <entry key="title" value-ref="SORT_ORDER.ASC" />
+        <entry key="name" value-ref="SORT_ORDER.ASC" />
+      </map>
+    </property>
   </bean>
 
   <bean id="articleListing.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
-        <entry key="${override.listing.prefix}articleListing.view" value-ref="${override.listing.prefix}articleListing.view" />
+        <entry key="articleListing.view" value-ref="articleListing.view" />
       </map>
     </property>
   </bean>
 
   <bean id="articleListing.view" parent="collectionListing.view" />
+
+  <!-- ### Legacy resource types and properties -->
+
+  <bean id="articleListing.resourceTypeQueryString" class="java.lang.String">
+    <constructor-arg value="(type IN article AND published-date &lt;= {$currentTime})" />
+  </bean>
+
+  <bean id="articleListing.sortPropDefPointers" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <value>published-date</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean id="article.configurablePropertySelectPointersList" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <null />
+      </list>
+    </constructor-arg>
+  </bean>
 
 </beans>

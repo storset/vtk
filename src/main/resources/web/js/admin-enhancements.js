@@ -184,8 +184,6 @@ vrtxAdmin._$(document).ready(function () {
 
   // Dropdowns
   vrtxAdm.dropdownLanguageMenu("#locale-selection");
-  vrtxAdm.dropdownLanguageMenu("#editor-help-menu");
-  
   vrtxAdm.dropdown({
     selector: "#resource-title.true ul#resourceMenuLeft",
     proceedCondition: function(numOfListElements) {
@@ -193,7 +191,7 @@ vrtxAdmin._$(document).ready(function () {
     }
   });
   vrtxAdm.dropdown({selector: "ul.manage-create"});
-  vrtxAdm.dropdown({selector: "ul#editor-menu"});
+
   
   // Slide up when choose something in dropdown
   _$("body").on("click", ".dropdown-shortcut-menu li a, .dropdown-shortcut-menu-container li a", function() {
@@ -247,10 +245,6 @@ vrtxAdmin._$(document).ready(function () {
     }
   } 
   
-  // Preview image
-  vrtxAdm.adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
-  vrtxAdm.adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");
-  
   createInteraction(bodyId, vrtxAdm, _$);
   
   // Collectionlisting interaction
@@ -264,10 +258,7 @@ vrtxAdmin._$(document).ready(function () {
 
   // Versioning interaction
   versioningInteraction(bodyId, vrtxAdm, _$);
-
-  // Zebra-tables
-  vrtxAdm.zebraTables(".resourceInfo");
-
+  
   // Resource menus
   var resourceMenuLeftServices = ["renameService", "manage\\.createArchiveService", "manage\\.expandArchiveService"];
 
@@ -434,6 +425,9 @@ vrtxAdmin._$(document).ready(function () {
   
   // About property forms
   if(bodyId == "vrtx-about") {
+    // Zebra-tables
+    vrtxAdm.zebraTables(".resourceInfo");
+    
     if(!vrtxAdmin.isIE7) { // Turn of tmp. in IE7
       var propsAbout = ["contentLocale", "commentsEnabled", "userTitle",   "keywords",       "description",
                         "verifiedDate",  "authorName",      "authorEmail", "authorURL",      "collection-type",
@@ -1287,7 +1281,16 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
 \*-------------------------------------------------------------------*/
 
 function editorInteraction(bodyId, vrtxAdm, _$) {
-  if(_$("form#editor").length) { // Save shortcut and AJAX
+  if(_$("form#editor").length) { 
+    // Dropdowns
+    vrtxAdm.dropdownLanguageMenu("#editor-help-menu");
+    vrtxAdm.dropdown({selector: "ul#editor-menu"});
+    
+    // Preview image
+    vrtxAdm.adjustImageAndCaptionContainer("#vrtx-resource\\.picture #resource\\.picture\\.preview");
+    vrtxAdm.adjustImageAndCaptionContainer(".introImageAndCaption #picture\\.preview");
+    
+    // Save shortcut and AJAX
     $(document).bind('keydown', 'ctrl+s', function(e) {
       ctrlSEventHandler(_$, e);
     });

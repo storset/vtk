@@ -131,7 +131,7 @@ var EDITOR_SAVE_BUTTON_NAME = "",
     LENGTH_FOR_MULTIPLE_INPUT_FIELD = [],
     MULTIPLE_INPUT_FIELD_TEMPLATES = [],
     MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED,
-    DO_RELOAD_FROM_SERVER = false; // global var changed by checkStillAdmin() (funcProceedCondition)
+    DO_RELOAD_FROM_SERVER = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync
 
 
 /*-------------------------------------------------------------------*\

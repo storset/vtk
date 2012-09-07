@@ -36,7 +36,7 @@
         </bean>
       </list>
     </property>
-    <property name="searchSorting" ref="${override.listing.prefix}articleListing.searchSorting" />
+    <property name="searchSorting" ref="articleListing.searchSorting" />
   </bean>
 
   <bean id="structured.blogListing.searchComponent" parent="blogListing.searchComponent">

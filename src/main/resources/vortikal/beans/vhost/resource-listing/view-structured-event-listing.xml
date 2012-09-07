@@ -2,121 +2,26 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-  <bean id="structured.eventListing.upcomingEventsSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
-    <property name="name" value="structured.eventListing.upcomingEventsSearchComponent" />
-    <property name="queryBuilders">
-      <list>
-        <ref bean="structured.eventListing.upcomingEventsQueryBuilder" />
-        <bean parent="queryStringParser">
-          <property name="queryString" value="type IN structured-event" />
-        </bean>
-      </list>
-    </property>
-    <property name="searchSorting" ref="structured.eventListing.upcoming.searchSorting" />
-    <property name="configurablePropertySelectPointers" ref="event.configurablePropertySelectPointersList" />
+  <!-- ### JSON resource type resource types and properties ### -->
+
+  <bean id="structured.eventListing.resourceTypeQueryString" class="java.lang.String">
+    <constructor-arg type="java.lang.String">
+      <value>type IN structured-event</value>
+    </constructor-arg>
   </bean>
 
-  <bean id="structured.eventListing.upcomingEventsQueryBuilder" parent="eventListing.upcomingEventsQueryBuilder">
-    <property name="startPropDefPointer" value="resource:start-date" />
-    <property name="endPropDefPointer" value="resource:end-date" />
+  <bean id="structured.eventListing.furtherUpcomingQueryString" class="java.lang.String">
+    <constructor-arg type="java.lang.String">
+      <value>resource:start-date &gt;= {$currentDate+[1]d}</value>
+    </constructor-arg>
   </bean>
 
-  <bean id="structured.eventListing.prevoiusEventsQueryBuilder" parent="structured.eventListing.upcomingEventsQueryBuilder">
-    <property name="inverted" value="true" />
-  </bean>
-
-  <bean id="structured.eventListing.upcoming.searchSorting" parent="eventListing.upcoming.searchSorting">
-    <property name="sortOrderPropDefPointers">
-      <list>
-        <value>resource:start-date</value>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="structured.eventListing.previousEventsSearchComponent" parent="eventListing.previousEventsSearchComponent">
-    <property name="name" value="structured.eventListing.previousEventsSearchComponent" />
-    <property name="queryBuilders">
-      <list>
-        <ref bean="structured.eventListing.prevoiusEventsQueryBuilder" />
-        <bean parent="queryStringParser">
-          <property name="queryString" value="type IN structured-event" />
-        </bean>
-      </list>
-    </property>
-    <property name="searchSorting" ref="structured.eventListing.previous.searchSorting" />
-    <property name="configurablePropertySelectPointers" ref="event.configurablePropertySelectPointersList" />
-  </bean>
-
-  <bean id="structured.eventListing.previous.searchSorting" parent="eventListing.previous.searchSorting">
-    <property name="sortOrderPropDefPointers">
-      <list>
-        <value>resource:start-date</value>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="structured.eventListing.furtherUpcomingSearchComponent" parent="structured.eventListing.upcomingEventsSearchComponent">
-    <property name="name" value="structured.eventListing.furtherUpcomingSearchComponent" />
-    <property name="queryBuilders">
-      <list>
-        <bean parent="queryStringParser">
-          <property name="queryString" value="type IN structured-event" />
-        </bean>
-        <bean class="org.vortikal.web.search.ParameterizedQueryStringProcessor" parent="queryStringParser">
-          <property name="replacements">
-            <map>
-              <entry key="[1]" value="${event.listing.days.ahead}" />
-            </map>
-          </property>
-          <property name="queryString" value="resource:start-date &gt;= {$currentDate+[1]d}" />
-        </bean>
-      </list>
-    </property>
-    <property name="titleLocalizationKey">
-      <null />
-    </property>
-    <property name="configurablePropertySelectPointers" ref="event.configurablePropertySelectPointersList" />
-  </bean>
-
-  <bean id="structured.eventListing.specificDateEventSearchComponent" parent="structured.eventListing.upcomingEventsSearchComponent">
-    <property name="name" value="structured.eventListing.furtherUpcomingSearchComponent" />
-    <property name="queryBuilders">
-      <list>
-        <bean parent="queryStringParser">
-          <property name="queryString" value="type IN structured-event" />
-        </bean>
-        <bean class="org.vortikal.web.search.eventlisting.DateAndSearchTypeQueryStringProcessor" parent="queryStringParser">
-          <property name="helper" ref="eventListingHelper" />
-          <property name="queryString"
-            value="(resource:start-date &gt;= [1] AND resource:start-date &lt; [2])
-            OR (resource:end-date &gt;= [1] AND resource:end-date &lt; [2])
-            OR (resource:start-date &lt;= [1] AND resource:end-date &gt;= [2])" />
-        </bean>
-      </list>
-    </property>
-    <property name="titleLocalizationKey">
-      <null />
-    </property>
-    <property name="configurablePropertySelectPointers" ref="event.configurablePropertySelectPointersList" />
-  </bean>
-
-  <bean id="structured.eventListing.currentMonthSearchComponent" parent="structured.eventListing.specificDateEventSearchComponent">
-    <property name="name" value="structured.eventListing.currentMonthSearchComponent" />
-    <property name="queryBuilders">
-      <list>
-        <bean parent="queryStringParser">
-          <property name="queryString" value="type IN structured-event" />
-        </bean>
-        <bean class="org.vortikal.web.search.eventlisting.CurrentMonthQueryStringProcessor" parent="queryStringParser">
-          <property name="helper" ref="eventListingHelper" />
-          <property name="queryString"
-            value="(resource:start-date &gt;= [1] AND resource:start-date &lt; [2])
-            OR (resource:end-date &gt;= [1] AND resource:end-date &lt; [2])
-            OR (resource:start-date &lt;= [1] AND resource:end-date &gt;= [2])" />
-        </bean>
-      </list>
-    </property>
-    <property name="configurablePropertySelectPointers" ref="event.configurablePropertySelectPointersList" />
+  <bean id="structured.eventListing.specificDateQueryString" class="java.lang.String">
+    <constructor-arg type="java.lang.String">
+      <value>(resource:start-date &gt;= [1] AND resource:start-date &lt; [2])
+        OR (resource:end-date &gt;= [1] AND resource:end-date &lt; [2])
+        OR (resource:start-date &lt;= [1] AND resource:end-date &gt;= [2])</value>
+    </constructor-arg>
   </bean>
 
   <bean id="structured.eventListing.startDatePropDefPointer" class="java.lang.String">
@@ -131,41 +36,22 @@
     </constructor-arg>
   </bean>
 
-  <bean id="structured.eventListing.view" parent="freemarkerView">
-    <property name="url" value="pages/view-collection-listing.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="resourceContextProvider" />
-      </list>
-    </property>
-    <property name="attributesMap">
-      <map>
-        <entry key="jsURLs">
-          <list>
-            <value>${webResources.baseURL}/jquery/include-jquery.js</value>
-            <value>${webResources.baseURL}/js/view-dropdown.js</value>
-          </list>
-        </entry>
-      </map>
-    </property>
-  </bean>
-
-  <bean id="event.configurablePropertySelectPointersList" class="java.util.ArrayList">
+  <bean id="structured.event.configurablePropertySelectPointersList" class="java.util.ArrayList">
     <constructor-arg>
-        <list>
-          <value>title</value>
-          <value>resource:introduction</value>
-          <value>resource:picture</value>
-          <value>resource:caption</value>
-          <value>resource:location</value>
-          <value>resource:end-date</value>
-          <value>resource:start-date</value>
-          <value>resource:mapurl</value>
-          <value>resource:hasBodyContent</value>
-          <value>numberOfComments</value>
-          <value>lastModified</value>
-          <value>contentLocale</value>
-        </list>
+      <list>
+        <value>title</value>
+        <value>resource:introduction</value>
+        <value>resource:picture</value>
+        <value>resource:caption</value>
+        <value>resource:location</value>
+        <value>resource:end-date</value>
+        <value>resource:start-date</value>
+        <value>resource:mapurl</value>
+        <value>resource:hasBodyContent</value>
+        <value>numberOfComments</value>
+        <value>lastModified</value>
+        <value>contentLocale</value>
+      </list>
     </constructor-arg>
   </bean>
 

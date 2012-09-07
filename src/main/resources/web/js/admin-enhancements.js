@@ -465,11 +465,22 @@ vrtxAdmin._$(document).ready(function () {
         return false;
       }
       GET_STAT_ASYNC_IN_PROGRESS = true;
+      
+      var liElm = $(this).parent();
+      if(liElm.hasClass("first")) {
+        liElm.removeClass("first").addClass("active").addClass("active-first");
+        liElm.next().removeClass("active").removeClass("active-last").addClass("last");
+      } else {
+        liElm.removeClass("last").addClass("active").addClass("active-last");
+        liElm.prev().removeClass("active").removeClass("active-first").addClass("first");
+      }
+
       _$("#vrtx-resource-visit-wrapper").append("<span id='urchin-loading'></span>");
-      _$("#vrtx-resource-visit-chart, #vrtx-resource-visit-stats, #vrtx-resource-visit-info").remove();
+      _$("#vrtx-resource-visit-chart-stats-info").remove();
       vrtxAdm.serverFacade.getHtml(this.href, {
         success: function (results, status, resp) {
-          _$("#vrtx-resource-visit-wrapper").html("<div id='vrtx-resource-visit'>" + _$(results).html() + "</div>");
+          _$("#urchin-loading").remove();
+          _$("#vrtx-resource-visit").append("<div id='vrtx-resource-visit-chart-stats-info'>" + _$(results).find("#vrtx-resource-visit-chart-stats-info").html() + "</div>");
           GET_STAT_ASYNC_IN_PROGRESS = false;
         }
       });

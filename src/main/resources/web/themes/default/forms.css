@@ -78,7 +78,7 @@ input[type=text]:focus {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-left.gif) no-repeat 0 0;
 }
 
-/* Webkit fix */
+/* Webkit fix for bug in jQuery UI buttons with our backgrounds */
 @media all and (-webkit-min-device-pixel-ratio:0) {
   .ui-dialog .ui-dialog-buttonpane button {
     background: none !important;

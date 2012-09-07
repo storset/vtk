@@ -73,14 +73,13 @@ public class DeleteResourcesController implements Controller {
         // key (String) that specifies type of failure and identifies list of
         // paths to resources that failed.
         Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
-        String msgKey = "manage".concat(".delete").concat(".error.");
+        String msgKey = "manage.delete.error.";
 
         @SuppressWarnings("rawtypes")
         Enumeration e = request.getParameterNames();
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
             Path uri = null;
-
             try {
             	uri = Path.fromString(name);
             	if (repository.exists(token, uri)) {
@@ -88,6 +87,9 @@ public class DeleteResourcesController implements Controller {
             	} else {
             		this.addToFailures(failures, uri, msgKey, "nonExisting");
             	}
+            } catch (IllegalArgumentException iae) {
+            	// Not a path, ignore it, try next one
+            	continue;
             } catch (AuthorizationException ae) {
                 this.addToFailures(failures, uri, msgKey, "unAuthorized");
             } catch (ResourceLockedException rle) {
@@ -100,7 +102,7 @@ public class DeleteResourcesController implements Controller {
                 this.addToFailures(failures, uri, msgKey, "generic");
             }
         }
-        
+
         for (Entry<String, List<Path>> entry : failures.entrySet()) {
             String key = entry.getKey();
             List<Path> failedResources = entry.getValue();

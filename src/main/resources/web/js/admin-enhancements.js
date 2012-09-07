@@ -393,8 +393,6 @@ vrtxAdmin._$(document).ready(function () {
         funcComplete: function() {
           if(DO_RELOAD_FROM_SERVER) {
             location.reload(true);
-          } else {
-            return;
           }
         },
         post: true,

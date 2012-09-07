@@ -78,6 +78,52 @@ input[type=text]:focus {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-left.gif) no-repeat 0 0;
 }
 
+/* Webkit fix */
+@media all and (-webkit-min-device-pixel-ratio:0) {
+  .ui-dialog .ui-dialog-buttonpane button {
+    background: none !important;
+    padding: 0 !important;
+    margin-right: 5px !important;
+    height: auto !important;
+  }
+  .ui-dialog .ui-dialog-buttonpane button.ui-state-hover.ui-state-active {
+    background: none !important;
+  }
+  .ui-dialog .ui-dialog-buttonpane button span {
+    background: url(/vrtx/__vrtx/static-resources/themes/default/images/dropdown-left.gif) top left no-repeat !important;
+    height: 23px !important;
+    margin: 0 !important;
+    position: relative;
+  }
+  .ui-dialog .ui-dialog-buttonpane button span:after {
+    content: "";
+    width: 5px;
+    height: 27px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background: #fff url(/vrtx/__vrtx/static-resources/themes/default/images/dropdown-right.gif) top right no-repeat !important;
+  }
+  .ui-dialog .ui-dialog-buttonpane button:hover span {
+    background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/dropdown-left-rollover.gif) !important;
+  }
+  .ui-dialog .ui-dialog-buttonpane button:hover span:after {
+    background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/button-closed-right-rollover.gif) !important;
+  }
+  .ui-dialog .ui-dialog-buttonpane button:first-child span {
+    background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-left.gif) !important;
+  }
+  .ui-dialog .ui-dialog-buttonpane button:first-child span:after {
+    background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-right.gif) !important;
+  }
+  .ui-dialog .ui-dialog-buttonpane button:first-child:hover span {
+    background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-left-rollover.gif) !important;
+  }
+  .ui-dialog .ui-dialog-buttonpane button:first-child:hover span:after {
+    background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-right-rollover.gif) !important;
+  }
+}
+
 .vrtx-button-small {
   height: 22px;
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-small-left.gif) no-repeat 0 0;
@@ -136,7 +182,7 @@ input[type=text]:focus {
 .ui-dialog .ui-dialog-buttonpane button:hover,
 .vrtx-button:hover,
 .vrtx-button.hover {
-  background-image: url(images/dropdown-left-rollover.gif);
+  background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/dropdown-left-rollover.gif);
 }
 
 .ui-dialog .ui-dialog-buttonpane button:first-child:hover,

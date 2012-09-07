@@ -79,6 +79,8 @@ input[type=text]:focus {
 }
 
 /* Webkit fix for bug in jQuery UI buttons with our backgrounds */
+/* TODO: could we do it like this for all buttons when IE7-comp.modus is removed on view? */
+/*       supported in IE8 */
 @media all and (-webkit-min-device-pixel-ratio:0) {
   .ui-dialog .ui-dialog-buttonpane button {
     background: none !important;

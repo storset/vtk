@@ -130,17 +130,8 @@ var EDITOR_SAVE_BUTTON_NAME = "",
     COUNTER_FOR_MULTIPLE_INPUT_FIELD = [],
     LENGTH_FOR_MULTIPLE_INPUT_FIELD = [],
     MULTIPLE_INPUT_FIELD_TEMPLATES = [],
-    MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED;
-                           
-// funcComplete for postAjaxForm()
-var doReloadFromServer = false; // global var changed by checkStillAdmin() (funcProceedCondition)             
-var reloadFromServer = function() {
-  if(doReloadFromServer) {
-    location.reload(true);
-  } else {
-    return;
-  }
-};
+    MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED,
+    DO_RELOAD_FROM_SERVER = false; // global var changed by checkStillAdmin() (funcProceedCondition)
 
 
 /*-------------------------------------------------------------------*\
@@ -399,7 +390,13 @@ vrtxAdmin._$(document).ready(function () {
         errorContainer: "errorContainer",
         errorContainerInsertAfter: ".groups-wrapper",
         funcProceedCondition: checkStillAdmin,
-        funcComplete: reloadFromServer,
+        funcComplete: function() {
+          if(DO_RELOAD_FROM_SERVER) {
+            location.reload(true);
+          } else {
+            return;
+          }
+        },
         post: true,
         transitionSpeed: 0,
         transitionEasingSlideDown: "linear",
@@ -1732,11 +1729,11 @@ function toggleConfigCustomPermissions(selectorClass) {
 
 function checkStillAdmin(options) {
   var stillAdmin = options.form.find(".still-admin").text();
-  doReloadFromServer = false;
+  DO_RELOAD_FROM_SERVER = false;
   if(stillAdmin == "false") {
-    doReloadFromServer = true;
+    DO_RELOAD_FROM_SERVER = true;
     vrtxAdmin.openConfirmDialog(removeAdminPermissionsMsg, removeAdminPermissionsTitle, vrtxAdmin.completeFormAsyncPost, function() {
-      doReloadFromServer = false;
+      DO_RELOAD_FROM_SERVER = false;
     }, options);
   } else {
     vrtxAdmin.completeFormAsyncPost(options);

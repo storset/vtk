@@ -18,6 +18,7 @@ resourcetype organizational-unit {
     picture : image_ref,
     introduction : simple_html,
     responsibilities : html,
+    getExternalScientificInformation : boolean,
     selectedEmployees : string multiple,
     numberOfEmployeesToDisplay : string,
     urlToEmployeesList : resource_ref,
@@ -227,6 +228,16 @@ resourcetype organizational-unit {
       [endif]
       ##
     }
+
+    scientific-info {
+      ##
+        [def document structured-document()]
+        [def getExternalPublications document.properties.getExternalScientificInformation]
+        [if getExternalPublications = "true"]
+          [call "unit:publications"]
+        [endif]
+      ##
+    }
     
     subunits {
       ##
@@ -280,6 +291,7 @@ resourcetype organizational-unit {
             [call "comp:employees"]
             [call "comp:content"]
             [call "comp:related-content"]
+            [call "comp:scientific-info"]
           </div>
         [else]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
@@ -300,6 +312,7 @@ resourcetype organizational-unit {
               [call "comp:contact-information"]
             </div>
             [call "comp:related-content"]
+            [call "comp:scientific-info"]
           </div>
         [endif]
       </body>

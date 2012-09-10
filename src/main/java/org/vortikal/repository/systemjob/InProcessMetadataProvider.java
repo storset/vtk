@@ -148,7 +148,11 @@ public class InProcessMetadataProvider implements MediaMetadataProvider {
         }
 
         ScaledImage thumbnail = imageService.scaleImage(image, imageFormat, width, ImageService.HEIGHT_ANY);
-        String thumbnailFormat = !imageFormat.equalsIgnoreCase("jpeg") ? "jpeg" : imageFormat;
+        String thumbnailFormat;
+        if (imageFormat.equalsIgnoreCase("gif") || imageFormat.equalsIgnoreCase("png"))
+            thumbnailFormat = "png";
+        else
+            thumbnailFormat = !imageFormat.equalsIgnoreCase("jpeg") ? "jpeg" : imageFormat;
 
         Property property = thumbnailPropDef.createProperty();
         property.setBinaryValue(thumbnail.getImageBytes(thumbnailFormat), "image/" + thumbnailFormat);

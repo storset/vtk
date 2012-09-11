@@ -448,5 +448,9 @@
       </list>
     </constructor-arg>
   </bean>
-  
+
+  <bean id="resourceTypeIsOrganizationalUnit" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceType" value="organizational-unit" />
+  </bean>
+
 </beans>

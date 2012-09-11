@@ -178,7 +178,7 @@ vrtxAdmin._$(document).ready(function () {
       
   vrtxAdm.cachedBody = _$("body");
   vrtxAdm.cachedAppContent = vrtxAdm.cachedBody.find("#app-content");
-  vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#content");
+  vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
 
   var bodyId = vrtxAdm.cachedBody.attr("id");
   vrtxAdm.cachedBody.addClass("js");

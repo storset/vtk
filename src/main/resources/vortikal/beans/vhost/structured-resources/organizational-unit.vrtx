@@ -18,14 +18,15 @@ resourcetype organizational-unit {
     picture : image_ref,
     introduction : simple_html,
     responsibilities : html,
-    getExternalScientificInformation : boolean,
     selectedEmployees : string multiple,
     numberOfEmployeesToDisplay : string,
     urlToEmployeesList : resource_ref,
     displayEmployees : boolean,
     content : html noextract,
     hasBodyContent : derived (content) eval (content?exists),
-    related-content : html noextract
+    related-content : html noextract,
+    getExternalScientificInformation : boolean,
+    selectedPublications : html noextract
   }
 
   edit-rules {
@@ -38,7 +39,8 @@ resourcetype organizational-unit {
     visitingAddress tooltip (en : "(building, streetaddress, postnumber place)", no : "(bygning, gateadresse, postnummer sted)", nn : "(bygning, gateadresse, postnummer sted)"),
     getExternalUnitInfo tooltip (en : "(report <a class='contact-info' href='http://www.uio.no/om/kontaktinformasjon/endre-personppl.html'>changes in information</a>.)",
                                  no : "(meld fra om <a class='contact-info' href='http://www.uio.no/om/kontaktinformasjon/endre-personppl.html'>feil eller mangler i opplysningene</a>.)",
-                                 nn : "(meld frå om <a class='contact-info' href='http://www.uio.no/om/kontaktinformasjon/endre-personppl.html'>feil eller manglar i opplysningane</a>.)")
+                                 nn : "(meld frå om <a class='contact-info' href='http://www.uio.no/om/kontaktinformasjon/endre-personppl.html'>feil eller manglar i opplysningane</a>.)"),
+    group combinedPublications (getExternalScientificInformation, selectedPublications) (after related-content)
   }
 
   scripts {
@@ -235,6 +237,11 @@ resourcetype organizational-unit {
         [def getExternalPublications document.properties.getExternalScientificInformation]
         [if getExternalPublications = "true"]
           [call "unit:publications"]
+        [else]
+          [def selectedPublications document.properties.selectedPublications]
+          [if (selectedPublications != null && selectedPublications != "")]
+            [val selectedPublications # unescaped]
+          [endif]
         [endif]
       ##
     }
@@ -344,6 +351,11 @@ resourcetype organizational-unit {
        en : (range = "1..10,15,20,25,30,35,40,45,50"),
        no : (range = "1..10,15,20,25,30,35,40,45,50"),
        nn : (range = "1..10,15,20,25,30,35,40,45,50")
+     },
+     getExternalScientificInformation {
+       en : ("true" = "Yes", "false" = "No"),
+       no : ("true" = "Ja", "false" = "Nei"),
+       nn : ("true" = "Ja", "false" = "Nei")
      }
   }
 
@@ -393,7 +405,10 @@ resourcetype organizational-unit {
     related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold"),
     no-external-unit-metadata : (en : "Could not get unit data from external service",
                                  no : "Kan ikke hente opplysninger om enhet fra ekstern kilde",
-                                 nn : "Kan ikkje hente opplysningar om eining frå ekstern kilde")
+                                 nn : "Kan ikkje hente opplysningar om eining frå ekstern kilde"),
+    combinedPublications : (en : "Publications", no : "Publikasjoner", nn : "Publikasjonar"),
+    getExternalScientificInformation : (en : "Show publications rapported in Cristin", no : "Vis publikasjoner rapportert i Cristin", nn : "Vis publikasjonar rapporterte i Cristin"),
+    selectedPublications : (en : "Selected publications", no : "Utvalgte publikasjoner", nn : "Utvalde publikasjonar")
   }
   
 }

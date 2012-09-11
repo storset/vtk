@@ -153,7 +153,11 @@ public class RemoteMetadataProvider implements MediaMetadataProvider {
         }
 
         if (scaleUp || (thumbnailSize < width)) {
-            conn = generateConnection(repository, context, token, resource, path, imageThumbnailParameters);
+            Map<String, String> tmpImageThumbnailParameters = new HashMap<String, String>(imageThumbnailParameters);
+            String filetype = resource.getContentType().substring(resource.getContentType().lastIndexOf("/") + 1);
+            if (filetype.equalsIgnoreCase("png") || filetype.equalsIgnoreCase("gif"))
+                tmpImageThumbnailParameters.put("fileformat", "png");
+            conn = generateConnection(repository, context, token, resource, path, tmpImageThumbnailParameters);
             generateImage(repository, context, token, resource, conn, thumbnailPropDef);
         } else {
             logger.info("Image is smaller than or equal to thumbnail size. Not scaling up: " + path);
@@ -253,9 +257,9 @@ public class RemoteMetadataProvider implements MediaMetadataProvider {
     private void generateImage(final Repository repository, final SystemChangeContext context, String token,
             Resource resource, URLConnection conn, PropertyTypeDefinition propDef) throws Exception {
 
-        if (!conn.getContentType().equals("image/jpeg")) {
+        if (!(conn.getContentType().equals("image/jpeg") || conn.getContentType().equals("image/png"))) {
             setMediaMetadataStatus(repository, context, token, resource, "CORRUPT");
-            throw new ConnectionException("Content type of URLConnection is not of image/jpeg.");
+            throw new ConnectionException("Content type of URLConnection is not of image/jpeg or image/png.");
         }
 
         Property property = propDef.createProperty();

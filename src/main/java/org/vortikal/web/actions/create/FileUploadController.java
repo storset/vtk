@@ -61,13 +61,15 @@ public class FileUploadController extends SimpleFormController {
 
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
 
-    private int maxUploadSize = 100000000;
+    // Default value in DiskFileItemFactory is 10 KB (10240 bytes) but we keep
+    // this variable in case we want it configured from bean.
+    private int sizeThreshold = 10240;
 
     private boolean downcaseNames = false;
     private Map<String, String> replaceNameChars;
 
-    public void setMaxUploadSize(int maxUploadSize) {
-        this.maxUploadSize = maxUploadSize;
+    public void setSizeThreshold(int sizeThreshold) {
+        this.sizeThreshold = sizeThreshold;
     }
 
     public void setTempDir(String tempDirPath) {
@@ -107,7 +109,7 @@ public class FileUploadController extends SimpleFormController {
             return new ModelAndView(getSuccessView());
         }
 
-        FileItemFactory factory = new DiskFileItemFactory(this.maxUploadSize, this.tempDir);
+        FileItemFactory factory = new DiskFileItemFactory(this.sizeThreshold, this.tempDir);
         ServletFileUpload upload = new ServletFileUpload(factory);
 
         List<FileItem> items = new ArrayList<FileItem>();

@@ -288,9 +288,6 @@
             <goals>
               <goal>javacc</goal>
             </goals>
-            <configuration>
-              <packageName>org.vortikal.repository.search</packageName>
-            </configuration>
           </execution>
         </executions>
       </plugin>

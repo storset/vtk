@@ -291,7 +291,6 @@ resourcetype organizational-unit {
             [call "comp:employees"]
             [call "comp:content"]
             [call "comp:related-content"]
-            [call "comp:scientific-info"]
           </div>
         [else]
           <div id="vrtx-main-content" class="vrtx-hide-additional-content-false">
@@ -305,6 +304,7 @@ resourcetype organizational-unit {
             [call "comp:subunits"]
             [call "comp:employees"]
             [call "comp:content"]
+            [call "comp:scientific-info"]
           </div>
           <div id="vrtx-additional-content">
             <div class="vrtx-frontpage-box">
@@ -312,7 +312,6 @@ resourcetype organizational-unit {
               [call "comp:contact-information"]
             </div>
             [call "comp:related-content"]
-            [call "comp:scientific-info"]
           </div>
         [endif]
       </body>

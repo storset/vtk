@@ -63,7 +63,7 @@ public class FileUploadController extends SimpleFormController {
 
     // Default value in DiskFileItemFactory is 10 KB (10240 bytes) but we keep
     // this variable in case we want it configured from bean.
-    private int sizeThreshold = 10240;
+    private int sizeThreshold = DiskFileItemFactory.DEFAULT_SIZE_THRESHOLD;
 
     private boolean downcaseNames = false;
     private Map<String, String> replaceNameChars;

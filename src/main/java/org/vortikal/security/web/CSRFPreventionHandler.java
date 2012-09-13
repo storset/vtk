@@ -80,17 +80,16 @@ import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 /**
- * Cross Site Request Forgery (CSRF) prevention handler. 
- * This class performs two tasks: 
- * <ol> 
- *   <li>{@link #filter(HtmlContent) Generates tokens} in HTML 
- * 	 forms on the page being served </li>
- *   <li>{@link #filter(HttpServletRequest, HandlerFilterChain) Verifies} 
- *   that valid tokens are present in POST requests</li>
- * </ol> 
+ * Cross Site Request Forgery (CSRF) prevention handler. This class performs two
+ * tasks:
+ * <ol>
+ * <li>{@link #filter(HtmlContent) Generates tokens} in HTML forms on the page
+ * being served</li>
+ * <li>{@link #filter(HttpServletRequest, HandlerFilterChain) Verifies} that
+ * valid tokens are present in POST requests</li>
+ * </ol>
  */
-public class CSRFPreventionHandler extends AbstractHtmlPageFilter 
-implements HandlerFilter {
+public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements HandlerFilter {
 
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
     private int maxUploadSize = 100000000;
@@ -102,6 +101,7 @@ implements HandlerFilter {
 
     /**
      * Utility method that can be called, e.g. from views
+     * 
      * @return a new CSRF prevention token
      */
     public String newToken(URL url) throws Exception {
@@ -122,8 +122,7 @@ implements HandlerFilter {
     }
 
     @Override
-    public void filter(HttpServletRequest request, HandlerFilterChain chain)
-    throws Exception {
+    public void filter(HttpServletRequest request, HandlerFilterChain chain) throws Exception {
         if (!"POST".equals(request.getMethod())) {
             chain.filter(request);
             return;
@@ -143,7 +142,6 @@ implements HandlerFilter {
         }
     }
 
-
     public NodeResult filter(HtmlContent node) {
         if (!(node instanceof HtmlElement)) {
             return NodeResult.keep;
@@ -153,13 +151,12 @@ implements HandlerFilter {
             return NodeResult.keep;
         }
         HtmlAttribute method = element.getAttribute("method");
-        if (method == null || "".equals(method.getValue().trim()) 
-                || "get".equals(method.getValue().toLowerCase())) {
+        if (method == null || "".equals(method.getValue().trim()) || "get".equals(method.getValue().toLowerCase())) {
             return NodeResult.keep;
         }
 
         HtmlElement[] inputs = element.getChildElements("input");
-        for (HtmlElement input: inputs) {
+        for (HtmlElement input : inputs) {
             HtmlAttribute name = input.getAttribute("name");
             if (name != null && TOKEN_REQUEST_PARAMETER.equals(name.getValue())) {
                 return NodeResult.keep;
@@ -168,17 +165,14 @@ implements HandlerFilter {
 
         URL url;
         HtmlAttribute actionAttr = element.getAttribute("action");
-        if (actionAttr == null || actionAttr.getValue() == null 
-                || "".equals(actionAttr.getValue().trim())) {
-            HttpServletRequest request = 
-                RequestContext.getRequestContext().getServletRequest();
+        if (actionAttr == null || actionAttr.getValue() == null || "".equals(actionAttr.getValue().trim())) {
+            HttpServletRequest request = RequestContext.getRequestContext().getServletRequest();
             url = URL.create(request);
         } else {
             try {
                 url = parseActionURL(actionAttr.getValue());
             } catch (Throwable t) {
-                logger.warn("Unable to find URL in action attribute: " 
-                        + actionAttr.getValue(), t);
+                logger.warn("Unable to find URL in action attribute: " + actionAttr.getValue(), t);
                 return NodeResult.keep;
             }
         }
@@ -224,8 +218,7 @@ implements HandlerFilter {
             byte[] hashed = mac.doFinal(buffer);
             String result = new String(TextUtils.toHex(hashed));
             if (logger.isDebugEnabled()) {
-                logger.debug("Generate token: url: " + url + ", token: " 
-                        + result + ", secret: " + secret);
+                logger.debug("Generate token: url: " + url + ", token: " + result + ", secret: " + secret);
             }
             return result;
         } catch (Exception e) {
@@ -248,8 +241,7 @@ implements HandlerFilter {
             return url;
         }
 
-        HttpServletRequest request = 
-            RequestContext.getRequestContext().getServletRequest();
+        HttpServletRequest request = RequestContext.getRequestContext().getServletRequest();
         URL url = URL.create(request);
         url.clearParameters();
         Path path = null;
@@ -284,7 +276,6 @@ implements HandlerFilter {
         return url;
     }
 
-
     private void verifyToken(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         if (requestContext.getPrincipal() == null) {
@@ -298,33 +289,28 @@ implements HandlerFilter {
         if (Boolean.TRUE.equals(service.getAttribute("disable-csrf-checking"))) {
             return;
         }
-        SecretKey secret = (SecretKey) 
-        session.getAttribute(SECRET_SESSION_ATTRIBUTE);
+        SecretKey secret = (SecretKey) session.getAttribute(SECRET_SESSION_ATTRIBUTE);
         if (secret == null) {
-            throw new AuthorizationException(
-                    "Missing CSRF prevention secret in session");
+            throw new AuthorizationException("Missing CSRF prevention secret in session");
         }
 
         String suppliedToken = request.getParameter(TOKEN_REQUEST_PARAMETER);
 
         if (suppliedToken == null) {
-            throw new AuthorizationException(
-            "Missing CSRF prevention token in request");
+            throw new AuthorizationException("Missing CSRF prevention token in request");
         }
 
         URL requestURL = URL.create(request);
-        String computed =  generateToken(requestURL, session);
+        String computed = generateToken(requestURL, session);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Check token: url: " + requestURL 
-                    + ", supplied token: " + suppliedToken 
+            logger.debug("Check token: url: " + requestURL + ", supplied token: " + suppliedToken
                     + ", computed token: " + computed + ", secret: " + secret);
         }
         if (!computed.equals(suppliedToken)) {
             throw new AuthorizationException("CSRF prevention token mismatch");
         }
     }
-
 
     private class MultipartWrapper extends HttpServletRequestWrapper {
         private HttpServletRequest request;
@@ -346,8 +332,7 @@ implements HandlerFilter {
 
         public void cleanup() {
             if (logger.isDebugEnabled()) {
-                logger.debug("Cleanup temp file: " + this.tempFile 
-                        + ", exists: " + this.tempFile.exists());
+                logger.debug("Cleanup temp file: " + this.tempFile + ", exists: " + this.tempFile.exists());
             }
             if (this.tempFile != null && this.tempFile.exists()) {
                 this.tempFile.delete();
@@ -374,27 +359,27 @@ implements HandlerFilter {
         public Map getParameterMap() {
             Map<String, List<String>> combined = new HashMap<String, List<String>>();
             Map<String, String[]> m = super.getParameterMap();
-            for (String s: m.keySet()) {
+            for (String s : m.keySet()) {
                 String[] values = m.get(s);
                 List<String> l = new ArrayList<String>();
-                for (String v: values) {
+                for (String v : values) {
                     l.add(v);
                 }
                 combined.put(s, l);
             }
 
-            for (String s: this.params.keySet()) {
+            for (String s : this.params.keySet()) {
                 List<String> l = combined.get(s);
                 if (l == null) {
                     l = new ArrayList<String>();
                 }
-                for (String v: this.params.get(s)) {
+                for (String v : this.params.get(s)) {
                     l.add(v);
                 }
                 combined.put(s, l);
             }
             Map<String, String[]> result = new HashMap<String, String[]>();
-            for (String name: combined.keySet()) {
+            for (String name : combined.keySet()) {
                 List<String> values = combined.get(name);
                 result.put(name, values.toArray(new String[values.size()]));
             }
@@ -418,7 +403,7 @@ implements HandlerFilter {
             List<String> result = new ArrayList<String>();
             String[] names = super.getParameterValues(name);
             if (names != null) {
-                for (String s: names) {
+                for (String s : names) {
                     result.add(s);
                 }
             }
@@ -486,7 +471,7 @@ implements HandlerFilter {
                     String name = item.getFieldName();
                     InputStream stream = item.openStream();
                     byte[] buf = StreamUtil.readInputStream(stream, 2000);
-                    // XXX: 
+                    // XXX:
                     String encoding = this.request.getCharacterEncoding();
                     if (encoding == null) {
                         encoding = "utf-8";
@@ -505,12 +490,10 @@ implements HandlerFilter {
     public void setTempDir(String tempDirPath) {
         File tmp = new File(tempDirPath);
         if (!tmp.exists()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file " 
-                    + tmp + " does not exist");
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " does not exist");
         }
         if (!tmp.isDirectory()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file " 
-                    + tmp + " is not a directory");
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " is not a directory");
         }
         this.tempDir = tmp;
     }

@@ -131,6 +131,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements Han
         if (contentType != null && contentType.startsWith("multipart/form-data")) {
             MultipartWrapper multipartRequest = new MultipartWrapper(request, this.tempDir, this.maxUploadSize);
             try {
+                multipartRequest.writeAndParse();
                 verifyToken(multipartRequest);
                 chain.filter(multipartRequest);
             } finally {
@@ -315,17 +316,21 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements Han
     private class MultipartWrapper extends HttpServletRequestWrapper {
         private HttpServletRequest request;
         private File tempFile;
+        private File tempDir;
         private int bufferSize = 1024;
         private long fileSizeMax;
         private Map<String, List<String>> params = new HashMap<String, List<String>>();
 
-        public MultipartWrapper(HttpServletRequest request, File tempDir, long fileSizeMax) throws Exception {
+        public MultipartWrapper(HttpServletRequest request, File tempDir, long fileSizeMax) {
             super(request);
             this.request = request;
             this.fileSizeMax = fileSizeMax;
+            this.tempDir = tempDir;
+        }
 
-            if (request.getContentLength() > 0) {
-                writeTempFile(request, tempDir);
+        public void writeAndParse() throws Exception {
+            if (this.request.getContentLength() > 0) {
+                writeTempFile(this.request, this.tempDir);
                 parseRequest();
             }
         }
@@ -446,14 +451,6 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements Han
                     }
                     out.write(buffer, 0, n);
                 }
-            } catch (IOException e) {
-                if (this.tempFile != null) {
-                    if (logger.isDebugEnabled() && this.tempFile.getName() != null) {
-                        logger.debug("Deleting multipart-filter tmp file: " + this.tempFile.getName());
-                    }
-                    this.tempFile.delete();
-                }
-                throw e;
             } finally {
                 in.close();
                 out.flush();

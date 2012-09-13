@@ -311,7 +311,9 @@ resourcetype organizational-unit {
             [call "comp:subunits"]
             [call "comp:employees"]
             [call "comp:content"]
-            [call "comp:scientific-info"]
+            <div class="vrtx-frontpage-box white-box" id="vrtx-organizational-unit-publications"> 
+              [call "comp:scientific-info"]
+            </div>
           </div>
           <div id="vrtx-additional-content">
             <div class="vrtx-frontpage-box">

@@ -142,7 +142,7 @@
   
   <!--  NEW COMPONENT TO REPLACE DEPRECATED / PHASED OUT  -->
   
-  <bean id="loginManageComponent" class="org.vortikal.web.decorating.components.LoginManageComponent" abstract="true">
+  <bean id="abstractLoginManageComponent" class="org.vortikal.web.decorating.components.LoginManageComponent" abstract="true">
     <property name="namespace" ref="decorating.includeNamespace" />
     <property name="view" ref="decorating.loginManageComponent.view" />
     <property name="defaultLoginService" ref="loginService" />
@@ -154,12 +154,12 @@
     <property name="logoutService" ref="logoutService" />  
   </bean>
   
-  <bean id="decorating.loginManageComponent" parent="loginManageComponent">
+  <bean id="decorating.loginManageComponent" parent="abstractLoginManageComponent">
     <property name="name" value="login-manage" />
     <property name="description" value="Displays login and manage component" />
   </bean>
   
-  <bean id="decorating.loginManageUserOptsComponent" parent="loginManageComponent">
+  <bean id="decorating.loginManageUserOptsComponent" parent="abstractLoginManageComponent">
     <property name="name" value="login-manage-user-options" />
     <property name="description" value="Displays manage component with user specific options" />
     <property name="displayOnlyIfAuth" value="true" />

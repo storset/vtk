@@ -140,7 +140,7 @@
     </property>
   </bean>
   
-  <!--  NEW COMPONENT TO REPLACE DEPRECATED / PHASED OUT  -->
+  <!--  NEW COMPONENT FOR LOGIN AND MANAGE (TO REPLACE DEPRECATED / PHASED OUT [1])  -->
   
   <bean id="abstractLoginManageComponent" class="org.vortikal.web.decorating.components.LoginManageComponent" abstract="true">
     <property name="namespace" ref="decorating.includeNamespace" />
@@ -180,7 +180,7 @@
     </property>
   </bean>
 
-  <!--  DEPRECATED / TO BE PHASED OUT -->
+  <!--  [1] DEPRECATED / TO BE PHASED OUT -->
 
   <bean id="decorating.authenticationComponent" class="org.vortikal.web.decorating.components.AuthenticationComponent">
     <property name="namespace" ref="decorating.includeNamespace" />
@@ -244,7 +244,7 @@
     <property name="service" ref="manageService" />
   </bean>
 
-  <!-- ^  DEPRECATED / TO BE PHASED OUT -->
+  <!-- ^ [1] DEPRECATED / TO BE PHASED OUT -->
 
   <bean id="decorating.includeMediaComponent" class="org.vortikal.web.decorating.components.IncludeMediaPlayerComponent"
     parent="decorating.resourceMediaComponent">

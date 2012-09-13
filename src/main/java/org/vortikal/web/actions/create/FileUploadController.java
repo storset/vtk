@@ -44,6 +44,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -54,7 +55,7 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 @SuppressWarnings("deprecation")
-public class FileUploadController extends SimpleFormController {
+public class FileUploadController extends SimpleFormController implements InitializingBean {
 
     private static Log logger = LogFactory.getLog(FileUploadController.class);
 
@@ -64,13 +65,18 @@ public class FileUploadController extends SimpleFormController {
     // this variable in case we want it configured from bean.
     private int sizeThreshold = DiskFileItemFactory.DEFAULT_SIZE_THRESHOLD;
 
-    private DiskFileItemFactory dfif = new DiskFileItemFactory(this.sizeThreshold, this.tempDir);
+    private DiskFileItemFactory dfif;
 
     private boolean downcaseNames = false;
     private Map<String, String> replaceNameChars;
 
     public void setSizeThreshold(int sizeThreshold) {
         this.sizeThreshold = sizeThreshold;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        dfif = new DiskFileItemFactory(this.sizeThreshold, this.tempDir);
     }
 
     public void setTempDir(String tempDirPath) {
@@ -189,7 +195,7 @@ public class FileUploadController extends SimpleFormController {
                     if (logger.isDebugEnabled() && uploadItem.getName() != null) {
                         logger.debug("Cleanup: Deleting " + uploadItem.getName() + " from DiskFileItemFactory");
                     }
-                    uploadItem.delete();
+                uploadItem.delete();
             }
     }
 

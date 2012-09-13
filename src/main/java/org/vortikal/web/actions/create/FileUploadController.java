@@ -191,11 +191,12 @@ public class FileUploadController extends SimpleFormController implements Initia
     private void cleanUp(List<FileItem> items) {
         if (items != null)
             for (FileItem uploadItem : items) {
-                if (uploadItem != null)
+                if (uploadItem != null) {
                     if (logger.isDebugEnabled() && uploadItem.getName() != null) {
                         logger.debug("Cleanup: Deleting " + uploadItem.getName() + " from DiskFileItemFactory");
                     }
-                uploadItem.delete();
+                    uploadItem.delete();
+                }
             }
     }
 

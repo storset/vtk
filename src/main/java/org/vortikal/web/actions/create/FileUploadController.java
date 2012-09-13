@@ -40,7 +40,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
@@ -64,6 +63,8 @@ public class FileUploadController extends SimpleFormController {
     // Default value in DiskFileItemFactory is 10 KB (10240 bytes) but we keep
     // this variable in case we want it configured from bean.
     private int sizeThreshold = DiskFileItemFactory.DEFAULT_SIZE_THRESHOLD;
+
+    private DiskFileItemFactory dfif = new DiskFileItemFactory(this.sizeThreshold, this.tempDir);
 
     private boolean downcaseNames = false;
     private Map<String, String> replaceNameChars;
@@ -109,8 +110,7 @@ public class FileUploadController extends SimpleFormController {
             return new ModelAndView(getSuccessView());
         }
 
-        FileItemFactory factory = new DiskFileItemFactory(this.sizeThreshold, this.tempDir);
-        ServletFileUpload upload = new ServletFileUpload(factory);
+        ServletFileUpload upload = new ServletFileUpload(dfif);
 
         List<FileItem> items = new ArrayList<FileItem>();
 
@@ -137,6 +137,7 @@ public class FileUploadController extends SimpleFormController {
             Path itemURI = uri.extend(fixFileName(name));
             boolean exists = repository.exists(token, itemURI);
             if (exists) {
+                cleanUp(items);
                 errors.rejectValue("file", "manage.upload.resource.exists", "A resource with this name already exists");
                 return showForm(request, response, errors);
             }
@@ -164,16 +165,32 @@ public class FileUploadController extends SimpleFormController {
                 repository.createDocument(token, itemURI, inStream);
             } catch (Exception e) {
                 logger.warn("Caught exception while performing file upload", e);
+                cleanUp(items);
                 errors.rejectValue("file", "manage.upload.error",
                         "An unexpected error occurred while processing file upload");
                 return showForm(request, response, errors);
+            } finally {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Deleting: " + uploadItem.getName() + " from DiskFileItemFactory");
+                }
+                uploadItem.delete();
             }
-
         }
 
         fileUploadCommand.setDone(true);
         return new ModelAndView(getSuccessView());
 
+    }
+
+    private void cleanUp(List<FileItem> items) {
+        if (items != null)
+            for (FileItem uploadItem : items) {
+                if (uploadItem != null)
+                    if (logger.isDebugEnabled() && uploadItem.getName() != null) {
+                        logger.debug("Cleanup: Deleting " + uploadItem.getName() + " from DiskFileItemFactory");
+                    }
+                    uploadItem.delete();
+            }
     }
 
     /**

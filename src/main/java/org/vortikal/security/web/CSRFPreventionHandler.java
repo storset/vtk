@@ -461,6 +461,14 @@ implements HandlerFilter {
                     }
                     out.write(buffer, 0, n);
                 }
+            } catch (IOException e) {
+                if (this.tempFile != null) {
+                    if (logger.isDebugEnabled() && this.tempFile.getName() != null) {
+                        logger.debug("Deleting multipart-filter tmp file: " + this.tempFile.getName());
+                    }
+                    this.tempFile.delete();
+                }
+                throw e;
             } finally {
                 in.close();
                 out.flush();

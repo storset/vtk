@@ -52,8 +52,8 @@ public class LoginManageComponent extends ViewRenderingDecoratorComponent {
 	private Service defaultLoginService;
 	private Map<String, Service> alternativeLoginServices;
 	private Service logoutService;
-	private boolean displayOnlyIfAuth;
-	private boolean displayAuthUser;
+	private boolean displayOnlyIfAuth = false;
+	private boolean displayAuthUser = false;
 
 	protected void processModel(Map<String, Object> model,
 			DecoratorRequest request, DecoratorResponse response)
@@ -148,12 +148,10 @@ public class LoginManageComponent extends ViewRenderingDecoratorComponent {
 		return map;
 	}
 	
-	@Required
 	public void setDisplayOnlyIfAuth(boolean displayOnlyIfAuth) {
 		this.displayOnlyIfAuth = displayOnlyIfAuth;
 	}
 	
-	@Required
 	public void setDisplayAuthUser(boolean displayAuthUser) {
 		this.displayAuthUser = displayAuthUser;
 	}

@@ -157,8 +157,6 @@
   <bean id="decorating.loginManageComponent" parent="loginManageComponent">
     <property name="name" value="login-manage" />
     <property name="description" value="Displays login and manage component" />
-    <property name="displayOnlyIfAuth" value="false" />
-    <property name="displayAuthUser" value="false" />
   </bean>
   
   <bean id="decorating.loginManageUserOptsComponent" parent="loginManageComponent">

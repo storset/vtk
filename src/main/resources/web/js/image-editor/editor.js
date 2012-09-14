@@ -396,8 +396,8 @@ VrtxImageEditor.prototype.initSelection = function initSelection(x, y, w, h) {
     selection.iMouseY = Math.floor(e.pageY - canvasOffset.top);
     // in case of drag of whole selector
     if (selection.bDragAll) {
-      selection.x = selection.iMouseX - selection.px;
-      selection.y = selection.iMouseY - selection.py;
+      selection.x = Math.min((selection.iMouseX - selection.px), (editor.rw - selection.w));
+      selection.y = Math.min((selection.iMouseY - selection.py), (editor.rh - selection.h));
     }
     for (i = 0; i < 4; i++) {
       selection.bHow[i] = false;
@@ -464,6 +464,10 @@ VrtxImageEditor.prototype.initSelection = function initSelection(x, y, w, h) {
       selection.x = iFX;
       selection.y = iFY;
     }
+    selection.w = Math.min((editor.rw - selection.x), selection.w);
+    selection.h = Math.min((editor.rh - selection.y), selection.h);
+    selection.x = Math.max(0, selection.x);
+    selection.y = Math.max(0, selection.y);
     editor.drawScene();
   });
   $('#vrtx-image-editor').bind("mousedown", function (e) { // binding mousedown event

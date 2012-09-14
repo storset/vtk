@@ -131,7 +131,10 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements Han
         if (contentType != null && contentType.startsWith("multipart/form-data")) {
             MultipartWrapper multipartRequest = new MultipartWrapper(request, this.tempDir, this.maxUploadSize);
             try {
-                multipartRequest.writeAndParse();
+                if (request.getContentLength() > 0) {
+                    multipartRequest.writeTempFile();
+                    multipartRequest.parseRequest();
+                }
                 verifyToken(multipartRequest);
                 chain.filter(multipartRequest);
             } finally {
@@ -328,13 +331,6 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements Han
             this.tempDir = tempDir;
         }
 
-        public void writeAndParse() throws Exception {
-            if (this.request.getContentLength() > 0) {
-                writeTempFile(this.request, this.tempDir);
-                parseRequest();
-            }
-        }
-
         public void cleanup() {
             if (logger.isDebugEnabled()) {
                 logger.debug("Cleanup temp file: " + this.tempFile + ", exists: " + this.tempFile.exists());
@@ -433,13 +429,13 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements Han
             values.add(value);
         }
 
-        private void writeTempFile(HttpServletRequest request, File tempDir) throws IOException, FileUploadException {
-            this.tempFile = File.createTempFile("multipart-filter", null, tempDir);
+        private void writeTempFile() throws IOException, FileUploadException {
+            this.tempFile = File.createTempFile("multipart-filter", null, this.tempDir);
             if (logger.isDebugEnabled()) {
                 logger.debug("Create temp file: " + tempFile);
             }
             byte[] buffer = new byte[this.bufferSize];
-            ServletInputStream in = request.getInputStream();
+            ServletInputStream in = this.request.getInputStream();
             OutputStream out = new FileOutputStream(tempFile);
             try {
                 int n = 0;

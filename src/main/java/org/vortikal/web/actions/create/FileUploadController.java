@@ -32,14 +32,13 @@ package org.vortikal.web.actions.create;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
@@ -118,86 +117,60 @@ public class FileUploadController extends SimpleFormController implements Initia
 
         ServletFileUpload upload = new ServletFileUpload(dfif);
 
-        List<FileItem> items = new ArrayList<FileItem>();
-
-        @SuppressWarnings("unchecked")
-        List<FileItem> fileItems = upload.parseRequest(request);
-        for (FileItem item : fileItems) {
-            if (!item.isFormField()) {
-                items.add(item);
-            }
-        }
-
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
-        Path uri = RequestContext.getRequestContext().getResourceURI();
+        Path uri = requestContext.getResourceURI();
 
         // Check for existing files
-        for (FileItem uploadItem : items) {
-            String name = stripWindowsPath(uploadItem.getName());
+        String name;
+        FileItemStream uploadItem;
+        FileItemIterator iter = upload.getItemIterator(request);
+        while (iter.hasNext()) {
+            uploadItem = iter.next();
+            if (!uploadItem.isFormField()) {
+                name = stripWindowsPath(uploadItem.getName());
 
-            if (name == null || name.trim().equals("")) {
-                return new ModelAndView(getSuccessView());
-            }
-            Path itemURI = uri.extend(fixFileName(name));
-            boolean exists = repository.exists(token, itemURI);
-            if (exists) {
-                cleanUp(items);
-                errors.rejectValue("file", "manage.upload.resource.exists", "A resource with this name already exists");
-                return showForm(request, response, errors);
+                if (name == null || name.trim().equals("")) {
+                    return new ModelAndView(getSuccessView());
+                }
+                if (repository.exists(token, uri.extend(fixFileName(name)))) {
+                    errors.rejectValue("file", "manage.upload.resource.exists",
+                            "A resource with this name already exists");
+                    return showForm(request, response, errors);
+                }
             }
         }
 
         // Write files
-        for (FileItem uploadItem : items) {
+        Path itemURI;
+        InputStream inStream;
+        iter = upload.getItemIterator(request);
+        while (iter.hasNext()) {
+            uploadItem = iter.next();
+            if (!uploadItem.isFormField()) {
+                name = stripWindowsPath(uploadItem.getName());
+                itemURI = uri.extend(fixFileName(name));
 
-            if (uploadItem == null) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("The user didn't upload anything");
+                    logger.debug("Uploaded resource will be: " + itemURI);
                 }
-                return new ModelAndView(getSuccessView());
-            }
 
-            String name = stripWindowsPath(uploadItem.getName());
-            Path itemURI = uri.extend(fixFileName(name));
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Uploaded resource will be: " + itemURI);
-            }
-
-            try {
-                InputStream inStream = uploadItem.getInputStream();
-                repository.createDocument(token, itemURI, inStream);
-            } catch (Exception e) {
-                logger.warn("Caught exception while performing file upload", e);
-                cleanUp(items);
-                errors.rejectValue("file", "manage.upload.error",
-                        "An unexpected error occurred while processing file upload");
-                return showForm(request, response, errors);
-            } finally {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Deleting: " + uploadItem.getName() + " from DiskFileItemFactory");
+                try {
+                    inStream = uploadItem.openStream();
+                    repository.createDocument(token, itemURI, inStream);
+                } catch (Exception e) {
+                    logger.warn("Caught exception while performing file upload", e);
+                    errors.rejectValue("file", "manage.upload.error",
+                            "An unexpected error occurred while processing file upload");
+                    return showForm(request, response, errors);
                 }
-                uploadItem.delete();
             }
         }
 
         fileUploadCommand.setDone(true);
         return new ModelAndView(getSuccessView());
 
-    }
-
-    private void cleanUp(List<FileItem> items) {
-        if (items != null)
-            for (FileItem uploadItem : items) {
-                if (uploadItem != null) {
-                    if (logger.isDebugEnabled() && uploadItem.getName() != null) {
-                        logger.debug("Cleanup: Deleting " + uploadItem.getName() + " from DiskFileItemFactory");
-                    }
-                    uploadItem.delete();
-                }
-            }
     }
 
     /**

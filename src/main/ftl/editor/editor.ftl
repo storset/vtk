@@ -441,37 +441,38 @@
           <#if allowedValues?size = 1 && !useRadioButtons>
 
             <#if type = 'BOOLEAN' && !displayLabel>
-
-              <#if value == allowedValues[0]>
-                <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" checked="checked" />
-              <#else>
-                <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" />
-              </#if>
-              <label class="resource.${name}" for="resource.${name}.${allowedValues[0]?html}">${localizedName}</label>
-              
-              <#-- HACKS 2012 start -->
-              <#-- Tooltip for aggregation and manually approve -->
-              <#if name = "display-aggregation"><#-- only add once. TODO: generalize editor tooltip concept -->
-                <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js"></script>
-                <script type="text/javascript"><!--
-                  $(function() {
-                    $("#editor").vortexTips("abbr", "#editor", 320, 300, 250, 300, 20, -30, false, false);
-                  });
-                // -->
-                </script>
-              </#if>
-              <#if name = "display-aggregation" || name = "display-manually-approved">
-                <abbr class="resource-prop-info" title="${vrtx.getMsg('editor.manually-approve-aggregation.info')}"></abbr>
-              </#if>
-              <#-- HACKS 2012 end -->
-              
+              <div class="vrtx-checkbox-square">
+                <#if value == allowedValues[0]>
+                  <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" checked="checked" />
+                <#else>
+                  <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" />
+                </#if>
+                <label class="resource.${name}" for="resource.${name}.${allowedValues[0]?html}">${localizedName}</label>
+                <#-- HACKS 2012 start -->
+                <#-- Tooltip for aggregation and manually approve -->
+                <#if name = "display-aggregation"><#-- only add once. TODO: generalize editor tooltip concept -->
+                  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js"></script>
+                  <script type="text/javascript"><!--
+                    $(function() {
+                      $("#editor").vortexTips("abbr", "#editor", 320, 300, 250, 300, 20, -30, false, false);
+                    });
+                  // -->
+                  </script>
+                </#if>
+                <#if name = "display-aggregation" || name = "display-manually-approved">
+                  <abbr class="resource-prop-info" title="${vrtx.getMsg('editor.manually-approve-aggregation.info')}"></abbr>
+                </#if>
+                <#-- HACKS 2012 end -->
+              </div>      
             <#else>
-              <label class="resource.${name}">${allowedValues[0]?html}</label>
-              <#if value == allowedValues[0]>
-                <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" checked="checked" />
-              <#else>
-                <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" />
-              </#if>
+              <div class="vrtx-checkbox-square">
+                <label class="resource.${name}">${allowedValues[0]?html}</label>
+                <#if value == allowedValues[0]>
+                  <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" checked="checked" />
+                <#else>
+                  <input name="resource.${name}" id="resource.${name}.${allowedValues[0]?html}" type="checkbox" value="${allowedValues[0]?html}" />
+                </#if>
+              </div>
             </#if>
 
           <#elseif useRadioButtons>
@@ -514,7 +515,6 @@
           <div class="vrtx-textfield">
             <input type="text" id="resource.${name}" name="resource.${name}" value="${value?html}" size="32" <#if multiple>class="vrtx-multiple"</#if> />
           </div>
-
           <#if name = 'recursive-listing-subfolders'>
             <label class="tooltip">${vrtx.getMsg("editor.recursive-listing.featured-articles.hint")}</label>
           </#if>
@@ -546,14 +546,18 @@
     <#recover>
       <#local nullValue = 'unspecified' />
     </#recover>
-    <#if !(resource.getProperty(propDef))?exists>
-      <input name="resource.${name}" id="resource.${name}.unspecified" type="radio" value="" checked="checked" />
-      <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label><br />
-    <#else>
-      <input name="resource.${name}" id="resource.${name}.unspecified" type="radio" value="" />
-      <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label><br />
-
-    </#if>
+    <div class="vrtx-radio-button">
+      <#if !(resource.getProperty(propDef))?exists>
+        <input name="resource.${name}" id="resource.${name}.unspecified" type="radio" value="" checked="checked" />
+        <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label>
+      <#else>
+        <input name="resource.${name}" id="resource.${name}.unspecified" type="radio" value="" />
+        <label class="resource.${name}" for="resource.${name}.unspecified">${nullValue?html}</label>
+      </#if>
+      <#if name = "recursive-listing">
+        <abbr class="resource-prop-info" title="${vrtx.getMsg('editor.recursive-listing.info')}"></abbr>
+      </#if>
+    </div>
   </#if>
 </#macro>
 
@@ -563,13 +567,15 @@
     <#if (propDef.valueFormatter)?exists>
       <#local localized = propDef.valueFormatter.valueToString(v, "localized", springMacroRequestContext.getLocale()) />
     </#if>
-    <#if v == value>
-      <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" checked="checked" />
-      <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label><br />
-    <#else>
-      <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" />
-      <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label><br />
-    </#if>
+    <div class="vrtx-radio-button">
+      <#if v == value>
+        <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" checked="checked" />
+        <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label>
+      <#else>
+        <input name="resource.${name}" id="resource.${name}.${v?html}" type="radio" value="${v?html}" />
+        <label class="resource.${name}" for="resource.${name}.${v?html}">${localized?html}</label>
+      </#if>
+    </div>
   </#list>
 </#macro>
 

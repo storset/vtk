@@ -149,7 +149,7 @@ public class RequestContextInitializer implements ContextInitializer {
             logger.info("Registered service tree root services in the following order: " 
                         + rootServices);
             logger.info("Service tree:");
-            logger.info(printServiceTree());
+            logger.info(printServiceTree(false));
         }
     }
     
@@ -339,15 +339,15 @@ public class RequestContextInitializer implements ContextInitializer {
     }
     
 
-    public StringBuilder printServiceTree() {
+    public StringBuilder printServiceTree(boolean printAssertions) {
         StringBuilder buffer = new StringBuilder();
         String lineSeparator = System.getProperty("line.separator");
-        printServiceList(this.rootServices, buffer, "->", lineSeparator);
+        printServiceList(this.rootServices, buffer, "->", lineSeparator, printAssertions);
         return buffer;
     }
 
     private void printServiceList(List<Service> services, StringBuilder buffer,
-                                  String indent, String lineSeparator) {
+                                  String indent, String lineSeparator, boolean printAssertions) {
         if (services == null)
             return;
         
@@ -359,8 +359,15 @@ public class RequestContextInitializer implements ContextInitializer {
             } else {
                 buffer.append(" (").append(service.getOrder()).append(")");
             }
+            if (printAssertions) {
+                for (Assertion assertion: service.getAssertions()) {
+                    buffer.append(lineSeparator);
+                    for (int i = indent.length(); i > 0; i--) buffer.append(' ');
+                    buffer.append("   ").append(assertion);
+                }
+            }
             buffer.append(lineSeparator);
-            printServiceList(this.childServices.get(service), buffer, "  " + indent, lineSeparator);
+            printServiceList(this.childServices.get(service), buffer, "  " + indent, lineSeparator, printAssertions);
         }
     }
 

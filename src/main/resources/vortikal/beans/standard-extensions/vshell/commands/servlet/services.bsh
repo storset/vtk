@@ -3,9 +3,10 @@ getDescription() {
 }
 
 getUsage() {
-    return "servlet services";
+    return "servlet services [-assertions:boolean]";
 }
 
 void execute(context, args, out) {
-    out.print(context.get("context").getBean("requestContextInitializer").printServiceTree());
+    assertions = args.get("assertions") != null;
+    out.print(context.get("context").getBean("requestContextInitializer").printServiceTree(assertions));
 }

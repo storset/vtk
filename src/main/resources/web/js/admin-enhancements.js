@@ -259,13 +259,11 @@ vrtxAdmin._$(document).ready(function () {
         selector: "#title-container a#" + resourceMenuLeftServices[i],
         selectorClass: "globalmenu",
         insertAfterOrReplaceClass: "ul#resourceMenuLeft",
-        isReplacing: false,
         nodeType: "div",
         simultanSliding: true
     });
     vrtxAdm.completeFormAsync({
-        selector: "form#" + resourceMenuLeftServices[i] + "-form input[type=submit]",
-        isReplacing: false
+        selector: "form#" + resourceMenuLeftServices[i] + "-form input[type=submit]"
     });
   }
 
@@ -276,13 +274,11 @@ vrtxAdmin._$(document).ready(function () {
         selector: "#title-container a#" + resourceMenuRightServices[i],
         selectorClass: "globalmenu",
         insertAfterOrReplaceClass: "#resource-title > ul:last-child",
-        isReplacing: false,
         nodeType: "div",
         simultanSliding: true
     });
     vrtxAdm.completeFormAsync({
-        selector: "form#" + resourceMenuRightServices[i] + "-form input[type=submit]",
-        isReplacing: false
+        selector: "form#" + resourceMenuRightServices[i] + "-form input[type=submit]"
     });
   }
 
@@ -295,14 +291,12 @@ vrtxAdmin._$(document).ready(function () {
           selector: "ul#tabMenuRight a#" + tabMenuServices[i],
           selectorClass: "vrtx-admin-form",
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
-          isReplacing: false,
           nodeType: "div",
           funcComplete: function(p){ createFuncComplete(); },
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({ 
           selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-          isReplacing: false,
           updateSelectors: ["#contents"],
           errorContainer: "errorContainer",
           errorContainerInsertAfter: "> ul",
@@ -315,14 +309,12 @@ vrtxAdmin._$(document).ready(function () {
             selector: "ul#tabMenuRight a#" + tabMenuServices[i],
             selectorClass: "vrtx-admin-form",
             insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
-            isReplacing: false,
             nodeType: "div",
             funcComplete: function(p){ createFuncComplete(); },
             simultanSliding: true
           });
           vrtxAdm.completeFormAsync({
-            selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-            isReplacing: false
+            selector: "form#" + tabMenuServices[i] + "-form input[type=submit]"
           });
         } else {
           if(vrtxAdm.isIPhone || vrtxAdm.isIPad) { // TODO: feature detection
@@ -332,20 +324,85 @@ vrtxAdmin._$(document).ready(function () {
               selector: "ul#tabMenuRight a#" + tabMenuServices[i],
               selectorClass: "vrtx-admin-form",
               insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
-              isReplacing: false,
               nodeType: "div",
               funcComplete: function(p){ vrtxAdm.initFileUpload() },
               simultanSliding: true
             });
             vrtxAdm.completeFormAsync({
-              selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-              isReplacing: false
+              selector: "form#" + tabMenuServices[i] + "-form input[type=submit]"
             });
             vrtxAdm.initFileUpload(); // when error message
           }
         }
       }
     }
+    
+    // Slide horizontal resource menu
+    
+    tabMenuServices = ["collectionListing\\.action\\.move-resources", "collectionListing\\.action\\.copy-resources"];
+    resourceMenuServices = ["moveToSelectedFolderService", "copyToSelectedFolderService"];
+    tabMenuServicesInjectMap = { "collectionListing.action.move-resources": "moveToSelectedFolderService", 
+                                 "collectionListing.action.copy-resources": "copyToSelectedFolderService"};
+
+    for (i = tabMenuServices.length; i--;) {
+      vrtxAdm.cachedBody.on("click", "input#" + tabMenuServices[i], function (e) {
+        var input = _$.single(this);
+        var form = input.closest("form");
+        var url = form.attr("action");
+        if(location.protocol == "http:" && url.indexOf("https://") != -1) { // Make sure SSL
+          return;
+        }
+        var li = "li." + tabMenuServicesInjectMap[input.attr("id")];
+        var dataString = form.serialize() + "&" + input.attr("name") + "=" + input.val();
+        vrtxAdm.serverFacade.postHtml(url, dataString, {
+          success: function (results, status, resp) {
+            var resourceMenuRight = $("#resourceMenuRight");
+            var copyMoveExists = "";
+            for(var key in tabMenuServicesInjectMap) {
+              var copyMove = resourceMenuRight.find("li." + tabMenuServicesInjectMap[key]);
+              if(copyMove.length) {
+                copyMoveExists = copyMove;
+                break;
+              }
+            }
+            if(copyMoveExists !== "") {
+              copyMoveExists.hide('slide', {direction: 'right'}, vrtxAdm.transitionSpeed, function() {
+                resourceMenuRight.html(_$(results).find("#resourceMenuRight").html());
+                resourceMenuRight.find(li).hide().show('slide', {direction: 'right'}, vrtxAdm.transitionSpeed);                   
+              });
+            } else {
+              resourceMenuRight.html(_$(results).find("#resourceMenuRight").html());
+              resourceMenuRight.find(li).hide().show('slide', {direction: 'right'}, vrtxAdm.transitionSpeed);           
+            }
+          }
+        });
+        e.stopPropagation();
+        e.preventDefault();
+      });
+    }
+    
+    for (i = resourceMenuServices.length; i--;) {
+      vrtxAdm.cachedBody.on("click", "#resourceMenuRight li." + resourceMenuServices[i] + " button", function (e) {
+        var button = _$.single(this);
+        var form = button.closest("form");
+        var url = form.attr("action");
+        if(location.protocol == "http:" && url.indexOf("https://") != -1) { // Make sure SSL
+          return;
+        }
+        var li = form.closest("li");
+        var dataString = form.serialize() + "&" + button.attr("name") + "=" + button.val();
+        vrtxAdm.serverFacade.postHtml(url, dataString, {
+          success: function (results, status, resp) {
+            li.hide('slide', {direction: 'right'}, vrtxAdm.transitionSpeed, function() {
+              vrtxAdm.cachedContent.html($(results).find("#contents").html());
+            });
+          }
+        });
+        e.stopPropagation();
+        e.preventDefault();
+      });
+    }
+    
   }
 
   // Permission privilegie forms (READ, READ_WRITE, ALL)
@@ -2115,7 +2172,7 @@ VrtxAdmin.prototype.addOriginalMarkup = function addOriginalMarkup(url, results,
 VrtxAdmin.prototype.addNewMarkup = function addNewMarkup(options, selectorClass, transitionSpeed, transitionEasingSlideDown, transitionEasingSlideUp, form) {
   var vrtxAdm = this,
       insertAfterOrReplaceClass = options.insertAfterOrReplaceClass,
-      isReplacing = options.isReplacing,
+      isReplacing = options.isReplacing || false,
       nodeType = options.nodeType,
       funcComplete = options.funcComplete,
       _$ = vrtxAdm._$;
@@ -2166,7 +2223,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
       
   vrtxAdm.cachedBody.on("click", options.selector, function (e) {
   
-    var isReplacing = options.isReplacing,
+    var isReplacing = options.isReplacing || false,
         funcProceedCondition = options.funcProceedCondition,
         funcComplete = options.funcComplete,
         transitionSpeed = options.transitionSpeed || vrtxAdm.transitionSpeed,

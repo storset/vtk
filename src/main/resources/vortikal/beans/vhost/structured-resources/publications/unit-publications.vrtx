@@ -1,0 +1,108 @@
+resourcetype unit-publications {
+
+  properties {
+    title : string overrides title,
+    introduction : simple_html,
+    areacode : string trim,
+    selectedPublications : html noextract,
+    showAdditionalContent : boolean defaultvalue("true"),
+    related-content : html noextract
+  }
+
+  edit-rules {
+    areacode (size[8]),
+    group publications (areacode, selectedPublications) (after introduction),
+    group related-content-group (showAdditionalContent, related-content) (after selectedPublications)
+  }
+
+  view-components {
+
+    title {
+      ##
+      [def v resource-prop(".", "title")]
+      [if v != null]
+        [val v]
+      [endif]
+      ##
+    }
+
+    introduction {
+      ##
+      [def intro resource-prop(".", "introduction")]
+      [if intro != null]
+        <div class="vrtx-introduction">[val intro # unescaped]</div>
+      [endif]
+      ##
+    }
+ 
+    related-content {
+      ##
+      [def document structured-document()]
+      [def related-content document.properties.related-content]
+      [if related-content != null]
+        <div id="vrtx-related-content">
+          [val related-content # unescaped]
+        </div>
+      [endif]
+      ##
+    }
+
+    publications {
+      ##
+        [def document structured-document()]
+        [def areacode document.properties.areacode]
+        [if areacode != null]
+          [call "unit:publications"]
+        [else]
+          [def selectedPublications document.properties.selectedPublications]
+          [if (selectedPublications != null && selectedPublications != "")]
+            [val selectedPublications # unescaped]
+          [endif]
+        [endif]
+      ##
+    }
+
+  }
+
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[call "comp:title"]</title>
+      </head>
+      <body id="vrtx-organizational-unit-publications">
+        <div id="vrtx-content">
+          [call "comp:title"]
+          [call "comp:introduction"]
+          [call "comp:publications"]
+        </div>
+        <div id="vrtx-additional-content">
+          [call "comp:related-content"]
+        </div>
+      </body>
+    </html>
+    ##
+  }
+
+  vocabulary {
+    showAdditionalContent {
+      en : ("true" = "Yes", "false" = "No"),
+      no : ("true" = "Ja", "false" = "Nei"),
+      nn : ("true" = "Ja", "false" = "Nei")
+    }
+  }
+
+  localization {
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    introduction : (en : "Introduction", no : "Innledning", nn : "Innleiing"),
+    areacode : (en : "Org. Unit ID", no : "Stedkode", nn : "Stadkode"),
+    publications : (en : "Publications", no : "Publikasjoner", nn : "Publikasjonar"),
+    selectedPublications : (en : "Selected publications", no : "Utvalgte publikasjoner", nn : "Utvalde publikasjonar"),
+    showAdditionalContent : (en : "Show in right-column", no : "Vis i høyrekolonne", nn : "Vis i høgrekolonne"),
+    related-content : (en : "Content", no : "Innhold", nn : "Innhold"),
+    related-content-group : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhald"),
+    related-content : (en : "Related content", no : "Relatert innhold", nn : "Relatert innhold")
+  }
+
+}

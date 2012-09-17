@@ -84,21 +84,11 @@
     </#if>
     <#assign url = url + "&amp;" + previewRefreshParameter + "=" + dateStr />
 
-    <#-- Do not show preview if resource is "Allowed for all" and we are on https. Should not normally happen -->
-    <#if ((permissions_ACTION_READ.permissionsQueryResult = 'true') || 
-          (permissions_ACTION_READ_PROCESSED.permissionsQueryResult = 'true')) 
-         && (permissions_ACTION_READ.requestScheme = 'https') && (permissions_ACTION_READ.requestPort = 443)
-         && (enableSelectiveProtocols = 'true') && (webProtocol = 'http') >
-      <p class="previewUnavailable">${vrtx.getMsg("preview.httpOnly")}</p>
-    
-    <#else>
-      <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}#${origUrl}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">
-        [Your user agent does not support frames or is currently configured
-        not to display frames. However, you may visit
-        <a href="${resourceReference}">the related document.</a>]
-      </iframe>
-    </#if>
-
+    <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}#${origUrl}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">
+      [Your user agent does not support frames or is currently configured
+      not to display frames. However, you may visit
+      <a href="${resourceReference}">the related document.</a>]
+    </iframe>
   </body>
 </html>
 

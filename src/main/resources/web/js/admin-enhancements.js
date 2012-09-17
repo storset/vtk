@@ -338,8 +338,6 @@ vrtxAdmin._$(document).ready(function () {
       }
     }
     
-    // Slide horizontal resource menu
-    
     tabMenuServices = ["collectionListing\\.action\\.move-resources", "collectionListing\\.action\\.copy-resources"];
     resourceMenuServices = ["moveToSelectedFolderService", "copyToSelectedFolderService"];
     // TODO: This map/lookup-obj is a little hacky..
@@ -347,7 +345,7 @@ vrtxAdmin._$(document).ready(function () {
                                  "collectionListing.action.copy-resources": "copyToSelectedFolderService"};
 
     for (i = tabMenuServices.length; i--;) {
-      vrtxAdm.cachedBody.on("click", "input#" + tabMenuServices[i], function (e) {
+      vrtxAdm.cachedContent.on("click", "input#" + tabMenuServices[i], function (e) {
         var input = _$.single(this);
         var form = input.closest("form");
         var url = form.attr("action");
@@ -384,7 +382,7 @@ vrtxAdmin._$(document).ready(function () {
       });
     }
     for (i = resourceMenuServices.length; i--;) {
-      vrtxAdm.cachedBody.on("click", "#resourceMenuRight li." + resourceMenuServices[i] + " button", function (e) {
+      vrtxAdm.cachedAppContent.on("click", "#resourceMenuRight li." + resourceMenuServices[i] + " button", function (e) {
         var button = _$.single(this);
         var form = button.closest("form");
         var url = form.attr("action");
@@ -421,6 +419,23 @@ vrtxAdmin._$(document).ready(function () {
       });
     }
     
+    vrtxAdm.cachedContent.on("click", "input#collectionListing\\.action\\.delete-resources", function (e) {
+      var input = _$.single(this);
+      var form = input.closest("form");
+      var url = form.attr("action");
+      if(vrtxAdm.isHTTP && url.indexOf("https://") != -1) { // Make sure SSL
+        return;
+      }
+      var dataString = form.serialize() + "&" + input.attr("name") + "=" + input.val();
+      vrtxAdm.serverFacade.postHtml(url, dataString, {
+        success: function (results, status, resp) {
+          vrtxAdm.cachedContent.html(_$(results).find("#contents").html());
+          vrtxAdm.collectionListingInteraction();
+        }
+      });
+      e.stopPropagation();
+      e.preventDefault();
+    });
   }
 
   // Permission privilegie forms (READ, READ_WRITE, ALL)

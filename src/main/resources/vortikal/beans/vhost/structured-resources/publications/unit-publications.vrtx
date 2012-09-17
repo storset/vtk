@@ -74,7 +74,7 @@ resourcetype unit-publications {
       <body id="vrtx-organizational-unit-publications">
         <div id="vrtx-content">
           <div id="vrtx-main-content">
-            [call "comp:title"]
+            <h1>[call "comp:title"]</h1>
             [call "comp:introduction"]
             [call "comp:publications"]
           </div>

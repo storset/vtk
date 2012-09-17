@@ -453,4 +453,8 @@
     <property name="resourceType" value="organizational-unit" />
   </bean>
 
+  <bean id="resourceTypeIsOrganizationalUnitPublications" class="org.vortikal.web.service.ResourceTypeAssertion" parent="repositoryAware">
+    <property name="resourceType" value="unit-publications" />
+  </bean>
+
 </beans>

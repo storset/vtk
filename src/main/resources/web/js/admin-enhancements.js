@@ -95,6 +95,7 @@ function VrtxAdmin() {
   this.transitionEasingSlideUp = "linear";
   
   this.ignoreAjaxErrors = false;
+  this.isHTTP = (location.protocol === "http:");
   
   return instance;
 };
@@ -350,7 +351,7 @@ vrtxAdmin._$(document).ready(function () {
         var input = _$.single(this);
         var form = input.closest("form");
         var url = form.attr("action");
-        if(location.protocol == "http:" && url.indexOf("https://") != -1) { // Make sure SSL
+        if(vrtxAdm.isHTTP && url.indexOf("https://") != -1) { // Make sure SSL
           return;
         }
         var li = "li." + tabMenuServicesInjectMap[input.attr("id")];
@@ -387,7 +388,7 @@ vrtxAdmin._$(document).ready(function () {
         var button = _$.single(this);
         var form = button.closest("form");
         var url = form.attr("action");
-        if(location.protocol == "http:" && url.indexOf("https://") != -1) { // Make sure SSL
+        if(vrtxAdm.isHTTP && url.indexOf("https://") != -1) { // Make sure SSL
           return;
         }
         var li = form.closest("li");
@@ -2054,7 +2055,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
       
   vrtxAdm.cachedBody.on("click", options.selector, function (e) {
     var url = _$.single(this).attr("href") || _$.single(this).closest("form").attr("action");
-    if(location.protocol == "http:" && url.indexOf("https://") != -1) {
+    if(vrtxAdm.isHTTP && url.indexOf("https://") != -1) {
       return; // no AJAX when http -> https (tmp. solution)
     }
     

@@ -382,7 +382,6 @@ vrtxAdmin._$(document).ready(function () {
         e.preventDefault();
       });
     }
-    
     for (i = resourceMenuServices.length; i--;) {
       vrtxAdm.cachedBody.on("click", "#resourceMenuRight li." + resourceMenuServices[i] + " button", function (e) {
         var button = _$.single(this);
@@ -396,8 +395,22 @@ vrtxAdmin._$(document).ready(function () {
         vrtxAdm.serverFacade.postHtml(url, dataString, {
           success: function (results, status, resp) {
             li.hide('slide', {direction: 'right'}, vrtxAdm.transitionSpeed, function() {
-              vrtxAdm.cachedContent.html($(results).find("#contents").html());
-              vrtxAdm.collectionListingInteraction();
+              var result = _$(results);
+              var errorMsg = vrtxAdm.cachedAppContent.find("> .errormessage");
+              var newErrorMsg = result.find(".errormessage");
+              if(newErrorMsg.length) {
+                 if(errorMsg.length) {
+                   errorMsg.html(newErrorMsg.html());
+                 } else {
+                   vrtxAdm.cachedAppContent.prepend(vrtxAdm.wrap("div", "errormessage message", newErrorMsg.html()));
+                 }
+              } else {
+                if(errorMsg.length) {
+                  errorMsg.remove();
+                }
+                vrtxAdm.cachedContent.html(result.find("#contents").html());
+                vrtxAdm.collectionListingInteraction();
+              }
               li.remove();
             });
           }

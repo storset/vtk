@@ -107,7 +107,7 @@
           </property>
           <property name="exceptionAttribute" value="manage.preventXFrameOptionsHeader" />
         </bean>
-        <ref bean="manage.selectiveProtocolManager" />
+        <!--ref bean="manage.selectiveProtocolManager" /-->
       </list>
     </property>
     <property name="attributes">
@@ -126,7 +126,7 @@
       <list>
         <ref bean="manage.portAssertion" />
         <ref bean="manage.hostNameAssertion" />
-        <ref bean="manage.selectiveProtocolManager" />
+        <ref bean="manage.protocolAssertion" />
         <ref bean="adminVrtxParameterRule" />
       </list>
     </property>
@@ -135,14 +135,18 @@
   <bean id="manage.urlPostProcessors" class="org.springframework.beans.factory.config.ListFactoryBean">
     <property name="sourceList">
       <list>
-        <ref bean="manage.selectiveProtocolManager" />
+        <!--ref bean="manage.selectiveProtocolManager" /-->
       </list>
     </property>
   </bean>
 
 
+  <bean id="manage.protocolAssertion" class="org.vortikal.web.service.RequestProtocolAssertion">
+    <property name="protocol" value="${manage.protocol}" />
+  </bean>
 
   <!-- Acts as both assertion, handler interceptor and URL post processor -->
+  <!--
   <bean id="manage.selectiveProtocolManager" class="org.vortikal.web.service.SelectiveProtocolManager">
     <property name="protocol" value="${manage.protocol}" />
     <property name="selectiveAccessEnabled" value="${manage.enableSelectiveProtocols}" />
@@ -165,6 +169,7 @@
       <ref bean="previewCollectionListingService" />
     </property>
   </bean>
+  -->
 
   <bean id="manage.notAuthorizedService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
@@ -624,6 +629,25 @@
   </bean>
 
 
+  <bean id="preview.mixedModeService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="previewService" />
+    <property name="order" value="-1" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestProtocolAssertion">
+          <property name="protocol" value="https" />
+        </bean>
+        <bean class="org.vortikal.web.service.ResourcePropertyAssertion">
+          <property name="namespace" ref="DEFAULT_NAMESPACE" />
+          <property name="name" value="sslMixedMode" />
+          <property name="checkExistenceOnly" value="true" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="preview.displayPopupURLHandler" />
+  </bean>
+
+
   <bean id="previewHTMLService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="previewService" />
     <property name="assertions">
@@ -945,6 +969,13 @@
     <property name="viewName" value="manageCollectionListing" />
   </bean>
 
+  <bean id="preview.displayPopupURLHandler" class="org.vortikal.web.display.url.ResourceServiceURLController">
+    <property name="viewName" value="preview.displayPopupURL" />
+    <property name="service" ref="viewService" />
+    <property name="displayWorkingRevision" value="true" />
+  </bean>
+
+
   <bean id="previewAdminIframeHandler" class="org.vortikal.web.display.url.ResourceServiceURLController">
     <property name="viewName" value="previewAdminIframe" />
     <property name="service" ref="viewService" />
@@ -982,6 +1013,7 @@
         <entry key="permissions" value-ref="permissionsView" />
         <entry key="previewImage" value-ref="previewImageView" />
         <entry key="previewMedia" value-ref="previewMediaPlayerView" />
+        <entry key="preview.displayPopupURL" value-ref="preview.displayPopupURLView" />
         <entry key="previewAdminIframe" value-ref="previewAdminIframeView" />
         <entry key="previewText" value-ref="previewTextView" />
         <entry key="previewText.documentTooLarge" value-ref="previewText.documentTooLargeView" />
@@ -1521,6 +1553,16 @@
     <property name="url" value="pages/preview-text-too-large.ftl" />
   </bean>
 
+
+  <bean id="preview.displayPopupURLView" parent="freemarkerView">
+    <property name="url" value="pages/preview-popup.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="resourceContextProvider" />
+        <ref bean="resourceDetailProvider" />
+      </list>
+    </property>
+  </bean>
 
   <bean id="previewFallbackView" parent="freemarkerView">
     <property name="url" value="pages/preview-unavailable.ftl" />

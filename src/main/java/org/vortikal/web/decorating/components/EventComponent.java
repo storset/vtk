@@ -96,6 +96,9 @@ public class EventComponent extends AbstractEventComponent {
     private static final String PARAMETER_EVENTS_EMPTY_MSG = "if-empty-message";
     private static final String PARAMETER_EVENTS_EMPTY_MSG_DESC = "Sets message to be shown if there are no events.";
 
+    private static final String PARAMETER_ALL_EVENTS_TEXT = "override-all-events-link-text";
+    private static final String PARAMETER_ALL_EVENTS_TEXT_DESC = "Sets text to be shown instead of go to all events link.";
+
     private SearchComponent search;
     private Service viewService;
 
@@ -147,6 +150,11 @@ public class EventComponent extends AbstractEventComponent {
         String emptyMsg = request.getStringParameter(PARAMETER_EVENTS_EMPTY_MSG);
         if (emptyMsg != null) {
             conf.put("emptyMsg", emptyMsg);
+        }
+
+        String allEventsText = request.getStringParameter(PARAMETER_ALL_EVENTS_TEXT);
+        if (allEventsText != null) {
+            conf.put("allEventsText", allEventsText);
         }
 
         boolean eventsTitle = parameterHasValue(PARAMETER_EVENTS_TITLE, "true", request);
@@ -391,6 +399,7 @@ public class EventComponent extends AbstractEventComponent {
         Map<String, String> map = new LinkedHashMap<String, String>();
         map.put(PARAMETER_ADD_TO_CALENDAR, PARAMETER_ADD_TO_CALENDAR_DESC);
         map.put(PARAMETER_ALL_EVENTS_LINK, PARAMETER_ALL_EVENTS_LINK_DESC);
+        map.put(PARAMETER_ALL_EVENTS_TEXT, PARAMETER_ALL_EVENTS_TEXT_DESC);
         map.put(PARAMETER_DATE_ICON, PARAMETER_DATE_ICON_DESC);
         map.put(PARAMETER_EVENT_DESCRIPTION, PARAMETER_EVENT_DESCRIPTION_DESC);
         map.put(PARAMETER_EVENTS_TITLE, PARAMETER_EVENTS_TITLE_DESC);

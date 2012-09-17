@@ -37,7 +37,7 @@
     </#if>
     <#if (conf.allEventsLink && include = "true")>
       <div class="vrtx-more">
-        <span><a href="${conf.uri?html}"><@vrtx.msg code="event.go-to-events" default="Go to events" /></a></span>
+        <span><a href="${conf.uri?html}"><#if conf.allEventsText?exists>${conf.allEventsText}<#else><@vrtx.msg code="event.go-to-events" default="Go to events" /></#if></a></span>
       </div>
     </#if>
 

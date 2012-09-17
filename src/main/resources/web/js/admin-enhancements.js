@@ -369,11 +369,11 @@ vrtxAdmin._$(document).ready(function () {
               copyMoveExists.hide('slide', {direction: 'right'}, vrtxAdm.transitionSpeed, function() {
                 copyMoveExists.remove();
                 resourceMenuRight.html(_$(results).find("#resourceMenuRight").html());
-                resourceMenuRight.find(li).hide().show('slide', {direction: 'right'}, vrtxAdm.transitionSpeed);              
+                resourceMenuRight.find(li).hide().show('slide', {direction: 'right', easing: vrtxAdm.transitionEasingSlideDown}, vrtxAdm.transitionSpeed);              
               });
             } else {
               resourceMenuRight.html(_$(results).find("#resourceMenuRight").html());
-              resourceMenuRight.find(li).hide().show('slide', {direction: 'right'}, vrtxAdm.transitionSpeed);                       
+              resourceMenuRight.find(li).hide().show('slide', {direction: 'right', easing: vrtxAdm.transitionEasingSlideDown}, vrtxAdm.transitionSpeed);                       
             }
           }
         });
@@ -393,7 +393,7 @@ vrtxAdmin._$(document).ready(function () {
         var dataString = form.serialize() + "&" + button.attr("name") + "=" + button.val();
         vrtxAdm.serverFacade.postHtml(url, dataString, {
           success: function (results, status, resp) {
-            li.hide('slide', {direction: 'right'}, vrtxAdm.transitionSpeed, function() {
+            li.hide('slide', {direction: 'right', easing: vrtxAdm.transitionEasingSlideUp}, vrtxAdm.transitionSpeed, function() {
               var result = _$(results);
               var errorMsg = vrtxAdm.cachedAppContent.find("> .errormessage");
               var newErrorMsg = result.find(".errormessage");

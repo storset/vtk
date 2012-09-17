@@ -341,6 +341,7 @@ vrtxAdmin._$(document).ready(function () {
     
     tabMenuServices = ["collectionListing\\.action\\.move-resources", "collectionListing\\.action\\.copy-resources"];
     resourceMenuServices = ["moveToSelectedFolderService", "copyToSelectedFolderService"];
+    // TODO: This map/lookup-obj is a little hacky..
     tabMenuServicesInjectMap = { "collectionListing.action.move-resources": "moveToSelectedFolderService", 
                                  "collectionListing.action.copy-resources": "copyToSelectedFolderService"};
 

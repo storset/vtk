@@ -367,6 +367,7 @@ vrtxAdmin._$(document).ready(function () {
             }
             if(copyMoveExists !== "") {
               copyMoveExists.hide('slide', {direction: 'right'}, vrtxAdm.transitionSpeed, function() {
+                copyMoveExists.remove();
                 resourceMenuRight.html(_$(results).find("#resourceMenuRight").html());
                 resourceMenuRight.find(li).hide().show('slide', {direction: 'right'}, vrtxAdm.transitionSpeed);                   
               });
@@ -395,6 +396,8 @@ vrtxAdmin._$(document).ready(function () {
           success: function (results, status, resp) {
             li.hide('slide', {direction: 'right'}, vrtxAdm.transitionSpeed, function() {
               vrtxAdm.cachedContent.html($(results).find("#contents").html());
+              vrtxAdm.collectionListingInteraction();
+              li.remove();
             });
           }
         });

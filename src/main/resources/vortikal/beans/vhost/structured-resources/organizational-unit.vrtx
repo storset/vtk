@@ -194,7 +194,6 @@ resourcetype organizational-unit {
 
     related-content {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def theRelated-content document.properties.related-content]
       [def subsubunits document.properties.showExtendedUnitList]
@@ -208,7 +207,6 @@ resourcetype organizational-unit {
     
     content {
       ##
-      [resource-props "."]
       [def document structured-document()]
       [def theContent document.properties.content]
       [if theContent != null && theContent != ""]

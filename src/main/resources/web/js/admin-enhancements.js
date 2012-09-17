@@ -369,11 +369,11 @@ vrtxAdmin._$(document).ready(function () {
               copyMoveExists.hide('slide', {direction: 'right'}, vrtxAdm.transitionSpeed, function() {
                 copyMoveExists.remove();
                 resourceMenuRight.html(_$(results).find("#resourceMenuRight").html());
-                resourceMenuRight.find(li).hide().show('slide', {direction: 'right'}, vrtxAdm.transitionSpeed);                   
+                resourceMenuRight.find(li).hide().show('slide', {direction: 'right'}, vrtxAdm.transitionSpeed);              
               });
             } else {
               resourceMenuRight.html(_$(results).find("#resourceMenuRight").html());
-              resourceMenuRight.find(li).hide().show('slide', {direction: 'right'}, vrtxAdm.transitionSpeed);           
+              resourceMenuRight.find(li).hide().show('slide', {direction: 'right'}, vrtxAdm.transitionSpeed);                       
             }
           }
         });

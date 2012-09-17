@@ -26,7 +26,7 @@
     var tipText;
     var fadeOutTimer;
 
-    $(this).on("mouseenter mouseleave", subSelector, function (e) {
+    $(this).off("mouseenter mouseleave", subSelector).on("mouseenter mouseleave", subSelector, function (e) {
       if (e.type == "mouseenter") {
         var link = $(this);
         if (typeof linkTriggeredMouseEnter !== "undefined" && linkTriggeredMouseEnter) {
@@ -97,6 +97,7 @@
           });
         }, animOutPreDelay);
       }
+      e.stopPropagation();
     });
   }
 })(jQuery);

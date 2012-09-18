@@ -273,9 +273,10 @@
           <@viewutils.displayDropdown "subscribe" title>
             <#list alternativeRepresentations as alt>
             <#if alt.contentType = 'application/atom+xml'>
-                <li><a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a></li>
+              <li><a id="vrtx-feed-link" href="${alt.url?html}"><@vrtx.msg code="viewCollectionListing.feed.fromThis" /></a></li>
             <#elseif alt.contentType = 'text/calendar' && (displayEventListingICalLink?? && displayEventListingICalLink)>
-                <li><a id="vrtx-ical-link" href="${alt.url?html}"><@vrtx.msg code="eventListing.ical.add" /></a></li>
+              <#assign altUrl = alt.url?replace("http://", "webcal://")?html /> 
+              <li><a id="vrtx-ical-link" href="${altUrl}"><@vrtx.msg code="eventListing.ical.add" /></a></li>
             </#if>
           </#list>
         </@viewutils.displayDropdown>

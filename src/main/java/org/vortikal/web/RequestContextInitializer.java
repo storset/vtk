@@ -100,7 +100,6 @@ public class RequestContextInitializer implements ContextInitializer {
     }
  
 
-    @SuppressWarnings("unchecked")
     @Required public void setServices(List<Service> services) {
 
         if (services == null) {
@@ -149,7 +148,7 @@ public class RequestContextInitializer implements ContextInitializer {
             logger.info("Registered service tree root services in the following order: " 
                         + rootServices);
             logger.info("Service tree:");
-            logger.info(printServiceTree(false));
+            logger.info(printServiceTree(true));
         }
     }
     

@@ -75,24 +75,25 @@ public class StaticResourceLocationsAssertion
     }
 
 
+    @Override
     public boolean conflicts(Assertion assertion) {
         return false;
     }
 
 
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(super.toString());
-        sb.append("; prefixes = ").append(this.prefixes);
-        return sb.toString();
+        return "request.uri.paths in (" + this.prefixes + ")";
     }
 
 
+    @Override
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         return true;
     }
 
 
+    @Override
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         URL url = URL.create(request);
         List<Path> paths = url.getPath().getPaths();
@@ -106,8 +107,8 @@ public class StaticResourceLocationsAssertion
     }
 
 
+    @Override
     public void processURL(URL url) {
-        // Empty
     }
 
 }

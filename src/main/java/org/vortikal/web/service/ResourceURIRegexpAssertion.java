@@ -51,36 +51,32 @@ public class ResourceURIRegexpAssertion extends AbstractRepositoryAssertion {
         this.pattern = Pattern.compile(pattern);
     }
     
+    public void setInvert(boolean invert) {
+        this.invert = invert;
+    }
 
+    @Override
     public boolean conflicts(Assertion assertion) {
         return false;
     }
 
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-		
-        sb.append(super.toString());
-        sb.append("; pattern = ").append(this.pattern.pattern());
-		
-        return sb.toString();
-    }
-
-
+    @Override
     public boolean matches(Resource resource, Principal principal) {
         if (resource == null) {
             return false;
         }
         Matcher m = this.pattern.matcher(resource.getURI().toString());
-        
         if (this.invert)
             return !m.matches();
-        
         return m.matches();
     }
-
-
-    public void setInvert(boolean invert) {
-        this.invert = invert;
+    
+    @Override
+    public String toString() {
+        if (this.invert) {
+            return "request.uri !~ " + this.pattern.pattern(); 
+        }
+        return "request.uri ~ " + this.pattern.pattern(); 
     }
 
 }

@@ -98,6 +98,10 @@ public class SessionVariableExistsAssertion implements Assertion {
 
     @Override
     public void processURL(URL url) {
-        // Empty
+    }
+    
+    @Override
+    public String toString() {
+        return "request.session[" + this.variableName + "].exists";
     }
 }

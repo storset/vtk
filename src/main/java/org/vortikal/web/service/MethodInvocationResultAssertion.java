@@ -95,6 +95,7 @@ public class MethodInvocationResultAssertion implements Assertion, InitializingB
     public void processURL(URL url) {
     }
 
+    @Override
     public void afterPropertiesSet() {
         if (this.target == null) {
             throw new IllegalStateException("Javabean property 'target' not specified");
@@ -115,6 +116,14 @@ public class MethodInvocationResultAssertion implements Assertion, InitializingB
                     + this.method + "' for class " + this.target.getClass() 
                     + ". Only methods that take no arguments are supported.");
         }
+    }
+    
+    @Override
+    public String toString() {
+        if (this.operator == Operator.EQ) {
+            return "invoke([obj]." + method + "()) = " + result;
+        }
+        return "invoke([obj]." + method + "()) != " + result;
     }
     
     public void setTarget(Object target) {

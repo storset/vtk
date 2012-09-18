@@ -68,6 +68,7 @@ public class ResourceURIAssertion
     }
 
 
+    @Override
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof ResourceURIAssertion) {
             ResourceURIAssertion other = (ResourceURIAssertion) assertion;
@@ -82,18 +83,7 @@ public class ResourceURIAssertion
         return false;
     }
 
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-		
-        sb.append(super.toString());
-        if (this.inverted) {
-            sb.append("; URI != ").append(this.uri);
-        } else {
-            sb.append("; URI = ").append(this.uri);
-        }
-        return sb.toString();
-    }
-
+    @Override
     public boolean matches(Resource resource, Principal principal) {
         if (resource == null) {
             return this.inverted ? true : false;
@@ -104,6 +94,14 @@ public class ResourceURIAssertion
         }
         
         return this.uri.equals(resource.getURI());
+    }
+
+    @Override
+    public String toString() {
+        if (this.inverted) {
+            return "request.uri != " + this.uri;
+        }
+        return "request.uri = " + this.uri;
     }
 
 }

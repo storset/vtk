@@ -57,4 +57,9 @@ public class ResourceExistsAssertion implements Assertion {
     @Override
     public void processURL(URL url) {
     }
+    
+    @Override
+    public String toString() {
+        return "resource exists";
+    }
 }

@@ -49,22 +49,15 @@ public class AndAssertion implements Assertion {
         this.assertions = assertions;
     }
     
+    @Override
     public void processURL(URL url) {
         for (int i = 0; i < this.assertions.length; i++) {
             this.assertions[i].processURL(url);
         }
     }
     
+    @Override
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        // XXX: remove this (?)
-//        HttpServletRequest request = null;
-//        if (match) {
-//            RequestContext context = RequestContext.getRequestContext();
-//            if (context != null) {
-//                request = context.getServletRequest();
-//            }
-//        }
-
         for (int i = 0; i < this.assertions.length; i++) {
             if (!this.assertions[i].processURL(url, resource, principal, match)) {
                 return false;
@@ -74,6 +67,7 @@ public class AndAssertion implements Assertion {
     }
     
 
+    @Override
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         for (int i = 0; i < this.assertions.length; i++) {
             if (!this.assertions[i].matches(request, resource, principal)) {
@@ -88,6 +82,7 @@ public class AndAssertion implements Assertion {
     }
     
 
+    @Override
     public boolean conflicts(Assertion assertion) {
         for (int i = 0; i < this.assertions.length; i++) {
             if (this.assertions[i].conflicts(assertion)) {
@@ -96,10 +91,15 @@ public class AndAssertion implements Assertion {
         }
         return false;
     }
-    
+
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
-        sb.append(": assertions = [" + java.util.Arrays.asList(this.assertions) + "]");
+        StringBuilder sb = new StringBuilder("(");
+        for (int i = 0; i < this.assertions.length; i++) {
+            sb.append(this.assertions[i]);
+            if (i < this.assertions.length - 1) sb.append(" and ");
+        }
+        sb.append(")");
         return sb.toString();
     }
 

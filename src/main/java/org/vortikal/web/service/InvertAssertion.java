@@ -33,54 +33,43 @@ package org.vortikal.web.service;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
-
-/**
- * Class that takes an Asserion of any type as "parameter" and inverts its result
- * XXX: Cannot be used on request matching, impossible to invert url processing!
- * Properties:
- * 
- * <ul>
- *   <li>assertion - the assertion to test the inverted value of</li>
- * </ul>
- */
-
-public class InvertAssertion extends AbstractAssertion implements InitializingBean {
+public class InvertAssertion extends AbstractAssertion {
     
     private Assertion assertion;
   
+    @Override
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        
         return ! this.assertion.matches(request, resource, principal);
     }
     
+    @Override
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof InvertAssertion)
             return true;
         return false;
     }
         
+    @Override
     public void processURL(URL url) {
-        // Empty
     }
 
+    @Override
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         return true;
     }
-    
-    public void afterPropertiesSet() throws Exception {
-        if (this.assertion == null) 
-            throw new BeanInitializationException("Property 'assertion' required");
-    }
-    
+
+    @Required
     public void setAssertion(Assertion assertion) {
         this.assertion = assertion;
     }
     
-
+    @Override
+    public String toString() {
+        return "not(" + this.assertion + ")";
+    }
 }
 

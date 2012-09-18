@@ -45,7 +45,8 @@ public class LogoutSupportedAssertion extends AbstractRepositoryAssertion {
     public void setTokenManager(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
     }
-    
+
+    @Override
     public boolean matches(Resource resource, Principal principal) {
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
@@ -62,7 +63,13 @@ public class LogoutSupportedAssertion extends AbstractRepositoryAssertion {
         return true;
     }
 
+    @Override
     public boolean conflicts(Assertion assertion) {
         return false;
+    }
+    
+    @Override
+    public String toString() {
+        return "authHandler.logoutSupported";
     }
 }

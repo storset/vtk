@@ -73,6 +73,7 @@ public class RequestPortAssertion
 
     }
 
+    @Override
     public boolean conflicts(Assertion assertion) {
 
         if (assertion instanceof RequestPortAssertion) {
@@ -101,6 +102,7 @@ public class RequestPortAssertion
     }
 
 
+    @Override
     public void processURL(URL url) {
         if (this.ports[0] != PORT_ANY) {
             url.setPort(new Integer(this.ports[0]));
@@ -123,6 +125,7 @@ public class RequestPortAssertion
         }
     }
 
+    @Override
     public boolean processURL(URL url, Resource resource, Principal principal,
                               boolean match) {
         processURL(url);
@@ -130,6 +133,7 @@ public class RequestPortAssertion
     }
 
 
+    @Override
     public boolean matches(HttpServletRequest request, Resource resource,
                            Principal principal) {
         for (int i = 0; i < this.ports.length; i++) {
@@ -144,10 +148,10 @@ public class RequestPortAssertion
     }
 
 
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(super.toString());
-        sb.append("; port = ");
+
+        StringBuilder sb = new StringBuilder("request.port in (");
         for (int i = 0; i < this.ports.length; i++) {
             if (i != 0) sb.append(", ");
             if (this.ports[i] != PORT_ANY) {
@@ -156,6 +160,7 @@ public class RequestPortAssertion
                 sb.append("*");
             }
         }
+        sb.append(")");
         return sb.toString();
     }
 

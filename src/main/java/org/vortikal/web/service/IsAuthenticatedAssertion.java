@@ -55,9 +55,8 @@ public class IsAuthenticatedAssertion extends AbstractRepositoryAssertion {
     private boolean requiresAuthentication = false;
     private boolean invert = false;
     
+    @Override
     public boolean matches(Resource resource, Principal principal) {
-        
-        
         if (this.requiresAuthentication && principal == null)
             throw new AuthenticationException();
         
@@ -67,6 +66,7 @@ public class IsAuthenticatedAssertion extends AbstractRepositoryAssertion {
         return !this.invert;
     }
 
+    @Override
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof IsAuthenticatedAssertion) {
             IsAuthenticatedAssertion a = (IsAuthenticatedAssertion) assertion;
@@ -86,6 +86,11 @@ public class IsAuthenticatedAssertion extends AbstractRepositoryAssertion {
 
     public void setRequiresAuthentication(boolean requiresAuthentication) {
         this.requiresAuthentication = requiresAuthentication;
-    }    
+    }
+    
+    @Override
+    public String toString() {
+        return "request.isAuthenticated";
+    }
 
 }

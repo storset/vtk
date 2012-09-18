@@ -72,6 +72,7 @@ public class RequestParameterExistsAssertion implements Assertion {
     }
 
 
+    @Override
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestParameterExistsAssertion) {
 
@@ -93,25 +94,26 @@ public class RequestParameterExistsAssertion implements Assertion {
     }
 
 
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-		
-        sb.append(super.toString());
-        sb.append("; parameterName = ").append(this.parameterName);
-        sb.append("; invert = ").append(this.invert);
-
+        StringBuilder sb = new StringBuilder();
+        if (this.invert) sb.append("!");
+        sb.append("request.parameters[").append(this.parameterName).append("].exists");
         return sb.toString();
     }
 
+    @Override
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         processURL(url);
         return true;
     }
 
+    @Override
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         return (this.invert != request.getParameterMap().containsKey(this.parameterName));
     }
 
+    @Override
     public void processURL(URL url) {
         if (!this.invert && (url.getParameter(this.parameterName) == null))
             url.addParameter(this.parameterName, "");

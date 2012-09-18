@@ -31,6 +31,7 @@
 package org.vortikal.web.service;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,7 +63,8 @@ public class RequestMethodAssertion implements Assertion {
             this.methods.add(method);
         }
     }
-    
+
+    @Override
     public boolean conflicts(Assertion assertion) {
         if (!(assertion instanceof RequestMethodAssertion)) {
             return false;
@@ -76,24 +78,30 @@ public class RequestMethodAssertion implements Assertion {
         return true;
     }
 
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append("; methods = ").append(this.methods);
-        return sb.toString();
-    }
-
+    @Override
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         return true;
     }
 
+    @Override
     public void processURL(URL url) {
-        // Empty
     }
     
+    @Override
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         String reqMethod = request.getMethod();
         return this.methods.contains(reqMethod);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("request.method in (");
+        for (Iterator<String> i = this.methods.iterator(); i.hasNext();) {
+            sb.append(i.next());
+            if (i.hasNext()) sb.append(", ");
+        }
+        sb.append(")");
+        return sb.toString();
     }
 
 }

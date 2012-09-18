@@ -42,38 +42,37 @@ public class ConfigAssertion implements Assertion {
     
     private String expectedValue;
     
-    public String getConfig() {
-        return config;
-    }
-
     public void setConfig(String config) {
         this.config = config;
-    }
-
-    public String getExpectedValue() {
-        return expectedValue;
     }
 
     public void setExpectedValue(String expectedValue) {
         this.expectedValue = expectedValue;
     }
 
+    @Override
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        
         return config.equals(expectedValue);
     }
     
+    @Override
     public boolean conflicts(Assertion assertion) {
         return false;
     }
         
+    @Override
     public void processURL(URL url) {
-        // Empty
     }
 
+    @Override
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         return true;
-    }    
+    }
+    
+    @Override
+    public String toString() {
+        return "eval(config[" + this.config + "] = " + this.expectedValue + "): " + this.config.equals(expectedValue);
+    }
 
 }
 

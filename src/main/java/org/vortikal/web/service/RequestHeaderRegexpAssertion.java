@@ -33,6 +33,7 @@ package org.vortikal.web.service;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -108,24 +109,31 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
     }
 
 
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-		
-        sb.append(super.toString());
-        sb.append("; header = ").append(this.header);
-        sb.append("; patterns = ").append(this.patternsList);
-        sb.append("; invert = ").append(this.invert);
-		
+        StringBuilder sb = new StringBuilder("request.headers[");
+        sb.append(this.header).append("] ");
+        if (this.invert) sb.append("!");
+        sb.append("~ ");
+        if (this.patternsList.size() == 1) {
+            sb.append(this.patternsList.get(0).pattern());
+            return sb.toString();
+        }
+        sb.append("(");
+        for (Iterator<Pattern> i = this.patternsList.iterator(); i.hasNext();) {
+            sb.append(i.next().pattern());
+            if (i.hasNext()) sb.append(", ");
+        }
+        sb.append(")");
         return sb.toString();
     }
 
 
+    @Override
     public boolean matches(HttpServletRequest request, Resource resource,
                            Principal principal) {
         boolean matched = match(request); 
-        
         if (this.invert) return !matched;
-        
         return matched;
 
     }
@@ -145,10 +153,11 @@ public class RequestHeaderRegexpAssertion implements Assertion, InitializingBean
     }
 
 
+    @Override
     public void processURL(URL url) {
-        // Empty
     }
 
+    @Override
     public boolean processURL(URL url, Resource resource, Principal principal,
                               boolean match) {
 

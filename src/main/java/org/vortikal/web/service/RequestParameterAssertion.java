@@ -30,6 +30,7 @@
  */
 package org.vortikal.web.service;
 
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -77,16 +78,6 @@ public class RequestParameterAssertion implements Assertion {
     }
 
 
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(super.toString());
-        sb.append("; parameterName = ").append(this.parameterName);
-        sb.append("; parameterValue = ").append(this.parameterValue);
-
-        return sb.toString();
-    }
-
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         processURL(url);
         return true;
@@ -109,5 +100,21 @@ public class RequestParameterAssertion implements Assertion {
 
     public Set<String> getLegalParameters() {
         return legalValueParameters;
+    }
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder("request.parameters[");
+        sb.append(this.parameterName).append("]");
+        if (this.legalValueParameters != null) {
+            sb.append(" in (");
+            for (Iterator<String> i = this.legalValueParameters.iterator(); i.hasNext();) {
+                sb.append(i.next());
+                if (i.hasNext()) sb.append(", ");
+            }
+            sb.append(")");
+            return sb.toString();
+        }
+        sb.append(" = ").append(this.parameterValue);
+        return sb.toString();
     }
 }

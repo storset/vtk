@@ -52,10 +52,12 @@ public class OrAssertion implements Assertion {
         this.assertions = assertions;
     }
     
+    @Override
     public void processURL(URL url) {
         this.assertions[0].processURL(url);
     }
     
+    @Override
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         for (int i = 0; i < this.assertions.length; i++) {
             // Process URL only for first matching assertion:
@@ -67,6 +69,7 @@ public class OrAssertion implements Assertion {
     }
     
 
+    @Override
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         for (int i = 0; i < this.assertions.length; i++) {
             if (this.assertions[i].matches(request, resource, principal)) {
@@ -77,6 +80,7 @@ public class OrAssertion implements Assertion {
     }
     
 
+    @Override
     public boolean conflicts(Assertion assertion) {
         for (int i = 0; i < this.assertions.length; i++) {
             if (!this.assertions[i].conflicts(assertion)) {
@@ -85,10 +89,15 @@ public class OrAssertion implements Assertion {
         }
         return true;
     }
-    
+
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(this.getClass().getName());
-        sb.append(": assertions = [" + java.util.Arrays.asList(this.assertions) + "]");
+        StringBuilder sb = new StringBuilder("(");
+        for (int i = 0; i < this.assertions.length; i++) {
+            sb.append(this.assertions[i]);
+            if (i < this.assertions.length - 1) sb.append(" or ");
+        }
+        sb.append(")");
         return sb.toString();
     }
 

@@ -84,7 +84,7 @@ public class RequestProtocolAssertion implements Assertion {
         this.preferRequestProtocol = preferRequestProtocol;
     }
     
-
+    @Override
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestProtocolAssertion) {
             boolean conflict = true;
@@ -112,6 +112,7 @@ public class RequestProtocolAssertion implements Assertion {
         return false;
     }
 
+    @Override
     public void processURL(URL url) {
         RequestContext requestContext = RequestContext.getRequestContext();
         if (requestContext != null && this.preferRequestProtocol) {
@@ -147,6 +148,7 @@ public class RequestProtocolAssertion implements Assertion {
         
     }
     
+    @Override
     public boolean processURL(URL url, Resource resource,
                               Principal principal, boolean match) {
         processURL(url);
@@ -154,6 +156,7 @@ public class RequestProtocolAssertion implements Assertion {
     }
 
 
+    @Override
     public boolean matches(HttpServletRequest request, Resource resource,
                            Principal principal) {
 
@@ -173,19 +176,18 @@ public class RequestProtocolAssertion implements Assertion {
     }
 
 
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-		
-        sb.append(super.toString());
-        sb.append("; protocol = ").append(java.util.Arrays.asList(this.protocols));
-
+        StringBuilder sb = new StringBuilder("request.protocol in (");
+        for (int i = 0; i < this.protocols.length; i++) {
+            sb.append(this.protocols[i]);
+            if (i < this.protocols.length - 1) sb.append(", ");
+        }
+        sb.append(")");
         return sb.toString();
     }
 
     private String getProtocol(HttpServletRequest request) {
         return request.isSecure() ? PROTO_HTTPS : PROTO_HTTP;
     }
-
-
-
 }

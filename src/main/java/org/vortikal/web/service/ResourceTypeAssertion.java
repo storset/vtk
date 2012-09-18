@@ -101,13 +101,8 @@ public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
                 }
             } else {
                 if (this.resourceTypeDefinition != null) {
-
                     match = typeInfo.isOfType(this.resourceTypeDefinition);
                 } else {
-                    // XXX should not this also test for isOfType: ??
-                    //match = typeInfo.getResourceType().getName().equals(this.resourceType);
-                    
-                    // XXX: yes...
                     match = typeInfo.isOfType(this.resourceType);
                 }
             }
@@ -130,10 +125,10 @@ public class ResourceTypeAssertion extends AbstractRepositoryAssertion {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append("; resourceType = ").append(this.resourceTypeDefinition);
-        sb.append("; invert = ").append(this.invert);
+        StringBuilder sb = new StringBuilder("resourcetype ");
+        if (this.invert) sb.append("not ");
+        sb.append(this.exactMatch ? "is " : "in ");
+        sb.append(this.resourceTypeDefinition != null ? this.resourceTypeDefinition.getName() : this.resourceType);
         return sb.toString();
     }
 

@@ -37,7 +37,6 @@ import org.vortikal.security.Principal;
 
 /**
  * Assertion that matches on requests that have no query string.
- * FIXME: dangerous to rely on conflicts on specific class!
  */
 public class RequestEmptyQueryStringAssertion implements Assertion {
 
@@ -48,20 +47,21 @@ public class RequestEmptyQueryStringAssertion implements Assertion {
         return false;
     }
 
-
+    @Override
     public String toString() {
-        return super.toString();
+        return "request.querystring = null";
     }
 
-
+    @Override
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         return true;
     }
 
+    @Override
     public void processURL(URL url) {
-        // Empty
     }
 
+    @Override
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         return request.getQueryString() == null;
     }

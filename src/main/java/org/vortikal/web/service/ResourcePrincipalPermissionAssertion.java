@@ -180,16 +180,6 @@ public class ResourcePrincipalPermissionAssertion
 
 
     @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append("[permission = ").append(this.permission);
-        sb.append("; requiresAuthentication = ");
-        sb.append(this.requiresAuthentication).append("]");
-        return sb.toString();
-    }
-
-    @Override
     public boolean matches(Resource resource, Principal principal) {
         if (resource == null) {
             if (logger.isDebugEnabled()) {
@@ -221,4 +211,12 @@ public class ResourcePrincipalPermissionAssertion
             throw new RuntimeException(e);
         }
     }
+    
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("principal.permissionsOn(currentResource).includes(" + this.permission + ")");
+        return sb.toString();
+    }
+
 }

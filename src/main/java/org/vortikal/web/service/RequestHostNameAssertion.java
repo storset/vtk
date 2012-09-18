@@ -73,6 +73,7 @@ public class RequestHostNameAssertion implements Assertion {
         return this.hostNames;
     }
     
+    @Override
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestHostNameAssertion) { 
             boolean conflict = true;
@@ -98,6 +99,7 @@ public class RequestHostNameAssertion implements Assertion {
         return false;
     }
 
+    @Override
     public void processURL(URL url) {
         url.setHost(this.defaultHostName);
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -115,12 +117,14 @@ public class RequestHostNameAssertion implements Assertion {
         }
     }
 
+    @Override
     public boolean processURL(URL url, Resource resource,
                               Principal principal, boolean match) {
         processURL(url);
         return true;
     }
 
+    @Override
     public boolean matches(HttpServletRequest request,
                            Resource resource, Principal principal) {
         for (String hostName: this.hostNames) {
@@ -135,10 +139,14 @@ public class RequestHostNameAssertion implements Assertion {
         return false;
     }
 
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(super.toString());
-        sb.append("; hostNames = ").append(java.util.Arrays.asList(this.hostNames));
+        StringBuilder sb = new StringBuilder("request.hostname in (");
+        for (int i = 0; i < this.hostNames.length; i++) {
+            sb.append(this.hostNames[i]);
+            if (i < this.hostNames.length - 1) sb.append(", ");
+        }
+        sb.append(")");
         return sb.toString();
     }
 }

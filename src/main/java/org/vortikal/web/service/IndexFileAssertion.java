@@ -38,19 +38,28 @@ import org.vortikal.web.RequestContext;
 
 public class IndexFileAssertion implements Assertion {
 
+    @Override
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         return true;
     }
 
+    @Override
     public void processURL(URL url) {
     }
     
+    @Override
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         RequestContext requestContext = RequestContext.getRequestContext();
         return requestContext.getIndexFileURI() != null;
     }
     
+    @Override
     public boolean conflicts(Assertion assertion) {
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "indexfile.exists";
     }
 }

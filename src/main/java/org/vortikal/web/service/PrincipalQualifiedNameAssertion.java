@@ -46,27 +46,29 @@ public class PrincipalQualifiedNameAssertion extends AbstractRepositoryAssertion
         return this.username;
     }
 
-    
+    public void setEquals(boolean equals) {
+        this.equals = equals;
+    }
+
+    @Override
     public boolean matches(Resource resource, Principal principal) {
-        if (principal != null) {
-           
-            boolean match = this.username.equals(principal.getQualifiedName());
-            
-            return (isEquals()) ? match : !match;
+        if (principal == null) {
+            return false;
         }
-        
-        return false;
+        boolean match = this.username.equals(principal.getQualifiedName());
+        return (equals) ? match : !match;
     }
     
+    @Override
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof PrincipalQualifiedNameAssertion) {
             PrincipalQualifiedNameAssertion other =
                 (PrincipalQualifiedNameAssertion) assertion;
             
-            if (isEquals() && other.isEquals()) {
+            if (this.equals && other.equals) {
                 if (!getUsername().equals(other.getUsername()))
                     return true;
-            } else if (isEquals() || other.isEquals()) {
+            } else if (this.equals || other.equals) {
                 if (getUsername().equals(other.getUsername()))
                     return true;
             }
@@ -74,13 +76,11 @@ public class PrincipalQualifiedNameAssertion extends AbstractRepositoryAssertion
         return false;
     }
     
-    public boolean isEquals() {
-        return this.equals;
+    @Override
+    public String toString() {
+        if (equals) {
+            return "principal.name = " + this.username;
+        }
+        return "principal.name != " + this.username;
     }
-    
-
-    public void setEquals(boolean equals) {
-        this.equals = equals;
-    }
-
 }

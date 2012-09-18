@@ -39,10 +39,12 @@ public class ResourceLockedAssertion
 
     private boolean byCurrentUser = true;
     
+    @Override
     public boolean conflicts(Assertion assertion) {
         return false;
     }
 
+    @Override
     public boolean matches(Resource resource, Principal principal) {
         Principal principalLockedBy = null;
         if (resource == null) {
@@ -62,10 +64,12 @@ public class ResourceLockedAssertion
         return principal.equals(principalLockedBy);
     }
 
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(super.toString());
-        return sb.toString();
+        if (this.byCurrentUser) {
+            return "resource.lockedBy(currentUser)";
+        }
+        return "resource.locked";
     }
 
     public void setByCurrentUser(boolean byCurrentUser) {

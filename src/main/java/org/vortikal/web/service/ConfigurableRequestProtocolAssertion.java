@@ -87,19 +87,23 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
         this.restrictedProtocol = restrictedProtocol;
     }
 
+    @Override
     public void afterPropertiesSet() {
         if (this.configuration == null) throw new IllegalArgumentException(
             "JavaBean property 'configuration' not specified");
     }
 
+    @Override
     public boolean conflicts(Assertion assertion) {
         return false;
     }
 
+    @Override
     public void processURL(URL url) {
         processURL(url, null, null, true);
     }
 
+    @Override
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         Path uri = url.getPath();
         if (resource != null && resource.isReadRestricted()) {
@@ -139,6 +143,7 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
     }
 
 
+    @Override
     public boolean matches(HttpServletRequest request, Resource resource,
                            Principal principal) {
         if (this.configuration == null || this.configuration.isEmpty()) {
@@ -159,6 +164,11 @@ public class ConfigurableRequestProtocolAssertion implements Assertion, Initiali
         }
         return this.invert ? false : true;
     }
+    
+    @Override
+    public String toString() {
+        return "request.protocol.matches(" + this.configuration + ")";
+   }
 
     private String invertProtocol(String protocol, boolean invert) {
         if (!invert) {

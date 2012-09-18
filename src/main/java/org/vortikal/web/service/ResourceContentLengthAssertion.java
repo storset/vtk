@@ -62,5 +62,16 @@ public class ResourceContentLengthAssertion extends AbstractRepositoryAssertion 
     public void setLessThanValue(long lessThanValue) {
         this.lessThanValue = lessThanValue;
     }
+    
+    @Override
+    public String toString() {
+        if (this.greaterThanValue > 0) {
+            return "resource.contentLength > " + this.greaterThanValue;
+        }
+        if (this.lessThanValue > 0) {
+            return "resource.contentLength < " + this.lessThanValue;
+        }
+        return "resource.contentLength = *";
+    }
 
 }

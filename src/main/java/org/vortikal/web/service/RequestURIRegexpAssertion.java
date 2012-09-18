@@ -40,7 +40,6 @@ import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
 /**
- * FIXME: should match on processurl?
  * Assertion that does regular expression matches on the requested
  * URI.
  * <p>Configurable properties:
@@ -66,17 +65,11 @@ public class RequestURIRegexpAssertion implements Assertion {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-		
-        sb.append(super.toString());
-        sb.append("; pattern = ").append(this.pattern.pattern());
-		
-        return sb.toString();
+        return "request.uri ~ " + this.pattern.pattern();
     }
 
     @Override
     public void processURL(URL url) {
-        // Empty
     }
 
     @Override

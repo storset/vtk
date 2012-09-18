@@ -160,14 +160,7 @@ public class XmlSchemaXPathAssertion extends AbstractRepositoryAssertion
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(super.toString());
-        sb.append("; schemaPropertyDefinition = ").append(this.schemaPropertyDefinition);
-        sb.append("; xpath = ").append(this.xpath);
-        if (this.matchValue != null) {
-            sb.append("; matchValue = ").append(this.matchValue.pattern());
-        }
-        return sb.toString();
+        return "document.xmlschema exists and document.xmlschema.matches(" + this.xpath + ")";
     }
 
 }

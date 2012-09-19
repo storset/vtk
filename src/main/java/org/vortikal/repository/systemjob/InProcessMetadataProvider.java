@@ -138,6 +138,17 @@ public class InProcessMetadataProvider implements MediaMetadataProvider {
             setThumbnailGeneratorStatus(repository, context, token, resource, "UNSUPPORTED_FORMAT");
             return;
         }
+        
+
+        if (dim != null) {
+            Property imageHeightProp = imageHeightPropDef.createProperty();
+            imageHeightProp.setIntValue(dim.height);
+            resource.addProperty(imageHeightProp);
+
+            Property imageWidthProp = imageWidthPropDef.createProperty();
+            imageWidthProp.setIntValue(dim.width);
+            resource.addProperty(imageWidthProp);
+        }
 
         if (!scaleUp && image.getWidth() <= width) {
             if (logger.isDebugEnabled()) {
@@ -157,16 +168,6 @@ public class InProcessMetadataProvider implements MediaMetadataProvider {
         Property property = thumbnailPropDef.createProperty();
         property.setBinaryValue(thumbnail.getImageBytes(thumbnailFormat), "image/" + thumbnailFormat);
         resource.addProperty(property);
-
-        if (dim != null) {
-            Property imageHeightProp = imageHeightPropDef.createProperty();
-            imageHeightProp.setIntValue(dim.height);
-            resource.addProperty(imageHeightProp);
-
-            Property imageWidthProp = imageWidthPropDef.createProperty();
-            imageWidthProp.setIntValue(dim.width);
-            resource.addProperty(imageWidthProp);
-        }
 
         if (resource.getLock() == null) {
             resource.removeProperty(mediaMetadataStatusPropDef);

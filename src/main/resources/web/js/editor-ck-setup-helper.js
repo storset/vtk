@@ -337,7 +337,7 @@ function validTextLengthsInEditorError(elm, isOldEditor) {
       var lbl = elm.find("label");
     }
     if(lbl.length) {
-      alert(tooLongFieldPre + lbl.text() + tooLongFieldPost);
+      vrtxAdmin.openMsgDialog(tooLongFieldPre + lbl.text() + tooLongFieldPost, "");
     }
   }
 }

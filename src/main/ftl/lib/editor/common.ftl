@@ -9,12 +9,12 @@
 <#import "../vortikal.ftl" as vrtx />
 
 <#macro addCkScripts>
+  <link rel="stylesheet" type="text/css" href="${webResources?html}/jquery/plugins/jquery.autocomplete.css" />
+  <link rel="stylesheet" type="text/css" href="${webResources?html}/js/autocomplete/autocomplete.override.css" />
   <script type="text/javascript" src="${fckeditorBase.url?html}/ckeditor.js"></script>
   <script type="text/javascript" src="${webResources?html}/js/plugins/mustache.js"></script>
   <script type="text/javascript" src="${jsBaseURL?html}/editor-ck-setup-helper.js"></script>
   <script type="text/javascript" src="${fckeditorBase.url?html}/adapters/jquery.js"></script>
-  <link rel="stylesheet" type="text/css" href="${webResources?html}/jquery/plugins/jquery.autocomplete.css" />
-  <link rel="stylesheet" type="text/css" href="${webResources?html}/js/autocomplete/autocomplete.override.css" />
   <script type='text/javascript' src='${webResources?html}/jquery/plugins/jquery.autocomplete.js'></script>
   <script type='text/javascript' src='${webResources?html}/js/autocomplete/autocomplete.js'></script>
   <script type='text/javascript' src='${webResources?html}/js/autocomplete/autocomplete-permissions.js'></script>

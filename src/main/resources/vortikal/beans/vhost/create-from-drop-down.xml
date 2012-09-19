@@ -203,24 +203,6 @@
         <ref bean="createFromDropDown.upService.urlProvider" />
       </list>
     </property>
-    <property name="attributesMap">
-      <map>
-        <entry key="cssURLs">
-          <list>
-            <value>${themeBaseURL}/default.css</value>
-            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.css</value>
-          </list>
-        </entry>
-        <entry key="jsURLs">
-          <list>
-           <value>${webResources.baseURL}/jquery/jquery.min.js</value>
-           <value>${webResources.baseURL}/js/cross-doc-com-link.js</value>
-           <value>${webResources.baseURL}/js/iframe-create-dropdown.js</value>
-           <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
-          </list>
-        </entry>
-      </map>
-    </property>
   </bean>
 
   <bean id="createDropDown.urlProvider" class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">

@@ -1,54 +1,6 @@
 <#ftl strip_whitespace=true>
 <#import "/lib/vortikal.ftl" as vrtx />
 
-<@genDropdown true />
-
-<#macro genDropdown preview=false>
-
-<#if preview>
-  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-  <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-
-    <#if cssURLs?exists>
-      <#list cssURLs as cssURL>
-        <link rel="stylesheet" href="${cssURL}" type="text/css" />
-      </#list>
-    </#if>
-  
-    <!--[if IE 7]>
-      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie7.css" type="text/css" /> 
-    <![endif]--> 
-    <!--[if lte IE 6]>
-      <link rel="stylesheet" href="/vrtx/__vrtx/static-resources/themes/default/default-ie6.css" type="text/css" /> 
-    <![endif]--> 
-  
-    <style type="text/css">
-      html, body {
-        background-color: transparent !important;
-      }
-      body {
-        min-width: 0;
-        position: relative;
-        text-align: left;
-        overflow: hidden;
-      }
-      div.dropdown-shortcut-menu-container {
-        left: auto !important;
-        right: 0px !important;
-        top: 28px !important;
-      }
-    </style>
-  
-    <#if jsURLs?exists>
-      <#list jsURLs as jsURL>
-        <script type="text/javascript" src="${jsURL}"></script>
-      </#list>
-    </#if>
-  </head>
-  <body>
-</#if>
-
 <#if docUrl?exists && collUrl?exists && upUrl?exists>
   <#if docUrl.url?exists && collUrl.url?exists && upUrl.url?exists>
     <#assign docFinalUrl = docUrl.url />
@@ -86,10 +38,3 @@
     </ul>
   </#if>
 </#if>
-
-<#if preview>
-  </body>
-  </html>
-</#if>
-
-</#macro>

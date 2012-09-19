@@ -79,8 +79,12 @@ public class LoginManageComponent extends ViewRenderingDecoratorComponent {
 		try {
 			if (principal == null && !displayOnlyIfAuth) { // Not logged in (unauthenticated)
 				URL loginURL = this.defaultLoginService.constructURL(resource, principal);
+				
+				// Add authTarget for http or https (where you came from)
 				if(!request.getServletRequest().isSecure()) {
 					loginURL.addParameter("authTarget", "http");
+				} else {
+					loginURL.addParameter("authTarget", "https");
 				}
 				options.put("login", loginURL);
 				this.putAdminURL(options, resource, request);
@@ -100,17 +104,9 @@ public class LoginManageComponent extends ViewRenderingDecoratorComponent {
 		Service adminService = this.alternativeLoginServices.get("admin");
 		if (adminService != null) {
 			if (resource.isCollection()) {
-				URL adminCollectionURL = adminService.constructURL(resource.getURI());
-				if(!request.getServletRequest().isSecure()) {
-					adminCollectionURL.addParameter("authTarget", "http");
-				}
-				options.put("admin-collection", adminCollectionURL);
+				options.put("admin-collection", adminService.constructURL(resource.getURI()));
 			} else {
-				URL adminURL = adminService.constructURL(resource.getURI());
-				if(!request.getServletRequest().isSecure()) {
-					adminURL.addParameter("authTarget", "http");
-				}
-				options.put("admin", adminURL);
+				options.put("admin", adminService.constructURL(resource.getURI()));
 			}
 		}
 	}

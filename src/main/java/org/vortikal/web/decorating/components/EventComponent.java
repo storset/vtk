@@ -76,7 +76,7 @@ public class EventComponent extends AbstractEventComponent {
     private static final String PARAMETER_DATE_ICON_DESC = "Set to 'false' if you don't want to show event date icon. Default is 'true'.";
 
     private static final String PARAMETER_LIST_ONLY_ONCE = "list-only-once";
-    private static final String PARAMETER_LIST_ONLY_ONCE_DESC = "Set to 'true' if you only want to list each event once. Enabling this overrides the date icon parameter and sets it to false. Default is 'false'.";
+    private static final String PARAMETER_LIST_ONLY_ONCE_DESC = "Set to 'true' if you only want to list each event once. Default is 'false'. Enabling this overrides the date icon parameter and sets it to false.";
 
     private static final String PARAMETER_SHOW_LOCATION = "show-location";
     private static final String PARAMETER_SHOW_LOCATION_DESC = "Set to 'false' if you don't want to show event location. Default is 'true'.";

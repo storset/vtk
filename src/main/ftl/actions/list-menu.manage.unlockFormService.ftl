@@ -19,8 +19,7 @@
 <#if unlockPermission.permissionsQueryResult = 'true'>
   <#assign owner = resourceContext.currentResource.lock.principal.qualifiedName />
   <#assign currentPrincipal = resourceContext.principal.qualifiedName />
-  <#assign isPreview = resourceContext.currentServiceName?exists && resourceContext.currentServiceName?contains("preview") />
-  <#if (!owner?exists || owner = currentPrincipal) && !isPreview>
+  <#if (!owner?exists || owner = currentPrincipal)>
      <#assign actionURL = vrtx.linkConstructor("", 'manage.unlockResourceService') />
      <form method="post" action="${actionURL?html}" name="unlockForm">
        <@vrtx.csrfPreventionToken url=actionURL />

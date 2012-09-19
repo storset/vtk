@@ -9,14 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.vortikal.context.BaseContext;
 import org.vortikal.web.filter.DAVLoggingRequestFilter.DavLoggingRequestWrapper;
 
 public class DAVLoggingResponseFilter extends AbstractResponseFilter {
-
-    private static Log log = LogFactory.getLog(DAVLoggingResponseFilter.class);
 
     @Override
     public HttpServletResponse filter(HttpServletRequest request, HttpServletResponse response) {

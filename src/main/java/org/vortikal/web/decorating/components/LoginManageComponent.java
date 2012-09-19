@@ -86,12 +86,14 @@ public class LoginManageComponent extends ViewRenderingDecoratorComponent {
 				} else {
 					loginURL.addParameter("authTarget", "https");
 				}
+				
 				options.put("login", loginURL);
 				this.putAdminURL(options, resource, request);
 			} else if(principal != null) { // Logged in (authenticated)
 				if (displayAuthUser) {
 					options.put("principal-desc", null);
 				}
+				
 				this.putAdminURL(options, resource, request);
 				options.put("logout", this.logoutService.constructURL(resource, principal));
 			}

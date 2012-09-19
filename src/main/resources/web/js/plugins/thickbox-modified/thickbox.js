@@ -11,6 +11,7 @@ var tb_pathToImage = "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified
 // USIT added: tb_postMessageClose() for notifying parent if thickbox closes in iframe
 // USIT added: possible with simple loading dialog
 // USIT added: opacity animation
+// USIT added: dynamic on click
 // USIT removed: old Mac FF hack
 
 /*!!!!!!!!!!!!!!!!! edit below this line at your own risk !!!!!!!!!!!!!!!!!!!!!!!*/
@@ -25,7 +26,7 @@ $(document).ready(function () {
 //add thickbox to href & area elements that have a class of .thickbox
 
 function tb_init(domChunk) {
-  $(domChunk).click(function () {
+  $(document).on("click", domChunk, function () {
     var t = this.title || this.name || null;
     var a = this.href || this.alt;
     var g = this.rel || false;

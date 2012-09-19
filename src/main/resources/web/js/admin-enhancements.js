@@ -95,7 +95,6 @@ function VrtxAdmin() {
   this.transitionEasingSlideUp = "linear";
   
   this.ignoreAjaxErrors = false;
-  this.isHTTP = (location.protocol === "http:");
   
   return instance;
 };
@@ -349,9 +348,6 @@ vrtxAdmin._$(document).ready(function () {
         var input = _$.single(this);
         var form = input.closest("form");
         var url = form.attr("action");
-        if(vrtxAdm.isHTTP && url.indexOf("https://") != -1) { // Make sure SSL
-          return;
-        }
         var li = "li." + tabMenuServicesInjectMap[input.attr("id")];
         var dataString = form.serialize() + "&" + input.attr("name") + "=" + input.val();
         vrtxAdm.serverFacade.postHtml(url, dataString, {
@@ -386,9 +382,6 @@ vrtxAdmin._$(document).ready(function () {
         var button = _$.single(this);
         var form = button.closest("form");
         var url = form.attr("action");
-        if(vrtxAdm.isHTTP && url.indexOf("https://") != -1) { // Make sure SSL
-          return;
-        }
         var li = form.closest("li");
         var dataString = form.serialize() + "&" + button.attr("name") + "=" + button.val();
         vrtxAdm.serverFacade.postHtml(url, dataString, {
@@ -423,9 +416,6 @@ vrtxAdmin._$(document).ready(function () {
       var input = _$.single(this);
       var form = input.closest("form");
       var url = form.attr("action");
-      if(vrtxAdm.isHTTP && url.indexOf("https://") != -1) { // Make sure SSL
-        return;
-      }
       var dataString = form.serialize() + "&" + input.attr("name") + "=" + input.val();
       vrtxAdm.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
@@ -2070,9 +2060,6 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
       
   vrtxAdm.cachedBody.on("click", options.selector, function (e) {
     var url = _$.single(this).attr("href") || _$.single(this).closest("form").attr("action");
-    if(vrtxAdm.isHTTP && url.indexOf("https://") != -1) {
-      return; // no AJAX when http -> https (tmp. solution)
-    }
     
     if(GET_FORM_ASYNCS_IN_PROGRESS) { // If there are any getFormAsync() in progress
       return false;

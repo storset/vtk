@@ -126,6 +126,7 @@ var EDITOR_SAVE_BUTTON_NAME = "",
     GET_STAT_ASYNC_IN_PROGRESS = false,
     CREATE_RESOURCE_REPLACE_TITLE = true,
     CREATE_DOCUMENT_FILE_NAME = "",
+    CHECKED_TRASHCAN_FILES = 0,
     MULTIPLE_INPUT_FIELD_NAMES = [],
     COUNTER_FOR_MULTIPLE_INPUT_FIELD = [],
     LENGTH_FOR_MULTIPLE_INPUT_FIELD = [],
@@ -377,6 +378,7 @@ vrtxAdmin._$(document).ready(function () {
         e.preventDefault();
       });
     }
+    
     for (i = resourceMenuServices.length; i--;) {
       vrtxAdm.cachedAppContent.on("click", "#resourceMenuRight li." + resourceMenuServices[i] + " button", function (e) {
         var button = _$.single(this);
@@ -411,7 +413,7 @@ vrtxAdmin._$(document).ready(function () {
         e.preventDefault();
       });
     }
-    
+
     vrtxAdm.cachedContent.on("click", "input#collectionListing\\.action\\.delete-resources", function (e) {
       var input = _$.single(this);
       var form = input.closest("form");
@@ -426,10 +428,26 @@ vrtxAdmin._$(document).ready(function () {
       e.stopPropagation();
       e.preventDefault();
     });
-  }
-
-  // Permission privilegie forms (READ, READ_WRITE, ALL)
-  if(bodyId == "vrtx-permissions") {
+  } else if(bodyId == "vrtx-trash-can") {
+    vrtxAdm.cachedContent.on("click", "input.deleteResourcePermanent", function (e) {
+      if(CHECKED_TRASHCAN_FILES >= (vrtxAdm.cachedContent.find("tbody tr").length - 1)) return; // Redirect if empty trash can
+      
+      var input = _$.single(this);
+      var form = input.closest("form");
+      var url = form.attr("action");
+      var dataString = form.serialize() + "&" + input.attr("name");
+      vrtxAdm.serverFacade.postHtml(url, dataString, {
+        success: function (results, status, resp) {
+          var results = _$(results);
+          vrtxAdm.cachedContent.parent().html(results.find("#main").html());
+          vrtxAdm.collectionListingInteraction();
+        }
+      });
+      e.stopPropagation();
+      e.preventDefault();
+    });
+  } else if(bodyId == "vrtx-permissions") {
+    // Permission privilegie forms (READ, READ_WRITE, ALL)
     var privilegiesPermissions = ["read", "read-write", "all"];
 
     for (i = privilegiesPermissions.length; i--;) {
@@ -493,10 +511,7 @@ vrtxAdmin._$(document).ready(function () {
     vrtxAdm.removePermissionAsync("input.removePermission", ".principalList");
     vrtxAdm.addPermissionAsync("span.addGroup", ".principalList", ".groups-wrapper", "errorContainer");
     vrtxAdm.addPermissionAsync("span.addUser", ".principalList", ".users-wrapper", "errorContainer");
-  }
-  
-  // About property forms
-  if(bodyId == "vrtx-about") {
+  } else if(bodyId == "vrtx-about") { // About property forms
     // Zebra-tables
     vrtxAdm.zebraTables(".resourceInfo");
     
@@ -1163,6 +1178,8 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
   
   vrtxAdm.cachedDirectoryListing = _$("#directory-listing");
+  if(!vrtxAdm.cachedDirectoryListing.length) return;
+  
   vrtxAdm.cachedActiveTab = vrtxAdm.cachedAppContent.find("#active-tab");
   
   // Remove active tab if it has no children
@@ -1174,9 +1191,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
   if (!activeTabMsg.text().length) {
     activeTabMsg.remove();
   }
-  
-  if(!vrtxAdm.cachedDirectoryListing.length) return;
-  
+
   if(typeof moveUncheckedMessage !== "undefined") {
     vrtxAdm.placeCopyMoveButtonInActiveTab({
       formName: "collectionListingForm",
@@ -1320,6 +1335,7 @@ VrtxAdmin.prototype.placeRecoverButtonInActiveTab = function placeRecoverButtonI
       //alert(recoverUncheckedMessage);
       vrtxAdm.openMsgDialog(recoverUncheckedMessage, recoverTitle);
     } else {
+      CHECKED_TRASHCAN_FILES = boxes.length;
       vrtxAdm.cachedAppContent.find('.recoverResource').click();
     }
     e.preventDefault();
@@ -1342,6 +1358,7 @@ VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDelete
       //alert(deletePermanentlyUncheckedMessage);
       vrtxAdm.openMsgDialog(deletePermanentlyUncheckedMessage, deletePermTitle);
     } else {
+      CHECKED_TRASHCAN_FILES = boxes.length;
       var list = "<ul>";
       var boxesSize = boxesSizeTmp = boxes.size();
       boxesSizeTmp = boxesSizeTmp > 10 ? 10 : boxesSizeTmp;

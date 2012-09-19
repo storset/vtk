@@ -15,15 +15,14 @@ resourcetype timeplan {
     iframe {
         ##
         [def emnekode resource-prop(".", "emnekode")]
-        [def fs resource-prop(".", "programContext.fs-program-code")]
         [def aar resource-prop(".", "aar")]
         [def semester resource-prop(".", "semester")]
         <iframe frameborder="0" 
             id="timeplaner" 
             scrolling="no" 
-            src="http://www.uio.no/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val aar]&amp;sem=[val semester]&amp;id=[val emnekode]-1&amp;path=matnat/ifi&amp;over=1" 
+            src="/institutt/timeplan-test/calendar_test.php?type=module&amp;embed=1&amp;ar=[val aar]&amp;sem=[val semester]&amp;id=[val emnekode]-1&amp;path=matnat/ifi&amp;over=1" 
             width="100%">
-        </iframe>[val fs]
+        </iframe>
         ##
     }
     

@@ -9,7 +9,7 @@
   <url>http://www.uio.no/tjenester/it/web/vortex/</url>
   <modelVersion>4.0.0</modelVersion>
   <prerequisites>
-    <maven>2.2.1</maven>
+    <maven>3.0.4</maven>
   </prerequisites>
   <description>
     The Vortikal Web Framework is an open source web publishing solution. It
@@ -90,43 +90,38 @@
       <url>dav:https://www-dav.usit.uio.no/it/vortex/internt/maven/${project.build.finalName}</url>
     </site>
     <repository>
-      <id>xml.uio.no</id>
-      <name>Maven repository on xml.uio.no</name>
-      <url>scp://xml.uio.no/site/opt/apache2.2/virtual/xml.uio.no/htdocs/vortex/maven2</url>
+      <id>nexus-internal</id>
+      <url>https://repo.usit.uio.no/nexus/content/repositories/internal-release</url>
     </repository>
+    <snapshotRepository>
+      <id>nexus-internal</id>
+      <url>https://repo.usit.uio.no/nexus/content/repositories/internal-snapshots</url>
+    </snapshotRepository>
   </distributionManagement>
   
   <pluginRepositories>
     <pluginRepository>
-      <id>xml.uio.no</id>
-      <url>http://xml.uio.no/vortex/maven2</url>
+      <id>nexus-public</id>
+      <url>https://repo.usit.uio.no/nexus/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </pluginRepository>
   </pluginRepositories>
   
   <repositories>
     <repository>
-      <id>xml.uio.no</id>
-      <url>http://xml.uio.no/vortex/maven2</url>
-    </repository>
-    <repository>
-      <id>repo1.maven.org</id>
-      <url>http://repo1.maven.org/maven2</url>
-    </repository>
-    <repository>
-      <id>download.java.net</id>
-      <url>http://download.java.net/maven/2/</url>
-    </repository>
-    
-    <!-- For opensaml -->
-    <repository>
-      <id>shibboleth</id>
-      <url>https://build.shibboleth.net/nexus/content/groups/public/</url>
-    </repository>
-
-    <!-- Java HTML sanitizer repo -->
-    <repository>
-      <id>owasp-java-html-sanitizer</id>
-      <url>http://owasp-java-html-sanitizer.googlecode.com/svn/maven</url>
+      <id>nexus-public</id>
+      <url>https://repo.usit.uio.no/nexus/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
   </repositories>
 
@@ -738,7 +733,8 @@
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>8.4-703.jdbc4</version>
+      <!--version>8.4-703.jdbc4</version-->
+      <version>9.1-901.jdbc4</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>

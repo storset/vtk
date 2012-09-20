@@ -1207,7 +1207,7 @@ VrtxAdmin.prototype.supportsReadOnly = function supportsReadOnly(inputfield) {
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInteraction() {
-  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+  var vrtxAdm = this, _$ = vrtxAdm._$;
 
   vrtxAdm.cachedActiveTab = vrtxAdm.cachedAppContent.find("#active-tab");
   
@@ -1247,7 +1247,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
 }
 
 VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckAll() {
-  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+  var vrtxAdm = this, _$ = vrtxAdm._$;
   
   var tdCheckbox = vrtxAdm.cachedDirectoryListing.find("td.checkbox");
   if(tdCheckbox.length) {
@@ -1297,7 +1297,7 @@ function classAddRemover(elem, name, isAdding) {
 
 // options: formName, btnId, service, msg, title
 VrtxAdmin.prototype.placeCopyMoveButtonInActiveTab = function placeCopyMoveButtonInActiveTab(options) {
-  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+  var vrtxAdm = this, _$ = vrtxAdm._$;
   
   var btn = vrtxAdm.cachedAppContent.find("#" + options.btnId);
   if (!btn.length) return;
@@ -1317,7 +1317,7 @@ VrtxAdmin.prototype.placeCopyMoveButtonInActiveTab = function placeCopyMoveButto
 };
 
 VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInActiveTab() {
-  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+  var vrtxAdm = this, _$ = vrtxAdm._$;
 
   var btn = vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.delete-resources');
   if (!btn.length) return;
@@ -1351,7 +1351,7 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
 };
 
 VrtxAdmin.prototype.placeRecoverButtonInActiveTab = function placeRecoverButtonInActiveTab() {
-  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+  var vrtxAdm = this, _$ = vrtxAdm._$;
 
   var btn = vrtxAdm.cachedAppContent.find('.recoverResource');
   if (!btn.length) return;
@@ -1373,7 +1373,7 @@ VrtxAdmin.prototype.placeRecoverButtonInActiveTab = function placeRecoverButtonI
 };
 
 VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDeletePermanentButtonInActiveTab() {
-  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
+  var vrtxAdm = this, _$ = vrtxAdm._$;
   
   var btn = vrtxAdm.cachedAppContent.find('.deleteResourcePermanent');
   if (!btn.length) return;

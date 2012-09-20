@@ -304,7 +304,7 @@ vrtxAdmin._$(document).ready(function () {
           updateSelectors: ["#contents"],
           errorContainer: "errorContainer",
           errorContainerInsertAfter: "> ul",
-          funcComplete: vrtxAdm.updateCollectionListingInteraction(),
+          funcComplete: vrtxAdm.updateCollectionListingInteraction,
           post: true
         });
       } else { // Half-async for file upload and create document

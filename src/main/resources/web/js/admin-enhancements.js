@@ -362,15 +362,15 @@ vrtxAdmin._$(document).ready(function () {
                 break;
               }
             }
-            if(copyMoveExists !== "") {
-              copyMoveExists.hide('slide', {direction: 'right'}, vrtxAdm.transitionSpeed, function() {
+            if(copyMoveExists !== "") { // Reverse the belt and roll out updated baggage :)
+              baggageBeltAnimFx(copyMoveExists, true, function() {
                 copyMoveExists.remove();
                 resourceMenuRight.html(_$(results).find("#resourceMenuRight").html());
-                resourceMenuRight.find(li).hide().show('slide', {direction: 'right', easing: vrtxAdm.transitionEasingSlideDown}, vrtxAdm.transitionSpeed);              
+                baggageBeltAnimFx(resourceMenuRight.find(li), false, $.noop());
               });
             } else {
               resourceMenuRight.html(_$(results).find("#resourceMenuRight").html());
-              resourceMenuRight.find(li).hide().show('slide', {direction: 'right', easing: vrtxAdm.transitionEasingSlideDown}, vrtxAdm.transitionSpeed);                       
+              baggageBeltAnimFx(resourceMenuRight.find(li), false, $.noop());
             }
           }
         });
@@ -388,7 +388,7 @@ vrtxAdmin._$(document).ready(function () {
         var dataString = form.serialize() + "&" + button.attr("name") + "=" + button.val();
         vrtxAdm.serverFacade.postHtml(url, dataString, {
           success: function (results, status, resp) {
-            li.hide('slide', {direction: 'right', easing: vrtxAdm.transitionEasingSlideUp}, vrtxAdm.transitionSpeed, function() {
+            baggageBeltAnimFx(li, true, function() {
               var result = _$(results);
               var errorMsg = vrtxAdm.cachedAppContent.find("> .errormessage");
               var newErrorMsg = result.find(".errormessage");
@@ -604,6 +604,19 @@ function interceptEnterKeyAndReroute(txt, btn) {
       }
     }
   });
+}
+
+function baggageBeltAnimFx(elm, reverse, callback) {
+  var width = elm.outerWidth(true);
+  if(reverse) {
+    anim = -width;
+    easing = vrtxAdmin.transitionEasingSlideUp;
+  } else {
+    elm.css("marginLeft", -width);
+    anim = 0;
+    easing = vrtxAdmin.transitionEasingSlideDown;
+  }
+  elm.animate({"marginLeft": anim + "px"}, vrtxAdmin.transitionSpeed, easing, callback);
 }
 
 VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelector) {

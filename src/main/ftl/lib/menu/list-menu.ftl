@@ -72,7 +72,7 @@
       
       <#if menu.label == "resourceMenuRight">
         <#assign size = size+1 />
-        <#if (menu.items?size == 0)>
+        <#if size == 1>
           <li class="readPermission first last">
         <#else>
           <li class="readPermission last">

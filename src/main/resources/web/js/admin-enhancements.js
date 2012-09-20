@@ -362,17 +362,20 @@ vrtxAdmin._$(document).ready(function () {
                 break;
               }
             }
+            var results = _$(results);
             if(copyMoveExists !== "") { // Reverse the belt and roll out updated baggage :)
               baggageBeltAnimFx(copyMoveExists, {
                 reverse: true,
                 complete: function() {
                   copyMoveExists.remove();
-                  resourceMenuRight.html(_$(results).find("#resourceMenuRight").html());
+                  resourceMenuRight.html(results.find("#resourceMenuRight").html());
+                  vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
                   baggageBeltAnimFx(resourceMenuRight.find(li));
                 }
               });
             } else {
-              resourceMenuRight.html(_$(results).find("#resourceMenuRight").html());
+              resourceMenuRight.html(results.find("#resourceMenuRight").html());
+              vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
               baggageBeltAnimFx(resourceMenuRight.find(li));
             }
           }
@@ -395,21 +398,9 @@ vrtxAdmin._$(document).ready(function () {
               reverse: true,
               complete: function() {
                 var result = _$(results);
-                var errorMsg = vrtxAdm.cachedAppContent.find("> .errormessage");
-                var newErrorMsg = result.find(".errormessage");
-                if(newErrorMsg.length) {
-                  if(errorMsg.length) {
-                    errorMsg.html(newErrorMsg.html());
-                  } else {
-                    vrtxAdm.cachedAppContent.prepend(vrtxAdm.wrap("div", "errormessage message", newErrorMsg.html()));
-                  }
-                } else {
-                  if(errorMsg.length) {
-                    errorMsg.remove();
-                  }
-                  vrtxAdm.cachedContent.html(result.find("#contents").html());
-                  vrtxAdm.collectionListingInteraction();
-                }
+                vrtxAdm.displayErrorMsg(result.find(".errormessage").html());       
+                vrtxAdm.cachedContent.html(result.find("#contents").html());
+                vrtxAdm.collectionListingInteraction();
                 li.remove();
               }
             });
@@ -2495,28 +2486,36 @@ VrtxAdmin.prototype.displayErrorMsg = function displayErrorMsg(msg) {
   var vrtxAdm = this, _$ = vrtxAdm._$;
   if(!vrtxAdm.ignoreAjaxErrors) {
     var errMsg = vrtxAdm.cachedAppContent.find("> .errormessage");
-    if (errMsg.length) {
-      errMsg.html(msg);
+    if(typeof msg !== "undefined" && msg != "") {
+      if (errMsg.length) {
+        errMsg.html(msg);
+      } else {
+        vrtxAdm.cachedAppContent.prepend("<div class='errormessage message'>" + msg + "</div>");
+      }
     } else {
-      vrtxAdm.cachedAppContent.prepend("<div class='errormessage message'>" + msg + "</div>");
-      vrtxAdm.cachedAppContent.find("> .infomessage").slideUp(0, "linear", function() {
-        _$.single(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
-      });
+      if (errMsg.length) {
+        errMsg.remove();
+      }
     }
+    vrtxAdm.cachedAppContent.find("> .infomessage").remove();
   }
 };
 
 VrtxAdmin.prototype.displayInfoMsg = function displayInfoMsg(msg) {
   var vrtxAdm = this, _$ = vrtxAdm._$;
   var infoMsg = vrtxAdm.cachedAppContent.find("> .infomessage");
-  if (infoMsg.length) {
-    infoMsg.html(msg);
+  if(typeof msg !== "undefined" && msg != "") {
+    if (infoMsg.length) {
+      infoMsg.html(msg);
+    } else {
+      vrtxAdm.cachedAppContent.prepend("<div class='infomessage message'>" + msg + "</div>")
+    }
   } else {
-    vrtxAdm.cachedAppContent.prepend("<div class='infomessage message'>" + msg + "</div>")
-    vrtxAdm.cachedAppContent.find("> .errormessage").slideUp(0, "linear", function() {
-      _$.single(this).slideDown(vrtxAdm.transitionDropdownSpeed, vrtxAdm.transitionEasingSlideDown);
-    });
+   if (infoMsg.length) {
+      infoMsg.remove();
+    }
   }
+  vrtxAdm.cachedAppContent.find("> .errormessage").remove();
 };
 
 VrtxAdmin.prototype.serverFacade = {

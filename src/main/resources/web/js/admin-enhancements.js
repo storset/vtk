@@ -363,14 +363,15 @@ vrtxAdmin._$(document).ready(function () {
               }
             }
             if(copyMoveExists !== "") { // Reverse the belt and roll out updated baggage :)
-              baggageBeltAnimFx(copyMoveExists, true, function() {
-                copyMoveExists.remove();
-                resourceMenuRight.html(_$(results).find("#resourceMenuRight").html());
-                baggageBeltAnimFx(resourceMenuRight.find(li), false, $.noop());
+              baggageBeltAnimFx(copyMoveExists, {reverse: true, complete: function() {
+                  copyMoveExists.remove();
+                  resourceMenuRight.html(_$(results).find("#resourceMenuRight").html());
+                  baggageBeltAnimFx(resourceMenuRight.find(li));
+                }
               });
             } else {
               resourceMenuRight.html(_$(results).find("#resourceMenuRight").html());
-              baggageBeltAnimFx(resourceMenuRight.find(li), false, $.noop());
+              baggageBeltAnimFx(resourceMenuRight.find(li));
             }
           }
         });
@@ -388,24 +389,25 @@ vrtxAdmin._$(document).ready(function () {
         var dataString = form.serialize() + "&" + button.attr("name") + "=" + button.val();
         vrtxAdm.serverFacade.postHtml(url, dataString, {
           success: function (results, status, resp) {
-            baggageBeltAnimFx(li, true, function() {
-              var result = _$(results);
-              var errorMsg = vrtxAdm.cachedAppContent.find("> .errormessage");
-              var newErrorMsg = result.find(".errormessage");
-              if(newErrorMsg.length) {
-                 if(errorMsg.length) {
-                   errorMsg.html(newErrorMsg.html());
-                 } else {
-                   vrtxAdm.cachedAppContent.prepend(vrtxAdm.wrap("div", "errormessage message", newErrorMsg.html()));
-                 }
-              } else {
-                if(errorMsg.length) {
-                  errorMsg.remove();
+            baggageBeltAnimFx(li, {reverse: true, complete: function() {
+                var result = _$(results);
+                var errorMsg = vrtxAdm.cachedAppContent.find("> .errormessage");
+                var newErrorMsg = result.find(".errormessage");
+                if(newErrorMsg.length) {
+                  if(errorMsg.length) {
+                    errorMsg.html(newErrorMsg.html());
+                  } else {
+                    vrtxAdm.cachedAppContent.prepend(vrtxAdm.wrap("div", "errormessage message", newErrorMsg.html()));
+                  }
+                } else {
+                  if(errorMsg.length) {
+                    errorMsg.remove();
+                  }
+                  vrtxAdm.cachedContent.html(result.find("#contents").html());
+                  vrtxAdm.collectionListingInteraction();
                 }
-                vrtxAdm.cachedContent.html(result.find("#contents").html());
-                vrtxAdm.collectionListingInteraction();
+                li.remove();
               }
-              li.remove();
             });
           }
         });
@@ -606,9 +608,10 @@ function interceptEnterKeyAndReroute(txt, btn) {
   });
 }
 
-function baggageBeltAnimFx(elm, reverse, callback) {
+function baggageBeltAnimFx(elm, opts) {
+  var opts = (typeof opts === "object") ? opts : {};
   var width = elm.outerWidth(true);
-  if(reverse) {
+  if(opts.reverse) {
     anim = -width;
     easing = vrtxAdmin.transitionEasingSlideUp;
   } else {
@@ -616,7 +619,11 @@ function baggageBeltAnimFx(elm, reverse, callback) {
     anim = 0;
     easing = vrtxAdmin.transitionEasingSlideDown;
   }
-  elm.animate({"marginLeft": anim + "px"}, vrtxAdmin.transitionSpeed, easing, callback);
+  if(opts.complete) {
+    elm.animate({"marginLeft": anim + "px"}, vrtxAdmin.transitionSpeed, easing, opts.complete);
+  } else {
+    elm.animate({"marginLeft": anim + "px"}, vrtxAdmin.transitionSpeed, easing);
+  }
 }
 
 VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelector) {

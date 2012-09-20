@@ -2756,15 +2756,6 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
 /*-------------------------------------------------------------------*\
     17. Override JavaScript / jQuery
 \*-------------------------------------------------------------------*/
-
-$.cachedScript = function(url, options) {
-  options = $.extend(options || {}, {
-    dataType: "script",
-    cache: true,
-    url: url
-  });
-  return jQuery.ajax(options);
-};
     
 /* 
     Override slideUp() / slideDown() to animate rows in a table

@@ -15,8 +15,9 @@ void execute(context, args, out) {
     if (parent != null) {
         out.println("Parent: " + parent.getName());
     }
+
     out.println("Assertions:");
-    for (a: s.getAssertions()) {
+    for (a: s.getAllAssertions()) {
         out.println("   " + a);
     }
     out.println("Handler: " + s.getHandler());

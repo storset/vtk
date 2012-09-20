@@ -180,6 +180,7 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.cachedBody = _$("body");
   vrtxAdm.cachedAppContent = vrtxAdm.cachedBody.find("#app-content");
   vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
+  vrtxAdm.cachedDirectoryListing = _$("#directory-listing");
 
   var bodyId = vrtxAdm.cachedBody.attr("id");
   vrtxAdm.cachedBody.addClass("js");
@@ -303,7 +304,12 @@ vrtxAdmin._$(document).ready(function () {
           updateSelectors: ["#contents"],
           errorContainer: "errorContainer",
           errorContainerInsertAfter: "> ul",
-          funcComplete: vrtxAdm.collectionListingInteraction,
+          funcComplete: function() {
+            vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
+            vrtxAdm.cachedDirectoryListing = vrtxAdm.cachedContent.find("#directory-listing");
+            vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
+            $("input[type=submit]").hide();
+          },
           post: true
         });
       } else { // Half-async for file upload and create document
@@ -401,8 +407,11 @@ vrtxAdmin._$(document).ready(function () {
               complete: function() {
                 var result = _$(results);
                 vrtxAdm.displayErrorMsg(result.find(".errormessage").html());       
-                vrtxAdm.cachedContent.html(result.find("#contents").html());
-                vrtxAdm.collectionListingInteraction();
+                vrtxAdm.cachedContent.html(_$(results).find("#contents").html());
+                vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
+                vrtxAdm.cachedDirectoryListing = vrtxAdm.cachedContent.find("#directory-listing");
+                vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
+                _$("input[type=submit]").hide();
                 li.remove();
               }
             });
@@ -421,7 +430,10 @@ vrtxAdmin._$(document).ready(function () {
       vrtxAdm.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
           vrtxAdm.cachedContent.html(_$(results).find("#contents").html());
-          vrtxAdm.collectionListingInteraction();
+          vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
+          vrtxAdm.cachedDirectoryListing = vrtxAdm.cachedContent.find("#directory-listing");
+          vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
+          _$("input[type=submit]").hide();
         }
       });
       e.stopPropagation();
@@ -430,16 +442,18 @@ vrtxAdmin._$(document).ready(function () {
   } else if(bodyId == "vrtx-trash-can") {
     vrtxAdm.cachedContent.on("click", "input.deleteResourcePermanent", function (e) {
       if(CHECKED_TRASHCAN_FILES >= (vrtxAdm.cachedContent.find("tbody tr").length - 1)) return; // Redirect if empty trash can
-      
+      CHECKED_TRASHCAN_FILES = 0;
       var input = _$.single(this);
       var form = input.closest("form");
       var url = form.attr("action");
       var dataString = form.serialize() + "&" + input.attr("name");
       vrtxAdm.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
-          var results = _$(results);
-          vrtxAdm.cachedContent.parent().html(results.find("#main").html());
-          vrtxAdm.collectionListingInteraction();
+          vrtxAdm.cachedContent.html(_$(results).find("#contents").html());
+          vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
+          vrtxAdm.cachedDirectoryListing = vrtxAdm.cachedContent.find("#directory-listing");
+          vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
+          _$("input[type=submit]").hide();
         }
       });
       e.stopPropagation();
@@ -670,7 +684,7 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasCancel, func
 	    funcOkComplete(options);
 	  }
     };
-	if(hasCancel) {
+    if(hasCancel) {
       var Cancel = (typeof cancelI18n != "undefined") ? cancelI18n : "Cancel";
       l10nButtons[Cancel] = function() {
         $(this).dialog("close");
@@ -1194,16 +1208,14 @@ VrtxAdmin.prototype.supportsReadOnly = function supportsReadOnly(inputfield) {
 
 VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInteraction() {
   var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
-  
-  vrtxAdm.cachedDirectoryListing = _$("#directory-listing");
-  if(!vrtxAdm.cachedDirectoryListing.length) return;
-  
+
   vrtxAdm.cachedActiveTab = vrtxAdm.cachedAppContent.find("#active-tab");
   
   // Remove active tab if it has no children
   if (!vrtxAdm.cachedActiveTab.find(" > *").length) {
     vrtxAdm.cachedActiveTab.remove();
   }
+
   // Remove active tab-message if it is empty
   var activeTabMsg = vrtxAdm.cachedActiveTab.find(" > .tabMessage");
   if (!activeTabMsg.text().length) {
@@ -1227,7 +1239,7 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
     });
     vrtxAdm.placeDeleteButtonInActiveTab();
   }
-  
+
   vrtxAdm.placeRecoverButtonInActiveTab();
   vrtxAdm.placeDeletePermanentButtonInActiveTab();
   
@@ -1239,8 +1251,7 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
   
   var tdCheckbox = vrtxAdm.cachedDirectoryListing.find("td.checkbox");
   if(tdCheckbox.length) {
-    vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
-    vrtxAdm.cachedDirectoryListing.on("click", "th.checkbox input", function() {
+    vrtxAdm.cachedAppContent.on("click", "th.checkbox input", function() {
       var checkAll = this.checked;
       var checkboxes = vrtxAdm.cachedDirectoryListing.find("td.checkbox input");
       var funcClassAddRemover = classAddRemover; 
@@ -1258,7 +1269,7 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
         }
       }
     });
-    vrtxAdm.cachedDirectoryListing.on("click", "td.checkbox input", function() {
+    vrtxAdm.cachedAppContent.on("click", "td.checkbox input", function() {
       var checkbox = this;
       var isChecked = checkbox.checked;
       var tr = $(checkbox).closest("tr");
@@ -1285,7 +1296,7 @@ function classAddRemover(elem, name, isAdding) {
 
 // options: formName, btnId, service, msg, title
 VrtxAdmin.prototype.placeCopyMoveButtonInActiveTab = function placeCopyMoveButtonInActiveTab(options) {
-  var vrtxAdm = this, _$ = vrtxAdm._$;
+  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
   
   var btn = vrtxAdm.cachedAppContent.find("#" + options.btnId);
   if (!btn.length) return;
@@ -1305,7 +1316,7 @@ VrtxAdmin.prototype.placeCopyMoveButtonInActiveTab = function placeCopyMoveButto
 };
 
 VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInActiveTab() {
-  var vrtxAdm = this, _$ = vrtxAdm._$;
+  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
 
   var btn = vrtxAdm.cachedAppContent.find('#collectionListing\\.action\\.delete-resources');
   if (!btn.length) return;
@@ -1339,14 +1350,14 @@ VrtxAdmin.prototype.placeDeleteButtonInActiveTab = function placeDeleteButtonInA
 };
 
 VrtxAdmin.prototype.placeRecoverButtonInActiveTab = function placeRecoverButtonInActiveTab() {
-  var vrtxAdm = this, _$ = vrtxAdm._$;
+  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
 
   var btn = vrtxAdm.cachedAppContent.find('.recoverResource');
   if (!btn.length) return;
   btn.hide();
   vrtxAdm.cachedActiveTab.prepend('<ul class="list-menu" id="tabMenuRight"><li class="recoverResourceService">'
-                              + '<a id="recoverResourceService" href="javascript:void(0);">' 
-                              + btn.attr('value') + '</a></li></ul>');
+                                + '<a id="recoverResourceService" href="javascript:void(0);">' 
+                                + btn.attr('value') + '</a></li></ul>');
   vrtxAdm.cachedActiveTab.find("#recoverResourceService").click(function (e) {
     var boxes = vrtxAdm.cachedDirectoryListing.find('td input[type=checkbox]:checked');
     if (!boxes.length) {
@@ -1361,7 +1372,7 @@ VrtxAdmin.prototype.placeRecoverButtonInActiveTab = function placeRecoverButtonI
 };
 
 VrtxAdmin.prototype.placeDeletePermanentButtonInActiveTab = function placeDeletePermanentButtonInActiveTab() {
-  var vrtxAdm = this, _$ = vrtxAdm._$;
+  var vrtxAdm = vrtxAdmin, _$ = vrtxAdm._$;
   
   var btn = vrtxAdm.cachedAppContent.find('.deleteResourcePermanent');
   if (!btn.length) return;

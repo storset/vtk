@@ -373,12 +373,18 @@ vrtxAdmin._$(document).ready(function () {
                   copyMoveExists.remove();
                   resourceMenuRight.html(results.find("#resourceMenuRight").html());
                   vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
+                  if(resourceMenuRight.hasClass("smaller-seperator")) {
+                    resourceMenuRight.removeClass("smaller-seperator");
+                  }
                   baggageBeltAnimFx(resourceMenuRight.find(li));
                 }
               });
             } else {
               resourceMenuRight.html(results.find("#resourceMenuRight").html());
               vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
+              if(resourceMenuRight.hasClass("smaller-seperator")) {
+                resourceMenuRight.removeClass("smaller-seperator");
+              }
               baggageBeltAnimFx(resourceMenuRight.find(li));
             }
           }

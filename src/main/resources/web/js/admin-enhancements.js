@@ -363,7 +363,9 @@ vrtxAdmin._$(document).ready(function () {
               }
             }
             if(copyMoveExists !== "") { // Reverse the belt and roll out updated baggage :)
-              baggageBeltAnimFx(copyMoveExists, {reverse: true, complete: function() {
+              baggageBeltAnimFx(copyMoveExists, {
+                reverse: true,
+                complete: function() {
                   copyMoveExists.remove();
                   resourceMenuRight.html(_$(results).find("#resourceMenuRight").html());
                   baggageBeltAnimFx(resourceMenuRight.find(li));
@@ -389,7 +391,9 @@ vrtxAdmin._$(document).ready(function () {
         var dataString = form.serialize() + "&" + button.attr("name") + "=" + button.val();
         vrtxAdm.serverFacade.postHtml(url, dataString, {
           success: function (results, status, resp) {
-            baggageBeltAnimFx(li, {reverse: true, complete: function() {
+            baggageBeltAnimFx(li, {
+              reverse: true,
+              complete: function() {
                 var result = _$(results);
                 var errorMsg = vrtxAdm.cachedAppContent.find("> .errormessage");
                 var newErrorMsg = result.find(".errormessage");

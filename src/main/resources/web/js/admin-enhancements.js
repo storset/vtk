@@ -240,7 +240,8 @@ vrtxAdmin._$(document).ready(function () {
   }
 
   $("#title-container").vortexTips("abbr", "#title-container", 200, 300, 250, 300, 20, 0, false, false);
-  
+  $(".vrtx-admin-form").vortexTips("abbr.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
+ 
   createInteraction(bodyId, vrtxAdm, _$);
   
   // Collectionlisting interaction
@@ -922,13 +923,6 @@ function createFuncComplete() {
   }
   
   $("#initChangeTemplate").click(); 
-  
-  // Tooltip
-  if(typeof vortexTips === "undefined") {
-    vrtxAdmin.loadScript("/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js", function() {
-      $(".vrtx-admin-form").vortexTips("abbr.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
-    });
-  }
   
   var textFields = $(".vrtx-admin-form input[type='text']");
   textFields.attr("autocomplete", "off");

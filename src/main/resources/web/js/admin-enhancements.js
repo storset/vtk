@@ -1251,6 +1251,7 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
   
   var tdCheckbox = vrtxAdm.cachedDirectoryListing.find("td.checkbox");
   if(tdCheckbox.length) {
+    vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
     vrtxAdm.cachedAppContent.on("click", "th.checkbox input", function() {
       var checkAll = this.checked;
       var checkboxes = vrtxAdm.cachedDirectoryListing.find("td.checkbox input");

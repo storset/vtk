@@ -236,7 +236,9 @@ vrtxAdmin._$(document).ready(function () {
     } else if(titleSplitsLength >= 3) {
       resourceMenuLeft.css("marginTop", "0px"); 
     }
-  } 
+  }
+
+  $("#title-container").vortexTips("abbr", "#title-container", 200, 300, 250, 300, 20, 0, false, false);
   
   createInteraction(bodyId, vrtxAdm, _$);
   
@@ -2753,7 +2755,16 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
 
 /*-------------------------------------------------------------------*\
     17. Override JavaScript / jQuery
-\*-------------------------------------------------------------------*/ 
+\*-------------------------------------------------------------------*/
+
+$.cachedScript = function(url, options) {
+  options = $.extend(options || {}, {
+    dataType: "script",
+    cache: true,
+    url: url
+  });
+  return jQuery.ajax(options);
+};
     
 /* 
     Override slideUp() / slideDown() to animate rows in a table

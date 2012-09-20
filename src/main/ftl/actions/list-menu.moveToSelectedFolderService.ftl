@@ -16,11 +16,6 @@
 
 <h3>${headerMsg}</h3>
 <#if session.filesToBeCopied?exists>
-  <script type="text/javascript" src="/vrtx/__vrtx/static-resources/jquery/plugins/jquery.vortexTips.js"></script>
-  <script type="text/javascript"><!--
-    $("#title-container").vortexTips("abbr", "#title-container", 200, 300, 250, 300, 20, 0, false, false);
-  // -->
-  </script>
   <p>
     <abbr title="<h4 id='title-wrapper'>${filesTipI18n}</h4><@vrtx.fileNamesAsLimitedList session.filesToBeCopied />">
       ${session.filesToBeCopied?size} ${filesI18n}

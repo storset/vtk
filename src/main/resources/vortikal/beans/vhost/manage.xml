@@ -1176,6 +1176,7 @@
             <value>${jquery.baseURL}/plugins/jquery.form.js</value>
             <value>${jsBaseURL}/cross-doc-com-link.js</value>
             <value>${jsBaseURL}/iframe-admin.js</value>
+            <value>${jquery.baseURL}/plugins/jquery.vortexTips.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
           </list>
@@ -1743,6 +1744,7 @@
             <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery-ui-${jquery.ui.version}.custom.min.js</value>
             <value>${jsBaseURL}/cross-doc-com-link.js</value>
             <value>${jsBaseURL}/iframe-admin.js</value>
+            <value>${jquery.baseURL}/plugins/jquery.vortexTips.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
           </list>
@@ -1759,6 +1761,7 @@
             <value>${jquery.baseURL}/jquery.min.js</value>
             <value>${jsBaseURL}/cross-doc-com-link.js</value>
             <value>${jsBaseURL}/iframe-admin.js</value>
+            <value>${jquery.baseURL}/plugins/jquery.vortexTips.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/iframe-admin-alone.js</value>
             <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>

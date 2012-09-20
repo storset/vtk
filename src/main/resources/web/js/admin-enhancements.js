@@ -2483,39 +2483,40 @@ VrtxAdmin.prototype.displayErrorContainers = function displayErrorContainers(res
 }; 
 
 VrtxAdmin.prototype.displayErrorMsg = function displayErrorMsg(msg) {
-  var vrtxAdm = this, _$ = vrtxAdm._$;
+  var vrtxAdm = this;
   if(!vrtxAdm.ignoreAjaxErrors) {
-    var errMsg = vrtxAdm.cachedAppContent.find("> .errormessage");
-    if(typeof msg !== "undefined" && msg != "") {
-      if (errMsg.length) {
-        errMsg.html(msg);
-      } else {
-        vrtxAdm.cachedAppContent.prepend("<div class='errormessage message'>" + msg + "</div>");
-      }
-    } else {
-      if (errMsg.length) {
-        errMsg.remove();
-      }
-    }
-    vrtxAdm.cachedAppContent.find("> .infomessage").remove();
+    vrtxAdm.displayMsg(msg, "error");
   }
 };
 
 VrtxAdmin.prototype.displayInfoMsg = function displayInfoMsg(msg) {
-  var vrtxAdm = this, _$ = vrtxAdm._$;
-  var infoMsg = vrtxAdm.cachedAppContent.find("> .infomessage");
+  this.displayMsg(msg, "info");
+};
+
+VrtxAdmin.prototype.displayMsg = function displayMsg(msg, type) {
+  var vrtxAdm = this;
+
+  var current = (type === "info") ? "infomessage" : "errormessage";
+  var other = (type === "info") ? "errormessage" : "infomessage";
+
+  var currentMsg = vrtxAdm.cachedAppContent.find("> ." + current);
+  var otherMsg = vrtxAdm.cachedAppContent.find("> ." + other);
   if(typeof msg !== "undefined" && msg != "") {
-    if (infoMsg.length) {
-      infoMsg.html(msg);
+    if(currentMsg.length) {
+      currentMsg.html(msg);
+    } else if(otherMsg.length) {
+      otherMsg.html(msg).removeClass(other).addClass(current);
     } else {
-      vrtxAdm.cachedAppContent.prepend("<div class='infomessage message'>" + msg + "</div>")
+      vrtxAdm.cachedAppContent.prepend("<div class='" + current + " message'>" + msg + "</div>")
     }
   } else {
-   if (infoMsg.length) {
-      infoMsg.remove();
+    if(currentMsg.length) {
+      currentMsg.remove();
+    }
+    if(otherMsg.length) {
+      otherMsg.remove();
     }
   }
-  vrtxAdm.cachedAppContent.find("> .errormessage").remove();
 };
 
 VrtxAdmin.prototype.serverFacade = {

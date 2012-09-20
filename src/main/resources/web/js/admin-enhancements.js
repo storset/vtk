@@ -1209,6 +1209,8 @@ VrtxAdmin.prototype.supportsReadOnly = function supportsReadOnly(inputfield) {
 VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInteraction() {
   var vrtxAdm = this, _$ = vrtxAdm._$;
 
+  if(!vrtxAdm.cachedDirectoryListing.length) return;
+
   vrtxAdm.cachedActiveTab = vrtxAdm.cachedAppContent.find("#active-tab");
   
   // Remove active tab if it has no children

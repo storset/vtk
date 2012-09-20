@@ -240,7 +240,7 @@ vrtxAdmin._$(document).ready(function () {
   }
 
   $("#title-container").vortexTips("abbr", "#title-container", 200, 300, 250, 300, 20, 0, false, false);
-  $(".vrtx-admin-form").vortexTips("abbr.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
+  $("#main").vortexTips("abbr.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
  
   createInteraction(bodyId, vrtxAdm, _$);
   

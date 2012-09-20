@@ -304,12 +304,7 @@ vrtxAdmin._$(document).ready(function () {
           updateSelectors: ["#contents"],
           errorContainer: "errorContainer",
           errorContainerInsertAfter: "> ul",
-          funcComplete: function() {
-            vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
-            vrtxAdm.cachedDirectoryListing = vrtxAdm.cachedContent.find("#directory-listing");
-            vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
-            $("input[type=submit]").hide();
-          },
+          funcComplete: vrtxAdm.updateCollectionListingInteraction(),
           post: true
         });
       } else { // Half-async for file upload and create document
@@ -408,10 +403,7 @@ vrtxAdmin._$(document).ready(function () {
                 var result = _$(results);
                 vrtxAdm.displayErrorMsg(result.find(".errormessage").html());       
                 vrtxAdm.cachedContent.html(_$(results).find("#contents").html());
-                vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
-                vrtxAdm.cachedDirectoryListing = vrtxAdm.cachedContent.find("#directory-listing");
-                vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
-                _$("input[type=submit]").hide();
+                vrtxAdm.updateCollectionListingInteraction();
                 li.remove();
               }
             });
@@ -430,10 +422,7 @@ vrtxAdmin._$(document).ready(function () {
       vrtxAdm.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
           vrtxAdm.cachedContent.html(_$(results).find("#contents").html());
-          vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
-          vrtxAdm.cachedDirectoryListing = vrtxAdm.cachedContent.find("#directory-listing");
-          vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
-          _$("input[type=submit]").hide();
+          vrtxAdm.updateCollectionListingInteraction();
         }
       });
       e.stopPropagation();
@@ -450,10 +439,7 @@ vrtxAdmin._$(document).ready(function () {
       vrtxAdm.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
           vrtxAdm.cachedContent.html(_$(results).find("#contents").html());
-          vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
-          vrtxAdm.cachedDirectoryListing = vrtxAdm.cachedContent.find("#directory-listing");
-          vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
-          _$("input[type=submit]").hide();
+          vrtxAdm.updateCollectionListingInteraction();
         }
       });
       e.stopPropagation();
@@ -1204,6 +1190,7 @@ VrtxAdmin.prototype.supportsReadOnly = function supportsReadOnly(inputfield) {
 
 /*-------------------------------------------------------------------*\
     8. Collectionlisting
+       TODO: dynamic event handlers for tab-menu links
 \*-------------------------------------------------------------------*/
 
 VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInteraction() {
@@ -1247,6 +1234,14 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
   
   vrtxAdm.initializeCheckUncheckAll();
 }
+
+VrtxAdmin.prototype.updateCollectionListingInteraction = function updateCollectionListingInteraction() {
+  var vrtxAdm = vrtxAdmin;
+  vrtxAdm.cachedContent = vrtxAdm.cachedAppContent.find("#contents");
+  vrtxAdm.cachedDirectoryListing = vrtxAdm.cachedContent.find("#directory-listing");
+  vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
+  vrtxAdm.cachedContent.find("input[type=submit]").hide();
+};
 
 VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckAll() {
   var vrtxAdm = this, _$ = vrtxAdm._$;
@@ -2721,7 +2716,7 @@ VrtxAdmin.prototype.wrap = function wrap(node, cls, html) {
 // jQuery outerHTML (because FF don't support regular outerHTML)
 VrtxAdmin.prototype.outerHTML = function outerHTML(selector, subselector) {
   var _$ = this._$;
-  
+
   if(_$(selector).find(subselector).length) { 
     if(typeof _$(selector).find(subselector)[0].outerHTML !== "undefined") {
       return _$(selector).find(subselector)[0].outerHTML;

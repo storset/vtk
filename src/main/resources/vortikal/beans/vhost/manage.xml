@@ -1169,6 +1169,7 @@
     <property name="referenceDataProviders">
       <list>
         <ref bean="leaveAdminLinkProvider" />
+        <ref bean="resourceContextProvider" />
       </list>
     </property>
   </bean>

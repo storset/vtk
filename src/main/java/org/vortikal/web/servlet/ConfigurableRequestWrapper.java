@@ -248,8 +248,13 @@ public class ConfigurableRequestWrapper extends HttpServletRequestWrapper {
                         newValues.add(queryValue);
                     }
                 }
-                String[] resultValues = queryValues.<String>toArray(new String[newValues.size()]);
+                String[] resultValues = newValues.<String>toArray(new String[newValues.size()]);
                 params.put(queryParam, resultValues);
+            } else {
+                List<String> values = this.url.getParameters(queryParam);
+                if (values != null) {
+                    params.put(queryParam, values.toArray(new String[values.size()]));
+                }
             }
         }
         return params;

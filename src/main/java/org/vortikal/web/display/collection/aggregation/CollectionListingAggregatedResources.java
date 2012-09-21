@@ -126,11 +126,11 @@ public class CollectionListingAggregatedResources implements Serializable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        if (this.aggregationSet != null) {
+        if (this.aggregationSet != null && this.aggregationSet.size() > 0) {
             sb.append("Aggregation set: ");
             sb.append(this.aggregationSet);
         }
-        if (this.manuallyApprovedSet != null) {
+        if (this.manuallyApprovedSet != null && this.manuallyApprovedSet.size() > 0) {
             if (sb.toString().length() > 0) {
                 sb.append("\n");
             }

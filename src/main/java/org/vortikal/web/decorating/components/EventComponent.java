@@ -243,7 +243,8 @@ public class EventComponent extends AbstractEventComponent {
                     pst = psList.get(i);
 
                     /* Used to set sprop and showTime in PropertySetData. */
-                    smidnight = pst.getStartDate();
+                    smidnight = Calendar.getInstance();
+                    smidnight.setTimeInMillis(pst.getStartDate().getTimeInMillis());
                     smidnight.set(Calendar.HOUR_OF_DAY, 00);
                     smidnight.set(Calendar.MINUTE, 00);
                     smidnight.set(Calendar.SECOND, 00);

@@ -107,8 +107,6 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             // Keep aggregation set in cache
             cache.put(new Element(cacheKey, clar));
 
-            logger.info("Performing multi host seach, aggregated and manually approved resources: " + clar);
-
             CollectionListingSearchProperties collectionListingSearchProps = new CollectionListingSearchProperties(
                     token, uriQuery, additionalQueries, clar, searchLimit, offset, sorting, null, propertySelect);
             try {

@@ -214,17 +214,14 @@ public class CollectionListingAggregationResolver implements AggregationResolver
         try {
             url = URL.parse(strVal);
         } catch (Exception e) {
-            // Ignore, continue, assume valid path
+            // Ignore, continue, assume a path
         }
         try {
-            // Be lenient on trailing slash
-            String pathString = strVal.endsWith("/") && !strVal.equals("/") ? strVal.substring(0,
-                    strVal.lastIndexOf("/")) : strVal;
-            Path path = Path.fromString(pathString);
+            Path path = Path.fromStringWithTrailingSlash(strVal);
             url = new URL(currentHostURL);
             url.setPath(path);
         } catch (IllegalArgumentException iae) {
-            // Ignore, invalid
+            // Ignore, invalid path
         }
         if (url != null) {
             url.setCollection(true);

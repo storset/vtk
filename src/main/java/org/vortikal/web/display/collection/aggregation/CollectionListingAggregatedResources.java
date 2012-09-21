@@ -68,10 +68,14 @@ public class CollectionListingAggregatedResources implements Serializable {
 
     public Set<Path> getHostAggregationSet(URL host) {
         if (this.aggregationSet != null) {
+            Set<Path> set = new HashSet<Path>();
             for (Entry<URL, Set<Path>> entry : this.aggregationSet.entrySet()) {
                 if (host.getHost().equals(entry.getKey().getHost())) {
-                    return Collections.unmodifiableSet(entry.getValue());
+                    set.addAll(entry.getValue());
                 }
+            }
+            if (!set.isEmpty()) {
+                return Collections.unmodifiableSet(set);
             }
         }
         return null;

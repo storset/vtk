@@ -2358,7 +2358,13 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
             }
           });
         } else {
-          if(modeUrl.indexOf("&mode=") !== -1) { // When we need the 'mode=' HTML. TODO: should only run when updateSelector is inside content
+          var sameMode = false;
+          if(url.indexOf("&mode=") !== -1) {
+            if(gup("mode", url) === gup("mode", modeUrl)) {
+              sameMode = true;
+            }
+          }
+          if(modeUrl.indexOf("&mode=") !== -1 && !sameMode) { // When we need the 'mode=' HTML. TODO: should only run when updateSelector is inside content
             vrtxAdmin.serverFacade.getHtml(modeUrl, {
               success: function (results, status, resp) {
                 for (var i = updateSelectors.length; i--;) {
@@ -2369,7 +2375,7 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
                   funcComplete();
                 }
                 form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
-                   _$.single(this).remove();
+                  _$.single(this).remove();
                 });
               }
             });
@@ -2821,6 +2827,15 @@ jQuery.fn.slideDown = function(speed, easing, callback) {
     originalSlideDown.apply($trOrOtherElm, arguments);
   }
 };
+
+// Get URL parameter - taken from: http://www.netlobo.com/url_query_string_javascript.html and modified slightly
+function gup(name, url) {
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec(url);
+  return (results == null) ? "" : results[1];
+}
 
 /* Minimize creating new jQuery instances (in addition to caching jQuery ref in vrtxAdmin)
  * Credits: http://james.padolsey.com/javascript/76-bytes-for-faster-jquery/

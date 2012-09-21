@@ -284,7 +284,7 @@ vrtxAdmin._$(document).ready(function () {
     });
     vrtxAdm.completeFormAsync({
         selector: "form#" + resourceMenuRightServices[i] + "-form input[type=submit]",
-        updateSelectors: ["#resource-title"],
+        updateSelectors: ["#resource-title", "#publishing-status"],
         post: true
     });
   }
@@ -2339,7 +2339,8 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
         form = options.form,
         link = options.link,
         url = form.attr("action"),
-        dataString = form.serialize() + "&" + link.attr("name");
+        dataString = form.serialize() + "&" + link.attr("name"),
+        modeUrl = location.href;
                       
   vrtxAdmin.serverFacade.postHtml(url, dataString, {
     success: function (results, status, resp) {
@@ -2357,16 +2358,33 @@ VrtxAdmin.prototype.completeFormAsyncPost = function completeFormAsyncPost(optio
             }
           });
         } else {
-          for (var i = updateSelectors.length; i--;) {
-            var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
-            vrtxAdm.cachedBody.find(updateSelectors[i]).replaceWith(outer);
+          if(modeUrl.indexOf("&mode=") !== -1) { // When we need the 'mode=' HTML. TODO: should only run when updateSelector is inside content
+            vrtxAdmin.serverFacade.getHtml(modeUrl, {
+              success: function (results, status, resp) {
+                for (var i = updateSelectors.length; i--;) {
+                  var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
+                  vrtxAdm.cachedBody.find(updateSelectors[i]).replaceWith(outer);
+                }
+                if (funcComplete) {
+                  funcComplete();
+                }
+                form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
+                   _$.single(this).remove();
+                });
+              }
+            });
+          } else {
+            for (var i = updateSelectors.length; i--;) {
+              var outer = vrtxAdm.outerHTML(results, updateSelectors[i]);
+              vrtxAdm.cachedBody.find(updateSelectors[i]).replaceWith(outer);
+            }
+            if (funcComplete) {
+              funcComplete();
+            }
+            form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
+              _$.single(this).remove();
+            });
           }
-          if (funcComplete) {
-            funcComplete();
-          }
-          form.parent().slideUp(transitionSpeed, transitionEasingSlideUp, function () {
-            _$.single(this).remove();
-          });
         }
       }
     }

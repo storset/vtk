@@ -51,6 +51,7 @@ public class RequestPathAssertion implements Assertion {
 
     private Path path;
     
+    @Override
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestPathAssertion) {
             return ! (this.path.equals(((RequestPathAssertion)assertion).path));
@@ -58,31 +59,31 @@ public class RequestPathAssertion implements Assertion {
         return false;
     }
 
+    @Override
     public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
         URL url = URL.create(request);
         return url.getPath().equals(this.path);
     }
 
+    @Override
     public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
         processURL(url);
         return true;
     }
 
+    @Override
     public void processURL(URL url) {
         url.setPath(this.path);
     }
     
-    @Required public void setPath(String path) {
+    @Required 
+    public void setPath(String path) {
         this.path = Path.fromString(path);
     }    
-    
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        
-        sb.append(super.toString());
-        sb.append("; path = ").append(this.path);
 
-        return sb.toString();
+    @Override
+    public String toString() {
+        return "request.path = " + this.path;
     }
 
 }

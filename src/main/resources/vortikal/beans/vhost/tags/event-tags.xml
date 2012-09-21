@@ -42,8 +42,8 @@
   </bean>
 
   <bean id="tags.eventListing.eventListingSearcher" parent="eventListing.eventListingSearcher">
-    <property name="upcomingEventsSearch" ref="${override.listing.prefix}tags.eventListing.upcomingEventsSearchComponent" />
-    <property name="previousEventsSearch" ref="${override.listing.prefix}tags.eventListing.previousEventsSearchComponent" />
+    <property name="upcomingEventsSearch" ref="tags.eventListing.upcomingEventsSearchComponent" />
+    <property name="previousEventsSearch" ref="tags.eventListing.previousEventsSearchComponent" />
   </bean>
 
   <bean id="tags.eventListing.upcomingEventsSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
@@ -52,7 +52,7 @@
       <list>
         <ref bean="eventListing.upcomingEventsQueryBuilder" />
         <bean parent="queryStringParser">
-          <property name="queryString" value="type IN event" />
+          <property name="queryString" ref="${override.listing.prefix}eventListing.resourceTypeQueryString" />
         </bean>
         <bean class="org.vortikal.web.search.PropertyValueQueryBuilder">
           <property name="parameterName" value="tag" />
@@ -68,39 +68,7 @@
       <list>
         <ref bean="eventListing.previousEventsQueryBuilder" />
         <bean parent="queryStringParser">
-          <property name="queryString" value="type IN event" />
-        </bean>
-        <bean class="org.vortikal.web.search.PropertyValueQueryBuilder">
-          <property name="parameterName" value="tag" />
-          <property name="propertyTypeDefinition" ref="tagsPropDef" />
-        </bean>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="structured.tags.eventListing.upcomingEventsSearchComponent" parent="structured.eventListing.upcomingEventsSearchComponent">
-    <property name="name" value="structured.tags.eventListing.upcomingEventsSearchComponent" />
-    <property name="queryBuilders">
-      <list>
-        <ref bean="structured.eventListing.upcomingEventsQueryBuilder" />
-        <bean parent="queryStringParser">
-          <property name="queryString" value="type IN structured-event" />
-        </bean>
-        <bean class="org.vortikal.web.search.PropertyValueQueryBuilder">
-          <property name="parameterName" value="tag" />
-          <property name="propertyTypeDefinition" ref="tagsPropDef" />
-        </bean>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="structured.tags.eventListing.previousEventsSearchComponent" parent="structured.eventListing.previousEventsSearchComponent">
-    <property name="name" value="structured.tags.eventListing.previousEventsSearchComponent" />
-    <property name="queryBuilders">
-      <list>
-        <ref bean="structured.eventListing.prevoiusEventsQueryBuilder" />
-        <bean parent="queryStringParser">
-          <property name="queryString" value="type IN structured-event" />
+          <property name="queryString" ref="${override.listing.prefix}eventListing.resourceTypeQueryString" />
         </bean>
         <bean class="org.vortikal.web.search.PropertyValueQueryBuilder">
           <property name="parameterName" value="tag" />
@@ -122,7 +90,7 @@
     <property name="handler" ref="tags.eventListing.atomHandler" />
     <property name="serviceNameProvider" ref="tags.viewService.serviceNameProvider" />
   </bean>
-  
+
   <bean id="tags.eventListing.atomHandler" parent="eventListing.atomHandler">
     <property name="searcher" ref="tags.eventListing.eventListingSearcher" />
   </bean>

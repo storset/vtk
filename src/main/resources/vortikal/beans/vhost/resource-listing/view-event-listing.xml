@@ -28,7 +28,7 @@
   <bean id="eventListing.handler" class="org.vortikal.web.display.collection.event.EventListingController">
     <property name="resourceManager" ref="resourceManager" />
     <property name="subFolderMenuProvider" ref="subFolderMenuProvider" />
-    <property name="viewName" value="${override.listing.prefix}eventListing.view" />
+    <property name="viewName" value="eventListing.view" />
     <property name="pageLimitPropDef" ref="pageLimitPropDef" />
     <property name="hideNumberOfComments" ref="hideNumberOfCommentsPropDef" />
     <property name="defaultPageLimit" value="${collectionListing.defaultPageLimit}" />
@@ -43,8 +43,8 @@
   </bean>
 
   <bean id="eventListing.eventListingSearcher" class="org.vortikal.web.display.collection.event.EventListingSearcher">
-    <property name="upcomingEventsSearch" ref="${override.listing.prefix}eventListing.upcomingEventsSearchComponent" />
-    <property name="previousEventsSearch" ref="${override.listing.prefix}eventListing.previousEventsSearchComponent" />
+    <property name="upcomingEventsSearch" ref="eventListing.upcomingEventsSearchComponent" />
+    <property name="previousEventsSearch" ref="eventListing.previousEventsSearchComponent" />
     <property name="furtherUpcomingSearchComponent" ref="${override.listing.prefix}eventListing.furtherUpcomingSearchComponent" />
     <property name="specificDateEventSearchComponent" ref="${override.listing.prefix}eventListing.specificDateEventSearchComponent" />
     <property name="daysAhead" value="${event.listing.days.ahead}" />
@@ -81,24 +81,25 @@
       <list>
         <ref bean="eventListing.upcomingEventsQueryBuilder" />
         <bean parent="queryStringParser">
-          <property name="queryString" value="type IN event" />
+          <property name="queryString" ref="${override.listing.prefix}eventListing.resourceTypeQueryString" />
         </bean>
       </list>
     </property>
     <property name="searchSorting" ref="eventListing.upcoming.searchSorting" />
+    <property name="configurablePropertySelectPointers" ref="${override.listing.prefix}event.configurablePropertySelectPointersList" />
   </bean>
 
   <bean id="eventListing.upcomingEventsQueryBuilder" class="org.vortikal.web.search.eventlisting.EventsDateAndTimeQueryBuilder">
     <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="startPropDefPointer" value="start-date" />
-    <property name="endPropDefPointer" value="end-date" />
+    <property name="startPropDefPointer" ref="${override.listing.prefix}eventListing.startDatePropDefPointer" />
+    <property name="endPropDefPointer" ref="${override.listing.prefix}eventListing.endDatePropDefPointer" />
   </bean>
 
   <bean id="eventListing.previousEventsQueryBuilder" parent="eventListing.upcomingEventsQueryBuilder">
     <property name="inverted" value="true" />
   </bean>
 
-  <bean id="eventListing.processedQuerySearchComponent" parent="${override.listing.prefix}eventListing.upcomingEventsSearchComponent">
+  <bean id="eventListing.processedQuerySearchComponent" parent="eventListing.upcomingEventsSearchComponent">
     <property name="name" value="eventListing.calendarEventSearch" />
     <property name="titleLocalizationKey">
       <null />
@@ -112,7 +113,7 @@
   <bean id="eventListing.upcoming.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
     <property name="sortOrderPropDefPointers">
       <list>
-        <value>start-date</value>
+        <ref bean="${override.listing.prefix}eventListing.startDatePropDefPointer" />
       </list>
     </property>
     <property name="resourceTypeTree" ref="resourceTypeTree" />
@@ -126,17 +127,18 @@
       <list>
         <ref bean="eventListing.previousEventsQueryBuilder" />
         <bean parent="queryStringParser">
-          <property name="queryString" value="type IN event" />
+          <property name="queryString" ref="${override.listing.prefix}eventListing.resourceTypeQueryString" />
         </bean>
       </list>
     </property>
     <property name="searchSorting" ref="eventListing.previous.searchSorting" />
+    <property name="configurablePropertySelectPointers" ref="${override.listing.prefix}event.configurablePropertySelectPointersList" />
   </bean>
 
   <bean id="eventListing.previous.searchSorting" class="org.vortikal.web.search.SearchSorting" depends-on="resourceTypeTree">
     <property name="sortOrderPropDefPointers">
       <list>
-        <value>start-date</value>
+        <ref bean="${override.listing.prefix}eventListing.startDatePropDefPointer" />
       </list>
     </property>
     <property name="resourceTypeTree" ref="resourceTypeTree" />
@@ -172,7 +174,7 @@
   <bean id="eventListing.viewResolver" parent="decoratorViewResolver">
     <property name="views">
       <map>
-        <entry key="${override.listing.prefix}eventListing.view" value-ref="${override.listing.prefix}eventListing.view" />
+        <entry key="eventListing.view" value-ref="eventListing.view" />
         <entry key="eventListingCalendar.view" value-ref="eventListingCalendar.view" />
       </map>
     </property>
@@ -190,5 +192,33 @@
       </map>
     </property>
   </bean>
-  
+
+  <!-- ### Legacy resource types and properties -->
+
+  <bean id="eventListing.resourceTypeQueryString" class="java.lang.String">
+    <constructor-arg type="java.lang.String">
+      <value>type IN event</value>
+    </constructor-arg>
+  </bean>
+
+  <bean id="eventListing.startDatePropDefPointer" class="java.lang.String">
+    <constructor-arg type="java.lang.String">
+      <value>start-date</value>
+    </constructor-arg>
+  </bean>
+
+  <bean id="eventListing.endDatePropDefPointer" class="java.lang.String">
+    <constructor-arg type="java.lang.String">
+      <value>end-date</value>
+    </constructor-arg>
+  </bean>
+
+  <bean id="event.configurablePropertySelectPointersList" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <null />
+      </list>
+    </constructor-arg>
+  </bean>
+
 </beans>

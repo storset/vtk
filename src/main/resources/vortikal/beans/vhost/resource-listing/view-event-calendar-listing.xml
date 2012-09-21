@@ -214,16 +214,4 @@
     <property name="viewAllPreviousService" ref="calendarEventListing.viewAllPreviousService" />
   </bean>
 
-  <bean id="eventListing.startDatePropDefPointer" class="java.lang.String">
-    <constructor-arg type="java.lang.String">
-      <value>start-date</value>
-    </constructor-arg>
-  </bean>
-
-  <bean id="eventListing.endDatePropDefPointer" class="java.lang.String">
-    <constructor-arg type="java.lang.String">
-      <value>end-date</value>
-    </constructor-arg>
-  </bean>
-
 </beans>

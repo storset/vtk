@@ -71,12 +71,6 @@
       <#assign url = resourceReference />	  
     </#if>
     
-    <#-- current URL to use in hash communication with iframe (Opera and IE 7) -->
-    <#assign origUrl = url?replace("?vrtx=view-as-webpage", "") + "?vrtx=admin" />
-    <#if resourceContext.currentResource.collection>
-      <#assign origUrl = origUrl + "&amp;action=preview" />
-    </#if>
-    
     <#if url?contains("?")>
       <#assign url = url + "&amp;" + previewViewParameter />
     <#else>
@@ -84,7 +78,7 @@
     </#if>
     <#assign url = url + "&amp;" + previewRefreshParameter + "=" + dateStr />
 
-    <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}#${origUrl}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">
+    <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">
       [Your user agent does not support frames or is currently configured
       not to display frames. However, you may visit
       <a href="${resourceReference}">the related document.</a>]

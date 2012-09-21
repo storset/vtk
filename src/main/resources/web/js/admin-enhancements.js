@@ -2531,7 +2531,7 @@ VrtxAdmin.prototype.displayInfoMsg = function displayInfoMsg(msg) {
 };
 
 VrtxAdmin.prototype.displayMsg = function displayMsg(msg, type) {
-  var vrtxAdm = this;
+  var vrtxAdm = this, _$ = vrtxAdm._$;
 
   var current = (type === "info") ? "infomessage" : "errormessage";
   var other = (type === "info") ? "errormessage" : "infomessage";
@@ -2544,13 +2544,20 @@ VrtxAdmin.prototype.displayMsg = function displayMsg(msg, type) {
     } else if(otherMsg.length) {
       otherMsg.html(msg).removeClass(other).addClass(current);
     } else {
-      vrtxAdm.cachedAppContent.prepend("<div class='" + current + " message'>" + msg + "</div>")
+      vrtxAdm.cachedAppContent.prepend("<div class='" + current + " message'>" + msg + "</div>");
+      // _$("." + current).hide().slideDown(vrtxAdm.transitionSpeed, vrtxAdm.transitionEasingSlideDown);
     }
   } else {
     if(currentMsg.length) {
+      /* currentMsg.hide().slideUp(vrtxAdm.transitionSpeed, vrtxAdm.transitionEasingSlideUp, function() {
+        _$.single(this).remove();
+      }); */
       currentMsg.remove();
     }
     if(otherMsg.length) {
+      /* otherMsg.hide().slideUp(vrtxAdm.transitionSpeed, vrtxAdm.transitionEasingSlideUp, function() {
+        _$.single(this).remove();
+      }); */
       otherMsg.remove();
     }
   }

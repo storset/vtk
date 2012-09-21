@@ -16,8 +16,8 @@
   - of the contents, and a parameter to display unpublished pages (only makes a difference for 
   - resources that can be published).
   - 
-  - Adds authTarget=http to ensure authenctication (e.g. needed to view unpublished). 
-  - Can be hardcoded as the value og "http" is only respected for world readable resources 
+  - Adds authTarget=http to ensure authentication (e.g. needed to view unpublished). 
+  - Can be hardcoded as the value and "http" is only respected for world readable resources 
   - (where preview should in fact be on http) 
   -
   - Directly includes"/system/javascript.ftl" since this 

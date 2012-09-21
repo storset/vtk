@@ -6,8 +6,6 @@
   - Description: A HTML page with a <iframe> tag to the previewed resource
   -              Loads from the admin domain. The src of the iframe points to the
   -              corresponding view domain.
-  - 
-  - Dynamic resizing of iframe only works in IE and Firefox. 
   -
   - Required model data:
   -   resourceReference

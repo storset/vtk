@@ -284,7 +284,7 @@ vrtxAdmin._$(document).ready(function () {
     });
     vrtxAdm.completeFormAsync({
         selector: "form#" + resourceMenuRightServices[i] + "-form input[type=submit]",
-        updateSelectors: ["#resource-title", "#publishing-status"],
+        updateSelectors: ["#resourceMenuRight", "#publishing-status"],
         post: true
     });
   }

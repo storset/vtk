@@ -85,9 +85,14 @@
         <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'> 
         
         $("body").prepend('<span id="vrtx-link-check-spinner"><@vrtx.msg code="linkcheck.spinner" default="Checking links..."/></span>');
+        
+        var linkCheckURL = '${linkcheck.URL?html}';
+        var href = location.href;
+        linkCheckURL = (href.indexOf("localhost:9322") === -1) ? linkCheckURL.replace("http://", "https://") : linkCheckURL;
+        
         visualizeBrokenLinks({
             selection : 'iframe',
-            validationURL : '${linkcheck.URL?html}',
+            validationURL : linkCheckURL,
             chunk : 10,
             responseLocalizer : linkCheckResponseLocalizer,
             completed : linkCheckCompleted
@@ -124,6 +129,11 @@
 
     <#if workingCopy?exists>
       <#assign url = url + "&amp;revision=WORKING_COPY" />
+    </#if>
+    
+    <#-- Force HTTPS preview if admin is HTTPS -->
+    <#if url?contains("http://") && !url?contains("localhost:9322")>
+      <#assign url = url?replace("http://", "https://") />
     </#if>
 
     <iframe class="previewView" name="previewViewIframe" id="previewViewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">

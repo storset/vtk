@@ -67,7 +67,7 @@
     
     <#if previewImage?exists >
       <#assign url = previewImage.URL />
-      <#elseif resourceReference?exists >
+    <#elseif resourceReference?exists >
       <#assign url = resourceReference />	  
     </#if>
     

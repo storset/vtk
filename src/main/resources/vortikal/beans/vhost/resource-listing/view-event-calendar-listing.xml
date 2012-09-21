@@ -22,7 +22,7 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="eventListing.calendarHandler" class="org.vortikal.web.display.collection.event.EventCalendarListingController"
+  <bean id="eventListing.calendarHandler" class="org.vortikal.web.display.collection.event.calendar.EventCalendarListingController"
     parent="eventListing.handler">
     <property name="viewName" value="eventListingCalendar.view" />
     <property name="helper" ref="eventListingHelper" />
@@ -52,7 +52,7 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="eventListing.calendarSpecificDateHandler" class="org.vortikal.web.display.collection.event.EventCalendarSpecificDateListingController"
+  <bean id="eventListing.calendarSpecificDateHandler" class="org.vortikal.web.display.collection.event.calendar.EventCalendarSpecificDateListingController"
     parent="eventListing.calendarHandler">
   </bean>
   
@@ -100,11 +100,11 @@
     <property name="serviceNameProvider" ref="collectionListing.viewService.serviceNameProvider" />
   </bean>
 
-  <bean id="eventListing.calendarAllPreviousHandler" class="org.vortikal.web.display.collection.event.EventCalendarAllPreviousListingController"
+  <bean id="eventListing.calendarAllPreviousHandler" class="org.vortikal.web.display.collection.event.calendar.EventCalendarAllPreviousListingController"
     parent="eventListing.calendarHandler">
   </bean>
 
-  <bean id="eventListing.calendarAllUpcomingHandler" class="org.vortikal.web.display.collection.event.EventCalendarAllUpcomingListingController"
+  <bean id="eventListing.calendarAllUpcomingHandler" class="org.vortikal.web.display.collection.event.calendar.EventCalendarAllUpcomingListingController"
     parent="eventListing.calendarHandler">
   </bean>
 
@@ -184,7 +184,8 @@
       <map>
         <entry key="cssURLs">
           <list>
-            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-tabs-customized/css/ui-lightness/jquery-ui-1.7.2.custom.css</value>
+            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-tabs-customized/css/ui-lightness/jquery-ui-1.7.2.custom.css
+            </value>
             <value>${themeBaseURL}/view-collectionlisting.css</value>
             <value>${themeBaseURL}/view-event-calendar-listing.css</value>
           </list>
@@ -192,9 +193,12 @@
         <entry key="jsURLs">
           <list>
             <value>${webResources.baseURL}/jquery/include-jquery.js</value>
-            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery-ui-${jquery.ui.version}.custom.min.js</value>
-            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery.ui.datepicker-no.js</value>
-            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery.ui.datepicker-nn.js</value>
+            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery-ui-${jquery.ui.version}.custom.min.js
+            </value>
+            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery.ui.datepicker-no.js
+            </value>
+            <value>${webResources.baseURL}/jquery/plugins/ui/jquery-ui-${jquery.ui.version}.custom/js/jquery.ui.datepicker-nn.js
+            </value>
             <value>${webResources.baseURL}/js/datepicker/datepicker-event-listing.js</value>
             <value>${webResources.baseURL}/js/view-dropdown.js</value>
           </list>

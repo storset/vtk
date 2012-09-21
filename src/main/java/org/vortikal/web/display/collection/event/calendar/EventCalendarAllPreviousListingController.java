@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.display.collection.event;
+package org.vortikal.web.display.collection.event.calendar;
 
 import java.util.Map;
 
@@ -37,17 +37,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.search.Listing;
 
-public class EventCalendarAllUpcomingListingController extends EventCalendarAllListingController {
+public class EventCalendarAllPreviousListingController extends EventCalendarAllListingController {
 
     @Override
     protected Listing getSearchResult(HttpServletRequest request, Resource collection, Map<String, Object> model,
             int page, int pageLimit) throws Exception {
-
-        Listing result = this.searcher.searchUpcoming(request, collection, page, pageLimit, 0);
-        if (result.getTotalHits() > 0) {
-            model.put(EventListingHelper.DISPLAY_LISTING_ICAL_LINK, true);
-        }
-
-        return result;
+        model.put(MODEL_KEY_HIDE_ALTERNATIVE_REP, Boolean.TRUE);
+        return this.searcher.searchPrevious(request, collection, page, pageLimit, 0);
     }
+
 }

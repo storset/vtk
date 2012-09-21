@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.vortikal.web.display.collection.event;
+package org.vortikal.web.display.collection.event.calendar;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -39,6 +39,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Resource;
+import org.vortikal.web.display.collection.event.EventListingController;
+import org.vortikal.web.display.collection.event.EventListingHelper;
 import org.vortikal.web.display.collection.event.EventListingSearcher.GroupedEvents;
 import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.search.Listing;

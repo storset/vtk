@@ -278,7 +278,7 @@ vrtxAdmin._$(document).ready(function () {
     vrtxAdm.getFormAsync({
         selector: "#title-container a#" + resourceMenuRightServices[i],
         selectorClass: "globalmenu",
-        insertAfterOrReplaceClass: "#resource-title > ul:last-child",
+        insertAfterOrReplaceClass: "ul#resourceMenuLeft",
         nodeType: "div",
         simultanSliding: true
     });

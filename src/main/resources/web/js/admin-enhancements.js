@@ -374,7 +374,7 @@ vrtxAdmin._$(document).ready(function () {
                   copyMoveExists.remove();
                   resourceMenuRight.html(results.find("#resourceMenuRight").html());
                   vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
-                  if(resourceMenuRight.hasClass("smaller-seperator")) {
+                  if(resourceMenuRight.hasClass("smaller-seperator")) { // Instant compact => expanded
                     resourceMenuRight.removeClass("smaller-seperator");
                   }
                   baggageBeltAnimFx(resourceMenuRight.find(li));
@@ -383,7 +383,7 @@ vrtxAdmin._$(document).ready(function () {
             } else {
               resourceMenuRight.html(results.find("#resourceMenuRight").html());
               vrtxAdm.displayInfoMsg(results.find(".infomessage").html());
-              if(resourceMenuRight.hasClass("smaller-seperator")) {
+              if(resourceMenuRight.hasClass("smaller-seperator")) { // Instant compact => expanded
                 resourceMenuRight.removeClass("smaller-seperator");
               }
               baggageBeltAnimFx(resourceMenuRight.find(li));

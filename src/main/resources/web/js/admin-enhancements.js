@@ -587,11 +587,11 @@ vrtxAdmin._$(document).ready(function () {
 
   // Show message in IE6, IE7 and IETrident in compability mode
   if (vrtxAdm.isIE7 || vrtxAdm.isIETridentInComp) {
-    var message = this.cachedAppContent.find(" > .message");
+    var message = vrtxAdm.cachedAppContent.find(" > .message");
     if (message.length) {
       message.html(outdatedBrowserText);
     } else {
-      this.cachedAppContent.prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
+      vrtxAdm.cachedAppContent.prepend("<div class='infomessage'>" + outdatedBrowserText + "</div>");
     }
   }
   

@@ -39,12 +39,15 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.support.RequestContext;
 
 public class DisplayComponentController implements Controller {
+    private static Log logger = LogFactory.getLog(DisplayComponentController.class);
 
     private ComponentResolver componentResolver;
     private static final String DOCTYPE = "";
@@ -58,6 +61,9 @@ public class DisplayComponentController implements Controller {
             return null;
         }
         ComponentInvocation invocation = getComponentInvocation(component, request);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Invoke component: " + invocation);
+        }
         renderComponent(component, invocation, request, response);
         return null;
     }

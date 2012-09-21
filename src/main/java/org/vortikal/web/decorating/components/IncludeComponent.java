@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -44,6 +45,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.context.ServletContextAware;
 import org.vortikal.repository.AuthorizationException;
@@ -67,6 +70,7 @@ import org.vortikal.web.service.URL;
 import org.vortikal.web.servlet.BufferedResponse;
 import org.vortikal.web.servlet.ConfigurableRequestWrapper;
 import org.vortikal.web.servlet.VortikalServlet;
+
 
 public class IncludeComponent extends AbstractDecoratorComponent
 implements ServletContextAware {
@@ -132,7 +136,7 @@ implements ServletContextAware {
     }
     
     
-    
+    private static Log logger = LogFactory.getLog(IncludeComponent.class);
     public void render(DecoratorRequest request, DecoratorResponse response)
     throws Exception {
 
@@ -151,9 +155,13 @@ implements ServletContextAware {
             
             if (this.inlineEsiLocations != null && this.inlineEsiLocations.matcher(requestURL).matches()) {
                 try {
-                    esi = URL.decode(esi);
-                    esi = HtmlUtil.unescapeHtmlString(esi);
-                    handleVirtualInclude(esi, request, response);
+                    URL url = URL.create(request.getServletRequest());
+                    url = url.relativeURL(esi);
+                    Map<String, String[]> query = new LinkedHashMap<String, String[]>();
+                    for (String p: url.getParameterNames()) {
+                        query.put(p, new String[] {url.getParameter(p)});
+                    }
+                    handleVirtualInclude(url.getPath(), query, request, response);
                     return;
                 } catch (Throwable t) {
                     throw new DecoratorComponentException("ESI include: " + t.getMessage(), t);
@@ -272,17 +280,9 @@ implements ServletContextAware {
             out.close();
         }
     }
-
-
+    
     private void handleVirtualInclude(String uri, DecoratorRequest request,
             DecoratorResponse response) throws Exception {
-
-        HttpServletRequest servletRequest = request.getServletRequest();
-        if (servletRequest.getAttribute(INCLUDE_ATTRIBUTE_NAME) != null) {
-            throw new DecoratorComponentException(
-                    "Error including URI '" + uri + "': possible include loop detected ");
-        }
-
         String decodedURI = uri;
 
         Map<String, String[]> queryMap = new HashMap<String, String[]>();
@@ -297,8 +297,16 @@ implements ServletContextAware {
         Path decodedPath = Path.fromString(decodedURI);
         decodedPath = URL.decode(decodedPath);
 
+        handleVirtualInclude(decodedPath, queryMap, request, response);
+    }
+
+
+    private void handleVirtualInclude(Path uri, Map<String, String[]> queryMap, DecoratorRequest request, 
+            DecoratorResponse response) throws Exception {
+        
+        HttpServletRequest servletRequest = request.getServletRequest();
         URL url = URL.create(servletRequest);
-        url.setPath(decodedPath);
+        url.setPath(uri);
         url.clearParameters();
         for (String param: queryMap.keySet()) {
             for (String value: queryMap.get(param)) {
@@ -306,8 +314,18 @@ implements ServletContextAware {
             }
         }
 
+        if (logger.isDebugEnabled()) {
+            logger.info("handle virtual include: " + uri + " -> " + url);
+        }
+        
+        if (servletRequest.getAttribute(INCLUDE_ATTRIBUTE_NAME) != null) {
+            throw new DecoratorComponentException(
+                    "Error including URI '" + uri + "': possible include loop detected ");
+        }
+
         ConfigurableRequestWrapper requestWrapper =
             new ConfigurableRequestWrapper(servletRequest, url);
+        
         requestWrapper.setHeader("If-Modified-Since", null);
 
         BufferedResponse servletResponse = new BufferedResponse();
@@ -366,8 +384,8 @@ implements ServletContextAware {
             out.close();
         }
     }
-
-
+    
+    
     private void handleHttpInclude(String uri,
             DecoratorRequest request, DecoratorResponse response) throws Exception {
         URLObject obj = this.httpIncludeCache.get(uri);

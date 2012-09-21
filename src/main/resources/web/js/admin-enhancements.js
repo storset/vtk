@@ -2828,7 +2828,10 @@ jQuery.fn.slideDown = function(speed, easing, callback) {
   }
 };
 
-// Get URL parameter - taken from: http://www.netlobo.com/url_query_string_javascript.html and modified slightly
+/* Get URL parameter
+ * Credits: http://www.netlobo.com/url_query_string_javascript.html
+ * Modified slightly
+ */
 function gup(name, url) {
   name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
   var regexS = "[\\?&]"+name+"=([^&#]*)";
@@ -2842,12 +2845,12 @@ function gup(name, url) {
  *          http://addyosmani.com/resources/essentialjsdesignpatterns/book/
  */
 jQuery.single = (function(o){
-    var collection = jQuery([1]); // Fill with 1 item, to make sure length === 1
-    return function(element) {
-        if(element.length) return jQuery(element); // If length exists return new instance instead
-        collection[0] = element; // Give collection the element:
-        return collection; // Return the collection:
-    };
+  var collection = jQuery([1]); // Fill with 1 item, to make sure length === 1
+  return function(element) {
+    if(element.length) return jQuery(element); // If length exists return new instance instead
+    collection[0] = element; // Give collection the element:
+    return collection; // Return the collection:
+  };
 }());
 
 /* Remove duplicates from an array

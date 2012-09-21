@@ -89,16 +89,12 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
         if (cachedObj != null) {
             clar = (CollectionListingAggregatedResources) cachedObj;
             isMultiHostSearch = true;
-
-            logger.debug("Getting resolved aggregation set from cache: " + clar);
-
         } else {
             clar = this.aggregationResolver.getAggregatedResources(collection);
             isMultiHostSearch = this.isMultiHostSearch(clar, localURL);
-
-            logger.debug("Resolved aggregation set: " + clar);
-
         }
+
+        logger.info("Resolved aggregation set for " + request.getRequestURI() + ": " + clar);
 
         ResultSet result = null;
 

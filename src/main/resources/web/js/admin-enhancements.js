@@ -272,7 +272,7 @@ vrtxAdmin._$(document).ready(function () {
     });
   }
 
-  var resourceMenuRightServices = ["vrtx-unpublish-document", "vrtx-publish-document", "manage\\.unlockFormService"];
+  var resourceMenuRightServices = ["vrtx-unpublish-document", "vrtx-publish-document"];
 
   for (i = resourceMenuRightServices.length; i--;) {
     vrtxAdm.getFormAsync({
@@ -288,6 +288,17 @@ vrtxAdmin._$(document).ready(function () {
         post: true
     });
   }
+  
+  vrtxAdm.getFormAsync({
+    selector: "#title-container a#manage\\.unlockFormService",
+    selectorClass: "globalmenu",
+    insertAfterOrReplaceClass: "#resource-title > ul:last-child",
+    nodeType: "div",
+    simultanSliding: true
+  });
+  vrtxAdm.completeFormAsync({
+    selector: "form#a#manage\\.unlockFormService-form input[type=submit]"
+  });
 
   if(bodyId == "vrtx-manage-collectionlisting") {
     var tabMenuServices = ["fileUploadService", "createDocumentService", "createCollectionService"];

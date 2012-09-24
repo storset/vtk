@@ -87,8 +87,9 @@
         $("body").prepend('<span id="vrtx-link-check-spinner"><@vrtx.msg code="linkcheck.spinner" default="Checking links..."/></span>');
         
         var linkCheckURL = '${linkcheck.URL?html}';
+        var authTarget = '${authTarget}';
         var href = location.href;
-        linkCheckURL = (href.indexOf("localhost:9322") === -1) ? linkCheckURL.replace("http://", "https://") : linkCheckURL;
+        linkCheckURL = (authTarget === "https" && linkCheckURL.match(/^http:/)) ? linkCheckURL.replace("http://", "https://") : linkCheckURL;
         
         visualizeBrokenLinks({
             selection : 'iframe',
@@ -120,20 +121,15 @@
     <#if url?contains("?")>
       <#assign url = url + "&amp;" + previewUnpublishedParameter + "="  + "true" 
                + "&amp;link-check=" + visualizeBrokenLinks?default('false')
-               + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=" + permissions_ACTION_READ.requestScheme />
+               + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=" + authTarget />
     <#else>
       <#assign url = url + "?" + previewUnpublishedParameter + "=" + "true"
                + "&amp;link-check=" + visualizeBrokenLinks?default('false')
-               + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=" + permissions_ACTION_READ.requestScheme />
+               + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=" + authTarget />
     </#if>
 
     <#if workingCopy?exists>
       <#assign url = url + "&amp;revision=WORKING_COPY" />
-    </#if>
-    
-    <#-- Force HTTPS preview if admin is HTTPS -->
-    <#if url?contains("http://") && !url?contains("localhost:9322")>
-      <#assign url = url?replace("http://", "https://") />
     </#if>
 
     <iframe class="previewView" name="previewViewIframe" id="previewViewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">

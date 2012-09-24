@@ -72,6 +72,8 @@ public class ResourceServiceURLController implements Controller {
     private Service service = null;
     private boolean displayWorkingRevision = false;
     private String viewName = DEFAULT_VIEW_NAME;
+    private String webHostName = null;
+    private String webProtocolRestricted = null;
 
     @Required 
     public void setService(Service service) {
@@ -86,7 +88,15 @@ public class ResourceServiceURLController implements Controller {
         this.viewName = viewName;
     }
     
-    public ModelAndView handleRequest(HttpServletRequest request,
+    public void setWebHostName(String webHostName) {
+		this.webHostName = webHostName;
+	}
+
+	public void setWebProtocolRestricted(String webProtocolRestricted) {
+		this.webProtocolRestricted = webProtocolRestricted;
+	}
+
+	public ModelAndView handleRequest(HttpServletRequest request,
                                       HttpServletResponse response) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
@@ -121,9 +131,23 @@ public class ResourceServiceURLController implements Controller {
             resourceURL = resourceURL.replaceFirst("http:", "https:");
         }
 
+        // Hack to ensure https for preview when not popup and set authTarget
+        
+        boolean isAdminHttps = this.webHostName != this.webProtocolRestricted;
+        boolean isPopup = "preview.displayPopupURL".equals(this.viewName);
+        
+        String authTarget = "http";
+        if(isAdminHttps) {
+        	authTarget = isPopup ? (resource.isReadRestricted() ? "https" : "http") : "https";
+        }
+        if(resourceURL.startsWith("http:") && !isPopup && isAdminHttps) {
+        	resourceURL = resourceURL.replaceFirst("http:", "https:");
+        }
+        
         model.put("resource", resource);
         model.put("resourceReference", resourceURL);
-
+        model.put("authTarget", authTarget);
+        
         return new ModelAndView(this.viewName, model);
     }
     

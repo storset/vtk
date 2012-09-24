@@ -22,9 +22,7 @@
   </head>
   <body>
     <h1>Document cannot be previewed</h1>
-    <p>This document can be previewed in
-    a <a href="${resourceReference?html}" target="vrtx_preview_popup">separate window</a>.
-    </p>
+    <p>This document can be previewed in a <a href="${resourceReference?html}" target="vrtx_preview_popup">separate window</a>.</p>
 
     Reasons:
     <#assign prop = vrtx.getProp(resourceContext.currentResource, 'sslMixedMode') />

@@ -75,11 +75,6 @@
       <#assign url = url + "?" + previewViewParameter />
     </#if>
     <#assign url = url + "&amp;" + previewRefreshParameter + "=" + dateStr />
-    
-    <#-- Force HTTPS preview if admin is HTTPS -->
-    <#if url?contains("http://") && !url?contains("localhost:9322")>
-      <#assign url = url?replace("http://", "https://") />
-    </#if>
 
     <iframe class="preview" name="previewIframe" id="previewIframe" src="${url}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">
       [Your user agent does not support frames or is currently configured

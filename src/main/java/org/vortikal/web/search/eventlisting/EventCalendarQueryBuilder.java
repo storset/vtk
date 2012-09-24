@@ -1,0 +1,138 @@
+/* Copyright (c) 2012, University of Oslo, Norway
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 
+ *  * Neither the name of the University of Oslo nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *      
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.vortikal.web.search.eventlisting;
+
+import java.util.Calendar;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
+import org.vortikal.repository.search.query.AndQuery;
+import org.vortikal.repository.search.query.OrQuery;
+import org.vortikal.repository.search.query.PropertyExistsQuery;
+import org.vortikal.repository.search.query.PropertyTermQuery;
+import org.vortikal.repository.search.query.Query;
+import org.vortikal.repository.search.query.TermOperator;
+import org.vortikal.web.display.collection.event.EventListingHelper;
+import org.vortikal.web.search.SearchComponentQueryBuilder;
+
+public class EventCalendarQueryBuilder implements SearchComponentQueryBuilder, InitializingBean {
+
+    private EventListingHelper helper;
+    private ResourceTypeTree resourceTypeTree;
+    private String startPropDefPointer;
+    private String endPropDefPointer;
+    private PropertyTypeDefinition startPropDef;
+    private PropertyTypeDefinition endPropDef;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.startPropDef = this.resourceTypeTree.getPropertyDefinitionByPointer(this.startPropDefPointer);
+        this.endPropDef = this.resourceTypeTree.getPropertyDefinitionByPointer(this.endPropDefPointer);
+    }
+
+    @Override
+    public Query build(Resource base, HttpServletRequest request) {
+
+        if (this.startPropDef == null || this.endPropDef == null) {
+            throw new IllegalArgumentException("Both start and end date properties must be available");
+        }
+
+        Calendar startCal = this.helper.getCurrentMonth();
+        long start = startCal.getTimeInMillis();
+
+        // Start time is not yet passed
+        Query notYetStarted = new PropertyTermQuery(this.startPropDef, String.valueOf(start), TermOperator.GT);
+
+        // Start time is passed, but end time is not yet passed
+        AndQuery notYetEnded = new AndQuery();
+        notYetEnded.add(new PropertyTermQuery(startPropDef, String.valueOf(start), TermOperator.LT));
+        OrQuery endTimeOr = new OrQuery();
+        endTimeOr.add(new PropertyTermQuery(endPropDef, String.valueOf(start), TermOperator.GE));
+        endTimeOr.add(new PropertyTermQuery(endPropDef, String.valueOf(this.getToday()), TermOperator.EQ));
+        notYetEnded.add(endTimeOr);
+
+        OrQuery query = new OrQuery();
+        query.add(notYetStarted);
+        query.add(notYetEnded);
+
+        // Start time is now/passed, but there is no end time -> regarded as
+        // upcoming for one hour from start time. Only when no specific date is
+        // supplied.
+        AndQuery noEndDate = new AndQuery();
+        long oneHourEarlier = this.getOneHourEarlier();
+        noEndDate.add(new PropertyTermQuery(this.startPropDef, String.valueOf(oneHourEarlier), TermOperator.GE));
+        noEndDate.add(new PropertyExistsQuery(this.endPropDef, true));
+        query.add(noEndDate);
+
+        return query;
+
+    }
+
+    private long getToday() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        return calendar.getTimeInMillis();
+    }
+
+    private long getOneHourEarlier() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR_OF_DAY, -1);
+        return calendar.getTimeInMillis();
+    }
+
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+
+    @Required
+    public void setStartPropDefPointer(String startPropDefPointer) {
+        this.startPropDefPointer = startPropDefPointer;
+    }
+
+    @Required
+    public void setEndPropDefPointer(String endPropDefPointer) {
+        this.endPropDefPointer = endPropDefPointer;
+    }
+
+    @Required
+    public void setHelper(EventListingHelper helper) {
+        this.helper = helper;
+    }
+}

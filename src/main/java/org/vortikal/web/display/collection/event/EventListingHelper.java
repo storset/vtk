@@ -30,13 +30,17 @@
  */
 package org.vortikal.web.display.collection.event;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,12 +50,15 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.support.RequestContext;
+import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
+import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.resourcetype.DateValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.web.display.listing.ListingPager;
+import org.vortikal.web.search.Listing;
 import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
 public final class EventListingHelper implements InitializingBean {
@@ -189,6 +196,71 @@ public final class EventListingHelper implements InitializingBean {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         return cal;
+    }
+
+    public String getCalendarWidgetEventDates(Listing events, Calendar cal) {
+
+        Set<String> eventDatesList = new HashSet<String>();
+        SimpleDateFormat eventDateFormat = new SimpleDateFormat("yyyy-M-d");
+
+        for (PropertySet propSet : events.getFiles()) {
+
+            Property startDateProp = propSet.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "start-date");
+            Date eventStart = startDateProp != null ? startDateProp.getDateValue() : cal.getTime();
+            Property endDateProp = propSet.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "end-date");
+            Date eventEnd = endDateProp != null ? endDateProp.getDateValue() : eventStart;
+
+            Calendar eventStartCal = this.getDayOfMonth(eventStart);
+            if (eventStartCal.get(Calendar.MONTH) < cal.get(Calendar.MONTH)) {
+                eventStartCal.setTime(cal.getTime());
+            }
+            Calendar eventEndCal = this.getDayOfMonth(eventEnd);
+            if (eventEndCal.get(Calendar.MONTH) > cal.get(Calendar.MONTH)) {
+                eventEndCal.set(Calendar.DAY_OF_MONTH, eventEndCal.getActualMaximum(Calendar.DAY_OF_MONTH));
+            }
+
+            while (eventStartCal.before(eventEndCal) || eventStartCal.equals(eventEndCal)) {
+                eventDatesList.add(eventDateFormat.format(eventStartCal.getTime()));
+                eventStartCal.add(Calendar.DAY_OF_MONTH, 1);
+            }
+
+        }
+
+        String eventDates = this.getEventDatesAsArrayString(eventDatesList);
+        return eventDates;
+    }
+
+    private Calendar getDayOfMonth(Date eventStart) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(eventStart);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal;
+    }
+
+    private String getEventDatesAsArrayString(Set<String> eventDates) {
+        StringBuilder sb = new StringBuilder("[");
+        Iterator<String> it = eventDates.iterator();
+        boolean first = true;
+        while (it.hasNext()) {
+            if (!first) {
+                sb.append(", ");
+            }
+            sb.append("'" + it.next() + "'");
+            first = false;
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void setCalendarTitles(HttpServletRequest request, Resource resource, Map model) {
+        model.put("dayHasPlannedEventsTitle",
+                this.getEventTypeTitle(request, resource, "eventListing.calendar.dayHasPlannedEvents", false));
+        model.put("dayHasNoPlannedEventsTitle",
+                this.getEventTypeTitle(request, resource, "eventListing.calendar.dayHasNoPlannedEvents", false));
     }
 
     @Required

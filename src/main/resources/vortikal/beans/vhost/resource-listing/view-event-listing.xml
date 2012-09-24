@@ -45,9 +45,7 @@
   <bean id="eventListing.eventListingSearcher" class="org.vortikal.web.display.collection.event.EventListingSearcher">
     <property name="upcomingEventsSearch" ref="eventListing.upcomingEventsSearchComponent" />
     <property name="previousEventsSearch" ref="eventListing.previousEventsSearchComponent" />
-    <property name="furtherUpcomingSearchComponent" ref="${override.listing.prefix}eventListing.furtherUpcomingSearchComponent" />
     <property name="specificDateEventSearchComponent" ref="${override.listing.prefix}eventListing.specificDateEventSearchComponent" />
-    <property name="daysAhead" value="${event.listing.days.ahead}" />
   </bean>
 
   <bean id="eventListing.atomHandler" class="org.vortikal.web.display.collection.event.EventListingAsFeedController"
@@ -176,6 +174,7 @@
       <map>
         <entry key="eventListing.view" value-ref="eventListing.view" />
         <entry key="eventListingCalendar.view" value-ref="eventListingCalendar.view" />
+        <entry key="eventListingCalendarWithWidgetContextProvider.view" value-ref="eventListingCalendarWithWidgetContextProvider.view" />
       </map>
     </property>
   </bean>

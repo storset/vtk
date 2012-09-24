@@ -27,6 +27,28 @@
     <property name="viewName" value="eventListingCalendar.view" />
     <property name="helper" ref="eventListingHelper" />
     <property name="daysAhead" value="${event.listing.days.ahead}" />
+    <property name="viewAllUpcomingService" ref="calendarEventListing.viewAllUpcomingService" />
+    <property name="viewAllPreviousService" ref="calendarEventListing.viewAllPreviousService" />
+    <property name="calendarSearchComponent" ref="eventListing.calendarCurrentMonthAndForwardSearchComponent" />
+  </bean>
+
+  <bean id="eventListing.calendarCurrentMonthAndForwardSearchComponent" parent="collectionListing.searchComponent">
+    <property name="name" value="eventListing.calendarCurrentMonthAndForwardSearchComponent" />
+    <property name="listableProperties" ref="eventListing.listableProperties" />
+    <property name="listingUriQueryBuilder" ref="eventListing.listingUriQueryBuilder" />
+    <property name="queryBuilders">
+      <list>
+        <ref bean="eventListing.calendarCurrentMonthAndForwardQueryBuilder" />
+      </list>
+    </property>
+    <property name="searchSorting" ref="eventListing.upcoming.searchSorting" />
+  </bean>
+
+  <bean id="eventListing.calendarCurrentMonthAndForwardQueryBuilder" class="org.vortikal.web.search.eventlisting.EventCalendarQueryBuilder">
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="startPropDefPointer" ref="${override.listing.prefix}eventListing.startDatePropDefPointer" />
+    <property name="endPropDefPointer" ref="${override.listing.prefix}eventListing.endDatePropDefPointer" />
+    <property name="helper" ref="eventListingHelper" />
   </bean>
 
   <!-- ### View specific date ###-->
@@ -54,6 +76,7 @@
 
   <bean id="eventListing.calendarSpecificDateHandler" class="org.vortikal.web.display.collection.event.calendar.EventCalendarSpecificDateListingController"
     parent="eventListing.calendarHandler">
+    <property name="viewName" value="eventListingCalendarWithWidgetContextProvider.view" />
   </bean>
   
   <!-- ### View all upcoming and all previous ### -->
@@ -102,40 +125,20 @@
 
   <bean id="eventListing.calendarAllPreviousHandler" class="org.vortikal.web.display.collection.event.calendar.EventCalendarAllPreviousListingController"
     parent="eventListing.calendarHandler">
+    <property name="viewName" value="eventListingCalendarWithWidgetContextProvider.view" />
   </bean>
 
   <bean id="eventListing.calendarAllUpcomingHandler" class="org.vortikal.web.display.collection.event.calendar.EventCalendarAllUpcomingListingController"
     parent="eventListing.calendarHandler">
+    <property name="viewName" value="eventListingCalendarWithWidgetContextProvider.view" />
   </bean>
 
   <bean id="viewParameterEquals" class="org.vortikal.web.service.RequestParameterAssertion" abstract="true">
     <property name="parameterName" value="view" />
   </bean>
 
-  <bean id="eventListing.furtherUpcomingSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
-    <property name="name" value="eventListing.furtherUpcomingSearchComponent" />
-    <property name="queryBuilders">
-      <list>
-        <bean parent="queryStringParser">
-          <property name="queryString" value="type IN event" />
-        </bean>
-        <bean class="org.vortikal.web.search.ParameterizedQueryStringProcessor" parent="queryStringParser">
-          <property name="replacements">
-            <map>
-              <entry key="[1]" value="${event.listing.days.ahead}" />
-            </map>
-          </property>
-          <property name="queryString" value="start-date &gt;= {$currentDate+[1]d}" />
-        </bean>
-      </list>
-    </property>
-    <property name="titleLocalizationKey">
-      <null />
-    </property>
-  </bean>
-
   <bean id="eventListing.specificDateEventSearchComponent" parent="eventListing.upcomingEventsSearchComponent">
-    <property name="name" value="eventListing.furtherUpcomingSearchComponent" />
+    <property name="name" value="eventListing.specificDateEventSearchComponent" />
     <property name="queryBuilders">
       <list>
         <bean parent="queryStringParser">
@@ -175,11 +178,6 @@
 
   <bean id="eventListingCalendar.view" parent="freemarkerView">
     <property name="url" value="pages/view-collection-listing.ftl" />
-    <property name="referenceDataProviders">
-      <list>
-        <ref bean="eventCalenderContentProvider" />
-      </list>
-    </property>
     <property name="attributesMap">
       <map>
         <entry key="cssURLs">
@@ -207,15 +205,18 @@
     </property>
   </bean>
 
+  <bean id="eventListingCalendarWithWidgetContextProvider.view" parent="eventListingCalendar.view">
+    <property name="url" value="pages/view-collection-listing.ftl" />
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="eventCalenderContentProvider" />
+      </list>
+    </property>
+  </bean>
+
   <bean id="eventCalenderContentProvider" class="org.vortikal.web.referencedata.provider.EventCalenderContentProvider">
     <property name="helper" ref="eventListingHelper" />
     <property name="currentMonthSearchComponent" ref="${override.listing.prefix}eventListing.currentMonthSearchComponent" />
-    <property name="displayTypePropDef" ref="eventListing.displayTypePropDef" />
-    <property name="resourceTypeTree" ref="resourceTypeTree" />
-    <property name="startDatePropDefPointer" ref="${override.listing.prefix}eventListing.startDatePropDefPointer" />
-    <property name="endDatePropDefPointer" ref="${override.listing.prefix}eventListing.endDatePropDefPointer" />
-    <property name="viewAllUpcomingService" ref="calendarEventListing.viewAllUpcomingService" />
-    <property name="viewAllPreviousService" ref="calendarEventListing.viewAllPreviousService" />
   </bean>
 
 </beans>

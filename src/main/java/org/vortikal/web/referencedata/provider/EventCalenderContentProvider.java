@@ -34,40 +34,25 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
-import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceTypeTree;
-import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.event.EventListingHelper;
 import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
-import org.vortikal.web.service.Service;
-import org.vortikal.web.service.URL;
 
 public class EventCalenderContentProvider implements ReferenceDataProvider {
 
     private EventListingHelper helper;
     private SearchComponent currentMonthSearchComponent;
-    private ResourceTypeTree resourceTypeTree;
-    private PropertyTypeDefinition displayTypePropDef;
-    private String startDatePropDefPointer;
-    private String endDatePropDefPointer;
-    private Service viewAllUpcomingService;
-    private Service viewAllPreviousService;
 
     @Override
     public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
@@ -83,105 +68,24 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
         Path resourceURI = requestContext.getResourceURI();
         Repository repository = requestContext.getRepository();
         Resource resource = repository.retrieve(token, resourceURI, true);
+        Calendar cal = this.helper.getCurrentMonth();
 
-        setAllowedDates(request, resource, model);
-        setCalendarTitles(request, resource, model);
-
-        URL viewAllUpcomingURL = this.viewAllUpcomingService.constructURL(resource);
-        model.put("viewAllUpcomingURL", viewAllUpcomingURL);
-        model.put("viewAllUpcomingTitle", this.helper.getEventTypeTitle(request, resource,
-                "eventListing.viewAllUpcoming", false));
-
-        URL viewAllPreviousURL = this.viewAllPreviousService.constructURL(resource);
-        model.put("viewAllPreviousURL", viewAllPreviousURL);
-        model.put("viewAllPreviousTitle", this.helper.getEventTypeTitle(request, resource,
-                "eventListing.viewAllPrevious", false));
-
-    }
-
-    @SuppressWarnings( { "unchecked", "rawtypes" })
-    private void setAllowedDates(HttpServletRequest request, Resource resource, Map model) throws Exception {
-        Property displayTypeProp = resource.getProperty(this.displayTypePropDef);
-        if (displayTypeProp != null && "calendar".equals(displayTypeProp.getStringValue())) {
-
-            PropertyTypeDefinition startDatePropDef = this.resourceTypeTree
-                    .getPropertyDefinitionByPointer(this.startDatePropDefPointer);
-            PropertyTypeDefinition endDatePropDef = this.resourceTypeTree
-                    .getPropertyDefinitionByPointer(this.endDatePropDefPointer);
-
-            Calendar cal = this.helper.getCurrentMonth();
-
-            String dateString = request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE);
-            if (dateString != null) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-                try {
-                    Date requestedMonth = sdf.parse(dateString);
-                    cal.setTime(requestedMonth);
-                } catch (ParseException e) {
-                    // Ignore, show current month
-                }
+        String dateString = request.getParameter(EventListingHelper.REQUEST_PARAMETER_DATE);
+        if (dateString != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+            try {
+                Date requestedMonth = sdf.parse(dateString);
+                cal.setTime(requestedMonth);
+            } catch (ParseException e) {
+                // Ignore, show current month
             }
-
-            Set<String> eventDatesList = new HashSet<String>();
-            SimpleDateFormat eventDateFormat = new SimpleDateFormat("yyyy-M-d");
-            Listing plannedEvents = this.currentMonthSearchComponent.execute(request, resource, 1, 500, 0);
-            for (PropertySet propSet : plannedEvents.getFiles()) {
-                Property startDateProp = propSet.getProperty(startDatePropDef);
-                Date eventStart = startDateProp != null ? startDateProp.getDateValue() : cal.getTime();
-                Property endDateProp = propSet.getProperty(endDatePropDef);
-                Date eventEnd = endDateProp != null ? endDateProp.getDateValue() : eventStart;
-                Calendar eventStartCal = this.getDayOfMonth(eventStart);
-                if (eventStartCal.get(Calendar.MONTH) < cal.get(Calendar.MONTH)) {
-                    eventStartCal.setTime(cal.getTime());
-                }
-                Calendar eventEndCal = this.getDayOfMonth(eventEnd);
-                if (eventEndCal.get(Calendar.MONTH) > cal.get(Calendar.MONTH)) {
-                    eventEndCal.set(Calendar.DAY_OF_MONTH, eventEndCal.getActualMaximum(Calendar.DAY_OF_MONTH));
-                }
-
-                while (eventStartCal.before(eventEndCal) || eventStartCal.equals(eventEndCal)) {
-                    eventDatesList.add(eventDateFormat.format(eventStartCal.getTime()));
-                    eventStartCal.add(Calendar.DAY_OF_MONTH, 1);
-                }
-
-            }
-            String eventDates = getEventDatesAsArrayString(eventDatesList);
-            model.put("allowedDates", eventDates);
-
         }
-    }
+        Listing plannedEvents = this.currentMonthSearchComponent.execute(request, resource, 1, 500, 0);
+        String eventDates = this.helper.getCalendarWidgetEventDates(plannedEvents, cal);
+        model.put("allowedDates", eventDates);
 
-    private Calendar getDayOfMonth(Date eventStart) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(eventStart);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal;
-    }
+        this.helper.setCalendarTitles(request, resource, model);
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private void setCalendarTitles(HttpServletRequest request, Resource resource, Map model) {
-        model.put("dayHasPlannedEventsTitle", this.helper.getEventTypeTitle(request, resource,
-                "eventListing.calendar.dayHasPlannedEvents", false));
-        model.put("dayHasNoPlannedEventsTitle", this.helper.getEventTypeTitle(request, resource,
-                "eventListing.calendar.dayHasNoPlannedEvents", false));
-    }
-
-    private String getEventDatesAsArrayString(Set<String> eventDates) {
-        StringBuilder sb = new StringBuilder("[");
-        Iterator<String> it = eventDates.iterator();
-        boolean first = true;
-        while (it.hasNext()) {
-            if (!first) {
-                sb.append(", ");
-            }
-            sb.append("'" + it.next() + "'");
-            first = false;
-        }
-        sb.append("]");
-        return sb.toString();
     }
 
     @Required
@@ -192,36 +96,6 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
     @Required
     public void setCurrentMonthSearchComponent(SearchComponent currentMonthSearchComponent) {
         this.currentMonthSearchComponent = currentMonthSearchComponent;
-    }
-
-    @Required
-    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
-        this.resourceTypeTree = resourceTypeTree;
-    }
-
-    @Required
-    public void setDisplayTypePropDef(PropertyTypeDefinition displayTypePropDef) {
-        this.displayTypePropDef = displayTypePropDef;
-    }
-
-    @Required
-    public void setStartDatePropDefPointer(String startDatePropDefPointer) {
-        this.startDatePropDefPointer = startDatePropDefPointer;
-    }
-
-    @Required
-    public void setEndDatePropDefPointer(String endDatePropDefPointer) {
-        this.endDatePropDefPointer = endDatePropDefPointer;
-    }
-
-    @Required
-    public void setViewAllUpcomingService(Service viewAllUpcomingService) {
-        this.viewAllUpcomingService = viewAllUpcomingService;
-    }
-
-    @Required
-    public void setViewAllPreviousService(Service viewAllPreviousService) {
-        this.viewAllPreviousService = viewAllPreviousService;
     }
 
 }

@@ -30,31 +30,20 @@
  */
 package org.vortikal.web.display.collection.event;
 
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Namespace;
-import org.vortikal.repository.Property;
-import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
-import org.vortikal.web.service.URL;
 
 public class EventListingSearcher {
 
     private SearchComponent upcomingEventsSearch;
     private SearchComponent previousEventsSearch;
-    private SearchComponent furtherUpcomingSearchComponent;
     private SearchComponent specificDateEventSearchComponent;
-    private int daysAhead;
 
     public Listing searchUpcoming(HttpServletRequest request, Resource collection, int upcomingEventPage,
             int pageLimit, int offset) throws Exception {
@@ -64,77 +53,6 @@ public class EventListingSearcher {
     public Listing searchPrevious(HttpServletRequest request, Resource collection, int upcomingEventPage,
             int pageLimit, int offset) throws Exception {
         return this.previousEventsSearch.execute(request, collection, upcomingEventPage, pageLimit, offset);
-    }
-
-    public List<GroupedEvents> searchGroupedByDayEvents(HttpServletRequest request, Resource collection)
-            throws Exception {
-        List<GroupedEvents> groupedByDayEvents = new ArrayList<GroupedEvents>();
-        Listing result = this.upcomingEventsSearch.execute(request, collection, 1, 100, 0);
-        if (result.size() > 0) {
-            List<PropertySet> allEvents = result.getFiles();
-            for (int i = 0; i < this.daysAhead; i++) {
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.DAY_OF_MONTH, i);
-                cal.set(Calendar.HOUR_OF_DAY, 0);
-                cal.set(Calendar.MINUTE, 0);
-                cal.set(Calendar.SECOND, 0);
-                cal.set(Calendar.MILLISECOND, 0);
-                Listing subListing = new Listing(result.getResource(), null, result.getName(), result.getOffset());
-                subListing.setDisplayPropDefs(result.getDisplayPropDefs());
-                List<PropertySet> events = new ArrayList<PropertySet>();
-                Map<String, URL> urls = new HashMap<String, URL>();
-                for (PropertySet ps : allEvents) {
-                    if (this.isWithinDaysAhead(cal.getTime(), ps)) {
-                        events.add(ps);
-                        String urlString = ps.getURI().toString();
-                        urls.put(urlString, result.getUrls().get(urlString));
-                    }
-                }
-                if (events.size() > 0) {
-                    subListing.setFiles(events);
-                    subListing.setUrls(urls);
-                    groupedByDayEvents.add(new GroupedEvents(cal.getTime(), subListing));
-                }
-            }
-        }
-        return groupedByDayEvents;
-    }
-
-    private boolean isWithinDaysAhead(Date time, PropertySet ps) {
-        Property sdProp = this.getProperty(ps, "start-date");
-        if (sdProp == null) {
-            sdProp = this.getProperty(ps, "publish-date");
-        }
-        Date sd = sdProp.getDateValue();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(time);
-        cal.add(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        boolean isToday = sd.equals(time) || (sd.after(time) && sd.before(cal.getTime()));
-        Property edProp = this.getProperty(ps, "end-date");
-        if (edProp == null) {
-            return isToday;
-        }
-        Date ed = edProp.getDateValue();
-        return isToday || (sd.before(time) && (ed.after(time) || ed.equals(time)));
-    }
-
-    private Property getProperty(PropertySet ps, String key) {
-        Property prop = ps.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, key);
-        if (prop == null) {
-            prop = ps.getProperty(Namespace.DEFAULT_NAMESPACE, key);
-        }
-        return prop;
-    }
-
-    public Listing searchFurtherUpcoming(HttpServletRequest request, Resource collection, int furtherUpcomingPageLimit)
-            throws Exception {
-        Listing furtherUpcomingEvents = this.furtherUpcomingSearchComponent.execute(request, collection, 1,
-                furtherUpcomingPageLimit, 0);
-        return furtherUpcomingEvents;
     }
 
     public Listing searchSpecificDate(HttpServletRequest request, Resource collection, int pageLimit, int page)
@@ -153,18 +71,8 @@ public class EventListingSearcher {
     }
 
     @Required
-    public void setFurtherUpcomingSearchComponent(SearchComponent furtherUpcomingSearchComponent) {
-        this.furtherUpcomingSearchComponent = furtherUpcomingSearchComponent;
-    }
-
-    @Required
     public void setSpecificDateEventSearchComponent(SearchComponent specificDateEventSearchComponent) {
         this.specificDateEventSearchComponent = specificDateEventSearchComponent;
-    }
-
-    @Required
-    public void setDaysAhead(int daysAhead) {
-        this.daysAhead = daysAhead;
     }
 
     public class GroupedEvents {

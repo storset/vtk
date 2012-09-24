@@ -64,7 +64,7 @@
     <#else>
       <p class="vrtx-events-no-planned">${noPlannedEventsMsg?html}</p>
     </#if>
-  <#elseif groupedByDayEvents?has_content || furtherUpcoming?has_content>
+  <#else>
     <div class="vrtx-events-calendar-introduction">
       <#local title = vrtx.propValue(collection, "title", "flattened") />
       <h1>${title}</h1>
@@ -145,7 +145,7 @@
       <a href="${viewAllPreviousURL}" id="vrtx-events-nav-all-previous">${viewAllPreviousTitle?html}</a>
     </div>
 
-    </#if>
+  </#if>
     
     <@viewutils.pagingSubscribeServices />
   </div>

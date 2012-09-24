@@ -64,7 +64,11 @@
     </#if>
     
     <#if previewImage?exists >
-      <#assign url = previewImage.URL />
+      <#assign url = previewImageURL />
+      <#-- Hack for image as web page -->
+      <#if resourceReference?starts_with("https://") && url?starts_with("http://")>
+        <#assign url = url.replace("http://", "https://") />
+      </#if>
     <#elseif resourceReference?exists >
       <#assign url = resourceReference />	  
     </#if>

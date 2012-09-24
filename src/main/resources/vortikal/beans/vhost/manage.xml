@@ -1026,21 +1026,21 @@
     <property name="viewName" value="previewAdminIframe" />
     <property name="service" ref="viewService" />
     <property name="displayWorkingRevision" value="true" />
-    <property name="webHostName" value="${webHostName}" />
+    <property name="webProtocol" value="${webProtocol}" />
     <property name="webProtocolRestricted" value="${webProtocolRestricted}" />
   </bean>
 
   <bean id="previewImageHandler" class="org.vortikal.web.display.url.ResourceServiceURLController">
     <property name="viewName" value="previewImage" />
     <property name="service" ref="viewService" />
-    <property name="webHostName" value="${webHostName}" />
+    <property name="webProtocol" value="${webProtocol}" />
     <property name="webProtocolRestricted" value="${webProtocolRestricted}" />
   </bean>
 
   <bean id="previewMediaHandler" class="org.vortikal.web.display.url.ResourceServiceURLController">
     <property name="viewName" value="previewMedia" />
     <property name="service" ref="viewService" />
-    <property name="webHostName" value="${webHostName}" />
+    <property name="webProtocol" value="${webProtocol}" />
     <property name="webProtocolRestricted" value="${webProtocolRestricted}" />
   </bean>
 

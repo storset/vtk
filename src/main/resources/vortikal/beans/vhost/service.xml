@@ -394,7 +394,7 @@
     <property name="viewName" value="previewViewIframe" />
     <property name="service" ref="viewService" />
     <property name="displayWorkingRevision" value="true" />
-    <property name="webHostName" value="${webHostName}" />
+    <property name="webProtocol" value="${webProtocol}" />
     <property name="webProtocolRestricted" value="${webProtocolRestricted}" />
   </bean>
 

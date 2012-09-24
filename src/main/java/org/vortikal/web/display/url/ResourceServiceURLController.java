@@ -72,7 +72,7 @@ public class ResourceServiceURLController implements Controller {
     private Service service = null;
     private boolean displayWorkingRevision = false;
     private String viewName = DEFAULT_VIEW_NAME;
-    private String webHostName = null;
+    private String webProtocol = null;
     private String webProtocolRestricted = null;
 
     @Required 
@@ -88,8 +88,8 @@ public class ResourceServiceURLController implements Controller {
         this.viewName = viewName;
     }
     
-    public void setWebHostName(String webHostName) {
-		this.webHostName = webHostName;
+    public void setWebProtocol(String webProtocol) {
+		this.webProtocol = webProtocol;
 	}
 
 	public void setWebProtocolRestricted(String webProtocolRestricted) {
@@ -133,14 +133,14 @@ public class ResourceServiceURLController implements Controller {
 
         // Hack to ensure https for preview when not popup and set authTarget
         
-        boolean isAdminHttps = this.webHostName != this.webProtocolRestricted;
+        boolean isViewSelectiveHttps = this.webProtocol != this.webProtocolRestricted;
         boolean isPopup = "preview.displayPopupURL".equals(this.viewName);
         
         String authTarget = "http";
-        if(isAdminHttps) {
+        if(isViewSelectiveHttps) {
         	authTarget = isPopup ? (resource.isReadRestricted() ? "https" : "http") : "https";
         }
-        if(resourceURL.startsWith("http:") && !isPopup && isAdminHttps) {
+        if(resourceURL.startsWith("http:") && !isPopup && isViewSelectiveHttps) {
         	resourceURL = resourceURL.replaceFirst("http:", "https:");
         }
         

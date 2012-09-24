@@ -44,19 +44,19 @@
     <div id="vrtx-main-content" class="vrtx-calendar-listing vrtx-no-daily-events">
   </#if>
   <#if allupcoming?has_content>
-	<h1>${allupcomingTitle?html}</h1>
-	<#if allupcoming.files?size &gt; 0 >
-	  <@displayStandard allupcoming hideNumberOfComments displayMoreURLs false />
-	<#else>
-	  <p class="vrtx-events-no-planned">${allupcomingNoPlannedTitle?html}</p>
-	</#if>
+	  <h1>${allupcomingTitle?html}</h1>
+	  <#if allupcoming.files?size &gt; 0 >
+	    <@displayStandard allupcoming hideNumberOfComments displayMoreURLs false />
+	  <#else>
+	    <p class="vrtx-events-no-planned">${allupcomingNoPlannedTitle?html}</p>
+	  </#if>
   <#elseif allprevious?has_content>
     <h1>${allpreviousTitle?html}</h1>
     <#if allprevious.files?size &gt; 0 >
       <@displayStandard allprevious hideNumberOfComments displayMoreURLs false />
-	<#else>
-	  <p class="vrtx-events-no-planned">${allpreviousNoPlannedTitle?html}</p>
-	</#if>
+    <#else>
+	    <p class="vrtx-events-no-planned">${allpreviousNoPlannedTitle?html}</p>
+    </#if>
   <#elseif specificDate?has_content && specificDate>
     <h1 class="vrtx-events-specific-date">${specificDateEventsTitle?html}</h1>
     <#if specificDateEvents?has_content && specificDateEvents.files?size &gt; 0>

@@ -209,7 +209,7 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
                     }
                 }
             }
-            if(this.name.equals("picture")) {
+            if(!retVal.isEmpty() && this.name.equals("picture")) {
             	retVal = viewService.constructLink(Path.fromString(retVal));
             }
             return retVal;

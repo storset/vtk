@@ -67,6 +67,7 @@
     <constructor-arg>
       <list>
         <value>title</value>
+        <value>publish-date</value>
         <value>resource:introduction</value>
         <value>resource:picture</value>
         <value>resource:caption</value>

@@ -67,12 +67,14 @@ public class BrokenLinksToTsvController implements Controller {
         String token = SecurityContext.getSecurityContext().getToken();
         Resource resource = repository.retrieve(token, requestContext.getResourceURI(), false);
 
-        Map<String, Object> result = this.brokenLinksReporter.getReportContent(token, resource, request);
-
         String filename = this.webHostName;
         filename += resource.getName().equals("/") ? "" : "_" + resource.getName();
         filename += "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         filename += "_BrokenLinks";
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("text/tab-separated-values;charset=utf-8");
+        response.setHeader("Content-Disposition", "filename=" + filename + ".tsv");
 
         org.springframework.web.servlet.support.RequestContext springRequestContext = new org.springframework.web.servlet.support.RequestContext(
                 request);
@@ -81,27 +83,36 @@ public class BrokenLinksToTsvController implements Controller {
         String locError = new MessageLocalizer("linkcheck.error", "Error", null, springRequestContext).get(null)
                 .toString();
 
-        StringBuilder tsv = new StringBuilder();
-        tsv.append(locTitle + ":\tUri:\t" + locError + ":\n");
-
-        List<PropertySet> list = (List<PropertySet>) result.get("result");
-        Map<String, Object> map = (Map<String, Object>) result.get("linkCheck");
-        for (PropertySet ps : list) {
-            Property titleProp = ps.getProperty(Namespace.DEFAULT_NAMESPACE, "title");
-            String title = titleProp.getFormattedValue();
-            String uri = ps.getURI().toString();
-            JSONObject obj = (JSONObject) map.get(uri);
-            if (obj != null)
-                tsv.append(title.replaceAll("[\\n\\r\\t]", "") + "\t" + uri + "\t" + obj.get("index") + "\n");
-        }
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("text/tab-separated-values;charset=utf-8");
-        response.setHeader("Content-Disposition", "filename=" + filename + ".tsv");
+        RequestWrapper requestWrapped = new RequestWrapper(request);
 
         ServletOutputStream out = response.getOutputStream();
         try {
-            out.print(tsv.toString());
+            out.print(locTitle + ":\tUri:\t" + locError + ":\n");
+
+            Map<String, Object> map;
+            List<PropertySet> list;
+            Property titleProp;
+            String title, uri;
+            JSONObject obj;
+
+            Map<String, Object> result = this.brokenLinksReporter.getReportContent(token, resource, requestWrapped);
+            while (!((List<PropertySet>) result.get("result")).isEmpty()) {
+                requestWrapped.increasePageNumber();
+
+                list = (List<PropertySet>) result.get("result");
+                map = (Map<String, Object>) result.get("linkCheck");
+                for (PropertySet ps : list) {
+                    titleProp = ps.getProperty(Namespace.DEFAULT_NAMESPACE, "title");
+                    title = titleProp.getFormattedValue();
+                    uri = ps.getURI().toString();
+                    obj = (JSONObject) map.get(uri);
+                    if (obj != null) {
+                        out.print(title.replaceAll("[\\n\\r\\t]", "") + "\t" + uri + "\t" + obj.get("index") + "\n");
+                    }
+                }
+
+                result = this.brokenLinksReporter.getReportContent(token, resource, requestWrapped);
+            }
         } finally {
             out.close();
         }
@@ -120,15 +131,14 @@ public class BrokenLinksToTsvController implements Controller {
         String[] names = webHostName.trim().split("\\s*,\\s*");
         this.webHostName = names[0];
     }
-    
+
     /**
      * Request wrapper hack to be able to manipulate page number.
-     * As an example.
      */
     private class RequestWrapper extends HttpServletRequestWrapper {
         private HttpServletRequest request;
         private int pageNumber = 1;
-        
+
         public RequestWrapper(HttpServletRequest request) {
             super(request);
             this.request = request;
@@ -139,12 +149,12 @@ public class BrokenLinksToTsvController implements Controller {
             if ("page".equals(name) && this.pageNumber > 1) {
                 return String.valueOf(this.pageNumber);
             }
-            
+
             return this.request.getParameter(name);
         }
-        
-        void setPageNumber(int p) {
-            this.pageNumber = p;
+
+        public void increasePageNumber() {
+            this.pageNumber++;
         }
     }
 

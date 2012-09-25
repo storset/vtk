@@ -352,11 +352,10 @@
     <property name="modelKey" value="socialWebsites" />
     <property name="urlTemplates">
       <map>
-        <entry key="Facebook" value="http://www.facebook.com/sharer/sharer.php?s=100&amp;amp;p[url]=%{url}&amp;amp;p[title]=%{title}&amp;amp;p[summary]=%{introduction}&amp;amp;p[images][0]=%{picture}" />
+        <entry key="Facebook" value="http://www.facebook.com/share.php?u=%{url}&amp;amp;t=%{title}" />
         <entry key="Twitter" value="http://twitter.com/intent/tweet?text=%{title}&amp;amp;url=%{url}" />
       </map>
     </property>
-    <property name="viewService" ref="viewService" />
   </bean>
 
   <bean id="decorating.resourcePropertyComponent" class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">

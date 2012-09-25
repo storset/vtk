@@ -209,9 +209,13 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
                     }
                 }
             }
-            if(!retVal.isEmpty() && this.name.equals("picture")) {
-            	retVal = viewService.constructLink(Path.fromString(retVal));
-            }
+			if (!retVal.isEmpty() && this.name.equals("picture")) {
+				try {
+					retVal = viewService.constructLink(Path.fromString(retVal));
+				} catch (IllegalArgumentException iae) {
+					retVal = "";
+				}
+			}
             return retVal;
         }
     }

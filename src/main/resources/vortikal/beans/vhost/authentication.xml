@@ -420,8 +420,9 @@
     </property>
   </bean>
 
+  <!-- XXX: Always true: -->
   <bean id="authTarget.enabledAssertion" class="org.vortikal.web.service.ConfigAssertion">
-    <property name="config" value="${manage.enableSelectiveProtocols}" />
+    <property name="config" value="true" />
     <property name="expectedValue" value="true" />
   </bean>
 

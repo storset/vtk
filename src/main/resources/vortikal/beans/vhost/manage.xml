@@ -154,7 +154,6 @@
           </property>
           <property name="exceptionAttribute" value="manage.preventXFrameOptionsHeader" />
         </bean>
-        <!--ref bean="manage.selectiveProtocolManager" /-->
       </list>
     </property>
     <property name="attributes">
@@ -182,7 +181,6 @@
   <bean id="manage.urlPostProcessors" class="org.springframework.beans.factory.config.ListFactoryBean">
     <property name="sourceList">
       <list>
-        <!--ref bean="manage.selectiveProtocolManager" /-->
       </list>
     </property>
   </bean>
@@ -192,31 +190,6 @@
     <property name="protocol" value="${manage.protocol}" />
   </bean>
 
-  <!-- Acts as both assertion, handler interceptor and URL post processor -->
-  <!--
-  <bean id="manage.selectiveProtocolManager" class="org.vortikal.web.service.SelectiveProtocolManager">
-    <property name="protocol" value="${manage.protocol}" />
-    <property name="selectiveAccessEnabled" value="${manage.enableSelectiveProtocols}" />
-    <property name="genURLFileServices">
-      <set>
-        <ref bean="manageService" />
-        <ref bean="previewService" />
-        <ref bean="previewCollectionListingService" />
-      </set>
-    </property>
-    <property name="genURLCollectionServices">
-      <set>
-        <ref bean="previewCollectionListingService" />
-      </set>
-    </property>
-    <property name="matchFileServices">
-      <ref bean="previewService" />
-    </property>
-    <property name="matchCollectionServices">
-      <ref bean="previewCollectionListingService" />
-    </property>
-  </bean>
-  -->
 
   <bean id="manage.notAuthorizedService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="manageService" />
@@ -1513,6 +1486,7 @@
           <property name="permission" ref="ACTION_READ_PROCESSED" />
           <property name="anonymous" value="true" />
         </bean>
+        <!--
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
           <property name="modelDataMap">
             <map>
@@ -1521,6 +1495,7 @@
             </map>
           </property>
         </bean>
+        -->
       </list>
     </property>
 
@@ -1546,7 +1521,6 @@
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
           <property name="modelDataMap">
             <map>
-              <entry key="enableSelectiveProtocols" value="${manage.enableSelectiveProtocols}" />
               <entry key="webProtocol" value="${webProtocol}" />
             </map>
           </property>
@@ -1580,7 +1554,6 @@
         <bean class="org.vortikal.web.referencedata.provider.StaticModelDataProvider">
           <property name="modelDataMap">
             <map>
-              <entry key="enableSelectiveProtocols" value="${manage.enableSelectiveProtocols}" />
               <entry key="webProtocol" value="${webProtocol}" />
             </map>
           </property>

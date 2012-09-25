@@ -253,7 +253,6 @@ vrtxAdmin._$(document).ready(function () {
   
   // Resource menus
   var resourceMenuLeftServices = ["renameService", "manage\\.createArchiveService", "manage\\.expandArchiveService"];
-
   for (var i = resourceMenuLeftServices.length; i--;) {
     vrtxAdm.getFormAsync({
         selector: "#title-container a#" + resourceMenuLeftServices[i],
@@ -266,9 +265,7 @@ vrtxAdmin._$(document).ready(function () {
         selector: "form#" + resourceMenuLeftServices[i] + "-form input[type=submit]"
     });
   }
-
   var resourceMenuRightServices = ["vrtx-unpublish-document", "vrtx-publish-document"];
-
   for (i = resourceMenuRightServices.length; i--;) {
     vrtxAdm.getFormAsync({
         selector: "#title-container a#" + resourceMenuRightServices[i],
@@ -283,7 +280,6 @@ vrtxAdmin._$(document).ready(function () {
         post: bodyId !== "vrtx-preview"
     });
   }
-  
   vrtxAdm.getFormAsync({
     selector: "#title-container a#manage\\.unlockFormService",
     selectorClass: "globalmenu",
@@ -298,7 +294,6 @@ vrtxAdmin._$(document).ready(function () {
   switch(bodyId) {
    case "vrtx-manage-collectionlisting":
     var tabMenuServices = ["fileUploadService", "createDocumentService", "createCollectionService"];
-
     for (i = tabMenuServices.length; i--;) {
       if(tabMenuServices[i] == "createCollectionService") {
         vrtxAdm.getFormAsync({
@@ -356,7 +351,6 @@ vrtxAdmin._$(document).ready(function () {
     // TODO: This map/lookup-obj is a little hacky..
     tabMenuServicesInjectMap = { "collectionListing.action.move-resources": "moveToSelectedFolderService", 
                                  "collectionListing.action.copy-resources": "copyToSelectedFolderService"};
-
     for (i = tabMenuServices.length; i--;) {
       vrtxAdm.cachedContent.on("click", "input#" + tabMenuServices[i], function (e) {
         var input = _$.single(this);
@@ -465,7 +459,6 @@ vrtxAdmin._$(document).ready(function () {
     break;
    case "vrtx-permissions":
     var privilegiesPermissions = ["read", "read-write", "all"];
-
     for (i = privilegiesPermissions.length; i--;) {
       vrtxAdm.getFormAsync({
         selector: "div.permissions-" + privilegiesPermissions[i] + "-wrapper a.full-ajax",
@@ -500,9 +493,7 @@ vrtxAdmin._$(document).ready(function () {
       });
     }
   
-    // More permission privilegie forms in table (ADD_COMMENT, READ_PROCESSED)
     var privilegiesPermissionsInTable = ["add-comment", "read-processed"];
-
     for (i = privilegiesPermissionsInTable.length; i--;) {
       vrtxAdm.getFormAsync({
         selector: ".privilegeTable tr." + privilegiesPermissionsInTable[i] + " a.full-ajax",
@@ -536,7 +527,6 @@ vrtxAdmin._$(document).ready(function () {
       var propsAbout = ["contentLocale", "commentsEnabled", "userTitle",   "keywords",       "description",
                         "verifiedDate",  "authorName",      "authorEmail", "authorURL",      "collection-type",
                         "contentType",   "userSpecifiedCharacterEncoding", "plaintext-edit", "xhtml10-type"];
-
       for (i = propsAbout.length; i--;) {
         vrtxAdm.getFormAsync({
           selector: ".prop-" + propsAbout[i] + " a.vrtx-button-small",
@@ -552,6 +542,7 @@ vrtxAdmin._$(document).ready(function () {
         });
       }
     }
+    
     // Urchin stats
     vrtxAdm.cachedBody.on("click", "#vrtx-resource-visit-tab-menu a", function(e) {
       if(GET_STAT_ASYNC_IN_PROGRESS) {

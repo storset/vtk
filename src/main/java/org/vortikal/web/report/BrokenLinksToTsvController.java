@@ -37,6 +37,7 @@ import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
@@ -118,6 +119,33 @@ public class BrokenLinksToTsvController implements Controller {
     public void setWebHostName(String webHostName) {
         String[] names = webHostName.trim().split("\\s*,\\s*");
         this.webHostName = names[0];
+    }
+    
+    /**
+     * Request wrapper hack to be able to manipulate page number.
+     * As an example.
+     */
+    private class RequestWrapper extends HttpServletRequestWrapper {
+        private HttpServletRequest request;
+        private int pageNumber = 1;
+        
+        public RequestWrapper(HttpServletRequest request) {
+            super(request);
+            this.request = request;
+        }
+
+        @Override
+        public String getParameter(String name) {
+            if ("page".equals(name) && this.pageNumber > 1) {
+                return String.valueOf(this.pageNumber);
+            }
+            
+            return this.request.getParameter(name);
+        }
+        
+        void setPageNumber(int p) {
+            this.pageNumber = p;
+        }
     }
 
 }

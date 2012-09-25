@@ -34,10 +34,6 @@
   <#stop "Unable to render model: required submodel
   'permissions_ACTION_READ_PROCESSED' missing">
 </#if>
-<#if !enableSelectiveProtocols?exists>
-  <#stop "Unable to render model: required submodel
-  'enableSelectiveProtocols' missing">
-</#if>
 <#if !webProtocol?exists>
   <#stop "Unable to render model: required submodel
   'webProtocol' missing">

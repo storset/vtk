@@ -295,7 +295,8 @@ vrtxAdmin._$(document).ready(function () {
     selector: "form#a#manage\\.unlockFormService-form input[type=submit]"
   });
 
-  if(bodyId == "vrtx-manage-collectionlisting") {
+  switch(bodyId) {
+   case "vrtx-manage-collectionlisting":
     var tabMenuServices = ["fileUploadService", "createDocumentService", "createCollectionService"];
 
     for (i = tabMenuServices.length; i--;) {
@@ -443,7 +444,8 @@ vrtxAdmin._$(document).ready(function () {
       e.stopPropagation();
       e.preventDefault();
     });
-  } else if(bodyId == "vrtx-trash-can") {
+    break;
+   case "vrtx-trash-can":
     vrtxAdm.cachedContent.on("click", "input.deleteResourcePermanent", function (e) {
       if(CHECKED_TRASHCAN_FILES >= (vrtxAdm.cachedContent.find("tbody tr").length - 1)) return; // Redirect if empty trash can
       CHECKED_TRASHCAN_FILES = 0;
@@ -460,8 +462,8 @@ vrtxAdmin._$(document).ready(function () {
       e.stopPropagation();
       e.preventDefault();
     });
-  } else if(bodyId == "vrtx-permissions") {
-    // Permission privilegie forms (READ, READ_WRITE, ALL)
+    break;
+   case "vrtx-permissions":
     var privilegiesPermissions = ["read", "read-write", "all"];
 
     for (i = privilegiesPermissions.length; i--;) {
@@ -526,8 +528,8 @@ vrtxAdmin._$(document).ready(function () {
     vrtxAdm.removePermissionAsync("input.removePermission", ".principalList");
     vrtxAdm.addPermissionAsync("span.addGroup", ".principalList", ".groups-wrapper", "errorContainer");
     vrtxAdm.addPermissionAsync("span.addUser", ".principalList", ".users-wrapper", "errorContainer");
-  } else if(bodyId == "vrtx-about") { // About property forms
-    // Zebra-tables
+    break;
+   case "vrtx-about":
     vrtxAdm.zebraTables(".resourceInfo");
     
     if(!vrtxAdmin.isIE7) { // Turn of tmp. in IE7
@@ -578,6 +580,9 @@ vrtxAdmin._$(document).ready(function () {
           
       e.preventDefault();
     });
+    break;
+    default: // noop
+    break;
   }
 
   // Show message in IE6, IE7 and IETrident in compability mode

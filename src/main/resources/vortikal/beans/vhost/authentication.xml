@@ -136,7 +136,7 @@
     </property>    
   </bean>
   
-  <!-- Explicit authentication with HTTP Digest over  SSL-secured (requires parameter 'challenge=digest') -->
+  <!-- Explicit authentication with HTTP Digest over SSL-secured (requires parameter 'challenge=digest') -->
   <bean id="authenticateDigestSSLService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="authenticateService" />
     <property name="order" value="99" />

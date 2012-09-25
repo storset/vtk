@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
@@ -69,6 +70,7 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
     private String fieldValueTruncationIndicator = "...";
     private Map<String, UrlTemplate> urlTemplates;
     private String modelKey = "externalLinks";
+    private Service viewService;
 
 
     @Override
@@ -194,7 +196,9 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
 
         public String render(RenderContext ctx) {
             String retVal = "";
+            
             Property prop = ctx.resource.getPropertyByPrefix(this.prefix, this.name);
+            if(prop == null) prop = ctx.resource.getPropertyByPrefix("resource", this.name);
             if (prop != null) {
                 PropertyTypeDefinition def = prop.getDefinition();
                 if (def != null) {
@@ -204,6 +208,9 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
                         retVal = prop.getFormattedValue();
                     }
                 }
+            }
+            if(this.name.equals("picture")) {
+            	retVal = viewService.constructLink(Path.fromString(retVal));
             }
             return retVal;
         }
@@ -262,4 +269,8 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
     public void setFieldValueTruncationIndicator(String fieldValueTruncationIndicator) {
         this.fieldValueTruncationIndicator = fieldValueTruncationIndicator;
     }
+
+	public void setViewService(Service viewService) {
+		this.viewService = viewService;
+	}
 }

@@ -207,11 +207,6 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.cachedBody.on("click", document, function(e) {
     _$(".dropdown-shortcut-menu-container:visible").slideUp(vrtxAdm.transitionDropdownSpeed, "swing");
     _$(".tip:visible").fadeOut(vrtxAdm.transitionDropdownSpeed, "swing");
-    // Communicate this to create-iframe if exists
-    var previewCreateIframe = _$("#create-iframe");
-    if(previewCreateIframe.length && typeof crossDocComLink !== "undefined") { 
-      crossDocComLink.postCmdToIframe(previewCreateIframe[0], "create-dropdown-collapsed");
-    }
   });
   
   // Ignore all AJAX errors on tab change

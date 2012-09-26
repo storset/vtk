@@ -106,10 +106,16 @@ public class EventsDateAndTimeQueryBuilder implements SearchComponentQueryBuilde
         endTimeOr.add(new PropertyTermQuery(endPropDef, String.valueOf(today), TermOperator.EQ));
         notYetEnded.add(endTimeOr);
 
+        // No start date, and end date is within start of desired period
+        AndQuery noStartDate = new AndQuery();
+        noStartDate.add(new PropertyTermQuery(endPropDef, String.valueOf(now), TermOperator.GE));
+        noStartDate.add(new PropertyExistsQuery(startPropDef, true));
+
         OrQuery upcoming = new OrQuery();
         upcoming.add(notYetStarted);
         upcoming.add(noEndDate);
         upcoming.add(notYetEnded);
+        upcoming.add(noStartDate);
         return upcoming;
     }
 

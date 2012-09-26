@@ -214,11 +214,6 @@ vrtxAdmin._$(document).ready(function () {
     vrtxAdm.ignoreAjaxErrors = true;
   });
   
-  // Hack for setting iframe width if english i18n
-  if (_$("#locale-selection li.active").hasClass("en")) {
-    _$("#create-iframe").css("width", "162px");
-  }
-  
   // Make breadcrumbs play along when you minimize window and have multiple rows of it
   vrtxAdm.adaptiveBreadcrumbs();
   

@@ -69,7 +69,7 @@ public class BrokenLinksToTsvController implements Controller {
 
         RequestWrapper requestWrapped = new RequestWrapper(request);
         Map<String, Object> result = this.brokenLinksReporter.getReportContent(token, resource, requestWrapped);
-        if (((Integer) result.get("total")) > 1000 && ((Integer) result.get("total")) <= 0)
+        if (((Integer) result.get("total")) > 1000 || ((Integer) result.get("total")) <= 0)
             return null;
 
         String filename = this.webHostName;

@@ -54,41 +54,40 @@ public class ListResourcesProvider {
     private Repository repository;
     private org.springframework.web.servlet.support.RequestContext springRequestContext;
 
-    public List<Resource> buildSearchAndPopulateResources(Path uri, String token,
-            HttpServletRequest request) {
-    	
-    	this.springRequestContext = new org.springframework.web.servlet.support.RequestContext(request);
+    public List<Resource> buildSearchAndPopulateResources(Path uri, String token, HttpServletRequest request) {
+
+        this.springRequestContext = new org.springframework.web.servlet.support.RequestContext(request);
 
         Resource[] resourcesArr = null;
-        
+
         try {
-        	resourcesArr = this.repository.listChildren(token, uri, false);
-		} catch (ResourceNotFoundException e1) {
-		} catch (AuthorizationException e1) {
-		} catch (AuthenticationException e1) {
-		} catch (Exception e1) { }
-        
-        
+            resourcesArr = this.repository.listChildren(token, uri, false);
+        } catch (ResourceNotFoundException e1) {
+        } catch (AuthorizationException e1) {
+        } catch (AuthenticationException e1) {
+        } catch (Exception e1) {
+        }
+
         List<Resource> resources = new ArrayList<Resource>();
-        
-        if(resourcesArr != null) {
-        	// Sort by name
-        	ResourceSorter.sort(resourcesArr, Order.BY_NAME, false, springRequestContext);
-        	for(Resource r : resourcesArr) {
-        		resources.add(r);
-        	}
+
+        if (resourcesArr != null) {
+            // Sort by name
+            ResourceSorter.sort(resourcesArr, Order.BY_NAME, false, springRequestContext);
+            for (Resource r : resourcesArr) {
+                resources.add(r);
+            }
         }
 
         return resources;
     }
-    
-    public boolean authorizedToRead(Acl acl, Principal principal) {
-    	return repository.authorize(principal, acl, Privilege.READ);
+
+    public boolean authorizedTo(Acl acl, Principal principal, Privilege privilege) {
+        return repository.authorize(principal, acl, privilege);
     }
-    
+
     public String[] getAclFormatted(Acl acl, HttpServletRequest request) {
-    	String[] aclFormatted = {"", "", ""}; // READ, READ_WRITE, ALL
- 
+        String[] aclFormatted = { "", "", "" }; // READ, READ_WRITE, ALL
+
         for (Privilege action : Privilege.values()) {
             String actionName = action.getName();
             Principal[] privilegedUsers = acl.listPrivilegedUsers(action);
@@ -131,16 +130,15 @@ public class ListResourcesProvider {
                 }
             }
             if (actionName == "read") {
-            	aclFormatted[0] = combined.toString();
+                aclFormatted[0] = combined.toString();
             } else if (actionName == "read-write") {
-            	aclFormatted[1] = combined.toString();
+                aclFormatted[1] = combined.toString();
             } else if (actionName == "all") {
-            	aclFormatted[2] = combined.toString();
+                aclFormatted[2] = combined.toString();
             }
         }
         return aclFormatted;
     }
-
 
     public String getLocalizedTitle(HttpServletRequest request, String key, Object[] params) {
         if (params != null) {
@@ -148,7 +146,6 @@ public class ListResourcesProvider {
         }
         return this.springRequestContext.getMessage(key);
     }
-
 
     @Required
     public void setRepository(Repository repository) {

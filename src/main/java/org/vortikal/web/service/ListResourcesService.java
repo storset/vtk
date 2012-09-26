@@ -46,27 +46,28 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.Acl;
 import org.vortikal.repository.Path;
+import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Resource;
 import org.vortikal.text.html.HtmlUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.provider.ListResourcesProvider;
 
 public class ListResourcesService implements Controller, InitializingBean {
-    
+
     private ListResourcesProvider provider;
     private Service permissionsService;
-      
+
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String uri = null;
         try {
-          uri = (String) request.getParameter("uri");  
+            uri = (String) request.getParameter("uri");
         } catch (Exception e) {
             badRequest(e, response);
             return null;
         }
         if (uri == null) {
-          return null;
+            return null;
         }
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
@@ -84,88 +85,95 @@ public class ListResourcesService implements Controller, InitializingBean {
             writer.close();
         }
     }
-    
-    private void writeResults(List<Resource> resources, HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	RequestContext requestContext = RequestContext.getRequestContext();
-    	
+
+    private void writeResults(List<Resource> resources, HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+        RequestContext requestContext = RequestContext.getRequestContext();
+
         JSONArray list = new JSONArray();
         for (Resource r : resources) {
-        	JSONObject o = new JSONObject();
-        	
-        	Acl acl = r.getAcl();
-        	boolean authorizedToRead = this.provider.authorizedToRead(acl, requestContext.getPrincipal());
+            JSONObject o = new JSONObject();
 
-        	String listClasses = "";
-        	String spanClasses = "";
+            Acl acl = r.getAcl();
+            boolean authorizedToRead = this.provider.authorizedTo(acl, requestContext.getPrincipal(), Privilege.READ);
+            boolean authorizedToReadWrite = this.provider.authorizedTo(acl, requestContext.getPrincipal(),
+                    Privilege.READ_WRITE);
 
-        	// Add classes
-        	if (r.isCollection()) {
-        		spanClasses = "folder";
-        		o.put("hasChildren", (r.getChildURIs() != null && authorizedToRead) ? !r.getChildURIs().isEmpty() : false);
-        	} else {
-        		spanClasses = "file";
-        	}
-        	if (r.isReadRestricted()) {
-        		spanClasses += " restricted";
-        	} else {
-        		spanClasses += " allowed-for-all";
-        	}
+            String listClasses = "";
+            String spanClasses = "";
 
-        	// Generate title
-        	StringBuilder title = new StringBuilder();
-        	String name = HtmlUtil.escapeHtmlString(r.getName());
-        	String uriService = permissionsService.constructURL(r.getURI()).getPathRepresentation();
+            // Add classes
+            if (r.isCollection()) {
+                spanClasses = "folder";
+                o.put("hasChildren", (r.getChildURIs() != null && authorizedToRead) ? !r.getChildURIs().isEmpty()
+                        : false);
+            } else {
+                spanClasses = "file";
+            }
+            if (r.isReadRestricted()) {
+                spanClasses += " restricted";
+            } else {
+                spanClasses += " allowed-for-all";
+            }
 
-        	title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + name + "</strong>");
-        	if (r.isInheritedAcl()) {
-        		title.append(" " + provider.getLocalizedTitle(request, "report.list-resources.inherited-permissions", null));
-        		if(authorizedToRead) {
-        			title.append(" (<a href=&quot;" + uriService + "&quot;>" 
-        					   + provider.getLocalizedTitle(request, "report.list-resources.edit", null)
-        					   + "</a>)");
-        		}
-        		title.append("</span><span class=&quot;inherited-permissions&quot;>");
-        	} else {
-        		title.append(" " + provider.getLocalizedTitle(request, "report.list-resources.own-permissions", null));
-        		if(authorizedToRead) {
-        			title.append(" (<a href=&quot;" + uriService + "&quot;>"
-        					   + provider.getLocalizedTitle(request, "report.list-resources.edit", null)
-        					   + "</a>)");
-        		}
-        		title.append("</span>");
-        		listClasses = "not-inherited";
-        	}
+            // Generate title
+            StringBuilder title = new StringBuilder();
+            String name = HtmlUtil.escapeHtmlString(r.getName());
+            String uriService = permissionsService.constructURL(r.getURI()).getPathRepresentation();
 
-        	// Generate table with permissions
-        	String notAssigned = provider.getLocalizedTitle(request, "permissions.not.assigned", null).toLowerCase();
-        	title.append("<table><tbody>");
+            title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + name + "</strong>");
+            if (r.isInheritedAcl()) {
+                title.append(" "
+                        + provider.getLocalizedTitle(request, "report.list-resources.inherited-permissions", null));
+                if (authorizedToReadWrite) {
+                    title.append(" (<a href=&quot;" + uriService + "&quot;>"
+                            + provider.getLocalizedTitle(request, "report.list-resources.edit", null) + "</a>)");
+                }
+                title.append("</span><span class=&quot;inherited-permissions&quot;>");
+            } else {
+                title.append(" " + provider.getLocalizedTitle(request, "report.list-resources.own-permissions", null));
+                if (authorizedToReadWrite) {
+                    title.append(" (<a href=&quot;" + uriService + "&quot;>"
+                            + provider.getLocalizedTitle(request, "report.list-resources.edit", null) + "</a>)");
+                }
+                title.append("</span>");
+                listClasses = "not-inherited";
+            }
 
-        	String[] aclFormatted = provider.getAclFormatted(acl, request);
+            // Generate table with permissions
+            String notAssigned = provider.getLocalizedTitle(request, "permissions.not.assigned", null).toLowerCase();
+            title.append("<table><tbody>");
 
-        	String read = aclFormatted[0].isEmpty() ? notAssigned : aclFormatted[0];
-        	title.append("<tr><td>" + provider.getLocalizedTitle(request, "permissions.privilege.read", null) + ":</td><td>" + read + "</td></tr>");
+            String[] aclFormatted = provider.getAclFormatted(acl, request);
 
-        	String write = aclFormatted[1].isEmpty() ? notAssigned : aclFormatted[1];
-        	title.append("<tr><td>" + provider.getLocalizedTitle(request, "permissions.privilege.read-write", null) + ":</td><td>" + write + "</td></tr>");
+            String read = aclFormatted[0].isEmpty() ? notAssigned : aclFormatted[0];
+            title.append("<tr><td>" + provider.getLocalizedTitle(request, "permissions.privilege.read", null)
+                    + ":</td><td>" + read + "</td></tr>");
 
-        	String admin = aclFormatted[2].isEmpty() ? notAssigned : aclFormatted[2];
-        	title.append("<tr><td>" + provider.getLocalizedTitle(request, "report.list-resources.admin-permission", null) + ":</td><td>" + admin + "</td></tr>");
+            String write = aclFormatted[1].isEmpty() ? notAssigned : aclFormatted[1];
+            title.append("<tr><td>" + provider.getLocalizedTitle(request, "permissions.privilege.read-write", null)
+                    + ":</td><td>" + write + "</td></tr>");
 
-        	title.append("</tbody></table>");
+            String admin = aclFormatted[2].isEmpty() ? notAssigned : aclFormatted[2];
+            title.append("<tr><td>"
+                    + provider.getLocalizedTitle(request, "report.list-resources.admin-permission", null)
+                    + ":</td><td>" + admin + "</td></tr>");
 
-        	if (r.isInheritedAcl()) {
-        		title.append("</span>"); 
-        	}
+            title.append("</tbody></table>");
 
-        	// Add to JSON-object
-        	o.put("text", name);
-        	o.put("uri", r.getURI().toString());
-        	o.put("title", title.toString());
-        	o.put("listClasses", listClasses);
-        	o.put("spanClasses", spanClasses);
+            if (r.isInheritedAcl()) {
+                title.append("</span>");
+            }
 
-        	// Add object to JSON-array
-        	list.add(o);
+            // Add to JSON-object
+            o.put("text", name);
+            o.put("uri", r.getURI().toString());
+            o.put("title", title.toString());
+            o.put("listClasses", listClasses);
+            o.put("spanClasses", spanClasses);
+
+            // Add object to JSON-array
+            list.add(o);
         }
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("text/plain;charset=utf-8");
@@ -176,7 +184,7 @@ public class ListResourcesService implements Controller, InitializingBean {
             writer.close();
         }
     }
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
     }
@@ -185,7 +193,7 @@ public class ListResourcesService implements Controller, InitializingBean {
     public void setProvider(ListResourcesProvider provider) {
         this.provider = provider;
     }
-    
+
     @Required
     public void setPermissionsService(Service permissionsService) {
         this.permissionsService = permissionsService;

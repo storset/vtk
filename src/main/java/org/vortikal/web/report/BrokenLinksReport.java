@@ -108,22 +108,16 @@ public class BrokenLinksReport extends DocumentReporter {
 
         Map<String, List<FilterOption>> filters = new LinkedHashMap<String, List<FilterOption>>();
 
-        Map<String, String> usedFilters = new LinkedHashMap<String, String>();
         String linkType = request.getParameter(FILTER_LINK_TYPE_PARAM_NAME);
         String published = request.getParameter(FILTER_PUBLISHED_PARAM_NAME);
         String readRestriction = request.getParameter(FILTER_READ_RESTRICTION_PARAM_NAME);
 
         if (linkType == null)
             linkType = FILTER_LINK_TYPE_PARAM_DEFAULT_VALUE;
-        usedFilters.put(FILTER_LINK_TYPE_PARAM_NAME, linkType);
-
         if (published == null)
             published = FILTER_PUBLISHED_PARAM_DEFAULT_VALUE;
-        usedFilters.put(FILTER_PUBLISHED_PARAM_NAME, published);
-
         if (readRestriction == null)
             readRestriction = FILTER_READ_RESTRICTION_PARAM_DEFAULT_VALUE;
-        usedFilters.put(FILTER_READ_RESTRICTION_PARAM_NAME, readRestriction);
 
         result.put("linkType", linkType);
 
@@ -168,19 +162,26 @@ public class BrokenLinksReport extends DocumentReporter {
         result.put("filters", filters);
         result.put("brokenLinkCount", getBrokenLinkCount(token, resource, request, linkType));
 
-        URL exportURL = this.brokenLinksToTsvReportService.constructURL(resource, null, usedFilters, false);
+        if (((Integer) result.get("total")) <= 1000 && ((Integer) result.get("total")) > 0) {
+            Map<String, String> usedFilters = new LinkedHashMap<String, String>();
+            usedFilters.put(FILTER_LINK_TYPE_PARAM_NAME, linkType);
+            usedFilters.put(FILTER_PUBLISHED_PARAM_NAME, published);
+            usedFilters.put(FILTER_READ_RESTRICTION_PARAM_NAME, readRestriction);
 
-        String[] exclude = request.getParameterValues(EXCLUDE_PATH_PARAM_NAME);
-        if (exclude != null)
-            for (String value : exclude)
-                exportURL.addParameter(EXCLUDE_PATH_PARAM_NAME, value);
+            URL exportURL = this.brokenLinksToTsvReportService.constructURL(resource, null, usedFilters, false);
 
-        String[] include = request.getParameterValues(INCLUDE_PATH_PARAM_NAME);
-        if (include != null)
-            for (String value : include)
-                exportURL.addParameter(INCLUDE_PATH_PARAM_NAME, value);
+            String[] exclude = request.getParameterValues(EXCLUDE_PATH_PARAM_NAME);
+            if (exclude != null)
+                for (String value : exclude)
+                    exportURL.addParameter(EXCLUDE_PATH_PARAM_NAME, value);
 
-        result.put("brokenLinksToTsvReportService", exportURL);
+            String[] include = request.getParameterValues(INCLUDE_PATH_PARAM_NAME);
+            if (include != null)
+                for (String value : include)
+                    exportURL.addParameter(INCLUDE_PATH_PARAM_NAME, value);
+
+            result.put("brokenLinksToTsvReportService", exportURL);
+        }
 
         return result;
     }

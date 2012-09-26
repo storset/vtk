@@ -67,6 +67,11 @@ public class BrokenLinksToTsvController implements Controller {
         String token = SecurityContext.getSecurityContext().getToken();
         Resource resource = repository.retrieve(token, requestContext.getResourceURI(), false);
 
+        RequestWrapper requestWrapped = new RequestWrapper(request);
+        Map<String, Object> result = this.brokenLinksReporter.getReportContent(token, resource, requestWrapped);
+        if (((Integer) result.get("total")) > 1000 && ((Integer) result.get("total")) <= 0)
+            return null;
+
         String filename = this.webHostName;
         filename += resource.getName().equals("/") ? "" : "_" + resource.getName();
         filename += "_" + new SimpleDateFormat("yyyy-MM-dd").format(new Date());
@@ -83,8 +88,6 @@ public class BrokenLinksToTsvController implements Controller {
         String locError = new MessageLocalizer("linkcheck.error", "Error", null, springRequestContext).get(null)
                 .toString();
 
-        RequestWrapper requestWrapped = new RequestWrapper(request);
-
         ServletOutputStream out = response.getOutputStream();
         try {
             out.print(locTitle + ":\tUri:\t" + locError + ":\n");
@@ -95,7 +98,6 @@ public class BrokenLinksToTsvController implements Controller {
             String title, uri;
             JSONObject obj;
 
-            Map<String, Object> result = this.brokenLinksReporter.getReportContent(token, resource, requestWrapped);
             while (!((List<PropertySet>) result.get("result")).isEmpty()) {
                 requestWrapped.increasePageNumber();
 

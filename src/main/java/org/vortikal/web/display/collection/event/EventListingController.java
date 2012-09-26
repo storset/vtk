@@ -70,7 +70,7 @@ public class EventListingController extends AbstractCollectionListingController 
         int totalHits = 0;
         int totalUpcomingHits = 0;
 
-        boolean atLeastOneUpcoming = this.searcher.searchUpcoming(request, collection, 1, 1, 0).size() > 0;
+        boolean atLeastOneUpcoming = false;
 
         List<Listing> results = new ArrayList<Listing>();
         Listing upcoming = null;
@@ -81,12 +81,16 @@ public class EventListingController extends AbstractCollectionListingController 
             totalUpcomingHits = upcoming.getTotalHits();
             if (upcoming.size() > 0) {
                 results.add(upcoming);
+                atLeastOneUpcoming = true;
             }
         } else {
-            upcoming = this.searcher.searchUpcoming(request, collection, upcomingEventPage, 0, 0);
-            totalHits += upcoming.getTotalHits();
-            totalUpcomingHits = upcoming.getTotalHits();
-            upcoming = null;
+            atLeastOneUpcoming = this.searcher.searchUpcoming(request, collection, 1, 1, 0).size() > 0;
+            if (atLeastOneUpcoming) {
+                upcoming = this.searcher.searchUpcoming(request, collection, upcomingEventPage, 0, 0);
+                totalHits += upcoming.getTotalHits();
+                totalUpcomingHits = upcoming.getTotalHits();
+                upcoming = null;
+            }
         }
 
         if (upcoming == null || upcoming.size() == 0) {

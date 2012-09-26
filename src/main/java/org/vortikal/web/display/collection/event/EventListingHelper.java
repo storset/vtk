@@ -50,15 +50,14 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.support.RequestContext;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.ResourceTypeTree;
 import org.vortikal.repository.resourcetype.DateValueFormatter;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.web.display.listing.ListingPager;
-import org.vortikal.web.search.Listing;
 import org.vortikal.web.servlet.ResourceAwareLocaleResolver;
 
 public final class EventListingHelper implements InitializingBean {
@@ -72,6 +71,11 @@ public final class EventListingHelper implements InitializingBean {
     private DateValueFormatter dateValueFormatter;
     private ResourceAwareLocaleResolver localeResolver;
     private PropertyTypeDefinition eventTypeTitlePropDef;
+    private String startPropDefPointer;
+    private String endPropDefPointer;
+    private PropertyTypeDefinition startPropDef;
+    private PropertyTypeDefinition endPropDef;
+    private ResourceTypeTree resourceTypeTree;
 
     public static final String REQUEST_PARAMETER_DATE = "date";
     public static final String REQUEST_PARAMETER_VIEW = "view";
@@ -94,6 +98,9 @@ public final class EventListingHelper implements InitializingBean {
         this.searchTypes.put(DATE_PATTERN, SpecificDateSearchType.Day);
         this.searchTypes.put(MONTH_PATTERN, SpecificDateSearchType.Month);
         this.searchTypes.put(YEAR_PATTERN, SpecificDateSearchType.Year);
+
+        this.startPropDef = this.resourceTypeTree.getPropertyDefinitionByPointer(this.startPropDefPointer);
+        this.endPropDef = this.resourceTypeTree.getPropertyDefinitionByPointer(this.endPropDefPointer);
     }
 
     public SpecificDateSearchType getSpecificDateSearchType(HttpServletRequest request) {
@@ -198,23 +205,37 @@ public final class EventListingHelper implements InitializingBean {
         return cal;
     }
 
-    public String getCalendarWidgetEventDates(Listing events, Calendar cal) {
+    public String getCalendarWidgetEventDates(List<PropertySet> events, Calendar cal) {
 
         Set<String> eventDatesList = new HashSet<String>();
         SimpleDateFormat eventDateFormat = new SimpleDateFormat("yyyy-M-d");
 
-        for (PropertySet propSet : events.getFiles()) {
+        for (PropertySet event : events) {
 
-            Property startDateProp = propSet.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "start-date");
-            Date eventStart = startDateProp != null ? startDateProp.getDateValue() : cal.getTime();
-            Property endDateProp = propSet.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, "end-date");
-            Date eventEnd = endDateProp != null ? endDateProp.getDateValue() : eventStart;
+            Property eventStartDateProp = this.getStartDateProperty(event);
+            Date eventStart = null;
+            if (eventStartDateProp != null) {
+                eventStart = eventStartDateProp.getDateValue();
+            }
 
-            Calendar eventStartCal = this.getDayOfMonth(eventStart);
+            Property eventEndDateProp = this.getEndDateProperty(event);
+            Date eventEnd = null;
+            if (eventEndDateProp != null) {
+                eventEnd = eventEndDateProp.getDateValue();
+            }
+
+            if (eventStart == null && eventEnd == null) {
+                // Should not even be in event list, repository search would
+                // under normal circumstances not return it
+                continue;
+            }
+
+            Calendar eventStartCal = eventStart != null ? this.getDayOfMonth(eventStart) : this.getDayOfMonth(eventEnd);
             if (eventStartCal.get(Calendar.MONTH) < cal.get(Calendar.MONTH)) {
                 eventStartCal.setTime(cal.getTime());
             }
-            Calendar eventEndCal = this.getDayOfMonth(eventEnd);
+
+            Calendar eventEndCal = eventEnd != null ? this.getDayOfMonth(eventEnd) : this.getDayOfMonth(eventStart);
             if (eventEndCal.get(Calendar.MONTH) > cal.get(Calendar.MONTH)) {
                 eventEndCal.set(Calendar.DAY_OF_MONTH, eventEndCal.getActualMaximum(Calendar.DAY_OF_MONTH));
             }
@@ -263,6 +284,14 @@ public final class EventListingHelper implements InitializingBean {
                 this.getEventTypeTitle(request, resource, "eventListing.calendar.dayHasNoPlannedEvents", false));
     }
 
+    public Property getStartDateProperty(PropertySet ps) {
+        return ps.getProperty(this.startPropDef);
+    }
+
+    public Property getEndDateProperty(PropertySet ps) {
+        return ps.getProperty(this.endPropDef);
+    }
+
     @Required
     public void setDateValueFormatter(DateValueFormatter dateValueFormatter) {
         this.dateValueFormatter = dateValueFormatter;
@@ -276,6 +305,21 @@ public final class EventListingHelper implements InitializingBean {
     @Required
     public void setEventTypeTitlePropDef(PropertyTypeDefinition eventTypeTitlePropDef) {
         this.eventTypeTitlePropDef = eventTypeTitlePropDef;
+    }
+
+    @Required
+    public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
+        this.resourceTypeTree = resourceTypeTree;
+    }
+
+    @Required
+    public void setStartPropDefPointer(String startPropDefPointer) {
+        this.startPropDefPointer = startPropDefPointer;
+    }
+
+    @Required
+    public void setEndPropDefPointer(String endPropDefPointer) {
+        this.endPropDefPointer = endPropDefPointer;
     }
 
 }

@@ -44,10 +44,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Required;
-import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.web.display.collection.event.EventListingController;
 import org.vortikal.web.display.collection.event.EventListingHelper;
 import org.vortikal.web.display.listing.ListingPager;
@@ -64,6 +64,7 @@ public class EventCalendarListingController extends EventListingController {
     private Service viewAllUpcomingService;
     private Service viewAllPreviousService;
     private SearchComponent calendarSearchComponent;
+    private PropertyTypeDefinition publishDatePropDef;
 
     // max 5 further upcoming events on 1 page
     private final int furtherUpcomingLimit = 5;
@@ -80,7 +81,7 @@ public class EventCalendarListingController extends EventListingController {
         model.put("requestedDate", requestedDate);
 
         // Days with events, with localized calendar titles for clickable days.
-        String eventDates = this.helper.getCalendarWidgetEventDates(result, currentMonth);
+        String eventDates = this.helper.getCalendarWidgetEventDates(result.getFiles(), currentMonth);
         model.put("allowedDates", eventDates);
         this.helper.setCalendarTitles(request, collection, model);
 
@@ -155,9 +156,10 @@ public class EventCalendarListingController extends EventListingController {
     }
 
     private boolean isWithinDaysAhead(Date time, PropertySet ps) {
-        Property sdProp = this.getProperty(ps, "start-date");
+        Property sdProp = this.helper.getStartDateProperty(ps);
+        Property edProp = this.helper.getEndDateProperty(ps);
         if (sdProp == null) {
-            sdProp = this.getProperty(ps, "publish-date");
+            sdProp = edProp != null ? edProp : ps.getProperty(this.publishDatePropDef);
         }
         Date sd = sdProp.getDateValue();
         Calendar cal = Calendar.getInstance();
@@ -168,20 +170,11 @@ public class EventCalendarListingController extends EventListingController {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         boolean isToday = sd.equals(time) || (sd.after(time) && sd.before(cal.getTime()));
-        Property edProp = this.getProperty(ps, "end-date");
         if (edProp == null) {
             return isToday;
         }
         Date ed = edProp.getDateValue();
         return isToday || (sd.before(time) && (ed.after(time) || ed.equals(time)));
-    }
-
-    private Property getProperty(PropertySet ps, String key) {
-        Property prop = ps.getProperty(Namespace.STRUCTURED_RESOURCE_NAMESPACE, key);
-        if (prop == null) {
-            prop = ps.getProperty(Namespace.DEFAULT_NAMESPACE, key);
-        }
-        return prop;
     }
 
     private Listing getFurtherUpcoming(Listing result, List<GroupedEvents> groupedEvents) {
@@ -227,6 +220,7 @@ public class EventCalendarListingController extends EventListingController {
                 Listing furtherUpcoming = new Listing(result.getResource(), null, result.getName(), result.getOffset());
                 furtherUpcoming.setFiles(furtherEvents);
                 furtherUpcoming.setUrls(urls);
+                furtherUpcoming.setDisplayPropDefs(result.getDisplayPropDefs());
                 return furtherUpcoming;
             }
 
@@ -235,7 +229,7 @@ public class EventCalendarListingController extends EventListingController {
     }
 
     private boolean isWithinFurtherUpcoming(PropertySet ps, Date lastGroupedByDay) {
-        Property sdProp = this.getProperty(ps, "start-date");
+        Property sdProp = this.helper.getStartDateProperty(ps);
         Date eventStartDate = null;
         if (sdProp != null) {
             eventStartDate = sdProp.getDateValue();
@@ -244,7 +238,14 @@ public class EventCalendarListingController extends EventListingController {
             return true;
         }
 
-        // XXX Check end date, only if start date was null
+        Property edProp = this.helper.getEndDateProperty(ps);
+        Date eventEndDate = null;
+        if (edProp != null) {
+            eventEndDate = edProp.getDateValue();
+        }
+        if (eventEndDate != null && eventEndDate.after(lastGroupedByDay)) {
+            return true;
+        }
 
         return false;
     }
@@ -272,6 +273,11 @@ public class EventCalendarListingController extends EventListingController {
     @Required
     public void setCalendarSearchComponent(SearchComponent calendarSearchComponent) {
         this.calendarSearchComponent = calendarSearchComponent;
+    }
+
+    @Required
+    public void setPublishDatePropDef(PropertyTypeDefinition publishDatePropDef) {
+        this.publishDatePropDef = publishDatePropDef;
     }
 
     public class GroupedEvents {

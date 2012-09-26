@@ -59,6 +59,8 @@ public final class EventAsICalHelper {
     private PropertyTypeDefinition titlePropDef;
 
     public String getAsICal(List<PropertySet> events) {
+        
+        System.out.println("Generating iCal...");
 
         if (events == null || events.size() < 1) {
             return null;

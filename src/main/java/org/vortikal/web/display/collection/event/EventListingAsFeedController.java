@@ -97,13 +97,11 @@ public class EventListingAsFeedController extends AtomFeedController {
 
     @Override
     protected Property getPublishDate(PropertySet resource) {
-        PropertyTypeDefinition overridePublishDatePropDef = this.resourceTypeTree
-                .getPropertyDefinitionByPointer(this.overridePublishDatePropDefPointer);
-        Property overridePublishDateProp = resource.getProperty(overridePublishDatePropDef);
-        if (overridePublishDateProp != null) {
-            return overridePublishDateProp;
+        Property sortProp = this.helper.getStartDateProperty(resource);
+        if (sortProp == null) {
+            sortProp = this.helper.getEndDateProperty(resource);
         }
-        return this.getDefaultPublishDate(resource);
+        return sortProp != null ? sortProp : this.getDefaultPublishDate(resource);
     }
 
     @Override

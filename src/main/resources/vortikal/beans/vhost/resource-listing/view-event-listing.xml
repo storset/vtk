@@ -68,6 +68,9 @@
     <property name="localeResolver" ref="viewServiceResourceAwareLocaleResolver" />
     <property name="dateValueFormatter" ref="dateValueFormatter" />
     <property name="eventTypeTitlePropDef" ref="eventListing.eventTypeTitlePropDef" />
+    <property name="resourceTypeTree" ref="resourceTypeTree" />
+    <property name="startPropDefPointer" ref="${override.listing.prefix}eventListing.startDatePropDefPointer" />
+    <property name="endPropDefPointer" ref="${override.listing.prefix}eventListing.endDatePropDefPointer" />
   </bean>
 
   <bean id="eventListing.upcomingEventsSearchComponent" parent="collectionListing.searchComponent">
@@ -112,6 +115,7 @@
     <property name="sortOrderPropDefPointers">
       <list>
         <ref bean="${override.listing.prefix}eventListing.startDatePropDefPointer" />
+        <ref bean="${override.listing.prefix}eventListing.endDatePropDefPointer" />
       </list>
     </property>
     <property name="resourceTypeTree" ref="resourceTypeTree" />
@@ -137,6 +141,7 @@
     <property name="sortOrderPropDefPointers">
       <list>
         <ref bean="${override.listing.prefix}eventListing.startDatePropDefPointer" />
+        <ref bean="${override.listing.prefix}eventListing.endDatePropDefPointer" />
       </list>
     </property>
     <property name="resourceTypeTree" ref="resourceTypeTree" />

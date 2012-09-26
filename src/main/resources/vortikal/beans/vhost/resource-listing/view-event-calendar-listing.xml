@@ -30,6 +30,7 @@
     <property name="viewAllUpcomingService" ref="calendarEventListing.viewAllUpcomingService" />
     <property name="viewAllPreviousService" ref="calendarEventListing.viewAllPreviousService" />
     <property name="calendarSearchComponent" ref="eventListing.calendarCurrentMonthAndForwardSearchComponent" />
+    <property name="publishDatePropDef" ref="publishDatePropDef" />
   </bean>
 
   <bean id="eventListing.calendarCurrentMonthAndForwardSearchComponent" parent="collectionListing.searchComponent">
@@ -209,12 +210,12 @@
     <property name="url" value="pages/view-collection-listing.ftl" />
     <property name="referenceDataProviders">
       <list>
-        <ref bean="eventCalenderContentProvider" />
+        <ref bean="eventCalendarContentProvider" />
       </list>
     </property>
   </bean>
 
-  <bean id="eventCalenderContentProvider" class="org.vortikal.web.referencedata.provider.EventCalenderContentProvider">
+  <bean id="eventCalendarContentProvider" class="org.vortikal.web.referencedata.provider.EventCalendarContentProvider">
     <property name="helper" ref="eventListingHelper" />
     <property name="currentMonthSearchComponent" ref="${override.listing.prefix}eventListing.currentMonthSearchComponent" />
   </bean>

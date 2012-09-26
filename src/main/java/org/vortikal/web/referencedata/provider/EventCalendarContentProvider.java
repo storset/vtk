@@ -49,7 +49,7 @@ import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.search.Listing;
 import org.vortikal.web.search.SearchComponent;
 
-public class EventCalenderContentProvider implements ReferenceDataProvider {
+public class EventCalendarContentProvider implements ReferenceDataProvider {
 
     private EventListingHelper helper;
     private SearchComponent currentMonthSearchComponent;
@@ -81,7 +81,7 @@ public class EventCalenderContentProvider implements ReferenceDataProvider {
             }
         }
         Listing plannedEvents = this.currentMonthSearchComponent.execute(request, resource, 1, 500, 0);
-        String eventDates = this.helper.getCalendarWidgetEventDates(plannedEvents, cal);
+        String eventDates = this.helper.getCalendarWidgetEventDates(plannedEvents.getFiles(), cal);
         model.put("allowedDates", eventDates);
 
         this.helper.setCalendarTitles(request, resource, model);

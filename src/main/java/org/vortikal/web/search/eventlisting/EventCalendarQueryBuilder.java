@@ -84,10 +84,6 @@ public class EventCalendarQueryBuilder implements SearchComponentQueryBuilder, I
         endTimeOr.add(new PropertyTermQuery(endPropDef, String.valueOf(this.getToday()), TermOperator.EQ));
         notYetEnded.add(endTimeOr);
 
-        OrQuery query = new OrQuery();
-        query.add(notYetStarted);
-        query.add(notYetEnded);
-
         // Start time is now/passed, but there is no end time -> regarded as
         // upcoming for one hour from start time. Only when no specific date is
         // supplied.
@@ -95,7 +91,17 @@ public class EventCalendarQueryBuilder implements SearchComponentQueryBuilder, I
         long oneHourEarlier = this.getOneHourEarlier();
         noEndDate.add(new PropertyTermQuery(this.startPropDef, String.valueOf(oneHourEarlier), TermOperator.GE));
         noEndDate.add(new PropertyExistsQuery(this.endPropDef, true));
+
+        // No start date, and end date is within start of desired period
+        AndQuery noStartDate = new AndQuery();
+        noStartDate.add(new PropertyTermQuery(this.endPropDef, String.valueOf(start), TermOperator.GE));
+        noStartDate.add(new PropertyExistsQuery(this.startPropDef, true));
+
+        OrQuery query = new OrQuery();
+        query.add(notYetStarted);
+        query.add(notYetEnded);
         query.add(noEndDate);
+        query.add(noStartDate);
 
         return query;
 

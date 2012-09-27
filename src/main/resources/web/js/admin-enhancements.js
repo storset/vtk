@@ -185,6 +185,19 @@ vrtxAdmin._$(document).ready(function () {
   var bodyId = vrtxAdm.cachedBody.attr("id");
   vrtxAdm.cachedBody.addClass("js");
 
+  vrtxAdm.cachedActiveTab = vrtxAdm.cachedAppContent.find("#active-tab");
+  
+  // Remove active tab if it has no children
+  if (!vrtxAdm.cachedActiveTab.find(" > *").length) {
+    vrtxAdm.cachedActiveTab.remove();
+  }
+
+  // Remove active tab-message if it is empty
+  var activeTabMsg = vrtxAdm.cachedActiveTab.find(" > .tabMessage");
+  if (!activeTabMsg.text().length) {
+    activeTabMsg.remove();
+  }
+
   // Buttons into links
   vrtxAdm.logoutButtonAsLink();
 
@@ -197,7 +210,6 @@ vrtxAdmin._$(document).ready(function () {
     }
   });
   vrtxAdm.dropdown({selector: "ul.manage-create"});
-
   
   // Slide up when choose something in dropdown
   vrtxAdm.cachedBody.on("click", ".dropdown-shortcut-menu li a, .dropdown-shortcut-menu-container li a", function() {
@@ -1196,19 +1208,6 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
   var vrtxAdm = this, _$ = vrtxAdm._$;
 
   if(!vrtxAdm.cachedDirectoryListing.length) return;
-
-  vrtxAdm.cachedActiveTab = vrtxAdm.cachedAppContent.find("#active-tab");
-  
-  // Remove active tab if it has no children
-  if (!vrtxAdm.cachedActiveTab.find(" > *").length) {
-    vrtxAdm.cachedActiveTab.remove();
-  }
-
-  // Remove active tab-message if it is empty
-  var activeTabMsg = vrtxAdm.cachedActiveTab.find(" > .tabMessage");
-  if (!activeTabMsg.text().length) {
-    activeTabMsg.remove();
-  }
 
   if(typeof moveUncheckedMessage !== "undefined") {
     vrtxAdm.placeCopyMoveButtonInActiveTab({

@@ -72,9 +72,6 @@
     </property>
   </bean>
 
-
-
-
   <bean id="previewManagedXmlService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="previewService" />
     <property name="order" value="0" />
@@ -88,9 +85,6 @@
       <ref bean="previewXmlResourceHandler" />
     </property>
   </bean>
-
-
-
 
   <bean id="viewXslStylesheetAvailable"
         class="org.vortikal.web.service.XmlSchemaXPathAssertion">
@@ -316,11 +310,7 @@
      </property>
    </bean>
 
-
-   
-
-  <bean id="previewXmlResourceHandler" 
-    class="org.vortikal.web.display.url.ResourceServiceURLController">
+  <bean id="previewXmlResourceHandler" parent="abstractPreviewIframe">
     <property name="service" ref="displayResourceService" />
     <property name="viewName" value="previewAdminIframe" />
   </bean>

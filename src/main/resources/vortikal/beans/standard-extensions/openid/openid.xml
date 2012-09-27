@@ -42,8 +42,7 @@
     <!--property name="authenticationChallenge" ref="openid.authHandler" /-->
   </bean>
 
-  <bean id="openid.authenticationFormHandler"
-        class="org.vortikal.web.display.url.ResourceServiceURLController">
+  <bean id="openid.authenticationFormHandler" parent="abstractPreviewIframe">
     <property name="service" ref="viewService" />
     <property name="viewName" value="openid.authenticationForm" />
   </bean>

@@ -1651,9 +1651,9 @@ body#vrtx-preview #app-content #contents .previewUnavailable {
 }
 
 p.previewUnavailableReasons {
-  padding-top: 5px;
-  margin-top: 20px;
-  background: url(images/line-dotted.gif) repeat-x top left;
+  margin-top: 25px;
+  padding-top: 10px;
+  background: url(images/line-dotted.gif) repeat-x 0 2px;
 }
 
 body#vrtx-trash-can #trash-can-empty,

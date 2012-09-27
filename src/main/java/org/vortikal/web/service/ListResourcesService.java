@@ -96,8 +96,7 @@ public class ListResourcesService implements Controller, InitializingBean {
 
             Acl acl = r.getAcl();
             boolean authorizedToRead = this.provider.authorizedTo(acl, requestContext.getPrincipal(), Privilege.READ);
-            boolean authorizedToReadWrite = this.provider.authorizedTo(acl, requestContext.getPrincipal(),
-                    Privilege.READ_WRITE);
+            boolean authorizedToAdmin = this.provider.authorizedTo(acl, requestContext.getPrincipal(), Privilege.ALL);
 
             String listClasses = "";
             String spanClasses = "";
@@ -119,23 +118,16 @@ public class ListResourcesService implements Controller, InitializingBean {
             // Generate title
             StringBuilder title = new StringBuilder();
             String name = HtmlUtil.escapeHtmlString(r.getName());
-            String uriService = permissionsService.constructURL(r.getURI()).getPathRepresentation();
-
+            
             title.append("<span id=&quot;title-wrapper&quot;><strong id=&quot;title&quot;>" + name + "</strong>");
             if (r.isInheritedAcl()) {
                 title.append(" "
                         + provider.getLocalizedTitle(request, "report.list-resources.inherited-permissions", null));
-                if (authorizedToReadWrite) {
-                    title.append(" (<a href=&quot;" + uriService + "&quot;>"
-                            + provider.getLocalizedTitle(request, "report.list-resources.edit", null) + "</a>)");
-                }
+                this.genEditOrViewButton(request, r, authorizedToAdmin, authorizedToRead, title);
                 title.append("</span><span class=&quot;inherited-permissions&quot;>");
             } else {
                 title.append(" " + provider.getLocalizedTitle(request, "report.list-resources.own-permissions", null));
-                if (authorizedToReadWrite) {
-                    title.append(" (<a href=&quot;" + uriService + "&quot;>"
-                            + provider.getLocalizedTitle(request, "report.list-resources.edit", null) + "</a>)");
-                }
+                this.genEditOrViewButton(request, r, authorizedToAdmin, authorizedToRead, title);
                 title.append("</span>");
                 listClasses = "not-inherited";
             }
@@ -182,6 +174,17 @@ public class ListResourcesService implements Controller, InitializingBean {
             writer.print(list.toString(1));
         } finally {
             writer.close();
+        }
+    }
+    
+    private void genEditOrViewButton(HttpServletRequest request, Resource r, boolean authorizedToAdmin, boolean authorizedToRead, StringBuilder title) {
+        String uriService = this.permissionsService.constructURL(r.getURI()).getPathRepresentation();
+    	if (authorizedToAdmin) {
+            title.append("&nbsp;&nbsp;<a class=&quot;vrtx-button-small&quot; href=&quot;" + uriService + "&quot;><span>"
+                    + provider.getLocalizedTitle(request, "report.list-resources.edit", null) + "</span></a>");
+        } else if (authorizedToRead) {
+            title.append("&nbsp;&nbsp;<a class=&quot;vrtx-button-small&quot; href=&quot;" + uriService + "&quot;><span>"
+                    + provider.getLocalizedTitle(request, "report.list-resources.view", null) + "</span></a>");
         }
     }
 

@@ -40,8 +40,6 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.Principal;
 
-
-
 /**
  * Assertion that matches on the locale of the request. The locale is
  * resolved using Spring's standard locale resolver functionality.
@@ -51,7 +49,7 @@ import org.vortikal.security.Principal;
  *    <li><code>locale</code> - a {@link Locale} to match
  *    <li><code>localeResolver</code> - a {@link LocaleResolver}
  *        that determines the request locale.
- *    <li><code>invert</code> - a boolean indicating whether to perform an inverted
+ *    <li><code>invert</code> - whether to perform an inverted
  *        match. Default is false.
  * </ul>
  */
@@ -67,18 +65,15 @@ public class RequestLocaleMatchAssertion
         this.locale = locale;
     }
 
-
     public void setLocaleResolver(LocaleResolver localeResolver) {
         this.localeResolver = localeResolver;
     }
-
 
     public void setInvert(boolean invert) {
         this.invert = invert;
     }
 
-
-
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (this.locale == null) {
             throw new BeanInitializationException(
@@ -90,8 +85,7 @@ public class RequestLocaleMatchAssertion
         }
     }
 
-
-
+    @Override
     public boolean conflicts(Assertion assertion) {
         if (assertion instanceof RequestLocaleMatchAssertion) {
 
@@ -107,10 +101,34 @@ public class RequestLocaleMatchAssertion
         return false;
     }
 
+    @Override
+    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
+        return true;
+    }
 
+    @Override
+    public void processURL(URL url) {
+    }
+    
+    @Override
+    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
+        Locale locale = this.localeResolver.resolveLocale(request);
+        boolean match = match(locale);
+        if (this.invert) {
+            return !match;
+        }
+        return match;
+    }
+
+    @Override
+    public String toString() {
+        if (this.invert) {
+            return "request.locale != " + this.locale;
+        }
+        return "request.locale = " + this.locale;
+    }
 
     private boolean match(Locale locale) {
-        
         if (!this.locale.getLanguage().equals(locale.getLanguage())) {
             return false;
         }
@@ -123,33 +141,4 @@ public class RequestLocaleMatchAssertion
         return true;
     }
     
-
-    public String toString() {
-        StringBuffer sb = new StringBuffer();
-		
-        sb.append(super.toString());
-        sb.append("; locale = ").append(this.locale);
-        sb.append("; invert = ").append(this.invert);
-        return sb.toString();
-    }
-
-
-    public boolean processURL(URL url, Resource resource, Principal principal, boolean match) {
-        return true;
-    }
-
-    public void processURL(URL url) {
-        // Empty
-    }
-    
-    public boolean matches(HttpServletRequest request, Resource resource, Principal principal) {
-        Locale locale = this.localeResolver.resolveLocale(request);
-        boolean match = match(locale);
-        if (this.invert) {
-            return !match;
-        }
-        return match;
-    }
-
-
 }

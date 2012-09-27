@@ -321,7 +321,6 @@
 
   <bean id="previewXmlResourceHandler" 
     class="org.vortikal.web.display.url.ResourceServiceURLController">
-    <!--property name="service" ref="displayResourceService" /-->
     <property name="service" ref="displayResourceService" />
     <property name="viewName" value="previewAdminIframe" />
   </bean>

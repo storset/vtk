@@ -1652,7 +1652,7 @@ body#vrtx-preview #app-content #contents .previewUnavailable {
 
 p.previewUnavailableReasons {
   margin-top: 25px;
-  padding-top: 10px;
+  padding-top: 15px;
   background: url(images/line-dotted.gif) repeat-x 0 2px;
 }
 

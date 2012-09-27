@@ -23,7 +23,7 @@
   <body>
     <h2>${vrtx.getMsg('preview.popup.title')}</h2>
     <p>${vrtx.getMsg('preview.popup.desc')}</p>
-    <a class="vrtx-button" href="${resourceReference?html}" target="vrtx_preview_popup"><span>${vrtx.getMsg('preview.popup.open')}</span></a>.
+    <a class="vrtx-button" href="${resourceReference?html}" target="vrtx_preview_popup"><span>${vrtx.getMsg('preview.popup.open')}</span></a>
     <p class="previewUnavailableReasons">${vrtx.getMsg('preview.popup.reasons.desc')}</p>
     <#assign prop = vrtx.getProp(resourceContext.currentResource, 'sslMixedMode') />
     <ul>

@@ -1650,6 +1650,12 @@ body#vrtx-preview #app-content #contents .previewUnavailable {
   margin: 10px 14px;
 }
 
+p.previewUnavailableReasons {
+  padding-top: 5px;
+  margin-top: 20px;
+  background: url(images/line-dotted.gif) repeat-x top left;
+}
+
 body#vrtx-trash-can #trash-can-empty,
 body#vrtx-manage-collectionlisting #collectionlisting-empty {
   text-align: center;

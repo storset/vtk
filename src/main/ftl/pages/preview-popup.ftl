@@ -22,10 +22,9 @@
   </head>
   <body>
     <h2>Document cannot be previewed</h2>
-    <p>But you can preview the web page if you want in a separate window.</p>
-    <a class="vrtx-button" href="${resourceReference?html}" target="vrtx_preview_popup"><span>Open</span></a>.
-    <hr />
-    <p>Reasons that preview is not available:</p>
+    <p>But you can preview the web page if you want in a separate window</p>
+    <a class="vrtx-button" href="${resourceReference?html}" target="vrtx_preview_popup"><span>Open in separate window</span></a>.
+    <p class="previewUnavailableReasons">Reasons that preview is not available:</p>
     <#assign prop = vrtx.getProp(resourceContext.currentResource, 'sslMixedMode') />
     <ul>
     <#list prop.values as v>

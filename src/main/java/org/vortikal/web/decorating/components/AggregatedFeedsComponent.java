@@ -253,8 +253,12 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
             }
             @SuppressWarnings("unchecked")
             List<SyndEntry> tmpEntries = tmpFeed.getEntries();
+            List<SyndEntry> filteredEntries = new ArrayList<SyndEntry>(tmpEntries);
             boolean filter = !parameterHasValue(PARAMETER_ALLOW_MARKUP, "true", request);
             for (SyndEntry entry : tmpEntries) {
+                if (entries.contains(entry)) {
+                    filteredEntries.remove(entry);
+                }
                 feedMapping.put(entry, tmpFeed);
                 HtmlFragment description = getDescription(entry, baseURL, requestURL, filter);
                 if (description == null) {
@@ -267,7 +271,7 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
                 }
                 descriptionNoImage.put(entry.toString(), description.getStringRepresentation());
             }
-            entries.addAll(tmpEntries);
+            entries.addAll(filteredEntries);
         }
     }
 

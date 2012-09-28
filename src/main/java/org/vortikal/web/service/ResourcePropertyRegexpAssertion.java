@@ -121,7 +121,6 @@ public class ResourcePropertyRegexpAssertion
                     for (Pattern p: this.patterns) {
                         Matcher m = p.matcher(s);
                         match = m.find();
-                        System.out.println("match: " + p + ", " + s + ": " + match);
                         if (!match) break;
                     }
                     if (!match) break;

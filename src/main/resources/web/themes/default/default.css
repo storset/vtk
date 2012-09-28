@@ -1393,7 +1393,7 @@ span.vrtx-help-step-by-step-cmd {
 }
 
 #directory-listing th.checkbox {
-  width: 3%;
+  width: 4%;
 }
 
 #directory-listing th.permissions {
@@ -1427,7 +1427,7 @@ span.vrtx-help-step-by-step-cmd {
 
 #directory-listing th.published,
 #directory-listing th#vrtx-report-published {
-  width: 9%;
+  width: 8%;
 }
 
 #directory-listing th#vrtx-report-broken-links-count {

@@ -142,7 +142,6 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
 
         if (this.revisionRequestParameter != null) {
             String revisionID = request.getParameter(this.revisionRequestParameter);
-            System.out.println("__rev: " + revisionID);
             if (revisionID != null) {
                 try {
                     Revision rev = null;

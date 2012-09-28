@@ -32,6 +32,7 @@ package org.vortikal.web.report;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,10 +52,12 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.service.Service;
 import org.vortikal.web.view.freemarker.MessageLocalizer;
 
 public class BrokenLinksToTsvController implements Controller {
 
+    private Service reportService;
     private Reporter brokenLinksReporter;
     private String webHostName;
 
@@ -69,8 +72,13 @@ public class BrokenLinksToTsvController implements Controller {
 
         RequestWrapper requestWrapped = new RequestWrapper(request);
         Map<String, Object> result = this.brokenLinksReporter.getReportContent(token, resource, requestWrapped);
-        if (((Integer) result.get("total")) > 1000 || ((Integer) result.get("total")) <= 0)
-            return null;
+        if (((Integer) result.get("total")) > 1000 || ((Integer) result.get("total")) <= 0) {
+            Map<String, Object> model = new HashMap<String, Object>();
+            model.put("serviceURL",
+                    reportService.constructURL(resource, RequestContext.getRequestContext().getPrincipal()));
+            model.put("report", brokenLinksReporter.getReportContent(token, resource, request));
+            return new ModelAndView(brokenLinksReporter.getViewName(), model);
+        }
 
         String filename = this.webHostName;
         filename += resource.getName().equals("/") ? "" : "_" + resource.getName();
@@ -121,6 +129,11 @@ public class BrokenLinksToTsvController implements Controller {
 
         return null;
 
+    }
+
+    @Required
+    public void setReportService(Service reportService) {
+        this.reportService = reportService;
     }
 
     @Required

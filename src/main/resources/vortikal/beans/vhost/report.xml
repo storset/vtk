@@ -36,6 +36,10 @@
         <ref bean="reports.viewPermissionAssertion" />
         <ref bean="resourceInCollection" />
         <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="report-type" />
+          <property name="parameterValue" value="broken-links" />
+        </bean>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
           <property name="parameterName" value="export-report" />
           <property name="parameterValue" value="broken-links-to-tsv" />
         </bean>
@@ -102,6 +106,7 @@
   <bean id="reportHandler" parent="abstractReportHandler" />
 
   <bean id="brokenLinksToTsvReportHandler" class="org.vortikal.web.report.BrokenLinksToTsvController">
+    <property name="reportService" ref="reportService" />
     <property name="brokenLinksReporter" ref="brokenLinksReport" />
     <property name="webHostName" value="${webHostName}" />
   </bean>

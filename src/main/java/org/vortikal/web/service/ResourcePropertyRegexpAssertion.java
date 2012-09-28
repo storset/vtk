@@ -36,17 +36,15 @@ import java.util.regex.Pattern;
 import org.vortikal.repository.Namespace;
 import org.vortikal.repository.Property;
 import org.vortikal.repository.Resource;
+import org.vortikal.repository.resourcetype.Value;
 import org.vortikal.security.Principal;
 
-/**
- * XXX: Rewrite to use propTypeDef instead!
- */
 public class ResourcePropertyRegexpAssertion
   extends AbstractRepositoryAssertion {
 
     private Namespace namespace;
     private String name;
-    private Pattern pattern = null;
+    private Pattern[] patterns = null;
     private boolean invert = false;
     
     public void setName(String name) {
@@ -58,41 +56,80 @@ public class ResourcePropertyRegexpAssertion
     }
 
     public void setPattern(String pattern) {
-        if (pattern == null) throw new IllegalArgumentException(
-            "Property 'pattern' cannot be null");
+        if (pattern == null) {
+            throw new IllegalArgumentException(
+                    "Property 'pattern' cannot be null");
+        }
     
-        this.pattern = Pattern.compile(pattern);
+        this.patterns = new Pattern[1];
+        this.patterns[0] = Pattern.compile(pattern);
+    }
+    
+    public void setPatterns(String[] patterns) {
+        if (patterns == null || patterns.length == 0) {
+            throw new IllegalArgumentException(
+                    "Property 'pattern' cannot be null or length 0");
+            
+        }
+        this.patterns = new Pattern[patterns.length];
+        for (int i = 0; i < patterns.length; i++) {
+            this.patterns[i] = Pattern.compile(patterns[i]);
+        }
     }
     
     public void setInvert(boolean invert) {
         this.invert = invert;
     }
-    
-    
+
+    @Override
     public boolean conflicts(Assertion assertion) {
         return false;
     }
 
-
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("property.").append(this.name);
-        sb.append(this.invert ? " !~ " : " ~ ");
-        sb.append(this.pattern.pattern());
+        
+        if (this.patterns.length == 1) {
+            sb.append("property.").append(this.name);
+            sb.append(this.invert ? " !~ " : " ~ ");
+            sb.append(this.patterns[0].pattern());
+            return sb.toString();
+        }
+        
+        sb.append("(");
+        for (int i = 0; i < this.patterns.length; i++) {
+            if (i > 0) sb.append(" and ");
+            sb.append("property.").append(this.name);
+            sb.append(this.invert ? " !~ " : " ~ ");
+            sb.append(this.patterns[i].pattern());
+        }
+        sb.append(")");
         return sb.toString();
     }
 
+    @Override
     public boolean matches(Resource resource, Principal principal) {
+        boolean match = true;
         if (resource != null) {
             Property property = resource.getProperty(this.namespace, this.name);
-
             if (property != null) {
-                Matcher m = this.pattern.matcher(property.getStringValue());
-                return this.invert != m.matches();
+                Value[] values = property.getDefinition().isMultiple() ? 
+                        property.getValues() : new Value[] { property.getValue() } ;
+                for (Value v: values) {
+                    String s = v.getStringValue();
+                    for (Pattern p: this.patterns) {
+                        Matcher m = p.matcher(s);
+                        match = m.find();
+                        System.out.println("match: " + p + ", " + s + ": " + match);
+                        if (!match) break;
+                    }
+                    if (!match) break;
+                }
             }
         }
-        
-        return this.invert;
+
+        return match && !invert;
     }
 
 }

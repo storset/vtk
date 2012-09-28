@@ -283,7 +283,7 @@ vrtxAdmin._$(document).ready(function () {
     });
     vrtxAdm.completeFormAsync({
         selector: "form#" + resourceMenuRightServices[i] + "-form input[type=submit]",
-        updateSelectors: ["#resourceMenuRight", "#publishing-status"],
+        updateSelectors: ["#resourceMenuRight", "#publishing-status", "#publishing-publish-date", "#publishing-unpublish-date"],
         post: bodyId !== "vrtx-preview"
     });
   }

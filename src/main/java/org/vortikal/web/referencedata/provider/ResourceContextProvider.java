@@ -31,6 +31,7 @@
 package org.vortikal.web.referencedata.provider;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +44,7 @@ import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryException;
 import org.vortikal.repository.Resource;
 import org.vortikal.repository.ResourceWrapper;
+import org.vortikal.repository.Revision;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.referencedata.ReferenceDataProvider;
@@ -86,6 +88,7 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
     private String resourceFromModelKey = "resource";
     private String modelName = "resourceContext";
     private ResourceWrapperManager resourceWrapperManager;
+    private String revisionRequestParameter = null;
 
     public void setRetrieveForProcessing(boolean retrieveForProcessing) {
         this.retrieveForProcessing = retrieveForProcessing;
@@ -106,7 +109,12 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
     public void setResourceWrapperManager(ResourceWrapperManager resourceWrapperManager) {
         this.resourceWrapperManager = resourceWrapperManager;
     }
+    
+    public void setRevisionRequestParameter(String revisionRequestParameter) {
+        this.revisionRequestParameter = revisionRequestParameter;
+    }
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         if (this.modelName == null) {
             throw new BeanInitializationException("Bean property 'modelName' must be set");
@@ -132,6 +140,29 @@ public class ResourceContextProvider implements InitializingBean, ReferenceDataP
         Resource resource = null;
         Path parent = null;
 
+        if (this.revisionRequestParameter != null) {
+            String revisionID = request.getParameter(this.revisionRequestParameter);
+            System.out.println("__rev: " + revisionID);
+            if (revisionID != null) {
+                try {
+                    Revision rev = null;
+                    List<Revision> revisions = repository.getRevisions(requestContext.getSecurityToken(), 
+                            requestContext.getResourceURI());
+                    for (Revision revision: revisions) {
+                        if (revisionID.equals(revision.getName())) {
+                            rev = revision;
+                            break;
+                        }
+                    }
+                    if (rev != null) {
+                        resource = repository.retrieve(requestContext.getSecurityToken(), 
+                                requestContext.getResourceURI(),
+                                this.retrieveForProcessing, rev);
+                    }
+                } catch (RepositoryException e) { }
+            }
+        }
+        
         if (model != null && this.getResourceFromModel) {
             resource = (Resource) model.get(this.resourceFromModelKey);
         }

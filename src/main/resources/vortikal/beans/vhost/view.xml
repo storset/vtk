@@ -218,6 +218,7 @@
   <bean id="resourceContextProvider" 
         class="org.vortikal.web.referencedata.provider.ResourceContextProvider">
     <property name="retrieveForProcessing" value="true" />
+    <property name="revisionRequestParameter" value="revision" />
     <property name="resourceWrapperManager" ref="resourceManager" />
   </bean>
 

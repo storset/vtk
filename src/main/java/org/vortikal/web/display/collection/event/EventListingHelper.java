@@ -205,10 +205,14 @@ public final class EventListingHelper implements InitializingBean {
         return cal;
     }
 
-    public String getCalendarWidgetEventDates(List<PropertySet> events, Calendar cal) {
+    public String getCalendarWidgetMonthEventDates(List<PropertySet> events, Calendar requestedMonthCal) {
 
         Set<String> eventDatesList = new HashSet<String>();
         SimpleDateFormat eventDateFormat = new SimpleDateFormat("yyyy-M-d");
+
+        Calendar endOfRequestedMonthCal = Calendar.getInstance();
+        endOfRequestedMonthCal.setTime(requestedMonthCal.getTime());
+        endOfRequestedMonthCal.add(Calendar.MONTH, 1);
 
         for (PropertySet event : events) {
 
@@ -231,12 +235,15 @@ public final class EventListingHelper implements InitializingBean {
             }
 
             Calendar eventStartCal = eventStart != null ? this.getDayOfMonth(eventStart) : this.getDayOfMonth(eventEnd);
-            if (eventStartCal.get(Calendar.MONTH) < cal.get(Calendar.MONTH)) {
-                eventStartCal.setTime(cal.getTime());
+            if (eventStartCal.after(endOfRequestedMonthCal)) {
+                continue;
+            }
+            if (eventStartCal.get(Calendar.MONTH) < requestedMonthCal.get(Calendar.MONTH)) {
+                eventStartCal.setTime(requestedMonthCal.getTime());
             }
 
             Calendar eventEndCal = eventEnd != null ? this.getDayOfMonth(eventEnd) : this.getDayOfMonth(eventStart);
-            if (eventEndCal.get(Calendar.MONTH) > cal.get(Calendar.MONTH)) {
+            if (eventEndCal.get(Calendar.MONTH) > requestedMonthCal.get(Calendar.MONTH)) {
                 eventEndCal.set(Calendar.DAY_OF_MONTH, eventEndCal.getActualMaximum(Calendar.DAY_OF_MONTH));
             }
 

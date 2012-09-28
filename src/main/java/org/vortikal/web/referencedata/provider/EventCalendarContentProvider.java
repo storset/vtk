@@ -81,7 +81,7 @@ public class EventCalendarContentProvider implements ReferenceDataProvider {
             }
         }
         Listing plannedEvents = this.currentMonthSearchComponent.execute(request, resource, 1, 500, 0);
-        String eventDates = this.helper.getCalendarWidgetEventDates(plannedEvents.getFiles(), cal);
+        String eventDates = this.helper.getCalendarWidgetMonthEventDates(plannedEvents.getFiles(), cal);
         model.put("allowedDates", eventDates);
 
         this.helper.setCalendarTitles(request, resource, model);

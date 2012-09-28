@@ -81,7 +81,7 @@ public class EventCalendarListingController extends EventListingController {
         model.put("requestedDate", requestedDate);
 
         // Days with events, with localized calendar titles for clickable days.
-        String eventDates = this.helper.getCalendarWidgetEventDates(result.getFiles(), currentMonth);
+        String eventDates = this.helper.getCalendarWidgetMonthEventDates(result.getFiles(), currentMonth);
         model.put("allowedDates", eventDates);
         this.helper.setCalendarTitles(request, collection, model);
 

@@ -47,8 +47,13 @@ resourcetype timeplan {
 
   localization {
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    header : (en : "Edit schedule", no : "Rediger timeplan", nn : "Rediger timeplan"),
+    emnekode : (en : "Course code", no : "Emnekode", nn : "Emnekode"),
+    aar : (en : "Year", no : "År", nn : "År"),
+    semester : (en : "Semester", no : "Semester", nn : "Semester"),
+    path : (en : "Path", no : "Sti", nn : "Sti"),
     kommentar : (en : "Comment", no : "Innledende kommentar", nn : "Innledende kommentar"),
-    header : (en : "Edit schedule", no : "Rediger timeplan", nn : "Rediger timeplan")
+    content : (en : "Content", no : "Innhold", nn : "Innhald")
   }
 
 }

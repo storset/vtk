@@ -438,6 +438,7 @@ vrtxAdmin._$(document).ready(function () {
       var dataString = form.serialize() + "&" + input.attr("name") + "=" + input.val();
       vrtxAdm.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
+          vrtxAdm.displayErrorMsg(result.find(".errormessage").html());      
           vrtxAdm.cachedContent.html(_$(results).find("#contents").html());
           vrtxAdm.updateCollectionListingInteraction();
         }
@@ -456,6 +457,7 @@ vrtxAdmin._$(document).ready(function () {
       var dataString = form.serialize() + "&" + input.attr("name");
       vrtxAdm.serverFacade.postHtml(url, dataString, {
         success: function (results, status, resp) {
+          vrtxAdm.displayErrorMsg(result.find(".errormessage").html());      
           vrtxAdm.cachedContent.html(_$(results).find("#contents").html());
           vrtxAdm.updateCollectionListingInteraction();
         }

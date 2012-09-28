@@ -1,0 +1,29 @@
+resourcetype eksamen {
+
+  properties {
+    title : string overrides title,
+    content : html noextract
+  }
+
+  view {
+    ##
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>[call "resource:property" {"id":"title"}]</title>
+      </head>
+      <body>
+        <h1>[call "resource:property" {"id":"title"}]</h1>
+        [call "json:field" {"select":"content"}]
+      </body>
+    </html>
+    ##
+  }
+
+  localization {
+    title : (en : "Title", no : "Tittel", nn : "Tittel"),
+    header : (en : "Edit exam", no : "Rediger eksamen", nn : "Rediger eksamen"),
+    content : (en : "Content", no : "Innhold", nn : "Innhald")
+  }
+
+}

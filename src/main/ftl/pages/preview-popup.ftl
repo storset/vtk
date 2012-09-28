@@ -22,6 +22,13 @@
   </head>
   <body>
     <h2>${vrtx.getMsg('preview.sslMixedContent.title')}</h2>
+    <#if workingCopy?exists>
+      <#if resourceReference?index_of("?") &gt; 0><#assign resourceReference = resourceReference + "&amp;revision=WORKING_COPY" />
+        <#assign resourceReference = resourceReference + "&amp;revision=WORKING_COPY" />
+      <#else>
+        <#assign resourceReference = resourceReference + "?revision=WORKING_COPY" />
+      </#if>
+    </#if>
 
     <p>${vrtx.getMsg('preview.sslMixedContent.desc')}</p>
     <a class="vrtx-button" href="${resourceReference?html}" target="vrtx_preview_popup"><span>${vrtx.getMsg('preview.sslMixedContent.open')}</span></a>

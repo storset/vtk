@@ -8,7 +8,6 @@
 // Modified path for use in Vortex
 var tb_pathToImage = "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif";
 
-// USIT added: tb_postMessageClose() for notifying parent if thickbox closes in iframe
 // USIT added: possible with simple loading dialog
 // USIT added: opacity animation
 // USIT added: dynamic on click
@@ -312,7 +311,6 @@ function tb_remove() {
   $("#TB_closeWindowButton").unbind("click");
   $("#TB_window, #TB_overlay").fadeOut("fast", function () {
     $('#TB_window,#TB_overlay,#TB_HideSelect').trigger("unload").unbind().remove();
-    tb_postMessageClose();
   });
   $("#TB_load").remove();
   if (typeof document.body.style.maxHeight == "undefined") { //if IE 6
@@ -364,13 +362,4 @@ function tb_getPageSize() {
   var h = window.innerHeight || self.innerHeight || (de && de.clientHeight) || document.body.clientHeight;
   arrayPageSize = [w, h];
   return arrayPageSize;
-}
-
-function tb_postMessageClose() {
-  // Pass our height to parent since it is typically cross domain (and can't access it directly)
-  // Also check that it is the right dialog in Vortex admin (contains "ul.manage-create")
-  if(parent && $("ul.manage-create").length && typeof crossDocComLink !== "undefined") {
-    $("ul.manage-create").css("position", "static"); // reset position to original
-    crossDocComLink.postCmdToParent("create-dropdown-original-size");
-  }
 }

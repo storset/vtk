@@ -1,4 +1,4 @@
-/* 
+/*
  * View dropdown
  *
  * Turn off() first to prevent bug when JS is already included
@@ -8,8 +8,8 @@
 $(document).ready(function() {
   $(document).off("click", ".vrtx-dropdown-component-toggled a.vrtx-dropdown-link")
               .on("click", ".vrtx-dropdown-component-toggled a.vrtx-dropdown-link", function(e) {
-    if($.browser.msie && $.browser.version <= 7) {
-      $(this).toggleClass("active").next(".vrtx-dropdown-wrapper").toggle(); // Because slide sets "overflow: hidden" causing IE7-bug
+    if(typeof document.documentMode !== "undefined" && document.documentMode <= 7) {
+      $(this).toggleClass("active").next(".vrtx-dropdown-wrapper").toggle(); // Because slide sets "overflow: hidden" causing IE7 css-bug
     } else {
       $(this).toggleClass("active").next(".vrtx-dropdown-wrapper").slideToggle("fast");
     }

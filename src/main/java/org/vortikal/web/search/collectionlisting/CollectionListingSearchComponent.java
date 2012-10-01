@@ -94,7 +94,9 @@ public class CollectionListingSearchComponent extends QueryPartsSearchComponent 
             isMultiHostSearch = this.isMultiHostSearch(clar, localURL);
         }
 
-        logger.info("Resolved aggregation set for " + request.getRequestURI() + ": " + clar);
+        if (isMultiHostSearch) {
+            logger.info("Resolved multi host aggregation set for " + request.getRequestURI() + ": " + clar);
+        }
 
         ResultSet result = null;
 

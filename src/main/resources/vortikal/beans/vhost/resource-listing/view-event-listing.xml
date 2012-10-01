@@ -217,12 +217,6 @@
     </constructor-arg>
   </bean>
 
-  <bean id="event.configurablePropertySelectPointersList" class="java.util.ArrayList">
-    <constructor-arg>
-      <list>
-        <null />
-      </list>
-    </constructor-arg>
-  </bean>
+  <bean id="event.configurablePropertySelectPointersList" class="java.util.ArrayList" />
 
 </beans>

@@ -170,12 +170,6 @@
     </constructor-arg>
   </bean>
 
-  <bean id="article.configurablePropertySelectPointersList" class="java.util.ArrayList">
-    <constructor-arg>
-      <list>
-        <null />
-      </list>
-    </constructor-arg>
-  </bean>
+  <bean id="article.configurablePropertySelectPointersList" class="java.util.ArrayList" />
 
 </beans>

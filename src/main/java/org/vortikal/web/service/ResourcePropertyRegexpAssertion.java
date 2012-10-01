@@ -123,7 +123,7 @@ public class ResourcePropertyRegexpAssertion
                         match = m.find();
                         if (!match) break;
                     }
-                    if (!match) break;
+                    if (match) break;
                 }
             }
         }

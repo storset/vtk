@@ -38,7 +38,6 @@
                         .addClass("feedback")
                         .text('<@vrtx.msg code="feedback.link" default="Give feedback" />');
         $(".vrtx-feedback ul").replaceWith('<p>' + noLink.html() + '</p>');
-        tb_init("a.feedback");
       }
     });
     function urchinTrack(action) {

@@ -110,7 +110,7 @@ public class ResourcePropertyRegexpAssertion
 
     @Override
     public boolean matches(Resource resource, Principal principal) {
-        boolean match = true;
+        boolean match = false;
         if (resource != null) {
             Property property = resource.getProperty(this.namespace, this.name);
             if (property != null) {

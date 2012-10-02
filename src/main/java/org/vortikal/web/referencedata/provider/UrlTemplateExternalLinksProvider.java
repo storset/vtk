@@ -197,25 +197,25 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
         public String render(RenderContext ctx) {
             String retVal = "";
             Property prop = ctx.resource.getPropertyByPrefix(this.prefix, this.name);
-            if(prop == null) prop = ctx.resource.getPropertyByPrefix("resource", this.name); // Try structured namespace
+            if (prop == null) prop = ctx.resource.getPropertyByPrefix("resource", this.name); // Try structured namespace
             if (prop != null) {
-                PropertyTypeDefinition def = prop.getDefinition();
-                if (def != null) {
-                    if (def.getType() == PropertyType.Type.HTML) {
-                        retVal = prop.getFormattedValue("flattened", null);
-                    } else {
-                        retVal = prop.getFormattedValue();
-                    }
-                }
+            	PropertyTypeDefinition def = prop.getDefinition();
+            	if (def != null) {
+            		if (def.getType() == PropertyType.Type.HTML) {
+            			retVal = prop.getFormattedValue("flattened", null);
+            		} else {
+            			retVal = prop.getFormattedValue();
+            		}
+            	}
             }
 
-			if (!retVal.isEmpty() && this.name.equals("picture")) { // Construct absolute URLs
-				try {
-					retVal = viewService.constructLink(Path.fromString(retVal));
-				} catch (IllegalArgumentException iae) {
-					retVal = "";
-				}
-			}
+            if (!retVal.isEmpty() && this.name.equals("picture")) { // Construct absolute URLs
+            	try {
+            		retVal = viewService.constructLink(Path.fromString(retVal));
+            	} catch (IllegalArgumentException iae) {
+            		retVal = "";
+            	}
+            }
             return retVal;
         }
     }

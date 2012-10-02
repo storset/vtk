@@ -61,6 +61,7 @@ import org.vortikal.repository.search.query.Query;
 import org.vortikal.repository.search.query.TermOperator;
 import org.vortikal.repository.search.query.TypeTermQuery;
 import org.vortikal.repository.search.query.UriPrefixQuery;
+import org.vortikal.repository.search.query.UriSetQuery;
 import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.display.collection.aggregation.AggregationResolver;
@@ -90,9 +91,6 @@ public class ManuallyApproveResourcesSearcher {
         // The final product. Will be populated with search results.
         List<ManuallyApproveResource> result = new ArrayList<ManuallyApproveResource>();
 
-        logger.info("Manually approving from: " + locations);
-        logger.info("Already approved: " + alreadyApproved);
-
         Repository repository = RequestContext.getRequestContext().getRepository();
         String token = SecurityContext.getSecurityContext().getToken();
 
@@ -116,25 +114,39 @@ public class ManuallyApproveResourcesSearcher {
         // Get the already approved resources.
         Set<PropertySet> alreadyApprovedResources = new HashSet<PropertySet>();
         if (alreadyApproved.size() > 0) {
-            for (String approved : alreadyApproved) {
 
-                PropertySet ps = null;
+            Set<String> localPathsAsStringSet = new HashSet<String>();
+            Set<URL> urls = new HashSet<URL>();
+
+            for (String approved : alreadyApproved) {
 
                 Path localPath = this.getLocalPath(approved, localURL);
                 if (localPath != null) {
-                    ps = this.retrieveResource(repository, token, localPath);
+                    localPathsAsStringSet.add(localPath.toString());
                 } else {
                     URL url = this.getAsURL(approved);
                     if (url != null) {
-                        ps = this.multiHostSearcher.retrieve(token, url);
+                        urls.add(url);
                     }
                 }
 
-                if (ps != null) {
-                    alreadyApprovedResources.add(ps);
-                }
-
             }
+
+            if (!localPathsAsStringSet.isEmpty()) {
+                UriSetQuery uriSetQuery = new UriSetQuery(localPathsAsStringSet, TermOperator.IN);
+                Search search = new Search();
+                search.setQuery(uriSetQuery);
+                ResultSet rs = repository.search(token, search);
+                alreadyApprovedResources.addAll(rs.getAllResults());
+            }
+
+            if (!urls.isEmpty() && this.multiHostSearcher.isMultiHostSearchEnabled()) {
+                Set<PropertySet> rs = this.multiHostSearcher.retrieve(token, urls);
+                if (rs != null && rs.size() > 0) {
+                    alreadyApprovedResources.addAll(rs);
+                }
+            }
+
         }
 
         // We display a maximum of 1000 resources
@@ -145,6 +157,8 @@ public class ManuallyApproveResourcesSearcher {
         Map<String, List<PropertySet>> resourceSet = new HashMap<String, List<PropertySet>>();
 
         for (String location : locations) {
+
+            logger.info("Searching for resources to manually approve from: " + location);
 
             // Is it a local resource ref?
             Path localPath = this.getLocalPath(location, localURL);
@@ -161,9 +175,13 @@ public class ManuallyApproveResourcesSearcher {
                 multiHostSearch = true;
             }
 
+            logger.info("Multihost search?: " + multiHostSearch);
+
             ResultSet rs = null;
 
             if (multiHostSearch || (clar != null && clar.includesResourcesFromOtherHosts(localURL))) {
+
+                logger.info("CLAR: " + clar.toString());
 
                 // Resolved aggregation indicates resources from other hosts,
                 // and we have proper configuration to meet demands -> search
@@ -250,18 +268,18 @@ public class ManuallyApproveResourcesSearcher {
         try {
             URL url = URL.parse(location);
             if (url.getHost().equals(localURL.getHost())) {
-                // Is a url ref to a resource on local host
+                // Is an url ref to a resource on local host
                 return url.getPath();
+            } else {
+                // Is an url to resource on some other host
+                return null;
             }
         } catch (Exception e) {
-            // Not a url, continue and assume a path
+            // Not an url, continue and assume a path
         }
 
         try {
-            // Trailing slash
-            String pathString = location.endsWith("/") && !location.equals("/") ? location.substring(0,
-                    location.lastIndexOf("/")) : location;
-            return Path.fromString(pathString);
+            return Path.fromStringWithTrailingSlash(location);
         } catch (IllegalArgumentException iae) {
             return null;
         }

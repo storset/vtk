@@ -39,23 +39,23 @@ import org.vortikal.web.decorating.DecoratorResponse;
 import org.vortikal.web.referencedata.provider.UrlTemplateExternalLinksProvider;
 
 public class ShareAtComponent extends ViewRenderingDecoratorComponent {
-	
-	private UrlTemplateExternalLinksProvider socialWebsitesProvider;
-    
-    protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
-            throws Exception {
 
-    	List<String> altUrls = new ArrayList<String>();
-    	
-        String useFacebookApi = request.getStringParameter("use-facebook-api");
-        if(useFacebookApi != null && !useFacebookApi.equals("false")) {
-            altUrls.add("Facebook");
-        }
-        
-        model.put("socialWebsites", this.socialWebsitesProvider.getTemplates(altUrls));
-        
-        super.processModel(model, request, response);
-    }
+	private UrlTemplateExternalLinksProvider socialWebsitesProvider;
+
+	protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
+			throws Exception {
+
+		List<String> altUrls = new ArrayList<String>();
+
+		String useFacebookApi = request.getStringParameter("use-facebook-api");
+		if(useFacebookApi != null && !useFacebookApi.equals("false")) {
+			altUrls.add("Facebook");
+		}
+
+		model.put("socialWebsites", this.socialWebsitesProvider.getTemplates(altUrls));
+
+		super.processModel(model, request, response);
+	}
 
 	public void setSocialWebsitesProvider(UrlTemplateExternalLinksProvider socialWebsitesProvider) {
 		this.socialWebsitesProvider = socialWebsitesProvider;

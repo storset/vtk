@@ -204,7 +204,7 @@ vrtxAdmin._$(document).ready(function () {
   // Dropdowns
   vrtxAdm.dropdownLanguageMenu("#locale-selection");
   vrtxAdm.dropdown({
-    selector: "#resource-title.true ul#resourceMenuLeft",
+    selector: "#resource-title ul#resourceMenuLeft",
     proceedCondition: function(numOfListElements) {
       return numOfListElements > 1;
     }
@@ -259,7 +259,7 @@ vrtxAdmin._$(document).ready(function () {
   versioningInteraction(bodyId, vrtxAdm, _$);
   
   // Resource menus
-  var resourceMenuLeftServices = ["renameService", "manage\\.createArchiveService", "manage\\.expandArchiveService"];
+  var resourceMenuLeftServices = ["renameService", "deleteResourceService", "manage\\.createArchiveService", "manage\\.expandArchiveService"];
   for (var i = resourceMenuLeftServices.length; i--;) {
     vrtxAdm.getFormAsync({
         selector: "#title-container a#" + resourceMenuLeftServices[i],

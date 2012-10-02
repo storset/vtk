@@ -23,7 +23,42 @@
     </property>
     <property name="handler" ref="deleteResourcesHandler" />
   </bean>
-
+  
+  <bean id="deleteResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-997" />
+    <property name="categories">
+      <set>
+        <value>resourceMenuLeft</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="resourceMenuLeftOrder">
+          <value type="java.lang.Integer">999</value>
+        </entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="delete-resource" />
+        </bean>
+        <ref local="resourceNotRootAssertion" />
+        <ref bean="writePermissionAssertion" />
+      </list>
+    </property>
+    <property name="handler" ref="deleteResourceHandler" />
+  </bean>
+  
+  <bean id="deleteResourceHandler" class="org.vortikal.web.actions.delete.DeleteResourceController">
+    <property name="formView" value="admin" />
+    <property name="successView" value="redirectToManage" />
+    <property name="cancelView" value="redirectToManage" />
+    <property name="commandClass" value="org.vortikal.web.actions.delete.DeleteCommand" />
+  </bean>
+  
   <bean id="deleteResourcesHandler" class="org.vortikal.web.actions.delete.DeleteResourcesController">
     <property name="viewName" value="manageCollectionListing" />
   </bean>

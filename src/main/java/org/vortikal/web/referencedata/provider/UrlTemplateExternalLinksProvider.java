@@ -39,8 +39,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Property;
@@ -50,7 +48,6 @@ import org.vortikal.repository.resourcetype.PropertyType;
 import org.vortikal.repository.resourcetype.PropertyTypeDefinition;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.referencedata.ReferenceDataProvider;
 import org.vortikal.web.service.Service;
 
 /**
@@ -61,7 +58,7 @@ import org.vortikal.web.service.Service;
  * 
  * Example: http://www.foo.com/share?url=%{url}
  */
-public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
+public class UrlTemplateExternalLinksProvider {
 
     private static final Pattern FIELD_PATTERN = Pattern.compile("(%\\{[^\\}]+\\})");
     private static final String URL_ENCODING_CHARSET = "utf-8";
@@ -69,12 +66,11 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
     private int fieldValueSizeLimit = 250;
     private String fieldValueTruncationIndicator = "...";
     private Map<String, UrlTemplate> urlTemplates;
-    private String modelKey = "externalLinks";
+    private Map<String, UrlTemplate> altUrlTemplates;
     private Service viewService;
 
 
-    @Override
-    public void referenceData(Map<String, Object> model, HttpServletRequest request) throws Exception {
+    public List<ExternalLink> getTemplates(List<String> altUrls) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
@@ -84,18 +80,24 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
         ctx.resource = repository.retrieve(token, requestContext.getResourceURI(), true);
         ctx.principal = requestContext.getPrincipal();
         ctx.service = requestContext.getService();
-        ctx.request = request;
 
         List<ExternalLink> links = new ArrayList<ExternalLink>();
         for (String externalLinkName : this.urlTemplates.keySet()) {
-            UrlTemplate template = this.urlTemplates.get(externalLinkName);
-            String encodedUrl = template.renderEncodedUrl(ctx);
-            ExternalLink link = new ExternalLink();
-            link.setName(externalLinkName);
-            link.setUrl(encodedUrl);
-            links.add(link);
+        	UrlTemplate template;
+        	if(altUrls.contains(externalLinkName)) {
+        		template = this.altUrlTemplates.get(externalLinkName);	
+        	} else {
+        		template = this.urlTemplates.get(externalLinkName);
+        	}
+        	if(template != null) {
+        		String encodedUrl = template.renderEncodedUrl(ctx);
+        		ExternalLink link = new ExternalLink();
+        		link.setName(externalLinkName);
+        		link.setUrl(encodedUrl);
+        		links.add(link);
+        	}
         }
-        model.put(this.modelKey, links);
+        return links;
     }
 
     private class UrlTemplate {
@@ -157,12 +159,10 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
         return new UrlEncodingWrapper(node);
     }
 
-    @SuppressWarnings("unused")
     private class RenderContext {
         Resource resource;
         Principal principal;
         Service service;
-        HttpServletRequest request;
     }
 
     private interface TemplateNode {
@@ -261,9 +261,15 @@ public class UrlTemplateExternalLinksProvider implements ReferenceDataProvider {
             }
         }
     }
-
-    public void setModelKey(String modelKey) {
-        this.modelKey = modelKey;
+    
+    public void setAltUrlTemplates(Map<String, String> urlTemplates) {
+        this.altUrlTemplates = new LinkedHashMap<String, UrlTemplate>(urlTemplates.size());
+        for (String name : urlTemplates.keySet()) {
+            String templateValue = urlTemplates.get(name);
+            if (templateValue != null) {
+                this.altUrlTemplates.put(name, new UrlTemplate(templateValue));
+            }
+        }
     }
 
     public void setFieldValueSizeLimit(int fieldValueSizeLimit) {

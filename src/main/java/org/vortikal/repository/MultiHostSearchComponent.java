@@ -30,6 +30,8 @@
  */
 package org.vortikal.repository;
 
+import java.util.Set;
+
 import org.vortikal.repository.search.ResultSet;
 import org.vortikal.repository.search.Search;
 import org.vortikal.web.search.collectionlisting.CollectionListingSearchProperties;
@@ -40,6 +42,8 @@ public interface MultiHostSearchComponent {
     public ResultSet search(String token, Search search);
 
     public PropertySet retrieve(String token, URL url);
+
+    public Set<PropertySet> retrieve(String token, Set<URL> urls);
 
     public ResultSet collectionListing(CollectionListingSearchProperties collectionListingSearchProps);
 

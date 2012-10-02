@@ -72,32 +72,32 @@ public class UrlTemplateExternalLinksProvider {
 
     public List<ExternalLink> getTemplates(List<String> altUrls) throws Exception {
 
-        RequestContext requestContext = RequestContext.getRequestContext();
-        String token = requestContext.getSecurityToken();
-        Repository repository = requestContext.getRepository();
-        
-        RenderContext ctx = new RenderContext();
-        ctx.resource = repository.retrieve(token, requestContext.getResourceURI(), true);
-        ctx.principal = requestContext.getPrincipal();
-        ctx.service = requestContext.getService();
+    	RequestContext requestContext = RequestContext.getRequestContext();
+    	String token = requestContext.getSecurityToken();
+    	Repository repository = requestContext.getRepository();
 
-        List<ExternalLink> links = new ArrayList<ExternalLink>();
-        for (String externalLinkName : this.urlTemplates.keySet()) {
-        	UrlTemplate template;
-        	if(altUrls.contains(externalLinkName)) {
-        		template = this.altUrlTemplates.get(externalLinkName);	
-        	} else {
-        		template = this.urlTemplates.get(externalLinkName);
-        	}
-        	if(template != null) {
-        		String encodedUrl = template.renderEncodedUrl(ctx);
-        		ExternalLink link = new ExternalLink();
-        		link.setName(externalLinkName);
-        		link.setUrl(encodedUrl);
-        		links.add(link);
-        	}
-        }
-        return links;
+    	RenderContext ctx = new RenderContext();
+    	ctx.resource = repository.retrieve(token, requestContext.getResourceURI(), true);
+    	ctx.principal = requestContext.getPrincipal();
+    	ctx.service = requestContext.getService();
+
+    	List<ExternalLink> links = new ArrayList<ExternalLink>();
+    	for (String externalLinkName : this.urlTemplates.keySet()) {
+    		UrlTemplate template;
+    		if(altUrls.contains(externalLinkName)) {
+    			template = this.altUrlTemplates.get(externalLinkName);	
+    		} else {
+    			template = this.urlTemplates.get(externalLinkName);
+    		}
+    		if(template != null) {
+    			String encodedUrl = template.renderEncodedUrl(ctx);
+    			ExternalLink link = new ExternalLink();
+    			link.setName(externalLinkName);
+    			link.setUrl(encodedUrl);
+    			links.add(link);
+    		}
+    	}
+    	return links;
     }
 
     private class UrlTemplate {

@@ -331,8 +331,18 @@
     <property name="name" value="share-at" />
     <property name="description" value="Inserts share component" />
     <property name="view" ref="decorating.shareAtComponent.view" />
+    <property name="exposedParameters">
+      <set>
+        <value>use-facebook-api</value>
+      </set>
+    </property>
+    <property name="parameterDescriptions">
+      <map>
+        <entry key="use-facebook-api" value="If set to 'true', the introduction and introduction-image is used explicitely via the Facebook API." />
+      </map>
+    </property>
   </bean>
-
+  
   <bean name="decorating.shareAtComponent.view" parent="freemarkerView">
     <property name="url" value="layouts/share-at.ftl" />
     <property name="attributes">
@@ -342,7 +352,6 @@
     </property>
     <property name="referenceDataProviders">
       <list>
-        <!-- <ref bean="resourceContextProvider" /> -->
         <ref bean="socialWebsitesProvider" />
       </list>
     </property>
@@ -353,6 +362,7 @@
     <property name="urlTemplates">
       <map>
         <entry key="Facebook" value="http://www.facebook.com/share.php?u=%{url}&amp;amp;t=%{title}" />
+        <entry key="FacebookAPI" value="http://www.facebook.com/share.php?u=%{url}&amp;amp;t=%{title}&amp;p[summary]=%{introduction}&amp;p[images][0]=%{picture}" />
         <entry key="Twitter" value="http://twitter.com/intent/tweet?text=%{title}&amp;amp;url=%{url}" />
       </map>
     </property>

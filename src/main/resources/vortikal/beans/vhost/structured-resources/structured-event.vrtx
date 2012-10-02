@@ -123,7 +123,7 @@ resourcetype structured-event : structured-document {
             [call "comp:vrtx-date-info"]
             <div class="vrtx-social-components">
               [call "resource:email-friend"]
-              [call "resource:share-at"]
+              [call "resource:share-at" {"use-facebook-api": true}]
             </div>
             [call "resource:comments"]
           </div>

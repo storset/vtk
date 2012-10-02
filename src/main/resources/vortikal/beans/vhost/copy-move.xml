@@ -136,7 +136,66 @@
         <entry key-ref="system.decoratorTemplateAttribute" value="dialog-template.html" />
       </map>
     </property>
-  </bean>        
+  </bean>   
+  
+ <bean id="copyResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-990" />
+    <property name="categories">
+      <set>
+        <value>resourceMenuLeft</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="resourceMenuLeftOrder">
+          <value type="java.lang.Integer">999</value>
+        </entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="copy-resource" />
+        </bean>
+        <ref bean="resourceNotRootAssertion" />
+        <ref bean="requiresReadPermissionAssertion" />
+      </list>
+    </property>
+  </bean>
+  
+ <bean id="moveResourceService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="manageService" />
+    <property name="order" value="-1000" />
+    <property name="categories">
+      <set>
+        <value>resourceMenuLeft</value>
+      </set>
+    </property>
+    <property name="attributes">
+      <map>
+        <entry key="resourceMenuLeftOrder">
+          <value type="java.lang.Integer">999</value>
+        </entry>
+      </map>
+    </property>
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="action" />
+          <property name="parameterValue" value="move-resource" />
+        </bean>
+        <ref bean="resourceNotRootAssertion" />
+        <ref bean="writePermissionAssertion" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="moveResourceHandler" 
+    class="org.vortikal.web.actions.copymove.CopyMoveController">
+    <property name="viewName" value="manageCollectionListing" />
+  </bean>
 
   <bean id="copyMove.warningHandler" 
     class="org.vortikal.web.display.file.DisplayResourceController">

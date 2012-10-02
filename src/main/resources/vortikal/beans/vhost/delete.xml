@@ -45,7 +45,7 @@
           <property name="parameterName" value="action" />
           <property name="parameterValue" value="delete-resource" />
         </bean>
-        <ref local="resourceNotRootAssertion" />
+        <ref bean="resourceNotRootAssertion" />
         <ref bean="writePermissionAssertion" />
       </list>
     </property>

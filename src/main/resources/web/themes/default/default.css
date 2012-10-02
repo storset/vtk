@@ -708,6 +708,12 @@ ul.dropdown-shortcut-menu li a,
   margin: 0 -5px 0 0;
 }
 
+#resource-title li form input[type=submit] {
+  cursor: pointer;
+  color: #005aab !important;
+  border: none;
+}
+
 /* Dropdown */
 
 ul.dropdown-shortcut-menu li.dropdown-init {

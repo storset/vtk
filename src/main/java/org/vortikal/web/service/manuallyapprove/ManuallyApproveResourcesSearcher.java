@@ -175,13 +175,9 @@ public class ManuallyApproveResourcesSearcher {
                 multiHostSearch = true;
             }
 
-            logger.info("Multihost search?: " + multiHostSearch);
-
             ResultSet rs = null;
 
             if (multiHostSearch || (clar != null && clar.includesResourcesFromOtherHosts(localURL))) {
-
-                logger.info("CLAR: " + clar.toString());
 
                 // Resolved aggregation indicates resources from other hosts,
                 // and we have proper configuration to meet demands -> search

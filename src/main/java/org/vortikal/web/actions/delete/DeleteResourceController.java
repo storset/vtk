@@ -30,31 +30,23 @@
  */
 package org.vortikal.web.actions.delete;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.validation.BindException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.security.Principal;
-import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
-import org.vortikal.web.actions.copymove.CopyHelper;
 import org.vortikal.web.service.Service;
 
 @SuppressWarnings("deprecation")
@@ -81,8 +73,7 @@ public class DeleteResourceController extends SimpleFormController {
         return this.cmd;
     }
 
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
-    		BindException errors) throws Exception {
+    protected ModelAndView onSubmit(Object command) throws Exception {
 
     	Map<String, Object> model = new HashMap<String, Object>();
 

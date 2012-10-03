@@ -264,7 +264,7 @@ public class MixedContentEvaluator implements LatePropertyEvaluator {
                 }
             }
             if (checkLink(href)) {
-                if (!report.includedContent("xml:img:", href)) {
+                if (!report.includedContent("xml:img", href)) {
                     break;
                 }
             }

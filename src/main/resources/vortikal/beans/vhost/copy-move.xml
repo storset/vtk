@@ -149,7 +149,7 @@
     <property name="attributes">
       <map>
         <entry key="resourceMenuLeftOrder">
-          <value type="java.lang.Integer">999</value>
+          <value type="java.lang.Integer">998</value>
         </entry>
       </map>
     </property>
@@ -177,7 +177,7 @@
     <property name="attributes">
       <map>
         <entry key="resourceMenuLeftOrder">
-          <value type="java.lang.Integer">999</value>
+          <value type="java.lang.Integer">997</value>
         </entry>
       </map>
     </property>

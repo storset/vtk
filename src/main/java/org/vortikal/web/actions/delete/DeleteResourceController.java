@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -51,6 +51,8 @@ import org.vortikal.web.service.Service;
 
 @SuppressWarnings("deprecation")
 public class DeleteResourceController extends SimpleFormController {
+	
+	/* TODO: change class name to something that says it is used when standing on resource */
 
     private String cancelView;
     private DeleteHelper deleteHelper;

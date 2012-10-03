@@ -205,6 +205,12 @@ public class ResourcePrincipalPermissionAssertion
             if(this.parent) {
                 Path parent = resource.getURI().getParent();
                 Resource resourceParent = this.repository.retrieve(this.trustedToken, parent, false);
+                if (resourceParent == null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Resource parent is null [match = false]");
+                    }
+                    return false;
+                }
                 if (this.anonymous) {
                     return this.repository.isAuthorized(resourceParent, this.permission, null, this.considerLocks);
                 }

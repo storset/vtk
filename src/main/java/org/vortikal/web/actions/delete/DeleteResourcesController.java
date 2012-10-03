@@ -49,39 +49,38 @@ public class DeleteResourcesController implements Controller {
 
     private String viewName;
     private DeleteHelper deleteHelper;
-    
+
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
-    	RequestContext requestContext = RequestContext.getRequestContext();
-    	Repository repository = requestContext.getRepository();
-    	String token = requestContext.getSecurityToken();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        String token = requestContext.getSecurityToken();
 
-    	boolean recoverable = true;
-    	String permanent = request.getParameter("permanent");
-    	if ("true".equals(permanent)) {
-    		recoverable = false;
-    	}
+        boolean recoverable = true;
+        String permanent = request.getParameter("permanent");
+        if ("true".equals(permanent)) {
+            recoverable = false;
+        }
 
-    	// Map of files that for some reason failed on delete. Separated by a
-    	// key (String) that specifies type of failure and identifies list of
-    	// paths to resources that failed.
-    	Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
+        // Map of files that for some reason failed on delete. Separated by a
+        // key (String) that specifies type of failure and identifies list of
+        // paths to resources that failed.
+        Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
 
-    	@SuppressWarnings("rawtypes")
-    	Enumeration e = request.getParameterNames();
-    	while (e.hasMoreElements()) {
-    		String name = (String) e.nextElement();
-    		try {
-    			this.deleteHelper.deleteResource(repository, token, Path.fromString(name), recoverable, failures);
-    		} catch (IllegalArgumentException iae) { // Not a path, ignore it
-    			continue;
-    		}
-    	}
-    	this.deleteHelper.addFailureMessages(failures, requestContext);
+        @SuppressWarnings("rawtypes")
+        Enumeration e = request.getParameterNames();
+        while (e.hasMoreElements()) {
+            String name = (String) e.nextElement();
+            try {
+                this.deleteHelper.deleteResource(repository, token, Path.fromString(name), recoverable, failures);
+            } catch (IllegalArgumentException iae) { // Not a path, ignore it
+                continue;
+            }
+        }
+        this.deleteHelper.addFailureMessages(failures, requestContext);
 
-    	return new ModelAndView(this.viewName);
+        return new ModelAndView(this.viewName);
     }
-    
 
     public void setViewName(String viewName) {
         this.viewName = viewName;
@@ -90,9 +89,9 @@ public class DeleteResourcesController implements Controller {
     public String getViewName() {
         return viewName;
     }
-    
+
     @Required
-	public void setDeleteHelper(DeleteHelper deleteHelper) {
-		this.deleteHelper = deleteHelper;
-	}
+    public void setDeleteHelper(DeleteHelper deleteHelper) {
+        this.deleteHelper = deleteHelper;
+    }
 }

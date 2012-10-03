@@ -161,6 +161,7 @@
         </bean>
         <ref bean="resourceNotRootAssertion" />
         <ref bean="requiresReadPermissionAssertion" />
+        <ref bean="requiresReadParentPermissionAssertion" />
       </list>
     </property>
   </bean>
@@ -187,7 +188,8 @@
           <property name="parameterValue" value="move-resource" />
         </bean>
         <ref bean="resourceNotRootAssertion" />
-        <ref bean="writePermissionAssertion" />
+        <ref bean="requiresReadPermissionAssertion" />
+        <ref bean="writeParentPermissionAssertion" />
       </list>
     </property>
   </bean>

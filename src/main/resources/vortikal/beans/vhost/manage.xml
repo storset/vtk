@@ -1918,6 +1918,12 @@
     <property name="requiresAuthentication" value="true" />
     <property name="permission" ref="ACTION_READ" />
   </bean>
+  
+  <bean id="requiresReadParentPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="parent" value="true" />
+    <property name="requiresAuthentication" value="true" />
+    <property name="permission" ref="ACTION_READ" />
+  </bean>
 
   <bean id="requiresWritePermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
     <property name="requiresAuthentication" value="true" />
@@ -1930,6 +1936,11 @@
   </bean>
 
   <bean id="writePermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="permission" ref="ACTION_WRITE" />
+  </bean>
+  
+  <bean id="writeParentPermissionAssertion" parent="abstractResourcePrincipalPermissionAssertion">
+    <property name="parent" value="true" />
     <property name="permission" ref="ACTION_WRITE" />
   </bean>
 

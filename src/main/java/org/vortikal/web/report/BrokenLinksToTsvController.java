@@ -31,6 +31,7 @@
 package org.vortikal.web.report;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +51,6 @@ import org.vortikal.repository.Property;
 import org.vortikal.repository.PropertySet;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.security.SecurityContext;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.view.freemarker.MessageLocalizer;
@@ -67,7 +67,7 @@ public class BrokenLinksToTsvController implements Controller {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         Repository repository = requestContext.getRepository();
-        String token = SecurityContext.getSecurityContext().getToken();
+        String token = requestContext.getSecurityToken();
         Resource resource = repository.retrieve(token, requestContext.getResourceURI(), false);
 
         RequestWrapper requestWrapped = new RequestWrapper(request);
@@ -105,6 +105,7 @@ public class BrokenLinksToTsvController implements Controller {
             Property titleProp;
             String title, uri;
             JSONObject obj;
+            ArrayList<Map<String, Object>> brokenLinks;
 
             while (!((List<PropertySet>) result.get("result")).isEmpty()) {
                 requestWrapped.increasePageNumber();
@@ -116,8 +117,9 @@ public class BrokenLinksToTsvController implements Controller {
                     title = titleProp.getFormattedValue();
                     uri = ps.getURI().toString();
                     obj = (JSONObject) map.get(uri);
+                    brokenLinks = (ArrayList<Map<String, Object>>) obj.get("brokenLinks");
                     if (obj != null) {
-                        out.print(title.replaceAll("[\\n\\r\\t]", "") + "\t" + uri + "\t" + obj.get("index") + "\n");
+                        out.print(title.replaceAll("[\\n\\r\\t]", "") + "\t" + uri + "\t" + brokenLinks.size() + "\n");
                     }
                 }
 

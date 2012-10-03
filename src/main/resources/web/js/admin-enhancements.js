@@ -709,7 +709,7 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasCancel, func
     });
   } else {
     if(title) {
-      elm.find("#ui-dialog-title-" + selector.substring(1)).html(title); 
+      elm.prev().find("#ui-dialog-title-" + selector.substring(1)).html(title); 
     }
     elm.find(selector + "-content").html("<p>" + msg + "</p>");
   }

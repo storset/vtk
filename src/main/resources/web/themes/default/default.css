@@ -773,6 +773,10 @@ ul.dropdown-shortcut-menu-container {
   background-color: #fff;
 }
 
+#resource-title div.dropdown-shortcut-menu-container {
+  top: auto;
+}
+
 .global-menu div.dropdown-shortcut-menu-container,
 #editor-menu-wrapper div.dropdown-shortcut-menu-container {
   left: auto !important;

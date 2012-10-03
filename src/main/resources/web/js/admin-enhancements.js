@@ -201,13 +201,26 @@ vrtxAdmin._$(document).ready(function () {
   // Buttons into links
   vrtxAdm.logoutButtonAsLink();
 
+  // Move down resource menu when long title
+  var titleSplits = _$("h1 .title-split");
+  var resourceMenuLeft = _$("#resourceMenuLeft");
+  var titleSplitsLength = titleSplits.length;
+  if (resourceMenuLeft.length) {
+    if (titleSplitsLength == 2) {
+      resourceMenuLeft.css("marginTop", "-22px");
+    } else if(titleSplitsLength >= 3) {
+      resourceMenuLeft.css("marginTop", "0px");
+    }
+  }
+
   // Dropdowns
   vrtxAdm.dropdownLanguageMenu("#locale-selection");
   vrtxAdm.dropdown({
     selector: "#resource-title ul#resourceMenuLeft",
     proceedCondition: function(numOfListElements) {
       return numOfListElements > 1;
-    }
+    },
+    calcTop: true
   });
   vrtxAdm.dropdown({selector: "ul.manage-create"});
   
@@ -228,18 +241,6 @@ vrtxAdmin._$(document).ready(function () {
   
   // Make breadcrumbs play along when you minimize window and have multiple rows of it
   vrtxAdm.adaptiveBreadcrumbs();
-  
-  // Move down resource menu when long title
-  var titleSplits = _$("h1 .title-split");
-  var resourceMenuLeft = _$("#resourceMenuLeft");
-  var titleSplitsLength = titleSplits.length;
-  if (resourceMenuLeft.length) {
-    if (titleSplitsLength == 2) {
-      resourceMenuLeft.css("marginTop", "-22px");
-    } else if(titleSplitsLength >= 3) {
-      resourceMenuLeft.css("marginTop", "0px"); 
-    }
-  }
 
   $("#title-container").vortexTips("abbr", "#title-container", 200, 300, 250, 300, 20, 0, false, false);
   $("#main").vortexTips("abbr.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
@@ -770,6 +771,9 @@ VrtxAdmin.prototype.dropdown = function dropdown(options) {
  
     var shortcutMenu = listParent.find(".dropdown-shortcut-menu-container");
     shortcutMenu.find("li" + startDropdown).remove();
+    if(options.calcTop) {
+      shortcutMenu.css("top", (list.position().top + list.height() - (parseInt(list.css("marginTop")) * -1) + 1) + "px");  
+    }
     shortcutMenu.css("left", (list.width()+5) + "px");
     
     list.find("li" + dropdownClickArea).addClass("dropdown-init");

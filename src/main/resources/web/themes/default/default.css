@@ -708,10 +708,15 @@ ul.dropdown-shortcut-menu li a,
   margin: 0 -5px 0 0;
 }
 
+#resource-title .dropdown-shortcut-menu-container li form {
+  padding: 0 !important;
+}
+
 #resource-title .dropdown-shortcut-menu-container li form input[type=submit] {
   cursor: pointer;
   color: #005aab !important;
   border: none;
+  padding: 8px 14px 7px 14px !important;
 }
 
 /* Dropdown */
@@ -2571,6 +2576,12 @@ div.vrtx-admin-form {
 /* TODO: the problems lays though with 'overflow:hidden' on table cells and resource link */
 #directory-listing tr input, x:-moz-any-link, x:only-child {
   margin: 3px 3px 3px 4px;
+}
+
+/* Fix bug in Firefox with to much padding on form input in dropdown */
+#resource-title .dropdown-shortcut-menu-container li form input[type=submit], x:-moz-any-link, x:only-child  {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
 }
 
 /* ^ UiO design - Vortex */

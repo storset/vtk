@@ -74,6 +74,7 @@ public class DeleteResourcesController implements Controller {
     		try {
     			this.deleteHelper.deleteResource(repository, token, Path.fromString(name), recoverable, failures);
     		} catch (IllegalArgumentException iae) { // Not a path, ignore it
+    			continue;
     		}
     	}
     	this.deleteHelper.addFailureMessages(failures, requestContext);

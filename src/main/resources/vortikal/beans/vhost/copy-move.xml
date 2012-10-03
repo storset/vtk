@@ -160,6 +160,7 @@
           <property name="parameterValue" value="copy-resource" />
         </bean>
         <ref bean="resourceNotRootAssertion" />
+        <ref bean="requiresReadPermissionAssertion" />
       </list>
     </property>
   </bean>

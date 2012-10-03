@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.vortikal.repository.AuthorizationException;
@@ -54,77 +55,39 @@ import org.vortikal.web.RequestContext;
 public class DeleteResourcesController implements Controller {
 
     private String viewName;
+    private DeleteHelper deleteHelper;
     
-    private static Log logger = LogFactory.getLog(DeleteResourcesController.class);
-
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
-        RequestContext requestContext = RequestContext.getRequestContext();
-        Repository repository = requestContext.getRepository();
-        String token = requestContext.getSecurityToken();
+    	RequestContext requestContext = RequestContext.getRequestContext();
+    	Repository repository = requestContext.getRepository();
+    	String token = requestContext.getSecurityToken();
 
-        boolean recoverable = true;
-        String permanent = request.getParameter("permanent");
-        if ("true".equals(permanent)) {
-            recoverable = false;
-        }
-        
-        // Map of files that for some reason failed on delete. Separated by a
-        // key (String) that specifies type of failure and identifies list of
-        // paths to resources that failed.
-        Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
-        String msgKey = "manage.delete.error.";
+    	boolean recoverable = true;
+    	String permanent = request.getParameter("permanent");
+    	if ("true".equals(permanent)) {
+    		recoverable = false;
+    	}
 
-        @SuppressWarnings("rawtypes")
-        Enumeration e = request.getParameterNames();
-        while (e.hasMoreElements()) {
-            String name = (String) e.nextElement();
-            Path uri = null;
-            try {
-            	uri = Path.fromString(name);
-            	if (repository.exists(token, uri)) {
-            		repository.delete(token, uri, recoverable);
-            	} else {
-            		this.addToFailures(failures, uri, msgKey, "nonExisting");
-            	}
-            } catch (IllegalArgumentException iae) {
-            	// Not a path, ignore it, try next one
-            	continue;
-            } catch (AuthorizationException ae) {
-                this.addToFailures(failures, uri, msgKey, "unAuthorized");
-            } catch (ResourceLockedException rle) {
-                this.addToFailures(failures, uri, msgKey, "locked");
-            } catch (Exception ex) {
-                StringBuilder msg = new StringBuilder("Could not perform ");
-                msg.append("delete of ").append(uri);
-                msg.append(": ").append(ex.getMessage());
-                logger.warn(msg);
-                this.addToFailures(failures, uri, msgKey, "generic");
-            }
-        }
+    	// Map of files that for some reason failed on delete. Separated by a
+    	// key (String) that specifies type of failure and identifies list of
+    	// paths to resources that failed.
+    	Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
 
-        for (Entry<String, List<Path>> entry : failures.entrySet()) {
-            String key = entry.getKey();
-            List<Path> failedResources = entry.getValue();
-            Message msg = new Message(key);
-            for (Path p : failedResources) {
-                msg.addMessage(p.getName());
-            }
-            requestContext.addErrorMessage(msg);
-        }
+    	@SuppressWarnings("rawtypes")
+    	Enumeration e = request.getParameterNames();
+    	while (e.hasMoreElements()) {
+    		String name = (String) e.nextElement();
+    		try {
+    			this.deleteHelper.deleteResource(repository, token, Path.fromString(name), recoverable, failures);
+    		} catch (IllegalArgumentException iae) { // Not a path, ignore it
+    		}
+    	}
+    	this.deleteHelper.addFailureMessages(failures, requestContext);
 
-        return new ModelAndView(this.viewName);
+    	return new ModelAndView(this.viewName);
     }
     
-    private void addToFailures(Map<String, List<Path>> failures, Path fileUri, String msgKey, String failureType) {
-        String key = msgKey.concat(failureType);
-        List<Path> failedPaths = failures.get(key);
-        if (failedPaths == null) {
-            failedPaths = new ArrayList<Path>();
-            failures.put(key, failedPaths);
-        }
-        failedPaths.add(fileUri);
-    }
 
     public void setViewName(String viewName) {
         this.viewName = viewName;
@@ -133,4 +96,9 @@ public class DeleteResourcesController implements Controller {
     public String getViewName() {
         return viewName;
     }
+    
+    @Required
+	public void setDeleteHelper(DeleteHelper deleteHelper) {
+		this.deleteHelper = deleteHelper;
+	}
 }

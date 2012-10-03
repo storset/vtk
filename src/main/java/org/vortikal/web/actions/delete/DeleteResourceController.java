@@ -38,6 +38,8 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 
 import org.apache.commons.logging.Log;
@@ -52,12 +54,14 @@ import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.security.Principal;
 import org.vortikal.web.Message;
 import org.vortikal.web.RequestContext;
+import org.vortikal.web.actions.copymove.CopyHelper;
 import org.vortikal.web.service.Service;
 
 @SuppressWarnings("deprecation")
 public class DeleteResourceController extends SimpleFormController {
 
     private String cancelView;
+    private DeleteHelper deleteHelper;
     
     protected Object cmd;
     
@@ -78,81 +82,48 @@ public class DeleteResourceController extends SimpleFormController {
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
-            BindException errors) throws Exception {
+    		BindException errors) throws Exception {
 
-        Map<String, Object> model = new HashMap<String, Object>();
+    	Map<String, Object> model = new HashMap<String, Object>();
 
-        RequestContext requestContext = RequestContext.getRequestContext();
-        String token = requestContext.getSecurityToken();
-        Repository repository = requestContext.getRepository();
-        Path uri = requestContext.getResourceURI();
+    	RequestContext requestContext = RequestContext.getRequestContext();
+    	String token = requestContext.getSecurityToken();
+    	Repository repository = requestContext.getRepository();
+    	Path uri = requestContext.getResourceURI();
 
-        DeleteCommand deleteCommand = (DeleteCommand) command;
+    	DeleteCommand deleteCommand = (DeleteCommand) command;
 
-        if (deleteCommand.getCancelAction() != null) {
-        	deleteCommand.setDone(true);
-            return new ModelAndView(this.cancelView);
-        }
+    	if (deleteCommand.getCancelAction() != null) {
+    		deleteCommand.setDone(true);
+    		return new ModelAndView(this.cancelView);
+    	}
 
-        Resource resource = repository.retrieve(token, uri.getParent(), false);
-        
-        // File that for some reason failed on delete. Separated by a
-        // key (String) that specifies type of failure and identifies list of
-        // paths to resources that failed.
-        Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
-        String msgKey = "manage.delete.error.";
-        
-        try {
-        	if (repository.exists(token, uri)) {
-        		repository.delete(token, uri, true);
-        	} else {
-        		this.addToFailures(failures, uri, msgKey, "nonExisting");
-        	}
-        } catch (IllegalArgumentException iae) { // Not a path, ignore it	
-        } catch (AuthorizationException ae) {
-            this.addToFailures(failures, uri, msgKey, "unAuthorized");
-        } catch (ResourceLockedException rle) {
-            this.addToFailures(failures, uri, msgKey, "locked");
-        } catch (Exception ex) {
-            StringBuilder msg = new StringBuilder("Could not perform ");
-            msg.append("delete of ").append(uri);
-            msg.append(": ").append(ex.getMessage());
-            logger.warn(msg);
-            this.addToFailures(failures, uri, msgKey, "generic");
-        }
-        
-        for (Entry<String, List<Path>> entry : failures.entrySet()) {
-            String key = entry.getKey();
-            List<Path> failedResources = entry.getValue();
-            Message msg = new Message(key);
-            for (Path p : failedResources) {
-                msg.addMessage(p.getName());
-            }
-            requestContext.addErrorMessage(msg);
-        }
-        
-        if(!failures.isEmpty()) {
-        	return new ModelAndView(super.getFormView());
-        }
-        
-        deleteCommand.setDone(true);
-        
-        model.put("resource", resource);
-        
-        return new ModelAndView(this.getSuccessView(), model);
-    }
-    
-    private void addToFailures(Map<String, List<Path>> failures, Path fileUri, String msgKey, String failureType) {
-        String key = msgKey.concat(failureType);
-        List<Path> failedPaths = failures.get(key);
-        if (failedPaths == null) {
-            failedPaths = new ArrayList<Path>();
-            failures.put(key, failedPaths);
-        }
-        failedPaths.add(fileUri);
+    	Resource resource = repository.retrieve(token, uri.getParent(), false);
+
+    	// File that for some reason failed on delete. Separated by a
+    	// key (String) that specifies type of failure and identifies list of
+    	// paths to resources that failed.
+    	Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
+
+    	this.deleteHelper.deleteResource(repository, token, uri, true, failures);
+    	this.deleteHelper.addFailureMessages(failures, requestContext);
+    	if(!failures.isEmpty()) {
+    		return new ModelAndView(super.getFormView());
+    	}
+
+    	deleteCommand.setDone(true);
+
+    	model.put("resource", resource);
+
+    	return new ModelAndView(this.getSuccessView(), model);
     }
 
     public void setCancelView(String cancelView) {
         this.cancelView = cancelView;
     }
+
+    @Required
+	public void setDeleteHelper(DeleteHelper deleteHelper) {
+		this.deleteHelper = deleteHelper;
+	}
 }

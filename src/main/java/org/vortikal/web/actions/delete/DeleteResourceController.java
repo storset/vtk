@@ -101,8 +101,8 @@ public class DeleteResourceController extends SimpleFormController {
     	Resource resource = repository.retrieve(token, uri.getParent(), false);
 
     	// File that for some reason failed on delete. Separated by a
-    	// key (String) that specifies type of failure and identifies list of
-    	// paths to resources that failed.
+    	// key (String) that specifies type of failure and identifies
+    	// path to resource that failed.
     	Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
 
     	this.deleteHelper.deleteResource(repository, token, uri, true, failures);

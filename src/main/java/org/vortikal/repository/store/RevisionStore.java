@@ -54,6 +54,6 @@ public interface RevisionStore {
     public InputStreamWrapper getContent(ResourceImpl resource, Revision revision) throws DataAccessException;
 
     public long getContentLength(ResourceImpl resource, Revision revision) throws DataAccessException;
-    
+
     public void gc() throws IOException;
 }

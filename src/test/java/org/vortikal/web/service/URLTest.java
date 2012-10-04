@@ -140,7 +140,7 @@ public class URLTest extends TestCase {
         url = URL.parse(rtmpUrl);
         assertEquals(rtmpUrl, url.toString());
     }
-
+    
     public void testSplitQueryString() {
         String testQueryString = "?key1=val1&key1=val2&key2=val%203";
         Map<String, String[]> splitValues = URL.splitQueryString(testQueryString);
@@ -190,6 +190,7 @@ public class URLTest extends TestCase {
         url = new URL("http", "foo.bar", Path.fromString("/%20"));
         assertEquals("http://foo.bar/%2520", url.toString());
     }
+    
 
     public void testDecode() {
         assertEquals("\u2664", URL.decode("%E2%99%A4"));
@@ -249,6 +250,7 @@ public class URLTest extends TestCase {
         assertEquals("http://a/", url.relativeURL("../../../../../b/../../../../../").toString());
     }
     
+    
     public void testIsRelative() {
         assertFalse(URL.isRelativeURL("http://foo.bar"));
         assertFalse(URL.isRelativeURL("mailto:xyz@example.com?subject=foo&body=bar"));
@@ -263,6 +265,14 @@ public class URLTest extends TestCase {
         assertTrue(URL.isEncoded("http://www.uio.no/dette%20erencoda"));
         assertTrue(URL.isEncoded("http://www.uio.no/?"));
         assertFalse(URL.isEncoded("http://www.uio.no/er dette encoda?"));
+    }
+    
+    public void testProtocolRelative() {
+        URL url = URL.parse("http://domain.com/img/logo.png");
+        assertEquals("//domain.com/img/logo.png", url.protocolRelativeURL());
+
+        URL url2 = URL.parse("https://b/c");
+        assertEquals("https://domain.com/img/logo.png", url2.relativeURL(url.protocolRelativeURL()).toString());
     }
     
 }

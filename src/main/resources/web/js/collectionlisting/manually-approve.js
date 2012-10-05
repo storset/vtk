@@ -172,7 +172,9 @@ function retrieveResources(serviceUri, locations, aggregatedlocations) {
   }
 
   // Add spinner
+  if(
   $("#manually-approve-container-title").append("<span id='approve-spinner'>" + approveRetrievingData + "...</span>");
+  
   vrtxAdmin.serverFacade.getJSON(getUri + "&no-cache=" + (+new Date()), {
     success: function (results, status, resp) {
       if (results != null && results.length > 0) {
@@ -246,8 +248,7 @@ function generateManuallyApprovedContainer(resources) {
   }
 
   // Update spinner with page generation progress
-  $("#approve-spinner").html("<span id='approve-spinner'>" + approveGeneratingPage + " <span id='approve-spinner-generated-pages'>"
-                            + pages + "</span> " + approveOf + " " + totalPages + "...</span>");
+  $("#approve-spinner").html(approveGeneratingPage + " <span id='approve-spinner-generated-pages'>" + pages + "</span> " + approveOf + " " + totalPages + "...");
   // Generate rest of pages asynchronous
   asyncGenPagesTimer = setTimeout(function() {
     html += generateTableRowFunc(resources[i]);

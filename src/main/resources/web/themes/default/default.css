@@ -663,6 +663,7 @@ ul.dropdown-shortcut-menu li.first,
 
 ul.dropdown-shortcut-menu li a,
 #resourceMenuLeft li a,
+#resourceMenuLeft li form input[type=submit],
 #editor-menu li a,
 #editor-button-row li a {
   color: #363534;
@@ -673,7 +674,13 @@ ul.dropdown-shortcut-menu li a,
   margin: 0 -5px 0 0;
 }
 
+#resourceMenuLeft li form input[type=submit] {
+  height: 28px;
+  margin-top: -1px !important;
+}
+
 #resourceMenuLeft li.last a,
+#resourceMenuLeft li.last form input[type=submit],
 #editor-menu li.last a,
 #editor-button-row li.last a {
   background: url(images/button-closed-right.gif) no-repeat top right;
@@ -687,21 +694,25 @@ ul.dropdown-shortcut-menu li a,
 }
 
 #resourceMenuLeft li:hover a,
+#resourceMenuLeft li:hover form input[type=submit],
 #editor-menu li:hover a,
 #editor-button-row li:hover a {
   background: none;
   color: #fff;
   text-decoration: none;
   margin: 0px;
+  cursor: pointer;
 }
 
 #resourceMenuLeft li.last:hover,
+#resourceMenuLeft li.last:hover form input[type=submit],
 #editor-menu li.last:hover,
 #editor-button-row li.last:hover {
   margin-right: 0px;
 }
 
 #resourceMenuLeft li.last:hover a,
+#resourceMenuLeft li.last:hover form input[type=submit],
 #editor-menu li.last:hover a,
 #editor-button-row li.last:hover a {
   background: url(images/button-closed-right-rollover.gif) no-repeat top right;

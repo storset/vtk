@@ -113,7 +113,7 @@ input[type=checkbox] {
 }
 
 #approve-spinner {
-  background: #fff url(icons/tabmenu-spinner.gif) no-repeat 10px 50%;
+  background: #fff url(icons/tabmenu-spinner.gif) no-repeat 12px 50%;
   padding-left: 36px;
 }
 

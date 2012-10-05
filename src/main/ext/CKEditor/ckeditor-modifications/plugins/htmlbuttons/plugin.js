@@ -8,6 +8,9 @@ CKEDITOR.plugins.add( 'htmlbuttons',
 {
 	init : function( editor )
 	{
+
+		lang = editor.config.language;
+
 		var buttonsConfig = editor.config.htmlbuttons;
 		if (!buttonsConfig)
 			return;
@@ -16,6 +19,10 @@ CKEDITOR.plugins.add( 'htmlbuttons',
 		{
 			return {
 				exec: function( editor ) {
+					if(definition.name == "Studytable" && lang == "en") {
+ 					  definition.html = definition.html.replace(/studiepoeng/g, "Credits");       
+					}
+
 					editor.insertHtml( definition.html );
 				}
 			};
@@ -26,6 +33,11 @@ CKEDITOR.plugins.add( 'htmlbuttons',
 		{
 			var button = buttonsConfig[ i ];
 			var commandName = button.name;
+
+			if(button.name == "Studytable" && lang == "en") {
+		        	button.title = 'Insert study table';
+			}
+
 			editor.addCommand( commandName, createCommand(button, editor) );
 
 			editor.ui.addButton( commandName,
@@ -126,14 +138,6 @@ var studyHtmlBody = "\
 	</tbody>\n\
 </table>";
 
-var lang = CKEDITOR.config.language;
-var studyButtonTitle = 'Sett inn studietabell';
-
-if(lang == "en") {
-   studyHtmlBody = studyHtmlBody.replace(/studiepoeng/g, "Credits");       
-   studyButtonTitle = 'Insert study table';
-}
-
 CKEDITOR.config.htmlbuttons =  [
 	{
 		name:'button1',
@@ -145,6 +149,6 @@ CKEDITOR.config.htmlbuttons =  [
 		name:'Studytable',
 		icon:'icon_tabellhatt.png',
 		html:studyHtmlBody,
-		title:studyButtonTitle
+		title:'Sett inn studietabell'
 	}
 ];

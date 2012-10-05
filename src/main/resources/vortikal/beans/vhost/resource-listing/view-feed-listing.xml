@@ -15,6 +15,7 @@
     <property name="introductionPropDefPointer" value="resource:introduction" />
     <property name="picturePropDefPointer" value="resource:picture" />
     <property name="mediaPropDefPointer" value="resource:media" />
+    <property name="useProtocolRelativeImages" value="${collectionListing.feed.protocolRelativeImages}" />
 
     <property name="introductionAsXHTMLSummaryResourceTypes">
       <list>

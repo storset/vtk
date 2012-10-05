@@ -66,6 +66,10 @@
   
   <import resource="tags/tags.xml" />
 
+  <!-- Extensions enabled by default: -->
+  <import resource="classpath:/vortikal/beans/standard-extensions/transformXml/transformXml.xml" />
+  <import resource="classpath:/vortikal/beans/standard-extensions/editXml/editXml.xml" />
+
   <!-- OperationLog interceptor for Repository -->
   <import resource="repository-operationlog-interceptor.xml" />
 

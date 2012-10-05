@@ -161,7 +161,7 @@ public abstract class AbstractFeedComponent extends ViewRenderingDecoratorCompon
             return null;
         }
         
-        return htmlUtil.linkResolveFilter(value, baseURL, requestURL);
+        return htmlUtil.linkResolveFilter(value, baseURL, requestURL, false);
     }
 
     protected List<String> getElementOrder(String param, DecoratorRequest request) {

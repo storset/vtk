@@ -36,26 +36,6 @@
 
 
 
-  <!-- Misc -->
-  <bean id="stdReqFilter" class="org.vortikal.web.filter.StandardRequestFilter"
-        parent="defaultRequestFilterCategoryBean">
-    <property name="urlReplacements" ref="stdReqFilter.urlReplacements" />
-    <property name="xForwardedFor" value="${request.xForwardedFor}" />
-    <property name="requestForwardFieldHeader" value="${request.forwardFieldHeader}" />
-  </bean>
-
-  <!-- Fix for resin 3.0 -->
-  <bean id="stdReqFilter.urlReplacements"
-        class="org.springframework.beans.factory.config.MapFactoryBean">
-    <property name="sourceMap">
-      <map>
-        <!--
-            <entry key="\+" value="%2B" />
-        -->
-      </map>
-    </property>
-  </bean>
-
   <!-- Context Initializers -->
   <bean id="requestContextInitializer" class="org.vortikal.web.RequestContextInitializer"
     lazy-init="true">

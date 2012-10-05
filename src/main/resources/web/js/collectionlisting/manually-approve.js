@@ -172,7 +172,6 @@ function retrieveResources(serviceUri, locations, aggregatedlocations) {
   }
 
   // Add spinner
-  if(
   $("#manually-approve-container-title").append("<span id='approve-spinner'>" + approveRetrievingData + "...</span>");
   
   vrtxAdmin.serverFacade.getJSON(getUri + "&no-cache=" + (+new Date()), {

@@ -281,12 +281,7 @@ public abstract class AtomFeedController implements Controller {
             }
             
             String imgPath = picture.getFormattedValue(PropertyType.THUMBNAIL_PROP_NAME, Locale.getDefault());
-            
-            if (this.useProtocolRelativeImages) {
-                imgPath = baseURL.relativeURL(imgPath).protocolRelativeURL();
-            }
             String imgAlt = getImageAlt(imgPath);
-
             sb.append("<img src=\"" + HtmlUtil.escapeHtmlString(imgPath) + "\" alt=\""
                     + HtmlUtil.escapeHtmlString(imgAlt) + "\"/>");
         }
@@ -298,7 +293,7 @@ public abstract class AtomFeedController implements Controller {
 
         if (sb.length() > 0) {
             HtmlFragment summary = htmlUtil.linkResolveFilter(sb.toString(), baseURL, RequestContext
-                    .getRequestContext().getRequestURL());
+                    .getRequestContext().getRequestURL(), this.useProtocolRelativeImages);
             return summary;
         } else {
             return null;

@@ -13,6 +13,7 @@ var lastVal = "",
     MANUALLY_APPROVE_TEMPLATES = [];
 
 $(window).load(function() {
+
   // Retrieve initial resources
   manuallyApproveLocationsTxt = $("#resource\\.manually-approve-from");
   aggregatedLocationsTxt = $("#resource\\.aggregation");
@@ -170,6 +171,8 @@ function retrieveResources(serviceUri, locations, aggregatedlocations) {
     return;
   }
 
+  // Add spinner
+  $("#manually-approve-container-title").append("<span id='approve-spinner'>" + approveRetrievingData + "...</span>");
   vrtxAdmin.serverFacade.getJSON(getUri + "&no-cache=" + (+new Date()), {
     success: function (results, status, resp) {
       if (results != null && results.length > 0) {
@@ -242,10 +245,9 @@ function generateManuallyApprovedContainer(resources) {
     $("#manually-approve-container").html(""); // clear if only one page
   }
 
-  // Add spinner
-  $("#manually-approve-container-title").append(
-      "<span id='approve-spinner'>" + approveGeneratingPage + " <span id='approve-spinner-generated-pages'>"
-      + pages + "</span> " + approveOf + " " + totalPages + "...</span>");
+  // Update spinner with page generation progress
+  $("#approve-spinner").html("<span id='approve-spinner'>" + approveGeneratingPage + " <span id='approve-spinner-generated-pages'>"
+                            + pages + "</span> " + approveOf + " " + totalPages + "...</span>");
   // Generate rest of pages asynchronous
   asyncGenPagesTimer = setTimeout(function() {
     html += generateTableRowFunc(resources[i]);

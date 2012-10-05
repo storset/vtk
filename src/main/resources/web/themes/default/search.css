@@ -13,6 +13,9 @@ div.vrtx-search-results .result .footer {margin-top: 0.25em; color: green; font-
   float: right; 
   width: 13em;
 }
+.vrtx-search-restricted {
+  color:red;
+}
 
 div#brodtekst {margin-right: 1em;} /* Do we need this */
 

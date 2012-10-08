@@ -20,7 +20,7 @@
   <#if val?matches(".*(img|iframe|embed|link|base|object|applet|property|xml:img:?):http://.*")>
     <#return true />
   </#if>
-  <#if val?matches(".*(style|script).*")>
+  <#if val?matches(".*style.*")>
     <#return true />
   </#if>
   <#if val?matches("element:ssi:include:feed.*") && val?matches(".*item-picture=\\[true\\].*") && val?matches(".*url=\\[http:.*")>

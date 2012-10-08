@@ -68,7 +68,7 @@
 	  //-->
     </script>
   </head>
-  <body id="vrtx-preview-popup">
+  <body>
     <h2>${vrtx.getMsg('preview.popup.title')}</h2>
 
     <#if workingCopy?exists>

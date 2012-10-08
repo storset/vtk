@@ -108,9 +108,13 @@ input[type=checkbox] {
   margin: 0 5px -4px -7px;
 }
 
-#manually-approve-container-title,
-#approve-spinner {
+#manually-approve-container-title {
   padding-left: 20px;
+}
+
+#approve-spinner {
+  background: #fff url(icons/tabmenu-spinner.gif) no-repeat 14px 50%;
+  padding-left: 36px;
 }
 
 #vrtx-manually-approve-from-add,

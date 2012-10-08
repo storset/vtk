@@ -77,7 +77,7 @@ public class HtmlUtil {
         return sb.toString();
     }
 
-    public HtmlFragment linkResolveFilter(String html, URL baseURL, URL requestURL) {
+    public HtmlFragment linkResolveFilter(String html, URL baseURL, URL requestURL, boolean protocolRelative) {
         HtmlFragment fragment;
         try {
             fragment = this.htmlParser.parseFragment(html);
@@ -85,7 +85,7 @@ public class HtmlUtil {
             throw new RuntimeException(e);
         }
 
-        LinkResolveFilter filter = new LinkResolveFilter(baseURL, requestURL);
+        LinkResolveFilter filter = new LinkResolveFilter(baseURL, requestURL, protocolRelative);
         fragment.filter(filter);
 
         return fragment;
@@ -180,10 +180,12 @@ public class HtmlUtil {
     private class LinkResolveFilter implements HtmlPageFilter {
         private URL base;
         private URL requestURL;
+        private boolean protocolRelative = false;
 
-        public LinkResolveFilter(URL base, URL requestURL) {
+        public LinkResolveFilter(URL base, URL requestURL, boolean protocolRelative) {
             this.base = base;
             this.requestURL = requestURL;
+            this.protocolRelative = protocolRelative;
         }
 
         @Override
@@ -217,7 +219,9 @@ public class HtmlUtil {
                 if (base.getHost().equals(requestURL.getHost())) {
                     try {
                         URL url = this.base.relativeURL(val);
-                        attr.setValue(escapeHtmlString(url.getPathRepresentation()));
+                        val = this.protocolRelative ? 
+                                url.protocolRelativeURL() : url.getPathRepresentation();
+                        attr.setValue(escapeHtmlString(val));
                     } catch (Exception e) {
                         return;
                     }
@@ -234,7 +238,9 @@ public class HtmlUtil {
                     try {
                         URL url = URL.parse(val);
                         if (url.getHost().equals(this.requestURL.getHost())) {
-                            attr.setValue(escapeHtmlString(url.getPathRepresentation()));
+                            val = this.protocolRelative ? 
+                                    url.protocolRelativeURL() : url.getPathRepresentation();
+                            attr.setValue(escapeHtmlString(val));
                         }
                     } catch (Throwable t) {
                     }

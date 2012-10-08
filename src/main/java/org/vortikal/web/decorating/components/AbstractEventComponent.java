@@ -137,7 +137,7 @@ public abstract class AbstractEventComponent extends ViewRenderingDecoratorCompo
             return null;
         }
         
-        return getHtmlUtil().linkResolveFilter(html, baseURL, requestURL);
+        return getHtmlUtil().linkResolveFilter(html, baseURL, requestURL, false);
     }
 
     protected List<String> getElementOrder(String param, DecoratorRequest request) {

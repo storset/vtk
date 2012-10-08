@@ -326,11 +326,6 @@ form button::-moz-focus-inner {
 .vrtx-textfield-big input, x:-moz-any-link, x:only-child {
   padding-top: 2px;
   height: 31px;
-} 
-
-#resource-title .dropdown-shortcut-menu-container li form, x:-moz-any-link, x:only-child  {
-  padding-left: 12px !important;
-  padding-right: 12px !important;
 }
 
 /* ^ Mozilla hacks */

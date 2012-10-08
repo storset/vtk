@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, University of Oslo, Norway
+/* Copyright (c) 2012, University of Oslo, Norway
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -31,31 +31,31 @@
 package org.vortikal.web.actions.delete;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.vortikal.repository.AuthorizationException;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
-import org.vortikal.repository.ResourceLockedException;
 import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
+@SuppressWarnings("deprecation")
 public class DeleteResourceController extends SimpleFormController {
 
+    /* TODO: change class name to something that says it is used when standing on resource */
+
     private String cancelView;
-    
+    private DeleteHelper deleteHelper;
+
     protected Object cmd;
-    
-    private static Log logger = LogFactory.getLog(DeleteResourceController.class);
-    
+
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         RequestContext requestContext = RequestContext.getRequestContext();
         Service service = requestContext.getService();
@@ -65,9 +65,8 @@ public class DeleteResourceController extends SimpleFormController {
         Resource resource = repository.retrieve(token, requestContext.getResourceURI(), false);
         String url = service.constructLink(resource, principal);
         String name = resource.getName();
-        
+
         this.cmd = new DeleteCommand(name, url);
-    
         return this.cmd;
     }
 
@@ -83,24 +82,25 @@ public class DeleteResourceController extends SimpleFormController {
         DeleteCommand deleteCommand = (DeleteCommand) command;
 
         if (deleteCommand.getCancelAction() != null) {
-        	deleteCommand.setDone(true);
+            deleteCommand.setDone(true);
             return new ModelAndView(this.cancelView);
         }
 
         Resource resource = repository.retrieve(token, uri.getParent(), false);
-        
-        try {
-        	if (repository.exists(token, uri)) {
-        		repository.delete(token, uri, true);
-        	}
-        } catch (IllegalArgumentException iae) {
-        } catch (AuthorizationException ae) {
-        } catch (ResourceLockedException rle) {
-        } catch (Exception ex) {
+
+        // File that for some reason failed on delete. Separated by a
+        // key (String) that specifies type of failure and identifies
+        // path to resource that failed.
+        Map<String, List<Path>> failures = new HashMap<String, List<Path>>();
+
+        this.deleteHelper.deleteResource(repository, token, uri, true, failures);
+        this.deleteHelper.addFailureMessages(failures, requestContext);
+        if (!failures.isEmpty()) {
+            return new ModelAndView(super.getFormView());
         }
-        
+
         deleteCommand.setDone(true);
- 
+
         model.put("resource", resource);
 
         return new ModelAndView(this.getSuccessView(), model);
@@ -108,5 +108,10 @@ public class DeleteResourceController extends SimpleFormController {
 
     public void setCancelView(String cancelView) {
         this.cancelView = cancelView;
+    }
+
+    @Required
+    public void setDeleteHelper(DeleteHelper deleteHelper) {
+        this.deleteHelper = deleteHelper;
     }
 }

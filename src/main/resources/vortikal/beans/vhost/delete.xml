@@ -57,10 +57,14 @@
     <property name="successView" value="redirectToManage" />
     <property name="cancelView" value="redirectToManage" />
     <property name="commandClass" value="org.vortikal.web.actions.delete.DeleteCommand" />
+    <property name="deleteHelper" ref="deleteHelper" />
   </bean>
   
   <bean id="deleteResourcesHandler" class="org.vortikal.web.actions.delete.DeleteResourcesController">
     <property name="viewName" value="manageCollectionListing" />
+    <property name="deleteHelper" ref="deleteHelper" />
   </bean>
+  
+  <bean id="deleteHelper" class="org.vortikal.web.actions.delete.DeleteHelper" />
 
 </beans>

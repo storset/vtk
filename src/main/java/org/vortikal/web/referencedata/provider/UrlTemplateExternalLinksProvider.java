@@ -51,10 +51,9 @@ import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 /**
- * Provides external links/URLs by use of template/pattern and dynamic values. 
+ * Provides external links/URLs by use of template/pattern and dynamic values.
  * 
- * Supported fields: "%{url}" (service URL)
- * and "%{foo:bar}" (property values of current resource).
+ * Supported fields: "%{url}" (service URL) and "%{foo:bar}" (property values of current resource).
  * 
  * Example: http://www.foo.com/share?url=%{url}
  */
@@ -69,35 +68,34 @@ public class UrlTemplateExternalLinksProvider {
     private Map<String, UrlTemplate> altUrlTemplates;
     private Service viewService;
 
-
     public List<ExternalLink> getTemplates(List<String> altUrls) throws Exception {
 
-    	RequestContext requestContext = RequestContext.getRequestContext();
-    	String token = requestContext.getSecurityToken();
-    	Repository repository = requestContext.getRepository();
+        RequestContext requestContext = RequestContext.getRequestContext();
+        String token = requestContext.getSecurityToken();
+        Repository repository = requestContext.getRepository();
 
-    	RenderContext ctx = new RenderContext();
-    	ctx.resource = repository.retrieve(token, requestContext.getResourceURI(), true);
-    	ctx.principal = requestContext.getPrincipal();
-    	ctx.service = requestContext.getService();
+        RenderContext ctx = new RenderContext();
+        ctx.resource = repository.retrieve(token, requestContext.getResourceURI(), true);
+        ctx.principal = requestContext.getPrincipal();
+        ctx.service = requestContext.getService();
 
-    	List<ExternalLink> links = new ArrayList<ExternalLink>();
-    	for (String externalLinkName : this.urlTemplates.keySet()) {
-    		UrlTemplate template;
-    		if(altUrls.contains(externalLinkName)) {
-    			template = this.altUrlTemplates.get(externalLinkName);	
-    		} else {
-    			template = this.urlTemplates.get(externalLinkName);
-    		}
-    		if(template != null) {
-    			String encodedUrl = template.renderEncodedUrl(ctx);
-    			ExternalLink link = new ExternalLink();
-    			link.setName(externalLinkName);
-    			link.setUrl(encodedUrl);
-    			links.add(link);
-    		}
-    	}
-    	return links;
+        List<ExternalLink> links = new ArrayList<ExternalLink>();
+        for (String externalLinkName : this.urlTemplates.keySet()) {
+            UrlTemplate template;
+            if (altUrls.contains(externalLinkName)) {
+                template = this.altUrlTemplates.get(externalLinkName);
+            } else {
+                template = this.urlTemplates.get(externalLinkName);
+            }
+            if (template != null) {
+                String encodedUrl = template.renderEncodedUrl(ctx);
+                ExternalLink link = new ExternalLink();
+                link.setName(externalLinkName);
+                link.setUrl(encodedUrl);
+                links.add(link);
+            }
+        }
+        return links;
     }
 
     private class UrlTemplate {
@@ -125,7 +123,6 @@ public class UrlTemplateExternalLinksProvider {
             }
             this.templateNodes = templateNodes;
         }
-
 
         String renderEncodedUrl(RenderContext ctx) {
             StringBuilder url = new StringBuilder();
@@ -171,9 +168,11 @@ public class UrlTemplateExternalLinksProvider {
 
     private class StaticEncodedText implements TemplateNode {
         private String text;
+
         StaticEncodedText(String text) {
             this.text = text;
         }
+
         public String render(RenderContext ctx) {
             return this.text;
         }
@@ -197,24 +196,25 @@ public class UrlTemplateExternalLinksProvider {
         public String render(RenderContext ctx) {
             String retVal = "";
             Property prop = ctx.resource.getPropertyByPrefix(this.prefix, this.name);
-            if (prop == null) prop = ctx.resource.getPropertyByPrefix("resource", this.name); // Try structured namespace
+            if (prop == null)
+                prop = ctx.resource.getPropertyByPrefix("resource", this.name); // Try structured namespace
             if (prop != null) {
-            	PropertyTypeDefinition def = prop.getDefinition();
-            	if (def != null) {
-            		if (def.getType() == PropertyType.Type.HTML) {
-            			retVal = prop.getFormattedValue("flattened", null);
-            		} else {
-            			retVal = prop.getFormattedValue();
-            		}
-            	}
+                PropertyTypeDefinition def = prop.getDefinition();
+                if (def != null) {
+                    if (def.getType() == PropertyType.Type.HTML) {
+                        retVal = prop.getFormattedValue("flattened", null);
+                    } else {
+                        retVal = prop.getFormattedValue();
+                    }
+                }
             }
 
             if (!retVal.isEmpty() && this.name.equals("picture")) { // Construct absolute URLs
-            	try {
-            		retVal = viewService.constructLink(Path.fromString(retVal));
-            	} catch (IllegalArgumentException iae) {
-            		retVal = "";
-            	}
+                try {
+                    retVal = viewService.constructLink(Path.fromString(retVal));
+                } catch (IllegalArgumentException iae) {
+                    retVal = "";
+                }
             }
             return retVal;
         }
@@ -222,6 +222,7 @@ public class UrlTemplateExternalLinksProvider {
 
     private class UrlEncodingWrapper implements TemplateNode {
         private TemplateNode wrappedNode;
+
         UrlEncodingWrapper(TemplateNode wrapped) {
             this.wrappedNode = wrapped;
         }
@@ -237,9 +238,11 @@ public class UrlTemplateExternalLinksProvider {
 
     private class TruncatingWrapper implements TemplateNode {
         private TemplateNode wrappedNode;
+
         TruncatingWrapper(TemplateNode wrapped) {
             this.wrappedNode = wrapped;
         }
+
         public String render(RenderContext ctx) {
             String retVal = this.wrappedNode.render(ctx);
             if (retVal.length() > UrlTemplateExternalLinksProvider.this.fieldValueSizeLimit) {
@@ -261,7 +264,7 @@ public class UrlTemplateExternalLinksProvider {
             }
         }
     }
-    
+
     public void setAltUrlTemplates(Map<String, String> urlTemplates) {
         this.altUrlTemplates = new LinkedHashMap<String, UrlTemplate>(urlTemplates.size());
         for (String name : urlTemplates.keySet()) {
@@ -279,7 +282,8 @@ public class UrlTemplateExternalLinksProvider {
     public void setFieldValueTruncationIndicator(String fieldValueTruncationIndicator) {
         this.fieldValueTruncationIndicator = fieldValueTruncationIndicator;
     }
+
     public void setViewService(Service viewService) {
-    	this.viewService = viewService;
+        this.viewService = viewService;
     }
 }

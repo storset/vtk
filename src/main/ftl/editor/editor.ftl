@@ -127,6 +127,7 @@
       
       // Manually approve i18n
       var approveGeneratingPage = "<@vrtx.msg code='editor.manually-approve.generating-page' />",
+          approveRetrievingData = "<@vrtx.msg code='editor.manually-approve.retrieving-data' />",
           approvePrev = "<@vrtx.msg code='imageListing.previous' />",
           approveNext = "<@vrtx.msg code='imageListing.next' />",
           approveShowing = "<@vrtx.msg code='editor.manually-approve.table-showing' />",

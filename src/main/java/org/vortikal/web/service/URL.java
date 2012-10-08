@@ -224,7 +224,7 @@ public class URL implements Serializable {
     public boolean isPathOnly() {
         return this.pathOnly;
     }
-
+    
     /**
      * Sets the path component of this URL.
      * 
@@ -427,16 +427,10 @@ public class URL implements Serializable {
         this.characterEncoding = characterEncoding;
         return this;
     }
-
-    @Override
-    public String toString() {
-        if (this.pathOnly) {
-            return this.getPathRepresentation();
-        }
-
+    
+    public String protocolRelativeURL() {
         StringBuilder url = new StringBuilder();
-
-        url.append(this.protocol).append("://");
+        url.append("//");
         url.append(this.host);
         if (this.port != null) {
             if (!(this.port.equals(PORT_80) && (PROTOCOL_HTTP.equals(this.protocol) || PROTOCL_RTMP.equals(protocol)) || (this.port
@@ -447,10 +441,21 @@ public class URL implements Serializable {
         if (PROTOCL_RTMP.equals(protocol)) {
             url.append(getPath());
         } else {
-            url.append(getPathRepresentation()); // Includes encoded /path,
-                                                 // ?query parameters and #ref.
+            url.append(getPathRepresentation()); 
         }
 
+        return url.toString();
+    }
+
+    @Override
+    public String toString() {
+        if (this.pathOnly) {
+            return this.getPathRepresentation();
+        }
+        StringBuilder url = new StringBuilder();
+
+        url.append(this.protocol).append(":");
+        url.append(protocolRelativeURL());
         return url.toString();
     }
 

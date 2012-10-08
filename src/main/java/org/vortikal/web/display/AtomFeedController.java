@@ -90,6 +90,7 @@ public abstract class AtomFeedController implements Controller {
     private String introductionPropDefPointer;
     private String picturePropDefPointer;
     private String mediaPropDefPointer;
+    private boolean useProtocolRelativeImages = true; 
 
     private List<String> introductionAsXHTMLSummaryResourceTypes;
 
@@ -266,6 +267,8 @@ public abstract class AtomFeedController implements Controller {
     protected HtmlFragment prepareSummary(PropertySet resource) throws Exception {
         StringBuilder sb = new StringBuilder();
 
+        URL baseURL = viewService.constructURL(resource.getURI());
+        
         Property picture = this.getProperty(resource, this.picturePropDefPointer);
         if (picture != null) {
             String imageRef = picture.getStringValue();
@@ -276,9 +279,9 @@ public abstract class AtomFeedController implements Controller {
                 } catch (Throwable t) {
                 }
             }
+            
             String imgPath = picture.getFormattedValue(PropertyType.THUMBNAIL_PROP_NAME, Locale.getDefault());
             String imgAlt = getImageAlt(imgPath);
-
             sb.append("<img src=\"" + HtmlUtil.escapeHtmlString(imgPath) + "\" alt=\""
                     + HtmlUtil.escapeHtmlString(imgAlt) + "\"/>");
         }
@@ -288,11 +291,9 @@ public abstract class AtomFeedController implements Controller {
             sb.append(intro);
         }
 
-        URL baseURL = viewService.constructURL(resource.getURI());
-
         if (sb.length() > 0) {
             HtmlFragment summary = htmlUtil.linkResolveFilter(sb.toString(), baseURL, RequestContext
-                    .getRequestContext().getRequestURL());
+                    .getRequestContext().getRequestURL(), this.useProtocolRelativeImages);
             return summary;
         } else {
             return null;
@@ -452,5 +453,11 @@ public abstract class AtomFeedController implements Controller {
     public void setHtmlUtil(HtmlUtil htmlUtil) {
         this.htmlUtil = htmlUtil;
     }
+
+    public void setUseProtocolRelativeImages(boolean useProtocolRelativeImages) {
+        this.useProtocolRelativeImages = useProtocolRelativeImages;
+    }
+    
+    
 
 }

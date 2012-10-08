@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
+import org.vortikal.repository.Path;
 import org.vortikal.repository.Privilege;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.RepositoryAction;
@@ -102,6 +103,7 @@ public class ResourcePrincipalPermissionAssertion
     private String trustedToken = null;
     private boolean anonymous = false;
     private boolean considerLocks = true;
+    private boolean parent = false;
     
     Set<String> rootPrincipals;
     Set<String> readPrincipals;
@@ -147,7 +149,11 @@ public class ResourcePrincipalPermissionAssertion
     public void setConsiderLocks(boolean considerLocks) {
         this.considerLocks = considerLocks;
     }
-    
+
+    public void setParent(boolean parent) {
+        this.parent = parent;
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         if (this.principalManager == null) {
@@ -196,10 +202,25 @@ public class ResourcePrincipalPermissionAssertion
         }
         
         try {
-            if (this.anonymous) {
-                return this.repository.isAuthorized(resource, this.permission, null, this.considerLocks);
+            if(this.parent) {
+                Path parent = resource.getURI().getParent();
+                Resource resourceParent = this.repository.retrieve(this.trustedToken, parent, false);
+                if (resourceParent == null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Resource parent is null [match = false]");
+                    }
+                    return false;
+                }
+                if (this.anonymous) {
+                    return this.repository.isAuthorized(resourceParent, this.permission, null, this.considerLocks);
+                }
+                return this.repository.isAuthorized(resourceParent, this.permission, principal, this.considerLocks);
+            } else {
+                if (this.anonymous) {
+                    return this.repository.isAuthorized(resource, this.permission, null, this.considerLocks);
+                }
+                return this.repository.isAuthorized(resource, this.permission, principal, this.considerLocks);
             }
-            return this.repository.isAuthorized(resource, this.permission, principal, this.considerLocks);
 
         } catch (RuntimeException e) {
             // XXX Hmm. Don't wrap runtime-exceptions, because we then hide

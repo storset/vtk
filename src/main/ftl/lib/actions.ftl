@@ -29,3 +29,22 @@
     </div>
   </#if>
 </#macro>
+
+<#macro copyMove item parentOp>
+  <#if resourceContext.parentURI = "/">
+    <#if resourceContext.currentResource.collection>
+      <#assign actionURL = vrtx.linkConstructor('../', 'manageService') />
+    <#else>
+      <#assign actionURL = vrtx.linkConstructor('./', 'manageService') />  
+    </#if>
+  <#else>
+    <#assign actionURL = vrtx.linkConstructor(resourceContext.parentURI, 'manageService') />
+  </#if>
+
+  <form method="post" action="${actionURL?html}" name="${parentOp}-single-form">
+    <@vrtx.csrfPreventionToken url=actionURL />
+    <input type="hidden" name="action" value="${parentOp}"  />
+    <input type="hidden" name="${resourceContext.currentURI}" />
+    <input type="submit" value="${item.title}" />
+  </form>
+</#macro>

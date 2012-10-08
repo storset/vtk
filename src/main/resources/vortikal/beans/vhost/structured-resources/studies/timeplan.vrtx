@@ -6,8 +6,18 @@ resourcetype timeplan {
     aar : string,
     semester : string,
     path : string,
+    over : string,
     kommentar : simple_html,
     content : html noextract
+  }
+
+  edit-rules {
+    emnekode (class[ui-helper-hidden]),
+    title (class[ui-helper-hidden]),
+    aar (class[ui-helper-hidden]),
+    semester (class[ui-helper-hidden]),
+    path (class[ui-helper-hidden]),
+    over (dropdown)
   }
   
   view-components {
@@ -17,10 +27,12 @@ resourcetype timeplan {
         [def emnekode resource-prop(".", "emnekode")]
         [def aar resource-prop(".", "aar")]
         [def semester resource-prop(".", "semester")]
+        [def path resource-prop(".", "path")]
+        [def over resource-prop(".", "over")]
         <iframe frameborder="0" 
             id="timeplaner" 
             scrolling="no" 
-            src="/institutt/timeplan-test/calendar_test.php?type=module&amp;embed=1&amp;ar=[val aar]&amp;sem=[val semester]&amp;id=[val emnekode]-1&amp;path=matnat/ifi&amp;over=1" 
+            src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val semester]&amp;sem=[val semester]&amp;id=[val emnekode]-1&amp;path=[val path]&amp;over=[val over]" 
             width="100%">
         </iframe>
         ##
@@ -45,6 +57,14 @@ resourcetype timeplan {
     ##
   }
 
+  vocabulary {
+     over {
+       en : ("1" = "Normal overview", "x" = "Only shortcut to anchor", "0" = "No overview"),
+       no : ("1" = "Vanlig oversikt", "x" = "Kun snarevei til anker", "0" = "Ingen oversikt"),
+       nn : ("1" = "vanlig oversikt", "x" = "Kun snarevei til anker", "0" = "Ingen oversikt")
+     }
+  }
+
   localization {
     title : (en : "Title", no : "Tittel", nn : "Tittel"),
     header : (en : "Edit schedule", no : "Rediger timeplan", nn : "Rediger timeplan"),
@@ -52,6 +72,7 @@ resourcetype timeplan {
     aar : (en : "Year", no : "År", nn : "År"),
     semester : (en : "Semester", no : "Semester", nn : "Semester"),
     path : (en : "Path", no : "Sti", nn : "Sti"),
+    over : (en : "Overview", no : "Oversikt", nn : "Oversikt"),
     kommentar : (en : "Comment", no : "Innledende kommentar", nn : "Innledende kommentar"),
     content : (en : "Content", no : "Innhold", nn : "Innhald")
   }

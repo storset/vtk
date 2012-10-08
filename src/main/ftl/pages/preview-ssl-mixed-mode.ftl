@@ -52,7 +52,7 @@
     <a class="vrtx-button" href="${preview.popupURL?html}" target="vrtx_preview_popup"><span>${vrtx.getMsg('preview.sslMixedContent.open')}</span></a-->
     <p class="previewUnavailableReasons">${vrtx.getMsg('preview.sslMixedContent.reasons.desc')}</p>
     <#assign prop = vrtx.getProp(resourceContext.currentResource, 'sslMixedMode') />
-    <ul id="vrtx-preview-ssl-mixed-mode-reasons">
+    <ul>
     <#list prop.values as v>
       <#assign val = v?string />
       <#if filter_reason(val)>

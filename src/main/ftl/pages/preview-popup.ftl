@@ -93,7 +93,7 @@
       <div class="vrtx-preview-message-box">Working copy..</div>
     <#else>
       <#assign published = vrtx.propValue(resourceContext.currentResource, "published-date") />
-      <#if !published?exists>
+      <#if !published?has_content>
         <div class="vrtx-preview-message-box">Unpublished..</div>
       </#if>
     </#if>

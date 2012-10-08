@@ -16,6 +16,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>${vrtx.getMsg('preview.popup.title')}</title>
+    <list type="text/css" href="/vrtx/__vrtx/static-resources/themes/default/default.css" rel="stylesheet" />
     <#include "/system/css.ftl"/> 
     <#include "/system/javascript.ftl"/>
     <#-- TODO: externalize more of the script -->

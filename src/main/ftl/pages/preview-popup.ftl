@@ -71,16 +71,7 @@
   <body>
     <h2>${vrtx.getMsg('preview.popup.title')}</h2>
 
-    <#if workingCopy?exists>
-      <#if resourceReference?index_of("?") &gt; 0><#assign resourceReference = resourceReference + "&amp;revision=WORKING_COPY" />
-        <#assign resourceReference = resourceReference + "&amp;revision=WORKING_COPY" />
-      <#else>
-        <#assign resourceReference = resourceReference + "?revision=WORKING_COPY" />
-      </#if>
-    </#if>
-
     <#assign previewRefreshParameter = 'vrtxPreviewForceRefresh' />
-    
     <#assign previewUnpublishedParameter = 'vrtxPreviewUnpublished' />
 
     <#assign constructor = "freemarker.template.utility.ObjectConstructor"?new() />
@@ -99,6 +90,12 @@
 
     <#if workingCopy?exists>
       <#assign url = url + "&amp;revision=WORKING_COPY" />
+      <div class="vrtx-preview-message-box">Working copy..</div>
+    <#else>
+      <#assign published = vrtx.propValue(resourceContext.currentResource, "published-date") />
+      <#if !published?exists>
+        <div class="vrtx-preview-message-box">Unpublished..</div>
+      </#if>
     </#if>
 
 

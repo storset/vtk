@@ -69,8 +69,8 @@
 	  //-->
     </script>
   </head>
-  <body>
-    <h2>${vrtx.getMsg('preview.popup.title')}</h2>
+  <body id="vrtx-preview-popup">
+    <h1>${vrtx.getMsg('preview.popup.title')}</h1>
 
     <#assign previewRefreshParameter = 'vrtxPreviewForceRefresh' />
     <#assign previewUnpublishedParameter = 'vrtxPreviewUnpublished' />

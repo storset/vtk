@@ -27,7 +27,6 @@ create table vortex_resource
     properties_modified_by varchar (64) not null,
     modified_by varchar (64) not null,
     resource_owner varchar (64) not null,
-    content_language varchar (64) null,
     content_type varchar (128) null,
     content_length bigint null, -- NULL for collections.
     resource_type varchar(64) not null,
@@ -373,7 +372,6 @@ insert into vortex_resource (
     properties_modified_by,
     modified_by,
     resource_owner,
-    content_language,
     content_type,
     character_encoding,
     is_collection,
@@ -394,7 +392,6 @@ values (
     'vortex@localhost',
     'vortex@localhost',
     'vortex@localhost',
-    null,
     null,
     null,
     'Y',

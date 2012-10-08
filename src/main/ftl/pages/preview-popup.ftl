@@ -16,6 +16,55 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>${vrtx.getMsg('preview.popup.title')}</title>
+    <#-- TODO: externalize more of the script -->
+    <script type="text/javascript"><!--
+	  function linkCheckResponseLocalizer(status) {
+	      switch (status) {
+	         case 'NOT_FOUND':
+	         case 'MALFORMED_URL':
+	            return '<@vrtx.msg code="linkcheck.status.NOT_FOUND" default="broken"/>';
+	         case 'TIMEOUT':
+	            return '<@vrtx.msg code="linkcheck.status.TIMEOUT" default="timeout"/>';
+	         default:
+	            return '<@vrtx.msg code="linkcheck.status.ERROR" default="error"/>';
+	      }
+	  }
+	  
+	  function linkCheckCompleted(requests, brokenLinks) {
+	    if(brokenLinks > 0) {
+	      $("body").find("#vrtx-link-check-spinner")
+	        .html(brokenLinks + ' <@vrtx.msg code="linkcheck.brokenlinks" default=" broken links"/>')
+	        .addClass("vrtx-broken-links");
+	    } else {
+	      $("body").find("#vrtx-link-check-spinner").remove();
+	    }
+	  }
+	
+	  $(document).ready(function() {
+	     $('iframe').load(function() {
+	        $(this).contents().find("a").attr("target", "_top");
+	        
+	        <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'> 
+	        
+	        $("body").prepend('<span id="vrtx-link-check-spinner"><@vrtx.msg code="linkcheck.spinner" default="Checking links..."/></span>');
+	        
+	        var linkCheckURL = '${linkcheck.URL?html}';
+	        var authTarget = '${authTarget}';
+	        var href = location.href;
+	        linkCheckURL = (authTarget === "https" && linkCheckURL.match(/^http:\/\//)) ? linkCheckURL.replace("http://", "https://") : linkCheckURL;
+	        
+	        visualizeBrokenLinks({
+	            selection : 'iframe',
+	            validationURL : linkCheckURL,
+	            chunk : 10,
+	            responseLocalizer : linkCheckResponseLocalizer,
+	            completed : linkCheckCompleted
+	        });
+	        </#if>
+	     });
+	  });	
+	  //-->
+    </script>
   </head>
   <body>
     <h2>${vrtx.getMsg('preview.popup.title')}</h2>

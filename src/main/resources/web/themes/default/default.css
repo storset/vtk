@@ -1781,7 +1781,7 @@ body#vrtx-permissions li.users ul {
 ul.vrtx-reporters li,
 body#vrtx-permissions li.groups ul li,
 body#vrtx-permissions li.users ul li,
-body#vrtx-preview-popup ul li {
+body#vrtx-preview-ssl-mixed-mode ul li {
   background: url(images/list-bullet-dark-grey.png) no-repeat center left;
   margin: 0 0 5px 5px;
   padding: 0 0 0 10px;
@@ -2356,8 +2356,8 @@ form.vrtx-admin-form ul,
 form.vrtx-admin-form ul li,
 ul#vrtx-manually-approve-tab-menu,
 ul#vrtx-manually-approve-tab-menu li,
-#vrtx-preview-popup ul,
-#vrtx-preview-popup ul li,
+#vrtx-preview-ssl-mixed-mode ul,
+#vrtx-preview-ssl-mixed-mode ul li,
 #vrtx-report-filters ul,
 #vrtx-report-filter ul li {
   margin-left: 0px;

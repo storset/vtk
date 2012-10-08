@@ -34,7 +34,7 @@
   <head>
     <title>${vrtx.getMsg('preview.sslMixedContent.title')}</title>
   </head>
-  <body id="vrtx-preview-popup">
+  <body id="vrtx-preview-ssl-mixed-mode">
     <h2>${vrtx.getMsg('preview.sslMixedContent.title')}</h2>
 
     <#--

@@ -1781,7 +1781,7 @@ body#vrtx-permissions li.users ul {
 ul.vrtx-reporters li,
 body#vrtx-permissions li.groups ul li,
 body#vrtx-permissions li.users ul li,
-ul#vrtx-preview-ssl-mixed-mode-reasons li {
+body#vrtx-preview-popup ul#vrtx-preview-ssl-mixed-mode-reasons li {
   background: url(images/list-bullet-dark-grey.png) no-repeat center left;
   margin: 0 0 5px 5px;
   padding: 0 0 0 10px;

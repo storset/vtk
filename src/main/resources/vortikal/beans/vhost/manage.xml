@@ -663,7 +663,7 @@
             <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
               <property name="namespace" ref="DEFAULT_NAMESPACE" />
               <property name="name" value="sslMixedMode" />
-              <property name="pattern" value="(img|iframe|embed|link|base|object|applet|property|xml:img):http://" />
+              <property name="pattern" value="(img|iframe|embed|link|base|object|applet|property|xml:img:?):http://" />
             </bean>
             <bean class="org.vortikal.web.service.ResourcePropertyRegexpAssertion">
               <property name="namespace" ref="DEFAULT_NAMESPACE" />
@@ -1612,11 +1612,15 @@
 
 
   <bean id="preview.displayPopupURLView" parent="freemarkerView">
-    <property name="url" value="pages/preview-popup.ftl" />
+    <property name="url" value="pages/preview-ssl-mixed-mode.ftl" />
     <property name="referenceDataProviders">
       <list>
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="service" ref="previewPopupService" />
+          <property name="modelName" value="preview" />
+          <property name="urlName" value="popupURL" />
+        </bean>
         <ref bean="resourceContextProvider" />
-        <ref bean="resourceDetailProvider" />
       </list>
     </property>
   </bean>

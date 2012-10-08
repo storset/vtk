@@ -14,6 +14,7 @@
         <entry key="displayResource" value-ref="displayResourceView" />
         <entry key="redirectToPublish" value-ref="redirectToPublishView" />
         <entry key="previewViewIframe" value-ref="previewViewIframeView" />
+        <entry key="previewPopup" value-ref="previewPopupView" />
       </map>
     </property>
   </bean>
@@ -120,6 +121,33 @@
 
   <bean id="previewViewIframeView" parent="freemarkerView">
     <property name="url" value="pages/preview-view-iframe.ftl" />
+    <property name="attributesMap">
+      <map>
+        <entry key="visualizeBrokenLinks" value="${preview.visualizeBrokenLinks}" />
+      </map>
+    </property>
+    <property name="referenceDataProviders">
+      <list>
+        <ref bean="viewIframeCSSProvider" />
+        <ref bean="viewIframeJSProvider" />
+        <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="service" ref="linkCheck.validationService" />
+          <property name="modelName" value="linkcheck" />
+          <property name="urlName" value="URL" />
+        </bean>
+        <bean class="org.vortikal.web.referencedata.provider.ResourcePrincipalPermissionsProvider">
+          <property name="modelName" value="permissions_ACTION_READ" />
+          <property name="permission" ref="ACTION_READ" />
+          <property name="anonymous" value="true" />
+        </bean>  
+      </list>
+    </property>
+  </bean>
+
+
+  <bean id="previewPopupView" parent="freemarkerView">
+    <property name="url" value="pages/preview-popup.ftl" />
     <property name="attributesMap">
       <map>
         <entry key="visualizeBrokenLinks" value="${preview.visualizeBrokenLinks}" />

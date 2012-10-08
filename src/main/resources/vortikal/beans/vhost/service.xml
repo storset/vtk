@@ -399,6 +399,29 @@
   </bean>
 
 
+  <bean id="previewPopupService" class="org.vortikal.web.service.ServiceImpl">
+    <property name="parent" ref="viewService" />
+    <property name="order" value="-90" />
+    <property name="assertions">
+      <list>
+        <bean class="org.vortikal.web.service.RequestParameterAssertion">
+          <property name="parameterName" value="vrtx" />
+          <property name="parameterValue" value="preview-popup" />
+        </bean>
+      </list>
+    </property>
+    <property name="handler" ref="previewPopupHandler" />
+  </bean>
+
+  <bean id="previewPopupHandler" parent="abstractPreviewIframe">
+    <property name="viewName" value="previewPopup" />
+    <property name="service" ref="viewService" />
+    <property name="displayWorkingRevision" value="true" />
+    <property name="webProtocol" value="${webProtocol}" />
+    <property name="webProtocolRestricted" value="${webProtocolRestricted}" />
+  </bean>
+
+
   <bean id="displayResourceService" class="org.vortikal.web.service.ServiceImpl">
     <property name="parent" ref="viewService" />
     <property name="order" value="100" />

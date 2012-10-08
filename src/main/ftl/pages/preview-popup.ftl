@@ -15,7 +15,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>${vrtx.getMsg('preview.popup.title')}</title>
+    <title><@vrtx.msg code="preview.popup.title" args=["${(title.title)?default(resourceContext.currentResource.name)}"] /></title>
     <link type="text/css" href="/vrtx/__vrtx/static-resources/themes/default/default.css" rel="stylesheet" />
     <#include "/system/css.ftl"/> 
     <#include "/system/javascript.ftl"/>
@@ -70,7 +70,7 @@
     </script>
   </head>
   <body id="vrtx-preview-popup">
-    <h1>${vrtx.getMsg('preview.popup.title')}</h1>
+    <h1><@vrtx.msg code="preview.popup.title" args=["${(title.title)?default(resourceContext.currentResource.name)}"] /></h1>
 
     <#assign previewRefreshParameter = 'vrtxPreviewForceRefresh' />
     <#assign previewUnpublishedParameter = 'vrtxPreviewUnpublished' />

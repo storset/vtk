@@ -90,11 +90,11 @@
 
     <#if workingCopy?exists>
       <#assign url = url + "&amp;revision=WORKING_COPY" />
-      <div class="vrtx-preview-message-box">Working copy..</div>
+      <div id="vrtx-preview-message-box">Working copy..</div>
     <#else>
       <#assign published = vrtx.propValue(resourceContext.currentResource, "published") />
       <#if !published?exists || !published>
-        <div class="vrtx-preview-message-box">Unpublished..</div>
+        <div id="vrtx-preview-message-box">Unpublished..</div>
       </#if>
     </#if>
 

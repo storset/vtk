@@ -394,8 +394,6 @@
     <property name="viewName" value="previewViewIframe" />
     <property name="service" ref="viewService" />
     <property name="displayWorkingRevision" value="true" />
-    <property name="webProtocol" value="${webProtocol}" />
-    <property name="webProtocolRestricted" value="${webProtocolRestricted}" />
   </bean>
 
 
@@ -417,8 +415,6 @@
     <property name="viewName" value="previewPopup" />
     <property name="service" ref="viewService" />
     <property name="displayWorkingRevision" value="true" />
-    <property name="webProtocol" value="${webProtocol}" />
-    <property name="webProtocolRestricted" value="${webProtocolRestricted}" />
   </bean>
 
 

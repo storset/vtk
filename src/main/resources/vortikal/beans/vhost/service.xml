@@ -406,6 +406,11 @@
           <property name="parameterName" value="vrtx" />
           <property name="parameterValue" value="preview-popup" />
         </bean>
+        <bean parent="abstractResourcePrincipalPermissionAssertion">
+          <property name="requiresAuthentication" value="true" />
+          <property name="considerLocks" value="false" />
+          <property name="permission" ref="ACTION_READ_PROCESSED" />
+        </bean>
       </list>
     </property>
     <property name="handler" ref="previewPopupHandler" />

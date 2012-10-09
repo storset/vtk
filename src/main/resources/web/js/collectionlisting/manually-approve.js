@@ -186,6 +186,7 @@ function retrieveResources(serviceUri, locations, aggregatedlocations) {
           storeInitPropValues();
         }
       } else {
+        $("#manually-approve-container-title").remove();
         if(!approvedOnly) {
           $("#vrtx-manually-approve-tab-menu:visible").addClass("hidden");
         } else {

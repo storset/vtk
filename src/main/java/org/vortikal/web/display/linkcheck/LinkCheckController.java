@@ -123,7 +123,7 @@ public class LinkCheckController implements Controller {
             List<String> urls = new ArrayList<String>();
             while ((line = reader.readLine()) != null) {
                 if (line.length() > 500) {
-                    throw new BadRequestException("Line too long: " + line.length());
+                	continue; // Facebook API link ofter exceeds 500 chars - ignore it
                 }
                 if (++n > 10) {
                     throw new BadRequestException("Too many lines");

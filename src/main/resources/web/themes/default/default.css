@@ -1707,6 +1707,12 @@ body#vrtx-preview-popup iframe#previewViewIframe {
   border: 1px solid #e4e4e4;
 }
 
+body#vrtx-preview-popup #vrtx-preview-popup-iframe-wrapper {
+  border: 1px solid #e4e4e4;
+  overflow: hidden;
+  padding: 19px;
+}
+
 body#vrtx-trash-can #trash-can-empty,
 body#vrtx-manage-collectionlisting #collectionlisting-empty {
   text-align: center;

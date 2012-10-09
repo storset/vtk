@@ -35,11 +35,11 @@
 	  
 	  function linkCheckCompleted(requests, brokenLinks) {
 	    if(brokenLinks > 0) {
-	      $("body").find("#vrtx-link-check-spinner")
+	      $("#vrtx-link-check-spinner")
 	        .html(brokenLinks + ' <@vrtx.msg code="linkcheck.brokenlinks" default=" broken links"/>')
 	        .addClass("vrtx-broken-links");
 	    } else {
-	      $("body").find("#vrtx-link-check-spinner").remove();
+	      $("#vrtx-link-check-spinner").remove();
 	    }
 	  }
 	
@@ -49,7 +49,7 @@
 	        
 	        <#if visualizeBrokenLinks?exists && visualizeBrokenLinks = 'true'> 
 	        
-	        $("body").prepend('<span id="vrtx-link-check-spinner"><@vrtx.msg code="linkcheck.spinner" default="Checking links..."/></span>');
+	        $("#vrtx-preview-popup-iframe-wrapper").prepend('<span id="vrtx-link-check-spinner"><@vrtx.msg code="linkcheck.spinner" default="Checking links..."/></span>');
 	        
 	        var linkCheckURL = '${linkcheck.URL?html}';
 	        var authTarget = '${authTarget}';

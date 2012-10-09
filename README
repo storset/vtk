@@ -1,7 +1,7 @@
 To set up a minimal version of the Vortikal server the following steps
 are necessary:
 
-1. Download and install Maven 2
+1. Download and install Maven 3
    ( http://maven.apache.org/download.html )
 
 2. Create a database using the DDL in the

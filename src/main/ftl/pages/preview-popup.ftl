@@ -54,8 +54,7 @@
 	        var linkCheckURL = '${linkcheck.URL?html}';
 	        var authTarget = '${authTarget}';
 	        var href = location.href;
-	        linkCheckURL = (authTarget === "https" && linkCheckURL.match(/^http:\/\//)) ? linkCheckURL.replace("http://", "https://") : linkCheckURL;
-	        
+	        linkCheckURL = linkCheckURL.match(/^http:\/\//) ? linkCheckURL.replace("http://", "https://") : linkCheckURL;
 	        visualizeBrokenLinks({
 	            selection : 'iframe',
 	            validationURL : linkCheckURL,

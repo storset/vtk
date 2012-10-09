@@ -79,17 +79,17 @@
 
     <#assign url = resourceReference />
     <#if url?contains("?")>
-      <#assign url = url + "&amp;" + previewUnpublishedParameter + "="  + "true" 
-               + "&amp;link-check=" + visualizeBrokenLinks?default('false')
-               + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=" + authTarget />
+      <#assign url = url + "&" + previewUnpublishedParameter + "="  + "true" 
+               + "&link-check=" + visualizeBrokenLinks?default('false')
+               + "&" + previewRefreshParameter + "=" + dateStr + "&authTarget=" + authTarget />
     <#else>
       <#assign url = url + "?" + previewUnpublishedParameter + "=" + "true"
-               + "&amp;link-check=" + visualizeBrokenLinks?default('false')
-               + "&amp;" + previewRefreshParameter + "=" + dateStr + "&amp;authTarget=" + authTarget />
+               + "&link-check=" + visualizeBrokenLinks?default('false')
+               + "&" + previewRefreshParameter + "=" + dateStr + "&authTarget=" + authTarget />
     </#if>
 
     <#if workingCopy?exists>
-      <#assign url = url + "&amp;revision=WORKING_COPY" />
+      <#assign url = url + "&revision=WORKING_COPY" />
       <div id="vrtx-preview-message-box">${vrtx.getMsg('preview.popup.working-copy')}</div>
     <#else>
       <#assign published = vrtx.propValue(resourceContext.currentResource, "published") />

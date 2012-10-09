@@ -48,7 +48,8 @@
     -->
 
     <ul>
-      <li>${vrtx.getMsg('preview.sslMixedContent.desc')}</li>
+      <li>${vrtx.getMsg('preview.sslMixedContent.desc1')}</li>
+      <li>${vrtx.getMsg('preview.sslMixedContent.desc2')}</li>
     </ul>
     <#--a class="vrtx-button" href="${resourceReference?html}" target="vrtx_preview_popup"><span>${vrtx.getMsg('preview.sslMixedContent.open')}</span></a-->
     <a class="vrtx-focus-button" href="${preview.popupURL?html}" target="vrtx_preview_popup"><span>${vrtx.getMsg('preview.sslMixedContent.open')}</span></a-->

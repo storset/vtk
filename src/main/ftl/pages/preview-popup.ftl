@@ -64,12 +64,21 @@
 	        });
 	        </#if>
 	     });
+	     
+	     $(document).on("click", "#vrtx-preview-popup-close", function(e) {
+	       window.close();
+	       e.stopPropagation();
+	       e.preventDefault();
+	     });
 	  });	
 	  //-->
     </script>
   </head>
   <body id="vrtx-preview-popup">
-    <h1><@vrtx.msg code="preview.popup.title" args=["${(title.title)?default(resourceContext.currentResource.name)}"] /></h1>
+    <h1>
+      <@vrtx.msg code="preview.popup.title" args=["${(title.title)?default(resourceContext.currentResource.name)}"] />
+      <span id="vrtx-preview-popup-close"></span>
+    </h1>
 
     <#assign previewRefreshParameter = 'vrtxPreviewForceRefresh' />
     <#assign previewUnpublishedParameter = 'vrtxPreviewUnpublished' />

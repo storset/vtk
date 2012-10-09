@@ -1695,6 +1695,19 @@ body#vrtx-preview-popup h1 {
   background: url("images/line-dotted.gif") repeat-x scroll left bottom transparent;
 }
 
+body#vrtx-preview-popup h1 span#vrtx-preview-popup-close {
+  background: url(images/thickbox-close.png) no-repeat top right;
+  width: 18px;
+  height: 18px;
+  display: block;
+  float: right;
+  margin: 5px 5px 0 0;
+}
+
+body#vrtx-preview-popup h1 span#vrtx-preview-popup-close:hover {
+  cursor: pointer;
+}
+
 #vrtx-preview-message-box {
   background: url("images/message-info-grey-bg.png") no-repeat scroll 14px center #F0F0F0;
   border: 1px solid #e4e4e4;

@@ -84,7 +84,8 @@ public class HtmlDigesterTest {
         String truncated = this.htmlDigester.truncateHtml(html, limit);
         assertNotNull(truncated);
         assertTrue(truncated.length() <= limit);
-        System.out.println(truncated + " " + truncated.length() + " (" + limit + ")");
+        // System.out.println(truncated + " " + truncated.length() + " (" +
+        // limit + ")");
     }
 
 }

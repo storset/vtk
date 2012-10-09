@@ -1682,6 +1682,8 @@ p.previewUnavailableReasons {
   background: url(images/line-dotted.gif) repeat-x 0 2px;
 }
 
+/* Preview popup */
+
 body#vrtx-preview-popup {
   padding: 0 35px 35px 35px;
   text-align: left;
@@ -1728,6 +1730,8 @@ body#vrtx-preview-popup #vrtx-preview-popup-iframe-wrapper {
   overflow: hidden;
   padding: 19px;
 }
+
+/* ^ Preview popup */
 
 body#vrtx-trash-can #trash-can-empty,
 body#vrtx-manage-collectionlisting #collectionlisting-empty {

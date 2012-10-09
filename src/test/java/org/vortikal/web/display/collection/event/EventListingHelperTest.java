@@ -45,6 +45,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Before;
 import org.junit.Test;
+import org.vortikal.testing.mocktypes.MockResourceTypeTree;
 import org.vortikal.web.display.collection.event.EventListingHelper.SpecificDateSearchType;
 
 public class EventListingHelperTest {
@@ -56,6 +57,9 @@ public class EventListingHelperTest {
     @Before
     public void init() throws Exception {
         this.eventListingHelper = new EventListingHelper();
+        this.eventListingHelper.setStartPropDefPointer("resource:start-date");
+        this.eventListingHelper.setEndPropDefPointer("resource:end-date");
+        this.eventListingHelper.setResourceTypeTree(new MockResourceTypeTree());
         this.eventListingHelper.afterPropertiesSet();
         this.mockRequest = this.context.mock(HttpServletRequest.class);
     }

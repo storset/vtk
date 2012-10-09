@@ -1690,9 +1690,10 @@ body#vrtx-preview-popup {
 
 body#vrtx-preview-popup h1 {
   margin: 15px 0 10px 0;
-  padding: 0 0 10px 0;
+  padding: 0 30px 10px 0;
   font-weight: normal;
   background: url("images/line-dotted.gif") repeat-x scroll left bottom transparent;
+  position: relative;
 }
 
 body#vrtx-preview-popup h1 span#vrtx-preview-popup-close {
@@ -1700,8 +1701,9 @@ body#vrtx-preview-popup h1 span#vrtx-preview-popup-close {
   width: 18px;
   height: 18px;
   display: block;
-  float: right;
-  margin: 5px 5px 0 0;
+  position: absolute;
+  bottom: 14px;
+  right: 5px;
 }
 
 body#vrtx-preview-popup h1 span#vrtx-preview-popup-close:hover {

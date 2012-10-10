@@ -34,7 +34,7 @@
   <head>
     <title>${vrtx.getMsg('preview.sslMixedContent.title')}</title>
     <script type="text/javascript">
-      vrtxAdmin.cachedAppContent.on("click", "#vrtx-preview-popup-open", function(e) {
+      $(document).on("click", "#vrtx-preview-popup-open", function(e) {
         var openedPreviewPopup = openRegular(this.href, 1020, 800, "vrtx_preview_popup");
         e.stopPropagation();
         e.preventDefault();

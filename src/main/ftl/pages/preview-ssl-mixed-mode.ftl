@@ -35,7 +35,7 @@
     <title>${vrtx.getMsg('preview.sslMixedContent.title')}</title>
     <script type="text/javascript">
       $(document).on("click", "#vrtx-preview-popup-open", function(e) {
-        var openedPreviewPopup = openRegular(this.href, 1020, 800, "vrtx_preview_popup");
+        var openedPreviewPopup = openRegular(this.href, 1112, 800, "vrtx_preview_popup");
         e.stopPropagation();
         e.preventDefault();
       });

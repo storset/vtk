@@ -82,6 +82,11 @@ p {
   margin: 3px 0 8px 0;
 }
 
+p.larger-p {
+  font-size: 1.077em;
+  margin: 4px 0 11px;
+}
+
 pre {
   font-family: courier;
   line-height: 1.9;
@@ -1719,6 +1724,10 @@ body#vrtx-preview-popup h1 span#vrtx-preview-popup-close:hover {
   font-weight: bold;
   padding: 16px 12px 16px 46px;
   margin: 0 0 20px 0;
+}
+
+#vrtx-preview-popup-open {
+  font-size: 1.154em;
 }
 
 body#vrtx-preview-popup iframe#previewViewIframe {

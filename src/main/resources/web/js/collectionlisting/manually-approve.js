@@ -249,6 +249,7 @@ function generateManuallyApprovedContainer(resources) {
 
   // Update spinner with page generation progress
   $("#approve-spinner").html(approveGeneratingPage + " <span id='approve-spinner-generated-pages'>" + pages + "</span> " + approveOf + " " + totalPages + "...");
+ 
   // Generate rest of pages asynchronous
   asyncGenPagesTimer = setTimeout(function() {
     html += generateTableRowFunc(resources[i]);

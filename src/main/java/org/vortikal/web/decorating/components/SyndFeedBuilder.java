@@ -144,7 +144,10 @@ public class SyndFeedBuilder {
                     if (src != null) {
                         String link = src.getValue();
                         if (link != null) {
-                            src.setValue(base.relativeURL(link).toString());
+                            // Don't resolve protocol-relative URLs:
+                            if (!link.startsWith("//")) {
+                                src.setValue(base.relativeURL(link).toString());
+                            }
                         }
                     }
                 }

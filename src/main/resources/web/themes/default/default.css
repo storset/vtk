@@ -1687,7 +1687,7 @@ p.previewUnavailableReasons {
 body#vrtx-preview-popup {
   padding: 0 35px 35px 35px;
   text-align: left;
-  min-width: 1040px;
+  min-width: 800px;
 }
 
 body#vrtx-preview-popup h1 {

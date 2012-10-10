@@ -54,8 +54,8 @@
     </#if>
     -->
 
-    <p>${vrtx.getMsg('preview.sslMixedContent.desc1')}</p>
-    <p>${vrtx.getMsg('preview.sslMixedContent.desc2')}</p>
+    <p class="larger-p">${vrtx.getMsg('preview.sslMixedContent.desc1')}</p>
+    <p class="larger-p">${vrtx.getMsg('preview.sslMixedContent.desc2')}</p>
     <#--a class="vrtx-button" href="${resourceReference?html}" target="vrtx_preview_popup"><span>${vrtx.getMsg('preview.sslMixedContent.open')}</span></a-->
     <a id="vrtx-preview-popup-open" class="vrtx-focus-button" href="${preview.popupURL?html}" target="vrtx_preview_popup"><span>${vrtx.getMsg('preview.sslMixedContent.open')}</span></a-->
    

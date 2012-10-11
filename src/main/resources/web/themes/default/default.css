@@ -84,6 +84,7 @@ p {
 
 p.larger-p {
   font-size: 1.077em;
+  max-width: 50em;
   margin: 4px 0 11px;
 }
 

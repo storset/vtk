@@ -93,62 +93,56 @@ public class JTidyTransformer implements Filter {
     }
     
     
-    public InputStream transform(InputStream inStream, String characterEncoding) {
-        try {
-            Tidy tidy = new Tidy();
-            
-            // Setting up Tidy (default) output
-            tidy.setTidyMark(tidyMark);
-            tidy.setMakeClean(makeClean);
-            tidy.setSmartIndent(smartIndent);
-            tidy.setShowWarnings(showWarnings);
-            tidy.setXHTML(xhtml);
-            tidy.setDocType(doctype);
-            tidy.setQuiet(quiet);
-            tidy.setInputEncoding(DEFAULT_ENCODING);
-            tidy.setOutputEncoding(DEFAULT_ENCODING);
-            
-            if (null == characterEncoding ) {
-                characterEncoding = DEFAULT_ENCODING;
-            } else if ("null".equals(characterEncoding.toLowerCase()) || "".equals(characterEncoding)) {
-                characterEncoding = DEFAULT_ENCODING;
-            }
-            
-            // Buffer the input stream:
-            byte[] buffer = StreamUtil.readInputStream(inStream);
+    public InputStream transform(InputStream inStream, String characterEncoding) throws Exception {
+        Tidy tidy = new Tidy();
 
-            // Convert stream to utf-8 encoding if necessary:
-            if (!DEFAULT_ENCODING.equals(characterEncoding)) {
-                String s = new String(buffer, characterEncoding);
-                buffer = s.getBytes(DEFAULT_ENCODING);
-            }
-            
-            if ("".equals(new String(buffer, DEFAULT_ENCODING).trim())) {
-                buffer = MINIMAL_DOCUMENT.getBytes(DEFAULT_ENCODING);
-            }
-            
-            InputStream bufferedStream = new ByteArrayInputStream(buffer);
-            tidy.setInputStreamName(bufferedStream.getClass().getName());
-            Document document = tidy.parseDOM(bufferedStream, null);
-            
-            // Handle (re)setting of doctype and encoding meta-tag
-            alterContentTypeMetaElement(document);
-            
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            tidy.pprint(document, outputStream);
-            
-            byte[] byteArrayBuffer = outputStream.toByteArray();
-            ByteArrayInputStream bais = new ByteArrayInputStream(byteArrayBuffer);
-            
-            outputStream.close();
-            bais.reset(); // must reset buffer pointer to [0]
+        // Setting up Tidy (default) output
+        tidy.setTidyMark(tidyMark);
+        tidy.setMakeClean(makeClean);
+        tidy.setSmartIndent(smartIndent);
+        tidy.setShowWarnings(showWarnings);
+        tidy.setXHTML(xhtml);
+        tidy.setDocType(doctype);
+        tidy.setQuiet(quiet);
+        tidy.setInputEncoding(DEFAULT_ENCODING);
+        tidy.setOutputEncoding(DEFAULT_ENCODING);
 
-            return bais;
-
-        } catch (IOException e) {
-            logger.error("Caught exception", e);
-            return new ByteArrayInputStream(null);
+        if (null == characterEncoding ) {
+            characterEncoding = DEFAULT_ENCODING;
+        } else if ("null".equals(characterEncoding.toLowerCase()) || "".equals(characterEncoding)) {
+            characterEncoding = DEFAULT_ENCODING;
         }
+
+        // Buffer the input stream:
+        byte[] buffer = StreamUtil.readInputStream(inStream);
+
+        // Convert stream to utf-8 encoding if necessary:
+        if (!DEFAULT_ENCODING.equals(characterEncoding)) {
+            String s = new String(buffer, characterEncoding);
+            buffer = s.getBytes(DEFAULT_ENCODING);
+        }
+
+        if ("".equals(new String(buffer, DEFAULT_ENCODING).trim())) {
+            buffer = MINIMAL_DOCUMENT.getBytes(DEFAULT_ENCODING);
+        }
+
+        InputStream bufferedStream = new ByteArrayInputStream(buffer);
+        tidy.setInputStreamName(bufferedStream.getClass().getName());
+        Document document = tidy.parseDOM(bufferedStream, null);
+
+        // Handle (re)setting of doctype and encoding meta-tag
+        alterContentTypeMetaElement(document);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        tidy.pprint(document, outputStream);
+
+        byte[] byteArrayBuffer = outputStream.toByteArray();
+        ByteArrayInputStream bais = new ByteArrayInputStream(byteArrayBuffer);
+
+        outputStream.close();
+        bais.reset(); // must reset buffer pointer to [0]
+
+        return bais;
     }
     
     

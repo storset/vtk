@@ -365,6 +365,7 @@
         <entry key="Facebook" value="http://www.facebook.com/sharer/sharer.php?s=100&amp;amp;p[url]=%{url}&amp;amp;p[title]=%{title}&amp;amp;p[summary]=%{introduction}&amp;amp;p[images][0]=%{picture}" />
       </map>
     </property>
+    <property name="viewService" ref="viewService" />
   </bean>
 
   <bean id="decorating.resourcePropertyComponent" class="org.vortikal.web.decorating.components.ResourcePropertiesDecoratorComponent">

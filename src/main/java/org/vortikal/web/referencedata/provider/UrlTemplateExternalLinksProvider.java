@@ -196,8 +196,9 @@ public class UrlTemplateExternalLinksProvider {
         public String render(RenderContext ctx) {
             String retVal = "";
             Property prop = ctx.resource.getPropertyByPrefix(this.prefix, this.name);
-            if (prop == null)
+            if (prop == null) {
                 prop = ctx.resource.getPropertyByPrefix("resource", this.name); // Try structured namespace
+            }
             if (prop != null) {
                 PropertyTypeDefinition def = prop.getDefinition();
                 if (def != null) {
@@ -205,15 +206,19 @@ public class UrlTemplateExternalLinksProvider {
                         retVal = prop.getFormattedValue("flattened", null);
                     } else {
                         retVal = prop.getFormattedValue();
+                        if (!retVal.isEmpty() && def.getType() == PropertyType.Type.IMAGE_REF) { // Construct absolute URLs
+                            try {
+                                if (retVal.startsWith("/")) {
+                                    retVal = viewService.constructLink(Path.fromString(retVal));
+                                } else {
+                                    Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
+                                    retVal = currentCollection.expand(retVal).toString();
+                                }
+                            } catch (Exception iae) {
+                                retVal = "";
+                            }
+                        }
                     }
-                }
-            }
-
-            if (!retVal.isEmpty() && this.name.equals("picture")) { // Construct absolute URLs
-                try {
-                    retVal = viewService.constructLink(Path.fromString(retVal));
-                } catch (IllegalArgumentException iae) {
-                    retVal = "";
                 }
             }
             return retVal;

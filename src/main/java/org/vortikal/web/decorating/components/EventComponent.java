@@ -299,7 +299,7 @@ public class EventComponent extends AbstractEventComponent {
     }
 
     /* Class to keep date and PropertySet so start date can be incremented */
-    public class PropertySetTmp {
+    public static class PropertySetTmp {
 
         private PropertySet propertySet;
         private Calendar startDate;
@@ -341,7 +341,7 @@ public class EventComponent extends AbstractEventComponent {
      * Class to keep date and showTime for each day an event occupies. Only used
      * if not listOnlyOnce is set.
      */
-    public class PropertySetDate {
+    public static class PropertySetDate {
 
         private PropertySet propertySet;
         private Date date;

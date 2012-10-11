@@ -62,8 +62,7 @@ public class DoxiaHtmlView implements View {
         return this.contentType + ";charset=" + this.characterEncoding;
     }
 
-    @SuppressWarnings("unchecked")
-    public void render(Map model, HttpServletRequest request,
+    public void render(Map<String, ?> model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
     	String title = null;
@@ -117,7 +116,7 @@ public class DoxiaHtmlView implements View {
         this.characterEncoding = characterEncoding;
     }
 
-    private class InsertHeaderSink extends XhtmlSink {
+    private static class InsertHeaderSink extends XhtmlSink {
     	private String title;
     	private boolean wroteTitle = false;
     	

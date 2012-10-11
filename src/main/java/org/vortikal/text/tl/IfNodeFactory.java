@@ -101,7 +101,7 @@ public class IfNodeFactory implements DirectiveNodeFactory {
         return new IfNode(expressions);
     }
 
-    private class IfNode extends Node {
+    private static class IfNode extends Node {
         private LinkedHashMap<Expression, NodeList> branches;
 
         public IfNode(LinkedHashMap<Expression, NodeList> branches) {

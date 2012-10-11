@@ -360,7 +360,7 @@ public class ResourceXsltView extends AbstractView
     }
     
 
-    private class ErrorListener implements javax.xml.transform.ErrorListener {
+    private static class ErrorListener implements javax.xml.transform.ErrorListener {
         TransformerException error = null;
         
         public void error(TransformerException e) {

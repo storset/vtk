@@ -276,7 +276,7 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
     }
 
     @SuppressWarnings("serial")
-    class MissingPublishedDateException extends RuntimeException {
+    static class MissingPublishedDateException extends RuntimeException {
         private SyndEntry entry;
 
         public MissingPublishedDateException(String message) {
@@ -348,7 +348,7 @@ public class AggregatedFeedsComponent extends AbstractFeedComponent {
         return map;
     }
 
-    public class FeedMapping {
+    public static class FeedMapping {
         Map<SyndEntry, SyndFeed> feedMapping = new HashMap<SyndEntry, SyndFeed>();
 
         public FeedMapping(Map<SyndEntry, SyndFeed> feedMapping) {

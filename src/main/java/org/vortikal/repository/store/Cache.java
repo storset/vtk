@@ -587,7 +587,7 @@ public class Cache implements DataAccessor, InitializingBean {
         this.items.dump(out);
     }
 
-    private class Item {
+    private static class Item {
         Item older = null;
         Item newer = null;
         final ResourceImpl resource;

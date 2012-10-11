@@ -109,7 +109,7 @@ public class ParsedHtmlDecoratorTemplate implements Template {
         return new Execution(this.compiledTemplate, this.componentResolver, html, request, model);
     }
 
-    public class Execution implements TemplateExecution {
+    public static class Execution implements TemplateExecution {
 
         private CompiledTemplate compiledTemplate;
         private ComponentResolver componentResolver;

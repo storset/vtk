@@ -1400,7 +1400,7 @@ public class SqlMapDataAccessor extends AbstractSqlMapDataAccessor implements Da
     }
 
     @SuppressWarnings("serial")
-    private class AclHolder extends HashMap<Privilege, Set<Principal>> {
+    private static class AclHolder extends HashMap<Privilege, Set<Principal>> {
 
         public void addEntry(Privilege action, Principal principal) {
             Set<Principal> set = this.get(action);

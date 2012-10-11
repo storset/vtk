@@ -156,7 +156,7 @@ public class UrlTemplateExternalLinksProvider {
         return new UrlEncodingWrapper(node);
     }
 
-    private class RenderContext {
+    private static class RenderContext {
         Resource resource;
         Principal principal;
         Service service;
@@ -166,7 +166,7 @@ public class UrlTemplateExternalLinksProvider {
         String render(RenderContext ctx);
     }
 
-    private class StaticEncodedText implements TemplateNode {
+    private static class StaticEncodedText implements TemplateNode {
         private String text;
 
         StaticEncodedText(String text) {
@@ -178,7 +178,7 @@ public class UrlTemplateExternalLinksProvider {
         }
     }
 
-    private class ServiceUrl implements TemplateNode {
+    private static class ServiceUrl implements TemplateNode {
         public String render(RenderContext ctx) {
             return ctx.service.constructLink(ctx.resource, ctx.principal);
         }
@@ -220,7 +220,7 @@ public class UrlTemplateExternalLinksProvider {
         }
     }
 
-    private class UrlEncodingWrapper implements TemplateNode {
+    private static class UrlEncodingWrapper implements TemplateNode {
         private TemplateNode wrappedNode;
 
         UrlEncodingWrapper(TemplateNode wrapped) {

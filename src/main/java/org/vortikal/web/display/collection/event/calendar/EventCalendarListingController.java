@@ -280,7 +280,7 @@ public class EventCalendarListingController extends EventListingController {
         this.publishDatePropDef = publishDatePropDef;
     }
 
-    public class GroupedEvents {
+    public static class GroupedEvents {
 
         private Date day;
         private Listing events;

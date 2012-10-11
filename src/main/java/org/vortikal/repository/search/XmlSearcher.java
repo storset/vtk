@@ -326,7 +326,7 @@ public class XmlSearcher {
     }
     
 
-    private class Formats {
+    private static class Formats {
 
         private Map<PropertyTypeDefinition, Set<String>> formats = 
             new HashMap<PropertyTypeDefinition, Set<String>>();

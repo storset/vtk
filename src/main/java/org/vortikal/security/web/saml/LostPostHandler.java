@@ -200,7 +200,7 @@ public class LostPostHandler implements Controller {
         return cookie;
     }
     
-    private class Config {
+    private static class Config {
         File baseDir;
         int maxEntries;
         Config(File baseDir, int maxEntries) {

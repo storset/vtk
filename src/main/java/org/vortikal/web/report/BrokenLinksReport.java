@@ -360,7 +360,7 @@ public class BrokenLinksReport extends DocumentReporter {
         }
     }
 
-    public class FilterOption {
+    public static class FilterOption {
         private String name;
         private URL url;
         private boolean active;

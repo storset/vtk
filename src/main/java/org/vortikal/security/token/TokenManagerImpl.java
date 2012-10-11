@@ -157,7 +157,7 @@ public class TokenManagerImpl implements TokenManager, InitializingBean {
     /**
      * Class holding (Principal, AuthenticationHandler) pairs.
      */
-    private class PrincipalItem {
+    private static class PrincipalItem {
         private Principal principal = null;
         private AuthenticationHandler authenticationHandler = null;
 

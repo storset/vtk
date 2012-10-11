@@ -84,7 +84,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
     private LocaleResolver localeResolver = null;
     private long maxDocumentSize = -1;
 
-    private class RegexpCacheItem {
+    private static class RegexpCacheItem {
         String string;
         Pattern compiled;
     }
@@ -446,7 +446,7 @@ public class ConfigurableDecorationResolver implements DecorationResolver, Initi
         return result;
     }
     
-    private class InternalDescriptor implements DecorationDescriptor {
+    private static class InternalDescriptor implements DecorationDescriptor {
         private boolean tidy = false;
         private boolean parse = true;
         private List<Template> templates = new ArrayList<Template>();

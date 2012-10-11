@@ -94,7 +94,7 @@ public class ListNodeFactory implements DirectiveNodeFactory {
         return new ListNode(expression, (Symbol) last, nodeList);
     }
 
-    private class ListNode extends Node {
+    private static class ListNode extends Node {
         private Expression expression;
         private Symbol defVar;
         private NodeList nodeList;

@@ -357,7 +357,7 @@ public class VShell extends AbstractConsole {
         return result;
     }
 
-    private class QuitCommand implements VCommand {
+    private static class QuitCommand implements VCommand {
         public String getDescription() {
             return "Quit VShell session";
         }
@@ -429,7 +429,7 @@ public class VShell extends AbstractConsole {
 
     }
 
-    private class PathNode {
+    private static class PathNode {
 
         private String name;
         private Set<PathNode> children = new HashSet<PathNode>();
@@ -484,7 +484,7 @@ public class VShell extends AbstractConsole {
         }
     }
     
-    private class ParamNode {
+    private static class ParamNode {
         private String name;
         private String type = "string";
         private boolean rest = false;

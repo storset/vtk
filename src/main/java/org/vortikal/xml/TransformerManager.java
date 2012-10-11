@@ -276,7 +276,7 @@ public class TransformerManager implements InitializingBean {
     
 
 
-    private class ChainedURIResolver implements URIResolver {
+    private static class ChainedURIResolver implements URIResolver {
         private URIResolver[] chain = null;
 
         public ChainedURIResolver(URIResolver[] chain) {
@@ -315,7 +315,7 @@ public class TransformerManager implements InitializingBean {
         
     }
 
-    private class ThrottledTransformer extends Transformer {
+    private static class ThrottledTransformer extends Transformer {
         private Transformer transformer;
         private TransformationThrottle throttle;
 

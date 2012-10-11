@@ -53,7 +53,7 @@ public class StripNodeFactory implements DirectiveNodeFactory {
         return new StripNode(nodeList);
     }
     
-    private class StripNode extends Node {
+    private static class StripNode extends Node {
         private NodeList nodeList;
         
         public StripNode(NodeList nodeList) {

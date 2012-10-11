@@ -182,7 +182,7 @@ public class ReportHandler implements Controller {
         this.viewName = viewName;
     }
 
-    public class ReporterObject {
+    public static class ReporterObject {
 
         private String name;
         private URL url;

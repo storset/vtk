@@ -316,7 +316,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements Han
         }
     }
 
-    private class MultipartWrapper extends HttpServletRequestWrapper {
+    private static class MultipartWrapper extends HttpServletRequestWrapper {
         private HttpServletRequest request;
         private File tempFile;
         private File tempDir;

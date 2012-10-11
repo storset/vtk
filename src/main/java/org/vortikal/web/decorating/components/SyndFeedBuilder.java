@@ -123,7 +123,7 @@ public class SyndFeedBuilder {
         }
     }
 
-    private class ImageFilter implements HtmlPageFilter {
+    private static class ImageFilter implements HtmlPageFilter {
         private URL base;
 
         public ImageFilter(URL base) {

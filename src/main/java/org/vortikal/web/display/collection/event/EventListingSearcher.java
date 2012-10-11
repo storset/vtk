@@ -75,7 +75,7 @@ public class EventListingSearcher {
         this.specificDateEventSearchComponent = specificDateEventSearchComponent;
     }
 
-    public class GroupedEvents {
+    public static class GroupedEvents {
 
         private Date day;
         private Listing events;

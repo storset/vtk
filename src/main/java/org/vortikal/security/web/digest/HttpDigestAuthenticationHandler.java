@@ -454,7 +454,7 @@ public class HttpDigestAuthenticationHandler
 
 
     @SuppressWarnings("unused")
-    private class StateEntry {
+    private static class StateEntry {
         private String username;
         private Date timestamp;
         private String nonce;

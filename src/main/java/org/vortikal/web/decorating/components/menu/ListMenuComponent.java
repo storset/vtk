@@ -497,7 +497,7 @@ public class ListMenuComponent extends ViewRenderingDecoratorComponent {
         return item;
     }
 
-    private class ListMenuRequest {
+    private static class ListMenuRequest {
 
         private Path uri;
         private int displayFromLevel = -1;

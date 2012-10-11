@@ -49,7 +49,7 @@ public class CommentNodeFactory implements DirectiveNodeFactory {
         return new CommentNode();
     }
 
-    private class CommentNode extends Node {
+    private static class CommentNode extends Node {
         public boolean render(Context ctx, Writer out) throws Exception {
             return true;
         }

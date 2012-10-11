@@ -172,7 +172,7 @@ public class PathMappingConfig {
     }
 
         
-    private class Node {
+    private static class Node {
         private Map<String, Node> children = new HashMap<String, Node>();
         private List<ConfigEntry> entries = null;
         
@@ -204,7 +204,7 @@ public class PathMappingConfig {
         return result.toString();
     }
 
-    public class ConfigEntry {
+    public static class ConfigEntry {
         private List<Predicate> predicates;
         private String value;
         private boolean exact;
@@ -236,7 +236,7 @@ public class PathMappingConfig {
         }
     }
     
-    public class Predicate {
+    public static class Predicate {
         private String name;
         private String value;
 

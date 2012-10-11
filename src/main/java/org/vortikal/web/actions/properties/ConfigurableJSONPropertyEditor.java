@@ -196,7 +196,7 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
     }
     
     
-    public class Form extends UpdateCancelCommand {
+    public static class Form extends UpdateCancelCommand {
         private String configError = null;
         private List<FormElement> elements;
         
@@ -226,7 +226,7 @@ public class ConfigurableJSONPropertyEditor extends SimpleFormController {
         }
     }
     
-    public class FormElement {
+    public static class FormElement {
         private PropertyAspectField desc;
         private Locale locale;
         private Object value;

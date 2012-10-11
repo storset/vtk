@@ -13,7 +13,7 @@
 <#import "/spring.ftl" as spring />
 <#import "/lib/vortikal.ftl" as vrtx />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="vrtx-preview-popup">
   <head>
     <title><@vrtx.msg code="preview.popup.title" args=["${(title.title)?default(resourceContext.currentResource.name)}"] /></title>
     <link type="text/css" href="/vrtx/__vrtx/static-resources/themes/default/default.css" rel="stylesheet" />
@@ -74,7 +74,7 @@
 	  //-->
     </script>
   </head>
-  <body id="vrtx-preview-popup">
+  <body>
     <h1>
       <@vrtx.msg code="preview.popup.title" args=["${(title.title)?default(resourceContext.currentResource.name)}"] />
       <span id="vrtx-preview-popup-close"></span>

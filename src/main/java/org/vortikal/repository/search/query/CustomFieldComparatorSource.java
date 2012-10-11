@@ -83,7 +83,6 @@ public class CustomFieldComparatorSource extends FieldComparatorSource {
             private final String[] values = new String[numHits];
             private String[] currentReaderValues;
             private final String field = fieldname;
-            final Collator collator = this.collator;
             private String bottom;
 
             @Override

@@ -1727,7 +1727,8 @@ body#vrtx-preview-popup h1 span#vrtx-preview-popup-close:hover {
 }
 
 #vrtx-preview-popup-open {
-  margin: 5px 0;
+  margin-top: 5px !important;
+  margin-bottom: 5px !important;
 }
 
 body#vrtx-preview-popup iframe#previewViewIframe {

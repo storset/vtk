@@ -23,6 +23,9 @@
   <#if val?matches(".*style.*")>
     <#return true />
   </#if>
+  <#if val?matches("script:.*")>
+    <#return true />
+  </#if>
   <#if val?matches("element:ssi:include:feed.*") && val?matches(".*item-picture=\\[true\\].*") && val?matches(".*url=\\[http:.*")>
     <#return true />
   </#if>
@@ -60,18 +63,17 @@
     <a id="vrtx-preview-popup-open" class="vrtx-focus-button" href="${preview.popupURL?html}" target="vrtx_preview_popup"><span>${vrtx.getMsg('preview.sslMixedContent.open')}</span></a-->
    
    
-    <#if (prop.values?length > 1)>
+    <#assign prop = vrtx.getProp(resourceContext.currentResource, 'sslMixedMode') />
+    <#if (prop.values?size &gt; 1)>
       <p class="previewUnavailableReasons"><strong>${vrtx.getMsg('preview.sslMixedContent.reasons.desc')}</strong></p>
     <#else>
       <p class="previewUnavailableReasons"><strong>${vrtx.getMsg('preview.sslMixedContent.reason.desc')}</strong></p>
     </#if>
     
-    <#assign prop = vrtx.getProp(resourceContext.currentResource, 'sslMixedMode') />
     <ul>
     <#list prop.values as v>
       <#assign val = v?string />
       <#if filter_reason(val)>
-
       <#if val?starts_with("img:")>
         <li><@vrtx.msg code="preview.sslMixedContent.reasons.img"  args=[val?substring("img:"?length, val?length)?html] /></li>
 
@@ -113,8 +115,11 @@
       <#elseif val?starts_with("element:style")>
         <li><@vrtx.msg code="preview.sslMixedContent.reasons.style" /></li>
 
+      <#elseif val?starts_with("script:")>
+        <li><@vrtx.msg code="preview.sslMixedContent.reasons.script" args=[val?substring("script:"?length, val?length)?html] /></li>
+
       <#elseif val?starts_with("element:script")>
-        <li><@vrtx.msg code="preview.sslMixedContent.reasons.script" /></li>
+        <li><@vrtx.msg code="preview.sslMixedContent.reasons.localscript" /></li>
 
       <#elseif val?starts_with("element:esi:include")>
         <li><@vrtx.msg code="preview.sslMixedContent.reasons.esi"  args=[val?substring("element:esi:include"?length, val?length)?html] /></li>

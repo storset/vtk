@@ -14,8 +14,8 @@ body#vrtx-preview-popup #vrtx-preview-popup-iframe-wrapper {
 }
 
 body#vrtx-preview-popup #vrtx-link-check-spinner {
-  top: 20px;
-  right: 18px;
+  top: 0px;
+  right: -2px;
   font-size: 0.923em;
 }
 

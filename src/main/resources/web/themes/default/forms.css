@@ -69,6 +69,11 @@ input[type=text]:focus {
   text-decoration: none !important;
 }
 
+.vrtx-focus-button-large {
+  height: 55px;
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-large-blue-left.png) no-repeat 0 0;
+}
+
 .ui-dialog .ui-dialog-buttonpane button {
   height: 28px;
 }
@@ -167,6 +172,12 @@ input[type=text]:focus {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-right.gif) no-repeat top right;
 }
 
+.vrtx-focus-button-large span {
+  height: 55px;
+  padding: 0 60px 0 13px;
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-large-blue-right.png) no-repeat top right;
+}
+
 .vrtx-button-small span,
 .vrtx-button-small input,
 .vrtx-button-small button {
@@ -191,6 +202,11 @@ input[type=text]:focus {
 .vrtx-focus-button:hover,
 .vrtx-focus-button.hover {
   background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-left-rollover.gif);
+}
+
+.vrtx-focus-button-large:hover,
+.vrtx-focus-button-large.hover {
+  background-image: url(/vrtx/__vrtx/static-resources/themes/default/images/button-large-blue-left-rollover.png);
 }
 
 .vrtx-button-small:hover,
@@ -229,6 +245,11 @@ input[type=text]:focus {
 .vrtx-focus-button.hover input,
 .vrtx-focus-button.hover button {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/focus-button-right-rollover.gif) no-repeat top right;
+}
+
+.vrtx-focus-button-large:hover span,
+.vrtx-focus-button-large.hover span {
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-large-blue-right-rollover.png) no-repeat top right;
 }
 
 .vrtx-button-small:hover span,

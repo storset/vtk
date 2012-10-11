@@ -9,11 +9,11 @@
   font-size: 0.75em; 
 }
 
-body#vrtx-preview-popup #vrtx-preview-popup-iframe-wrapper {
+html#vrtx-preview-popup #vrtx-preview-popup-iframe-wrapper {
   position: relative;
 }
 
-body#vrtx-preview-popup #vrtx-link-check-spinner {
+html#vrtx-preview-popup #vrtx-link-check-spinner {
   top: 0px;
   right: -2px;
   font-size: 0.923em;

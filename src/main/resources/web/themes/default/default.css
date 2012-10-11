@@ -1689,13 +1689,18 @@ p.previewUnavailableReasons {
 
 /* Preview popup */
 
-body#vrtx-preview-popup {
+html#vrtx-preview-popup,
+html#vrtx-preview-popup body {
+  background-color: #fff !important;
+}
+
+html#vrtx-preview-popup body {
   padding: 0 35px 35px 35px;
   text-align: left;
   min-width: 760px;
 }
 
-body#vrtx-preview-popup h1 {
+html#vrtx-preview-popup h1 {
   margin: 15px 0 10px 0;
   padding: 0 30px 10px 0;
   font-weight: normal;
@@ -1703,7 +1708,7 @@ body#vrtx-preview-popup h1 {
   position: relative;
 }
 
-body#vrtx-preview-popup h1 span#vrtx-preview-popup-close {
+html#vrtx-preview-popup h1 span#vrtx-preview-popup-close {
   background: url(images/thickbox-close.png) no-repeat top right;
   width: 18px;
   height: 18px;
@@ -1713,7 +1718,7 @@ body#vrtx-preview-popup h1 span#vrtx-preview-popup-close {
   right: 5px;
 }
 
-body#vrtx-preview-popup h1 span#vrtx-preview-popup-close:hover {
+html#vrtx-preview-popup h1 span#vrtx-preview-popup-close:hover {
   cursor: pointer;
 }
 
@@ -1731,7 +1736,7 @@ body#vrtx-preview-popup h1 span#vrtx-preview-popup-close:hover {
   margin-bottom: 5px !important;
 }
 
-body#vrtx-preview-popup iframe#previewViewIframe {
+html#vrtx-preview-popup iframe#previewViewIframe {
   border: 1px solid #e4e4e4;
 }
 

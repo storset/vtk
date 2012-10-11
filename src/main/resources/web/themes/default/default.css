@@ -1727,7 +1727,7 @@ body#vrtx-preview-popup h1 span#vrtx-preview-popup-close:hover {
 }
 
 #vrtx-preview-popup-open {
-  font-size: 1.154em;
+  margin: 5px 0;
 }
 
 body#vrtx-preview-popup iframe#previewViewIframe {

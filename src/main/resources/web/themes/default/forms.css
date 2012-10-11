@@ -74,7 +74,6 @@ input[type=text]:focus {
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-large-blue-left.png) no-repeat 0 0 !important;
   font-size: 1.15em !important;
   font-weight: bold !important;
-  margin: 0 0 0 5px !important;
 }
 
 .ui-dialog .ui-dialog-buttonpane button {
@@ -179,6 +178,7 @@ input[type=text]:focus {
   height: 38px !important;
   padding: 17px 60px 0 13px !important;
   background: url(/vrtx/__vrtx/static-resources/themes/default/images/button-large-blue-right.png) no-repeat top right !important;
+  margin-left: 5px !important;
 }
 
 .vrtx-button-small span,

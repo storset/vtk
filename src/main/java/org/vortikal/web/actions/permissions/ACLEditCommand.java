@@ -52,7 +52,7 @@ public class ACLEditCommand extends UpdateCancelCommand {
     private String userNames[] = new String[0];
     private String groupNames[] = new String[0];
     private String shortcuts[][] = new String[0][0];
-    private String updatedShortcut = new String();
+    private String updatedShortcut = "";
 
     private String saveAction = null;
     

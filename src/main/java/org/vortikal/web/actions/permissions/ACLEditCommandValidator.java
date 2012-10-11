@@ -97,10 +97,10 @@ public class ACLEditCommandValidator implements Validator {
     private void validateGroupNames(ACLEditCommand editCommand, Errors errors) {
         String[] groupNames = editCommand.getGroupNames();
         if (groupNames.length > 0) {
-            this.notFound = new String();
-            this.illegalBlacklisted = new String();
-            this.illegal = new String();
-            this.tooManyMatchedUsers = new String();
+            this.notFound = "";
+            this.illegalBlacklisted = "";
+            this.illegal = "";
+            this.tooManyMatchedUsers = "";
 
             for (String groupName : groupNames) {
                 if (!validateGroupOrUserName(Type.GROUP, groupName, editCommand)) {

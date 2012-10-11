@@ -226,7 +226,7 @@ public class ACLProvider implements ReferenceDataProvider {
 
         aclModel.put("aclEditURLs", editURLs);
         aclModel.put("privileges", privileges);
-        aclModel.put("inherited", new Boolean(resource.isInheritedAcl()));
+        aclModel.put("inherited", resource.isInheritedAcl());
         aclModel.put("privilegedGroups", privilegedGroups);
         aclModel.put("privilegedUsers", privilegedUsers);
         aclModel.put("privilegedPseudoPrincipals", privilegedPseudoPrincipals);

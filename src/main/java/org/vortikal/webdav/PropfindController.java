@@ -236,7 +236,7 @@ public class PropfindController extends AbstractWebdavController {
                                         || "prop".equals(propTypeName));
 
         model.put(WebdavConstants.WEBDAVMODEL_REQUESTED_PROPERTIES_APPEND_VALUES,
-                  new Boolean(appendPropertyValues));
+                  appendPropertyValues);
         
         return model;
     }

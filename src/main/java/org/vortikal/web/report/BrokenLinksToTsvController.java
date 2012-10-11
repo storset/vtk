@@ -117,8 +117,8 @@ public class BrokenLinksToTsvController implements Controller {
                     title = titleProp.getFormattedValue();
                     uri = ps.getURI().toString();
                     obj = (JSONObject) map.get(uri);
-                    brokenLinks = (ArrayList<Map<String, Object>>) obj.get("brokenLinks");
                     if (obj != null) {
+                        brokenLinks = (ArrayList<Map<String, Object>>) obj.get("brokenLinks");
                         out.print(title.replaceAll("[\\n\\r\\t]", "") + "\t" + uri + "\t" + brokenLinks.size() + "\n");
                     }
                 }

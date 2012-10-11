@@ -107,13 +107,11 @@
       </#if>
     </#if>
 
-    <div id="vrtx-preview-popup-iframe-wrapper">
-      <iframe class="previewView" name="previewViewIframe" id="previewViewIframe" src="${url?html}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">
-        [Your user agent does not support frames or is currently configured
-        not to display frames. However, you may visit
-        <a href="${url?html}">the related document.</a>]
-      </iframe>
-    </div>
+    <iframe class="previewView" name="previewViewIframe" id="previewViewIframe" src="${url?html}" marginwidth="0" marginheight="0" scrolling="auto" frameborder="0" style="overflow:visible; width:100%; ">
+      [Your user agent does not support frames or is currently configured
+      not to display frames. However, you may visit
+      <a href="${url?html}">the related document.</a>]
+    </iframe>
 
   </body>
 </html>

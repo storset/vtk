@@ -1692,7 +1692,7 @@ p.previewUnavailableReasons {
 body#vrtx-preview-popup {
   padding: 0 35px 35px 35px;
   text-align: left;
-  min-width: 800px;
+  min-width: 760px;
 }
 
 body#vrtx-preview-popup h1 {
@@ -1732,12 +1732,6 @@ body#vrtx-preview-popup h1 span#vrtx-preview-popup-close:hover {
 
 body#vrtx-preview-popup iframe#previewViewIframe {
   border: 1px solid #e4e4e4;
-}
-
-body#vrtx-preview-popup #vrtx-preview-popup-iframe-wrapper {
-  border: 1px solid #e4e4e4;
-  overflow: hidden;
-  padding: 19px;
 }
 
 /* ^ Preview popup */

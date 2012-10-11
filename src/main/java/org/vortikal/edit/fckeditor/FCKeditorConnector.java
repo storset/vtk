@@ -228,6 +228,11 @@ public class FCKeditorConnector implements Controller {
                     break;
                 }
             }
+            if (uploadItem == null) {
+                model.put("error", 1);
+                model.put("customMessage", "No file uploaded");
+                return new ModelAndView(this.uploadStatusViewName, model);
+            }
             String name = cleanupFileName(uploadItem.getName());
             Path uri = command.getCurrentFolder().extend(fixUploadName(name));
             boolean existed = false;

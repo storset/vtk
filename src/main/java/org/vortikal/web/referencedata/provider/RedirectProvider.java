@@ -93,9 +93,7 @@ public class RedirectProvider implements InitializingBean, ReferenceDataProvider
         Principal principal = requestContext.getPrincipal();
 
         Resource resource = null;
-        if (model != null) {
-            resource = (Resource) model.get("resource");
-        }
+        resource = (Resource) model.get("resource");
 
         if (resource == null) {
             Repository repository = requestContext.getRepository();

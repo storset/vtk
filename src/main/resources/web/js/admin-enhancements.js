@@ -152,7 +152,7 @@ vrtxAdmin._$(window).load(function() {
   }
   
   // When AJAX is turned of because of http->https we need to ensure form is in the right place
-  var formResourceMenu = _$("#title-container:last-child").hasClass("expandedForm");
+  var formResourceMenu = _$("#title-container:last").hasClass("expandedForm");
   if(!formResourceMenu) {
     var expandedForm = _$("#title-container .expandedForm").remove();
     _$("#title-container").append(expandedForm);
@@ -291,12 +291,12 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.getFormAsync({
     selector: "#title-container a#manage\\.unlockFormService",
     selectorClass: "globalmenu",
-    insertAfterOrReplaceClass: "#resource-title > ul:last-child",
+    insertAfterOrReplaceClass: "#resource-title > ul:last",
     nodeType: "div",
     simultanSliding: true
   });
   vrtxAdm.completeFormAsync({
-    selector: "form#a#manage\\.unlockFormService-form input[type=submit]"
+    selector: "form a#manage\\.unlockFormService-form input[type=submit]"
   });
 
   switch(bodyId) {

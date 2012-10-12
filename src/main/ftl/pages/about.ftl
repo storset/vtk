@@ -180,7 +180,18 @@
                propName = "contentLength"
                name = vrtx.getMsg("property.contentLength", "Size")
                value = size />
-    </#if>
+        <!-- Archive in document -->
+        <#if resourceDetail.inheritedFrom?exists>
+          <@propList.defaultPropertyDisplay propName = "archived" name = vrtx.getMsg("property.archived") value = vrtx.getMsg("property.archived.inheritedFrom") + ' ' + resourceDetail.inheritedFrom />
+        </#if>
+      <#else>
+        <!-- Archive in collection -->
+        <#if resourceDetail.inheritedFrom?exists>
+          <@propList.defaultPropertyDisplay propName = "archived" name = vrtx.getMsg("property.archived") value = vrtx.getMsg("property.archived.inheritedFrom") + ' ' + resourceDetail.inheritedFrom />
+        <#else>
+          <@propList.editOrDisplayProperty modelName = 'aboutItems' propertyName = 'archived' displayMacro = 'archivedPropertyDisplay' />
+        </#if>
+      </#if>
   </table>
 
   <#if urchinStats?exists>
@@ -310,6 +321,28 @@
 </#macro>
 
 <#macro commentsEnabledPropertyDisplay propName name value prefix=false editURL="">
+  <tr class="prop-${propName}">
+    <td class="key">
+      ${name}:
+    </td>
+    <td class="value">
+      <#if prefix?is_string>
+        ${prefix}
+      </#if>
+      ${value?trim}
+      <#compress>
+      <#if .vars['aboutItems'][propName].property?exists && .vars['aboutItems'][propName].property.inherited>
+         &nbsp;(<@vrtx.msg "resource.property.inherited"  "inherited" />)
+      </#if>
+      </#compress>
+      <#if editURL != "">
+        ${editURL}
+      </#if>
+    </td>
+  </tr>
+</#macro>
+
+<#macro archivedPropertyDisplay propName name value prefix=false editURL="">
   <tr class="prop-${propName}">
     <td class="key">
       ${name}:

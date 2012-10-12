@@ -39,6 +39,7 @@
         <ref bean="collection.hideIntroductionPropDef" />
         <ref bean="collection.hideIconPropDef" />
         <ref bean="hideNumberOfCommentsPropDef" />
+        <ref bean="archivedPropDef" />
       </list>
     </property>
   </bean>

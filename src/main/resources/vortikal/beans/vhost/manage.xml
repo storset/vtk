@@ -856,6 +856,9 @@
         <ref bean="xhtml10TransTypePropDef" />
         <ref bean="commentsEnabledPropDef" />
 
+        <!-- Archive -->
+        <ref bean="archivedPropDef" />
+
         <!-- Collection type: -->
         <ref bean="collection.typePropDef" />
       </list>

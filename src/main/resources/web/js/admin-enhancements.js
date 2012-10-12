@@ -296,7 +296,7 @@ vrtxAdmin._$(document).ready(function () {
     simultanSliding: true
   });
   vrtxAdm.completeFormAsync({
-    selector: "form a#manage\\.unlockFormService-form input[type=submit]"
+    selector: "form#manage\\.unlockFormService-form input[type=submit]"
   });
 
   switch(bodyId) {
@@ -2305,6 +2305,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     
     if(!post) {
       if(isCancelAction && !isReplacing) {
+        alert("hei");
         _$(".expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
           _$.single(this).remove();
         });

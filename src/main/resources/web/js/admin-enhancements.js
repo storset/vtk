@@ -2305,7 +2305,6 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     
     if(!post) {
       if(isCancelAction && !isReplacing) {
-        alert("hei");
         _$(".expandedForm").slideUp(transitionSpeed, transitionEasingSlideUp, function() {
           _$.single(this).remove();
         });

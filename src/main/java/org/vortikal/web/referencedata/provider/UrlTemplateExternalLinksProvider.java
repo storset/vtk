@@ -208,12 +208,11 @@ public class UrlTemplateExternalLinksProvider {
                         retVal = prop.getFormattedValue();
                         if (!retVal.isEmpty() && def.getType() == PropertyType.Type.IMAGE_REF) { // Construct absolute URLs
                             try {
-                                if (retVal.startsWith("/")) {
-                                    retVal = viewService.constructLink(Path.fromString(retVal));
-                                } else {
+                                if (!retVal.startsWith("/")) {
                                     Path currentCollection = RequestContext.getRequestContext().getCurrentCollection();
                                     retVal = currentCollection.expand(retVal).toString();
                                 }
+                                retVal = viewService.constructLink(Path.fromString(retVal));
                             } catch (Exception iae) {
                                 retVal = "";
                             }

@@ -78,6 +78,7 @@ public class LoginManageComponent extends ViewRenderingDecoratorComponent {
         try {
             if (principal == null && !displayOnlyIfAuth) { // Not logged in (unauthenticated)
                 URL loginURL = ListingPager.removePagerParms(URL.create(request.getServletRequest()));
+                loginURL.removeParameter("authTarget");
                 if (!request.getServletRequest().isSecure()) {
                     loginURL.addParameter("authTarget", "http");
                 } else {

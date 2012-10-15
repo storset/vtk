@@ -538,7 +538,8 @@ vrtxAdmin._$(document).ready(function () {
     if(!vrtxAdmin.isIE7) { // Turn of tmp. in IE7
       var propsAbout = ["contentLocale", "commentsEnabled", "userTitle",   "keywords",       "description",
                         "verifiedDate",  "authorName",      "authorEmail", "authorURL",      "collection-type",
-                        "contentType",   "userSpecifiedCharacterEncoding", "plaintext-edit", "xhtml10-type"];
+                        "contentType",   "userSpecifiedCharacterEncoding", "plaintext-edit", "xhtml10-type",
+                        "archived"];
       for (i = propsAbout.length; i--;) {
         vrtxAdm.getFormAsync({
           selector: ".prop-" + propsAbout[i] + " a.vrtx-button-small",

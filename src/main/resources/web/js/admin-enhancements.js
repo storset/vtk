@@ -150,13 +150,6 @@ vrtxAdmin._$(window).load(function() {
   if(!_$("ul#resourceMenuLeft li").length && !buttonsInResourceMenuRightListElements.length) {
     resourceMenuRight.addClass("smaller-seperator");
   }
-  
-  // When AJAX is turned of because of http->https we need to ensure form is in the right place
-  var formResourceMenu = _$("#title-container:last").hasClass("expandedForm");
-  if(!formResourceMenu) {
-    var expandedForm = _$("#title-container .expandedForm").remove();
-    _$("#title-container").append(expandedForm);
-  }
 
   vrtxAdmin.log({msg: "window.load() in " + (+new Date - startLoadTime) + "ms"});
 });
@@ -309,7 +302,7 @@ vrtxAdmin._$(document).ready(function () {
           selectorClass: "vrtx-admin-form",
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           nodeType: "div",
-          funcComplete: function(p){ createFuncComplete(); },
+         // funcComplete: function(p){ createFuncComplete(); },
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({ 
@@ -327,7 +320,7 @@ vrtxAdmin._$(document).ready(function () {
             selectorClass: "vrtx-admin-form",
             insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
             nodeType: "div",
-            funcComplete: function(p){ createFuncComplete(); },
+         //   funcComplete: function(p){ createFuncComplete(); },
             simultanSliding: true
           });
           vrtxAdm.completeFormAsync({

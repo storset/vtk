@@ -42,112 +42,104 @@ import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.decorating.DecoratorRequest;
 import org.vortikal.web.decorating.DecoratorResponse;
+import org.vortikal.web.display.listing.ListingPager;
 import org.vortikal.web.service.Service;
 import org.vortikal.web.service.URL;
 
 public class LoginManageComponent extends ViewRenderingDecoratorComponent {
 
-	private static final String DESCRIPTION = "Displays an authentication and manage component";
+    private static final String DESCRIPTION = "Displays an authentication and manage component";
 
-	private Service defaultLoginService;
-	private Map<String, Service> alternativeLoginServices;
-	private Service logoutService;
-	private boolean displayOnlyIfAuth = false;
-	private boolean displayAuthUser = false;
+    private Map<String, Service> alternativeLoginServices;
+    private Service logoutService;
+    private boolean displayOnlyIfAuth = false;
+    private boolean displayAuthUser = false;
 
-	protected void processModel(Map<String, Object> model,
-			DecoratorRequest request, DecoratorResponse response)
-			throws Exception {
+    protected void processModel(Map<String, Object> model, DecoratorRequest request, DecoratorResponse response)
+            throws Exception {
 
-		super.processModel(model, request, response);
-		RequestContext requestContext = RequestContext.getRequestContext();
-		Repository repository = requestContext.getRepository();
-		Path uri = requestContext.getResourceURI();
-		Principal principal = requestContext.getPrincipal();
-		String token = requestContext.getSecurityToken();
-		Resource resource = repository.retrieve(token, uri, true);
+        super.processModel(model, request, response);
+        RequestContext requestContext = RequestContext.getRequestContext();
+        Repository repository = requestContext.getRepository();
+        Path uri = requestContext.getResourceURI();
+        Principal principal = requestContext.getPrincipal();
+        String token = requestContext.getSecurityToken();
+        Resource resource = repository.retrieve(token, uri, true);
 
-		// VTK-2460
-		if (requestContext.isViewUnauthenticated()) {
-			principal = null;
-		}
-		
-		model.put("principal", principal);
+        // VTK-2460
+        if (requestContext.isViewUnauthenticated()) {
+            principal = null;
+        }
 
-		Map<String, URL> options = new LinkedHashMap<String, URL>();
+        model.put("principal", principal);
 
-		try {
-			if (principal == null && !displayOnlyIfAuth) { // Not logged in (unauthenticated)
-				URL loginURL = this.defaultLoginService.constructURL(resource, principal);
-				if(!request.getServletRequest().isSecure()) {
-					loginURL.addParameter("authTarget", "http");
-				} else {
-					loginURL.addParameter("authTarget", "https");
-				}
-				options.put("login", loginURL);
-				this.putAdminURL(options, resource, request);
-			} else if(principal != null) { // Logged in (authenticated)
-				if (displayAuthUser) {
-					options.put("principal-desc", null);
-				}
-				this.putAdminURL(options, resource, request);
-				options.put("logout", this.logoutService.constructURL(resource, principal));
-			}
-		} catch (Exception e) {}
-		
-		model.put("options", options);
-	}
-	
-	private void putAdminURL(Map<String, URL> options, Resource resource, DecoratorRequest request) throws Exception {
-		Service adminService = this.alternativeLoginServices.get("admin");
-		if (adminService != null) {
-			if (resource.isCollection()) {
-				options.put("admin-collection", adminService.constructURL(resource.getURI()));
-			} else {
-				options.put("admin", adminService.constructURL(resource.getURI()));
-			}
-		}
-	}
+        Map<String, URL> options = new LinkedHashMap<String, URL>();
 
-	public void setAlternativeLoginServices(Map<String, Service> alternativeLoginServices) {
-		this.alternativeLoginServices = alternativeLoginServices;
-	}
+        try {
+            if (principal == null && !displayOnlyIfAuth) { // Not logged in (unauthenticated)
+                URL loginURL = ListingPager.removePagerParms(URL.create(request.getServletRequest()));
+                if (!request.getServletRequest().isSecure()) {
+                    loginURL.addParameter("authTarget", "http");
+                } else {
+                    loginURL.addParameter("authTarget", "https");
+                }
+                options.put("login", loginURL);
+                this.putAdminURL(options, resource, request);
+            } else if (principal != null) { // Logged in (authenticated)
+                if (displayAuthUser) {
+                    options.put("principal-desc", null);
+                }
+                this.putAdminURL(options, resource, request);
+                options.put("logout", this.logoutService.constructURL(resource, principal));
+            }
+        } catch (Exception e) {
+        }
 
-	public Map<String, Service> getAlternativeLoginServices() {
-		return alternativeLoginServices;
-	}
+        model.put("options", options);
+    }
 
-	@Required
-	public void setDefaultLoginService(Service loginService) {
-		if (loginService == null) {
-			throw new IllegalArgumentException("Argument cannot be null");
-		}
-		this.defaultLoginService = loginService;
-	}
+    private void putAdminURL(Map<String, URL> options, Resource resource, DecoratorRequest request) throws Exception {
+        Service adminService = this.alternativeLoginServices.get("admin");
+        if (adminService != null) {
+            if (resource.isCollection()) {
+                options.put("admin-collection", adminService.constructURL(resource.getURI()));
+            } else {
+                options.put("admin", adminService.constructURL(resource.getURI()));
+            }
+        }
+    }
 
-	@Required
-	public void setLogoutService(Service logoutService) {
-		if (logoutService == null) {
-			throw new IllegalArgumentException("Argument cannot be null");
-		}
-		this.logoutService = logoutService;
-	}
+    public void setAlternativeLoginServices(Map<String, Service> alternativeLoginServices) {
+        this.alternativeLoginServices = alternativeLoginServices;
+    }
 
-	protected String getDescriptionInternal() {
-		return DESCRIPTION;
-	}
+    public Map<String, Service> getAlternativeLoginServices() {
+        return alternativeLoginServices;
+    }
 
-	protected Map<String, String> getParameterDescriptionsInternal() {
-		Map<String, String> map = new HashMap<String, String>();
-		return map;
-	}
-	
-	public void setDisplayOnlyIfAuth(boolean displayOnlyIfAuth) {
-		this.displayOnlyIfAuth = displayOnlyIfAuth;
-	}
-	
-	public void setDisplayAuthUser(boolean displayAuthUser) {
-		this.displayAuthUser = displayAuthUser;
-	}
+    @Required
+    public void setLogoutService(Service logoutService) {
+        if (logoutService == null) {
+            throw new IllegalArgumentException("Argument cannot be null");
+        }
+        this.logoutService = logoutService;
+    }
+
+    protected String getDescriptionInternal() {
+        return DESCRIPTION;
+    }
+
+    protected Map<String, String> getParameterDescriptionsInternal() {
+        Map<String, String> map = new HashMap<String, String>();
+        return map;
+    }
+
+    public void setDisplayOnlyIfAuth(boolean displayOnlyIfAuth) {
+        this.displayOnlyIfAuth = displayOnlyIfAuth;
+    }
+
+    public void setDisplayAuthUser(boolean displayAuthUser) {
+        this.displayAuthUser = displayAuthUser;
+    }
 
 }

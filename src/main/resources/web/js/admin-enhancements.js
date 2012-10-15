@@ -2145,6 +2145,8 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
         existExpandedFormIsReplaced = false,
         expandedForm = $(".expandedForm"),
         existExpandedForm = expandedForm.length;
+        
+        if(vrtxAdm.isIE8) alert(transitionSpeed + " " + transitionEasingSlideDown + " " + transitionEasingSlideUp);
 
     // Make sure we get the mode markup (current page) if service is not mode
     // -- only if a expandedForm exists and is of the replaced kind..

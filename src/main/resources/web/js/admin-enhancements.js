@@ -133,6 +133,7 @@ var EDITOR_SAVE_BUTTON_NAME = "",
     MULTIPLE_INPUT_FIELD_TEMPLATES = [],
     MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED,
     LAST_BREADCRUMB_POS_LEFT = -999,
+    WAIT_RESIZE_AFTER_LOAD = true;
     DO_RELOAD_FROM_SERVER = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
 
 
@@ -2885,40 +2886,43 @@ jQuery.fn.extend({
  * Send me music http://www.amazon.co.uk/wishlist/HNTU0468LQON
  */
 (function($) {
+  var $event = $.event,
+	  $special,
+	  resizeTimeout;
 
-var $event = $.event,
-	$special,
-	resizeTimeout;
-
-$special = $event.special.debouncedresize = {
-	setup: function() {
-		$( this ).on( "resize", $special.handler );
-	},
-	teardown: function() {
-		$( this ).off( "resize", $special.handler );
-	},
-	handler: function( event, execAsap ) {
-		// Save the context
-		var context = this,
-			args = arguments,
-			dispatch = function() {
-				// set correct event type
-				event.type = "debouncedresize";
-				$event.dispatch.apply( context, args );
-			};
-
-		if ( resizeTimeout ) {
-			clearTimeout( resizeTimeout );
-		}
-
-		execAsap ?
-			dispatch() :
-			resizeTimeout = setTimeout( dispatch, $special.threshold );
-	},
-	threshold: 150
-};
-
+  $special = $event.special.debouncedresize = {
+    setup: function() {
+      $(this).on("resize", $special.handler);
+    },
+    teardown: function() {
+      $(this).off("resize", $special.handler);
+    },
+    handler: function(event, execAsap) {
+      // Save the context
+	  var context = this,
+		  args = arguments,
+		  dispatch = function() {
+		    // set correct event type
+		    event.type = "debouncedresize";
+		    $event.dispatch.apply(context, args);
+		  };
+		  if (resizeTimeout) {
+		    clearTimeout(resizeTimeout);
+		  }
+		  execAsap ? dispatch() : resizeTimeout = setTimeout(dispatch, $special.threshold);
+	  },
+	  threshold: 150
+  };
 })(jQuery);
+
+vrtxAdmin._$(window).on("debouncedresize", function() {
+  if(vrtxAdmin.cachedBreadcrumbs && !WAIT_RESIZE_AFTER_LOAD) {
+    vrtxAdmin.adaptiveBreadcrumbs();
+  }
+  if(WAIT_RESIZE_AFTER_LOAD) {
+    WAIT_RESIZE_AFTER_LOAD = false;
+  }
+});
 
 /* Get URL parameter
  * Credits: http://www.netlobo.com/url_query_string_javascript.html
@@ -2944,12 +2948,6 @@ jQuery.single = (function(o){
     return collection; // Return the collection:
   };
 }());
-
-vrtxAdmin._$(window).on("debouncedresize", function() {
-  if(vrtxAdmin.cachedBreadcrumbs) {
-    vrtxAdmin.adaptiveBreadcrumbs();
-  }
-});
 
 /* Remove duplicates from an array
  *

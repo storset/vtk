@@ -952,10 +952,11 @@ function createFuncComplete() {
   // Fix margin left for radio descriptions because radio width variation on different OS-themes
   var radioDescriptions = $(".radioDescription");
   if(radioDescriptions.length) {
-    radioDescriptions.css("marginLeft", $(".radio-buttons label:first").position().left + "px");
+    var leftPos = $(".radio-buttons label:first").position().left;
+    radioDescriptions.css("marginLeft", leftPos + "px");
   }
   
-  $("#initChangeTemplate").click(); 
+  $("#initChangeTemplate").trigger("click"); 
   
   var textFields = $(".vrtx-admin-form input[type='text']");
   textFields.attr("autocomplete", "off");

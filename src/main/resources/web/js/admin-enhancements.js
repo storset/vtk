@@ -2137,7 +2137,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
     var selector = options.selector,
         selectorClass = options.selectorClass,
         simultanSliding = options.simultanSliding,
-        transitionSpeed = options.transitionSpeed || vrtxAdm.transitionSpeed,
+        transitionSpeed = options.transitionSpeed !== null ? options.transitionSpeed : vrtxAdm.transitionSpeed,
         transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
         transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
         modeUrl = location.href,
@@ -2145,8 +2145,6 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
         existExpandedFormIsReplaced = false,
         expandedForm = $(".expandedForm"),
         existExpandedForm = expandedForm.length;
-        
-        if(vrtxAdm.isIE8) alert(transitionSpeed + " " + transitionEasingSlideDown + " " + transitionEasingSlideUp);
 
     // Make sure we get the mode markup (current page) if service is not mode
     // -- only if a expandedForm exists and is of the replaced kind..
@@ -2317,7 +2315,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
     var isReplacing = options.isReplacing || false,
         funcProceedCondition = options.funcProceedCondition,
         funcComplete = options.funcComplete,
-        transitionSpeed = options.transitionSpeed || vrtxAdm.transitionSpeed,
+        transitionSpeed = options.transitionSpeed !== null ? options.transitionSpeed : vrtxAdm.transitionSpeed,
         transitionEasingSlideDown = options.transitionEasingSlideDown || vrtxAdm.transitionEasingSlideDown,
         transitionEasingSlideUp = options.transitionEasingSlideUp || vrtxAdm.transitionEasingSlideUp,
         post = options.post || false,

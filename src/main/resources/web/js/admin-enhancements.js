@@ -303,7 +303,7 @@ vrtxAdmin._$(document).ready(function () {
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           nodeType: "div",
           funcComplete: function(p){ createFuncComplete(); },
-          simultanSliding: true,
+          simultanSliding: !vrtxAdm.isIE8,
           transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
           transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
           transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
@@ -327,7 +327,7 @@ vrtxAdmin._$(document).ready(function () {
             insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
             nodeType: "div",
             funcComplete: function(p){ createFuncComplete(); },
-            simultanSliding: true,
+            simultanSliding: !vrtxAdm.isIE8,
             transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
             transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
             transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
@@ -348,10 +348,16 @@ vrtxAdmin._$(document).ready(function () {
               insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
               nodeType: "div",
               funcComplete: function(p){ vrtxAdm.initFileUpload() },
-              simultanSliding: true
+              simultanSliding: !vrtxAdm.isIE8,
+              transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
+              transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
+              transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
             });
             vrtxAdm.completeFormAsync({
-              selector: "form#" + tabMenuServices[i] + "-form input[type=submit]"
+              selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
+              transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
+              transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
+              transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
             });
             vrtxAdm.initFileUpload(); // when error message
           }

@@ -87,10 +87,10 @@ public class ResourceDetailProvider implements InitializingBean, ReferenceDataPr
         this.serviceMap = serviceMap;
     }
 
-    private PropertyTypeDefinition archivedPropDef;
+    private PropertyTypeDefinition obsoletedPropDef;
 
-    public void setArchivedPropDef(PropertyTypeDefinition archivedPropDef) {
-        this.archivedPropDef = archivedPropDef;
+    public void setObsoletedPropDef(PropertyTypeDefinition obsoletedPropDef) {
+        this.obsoletedPropDef = obsoletedPropDef;
     }
 
     public void afterPropertiesSet() throws Exception {
@@ -113,17 +113,17 @@ public class ResourceDetailProvider implements InitializingBean, ReferenceDataPr
         } catch (Throwable t) {
         }
 
-        Property archived = resource.getProperty(archivedPropDef);
-        if (archived != null && archived.isInherited()) {
-            final Resource[] archivedResource = new Resource[1];
+        Property obsoleted = resource.getProperty(obsoletedPropDef);
+        if (obsoleted != null && obsoleted.isInherited()) {
+            final Resource[] obsoletedResource = new Resource[1];
 
             RepositoryTraversal traversal = requestContext.rootTraversal(token, resource.getURI());
             traversal.traverse(new TraversalCallback() {
                 @Override
                 public boolean callback(Resource resource) {
-                    Property archived = resource.getProperty(archivedPropDef);
-                    if (archived != null && !archived.isInherited()) {
-                        archivedResource[0] = resource;
+                    Property obsoleted = resource.getProperty(obsoletedPropDef);
+                    if (obsoleted != null && !obsoleted.isInherited()) {
+                        obsoletedResource[0] = resource;
                         return false;
                     }
                     return true;
@@ -135,8 +135,8 @@ public class ResourceDetailProvider implements InitializingBean, ReferenceDataPr
                 }
             });
 
-            if (archivedResource[0] != null) {
-                resourceDetailModel.put("inheritedFrom", archivedResource[0].getURI().toString());
+            if (obsoletedResource[0] != null) {
+                resourceDetailModel.put("inheritedFrom", obsoletedResource[0].getURI().toString());
             }
         }
 

@@ -180,16 +180,16 @@
                propName = "contentLength"
                name = vrtx.getMsg("property.contentLength", "Size")
                value = size />
-        <!-- Archive in document -->
+        <!-- Obsoleted for document -->
         <#if resourceDetail.inheritedFrom?exists>
-          <@propList.defaultPropertyDisplay propName = "archived" name = vrtx.getMsg("property.archived") value = vrtx.getMsg("property.archived.inheritedFrom") + ' ' + resourceDetail.inheritedFrom />
+          <@propList.defaultPropertyDisplay propName = "obsoleted" name = vrtx.getMsg("property.obsoleted") value = vrtx.getMsg("property.obsoleted.inheritedFrom") + ' ' + resourceDetail.inheritedFrom />
         </#if>
       <#else>
-        <!-- Archive in collection -->
+        <!-- Obsolete for collection -->
         <#if resourceDetail.inheritedFrom?exists>
-          <@propList.defaultPropertyDisplay propName = "archived" name = vrtx.getMsg("property.archived") value = vrtx.getMsg("property.archived.inheritedFrom") + ' ' + resourceDetail.inheritedFrom />
+          <@propList.defaultPropertyDisplay propName = "obsoleted" name = vrtx.getMsg("property.obsoleted") value = vrtx.getMsg("property.obsoleted.inheritedFrom") + ' ' + resourceDetail.inheritedFrom />
         <#else>
-          <@propList.editOrDisplayProperty modelName = 'aboutItems' propertyName = 'archived' displayMacro = 'archivedPropertyDisplay' />
+          <@propList.editOrDisplayProperty modelName = 'aboutItems' propertyName = 'obsoleted' displayMacro = 'obsoletedPropertyDisplay' />
         </#if>
       </#if>
   </table>
@@ -342,7 +342,7 @@
   </tr>
 </#macro>
 
-<#macro archivedPropertyDisplay propName name value prefix=false editURL="">
+<#macro obsoletedPropertyDisplay propName name value prefix=false editURL="">
   <tr class="prop-${propName}">
     <td class="key">
       ${name}:

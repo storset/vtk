@@ -77,6 +77,6 @@
   <import resource="scheduling/scheduling.xml"/>
   <import resource="simple-structured-editor.xml" />
 
-  <!-- Archive -->
-  <import resource="archive.xml" />
+  <!-- Obsolete -->
+  <import resource="obsoleted.xml" />
 </beans>

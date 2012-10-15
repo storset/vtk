@@ -302,7 +302,7 @@ vrtxAdmin._$(document).ready(function () {
           selectorClass: "vrtx-admin-form",
           insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
           nodeType: "div",
-         // funcComplete: function(p){ createFuncComplete(); },
+          funcComplete: function(p){ createFuncComplete(); },
           simultanSliding: true
         });
         vrtxAdm.completeFormAsync({ 
@@ -320,7 +320,7 @@ vrtxAdmin._$(document).ready(function () {
             selectorClass: "vrtx-admin-form",
             insertAfterOrReplaceClass: "#active-tab ul#tabMenuRight",
             nodeType: "div",
-         //   funcComplete: function(p){ createFuncComplete(); },
+            funcComplete: function(p){ createFuncComplete(); },
             simultanSliding: true
           });
           vrtxAdm.completeFormAsync({
@@ -2211,6 +2211,7 @@ VrtxAdmin.prototype.getFormAsync = function getFormAsync(options) {
         }
       }
     });
+    e.stopPropagation();
     e.preventDefault();
   });
 };
@@ -2317,6 +2318,7 @@ VrtxAdmin.prototype.completeFormAsync = function completeFormAsync(options) {
       } else {
         vrtxAdm.completeFormAsyncPost(options);
       }
+      e.stopPropagation();
       e.preventDefault();
     }
   });

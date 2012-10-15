@@ -132,6 +132,7 @@ var EDITOR_SAVE_BUTTON_NAME = "",
     LENGTH_FOR_MULTIPLE_INPUT_FIELD = [],
     MULTIPLE_INPUT_FIELD_TEMPLATES = [],
     MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED,
+    LAST_BREADCRUMB_POS_LEFT = -999,
     DO_RELOAD_FROM_SERVER = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
 
 
@@ -150,13 +151,12 @@ vrtxAdmin._$(window).load(function() {
   if(!_$("ul#resourceMenuLeft li").length && !buttonsInResourceMenuRightListElements.length) {
     resourceMenuRight.addClass("smaller-seperator");
   }
+  
+  // Make breadcrumbs play along when you minimize window and have multiple rows of it
+  vrtxAdmin.cachedBreadcrumbs = _$("#vrtx-breadcrumb > span");
+  vrtxAdmin.adaptiveBreadcrumbs();
 
   vrtxAdmin.log({msg: "window.load() in " + (+new Date - startLoadTime) + "ms"});
-});
-
-var lastBreadcrumbPosLeft = -999;
-vrtxAdmin._$(window).bind("debouncedresize", function() {
-  vrtxAdmin.adaptiveBreadcrumbs();
 });
 
 
@@ -231,10 +231,6 @@ vrtxAdmin._$(document).ready(function () {
   _$("#app-tabs, #vrtx-breadcrumb-wrapper").on("click", "a", function(e) {
     vrtxAdm.ignoreAjaxErrors = true;
   });
-  
-  // Make breadcrumbs play along when you minimize window and have multiple rows of it
-  vrtxAdm.cachedBreadcrumbs = _$("#vrtx-breadcrumb > span");
-  vrtxAdm.adaptiveBreadcrumbs();
 
   $("#title-container").vortexTips("abbr", "#title-container", 200, 300, 250, 300, 20, 0, false, false);
   $("#main").vortexTips("abbr.resource-prop-info", ".vrtx-admin-form", 200, 300, 250, 300, 20, -30, false, false);
@@ -829,10 +825,10 @@ VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
     var breadcrumbPosTop = breadcrumbPos.top;
     var breadcrumbPosLeft = breadcrumbPos.left;
     if (!runnedAtStart) {
-      if (lastBreadcrumbPosLeft == breadcrumbPosLeft) {
+      if (LAST_BREADCRUMB_POS_LEFT == breadcrumbPosLeft) {
         return;     
       } else {
-        lastBreadcrumbPosLeft = breadcrumbPosLeft;
+        LAST_BREADCRUMB_POS_LEFT = breadcrumbPosLeft;
       }
       runnedAtStart = true;
     }
@@ -1551,8 +1547,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           }
         }
       });
-      
-      _$(window).bind("debouncedresize", function() {
+      _$(window).on("resize", function() {
         if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
           titleSubmitButtons.css("width", (_$("#main").outerWidth(true) - 2) + "px");
         }
@@ -2949,6 +2944,12 @@ jQuery.single = (function(o){
     return collection; // Return the collection:
   };
 }());
+
+vrtxAdmin._$(window).on("debouncedresize", function() {
+  if(vrtxAdmin.cachedBreadcrumbs) {
+    vrtxAdmin.adaptiveBreadcrumbs();
+  }
+});
 
 /* Remove duplicates from an array
  *

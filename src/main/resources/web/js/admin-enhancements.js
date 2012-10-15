@@ -574,7 +574,7 @@ vrtxAdmin._$(document).ready(function () {
           GET_STAT_ASYNC_IN_PROGRESS = false;
         }
       });  
-          
+      e.stopPropagation();    
       e.preventDefault();
     });
     break;
@@ -643,6 +643,7 @@ function baggageBeltAnimFx(elm, opts) {
 VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelector) {
   this.cachedAppContent.on("click", selectors, function(e) {
     $(reroutedSelector).click();
+    e.stopPropagation();
     e.preventDefault();
   });
 };
@@ -855,6 +856,7 @@ function createInteraction(bodyId, vrtxAdm, _$) {
     if(focusedTextField.length && !focusedTextField.val().length) { // Only focus when empty
       focusedTextField.focus();
     }
+    e.stopPropagation();
   });    
 }
 
@@ -1249,7 +1251,7 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
   var tdCheckbox = vrtxAdm.cachedDirectoryListing.find("td.checkbox");
   if(tdCheckbox.length) {
     vrtxAdm.cachedDirectoryListing.find("th.checkbox").append("<input type='checkbox' name='checkUncheckAll' />");
-    vrtxAdm.cachedAppContent.on("click", "th.checkbox input", function() {
+    vrtxAdm.cachedAppContent.on("click", "th.checkbox input", function(e) {
       var checkAll = this.checked;
       var checkboxes = vrtxAdm.cachedDirectoryListing.find("td.checkbox input");
       var funcClassAddRemover = classAddRemover; 
@@ -1266,8 +1268,9 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
           funcClassAddRemover(tr, "checked", false);
         }
       }
+      e.stopPropagation();
     });
-    vrtxAdm.cachedAppContent.on("click", "td.checkbox input", function() {
+    vrtxAdm.cachedAppContent.on("click", "td.checkbox input", function(e) {
       var checkbox = this;
       var isChecked = checkbox.checked;
       var tr = $(checkbox).closest("tr");
@@ -1276,6 +1279,7 @@ VrtxAdmin.prototype.initializeCheckUncheckAll = function initializeCheckUncheckA
       } else {
         classAddRemover(tr, "checked", false);
       }
+      e.stopPropagation();
     });
   }
 };
@@ -1468,6 +1472,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           _$("#editor").submit();
         }
       });
+      e.stopPropagation();
       e.preventDefault();
     });
   }
@@ -1485,20 +1490,22 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       _$("#vrtx-resource\\.manually-approve-from").slideUp(0, "linear");
     }
  
-    vrtxAdm.cachedAppContent.on("click", "#resource\\.display-aggregation\\.true", function() {
+    vrtxAdm.cachedAppContent.on("click", "#resource\\.display-aggregation\\.true", function(e) {
       if(!_$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
         _$(".aggregation .vrtx-multipleinputfield").remove();
         _$("#resource\\.aggregation").val("");
       }
       _$("#vrtx-resource\\.aggregation").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
+      e.stopPropagation();
     });
 
-    vrtxAdm.cachedAppContent.on("click", "#resource\\.display-manually-approved\\.true", function() {
+    vrtxAdm.cachedAppContent.on("click", "#resource\\.display-manually-approved\\.true", function(e) {
       if(!_$.single(this).is(":checked")) {                   // If unchecked remove rows and clean prop textfield
         _$(".manually-approve-from .vrtx-multipleinputfield").remove();
         _$("#resource\\.manually-approve-from").val("");
       }
       _$("#vrtx-resource\\.manually-approve-from").slideToggle(vrtxAdm.transitionDropdownSpeed, "swing");
+      e.stopPropagation();
     });
 
     // Stickybar
@@ -1650,23 +1657,23 @@ function initMultipleInputFields() {
 
   wrapper.on("click", ".vrtx-multipleinputfield button.remove", function(e){
     removeFormField($(this));
-        e.preventDefault();
-        e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
   });
   wrapper.on("click", ".vrtx-multipleinputfield button.moveup", function(e){
     moveUpFormField($(this));
-        e.preventDefault();
-        e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
   });
   wrapper.on("click", ".vrtx-multipleinputfield button.movedown", function(e){
     moveDownFormField($(this));
-        e.preventDefault();
-        e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
   });
   wrapper.on("click", ".vrtx-multipleinputfield button.browse-resource-ref", function(e){
     browseServer($(this).parent().parent().find('input').attr('id'), browseBase, browseBaseFolder, browseBasePath, 'File');
-        e.preventDefault();
-        e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
   });
   
   // Retrieve HTML templates
@@ -1904,6 +1911,7 @@ function autocompleteTags(selector) {
 function reportsInteraction(bodyId, vrtxAdm, _$) {
   vrtxAdm.cachedAppContent.on("click", "td.vrtx-report-broken-links-web-page a", function(e) {
     var openedWebpageWithBrokenLinks = openRegular(this.href, 1020, 800, "DisplayWebpageBrokenLinks");
+    e.stopPropagation();
     e.preventDefault();
   });
   var brokenLinksFilters = _$("#vrtx-report-filters");
@@ -2012,6 +2020,7 @@ function reportsInteraction(bodyId, vrtxAdm, _$) {
 function versioningInteraction(bodyId, vrtxAdm, _$) {
   vrtxAdm.cachedAppContent.on("click", "a.vrtx-revision-view", function(e) {
     var openedRevision = openRegular(this.href, 1020, 800, "DisplayRevision");
+    e.stopPropagation();
     e.preventDefault();
   });
 
@@ -2035,6 +2044,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
           });
         }
       });
+      e.stopPropagation();
       e.preventDefault();
     });
     contents.on("click", ".vrtx-revisions-restore-form input[type=submit]", function(e) { // Restore revisions
@@ -2056,6 +2066,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
           _$("td.vrtx-revisions-buttons-column input").removeAttr("disabled"); // Unlock buttons
         }
       });
+      e.stopPropagation();
       e.preventDefault();
     });
     contents.on("click", "#vrtx-revisions-make-current-form input[type=submit]", function(e) { // Make working copy into current version
@@ -2071,6 +2082,7 @@ function versioningInteraction(bodyId, vrtxAdm, _$) {
           }
         }
       });
+      e.stopPropagation();
       e.preventDefault();
     });
   }

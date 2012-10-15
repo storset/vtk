@@ -133,7 +133,6 @@ var EDITOR_SAVE_BUTTON_NAME = "",
     MULTIPLE_INPUT_FIELD_TEMPLATES = [],
     MULTIPLE_INPUT_FIELD_TEMPLATES_DEFERRED,
     LAST_BREADCRUMB_POS_LEFT = -999,
-    WAIT_RESIZE_AFTER_LOAD = true;
     DO_RELOAD_FROM_SERVER = false; // changed by funcProceedCondition and used by funcComplete in completeFormAsync for admin-permissions
 
 
@@ -2915,12 +2914,14 @@ jQuery.fn.extend({
   };
 })(jQuery);
 
+var debouncedResized = true;
 vrtxAdmin._$(window).on("debouncedresize", function() {
-  if(vrtxAdmin.cachedBreadcrumbs && !WAIT_RESIZE_AFTER_LOAD) {
+  if(vrtxAdmin.cachedBreadcrumbs && debouncedResized) {
     vrtxAdmin.adaptiveBreadcrumbs();
-  }
-  if(WAIT_RESIZE_AFTER_LOAD) {
-    WAIT_RESIZE_AFTER_LOAD = false;
+    debouncedResized = false;
+    setTimeout(function() {
+      debouncedResized = true; 
+    }, 1000);
   }
 });
 

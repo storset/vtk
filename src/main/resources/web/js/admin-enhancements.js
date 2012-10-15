@@ -155,7 +155,7 @@ vrtxAdmin._$(window).load(function() {
 });
 
 var lastBreadcrumbPosLeft = -999;
-vrtxAdmin._$(window).resize(function() {
+vrtxAdmin._$(window).bind("debouncedresize", function() {
   vrtxAdmin.adaptiveBreadcrumbs();
 });
 
@@ -233,6 +233,7 @@ vrtxAdmin._$(document).ready(function () {
   });
   
   // Make breadcrumbs play along when you minimize window and have multiple rows of it
+  vrtxAdm.cachedBreadcrumbs = _$("#vrtx-breadcrumb > span");
   vrtxAdm.adaptiveBreadcrumbs();
 
   $("#title-container").vortexTips("abbr", "#title-container", 200, 300, 250, 300, 20, 0, false, false);
@@ -819,7 +820,7 @@ function closeDropdowns() {
 
 VrtxAdmin.prototype.adaptiveBreadcrumbs = function adaptiveBreadcrumbs() {
   var _$ = this._$;
-  var breadcrumbs = _$("#vrtx-breadcrumb > span"), 
+  var breadcrumbs = this.cachedBreadcrumbs, 
       i = breadcrumbs.length,
       runnedAtStart = false;
   while(i--) {
@@ -1550,7 +1551,8 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           }
         }
       });
-      _$(window).on("resize", function() {
+      
+      _$(window).bind("debouncedresize", function() {
         if(_$(window).scrollTop() >= titleSubmitButtonsPos.top) {
           titleSubmitButtons.css("width", (_$("#main").outerWidth(true) - 2) + "px");
         }
@@ -2874,6 +2876,54 @@ jQuery.fn.extend({
     }
   }
 });
+
+/*
+ * debouncedresize: special jQuery event that happens once after a window resize
+ *
+ * latest version and complete README available on Github:
+ * https://github.com/louisremi/jquery-smartresize
+ *
+ * Copyright 2012 @louis_remi
+ * Licensed under the MIT license.
+ *
+ * This saved you an hour of work? 
+ * Send me music http://www.amazon.co.uk/wishlist/HNTU0468LQON
+ */
+(function($) {
+
+var $event = $.event,
+	$special,
+	resizeTimeout;
+
+$special = $event.special.debouncedresize = {
+	setup: function() {
+		$( this ).on( "resize", $special.handler );
+	},
+	teardown: function() {
+		$( this ).off( "resize", $special.handler );
+	},
+	handler: function( event, execAsap ) {
+		// Save the context
+		var context = this,
+			args = arguments,
+			dispatch = function() {
+				// set correct event type
+				event.type = "debouncedresize";
+				$event.dispatch.apply( context, args );
+			};
+
+		if ( resizeTimeout ) {
+			clearTimeout( resizeTimeout );
+		}
+
+		execAsap ?
+			dispatch() :
+			resizeTimeout = setTimeout( dispatch, $special.threshold );
+	},
+	threshold: 150
+};
+
+})(jQuery);
 
 /* Get URL parameter
  * Credits: http://www.netlobo.com/url_query_string_javascript.html

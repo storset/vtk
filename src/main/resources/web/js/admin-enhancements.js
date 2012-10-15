@@ -304,9 +304,9 @@ vrtxAdmin._$(document).ready(function () {
           nodeType: "div",
           funcComplete: function(p){ createFuncComplete(); },
           simultanSliding: true,
-          transitionSpeed: (!vrtxAdm.isIE8 ? vrtxAdm.transitionSpeed : 0),
-          transitionEasingSlideDown: (!vrtxAdm.isIE8 ? vrtxAdm.transitionEasingSlideDown : "linear"),
-          transitionEasingSlideUp: (!vrtxAdm.isIE8 ? vrtxAdm.transitionEasingSlideUp : "linear")
+          transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
+          transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
+          transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
         });
         vrtxAdm.completeFormAsync({ 
           selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
@@ -315,9 +315,9 @@ vrtxAdmin._$(document).ready(function () {
           errorContainerInsertAfter: "> ul",
           funcComplete: vrtxAdm.updateCollectionListingInteraction,
           post: true,
-          transitionSpeed: (!vrtxAdm.isIE8 ? vrtxAdm.transitionSpeed : 0),
-          transitionEasingSlideDown: (!vrtxAdm.isIE8 ? vrtxAdm.transitionEasingSlideDown : "linear"),
-          transitionEasingSlideUp: (!vrtxAdm.isIE8 ? vrtxAdm.transitionEasingSlideUp : "linear")
+          transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
+          transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
+          transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
         });
       } else { // Half-async for file upload and create document
         if(tabMenuServices[i] == "createDocumentService") {
@@ -328,15 +328,15 @@ vrtxAdmin._$(document).ready(function () {
             nodeType: "div",
             funcComplete: function(p){ createFuncComplete(); },
             simultanSliding: true,
-            transitionSpeed: (!vrtxAdm.isIE8 ? vrtxAdm.transitionSpeed : 0),
-            transitionEasingSlideDown: (!vrtxAdm.isIE8 ? vrtxAdm.transitionEasingSlideDown : "linear"),
-            transitionEasingSlideUp: (!vrtxAdm.isIE8 ? vrtxAdm.transitionEasingSlideUp : "linear")
+            transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
+            transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
+            transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
           });
           vrtxAdm.completeFormAsync({
             selector: "form#" + tabMenuServices[i] + "-form input[type=submit]",
-            transitionSpeed: (!vrtxAdm.isIE8 ? vrtxAdm.transitionSpeed : 0),
-            transitionEasingSlideDown: (!vrtxAdm.isIE8 ? vrtxAdm.transitionEasingSlideDown : "linear"),
-            transitionEasingSlideUp: (!vrtxAdm.isIE8 ? vrtxAdm.transitionEasingSlideUp : "linear")
+            transitionSpeed: (vrtxAdm.isIE8 ? 0 : null),
+            transitionEasingSlideDown: (vrtxAdm.isIE8 ? "linear" : null),
+            transitionEasingSlideUp: (vrtxAdm.isIE8 ? "linear" : null)
           });
         } else {
           if(vrtxAdm.isIPhone || vrtxAdm.isIPad) { // TODO: feature detection

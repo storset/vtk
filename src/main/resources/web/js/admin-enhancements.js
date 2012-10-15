@@ -532,7 +532,7 @@ vrtxAdmin._$(document).ready(function () {
       var propsAbout = ["contentLocale", "commentsEnabled", "userTitle",   "keywords",       "description",
                         "verifiedDate",  "authorName",      "authorEmail", "authorURL",      "collection-type",
                         "contentType",   "userSpecifiedCharacterEncoding", "plaintext-edit", "xhtml10-type",
-                        "archived"];
+                        "obsoleted"];
       for (i = propsAbout.length; i--;) {
         vrtxAdm.getFormAsync({
           selector: ".prop-" + propsAbout[i] + " a.vrtx-button-small",

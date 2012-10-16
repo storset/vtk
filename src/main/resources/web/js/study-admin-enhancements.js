@@ -43,13 +43,13 @@ $(document).ready(function () {
                            });
     $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
   }
-  $(document).on('change', '#typeToDisplay', function () {
+  $(document).on("change", '#typeToDisplay', function () {
     hideShowStudy($(this).val());
     $(".ui-accordion > .vrtx-string.last").removeClass("last");
     $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
   });
   
-  
+  // 'Samlet program'-document
   var samletElm = $(".samlet-element");
   if(samletElm.length) {
     replaceTag(samletElm, "h6", "strong");

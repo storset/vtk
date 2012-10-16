@@ -103,7 +103,7 @@
               <@vrtx.msg code="propertyEditor.takeOwnershipWarning"
                          default="Are you sure you want to take ownership of this resource?" />
             </#assign>
-            <script type="text/javascript">
+            <script type="text/javascript"><!--
               $(document).ready(function() {
                 var SUBMIT_TAKE_OWNERSHIP = false;
                 $(document).on("submit", "#vrtx-admin-ownership-form", function(e) {
@@ -119,6 +119,7 @@
                   }
                 });
               });
+            // -->
             </script>
             <form id="vrtx-admin-ownership-form" action="${ownerItem.toggleURL?html}" method="post">
               <div class="vrtx-button-small">

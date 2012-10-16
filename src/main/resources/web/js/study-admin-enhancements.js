@@ -23,8 +23,10 @@ function replaceTag(selector, tag, replaceTag) {
 }
 
 $(document).ready(function () {
-  var typeToDisplay = $('#typeToDisplay'); // 'How to search'-document
-  if(typeToDisplay.length) { // Check that it is the correct document
+
+  // 'How to search'-document
+  var typeToDisplay = $('#typeToDisplay'); 
+  if(typeToDisplay.length) { 
     try {
       hideShowStudy(typeToDisplay.val());
     }
@@ -46,6 +48,7 @@ $(document).ready(function () {
     $(".ui-accordion > .vrtx-string.last").removeClass("last");
     $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
   });
+  
   
   var samletElm = $(".samlet-element");
   if(samletElm.length) {

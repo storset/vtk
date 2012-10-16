@@ -104,23 +104,11 @@
                          default="Are you sure you want to take ownership of this resource?" />
             </#assign>
             <script type="text/javascript"><!--
-              $(document).ready(function() {
-                var SUBMIT_TAKE_OWNERSHIP = false;
-                $(document).on("submit", "#vrtx-admin-ownership-form", function(e) {
-                  if(!SUBMIT_TAKE_OWNERSHIP) {
-                    vrtxAdmin.openConfirmDialog('${warning}', '${editAction}', function() {
-                      SUBMIT_TAKE_OWNERSHIP = true;
-                      $("#vrtx-admin-ownership-form").submit();
-                    }, null, null);
-                    e.stopPropagation();
-                    e.preventDefault();
-                  } else {
-                    e.stopPropagation();
-                  }
-                });
-              });
+              var confirmTakeOwnershipMsg = '${warning?js_string}',
+                  confirmTakeOwnershipTitle = '${editAction}';
             // -->
             </script>
+            
             <form id="vrtx-admin-ownership-form" action="${ownerItem.toggleURL?html}" method="post">
               <div class="vrtx-button-small">
                 <input id="vrtx-admin-ownership-button" type="submit" 

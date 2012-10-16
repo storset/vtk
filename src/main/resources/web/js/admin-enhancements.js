@@ -540,6 +540,21 @@ vrtxAdmin._$(document).ready(function () {
     vrtxAdm.removePermissionAsync("input.removePermission", ".principalList");
     vrtxAdm.addPermissionAsync("span.addGroup", ".principalList", ".groups-wrapper", "errorContainer");
     vrtxAdm.addPermissionAsync("span.addUser", ".principalList", ".users-wrapper", "errorContainer");
+    
+    var SUBMIT_SET_INHERITED_PERMISSIONS = false;
+    $(document).on("click", "#permissions\\.toggleInheritance\\.submit", function(e) {
+      if(!SUBMIT_SET_INHERITED_PERMISSIONS) {
+        vrtxAdmin.openConfirmDialog(confirmSetInheritedPermissionsMsg, confirmSetInheritedPermissionsTitle, function() {
+          SUBMIT_SET_INHERITED_PERMISSIONS = true;
+          $("#permissions\\.toggleInheritance\\.submit").trigger("click");
+        }, null, null);
+        e.stopPropagation();
+        e.preventDefault();
+      } else {
+        e.stopPropagation();
+      }
+    });
+    
     break;
    case "vrtx-about":
     vrtxAdm.zebraTables(".resourceInfo");
@@ -564,6 +579,20 @@ vrtxAdmin._$(document).ready(function () {
         });
       }
     }
+    
+    var SUBMIT_TAKE_OWNERSHIP = false;
+    $(document).on("submit", "#vrtx-admin-ownership-form", function(e) {
+      if(!SUBMIT_TAKE_OWNERSHIP) {
+        vrtxAdmin.openConfirmDialog(confirmTakeOwnershipMsg, confirmTakeOwnershipTitle, function() {
+          SUBMIT_TAKE_OWNERSHIP = true;
+          $("#vrtx-admin-ownership-form").submit();
+        }, null, null);
+        e.stopPropagation();
+        e.preventDefault();
+      } else {
+        e.stopPropagation();
+      }
+    });
     
     // Urchin stats
     vrtxAdm.cachedBody.on("click", "#vrtx-resource-visit-tab-menu a", function(e) {

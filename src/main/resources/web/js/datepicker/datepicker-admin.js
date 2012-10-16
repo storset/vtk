@@ -109,7 +109,7 @@ function saveDateAndTimeFields() {
     var minutes = $("#" + fieldName + "-minutes");
     var date = $("#" + fieldName + "-date");
 
-    dateFields[i].value = "";
+    // dateFields[i].value = "";
 
     if (date[0] && date[0].value.toString().length) {
       dateFields[i].value = date[0].value;
@@ -122,12 +122,14 @@ function saveDateAndTimeFields() {
     }
 
     // Hack fix for editor.. .must be removed!!!
+    /*
     if (typeof UNSAVED_CHANGES_CONFIRMATION !== "undefined") {
        $("#" + fieldName + "-hours").parent().remove();
        $("#" + fieldName + "-minutes").parent().remove();
        $("#" + fieldName + "-date").parent().remove();
        $(".vrtx-time-seperator").remove();
     }
+    */
   }
 }
 

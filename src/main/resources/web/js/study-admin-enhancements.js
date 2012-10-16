@@ -23,7 +23,7 @@ function replaceTag(selector, tag, replaceTag) {
 }
 
 $(document).ready(function () {
-  var typeToDisplay = $('#typeToDisplay');
+  var typeToDisplay = $('#typeToDisplay'); // 'How to search'-document
   if(typeToDisplay.length) { // Check that it is the correct document
     try {
       hideShowStudy(typeToDisplay.val());

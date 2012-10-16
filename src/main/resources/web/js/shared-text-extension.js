@@ -19,10 +19,7 @@ $(document).ready(function () {
     var inputfieldContainer = $(this).parents(".inputfield");
 
     $.getJSON(path, function (data) {
-
-      if (!data) {
-        return;
-      }
+      if (!data) return;
 
       $(inputfieldContainer).html("<select id='" + id + "' name='" + name + "'></select>");
       var selectElement = $("#" + id);

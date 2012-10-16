@@ -25,7 +25,7 @@ function replaceTag(selector, tag, replaceTag) {
 $(document).ready(function () {
 
   // 'How to search'-document
-  var typeToDisplay = $('#typeToDisplay'); 
+  var typeToDisplay = $("#typeToDisplay"); 
   if(typeToDisplay.length) { 
     try {
       hideShowStudy(typeToDisplay.val());
@@ -43,7 +43,7 @@ $(document).ready(function () {
                            });
     $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
   }
-  $(document).on("change", '#typeToDisplay', function () {
+  $(document).on("change", "#typeToDisplay", function () {
     hideShowStudy($(this).val());
     $(".ui-accordion > .vrtx-string.last").removeClass("last");
     $(".ui-accordion > .vrtx-string:visible:last").addClass("last");

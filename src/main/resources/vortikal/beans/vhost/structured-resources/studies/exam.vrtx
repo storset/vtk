@@ -1,4 +1,4 @@
-resourcetype eksamen {
+resourcetype exam {
 
   properties {
     title : string overrides title,

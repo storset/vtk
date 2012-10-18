@@ -1,0 +1,127 @@
+resourcetype course-description : fellestekst-document {
+
+  properties {
+    studiepoeng : string,
+    undervisningssemester : string,
+    undervisningssemester-bestemt-semester : string,
+    undervisningssemester-annet : simple_html,
+    eksamenssemester : string,
+    eksamenssemester-bestemt-semester : string,
+    eksamenssemester-annet : simple_html,
+    emnetype : string,
+    undervisning-kveldstid-eller-helg : string,
+    nettbasert-undervisning : string,
+    opptak-og-adgang : string,
+    opptak-metode : string
+  }
+
+  edit-rules {
+    studiepoeng (dropdown),
+    undervisningssemester (dropdown),
+    undervisningssemester-bestemt-semester (class[if-undervisningssemester-bestemt]),
+    undervisningssemester-annet (class[if-undervisningssemester-annet]),
+    eksamenssemester (dropdown),
+    eksamenssemester-bestemt-semester (class[if-eksamenssemester-bestemt]),
+    eksamenssemester-annet (class[if-eksamenssemester-annet]),
+    emnetype (dropdown),
+    undervisning-kveldstid-eller-helg (dropdown),
+    nettbasert-undervisning (dropdown),
+    opptak-og-adgang (dropdown)
+  }
+
+  view {
+    ##
+    [resources-props "."]
+    [def semester resource-prop(".", "semesterContext.semester")]
+    [def emneCode resource-prop(".", "emneContext.fs-emne-code")]
+    [def emneStatus resource-prop(".", "emneContext.emne-status")]
+    [def studiepoeng resource-prop(".", "studiepoeng")]
+    [def contentLocale resource-prop(".", "contentLocale")]
+    [def undervisningssemester resource-prop(".", "undervisningssemester")]
+    [def eksamenssemester resource-prop(".", "eksamenssemester")]
+    [def emnetype resource-prop(".", "emnetype")]
+    [def undervisning-kveldstid-eller-helg resource-prop(".", "undervisning-kveldstid-eller-helg")]
+    [def nettbasert-undervisning resource-prop(".", "nettbasert-undervisning")]
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+        <title>Emnet</title>
+      </head>
+      <body>
+      <h1>Emnet</h1>
+      <div>
+        Emnekode: [val emneCode] Semester: [val semester]
+      </div>
+      <div>
+        Sap emnet? Her er litt studiepoeng: [val studiepoeng]
+      </div>
+      <div>
+        Kanskje litt språk også? Her: [val contentLocale]
+      </div>
+      <div>
+        Her er litt undervisningssemester: [val undervisningssemester]
+        <p>Trenger vise annet og bestemt felt ved valg. classer og js?</p>
+      </div>
+      <div>
+        Her er litt eksamenssemester: [val eksamenssemester]
+      </div>
+      <div>
+        Status ligger på mappe nivå. [val emneStatus]
+      </div>
+      <div>
+        Her er litt emnetype: [val emnetype]
+      </div>
+      <div>
+        Her er litt undervisning-kveldstid-eller-helg: [val undervisning-kveldstid-eller-helg]
+      </div>
+      <div>
+        Her er litt nettbasert-undervisning: [val nettbasert-undervisning]
+      </div>
+      <div>
+        [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-metode"}]
+        [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-frist-frekvens"}]
+      </div>
+      </body>
+    </html>
+    ##
+  }
+  
+  vocabulary {
+     studiepoeng {
+       en : (range = "1..120"),
+       no : (range = "1..120"),
+       nn : (range = "1..120")
+     },
+     undervisningssemester {
+       en : ("vaar-og-host" = "Autumn and spring", "hver-hoest" = "Every autumn", "hver-vaar" =  "Every spring", "bestemt-semester" = "semester", "annet" = "Other"),
+       no : ("vaar-og-host" = "Høst og vår", "hver-hoest" = "Hver høst", "hver-vaar" =  "Hver vår", "bestemt-semester" = "Bestemt semester", "annet" = "Annet"),
+       nn : ("vaar-og-host" = "Haust og vår", "hver-hoest" = "Hver haust", "hver-vaar" =  "Hver vår", "bestemt-semester" = "Bestemt semester", "annet" = "Annet")
+     },
+     eksamenssemester {
+       en : ("vaar-og-host" = "Autumn and spring", "hver-hoest" = "Every autumn", "hver-vaar" =  "Every spring", "bestemt-semester" = "semester", "annet" = "Other"),
+       no : ("vaar-og-host" = "Høst og vår", "hver-hoest" = "Hver høst", "hver-vaar" =  "Hver vår", "bestemt-semester" = "Bestemt semester", "annet" = "Annet"),
+       nn : ("vaar-og-host" = "Haust og vår", "hver-hoest" = "Hver haust", "hver-vaar" =  "Hver vår", "bestemt-semester" = "Bestemt semester", "annet" = "Annet")
+     },
+     emnetype {
+       en : ("redskapsemne" = "Toolcourse wtf", "grunnemne" = "Basic course", "videregaende-emne" = "Intermediate course", "avansert-emne" = "Advanced course", "phd-emne" = "Phd course", "ikke-satt" = "Not set"),
+       no : ("redskapsemne" = "Redskapsemne", "grunnemne" = "Grunnemne", "videregaende-emne" = "Videregående emne", "avansert-emne" = "Avansert emne", "phd-emne" = "Phd emne", "ikke-satt" = "Ikke satt"),
+       nn : ("redskapsemne" = "Redskapsemne", "grunnemne" = "Grunnemne", "videregaende-emne" = "Videregåande emne", "avansert-emne" = "Avansert emne", "phd-emne" = "Phd emne", "ikke-satt" = "Ikke satt")
+     },
+     undervisning-kveldstid-eller-helg {
+       en : ("ja" = "Yes", "nei" = "No", "ikke-satt" = "Not set"),
+       no : ("ja" = "Ja", "nei" = "Nei", "ikke-satt" = "Ikke satt"),
+       nn : ("ja" = "Ja", "nei" = "Nei", "ikke-satt" = "Ikkje satt")
+     },
+     nettbasert-undervisning {
+       en : ("ja" = "Yes", "nei" = "No", "ikke-satt" = "Not set"),
+       no : ("ja" = "Ja", "nei" = "Nei", "ikke-satt" = "Ikke satt"),
+       nn : ("ja" = "Ja", "nei" = "Nei", "ikke-satt" = "Ikkje satt")
+     }
+     opptak-og-adgang {
+       en : ("opptak-metode" = "Opptak metode"),
+       no : ("opptak-metode" = "Opptak metode"),
+       nn : ("opptak-metode" = "Opptak metode")
+     }
+  }
+  
+}

@@ -22,7 +22,8 @@ include structured-resources/studies/program-option-frontpage.vrtx
 include structured-resources/studies/samlet.vrtx
 include structured-resources/studies/samlet-program.vrtx
 include structured-resources/studies/samlet-retning.vrtx
-include structured-resources/studies/timeplan.vrtx
-include structured-resources/studies/eksamen.vrtx
+include structured-resources/studies/schedule.vrtx
+include structured-resources/studies/exam.vrtx
+include structured-resources/studies/course-description.vrtx
 
 include structured-resources/publications/unit-publications.vrtx

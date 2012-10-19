@@ -33,8 +33,8 @@ resourcetype course-description : fellestekst-document {
     ##
     [resources-props "."]
     [def semester resource-prop(".", "semesterContext.semester")]
-    [def emneCode resource-prop(".", "emneContext.fs-emne-code")]
-    [def emneStatus resource-prop(".", "emneContext.emne-status")]
+    [def emneCode resource-prop(".", "courseContext.fs-emne-code")]
+    [def emneStatus resource-prop(".", "courseContext.emne-status")]
     [def studiepoeng resource-prop(".", "studiepoeng")]
     [def contentLocale resource-prop(".", "contentLocale")]
     [def undervisningssemester resource-prop(".", "undervisningssemester")]
@@ -81,6 +81,18 @@ resourcetype course-description : fellestekst-document {
         [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-metode"}]
         [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-frist-frekvens"}]
       </div>
+      
+      
+      [def uris resource-prop(".", "parentChildURIs")]
+      [def count 1]
+      [list uris uri]
+        [def type resource-prop(uri, "resourceType") ]
+        [if type != null && type = "semester-context"]
+          [val count]: [val uri] - [val type]
+          [def count count + 1]
+        [endif]
+      [endlist]
+      
       </body>
     </html>
     ##

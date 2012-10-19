@@ -1,6 +1,6 @@
-function hideShowStudy(typeToDisplay) {
+function hideShowStudy(typeToDisplayElem) {
   var container = $("#editor");
-  switch (typeToDisplay) { // TODO: possible use container.attr("class", "").addClass(""); instead
+  switch (typeToDisplayElem.val()) { // TODO: possible use container.attr("class", "").addClass(""); instead
     case "so":
       container.removeClass("nm").removeClass("em").addClass("so");
       break;
@@ -16,13 +16,10 @@ function hideShowStudy(typeToDisplay) {
   }
 }
 
-function hideShowSemester(typeSemester) {
+function hideShowSemester(typeSemesterElem) {
   var container = $("#editor");
-  var elem = $(typeSemester);
-  var val = elem.val();
-  var prefix = elem.attr("id") + "-valgt";
-  
-  switch (val) { // TODO: possible use container.attr("class", "").addClass(""); instead
+  var prefix = typeSemesterElem.attr("id") + "-valgt";
+  switch (typeSemesterElem.val()) { // TODO: possible use container.attr("class", "").addClass(""); instead
     case "bestemt-semester":
       container.removeClass(prefix + "-annet").addClass(prefix + "-bestemt-semester");
       break;
@@ -46,12 +43,7 @@ $(document).ready(function () {
   // 'How to search'-document
   var typeToDisplay = $("#typeToDisplay"); 
   if(typeToDisplay.length) { 
-    try {
-      hideShowStudy(typeToDisplay.val());
-    }
-    catch (err) {
-      vrtxAdmin.error({msg: err});
-    }
+    hideShowStudy(typeToDisplay);
     for(var grouped = $(".vrtx-grouped"), i = grouped.length; i--;) { // Because accordion needs one content wrapper
       $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
     }

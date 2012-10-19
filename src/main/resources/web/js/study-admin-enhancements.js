@@ -65,7 +65,7 @@ $(document).ready(function () {
     });
   }
   
-  // Course description - hide/show semesters
+  // Course description - hide/show semesters (TODO: combine simular code)
   var typeSemesterUndervisning = $("#undervisningssemester");
   if(typeSemesterUndervisning.length) {
     try {

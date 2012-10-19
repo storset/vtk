@@ -1,42 +1,7 @@
-function hideShowStudy(typeToDisplayElem) {
-  var container = $("#editor");
-  switch (typeToDisplayElem.val()) { // TODO: possible use container.attr("class", "").addClass(""); instead
-    case "so":
-      container.removeClass("nm").removeClass("em").addClass("so");
-      break;
-    case "nm":
-      container.removeClass("so").removeClass("em").addClass("nm");
-      break;
-    case "em":
-      container.removeClass("so").removeClass("nm").addClass("em");
-      break;
-    default:
-      container.removeClass("so").removeClass("nm").removeClass("em");
-      break;
-  }
-}
-
-function hideShowSemester(typeSemesterElem) {
-  var container = $("#editor");
-  var prefix = typeSemesterElem.attr("id") + "-valgt";
-  switch (typeSemesterElem.val()) { // TODO: possible use container.attr("class", "").addClass(""); instead
-    case "bestemt-semester":
-      container.removeClass(prefix + "-annet").addClass(prefix + "-bestemt-semester");
-      break;
-    case "annet":
-      container.removeClass(prefix + "-bestemt-semester").addClass(prefix + "-annet");
-      break;
-    default:
-      container.removeClass(prefix + "-annet").removeClass(prefix + "-bestemt-semester");
-      break;
-  }
-}
-
-function replaceTag(selector, tag, replaceTag) {
-  selector.find(tag).replaceWith(function() {
-    return "<" + replaceTag + ">" + $(this).text() + "</" + replaceTag + ">";
-  });
-}
+/*
+ *  Vortex Study admin enhancements
+ *
+ */
 
 $(document).ready(function () {
 
@@ -84,3 +49,45 @@ $(document).ready(function () {
     replaceTag(samletElm, "h1", "h2");
   }
 });
+
+function hideShowStudy(typeToDisplayElem) {
+  var container = $("#editor");
+  switch (typeToDisplayElem.val()) { // TODO: possible use container.attr("class", "").addClass(""); instead
+    case "so":
+      container.removeClass("nm").removeClass("em").addClass("so");
+      break;
+    case "nm":
+      container.removeClass("so").removeClass("em").addClass("nm");
+      break;
+    case "em":
+      container.removeClass("so").removeClass("nm").addClass("em");
+      break;
+    default:
+      container.removeClass("so").removeClass("nm").removeClass("em");
+      break;
+  }
+}
+
+function hideShowSemester(typeSemesterElem) {
+  var container = $("#editor");
+  var prefix = typeSemesterElem.attr("id") + "-valgt";
+  switch (typeSemesterElem.val()) { // TODO: possible use container.attr("class", "").addClass(""); instead
+    case "bestemt-semester":
+      container.removeClass(prefix + "-annet").addClass(prefix + "-bestemt-semester");
+      break;
+    case "annet":
+      container.removeClass(prefix + "-bestemt-semester").addClass(prefix + "-annet");
+      break;
+    default:
+      container.removeClass(prefix + "-annet").removeClass(prefix + "-bestemt-semester");
+      break;
+  }
+}
+
+function replaceTag(selector, tag, replaceTag) {
+  selector.find(tag).replaceWith(function() {
+    return "<" + replaceTag + ">" + $(this).text() + "</" + replaceTag + ">";
+  });
+}
+
+/* ^ Vortex Study admin enhancements */

@@ -1,6 +1,9 @@
 /*
  *  Vortex Study admin enhancements
  *
+ *  TODO: delete file and move content to editor-ck-setup-helper.js (VTK-3047)
+ *        also other editor specific code in admin-enhancements.js
+ *
  */
 
 $(document).ready(function () {

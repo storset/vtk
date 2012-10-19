@@ -28,7 +28,7 @@
     var tooLongFieldPost = "<@vrtx.msg code='editor.too-long-field-post' />";
          
     // IE CSS
-    if (vrtxAdmin.isIE && vrtxAdmin.browserVersion <= 7 && typeof cssFileList !== "undefined") {
+    if (vrtxAdmin.isIE && typeof cssFileList !== "undefined") {
       cssFileList.push("/vrtx/__vrtx/static-resources/themes/default/editor-container-ie.css");
     }
   // -->

@@ -101,7 +101,6 @@ function saveDateAndTimeFields() {
   var dateFields = $(".date");
   for(var i = 0, len = dateFields.length; i < len; i++) {
     var dateFieldName = dateFields[i].name;
-    console.log(dateFieldName);
     if (!dateFieldName) return;
 
     var fieldName = dateFieldName.replace(/\./g, '\\.');

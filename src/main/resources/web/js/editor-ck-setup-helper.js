@@ -185,35 +185,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 
   config.disableNativeSpellChecker = false;
 
-  // Configure tag formatting in source
-  config.on = {
-    instanceReady: function (ev) {
 
-      var tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-
-      for (var key in tags) {
-        this.dataProcessor.writer.setRules(tags[key], {
-          indent: false,
-          breakBeforeOpen: true,
-          breakAfterOpen: false,
-          breakBeforeClose: false,
-          breakAfterClose: true
-        });
-      }
-
-      tags = ['ol', 'ul', 'li'];
-
-      for (key in tags) {
-        this.dataProcessor.writer.setRules(tags[key], {
-          indent: true,
-          breakBeforeOpen: true,
-          breakAfterOpen: false,
-          breakBeforeClose: false,
-          breakAfterClose: true
-        });
-      }
-    }
-  }
 
   CKEDITOR.replace(name, config);
 }

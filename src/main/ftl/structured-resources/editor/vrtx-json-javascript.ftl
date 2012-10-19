@@ -132,11 +132,16 @@
       }
       
       // Move up, move down, remove
+      
+      var jsonParent = $(button).closest(".vrtx-json");
+      var isImmovable = jsonParent && jsonParent.hasClass("vrtx-multiple-immovable");
 
-      var moveDownButton = $.mustache(TEMPLATES["add-remove-move"], { clazz: 'move-down', buttonText: '&darr; ${vrtx.getMsg("editor.move-down")}' });
-      var moveUpButton = $.mustache(TEMPLATES["add-remove-move"],   { clazz: 'move-up',   buttonText: '&uarr; ${vrtx.getMsg("editor.move-up")}'   });
+      if(!isImmovable) {
+        var moveDownButton = $.mustache(TEMPLATES["add-remove-move"], { clazz: 'move-down', buttonText: '&darr; ${vrtx.getMsg("editor.move-down")}' });
+        var moveUpButton = $.mustache(TEMPLATES["add-remove-move"],   { clazz: 'move-up',   buttonText: '&uarr; ${vrtx.getMsg("editor.move-up")}'   });
+      }
       var removeButton = $.mustache(TEMPLATES["add-remove-move"],   { clazz: 'remove',    buttonText: '${vrtx.getMsg("editor.remove")}'           });
-
+      
       var id = "<input type=\"hidden\" class=\"id\" value=\"" + counter + "\" \/>";
       var newElementId = "vrtx-json-element-" + j.name + "-" + counter;
     
@@ -146,25 +151,31 @@
       newElement.append(htmlTemplate);
       newElement.append(id);
     
-      if (counter > 0 && newElement.prev(".vrtx-json-element").length) {
+      if (!isImmovable && counter > 0 && newElement.prev(".vrtx-json-element").length) {
         newElement.prev(".vrtx-json-element").append(moveDownButton);
       }
+      
       newElement.append(removeButton);
     
-      if (counter > 0) {
+      if (!isImmovable && counter > 0) {
         newElement.append(moveUpButton);
       }
+      
       newElement.find(".vrtx-remove-button").click(function () {
         removeNode(j.name, counter);
       });
-      newElement.find(".vrtx-move-up-button").click(function () {
-        swapContent(counter, arrayOfIds, -1, j.name);
-      });
-
-      if (newElement.prev(".vrtx-json-element").length) {
-        newElement.prev(".vrtx-json-element").find(".vrtx-move-down-button").click(function () {
-          swapContent(counter-1, arrayOfIds, 1, j.name);
+      
+      if(!isImmovable) {
+        newElement.find(".vrtx-move-up-button").click(function () {
+          swapContent(counter, arrayOfIds, -1, j.name);
         });
+
+        if (newElement.prev(".vrtx-json-element").length) {
+          newElement.prev(".vrtx-json-element").find(".vrtx-move-down-button").click(function () {
+            swapContent(counter-1, arrayOfIds, 1, j.name);
+          });
+        }
+      
       }
 
       // CK and date inputfields

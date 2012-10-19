@@ -68,22 +68,14 @@ $(document).ready(function () {
   // Course description - hide/show semesters (TODO: combine simular code)
   var typeSemesterUndervisning = $("#undervisningssemester");
   if(typeSemesterUndervisning.length) {
-    try {
-      hideShowSemester(typeSemesterUndervisning.val(), "undervisning");
-    } catch (err) {
-      vrtxAdmin.error({msg: err});
-    }
+    hideShowSemester(typeSemesterUndervisning.val(), "undervisning");
     $(document).on("change", "#undervisningssemester", function () {
       hideShowSemester($(this).val(), "undervisning");
     });
   }
   var typeSemesterEksamen = $("#eksamenssemester");
   if(typeSemesterEksamen.length) {
-    try {
-      hideShowSemester(typeSemesterEksamen.val(), "eksamen");
-    } catch (err) {
-      vrtxAdmin.error({msg: err});
-    }
+    hideShowSemester(typeSemesterEksamen.val(), "eksamen");
     $(document).on("change", "#eksamenssemester", function () {
       hideShowSemester($(this).val(), "eksamen");
     });

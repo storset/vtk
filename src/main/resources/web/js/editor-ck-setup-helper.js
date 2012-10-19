@@ -181,7 +181,7 @@ function setCKEditorConfig(name, linkBrowseUrl, imageBrowseUrl, flashBrowseUrl, 
 
   config.forcePasteAsPlainText = false;
 
-  
+  config.disableObjectResizing = true;
 
   config.disableNativeSpellChecker = false;
 

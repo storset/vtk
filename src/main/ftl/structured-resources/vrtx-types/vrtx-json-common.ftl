@@ -289,31 +289,33 @@
                });
     	     // -->
        	     </script>
+       	     
+       	     <#if cssclass = "vrtx-multiple-immovable">
+               <#if (counter > 0) >
+                 <div class="vrtx-button vrtx-move-up-button">
+                   <input type="button" value="&uarr; ${vrtx.getMsg("editor.move-up")}"  />
+                 </div>
 
-             <#if (counter > 0) >
-               <div class="vrtx-button vrtx-move-up-button">
-                 <input type="button" value="&uarr; ${vrtx.getMsg("editor.move-up")}"  />
-               </div>
+                 <script type="text/javascript"><!--
+                   $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-up-button").click(function(){
+     		         swapContent(${counter}, ${arrayOfIds}, -1, "${inputFieldName}");
+                   });
+                 // -->
+                 </script>
+               </#if>
 
-               <script type="text/javascript"><!--
-                 $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-up-button").click(function(){
-     		       swapContent(${counter}, ${arrayOfIds}, -1, "${inputFieldName}");
-                 });
-               // -->
-               </script>
-             </#if>
+               <#if map_has_next >
+                 <div class="vrtx-button vrtx-move-down-button">
+                   <input type="button" value="&darr; ${vrtx.getMsg("editor.move-down")}"  />
+                 </div>
 
-             <#if map_has_next >
-               <div class="vrtx-button vrtx-move-down-button">
-                 <input type="button" value="&darr; ${vrtx.getMsg("editor.move-down")}"  />
-               </div>
-
-               <script type="text/javascript"><!--
-          	     $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-down-button").click(function(){
-	     	       swapContent(${counter}, ${arrayOfIds}, 1, "${inputFieldName}");
-	     	     });
-	     	   // -->
-               </script>
+                 <script type="text/javascript"><!--
+          	       $("#vrtx-json-element-${inputFieldName}-${counter}").find(".vrtx-move-down-button").click(function(){
+	     	         swapContent(${counter}, ${arrayOfIds}, 1, "${inputFieldName}");
+	     	       });
+	     	     // -->
+                 </script>
+               </#if>
              </#if>
 
            </div>

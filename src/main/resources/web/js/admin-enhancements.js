@@ -1067,6 +1067,9 @@ function userTitleChange(titleBind, nameBind, indexBind) {
     var nameFieldVal = replaceInvalidChar(titleField.val());
     
     if(!indexBind || !indexCheckbox.length || !indexCheckbox.is(":checked")) {
+      if(nameFieldVal.length > 50) {
+        nameFieldVal = nameFieldVal.substring(0, 50); 
+      }
       nameField.val(nameFieldVal);
       growField(nameField, nameFieldVal, 5, 35, 530);
     } else {

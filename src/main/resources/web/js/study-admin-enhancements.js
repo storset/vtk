@@ -16,17 +16,21 @@ function hideShowStudy(typeToDisplay) {
   }
 }
 
-function hideShowSemester(typeSemester, str) {
+function hideShowSemester(typeSemester) {
   var container = $("#editor");
-  switch (typeSemester) { // TODO: possible use container.attr("class", "").addClass(""); instead
+  var elem = $(typeSemester);
+  var val = elem.val();
+  var prefix = elem.attr("id") + "-valgt";
+  
+  switch (val) { // TODO: possible use container.attr("class", "").addClass(""); instead
     case "bestemt-semester":
-      container.removeClass(str + "-annet").addClass(str + "-bestemt");
+      container.removeClass(prefix + "-annet").addClass(prefix + "-bestemt-semester");
       break;
     case "annet":
-      container.removeClass(str + "-bestemt").addClass(str + "-annet");
+      container.removeClass(prefix + "-bestemt-semester").addClass(prefix + "-annet");
       break;
     default:
-      container.removeClass(str + "-annet").removeClass(str + "-bestemt");
+      container.removeClass(prefix + "-annet").removeClass(prefix + "-bestemt-semester");
       break;
   }
 }
@@ -65,20 +69,16 @@ $(document).ready(function () {
     });
   }
   
-  // Course description - hide/show semesters (TODO: combine simular code)
-  var typeSemesterUndervisning = $("#undervisningssemester");
-  if(typeSemesterUndervisning.length) {
-    hideShowSemester(typeSemesterUndervisning.val(), "undervisning");
-    $(document).on("change", "#undervisningssemester", function () {
-      hideShowSemester($(this).val(), "undervisning");
-    });
-  }
-  var typeSemesterEksamen = $("#eksamenssemester");
-  if(typeSemesterEksamen.length) {
-    hideShowSemester(typeSemesterEksamen.val(), "eksamen");
-    $(document).on("change", "#eksamenssemester", function () {
-      hideShowSemester($(this).val(), "eksamen");
-    });
+  // Course description - hide/show semesters
+  for(var semesters = ["undervisning", "eksamen"], i = semesters.length, semesterId, semesterType; i--;) {
+    semesterId = "#" + semesters[i] + "ssemester";
+    semesterType = $(semesterId);
+    if(semesterType.length) {
+      hideShowSemester(semesterType);
+      $(document).on("change", semesterId, function () {
+        hideShowSemester($(this));
+      });
+    }
   }
   
   // 'Samlet program'-document

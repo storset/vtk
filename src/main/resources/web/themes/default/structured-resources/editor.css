@@ -152,10 +152,10 @@
   display: none;  
 }
 
-#editor.undervisning-bestemt .undervisningssemester-bestemt-semester,
-#editor.undervisning-annet .undervisningssemester-annet,
-#editor.eksamen-bestemt .eksamenssemester-bestemt-semester,
-#editor.eksamen-annet .eksamenssemester-annet {
+#editor.undervisningssemester-valgt-bestemt-semester .undervisningssemester-bestemt-semester,
+#editor.undervisningssemester-valgt-annet .undervisningssemester-annet,
+#editor.eksamenssemester-valgt-bestemt-semester .eksamenssemester-bestemt-semester,
+#editor.eksamenssemester-valgt-annet .eksamenssemester-annet {
   display: block;
 }
 

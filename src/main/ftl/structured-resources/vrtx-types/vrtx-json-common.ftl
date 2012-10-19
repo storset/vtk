@@ -191,8 +191,8 @@
         elem.name
         ""
         locale
-        cssclass
         form.resource.getLocalizedTooltip(elem.name, locale)
+        cssclass
       />
       <#break>
 
@@ -203,8 +203,8 @@
 
 </#macro>
 
-<#macro printJSONPropertyEditView title inputFieldName elem id tooltip locale classes inputFieldSize=20>
-  <div class="vrtx-json${classes}">
+<#macro printJSONPropertyEditView title inputFieldName elem id tooltip locale inputFieldSize=20 cssclass="">
+  <div class="vrtx-json${cssclass}">
     <div id="${id}" class="fieldset">
       <div class="header">${title}</div>
     

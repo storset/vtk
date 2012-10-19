@@ -118,6 +118,8 @@ function saveDateAndTimeFields() {
          dateFields[i].value += ":" + minutes[0].value;
         }
       }
+    } else {
+      dateFields[i].value = "";
     }
   }
 }

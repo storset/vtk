@@ -38,6 +38,8 @@ resourcetype person {
     group additionalContactInformation (alternativeVisitingAddress, building, room, availableHours, alternativeCellPhone) (after contactInformation),
     group images (picture, pressPhoto) (after additionalContactInformation) horizontal,
     group combinedPublications (getExternalScientificInformation, selectedPublications) (after tags),
+    projects (class[vrtx-multiple-immovable]),
+    groups (class[vrtx-multiple-immovable]),
     group combinedProjects (getRelatedProjects, projects) (after combinedPublications),
     group combinedGroups (getRelatedGroups, groups) (after combinedProjects),
     username (size[8], class[vrtx-autocomplete-username]),

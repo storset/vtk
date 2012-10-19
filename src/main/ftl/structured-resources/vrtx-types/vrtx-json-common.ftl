@@ -180,6 +180,10 @@
       <#break>
 
     <#case "json">
+      <#assign cssclass =  "" />
+      <#if elem.description.edithints?exists && elem.description.edithints['class']?exists >
+        <#assign cssclass = " " + elem.description.edithints['class'] />
+      </#if>
       <@printJSONPropertyEditView
         localizedTitle
         elem.name
@@ -187,6 +191,7 @@
         elem.name
         ""
         locale
+        cssclass
         form.resource.getLocalizedTooltip(elem.name, locale)
       />
       <#break>
@@ -198,9 +203,8 @@
 
 </#macro>
 
-<#macro printJSONPropertyEditView title inputFieldName elem id tooltip locale inputFieldSize=20>
-
-  <div class="vrtx-json">
+<#macro printJSONPropertyEditView title inputFieldName elem id tooltip locale classes inputFieldSize=20>
+  <div class="vrtx-json${classes}">
     <div id="${id}" class="fieldset">
       <div class="header">${title}</div>
     

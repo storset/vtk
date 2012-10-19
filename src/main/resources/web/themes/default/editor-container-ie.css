@@ -1,19 +1,5 @@
 @charset "UTF-8";
 
-.vrtx-container {
-  border: 1px solid green; 
-}
-
-.vrtx-container p {
-  border: 1px solid red;
-  position: relative;
-}
-
-.vrtx-container p img {
-  border: 1px solid blue;
-  position: relative;
-}
-
 /* IE7
 .vrtx-container-size-xxl p { width :768px; }
 .vrtx-container-size-xl p  { width: 668px; }

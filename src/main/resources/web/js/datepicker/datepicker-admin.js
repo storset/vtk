@@ -49,9 +49,9 @@ function displayDateAsMultipleInputFields(name) {
     date = new String(a[0].value).split(" ");
   }
 
-  dateField = "<div class='vrtx-textfield vrtx-date'><input type='text' size='12' id='" + name + "-date' value='" + date[0] + "' class='date' /></div>";
-  hoursField = "<div class='vrtx-textfield vrtx-hours'><input type='text' size='2' id='" + name + "-hours' value='" + hours + "' class='hours' /></div>";
-  minutesField = "<div class='vrtx-textfield vrtx-minutes'><input type='text' size='2' id='" + name + "-minutes' value='" + minutes + "' class='minutes' /></div>";
+  dateField = "<div class='vrtx-textfield vrtx-date'><input type='text' size='12' id='" + name + "-date' value='" + date[0] + "' /></div>";
+  hoursField = "<div class='vrtx-textfield vrtx-hours'><input type='text' size='2' id='" + name + "-hours' value='" + hours + "' /></div>";
+  minutesField = "<div class='vrtx-textfield vrtx-minutes'><input type='text' size='2' id='" + name + "-minutes' value='" + minutes + "' /></div>";
   a.parent().hide();
   a.parent().after(dateField + hoursField + "<span class='vrtx-time-seperator'>:</span>" + minutesField);
   $("#" + fieldName + "-date").datepicker({
@@ -101,6 +101,7 @@ function saveDateAndTimeFields() {
   var dateFields = $(".date");
   for(var i = 0, len = dateFields.length; i < len; i++) {
     var dateFieldName = dateFields[i].name;
+    console.log(dateFieldName);
     if (!dateFieldName) return;
 
     var fieldName = dateFieldName.replace(/\./g, '\\.');

@@ -92,7 +92,7 @@ import org.vortikal.web.service.URL;
 public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements HandlerFilter {
 
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
-    private int maxUploadSize = 100000000;
+    private long maxUploadSize = 2*1024*1024*1024; // 2G max by default
 
     public static final String TOKEN_REQUEST_PARAMETER = "csrf-prevention-token";
     private static final String SECRET_SESSION_ATTRIBUTE = "csrf-prevention-secret";
@@ -131,10 +131,8 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements Han
         if (contentType != null && contentType.startsWith("multipart/form-data")) {
             MultipartWrapper multipartRequest = new MultipartWrapper(request, this.tempDir, this.maxUploadSize);
             try {
-                if (request.getContentLength() > 0) {
-                    multipartRequest.writeTempFile();
-                    multipartRequest.parseRequest();
-                }
+                multipartRequest.writeTempFile();
+                multipartRequest.parseRequest();
                 verifyToken(multipartRequest);
                 chain.filter(multipartRequest);
             } finally {
@@ -146,6 +144,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements Han
         }
     }
 
+    @Override
     public NodeResult filter(HtmlContent node) {
         if (!(node instanceof HtmlElement)) {
             return NodeResult.keep;
@@ -196,11 +195,13 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements Han
             input.setAttributes(attrs.toArray(new HtmlAttribute[attrs.size()]));
             element.addContent(0, input);
             element.addContent(0, new HtmlText() {
+                @Override
                 public String getContent() {
                     return "\r\n";
                 }
             });
             element.addContent(new HtmlText() {
+                @Override
                 public String getContent() {
                     return "\r\n";
                 }
@@ -248,7 +249,7 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements Han
         HttpServletRequest request = RequestContext.getRequestContext().getServletRequest();
         URL url = URL.create(request);
         url.clearParameters();
-        Path path = null;
+        Path path;
         String[] segments = action.split("/");
         int startIdx = 0;
         if (action.startsWith("/")) {
@@ -318,31 +319,30 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements Han
 
     private static class MultipartWrapper extends HttpServletRequestWrapper {
         private HttpServletRequest request;
-        private File tempFile;
+        private StreamUtil.TempFile tempFile;
+        private long maxMultipartSize;
         private File tempDir;
-        private int bufferSize = 1024;
-        private long fileSizeMax;
         private Map<String, List<String>> params = new HashMap<String, List<String>>();
 
-        public MultipartWrapper(HttpServletRequest request, File tempDir, long fileSizeMax) {
+        public MultipartWrapper(HttpServletRequest request, File tempDir, long maxMultipartSize) {
             super(request);
             this.request = request;
-            this.fileSizeMax = fileSizeMax;
+            this.maxMultipartSize = maxMultipartSize;
             this.tempDir = tempDir;
         }
 
         public void cleanup() {
             if (logger.isDebugEnabled()) {
-                logger.debug("Cleanup temp file: " + this.tempFile + ", exists: " + this.tempFile.exists());
+                logger.debug("Cleanup temp file: " + this.tempFile + ", exists: " + this.tempFile.getFile().exists());
             }
-            if (this.tempFile != null && this.tempFile.exists()) {
+            if (this.tempFile != null) {
                 this.tempFile.delete();
             }
         }
 
         @Override
         public ServletInputStream getInputStream() throws IOException {
-            FileInputStream fileStream = new FileInputStream(this.tempFile);
+            FileInputStream fileStream = this.tempFile.getFileInputStream();
             return new org.vortikal.util.io.ServletInputStream(fileStream);
         }
 
@@ -430,34 +430,20 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements Han
         }
 
         private void writeTempFile() throws IOException, FileUploadException {
-            this.tempFile = File.createTempFile("multipart-filter", null, this.tempDir);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Create temp file: " + tempFile);
+            this.tempFile = StreamUtil.streamToTempFile(
+                    request.getInputStream(), this.maxMultipartSize, this.tempDir);
+            if (this.tempFile.isTruncatedToSizeLimit()) {
+                throw new FileUploadException("Upload limit exceeded");
             }
-            byte[] buffer = new byte[this.bufferSize];
-            ServletInputStream in = this.request.getInputStream();
-            OutputStream out = new FileOutputStream(tempFile);
-            try {
-                int n = 0;
-                long total = 0L;
-                while ((n = in.read(buffer, 0, buffer.length)) > 0) {
-                    total += n;
-                    if (this.fileSizeMax > 0 && total > this.fileSizeMax) {
-                        throw new FileUploadException("Upload limit exceeded");
-                    }
-                    out.write(buffer, 0, n);
-                }
-            } finally {
-                in.close();
-                out.flush();
-                out.close();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Create temp file: " + this.tempFile);
             }
         }
 
         private void parseRequest() throws FileUploadException, IOException {
             ServletFileUpload upload = new ServletFileUpload();
-            upload.setFileSizeMax(this.fileSizeMax);
             FileItemIterator iter = upload.getItemIterator(this);
+            List<String> multipartUploadFileItemNames = new ArrayList<String>();
             while (iter.hasNext()) {
                 FileItemStream item = iter.next();
                 if (item.isFormField()) {
@@ -471,12 +457,25 @@ public class CSRFPreventionHandler extends AbstractHtmlPageFilter implements Han
                     }
                     String value = new String(buf, encoding);
                     addParameter(name, value);
+                } else {
+                    multipartUploadFileItemNames.add(item.getName());
                 }
+            }
+            
+            // Provide cached info about file item names in upload
+            if (!multipartUploadFileItemNames.isEmpty()) {
+                setAttribute("org.vortikal.MultipartUploadWrapper.FileItemNames", multipartUploadFileItemNames);
             }
         }
     }
 
-    public void setMaxUploadSize(int maxUploadSize) {
+    /**
+     * Maximum size in bytes of POST multipart requests to process.
+     * -1 means no limit.
+     * 
+     * @param maxUploadSize 
+     */
+    public void setMaxUploadSize(long maxUploadSize) {
         this.maxUploadSize = maxUploadSize;
     }
 

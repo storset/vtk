@@ -424,6 +424,20 @@ public class StreamUtilTest {
         assertEquals(1024 - 1, tmp.getFile().length());
         tmp.delete();
         assertFalse(tmp.getFile().exists());
+
+        data = new byte[0];
+        tmp = StreamUtil.streamToTempFile(new SmallChunkInputStream(data), -1, null);
+        assertFalse(tmp.isTruncatedToSizeLimit());
+        assertEquals(0, tmp.getFile().length());
+        tmp.delete();
+        assertFalse(tmp.getFile().exists());
+
+        data = new byte[1];
+        tmp = StreamUtil.streamToTempFile(new SmallChunkInputStream(data), -1, null);
+        assertFalse(tmp.isTruncatedToSizeLimit());
+        assertEquals(1, tmp.getFile().length());
+        tmp.delete();
+        assertFalse(tmp.getFile().exists());
     }
     
     @Test

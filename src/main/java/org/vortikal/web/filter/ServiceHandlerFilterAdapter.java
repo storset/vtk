@@ -115,6 +115,7 @@ public final class ServiceHandlerFilterAdapter implements HandlerAdapter {
             this.response = response;
         }
         
+        @Override
         public HttpServletResponse getResponse() {
             return this.response;
         }

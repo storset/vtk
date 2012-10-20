@@ -51,6 +51,7 @@ import org.vortikal.repository.search.Search;
 import org.vortikal.repository.store.Cache;
 import org.vortikal.security.AuthenticationException;
 import org.vortikal.security.Principal;
+import org.vortikal.util.io.StreamUtil;
 
 /**
  * Handles synchronization in URI namespace of repository read/write operations
@@ -200,15 +201,15 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
     public Resource createDocument(String token, Path uri, InputStream byteStream) throws IllegalOperationException,
             AuthorizationException, AuthenticationException, ResourceLockedException, ReadOnlyException, Exception {
 
-        File tempFile = null;
+        StreamUtil.TempFile tempFile = null;
         try {
             // Convert input stream to file FileInputStream if necessary, to ensure
             // most efficient transfer to repository content store while holding locks.
             if (! ((byteStream instanceof FileInputStream)
                     || (byteStream instanceof ByteArrayInputStream))) {
                 
-                tempFile = writeTempFile(uri.getName(), byteStream);
-                byteStream = new FileInputStream(tempFile);
+                tempFile = StreamUtil.streamToTempFile(byteStream, this.tempDir);
+                byteStream = tempFile.getFileInputStream();
             }
 
             // Synchronize on:
@@ -636,50 +637,6 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         return this.wrappedRepository.getTypeInfo(resource);
     }
 
-    @Required
-    public void setCache(Cache cache) {
-        this.cache = cache;
-    }
-
-    @Required
-    public void setWrappedRepository(Repository wrappedRepository) {
-        this.wrappedRepository = wrappedRepository;
-    }
-    
-    @Required
-    public void setTempDir(String tempDirPath) {
-        File tmp = new File(tempDirPath);
-        if (!tmp.exists()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " does not exist");
-        }
-        if (!tmp.isDirectory()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " is not a directory");
-        }
-        this.tempDir = tmp;
-    }
-    
-    /**
-     * Writes to a temporary file (used to avoid lengthy blocking on file
-     * uploads).
-     */
-    private File writeTempFile(String name, InputStream byteStream) throws IOException {
-        ReadableByteChannel src = Channels.newChannel(byteStream);
-        File tempFile = File.createTempFile("tmpfile-" + name, null, this.tempDir);
-        FileChannel dest = new FileOutputStream(tempFile).getChannel();
-        int chunk = 100000;
-        long pos = 0;
-        while (true) {
-            long n = dest.transferFrom(src, pos, chunk);
-            if (n == 0) {
-                break;
-            }
-            pos += n;
-        }
-        src.close();
-        dest.close();
-        return tempFile;
-    }
-    
     private void flushFromCache(Path uri, boolean includeDescendants, String serviceMethodName) {
         this.cache.flushFromCache(uri, includeDescendants);
         if (logger.isDebugEnabled()) {
@@ -731,4 +688,27 @@ public class LockingCacheControlRepositoryWrapper implements Repository {
         }
     }
 
+    
+    @Required
+    public void setCache(Cache cache) {
+        this.cache = cache;
+    }
+
+    @Required
+    public void setWrappedRepository(Repository wrappedRepository) {
+        this.wrappedRepository = wrappedRepository;
+    }
+    
+    @Required
+    public void setTempDir(String tempDirPath) {
+        File tmp = new File(tempDirPath);
+        if (!tmp.exists()) {
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " does not exist");
+        }
+        if (!tmp.isDirectory()) {
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " is not a directory");
+        }
+        this.tempDir = tmp;
+    }
+    
 }

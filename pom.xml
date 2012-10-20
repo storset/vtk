@@ -181,11 +181,11 @@
           <connectors>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
               <port>9321</port>
-              <maxIdleTime>60000</maxIdleTime>
+              <maxIdleTime>600000</maxIdleTime>
             </connector>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
               <port>9322</port>
-              <maxIdleTime>60000</maxIdleTime>
+              <maxIdleTime>600000</maxIdleTime>
             </connector>
           </connectors>
           <scanIntervalSeconds>0</scanIntervalSeconds>

@@ -30,12 +30,16 @@
  */
 package org.vortikal.util.io;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -45,6 +49,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 
 /**
  * Thorough test-case for StreamUtil class.
@@ -353,7 +358,99 @@ public class StreamUtilTest {
         String result = StreamUtil.streamToString(in, "utf-8");
         assertEquals(s, result);
     }
+    
+    @Test
+    public void testStreamToTempFile() throws IOException {
+        byte[] data = generateRandomDataBuffer(10*1024);
+        StreamUtil.TempFile tmp = StreamUtil.streamToTempFile(new ByteArrayInputStream(data));
+        assertFalse(tmp.isTruncatedToSizeLimit());
+        
+        byte[] tmpData = StreamUtil.readInputStream(tmp.getFileInputStream());
+        assertTrue(buffersEqual(data, tmpData));
+        
+        tmp.delete();
+        assertFalse(tmp.getFile().exists());
+        try {
+            tmp.getFileInputStream();
+            fail("Expected IOException on trying to get input stream of deleted file");
+        } catch (IOException io) {
+            // ok
+        }
+    }
 
+    @Test
+    public void testStreamToTempFileWithLimit() throws IOException {
+        byte[] data = generateRandomDataBuffer(1000);
+        StreamUtil.TempFile tmp = StreamUtil.streamToTempFile(new ByteArrayInputStream(data), 100, null);
+        assertTrue(tmp.isTruncatedToSizeLimit());
+        assertEquals(100, tmp.getFile().length());
+        
+        byte[] tmpData = StreamUtil.readInputStream(tmp.getFileInputStream());
+        
+        byte[] cappedData = new byte[100];
+        System.arraycopy(tmpData, 0, cappedData, 0, 100);
+        assertTrue(buffersEqual(cappedData, tmpData));
+        tmp.delete();
+        assertFalse(tmp.getFile().exists());
+        
+        data = new byte[2*1024*1024 + 100];
+        tmp = StreamUtil.streamToTempFile(new ByteArrayInputStream(data), data.length, null);
+        assertFalse(tmp.isTruncatedToSizeLimit());
+        tmpData = StreamUtil.readInputStream(tmp.getFileInputStream());
+        assertTrue(buffersEqual(data, tmpData));
+        assertEquals(2*1024*1024 + 100, tmp.getFile().length());
+        tmp.delete();
+        assertFalse(tmp.getFile().exists());
+
+        data = new byte[1024];
+        tmp = StreamUtil.streamToTempFile(new ByteArrayInputStream(data),0, null);
+        assertTrue(tmp.isTruncatedToSizeLimit());
+        assertEquals(0, tmp.getFile().length());
+        tmp.delete();
+        assertFalse(tmp.getFile().exists());
+
+        data = new byte[1024];
+        tmp = StreamUtil.streamToTempFile(new SmallChunkInputStream(data), 1024 + 1, null);
+        assertFalse(tmp.isTruncatedToSizeLimit());
+        assertEquals(1024, tmp.getFile().length());
+        tmpData = StreamUtil.readInputStream(tmp.getFileInputStream());
+        assertTrue(buffersEqual(data, tmpData));
+        tmp.delete();
+        assertFalse(tmp.getFile().exists());
+
+        data = new byte[1024];
+        tmp = StreamUtil.streamToTempFile(new SmallChunkInputStream(data), 1024 - 1, null);
+        assertTrue(tmp.isTruncatedToSizeLimit());
+        assertEquals(1024 - 1, tmp.getFile().length());
+        tmp.delete();
+        assertFalse(tmp.getFile().exists());
+    }
+    
+    @Test
+    public void fileStreamCopyTest() throws Exception {
+        byte[] data = generateRandomDataBuffer(1000);
+        StreamUtil.TempFile tempFile = StreamUtil.streamToTempFile(new ByteArrayInputStream(data));
+        File destFile = File.createTempFile("StreamUtilTest", null);
+        
+        long count = StreamUtil.fileStreamCopy(tempFile.getFileInputStream(), new FileOutputStream(destFile), true);
+        assertEquals(1000, count);
+        byte[] destFileData = StreamUtil.readInputStream(new FileInputStream(destFile));
+        assertTrue(buffersEqual(data, destFileData));
+        tempFile.delete();
+        destFile.delete();
+        
+        data = new byte[2*1024*1024 + 100];
+        data[2*1024*1024] = 'X';
+        tempFile = StreamUtil.streamToTempFile(new ByteArrayInputStream(data));
+        destFile = File.createTempFile("StreamUtilTest", null);
+        count = StreamUtil.fileStreamCopy(tempFile.getFileInputStream(), new FileOutputStream(destFile), true);
+        assertEquals(2*1024*1024 + 100, count);
+        destFileData = StreamUtil.readInputStream(new FileInputStream(destFile));
+        assertTrue(buffersEqual(data, destFileData));
+        tempFile.delete();
+        destFile.delete();
+    }
+    
     private boolean buffersEqual(byte[] a, byte[] b) {
         if (a.length != b.length) {
             return false;
@@ -375,100 +472,6 @@ public class StreamUtilTest {
 
         return data;
     }
-
-    // Performance tests, comparing old and new
-//    @Test
-//    public void perftest() throws Exception {
-//        byte[] data = generateRandomDataBuffer(65536);
-//
-//        long start, end;
-//        for (int r = 0; r < 2; r++) {
-//            start = System.currentTimeMillis();
-//            for (int i = 0; i < 20000; i++) {
-//                InputStream in = new ByteArrayInputStream(data);
-//                byte[] result = StreamUtil.readInputStream(in);
-//            }
-//            end = System.currentTimeMillis();
-//            System.out.println("New impl: " + (end - start) + "ms");
-//
-//            start = System.currentTimeMillis();
-//            for (int i = 0; i < 20000; i++) {
-//                InputStream in = new ByteArrayInputStream(data);
-//                byte[] result = StreamUtil.readInputStreamOLD(in);
-//            }
-//            end = System.currentTimeMillis();
-//            System.out.println("OLD impl: " + (end - start) + "ms");
-//        }
-//    }
-//    @Test
-//    public void perftestSmallChunks() throws Exception {
-//        byte[] data = generateRandomDataBuffer(50000);
-//        long start, end;
-//
-//        for (int r = 0; r < 2; r++) {
-//            start = System.currentTimeMillis();
-//            for (int i = 0; i < 1000; i++) {
-//                InputStream in = new SmallChunkInputStream(data);
-//                StreamUtil.readInputStream(in);
-//            }
-//            end = System.currentTimeMillis();
-//            System.out.println("New impl small chunks: " + (end - start) + "ms");
-//
-//            start = System.currentTimeMillis();
-//            for (int i = 0; i < 1000; i++) {
-//                InputStream in = new SmallChunkInputStream(data);
-//                StreamUtil.readInputStreamOLD(in);
-//            }
-//            end = System.currentTimeMillis();
-//            System.out.println("OLD impl small chunks: " + (end - start) + "ms");
-//        }
-//    }
-//    @Test
-//    public void perftestCap() throws Exception {
-//        byte[] data = generateRandomDataBuffer(65536);
-//        long start, end;
-//
-//        for (int r=0; r<2; r++) {
-//            start = System.currentTimeMillis();
-//            for (int i = 0; i < 20000; i++) {
-//                InputStream in = new ByteArrayInputStream(data);
-//                StreamUtil.readInputStream(in, 30000);
-//            }
-//            end = System.currentTimeMillis();
-//            System.out.println("New impl cap: " + (end - start) + "ms");
-//
-//            start = System.currentTimeMillis();
-//            for (int i = 0; i < 20000; i++) {
-//                InputStream in = new ByteArrayInputStream(data);
-//                StreamUtil.readInputStreamOLD(in, 30000);
-//            }
-//            end = System.currentTimeMillis();
-//            System.out.println("OLD impl cap: " + (end - start) + "ms");
-//        }
-//    }
-//    @Test
-//    public void perftestCapSmallChunks() throws Exception {
-//        byte[] data = generateRandomDataBuffer(65536);
-//        long start, end;
-//
-//        for (int r = 0; r < 2; r++) {
-//            start = System.currentTimeMillis();
-//            for (int i = 0; i < 5000; i++) {
-//                InputStream in = new SmallChunkInputStream(data);
-//                StreamUtil.readInputStream(in, 30000);
-//            }
-//            end = System.currentTimeMillis();
-//            System.out.println("New impl cap small: " + (end - start) + "ms");
-//
-//            start = System.currentTimeMillis();
-//            for (int i = 0; i < 5000; i++) {
-//                InputStream in = new SmallChunkInputStream(data);
-//                StreamUtil.readInputStreamOLD(in, 30000);
-//            }
-//            end = System.currentTimeMillis();
-//            System.out.println("OLD impl cap small: " + (end - start) + "ms");
-//        }
-//    }
 
 }
 

@@ -31,14 +31,22 @@
 package org.vortikal.util.io;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Arrays;
 
 
 public abstract class StreamUtil {
 
+    public static final int NIO_CHANNEL_CHUNK_SIZE = 4*1024*1024;
+    
     /**
      * Reads an input stream into a byte array. Closes the stream
      * after the data has been read.
@@ -248,7 +256,7 @@ public abstract class StreamUtil {
         if (bufferSize <= 0) {
             throw new IllegalArgumentException("Buffer size must be > 0");
         }
-
+        
         try {
             byte[] buffer = new byte[bufferSize];
             long count = 0;
@@ -264,6 +272,33 @@ public abstract class StreamUtil {
                 out.close();
             }
         }
+    }
+    
+    /**
+     * Optimized copy for file streams using java.nio channels. If both
+     * input stream and output stream are actually file streams, then this
+     * method should be faster than {@link #pipe(java.io.InputStream, java.io.OutputStream, int, boolean) }.
+     * 
+     * @return number of bytes transferred.
+     * 
+     * @see #pipe(java.io.InputStream, java.io.OutputStream, int, boolean) 
+     */
+    public static long fileStreamCopy(FileInputStream in, FileOutputStream out, boolean closeOutput) throws IOException {
+        FileChannel src = in.getChannel();
+        FileChannel dst = out.getChannel();
+        long pos = 0;
+        long n;
+        try {
+            while ((n = dst.transferFrom(src, pos, NIO_CHANNEL_CHUNK_SIZE)) > 0) {
+                pos += n;
+            }
+        } finally {
+            src.close();
+            if (closeOutput) {
+                dst.close();
+            }
+        }
+        return pos;
     }
 
     /**
@@ -338,6 +373,156 @@ public abstract class StreamUtil {
      */
     public static String streamToString(InputStream in) throws IOException {
         return streamToString(in, System.getProperty("file.encoding"));
+    }
+    
+    /**
+     * Creates a temporary file from an input stream. The input stream
+     * is read to a temporary file in its entirety, and is then closed. An instance of
+     * {@link TempFile} is returned if no I/O error occurs. Generally, the temporary
+     * file should only be used for reading, and it should be deleted when
+     * no longer needed.
+     * 
+     * Temporary file is created in the system default location.
+     * 
+     * @param stream the input stream to write to a temporary file.
+     * @return An instance of {@link TempFile} which can be used to get access to the
+     *         underlying {@link File}. Note that you cannot rely on persistence of
+     *         this file, since it will be deleted when the <code>TempFile</code> instance
+     *         is garbage collected.
+     * 
+     * @throws IOException if an I/O error occurs
+     */
+    public static TempFile streamToTempFile(InputStream stream) throws IOException {
+        return streamToTempFile(stream, null);
+    }
+    
+    /**
+     * Like {@link #streamToTempFile(java.io.InputStream), but with possibilty
+     * to explicity set directory where temporary file should be created,
+     * instead of using the system default.
+     * 
+     * @param stream the input stream to write to a temporary file.
+     * @param tempDir temporary directory to store the file in. May be <code>null</code> for system default
+     *                directory (value of system property <code>"java.io.tmpdir"</code>).
+     * @return An instance of {@link TempFile} which can be used to get access to the
+     *         underlying {@link File}. Note that you cannot rely on persistence of
+     *         this file, since it will be deleted when the <code>TempFile</code> instance
+     *         is garbage collected.
+     * 
+     * @throws IOException if an I/O error occurs
+     */
+    public static TempFile streamToTempFile(InputStream stream, File tempDir) throws IOException {
+        return streamToTempFile(stream, -1, tempDir);
+    }
+
+    /**
+     * Like {@link #streamToTempFile(java.io.InputStream, java.io.File) }, but with an additional
+     * size limit on the created temporary file.
+     * 
+     * @param stream the input stream to write to a temporary file.
+     * @param tempDir temporary directory to store the file in. May be <code>null</code> for system default
+     *                directory (value of system property <code>"java.io.tmpdir"</code>).
+     * @param sizeLimit limit on number of bytes to store in temporary file. If
+     *                  the input stream contains <em>more</em> bytes than limit, the temporary
+     *                  file will be truncated to limit. Reading input stream stops
+     *                  when limit is reached. To check for this condition from client code, you
+     *                  can use {@link TempFile#isTruncatedToSizeLimit() }.
+     * 
+     *                  Note that the input stream is closed both when there is nothing
+     *                  more to read and if the size limit is reached.
+     * 
+     *                  A limit of &lt;= -1 means no limit and is equivalent to calling
+     *                  {@link #streamToTempFile(java.io.InputStream) }.
+     * 
+     * @see #streamToTempFile(java.io.InputStream) 
+     */
+    public static TempFile streamToTempFile(InputStream stream, final long sizeLimit, File tempDir) throws IOException {
+        if (tempDir == null) {
+            tempDir = new File(System.getProperty("java.io.tmpdir"));
+        }
+        ReadableByteChannel src = Channels.newChannel(stream);
+        File tempFile = File.createTempFile("StreamUtil-tmpfile", null, tempDir);
+        FileChannel dest = new FileOutputStream(tempFile).getChannel();
+        long pos = 0;
+        try {
+            while (true) {
+                long n = dest.transferFrom(src, pos, NIO_CHANNEL_CHUNK_SIZE);
+                if (n == 0) {
+                    break;
+                }
+                pos += n;
+
+                if (sizeLimit > -1 && pos > sizeLimit) {
+                    dest.truncate(sizeLimit);
+                    return new TempFile(tempFile, true);
+                }
+            }
+        } finally {
+            src.close();
+            dest.close();
+        }
+        
+        return new TempFile(tempFile, false);
+    }
+    
+    /**
+     * A thin holder class for a temporary file on local file system. Note that temporary
+     * files will be deleted when instances of this class are finalized, so
+     * <em>do not rely on persistence</em>.
+     */
+    public static final class TempFile {
+        private File file;
+        private boolean truncated = false;
+        
+        private TempFile(File file, boolean truncated) {
+            this.file = file;
+            this.truncated = truncated;
+        }
+        
+        /**
+         * Get the {@link File} object for the temporary file.
+         * @return 
+         */
+        public File getFile() {
+            return this.file;
+        }
+        
+        /**
+         * Returns <code>true</code> if the temporary file is truncated to a size limit.
+         * A temporary file may be truncated if it was created with a size limit, and the
+         * input stream source contained more bytes than that limit.
+         */
+        public boolean isTruncatedToSizeLimit() {
+            return this.truncated;
+        }
+        
+        /**
+         * Get the input stream of this temporary file.
+         * @return an input stream backed by the temporary file.
+         */
+        public FileInputStream getFileInputStream() throws IOException {
+            return new FileInputStream(this.file);
+        }
+        
+        /**
+         * Calls method {@link File#delete() } on underlying file object if
+         * file still exists.
+         */
+        public void delete() {
+            if (this.file.exists()) {
+                this.file.delete();
+            }
+        }
+        
+        @Override
+        protected void finalize() {
+            delete();
+        }
+        
+        @Override
+        public String toString() {
+            return StreamUtil.TempFile.class.getSimpleName() + "[file = " + this.file + ", truncated = " + this.truncated + "]";
+        }
     }
 
 }

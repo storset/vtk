@@ -31,7 +31,8 @@
 package org.vortikal.web.actions.create;
 
 import java.io.File;
-import java.io.InputStream;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,55 +40,28 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.vortikal.repository.Path;
 import org.vortikal.repository.Repository;
 import org.vortikal.repository.Resource;
+import org.vortikal.util.io.StreamUtil;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
 @SuppressWarnings("deprecation")
-public class FileUploadController extends SimpleFormController implements InitializingBean {
+public class FileUploadController extends SimpleFormController {
 
     private static Log logger = LogFactory.getLog(FileUploadController.class);
 
     private File tempDir = new File(System.getProperty("java.io.tmpdir"));
 
-    // Default value in DiskFileItemFactory is 10 KB (10240 bytes) but we keep
-    // this variable in case we want it configured from bean.
-    private int sizeThreshold = DiskFileItemFactory.DEFAULT_SIZE_THRESHOLD;
-
-    private DiskFileItemFactory dfif;
-
     private boolean downcaseNames = false;
     private Map<String, String> replaceNameChars;
-
-    public void setSizeThreshold(int sizeThreshold) {
-        this.sizeThreshold = sizeThreshold;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        dfif = new DiskFileItemFactory(this.sizeThreshold, this.tempDir);
-    }
-
-    public void setTempDir(String tempDirPath) {
-        File tmp = new File(tempDirPath);
-        if (!tmp.exists()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " does not exist");
-        }
-        if (!tmp.isDirectory()) {
-            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " is not a directory");
-        }
-        this.tempDir = tmp;
-    }
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -115,62 +89,84 @@ public class FileUploadController extends SimpleFormController implements Initia
             return new ModelAndView(getSuccessView());
         }
 
-        ServletFileUpload upload = new ServletFileUpload(dfif);
+        ServletFileUpload upload = new ServletFileUpload();
 
         RequestContext requestContext = RequestContext.getRequestContext();
         String token = requestContext.getSecurityToken();
         Repository repository = requestContext.getRepository();
         Path uri = requestContext.getResourceURI();
-
-        // Check for existing files
-        String name;
-        FileItemStream uploadItem;
+        
+        // Check request to see if there is any cached info about file item names
+        List<String> fileItemNames = (List<String>)request.getAttribute("org.vortikal.MultipartUploadWrapper.FileItemNames");
+        if (fileItemNames != null) {
+            // ok, use this to check for name collisions, so we can fail as early as possible.
+            for (String name: fileItemNames) {
+                name = stripWindowsPath(name);
+                if (name == null || name.trim().equals("")) {
+                    return new ModelAndView(getSuccessView());
+                }
+                Path itemPath = uri.extend(fixFileName(name));
+                if (repository.exists(token, itemPath)) {
+                    errors.rejectValue("file", "manage.upload.resource.exists",
+                            "A resource with the same name already exists");
+                    return showForm(request, response, errors);
+                }
+            }
+        }
+        
+        // Iterate input stream. We can only safely consume the data once.
         FileItemIterator iter = upload.getItemIterator(request);
+        Map<Path, StreamUtil.TempFile> fileMap = new LinkedHashMap<Path, StreamUtil.TempFile>();
         while (iter.hasNext()) {
-            uploadItem = iter.next();
+            FileItemStream uploadItem = iter.next();
             if (!uploadItem.isFormField()) {
-                name = stripWindowsPath(uploadItem.getName());
+                String name = stripWindowsPath(uploadItem.getName());
 
                 if (name == null || name.trim().equals("")) {
                     return new ModelAndView(getSuccessView());
                 }
-                if (repository.exists(token, uri.extend(fixFileName(name)))) {
+                
+                String fixedName = fixFileName(name);
+                Path itemPath = uri.extend(fixedName);
+                if (repository.exists(token, itemPath)) {
                     errors.rejectValue("file", "manage.upload.resource.exists",
-                            "A resource with this name already exists");
+                            "A resource with the same name already exists");
+                    // Clean up already created temporary files
+                    for (StreamUtil.TempFile t: fileMap.values()) {
+                        t.delete();
+                    }
                     return showForm(request, response, errors);
                 }
+                
+                StreamUtil.TempFile tmpFile = StreamUtil.streamToTempFile(uploadItem.openStream(), this.tempDir);
+                fileMap.put(itemPath, tmpFile);
             }
         }
-
+        
         // Write files
-        Path itemURI;
-        InputStream inStream;
-        iter = upload.getItemIterator(request);
-        while (iter.hasNext()) {
-            uploadItem = iter.next();
-            if (!uploadItem.isFormField()) {
-                name = stripWindowsPath(uploadItem.getName());
-                itemURI = uri.extend(fixFileName(name));
-
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Uploaded resource will be: " + itemURI);
+        for (Map.Entry<Path,StreamUtil.TempFile> entry: fileMap.entrySet()) {
+            Path path = entry.getKey();
+            StreamUtil.TempFile tempFile = entry.getValue();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Uploaded resource will be: " + path);
+            }
+            try {
+                repository.createDocument(token, path, tempFile.getFileInputStream());
+                tempFile.delete();
+            } catch (Exception e) {
+                logger.warn("Caught exception while performing file upload", e);
+                errors.rejectValue("file", "manage.upload.error",
+                        "An unexpected error occurred while processing file upload");
+                // Clean now to free up temp files faster
+                for (StreamUtil.TempFile t : fileMap.values()) {
+                    t.delete();
                 }
-
-                try {
-                    inStream = uploadItem.openStream();
-                    repository.createDocument(token, itemURI, inStream);
-                } catch (Exception e) {
-                    logger.warn("Caught exception while performing file upload", e);
-                    errors.rejectValue("file", "manage.upload.error",
-                            "An unexpected error occurred while processing file upload");
-                    return showForm(request, response, errors);
-                }
+                return showForm(request, response, errors);
             }
         }
-
+        
         fileUploadCommand.setDone(true);
         return new ModelAndView(getSuccessView());
-
     }
 
     /**
@@ -195,14 +191,6 @@ public class FileUploadController extends SimpleFormController implements Initia
         return fileName;
     }
 
-    public void setReplaceNameChars(Map<String, String> replaceNameChars) {
-        this.replaceNameChars = replaceNameChars;
-    }
-
-    public void setDowncaseNames(boolean downcaseNames) {
-        this.downcaseNames = downcaseNames;
-    }
-
     private String fixFileName(String name) {
         if (this.downcaseNames) {
             name = name.toLowerCase();
@@ -215,6 +203,25 @@ public class FileUploadController extends SimpleFormController implements Initia
             }
         }
         return name;
+    }
+
+    public void setReplaceNameChars(Map<String, String> replaceNameChars) {
+        this.replaceNameChars = replaceNameChars;
+    }
+
+    public void setDowncaseNames(boolean downcaseNames) {
+        this.downcaseNames = downcaseNames;
+    }
+
+    public void setTempDir(String tempDirPath) {
+        File tmp = new File(tempDirPath);
+        if (!tmp.exists()) {
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " does not exist");
+        }
+        if (!tmp.isDirectory()) {
+            throw new IllegalArgumentException("Unable to set tempDir: file " + tmp + " is not a directory");
+        }
+        this.tempDir = tmp;
     }
 
 }

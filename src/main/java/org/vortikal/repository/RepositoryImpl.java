@@ -1695,9 +1695,6 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     @Override
     public ResultSet search(String token, Search search) throws QueryException {
         if (this.searcher != null) {
-            // Enforce searching in published resources only when going through
-            // Repository.search(String, Search)
-            search.setOnlyPublishedResources(true);
             long before = System.currentTimeMillis();
             try {
                 return this.searcher.execute(token, search);

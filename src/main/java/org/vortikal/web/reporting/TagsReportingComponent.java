@@ -209,7 +209,6 @@ public class TagsReportingComponent {
         search.setQuery(masterScopeQuery);
         search.setSorting(null);
         search.setLimit(Integer.MAX_VALUE);
-        search.setOnlyPublishedResources(true);
         ConfigurablePropertySelect propSelect = new ConfigurablePropertySelect();
         propSelect.addPropertyDefinition(tagsPropDef);
         search.setPropertySelect(propSelect);

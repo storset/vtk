@@ -30,7 +30,6 @@
  */
 package org.vortikal.repository.search.query;
 
-import org.apache.lucene.document.Fieldable;
 import static org.vortikal.repository.search.query.TermOperator.EQ;
 import static org.vortikal.repository.search.query.TermOperator.NE;
 
@@ -38,16 +37,15 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.FieldSelectorResult;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanFilter;
 import org.apache.lucene.search.CachingWrapperFilter;
-import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.FieldValueFilter;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.FilterClause;
@@ -104,19 +102,31 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     private FieldValueMapper fieldValueMapper;
     private QueryAuthorizationFilterFactory queryAuthorizationFilterFactory;
     private PropertyTypeDefinition publishedPropDef;
+    private PropertyTypeDefinition obsoletedPropDef;
 
-    private Filter onlyPublishedFilter;
+    private Filter useDefaultExcludesFilter;
     private Filter cachedDeletedDocsFilter;
 
     @Override
     public void afterPropertiesSet() {
+        
         // Setup filter for published resources
         TermsFilter tf = new TermsFilter();
         String searchFieldName = FieldNames.getSearchFieldName(this.publishedPropDef, false);
         String searchFieldValue = this.fieldValueMapper.encodeIndexFieldValue("true", Type.BOOLEAN, false);
         Term publishedTrueTerm = new Term(searchFieldName, searchFieldValue);
         tf.addTerm(publishedTrueTerm);
-        this.onlyPublishedFilter = new CachingWrapperFilter(tf);
+
+        // Setup filter for obsoleted resources
+        String obsoletedPropSearchFieldName = FieldNames.getSearchFieldName(this.obsoletedPropDef, false);
+        FieldValueFilter fvf = new FieldValueFilter(obsoletedPropSearchFieldName, true);
+
+        // Combine filter for resources to include per default (include only
+        // published and exclude obsoleted)
+        BooleanFilter bf = new BooleanFilter();
+        bf.add(tf, BooleanClause.Occur.MUST);
+        bf.add(fvf, BooleanClause.Occur.MUST);
+        this.useDefaultExcludesFilter = new CachingWrapperFilter(bf);
 
         // Setup cached deleted docs filter
         this.cachedDeletedDocsFilter = new CachingWrapperFilter(new DeletedDocsFilter(), 
@@ -358,20 +368,20 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         filter = aclFilter;
         
         // Add published-filter if requested
-        if (search.isOnlyPublishedResources()) {
+        if (search.isUseDefaultExcludes()) {
             if (filter != null) {
                 BooleanFilter bf = new BooleanFilter();
-                bf.add(new FilterClause(filter, BooleanClause.Occur.MUST));
-                bf.add(new FilterClause(this.onlyPublishedFilter, BooleanClause.Occur.MUST));
+                bf.add(filter, BooleanClause.Occur.MUST);
+                bf.add(this.useDefaultExcludesFilter, BooleanClause.Occur.MUST);
                 filter = bf;
             } else {
-                filter = this.onlyPublishedFilter;
+                filter = this.useDefaultExcludesFilter;
             }
         }
 
         return filter;
     }
-    
+
     @Override
     public Filter buildIterationFilter(String token, Search search, IndexReader reader) {
         Query query = search.getQuery();
@@ -425,6 +435,15 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
     @Required
     public void setPublishedPropDef(PropertyTypeDefinition publishedPropDef) {
         this.publishedPropDef = publishedPropDef;
+    }
+    
+    @Required
+    public void setObsoletedPropDef(PropertyTypeDefinition obsoletedPropDef) {
+        this.obsoletedPropDef = obsoletedPropDef;
+    }
+
+    public Filter getUseDefaultExcludesFilter() {
+        return useDefaultExcludesFilter;
     }
 
 }

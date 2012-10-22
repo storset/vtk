@@ -2854,13 +2854,12 @@ VrtxAdmin.prototype.zebraTables = function zebraTables(selector) {
     17. Override JavaScript / jQuery
 \*-------------------------------------------------------------------*/
     
-/* 
-    Override slideUp() / slideDown() to animate rows in a table
-    
-    Credits: 
-    o http://stackoverflow.com/questions/467336/jquery-how-to-use-slidedown-or-show-function-on-a-table-row/920480#920480
-    o http://www.bennadel.com/blog/1624-Ask-Ben-Overriding-Core-jQuery-Methods.htm
-*/  
+/*  Override slideUp() / slideDown() to animate rows in a table
+ *  
+ *  Credits: 
+ *  o http://stackoverflow.com/questions/467336/jquery-how-to-use-slidedown-or-show-function-on-a-table-row/920480#920480
+ *  o http://www.bennadel.com/blog/1624-Ask-Ben-Overriding-Core-jQuery-Methods.htm
+ */  
 
 jQuery.fn.prepareTableRowForSliding = function() {
   $tr = this;
@@ -2890,7 +2889,8 @@ jQuery.fn.slideDown = function(speed, easing, callback) {
   }
 };
 
-/* A little faster dynamic click handler */
+/* A little faster dynamic click handler 
+ */
 jQuery.fn.extend({
   dynClick: function(selector, fn) {
     var nodes = $(this);
@@ -2900,8 +2900,7 @@ jQuery.fn.extend({
   }
 });
 
-/*
- * debouncedresize: special jQuery event that happens once after a window resize
+/* debouncedresize: special jQuery event that happens once after a window resize
  *
  * latest version and complete README available on Github:
  * https://github.com/louisremi/jquery-smartresize
@@ -2951,7 +2950,9 @@ vrtxAdmin._$(window).on("debouncedresize", function() {
 });
 
 /* Get URL parameter
+ *
  * Credits: http://www.netlobo.com/url_query_string_javascript.html
+ *
  * Modified slightly
  */
 function gup(name, url) {
@@ -2963,6 +2964,7 @@ function gup(name, url) {
 }
 
 /* Minimize creating new jQuery instances (in addition to caching jQuery ref in vrtxAdmin)
+ *
  * Credits: http://james.padolsey.com/javascript/76-bytes-for-faster-jquery/
  *          http://addyosmani.com/resources/essentialjsdesignpatterns/book/
  */

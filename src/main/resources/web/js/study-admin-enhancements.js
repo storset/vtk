@@ -12,7 +12,14 @@ $(document).ready(function () {
   var typeToDisplay = $("#typeToDisplay"); 
   if(typeToDisplay.length) { 
     hideShowStudy(typeToDisplay);
-    for(var grouped = $(".vrtx-grouped"), i = grouped.length; i--;) { // Because accordion needs one content wrapper
+    $(document).on("change", "#typeToDisplay", function () {
+      hideShowStudy($(this).val());
+      $(".ui-accordion > .vrtx-string.last").removeClass("last");
+      $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
+    });    
+    
+     // Because accordion needs one content wrapper
+    for(var grouped = $(".vrtx-grouped"), i = grouped.length; i--;) { 
       $(grouped[i]).find("> *:not(.header)").wrapAll("<div />");
     }
     $("#editor").accordion({ header: "> div > .header",
@@ -21,12 +28,6 @@ $(document).ready(function () {
                              active: false
                            });
     $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
-    
-    $(document).on("change", "#typeToDisplay", function () {
-      hideShowStudy($(this).val());
-      $(".ui-accordion > .vrtx-string.last").removeClass("last");
-      $(".ui-accordion > .vrtx-string:visible:last").addClass("last");
-    });
   }
   
   // Course description - hide/show semesters

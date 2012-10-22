@@ -35,7 +35,7 @@ resourcetype course-description : fellestekst-document {
     ##
     [resources-props "."]
     [def semester resource-prop(".", "semesterContext.semester")]
-    [def emneCode resource-prop(".", "courseContext.fs-emne-code")]
+    [def emneCode resource-prop(".", "courseContext.fs-course-code")]
     [def emneStatus resource-prop(".", "courseContext.emne-status")]
     [def studiepoeng resource-prop(".", "studiepoeng")]
     [def studiedesimalpoeng resource-prop(".", "studiedesimalpoeng")]

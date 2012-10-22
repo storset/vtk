@@ -2752,29 +2752,26 @@ function browseServer(obj, editorBase, baseFolder, editorBrowseUrl, type) {
 }
  
 function openServerBrowser(url, width, height) {
-  var iLeft = (screen.width - width) / 2;
-  var iTop = (screen.height - height) / 2;
   var sOptions = "toolbar=no,status=no,resizable=yes"; // http://www.quirksmode.org/js/popup.html
-  sOptions += ",width=" + width;
-  sOptions += ",height=" + height;
-  sOptions += ",left=" + iLeft;
-  sOptions += ",top=" + iTop;
-  var oWindow = window.open(url, "BrowseServer", sOptions); // title must be without spaces in IE
-  return oWindow;
+  return openGeneral(url, width, height, "BrowseServer", sOptions); // title must be without spaces in IE
 }
 
 function openRegular(url, width, height, winTitle) {
-  var iLeft = (screen.width - width) / 2;
-  var iTop = (screen.height - height) / 2;
   var sOptions = "toolbar=yes,status=yes,resizable=yes";
   sOptions += ",location=yes,menubar=yes,scrollbars=yes";
   sOptions += ",directories=yes";
+  var now = +new Date();
+  return openGeneral(url, width, height, winTitle + now, sOptions);
+}
+
+function openGeneral(url, width, height, winTitle, sOptions) {
+  var iLeft = (screen.width - width) / 2;
+  var iTop = (screen.height - height) / 2;
   sOptions += ",width=" + width;
   sOptions += ",height=" + height;
   sOptions += ",left=" + iLeft;
   sOptions += ",top=" + iTop;
-  var now = +new Date();
-  var oWindow = window.open(url, winTitle + now, sOptions); // title must be without spaces in IE
+  var oWindow = window.open(url, winTitle, sOptions);
   return oWindow;
 }
 

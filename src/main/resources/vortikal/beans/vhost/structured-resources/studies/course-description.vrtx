@@ -2,6 +2,7 @@ resourcetype course-description : fellestekst-document {
 
   properties {
     studiepoeng : string,
+    studiedesimalpoeng : string,
     undervisningssemester : string,
     undervisningssemester-bestemt-semester : string,
     undervisningssemester-annet : simple_html,
@@ -17,6 +18,7 @@ resourcetype course-description : fellestekst-document {
 
   edit-rules {
     studiepoeng (dropdown),
+    studiedesimalpoeng (dropdown),
     undervisningssemester (dropdown),
     undervisningssemester-bestemt-semester (class[if-undervisningssemester-bestemt]),
     undervisningssemester-annet (class[if-undervisningssemester-annet]),
@@ -36,6 +38,7 @@ resourcetype course-description : fellestekst-document {
     [def emneCode resource-prop(".", "courseContext.fs-emne-code")]
     [def emneStatus resource-prop(".", "courseContext.emne-status")]
     [def studiepoeng resource-prop(".", "studiepoeng")]
+    [def studiedesimalpoeng resource-prop(".", "studiedesimalpoeng")]
     [def contentLocale resource-prop(".", "contentLocale")]
     [def undervisningssemester resource-prop(".", "undervisningssemester")]
     [def eksamenssemester resource-prop(".", "eksamenssemester")]
@@ -53,7 +56,7 @@ resourcetype course-description : fellestekst-document {
         Emnekode: [val emneCode] Semester: [val semester]
       </div>
       <div>
-        Sap emnet? Her er litt studiepoeng: [val studiepoeng]
+        Sap emnet? Her er litt studiepoeng: [val studiepoeng][if studiedesimalpoeng != null && studiedesimalpoeng != ""],[val studiedesimalpoeng][endif]
       </div>
       <div>
         Kanskje litt språk også? Her: [val contentLocale]
@@ -103,6 +106,11 @@ resourcetype course-description : fellestekst-document {
        en : (range = "1..120"),
        no : (range = "1..120"),
        nn : (range = "1..120")
+     },
+     studiedesimalpoeng {
+       en : ("0" = "0", "5" = "5"),
+       no : ("0" = "0", "5" = "5"),
+       nn : ("0" = "0", "5" = "5")
      },
      undervisningssemester {
        en : ("vaar-og-host" = "Autumn and spring", "hver-hoest" = "Every autumn", "hver-vaar" =  "Every spring", "bestemt-semester" = "semester", "annet" = "Other"),

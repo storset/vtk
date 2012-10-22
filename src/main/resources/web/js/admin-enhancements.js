@@ -2925,12 +2925,10 @@ jQuery.fn.extend({
       $(this).off("resize", $special.handler);
     },
     handler: function(event, execAsap) {
-      // Save the context
-	  var context = this,
+	  var context = this, // Save the context
 		  args = arguments,
 		  dispatch = function() {
-		    // set correct event type
-		    event.type = "debouncedresize";
+		    event.type = "debouncedresize"; // set correct event type
 		    $event.dispatch.apply(context, args);
 		  };
 		  if (resizeTimeout) {

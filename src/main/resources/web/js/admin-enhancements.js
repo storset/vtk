@@ -2890,6 +2890,7 @@ jQuery.fn.slideDown = function(speed, easing, callback) {
   }
 };
 
+/* A little faster dynamic click handler */
 jQuery.fn.extend({
   dynClick: function(selector, fn) {
     var nodes = $(this);
@@ -2946,7 +2947,7 @@ vrtxAdmin._$(window).on("debouncedresize", function() {
     vrtxAdmin.adaptiveBreadcrumbs();
     DEBOUNCED_RESIZE_WAIT = false;
     setTimeout(function() {
-      DEBOUNCED_RESIZE_WAIT = true; 
+      DEBOUNCED_RESIZE_WAIT = true;
     }, 1000);
   }
 });

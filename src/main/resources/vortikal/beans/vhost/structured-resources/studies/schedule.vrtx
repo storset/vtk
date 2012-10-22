@@ -4,7 +4,7 @@ resourcetype schedule {
     title : string required overrides title,
     emnekode : string,
     aar : string,
-    semester : string,
+    sem : string,
     path : string,
     over : string,
     kommentar : simple_html,
@@ -15,7 +15,7 @@ resourcetype schedule {
     emnekode tooltip (en : "(Course code)", no : "(Emnekode)", nn : "(Emnekode)"),
     title (class[ui-helper-hidden]),
     aar (class[ui-helper-hidden]),
-    semester (class[ui-helper-hidden]),
+    sem (class[ui-helper-hidden]),
     path (class[ui-helper-hidden]),
     over (dropdown)
   }
@@ -26,13 +26,13 @@ resourcetype schedule {
         ##
         [def emnekode resource-prop(".", "emnekode")]
         [def aar resource-prop(".", "aar")]
-        [def semester resource-prop(".", "semester")]
+        [def sem resource-prop(".", "sem")]
         [def path resource-prop(".", "path")]
         [def over resource-prop(".", "over")]
         <iframe frameborder="0" 
             id="timeplaner" 
             scrolling="no" 
-            src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val aar]&amp;sem=[val semester]&amp;id=[val emnekode]-1&amp;path=[val path]&amp;over=[val over]" 
+            src="/studier/timeplaner/calendar.php?type=module&amp;embed=1&amp;ar=[val aar]&amp;sem=[val sem]&amp;id=[val emnekode]-1&amp;path=[val path][if over != null && over != ""]&amp;over=[val over][endif]" 
             width="100%">
         </iframe>
         ##
@@ -70,7 +70,7 @@ resourcetype schedule {
     header : (en : "Edit schedule", no : "Rediger timeplan", nn : "Rediger timeplan"),
     emnekode : (en : "Show schedule from", no : "Vis timeplan for", nn : "Vis timeplan for"),
     aar : (en : "Year", no : "År", nn : "År"),
-    semester : (en : "Semester", no : "Semester", nn : "Semester"),
+    sem : (en : "Semester", no : "Semester", nn : "Semester"),
     path : (en : "Path", no : "Sti", nn : "Sti"),
     over : (en : "Overview", no : "Oversikt", nn : "Oversikt"),
     kommentar : (en : "Introductory comment", no : "Innledende kommentar", nn : "Innleiande kommentar"),

@@ -11,6 +11,9 @@
     <meta name="robots" content="noindex, nofollow" />
   </head>
   <body>
-    <strong><@vrtx.msg code="property.obsoleted.value.true" default="This resource is obsoleted."/><strong>
+    <strong><@vrtx.msg code="obsoleted.view.title" default="This resource is obsoleted."/><strong>
+    
+    <a href="${manage.url?html}">${manage.title}</a>
+    
   </body>
 </html>

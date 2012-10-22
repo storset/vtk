@@ -70,7 +70,14 @@
   <bean id="displayObsoletedMessage.view" parent="freemarkerView">
     <property name="url" value="pages/obsoleted-view.ftl" />
     <property name="referenceDataProviders">
-      <ref bean="resourceContextProvider" />
+      <list>
+        <ref bean="resourceContextProvider" />
+        <bean class="org.vortikal.web.referencedata.provider.ResourceServiceURLProvider">
+          <property name="service" ref="manageService" />
+          <property name="modelName" value="manage" />
+          <property name="matchAssertions" value="true" />
+        </bean>
+      </list>
     </property>
   </bean>
 

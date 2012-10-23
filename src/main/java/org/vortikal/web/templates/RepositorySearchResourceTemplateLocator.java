@@ -100,6 +100,7 @@ public class RepositorySearchResourceTemplateLocator implements ResourceTemplate
         Query query = getQuery(baseUris, resourceTypes, recursive);
         
         search.setQuery(query);
+        search.setUseDefaultExcludes(false);
         
         // Restrict what properties are loaded from search index (optimization)
         ConfigurablePropertySelect select = new ConfigurablePropertySelect();

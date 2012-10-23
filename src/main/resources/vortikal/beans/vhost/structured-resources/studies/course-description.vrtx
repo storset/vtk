@@ -10,8 +10,6 @@ resourcetype course-description : fellestekst-document {
     eksamenssemester-bestemt-semester : string,
     eksamenssemester-annet : simple_html,
     emnetype : string,
-    undervisning-kveldstid-eller-helg : string,
-    nettbasert-undervisning : string,
     opptak-og-adgang : string,
     opptak-metode : string
   }
@@ -26,41 +24,117 @@ resourcetype course-description : fellestekst-document {
     eksamenssemester-bestemt-semester (class[if-eksamenssemester-bestemt]),
     eksamenssemester-annet (class[if-eksamenssemester-annet]),
     emnetype (dropdown),
-    undervisning-kveldstid-eller-helg (dropdown),
-    nettbasert-undervisning (dropdown),
     opptak-og-adgang (dropdown)
   }
 
   view {
     ##
     [resources-props "."]
-    [def semester resource-prop(".", "semesterContext.semester")]
     [def emneCode resource-prop(".", "courseContext.fs-course-code")]
-    [def emneStatus resource-prop(".", "courseContext.emne-status")]
+    [def emneName resource-prop(".", "courseContext.course-name")]
+    [def emneStatus resource-prop(".", "courseContext.course-status")]
     [def studiepoeng resource-prop(".", "studiepoeng")]
     [def studiedesimalpoeng resource-prop(".", "studiedesimalpoeng")]
     [def contentLocale resource-prop(".", "contentLocale")]
     [def undervisningssemester resource-prop(".", "undervisningssemester")]
     [def eksamenssemester resource-prop(".", "eksamenssemester")]
     [def emnetype resource-prop(".", "emnetype")]
-    [def undervisning-kveldstid-eller-helg resource-prop(".", "undervisning-kveldstid-eller-helg")]
-    [def nettbasert-undervisning resource-prop(".", "nettbasert-undervisning")]
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>Emnet</title>
+        <title>[val emneCode] - [val emneName]</title>
       </head>
       <body>
-      <h1>Emnet</h1>
-      <div>
-        Emnekode: [val emneCode] Semester: [val semester]
+      <table id="vrtx-academics-course-navigation" align="right" cellpadding="1" cellspacing="0">
+        <tbody>
+          <tr>
+            <td class="navigasjon">
+              <div class="engelsk">
+                <a href="http://www.uio.no/studier/emner/matnat/ifi/INF1000/index-eng.xml" class="vrtx-link-check">English version</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <h1 id="hdr">[val emneCode] - [val emneName]</h1>
+      <div id="vrtx-academics-course-toc" style="padding-top:5px;">
+        <a href="#kort-om-emnet" class="vrtx-link-check">Kort om emnet</a>
+         - <a href="#hva-laerer-du" class="vrtx-link-check">Hva lærer du?</a>
+          - <a href="#opptak-og-adgang" class="vrtx-link-check">Opptak og adgangsregulering</a>
+           - <a href="#forkunnskaper" class="vrtx-link-check">Forkunnskaper</a>
+            - <a href="#overlapp" class="vrtx-link-check">Overlapping</a>
+             - <a href="#undervisning" class="vrtx-link-check">Undervisning</a>
+              - <a href="#vurdering-og-eksamen" class="vrtx-link-check">Vurdering og eksamen</a>
+               - <a href="#annet" class="vrtx-link-check">Annet</a>
+                - <a href="#kontaktinformasjon" class="vrtx-link-check">Kontakt oss</a>
       </div>
-      <div>
-        Sap emnet? Her er litt studiepoeng: [val studiepoeng][if studiedesimalpoeng != null && studiedesimalpoeng != ""],[val studiedesimalpoeng][endif]
-      </div>
-      <div>
-        Kanskje litt språk også? Her: [val contentLocale]
-      </div>
+      <table id="vrtx-academics-course-table" align="right" cellpadding="0" cellspacing="0" width="50%">
+        <tbody>
+          <tr>
+            <td>
+              <table class="emner" cellpadding="0" cellspacing="0" width="100%">
+                <tbody>
+                  <tr class="vrtx-academics-course-table-title">
+                    <td colspan="2"><b>Fakta om emnet:</b></td>
+                  </tr>
+                  <tr valign="top">
+                    <td>Studiepoeng:</td><td>[val studiepoeng][if studiedesimalpoeng != null && studiedesimalpoeng != ""],[val studiedesimalpoeng][endif]</td>
+                  </tr>
+                  <tr valign="top">
+                    <td>Undervises:</td>
+                    <td>[val undervisningssemester]<br><br>
+                      <p>Trenger vise annet og bestemt felt ved valg. classer og js?</p>
+                      <p>Fra og med 2011 vil emnet kun undervises i høstsemesteret.</p>
+                    </td>
+                  </tr>
+                  <tr valign="top">
+                    <td>Eksamen:</td><td>Hvert høstsemester</td>
+                  </tr>
+                  <tr valign="top">
+                    <td>Undervisningsspråk:</td><td>[val contentLocale]</td>
+                  </tr>
+                  <tr valign="top">
+                    <td>Tilbys ved:</td>
+                    <td><a href="http://www.mn.uio.no/ifi/" class="vrtx-link-check">Institutt for informatikk (Ifi)</a><br></td>
+                  </tr>
+                  <tr>
+                    <td></td><td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr class="vrtx-academics-course-table-title">
+            <td>
+              <table class="master" cellpadding="5" cellspacing="5" width="100%">
+                <tbody>
+                  <tr>
+                    <td><b>Semestersider</b> (undervisningstider, eksamensdato, pensum m.m.):
+                      <ul>
+                        [def uris resource-prop(".", "parentChildURIs")]
+                        [def count 1]
+                        [list uris uri]
+                          [def type resource-prop(uri, "resourceType")]
+                          [def title resource-prop(uri, "title")]
+                          [if type != null && type = "semester-context"]
+                            <li class="vrtx-semesterside-[val count]">
+                              <a href="[val uri]" class="vrtx-link-check">[val title] uri relevant url</a>
+                            </li>
+                            [def count count + 1]
+                          [endif]
+                        [endlist]
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+
+
       <div>
         Her er litt undervisningssemester: [val undervisningssemester]
         <p>Trenger vise annet og bestemt felt ved valg. classer og js?</p>
@@ -73,12 +147,6 @@ resourcetype course-description : fellestekst-document {
       </div>
       <div>
         Her er litt emnetype: [val emnetype]
-      </div>
-      <div>
-        Her er litt undervisning-kveldstid-eller-helg: [val undervisning-kveldstid-eller-helg]
-      </div>
-      <div>
-        Her er litt nettbasert-undervisning: [val nettbasert-undervisning]
       </div>
       <div>
         [call "comp:vis-fellestekst" {"docType":"hvordan-soke", "propName":"opptak-metode"}]

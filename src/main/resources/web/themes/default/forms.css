@@ -330,7 +330,7 @@ form button::-moz-focus-inner {
 
 /* ^ Mozilla hacks */
 
-/* Wekbit hacks - typical phones */
+/* Webkit fixes - typical apple mobile devices */
 
 input[type=button],
 input[type=file],
@@ -343,6 +343,6 @@ input[type=text] { /* input reset */
   -webkit-border-radius: 0;
 }
 
-/* ^ Wekbit hacks - typical phones */
+/* ^ Webkit fixes - typical apple mobile devices */
 
 /* ^ Vortex - Forms */

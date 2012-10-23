@@ -2645,16 +2645,17 @@ div.vrtx-admin-form {
 /* ^ Tooltips */
 
 /* The only way (it seems) to set cursor:pointer for file upload button in Webkit
-   http://chipsandtv.com/articles/styling-upload-elements
-   http://stackoverflow.com/questions/7554845/the-cursorpointer-property-doesnt-apply-to-file-upload-buttons-in-webkit-browse
-*/
+ * http://chipsandtv.com/articles/styling-upload-elements
+ * http://stackoverflow.com/questions/7554845/the-cursorpointer-property-doesnt-apply-to-file-upload-buttons-in-webkit-browse
+ */
     
 ::-webkit-file-upload-button {
   cursor: pointer;
 }
 
-/* Fix rendering bug in Firefox for hover in table (VTK-2562) */
-/* TODO: the problems lays though with 'overflow:hidden' on table cells and resource link */
+/* Fix rendering bug in Firefox for hover in table (VTK-2562)
+ * TODO: the problems lays though with 'overflow:hidden' on table cells and resource link
+ */
 #directory-listing tr input, x:-moz-any-link, x:only-child {
   margin: 3px 3px 3px 4px;
 }

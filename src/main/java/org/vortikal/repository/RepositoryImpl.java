@@ -91,19 +91,18 @@ import org.vortikal.util.io.StreamUtil;
 
 /**
  * A semi-transactional implementation of the
- * <code>org.vortikal.repository.Repository</code> interface. (A transaction-aware
- * content-store implementation is needed to make repository fully transactional.)
+ * <code>org.vortikal.repository.Repository</code> interface. (A
+ * transaction-aware content-store implementation is needed to make repository
+ * fully transactional.)
  * 
- * Any operation that modifies the content store cannot be rolled back, so
- * most checks/verifications and DAO operations should be done before any content-store
- * operation.
+ * Any operation that modifies the content store cannot be rolled back, so most
+ * checks/verifications and DAO operations should be done before any
+ * content-store operation.
  * 
  * XXX: implement locking of depth 'infinity' XXX: namespace locking/concurrency
- * XXX: Evaluate exception practice, handling and propagation
- * XXX: make content store participate in transactions
- * XXX: externalize caching
- * XXX: duplication of owner and inherited between resource and acl.
- * XXX: too big.
+ * XXX: Evaluate exception practice, handling and propagation XXX: make content
+ * store participate in transactions XXX: externalize caching XXX: duplication
+ * of owner and inherited between resource and acl. XXX: too big.
  */
 public class RepositoryImpl implements Repository, ApplicationContextAware {
 
@@ -135,10 +134,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     private long lockMaxTimeout = LOCK_DEFAULT_TIMEOUT;
 
     private static final int FILE_COPY_BUF_SIZE = 122880;
-    
+
     private static Log searchLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Search");
     private static Log trashLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Trash");
- 
+
     @Override
     public boolean isReadOnly() {
         return this.authorizationManager.isReadOnly();
@@ -164,7 +163,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (uri == null) {
             throw new IllegalArgumentException("URI is NULL");
         }
-        
+
         Principal principal = this.tokenManager.getPrincipal(token);
 
         ResourceImpl resource = this.dao.load(uri);
@@ -172,7 +171,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (resource == null) {
             throw new ResourceNotFoundException(uri);
         }
-        
+
         if (forProcessing) {
             this.authorizationManager.authorizeReadProcessed(uri, principal);
         } else {
@@ -185,13 +184,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IOException("Failed to clone object", e);
         }
     }
-    
-    
+
     @Transactional
     @Override
-    public Resource retrieve(String token, Path uri, boolean forProcessing,
-            Revision revision) throws ResourceNotFoundException,
-            AuthorizationException, AuthenticationException, Exception {
+    public Resource retrieve(String token, Path uri, boolean forProcessing, Revision revision)
+            throws ResourceNotFoundException, AuthorizationException, AuthenticationException, Exception {
 
         if (uri == null) {
             throw new IllegalArgumentException("URI is NULL");
@@ -201,8 +198,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         Principal principal = this.tokenManager.getPrincipal(token);
         if (principal == null) {
-            throw new AuthenticationException(
-                    "Principal NULL not permitted to retrieve resource revisions");
+            throw new AuthenticationException("Principal NULL not permitted to retrieve resource revisions");
         }
 
         ResourceImpl resource = this.dao.load(uri);
@@ -210,7 +206,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (resource == null) {
             throw new ResourceNotFoundException(uri);
         }
-        
+
         if (forProcessing) {
             this.authorizationManager.authorizeReadProcessed(uri, principal);
         } else {
@@ -219,7 +215,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         List<Revision> revisions = this.revisionStore.list(resource);
         boolean found = false;
-        for (Revision r: revisions) {
+        for (Revision r : revisions) {
             if (r.getID() == revision.getID()) {
                 found = true;
                 revision = r;
@@ -233,7 +229,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (revision.getType() != Revision.Type.WORKING_COPY) {
             this.authorizationManager.authorizeReadRevision(principal, revision);
         }
-        
+
         // Evaluate revision content (as content-modification)
         Content content = getContent(resource, revision);
         ResourceImpl result = this.resourceHelper.contentModification(resource, principal, content);
@@ -249,7 +245,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (resource == null) {
             throw new ResourceNotFoundException(uri);
         }
-        
+
         this.authorizationManager.authorizeReadProcessed(uri, principal);
         return new TypeInfo(this.resourceTypeTree, resource.getResourceType());
     }
@@ -278,14 +274,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } else {
             this.authorizationManager.authorizeRead(uri, principal);
         }
-        
+
         return this.contentStore.getInputStream(uri).getInputStream();
     }
 
     @Transactional
     @Override
-    public InputStream getInputStream(String token, Path uri, boolean forProcessing, Revision revision) throws ResourceNotFoundException,
-            AuthorizationException, AuthenticationException, ResourceLockedException, IOException {
+    public InputStream getInputStream(String token, Path uri, boolean forProcessing, Revision revision)
+            throws ResourceNotFoundException, AuthorizationException, AuthenticationException, ResourceLockedException,
+            IOException {
 
         Principal principal = this.tokenManager.getPrincipal(token);
         ResourceImpl r = this.dao.load(uri);
@@ -301,10 +298,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } else {
             this.authorizationManager.authorizeRead(uri, principal);
         }
-        
+
         List<Revision> revisions = this.revisionStore.list(r);
         boolean found = false;
-        for (Revision rev: revisions) {
+        for (Revision rev : revisions) {
             if (rev.getID() == revision.getID()) {
                 found = true;
             }
@@ -365,8 +362,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         ResourceImpl parent = this.dao.load(uri.getParent());
         if ((parent == null) || !parent.isCollection()) {
-            throw new IllegalOperationException(
-                    "Either parent doesn't exist or parent is document");
+            throw new IllegalOperationException("Either parent doesn't exist or parent is document");
         }
 
         checkLock(parent, principal);
@@ -380,13 +376,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         try {
             // Content modification on parent for bind
-            final ResourceImpl originalParent = (ResourceImpl)parent.clone();
+            final ResourceImpl originalParent = (ResourceImpl) parent.clone();
             parent.addChildURI(uri);
 
             content = getContent(parent);
             parent = this.resourceHelper.contentModification(parent, principal, content);
             parent = this.dao.store(parent);
-            this.context.publishEvent(new ContentModificationEvent(this, (Resource)parent.clone(), originalParent));
+            this.context.publishEvent(new ContentModificationEvent(this, (Resource) parent.clone(), originalParent));
 
             // Store new resource
             newResource.setAcl(parent.getAcl());
@@ -396,8 +392,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource = this.dao.store(newResource);
             this.contentStore.createResource(newResource.getURI(), true);
 
-            this.context.publishEvent(new ResourceCreationEvent(this, (Resource)newResource.clone()));
-            return (Resource)newResource.clone();
+            this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));
+            return (Resource) newResource.clone();
         } catch (CloneNotSupportedException e) {
             throw new IOException("Failed to clone object", e);
         }
@@ -406,8 +402,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     @Transactional
     @Override
-    public void copy(String token, Path srcUri, Path destUri, boolean overwrite,
-            boolean preserveACL) throws IllegalOperationException, AuthorizationException, AuthenticationException,
+    public void copy(String token, Path srcUri, Path destUri, boolean overwrite, boolean preserveACL)
+            throws IllegalOperationException, AuthorizationException, AuthenticationException,
             FailedDependencyException, ResourceOverwriteException, ResourceLockedException, ResourceNotFoundException,
             ReadOnlyException, IOException {
 
@@ -443,8 +439,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (dest != null) {
             this.dao.delete(dest);
             this.contentStore.deleteResource(dest.getURI());
-            this.context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(),
-                                      dest.getID(), dest.isCollection()));
+            this.context
+                    .publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), dest.isCollection()));
         }
 
         try {
@@ -455,20 +451,21 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             // XXX: why nameChange() on copy?
             newResource = this.resourceHelper.nameChange(src, newResource, principal, content);
 
-            final ResourceImpl destParentOriginal = (ResourceImpl)destParent.clone();
+            final ResourceImpl destParentOriginal = (ResourceImpl) destParent.clone();
             destParent.addChildURI(destUri);
             content = getContent(destParent);
             destParent = this.resourceHelper.contentModification(destParent, principal, content);
 
             // Both new resource and destParent are stored in DAO copy call
-            // Probably better to not touch destparent in DAO copy code and explicitly
+            // Probably better to not touch destparent in DAO copy code and
+            // explicitly
             // store it here instead (for better clarity).
             newResource = this.dao.copy(src, destParent, newResource, preserveACL, fixedProps);
             this.contentStore.copy(src.getURI(), newResource.getURI());
 
-            this.context.publishEvent(new ResourceCreationEvent(this, (Resource)newResource.clone()));
+            this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));
             this.context.publishEvent(new ContentModificationEvent(this, destParent, destParentOriginal));
-            
+
         } catch (CloneNotSupportedException e) {
             throw new IOException("Failed to clone object", e);
         }
@@ -519,7 +516,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (dest != null) {
             this.dao.delete(dest);
             this.contentStore.deleteResource(dest.getURI());
-            this.context.publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), dest.isCollection()));
+            this.context
+                    .publishEvent(new ResourceDeletionEvent(this, dest.getURI(), dest.getID(), dest.isCollection()));
         }
 
         try {
@@ -532,15 +530,17 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 Content content = getContent(srcParent);
                 srcParent = this.resourceHelper.contentModification(srcParent, principal, content);
                 this.dao.store(srcParent);
-                this.context.publishEvent(new ContentModificationEvent(this, (Resource)srcParent.clone(), srcParentOriginal));
+                this.context.publishEvent(new ContentModificationEvent(this, (Resource) srcParent.clone(),
+                        srcParentOriginal));
             }
 
-            final ResourceImpl destParentOriginal = (ResourceImpl)destParent.clone();
+            final ResourceImpl destParentOriginal = (ResourceImpl) destParent.clone();
             destParent.addChildURI(destUri);
             Content content = getContent(destParent);
             destParent = this.resourceHelper.contentModification(destParent, principal, content);
             this.dao.store(destParent);
-            this.context.publishEvent(new ContentModificationEvent(this, (Resource)destParent.clone(), destParentOriginal));
+            this.context.publishEvent(new ContentModificationEvent(this, (Resource) destParent.clone(),
+                    destParentOriginal));
 
             // Process move
             ResourceImpl newResource = src.createCopy(destUri);
@@ -584,13 +584,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.authorizationManager.authorizeDelete(uri, principal);
         checkLock(parentCollection, principal);
         checkLock(resourceToDelete, principal);
-        
-        final ResourceImpl originalParent = (ResourceImpl)parentCollection.clone();
+
+        final ResourceImpl originalParent = (ResourceImpl) parentCollection.clone();
         parentCollection.removeChildURI(uri);
         Content content = getContent(parentCollection);
         parentCollection = this.resourceHelper.contentModification(parentCollection, principal, content);
         parentCollection = this.dao.store(parentCollection);
-        this.context.publishEvent(new ContentModificationEvent(this, (Resource)parentCollection.clone(), originalParent));
+        this.context.publishEvent(new ContentModificationEvent(this, (Resource) parentCollection.clone(),
+                originalParent));
 
         if (restorable) {
             // Check ACL before moving to trash can,
@@ -610,7 +611,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.contentStore.deleteResource(resourceToDelete.getURI());
         }
 
-        ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, resourceToDelete.getID(), resourceToDelete.isCollection());
+        ResourceDeletionEvent event = new ResourceDeletionEvent(this, uri, resourceToDelete.getID(),
+                resourceToDelete.isCollection());
         this.context.publishEvent(event);
     }
 
@@ -650,13 +652,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.context.publishEvent(new ResourceCreationEvent(this, (Resource) recovered.clone()));
 
             // Content modification on parent
-            final ResourceImpl originalParent = (ResourceImpl)parent.clone();
+            final ResourceImpl originalParent = (ResourceImpl) parent.clone();
             parent.addChildURI(recovered.getURI());
             Content content = getContent(parent);
             parent = this.resourceHelper.contentModification(parent, principal, content);
             parent = this.dao.store(parent);
-            this.context.publishEvent(new ContentModificationEvent(this, (Resource)parent.clone(), originalParent));
-            
+            this.context.publishEvent(new ContentModificationEvent(this, (Resource) parent.clone(), originalParent));
+
         } catch (CloneNotSupportedException c) {
             throw new IOException("Failed to clone object", c);
         }
@@ -692,7 +694,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (r == null) {
             throw new ResourceNotFoundException(uri);
         }
-        
+
         if (lockToken != null) {
             if (r.getLock() == null) {
                 throw new IllegalOperationException("Invalid lock refresh request: lock token '" + lockToken
@@ -726,13 +728,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             r.setLock(lock);
         } else {
             r.setLock(new LockImpl(r.getLock().getLockToken(), principal, ownerInfo, depth, new Date(System
-                    .currentTimeMillis()
-                    + (requestedTimeoutSeconds * 1000))));
+                    .currentTimeMillis() + (requestedTimeoutSeconds * 1000))));
         }
-        
+
         ResourceImpl newResource = this.dao.storeLock(r);
         try {
-            return (Resource)newResource.clone();
+            return (Resource) newResource.clone();
         } catch (CloneNotSupportedException c) {
             throw new IOException("Failed to clone resource");
         }
@@ -779,12 +780,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             ResourceLockedException, AuthenticationException, IllegalOperationException, ReadOnlyException, IOException {
         return store(token, resource, null);
     }
-    
+
     @Transactional
     @Override
-    public Resource store(String token, Resource resource, StoreContext storeContext) throws ResourceNotFoundException, AuthorizationException,
-            ResourceLockedException, AuthenticationException, IllegalOperationException, ReadOnlyException, IOException {
-        
+    public Resource store(String token, Resource resource, StoreContext storeContext) throws ResourceNotFoundException,
+            AuthorizationException, ResourceLockedException, AuthenticationException, IllegalOperationException,
+            ReadOnlyException, IOException {
+
         final Principal principal = this.tokenManager.getPrincipal(token);
 
         if (resource == null) {
@@ -812,12 +814,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             // Inheritable props store
             if (storeContext instanceof InheritablePropertiesStoreContext) {
-                return storeInheritableProps(uri, resource, original, principal, (InheritablePropertiesStoreContext) storeContext);
+                return storeInheritableProps(uri, resource, original, principal,
+                        (InheritablePropertiesStoreContext) storeContext);
             }
-            
+
             throw new IllegalArgumentException("Unknown store context impl: " + storeContext);
         }
-        
+
         // Regular store
         this.authorizationManager.authorizeReadWrite(uri, principal);
 
@@ -832,7 +835,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             newResource = this.dao.store(newResource);
 
-            ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource)newResource.clone(), originalClone);
+            ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource) newResource.clone(),
+                    originalClone);
             this.context.publishEvent(event);
 
             return (Resource) newResource.clone();
@@ -840,8 +844,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IOException("Failed to clone object", e);
         }
     }
-    
-    private Resource storeSystemChange(Path uri, Resource resource, ResourceImpl original, Principal principal, SystemChangeContext context) throws IOException {
+
+    private Resource storeSystemChange(Path uri, Resource resource, ResourceImpl original, Principal principal,
+            SystemChangeContext context) throws IOException {
         // Require root role for system change
         this.authorizationManager.authorizeRootRoleAction(principal);
 
@@ -856,7 +861,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             newResource = this.dao.store(newResource);
 
-            ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource)newResource.clone(), originalClone);
+            ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource) newResource.clone(),
+                    originalClone);
             this.context.publishEvent(event);
 
             return (Resource) newResource.clone();
@@ -864,8 +870,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IOException("Failed to clone object", e);
         }
     }
-    
-    private Resource storeInheritableProps(Path uri, Resource resource, ResourceImpl original, Principal principal, InheritablePropertiesStoreContext context) throws IOException {
+
+    private Resource storeInheritableProps(Path uri, Resource resource, ResourceImpl original, Principal principal,
+            InheritablePropertiesStoreContext context) throws IOException {
         // Normal write privilege required
         this.authorizationManager.authorizeReadWrite(uri, principal);
 
@@ -876,11 +883,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             ResourceImpl newResource;
             Content content = getContent(original);
 
-            newResource = this.resourceHelper.inheritablePropertiesChange(original, principal, suppliedResource, content, context);
+            newResource = this.resourceHelper.inheritablePropertiesChange(original, principal, suppliedResource,
+                    content, context);
 
             newResource = this.dao.store(newResource);
 
-            InheritablePropertiesModificationEvent event = new InheritablePropertiesModificationEvent(this, (Resource)newResource.clone(), originalClone);
+            InheritablePropertiesModificationEvent event = new InheritablePropertiesModificationEvent(this,
+                    (Resource) newResource.clone(), originalClone);
             this.context.publishEvent(event);
 
             return (Resource) newResource.clone();
@@ -915,23 +924,23 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             newResource = this.resourceHelper.create(principal, newResource, false, content);
 
             // Content modification on parent
-            final ResourceImpl originalParent = (ResourceImpl)parent.clone();
+            final ResourceImpl originalParent = (ResourceImpl) parent.clone();
             parent.addChildURI(uri);
             content = getContent(parent);
             parent = this.resourceHelper.contentModification(parent, principal, content);
             parent = this.dao.store(parent);
-            this.context.publishEvent(new ContentModificationEvent(this, (Resource)parent.clone(), originalParent));
+            this.context.publishEvent(new ContentModificationEvent(this, (Resource) parent.clone(), originalParent));
 
             // Store new resource
             newResource.setAcl(parent.getAcl());
             newResource.setInheritedAcl(true);
             int aclIneritedFrom = parent.isInheritedAcl() ? parent.getAclInheritedFrom() : parent.getID();
             newResource.setAclInheritedFrom(aclIneritedFrom);
-            
+
             newResource = this.dao.store(newResource);
 
             this.context.publishEvent(new ResourceCreationEvent(this, (Resource) newResource.clone()));
-            
+
             return (Resource) newResource.clone();
         } catch (CloneNotSupportedException e) {
             throw new IOException("Failed to clone object", e);
@@ -967,24 +976,23 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             r = this.resourceHelper.contentModification(r, principal, content);
 
             Resource newResource = this.dao.store(r);
-            
-            this.context.publishEvent(new ContentModificationEvent(this, (Resource)newResource.clone(), original));
 
-            return (Resource)newResource.clone();
+            this.context.publishEvent(new ContentModificationEvent(this, (Resource) newResource.clone(), original));
+
+            return (Resource) newResource.clone();
         } catch (CloneNotSupportedException e) {
             throw new IOException("Failed to clone object", e);
         }
     }
-
 
     /**
      * Requests that an InputStream be written to a resource.
      */
     @Transactional
     @Override
-    public Resource storeContent(String token, Path uri, InputStream stream, Revision revision) throws AuthorizationException,
-            AuthenticationException, ResourceNotFoundException, ResourceLockedException, IllegalOperationException,
-            ReadOnlyException, IOException {
+    public Resource storeContent(String token, Path uri, InputStream stream, Revision revision)
+            throws AuthorizationException, AuthenticationException, ResourceNotFoundException, ResourceLockedException,
+            IllegalOperationException, ReadOnlyException, IOException {
 
         if (uri == null) {
             throw new IllegalArgumentException("URI is NULL");
@@ -999,7 +1007,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalArgumentException("Only WORKING_COPY is supported");
         }
         Principal principal = this.tokenManager.getPrincipal(token);
-        
+
         ResourceImpl r = this.dao.load(uri);
 
         if (r == null) {
@@ -1007,37 +1015,36 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         } else if (r.isCollection()) {
             throw new IllegalOperationException("resource is collection");
         }
-        
+
         Revision existing = null;
-        for (Revision rev: this.revisionStore.list(r)) {
+        for (Revision rev : this.revisionStore.list(r)) {
             if (rev.getID() == revision.getID()) {
                 existing = rev;
                 break;
             }
         }
         if (existing == null) {
-            throw new IllegalOperationException(
-                    "No revision WORKING_COPY exists for resource " + r);
+            throw new IllegalOperationException("No revision WORKING_COPY exists for resource " + r);
         }
         if (existing.getType() != Type.WORKING_COPY) {
-            throw new IllegalOperationException(
-                    "Only revisions of type WORKING_COPY may be updated" + r);
+            throw new IllegalOperationException("Only revisions of type WORKING_COPY may be updated" + r);
         }
-        
+
         checkLock(r, principal);
 
         this.authorizationManager.authorizeReadWrite(uri, principal);
-        //this.authorizationManager.authorizeWriteRevision(principal, revision); 
-                
+        // this.authorizationManager.authorizeWriteRevision(principal,
+        // revision);
+
         long revisionId = existing.getID();
-        Acl acl = null; //r.getAcl();
+        Acl acl = null; // r.getAcl();
         String name = existing.getName();
         String uid = principal.getQualifiedName();
         Type type = existing.getType();
         Date timestamp = new Date();
         String checksum = null;
         Integer changeAmount = null;
-        
+
         File tempFile = null;
         try {
             tempFile = File.createTempFile("revision", null, this.tempDir);
@@ -1045,28 +1052,21 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             OutputStream out = new FileOutputStream(tempFile);
             StreamUtil.pipe(wrapper, out, FILE_COPY_BUF_SIZE, true);
             checksum = wrapper.checksum();
-            changeAmount = Revisions.changeAmount(new FileInputStream(tempFile), 
+            changeAmount = Revisions.changeAmount(new FileInputStream(tempFile),
                     this.contentStore.getInputStream(r.getURI()));
 
             stream = new FileInputStream(tempFile);
-            
+
             Revision.Builder builder = Revision.newBuilder();
-            
-            Revision rev = 
-                    builder.id(revisionId)
-                    .acl(acl)
-                    .changeAmount(changeAmount)
-                    .checksum(checksum)
-                    .name(name)
-                    .type(type)
-                    .timestamp(timestamp)
-                    .uid(uid).build();
+
+            Revision rev = builder.id(revisionId).acl(acl).changeAmount(changeAmount).checksum(checksum).name(name)
+                    .type(type).timestamp(timestamp).uid(uid).build();
             this.revisionStore.store(r, rev, stream);
-            
+
             Content content = getContent(r, existing);
             ResourceImpl result = this.resourceHelper.contentModification(r, principal, content);
             return result;
-            
+
         } finally {
             if (tempFile != null) {
                 if (!tempFile.delete()) {
@@ -1080,7 +1080,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     public boolean authorize(Principal principal, Acl acl, Privilege privilege) {
         return this.authorizationManager.authorize(principal, acl, privilege);
     }
-    
+
     @Transactional
     @Override
     public boolean isAuthorized(Resource resource, RepositoryAction action, Principal principal, boolean considerLocks)
@@ -1104,17 +1104,13 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                     checkLock(parent, principal);
                     checkLock(resource, principal);
 
-                } else if (action == RepositoryAction.ALL 
-                        || action == RepositoryAction.ADD_COMMENT
+                } else if (action == RepositoryAction.ALL || action == RepositoryAction.ADD_COMMENT
                         || action == RepositoryAction.EDIT_COMMENT
                         || action == RepositoryAction.REPOSITORY_ADMIN_ROLE_ACTION
                         || action == RepositoryAction.REPOSITORY_ROOT_ROLE_ACTION
-                        || action == RepositoryAction.UNEDITABLE_ACTION 
-                        || action == RepositoryAction.UNLOCK
-                        || action == RepositoryAction.CREATE 
-                        || action == RepositoryAction.WRITE 
-                        || action == RepositoryAction.READ_WRITE
-                        || action == RepositoryAction.WRITE_ACL) {
+                        || action == RepositoryAction.UNEDITABLE_ACTION || action == RepositoryAction.UNLOCK
+                        || action == RepositoryAction.CREATE || action == RepositoryAction.WRITE
+                        || action == RepositoryAction.READ_WRITE || action == RepositoryAction.WRITE_ACL) {
                     checkLock(resource, principal);
                 }
             }
@@ -1163,11 +1159,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             if (validateACL) {
                 validateNewAcl(acl, original.getAcl());
             }
-            
+
             ResourceImpl newResource = this.dao.storeACL(r);
-            
-            newResource = (ResourceImpl) newResource.clone(); // Clone for event publishing
-            
+
+            newResource = (ResourceImpl) newResource.clone(); // Clone for event
+                                                              // publishing
+
             ACLModificationEvent event = new ACLModificationEvent(this, newResource, original, newResource.getAcl(),
                     original.getAcl());
 
@@ -1211,9 +1208,10 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             r.setInheritedAcl(true);
 
             ResourceImpl newResource = this.dao.storeACL(r);
-            
-            newResource = (ResourceImpl) newResource.clone(); // clone for event publish
-            
+
+            newResource = (ResourceImpl) newResource.clone(); // clone for event
+                                                              // publish
+
             ACLModificationEvent event = new ACLModificationEvent(this, newResource, original, newResource.getAcl(),
                     original.getAcl());
 
@@ -1235,10 +1233,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     public boolean isBlacklisted(Privilege privilege, Principal principal) {
         return this.authorizationManager.isBlackListed(principal, privilege);
     }
-    
+
     @Transactional
     @Override
-    public List<Revision> getRevisions(String token, Path uri) throws AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException {
+    public List<Revision> getRevisions(String token, Path uri) throws AuthorizationException,
+            ResourceNotFoundException, AuthenticationException, IOException {
         if (uri == null) {
             throw new IllegalArgumentException("URI is NULL");
         }
@@ -1253,7 +1252,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
     @Transactional
     @Override
-    public Revision createRevision(String token, Path uri, Revision.Type type) throws ReadOnlyException, AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException {
+    public Revision createRevision(String token, Path uri, Revision.Type type) throws ReadOnlyException,
+            AuthorizationException, ResourceNotFoundException, AuthenticationException, IOException {
         if (uri == null) {
             throw new IllegalArgumentException("URI is NULL");
         }
@@ -1265,17 +1265,16 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
         Principal principal = this.tokenManager.getPrincipal(token);
-        
+
         checkLock(resource, principal);
         this.authorizationManager.authorizeReadWrite(resource.getURI(), principal);
         List<Revision> revs = this.revisionStore.list(resource);
 
         Revision newest = null;
-        for (Revision rev: revs) {
+        for (Revision rev : revs) {
             if (type == Type.WORKING_COPY) {
                 if (rev.getName().equals(Type.WORKING_COPY.name())) {
-                    throw new IllegalOperationException(
-                            "Working copy revision already exists for " + uri);
+                    throw new IllegalOperationException("Working copy revision already exists for " + uri);
                 }
                 continue;
             }
@@ -1300,7 +1299,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         InputStream content = this.contentStore.getInputStream(resource.getURI());
         InputStream prev = null;
-        
+
         if (Revision.Type.WORKING_COPY.name().equals(name)) {
             prev = this.contentStore.getInputStream(resource.getURI());
         } else {
@@ -1310,14 +1309,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 prev = this.revisionStore.getContent(resource, r);
             }
         }
-        
+
         long revisionId = this.revisionStore.newRevisionID();
         Integer changeAmount = null;
         String uid = resource.getModifiedBy().getQualifiedName();
         String checksum = null;
         Date timestamp = resource.getLastModified();
         Acl acl = type == Type.WORKING_COPY ? null : resource.getAcl();
-        
+
         File tempFile = null;
         try {
             tempFile = File.createTempFile("revision", null, this.tempDir);
@@ -1327,22 +1326,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             checksum = wrapper.checksum();
 
             if (prev != null && tempFile != null) {
-                changeAmount = Revisions.changeAmount(
-                        prev, new FileInputStream(tempFile));
-                
+                changeAmount = Revisions.changeAmount(prev, new FileInputStream(tempFile));
+
             }
             content = new FileInputStream(tempFile);
             Revision.Builder builder = Revision.newBuilder();
-            
-            Revision revision = 
-                    builder.id(revisionId)
-                    .acl(acl)
-                    .changeAmount(changeAmount)
-                    .checksum(checksum)
-                    .name(name)
-                    .type(type)
-                    .timestamp(timestamp)
-                    .uid(uid).build();
+
+            Revision revision = builder.id(revisionId).acl(acl).changeAmount(changeAmount).checksum(checksum)
+                    .name(name).type(type).timestamp(timestamp).uid(uid).build();
             this.revisionStore.create(resource, revision, content);
             return revision;
 
@@ -1352,13 +1343,12 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
         }
     }
-    
+
     @Transactional
     @Override
-    public void deleteRevision(String token, Path uri, Revision revision)
-            throws ResourceNotFoundException, AuthorizationException,
-            AuthenticationException, Exception {
-        
+    public void deleteRevision(String token, Path uri, Revision revision) throws ResourceNotFoundException,
+            AuthorizationException, AuthenticationException, Exception {
+
         if (uri == null) {
             throw new IllegalArgumentException("URI is NULL");
         }
@@ -1370,7 +1360,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new ResourceNotFoundException(uri);
         }
         Principal principal = this.tokenManager.getPrincipal(token);
-        
+
         checkLock(resource, principal);
         this.authorizationManager.authorizeReadWrite(resource.getURI(), principal);
 
@@ -1398,9 +1388,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         if (found == null) {
             throw new IllegalOperationException("Revision not found: " + revision.getID());
         }
-        
+
         this.revisionStore.delete(resource, revision);
-        
+
         if (newer != null && older != null) {
             Revision.Builder builder = newer.changeBuilder();
             InputStream newerStream = this.revisionStore.getContent(resource, newer);
@@ -1408,18 +1398,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             Integer changeAmount = Revisions.changeAmount(newerStream, olderStream);
             builder.changeAmount(changeAmount);
             newer = builder.build();
-            this.revisionStore.store(resource, newer, 
-                    this.revisionStore.getContent(resource, newer));
-            
+            this.revisionStore.store(resource, newer, this.revisionStore.getContent(resource, newer));
+
         } else if (newer != null) {
             Revision.Builder builder = newer.changeBuilder();
             builder.changeAmount(null);
             newer = builder.build();
-            this.revisionStore.store(resource, newer, 
-                    this.revisionStore.getContent(resource, newer));
+            this.revisionStore.store(resource, newer, this.revisionStore.getContent(resource, newer));
         }
     }
-    
 
     @Transactional
     @Override
@@ -1500,12 +1487,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             comment = this.commentDAO.createComment(comment);
 
             Content content = getContent(original);
-            ResourceImpl newResource = this.resourceHelper.commentsChange(original, principal, (ResourceImpl) resource, content);
+            ResourceImpl newResource = this.resourceHelper.commentsChange(original, principal, (ResourceImpl) resource,
+                    content);
             newResource = this.dao.store(newResource);
 
             // Publish resource modification event (necessary to trigger
             // re-indexing, since a prop is now modified)
-            ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource)newResource.clone(), original);
+            ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource) newResource.clone(),
+                    original);
             this.context.publishEvent(event);
 
             return comment;
@@ -1524,7 +1513,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
         // XXX Only allow for users with root privilege?
         this.authorizationManager.authorizeRootRoleAction(principal);
-        
+
         return this.commentDAO.createComment(comment);
     }
 
@@ -1552,12 +1541,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.commentDAO.deleteComment(comment);
 
             Content content = getContent(original);
-            ResourceImpl newResource = this.resourceHelper.commentsChange(original, principal, (ResourceImpl) resource, content);
+            ResourceImpl newResource = this.resourceHelper.commentsChange(original, principal, (ResourceImpl) resource,
+                    content);
             newResource = this.dao.store(newResource);
 
             // Publish resource modification event (necessary to trigger
             // re-indexing, since a prop is now modified)
-            ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource)newResource.clone(), original);
+            ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource) newResource.clone(),
+                    original);
             this.context.publishEvent(event);
 
         } catch (Exception e) {
@@ -1589,12 +1580,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             this.commentDAO.deleteAllComments(resource);
 
             Content content = getContent(original);
-            ResourceImpl newResource = this.resourceHelper.commentsChange(original, principal, (ResourceImpl) resource, content);
+            ResourceImpl newResource = this.resourceHelper.commentsChange(original, principal, (ResourceImpl) resource,
+                    content);
             newResource = this.dao.store(newResource);
 
             // Publish resource modification event (necessary to trigger
             // re-indexing, since a prop is now modified)
-            ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource)newResource.clone(), original);
+            ResourceModificationEvent event = new ResourceModificationEvent(this, (Resource) newResource.clone(),
+                    original);
             this.context.publishEvent(event);
 
         } catch (Exception e) {
@@ -1691,10 +1684,15 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         this.authorizationManager.authorizeRootRoleAction(principal);
         this.authorizationManager.setReadOnly(readOnly);
     }
-    
+
     @Override
     public ResultSet search(String token, Search search) throws QueryException {
         if (this.searcher != null) {
+
+            // Set use default excludes to true, exclude not published and
+            // obsoleted resources from search
+            search.setUseDefaultExcludes(true);
+
             long before = System.currentTimeMillis();
             try {
                 return this.searcher.execute(token, search);
@@ -1711,7 +1709,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             throw new IllegalStateException("No repository searcher has been configured.");
         }
     }
-    
+
     @Required
     public void setTokenManager(TokenManager tokenManager) {
         this.tokenManager = tokenManager;
@@ -1721,7 +1719,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     public void setDao(DataAccessor dao) {
         this.dao = dao;
     }
-    
+
     @Required
     public void setRevisionStore(RevisionStore revisionStore) {
         this.revisionStore = revisionStore;
@@ -1741,7 +1739,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     public void setId(String id) {
         this.id = id;
     }
-    
+
     public void setLockMaxTimeout(long lockMaxTimeout) {
         this.lockMaxTimeout = lockMaxTimeout;
     }
@@ -1769,7 +1767,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     public void setResourceTypeTree(ResourceTypeTree resourceTypeTree) {
         this.resourceTypeTree = resourceTypeTree;
     }
-    
+
     @Required
     public void setContentRepresentationRegistry(ContentRepresentationRegistry contentRepresentationRegistry) {
         this.contentRepresentationRegistry = contentRepresentationRegistry;
@@ -1779,9 +1777,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     public void setTempDir(String tempDir) {
         File f = new File(tempDir);
         if (!f.exists()) {
-            throw new IllegalStateException(
-                    "Directory " + tempDir + " does not exist");
-            
+            throw new IllegalStateException("Directory " + tempDir + " does not exist");
+
         }
         this.tempDir = f;
     }
@@ -1812,14 +1809,14 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         }
         this.permanentDeleteOverdueLimitInDays = permanentDeleteOverdueLimitInDays;
     }
-    
+
     private Content getContent(Resource resource) {
         if (resource == null || resource.isCollection()) {
             return null;
         }
         return new ContentImpl(resource.getURI(), this.contentStore, this.contentRepresentationRegistry);
     }
-    
+
     private Content getContent(final ResourceImpl resource, final Revision revision) {
         if (resource == null || resource.isCollection() || revision == null) {
             return null;
@@ -1832,9 +1829,9 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             public long getContentLength(Path uri) throws DataAccessException {
                 return revisionStore.getContentLength(resource, revision);
             }
+
             @Override
-            public InputStreamWrapper getInputStream(Path uri)
-                    throws DataAccessException {
+            public InputStreamWrapper getInputStream(Path uri) throws DataAccessException {
                 return revisionStore.getContent(resource, revision);
             }
 
@@ -1842,47 +1839,39 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             public void deleteResource(Path uri) throws DataAccessException {
                 throw new IllegalStateException("Don't call me, I'll call you");
             }
+
             @Override
-            public void createResource(Path uri, boolean isCollection)
-                    throws DataAccessException {
+            public void createResource(Path uri, boolean isCollection) throws DataAccessException {
                 throw new IllegalStateException("Don't call me, I'll call you");
             }
 
             @Override
-            public void storeContent(Path uri, InputStream inputStream)
-                    throws DataAccessException {
+            public void storeContent(Path uri, InputStream inputStream) throws DataAccessException {
                 throw new IllegalStateException("Don't call me, I'll call you");
             }
 
             @Override
-            public void copy(Path srcURI, Path destURI)
-                    throws DataAccessException {
+            public void copy(Path srcURI, Path destURI) throws DataAccessException {
                 throw new IllegalStateException("Don't call me, I'll call you");
             }
 
             @Override
-            public void move(Path srcURI, Path destURI)
-                    throws DataAccessException {
+            public void move(Path srcURI, Path destURI) throws DataAccessException {
                 throw new IllegalStateException("Don't call me, I'll call you");
             }
 
             @Override
-            public void moveToTrash(Path srcURI, String trashIdDir)
-                    throws DataAccessException {
+            public void moveToTrash(Path srcURI, String trashIdDir) throws DataAccessException {
                 throw new IllegalStateException("Don't call me, I'll call you");
             }
 
             @Override
-            public void recover(Path destURI,
-                    RecoverableResource recoverableResource)
-                    throws DataAccessException {
+            public void recover(Path destURI, RecoverableResource recoverableResource) throws DataAccessException {
                 throw new IllegalStateException("Don't call me, I'll call you");
             }
 
             @Override
-            public void deleteRecoverable(
-                    RecoverableResource recoverableResource)
-                    throws DataAccessException {
+            public void deleteRecoverable(RecoverableResource recoverableResource) throws DataAccessException {
                 throw new IllegalStateException("Don't call me, I'll call you");
             }
 
@@ -1890,11 +1879,11 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
         ContentImpl content = new ContentImpl(resource.getURI(), cs, this.contentRepresentationRegistry);
         return content;
     }
-    
+
     public void setTransactionManager(PlatformTransactionManager transactionManager) {
         this.transactionManager = transactionManager;
     }
-    
+
     public void setRevisionGCHours(Set<Integer> revisionGCHours) {
         this.revisionGCHours = revisionGCHours;
     }
@@ -1906,18 +1895,18 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
     public void setMaintenanceIntervalSeconds(int interval) {
         this.maintenanceIntervalSeconds = interval;
     }
-    
+
     private static Log periodicLogger = LogFactory.getLog(RepositoryImpl.class.getName() + ".Maintenance");
-    private Set<Integer> revisionGCHours = new HashSet<Integer>(Arrays.asList(new Integer[]{3}));
-    private Set<Integer> trashCanPurgeHours = new HashSet<Integer>(Arrays.asList(new Integer[]{4}));
+    private Set<Integer> revisionGCHours = new HashSet<Integer>(Arrays.asList(new Integer[] { 3 }));
+    private Set<Integer> trashCanPurgeHours = new HashSet<Integer>(Arrays.asList(new Integer[] { 4 }));
     private int maintenanceIntervalSeconds = 600;
     private PlatformTransactionManager transactionManager;
     private final MaintenanceManager mm = new MaintenanceManager();
-    
+
     public void init() {
         mm.init();
     }
-    
+
     public void destroy() {
         mm.destroy();
     }
@@ -1935,7 +1924,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             if (this.executor != null) {
                 throw new IllegalStateException("init() should only be called once at start of bean life cycle");
             }
-            
+
             if (transactionManager != null) {
                 this.transactionTemplate = new TransactionTemplate(transactionManager);
             }
@@ -2008,7 +1997,8 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
             }
         }
 
-        // Determine if periodic job should be executed, when it is supposed to be run
+        // Determine if periodic job should be executed, when it is supposed to
+        // be run
         // once within certain hours of the day.
         private boolean shouldRun(Date lastRun, Set<Integer> runAtHours) {
             Calendar nowCal = Calendar.getInstance();
@@ -2031,47 +2021,47 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
 
             return false;
         }
-        
+
         private final class DeleteExpiredLocksJob extends TransactionCallbackWithoutResult {
             Date lastRun;
-            
+
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 execute();
             }
-            
+
             void execute() {
                 dao.deleteExpiredLocks(new Date());
                 lastRun = new Date();
             }
-            
-            Date lastRun() {
-               return this.lastRun;
-            }
-        }
-        
-        private final class RevisionStoreGcJob extends TransactionCallbackWithoutResult {
-            private Date lastRun;
-            
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                try {
-                execute();
-                } catch (IOException io) {
-                    throw new RuntimeException(io);
-                }
-            }
-            
-            void execute() throws IOException {
-                revisionStore.gc();
-                lastRun = new Date();
-            }
-            
+
             Date lastRun() {
                 return this.lastRun;
             }
         }
-        
+
+        private final class RevisionStoreGcJob extends TransactionCallbackWithoutResult {
+            private Date lastRun;
+
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try {
+                    execute();
+                } catch (IOException io) {
+                    throw new RuntimeException(io);
+                }
+            }
+
+            void execute() throws IOException {
+                revisionStore.gc();
+                lastRun = new Date();
+            }
+
+            Date lastRun() {
+                return this.lastRun;
+            }
+        }
+
         /**
          * Permanently removes overdue and orphan resources from trash can. A
          * resource is overdue if it has been deleted (put in trash can) for
@@ -2080,7 +2070,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
          */
         private final class PurgeTrashJob extends TransactionCallbackWithoutResult {
             private Date lastRun;
-            
+
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 execute();
@@ -2108,7 +2098,7 @@ public class RepositoryImpl implements Repository, ApplicationContextAware {
                 }
                 lastRun = new Date();
             }
-            
+
             Date lastRun() {
                 return this.lastRun;
             }

@@ -61,7 +61,7 @@ public class IndexQueryPathSelector implements PathSelector {
     
     private String queryString;
     private String sortString;
-    private boolean useDefaultExcludes = true;
+    private boolean useDefaultExcludes = false;
 
     private int limit = 2000;
 

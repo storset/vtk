@@ -86,7 +86,7 @@ public final class Search {
     private Sorting sorting;
     private int limit = DEFAULT_LIMIT;
     private int cursor = 0;
-    private boolean useDefaultExcludes = true;
+    private boolean useDefaultExcludes = false;
 
     public Search() {
         SortingImpl defaultSorting = new SortingImpl();

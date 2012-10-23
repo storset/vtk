@@ -89,21 +89,15 @@ public class LuceneQueryBuilderImplTest {
     @Test
     public void testGetSearchFilterDefaultExcludesFalseNoAcl() {
 
-        Search search = new Search();
-        search.setUseDefaultExcludes(false);
-
-        this.assertGetSearchFilter(null, search, null);
+        this.assertGetSearchFilter(null, new Search(), null);
 
     }
 
     @Test
     public void testGetSearchFilterDefaultExcludesFalseAndAcl() {
 
-        Search search = new Search();
-        search.setUseDefaultExcludes(false);
         Filter expected = dummyAclFilter;
-
-        this.assertGetSearchFilter(expected, search, dummyAclFilter);
+        this.assertGetSearchFilter(expected, new Search(), dummyAclFilter);
 
     }
 
@@ -111,8 +105,9 @@ public class LuceneQueryBuilderImplTest {
     public void testGetSearchFilterDefaultExcludesNoAcl() {
 
         Filter expected = luceneQueryBuilder.getUseDefaultExcludesFilter();
-
-        this.assertGetSearchFilter(expected, new Search(), null);
+        Search search = new Search();
+        search.setUseDefaultExcludes(true);
+        this.assertGetSearchFilter(expected, search, null);
 
     }
 
@@ -122,8 +117,9 @@ public class LuceneQueryBuilderImplTest {
         BooleanFilter expected = new BooleanFilter();
         expected.add(dummyAclFilter, BooleanClause.Occur.MUST);
         expected.add(luceneQueryBuilder.getUseDefaultExcludesFilter(), BooleanClause.Occur.MUST);
-
-        this.assertGetSearchFilter(expected, new Search(), dummyAclFilter);
+        Search search = new Search();
+        search.setUseDefaultExcludes(true);
+        this.assertGetSearchFilter(expected, search, dummyAclFilter);
 
     }
 

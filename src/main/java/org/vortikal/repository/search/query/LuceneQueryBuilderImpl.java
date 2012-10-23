@@ -124,9 +124,9 @@ public final class LuceneQueryBuilderImpl implements LuceneQueryBuilder, Initial
         // Combine filter for resources to include per default (include only
         // published and exclude obsoleted)
         BooleanFilter bf = new BooleanFilter();
-        bf.add(tf, BooleanClause.Occur.MUST);
+        bf.add(new CachingWrapperFilter(tf), BooleanClause.Occur.MUST);
         bf.add(fvf, BooleanClause.Occur.MUST);
-        this.useDefaultExcludesFilter = new CachingWrapperFilter(bf);
+        this.useDefaultExcludesFilter = bf;
 
         // Setup cached deleted docs filter
         this.cachedDeletedDocsFilter = new CachingWrapperFilter(new DeletedDocsFilter(), 

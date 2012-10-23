@@ -329,6 +329,8 @@ public class BrokenLinksReport extends DocumentReporter {
             // ONLY those NOT published
             PropertyTermQuery ptq = new PropertyTermQuery(this.publishedPropDef, "true", TermOperator.NE);
             topLevelQ.add(ptq);
+        } else {
+            search.setUseDefaultExcludes(true);
         }
 
         return search;

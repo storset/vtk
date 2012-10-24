@@ -846,7 +846,7 @@ VrtxAdmin.prototype.openConfirmDialog = function openConfirmDialog(msg, title, f
 };
 
 VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCancel, closable, width, height, funcOkComplete, funcCancelComplete, options) {
-  var selector = !hasOk ? "#dialog-html" : (!hasCancel ? "#dialog-message" : "#dialog-confirm");
+  var selector = !closable ?  "#dialog-loading" : (!hasOk ? "#dialog-html" : (!hasCancel ? "#dialog-message" : "#dialog-confirm"));
   var elm = $(selector);
   if(!elm.length) {
     if(title) {
@@ -1662,7 +1662,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       if(typeof performSave !== "undefined") {      
         var ok = performSave();
         if(!ok) {
-          $("#dialog-html").dialog("close");
+          $("#dialog-loading").dialog("close");
           return false;
         }
       }
@@ -1671,15 +1671,15 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           var endTime = new Date() - startTime;
           var waitMinMs = 800;
           if(endTime >= waitMinMs) { // Wait minimum 0.8s
-            $("#dialog-html").dialog("close");
+            $("#dialog-loading").dialog("close");
           } else {
             setTimeout(function() {
-               $("#dialog-html").dialog("close");
+               $("#dialog-loading").dialog("close");
             }, Math.round(waitMinMs - endTime));
           }
         },
         error: function(xhr, statusText, errMsg) {
-          $("#dialog-html").dialog("close");
+          $("#dialog-loading").dialog("close");
           _$("#editor").submit();
         }
       });

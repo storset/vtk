@@ -600,13 +600,13 @@ vrtxAdmin._$(document).ready(function () {
             dialogTemplate.hide();
             
             vrtxAdmin.openConfirmDialog("", dialogTemplate.find(".vrtx-confirm-publish-msg").html(), function() {
-              $(dialogTemplate.find(".vrtx-focus-button input")).trigger("click");
+              dialogTemplate.find(".vrtx-focus-button input").trigger("click");
             }, null, null);
           }
         });
       } else {
         vrtxAdmin.openConfirmDialog("", dialogTemplate.find(".vrtx-confirm-publish-msg").html(), function() {
-          $(dialogTemplate.find(".vrtx-focus-button input")).trigger("click");
+          dialogTemplate.find(".vrtx-focus-button input").trigger("click");
         }, null, null);
       }
       e.stopPropagation();
@@ -1406,6 +1406,30 @@ VrtxAdmin.prototype.collectionListingInteraction = function collectionListingInt
   var vrtxAdm = this, _$ = vrtxAdm._$;
 
   if(!vrtxAdm.cachedDirectoryListing.length) return;
+  
+  // TODO: generalize dialog jQuery UI function with AJAX markup/text
+  $(document).on("click", "a.vrtx-copy-move-to-selected-folder-disclosed", function(e) {
+    var dialogTemplate = $("#vrtx-dialog-template-copy-move-content");
+    if(!dialogTemplate.length) {
+      vrtxAdm.serverFacade.getHtml(this.href, {
+        success: function (results, status, resp) {
+          _$("body").append("<div id='vrtx-dialog-template-copy-move-content'>" + _$(results).find("#vrtx-dialog-template-content").html() + "</div>");
+          dialogTemplate = $("#vrtx-dialog-template-copy-move-content");
+          dialogTemplate.hide();
+            
+          vrtxAdmin.openConfirmDialog(dialogTemplate.find(".vrtx-confirm-copy-move-explanation").text(), dialogTemplate.find(".vrtx-confirm-copy-move-confirmation").text(), function() {
+            dialogTemplate.find(".vrtx-focus-button button").trigger("click");
+          }, null, null);
+        }
+      });
+    } else {
+      vrtxAdmin.openConfirmDialog(dialogTemplate.find(".vrtx-confirm-copy-move-explanation").text(), dialogTemplate.find(".vrtx-confirm-copy-move-confirmation").text(), function() {
+        dialogTemplate.find(".vrtx-focus-button button").trigger("click");
+      }, null, null);
+    }
+    e.stopPropagation();
+    e.preventDefault();
+  });
 
   if(typeof moveUncheckedMessage !== "undefined") {
     vrtxAdm.placeCopyMoveButtonInActiveTab({

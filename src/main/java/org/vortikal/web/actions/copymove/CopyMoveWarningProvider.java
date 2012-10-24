@@ -98,19 +98,11 @@ public class CopyMoveWarningProvider implements ReferenceDataProvider {
                     Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
                 return;
             }
-            // XXX index search can be optimized to avoid iterating resourceset
-            ResultSet rs = indexAclSearch(sessionBean, token, new ACLExistsQuery(), false);
-            if (rs.getSize() > 0) {
-                for (PropertySet ps : rs.getAllResults()) {
-                    Resource resource = repository.retrieve(token, ps.getURI(), false);
-                    Acl acl = resource.getAcl();
-                    if (!(acl.containsEntry(Privilege.READ, PrincipalFactory.ALL) || acl.containsEntry(
-                            Privilege.READ_PROCESSED, PrincipalFactory.ALL))) {
+            
+            System.out.println("___________________  DEST READ ALL");
+
                         addWarning(model, confirmURL, sessionBean);
-                        break;
-                    }
-                }
-            }
+
         }
 
         if (sourceParentUri.equals(destinationUri)) {

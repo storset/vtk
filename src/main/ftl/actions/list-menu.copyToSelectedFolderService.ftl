@@ -10,7 +10,7 @@
 <#assign actionURL = item.url />
 <#assign method = "post" />
 <#if resourcesDisclosed?exists>
-  <#assign actionURL =  warningDialogURL + '&showAsHtml=true&height=110&width=250' />
+  <#assign actionURL =  warningDialogURL />
   <#assign method = "get" />
 </#if>
 
@@ -30,7 +30,7 @@
           value="copy-resources-to-this-folder" name="action">${item.title?html}</button></div>
   </form>
 <#else>
-  <a class="vrtx-button-small" title="${titleMsg}" id="vrtx-copy-to-selected-folder" href="${actionURL?html}"><span>${item.title?html}</span></a>
+  <a class="vrtx-button-small vrtx-copy-move-to-selected-folder-disclosed" title="${titleMsg}" id="vrtx-copy-to-selected-folder" href="${actionURL?html}"><span>${item.title?html}</span></a>
 </#if>
 
 <#recover>

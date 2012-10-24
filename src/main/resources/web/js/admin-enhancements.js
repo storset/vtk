@@ -752,9 +752,8 @@ VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelect
 function initializeTree() {
   var dialog = $(".ui-dialog");
   var treeElem = dialog.find(".tree-create");
-  var treeTrav = [dialog.find("#vrtx-create-tree-folders").hide().text()];
+  var treeTrav = dialog.find("#vrtx-create-tree-folders").hide().text().split(",");
   var treeType = dialog.find("#vrtx-create-tree-type").hide().text();
-
   var timestamp = 1 - new Date();
   var pathNum = 0;
   treeElem.treeview({
@@ -796,7 +795,7 @@ function traverseNode(treeElem, treeTravNode, lastNode) {
         treeElem.fadeIn(200, function () {
           var scrollToLink = (link.position().top - 145);
           scrollToLink = scrollToLink < 0 ? 0 : scrollToLink;
-          treeElem.scrollTo(scrollToLink, 250, {
+          $(".ui-dialog #dialog-html").scrollTo(scrollToLink, 250, {
             easing: "swing",
             queue: true,
             axis: 'y',

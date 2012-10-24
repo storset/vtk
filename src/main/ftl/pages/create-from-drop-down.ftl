@@ -22,7 +22,7 @@
     <link rel="stylesheet" type="text/css" href="/vrtx/__vrtx/static-resources/themes/default/report/jquery.treeview.ie.css" type="text/css" />
   <![endif]-->
   
-  <div id="vrtx-create-tree-folders"><#list uris as link>"${link?html}"<#if uris[link_index+1]?exists>,</#if></#list></div>
+  <div id="vrtx-create-tree-folders"><#list uris as link>${link?html}<#if uris[link_index+1]?exists>,</#if></#list></div>
   <div id="vrtx-create-tree-type">${type}</div>
   
   </div></div>

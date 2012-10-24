@@ -828,7 +828,11 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
   });
 };
 
-VrtxAdmin.prototype.openHtmlDialog = function openMsgDialog(html, title) {
+VrtxAdmin.prototype.openLoadingDialog = function openLoadingDialog(title, html) {
+  this.openDialog("<img src='/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20' alt='Loading icon' />", title, false, false, null, null, null);
+};
+
+VrtxAdmin.prototype.openHtmlDialog = function openHtmlDialog(html, title) {
   this.openDialog(html, title, false, false, null, null, null);
 };
 
@@ -1653,19 +1657,17 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           CKEDITOR.instances[instance].updateElement();
         }  
       }
-      var startTime = new Date();   
-      /* TODO: jquery ui
-      tb_show(ajaxSaveText + "...", 
-              "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
-              false);
-      */        
+      var startTime = new Date();       
+      
+      vrtxAdm.openLoadingDialog(ajaxSaveText);  
+      
       if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save) {
         vrtxImageEditor.save();
       }
       if(typeof performSave !== "undefined") {      
         var ok = performSave();
         if(!ok) {
-          //tb_remove();
+          $("#dialog-html").dialog("close");
           return false;
         }
       }
@@ -1674,15 +1676,15 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           var endTime = new Date() - startTime;
           var waitMinMs = 800;
           if(endTime >= waitMinMs) { // Wait minimum 0.8s
-            //tb_remove();
+            $("#dialog-html").dialog("close");
           } else {
             setTimeout(function() {
-               //tb_remove();
+               $("#dialog-html").dialog("close");
             }, Math.round(waitMinMs - endTime));
           }
         },
         error: function(xhr, statusText, errMsg) {
-          // tb_remove();
+          $("#dialog-html").dialog("close");
           _$("#editor").submit();
         }
       });

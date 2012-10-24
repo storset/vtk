@@ -33,7 +33,7 @@ ${vrtx.getMsg("confirm-publish.confirmation.publish")}?
              name="publishResourceAction" value="${vrtx.getMsg("confirm-delete.ok")}" />
     </div>
     <div class="vrtx-button">
-      <input tabindex="2" type="submit" onclick="tb_remove(); return false;" id="publishResourceCancelAction"  
+      <input tabindex="2" type="submit" id="publishResourceCancelAction"  
              name="publishResourceCancelAction" value="${vrtx.getMsg("confirm-delete.cancel")}"  />
     </div>
   </div>

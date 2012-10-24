@@ -1654,16 +1654,18 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
         }  
       }
       var startTime = new Date();   
+      /* TODO: jquery ui
       tb_show(ajaxSaveText + "...", 
               "/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20", 
               false);
+      */        
       if(typeof vrtxImageEditor !== "undefined" && vrtxImageEditor.save) {
         vrtxImageEditor.save();
       }
       if(typeof performSave !== "undefined") {      
         var ok = performSave();
         if(!ok) {
-          tb_remove();
+          //tb_remove();
           return false;
         }
       }
@@ -1672,10 +1674,10 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           var endTime = new Date() - startTime;
           var waitMinMs = 800;
           if(endTime >= waitMinMs) { // Wait minimum 0.8s
-            tb_remove();
+            //tb_remove();
           } else {
             setTimeout(function() {
-               tb_remove();
+               //tb_remove();
             }, Math.round(waitMinMs - endTime));
           }
         },

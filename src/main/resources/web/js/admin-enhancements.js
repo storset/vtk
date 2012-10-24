@@ -305,7 +305,7 @@ vrtxAdmin._$(document).ready(function () {
                .done(function(script, textStatus) {
                  $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo-1.4.2-min.js')
                 .done(function(script, textStatus) {
-                  vrtxAdmin.openDialog(dialogManageCreate.html(), "");
+                  vrtxAdmin.openMsgDialogSimple(dialogManageCreate.html(), "");
                   initializeTree();
                 }).fail(function(jqxhr, settings, exception) {});
               }).fail(function(jqxhr, settings, exception) {}); 
@@ -822,19 +822,19 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
   });
 };
 
-VrtxAdmin.prototype.openMsgDialogCallback = function openMsgDialog(msg, title) {
-  this.openDialog(msg, title, false, null, null);
+VrtxAdmin.prototype.openMsgDialogSimple = function openMsgDialog(msg, title) {
+  this.openDialog(msg, title, false, false, null, null);
 };
 
 VrtxAdmin.prototype.openMsgDialog = function openMsgDialog(msg, title) {
-  this.openDialog(msg, title, false, null, null);
+  this.openDialog(msg, title, true, false, null, null);
 };
 
 VrtxAdmin.prototype.openConfirmDialog = function openConfirmDialog(msg, title, funcOkComplete, funcCancelComplete, options) {
-  this.openDialog(msg, title, true, funcOkComplete, funcCancelComplete, options);
+  this.openDialog(msg, title, true, true, funcOkComplete, funcCancelComplete, options);
 };
 
-VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasCancel, funcOkComplete, funcCancelComplete, options) {
+VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCancel, funcOkComplete, funcCancelComplete, options) {
   var selector = !hasCancel ? "#dialog-message" : "#dialog-confirm";
   var elm = $(selector);
   if(!elm.length) {
@@ -845,12 +845,14 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasCancel, func
     }
     elm = $(selector); // Re-query DOM after appending html
     var l10nButtons = {};
-    l10nButtons["Ok"] = function() {
-	  $(this).dialog("close");
-	  if(funcOkComplete) {
-	    funcOkComplete(options);
-	  }
-    };
+    if(hasOk) {
+      l10nButtons["Ok"] = function() {
+	    $(this).dialog("close");
+	    if(funcOkComplete) {
+	      funcOkComplete(options);
+	    }
+      };
+    }
     if(hasCancel) {
       var Cancel = (typeof cancelI18n != "undefined") ? cancelI18n : "Cancel";
       l10nButtons[Cancel] = function() {

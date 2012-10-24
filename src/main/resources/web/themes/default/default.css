@@ -1015,21 +1015,6 @@ form#editor .tip ul a {
 
 /* Create dialog */
 
-.iframe-fullscreen {
-  position: fixed;
-  top: 0px;
-  left: 0px;
-}
-
-#create-iframe {
-  height: 40px;
-  width: 150px;
-  overflow: visible;
-  margin: 0;
-  padding: 0;
-  background-color: transparent;
-}
-
 .vrtx-create-tree .tree-create {
   position: absolute;
   top: 0px;

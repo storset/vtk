@@ -752,7 +752,7 @@ VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelect
 };
 
 function initializeTree() {
-  var dialog = $(".ui-dialog");
+  var dialog = $(".ui-dialog:visible");
   var treeElem = dialog.find(".tree-create");
   var treeTrav = dialog.find("#vrtx-create-tree-folders").hide().text().split(",");
   var treeType = dialog.find("#vrtx-create-tree-type").hide().text();

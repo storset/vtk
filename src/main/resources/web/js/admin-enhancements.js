@@ -882,12 +882,7 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCance
       };
     }
     
-    var dialogOpts = {
-          modal: true,
-	      autoOpen: false,
-	      resizable: false,
-	      buttons: l10nButtons
-	    };
+    var dialogOpts = { modal: true, autoOpen: false, resizable: false, buttons: l10nButtons };
 
     if(width && height) { // Not zero
       dialogOpts.width = width;

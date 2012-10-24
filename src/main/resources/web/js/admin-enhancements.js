@@ -751,6 +751,8 @@ VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelect
   });
 };
 
+/* Create dialog tree view */
+
 function initializeTree() {
   var dialog = $(".ui-dialog:visible");
   var treeElem = dialog.find(".tree-create");
@@ -813,6 +815,10 @@ function traverseNode(treeElem, treeTravNode, lastNode) {
   }, 15);
 }
 
+/* ^ Create dialog tree view */
+
+/* Dialogs and interface to jQuery UI */
+
 VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
   var _$ = this._$;
 
@@ -829,7 +835,7 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
 };
 
 VrtxAdmin.prototype.closeDialog = function closeDialog(classOrId) {
-   $(classOrId).dialog("close"); 
+  $(classOrId).dialog("close"); 
 };
 
 VrtxAdmin.prototype.openLoadingDialog = function openLoadingDialog(title, html) {
@@ -904,6 +910,8 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCance
   }
   elm.dialog("open");
 };
+
+/* ^ Dialogs and interface to jQuery UI */
 
 
 /*-------------------------------------------------------------------*\

@@ -305,7 +305,7 @@ vrtxAdmin._$(document).ready(function () {
                .done(function(script, textStatus) {
                  $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo-1.4.2-min.js')
                 .done(function(script, textStatus) {
-                  vrtxAdmin.openMsgDialogSimple(dialogManageCreate.html(), "");
+                  vrtxAdmin.openHtmlDialog(dialogManageCreate.html());
                   initializeTree();
                 }).fail(function(jqxhr, settings, exception) {});
               }).fail(function(jqxhr, settings, exception) {}); 
@@ -751,8 +751,8 @@ VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelect
 function initializeTree() {
   var dialog = $(".ui-dialog");
   var treeElem = dialog.find(".tree-create");
-  var treeTrav = [dialog.find("#vrtx-create-tree-folders").text()];
-  var treeType = dialog.find("#vrtx-create-tree-type").text();
+  var treeTrav = [dialog.find("#vrtx-create-tree-folders").hide().text()];
+  var treeType = dialog.find("#vrtx-create-tree-type").hide().text();
 
   var timestamp = 1 - new Date();
   var pathNum = 0;
@@ -822,8 +822,8 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
   });
 };
 
-VrtxAdmin.prototype.openMsgDialogSimple = function openMsgDialog(msg, title) {
-  this.openDialog(msg, title, false, false, null, null);
+VrtxAdmin.prototype.openHtmlDialog = function openMsgDialog(html, title) {
+  this.openDialog(html, null, false, false, null, null);
 };
 
 VrtxAdmin.prototype.openMsgDialog = function openMsgDialog(msg, title) {
@@ -835,13 +835,21 @@ VrtxAdmin.prototype.openConfirmDialog = function openConfirmDialog(msg, title, f
 };
 
 VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCancel, funcOkComplete, funcCancelComplete, options) {
-  var selector = !hasCancel ? "#dialog-message" : "#dialog-confirm";
+  var selector = !hasOk ? "#dialog-html" : (!hasCancel ? "#dialog-message" : "#dialog-confirm");
   var elm = $(selector);
   if(!elm.length) {
     if(title) {
-      this.cachedBody.append("<div id='" + selector.substring(1) + "' title='" + title + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
+      if(!hasOk) {
+        this.cachedBody.append("<div id='" + selector.substring(1) + "' title='" + title + "'><div id='" + selector.substring(1) + "-content'>" + msg + "</div></div>");
+      } else {
+        this.cachedBody.append("<div id='" + selector.substring(1) + "' title='" + title + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
+      }
     } else {
-      this.cachedBody.append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
+      if(!hasOk) {
+        this.cachedBody.append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'>" + msg + "</div></div>");
+      } else {
+        this.cachedBody.append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'><p>" + msg + "</p></div></div>");
+      }
     }
     elm = $(selector); // Re-query DOM after appending html
     var l10nButtons = {};
@@ -862,12 +870,23 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCance
 	    }
       };
     }
-    elm.dialog({
-      modal: true,
-	  autoOpen: false,
-	  resizable: false,
-	  buttons: l10nButtons
-    });
+    if(!hasOk) {
+      elm.dialog({
+        modal: true,
+	    autoOpen: false,
+	    resizable: false,
+	    buttons: l10nButtons,
+	    width: 600,
+	    height: 395
+      });
+    } else {
+      elm.dialog({
+        modal: true,
+	    autoOpen: false,
+	    resizable: false,
+	    buttons: l10nButtons
+      });
+    }
   } else {
     if(title) {
       elm.prev().find("#ui-dialog-title-" + selector.substring(1)).html(title); 

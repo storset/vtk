@@ -294,7 +294,8 @@ vrtxAdmin._$(document).ready(function () {
     $(document).on("click", "#global-menu-create a", function(e) {
       var dialogManageCreate = $("#vrtx-manage-create-content");
       if(!dialogManageCreate.length) {
-        vrtxAdm.serverFacade.getHtml(this.href, {
+        var link = this;
+        vrtxAdm.serverFacade.getHtml(link.href, {
           success: function (results, status, resp) {
             _$("body").append(_$(results).find("#vrtx-manage-create-content").parent().html());
             dialogManageCreate = $("#vrtx-manage-create-content");
@@ -305,7 +306,7 @@ vrtxAdmin._$(document).ready(function () {
                .done(function(script, textStatus) {
                  $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo-1.4.2-min.js')
                 .done(function(script, textStatus) {
-                  vrtxAdmin.openHtmlDialog(dialogManageCreate.html());
+                  vrtxAdmin.openHtmlDialog(dialogManageCreate.html(), link.title);
                   initializeTree();
                 }).fail(function(jqxhr, settings, exception) {});
               }).fail(function(jqxhr, settings, exception) {}); 
@@ -823,7 +824,7 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
 };
 
 VrtxAdmin.prototype.openHtmlDialog = function openMsgDialog(html, title) {
-  this.openDialog(html, null, false, false, null, null);
+  this.openDialog(html, title, false, false, null, null);
 };
 
 VrtxAdmin.prototype.openMsgDialog = function openMsgDialog(msg, title) {

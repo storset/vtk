@@ -20,18 +20,18 @@
     </#if>
 
     <ul class="manage-create"> 
-      <li class="manage-create-drop first" id="manage-create-drop-document">
-        <a title="<@vrtx.msg code="manage.choose-location.document" default="Choose where you would like to create document" />" href="${docFinalUrl?html}">
+      <li class="manage-create-drop first">
+        <a id="manage-create-drop-document" title="<@vrtx.msg code="manage.choose-location.document" default="Choose where you would like to create document" />" href="${docFinalUrl?html}">
           <@vrtx.msg code="manage.document" default="Create document" />
         </a>
       </li>
-      <li class="manage-create-drop" id="manage-create-drop-collection">
-        <a title="<@vrtx.msg code="manage.choose-location.collection" default="Choose where you would like to create folder" />" href="${collFinalUrl?html}">
+      <li class="manage-create-drop">
+        <a id="manage-create-drop-collection" title="<@vrtx.msg code="manage.choose-location.collection" default="Choose where you would like to create folder" />" href="${collFinalUrl?html}">
           <@vrtx.msg code="manage.collection" default="Create folder" />
         </a>
       </li>
-      <li class="manage-create-drop" id="manage-create-drop-upload">
-        <a title="<@vrtx.msg code="manage.choose-location.upload-file" default="Choose where you would like to upload file" />" href="${upFinalUrl?html}">
+      <li class="manage-create-drop">
+        <a id="manage-create-drop-upload" title="<@vrtx.msg code="manage.choose-location.upload-file" default="Choose where you would like to upload file" />" href="${upFinalUrl?html}">
           <@vrtx.msg code="manage.upload-file" default="Upload file" />
         </a>
       </li>

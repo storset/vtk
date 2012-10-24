@@ -292,13 +292,14 @@ vrtxAdmin._$(document).ready(function () {
   
   // TODO: generalize dialog jQuery UI function with AJAX markup/text
     $(document).on("click", "#global-menu-create a", function(e) {
-      var dialogManageCreate = $("#vrtx-manage-create-content");
+      var link = this;
+      var id = link.id + "-content";
+      var dialogManageCreate = $("#" + id);
       if(!dialogManageCreate.length) {
-        var link = this;
         vrtxAdm.serverFacade.getHtml(link.href, {
           success: function (results, status, resp) {
-            _$("body").append(_$(results).find("#vrtx-manage-create-content").parent().html());
-            dialogManageCreate = $("#vrtx-manage-create-content");
+            _$("body").append("<div id='" + id + "'>" + _$(results).find("#vrtx-manage-create-content").html() + "</div>");
+            dialogManageCreate = $("#" + id);
             dialogManageCreate.hide();
             $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js')
             .done(function(script, textStatus) {
@@ -314,7 +315,8 @@ vrtxAdmin._$(document).ready(function () {
           }
         });
       } else {
-        
+        vrtxAdmin.openHtmlDialog(dialogManageCreate.html(), link.title);
+        initializeTree();
       }
       e.stopPropagation();
       e.preventDefault();
@@ -772,6 +774,10 @@ function initializeTree() {
   treeElem.on("click", "a", function (e) { // Don't want click on links
     e.preventDefault();
   });
+  
+  dialog.on("click", ".tip a", function (e) { // Override jQuery UI prevention
+    location.href = this.href;
+  });
 
   // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset, autoWidth
   treeElem.vortexTips("li span.folder", ".vrtx-create-tree", 80, 300, 4000, 300, 10, - 8, false, true);
@@ -823,11 +829,11 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
 };
 
 VrtxAdmin.prototype.openHtmlDialog = function openMsgDialog(html, title) {
-  this.openDialog(html, title, false, false, null, null);
+  this.openDialog(html, title, false, false, null, null, null);
 };
 
 VrtxAdmin.prototype.openMsgDialog = function openMsgDialog(msg, title) {
-  this.openDialog(msg, title, true, false, null, null);
+  this.openDialog(msg, title, true, false, null, null, null);
 };
 
 VrtxAdmin.prototype.openConfirmDialog = function openConfirmDialog(msg, title, funcOkComplete, funcCancelComplete, options) {

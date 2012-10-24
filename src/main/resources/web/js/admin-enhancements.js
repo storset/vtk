@@ -1682,7 +1682,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           }
         },
         error: function(xhr, statusText, errMsg) {
-          tb_remove();
+          // tb_remove();
           _$("#editor").submit();
         }
       });

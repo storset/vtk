@@ -829,22 +829,23 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
 };
 
 VrtxAdmin.prototype.openLoadingDialog = function openLoadingDialog(title, html) {
-  this.openDialog("<img src='/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20' alt='Loading icon' />", title, false, false, null, null, null);
+  this.openDialog("<img src='/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20' alt='Loading icon' />",
+                  title, false, false, false, 0, 0, null, null, null);
 };
 
 VrtxAdmin.prototype.openHtmlDialog = function openHtmlDialog(html, title) {
-  this.openDialog(html, title, false, false, null, null, null);
+  this.openDialog(html, title, false, false, true, 600, 395, null, null, null);
 };
 
 VrtxAdmin.prototype.openMsgDialog = function openMsgDialog(msg, title) {
-  this.openDialog(msg, title, true, false, null, null, null);
+  this.openDialog(msg, title, true, false, true, 0, 0, null, null, null);
 };
 
 VrtxAdmin.prototype.openConfirmDialog = function openConfirmDialog(msg, title, funcOkComplete, funcCancelComplete, options) {
-  this.openDialog(msg, title, true, true, funcOkComplete, funcCancelComplete, options);
+  this.openDialog(msg, title, true, true, true, 0, 0, funcOkComplete, funcCancelComplete, options);
 };
 
-VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCancel, funcOkComplete, funcCancelComplete, options) {
+VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCancel, closable, width, height, funcOkComplete, funcCancelComplete, options) {
   var selector = !hasOk ? "#dialog-html" : (!hasCancel ? "#dialog-message" : "#dialog-confirm");
   var elm = $(selector);
   if(!elm.length) {
@@ -880,23 +881,22 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCance
 	    }
       };
     }
-    if(!hasOk) {
-      elm.dialog({
-        modal: true,
-	    autoOpen: false,
-	    resizable: false,
-	    buttons: l10nButtons,
-	    width: 600,
-	    height: 395
-      });
-    } else {
-      elm.dialog({
-        modal: true,
-	    autoOpen: false,
-	    resizable: false,
-	    buttons: l10nButtons
-      });
+    
+    var dialogOpts = {
+          modal: true,
+	      autoOpen: false,
+	      resizable: false,
+	      buttons: l10nButtons
+	    };
+
+    if(width && height) {
+      dialogOpts.width = width;
+	  dialogOpts.height = height;
     }
+    if(!closable) {
+      dialogOpts.closeOnEscape = false;
+    }
+    elm.dialog(dialogOpts);
   } else {
     if(title) {
       elm.prev().find("#ui-dialog-title-" + selector.substring(1)).html(title); 

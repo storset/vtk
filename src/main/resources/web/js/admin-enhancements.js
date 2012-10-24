@@ -556,6 +556,31 @@ vrtxAdmin._$(document).ready(function () {
     });
     
     break;
+   case "vrtx-publishing":
+    $(document).on("click", "a.publishing-status-link", function(e) {
+      var dialogTemplate = $("#vrtx-dialog-template-content");
+      if(!dialogTemplate.length) {
+        vrtxAdm.serverFacade.getHtml(this.href, {
+          success: function (results, status, resp) {
+            _$("body").append(_$(results).find("#vrtx-dialog-template-content").parent().html());
+            dialogTemplate = $("#vrtx-dialog-template-content");
+            dialogTemplate.hide();
+            
+            vrtxAdmin.openConfirmDialog("", dialogTemplate.find(".vrtx-confirm-publish-msg").html(), function() {
+              $(dialogTemplate.find(".vrtx-focus-button input")).trigger("click");
+            }, null, null);
+          }
+        });
+      } else {
+        vrtxAdmin.openConfirmDialog("", dialogTemplate.find(".vrtx-confirm-publish-msg").html(), function() {
+          $(dialogTemplate.find(".vrtx-focus-button input")).trigger("click");
+        }, null, null);
+      }
+      e.stopPropagation();
+      e.preventDefault();
+    });
+      
+    break;
    case "vrtx-about":
     vrtxAdm.zebraTables(".resourceInfo");
     

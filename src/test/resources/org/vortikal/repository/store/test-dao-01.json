@@ -1,0 +1,28 @@
+{
+
+   "/" : {
+      "type" : "collection"
+      "acl"  : {
+         "read" : [ "u:user@localhost" ]
+         "read-write" : [ "u:foo@localhost" ]
+      }
+      "properties" : {
+         "title" : "Root"
+      }
+   }
+
+   "/a" : {
+      "type" : "collection"
+   }
+
+   "/a/b" : {
+      "type" : "collection"
+      "acl"  : {
+         "read" : [ "u:user@localhost" ]
+         "read-write" : [ "u:foo@localhost" ]
+         "add-comment" : [ "u:bar@localhost" ]
+      }
+   }
+
+}
+

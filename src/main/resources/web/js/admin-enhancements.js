@@ -828,6 +828,10 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
   });
 };
 
+VrtxAdmin.prototype.closeDialog = function closeDialog(classOrId) {
+   $(classOrId).dialog("close"); 
+};
+
 VrtxAdmin.prototype.openLoadingDialog = function openLoadingDialog(title, html) {
   this.openDialog("<img src='/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20' alt='Loading icon' />",
                   title, false, false, false, 0, 0, null, null, null);
@@ -1662,7 +1666,7 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
       if(typeof performSave !== "undefined") {      
         var ok = performSave();
         if(!ok) {
-          $("#dialog-loading").dialog("close");
+          vrtxAdm.closeDialog("#dialog-loading");
           return false;
         }
       }
@@ -1671,15 +1675,15 @@ function editorInteraction(bodyId, vrtxAdm, _$) {
           var endTime = new Date() - startTime;
           var waitMinMs = 800;
           if(endTime >= waitMinMs) { // Wait minimum 0.8s
-            $("#dialog-loading").dialog("close");
+            vrtxAdm.closeDialog("#dialog-loading");
           } else {
             setTimeout(function() {
-               $("#dialog-loading").dialog("close");
+              vrtxAdm.closeDialog("#dialog-loading");
             }, Math.round(waitMinMs - endTime));
           }
         },
         error: function(xhr, statusText, errMsg) {
-          $("#dialog-loading").dialog("close");
+          vrtxAdm.closeDialog("#dialog-loading");
           _$("#editor").submit();
         }
       });

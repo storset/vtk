@@ -889,9 +889,9 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCance
 	      buttons: l10nButtons
 	    };
 
-    if(width && height) {
+    if(width && height) { // Not zero
       dialogOpts.width = width;
-	  dialogOpts.height = height;
+      dialogOpts.height = height;
     }
     if(!closable) {
       dialogOpts.closeOnEscape = false;

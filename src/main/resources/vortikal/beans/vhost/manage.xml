@@ -1172,7 +1172,6 @@
           <list>
             <value>${jquery.baseURL}/plugins/ui/jquery-ui-${jquery.ui.version}.custom/css/smoothness/jquery-ui-${jquery.ui.version}.custom.css</value>
             <value>${themeBaseURL}/default.css</value>
-            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.css</value>
           </list>
         </entry>
       </map>
@@ -1200,7 +1199,6 @@
             <value>${jsBaseURL}/iframe-admin.js</value>
             <value>${jquery.baseURL}/plugins/jquery.vortexTips.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
-            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
           </list>
         </entry>
       </map>
@@ -1769,7 +1767,6 @@
             <value>${jsBaseURL}/iframe-admin.js</value>
             <value>${jquery.baseURL}/plugins/jquery.vortexTips.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
-            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
           </list>
         </entry>
       </map>
@@ -1787,7 +1784,6 @@
             <value>${jquery.baseURL}/plugins/jquery.vortexTips.js</value>
             <value>${jsBaseURL}/admin-enhancements.js</value>
             <value>${jsBaseURL}/iframe-admin-alone.js</value>
-            <value>${jsBaseURL}/plugins/thickbox-modified/thickbox.js</value>
           </list>
         </entry>
       </map>

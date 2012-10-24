@@ -289,6 +289,35 @@ vrtxAdmin._$(document).ready(function () {
   vrtxAdm.completeFormAsync({
     selector: "form#manage\\.unlockFormService-form input[type=submit]"
   });
+  
+  // TODO: generalize dialog jQuery UI function with AJAX markup/text
+    $(document).on("click", "#global-menu-create a", function(e) {
+      var dialogManageCreate = $("#vrtx-manage-create-content");
+      if(!dialogManageCreate.length) {
+        vrtxAdm.serverFacade.getHtml(this.href, {
+          success: function (results, status, resp) {
+            _$("body").append(_$(results).find("#vrtx-manage-create-content").parent().html());
+            dialogManageCreate = $("#vrtx-manage-create-content");
+            dialogManageCreate.hide();
+            $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.js')
+            .done(function(script, textStatus) {
+               $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.treeview.async.js')
+               .done(function(script, textStatus) {
+                 $.cachedScript('/vrtx/__vrtx/static-resources/jquery/plugins/jquery.scrollTo-1.4.2-min.js')
+                .done(function(script, textStatus) {
+                  vrtxAdmin.openDialog(dialogManageCreate.html(), "");
+                  initializeTree();
+                }).fail(function(jqxhr, settings, exception) {});
+              }).fail(function(jqxhr, settings, exception) {}); 
+            }).fail(function(jqxhr, settings, exception) {}); 
+          }
+        });
+      } else {
+        
+      }
+      e.stopPropagation();
+      e.preventDefault();
+    });
 
   switch(bodyId) {
    case "vrtx-manage-collectionlisting":
@@ -557,6 +586,7 @@ vrtxAdmin._$(document).ready(function () {
     
     break;
    case "vrtx-publishing":
+    // TODO: generalize dialog jQuery UI function with AJAX markup/text
     $(document).on("click", "a.publishing-status-link", function(e) {
       var dialogTemplate = $("#vrtx-dialog-template-content");
       if(!dialogTemplate.length) {
@@ -718,6 +748,65 @@ VrtxAdmin.prototype.mapShortcut = function mapShortcut(selectors, reroutedSelect
   });
 };
 
+function initializeTree() {
+  var dialog = $(".ui-dialog");
+  var treeElem = dialog.find(".tree-create");
+  var treeTrav = [dialog.find("#vrtx-create-tree-folders").text()];
+  var treeType = dialog.find("#vrtx-create-tree-type").text();
+
+  var timestamp = 1 - new Date();
+  var pathNum = 0;
+  treeElem.treeview({
+    animated: "fast",
+    url: "?vrtx=admin&service=" + treeType + "-from-drop-down&uri=&ts=" + timestamp,
+    service: treeType + "-from-drop-down",
+    dataLoaded: function () { // AJAX success
+      var last = false;
+      if (pathNum == (treeTrav.length - 1)) {
+        last = true;
+      }
+      traverseNode(treeElem, treeTrav[pathNum++], last);
+    }
+  })
+
+  treeElem.on("click", "a", function (e) { // Don't want click on links
+    e.preventDefault();
+  });
+
+  // Params: class, appendTo, containerWidth, in-, pre-, outdelay, xOffset, yOffset, autoWidth
+  treeElem.vortexTips("li span.folder", ".vrtx-create-tree", 80, 300, 4000, 300, 10, - 8, false, true);
+}
+
+function treeCreateScrollToCallback(link) {
+  linkTriggeredMouseEnter = link;
+  linkTriggeredMouseEnterTipText = linkTriggeredMouseEnter.attr('title');
+  link.parent().trigger("mouseenter");
+}
+
+function traverseNode(treeElem, treeTravNode, lastNode) {
+  var checkNodeAvailable = setInterval(function () {
+    var link = treeElem.find("a[href$='" + treeTravNode + "']");
+    if (link.length) {
+      clearInterval(checkNodeAvailable);
+      var hit = link.closest("li").find("> .hitarea");
+      hit.click();
+      if (lastNode) { // If last: scroll to node
+        treeElem.css("background", "none");
+        treeElem.fadeIn(200, function () {
+          var scrollToLink = (link.position().top - 145);
+          scrollToLink = scrollToLink < 0 ? 0 : scrollToLink;
+          treeElem.scrollTo(scrollToLink, 250, {
+            easing: "swing",
+            queue: true,
+            axis: 'y',
+            complete: treeCreateScrollToCallback(link)
+          });
+        });
+      }
+    }
+  }, 15);
+}
+
 VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
   var _$ = this._$;
 
@@ -731,6 +820,10 @@ VrtxAdmin.prototype.logoutButtonAsLink = function logoutButtonAsLink() {
     e.stopPropagation();
     e.preventDefault();
   });
+};
+
+VrtxAdmin.prototype.openMsgDialogCallback = function openMsgDialog(msg, title) {
+  this.openDialog(msg, title, false, null, null);
 };
 
 VrtxAdmin.prototype.openMsgDialog = function openMsgDialog(msg, title) {
@@ -2910,6 +3003,15 @@ jQuery.fn.slideDown = function(speed, easing, callback) {
     originalSlideDown.apply($trOrOtherElm, arguments);
   }
 };
+
+$.cachedScript = function(url, options) {
+  options = $.extend(options || {}, {
+    dataType: "script",
+    cache: true,
+    url: url
+  });
+  return jQuery.ajax(options);
+}; 
 
 /* A little faster dynamic click handler 
  */

@@ -858,15 +858,15 @@ VrtxAdmin.prototype.openConfirmDialog = function openConfirmDialog(msg, title, f
 VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCancel, closable, width, height, funcOkComplete, funcCancelComplete, options) {
   var selector = !closable ?  "#dialog-loading" : (!hasOk ? "#dialog-html" : (!hasCancel ? "#dialog-message" : "#dialog-confirm"));
   var elm = $(selector);
-  if(!elm.length) {
-    if(title) {
+  if (!elm.length) {
+    if (title) {
       this.cachedBody.append("<div id='" + selector.substring(1) + "' title='" + title + "'><div id='" + selector.substring(1) + "-content'>" + (!hasOk ? "<p>" + msg + "</p>" : msg) + "</div></div>");
     } else {
       this.cachedBody.append("<div id='" + selector.substring(1) + "'><div id='" + selector.substring(1) + "-content'>" + (!hasOk ? "<p>" + msg + "</p>" : msg) + "</div></div>");
     }
     elm = $(selector); // Re-query DOM after appending html
     var l10nButtons = {};
-    if(hasOk) {
+    if (hasOk) {
       l10nButtons["Ok"] = function() {
 	    $(this).dialog("close");
 	    if(funcOkComplete) {
@@ -874,7 +874,7 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCance
 	    }
       };
     }
-    if(hasCancel) {
+    if (hasCancel) {
       var Cancel = (typeof cancelI18n != "undefined") ? cancelI18n : "Cancel";
       l10nButtons[Cancel] = function() {
         $(this).dialog("close");
@@ -884,15 +884,14 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCance
       };
     }
     
-    var dialogOpts = { modal: true, autoOpen: false, resizable: false, buttons: l10nButtons };
-
-    if(width && height) { // Not zero
-      dialogOpts.width = width;
-      dialogOpts.height = height;
-    }
-    if(!closable) {
-      dialogOpts.closeOnEscape = false;
-    }
+    var dialogOpts = {     modal: true,                        // Defaults
+                           autoOpen: false,
+                           resizable: false,
+                           buttons: l10nButtons };
+    if (width && height) { dialogOpts.width = width;           // Not zero than set
+                           dialogOpts.height = height; }
+    if (!closable)       { dialogOpts.closeOnEscape = false; }
+    
     elm.dialog(dialogOpts);
   } else {
     if(title) {

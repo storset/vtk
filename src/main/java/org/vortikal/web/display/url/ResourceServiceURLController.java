@@ -47,57 +47,35 @@ import org.vortikal.security.Principal;
 import org.vortikal.web.RequestContext;
 import org.vortikal.web.service.Service;
 
-
 /**
- * Controller that provides a reference (URL) to the requested
- * resource.
- *
- * <p>Configurable properties:
+ * Controller that provides a reference (URL) to the requested resource.
+ * 
+ * <p>
+ * Configurable properties:
  * <ul>
- *   <li><code>service</code> - the service used to construct the URL</li>
- *   <li><code>viewName</code> - the name of the returned view</li>
+ * <li><code>service</code> - the service used to construct the URL</li>
+ * <li><code>viewName</code> - the name of the returned view</li>
  * </ul>
  * </p>
- *
- * <p>Model data provided:
+ * 
+ * <p>
+ * Model data provided:
  * <ul>
- *   <li><code>resource</code> - the resource object</li>
- *   <li><code>resourceReference</code> - the URL</li>
+ * <li><code>resource</code> - the resource object</li>
+ * <li><code>resourceReference</code> - the URL</li>
  * </ul>
  */
 public class ResourceServiceURLController implements Controller {
 
     public static final String DEFAULT_VIEW_NAME = "resourceReference";
-    
-    private Service service = null;
-    private boolean displayWorkingRevision = false;
+
+    private Service service;
     private String viewName = DEFAULT_VIEW_NAME;
-    private String webProtocol = null;
-    private String webProtocolRestricted = null;
+    private String webProtocol;
+    private String webProtocolRestricted;
+    private boolean displayWorkingRevision;
 
-    @Required 
-    public void setService(Service service) {
-        this.service = service;
-    }
-    
-    public void setDisplayWorkingRevision(boolean displayWorkingRevision) {
-        this.displayWorkingRevision = displayWorkingRevision;
-    }
-
-    public void setViewName(String viewName) {
-        this.viewName = viewName;
-    }
-    
-    public void setWebProtocol(String webProtocol) {
-		this.webProtocol = webProtocol;
-	}
-
-	public void setWebProtocolRestricted(String webProtocolRestricted) {
-		this.webProtocolRestricted = webProtocolRestricted;
-	}
-
-	public ModelAndView handleRequest(HttpServletRequest request,
-                                      HttpServletResponse response) throws Exception {
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         RequestContext requestContext = RequestContext.getRequestContext();
         Principal principal = requestContext.getPrincipal();
@@ -106,11 +84,11 @@ public class ResourceServiceURLController implements Controller {
         Path uri = requestContext.getResourceURI();
 
         Map<String, Object> model = new HashMap<String, Object>();
-        
+
         Resource resource = repository.retrieve(token, uri, false);
         if (this.displayWorkingRevision) {
             Revision workingCopy = null;
-            for (Revision rev: repository.getRevisions(token, uri)) {
+            for (Revision rev : repository.getRevisions(token, uri)) {
                 if (rev.getType() == Revision.Type.WORKING_COPY) {
                     workingCopy = rev;
                     break;
@@ -120,36 +98,57 @@ public class ResourceServiceURLController implements Controller {
                 try {
                     resource = repository.retrieve(token, uri, false, workingCopy);
                     model.put("workingCopy", workingCopy);
-                } catch(Throwable t) { }
+                } catch (Throwable t) {
+                }
             }
         }
         String resourceURL = this.service.constructLink(resource, principal, false);
-        
+
         // Hack to ensure https for preview of direct access interfaces
-        if ((request.getScheme() == "https") && (request.getServerPort() != 443)
-            && resourceURL.startsWith("http:")) { 
+        if ((request.getScheme() == "https") && (request.getServerPort() != 443) && resourceURL.startsWith("http:")) {
             resourceURL = resourceURL.replaceFirst("http:", "https:");
         }
 
         // Hack to ensure https for preview when not popup and set authTarget
-        boolean isViewSelectiveHttps = this.webProtocol != this.webProtocolRestricted;
+        boolean isViewSelectiveHttps = !this.webProtocol.equals(this.webProtocolRestricted);
         // Exceptions (https only if readRestricted)
         boolean isPopup = "preview.displayPopupURL".equals(this.viewName) || "previewPopup".equals(this.viewName);
-        
+
         String authTarget = "http";
-        if(isViewSelectiveHttps) {
-        	authTarget = isPopup ? (resource.isReadRestricted() ? "https" : "http") : "https";
+        if (isViewSelectiveHttps) {
+            authTarget = isPopup ? (resource.isReadRestricted() ? "https" : "http") : "https";
         }
-        if(resourceURL.startsWith("http:") && !isPopup && isViewSelectiveHttps) {
-        	resourceURL = resourceURL.replaceFirst("http:", "https:");
+        if (resourceURL.startsWith("http:") && !isPopup && isViewSelectiveHttps) {
+            resourceURL = resourceURL.replaceFirst("http:", "https:");
         }
-        
+
         model.put("resource", resource);
         model.put("resourceReference", resourceURL);
         model.put("authTarget", authTarget);
-        
+
         return new ModelAndView(this.viewName, model);
     }
-    
-}
 
+    @Required
+    public void setService(Service service) {
+        this.service = service;
+    }
+
+    @Required
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
+
+    public void setWebProtocol(String webProtocol) {
+        this.webProtocol = webProtocol;
+    }
+
+    public void setWebProtocolRestricted(String webProtocolRestricted) {
+        this.webProtocolRestricted = webProtocolRestricted;
+    }
+
+    public void setDisplayWorkingRevision(boolean displayWorkingRevision) {
+        this.displayWorkingRevision = displayWorkingRevision;
+    }
+
+}

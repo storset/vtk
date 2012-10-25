@@ -840,7 +840,7 @@ VrtxAdmin.prototype.closeDialog = function closeDialog(classOrId) {
 
 VrtxAdmin.prototype.openLoadingDialog = function openLoadingDialog(title, html) {
   this.openDialog("<img src='/vrtx/__vrtx/static-resources/js/plugins/thickbox-modified/loadingAnimation.gif?width=240&height=20' alt='Loading icon' />",
-                  title, false, false, false, 0, 0, null, null, null);
+                  title, false, false, false, 208, 0, null, null, null);
 };
 
 VrtxAdmin.prototype.openHtmlDialog = function openHtmlDialog(html, title) {
@@ -888,9 +888,9 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCance
                            autoOpen: false,
                            resizable: false,
                            buttons: l10nButtons };
-    if (width && height) { dialogOpts.width = width;           // Not zero than set
-                           dialogOpts.height = height; }
-    if (!closable)       { dialogOpts.closeOnEscape = false; 
+    if (width)           { dialogOpts.width = width; }
+    if (height)          { dialogOpts.height = height; }
+    if (!closable)       { dialogOpts.closeOnEscape = false;   // TODO: used only for loading dialog yet
                            dialogOpts.open = function(e, ui) { 
                              var ctx = $(this).parent();
                              $(".ui-dialog-titlebar-close", ctx).hide();

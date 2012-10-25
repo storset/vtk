@@ -884,14 +884,15 @@ VrtxAdmin.prototype.openDialog = function openDialog(msg, title, hasOk, hasCance
       };
     }
     
-    var dialogOpts = {     modal: true,                        // Defaults
+    var dialogOpts =     { modal: true,                        // Defaults
                            autoOpen: false,
                            resizable: false,
                            buttons: l10nButtons };
     if (width && height) { dialogOpts.width = width;           // Not zero than set
                            dialogOpts.height = height; }
-    if (!closable)       { dialogOpts.closeOnEscape = false; }
-    
+    if (!closable)       { dialogOpts.closeOnEscape = false; 
+                           dialogOpts.open = function(e, ui) { $(".ui-dialog-titlebar-close", $(this).parent()).hide(); }}   
+                           
     elm.dialog(dialogOpts);
   } else {
     if(title) {

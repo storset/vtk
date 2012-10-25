@@ -321,7 +321,7 @@ input[type=text]:focus {
 }
 
 .ui-dialog .ui-dialog-titlebar {
-  background: url("images/line-dotted.gif") repeat-x scroll left bottom transparent;
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/line-dotted.gif) repeat-x scroll left bottom transparent;
   border: none;
   padding: 0 0 15px 0;
 }
@@ -356,7 +356,7 @@ input[type=text]:focus {
 }
 
 .ui-dialog .ui-dialog-titlebar-close span {
-  background: url(images/thickbox-close.png) no-repeat center center;
+  background: url(/vrtx/__vrtx/static-resources/themes/default/images/thickbox-close.png) no-repeat center center;
 }
 
 .ui-dialog .ui-dialog-buttonpane,
@@ -399,7 +399,6 @@ input[type=text]:focus {
 }
 
 /* ^ jQuery UI dialog, datepicker, accordion etc. */
-
 
 /* Mozilla hacks */
 

@@ -40,7 +40,7 @@
   </bean>
 
   <bean id="displayObsoletedMessageService" class="org.vortikal.web.service.ServiceImpl">
-    <property name="parent" ref="viewService" />
+    <property name="parent" ref="structuredResources.displayService" />
     <property name="order" value="-2" />
     <property name="assertions">
       <list>
